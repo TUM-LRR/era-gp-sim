@@ -1,0 +1,22 @@
+\documentclass{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+
+\begin{document}
+\section{Parser-Modul}
+
+Das Parser-Modul ist für das Parsen von Assembler-Quelltext und für die Bereitstellung von dialektabhängigen Befehlen und Direktiven zuständig. Dabei werden Marken und Rechenausdrücke schon zusammengefasst bzw. ersetzt und die einzelnen Befehle dann über das Core-Modul an das Architektur-Modul übergeben. Des Weiteren stellt das Parser-Modul dialektspezifisch formatierte reguläre Ausdrücke für Syntax-Highlighting zur Verfügung.
+
+Wir haben uns zur Entwicklung eines eigenständigen Parser-Moduls entschieden, um Redundanz beim Parsen von ähnlichen oder gleichen Dialekten für unterschiedliche Architekturen zu vermeiden. Außerdem können hierdurch mehrere Dialekte für eine Architektur zur Verfügung gestellt werden ohne weitere Architektur-Module implementieren zu müssen.
+
+Es stand zur Diskussion das Parser-Modul bis auf einen kleinen Teil möglichst allgemein zu halten, diese Idee wurde aber wegen zu hohem Arbeitsaufwand verworfen. Stattdessen werden wir uns fürs Erste auf einen Parser allein für RISC-V konzentrieren.
+
+Der Parser arbeitet in mehreren Schritten. Im ersten Durchlauf werden Marken eingelesen und mögliche Direktiven wie Speicherreservierungen ausgewertet. Im zweiten Schritt wird zu jedem Befehl ein Syntaxbaum erstellt. Befehlsspezifische Knoten erhalten wir dabei durch eine Factory, die das Core-Modul bereitstellt. In diesem Syntaxbaum existieren keine Marken oder Rechenausdrücke, diese werden bereits davor vom Parser ausgewertet. Der fertige Syntaxbaum wird dann an den Core zurückgeben.
+
+Das Parser-Modul stellt auch reguläre Ausdrücke für das Syntax-Highlighting zur Verfügung. Um diese generieren zu können gibt es eine Schnitstelle um über das Core-Module von der Architektur eine Liste von Schlüsselwörtern zu bekommen. Diese können dann in dialektspezifisch formatierte reguläre Ausdrücke umgewandelt werden.
+
+In Anbetracht unserer geringen verfügbaren personellen Resourcen haben wir uns dazu entschieden, die boost::spirit-Bibliothek zum Parsen zu benutzen. Sollte diese Abhängigkeit in Zukunft Probleme bereiten, kann durch den modularen Aufbau der Parser leicht ausgetauscht werden.
+
+\end{document}
