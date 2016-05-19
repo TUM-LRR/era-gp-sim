@@ -15,6 +15,8 @@ Somit entspricht der Parser dem Assemblierer.
 Die Trennung von Architektur und Parser wurde vorgenommen,
 um Code-Duplikation zu vermeiden,
 die bei Architekturen mit mehreren Dialekten auftreten könnten (bei X86 z.B. AT\&T- und Intel-Syntax).
+
+Eine weitere Funktion des Parsers ist die Bereitstellung von dialektspezifisch angepassten regulären Ausdrücken, die zum Syntax-Highlighting benutzt werden können. Hierzu bekommt der Parser über den Core von der Architektur eine Liste mit Schlüsselwörtern wie Befehlen, Registernamen und ähnlichem. Der Parser ergänzt diese dann je nach Dialekt (z.B. Präfixe für Register/Konstanten). Die so entstandenen regulären Ausdrücke können nun vom GUI-Modul abgefragt werden.
 \subsection{Umsetzung (Referenzmodul)}
 Das Referenzmodul (welches im Rahmen dieses Großpraktikums konstruiert werden soll) wird als bekannter 2-Pass-Assembler realisiert. Wie die Architektur wird dieses vorerst auf RISC-V (und hier einen bestimmten Dialekt) ausgelegt und spezialisiert sein.
 \subsubsection{Entfernen von Kommentaren}
