@@ -3,10 +3,10 @@
 RISC-V ist eine neue open-source ISA (instruction set architecture), die
 ursprünglich für Lern- und Forschungsziele entwickelt wurde.
 
-Es gibt zwei Versionen mit 32-bit und 64-bit Addressraumaufteilung. Wir werden uns
-zuerst ausschliesslich für die erste Variante interessieren.
+Es gibt zwei Versionen mit 32-bit und 64-bit Architektur. Wir werden uns
+zuerst ausschließlich für die erste Variante interessieren.
 
-Die Architektur ist in Module aufgeteilt, mit dem Basis Integer Modul "I",
+Die Architektur ist in Module aufgeteilt, mit der Basis Integer Modul "I",
 das in allen Implementierungen vorhanden sein muss. Es enthält ganzzahlige
 Rechen-, Lade-, Store- und Kontrollflussinstruktionen. Es kann durch folgende
 Standartmodule erweitert werden:
@@ -15,11 +15,11 @@ Standartmodule erweitert werden:
 + "A" - atomicity für inter-processor Synchronization
 + "F" und "D" - für floats und doubles entsprechend
 
-Die Instruktionen der Standart ISA sind 32-bit lang und sie sind aligned auf die 32-bit Grenzen. Jedoch unterstützt Risc-V auch Befehle mit variablen Länge, die aus einer beliebigen Anzahl von 16-bit parcels bestehen können.
+Die Instruktionen der Standard ISA sind 32-bit lang und sie sind aligned auf die 32-bit Grenzen. Jedoch unterstützt Risc-V auch Befehle mit variablen Länge, die aus einer beliebigen Anzahl von 16-bit parcels bestehen können.
 
 Standartmässig wird little-endian als Speicherformat verwendet.
 
-Es gibt 31 Allzweckregister (x1 - x31). Zusätzlich gibt es einen Register x0, der mit der Konstante 0 hardwired ist, und einen Programmzähler. Sie sind alle 32 bit breit.
+Es gibt 31 Allzweckregister (x1 - x31). Zusätzlich gibt es ein Register x0, der mit der Konstante 0 hardwired ist, und einen Programmzähler. Sie sind alle 32 bit breit.
 
 ### Integer Basis Instruktionen
 
@@ -29,7 +29,7 @@ Keine integer Rechenbefehle verursachen arithmetische Ausnahmen.
 
 ```asm
 ADDI rd, rs1, 0  ; addiert 12-bit immediate mit dem Register r1, Ziel: rd
-SLTI rd, rs1, 0  ; set let than immediate, rd = 1, falls rs1 < 0, sonst rd=0
+SLTI rd, rs1, 0  ; set less than immediate, rd = 1, falls rs1 < 0, sonst rd=0
 SLTIU rd, rs1, 1 ; dasselbe, aber unsigned
 ```
 
@@ -46,7 +46,7 @@ AUIPC dest, immediate  ; add upper immediate to pc
 
 LUI platziert die Immediate in die höheren 20 bits des Zielregisters und die unteren 12 werden mit 0 gefüllt.
 
-AUIPC addiert die Immediate mit den höheren 20 bits des Instruktionzählers und speichert das Ergebnis in den Zielregister.
+AUIPC addiert die Immediate mit den höheren 20 bits des Instruktionszählers und speichert das Ergebnis in das Zielregister.
 
 **Register-Register**
 
@@ -71,7 +71,7 @@ ADDI x0, x0, 0
 JAL rd, immediate  ; rd = (pc + 4), Immediate 20 bit lang, range +-1MiB
 ```
 
-JAL (jump and link) setzt den Befehlszähler auf den Wert (pc + immediate) und der vorherige Wert des (Befehlszählers + 4) wird in den Register rd gespeichert, der als eine Rücksprungadresse verwendet werden kann. Nach den Konventionen benutzt man dafür x1 und wenn JAL ein unconditional jump ist, dann x0.
+JAL (jump and link) setzt den Befehlszähler auf den Wert (pc + immediate) und der vorherige Wert des (Befehlszählers + 4) wird in das Register rd gespeichert, der als eine Rücksprungadresse verwendet werden kann. Nach den Konventionen benutzt man dafür x1 und, wenn JAL ein unconditional jump ist, dann x0.
 
 ```asm
 JALR rd, rs1, immediate  ; rd = (pc + 4), Immediate 12 bit
