@@ -16,13 +16,15 @@ Die Trennung von Architektur und Parser wurde vorgenommen,
 um Code-Duplikation zu vermeiden,
 die bei Architekturen mit mehreren Dialekten auftreten könnten (bei X86 z.B. AT\&T- und Intel-Syntax).
 
-Eine weitere Funktion des Parsers ist die Bereitstellung von dialektspezifisch angepassten regulären Ausdrücken, die zum Syntax-Highlighting benutzt werden können. Hierzu bekommt der Parser über den Core von der Architektur eine Liste mit Schlüsselwörtern wie Befehlen, Registernamen und ähnlichem. Der Parser ergänzt diese dann je nach Dialekt (z.B. Präfixe für Register/Konstanten). Die so entstandenen regulären Ausdrücke können nun vom GUI-Modul abgefragt werden.
+Weiterhin assitiert der Parser mit dem Befehlssatz der Architektur der GUI beim Syntax-Highlighting.
 \subsection{Umsetzung (Referenzmodul)}
 Das Referenzmodul (welches im Rahmen dieses Großpraktikums konstruiert werden soll) wird als bekannter 2-Pass-Assembler realisiert. Wie die Architektur wird dieses vorerst auf RISC-V (und hier einen bestimmten Dialekt) ausgelegt und spezialisiert sein.
 \subsubsection{Entfernen von Kommentaren}
 Zuvor werden alle Kommentare entfernt. Dieser Schritt ist nur notwendig, falls der RISC-V-Assembler mehrzeilige Kommentare unterstützen soll.
 \subsubsection{1. Pass}
 Im ersten Schritt wird der rohe Assemblertext gelesen und in Zeilenbereiche unterteilt, die jeweils einen Befehl mit allen zugehörigen Marken beinhalten.
+(alternativ steht momentan zur Diskussion, dass nur die veränderten Assemblertextteile gelesen und neu analysiert werden, da dies eine bessere Ausführungsgeschwindigkeit mit sich bringt.
+Es würde natürlich bedeuten, dass alle hier genannten Objekte, Symbole usw. über die Laufzeit des Programmes über gespeichert werden.)
 Diese Befehle werden anschließend in Objekte gepackt (mit Zeilenintervall und Datei des Auftretens), wobei wir zwischen Direktiven und den eigentlichen Befehlen unterscheiden.
 Besonders bei ersteren wird bereits hier genauer unterschieden.
 Alle Labels und eventuell auch Konstantennamen (die wie Labels behandelt werden) werden in die Symboltabelle mit ihrem korrespondierenden (Text-)Wert geschrieben.
@@ -30,12 +32,13 @@ Wenn von Core oder GUI gewünscht (also wenn das Programm gerade nicht läuft), 
 Bei allen Makros wird Anfang und Ende erfasst und diese in eine separate Makroliste eingetragen.
 \subsubsection{2. Pass}
 Wir haben nun eine Befehlsfolge von Objekten. In diesem Schritt werden nun die Direktiven ausgeführt und die Labels mit ihrem Wert eingesetzt.
-Aus jedem der Argumente wird ein Syntaxbaum gebildet. Wegen möglichen unbekannten Datentypen anderer ISAs usw. wird hier eine Factory für Knoten vom Architektur-Modul bereitgestellt.
+Ein Befehl wird zu einem großen Syntaxbaum umgewandelt. (in Diskussion: Nur aus jedem der Argumente wird ein Syntaxbaum gebildet. Die Entscheidung steht noch aus)
+Wegen möglichen unbekannten Datentypen anderer ISAs usw. wird hier eine Factory für Knoten vom Architektur-Modul bereitgestellt.
 Als Ausgabe dient schließlich eine Liste von Objekten \emph{ohne} jegliche Direktiven und mit Argumenten als Syntaxbäumen. Diese wird dann dem Core zur Verfügung gestellt.
 \begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{process.png}
-\caption{Eine grobe Skizze des Parsing-Prozesses.}
+\caption{Eine grobe Skizze des geplanten Parsing-Prozesses nach aktuellem Stand.}
 \end{figure}
 \subsubsection{Geplante Direktiven-Unterstützung}
 Unterstützt werden sollen:
@@ -51,10 +54,15 @@ Unterstützt werden sollen:
 \item Komplett freie Textersetzungssysteme (z.B. C-Präprozessor)
 \item Inkludieren anderer Assembler-Dateien
 \end{itemize}
+Ebenfalls werden nur einzeilige Kommentare unterstützt werden.
 \subsection{Abhängigkeiten}
 Der Parser kommuniziert mit allen anderen Modulen über den Core und ist somit alleine von diesem abhängig. 
 Die Architektur erfragt vom Parser die einzelnen assemblierten Zeilen, um diese auszuführen.
 Die GUI erhält vom Parser die Fehlermeldungen und stellt die Anfragen, um Code zu übersetzen.
+
+Eine weitere Funktion des Parsers ist die Bereitstellung von dialektspezifisch angepassten regulären Ausdrücken, die zum Syntax-Highlighting benutzt werden können.
+Hierzu bekommt der Parser über den Core von der Architektur eine Liste mit Schlüsselwörtern wie Befehlen, Registernamen und ähnlichem. Der Parser ergänzt diese dann je nach Dialekt (z.B. Präfixe für Register/Konstanten).
+Die so entstandenen regulären Ausdrücke können nun vom GUI-Modul abgefragt werden.
 
 Wir haben uns dazu entschieden, vorerst die boost::spirit-Bibliothek zu verwenden, um Ausdrücke zu parsen.
 Wir erachten dies als sinnvoll, um das Projekt in Anbetracht der Stärke des Parser-Teams (zwei Personen) und der verfügbaren Zeit ordentlich fertigstellen zu können.
