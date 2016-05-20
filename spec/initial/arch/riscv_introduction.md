@@ -9,7 +9,7 @@ zuerst ausschließlich für die erste Variante interessieren.
 Die Architektur ist in Module aufgeteilt, mit der Basis Integer Modul "I",
 das in allen Implementierungen vorhanden sein muss. Es enthält ganzzahlige
 Rechen-, Lade-, Store- und Kontrollflussinstruktionen. Es kann durch folgende
-Standartmodule erweitert werden:
+Standardmodule erweitert werden:
 
 + "M" - ganzzahlige Multiplikation und Division
 + "A" - atomicity für inter-processor Synchronization
@@ -17,13 +17,13 @@ Standartmodule erweitert werden:
 
 Die Instruktionen der Standard ISA sind 32-bit lang und sie sind aligned auf die 32-bit Grenzen. Jedoch unterstützt Risc-V auch Befehle mit variablen Länge, die aus einer beliebigen Anzahl von 16-bit parcels bestehen können.
 
-Standartmässig wird little-endian als Speicherformat verwendet.
+Standardmäßig wird little-endian als Speicherformat verwendet.
 
 Es gibt 31 Allzweckregister (x1 - x31). Zusätzlich gibt es ein Register x0, der mit der Konstante 0 hardwired ist, und einen Programmzähler. Sie sind alle 32 bit breit.
 
 ### Integer Basis Instruktionen
 
-Keine integer Rechenbefehle verursachen arithmetische Ausnahmen.
+Keine Integer Rechenbefehle verursachen arithmetische Ausnahmen.
 
 **Register-Immediate**
 
@@ -35,18 +35,18 @@ SLTIU rd, rs1, 1 ; dasselbe, aber unsigned
 
 ANDI, ORI, XORI sind logische Operationen, die AND, OR und XOR entsprechen. Ihr Befehlsformat ist gleich dem obigen.
 
-Es gibt logische und arithmetische Shifts (SLLI, SRLI, SLAI, SRAI). Die Anzahl der geshifteten Bits ist gleich der Zahl, die aus den ersten fünf Bits der immediate entsteht.
+Es gibt logische und arithmetische Shifts (SLLI, SRLI, SLAI, SRAI). Die Anzahl der geshifteten Bits ist gleich der Zahl, die aus den ersten fünf Bits des Immediate entsteht.
 
-In den nächsten beiden Befehlen ist die immediate 20 bit lang, anstatt 12.
+In den nächsten beiden Befehlen ist die Immediate 20 Bit lang, anstatt 12.
 
 ```asm
 LUI dest, immediate  ; load upper immediate
 AUIPC dest, immediate  ; add upper immediate to pc
 ```
 
-LUI platziert die Immediate in die höheren 20 bits des Zielregisters und die unteren 12 werden mit 0 gefüllt.
+LUI platziert die Immediate in die höheren 20 Bits des Zielregisters und die unteren 12 werden mit 0 gefüllt.
 
-AUIPC addiert die Immediate mit den höheren 20 bits des Instruktionszählers und speichert das Ergebnis in das Zielregister.
+AUIPC addiert die Immediate mit den höheren 20 Bits des Instruktionszählers und speichert das Ergebnis in das Zielregister.
 
 **Register-Register**
 
@@ -81,14 +81,14 @@ JALR setzt den Befehlszähler auf (rs1 + imm). Zusammen mit dem Befehl LUI kann 
 
 **Conditional Branches**
 
-Ein wichtiger Aspekt der Risc-V ISA ist, dass es keine flags gibt, stattdessen werden Branchbefehle benutzt.
+Ein wichtiger Aspekt der Risc-V ISA ist, dass es keine Flags gibt, stattdessen werden Branchbefehle benutzt.
 
 ```asm
 BEQ/BNE src1, src2, offset ; branch equal/not equal
 BLT[U]/BGE[U]  src1, src2, offset  ; branch less/greater than
 ```
 
-Falls die Bedingung erfüllt wird, wird der offset zu dem Befehlszähler addiert.
+Falls die Bedingung erfüllt wird, wird der Offset zu dem Befehlszähler addiert.
 
 **Load/Store Instruktionen**
 
@@ -97,4 +97,4 @@ LW/LH/LB rd, rs1, offset ; kopiert 32/16/8 bits vom Speicher von der Adresse (rs
 SW/SH/SB rd, rs1, offset ; kopiert den Wert vom rd in den Speicher
 ```
 
-Es gibt auch LHU und LBU (analog SHU, SBU). Der Unterschied ist, dass der kopierte 16/8 bit Wert wird zero-extended zu 32 bits, wogegen bei normalen LH und LB wird das sign-extended.
+Es gibt auch LHU und LBU (analog SHU, SBU). Der Unterschied ist, dass der kopierte 16/8 Bit Wert wird zero-extended zu 32 Bits, wogegen bei normalen LH und LB wird das sign-extended.
