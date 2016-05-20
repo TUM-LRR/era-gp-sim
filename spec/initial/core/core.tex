@@ -1,0 +1,33 @@
+\chapter{Core}
+
+Das Core-Modul ist das Herzstück des Assemblersimulators. Es regelt die Kommunikation zwischen den einzelnen Modulen (was ein einfaches Austauschen von Modulen für unterschiedliche Architekturen, Assembler-Syntaxen und Benutzeroberflächen erlaubt) sowie die eigentliche Ausführung des von den Parser- und Architektur-Modulen erzeugten Syntaxbaums. Zusätzlich ist es für die Verwaltung der Threads zuständig (sodass z.B. die GUI nicht blockiert ist, während das Assemblerprogramm ausgeführt wird).
+
+\section{Threading}
+
+Damit kein Modul, insbesondere jedoch nicht die GUI (die immer auf Nutzereingaben reagieren können sollte) und das Core-Modul (zumindest so weit, wie es zur Koordination der einzelnen Module nötig ist), blockierend auf die Simulation warten müssen, wird jedem Programmteil, für den dies nötig ist, ein Thread (oder notfalls ein Threadpool) zugewiesen. Um Implementierungskomplikationen durch \textit{Race Conditions} oder \textit{Deadlocks} zu vermeiden, sollen die Threads hier weitestgehend dem \textit{Active Object}-Pattern folgen---jedes Objekt lebt in nur einem Thread, Datentransfer und Funktionsaufrufe erfolgen über Queues und Callbacks, sodass Threadsicherheit weitestgehend vom Threading-Framework selbst (hier über das Core-Modul) statt über die einzelnen Datentypen garantiert wird. Natürlich ist es nicht unbedingt erstrebenswert, für jedes Objekt einen einzelnen Thread zu erzeugen, also sollten auch mehrere Objekte in einem Thread verwaltet werden können (Teile des Threading-Systems werden dann mehr dem sog. Proactor-Pattern ähneln).
+
+Um das Threading zu implementieren, werden wir---nachdem das Parser-Team sich für bereits die Nutzung von \textsf{Boost.Spirit} entschieden hat---die \textsf{Boost.Thread}-Library verwenden. So stehen uns mehr Features zur Verfügung als mit der Threading-Teilbiliothek der C++ Standard Library, und wir sind für nichts von Qt abhängig, was nicht direkt mit der GUI zusammenhängt (dies ist besonders relevant, da es von mehreren Seiten den Wunsch gab, bis zur Fertigstellung der GUI die Möglichkeit zu schaffen, kleinere ``Test-GUIs'' zu schreiben, die das Testen der anderen Module erleichtern).
+
+\section{Datentypen}
+
+Um möglichst alle Architekturen abzudecken, wollen wir den Returntyp der Zugriffsfunktionen auf Speicher und Register möglichst allgemein halten. Da die Interpretation der Daten von der Architektur abhängt, wird ein Speicherzugriff zunächst nur die rohen Bits als `std::bitset` (oder, falls mehr Operationen benötigt werden, in einem ähnlichen, eigenen Typ) zurückgegeben. Das Core-Modul wird dann Konvertierungsfunktionen bereitstellen, besonders in Ganzzahl- und Gleitkommazahlen variabler Bitgrö{\ss}e (``Bigints'' und ``Bigfloats''). Diese Typen sollen soweit möglich die gleichen Operationen anbieten, die auch von den normalen \lstinline!int! und \lstinline!float!-Typen bereitgestellt werden. Falls der Bedarf besteht, könnte auch eine Konvertierung in normale C++-Typen angeboten werden, dies sollte aber per se nicht nötig sein.
+
+
+\section{Hauptspeicher}
+Der Hauptspeicher stellt einen ausgedehnten numerisch adressierbaren Speicher dar, welcher direkt von der CPU aus angesprochen werden kann. Wir beschränken uns hier auf homogene Hauptspeicherzellen mit konsistenten Grö{\ss}en. Um den Zugriff auf den simulierten Hauptspeicher, der ja vergleichsweise häufig benötigt wird, möglichst einfach zu gestalten, werden die einzelnen Speicherzellen auf ganze Bytezahlen gepaddet; eine Implementierung, in der die Speicherzellen bitgenau aneinandergereiht werden, wäre untunlich.
+
+\section{Register}
+Die Register stellenden ALU-nächsten Speicher dar. Gegensätzlich zum Hauptspeicher ist dieser nicht numerisch-bytegenau zu adressieren, sondern individuell, teils sogar als Teilbitabschnitt dieser.  Um Register zeichenkettenförmig zu identifizieren wird eine Map/Dictionary und das Proxy-Pattern verwendet.
+
+\section{Interfaces}
+
+\subsection{Architektur}
+Die Architektur muss zusammen mit dem Parser-Modul die Interpretation des Assembly-Codes vornehmen. Der Core selbst, obgleich er von der genauen Wahl der Architektur und des Parsers unabhängig ist, muss dabei die benötigten Daten zwischen den Modulen übertragen. Insbesondere muss die Architektur---neben der Registrierung der Factories, die die Syntaxbäume erzeugen---auch zu jedem Zustand dem Core kundtun können, welche Instruktion als nächstes ausgeführt werden soll, schließlich ist dem Core die genaue Bedeutung der einzelnen Register vollkommen unbekannt.
+
+\subsection{GUI}
+
+Core und GUI kommunizieren mit Hilfe eines Observer-Patterns, so dass der Core keinen Zugriff auf die Funktionalität der GUI benötigt. Die GUI wird dabei über änderungen an Registern, am Speicher und über Fehlermeldungen informiert, damit die Darstellung aktualisiert werden kann. Gleichzeitig muss sie den Core über änderungen am Assemblercode, den Registern oder dem Speicher informieren, die vom Benutzer ausgelöst wurden. Beim Programmstart wird das GUI-Modul vom Core gestartet, da dieser die verschiedenen Programmteile verwaltet und die Kommunikation zwischen den Threads regelt.
+
+\subsection{Parser}
+
+Der Core startet und verwaltet auch den Parser und übergibt diesem die Informationen der Architektur, beispielsweise die Factories für die Syntaxbäume. Au{\ss}erdem erhält der Parser den Assemblercode von der GUI, dieser wird als \lstinline!std::string! weitergegeben. Der Core erhält vom Parser Fehlermeldungen für die GUI oder die Syntaxbäume, die vom Core ausgeführt werden können. Dabei wird der als nächstes auszuführende Befehl von der Architektur ermittelt.
