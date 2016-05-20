@@ -56,7 +56,7 @@ AND/OR/XOR   dest, src1, src2
 SLL/SRL      dest, src1, src2
 SUB/SRA      dest, src1, src2
 
-SLTU rd, x0, rs2 ; setzt rd zu 1 nur wenn rs2 = 0
+SLTU rd, x0, rs2 ; setzt rd zu 0 nur wenn rs2 = 0
 ```
 
 **NOP Instruktion**
