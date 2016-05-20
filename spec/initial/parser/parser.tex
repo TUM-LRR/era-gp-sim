@@ -1,8 +1,3 @@
-\documentclass[a4paper]{article}
-\usepackage{fullpage}
-\usepackage[utf8]{inputenc}
-\usepackage{graphicx}
-\begin{document}
 \section{Parser-Modul}
 \textbf{Bitte berücksichtigen: Es kann noch Änderungen hieran geben, da dies nur eine Präsentation des aktuellen Standes ist...}
 \subsection{Funktionalität}
@@ -37,7 +32,7 @@ Wegen möglichen unbekannten Datentypen anderer ISAs usw. wird hier eine Factory
 Als Ausgabe dient schließlich eine Liste von Objekten \emph{ohne} jegliche Direktiven und mit Argumenten als Syntaxbäumen. Diese wird dann dem Core zur Verfügung gestellt.
 \begin{figure}
 \centering
-\includegraphics[width=0.8\textwidth]{process.png}
+\includegraphics[width=0.8\textwidth]{../parser/figures/process.png}
 \caption{Eine grobe Skizze des geplanten Parsing-Prozesses nach aktuellem Stand.}
 \end{figure}
 \subsubsection{Geplante Direktiven-Unterstützung}
@@ -56,7 +51,7 @@ Unterstützt werden sollen:
 \end{itemize}
 Ebenfalls werden nur einzeilige Kommentare unterstützt werden.
 \subsection{Abhängigkeiten}
-Der Parser kommuniziert mit allen anderen Modulen über den Core und ist somit alleine von diesem abhängig. 
+Der Parser kommuniziert mit allen anderen Modulen über den Core und ist somit alleine von diesem abhängig.
 Die Architektur erfragt vom Parser die einzelnen assemblierten Zeilen, um diese auszuführen.
 Die GUI erhält vom Parser die Fehlermeldungen und stellt die Anfragen, um Code zu übersetzen.
 
@@ -71,4 +66,3 @@ Im Laufe unserer Entscheidungsfindung stand auch kurz auf dem Plan, einen allgem
 Dies hätte den Vorteil, dass die Dialektmodule wesentlich kleiner und einfacher zu programmieren ausgefallen wären, da die Hauptarbeit ja sowieso der große allgemeine Parser übernimmt.
 Jedoch haben wir diese Idee für dieses Großpraktikum verworfen, da hierbei zu viele Komplikationen entstanden (wie will man fast alle Assemblersprachen verallgemeinern?).
 Sie steht jedoch für spätere Projekte frei, verwendet zu werden.
-\end{document}

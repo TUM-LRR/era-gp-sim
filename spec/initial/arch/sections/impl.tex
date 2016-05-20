@@ -1,40 +1,9 @@
-\documentclass[10pt]{article}
-\usepackage{fullpage}
-\usepackage{amssymb}
-\usepackage{amsmath}
-\usepackage[utf8]{inputenc}
 
-\usepackage{graphicx}
-\usepackage{listings}
-\usepackage{color}
-
-\definecolor{dkgreen}{rgb}{0,0.6,0}
-\definecolor{gray}{rgb}{0.5,0.5,0.5}
-\definecolor{mauve}{rgb}{0.58,0,0.82}
-
-\lstset{frame=tb,
-	language=C++,
-	aboveskip=3mm,
-	belowskip=3mm,
-	showstringspaces=false,
-	columns=flexible,
-	basicstyle={\small\ttfamily},
-	numbers=none,
-	numberstyle=\tiny\color{gray},
-	keywordstyle=\color{blue},
-	commentstyle=\color{dkgreen},
-	stringstyle=\color{mauve},
-	breaklines=true,
-	breakatwhitespace=true,
-	tabsize=3
-}
-
-\begin{document}
-\title{Ansatz und Grundgedanken der Implementierung des Architekturteils}
-\section{Allgemeine Idee}
+\section{Ansatz und Grundgedanken der Implementierung des Architekturteils}
+\subsection{Allgemeine Idee}
 Jeder Ausdruck (ein Befehl) des Quelltextes wird durch den Parser eingelesen. Ziel ist es, einen Syntaxbaum zu erstellen, der den Ausdruck in einer Form darstellt, die die geladene Architektur verarbeiten kann.
 
-\subsection{Erzeugung des Syntaxbaumes über das Abstract Factory Pattern}
+\subsubsection{Erzeugung des Syntaxbaumes über das Abstract Factory Pattern}
 Die Schnittstelle zum Parser soll so allgemein wie möglich gehalten werden, um verschiedene Parser und Architekturen auszutauschen. Die Erzeugung der Knoten für diesen Syntaxbaum wird transparent über eine bzw. mehrere (für jeden Knotentyp eine) Factory geregelt.\\
 Teil der Schnittstelle sind hierbei eine abstrakte Oberklasse Knoten, sowie die abstrakten Factory-Interfaces der einzelnen Knotentypen. Einige Knoten-Implementierungen, wie der Immediate-Knoten, Summe oder Produkt als arithmetische Operation können auch von anderen Architekturen verwendet werden und werden daher als "Standard-Implementierungen" in dem Teil des Programms vorhanden sein, der architekturunabhängig ist.\\
 Eine konkrete Architektur wird durch den Core geladen und registriert/übergibt eine konkrete Implementierung jeder Factory beim Parser. Diese Implementierung kann eigene Knoten von der Oberklasse ableiten und so architekturspezifische Implementierungen vornehmen.\\
@@ -43,10 +12,10 @@ Die abstrakte Oberklasse aller Knoten stellt folgende Methoden bereit, die von j
 \begin{itemize}
 	\item \texttt{Zahlentyp getValue(Zugriffsmöglichkeit\_auf\_den\_Speicher)}: Diese Methode wird bei der Ausführung aufgerufen und ruft evtl. dieselbe Methode bei Kindknoten auf. Rückgabewert ist eine Zahl, die je nach Art des Knotens dessen Inhalt/Aufgabe repräsentiert. Beispielsweise gibt ein Immediate-Knoten die gespeicherte Konstante, ein ArithmetischerOp-Knoten das Ergebnis der Rechenoperation mit den Kindknoten bzw. ein Registerzugriffsknoten den Inhalt des Registers zurück.\\
 	Hierdurch muss z.B. der Befehl ADD nur einmal implementiert werden, obwohl dieser sowohl Register, als auch Immediates verarbeiten kann (Eine Beispiel-Implementierung mit Pseudo-Code befindet sich weiter unten). Die Ausführung prüft hierbei nicht mehr, ob dieser Befehl in dieser Architektur und Form so erlaubt ist. Dies geschieht separat in der nächsten Methode.
-	
+
 	\item \texttt{Wahrheitswert/String\footnote{Je nachdem wie das Auffinden und Rückmelden eines Syntax/Semantik-Fehlers gehandhabt wird, kann hier entweder das Vorhandensein eines Fehlers oder schon ein konkreter Fehlertext zurückgegeben werden} validate()}: Diese Methode wird aufgerufen, wenn der Syntaxbaum bzw. alle darunterliegenden Knoten auf Gültigkeit überprüft werden sollen. Auch dieser Methodenaufruf wird an Kindknoten weitergegeben. Dieser Aufruf ist Teil der 2-Schritt-Validierung und beschäftigt sich nicht mehr mit Schreibfehlern, sondern vielmehr mit falschen Typen der Operanden eines Befehls, Länge von Immediates usw.\\
 	So kontrolliert z.B. der Immediate-Knoten, ob die gespeicherte Konstante eine zulässige Größe hat oder der Befehls-Knoten für ADD, ob der Zieloperand ein zulässiges Register zulässiger Größe ist.
-	
+
 	\item Einige weitere Methoden, die z.B. zur Erkennung des Knotentypen (nützlich für Validierung)  genutzt werden.
 \end{itemize}
 \textbf{Knotentypen}\\
@@ -54,17 +23,17 @@ Für jeden Knotentypen muss ein Factory-Interface in der Schnittstelle vorhanden
 Knotentypen, die bei der RISC-V Architektur nicht benötigt werden, sind der Vollständigkeit halber trotzdem aufgeführt und deren Factory-Interface(s) werden von uns trotzdem als Schnittstelle für weitere Architekturen bereitgestellt. Sie sind hier in der Aufzählung mit \textbf{*} gekennzeichnet
 \begin{itemize}
 	\item \textbf{Befehl} Führt einen konkreten Befehl aus (siehe Beispiel-Implementierung als Pseudo-Code)
-	
+
 	\item \textbf{Immediate} Speichert eine Konstante (oder das Ergebnis der Ersetzung einer Marke durch den Parser)
-	
+
 	\item \textbf{Register} Repräsentiert ein Register (z.B. x4)
-	
+
 	\item \textbf{Speicherzugriff im Befehl}* Führt einen Speicherzugriff aus, z.B. während einer arithmetischen Operation (Bei Intel 386 "[...]")
-	
+
 	\item \textbf{Arithmetische Operation im Befehl}* Führt eine arithmetische Operation zur Laufzeit aus, z.B. in einem Speicherzugriff bei Intel 386 [EBX+EDX+8]
-	
+
 \end{itemize}
-\subsection{Pseudo-Code Beispiel von ADD}
+\subsubsection{Pseudo-Code Beispiel von ADD}
 Der hier benutzte Datentyp \texttt{Zahl} ist für das RISC-V 32I-Modul ein 32-Bit Integer, \texttt{Registername} ist ein Schlüssel, mit dem ein Register identifiziert werden kann.
 \begin{lstlisting}
 	function Zahl getValue(AbstraktSpeicher s) {
@@ -72,10 +41,16 @@ Der hier benutzte Datentyp \texttt{Zahl} ist für das RISC-V 32I-Modul ein 32-Bi
 		Zahl summand1 = kind[1].getValue(s);
 		Zahl summdand2 = kind[2].getValue(s);
 		Zahl result = summand1 + summand2;
-		
+
 		s.storeToRegister(destination, result);
 		return 0;//z.B. um anzuzeigen, dass kein Fehler aufgetreten ist
 	}
 \end{lstlisting}
-\includegraphics[scale=0.5]{Zeichnung}
-\end{document}
+\begin{figure}[h!]
+\includegraphics[scale=0.5]{../arch/figures/zeichnung}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "arch"
+%%% End:
