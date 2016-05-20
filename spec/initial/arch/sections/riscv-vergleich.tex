@@ -1,0 +1,102 @@
+\section{Unterschiede zwischen x86 und RISC-V}
+
+In den folgenden Absätzen wollen wir die wichtigsten Unterschiede zwischen dem
+x86 und RISC-V Befehlssatz erläutern. Wir möchten dadurch den übrigen
+Teammitgliedern den Umstieg von x86 erleichtern sowie unsere eigenen
+Beobachtungen festhalten.
+
+\subsection{Load/Store Paradigma}
+
+Ein grundlegender Unterschied zwischen RISC-V, als
+reduced-instruction-set-comuting (RISC) ISA, und x86, als
+complex-instruction-set-computing (CISC) Befehlssatz, ist die Beschränkung der
+Zugriffsmöglichkeiten auf den Speicher. In x86 ist es erlaubt, bei so gut wie
+jedem Befehl einen Speicherzugriff als Operand anzugeben, wobei aber die
+Beschränkung auf nur einen solchen Zugriff gilt. So können wir beispielsweise
+die folgenden wohl-geformten Befehle ausdrücken:
+
+\begin{lstlisting}
+  ; Schreibe den Wert an der Speicheradresse
+  ; 0xDEADBEEF in das Register EAX
+  mov eax, [0xDEADBEEF]
+  ; Addiere den Wert im Register EAX auf den
+  ; Wert an der Speicheadresse 0xDEADAFFE
+  add [0xDEADAFFE], eax
+\end{lstlisting}
+
+In RISC-V wären diese Befehle nicht erlaubt, da es das LOAD/Store Paradigma
+befolgt. Das bedeutet, dass nur zwei Instruktionen gibt, die auf den Speicher
+zugreifen können: \code{LOAD} und \code{STORE} (in Pseudo-Code). Der erste
+Befehl lädt ein einen Wert an einer Speicheradresse in ein Register. Im
+Gegensatz dazu erlaubt \code{STORE}, einen Wert aus einem Register an eine
+Speicheradresse zu legen.
+
+Im RISC-V gibt es mehrere Varianten dieser beiden Befehlsklassen, für
+verschieden breite Speicherzugriffe. Für LOAD, wären das:
+
+\begin{itemize}
+  \item \code{LW dest, base, immediate}: Lädt ein Wort (32-Bit für RV32I) an der
+    Speicheradresse, die sich aus den oberen 20 Bit von \code{base} und der
+    11-Bit Konstante \code{immediate} zusammensetzt.
+  \item \code{LH[U] dest, base, immediate}: Lädt ein Halbwort
+    (engl. \emph{halfword}; 16-Bit für RV32I) an der Speicheradresse, die sich
+    aus den oberen 20 Bit von \code{base} und der 11-Bit Konstante
+    \code{immediate} zusammensetzt. Für \code{LH} wird der geladene 16-Bit Wert
+    sign-extended\footnote{Das bedeutet, dass negative Werte mit gesetztem MSB
+      mit weiteren Einsen nach links aufgefüllt werden. Positive Werte, dessen
+      Sign-Bit gelöscht ist, werden mit weiteren Nullen gepaddet.}, bevor er im
+    Zielregister abgelegt wird. Bei \code{LHU}\footnote{Es gibt kein LWU, weil
+      ein Wort schon die vollen 32-Bit belegt und man sich somit nicht um
+      Erweiterung auf größere Datentypen kümmern muss.} (\emph{load halfword
+      unsigned}) wird der Wert hingegen nur mit Nullen aufgefüllt.
+  \item \code{LB[U] dest, base, immediate} Lädt wie \code{LH[U]} einen Wert von
+    der gegebenen Speicheradresse in das Zielregister. Hierbei wird jedoch ein
+    enziger \textbf{B}yte, also 8-Bit, geladen. Die übrigen 24 Bit werden wieder
+    aufgefüllt, entweder mit dem Sign-Bit (\code{LB}) oder mit Nullen
+    (\code{LBU}).
+\end{itemize}
+
+Wie kann man mit diesen Befehlen nun den gesamten 32-Bit Adressraum ansprechen?
+Zuerst würde man dafür mit \code{LUI} (\emph{load upper immediate}) einen 20-Bit
+Wert in ein Register legen und dieses Register dann als Basisregister
+verwenden. Auf diese 20-Bit kann man dann eine beliebige 12-Bit Konstante
+aufaddieren:
+
+\begin{lstlisting}
+  ; Wir wollen die Addresse 0xDEADBEEF nach Register x1 laden
+  ; Zuerst geben wir die oberen 20 Bit in ein Register
+  lui x2, 0xDEADB
+  ; Dann benutzen wir x1 als Basis und addieren die unteren 12 Bit
+  lw x1, x2, 0xEEF
+\end{lstlisting}
+
+Nun für Store:
+
+\begin{itemize}
+  \item \code{SW source, base, immediate}: Speichert den 32-Bit Wert in \code{source}
+    an die Addresse \code{base + immediate}. Die Konstante \code{immediate} ist
+    hierbei wieder 11-Bit.
+  \item \code{SH} Speichert die unteren 16-Bit aus \code{source} an die Addresse
+    \code{base + immediate}. Die Konstante \code{immediate} ist hierbei wieder
+    11-Bit.
+  \item \code{SB} Speichert die unteren 8-Bit aus \code{source} an die Addresse
+    \code{base + immediate}. Die Konstante \code{immediate} ist hierbei wieder
+    11-Bit.
+\end{itemize}
+
+Theoretisch erlauben die obigen Befehle auch \emph{unausgerichtete}
+Zugriffe. Die RISC-V Architektur erlaubt solche Zugriffe, wobei die
+Spezifikation jedoch anmerkt, dass sie für optimale Performance vermieden werden
+sollten.
+
+\subsection{Reduzierter Befehlssatz}
+
+
+
+\subsection{Fehlende Flags}
+
+\subsection{Instruktionsformate}
+
+\subsection{Calling Conventions}
+
+\subsection{Multiplikation und Division}
