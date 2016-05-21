@@ -5,7 +5,7 @@ Jeder Ausdruck (ein Befehl) des Quelltextes wird durch den Parser eingelesen. Zi
 
 \subsubsection{Erzeugung des Syntaxbaumes über das Abstract Factory Pattern}
 Die Schnittstelle zum Parser soll so allgemein wie möglich gehalten werden, um verschiedene Parser und Architekturen auszutauschen. Die Erzeugung der Knoten für diesen Syntaxbaum wird transparent über eine bzw. mehrere (für jeden Knotentyp eine) Factory geregelt.\\
-Teil der Schnittstelle sind hierbei eine abstrakte Oberklasse Knoten, sowie die abstrakten Factory-Interfaces der einzelnen Knotentypen. Einige Knoten-Implementierungen, wie der Immediate-Knoten, Summe oder Produkt als arithmetische Operation können auch von anderen Architekturen verwendet werden und werden daher als "Standard-Implementierungen" in dem Teil des Programms vorhanden sein, der architekturunabhängig ist.\\
+Teil der Schnittstelle sind hierbei eine abstrakte Oberklasse Knoten, sowie die abstrakten Factory-Interfaces der einzelnen Knotentypen. Einige Knoten-Implementierungen, wie der Immediate-Knoten, Summe oder Produkt als arithmetische Operation können auch von anderen Architekturen verwendet werden und werden daher als ''Standard-Implementierungen'' in dem Teil des Programms vorhanden sein, der architekturunabhängig ist.\\
 Eine konkrete Architektur wird durch den Core geladen und registriert/übergibt eine konkrete Implementierung jeder Factory beim Parser. Diese Implementierung kann eigene Knoten von der Oberklasse ableiten und so architekturspezifische Implementierungen vornehmen.\\
 \textbf{Aufbau eines Knoten}\\
 Die abstrakte Oberklasse aller Knoten stellt folgende Methoden bereit, die von jeder Kindklasse implementiert werden müssen:

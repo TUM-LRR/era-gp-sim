@@ -17,7 +17,7 @@ Um möglichst alle Architekturen abzudecken, wollen wir den Returntyp der Zugrif
 Der Hauptspeicher stellt einen ausgedehnten numerisch adressierbaren Speicher dar, welcher direkt von der CPU aus angesprochen werden kann. Wir beschränken uns hier auf homogene Hauptspeicherzellen mit konsistenten Grö{\ss}en. Um den Zugriff auf den simulierten Hauptspeicher, der ja vergleichsweise häufig benötigt wird, möglichst einfach zu gestalten, werden die einzelnen Speicherzellen auf ganze Bytezahlen gepaddet; eine Implementierung, in der die Speicherzellen bitgenau aneinandergereiht werden, wäre untunlich.
 
 \section{Register}
-Die Register stellenden ALU-nächsten Speicher dar. Gegensätzlich zum Hauptspeicher ist dieser nicht numerisch-bytegenau zu adressieren, sondern individuell, teils sogar als Teilbitabschnitt dieser.  Um Register zeichenkettenförmig zu identifizieren wird eine Map/Dictionary und das Proxy-Pattern verwendet.
+Die Register stellen den ALU-nächsten Speicher dar. Gegensätzlich zum Hauptspeicher ist dieser nicht numerisch-bytegenau zu adressieren, sondern individuell, teils sogar als Teilbitabschnitt dieser.  Um Register zeichenkettenförmig zu identifizieren wird eine Map/Dictionary und das Proxy-Pattern verwendet.
 
 \section{Interfaces}
 
@@ -26,7 +26,7 @@ Die Architektur muss zusammen mit dem Parser-Modul die Interpretation des Assemb
 
 \subsection{GUI}
 
-Core und GUI kommunizieren mit Hilfe eines Observer-Patterns, so dass der Core keinen Zugriff auf die Funktionalität der GUI benötigt. Die GUI wird dabei über änderungen an Registern, am Speicher und über Fehlermeldungen informiert, damit die Darstellung aktualisiert werden kann. Gleichzeitig muss sie den Core über änderungen am Assemblercode, den Registern oder dem Speicher informieren, die vom Benutzer ausgelöst wurden. Beim Programmstart wird das GUI-Modul vom Core gestartet, da dieser die verschiedenen Programmteile verwaltet und die Kommunikation zwischen den Threads regelt.
+Core und GUI kommunizieren mit Hilfe eines Observer-Patterns, so dass der Core keinen Zugriff auf die Funktionalität der GUI benötigt. Die GUI wird dabei über Änderungen an Registern, am Speicher und über Fehlermeldungen informiert, damit die Darstellung aktualisiert werden kann. Gleichzeitig muss sie den Core über Änderungen am Assemblercode, den Registern oder dem Speicher informieren, die vom Benutzer ausgelöst wurden. Beim Programmstart wird das GUI-Modul vom Core gestartet, da dieser die verschiedenen Programmteile verwaltet und die Kommunikation zwischen den Threads regelt.
 
 \subsection{Parser}
 

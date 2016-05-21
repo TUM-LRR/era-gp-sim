@@ -27,7 +27,7 @@ die folgenden wohl-geformten Befehle ausdrücken:
 In RISC-V wären diese Befehle nicht erlaubt, da es das LOAD/Store Paradigma
 befolgt. Das bedeutet, dass es nur zwei Instruktionen gibt, die auf den Speicher
 zugreifen können: \code{LOAD} und \code{STORE} (in Pseudo-Code). Der erste
-Befehl lädt ein einen Wert an einer Speicheradresse in ein Register. Im
+Befehl lädt einen Wert an einer Speicheradresse in ein Register. Im
 Gegensatz dazu erlaubt \code{STORE}, einen Wert aus einem Register an eine
 Speicheradresse zu legen.
 
@@ -123,8 +123,7 @@ Rücksprungadresse verbunden ist, im Gegensatz zu einem Unterprogrammaufruf mit
     relativ zum Befehlszähler. Die \emph{Rücksprungsadresse} \code{pc + 4}
     (\code{pc} = \emph{program counter}) wird dabei in das Register
     \code{destination} gelegt.
- \item \code{JALR destination, source, immediate}: Dieser Befehl erlaubt einen
-   Sprung an eine Adresse, die nicht relativ zum Befehlszähler sein muss (sie
+ \item \code{JALR destination, source, immediate}: Dieser Befehl erlaubt einen Sprung an eine Adresse, die nicht relativ zum Befehlszähler sein muss (sie
    kann es sein, wenn \code{register} mit \code{pc} gewählt wird). Hierbei wird
    die 12-Bit \code{immediate} auf den 32-Bit Wert addiert, der im Register
    \code{source} liegt. Dieser Wert ergibt die Zieladresse. Die
@@ -137,7 +136,7 @@ destination Register.
 
 Das letzte Beispiel für den reduzierten Befehlssatz wollen wir durch die
 bedingten Sprungbefehle geben. In x86 gibt es ein Vielzahl an Möglichkeiten,
-Relationen zwischen zwei zwei Werten nach einem Vergleich als Sprungbedingung zu
+Relationen zwischen zwei Werten nach einem Vergleich als Sprungbedingung zu
 nutzen. So gab es \code{je, jne, jg, jl, jle} und noch weitere Varianten. In
 RISC-V gibt es nur vier mögliche Prädikate:
 
@@ -244,7 +243,7 @@ bzw. RV64I sind, also der minimalsten Standardausgabe von RISC-V. Vielmehr sind
 diese zwei Operationsfamilien in der \emph{M}-Standarderweiterung der Base ISA
 enthalten.
 
-Im wesentlichen x86 und RISC-V diesbezüglich anders, wie sie den Übertrag bei
+Im Wesentlichen sind x86 und RISC-V diesbezüglich anders, wie sie den Übertrag bei
 der Multiplikation und den Rest bei der Division behandeln. Bekanntlich
 speichert x86 bei der Multiplikation der beiden 32-Bit Register \code{EAX} und
 \code{EBX} die oberen 32-Bit des Ergebnisses\footnote{Man erinnere sich: die

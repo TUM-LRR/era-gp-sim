@@ -3,29 +3,27 @@
 RISC-V ist eine neue open-source ISA (instruction set architecture), die
 ursprünglich für Lern- und Forschungsziele entwickelt wurde.
 
-Es gibt zwei Versionen mit 32-bit und 64-bit Architektur. Wir werden uns
+Es gibt zwei Versionen mit 32-Bit und 64-Bit Architektur. Wir werden uns
 zuerst ausschließlich für die erste Variante interessieren.
 
-Die Architektur ist in Module aufgeteilt, mit der Basis Integer Modul "I",
+Die Architektur ist in Module aufgeteilt, mit der Basis Integer Modul  ''I'',
 das in allen Implementierungen vorhanden sein muss. Es enthält ganzzahlige
 Rechen-, Lade-, Store- und Kontrollflussinstruktionen. Es kann durch folgende
 Standardmodule erweitert werden:
 
 \begin{itemize}
-\item "M" - ganzzahlige Multiplikation und Division
-\item + "A" - atomicity für inter-processor Synchronization
-\item + "F" und "D" - für floats und doubles entsprechend
+\item ''M'' ganzzahlige Multiplikation und Division
+\item ''A'' atomicity für inter-processor Synchronization
+\item ''F'' und ''D'' für floats und doubles entsprechend
 \end{itemize}
 
-Die Instruktionen der Standard ISA sind 32-bit lang und sie sind aligned auf die
-32-bit Grenzen. Jedoch unterstützt Risc-V auch Befehle mit variablen Länge, die
-aus einer beliebigen Anzahl von 16-bit parcels bestehen können.
+Die Instruktionen der Standard ISA sind 32-Bit lang und sie sind aligned auf die
+32-Bit Grenzen. Jedoch unterstützt Risc-V auch Befehle mit variablen Länge, die
+aus einer beliebigen Anzahl von 16-Bit parcels bestehen können.
 
 Standardmäßig wird little-endian als Speicherformat verwendet.
 
-Es gibt 31 Allzweckregister (x1 - x31). Zusätzlich gibt es ein Register x0, der
-mit der Konstante 0 hardwired ist, und einen Programmzähler. Sie sind alle 32
-bit breit.
+Es gibt 31 Allzweckregister (x1 - x31). Zusätzlich gibt es ein Register x0, der mit der Konstante 0 hardwired ist, und einen Programmzähler. Sie sind alle 32 Bit breit.
 
 \subsection{Integer Basis Instruktionen}
 
