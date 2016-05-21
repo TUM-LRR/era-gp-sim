@@ -19,18 +19,18 @@ Die dadurch entstehenden Modulzellen sollen variabel mit den oben beschriebenen 
 
 \subsection{Toolbar}
 
-Über die Toolbar kann die \textbf{Ausführung} des Programms gesteuert werden, wobei die Optionen \textit{Ausführung des gesamten Programms}, \textit{Ausführung einer einzelnen Instruktion}, \textit{Ausführung bis zum
+Über die Toolbar kann die Ausführung des Programms gesteuert werden, wobei die Optionen \textit{Ausführung des gesamten Programms}, \textit{Ausführung einer einzelnen Instruktion}, \textit{Ausführung bis zum
   nächsten Breakpoint} und \textit{Abbrechen der Programmausführung} zur
 
-Des Weiteren lässt sich das \textbf{Zahlenformat} modulübergreifend festlegen, was insebesondere Einfluss auf Register- und Speicherinhalte hat.
+Des Weiteren lässt sich das Zahlenformat modulübergreifend festlegen, was insebesondere Einfluss auf Register- und Speicherinhalte hat.
 
 \subsection{Editor}
 
-Der Editor für die Eingabe der Assembler-Instruktion soll \textbf{Syntax-Highlighting} unterstützen, um Instruktions-Komponenten visuell zu trennen. Die Umsetzung erfolgt mit dem Qt-eigenen Syntax-Highlighter (\textit{QHighlighter}), welcher mit Regex-Ausdrücken initialisiert wird. Diese werden vom Parser in Kombination mit Architektur-eigenen Keywords generiert und über den Core zur Verfügung gestellt.
+Der Editor für die Eingabe der Assembler-Instruktion soll Syntax-Highlighting unterstützen, um Instruktions-Komponenten visuell zu trennen. Die Umsetzung erfolgt mit dem Qt-eigenen Syntax-Highlighter (\textit{QHighlighter}), welcher mit Regex-Ausdrücken initialisiert wird. Diese werden vom Parser in Kombination mit Architektur-eigenen Keywords generiert und über den Core zur Verfügung gestellt.
 
-\textbf{Fehlermeldungen}, die vom Parser ermittelt wurden, werden innerhalb der zugehörigen Zeile im Editor angezeigt, was es ermöglicht mehrere Fehlermeldungen gleichzeitig anzuzeigen.
+Fehlermeldungen, die vom Parser ermittelt wurden, werden innerhalb der zugehörigen Zeile im Editor angezeigt, was es ermöglicht mehrere Fehlermeldungen gleichzeitig anzuzeigen.
 
-Ein \textbf{Makroaufruf} wird im Editor als einzelne Zeile dargestellt, die bei Bedarf vom User aufgeklappt werden kann, wodurch die Makrodefinition in-place eingeblendet wird. Dies ermöglicht u.a. die schrittweise Ausführung des Codes.
+Ein Makroaufruf wird im Editor als einzelne Zeile dargestellt, die bei Bedarf vom User aufgeklappt werden kann, wodurch die Makrodefinition in-place eingeblendet wird. Dies ermöglicht u.a. die schrittweise Ausführung des Codes.
 
 \subsection{Register}
 
@@ -43,14 +43,14 @@ Intern werden die einzelnen Zahlenformate vom \textit{Core} berechnet und als St
 \subsection{Speicher}
 
 Der Speicher teilt sich in drei Hauptbereiche: Speicheradressen, Speicherinhalte und Kontextinformationen.
-Der \textbf{Adressraum} erlaubt die Unterteilung in verschiedene Datenformate, darunter Byte, Halbwort, Wort etc.
-Das Zahlenformat der \textbf{Speicherinhalte} ist spaltenweise anpassbar.
+Der Adressraum erlaubt die Unterteilung in verschiedene Datenformate, darunter Byte, Halbwort, Wort etc.
+Das Zahlenformat der Speicherinhalte ist spaltenweise anpassbar.
 
-\textbf{Kontextinformationen} zu einzelnen Speicherzellen geben Hinweise auf die Verwendung im Programm, darunter etwa Marken zu Datendefinitionen, Speicherbereiche für Ausgabegeräte und Speicher-Referenzierungen durch Register.
+Kontextinformationen zu einzelnen Speicherzellen geben Hinweise auf die Verwendung im Programm, darunter etwa Marken zu Datendefinitionen, Speicherbereiche für Ausgabegeräte und Speicher-Referenzierungen durch Register.
 
 \subsection{Projekt}
 
-Das Projekt-Modul dient der \textbf{Datei-Verwaltung}. Gegebenefalls können ein oder mehrere Dateien zu Projekten zusammengefasst werden, welche dann zusätzliche Information etwa über die verwendete Architektur sowie Speicher- und Registerinhalte speichern können.
+Das Projekt-Modul dient der Datei-Verwaltung. Gegebenefalls können ein oder mehrere Dateien zu Projekten zusammengefasst werden, welche dann zusätzliche Information etwa über die verwendete Architektur sowie Speicher- und Registerinhalte speichern können.
 
 \section{Implementierung}
 
