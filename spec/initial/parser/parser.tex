@@ -1,8 +1,8 @@
 \chapter{Parser-Modul}
 
-{\color{red} Kurze Einführung (siehe Kapitel zu Core, RISC-V) }
+%{\color{red} Kurze Einführung (siehe Kapitel zu Core, RISC-V) }
 
-\section{Funktionalität}
+%\section{Funktionalität}
 
 Das Parser-Modul liest den gegebenen Assembler-Code, führt alle gegebenen
 Compiler-Direktiven aus und generiert für jedes Argument einen Syntax-Baum, der
@@ -24,12 +24,7 @@ soll) wird als bekannter 2-Pass-Assembler realisiert. Wie die Architektur wird
 dieses vorerst auf RISC-V (und hier einen bestimmten Dialekt) ausgelegt und
 spezialisiert sein.
 
-\subsection{Entfernen von Kommentaren}
-
-Zuvor werden alle Kommentare entfernt. Dieser Schritt ist nur notwendig, falls
-der RISC-V-Assembler mehrzeilige Kommentare unterstützen soll.
-
-\subsection{1. Pass}
+\subsection{1. Durchlauf}
 
 Im ersten Schritt wird der rohe Assemblertext gelesen und in Zeilenbereiche
 unterteilt, die jeweils einen Befehl mit allen zugehörigen Marken beinhalten.
@@ -47,7 +42,7 @@ korrespondierenden (Text-)Wert geschrieben.  Wenn von Core oder GUI gewünscht
 sonst werden nur die entsprechenden Positionen berechnet.  Bei allen Makros wird
 Anfang und Ende erfasst und diese in eine separate Makroliste eingetragen.
 
-\subsection{2. Pass}
+\subsection{2. Durchlauf}
 
 Wir haben nun eine Befehlsfolge von Objekten. In diesem Schritt werden nun die
 Direktiven ausgeführt und die Labels mit ihrem Wert eingesetzt.  Ein Befehl wird

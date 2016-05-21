@@ -1,12 +1,12 @@
 \section{Die RISC-V ISA}
 
-RISC-V ist eine neue open-source ISA (instruction set architecture), die
+RISC-V ist eine neue Open-Source-ISA (instruction set architecture), die
 ursprünglich für Lern- und Forschungsziele entwickelt wurde.
 
 Es gibt zwei Versionen mit 32-Bit und 64-Bit Architektur. Wir werden uns
 zuerst ausschließlich für die erste Variante interessieren.
 
-Die Architektur ist in Module aufgeteilt, mit der Basis Integer Modul  ''I'',
+Die Architektur ist in Module aufgeteilt, mit Ausnahme des Basis-Integer-Moduls ''I'', %??
 das in allen Implementierungen vorhanden sein muss. Es enthält ganzzahlige
 Rechen-, Lade-, Store- und Kontrollflussinstruktionen. Es kann durch folgende
 Standardmodule erweitert werden:
@@ -17,15 +17,15 @@ Standardmodule erweitert werden:
 \item ''F'' und ''D'' für floats und doubles entsprechend
 \end{itemize}
 
-Die Instruktionen der Standard ISA sind 32-Bit lang und sie sind aligned auf die
-32-Bit Grenzen. Jedoch unterstützt Risc-V auch Befehle mit variablen Länge, die
-aus einer beliebigen Anzahl von 16-Bit parcels bestehen können.
+Die Instruktionen der Standard ISA sind 32-Bit lang und auf die
+32-Bit-Grenzen ausgerichtet. Jedoch unterstützt Risc-V auch Befehle variabler Länge, die
+aus einer beliebigen Anzahl von 16-Bit-Parcels bestehen können.
 
-Standardmäßig wird little-endian als Speicherformat verwendet.
+Standardmäßig wird Little-Endian als Speicherformat verwendet.
 
-Es gibt 31 Allzweckregister (x1 - x31). Zusätzlich gibt es ein Register x0, der mit der Konstante 0 hardwired ist, und einen Programmzähler. Sie sind alle 32 Bit breit.
+Die RISV-V ISA hat 31 Allzweckregister (x1 - x31). Zusätzlich existiert ein Register x0, der mit der Konstante 0 hardwired ist, und einen Programmzähler. Sie sind alle 32 Bit breit.
 
-\subsection{Integer Basis Instruktionen}
+\subsection{Integer-Basis-Instruktionen}
 
 Keine Integer Rechenbefehle verursachen arithmetische Ausnahmen.
 
@@ -38,22 +38,22 @@ SLTIU rd, rs1, 1 ; dasselbe, aber unsigned
 \end{lstlisting}
 
 ANDI, ORI, XORI sind logische Operationen, die AND, OR und XOR entsprechen. Ihr
-Befehlsformat ist gleich dem obigen.
+Befehlsformat entspricht dem obigen.
 
 Es gibt logische und arithmetische Shifts (SLLI, SRLI, SLAI, SRAI). Die Anzahl
 der geshifteten Bits ist gleich der Zahl, die aus den ersten fünf Bits des
 Immediate entsteht.
 
-In den nächsten beiden Befehlen ist die Immediate 20 Bit lang, anstatt 12.
+In den nächsten beiden Befehlen ist der Immediate 20 Bit lang, anstatt 12.
 
 \begin{lstlisting}
 LUI dest, immediate  ; load upper immediate
 AUIPC dest, immediate  ; add upper immediate to pc
 \end{lstlisting}
 
-LUI platziert die Immediate in die höheren 20 Bits des Zielregisters und die unteren 12 werden mit 0 gefüllt.
+LUI platziert den Immediate in die höheren 20 Bits des Zielregisters, die unteren 12 Bits werden genullt.
 
-AUIPC addiert die Immediate mit den höheren 20 Bits des Instruktionszählers und speichert das Ergebnis in das Zielregister.
+AUIPC addiert den Immediate mit den höheren 20 Bits des Instruktionszählers und speichert das Ergebnis in das Zielregister.
 
 \subsubsection{Register-Register}
 
@@ -66,13 +66,13 @@ SLL/SRL      dest, src1, src2
 SLTU rd, x0, rs2 ; setzt rd zu 0 nur wenn rs2 = 0
 \end{lstlisting}
 
-\textbf{NOP Instruktion}
+\textbf{NOP-Instruktion}
 
 \begin{lstlisting}
 ADDI x0, x0, 0
 \end{lstlisting}
 
-\subsubsection{Control Transfer Instruktionen}
+\subsubsection{Kontrolltransfer-Instruktionen}
 
 \begin{lstlisting}
 JAL rd, immediate  ; rd = (pc + 4), Immediate 20 bit lang, range +-1MiB
@@ -81,7 +81,7 @@ JAL rd, immediate  ; rd = (pc + 4), Immediate 20 bit lang, range +-1MiB
 JAL (jump and link) setzt den Befehlszähler auf den Wert (pc + immediate) und
 der vorherige Wert des (Befehlszählers + 4) wird in das Register rd gespeichert,
 der als eine Rücksprungadresse verwendet werden kann. Nach den Konventionen
-benutzt man dafür x1 und, wenn JAL ein unconditional jump ist, dann x0.
+benutzt man dafür x1 und, falls JAL ein unbedingter Sprung ist, dann x0.
 
 \begin{lstlisting}
 JALR rd, rs1, immediate  ; rd = (pc + 4), Immediate 12 bit
@@ -90,17 +90,17 @@ JALR rd, rs1, immediate  ; rd = (pc + 4), Immediate 12 bit
 JALR setzt den Befehlszähler auf (rs1 + imm). Zusammen mit dem Befehl LUI kann
 man auf eine beliebige Adresse im Adressraum springen.
 
-\subsubsection{Conditional Branches}
+\subsubsection{Bedingte Verzweigungen}
 
-Ein wichtiger Aspekt der Risc-V ISA ist, dass es keine Flags gibt, stattdessen
-werden Branchbefehle benutzt.
+Ein wichtiger Aspekt der Risc-V ISA ist, dass es keine Flags gibt. Stattdessen
+werden Branchbefehle verwendet.
 
 \begin{lstlisting}
 BEQ/BNE src1, src2, offset ; branch equal/not equal
 BLT[U]/BGE[U]  src1, src2, offset  ; branch less/greater than
 \end{lstlisting}
 
-Falls die Bedingung erfüllt wird, wird der Offset zu dem Befehlszähler addiert.
+Falls die Bedingung erfüllt ist, wird der Offset zu dem Befehlszähler addiert.
 
 \subsubsection{Load/Store Instruktionen}
 
@@ -110,5 +110,5 @@ SW/SH/SB rd, rs1, offset ; kopiert den Wert vom rd in den Speicher
 \end{lstlisting}
 
 Es gibt auch LHU und LBU (analog SHU, SBU). Der Unterschied ist, dass der
-kopierte 16/8 Bit Wert wird zero-extended zu 32 Bits, wogegen bei normalen LH
-und LB wird das sign-extended.
+kopierte 16/8 Bit Wert mit Nullen auf 32 Bits erweitert wird, wohingegen bei normalen LH
+und LB mit dem Vorzeichen erweitert wird.

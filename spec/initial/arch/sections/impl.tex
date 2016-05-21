@@ -4,8 +4,8 @@
 Jeder Ausdruck (ein Befehl) des Quelltextes wird durch den Parser eingelesen. Ziel ist es, einen Syntaxbaum zu erstellen, der den Ausdruck in einer Form darstellt, die die geladene Architektur verarbeiten kann.
 
 \subsubsection{Erzeugung des Syntaxbaumes über das Abstract Factory Pattern}
-Die Schnittstelle zum Parser soll so allgemein wie möglich gehalten werden, um verschiedene Parser und Architekturen auszutauschen. Die Erzeugung der Knoten für diesen Syntaxbaum wird transparent über eine bzw. mehrere (für jeden Knotentyp eine) Factory geregelt.\\
-Teil der Schnittstelle sind hierbei eine abstrakte Oberklasse Knoten, sowie die abstrakten Factory-Interfaces der einzelnen Knotentypen. Einige Knoten-Implementierungen, wie der Immediate-Knoten, Summe oder Produkt als arithmetische Operation können auch von anderen Architekturen verwendet werden und werden daher als ''Standard-Implementierungen'' in dem Teil des Programms vorhanden sein, der architekturunabhängig ist.\\
+Die Schnittstelle zum Parser soll so allgemein wie möglich gehalten werden, um Parser und Architekturen austauschen zu können. Die Erzeugung der Knoten für diesen Syntaxbaum wird transparent über eine bzw. mehrere (für jeden Knotentyp eine) Factory(s) geregelt.\\
+Teil der Schnittstelle sind hierbei die abstrakte Oberklasse "Knoten" sowie die abstrakten Factory-Interfaces der einzelnen Knotentypen. Einige Knoten-Implementierungen, wie der Immediate-Knoten, Summe oder Produkt als arithmetische Operation können auch von anderen Architekturen verwendet werden und werden daher als ''Standard-Implementierungen'' in dem Teil des Programms vorhanden sein, der architekturunabhängig ist.\\
 Eine konkrete Architektur wird durch den Core geladen und registriert/übergibt eine konkrete Implementierung jeder Factory beim Parser. Diese Implementierung kann eigene Knoten von der Oberklasse ableiten und so architekturspezifische Implementierungen vornehmen.\\
 \textbf{Aufbau eines Knoten}\\
 Die abstrakte Oberklasse aller Knoten stellt folgende Methoden bereit, die von jeder Kindklasse implementiert werden müssen:
@@ -16,11 +16,11 @@ Die abstrakte Oberklasse aller Knoten stellt folgende Methoden bereit, die von j
 	\item \texttt{Wahrheitswert/String\footnote{Je nachdem wie das Auffinden und Rückmelden eines Syntax/Semantik-Fehlers gehandhabt wird, kann hier entweder das Vorhandensein eines Fehlers oder schon ein konkreter Fehlertext zurückgegeben werden} validate()}: Diese Methode wird aufgerufen, wenn der Syntaxbaum bzw. alle darunterliegenden Knoten auf Gültigkeit überprüft werden sollen. Auch dieser Methodenaufruf wird an Kindknoten weitergegeben. Dieser Aufruf ist Teil der 2-Schritt-Validierung und beschäftigt sich nicht mehr mit Schreibfehlern, sondern vielmehr mit falschen Typen der Operanden eines Befehls, Länge von Immediates usw.\\
 	So kontrolliert z.B. der Immediate-Knoten, ob die gespeicherte Konstante eine zulässige Größe hat oder der Befehls-Knoten für ADD, ob der Zieloperand ein zulässiges Register zulässiger Größe ist.
 
-	\item Einige weitere Methoden, die z.B. zur Erkennung des Knotentypen (nützlich für Validierung)  genutzt werden.
+	\item Einige weitere Methoden, die z.B. zur Erkennung des Knotentypen (nützlich für Validierung) genutzt werden.
 \end{itemize}
 \textbf{Knotentypen}\\
 Für jeden Knotentypen muss ein Factory-Interface in der Schnittstelle vorhanden sein.\\
-Knotentypen, die bei der RISC-V Architektur nicht benötigt werden, sind der Vollständigkeit halber trotzdem aufgeführt und deren Factory-Interface(s) werden von uns trotzdem als Schnittstelle für weitere Architekturen bereitgestellt. Sie sind hier in der Aufzählung mit \textbf{*} gekennzeichnet
+Knotentypen, die bei der RISC-V-Architektur nicht benötigt werden, sind der Vollständigkeit halber trotzdem aufgeführt und deren Factory-Interface(s) werden von uns trotzdem als Schnittstelle für weitere Architekturen bereitgestellt. Sie sind hier in der Aufzählung mit \textbf{*} gekennzeichnet
 \begin{itemize}
 	\item \textbf{Befehl} Führt einen konkreten Befehl aus (siehe Beispiel-Implementierung als Pseudo-Code)
 
@@ -33,7 +33,7 @@ Knotentypen, die bei der RISC-V Architektur nicht benötigt werden, sind der Vol
 	\item \textbf{Arithmetische Operation im Befehl}* Führt eine arithmetische Operation zur Laufzeit aus, z.B. in einem Speicherzugriff bei Intel 386 [EBX+EDX+8]
 
 \end{itemize}
-\subsubsection{Pseudo-Code Beispiel von ADD}
+\subsubsection{Pseudo-Code-Beispiel von ADD}
 Der hier benutzte Datentyp \texttt{Zahl} ist für das RISC-V 32I-Modul ein 32-Bit Integer, \texttt{Registername} ist ein Schlüssel, mit dem ein Register identifiziert werden kann.
 \begin{lstlisting}
 	function Zahl getValue(AbstraktSpeicher s) {
