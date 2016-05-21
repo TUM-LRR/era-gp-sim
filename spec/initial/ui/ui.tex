@@ -1,101 +1,67 @@
 \chapter{Graphical User Interface}
 
-{\color{red} Kurze Einführung in das GUI Modul (siehe Kapitel zu Core, RISCV)}
-
-{\color{red} Könnt ihr das da unten vielleicht in eine eigene Sektion zu
-  \emph{Implementierung} machen? Vielleicht erwähnen, wie ihr Qt, QML und
-  weiteres (CSS/SASS für Themes!) verwenden wollt?}
-
-Die GUI wird mit dem Qt-Framework umgesetzt, wobei grafische Elemente im
-Besonderen mit QML implementiert werden. Dies unterstützt die strikte Trennung
-von Präsentation, Steuerung und Struktur der zugrundeliegenden Daten.
-
-Die Kommunikation mit dem \textit{Core} erfolgt über eine C++-Schnittstelle auf
-Basis des Observer-Patterns.
+Die GUI als Schnittstelle zwischen dem Nutzer und Simulatorkern soll den Anforderungen an eine moderne Anwendung genügen und ein ansprechendes Design sowie hohe Benutzerfreundlichkeit als zentrale Merkmale implementieren. Dabei orientiert sich die Gestaltung an den Anforderungen des Programms als Simulations- und Lernwerkzeug: Gute Verständlichkeit der dargestellten Inhalte, visuelle Hervorhebung technischer Zusammenhänge, sowie der Verzicht auf irreführende Vereinfachungen, wo dies möglich ist.
 
 
 \section{Fenstermanagement}
 
-Die GUI soll aus verschiedenen Modulen bestehen, die zunächst als Editor-,
-Register-, Speicher-, Projekt-, Hilfs- und Output-Modul identifiziert
-wurden. Die darüberliegende Toolbar steuert Abläufe und Einstellungen, die über
-Modulgrenzen hinweg Relevanz haben.
+Die GUI soll aus verschiedenen Modulen bestehen, die zunächst als Editor-, Register-, Speicher-, Projekt-, Hilfs- und Output-Modul identifiziert wurden. Die darüberliegende Toolbar steuert Abläufe und Einstellungen, die über Modulgrenzen hinweg Relevanz haben.
 
-Die Unterbringung der Module erfolgt in einem tabellarischen Layout bestehend
-aus 4 Spalten zu je 1 bis 2 Zeilen. Die untere Zeile einer Spalte kann je nach
-Bedarf angezeigt oder ausgeblendet werden.
+Die Unterbringung der Module erfolgt in einem tabellarischen Layout bestehend aus 4 Spalten zu je 1 bis 2 Zeilen. Die untere Zeile einer Spalte kann je nach Bedarf angezeigt oder ausgeblendet werden.
 
-Die dadurch entstehenden Modulzellen sollen variabel mit den oben beschriebenen
-Modulen belegt werden können, was die Möglichkeit mit einschließt, ein Modul
-mehrfach in verschiedenen Zellen anzuzeigen. Ein einfaches Anwendungsbeispiel
-für dieses Feature ist das parallele Arbeiten auf zwei Bereichen den Speichers.
+Die dadurch entstehenden Modulzellen sollen variabel mit den oben beschriebenen Modulen belegt werden können, was die Möglichkeit mit einschließt, ein Modul mehrfach in verschiedenen Zellen anzuzeigen. Ein einfaches Anwendungsbeispiel für dieses Feature ist das parallele Arbeiten auf zwei Bereichen den Speichers.
 
 \begin{figure}
   \includegraphics[width=\textwidth]{../ui/figures/mockup}
   \label{fig:Mockup}
-  \caption{Der obige rein visuelle Entwurf soll einen groben Überblick über die
-    geplante Umsetzung der Benutzeroberfläche geben. Im Wesentlichen ist die
-    Aufteilung des Fensters in Toolbar und die vier Spalten mit ein bis zwei
-    Zeilen erkennbar. Zudem wurden die einzelnen Module skizziert.}
+  \caption{Der obige rein visuelle Entwurf soll einen groben Überblick über die geplante Umsetzung der Benutzeroberfläche geben. Im Wesentlichen ist die Aufteilung des Fensters in Toolbar und die vier Spalten mit ein bis zwei Zeilen erkennbar. Zudem wurden die einzelnen Module skizziert.}
 \end{figure}
 
-\section{Toolbar}
+\subsection{Toolbar}
 
-Über die Toolbar kann die \textbf{Ausführung} des Programms gesteuert werden,
-wobei die Optionen \textit{Ausführung des gesamten Programms},
-\textit{Ausführung einer einzelnen Instruktion}, \textit{Ausführung bis zum
+Über die Toolbar kann die \textbf{Ausführung} des Programms gesteuert werden, wobei die Optionen \textit{Ausführung des gesamten Programms}, \textit{Ausführung einer einzelnen Instruktion}, \textit{Ausführung bis zum
   nächsten Breakpoint} und \textit{Abbrechen der Programmausführung} zur
-Verfügung stehen.
 
-Des Weiteren lässt sich das \textbf{Zahlenformat} modulübergreifend festlegen,
-was insebesondere Einfluss auf Register- und Speicherinhalte hat.
+Des Weiteren lässt sich das \textbf{Zahlenformat} modulübergreifend festlegen, was insebesondere Einfluss auf Register- und Speicherinhalte hat.
 
-\section{Editor}
+\subsection{Editor}
 
-Der Editor für die Eingabe der Assembler-Instruktion soll
-\textbf{Syntax-Highlighting} unterstützen, um Instruktions-Komponenten visuell
-zu trennen. Die Umsetzung erfolgt mit dem Qt-eigenen Syntax-Highlighter
-(\textit{QHighlighter}), welcher mit Regex-Ausdrücken initialisiert wird. Diese
-werden vom Parser in Kombination mit Architektur-eigenen Keywords generiert und
-über den Core zur Verfügung gestellt.
+Der Editor für die Eingabe der Assembler-Instruktion soll \textbf{Syntax-Highlighting} unterstützen, um Instruktions-Komponenten visuell zu trennen. Die Umsetzung erfolgt mit dem Qt-eigenen Syntax-Highlighter (\textit{QHighlighter}), welcher mit Regex-Ausdrücken initialisiert wird. Diese werden vom Parser in Kombination mit Architektur-eigenen Keywords generiert und über den Core zur Verfügung gestellt.
 
-\textbf{Fehlermeldungen}, die vom Parser ermittelt wurden, werden innerhalb der
-zugehörigen Zeile im Editor angezeigt, was es ermöglicht mehrere Fehlermeldungen
-gleichzeitig anzuzeigen.
+\textbf{Fehlermeldungen}, die vom Parser ermittelt wurden, werden innerhalb der zugehörigen Zeile im Editor angezeigt, was es ermöglicht mehrere Fehlermeldungen gleichzeitig anzuzeigen.
 
-Ein \textbf{Makroaufruf} wird im Editor als einzelne Zeile dargestellt, die bei
-Bedarf vom User aufgeklappt werden kann, wodurch die Makrodefinition in-place
-eingeblendet wird. Dies ermöglicht u.a. die schrittweise Ausführung des Codes.
+Ein \textbf{Makroaufruf} wird im Editor als einzelne Zeile dargestellt, die bei Bedarf vom User aufgeklappt werden kann, wodurch die Makrodefinition in-place eingeblendet wird. Dies ermöglicht u.a. die schrittweise Ausführung des Codes.
 
-\section{Register}
+\subsection{Register}
 
-Die Registerwerte werden übersichtlich mit Hilfe von Byte-Separatoren
-dargestellt. Zu den jeweiligen Registern gehörige Unterregister können separat
-eingeblendet werden.
+Die Registerwerte werden übersichtlich mit Hilfe von Byte-Separatoren dargestellt. Zu den jeweiligen Registern gehörige Unterregister können separat eingeblendet werden.
 
-Registern wie Unterregistern kann unabhängig von den globalen Einstellungen ein
-eigenes Zahlenformat (binär, hexadezimal etc.) zugewiesen werden.
+Registern wie Unterregistern kann unabhängig von den globalen Einstellungen ein eigenes Zahlenformat (binär, hexadezimal etc.) zugewiesen werden.
 
-Intern werden die einzelnen Zahlenformate vom \textit{Core} berechnet und als
-String an die GUI übergeben.
+Intern werden die einzelnen Zahlenformate vom \textit{Core} berechnet und als String an die GUI übergeben.
 
-\section{Speicher}
+\subsection{Speicher}
 
-Der Speicher teilt sich in drei Hauptbereiche: Speicheradressen, Speicherinhalte
-und Kontextinformationen.
-
-Der \textbf{Adressraum} erlaubt die Unterteilung in verschiedene Datenformate,
-darunter Byte, Halbwort, Wort etc.
-
+Der Speicher teilt sich in drei Hauptbereiche: Speicheradressen, Speicherinhalte und Kontextinformationen.
+Der \textbf{Adressraum} erlaubt die Unterteilung in verschiedene Datenformate, darunter Byte, Halbwort, Wort etc.
 Das Zahlenformat der \textbf{Speicherinhalte} ist spaltenweise anpassbar.
 
-\textbf{Kontextinformationen} zu einzelnen Speicherzellen geben Hinweise auf die
-Verwendung im Programm, darunter etwa Marken zu Datendefinitionen,
-Speicherbereiche für Ausgabegeräte und Speicher-Referenzierungen durch Register.
+\textbf{Kontextinformationen} zu einzelnen Speicherzellen geben Hinweise auf die Verwendung im Programm, darunter etwa Marken zu Datendefinitionen, Speicherbereiche für Ausgabegeräte und Speicher-Referenzierungen durch Register.
 
-\section{Projekt}
+\subsection{Projekt}
 
-Das Projekt-Modul dient der \textbf{Datei-Verwaltung}. Gegebenefalls können ein
-oder mehrere Dateien zu Projekten zusammengefasst werden, welche dann
-zusätzliche Information etwa über die verwendete Architektur sowie Speicher- und
-Registerinhalte speichern können.
+Das Projekt-Modul dient der \textbf{Datei-Verwaltung}. Gegebenefalls können ein oder mehrere Dateien zu Projekten zusammengefasst werden, welche dann zusätzliche Information etwa über die verwendete Architektur sowie Speicher- und Registerinhalte speichern können.
+
+\section{Implementierung}
+
+Die GUI wird unter Verwendung des Qt-Frameworks implementiert, wobei hauptsächlich das Qt Quick-Modul zum Einsatz kommt, das die Erstellung der Benutzeroberfläche mit QML erlaubt. Dessen Einsatz wiederum begünstigt die strikte Trennung des Models, das in Gestalt des Cores und der dahinterliegenden Module in C++ implementiert ist, vom View, dessen Umsetzung im Wesentlichen in QML und JavaScript erfolgt.
+
+\subsection{View}
+
+Die Modularität der Benutzeroberfläche spiegelt sich auch in der strukturellen Entwurf der GUI-Module in QML wieder, wo diese durch die jeweils eigenständigen Komponenten implementiert sind.
+
+\subsection{Model-View-Schnittstelle}
+
+Der Core kann über das Observer-Pattern mit dem View kommunizieren und benötigt somit keine Information über die interne Struktur des Views.
+
+Die Kommunikation in umgekehrter Richtung, also der Zugriff des Views auf die Daten des Models, basiert auf dem von QML unterstützten Muster, das den Datenaustausch über Delegates regelt. Damit nach diesem Muster ausgehend von QML-Objekten auf Daten des Models zugegriffen werden kann, wird eine C++-Schnittstelle bestehend aus QObject-Klassen benötigt, die zwischen beiden Modulen vermittelt.
