@@ -25,14 +25,14 @@ die folgenden wohl-geformten Befehle ausdrücken:
 \end{lstlisting}
 
 In RISC-V wären diese Befehle nicht erlaubt, da es das LOAD/Store Paradigma
-befolgt. Das bedeutet, dass nur zwei Instruktionen gibt, die auf den Speicher
+befolgt. Das bedeutet, dass es nur zwei Instruktionen gibt, die auf den Speicher
 zugreifen können: \code{LOAD} und \code{STORE} (in Pseudo-Code). Der erste
 Befehl lädt ein einen Wert an einer Speicheradresse in ein Register. Im
 Gegensatz dazu erlaubt \code{STORE}, einen Wert aus einem Register an eine
 Speicheradresse zu legen.
 
 Im RISC-V gibt es mehrere Varianten dieser beiden Befehlsklassen, für
-verschieden breite Speicherzugriffe. Für LOAD, wären das:
+verschieden breite Speicherzugriffe. Für \code{LOAD} wären das:
 
 \begin{itemize}
   \item \code{LW dest, base, immediate}: Lädt ein Wort (32-Bit für RV32I) an der
@@ -45,8 +45,8 @@ verschieden breite Speicherzugriffe. Für LOAD, wären das:
     sign-extended\footnote{Das bedeutet, dass negative Werte mit gesetztem MSB
       mit weiteren Einsen nach links aufgefüllt werden. Positive Werte, dessen
       Sign-Bit gelöscht ist, werden mit weiteren Nullen gepaddet.}, bevor er im
-    Zielregister abgelegt wird. Bei \code{LHU}\footnote{Es gibt kein LWU, weil
-      ein Wort schon die vollen 32-Bit belegt und man sich somit nicht um
+    Zielregister abgelegt wird. Bei \code{LHU}\footnote{Es gibt kein \code{LWU},
+      weil ein Wort schon die vollen 32-Bit belegt und man sich somit nicht um
       Erweiterung auf größere Datentypen kümmern muss.} (\emph{load halfword
       unsigned}) wird der Wert hingegen nur mit Nullen aufgefüllt.
   \item \code{LB[U] dest, base, immediate} Lädt wie \code{LH[U]} einen Wert von
@@ -91,12 +91,216 @@ sollten.
 
 \subsection{Reduzierter Befehlssatz}
 
+Da es sich bei RISC-V um einen RISC Befehlssatz handelt, ist dieser im Vergleich
+zu x86 wesentlich reduziert. So müssen bestimmte Befehle durch andere äquivalent
+ausgedrückt werden. Wir wollen einige Beispiele hierfür betrachten.
 
+Ein anschaulicher Fall ist die \code{NOP} Instruktion, welche keine Funktion
+hat, außer den Befehlszähler um eine Instruktion fortzuschreiten. In CISC
+Befehlssätzen wie x86 ist diese Instruktion meist gegeben. In RISC-V, muss sie
+durch eine Addition nachgebildet werden:
+
+\begin{lstlisting}
+  ; NOP in RISC-V
+  add x0, x0, 0
+\end{lstlisting}
+
+Das Register x0 ist fest auf die Null verdrahtet. Insofern kann man auf sie
+jede beliebige Zahl addieren, ohne dass etwas passiert.
+
+Das x0 ist allgemein oftmals für Späße wie den obigen zu gebrauchen. Ein
+weiteres Beispiel hierfür ist ein einfacher Sprung. Mit \emph{einfach} meinen
+wir hier einen Sprung wie \code{jmp} in x86, der nicht mit einer
+Rücksprungadresse verbunden ist, im Gegensatz zu einem Unterprogrammaufruf mit
+\code{call}. In RISC-V gibt es nur \code{call}-ähnliche Befehle. Diese sind:
+
+\begin{itemize}
+  \item \code{JAL destination, immediate}: Springt an die Adresse, die man
+    erhält, wenn man die 20-Bit Konstante \code{immediate} auf den Befehlszähler
+    addiert. \code{immediate} wird hierbei implizit um einen Bit nach links
+    geshiftet, wodurch man also nur Vielfache von 2 Byte ansprechen
+    kann. Dadurch erhält man einen addressierbaren Bereich von $\pm 1$ MiB
+    relativ zum Befehlszähler. Die \emph{Rücksprungsadresse} \code{pc + 4}
+    (\code{pc} = \emph{program counter}) wird dabei in das Register
+    \code{destination} gelegt.
+ \item \code{JALR destination, source, immediate}: Dieser Befehl erlaubt einen
+   Sprung an eine Adresse, die nicht relativ zum Befehlszähler sein muss (sie
+   kann es sein, wenn \code{register} mit \code{pc} gewählt wird). Hierbei wird
+   die 12-Bit \code{immediate} auf den 32-Bit Wert addiert, der im Register
+   \code{source} liegt. Dieser Wert ergibt die Zieladresse. Die
+   Rücksprungadresse, \code{pc + 4}, wird in das Register \code{destination}
+   gegeben.
+\end{itemize}
+
+Um nun einen einfachen Sprung zu machen, benutzt man \code{JALR} mit \code{x0} als
+destination Register.
+
+Das letzte Beispiel für den reduzierten Befehlssatz wollen wir durch die
+bedingten Sprungbefehle geben. In x86 gibt es ein Vielzahl an Möglichkeiten,
+Relationen zwischen zwei zwei Werten nach einem Vergleich als Sprungbedingung zu
+nutzen. So gab es \code{je, jne, jg, jl, jle} und noch weitere Varianten. In
+RISC-V gibt es nur vier mögliche Prädikate:
+
+\begin{itemize}
+  \item \code{BEQ r1, r2, immediate}: Springe an die Adresse, die man durch
+    Addition der Konstante \code{immediate} mit dem Befehlszähler erhält, wenn
+    die Inhalte der Register \code{r1} und \code{r2} gleich sind. Die Konstante
+    ist hierbei wieder 12-Bit und in 2-Byte Schritten, wodurch man einen
+    Spannweite von $\pm 4$ KiB relativ zum Befehlszähler erreichen kann.
+  \item \code{BNE r1, r2, immediate}: Wie \code{BEQ}, aber springt dann, wenn
+    die Registerinhalte ungleich sind.
+  \item \code{BLT[U] r1, r2, immediate}: Springt an die wie oben berechnete
+    Adresse, wenn der Wert in \code{r1} kleiner dem in \code{r2} ist. Hierbei
+    kann der Vergleich vorzeichenbehaftet sein (\code{BLT}) oder nicht
+    (\code{BLTU}).
+  \item \code{BGE[U] r1, r2, immediate}: Springt, wenn \code{r1} größer oder
+    gleich r2 ist.
+\end{itemize}
+
+Wie man sehen kann, gibt es kein \code{BLE[U]} oder \code{BGT[U]}. Diese beiden
+Befehle, welche es in x86 sicher gäbe, muss man also einfach durch Vertauschen
+der Operanden im Vergleich ausdrücken.
 
 \subsection{Fehlende Flags}
 
-\subsection{Instruktionsformate}
+In x86 ist das Statusregister ein wichtiger Bestandteil einer jeden
+Programmieraufgabe. Ohne dieses Register wäre es nicht möglich, bedingte Sprünge
+zu machen. Das ist so, weil Vergleiche bestimmte Bits in diesem Register setzen,
+welche folglich von Sprungbefehlen wie \code{JGE} abgefragt werden. In RISC-V
+gibt es jedoch kein solches Statusregister. Ebenso gibt es keinen
+Vergleichsoperator \code{CMP}. Bedingungen für Sprünge werden nämlich, wie schon
+weiter oben gezeigt, explizit für jeden Sprungbefehl berechnet. Daher wird der
+folgende x86 Code:
+
+\begin{lstlisting}
+  ; Vergleich das Register EAX mit EBX
+  cmp eax, ebx
+  ; Springe auf die Marke, wenn EAX gleich EBX war
+  je marke
+\end{lstlisting}
+
+zu folgendem RISC-V Code:
+
+\begin{lstlisting}
+  ; Vergleiche das Register x1 mit dem Register x2 und springe
+  ; an die Adresse pc + 0xABC, falls die Bedingung galt
+  beq x1, x2, 0xABC
+\end{lstlisting}
 
 \subsection{Calling Conventions}
 
+Ebenso wie das Statusregister ist der Stack ein wichtiger Bestandteil der x86
+Architektur. Ebenso wie das Statusregister gibt es aber auch keinen Stack in
+RISC-V. Da die Assembler (bzw. C) \emph{Calling Convention}\footnote{Eine
+  \emph{Calling Convention} ist eine Abmachung, wie Funktionsaufrufe verlaufen
+  sollten. Hierbei interessiert man sich dafür, wie Parameter übergeben werden,
+  welche Register durch die Funktion verändert werden dürfen sowie dafür, wie
+  Rückgabewerte zurückgegeben werden.} starken Gebrauch des Stacks macht, muss
+die Calling Convention für RISC-V vollkommen überdacht werden.
+
+Die offizielle RISC-V Spezifikation gibt nur an, in welches Register die
+Rücksprungadresse bei einem Funktionsaufruf gegeben werden soll, nämlich
+\code{x1}. Das Register, in welches man die Rücksprungadresse gibt, nennt man
+hierbei auch \emph{Link Register}. Nach der offiziellen Calling Convention würde
+man also stets nach folgendem Schema Funktionsaufrufe durchführen:
+
+\begin{lstlisting}
+  ; jump and link register, x1 als Link Register
+  ; Basis (20-Bit Register) + Offset (11-Bit Konstante) ergibt die Adresse
+  jalr x1, <basis>, <offset>
+\end{lstlisting}
+
+\subsection{Registerorganisation}
+
+Ein weiterer Unterschied zwischen den x86 und RISC-V ISAs ist die
+Registerorganisation. In x86 gibt es sechs \emph{general-purpose} Register
+\code{EAX} bis \code{EDX}, \code{ESI} und \code{EDI}. Vor Allem interessant ist,
+dass diese Register auch teilweise adressierbar sind. So ist es beispielsweise
+möglich, die unteren 8-Bit des Registers \code{EAX} als \code{AL}
+anzusprechen. Die Architektur hat natürlich auch noch einen Befehlszähler,
+welcher auch in einem Register gespeichert ist. Dieses Register ist aber vom
+Assemblerprogrammierer nicht ansprechbar.
+
+Die Registerorganisation von RISC-V ist in manchen Belangen sehr anders. Es gibt
+32 general-purpose Register, welche je nach Variante von RISC-V jeweils 32 oder
+64 Bit breit sind. Wir erkennen drei Unterschiede:
+
+\begin{enumerate}
+  \item Das erste Register, \code{x0}, ist fest zur Null verdrahtet. Es enthält
+    also immer den Wert Null. Somit sind also nur 31 der 32 Register
+    \emph{wirklich} general-purpose.
+  \item Die Register sind atomar, also nicht weiter aufteilbar oder teilweise
+    ansprechbar.
+  \item Zusätzlich zu den 31 general-purpose Registern ist auch das
+    \textbf{Befehlszählerregister} \code{pc} für den Programmierer sichtbar.
+\end{enumerate}
+
 \subsection{Multiplikation und Division}
+
+Letztlich wollen wir noch die Unterschiede zu x86 bezüglich der Multiplikation
+und Division erläutern. Hierbei sei angemerkt, dass Multiplikations- und
+Divisionsinstruktionen nicht Teil der \emph{Base Integer Instruction Set} RV32I
+bzw. RV64I sind, also der minimalsten Standardausgabe von RISC-V. Vielmehr sind
+diese zwei Operationsfamilien in der \emph{M}-Standarderweiterung der Base ISA
+enthalten.
+
+Im wesentlichen x86 und RISC-V diesbezüglich anders, wie sie den Übertrag bei
+der Multiplikation und den Rest bei der Division behandeln. Bekanntlich
+speichert x86 bei der Multiplikation der beiden 32-Bit Register \code{EAX} und
+\code{EBX} die oberen 32-Bit des Ergebnisses\footnote{Man erinnere sich: die
+  Multiplikation zweier 32-Bit Werte ergibt einen 64-Bit Wert.} in \code{EDX}
+und die unteren in \code{EAX}. In RISC-V gibt es für die Multiplikation hingegen
+zwei verschiedene Befehle, welche zusammen das Problem des Übertrags behandeln:
+
+\begin{itemize}
+  \item \code{MUL dest, r1, r2}: Multipliziert die Inhalte der Register
+    \code{r1} und \code{r2} und speichert \emph{die unteren 32-Bit} des
+    resultierenden 64-Bit Produkts im Zielregister \code{dest}.
+  \item \code{MULH[[S]U] dest, r1, r2}: Multipliziert die Ihhalte der Register
+    \code{r1} und \code{r2} und speichert \emph{die oberen 32-Bit} des
+    resultierenden Produkts im Zielregister \code{dest}. Da der Sign-Bit des
+    64-Bit Produkts im letzten Bit der höheren 32-Bit liegt, gibt es für diesen
+    Befehl noch drei Optionen, um die Beachtung der Vorzeichenbehaftung der
+    beiden Operanden zu kontrollieren. So führt \code{MULH} eine
+    $signed \cdot signed$ Multiplikation durch, \code{MULHU}
+    eine $unsigned \cdot unsigned$ Operation wohingegen
+    \code{MULHSU} ein $signed \cdot unsigned$ Produkt bildet.
+\end{itemize}
+
+Bei der Division zweier 32-Bit Werte speichert x86 den Rest der Division in
+\code{EDX} und den ganzzahligen Quotienten im ersten Operandenregister. In der
+RISC-V ISA gibt es hierfür wieder zwei separate Befehle:
+
+\begin{itemize}
+\item \code{DIV[U] dest, r1, r2}: Dividiert den Inhalt des Registers \code{r1}
+  durch den Inhalt des Registers \code{r2} und speichert den ganzzahligen 32-Bit
+  \emph{Quotienten} im Zielregister \code{dest}. \code{DIVU} interpretiert die
+  Operanden hierbei als nicht vorzeichenbehaftete Werte, \code{DIV} schon.
+  \item \code{REM[U] dest, r1, r2}: Führt die selbe Operation wie \code{DIV[U]}
+    durch, speichert jedoch den 32-Bit \emph{Rest} der Division im Zielregister
+    \code{dest}. Wieder gibt es eine Variante mit Beachtung von Vorzeichen und
+    eine ohne.
+\end{itemize}
+
+Für sowohl Multiplikation als auch Division müsste man also zwei separate
+Befehle ausführen, um das ganze Ergebnis eines Produkt bzw. einer Division zu
+erhalten. Die offizielle RISC-V Spezifikation empfiehlt hierbei, zuerst
+\code{MULH[[S]U]} und dann \code{MUL} zu berechnen, bzw. zuerst \code{DIV[U]}
+und dann \code{REM[U]}.
+
+\begin{lstlisting}
+  ; Multipliziere register x1 und x2
+  ; Intepretiere x1 als vorzeichenbehaftet, x2 nicht
+  ; Speichere die oberen 32-Bit des Produkts in x3
+  mulhsu x3, x1, x2
+
+  ; Erhalte nun noch die unteren 32-Bit
+  mul x4, x1, x2
+
+  ; Dividiere x5 durch x6
+  ; Speichere den ganzzahligen 32-Bit Quotienten in x7
+  div x7, x5, x6
+
+  ; Berechne noch den Rest und lege ihn in x8 ab
+  div x8, x5, x6
+\end{lstlisting}

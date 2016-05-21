@@ -1,0 +1,78 @@
+\chapter{Einführung}
+
+Dieses Dokument stellt einen Statusbericht des ERA Großpraktikums-Teams sowie
+eine initiale, konzeptuelle Ausarbeitung des zu entwickelnden Assembler Software
+Simulators dar. In den folgenden Kapiteln stellen wir die einzelnen Untergruppen
+der Mannschaft vor, sowie dessen Planung und Ausarbeitung für ihre respektive
+Teildomäne des Projekts. Wir beginnen hierbei mit einer groben, kurzen Übersicht
+über unsere Untergruppen sowie dessen Modulen. Folglich fokusieren wir uns in
+jedem Kapitel auf ein bestimmtes Modul und besprechen dabei unsere Erfahrungen,
+Beobachungen und weitere Planung. Ebenfalls erläutern wir, wie die einzelnen
+Module von einander abhängen und welche Verantwortungen auf welche Weise geteilt
+werden müssen.
+
+\section{Übersicht}
+
+Wir haben uns für eine vierfaltige Gliederung des Projekts entschieden. Die
+einzelnen Gruppen bezeichnen wir hierbei als \emph{Parser}, \emph{Core},
+\emph{Arch} und \emph{GUI}. In den folgenden Absätzen beschreiben wir diese
+einzelnen Gruppen kurz und nennen ihre Teammitglieder. Eine fokusiertere Analyse
+der einzelnen Domänen folgt in den übrigen Kapiteln dieser Spezifikation.
+
+\textbf{Architektur}
+
+Wir haben es uns als Ziel genommen, einen Assembler Simulator zu entwickeln, der
+architekturunabhängig ist und somit einer weiten Spannbreite an Anwendungen in
+der Bildung gerecht werden kann. Ohne Beschränkung dieser Allgemeinheit für die
+Zukunft haben wir uns im Weiteren dazu entschlossen, den \emph{RISC-V}
+Befehlssatz als erstes zu unterstützen. Jegliche architektur-spezifische Aspekte
+unseres Simulators fallen hierbei in den Aufgabenbereich der
+\emph{Architektur}-, kurz \emph{Arch}-, Gruppe. Unter
+\emph{architektur-spezifisch} verstehen wir hierbei die Implementierung der
+Instruktionen eines Befehlssatzes sowie die Bereitstellung aller Informationen
+und Daten, die andere Module des Simulators benötigen. Beispiele hierfür wären
+die Registerorganisation sowie das Speichermodell, welche die GUI zur
+Visualisierung benötigt; die reservierten Schlüsselwörter der Assemblersprache
+der Architektur als notwendige Information für den Parser sowie die
+unterstützten Datentypen für die Speicherverwaltung des Cores. Das
+Architektur-Team besteht aus Yuriy Arabskyy, Erik Pohle, Lukas Karnowski und
+Peter Goldsborough.
+
+\textbf{Parser}
+
+Die Assemblersprache stellt ein mächtiges Interface zur Manipulation des
+Speichers sowie des Prozessors einer jeden Architektur dar. Jegliche
+Instruktionen an unsere simulierte Maschine müssen notwendigerweise in Assembler
+formuliert werden. Als roher Textkörper ist ein Assemblerprogramm jedoch keinem
+unserer Module nützlich. Der Assemblercode muss somit zuerst in eine
+Representation überführt werden, die die Evaluierung einzelner Instruktionen
+sowie deren Argumente als Datenobjekte in anderen Modulen des Simulators
+ermöglicht. Hierzu widmet sich das \emph{Parser}-Team, bestehend aus Dominik
+Kreutzer und David Schneller. Zwei wesentliche Aufgaben dieser Gruppe sind es,
+den Assembler Code für Core und Architektur in einen abstrakten Syntaxbaum zu
+transformieren sowie bezüglich syntaktischen und semantischen Aspekten des Codes
+mit der GUI zu kommunizieren.
+
+\textbf{GUI}
+
+Um unsere simulierte Maschine interaktiv zu visualisieren planen wir, mit dem
+Qt-Framework eine graphische Benutzeroberfläche zu enwickeln. In dieser
+Oberfläche sollen eine Eingaberegion für Assemblercode, der Hauptspeicher, die
+Register sowie weitere zusätzliche Elemente dargestellt werden. Wir legen
+hierbei darauf Wert, den Assemblercode nützlich und intuitiv hervorzuheben
+(highlighten) sowie auch in weiteren Teilen der graphischen Oberfläche dem
+Nutzer beim Erlernen der Rechnerarchtektur sowie des Assemblierens zu
+helfen. Auch ist es Aufgabe der GUI-Gruppe, Elemente wie simulierte LED Streifen
+oder Matrizen zu kreeiren, auf welche man durch Assemblercode zugreifen
+kann. Die Mitglieder dieses Teams sind Sabine Rieder, Felix Kopohl, Andreas
+Zimmerer sowie Jan Schopohl (1. Hälfte).
+
+\textbf{Core}
+
+Das \emph{Core} Team setzt sich aus drei Mitgliedern zusammen: Tobias Holl,
+Daniel Riedel und Jan Schopohl (2. Hälfte). Die Aufgabe dieses Teams ist es, ein
+Modul zu entwickeln, dass die Koordination aller Teile des Programms leitet. Es
+trägt somit die Verantwortung, den Austausch von Daten und Kontrollinformationen
+zwischen der Architektur, dem Parser sowie der GUI zu steuern. Des Weiteren hat
+es die Aufgabe, den Speicher und die Register des simulierten Prozessors zu
+verwalten. Letztlich kümmert sich dieses Modul noch um Threadverwaltung.
