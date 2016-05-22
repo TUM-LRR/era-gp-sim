@@ -98,3 +98,18 @@ SW/SH/SB rd, rs1, offset ; kopiert den Wert vom rd in den Speicher
 ```
 
 Es gibt auch LHU und LBU (analog SHU, SBU). Der Unterschied ist, dass der kopierte 16/8 Bit Wert wird zero-extended zu 32 Bits, wogegen bei normalen LH und LB wird das sign-extended.
+
+### Base Instruction Formats
+
+Wie Sie vielleicht schon bemerkt haben, gibt es nicht so viele verschiedenen
+Befehlsformate. Eigentlich gibt es bei Risc-V nur 4:
+
+1. R-Typ - opcode rd, rs1, rs2
+2. I-Typ - opcode rd, rs1, immediate
+3. S-Typ - opcode rs1, rs2, immediate
+4. U-Typ - opcode rd, immediate
+
+Da wo es zwei Register in einem Befehl gibt, ist die Immediate 12-bit lang und
+beim U-Typ ist sie 20-bit lang.
+
+
