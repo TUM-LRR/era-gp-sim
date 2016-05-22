@@ -171,32 +171,6 @@ suffix</y:AttributeLabel>
     <node id="n7">
       <data key="d4"/>
       <data key="d6">
-        <y:UMLClassNode>
-          <y:Geometry height="149.87499999999994" width="142.0" x="881.3124999999978" y="25.749999999999915"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" modelName="custom" textColor="#000000" visible="true" width="124.6181640625" x="8.69091796875" y="3.0">CompiledOperation<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-0.03703090122767855" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
-            <y:AttributeLabel>file
-lines
-labels
-operation
-sources
-targets</y:AttributeLabel>
-            <y:MethodLabel>getAsString()</y:MethodLabel>
-          </y:UML>
-        </y:UMLClassNode>
-      </data>
-    </node>
-    <node id="n8">
-      <data key="d4"/>
-      <data key="d6">
         <y:UMLNoteNode>
           <y:Geometry height="28.0" width="100.0" x="475.6875" y="491.6250000000001"/>
           <y:Fill color="#FFCC00" transparent="false"/>
@@ -211,7 +185,7 @@ targets</y:AttributeLabel>
         </y:UMLNoteNode>
       </data>
     </node>
-    <node id="n9">
+    <node id="n8">
       <data key="d4"/>
       <data key="d6">
         <y:UMLNoteNode>
@@ -228,14 +202,14 @@ targets</y:AttributeLabel>
         </y:UMLNoteNode>
       </data>
     </node>
-    <node id="n10">
+    <node id="n9">
       <data key="d4"/>
       <data key="d6">
         <y:UMLNoteNode>
-          <y:Geometry height="28.0" width="100.0" x="67.06249999999821" y="82.5"/>
+          <y:Geometry height="28.0" width="147.0" x="52.06249999999821" y="202.5"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="53.359375" x="23.3203125" y="4.6494140625">Plain text<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="112.046875" x="17.4765625" y="4.6494140625">Assembler plain text<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -245,7 +219,7 @@ targets</y:AttributeLabel>
         </y:UMLNoteNode>
       </data>
     </node>
-    <node id="n11">
+    <node id="n10">
       <data key="d4"/>
       <data key="d6">
         <y:UMLNoteNode>
@@ -262,7 +236,7 @@ targets</y:AttributeLabel>
         </y:UMLNoteNode>
       </data>
     </node>
-    <node id="n12">
+    <node id="n11">
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
@@ -284,31 +258,14 @@ value</y:AttributeLabel>
         </y:UMLClassNode>
       </data>
     </node>
-    <node id="n13">
+    <node id="n12">
       <data key="d4"/>
       <data key="d6">
         <y:UMLNoteNode>
-          <y:Geometry height="80.68749999999989" width="100.0" x="902.3124999999978" y="345.2500000000002"/>
+          <y:Geometry height="28.0" width="142.0" x="881.312499999998" y="212.0"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="92.705078125" x="3.6474609375" y="30.993164062499943">or a Syntax Tree<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-        </y:UMLNoteNode>
-      </data>
-    </node>
-    <node id="n14">
-      <data key="d4"/>
-      <data key="d6">
-        <y:UMLNoteNode>
-          <y:Geometry height="28.0" width="164.0" x="35.06249999999821" y="292.06250000000006"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="122.734375" x="20.6328125" y="4.6494140625">or: Just changed parts<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="64.697265625" x="38.6513671875" y="4.6494140625">Syntax tree<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
