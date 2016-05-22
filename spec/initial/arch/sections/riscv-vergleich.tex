@@ -15,7 +15,7 @@ jedem Befehl einen Speicherzugriff als Operand anzugeben, wobei aber die
 Beschränkung auf nur einen solchen Zugriff gilt. So können wir beispielsweise
 die folgenden wohlgeformten Befehle ausdrücken:
 
-\begin{lstlisting}
+\begin{lstlisting}[style=x86Assembler]
   ; Schreibe den Wert an der Speicheradresse
   ; 0xDEADBEEF in das Register EAX
   mov eax, [0xDEADBEEF]
@@ -62,7 +62,7 @@ in ein Register legen und dieses Register dann als Basisregister
 verwenden. Auf diese 20 Bit kann man dann eine beliebige 12-Bit-Konstante
 aufaddieren:
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
   ; Wir wollen die Addresse 0xDEADBEEF nach Register x1 laden
   ; Zuerst geben wir die oberen 20 Bit in ein Register
   lui x2, 0xDEADB
@@ -99,7 +99,7 @@ hat, außer den Befehlszähler um eine Instruktion fortzuschreiten. In CISC
 Befehlssätzen wie x86 ist diese Instruktion meist gegeben. In RISC-V muss sie
 durch eine Addition nachgebildet werden:
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
   ; NOP in RISC-V
   add x0, x0, 0
 \end{lstlisting}
@@ -170,7 +170,7 @@ Vergleichsoperation wie \code{CMP}. Bedingungen für Sprünge werden nämlich, w
 weiter oben gezeigt, explizit für jeden Sprungbefehl berechnet. Daher wird der
 folgende x86 Code
 
-\begin{lstlisting}
+\begin{lstlisting}[style=x86Assembler]
   ; Vergleich das Register EAX mit EBX
   cmp eax, ebx
   ; Springe auf die Marke, wenn EAX gleich EBX war
@@ -179,7 +179,7 @@ folgende x86 Code
 
 zu folgendem RISC-V Code:
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
   ; Vergleiche das Register x1 mit dem Register x2 und springe
   ; an die Adresse pc + 0xABC, falls die Bedingung galt
   beq x1, x2, 0xABC
@@ -202,7 +202,7 @@ Rücksprungadresse bei einem Funktionsaufruf gegeben werden soll, nämlich
 hierbei auch \emph{Link Register}. Nach der offiziellen Calling Convention würde
 man also stets nach folgendem Schema Funktionsaufrufe durchführen:
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
   ; jump and link register, x1 als Link Register
   ; Basis (20-Bit Register) + Offset (11-Bit Konstante) ergibt die Adresse
   jalr x1, <basis>, <offset>
@@ -286,7 +286,7 @@ erhalten. Die offizielle RISC-V-Spezifikation empfiehlt hierbei, zuerst
 \code{MULH[[S]U]} und dann \code{MUL} zu berechnen, bzw. zuerst \code{DIV[U]}
 und dann \code{REM[U]}.
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
   ; Multipliziere register x1 und x2
   ; Intepretiere x1 als vorzeichenbehaftet, x2 nicht
   ; Speichere die oberen 32-Bit des Produkts in x3

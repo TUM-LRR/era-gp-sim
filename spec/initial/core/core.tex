@@ -10,7 +10,7 @@ Um das Threading zu implementieren, werden wir---nachdem das Parser-Team sich f�
 
 \section{Datentypen}
 
-Um möglichst alle Architekturen abzudecken, wollen wir den Returntyp der Zugriffsfunktionen auf Speicher und Register möglichst allgemein halten. Da die Interpretation der Daten von der Architektur abhängt, wird ein Speicherzugriff zunächst nur die rohen Bits als `std::bitset` (oder, falls mehr Operationen benötigt werden, in einem ähnlichen, eigenen Typ) zurückgegeben. Das Core-Modul wird dann Konvertierungsfunktionen bereitstellen, besonders in Ganzzahl- und Gleitkommazahlen variabler Bitgrö{\ss}e (``Bigints'' und ``Bigfloats''). Diese Typen sollen soweit möglich die gleichen Operationen anbieten, die auch von den normalen \lstinline!int! und \lstinline!float!-Typen bereitgestellt werden. Falls der Bedarf besteht, könnte auch eine Konvertierung in normale C++-Typen angeboten werden, dies sollte aber per se nicht nötig sein.
+Um möglichst alle Architekturen abzudecken, wollen wir den Returntyp der Zugriffsfunktionen auf Speicher und Register möglichst allgemein halten. Da die Interpretation der Daten von der Architektur abhängt, wird ein Speicherzugriff zunächst nur die rohen Bits als `std::bitset` (oder, falls mehr Operationen benötigt werden, in einem ähnlichen, eigenen Typ) zurückgegeben. Das Core-Modul wird dann Konvertierungsfunktionen bereitstellen, besonders in Ganzzahl- und Gleitkommazahlen variabler Bitgrö{\ss}e (``Bigints'' und ``Bigfloats''). Diese Typen sollen soweit möglich die gleichen Operationen anbieten, die auch von den normalen \lstinline[style=C++]!int! und \lstinline[style=C++]!float!-Typen bereitgestellt werden. Falls der Bedarf besteht, könnte auch eine Konvertierung in normale C++-Typen angeboten werden, dies sollte aber per se nicht nötig sein.
 
 
 \section{Hauptspeicher}
@@ -30,4 +30,4 @@ Core und GUI kommunizieren mit Hilfe eines Observer-Patterns, so dass der Core k
 
 \subsection{Parser}
 
-Der Core startet und verwaltet auch den Parser und übergibt diesem die Informationen der Architektur, beispielsweise die Factories für die Syntaxbäume. Au{\ss}erdem erhält der Parser den Assemblercode von der GUI, dieser wird als \lstinline!std::string! weitergegeben. Der Core erhält vom Parser Fehlermeldungen für die GUI oder die Syntaxbäume, die vom Core ausgeführt werden können. Dabei wird der als nächstes auszuführende Befehl von der Architektur ermittelt.
+Der Core startet und verwaltet auch den Parser und übergibt diesem die Informationen der Architektur, beispielsweise die Factories für die Syntaxbäume. Au{\ss}erdem erhält der Parser den Assemblercode von der GUI, dieser wird als \lstinline[style=C++]!std::string! weitergegeben. Der Core erhält vom Parser Fehlermeldungen für die GUI oder die Syntaxbäume, die vom Core ausgeführt werden können. Dabei wird der als nächstes auszuführende Befehl von der Architektur ermittelt.

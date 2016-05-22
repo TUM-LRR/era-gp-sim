@@ -31,7 +31,7 @@ Keine Integer Rechenbefehle verursachen arithmetische Ausnahmen.
 
 \subsubsection{Register-Immediate}
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
 ADDI rd, rs1, 0  ; addiert 12-bit immediate mit dem Register r1, Ziel: rd
 SLTI rd, rs1, 0  ; set less than immediate, rd = 1, falls rs1 < 0, sonst rd=0
 SLTIU rd, rs1, 1 ; dasselbe, aber unsigned
@@ -46,7 +46,7 @@ Immediate entsteht.
 
 In den nächsten beiden Befehlen ist der Immediate 20 Bit lang, anstatt 12.
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
 LUI dest, immediate  ; load upper immediate
 AUIPC dest, immediate  ; add upper immediate to pc
 \end{lstlisting}
@@ -57,7 +57,7 @@ AUIPC addiert den Immediate mit den höheren 20 Bits des Instruktionszählers un
 
 \subsubsection{Register-Register}
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
 ADD/SLT/SLTU dest, src1, src2
 AND/OR/XOR   dest, src1, src2
 SLL/SRL      dest, src1, src2
@@ -68,13 +68,13 @@ SLTU rd, x0, rs2 ; setzt rd zu 0 nur wenn rs2 = 0
 
 \textbf{NOP-Instruktion}
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
 ADDI x0, x0, 0
 \end{lstlisting}
 
 \subsubsection{Kontrolltransfer-Instruktionen}
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
 JAL rd, immediate  ; rd = (pc + 4), Immediate 20 bit lang, range +-1MiB
 \end{lstlisting}
 
@@ -83,7 +83,7 @@ der vorherige Wert des (Befehlszählers + 4) wird in das Register rd gespeichert
 der als eine Rücksprungadresse verwendet werden kann. Nach den Konventionen
 benutzt man dafür x1 und, falls JAL ein unbedingter Sprung ist, dann x0.
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
 JALR rd, rs1, immediate  ; rd = (pc + 4), Immediate 12 bit
 \end{lstlisting}
 
@@ -95,7 +95,7 @@ man auf eine beliebige Adresse im Adressraum springen.
 Ein wichtiger Aspekt der Risc-V ISA ist, dass es keine Flags gibt. Stattdessen
 werden Branchbefehle verwendet.
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
 BEQ/BNE src1, src2, offset ; branch equal/not equal
 BLT[U]/BGE[U]  src1, src2, offset  ; branch less/greater than
 \end{lstlisting}
@@ -104,7 +104,7 @@ Falls die Bedingung erfüllt ist, wird der Offset zu dem Befehlszähler addiert.
 
 \subsubsection{Load/Store Instruktionen}
 
-\begin{lstlisting}
+\begin{lstlisting}[style=risc-v_Assembler]
 LW/LH/LB rd, rs1, offset ; kopiert 32/16/8 bits vom Speicher von der Adresse (rs1+offset)
 SW/SH/SB rd, rs1, offset ; kopiert den Wert vom rd in den Speicher
 \end{lstlisting}

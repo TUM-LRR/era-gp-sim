@@ -35,7 +35,7 @@ Knotentypen, die bei der RISC-V-Architektur nicht benötigt werden, sind der Vol
 \end{itemize}
 \subsubsection{Pseudo-Code-Beispiel von ADD}
 Der hier benutzte Datentyp \texttt{Zahl} ist für das RISC-V 32I-Modul ein 32-Bit Integer, \texttt{Registername} ist ein Schlüssel, mit dem ein Register identifiziert werden kann.
-\begin{lstlisting}
+\begin{lstlisting}[style=C++]
 	function Zahl getValue(AbstraktSpeicher s) {
 		Registername destination = kind[0].getReference();
 		Zahl summand1 = kind[1].getValue(s);
