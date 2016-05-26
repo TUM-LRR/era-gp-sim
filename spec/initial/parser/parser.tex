@@ -39,7 +39,7 @@ spezialisiert sein.
 Im ersten Schritt wird der rohe Assemblertext gelesen und in Zeilenbereiche
 unterteilt, die jeweils einen Befehl mit allen zugehörigen Marken beinhalten.
 Wenn wir im \textbf{Update}-Modus sind, betrachten wir hiervon nur die Befehle, die sich seit der letzten Ausführung geändert haben.
-Diese Befehle werden anschließend in Objekte umgewandelt, wobei auch das Zeilenintervall und Datei des Auftretens gespeichert werden. Wir unterscheiden bei den Befehlen zwischen Direktiven und Operationen unterscheiden, bei ersteres differenzieren wir besonders. Alle Labels und auch Konstantennamen, die wie Labels behandelt werden, werden in die Symboltabelle mit ihrem
+Diese Befehle werden anschließend in Objekte umgewandelt, wobei auch das Zeilenintervall und Datei des Auftretens gespeichert werden. Wir unterscheiden bei den Befehlen zwischen Direktiven und Operationen, bei ersteren differenzieren wir besonders. Alle Labels und auch Konstantennamen, die wie Labels behandelt werden, werden in die Symboltabelle mit ihrem
 korrespondierenden (Text-)Wert geschrieben bzw. aktualisiert. Falls im \textbf{Compile}-Modus ausgeführt wird, wird die Symboltabelle zuvor noch geleert. Ebenfalls wird in diesem Modus der Speicher reserviert
 und die Positionen der Daten berechnet, im \textbf{Update}-Modus erfolgt dies entsprechend nicht, die zugehörigen Direktiven werden einfach ignoriert.  Bei allen Makros wird Anfang und Ende erfasst und diese in eine separate Makroliste eingetragen.
 
