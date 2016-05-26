@@ -1,5 +1,7 @@
 \chapter{Parser}
 
+\emph{\textbf{Autoren:} David Schneller, Dominik Kreutzer}
+
 Das Parser-Modul liest den gegebenen Assembler-Code, führt alle gegebenen
 Compiler-Direktiven aus und generiert für jedes Argument einen Syntax-Baum, der
 an die Architektur übergeben wird.  Außerdem reserviert er den über die
@@ -13,10 +15,22 @@ Intel-Syntax).
 Weiterhin assistiert der Parser mit dem Befehlssatz der Architektur der GUI beim
 Syntax-Highlighting und stellt syntaktische Fehler sowie nicht vorhandene Befehle fest.
 
+\section{Ausführungsmodi}
+
+Generell soll der Parser zwei Ausführungsmodi unterstützen:
+\begin{itemize}
+\item \textbf{Compile}: Kompiliert den kompletten Assemblertext und erstellt Symboltabellen und Syntaxbäume, reserviert Speicher.
+\item \textbf{Update}: Betrachtet nur die Veränderungen zum vorherigen Assemblertext und aktualisiert Symboltabelle, Syntaxbäume entsprechend. Speicherreservierungsbefehle werden ignoriert.
+\end{itemize}
+
+\textbf{Compile} soll den Assemblertext in einen ausführbaren Zustand bringen, sodass dann das Assemblerprogramm ausgeführt werden kann. \textbf{Update} hingegen aktualisiert die interne Darstellung, falls während der Programmausführung der Quelltext verändert wird.
+
+\textbf{TODO: PASST DAS SO? ODER SOLLEN WIR ES ANDERS MACHEN?}
+
 \section{Umsetzung (Referenzmodul)}
 
-Das Referenzmodul (welches im Rahmen dieses Großpraktikums konstruiert werden
-soll) wird als bekannter 2-Pass-Assembler realisiert. Wie die Architektur wird
+Das Referenzmodul, welches im Rahmen dieses Großpraktikums konstruiert werden
+soll, wird als bekannter 2-Pass-Assembler realisiert. Wie die Architektur wird
 dieses vorerst auf RISC-V (und hier einen bestimmten Dialekt) ausgelegt und
 spezialisiert sein.
 
@@ -24,25 +38,19 @@ spezialisiert sein.
 
 Im ersten Schritt wird der rohe Assemblertext gelesen und in Zeilenbereiche
 unterteilt, die jeweils einen Befehl mit allen zugehörigen Marken beinhalten.
-Diese Befehle werden anschließend in Objekte gepackt (mit
-Zeilenintervall und Datei des Auftretens), wobei wir zwischen Direktiven und den
-eigentlichen Befehlen unterscheiden.  Besonders bei ersteren wird bereits hier
-genauer unterschieden.  Alle Labels und eventuell auch Konstantennamen (die wie
-Labels behandelt werden) werden in die Symboltabelle mit ihrem
-korrespondierenden (Text-)Wert geschrieben.  Wenn von Core oder GUI gewünscht
-(also wenn das Programm gerade nicht läuft), wird hier der Speicher reserviert,
-sonst werden nur die entsprechenden Positionen berechnet.  Bei allen Makros wird
-Anfang und Ende erfasst und diese in eine separate Makroliste eingetragen.
+Wenn wir im \textbf{Update}-Modus sind, betrachten wir hiervon nur die Befehle, die sich seit der letzten Ausführung geändert haben.
+Diese Befehle werden anschließend in Objekte umgewandelt, wobei auch das Zeilenintervall und Datei des Auftretens gespeichert werden. Wir unterscheiden bei den Befehlen zwischen Direktiven und Operationen unterscheiden, bei ersteres differenzieren wir besonders. Alle Labels und auch Konstantennamen, die wie Labels behandelt werden, werden in die Symboltabelle mit ihrem
+korrespondierenden (Text-)Wert geschrieben bzw. aktualisiert. Falls im \textbf{Compile}-Modus ausgeführt wird, wird die Symboltabelle zuvor noch geleert. Ebenfalls wird in diesem Modus der Speicher reserviert
+und die Positionen der Daten berechnet, im \textbf{Update}-Modus erfolgt dies entsprechend nicht, die zugehörigen Direktiven werden einfach ignoriert.  Bei allen Makros wird Anfang und Ende erfasst und diese in eine separate Makroliste eingetragen.
 
 \subsection{2. Durchlauf}
 
 Wir haben nun eine Befehlsfolge von Objekten. In diesem Schritt werden nun die
-Direktiven ausgeführt und die Labels mit ihrem Wert eingesetzt.  Ein Befehl wird
-zu einem Syntaxbaum umgewandelt. Wegen
-möglichen unbekannten Datentypen anderer ISAs usw. wird hier eine Factory für
-Knoten vom Architektur-Modul bereitgestellt.  Als Ausgabe dient schließlich eine
-Liste von Objekten \emph{ohne} jegliche Direktiven und mit Argumenten als
-Syntaxbäumen. Diese wird dann dem Core zur Verfügung gestellt.
+Direktiven ausgeführt und die Labels mit ihrem Wert eingesetzt. Ein Befehl wird
+zu einem Syntaxbaum umgewandelt. Im \textbf{Update}-Modus erfolgt dies nur für die Befehle, die geändert wurden oder von einem modifizierten Symbol abhängen. Zu diesem Zweck soll die Symboltabelle alle Befehlsreferenzen auf ein Symbol halten, sodass eine Suche nach abhängigen Befehlen schnell möglich ist.
+Wegen möglichen unbekannten Datentypen anderer ISAs usw. stellt das Architektur-Modul hier eine Factory für
+Knoten bereit.  Als Ausgabe dient schließlich eine
+Liste von Befehls-Syntaxbäumen \emph{ohne} jegliche Direktiven. Diese wird dann dem Core zur Verfügung gestellt.
 
 \begin{figure}[h!]
   \centering
@@ -65,7 +73,7 @@ Syntaxbäumen. Diese wird dann dem Core zur Verfügung gestellt.
 \item Bedingte Assemblerkompilierung
 \item Komplett freie Textersetzungssysteme (z.B. C-Präprozessor)
 \item Inkludieren anderer Assembler-Dateien
-\end{itemize} Ebenfalls werden nur einzeilige Kommentare unterstützt werden.
+\end{itemize} Ebenfalls sollen nur einzeilige Kommentare unterstützt werden.
 
 \section{Abhängigkeiten}
 Der Parser kommuniziert mit allen anderen Modulen
@@ -85,10 +93,12 @@ Ebenso stellt der Parser Syntaxfehler sowie unbekannte Befehle fest und meldet d
 und damit auch die GUI weiter. Dabei soll die Zeile des Fehlers sowie eine kurze Beschreibung angegeben werden.
 Die semantische Validierung übernimmt anschließend die Architektur.
 
-Wir haben uns dazu entschieden, vorerst die boost::spirit-Bibliothek zu
-verwenden, um Ausdrücke zu parsen.  Wir erachten dies als sinnvoll, um das
+Wir haben uns dazu entschieden, vorerst die \lstinline[style=C++]!boost::spirit!-Bibliothek zu
+verwenden, um Ausdrücke, insbesondere die Rechenoperationen, zu parsen.  Wir erachten dies als sinnvoll, um das
 Projekt in Anbetracht der Stärke des Parser-Teams (zwei Personen) und der
-verfügbaren Zeit ordentlich fertigstellen zu können.
+verfügbaren Zeit ordentlich fertigstellen zu können. Der Vorteil gegenüber den
+regulären Ausdrücken der Standardbibliothek ist, dass \lstinline[style=C++]!boost::spirit! auch kontextfreie Sprachen vollständig unterstützt, was z.B. Klammerschachtelung erst möglich zu implementieren macht.
+Sollte die Verwendung von boost nicht erwünscht sein, so könnten wir auf Parser-Generatoren wie z.B. Elkhound umsteigen. %(Liste: https://en.wikipedia.org/wiki/Comparison_of_parser_generators).
 
 \section{Verworfen: Allgemeiner Parser} Im Laufe unserer Entscheidungsfindung
 stand auch kurz auf dem Plan, einen allgemeinen Parser mit einem kleinen
@@ -96,6 +106,6 @@ dialektabhängigen Modul zu entwerfen.  Dies hätte den Vorteil, dass die
 Dialektmodule wesentlich kleiner und einfacher zu programmieren ausgefallen
 wären, da die Hauptarbeit ja sowieso der große allgemeine Parser übernimmt.
 Jedoch haben wir diese Idee für dieses Großpraktikum verworfen, da hierbei zu
-viele Komplikationen entstanden (wie will man fast alle Assemblersprachen
-verallgemeinern?).  Sie steht jedoch für spätere Projekte frei, verwendet zu
-werden.
+viele Komplikationen entstanden. Es war schlichtweg unmöglich,
+alle Assemblersprachen in machbarem Aufwand zu verallgemeinern.
+Der allgemeine Parser kann jedoch gerne in späteren Projekten implementiert werden.
