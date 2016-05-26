@@ -1,31 +1,30 @@
 \chapter{Einführung}
 
-Dieses Dokument stellt einen Statusbericht des ERA Großpraktikums-Teams sowie
-eine initiale, konzeptuelle Ausarbeitung des zu entwickelnden Assembler Software
-Simulators dar. In den folgenden Kapiteln stellen wir die einzelnen Untergruppen
-der Mannschaft vor, sowie dessen Planung und Ausarbeitung für ihre respektive
-Teildomäne des Projekts. Wir beginnen hierbei mit einer groben, kurzen Übersicht
-über unsere Untergruppen sowie dessen Modulen. Folglich fokussieren wir uns in
-jedem Kapitel auf ein bestimmtes Modul und besprechen dabei unsere Erfahrungen,
-Beobachungen und weitere Planung. Ebenfalls erläutern wir, wie die einzelnen
-Module von einander abhängen und welche Verantwortungen auf welche Weise geteilt
-werden müssen.
+Dieses Dokument stellt einen Statusbericht des ERA-Großpraktikum-Teams sowie
+eine initiale, konzeptuelle Ausarbeitung des zu entwickelnden Assembler-
+Simulators dar.
+Wir beginnen mit einer groben, kurzen Übersicht
+unserer Teilgruppen und ihren Aufgabenbereichen.
+In den folgenden Kapiteln
+behandeln wir dann die einzelnen Module und berichten dabei von den jeweiligen
+Erfahrungen, Beobachtungen und weiterführenden Ideen.
+Ebenfalls erläutern wir, wie die einzelnen
+Module von einander abhängen und was miteinander kommuniziert werden muss.
 
 \section{Übersicht}
 
-Wir haben uns für eine vierfaltige Gliederung des Projekts entschieden. Die
-einzelnen Gruppen bezeichnen wir hierbei als \emph{Parser}, \emph{Core},
-\emph{Arch} und \emph{GUI}. In den folgenden Absätzen beschreiben wir diese
-einzelnen Gruppen kurz und nennen ihre Teammitglieder. Eine fokussiertere Analyse
-der einzelnen Domänen folgt in den übrigen Kapiteln dieser Spezifikation.
+Wir haben uns für eine Gliederung des Projekts in vier Gruppen entschieden.
+Diese bezeichnen wir hierbei als \emph{Parser}, \emph{Core},
+\emph{Architektur} und \emph{GUI}. In den folgenden Absätzen beschreiben wir kurz die
+einzelnen Gruppen und nennen ihre Teammitglieder.
 
 \textbf{Architektur}
 
-Wir haben es uns als Ziel genommen, einen Assembler Simulator zu entwickeln, der
-architekturunabhängig ist und somit einer weiten Spannbreite an Anwendungen in
-der Bildung gerecht werden kann. Ohne Beschränkung dieser Allgemeinheit für die
-Zukunft haben wir uns im Weiteren dazu entschlossen, den \emph{RISC-V}
-Befehlssatz als erstes zu unterstützen. Jegliche architektur-spezifische Aspekte
+Wir haben uns das Ziel eines architekturunabhängigen Assembler-Simulators gesetzt,
+da dieser einer weiten Spannbreite an Anwendungen in
+der Bildung gerecht werden kann. Als erstes wollen wir den \emph{RISC-V}-Befehlssatz
+als unterstützen, jedoch architekturunabhängige Schnittstellen bewahren.
+Jegliche architektur-spezifische Aspekte
 unseres Simulators fallen hierbei in den Aufgabenbereich der
 \emph{Architektur}-, kurz \emph{Arch}-, Gruppe. Unter
 \emph{architektur-spezifisch} verstehen wir hierbei die Implementierung der
@@ -40,7 +39,7 @@ Peter Goldsborough.
 
 \textbf{Parser}
 
-Die Assemblersprache stellt ein mächtiges Interface zur Manipulation des
+Die Assemblersprache stellt ein mächtige Schnittstelle zur Manipulation des
 Speichers sowie des Prozessors einer jeden Architektur dar. Jegliche
 Instruktionen an unsere simulierte Maschine müssen notwendigerweise in Assembler
 formuliert werden. Als roher Textkörper ist ein Assemblerprogramm jedoch keinem
@@ -49,30 +48,30 @@ Representation überführt werden, die die Evaluierung einzelner Instruktionen
 sowie deren Argumente als Datenobjekte in anderen Modulen des Simulators
 ermöglicht. Hierzu widmet sich das \emph{Parser}-Team, bestehend aus Dominik
 Kreutzer und David Schneller. Zwei wesentliche Aufgaben dieser Gruppe sind es,
-den Assembler Code für Core und Architektur in einen abstrakten Syntaxbaum zu
-transformieren sowie bezüglich syntaktischen und semantischen Aspekten des Codes
+den Assemblertext für Core und Architektur in einen abstrakten Syntaxbaum zu
+transformieren sowie bezüglich syntaktischen und semantischen Aspekten des Quelltextes
 mit der GUI zu kommunizieren.
 
 \textbf{GUI}
 
-Um unsere simulierte Maschine interaktiv zu visualisieren planen wir, mit dem
-Qt-Framework eine graphische Benutzeroberfläche zu enwickeln. In dieser
-Oberfläche sollen eine Eingaberegion für Assemblercode, der Hauptspeicher, die
+Um unsere simulierte Maschine interaktiv zu visualisieren, planen wir, mit dem
+Qt-Framework eine grafische Benutzeroberfläche zu enwickeln. In dieser
+Oberfläche sollen eine Eingaberegion für Assemblercode, den Hauptspeicher, die
 Register sowie weitere zusätzliche Elemente dargestellt werden. Wir legen
-hierbei darauf Wert, den Assemblercode nützlich und intuitiv hervorzuheben
+hierbei Wert darauf, den Assemblercode nützlich und intuitiv hervorzuheben
 (highlighten) sowie auch in weiteren Teilen der graphischen Oberfläche dem
-Nutzer beim Erlernen der Rechnerarchitektur sowie des Assemblierens zu
+Nutzer beim Erlernen der Rechnerarchitektur und des Assemblierens zu
 helfen. Auch ist es Aufgabe der GUI-Gruppe, Elemente wie simulierte LED-Streifen
 oder Matrizen zu kreieren, auf welche man durch Assemblercode zugreifen
 kann. Die Mitglieder dieses Teams sind Sabine Rieder, Felix Opolka, Andreas
-Zimmerer sowie Jan Schopohl (1. Hälfte).
+Zimmerer sowie Jan Schopohl (auch im Core-Team).
 
 \textbf{Core}
 
 Das \emph{Core} Team setzt sich aus drei Mitgliedern zusammen: Tobias Holl,
-Daniel Riedel und Jan Schopohl (2. Hälfte). Die Aufgabe dieses Teams ist es, ein
+Daniel Riedel und Jan Schopohl (auch im GUI-Team). Die Aufgabe dieses Teams ist es, ein
 Modul zu entwickeln, das die Koordination aller Teile des Programms leitet. Es
 trägt somit die Verantwortung, den Austausch von Daten und Kontrollinformationen
-zwischen der Architektur, dem Parser sowie der GUI zu steuern. Des Weiteren hat
+zwischen der Architektur, dem Parser sowie der GUI zu steuern. Weiterhin hat
 es die Aufgabe, den Speicher und die Register des simulierten Prozessors zu
 verwalten. Letztlich kümmert sich dieses Modul noch um Threadverwaltung.
