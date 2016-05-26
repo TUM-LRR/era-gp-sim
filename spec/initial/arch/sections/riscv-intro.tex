@@ -1,59 +1,58 @@
 \section{Die RISC-V ISA}
 
-RISC-V ist eine neue Open-Source-ISA (instruction set architecture), die
-ursprünglich für Lern- und Forschungsziele entwickelt wurde.
+RISC-V ist ein neuer quelloffener Befehlssatz, der
+ursprünglich zu Lern- und Forschungszielen entwickelt wurde.
 
-Es gibt zwei Versionen mit 32-Bit und 64-Bit Architektur. Wir werden uns
-zuerst ausschließlich für die erste Variante interessieren.
+Es gibt zwei Versionen mit 32-Bit- und 64-Bit-Architektur. Wir werden
+vorerst ausschließlich erstere Variante betrachten.
 
-Die Architektur ist in Module aufgeteilt, mit Ausnahme des Basis-Integer-Moduls ''I'', %??
-das in allen Implementierungen vorhanden sein muss. Es enthält ganzzahlige
-Rechen-, Lade-, Store- und Kontrollflussinstruktionen. Es kann durch folgende
+Die Architektur ist in Module auf geteilt, die nach zu einer Konfiguration nach Belieben hinzugefügt werden können.
+Lediglich das Basismodul für Ganzzahloperationen ``I'' (Basic Integer Module) muss dabei in allen Implementierungen vorhanden sein.
+Es enthält Rechen-, Lade-, Speicher- und Kontrollflussbefehle auf ganzzahlige Werte und kann durch folgende
 Standardmodule erweitert werden:
 
 \begin{itemize}
-\item ''M'' ganzzahlige Multiplikation und Division
-\item ''A'' atomicity für inter-processor Synchronization
-\item ''F'' und ''D'' für floats und doubles entsprechend
+\item ``M'' Multiplikation und Division für ganze Zahlen
+\item ``A'' atomare Operationen für prozessorübergreifende Synchronisation
+\item ``F'' und ``D'' für Gleitkommazahlen einfacher und doppelter Genauigkeit (floats und doubles)
 \end{itemize}
 
-Die Instruktionen der Standard ISA sind 32-Bit lang und auf die
-32-Bit-Grenzen ausgerichtet. Jedoch unterstützt Risc-V auch Befehle variabler Länge, die
-aus einer beliebigen Anzahl von 16-Bit-Parcels bestehen können.
+Die Instruktionen des Standardbefehlssatzes sind 32 Bit lang und auf
+32-Bit-Grenzen ausgerichtet. Jedoch unterstützt RISC-V auch Befehle variabler Länge, die
+aus einer beliebigen Anzahl von 16-Bit-Blöcken bestehen können.
 
 Standardmäßig wird Little-Endian als Speicherformat verwendet.
 
-Die RISV-V ISA hat 31 Allzweckregister (x1 - x31). Zusätzlich existiert ein Register x0, der mit der Konstante 0 hardwired ist, und einen Programmzähler. Sie sind alle 32 Bit breit.
+Die RISV-V ISA hat 31 Allzweckregister (\lstinline[style=risc-v_Assembler]!x1! bis \lstinline[style=risc-v_Assembler]!x31!). Zusätzlich existiert das Register \lstinline[style=risc-v_Assembler]!x0!, der mit einer konstanten \lstinline[style=risc-v_Assembler]!0! verdrahtet ist sowie der Befehlszähler (ab sofort abgekürzt mit \lstinline[style=risc-v_Assembler]!pc!). All diese Register sind 32 Bit breit.
 
-\subsection{Integer-Basis-Instruktionen}
+\subsection{Grundlegende Ganzzahl-Befehle (Integer Basic Module)}
 
-Keine Integer Rechenbefehle verursachen arithmetische Ausnahmen.
+Rechenbefehle auf ganzen Zahlen verursachen keine arithmetischen Ausnahmen.
 
-\subsubsection{Register-Immediate}
-
-\begin{lstlisting}[style=risc-v_Assembler]
-ADDI rd, rs1, 0  ; addiert 12-bit immediate mit dem Register r1, Ziel: rd
-SLTI rd, rs1, 0  ; set less than immediate, rd = 1, falls rs1 < 0, sonst rd=0
-SLTIU rd, rs1, 1 ; dasselbe, aber unsigned
-\end{lstlisting}
-
-ANDI, ORI, XORI sind logische Operationen, die AND, OR und XOR entsprechen. Ihr
-Befehlsformat entspricht dem obigen.
-
-Es gibt logische und arithmetische Shifts (SLLI, SRLI, SLAI, SRAI). Die Anzahl
-der geshifteten Bits ist gleich der Zahl, die aus den ersten fünf Bits des
-Immediate entsteht.
-
-In den nächsten beiden Befehlen ist der Immediate 20 Bit lang, anstatt 12.
+\subsubsection{Register-Unmittelbar}
 
 \begin{lstlisting}[style=risc-v_Assembler]
-LUI dest, immediate  ; load upper immediate
-AUIPC dest, immediate  ; add upper immediate to pc
+ADDI rd, rs1, 0  ; (add immediate) addiert die Konstante und den Wert von r1, das ganze wird dann nach rd gespeichert
+SLTI rd, rs1, 0  ; (set less than immediate) setzt den Wert von rd=1, falls rs1 < 0, sonst rd=0
+SLTIU rd, rs1, 1 ; (set less than immediate unsigned) wie SLTI, nur vorzeichenloser Vergleich
 \end{lstlisting}
 
-LUI platziert den Immediate in die höheren 20 Bits des Zielregisters, die unteren 12 Bits werden genullt.
+\lstinline[style=risc-v_Assembler]!ANDI!, \lstinline[style=risc-v_Assembler]!ORI!, \lstinline[style=risc-v_Assembler]!XORI! sind logische Operationen, die dem bitweisen Und, Oder bzw. Exklusiv-Oder entsprechen (Register-Register-Äquivalent: \lstinline[style=risc-v_Assembler]!AND!, \lstinline[style=risc-v_Assembler]!OR! bzw. \lstinline[style=risc-v_Assembler]!XOR!). Ihr
+Befehlsformat entspricht dem obigen. \textbf{Was meintet ihr mit "entsprechen AND, OR, und XOR?"}
 
-AUIPC addiert den Immediate mit den höheren 20 Bits des Instruktionszählers und speichert das Ergebnis in das Zielregister.
+Zudem existieren logische und arithmetische Shifts (\lstinline[style=risc-v_Assembler]!SLLI!, \lstinline[style=risc-v_Assembler]!SRLI!, \lstinline[style=risc-v_Assembler]!SLAI!, \lstinline[style=risc-v_Assembler]!SRAI!). Die Anzahl
+der geshifteten Bits ist gleich der Zahl, die aus den ersten fünf Bits der angegebenen Konstante entsteht.
+
+In den nächsten beiden Befehlen ist die unmittelbar angegebene Konstante 20 Bit lang, anstatt 12 Bit.
+
+\begin{lstlisting}[style=risc-v_Assembler]
+LUI dest, immediate  ; (load upper immediate)
+AUIPC dest, immediate  ; (add upper immediate to program counter)
+\end{lstlisting}
+
+\lstinline[style=risc-v_Assembler]!LUI! platziert die Konstante in die höheren 20 Bits des Zielregisters, die unteren 12 Bits werden genullt.
+
+\lstinline[style=risc-v_Assembler]!AUIPC! addiert die Konstante mit den höheren 20 Bits des Befehlszählers und speichert das Ergebnis in das Zielregister.
 
 \subsubsection{Register-Register}
 
@@ -63,67 +62,61 @@ AND/OR/XOR   dest, src1, src2
 SLL/SRL      dest, src1, src2
 /SRA      dest, src1, src2
 
-SLTU rd, x0, rs2 ; setzt rd zu 0 nur wenn rs2 = 0
+SLTU rd, x0, rs2 ; (set less than unsigned) setzt rd zu 0, nur wenn rs2 = 0 (da x0 auf 0 fest verdrahtet ist)
 \end{lstlisting}
 
-\textbf{NOP-Instruktion}
+\subsubsection{NOP-Instruktion}
 
 \begin{lstlisting}[style=risc-v_Assembler]
 ADDI x0, x0, 0
 \end{lstlisting}
 
-\subsubsection{Kontrolltransfer-Instruktionen}
+\subsubsection{Unbedingte Sprünge}
 
 \begin{lstlisting}[style=risc-v_Assembler]
-JAL rd, immediate  ; rd = (pc + 4), Immediate 20 bit lang, range +-1MiB
+JAL rd, immediate  ; rd = (pc + 4), Konstante (immediate) ist 20 Bit lang, Bereich: +-1MiB
 \end{lstlisting}
 
-JAL (jump and link) setzt den Befehlszähler auf den Wert (pc + immediate) und
-der vorherige Wert des (Befehlszählers + 4) wird in das Register rd gespeichert,
-der als eine Rücksprungadresse verwendet werden kann. Nach den Konventionen
-benutzt man dafür x1 und, falls JAL ein unbedingter Sprung ist, dann x0.
+\lstinline[style=risc-v_Assembler]!JAL! (jump and link) speichert \lstinline[style=risc-v_Assembler]!pc + 4! (Befehlszähler um 4 vorgeschaltet) in das Register rd und setzt anschließend den Befehlszähler auf \lstinline[style=risc-v_Assembler]!pc+imm! (Befehlszähler + Konstante). Somit kann der Wert in rd als Rücksprungadresse dienen. Die Konvention ist, dass man diese normalerweise nach x1 speichert. Wenn aber nicht zurückgesprungen werden soll, so kann die Rücksprungadresse auch auf \lstinline[style=risc-v_Assembler]!x0! (die fest verdrahtete \lstinline[style=risc-v_Assembler]!0!) geschrieben werden und geht verloren.
 
 \begin{lstlisting}[style=risc-v_Assembler]
-JALR rd, rs1, immediate  ; rd = (pc + 4), Immediate 12 bit
+JALR rd, rs1, immediate  ; rd = (pc + 4), die Konstante (immediate) 12 Bit lang
 \end{lstlisting}
 
-JALR setzt den Befehlszähler auf (rs1 + imm). Zusammen mit dem Befehl LUI kann
-man auf eine beliebige Adresse im Adressraum springen.
+\lstinline[style=risc-v_Assembler]!JALR! setzt den Befehlszähler auf \lstinline[style=risc-v_Assembler]!rs1 + imm! (Quellregister 1 + Konstante). Zusammen mit dem Befehl \lstinline[style=risc-v_Assembler]!LUI! kann
+man damit auf eine beliebige Adresse im Adressraum springen.
 
 \subsubsection{Bedingte Verzweigungen}
 
-Ein wichtiger Aspekt der Risc-V ISA ist, dass es keine Flags gibt. Stattdessen
-werden Branchbefehle verwendet.
+Ein wichtiger Aspekt des RISC-V-Befehlssatzes ist, dass es weder Flags noch ein Statusregister gibt. Stattdessen
+werden Verzweigungsbefehle verwendet:
 
 \begin{lstlisting}[style=risc-v_Assembler]
-BEQ/BNE src1, src2, offset ; branch equal/not equal
-BLT[U]/BGE[U]  src1, src2, offset  ; branch less/greater than
+BEQ/BNE src1, src2, offset ; (branch equal/not equal)
+BLT[U]/BGE[U]  src1, src2, offset  ; (branch less/greater than)
 \end{lstlisting}
 
-Falls die Bedingung erfüllt ist, wird der Offset zu dem Befehlszähler addiert.
+Falls die Bedingung erfüllt ist, wird \lstinline[style=risc-v_Assembler]!offset! zu dem Befehlszähler addiert.
 
-\subsubsection{Load/Store Instruktionen}
+\subsubsection{Lade-/Speicher-Instruktionen}
 
 \begin{lstlisting}[style=risc-v_Assembler]
-LW/LH/LB rd, rs1, offset ; kopiert 32/16/8 bits vom Speicher von der Adresse (rs1+offset)
-SW/SH/SB rd, rs1, offset ; kopiert den Wert vom rd in den Speicher
+LW/LH/LB rd, rs1, offset ; (load word/half/byte) kopiert 32/16/8 Bits vom Speicher von der Adresse (rs1+offset)
+SW/SH/SB rd, rs1, offset ; (store word/half/byte) kopiert den Wert von rd in den Speicher
 \end{lstlisting}
 
-Es gibt auch LHU und LBU (analog SHU, SBU). Der Unterschied ist, dass der
-kopierte 16/8 Bit Wert mit Nullen auf 32 Bits erweitert wird, wohingegen bei normalen LH
-und LB mit dem Vorzeichen erweitert wird.
+Neben \lstinline[style=risc-v_Assembler]!LH! und \lstinline[style=risc-v_Assembler]!LB! existieren auch \lstinline[style=risc-v_Assembler]!LHU! und \lstinline[style=risc-v_Assembler]!LBU! (analog \lstinline[style=risc-v_Assembler]!SHU!, \lstinline[style=risc-v_Assembler]!SBU!). Der Unterschied ist, dass der
+kopierte 16-/8-Bit-Wert mit Nullen, hingegen bei \lstinline[style=risc-v_Assembler]!LH! und \lstinline[style=risc-v_Assembler]!LB! mit dem Vorzeichenbit auf 32 Bits aufgefüllt wird.
 
-\subsection{Grundbefehlsformate}
+\subsection{Befehlsformate von RISC-V}
 
-Wie Sie vielleicht schon bemerkt haben, gibt es nicht so viele verschiedenen
-Befehlsformate. Eigentlich gibt es bei Risc-V nur 4:
+Wir stellen fest, dass es bei RISC-V nur wenige Befehlsformate gibt, in der Tat sind es genau vier:
 
 \begin{itemize}
-\item R-Typ - opcode rd, rs1, rs2
-\item I-Typ - opcode rd, rs1, immediate
-\item S-Typ - opcode rs1, rs2, immediate
-\item U-Typ - opcode rd, immediate
+\item R-Typ --- Operation Ziel, Quelle 1, Quelle 2 (\lstinline[style=risc-v_Assembler]!opcode rd, rs1, rs2!)
+\item I-Typ --- Operation Ziel, Quelle 1, Konstante (\lstinline[style=risc-v_Assembler]!opcode rd, rs1, immediate!)
+\item S-Typ --- Operation Quelle 1, Quelle 2, Konstante (\lstinline[style=risc-v_Assembler]!opcode rs1, rs2, immediate!)
+\item U-Typ --- Operation Ziel, Konstante (\lstinline[style=risc-v_Assembler]!opcode rd, immediate!)
 \end{itemize}
 
-Da wo es zwei Register in einem Befehl gibt, ist die Immediate 12-bit lang und
-beim U-Typ ist sie 20-bit lang.
+Beim U-Typ ist die Konstante 20 Bit lang, sonst 12 Bit, da bereits zwei Register kodiert werden müssen.
