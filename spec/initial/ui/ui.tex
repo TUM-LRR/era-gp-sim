@@ -5,7 +5,7 @@ Die GUI als Schnittstelle zwischen dem Nutzer und Simulatorkern soll den Anforde
 
 \section{Fenstermanagement}
 
-Die GUI soll aus verschiedenen Modulen bestehen, die zunächst als Editor-, Register-, Speicher-, Projekt-, Hilfs- und Output-Modul identifiziert wurden. Die darüberliegende Toolbar steuert Abläufe und Einstellungen, die über Modulgrenzen hinweg Relevanz haben.
+Die GUI soll aus verschiedenen Modulen bestehen, die zunächst als Editor-, Register-, Speicher-, Projekt-, Hilfs- und Output-Modul identifiziert wurden. Die darüberliegende Symbolleiste steuert Abläufe und Einstellungen, die über Modulgrenzen hinweg Relevanz haben.
 
 Die Unterbringung der Module erfolgt in einem tabellarischen Layout bestehend aus 4 Spalten zu je 1 bis 2 Zeilen. Die untere Zeile einer Spalte kann je nach Bedarf angezeigt oder ausgeblendet werden.
 
@@ -14,23 +14,23 @@ Die dadurch entstehenden Modulzellen sollen variabel mit den oben beschriebenen 
 \begin{figure}
   \includegraphics[width=\textwidth]{../ui/figures/mockup}
   \label{fig:Mockup}
-  \caption{Der obige rein visuelle Entwurf soll einen groben Überblick über die geplante Umsetzung der Benutzeroberfläche geben. Im Wesentlichen ist die Aufteilung des Fensters in Toolbar und die vier Spalten mit ein bis zwei Zeilen erkennbar. Zudem wurden die einzelnen Module skizziert.}
+  \caption{Der obige rein visuelle Entwurf soll einen groben Überblick über die geplante Umsetzung der Benutzeroberfläche geben. Im Wesentlichen ist die Aufteilung des Fensters in Symbolleiste und die vier Spalten mit ein bis zwei Zeilen erkennbar. Zudem wurden die einzelnen Module skizziert.}
 \end{figure}
 
-\subsection{Toolbar}
+\subsection{Symbolleiste}
 
-Über die Toolbar kann die Ausführung des Programms gesteuert werden, wobei die Optionen \textit{Ausführung des gesamten Programms}, \textit{Ausführung einer einzelnen Instruktion}, \textit{Ausführung bis zum
-  nächsten Breakpoint} und \textit{Abbrechen der Programmausführung} zur
+Über die Symbolleiste kann die Ausführung des Programms gesteuert werden, wobei die Optionen \textit{Ausführung des gesamten Programms}, \textit{Ausführung einer einzelnen Instruktion}, \textit{Ausführung bis zum
+  nächsten Haltepunkt} und \textit{Abbrechen der Programmausführung} zur
 
 Des Weiteren lässt sich das Zahlenformat modulübergreifend festlegen, was insebesondere Einfluss auf Register- und Speicherinhalte hat.
 
 \subsection{Editor}
 
-Der Editor für die Eingabe der Assembler-Instruktion soll Syntax-Highlighting unterstützen, um Instruktions-Komponenten visuell zu trennen. Die Umsetzung erfolgt mit dem Qt-eigenen Syntax-Highlighter (\textit{QHighlighter}), welcher mit Regex-Ausdrücken initialisiert wird. Diese werden vom Parser in Kombination mit Architektur-eigenen Keywords generiert und über den Core zur Verfügung gestellt.
+Der Editor für die Eingabe der Assembler-Instruktion soll Syntax-Highlighting unterstützen, um Instruktions-Komponenten visuell zu trennen. Die Umsetzung erfolgt mit dem Qt-eigenen Syntax-Highlighter (\textit{QHighlighter}), welcher mit Regex-Ausdrücken initialisiert wird. Diese werden vom Parser in Kombination mit Architektur-eigenen Schlüsselwörtern generiert und über den Core zur Verfügung gestellt.
 
-Fehlermeldungen, die vom Parser ermittelt wurden, werden innerhalb der zugehörigen Zeile im Editor angezeigt, was es ermöglicht mehrere Fehlermeldungen gleichzeitig anzuzeigen.
+Fehlermeldungen, die vom Parser ermittelt wurden, werden innerhalb der zugehörigen Zeile im Editor angezeigt. Dies ermöglich es, mehrere Fehler gleichzeitig anzuzeigen.
 
-Ein Makroaufruf wird im Editor als einzelne Zeile dargestellt, die bei Bedarf vom User aufgeklappt werden kann, wodurch die Makrodefinition in-place eingeblendet wird. Dies ermöglicht u.a. die schrittweise Ausführung des Codes.
+Ein Makroaufruf wird im Editor als einzelne Zeile dargestellt, die bei Bedarf vom User aufgeklappt werden kann, wodurch die Makrodefinition an der selben Stelle eingeblendet wird. Dies ermöglicht u.a. die schrittweise Ausführung des Codes.
 
 \subsection{Register}
 
@@ -50,7 +50,7 @@ Kontextinformationen zu einzelnen Speicherzellen geben Hinweise auf die Verwendu
 
 \subsection{Projekt}
 
-Das Projekt-Modul dient der Datei-Verwaltung. Gegebenefalls können ein oder mehrere Dateien zu Projekten zusammengefasst werden, welche dann zusätzliche Information etwa über die verwendete Architektur sowie Speicher- und Registerinhalte speichern können.
+Das Projekt-Modul dient der Dateiverwaltung. Gegebenefalls können ein oder mehrere Dateien zu Projekten zusammengefasst werden, welche dann zusätzliche Information etwa über die verwendete Architektur sowie Speicher- und Registerinhalte speichern können.
 
 \section{Implementierung}
 
@@ -62,6 +62,6 @@ Die Modularität der Benutzeroberfläche spiegelt sich auch in der strukturellen
 
 \subsection{Model-View-Schnittstelle}
 
-Der Core kann über das Observer-Pattern mit dem View kommunizieren und benötigt somit keine Information über die interne Struktur des Views.
+Der Core kann über das Observer-Entwurfsmuster mit dem View kommunizieren und benötigt somit keine Information über die interne Struktur des Views.
 
 Die Kommunikation in umgekehrter Richtung, also der Zugriff des Views auf die Daten des Models, basiert auf dem von QML unterstützten Muster, das den Datenaustausch über Delegates regelt. Damit nach diesem Muster ausgehend von QML-Objekten auf Daten des Models zugegriffen werden kann, wird eine C++-Schnittstelle bestehend aus QObject-Klassen benötigt, die zwischen beiden Modulen vermittelt.
