@@ -19,13 +19,11 @@ Syntax-Highlighting und stellt syntaktische Fehler sowie nicht vorhandene Befehl
 
 Generell soll der Parser zwei Ausführungsmodi unterstützen:
 \begin{itemize}
-\item \textbf{Compile}: Kompiliert den kompletten Assemblertext und erstellt Symboltabellen und Syntaxbäume, reserviert Speicher.
+\item \textbf{Compile}: Kompiliert den kompletten Assemblertext und erstellt Symboltabellen und Syntaxbäume, reserviert Speicher und produziert Maschinencode.
 \item \textbf{Update}: Betrachtet nur die Veränderungen zum vorherigen Assemblertext und aktualisiert Symboltabelle, Syntaxbäume entsprechend. Speicherreservierungsbefehle werden ignoriert.
 \end{itemize}
 
-\textbf{Compile} soll den Assemblertext in einen ausführbaren Zustand bringen, sodass dann das Assemblerprogramm ausgeführt werden kann. \textbf{Update} hingegen aktualisiert die interne Darstellung, falls während der Programmausführung der Quelltext verändert wird.
-
-\textbf{TODO: PASST DAS SO? ODER SOLLEN WIR ES ANDERS MACHEN?}
+\textbf{Compile} soll den Assemblertext in einen ausführbaren Zustand bringen. \textbf{Update} hingegen aktualisiert die interne Darstellung, falls während der Programmausführung der Quelltext verändert wird.
 
 \section{Umsetzung (Referenzmodul)}
 
@@ -41,7 +39,7 @@ unterteilt, die jeweils einen Befehl mit allen zugehörigen Marken beinhalten.
 Wenn wir im \textbf{Update}-Modus sind, betrachten wir hiervon nur die Befehle, die sich seit der letzten Ausführung geändert haben.
 Diese Befehle werden anschließend in Objekte umgewandelt, wobei auch das Zeilenintervall und Datei des Auftretens gespeichert werden. Wir unterscheiden bei den Befehlen zwischen Direktiven und Operationen, bei ersteren differenzieren wir besonders. Alle Labels und auch Konstantennamen, die wie Labels behandelt werden, werden in die Symboltabelle mit ihrem
 korrespondierenden (Text-)Wert geschrieben bzw. aktualisiert. Falls im \textbf{Compile}-Modus ausgeführt wird, wird die Symboltabelle zuvor noch geleert. Ebenfalls wird in diesem Modus der Speicher reserviert
-und die Positionen der Daten berechnet, im \textbf{Update}-Modus erfolgt dies entsprechend nicht, die zugehörigen Direktiven werden einfach ignoriert.  Bei allen Makros wird Anfang und Ende erfasst und diese in eine separate Makroliste eingetragen.
+und die Positionen der Daten berechnet, sowie die Befehlspositionen berechnet. Im \textbf{Update}-Modus erfolgt dies entsprechend nicht, die zugehörigen Direktiven werden einfach ignoriert.  Bei allen Makros wird Anfang und Ende erfasst und diese in eine separate Makroliste eingetragen.
 
 \subsection{2. Durchlauf}
 
@@ -58,7 +56,9 @@ Liste von Befehls-Syntaxbäumen \emph{ohne} jegliche Direktiven. Diese wird dann
   \caption{Eine grobe Skizze des geplanten Parsing-Prozesses nach aktuellem Stand.}
 \end{figure}
 
-\subsection{Geplante Direktiven-Unterstützung} Unterstützt werden sollen:
+\subsection{Geplante Unterstützung}
+\subsubsection{Direktiven}
+Unterstützt werden sollen:
 
 \begin{itemize}
 \item Makros
@@ -73,7 +73,11 @@ Liste von Befehls-Syntaxbäumen \emph{ohne} jegliche Direktiven. Diese wird dann
 \item Bedingte Assemblerkompilierung
 \item Komplett freie Textersetzungssysteme (z.B. C-Präprozessor)
 \item Inkludieren anderer Assembler-Dateien
-\end{itemize} Ebenfalls sollen nur einzeilige Kommentare unterstützt werden.
+\end{itemize}
+
+\subsubsection{Sonstiges}
+Ebenfalls sollen nur einzeilige Kommentare unterstützt werden.
+Die Unterstützung für geschachtelte Rechenausdrücke wird ebenfalls vorerst vernachlässigt, da diese einen kontextfreien Parser erfordern würden. Sollte noch Zeit bestehen, so könnte diese Funktion implementiert werden, sonst steht sie für zukünftige Projekte zur Verfügung.
 
 \section{Abhängigkeiten}
 Der Parser kommuniziert mit allen anderen Modulen
@@ -93,12 +97,7 @@ Ebenso stellt der Parser Syntaxfehler sowie unbekannte Befehle fest und meldet d
 und damit auch die GUI weiter. Dabei soll die Zeile des Fehlers sowie eine kurze Beschreibung angegeben werden.
 Die semantische Validierung übernimmt anschließend die Architektur.
 
-Wir haben uns dazu entschieden, vorerst die \lstinline[style=C++]!boost::spirit!-Bibliothek zu
-verwenden, um Ausdrücke, insbesondere die Rechenoperationen, zu parsen.  Wir erachten dies als sinnvoll, um das
-Projekt in Anbetracht der Stärke des Parser-Teams (zwei Personen) und der
-verfügbaren Zeit ordentlich fertigstellen zu können. Der Vorteil gegenüber den
-regulären Ausdrücken der Standardbibliothek ist, dass \lstinline[style=C++]!boost::spirit! auch kontextfreie Sprachen vollständig unterstützt, was z.B. Klammerschachtelung erst möglich zu implementieren macht.
-Sollte die Verwendung von boost nicht erwünscht sein, so könnten wir auf Parser-Generatoren wie z.B. Elkhound umsteigen. %(Liste: https://en.wikipedia.org/wiki/Comparison_of_parser_generators).
+Der Parser soll von keinen externen Bibliotheken oder Generatoren abhängen.
 
 \section{Verworfen: Allgemeiner Parser} Im Laufe unserer Entscheidungsfindung
 stand auch kurz auf dem Plan, einen allgemeinen Parser mit einem kleinen
@@ -109,3 +108,14 @@ Jedoch haben wir diese Idee für dieses Großpraktikum verworfen, da hierbei zu
 viele Komplikationen entstanden. Es war schlichtweg unmöglich,
 alle Assemblersprachen in machbarem Aufwand zu verallgemeinern.
 Der allgemeine Parser kann jedoch gerne in späteren Projekten implementiert werden.
+
+\section{Zeitplan}
+Der Zeitplan der Parser-Gruppe sieht wie folgt aus:
+\begin{itemize}
+\item \emph{Ende Juni:} Befehle ohne komplexe Operanden sollten in einen Syntaxbaum verarbeitet werden. Dies impliziert natürlich, dass auch dieser definiert ist.
+\item \emph{Ende Juli:} Komplexere Operanden werden ebenfalls akzeptiert.
+\item \emph{Ende September:} Direktiven, Labels und Konstanten werden erfolgreich verarbeitet bzw. eingesetzt und der Speicher reserviert.
+\item \emph{Oktober:} Puffermonat. Falls wir die Zeit benötigen sollten und nicht mehr im Zeitplan liegen, werden wir diesen Monat zum Aufarbeiten verwenden. Ansonsten verteilen wir uns auf die anderen drei Teams.
+\item \emph{November:} Arbeit an der Architektur \emph{Marcel-V}.
+\item \emph{Ende Januar:} Code ist finalisiert und dokumentiert.
+\end{itemize}
