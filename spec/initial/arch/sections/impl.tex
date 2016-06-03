@@ -1,7 +1,7 @@
 
 \section{Ansatz und Grundgedanken der Implementierung des Architekturteils}
 \subsection{Allgemeine Idee}
-Jeder Ausdruck (ein Befehl) des Quelltextes wird durch den Parser eingelesen. Ziel ist es, einen Syntaxbaum zu erstellen, der den Ausdruck in einer Form darstellt, die die geladene Architektur verarbeiten kann.
+In der Übersetzungsphase wird jeder Ausdruck (ein Befehl) des Quelltextes durch den Parser eingelesen. Ziel ist es, einen Syntaxbaum zu erstellen, der den Ausdruck in einer Form darstellt, die die geladene Architektur verarbeiten kann. Daraufhin werden die Ausdrücke der Reihe nach als assemblierte Form in den nicht-modifizierbaren Code-Teil des Speichers geschrieben.
 
 \subsubsection{Erzeugung des Syntaxbaumes über das Abstract Factory Pattern}
 Die Schnittstelle zum Parser soll so allgemein wie möglich gehalten werden, um Parser und Architekturen austauschen zu können. Die Erzeugung der Knoten für diesen Syntaxbaum wird transparent über eine bzw. mehrere (für jeden Knotentyp eine) Factory(s) geregelt.
@@ -20,6 +20,8 @@ Die abstrakte Oberklasse aller Knoten stellt folgende Methoden bereit, die von j
 	\item \texttt{Wahrheitswert/String\footnote{Je nachdem wie das Auffinden und Rückmelden eines Syntax/Semantik-Fehlers gehandhabt wird, kann hier entweder das Vorhandensein eines Fehlers oder schon ein konkreter Fehlertext zurückgegeben werden} validate()}: Diese Methode wird aufgerufen, wenn der Syntaxbaum bzw. alle darunterliegenden Knoten auf Gültigkeit überprüft werden sollen. Auch dieser Methodenaufruf wird an Kindknoten weitergegeben. Dieser Aufruf ist Teil der 2-Schritt-Validierung und beschäftigt sich nicht mehr mit Schreibfehlern, sondern vielmehr mit falschen Typen der Operanden eines Befehls, Länge von Immediates usw.
 
 	So kontrolliert z.B. der Immediate-Knoten, ob die gespeicherte Konstante eine zulässige Größe hat oder der Befehls-Knoten für ADD, ob der Zieloperand ein zulässiges Register zulässiger Größe ist.
+	
+	\item \texttt{Binärdarstellung assemble(Bitlänge)}: Diese Methode wird zur Übersetzungsphase aufgerufen und ruft evtl. diese Methode bei Kindknoten auf. Sie gibt die Werte/Bedeutung dieses Knoten in Binärdarstellung in der durch die entsprechende Architektur definierten, assemblierten Form zurück. Der Parameter Bitlänge gibt dabei an, wie lang (u.a. auch mit führenden Nullen) der ''assemblierte'' Knoten sein soll. Ein Immediate-Knoten gibt also die Konstante in dieser Darstellung zurück, ein Registerknoten den assemblierten Register-Bezeichner (also bei x4 ''00100'') und ein Befehlsknoten das Ergebnis der Konkatenation von Opcode, Zielregister, Immediate oder/und Register-Bezeichner. 
 
 	\item Einige weitere Methoden, die z.B. zur Erkennung des Knotentypen (nützlich für Validierung) genutzt werden.
 \end{itemize}
