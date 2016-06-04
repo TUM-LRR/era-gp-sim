@@ -25,7 +25,14 @@ Standardmäßig wird Little-Endian als Speicherformat verwendet.
 
 Die RISV-V ISA hat 31 Allzweckregister (\lstinline[style=risc-v_Assembler]!x1! bis \lstinline[style=risc-v_Assembler]!x31!). Zusätzlich existiert das Register \lstinline[style=risc-v_Assembler]!x0!, der mit einer konstanten \lstinline[style=risc-v_Assembler]!0! verdrahtet ist sowie der Befehlszähler (ab sofort abgekürzt mit \lstinline[style=risc-v_Assembler]!pc!). All diese Register sind 32 Bit breit.
 
-\subsection{Grundlegende Ganzzahl-Befehle (Integer Basic Module)}
+\subsection{Binärdarstellung}
+
+Jeder Befehl im RISC-V Simulator wird zur Kompilierzeit in seine
+Binärdarstellung umgewandelt und in den Speicher reingeschrieben. Unser Model
+ist also addressbasiert. Und das ermöglicht unserem Programm evtl. Obj-Dateien
+einzulesen und sie zu interpretieren.
+
+\Subsection{Grundlegende Ganzzahl-Befehle (Integer Basic Module)}
 
 Rechenbefehle auf ganzen Zahlen verursachen keine arithmetischen Ausnahmen.
 
@@ -60,7 +67,7 @@ AUIPC dest, immediate  ; (add upper immediate to program counter)
 ADD/SLT/SLTU dest, src1, src2
 AND/OR/XOR   dest, src1, src2
 SLL/SRL      dest, src1, src2
-/SRA      dest, src1, src2
+SLA/SRA      dest, src1, src2
 
 SLTU rd, x0, rs2 ; (set less than unsigned) setzt rd zu 0, nur wenn rs2 = 0 (da x0 auf 0 fest verdrahtet ist)
 \end{lstlisting}
