@@ -2,28 +2,64 @@
 
 Dieses Dokument stellt einen Statusbericht des ERA-Großpraktikum-Teams sowie
 eine initiale, konzeptuelle Ausarbeitung des zu entwickelnden Assembler-
-Simulators dar.
-Wir beginnen mit einer groben, kurzen Übersicht
-unserer Teilgruppen und ihren Aufgabenbereichen.
-In den folgenden Kapiteln
-behandeln wir dann die einzelnen Module und berichten dabei von den jeweiligen
-Erfahrungen, Beobachtungen und weiterführenden Ideen.
-Ebenfalls erläutern wir, wie die einzelnen
-Module von einander abhängen und was miteinander kommuniziert werden muss.
+Simulators dar.  Wir beginnen mit einer groben, kurzen Übersicht unserer
+Teilgruppen und ihren Aufgabenbereichen.  In den folgenden Kapiteln behandeln
+wir dann die einzelnen Module und berichten dabei von den jeweiligen
+Erfahrungen, Beobachtungen und weiterführenden Ideen.  Ebenfalls erläutern wir,
+wie die einzelnen Module von einander abhängen und miteinander kommunizieren.
 
 \section{Übersicht}
+
+Wir haben es uns zum Ziel gesetzt, einen architekturunabhängigen
+Assembler-Simulator in C++ zu bauen. Mit \emph{architekturunabhängig} meinen wir
+hierbei, dass der Simulator so flexibel sein soll, dass nicht nur eine bestimmte
+Architektur, sondern eine Vielzahl existenter sowie auch zukünftiger
+Befehlssätze darin simuliert werden können. Als ersten Befehlssatz wollen wir
+dabei \emph{RISC-V} unterstützen, auf welchen wir uns in unserer
+Entwicklungsphase zunächst auch fokussieren werden. Im Weiteren sollen aber
+beispielsweise auch die Intel x86 oder ARM v7 Architektur simulierbar sein.
+
+Unsere grundsätzliche und hauptsächliche Zielgruppe wird hierbei die Lehre
+sein. Wir werden unser Augenmerk also vor Allem darauf legen, die vielen
+verschiedenen und teilweise auch komplexen Komponenten eines Befehlssatzes
+intuitiv und informativ für den Nutzer zu visualisieren und im Hintergrund auch
+entsprechend zu implementieren. So sollen Studenten und andere
+Assembler-Enthusiasten die Assembler Sprache praktisch erlernen und erkennen,
+wie die einzelnen Zahnräder einer Computer-Architektur zusammenspielen. Wir
+wollen unsere potentielle Nutzergruppe jedoch nicht exklusiv auf die Lehre
+beschränken. Unser Simulator soll auch außerhalb der Lehre, also in der
+Forschung oder im professionellen Bereich, von Nutzen sein.
+
+Neben der Architekturunabhängigkeit war eine unserer fundamentaleren
+Entscheidungen jene, Assembler-Programme \emph{addressbasiert} und nicht
+\emph{zeilenbasiert} zu simulieren. Damit ist gemeint, dass Sprungadressen im
+Programm nicht Zeilen des Text-Editors referenzieren, sondern echte
+Speicheradressen. Als Konsequenz davon wird vor der Ausführung eines
+Assemblerprogramms das Programm auch assembliert in den Speicher gelegt. Wir
+erwarten uns davon zwei Vorteile. Der erste Vorteil ist, dass unerfahrene Nutzer
+auch sofort den Zusammenhang zwischen der textuellen Darstellung ihres
+Programms, und den finalen, assemblierten Instruktionen im Speicher
+lernen. Zweitens können wir durch addressbasierte Simulation auch \emph{echte}
+Assemblerprogramme simulieren, welche auch auf realer Hardware ausführbar wären.
+
+Theoretisch wäre durch addressbasierte Referenzierung auch das Laden von
+Objektdateien direkt in unseren Speicher, sowie die Manipulation von
+Instruktionen im Speicher, möglich. Dabei wäre jedoch auch die Implementierung
+eines \emph{Disassemblierers} nötig, was wir vorerst außerhalb unseres Fokus
+sehen. Diese beiden Funktionen werden wir somit nicht unterstützen, wobei dies
+in Zukunft ohne Weiteres möglich wäre. Die assemblierte Darstellung von
+Programmen im Speicher als Folge der adressbasierten Simulation soll also nur
+kosmetischen bzw. pädagogischen Nutzen haben.
+
+\section{Organisation}
 
 Wir haben uns für eine Gliederung des Projekts in vier Gruppen entschieden.
 Diese bezeichnen wir hierbei als \emph{Parser}, \emph{Core},
 \emph{Architektur} und \emph{GUI}. In den folgenden Absätzen beschreiben wir kurz die
 einzelnen Gruppen und nennen ihre Teammitglieder.
 
-\textbf{Architektur}
+\subsection{Architektur}
 
-Wir haben uns das Ziel eines architekturunabhängigen Assembler-Simulators gesetzt,
-da dieser einer weiten Spannbreite an Anwendungen in
-der Bildung gerecht werden kann. Als erstes wollen wir den \emph{RISC-V}-Befehlssatz
-als unterstützen, jedoch architekturunabhängige Schnittstellen bewahren.
 Jegliche architektur-spezifische Aspekte
 unseres Simulators fallen hierbei in den Aufgabenbereich der
 \emph{Architektur}-, kurz \emph{Arch}-, Gruppe. Unter
@@ -33,11 +69,12 @@ und Daten, die andere Module des Simulators benötigen. Beispiele hierfür wäre
 die Registerorganisation sowie das Speichermodell, welche die GUI zur
 Visualisierung benötigt; die reservierten Schlüsselwörter der Assemblersprache
 der Architektur als notwendige Information für den Parser sowie die
-unterstützten Datentypen für die Speicherverwaltung des Cores. Das
-Architektur-Team besteht aus Yuriy Arabskyy, Erik Pohle, Lukas Karnowski und
+unterstützten Datentypen für die Speicherverwaltung des Cores.
+
+Das Architektur-Team besteht aus Yuriy Arabskyy, Erik Pohle, Lukas Karnowski und
 Peter Goldsborough.
 
-\textbf{Parser}
+\subsection{Parser}
 
 Die Assemblersprache stellt ein mächtige Schnittstelle zur Manipulation des
 Speichers sowie des Prozessors einer jeden Architektur dar. Jegliche
@@ -46,13 +83,14 @@ formuliert werden. Als roher Textkörper ist ein Assemblerprogramm jedoch keinem
 unserer Module nützlich. Der Assemblercode muss somit zuerst in eine
 Representation überführt werden, die die Evaluierung einzelner Instruktionen
 sowie deren Argumente als Datenobjekte in anderen Modulen des Simulators
-ermöglicht. Hierzu widmet sich das \emph{Parser}-Team, bestehend aus Dominik
-Kreutzer und David Schneller. Zwei wesentliche Aufgaben dieser Gruppe sind es,
-den Assemblertext für Core und Architektur in einen abstrakten Syntaxbaum zu
-transformieren sowie bezüglich syntaktischen und semantischen Aspekten des Quelltextes
-mit der GUI zu kommunizieren.
+ermöglicht. Hierzu widmet sich das \emph{Parser}-Team. Zwei wesentliche Aufgaben
+dieser Gruppe sind es, den Assemblertext für Core und Architektur in einen
+abstrakten Syntaxbaum zu transformieren sowie bezüglich syntaktischen und
+semantischen Aspekten des Quelltextes mit der GUI zu kommunizieren.
 
-\textbf{GUI}
+Die Mitglieder des Parser-Teams sind Dominik Kreutzer und David Schneller.
+
+\subsection{GUI}
 
 Um unsere simulierte Maschine interaktiv zu visualisieren, planen wir, mit dem
 Qt-Framework eine grafische Benutzeroberfläche zu enwickeln. In dieser
@@ -63,15 +101,210 @@ hierbei Wert darauf, den Assemblercode nützlich und intuitiv hervorzuheben
 Nutzer beim Erlernen der Rechnerarchitektur und des Assemblierens zu
 helfen. Auch ist es Aufgabe der GUI-Gruppe, Elemente wie simulierte LED-Streifen
 oder Matrizen zu kreieren, auf welche man durch Assemblercode zugreifen
-kann. Die Mitglieder dieses Teams sind Sabine Rieder, Felix Opolka, Andreas
-Zimmerer sowie Jan Schopohl (auch im Core-Team).
+kann.
 
-\textbf{Core}
+Im GUI-Team sind Sabine Rieder, Felix Opolka, Andreas Zimmerer sowie Jan
+Schopohl (auch im Core-Team).
 
-Das \emph{Core} Team setzt sich aus drei Mitgliedern zusammen: Tobias Holl,
-Daniel Riedel und Jan Schopohl (auch im GUI-Team). Die Aufgabe dieses Teams ist es, ein
-Modul zu entwickeln, das die Koordination aller Teile des Programms leitet. Es
-trägt somit die Verantwortung, den Austausch von Daten und Kontrollinformationen
-zwischen der Architektur, dem Parser sowie der GUI zu steuern. Weiterhin hat
-es die Aufgabe, den Speicher und die Register des simulierten Prozessors zu
-verwalten. Letztlich kümmert sich dieses Modul noch um Threadverwaltung.
+\subsection{Core}
+
+Die Aufgabe des \emph{Core}-Teams ist es, ein Modul zu entwickeln, das die
+Koordination aller Teile des Programms leitet. Es trägt somit die Verantwortung,
+den Austausch von Daten und Kontrollinformationen zwischen der Architektur, dem
+Parser sowie der GUI zu steuern. Weiterhin hat es die Aufgabe, den Speicher und
+die Register des simulierten Prozessors zu verwalten. Letztlich kümmert sich
+dieses Modul noch um Threadverwaltung.
+
+Das Core-Team setzt sich aus drei Mitgliedern zusammen: Tobias Holl, Daniel
+Riedel und Jan Schopohl (auch im GUI-Team).
+
+\section{Zeitplan}
+
+Wir haben das ERA-Großpraktikum offiziell Mitte April begonnen und wollen es in
+zwei Semestern, bis Februar 2017, zur Gänze vollenden. Hierbei beschränken wir
+uns jedoch auf eine \emph{Entwicklungszeit} von sechs Monaten, zwischen Juni und
+November 2016 (beide inklusive). Die danach verbleibende Zeit halten wir für
+Dokumentation, Ausarbeitung der finalen Spezifikation sowie sonstige
+logistische Tätigkeiten frei.
+
+Für jeden dieser sechs Monate haben wir uns gemeinsam Ziele gesetzt, welche wir
+bis zum Ende dieser einzelnen Monate vollendet haben wollen. Diese Ziele lauten,
+chronologisch geordnet, wie folgt:
+
+\begin{itemize}
+  \item \textbf{Juni}
+     \begin{itemize}
+     \item \textbf{Arch}: RISC-V Architektur ist als Objekt definiert und für
+       andere Module nutzbar. Syntaxbaum ist im Abstrakten implementiert, sodass
+       der Parser aus Ausdrücken schon einen Baum erstellen kann. Einfache
+       RISC-V Befehle sollen auch schon vollendet sein.
+     \item \textbf{Parser}: Grundlegende Befehle, ohne komplexe Operanden,
+       können in einen Syntaxbaum verarbeitet werden.
+     \item \textbf{Core}: Das Speichermodell, inklusive Hauptspeicher und
+       Register, ist zumindest als ``Dummy'' implementiert, sodass andere Module
+       darauf operieren können. Somit sind auch schon einfache Datentypen
+       erstellt. Die Threading-Infrastruktur steht.
+     \item \textbf{GUI}: Die Oberfläche des Mockups, wie in der Spezifikation
+       gezeigt, soll implementiert sein (ohne eigentliche Funktionalität).
+     \end{itemize}
+  \item \textbf{Juli}:
+    \begin{itemize}
+      \item \textbf{Arch}: Alle Befehle sind implementiert und der Syntaxbaum
+        ist als Ganzes fertig.
+      \item \textbf{Parser}: Alle Befehle, auch mit komplexen Operanden, werden unterstützt.
+      \item \textbf{Core}: Speichermodell ist vollständig. Der \emph{Main}-Loop
+        verbindet alle Module. Threading wird vollständig behandelt.
+      \item \textbf{GUI}: Kommunikation mit dem Core (Update der View) als
+        Prototyp fertig.
+    \end{itemize}
+  \item \textbf{August + September (Sommerblock)}:
+    \begin{itemize}
+      \item \textbf{Arch}: Alle Befehle können in ihre Binärdarstellung
+        assembliert werden. Implementierung des RISC-V Befehlssatzes, mit
+        Multiplikation und Division, ist fertig.
+      \item \textbf{Parser}: Direktiven, Labels und Konstanten werden
+        erfolgreich verarbeitet bzw. eingesetzt und der Speicher reserviert.
+      \item \textbf{Core}: Basis wird erweitert: BigInteger, BigFloat, variable Speicherzellengröße.
+      \item \textbf{GUI}: Kommunikation mit dem Core fertig. Zeilenweises
+        durchschreiten möglich. Kontextinformationen im Speicher
+        implementiert. Fehlermeldungen für Syntaxfehler.
+    \end{itemize}
+  \item \textbf{Oktober}:
+    \begin{itemize}
+      \item \textbf{Arch}: Floating-Point Befehlssatz.
+      \item \textbf{Parser}: Puffer-Monat, falls es noch Aufgaben geben
+        sollte. Ansonsten Auflösung in andere Teams.
+      \item \textbf{Core}: Serialisierung des Speichermodells.
+      \item \textbf{GUI}: Serialisierung des Projekts (mit Core).
+    \end{itemize}
+  \item \textbf{November}: Um die Flexibilität unseres Simulators zu beweisen,
+    wollen wir in diesem letzten Monat eine eigene Architektur entwickeln. Diese
+    Architektur, mit $< 5$ Befehlen, sei unter dem Codenamen MARCEL-V bekannt
+    (Mighty Architecture Extended Language).
+  \item \textbf{Dezember + Januar}: Dokumentation, Bericht, Cleanup.
+\end{itemize}
+
+
+Um diese Ziele jeweils zu erreichen, teilen wir unsere Entwicklungszeit weiter
+in 2-wöchge \emph{Sprints} auf. Innerhalb eines Sprints bewältigt jedes Team
+bzw. jedes Mitglied konkrete, atomare Aufgaben, welche zur Vollendung des
+monatlichen Ziels führen sollen.
+
+\section{Logistik}
+
+In dieser Sektion erläutern wir unsere Entscheidungen zu logistischen und
+organisatorischen Aspekten der Entwicklung.
+
+\subsection{Taskboard}
+
+In unserem \emph{Taskboard} (agil: \emph{KanBan Board}) werden zu jedem
+Zeitpunkt die einzelnen Aufgaben (agil: \emph{Backlog}) des momentanen Sprints
+angezeigt und organisiert. Hierfür haben wir die
+waffle.io\footnote{\url{http://waffle.io}} Online-Platform in unser GitHub
+Projekt integriert. In diesem Taskboard liegen Aufgaben stets in einer von vier
+Spalten:
+
+\begin{enumerate}
+  \item \emph{Open}: Noch offen, wird gerade von niemandem bearbeitet.
+  \item \emph{In Progress}: Wird momentan von jemandem bearbeitet.
+  \item \emph{Code Review}: Bearbeitung der Aufgabe ist vorerst fertig und für
+    Reviews offen.
+  \item \emph{Done}: Die Aufgabe wurde bewältigt.
+\end{enumerate}
+
+An einer Aufgabe arbeitet hierbei stets genau ein Mitglied des Teams, was im
+Taskboard entsprechend gekennzeichnet ist.
+
+\subsection{Definitions of Done}
+
+Was es für uns bedeutet, dass eine Aufgabe \emph{fertig} (\emph{done}) ist,
+legen wir als unsere \emph{Defintions of Done} wie folgt fest:
+
+\begin{enumerate}
+  \item Code wurde vorerst geschrieben.
+  \item Unit-Tests sind geschrieben und passen.
+  \item In-Code Dokumentation ist vollständig.
+  \item Task wurde von \emph{In Progress} nach \emph{Code Review} geschoben.
+  \item OK von den Code-Reviewern.
+  \item Merge des Feature Branch in den Master Branch.
+  \item Task wurde von \emph{Code Review} nach \emph{Done} geschoben.
+\end{enumerate}
+
+\subsection{Code Reviews}
+
+Um eine hohe Code-Qualität zu garantieren sowie das Einschleichen von Bugs zu
+verhindern, finden wir es wertvoll, \emph{Code Reviews} durchzuführen. Hierbei
+soll jede Zeile Code, welche als ``stabil'' gelten soll (Feature Branch
+$\rightarrow$ Master Branch), zunächst von vier weiteren Augen gesehen worden
+sein. Wir benutzten hierbei das bei GitHub integrierte Code-Review Tool. Eine
+Code-Review soll es dabei immer genau dann geben, wenn ein Mitglied eines Teams
+ein Feature (vorerst) vollendet hat und entsprechende Unit-Tests passen (Schritt
+4 in den \emph{Definitions of Done}).
+
+Konkret hat jedes Mitglied zwei \emph{Review-Buddies}. Möchte ein Mitglied der
+Buddy-Group ein Feature in den Master Branch mergen, so müssen zuerst seine/ihre
+beiden Review-Buddies den Code inspizieren und das OK dafür geben. Die Buddies
+sind dabei so gewählt, dass jedes Mitglied einen Buddy aus seinem Team (Arch,
+Core, Parser, GUI) und einen aus einem anderen Team hat:
+
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{lll}
+    \textbf{Opfer} & \textbf{1. Reviewer (Intern)} & \textbf{2. Reviewer (Extern)} \\
+    \toprule \\
+    Erik Pohle & Lukas Karnowski & Daniel Riedel \\
+    Lukas Karnowski & Yuriy Arabskyy &  Sabine Rieder \\
+    Yuriy Arabskyy & Peter Goldsborough & Felix Opolka \\
+    Peter Goldsborough & Erik Pohle & Tobias Holl \\
+
+    Daniel Riedel & Jan Schopohl & David Schneller \\
+    Jan Schopohl & Tobias Holl & Andreas Zimmerer \\
+    Tobias Holl & Daniel Riedel & Peter Goldsborough \\
+
+    Sabine Rieder & Felix Opolka & Erik Pohle \\
+    Felix Opolka & Sabine Rieder & Lukas Karnowski \\
+    Andreas Zimmerer & Jan Schopohl & Yuriy Arabskyy \\
+
+    Dominik Kreutzer & David Schneller & Dominik Kreutzer \\
+    David Schneller & Dominik Kreutzer &  Andreas Zimmerer \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Git Flow}
+
+Wir verwenden \emph{Git} als Versionskontrollsystem. Diese Tatsache alleine,
+klärt aber natürlich noch nicht, \emph{wie} wir Git nutzen. Ein Modell der
+Git-Nutzung, dass sich in der Software-Industrie hoher Beliebtheit erfreut, ist
+\emph{Git-Flow}\footnote{\url{https://www.atlassian.com/git/tutorials/comparing-workflows/}}. Eine
+Variation dieses Modells, welche wir nutzen wollen, lässt sich kompakt wie folgt
+charakterisieren:
+
+\begin{itemize}
+  \item Es gibt einen \emph{Master}-Branch, der immer stabilen Code enthält.
+  \item Jede Aufgabe wird isoliert in einem \emph{Feature} Branch bearbeitet.
+  \item Ist eine Aufgabe (nach den Definitions of Done) bewältigt, wird der
+    Feature Branch in den Master Branch gemerged.
+  \item Findet sich im Master-Branch ein Bug, wird ein \emph{Hotfix} Branch
+    eröffnet, wo der Bug schnell (und zunächst auch isoliert) behandelt wird,
+    bevor er auch wieder in den Master Branch gemerged wird.
+\end{itemize}
+
+So erhoffen wir uns eine produktiven Workflow, wo Aufgaben isoliert behandelt
+werden. So interferieren Aufgaben nicht miteinander und wir können davon
+ausgehen, dass im sich Master Branch immer sauberer, stabiler Code befindet.
+
+\subsection{Style Guide}
+
+Ein Software-Projekt lässt sich sehr leicht mit einem Sandwich vergleichen. Es
+ist gut bzw. notwendig, dass das Sandwich gut schmeckt und der Code korrekt
+läuft. Jedoch isst jeder von uns doch viel lieber ein Sandwich, dass auch
+schmackhaft aussieht. Ebenso sollte Code entsprechenden Standards folgen. Wir
+haben uns hierbei entschieden, den Style Guide von Google\footnote{\url{https://google.github.io/styleguide/cppguide.html}} zu
+befolgen. Dieser umfasst nicht nur kosmetische Vorschriften, sondern schlägt
+auch dort, wo es für das selbe Problem zwei Lösungen gibt, eine konkrete vor.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../combined/spec"
+%%% End:
