@@ -51,6 +51,19 @@ in Zukunft ohne Weiteres möglich wäre. Die assemblierte Darstellung von
 Programmen im Speicher als Folge der adressbasierten Simulation soll also nur
 kosmetischen bzw. pädagogischen Nutzen haben.
 
+Als \emph{minimale Funktionalität}, die wir unterstützen wollen, legen wir
+jegliche Programme fest, die in der Vorlesung \emph{Einführung in die
+  Rechnerarchitektur} sowie allen dazugehörenden Klausuren der letzten Jahre
+verwendet wurden. Es soll also jedes x86 Assembler Programm, das in der
+ERA-Lehre gezeigt wurde, nach Übersetzung in den RISC-V Befehlssatz in unserem
+Simulator ausführbar sein. Als \emph{maximale} Funktionalität geben wir uns die
+Ausführung beliebiger \emph{realer} Programme als Ziel. Dies sollte durch die
+Address-Basierung näherungsweise auch sehr möglich sein. Diese sind dabei aber
+natürlich durch die von uns unterstützten Teile eines Befehlssatzes
+beschränkt. Wir planen beispielsweise nicht, \emph{syscalls} zu
+implementieren. Somit schließen wir also die Simulation eines Betriebssystems
+zum Beispiel (vorerst) aus.
+
 \section{Organisation}
 
 Wir haben uns für eine Gliederung des Projekts in vier Gruppen entschieden.
