@@ -1,15 +1,15 @@
 \chapter{Graphical User Interface}
 
-Die GUI als Schnittstelle zwischen dem Nutzer und Simulatorkern soll den Anforderungen an eine moderne Anwendung genügen und ein ansprechendes Design sowie hohe Benutzerfreundlichkeit als zentrale Merkmale implementieren. Dabei orientiert sich die Gestaltung an den Anforderungen des Programms als Simulations- und Lernwerkzeug: Gute Verständlichkeit der dargestellten Inhalte, visuelle Hervorhebung technischer Zusammenhänge, sowie der Verzicht auf irreführende Vereinfachungen, wo dies möglich ist.
+Die graphische Benutzeroberfläche als Schnittstelle zwischen dem Nutzer und dem Simulatorkern soll den Anforderungen an eine moderne Anwendung gerecht werden und ein ansprechendes Design sowie hohe Benutzerfreundlichkeit als zentrale Merkmale implementieren. Dabei orientiert sich die Gestaltung an den Ansprüchen des Programms als Simulations- und Lernwerkzeug: Gute Verständlichkeit der dargestellten Inhalte, visuelle Hervorhebung technischer Zusammenhänge, sowie der Verzicht auf irreführende Vereinfachungen, wo dies möglich ist.
 
 
 \section{Fenstermanagement}
 
-Die GUI soll aus verschiedenen Modulen bestehen, die zunächst als Editor-, Register-, Speicher-, Projekt-, Hilfs- und Output-Modul identifiziert wurden. Die darüberliegende Symbolleiste steuert Abläufe und Einstellungen, die über Modulgrenzen hinweg Relevanz haben.
+Die graphische Benutzeroberfläche soll aus verschiedenen Modulen bestehen, die zunächst als Editor-, Register-, Speicher-, Projekt-, Hilfs- und Output-Modul identifiziert wurden. Die darüberliegende Symbolleiste steuert Abläufe und Einstellungen, die über Modulgrenzen hinweg Relevanz haben.
 
 Die Unterbringung der Module erfolgt in einem tabellarischen Layout bestehend aus 4 Spalten zu je 1 bis 2 Zeilen. Die untere Zeile einer Spalte kann je nach Bedarf angezeigt oder ausgeblendet werden.
 
-Die dadurch entstehenden Modulzellen sollen variabel mit den oben beschriebenen Modulen belegt werden können, was die Möglichkeit mit einschließt, ein Modul mehrfach in verschiedenen Zellen anzuzeigen. Ein einfaches Anwendungsbeispiel für dieses Feature ist das parallele Arbeiten auf zwei Bereichen den Speichers.
+Die dadurch entstehenden Modulzellen sollen variabel mit den oben beschriebenen Modulen belegt werden können, was die Möglichkeit mit einschließt, ein Modul mehrfach in verschiedenen Zellen anzuzeigen. Ein einfaches Anwendungsbeispiel für diese Funktionalität ist das parallele Arbeiten auf zwei Bereichen des Speichers.
 
 \begin{figure}
   \includegraphics[width=\textwidth]{../ui/figures/mockup}
@@ -20,17 +20,17 @@ Die dadurch entstehenden Modulzellen sollen variabel mit den oben beschriebenen 
 \subsection{Symbolleiste}
 
 Über die Symbolleiste kann die Ausführung des Programms gesteuert werden, wobei die Optionen \textit{Ausführung des gesamten Programms}, \textit{Ausführung einer einzelnen Instruktion}, \textit{Ausführung bis zum
-  nächsten Haltepunkt} und \textit{Abbrechen der Programmausführung} zur
+  nächsten Haltepunkt} und \textit{Abbrechen der Programmausführung} zur Verfügung stehen.
 
 Des Weiteren lässt sich das Zahlenformat modulübergreifend festlegen, was insebesondere Einfluss auf Register- und Speicherinhalte hat.
 
 \subsection{Editor}
 
-Der Editor für die Eingabe der Assembler-Instruktion soll Syntax-Highlighting unterstützen, um Instruktions-Komponenten visuell zu trennen. Die Umsetzung erfolgt mit dem Qt-eigenen Syntax-Highlighter (\textit{QHighlighter}), welcher mit Regex-Ausdrücken initialisiert wird. Diese werden vom Parser in Kombination mit Architektur-eigenen Schlüsselwörtern generiert und über den Core zur Verfügung gestellt.
+Der Editor für die Eingabe der Assembler-Instruktion soll Syntax-Highlighting unterstützen, um Instruktions-Komponenten visuell zu trennen. Die Umsetzung erfolgt mit dem Qt-eigenen Syntax-Highlighter (\textit{QHighlighter}), welcher mit regulären Ausdrücken initialisiert wird. Diese werden vom Parser in Kombination mit Architektur-eigenen Schlüsselwörtern generiert und über den Core zur Verfügung gestellt.
 
-Fehlermeldungen, die vom Parser ermittelt wurden, werden innerhalb der zugehörigen Zeile im Editor angezeigt. Dies ermöglich es, mehrere Fehler gleichzeitig anzuzeigen.
+Fehlermeldungen, die vom Parser ermittelt wurden, werden innerhalb der zugehörigen Zeile im Editor angezeigt. Dies ermöglich es, mehrere Fehlermeldungen gleichzeitig anzuzeigen.
 
-Ein Makroaufruf wird im Editor als einzelne Zeile dargestellt, die bei Bedarf vom User aufgeklappt werden kann, wodurch die Makrodefinition an der selben Stelle eingeblendet wird. Dies ermöglicht u.a. die schrittweise Ausführung des Codes.
+Ein Makroaufruf wird im Editor als einzelne Zeile dargestellt, die bei Bedarf vom Benutzer aufgeklappt werden kann, wodurch die Makrodefinition an der selben Stelle eingeblendet wird. Dies ermöglicht u.a. die schrittweise Ausführung des Codes ohne Unterbrechungen oder Sprünge.
 
 \subsection{Register}
 
@@ -38,7 +38,7 @@ Die Registerwerte werden übersichtlich mit Hilfe von Byte-Separatoren dargestel
 
 Registern wie Unterregistern kann unabhängig von den globalen Einstellungen ein eigenes Zahlenformat (binär, hexadezimal etc.) zugewiesen werden.
 
-Intern werden die einzelnen Zahlenformate vom \textit{Core} berechnet und als String an die GUI übergeben.
+Intern werden die einzelnen Zahlenformate vom Core berechnet und als String an das GUI-Modul übergeben.
 
 \subsection{Speicher}
 
@@ -48,9 +48,11 @@ Das Zahlenformat der Speicherinhalte ist spaltenweise anpassbar.
 
 Kontextinformationen zu einzelnen Speicherzellen geben Hinweise auf die Verwendung im Programm, darunter etwa Marken zu Datendefinitionen, Speicherbereiche für Ausgabegeräte und Speicher-Referenzierungen durch Register.
 
+Beim Assemblieren des Assembler-Codes werden die Instruktionen ins Binärformat übersetzt und in den Speicher geschrieben, um die technischen Grundlagen hinter der Ausführung eines Assemblerprogramms zu verdeutlichen. Die einzelnen Adresszellen werden mit den jeweils zugehörigen Zeilennummern in Form von Kontextinformation annotiert. Um zu verhindern, dass der Speicher aufgrund der vielen durch das assemblierte Programm besetzten Speicherzellen unübersichtlich wird, soll eine visuelle Trennung des Code-Bereichs vom Daten-Bereich vorgenommen werden.
+
 \subsection{Projekt}
 
-Das Projekt-Modul dient der Dateiverwaltung. Gegebenefalls können ein oder mehrere Dateien zu Projekten zusammengefasst werden, welche dann zusätzliche Information etwa über die verwendete Architektur sowie Speicher- und Registerinhalte speichern können.
+Das Projekt-Modul dient der Dateiverwaltung. Eine einzelne Assembler-Datei wird zusammen mit einer Projektdatei, die Zusatzinformationen wie die verwendete Architektur und gesicherte Speicher- und Registerinhalte enthält, zu einem Projekt zusammengefasst.
 
 \section{Implementierung}
 
@@ -64,4 +66,4 @@ Die Modularität der Benutzeroberfläche spiegelt sich auch in der strukturellen
 
 Der Core kann über das Observer-Entwurfsmuster mit dem View kommunizieren und benötigt somit keine Information über die interne Struktur des Views.
 
-Die Kommunikation in umgekehrter Richtung, also der Zugriff des Views auf die Daten des Models, basiert auf dem von QML unterstützten Muster, das den Datenaustausch über Delegates regelt. Damit nach diesem Muster ausgehend von QML-Objekten auf Daten des Models zugegriffen werden kann, wird eine C++-Schnittstelle bestehend aus QObject-Klassen benötigt, die zwischen beiden Modulen vermittelt.
+Die Kommunikation in umgekehrter Richtung, also der Zugriff des Views auf die Daten des Models, basiert auf dem von QML unterstützten Muster, das den Datenaustausch über Delegates regelt. Damit nach diesem Muster ausgehend von QML-Objekten auf Daten des Models zugegriffen werden kann, wird eine C++-Schnittstelle bestehend aus \textit{QObject}-Klassen benötigt, die zwischen beiden Modulen vermittelt.
