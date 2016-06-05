@@ -54,6 +54,7 @@ Beim Assemblieren des Assembler-Codes werden die Instruktionen ins Binärformat 
 
 Um schnell zwischen verschiedenen Register- und Speicherzuständen wechseln zu können, wird das Anelgen von sogenannten Snapshots unterstützt, in denen alle Register- und Speicherinhalte abgespeichert werden. Im Snapshot-Modul können die dem aktuellen Projekt zugeordneten Snapshots angezeigt und geladen werden.
 
+
 \section{Implementierung}
 
 Die GUI wird unter Verwendung des Qt-Frameworks implementiert, wobei hauptsächlich das Qt Quick-Modul zum Einsatz kommt, das die Erstellung der Benutzeroberfläche mit QML erlaubt. Dessen Einsatz wiederum begünstigt die strikte Trennung des Models, das in Gestalt des Cores und der dahinterliegenden Module in C++ implementiert ist, vom View, dessen Umsetzung im Wesentlichen in QML und JavaScript erfolgt.
