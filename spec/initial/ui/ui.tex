@@ -5,7 +5,7 @@ Die graphische Benutzeroberfläche als Schnittstelle zwischen dem Nutzer und dem
 
 \section{Fenstermanagement}
 
-Die graphische Benutzeroberfläche soll aus verschiedenen Modulen bestehen, die zunächst als Editor-, Register-, Speicher-, Projekt-, Hilfs- und Output-Modul identifiziert wurden. Die darüberliegende Symbolleiste steuert Abläufe und Einstellungen, die über Modulgrenzen hinweg Relevanz haben.
+Die graphische Benutzeroberfläche soll aus verschiedenen Modulen bestehen, die zunächst als Editor-, Register-, Speicher-, Snapshot-, Hilfs- und Output-Modul identifiziert wurden. Die darüberliegende Symbolleiste steuert Abläufe und Einstellungen, die über Modulgrenzen hinweg Relevanz haben.
 
 Die Unterbringung der Module erfolgt in einem tabellarischen Layout bestehend aus 4 Spalten zu je 1 bis 2 Zeilen. Die untere Zeile einer Spalte kann je nach Bedarf angezeigt oder ausgeblendet werden.
 
@@ -50,9 +50,9 @@ Kontextinformationen zu einzelnen Speicherzellen geben Hinweise auf die Verwendu
 
 Beim Assemblieren des Assembler-Codes werden die Instruktionen ins Binärformat übersetzt und in den Speicher geschrieben, um die technischen Grundlagen hinter der Ausführung eines Assemblerprogramms zu verdeutlichen. Die einzelnen Adresszellen werden mit den jeweils zugehörigen Zeilennummern in Form von Kontextinformation annotiert. Um zu verhindern, dass der Speicher aufgrund der vielen durch das assemblierte Programm besetzten Speicherzellen unübersichtlich wird, soll eine visuelle Trennung des Code-Bereichs vom Daten-Bereich vorgenommen werden.
 
-\subsection{Projekt}
+\subsection{Snapshots}
 
-Das Projekt-Modul dient der Dateiverwaltung. Eine einzelne Assembler-Datei wird zusammen mit einer Projektdatei, die Zusatzinformationen wie die verwendete Architektur und gesicherte Speicher- und Registerinhalte enthält, zu einem Projekt zusammengefasst.
+Um schnell zwischen verschiedenen Register- und Speicherzuständen wechseln zu können, wird das Anelgen von sogenannten Snapshots unterstützt, in denen alle Register- und Speicherinhalte abgespeichert werden. Im Snapshot-Modul können die dem aktuellen Projekt zugeordneten Snapshots angezeigt und geladen werden.
 
 \section{Implementierung}
 
