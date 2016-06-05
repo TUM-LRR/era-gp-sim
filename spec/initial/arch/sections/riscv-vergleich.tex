@@ -22,8 +22,6 @@ die folgenden wohlgeformten Befehle ausdrücken:
   add [0xDEADAFFE], eax
 \end{lstlisting}
 
-\textbf{FORMATIERUNG ALS CODE!}
-
 In RISC-V wären diese Befehle nicht erlaubt, da es das Load-/Store-Paradigma
 befolgt. Das bedeutet, dass es nur zwei Instruktionen gibt, die auf den Speicher
 zugreifen können: \lstinline[style=risc-v_Assembler]!LOAD! (Laden) und \lstinline[style=risc-v_Assembler]!STORE! (Speichern). Der erste
@@ -56,7 +54,7 @@ verschieden breite Speicherzugriffe. Für \lstinline[style=risc-v_Assembler]!LOA
     (\lstinline[style=risc-v_Assembler]!LBU!).
 \end{itemize}
 
-Um den gesamten 32-Bit-Adressraum anzusprechen, können wir wie folgt vorgehen: 
+Um den gesamten 32-Bit-Adressraum anzusprechen, können wir wie folgt vorgehen:
 Zuerst legt man dafür mit \lstinline[style=risc-v_Assembler]!LUI! (\emph{load upper immediate}) einen 20-Bit-Wert
 in ein Register und dieses Register dann als Basisregister
 verwenden. Auf diese 20 Bit kann man dann eine beliebige 12-Bit-Konstante
