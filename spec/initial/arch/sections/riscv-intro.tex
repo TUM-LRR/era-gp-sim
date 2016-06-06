@@ -19,18 +19,11 @@ Standardmodule erweitert werden:
 
 Die Instruktionen des Standardbefehlssatzes sind 32 Bit lang und auf
 32-Bit-Grenzen ausgerichtet. Jedoch unterstützt RISC-V auch Befehle variabler Länge, die
-aus einer beliebigen Anzahl von 16-Bit-Blöcken bestehen können.
+aus einer beliebigen Anzahl von 16-Bit-Blöcken (\emph{Parcels}) bestehen können.
 
-Standardmäßig wird Little-Endian als Speicherformat verwendet.
+Die Speicherausrichtung ist bei RISC-V standardmäßig Little-Endian.
 
-Die RISV-V ISA hat 31 Allzweckregister (\lstinline[style=risc-v_Assembler]!x1! bis \lstinline[style=risc-v_Assembler]!x31!). Zusätzlich existiert das Register \lstinline[style=risc-v_Assembler]!x0!, der mit einer konstanten \lstinline[style=risc-v_Assembler]!0! verdrahtet ist sowie der Befehlszähler (ab sofort abgekürzt mit \lstinline[style=risc-v_Assembler]!pc!). All diese Register sind 32 Bit breit.
-
-\subsection{Binärdarstellung}
-
-Jeder Befehl im RISC-V Simulator wird zur Kompilierzeit in seine
-Binärdarstellung umgewandelt und in den Speicher reingeschrieben. Unser Model
-ist also addressbasiert. Und das ermöglicht unserem Programm evtl. Obj-Dateien
-einzulesen und sie zu interpretieren.
+Standardmäßig wird Little-Endian als Speicherausrichtung verwendet.
 
 \subsection{Grundlegende Ganzzahl-Befehle (Integer Basic Module)}
 

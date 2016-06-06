@@ -35,10 +35,10 @@ verschieden breite Speicherzugriffe. Für \lstinline[style=risc-v_Assembler]!LOA
 \begin{itemize}
   \item \lstinline[style=risc-v_Assembler]!LW dest, base, immediate!: Lädt ein Wort (32-Bit für RV32I) an der
     Speicheradresse, die sich aus den oberen 20 Bits der \lstinline[style=risc-v_Assembler]!base! und der
-    11-Bit-Konstante \lstinline[style=risc-v_Assembler]!immediate! zusammensetzt.
+    12-Bit-Konstante \lstinline[style=risc-v_Assembler]!immediate! zusammensetzt.
   \item\lstinline[style=risc-v_Assembler]!LH/LHU dest, base, immediate!: Lädt ein Halbwort
     (engl. \emph{halfword}; 16-Bit für RV32I) an der Speicheradresse, die sich
-    aus den oberen 20 Bits der \lstinline[style=risc-v_Assembler]!base! und der 11-Bit-Konstante
+    aus den oberen 20 Bits der \lstinline[style=risc-v_Assembler]!base! und der 12-Bit-Konstante
     \lstinline[style=risc-v_Assembler]!immediate! zusammensetzt. Für \lstinline[style=risc-v_Assembler]!LH! wird der geladene 16-Bit-Wert
     mit dem Vorzeichen erweitert\footnote{Das bedeutet, dass negative Werte mit gesetztem höchstewertigem Bit/MSB
       mit weiteren Einsen nach links aufgefüllt werden. Positive Werte, deren
@@ -73,13 +73,13 @@ Betrachten wir nun \lstinline[style=risc-v_Assembler]!STORE!:
 \begin{itemize}
   \item \lstinline[style=risc-v_Assembler]!SW source, base, immediate!: Speichert den 32-Bit-Wert in \lstinline[style=risc-v_Assembler]!source!
     an die Addresse \lstinline[style=risc-v_Assembler]!base + immediate!. Die Konstante \lstinline[style=risc-v_Assembler]!immediate! ist
-    hierbei wieder 11 Bit groß.
+    hierbei wieder 12 Bit groß.
   \item \lstinline[style=risc-v_Assembler]!SH source, base, immediate! Speichert die unteren 16 Bit aus \lstinline[style=risc-v_Assembler]!source! an die Addresse
     \lstinline[style=risc-v_Assembler]!base + immediate!. Die Konstante \lstinline[style=risc-v_Assembler]!immediate! ist hierbei wieder
-    11 Bit groß.
+    12 Bit groß.
   \item \lstinline[style=risc-v_Assembler]!SB source, base, immediate! Speichert die unteren 8 Bit aus \lstinline[style=risc-v_Assembler]!source! an die Addresse
     \lstinline[style=risc-v_Assembler]!base + immediate!. Die Konstante \lstinline[style=risc-v_Assembler]!immediate! ist hierbei wieder
-    11-Bit groß.
+    12 Bit groß.
 \end{itemize}
 
 Theoretisch lassen die obigen Befehle auch \emph{unausgerichtete}
@@ -195,7 +195,7 @@ man also stets nach folgendem Schema Funktionsaufrufe durchführen:
 
 \begin{lstlisting}[style=risc-v_Assembler]
   ; jump and link register, x1 als Link Register
-  ; Basis (20-Bit Register) + Offset (11-Bit Konstante) ergibt die Adresse
+  ; Basis (20-Bit Register) + Offset (12-Bit Konstante) ergibt die Adresse
   jalr x1, <basis>, <offset>
 \end{lstlisting}
 
