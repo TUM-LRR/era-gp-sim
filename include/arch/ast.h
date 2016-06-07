@@ -103,7 +103,7 @@ public:
    *
    * @param value The value of this node.
    */
-  ImmediateNode(_IntType value)
+  ConcreteValueNode(_IntType value)
       : AbstractSyntaxTreeNode<_IntType>(NodeType::IMMEDIATE),
         _value(value) {}
 
