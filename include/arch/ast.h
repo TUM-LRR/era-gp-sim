@@ -28,9 +28,9 @@ struct DummyMemoryAccess {};
 enum struct NodeType {
   INSTRUCTION,
   IMMEDIATE,
-  REGISTER,
-  MEMORY_ACCESS,
-  ARITHMETIC
+  REGISTER
+  /*MEMORY_ACCESS,
+  ARITHMETIC*/ // Not needed for RISC V - Can be added for further architectures
 };
 
 /* The class definition of a Syntax Tree Node */
@@ -40,6 +40,14 @@ private:
 
 protected:
   std::vector<AbstractSyntaxTreeNode *> _children;
+
+  /**
+   * Constructs a new node. The constructor is supposed to be called in
+   * the subclasses.
+   *
+   * @param node_type The type of this node.
+   */
+  AbstractSyntaxTreeNode(NodeType node_type) : _node_type(node_type) {}
 
 public:
   /**
@@ -71,14 +79,54 @@ public:
    * Getter for the type of this node.
    * @return The type of this node.
    */
-  NodeType getType() { return _node_type; }
+  NodeType GetType() { return _node_type; }
 
   /**
    * Adds a child to this node. Note, that the node will be added after
    * the last node, that has been added.
+   *
    * @param node The node to be added.
    */
   void AddChild(AbstractSyntaxTreeNode *node) { _children.pushBack(node); }
+};
+
+/* A node that contains a concrete int value. Can be used for immediate
+ * and register nodes */
+template <class _IntType>
+class ConcreteValueNode : public AbstractSyntaxTreeNode<_IntType> {
+private:
+  _IntType _value;
+
+public:
+  /**
+   * Constructs a new node that contains a concrete value.
+   *
+   * @param value The value of this node.
+   */
+  ImmediateNode(_IntType value)
+      : AbstractSyntaxTreeNode<_IntType>(NodeType::IMMEDIATE),
+        _value(value) {}
+
+  /**
+   * @return The concrete value
+   */
+  virtual _IntType GetValue(DummyMemoryAccess memory_access) override {
+    return _value;
+  }
+
+  /**
+   * @return true, if there are no children.
+   */
+  virtual bool Validate() override {
+    // Immediate values can't have any children
+    return AbstractSyntaxTreeNode<_IntType>::_children.size() == 0;
+  }
+
+  /**
+   * @return An empty std::vector<bool>, because the instruction has to be
+   * assembled in the instruction node.
+   */
+  virtual std::vector<bool> Assemble() override { return std::vector<bool>{}; }
 };
 
 #endif // AST_H
