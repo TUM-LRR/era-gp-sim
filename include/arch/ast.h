@@ -101,10 +101,12 @@ public:
   /**
    * Constructs a new node that contains a concrete value.
    *
+   * @param node_type The type of this node. Should either be
+   * IMMEDIATE or REGISTER
    * @param value The value of this node.
    */
-  ConcreteValueNode(_IntType value)
-      : AbstractSyntaxTreeNode<_IntType>(NodeType::IMMEDIATE),
+  ConcreteValueNode(NodeType node_type, _IntType value)
+      : AbstractSyntaxTreeNode<_IntType>(node_type),
         _value(value) {}
 
   /**
