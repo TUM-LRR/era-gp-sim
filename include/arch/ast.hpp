@@ -34,7 +34,7 @@ enum struct NodeType {
 };
 
 /* The class definition of a Syntax Tree Node */
-template <class _IntType> class AbstractSyntaxTreeNode {
+template <class IntType> class AbstractSyntaxTreeNode {
 private:
   NodeType _node_type;
 
@@ -57,7 +57,7 @@ public:
    * @return An Integer, that represents the the result of the execution.
    * The meaning differs between different node types.
    */
-  virtual _IntType GetValue(DummyMemoryAccess memory_access) = 0;
+  virtual IntType GetValue(DummyMemoryAccess memory_access) = 0;
 
   /**
    * Validates the structure of this syntax tree. This should be called
@@ -92,10 +92,10 @@ public:
 
 /* A node that contains a concrete int value. Can be used for immediate
  * and register nodes */
-template <class _IntType>
-class ConcreteValueNode : public AbstractSyntaxTreeNode<_IntType> {
+template <class IntType>
+class ConcreteValueNode : public AbstractSyntaxTreeNode<IntType> {
 private:
-  _IntType _value;
+  IntType _value;
 
 public:
   /**
@@ -105,14 +105,14 @@ public:
    * IMMEDIATE or REGISTER
    * @param value The value of this node.
    */
-  ConcreteValueNode(NodeType node_type, _IntType value)
-      : AbstractSyntaxTreeNode<_IntType>(node_type),
+  ConcreteValueNode(NodeType node_type, IntType value)
+      : AbstractSyntaxTreeNode<IntType>(node_type),
         _value(value) {}
 
   /**
    * @return The concrete value
    */
-  virtual _IntType GetValue(DummyMemoryAccess memory_access) override {
+  virtual IntType GetValue(DummyMemoryAccess memory_access) override {
     return _value;
   }
 
@@ -121,7 +121,7 @@ public:
    */
   virtual bool Validate() override {
     // Immediate values can't have any children
-    return AbstractSyntaxTreeNode<_IntType>::_children.size() == 0;
+    return AbstractSyntaxTreeNode<IntType>::_children.size() == 0;
   }
 
   /**
