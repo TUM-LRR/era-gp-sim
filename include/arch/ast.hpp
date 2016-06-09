@@ -57,7 +57,7 @@ public:
    * @return An Integer, that represents the the result of the execution.
    * The meaning differs between different node types.
    */
-  virtual IntType GetValue(DummyMemoryAccess memory_access) = 0;
+  virtual IntType getValue(DummyMemoryAccess memory_access) = 0;
 
   /**
    * Validates the structure of this syntax tree. This should be called
@@ -65,7 +65,7 @@ public:
    *
    * @return Whether this syntax tree is valid for execution.
    */
-  virtual bool Validate() = 0;
+  virtual bool validate() = 0;
 
   /**
    * Assembles this syntax tree into its binary representation. So, this
@@ -73,13 +73,13 @@ public:
    *
    * @return The bit representation of this syntax tree.
    */
-  virtual std::vector<bool> Assemble() = 0;
+  virtual std::vector<bool> assemble() = 0;
 
   /**
    * Getter for the type of this node.
    * @return The type of this node.
    */
-  NodeType GetType() { return _node_type; }
+  NodeType getType() { return _node_type; }
 
   /**
    * Adds a child to this node. Note, that the node will be added after
@@ -87,7 +87,7 @@ public:
    *
    * @param node The node to be added.
    */
-  void AddChild(AbstractSyntaxTreeNode *node) { _children.pushBack(node); }
+  void addChild(AbstractSyntaxTreeNode *node) { _children.pushBack(node); }
 };
 
 /* A node that contains a concrete int value. Can be used for immediate
@@ -112,14 +112,14 @@ public:
   /**
    * @return The concrete value
    */
-  virtual IntType GetValue(DummyMemoryAccess memory_access) override {
+  virtual IntType getValue(DummyMemoryAccess memory_access) override {
     return _value;
   }
 
   /**
    * @return true, if there are no children.
    */
-  virtual bool Validate() override {
+  virtual bool validate() override {
     // Immediate values can't have any children
     return AbstractSyntaxTreeNode<IntType>::_children.size() == 0;
   }
@@ -128,7 +128,7 @@ public:
    * @return An empty std::vector<bool>, because the instruction has to be
    * assembled in the instruction node.
    */
-  virtual std::vector<bool> Assemble() override { return std::vector<bool>{}; }
+  virtual std::vector<bool> assemble() override { return std::vector<bool>{}; }
 };
 
 #endif // AST_H
