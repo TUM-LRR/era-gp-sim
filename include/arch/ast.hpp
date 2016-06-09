@@ -18,6 +18,7 @@
 #ifndef AST_H
 #define AST_H
 
+#include <memory>
 #include <vector>
 
 /* A dummy memory access. It will be replaced by
@@ -30,7 +31,8 @@ enum struct NodeType {
   IMMEDIATE,
   REGISTER
   /*MEMORY_ACCESS,
-  ARITHMETIC*/ // Not needed for RISC V - Can be added for further architectures
+  ARITHMETIC*/ // Not needed for RISC V - Can be added for further
+                   // architectures
 };
 
 /* The class definition of a Syntax Tree Node */
@@ -39,7 +41,9 @@ private:
   NodeType _node_type;
 
 protected:
-  std::vector<AbstractSyntaxTreeNode *> _children;
+  typedef std::unique_ptr<AbstractSyntaxTreeNode> NodePtr;
+
+  std::vector<NodePtr> _children;
 
   /**
    * Constructs a new node. The constructor is supposed to be called in
@@ -87,7 +91,7 @@ public:
    *
    * @param node The node to be added.
    */
-  void addChild(AbstractSyntaxTreeNode *node) { _children.pushBack(node); }
+  void addChild(NodePtr node) { _children.pushBack(node); }
 };
 
 /* A node that contains a concrete int value. Can be used for immediate
@@ -106,8 +110,7 @@ public:
    * @param value The value of this node.
    */
   ConcreteValueNode(NodeType node_type, IntType value)
-      : AbstractSyntaxTreeNode<IntType>(node_type),
-        _value(value) {}
+      : AbstractSyntaxTreeNode<IntType>(node_type), _value(value) {}
 
   /**
    * @return The concrete value
