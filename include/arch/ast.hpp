@@ -35,29 +35,15 @@ enum struct NodeType {
                    // architectures
 };
 
-/* The class definition of a Syntax Tree Node */
+/* The base class for nodes in an abstract syntax tree */
 template <class IntType> class AbstractSyntaxTreeNode {
-private:
-  NodeType _node_type;
-
-protected:
+public:
   typedef std::unique_ptr<AbstractSyntaxTreeNode> NodePtr;
 
-  std::vector<NodePtr> _children;
-
-  /**
-   * Constructs a new node. The constructor is supposed to be called in
-   * the subclasses.
-   *
-   * @param node_type The type of this node.
-   */
-  AbstractSyntaxTreeNode(NodeType node_type) : _node_type(node_type) {}
-
-public:
   /**
    * Executes this node and it's children recursively.
    *
-   * @param memory_access Possibility to access memory and registers
+   * @param memory_access Access to memory and registers
    * @return An Integer, that represents the the result of the execution.
    * The meaning differs between different node types.
    */
@@ -92,15 +78,26 @@ public:
    * @param node The node to be added.
    */
   void addChild(NodePtr node) { _children.pushBack(node); }
+
+protected:
+  /**
+   * Constructs a new node. The constructor is supposed to be called in
+   * the subclasses.
+   *
+   * @param node_type The type of this node.
+   */
+  AbstractSyntaxTreeNode(NodeType node_type) : _node_type(node_type) {}
+
+  std::vector<NodePtr> _children;
+
+private:
+  NodeType _node_type;
 };
 
 /* A node that contains a concrete int value. Can be used for immediate
  * and register nodes */
 template <class IntType>
 class ConcreteValueNode : public AbstractSyntaxTreeNode<IntType> {
-private:
-  IntType _value;
-
 public:
   /**
    * Constructs a new node that contains a concrete value.
@@ -132,6 +129,9 @@ public:
    * assembled in the instruction node.
    */
   virtual std::vector<bool> assemble() override { return std::vector<bool>{}; }
+
+private:
+  IntType _value;
 };
 
 #endif // AST_H
