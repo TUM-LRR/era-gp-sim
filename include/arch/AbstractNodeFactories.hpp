@@ -1,9 +1,8 @@
-#ifndef ARCH_ABSTRACTNODEFACTORIES_HPP
-#define ARCH_ABSTRACTNODEFACTORIES_HPP
+#ifndef ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
+#define ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
 
 #include <memory>
 #include <string>
-#include <vector>
 
 /**
  * @brief The AbstractSyntaxTreeNode struct
@@ -13,6 +12,13 @@
 struct AbstractSyntaxTreeNode {};
 
 /**
+ * @brief The MemoryValue struct
+ * Placeholder struct, will be replaced by an #include, when MemoryValue-Header
+ * is ready
+ */
+struct MemoryValue {};
+
+/**
  * @brief The AbstractInstructionNodeFactory class
  * Abstract factory type for creating SyntaxTreeNodes of type instruction
  */
@@ -20,7 +26,7 @@ class AbstractInstructionNodeFactory {
  public:
   AbstractInstructionNodeFactory() {}
 
-  virtual ~AbstractInstructionNodeFactory() = 0;
+  virtual ~AbstractInstructionNodeFactory();
 
   /**
    * @brief createInstructionNode
@@ -62,7 +68,7 @@ class AbstractImmediateNodeFactory {
    * immediate from the given numericalValue
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode> createImmediateNode(
-      std::vector<bool> numericalValue) = 0;
+      MemoryValue numericalValue) = 0;
 };
 
 /**
@@ -73,7 +79,7 @@ class AbstractRegisterAccessNodeFactory {
  public:
   AbstractRegisterAccessNodeFactory() {}
 
-  virtual ~AbstractRegisterAccessNodeFactory() = 0;
+  virtual ~AbstractRegisterAccessNodeFactory();
 
   /**
    * @brief createRegisterAccessNode
@@ -82,12 +88,12 @@ class AbstractRegisterAccessNodeFactory {
    * registerAddress. If the given registerAddress is invalid a nullptr is
    * returned.
    *
-   * @param registerAdress Identifier linking to a valid register
+   * @param registerAdress Identifier or alias linking to a valid register
    * @return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given registerAddress is invalid
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode> createRegisterAccessNode(
-      const int registerAddress) = 0;
+      const std::string& registerAddress) = 0;
 };
 
 /**
@@ -98,7 +104,7 @@ class AbstractMemoryAccessNodeFactory {
  public:
   AbstractMemoryAccessNodeFactory() {}
 
-  virtual ~AbstractMemoryAccessNodeFactory() = 0;
+  virtual ~AbstractMemoryAccessNodeFactory();
 
   /**
    * @brief createMemoryAccessNode
@@ -117,14 +123,14 @@ class AbstractMemoryAccessNodeFactory {
  */
 class AbstractArithmeticOpNodeFactory {
  public:
-  static const int ADDITION = 1;
-  static const int SUBTRACTION = 2;
-  static const int MULTIPLICATION = 3;
-  static const int DIVISION = 4;
+  static constexpr int ADDITION = 1;
+  static constexpr int SUBTRACTION = 2;
+  static constexpr int MULTIPLICATION = 3;
+  static constexpr int DIVISION = 4;
 
   AbstractArithmeticOpNodeFactory() {}
 
-  virtual ~AbstractArithmeticOpNodeFactory() = 0;
+  virtual ~AbstractArithmeticOpNodeFactory();
 
   /**
    * @brief createArithmeticOperationNode
@@ -142,4 +148,4 @@ class AbstractArithmeticOpNodeFactory {
       const int opType) = 0;
 };
 
-#endif  // ARCH_ABSTRACTNODEFACTORIES_HPP
+#endif  // ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
