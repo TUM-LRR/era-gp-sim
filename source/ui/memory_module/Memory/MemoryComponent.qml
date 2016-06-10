@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
+import QtQuick.Controls.Styles 1.4
 
 Item {
     property var memory_size: 10
@@ -12,7 +13,8 @@ Item {
             libraryModel.append({
                                     address: "0x" + pad(
                                                  libraryModel.count.toString(
-                                                     16).toUpperCase(), 5)
+                                                     16).toUpperCase(), 5),
+                                    info: "info"
                                 })
         }
         while (libraryModel.count > memory_size) {
@@ -32,7 +34,8 @@ Item {
     }
 
     TableView {
-        alternatingRowColors: false
+
+        // alternatingRowColors: false
         anchors.fill: parent
         selectionMode: SelectionMode.NoSelection
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
@@ -42,15 +45,22 @@ Item {
             title: "Adresse"
             movable: false
             resizable: false
-            width: 80
+            width: 70
         }
         TableViewColumn {
             role: "content"
             title: "Inhalt"
             movable: false
             resizable: false
-            width: parent.width - 120
+            width: 80
             delegate: editableContent
+        }
+        TableViewColumn {
+            role: "info"
+            title: "Info"
+            movable: false
+            resizable: false
+            width: parent.width - 200
         }
         model: libraryModel
     }
@@ -58,8 +68,25 @@ Item {
     Component {
         id: editableContent
         TextField {
+
+            style: TextFieldStyle {
+                background: Rectangle {
+                    id: styleRec
+                    color: "transparent"
+                }
+            }
+            font.bold: true
             inputMask: "\\0\\xHHHH"
-            onFocusChanged: cursorPosition=2
+            onActiveFocusChanged: {
+                cursorPosition = 2
+            }
+            onHoveredChanged: {
+
+                //styleRec.border.width=2
+            }
+
+            placeholderText: "0x0000"
+            text: "0x0000"
         }
     }
 
