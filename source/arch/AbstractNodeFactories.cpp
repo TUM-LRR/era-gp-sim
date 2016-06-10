@@ -1,5 +1,9 @@
 #include "include/arch/AbstractNodeFactories.hpp"
 
+/*
+ * Stub implementations for the destructors
+ */
+
 // INSTRUCTION NODE
 
 AbstractInstructionNodeFactory::~AbstractInstructionNodeFactory() {}
