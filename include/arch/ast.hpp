@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef AST_H
-#define AST_H
+#ifndef ERAGPSIM_ARCH_AST_HPP
+#define ERAGPSIM_ARCH_AST_HPP
 
 #include <memory>
 #include <vector>
@@ -134,4 +134,4 @@ private:
   IntType _value;
 };
 
-#endif // AST_H
+#endif // ERAGPSIM_ARCH_AST_HPP
