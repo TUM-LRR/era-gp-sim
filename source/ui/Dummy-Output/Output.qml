@@ -25,7 +25,7 @@ Item {
 
     }
     ComboBox{
-        width: 100
+        width: 150
         model: ["","Red Rectangle", "Blue Rectangle", "GreenRectangle" ]
 
         onCurrentIndexChanged:{
