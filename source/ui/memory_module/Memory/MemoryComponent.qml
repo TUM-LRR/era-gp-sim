@@ -34,7 +34,7 @@ Item {
     }
 
     TableView {
-
+        id: tableView
         // alternatingRowColors: false
         anchors.fill: parent
         selectionMode: SelectionMode.NoSelection
@@ -68,7 +68,7 @@ Item {
     Component {
         id: editableContent
         TextField {
-
+            id: textFieldMemoryValue
             style: TextFieldStyle {
                 background: Rectangle {
                     id: styleRec
@@ -81,8 +81,21 @@ Item {
                 cursorPosition = 2
             }
             onHoveredChanged: {
-
                 //styleRec.border.width=2
+            }
+            onCursorPositionChanged: {
+                //jump to TextField in following memory segment
+                if(cursorPosition >= inputMask.length - 4)
+                    nextItemInFocusChain(true).forceActiveFocus()
+                //jump to TextField in preceeding memory segment
+                if(cursorPosition <= 1 && selectedText == "")
+                    nextItemInFocusChain(false).forceActiveFocus()
+            }
+            onTextChanged: {
+                textFieldMemoryValue.text = textFieldMemoryValue.text.replace(' ','0')
+            }
+            Keys.onDeletePressed: {
+
             }
 
             placeholderText: "0x0000"
