@@ -5,12 +5,7 @@ Window {
     id: mainWindow
     visible: true
 
-//    MainForm {
-//        anchors.fill: parent
-//        mouseArea.onClicked: {
-//            Qt.quit();
-//        }
-//    }
+
 
     SnapshotList{
         id: list
