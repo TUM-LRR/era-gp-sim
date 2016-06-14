@@ -11,18 +11,24 @@ Item {
     property int maxValue: 10000
     property int step: 12
 
+    signal valueChanged(int value)
+    signal valueBoundariesChanged(int minValue, int maxValue)
+
     onValueChanged: {
         textField.text=value.toString();
+        valueChanged(value)
     }
     onMinValueChanged: {
         //fit value into value boundary given by minValue und maxValue
         if(value < minValue)
             value = minValue
+        valueBoundariesChanged(minValue, maxValue)
     }
     onMaxValueChanged: {
         //fit value into value boundary given by minValue und maxValue
         if(value > maxValue)
             value = maxValue
+        valueBoundariesChanged(minValue, maxValue)
     }
 
 
