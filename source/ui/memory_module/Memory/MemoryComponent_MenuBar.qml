@@ -4,12 +4,25 @@ import QtQuick.Layouts 1.1
 
 Item {
     property alias memory_value: memory_size_chooser.value
+
+    width: parent.width
+
+    //background
+    Rectangle{
+        anchors.fill:parent
+        gradient: Gradient {
+                    GradientStop { position: 0.0;  color: "#f2f5f6" }
+                    GradientStop { position: 0.37; color: "#e3eaed" }
+                    GradientStop { position: 1.0;  color: "#c8d7dc" }
+                }
+    }
+
     RowLayout {
         id: menuBar
 
         //styling
         spacing: 5
-        anchors.fill: parent
+        width: parent.width
         anchors.leftMargin: 5
         anchors.rightMargin: 5
         anchors.topMargin: 2
@@ -37,7 +50,6 @@ Item {
         }
         Label {
             id: memory_size
-            Layout.alignment: Qt.AlignRight
             anchors.right: parent.right
             anchors.rightMargin: 20
             text: memory_size_chooser.value.toString()

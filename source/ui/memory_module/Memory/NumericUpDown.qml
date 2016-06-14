@@ -40,12 +40,17 @@ Item {
             value = parseInt(text)
             console.log("memory size input by user: "+parseInt(text))
         }
+
+        //enable changing numbers with arrow keys
+        Keys.onUpPressed: button_up.clicked()
+        Keys.onDownPressed: button_down.clicked()
     }
     Button {
+        id: button_up
         anchors.right: parent.right
         anchors.top: parent.top
-        height: parent.height / 2
-        width: 20
+        height: parent.height / 2 + 1
+        width: 20 + 3
         text: "△"
 
         onClicked: {
@@ -57,10 +62,11 @@ Item {
         }
     }
     Button {
+        id: button_down
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        height: parent.height / 2
-        width: 20
+        height: parent.height / 2 + 1
+        width: 20 + 3
         text: "▽"
 
         onClicked: {

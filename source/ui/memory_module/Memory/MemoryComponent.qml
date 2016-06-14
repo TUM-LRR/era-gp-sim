@@ -105,7 +105,8 @@ Item {
 
     MemoryComponent_MenuBar{
         id:menuBar
-        width: parent.width
-
+        height: 35
     }
+
+
 }
