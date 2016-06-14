@@ -6,33 +6,32 @@ Item {
     height: 30
     width: 100
 
-    property int value: 0
-    property int minValue: 0
-    property int maxValue: 10000
-    property int step: 12
+    property int _value: 0
+    property int _minValue: 0
+    property int _maxValue: 10000
+    property int _step: 12
 
     signal valueChanged(int value)
     signal valueBoundariesChanged(int minValue, int maxValue)
 
-    onValueChanged: {
-        textField.text=value.toString();
-        valueChanged(value)
+    on_ValueChanged: {
+        textField.text = _value.toString()
+        valueChanged(_value)
     }
-    onMinValueChanged: {
+    on_MinValueChanged: {
         //fit value into value boundary given by minValue und maxValue
-        if(value < minValue)
-            value = minValue
-        valueBoundariesChanged(minValue, maxValue)
+        if (_value < _minValue)
+            _value = _minValue
+        valueBoundariesChanged(_minValue, _maxValue)
     }
-    onMaxValueChanged: {
+    on_MaxValueChanged: {
         //fit value into value boundary given by minValue und maxValue
-        if(value > maxValue)
-            value = maxValue
-        valueBoundariesChanged(minValue, maxValue)
+        if (_value > _maxValue)
+            _value = _maxValue
+        valueBoundariesChanged(_minValue, _maxValue)
     }
 
-
-    TextField{
+    TextField {
         id: textField
         anchors.left: parent.left
         anchors.top: parent.top
@@ -40,11 +39,11 @@ Item {
         anchors.right: parent.right
         anchors.rightMargin: 20
 
-        text:"0"
+        text: "0"
 
         onAccepted: {
-            value = parseInt(text)
-            console.log("memory size input by user: "+parseInt(text))
+            _value = parseInt(text)
+            console.log("memory size input by user: " + parseInt(text))
         }
 
         //enable changing numbers with arrow keys
@@ -61,10 +60,10 @@ Item {
 
         onClicked: {
             //fit value into value boundary given by minValue und maxValue
-            if(value + step > maxValue)
-                value = maxValue
+            if (_value + _step > _maxValue)
+                _value = _maxValue
             else
-                value += step
+                _value += _step
         }
     }
     Button {
@@ -77,11 +76,10 @@ Item {
 
         onClicked: {
             //fit value into value boundary given by minValue und maxValue
-            if(value - step < minValue)
-                value = minValue
+            if (_value - _step < _minValue)
+                _value = _minValue
             else
-                value -= step
+                _value -= _step
         }
     }
-
 }

@@ -3,7 +3,7 @@ import QtQuick.Controls 1.5
 import QtQuick.Layouts 1.1
 
 Item {
-    property alias memory_value: memory_size_chooser.value
+    property alias memory_value: memory_size_chooser._value
 
     width: parent.width
 
@@ -52,7 +52,7 @@ Item {
             id: memory_size
             anchors.right: parent.right
             anchors.rightMargin: 20
-            text: memory_size_chooser.value.toString()
+            text: memory_size_chooser._value.toString()
         }
     }
 }
