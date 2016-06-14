@@ -117,4 +117,7 @@ Item {
         text: "-"
         onClicked: memory_size -= 10
     }
+    MemoryComponent_MenuBar{
+        anchors.fill: parent
+    }
 }
