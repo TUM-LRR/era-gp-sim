@@ -1,8 +1,9 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.4
 
-Item {
+Item {//The Output-Module
 
+    //Dummys, created by starting the window because of time reasons. They will not be active unless they are choosen
     GreenRectangle{
         id: greenBackground
         anchors.fill: parent
@@ -22,13 +23,14 @@ Item {
         anchors.fill: parent
         visible: false
         enabled: false
-
     }
-    ComboBox{
-        width: 150
-        model: ["","Red Rectangle", "Blue Rectangle", "GreenRectangle" ]
 
-        onCurrentIndexChanged:{
+
+    ComboBox{//Drop-Down button
+        width: 150
+        model: ["Choose Output","Red Rectangle", "Blue Rectangle", "GreenRectangle" ]
+
+        onCurrentIndexChanged:{//If another line is choosen, an other Output will be set active, al others stay inactive
             if(currentIndex==0){
                 redBackground.visible=false;
                 redBackground.enabled=false;

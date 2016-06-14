@@ -2,7 +2,7 @@
 #include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
-{
+{//Dummy for the reviewers, will not be added to master-branche
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;

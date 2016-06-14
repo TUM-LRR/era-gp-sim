@@ -1,7 +1,7 @@
 import QtQuick 2.0
 
 Item {
-    Rectangle{
+    Rectangle{//Dummy-Module, will be replaced
         id: redBackground
         width: 360
         height: 360
