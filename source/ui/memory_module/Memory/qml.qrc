@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>MemoryComponent.qml</file>
         <file>MemoryComponent_MenuBar.qml</file>
+        <file>NumericUpDown.qml</file>
     </qresource>
 </RCC>

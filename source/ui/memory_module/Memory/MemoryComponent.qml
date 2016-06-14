@@ -3,7 +3,7 @@ import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
 Item {
-    property var memory_size: 10
+    property int memory_size: menuBar.memory_value
     onMemory_sizeChanged: {
         if (memory_size < 0) {
             memory_size = 0
@@ -103,21 +103,9 @@ Item {
         }
     }
 
-    Button {
-        text: "+"
-        x: 200
-        width: 30
-        height: 30
-        onClicked: memory_size += 10
-    }
-    Button {
-        width: 30
-        height: 30
-        x: 240
-        text: "-"
-        onClicked: memory_size -= 10
-    }
     MemoryComponent_MenuBar{
-        anchors.fill: parent
+        id:menuBar
+        width: parent.width
+
     }
 }

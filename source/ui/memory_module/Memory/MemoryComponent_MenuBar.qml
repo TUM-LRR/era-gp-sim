@@ -3,21 +3,22 @@ import QtQuick.Controls 1.5
 import QtQuick.Layouts 1.1
 
 Item {
+    property alias memory_value: memory_size_chooser.value
     RowLayout {
         id: menuBar
 
         //styling
         spacing: 5
         anchors.fill: parent
-        anchors.leftMargin: 10
-        anchors.rightMargin: 10
+        anchors.leftMargin: 5
+        anchors.rightMargin: 5
+        anchors.topMargin: 2
+        anchors.bottomMargin: 2
 
         //children
         ComboBox {
-            //styling
-
-            currentIndex: 2
             //content
+            Layout.alignment: Qt.AlignLeft
             model: ListModel {
                     id: model
                     ListElement { text: "Binary"; shortform:"BIN"; mask: "xxxxx" }
@@ -29,11 +30,17 @@ Item {
                 console.log("representation of numbers changed")
             }
         }
+        NumericUpDown{
+            id: memory_size_chooser
+            anchors.left: parent.left
+            anchors.leftMargin: 150
+        }
         Label {
             id: memory_size
+            Layout.alignment: Qt.AlignRight
             anchors.right: parent.right
             anchors.rightMargin: 20
-            text: "test"
+            text: memory_size_chooser.value.toString()
         }
     }
 }
