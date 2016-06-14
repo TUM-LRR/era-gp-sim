@@ -5,7 +5,7 @@
 
 
 int main(int argc, char *argv[])
-{
+{//file for the output, will not be added to Master-branche
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
@@ -14,20 +14,18 @@ int main(int argc, char *argv[])
     QObject *rootObject = engine.rootObjects().first();
     QObject *obj = rootObject->findChild<QObject*>("list");
 
-
-    //QObject *obj =engine.findChild<QObject *>("mainWindow");
     if(obj!=NULL){
         QVariant data = "Orange";
+        //add data from cpp
            bool ret = QMetaObject::invokeMethod(obj, "add",
                Q_ARG(QVariant, data));
-           //std::cout<<ret<<std::endl;
            if (!ret){
                std::cout<<"Fehler"<<std::endl;
            }
+           //delete data from cpp
            QVariant data2=1;
            bool ret2 = QMetaObject::invokeMethod(obj, "remove",
                Q_ARG(QVariant, data2));
-           //std::cout<<ret<<std::endl;
            if (!ret2){
                std::cout<<"Fehler"<<std::endl;
            }
@@ -35,10 +33,5 @@ int main(int argc, char *argv[])
         std::cout<<"Kein Objekt"<<std::endl;
     }
 
-
-
-
-
-    //std::cout << "Ende" << std::endl;
     return app.exec();
 }
