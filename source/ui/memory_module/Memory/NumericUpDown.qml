@@ -14,6 +14,11 @@ Item {
     signal valueChanged(int value)
     signal valueBoundariesChanged(int minValue, int maxValue)
 
+    SystemPalette {
+        id: systemColorPalette
+        colorGroup: SystemPalette.Active
+    }
+
     on_ValueChanged: {
         textField.text = _value.toString()
         valueChanged(_value)
@@ -47,39 +52,99 @@ Item {
         }
 
         //enable changing numbers with arrow keys
-        Keys.onUpPressed: button_up.clicked()
-        Keys.onDownPressed: button_down.clicked()
+        Keys.onUpPressed: button_up.mouseArea.clicked(Qt.LeftButton)
+        Keys.onDownPressed: button_down.mouseArea.clicked(Qt.LeftButton)
     }
-    Button {
+    Rectangle {
         id: button_up
+        property alias mouseArea: mouseArea_up
+        property alias text: label_up.text
+
+        //layout
         anchors.right: parent.right
         anchors.top: parent.top
-        height: parent.height / 2 + 1
+        height: parent.height / 2
         width: 20 + 3
-        text: "△"
 
-        onClicked: {
-            //fit value into value boundary given by minValue und maxValue
-            if (_value + _step > _maxValue)
-                _value = _maxValue
-            else
-                _value += _step
+        //styling
+        border {
+            color: "#B9C5D0"
+            width: 1
+        }
+        radius: 1
+        smooth: true
+
+        Text {
+            id: label_up
+            anchors.centerIn: parent
+            text: "△"
+            bottomPadding: 3
+            color: "#808080"
+        }
+
+        MouseArea {
+            id: mouseArea_up
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: {
+                //fit value into value boundary given by minValue und maxValue
+                if (_value + _step > _maxValue)
+                    _value = _maxValue
+                else
+                    _value += _step
+            }
+            onHoveredChanged: {
+                if (containsMouse)
+                    parent.border.color = systemColorPalette.highlight
+                else
+                    parent.border.color = "#B9C5D0"
+            }
         }
     }
-    Button {
+    Rectangle {
         id: button_down
+        property alias mouseArea: mouseArea_down
+        property alias text: label_down.text
+
+        //layout
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        height: parent.height / 2 + 1
+        height: parent.height / 2
         width: 20 + 3
-        text: "▽"
 
-        onClicked: {
-            //fit value into value boundary given by minValue und maxValue
-            if (_value - _step < _minValue)
-                _value = _minValue
-            else
-                _value -= _step
+        //styling
+        border {
+            color: "#B9C5D0"
+            width: 1
+        }
+        radius: 1
+        smooth: true
+
+        Text {
+            id: label_down
+            anchors.centerIn: parent
+            text: "▽"
+            bottomPadding: 2
+            color: "#808080"
+        }
+
+        MouseArea {
+            id: mouseArea_down
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: {
+                //fit value into value boundary given by minValue und maxValue
+                if (_value - _step < _minValue)
+                    _value = _minValue
+                else
+                    _value -= _step
+            }
+            onHoveredChanged: {
+                if (containsMouse)
+                    parent.border.color = systemColorPalette.highlight
+                else
+                    parent.border.color = "#B9C5D0"
+            }
         }
     }
 }
