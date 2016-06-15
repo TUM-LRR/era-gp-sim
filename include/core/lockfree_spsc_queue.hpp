@@ -1,5 +1,23 @@
-#ifndef LOCKFREE_SPSC_QUEUE_HPP_
-#define LOCKFREE_SPSC_QUEUE_HPP_
+/* C++ Assembler Interpreter
+ * Copyright (C) 2016 Chair of Computer Architecture
+ * at Technical University of Munich
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef ERAGPSIM_CORE_LOCKFREE_SPSC_QUEUE_HPP_
+#define ERAGPSIM_LOCKFREE_SPSC_QUEUE_HPP_
 
 #include <atomic>
 #include <type_traits>
@@ -49,30 +67,13 @@ class LockfreeSPSCQueue {
   LockfreeSPSCQueue<T>& operator=(LockfreeSPSCQueue&& other) = delete;
   
   /**
-   * \brief Copy a new value into the queue.
-   * 
-   * \pre \c T must be copy-constructible
-   * 
-   * \returns nothing.
-   * \param value The value to copy into the queue
+   * \brief Add a new value into the queue.
+   * \pre \c T must be constructible from \c U&& via \c std::forward<U>.
+   * \param value The value to add into the queue.
    */
-  typename std::enable_if<std::is_copy_constructible<T>::value, void>::type
-  push(const T& value) noexcept(std::is_nothrow_copy_constructible<T>::value) {
-    Node* node = new Node { nullptr, value };
-    appendNode(node);
-  }
-  
-  /**
-   * \brief Move a new value into the queue.
-   * 
-   * \pre \c T must be move-constructible.
-   * 
-   * \returns nothing.
-   * \param value The value to move into the queue.
-   */
-  typename std::enable_if<std::is_move_constructible<T>::value, void>::type
-  push(T&& value) noexcept(std::is_nothrow_move_constructible<T>::value) {
-    Node* node = new Node { nullptr, std::move(value) };
+  template <typename U>
+  void push(U&& value) noexcept(std::is_nothrow_constructible<T, decltype(std::forward<U>(value))>::value) {
+    Node* node = new Node { nullptr, std::forward<U>(value) };
     appendNode(node);
   }
   
@@ -148,4 +149,4 @@ class LockfreeSPSCQueue {
   }
 };
 
-#endif // LOCKFREE_SPSC_QUEUE_HPP_
+#endif // ERAGPSIM_LOCKFREE_SPSC_QUEUE_HPP_
