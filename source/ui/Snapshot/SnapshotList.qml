@@ -25,11 +25,60 @@ Item {//Modul, which should be bound to the container
         Component {//Shows, how the the entries should be presented
             id: listDelegate
 
-            Item {
+            MouseArea {//MouseArea ofer every line for showing buttons
                 height: 25
+                width: 250
+                hoverEnabled: true
+                onEntered: {
+                    deleteButton.visible=true;
+                    loadButton.visible=true;
+                    mouseText.width=80;
+
+                }
+                onExited: {
+                    deleteButton.visible=false;
+                    loadButton.visible=false;
+                    mouseText.width=250;
+                }
+
+
 
                 Row {
+
+
+
+                    Column{//Space before the text
+                        Rectangle{
+                            height: 20
+                            width: 10
+                            color: "white"
+                        }
+                    }
+
+                    Column{//Text, Snapshot Name
+
+                        MouseArea{
+                            id: mouseText
+                            height: 20
+                            width: 250
+
+                            acceptedButtons: Qt.RightButton | Qt.LeftButton
+                            Text{ text: name
+                                font.bold: true
+                            }
+
+                            onDoubleClicked: {//open and delete by clicks
+                                if(mouse.button===Qt.LeftButton){
+                                    console.info("Left Double Click, load "+name);
+                                }
+                                else if(mouse.button===Qt.RightButton){
+                                    console.info("Right Double Click, delete "+ name);
+                                }
+                             }
+                        }
+                    }
                     Column{//Leaving space to the right end of the window
+                        id: afterText
                         Rectangle{
                             height: 20
                             width: 5
@@ -38,6 +87,8 @@ Item {//Modul, which should be bound to the container
                     }
                     Column{
                         Button{
+                            id: deleteButton
+                            visible: false
                             height: 20
                             width: 40
                             Text{
@@ -51,6 +102,7 @@ Item {//Modul, which should be bound to the container
                         }
                     }
                     Column{//space between the buttons
+
                         Rectangle{
                             height: 20
                             width: 5
@@ -59,9 +111,10 @@ Item {//Modul, which should be bound to the container
                     }
                     Column{
                         Button{
+                            id: loadButton
+                            visible: false
                             height: 20
                             width: 40
-                            visible: true
                             Text{
                                 text: "Load"
                                 color: "green"
@@ -73,32 +126,8 @@ Item {//Modul, which should be bound to the container
                         }
                     }
 
-                    Column{//Space before the text
-                        Rectangle{
-                            height: 20
-                            width: 10
-                            color: "white"
-                        }
-                    }
-
-                    Column{//Text, Snapshot Name
-                        MouseArea{
-                            height: 20
-                            width: listView.width
-                            acceptedButtons: Qt.RightButton | Qt.LeftButton
-                            Text{ text: name}
-
-                            onDoubleClicked: {//open and delete by clicks
-                                if(mouse.button===Qt.LeftButton){
-                                    console.info("Left Double Click, load "+name);
-                                }
-                                else if(mouse.button===Qt.RightButton){
-                                    console.info("Right Double Click, delete "+ name);
-                                }
-                             }
-                        }
-                    }
                 }
+
             }
         }
 
@@ -189,6 +218,8 @@ Item {//Modul, which should be bound to the container
               model: listModel
               delegate: listDelegate
         }
+
+
 
         function add(name){//Function for adding Data from cpp
             listModel.append({name: name});
