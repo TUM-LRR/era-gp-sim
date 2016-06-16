@@ -36,7 +36,11 @@ Item {
     TableView {
         id: tableView
         // alternatingRowColors: false
-        anchors.fill: parent
+        //anchors.fill: parent
+        anchors.top: menuBar.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
         selectionMode: SelectionMode.NoSelection
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
 

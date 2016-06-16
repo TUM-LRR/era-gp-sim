@@ -30,8 +30,12 @@ Item {
 
         //children
         ComboBox {
+            id: numericRepresentationChooser
+            property alias items: model
             //content
             Layout.alignment: Qt.AlignLeft
+            currentIndex: 2
+
             model: ListModel {
                     id: model
                     ListElement { text: "Binary"; shortform:"BIN"; mask: "xxxxx" }
@@ -52,7 +56,7 @@ Item {
             id: memory_size
             anchors.right: parent.right
             anchors.rightMargin: 20
-            text: memory_size_chooser._value.toString()
+            text: memory_size_chooser._value.toString() +" / "+ numericRepresentationChooser.items.get(numericRepresentationChooser.currentIndex).shortform
         }
     }
 }
