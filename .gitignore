@@ -1,4 +1,3 @@
-
 # Created by https://www.gitignore.io/api/emacs,c++,sass,c,qt
 
 ### Emacs ###
@@ -196,3 +195,8 @@ CMakeLists.txt.user
 *.xdy
 *.tdo
 *.pdf
+
+# Documentation
+
+docs/html
+docs/latex
