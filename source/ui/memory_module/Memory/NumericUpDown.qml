@@ -66,8 +66,22 @@ Item {
         text: "0"
 
         onAccepted: {
-            _value = parseInt(text)
-            console.log("memory size input by user: " + parseInt(text))
+            var tmp = parseInt(text)
+
+            //check for valid number
+            if(!isNaN(tmp))
+            {
+                //check for range
+                if(tmp < _minValue)
+                    _value = _minValue
+                else if(tmp > _maxValue)
+                    _value = _maxValue
+                else
+                    _value = tmp
+            }else //invalid input: change to previous state
+                textField.text = _value.toString()
+
+            console.log("memory size input by user: " + _value)
         }
 
         //enable changing numbers with arrow keys
