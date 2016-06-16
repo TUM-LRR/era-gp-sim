@@ -35,7 +35,7 @@ def create_header(root, relative_path, name):
 
 def create_source(root, relative_path, name):
     directory = os.path.join(root, "source", relative_path)
-    source_path = os.path.join(directory, name + ".hpp")
+    source_path = os.path.join(directory, name + ".cpp")
     include_path = os.path.join(relative_path, "{0}.hpp".format(name))
     print('Creating source file ...')
     with open(source_path, 'w') as source:
