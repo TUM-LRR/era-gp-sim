@@ -63,6 +63,8 @@ class Parser {
 	 * @return Dialect-specific Regex
 	 */
 	virtual std::string getSyntaxImmediate();
+	
+	virtual ~Parser() = default;
 };
 
 #endif// ERAGPSIM_PARSER_PARSER_H_
