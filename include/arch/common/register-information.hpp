@@ -17,15 +17,17 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef REGISTER_INFORMATION_HPP
-#define REGISTER_INFORMATION_HPP
+#ifndef ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP
+#define ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP
 
 #include <cstddef>
-#include <experimental/optional>
 #include <iterator>
 #include <string>
 #include <type_traits>
 #include <vector>
+
+#include "common/builder.hpp"
+#include "common/optional.hpp"
 
 /**
  * Holds information about a register.
@@ -48,12 +50,9 @@
  *
  * - The type defauls to `Type::INTEGER`.
  * - The ID defaults to an instance-unique (static), incrementing ID.
- * - The size defaults to 32 Bits.
  */
-class RegisterInformation {
+class RegisterInformation : public Builder {
  public:
-	template <typename T>
-	using Optional = std::experimental::optional<T>;
 	using id_t = std::size_t;
 	using size_t = unsigned short;
 
@@ -81,7 +80,7 @@ class RegisterInformation {
 	 *
 	 * @return The name of the register.
 	 */
-	const std::string& name() const;
+	const std::string& getName() const noexcept;
 
 	/**
 	 * Sets the size (width) of the register, in bits.
@@ -93,11 +92,11 @@ class RegisterInformation {
 	RegisterInformation& size(size_t bit_size);
 
 	/**
-	 * Returns the size of the register.
+	 * Returns the size of the register, if any.
 	 *
 	 * @return The size of the register.
 	 */
-	size_t size() const;
+	size_t size() const noexcept;
 
 	/**
 	 * Sets the numeric identifier for the register.
@@ -113,7 +112,7 @@ class RegisterInformation {
 	 *
 	 * @return The ID of the register.
 	 */
-	id_t id() const;
+	id_t getID() const noexcept;
 
 	/**
 	 * Sets the type of the register.
@@ -132,7 +131,7 @@ class RegisterInformation {
 	 *
 	 * @return The type of the register.
 	 */
-	Type type() const;
+	Type getType() const noexcept;
 
 	/**
 	 * Sets the register to be hardwired to the given constant.
@@ -157,7 +156,7 @@ class RegisterInformation {
 	 * Returns the constant the register is hardwired to, if any, and converts it
 	 *  to the given type.
 	 *
-	 * @tparam The output type for the constant.
+	 * @tparam Hardwired The output type for the constant.
 	 *
 	 * @return If a conversion is possible, the current hardwired constant
 	 *         cast to the given type.
@@ -165,7 +164,7 @@ class RegisterInformation {
 	template <typename HardwiredType,
 						typename = std::enable_if_t<
 								std::is_convertible<HardwiredType, double>::value>>
-	const Optional<HardwiredType>& hardwiredTo() const {
+	const Optional<HardwiredType>& hardwiredTo() const noexcept {
 		return isHardwired() ? static_cast<HardwiredType>(_constant)
 												 : Optional<HardwiredType>{};
 	}
@@ -175,22 +174,22 @@ class RegisterInformation {
 	 *
 	 * @return True if the register is hardwired to a constant, else false.
 	 */
-	bool isHardwired() const;
+	bool isHardwired() const noexcept;
 
 	/**
-	 * Adds a range of aliases to the known aliases for the register.
+	 * Adds a range of addAliases to the known aliases for the register.
 	 *
-	 * @tparam A range-like type.
+	 * @tparam Range A range-like type.
 	 *
 	 * @param range A range of new aliases.
 	 *
 	 * @return The current register object.
 	 */
 	template <typename Range>
-	RegisterInformation& aliases(const Range& range) {
+	RegisterInformation& addAliases(const Range& range) {
 		using std::begin;
 		using std::end;
-		_aliases.insert(_aliases.end(), begin(range), end(range));
+		_aliases.insert(_aliases.getEnd(), begin(range), end(range));
 
 		return *this;
 	}
@@ -202,7 +201,7 @@ class RegisterInformation {
 	 *
 	 * @return The current register object.
 	 */
-	RegisterInformation& aliases(std::initializer_list<std::string> aliases);
+	RegisterInformation& addAliases(std::initializer_list<std::string> aliases);
 
 	/**
 	 * Adds the given alias to the known aliases for the register.
@@ -211,21 +210,21 @@ class RegisterInformation {
 	 *
 	 * @return The current register object.
 	 */
-	RegisterInformation& alias(const std::string& alias);
+	RegisterInformation& addAlias(const std::string& alias);
 
 	/**
 	 * Returns the known aliases for the register.
 	 *
 	 * @return The currently known aliases for the register.
 	 */
-	const std::vector<std::string>& aliases() const;
+	const std::vector<std::string>& getAliases() const noexcept;
 
 	/**
 	 * Returns whether or not the register has aliases at all.
 	 *
 	 * @return True if the register has at least one alias, else false.
 	 */
-	bool hasAliases() const;
+	bool hasAliases() const noexcept;
 
 	/**
 	 * Sets the ID of the enclosing register.
@@ -248,12 +247,12 @@ class RegisterInformation {
 	 * @return An Optional object, possibly containing an ID for the enclosing
 	 *         register (if this register has an enclosing register).
 	 */
-	Optional<id_t> enclosing() const;
+	Optional<id_t> getEnclosing() const noexcept;
 
 	/**
 	 * Adds a range of constituent register IDs for the register.
 	 *
-	 * See constituents() for a description of a register's consituents.
+	 * See getConstituents() for a description of a register's consituents.
 	 *
 	 * @tparam A range-like type.
 	 *
@@ -262,7 +261,7 @@ class RegisterInformation {
 	 * @return The current register object.
 	 */
 	template <typename Range>
-	RegisterInformation& constituents(const Range& range) {
+	RegisterInformation& addConstituents(const Range& range) {
 		using std::begin;
 		using std::end;
 		_constituents.insert(_constituents.end(), begin(range), end(range));
@@ -273,24 +272,25 @@ class RegisterInformation {
 	/**
 	 * Adds a list of constituent register IDs for the register.
 	 *
-	 * See constituents() for a description of a register's consituents.
+	 * See getConstituents() for a description of a register's consituents.
 	 *
 	 * @param constituents The list of constituents to be added for the register.
 	 *
 	 * @return The current register object.
 	 */
-	RegisterInformation& constituents(std::initializer_list<id_t> constituents);
+	RegisterInformation&
+	addConstituents(std::initializer_list<id_t> constituents);
 
 	/**
 	 * Adds a single consituent ID for the register.
 	 *
-	 * See constituents() for a description of a register's consituents.
+	 * See getConstituents() for a description of a register's consituents.
 	 *
 	 * @param id The ID of the constituent register to add.
 	 *
 	 * @return The current register object.
 	 */
-	RegisterInformation& constituent(id_t id);
+	RegisterInformation& addConstituent(id_t id);
 
 	/**
 	 * Returns the constituent IDs of the register.
@@ -303,14 +303,17 @@ class RegisterInformation {
 	 *
 	 * @return The constituent IDs of the register.
 	 */
-	const std::vector<id_t>& constituents() const;
+	const std::vector<id_t>& getConstituents() const noexcept;
 
 	/**
 	 * Returns whether or not the register has constituents at all.
 	 *
 	 * @return True if the register has at least one constituent, else false.
 	 */
-	bool hasConstituents() const;
+	bool hasConstituents() const noexcept;
+
+	/** @copydoc Builder::isValid() */
+	bool isValid() const noexcept override;
 
  private:
 	/** An ID that increments for each new created instance (for default IDs). */
@@ -329,11 +332,11 @@ class RegisterInformation {
 	/** The type of the register. */
 	Type _type;
 
-	/** The size of the register, in bits. */
-	size_t _size;
-
 	/** The name of the register, e.g. "EAX". */
 	std::string _name;
+
+	/** The size of the register, in bits. */
+	Optional<size_t> _size;
 
 	/** The constant the register is hardwired to, if any. */
 	Optional<double> _constant;
@@ -348,4 +351,4 @@ class RegisterInformation {
 	std::vector<std::string> _aliases;
 };
 
-#endif /* REGISTER_INFORMATION_HPP */
+#endif /* ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP */

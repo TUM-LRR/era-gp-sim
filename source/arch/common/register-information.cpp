@@ -20,7 +20,7 @@ RegisterInformation& RegisterInformation::name(const std::string& name) {
 	return *this;
 }
 
-const std::string& RegisterInformation::name() const {
+const std::string& RegisterInformation::getName() const noexcept {
 	return _name;
 }
 
@@ -31,8 +31,9 @@ RegisterInformation& RegisterInformation::size(size_t bit_size) {
 	return *this;
 }
 
-RegisterInformation::size_t RegisterInformation::size() const {
-	return _size;
+RegisterInformation::size_t RegisterInformation::size() const noexcept {
+	assert(static_cast<bool>(_size));
+	return *_size;
 }
 
 RegisterInformation& RegisterInformation::id(id_t id) {
@@ -41,7 +42,7 @@ RegisterInformation& RegisterInformation::id(id_t id) {
 	return *this;
 }
 
-RegisterInformation::id_t RegisterInformation::id() const {
+RegisterInformation::id_t RegisterInformation::getID() const noexcept {
 	return _id;
 }
 
@@ -51,32 +52,33 @@ RegisterInformation& RegisterInformation::type(Type type) {
 	return *this;
 }
 
-RegisterInformation::Type RegisterInformation::type() const {
+RegisterInformation::Type RegisterInformation::getType() const noexcept {
 	return _type;
 }
 
-bool RegisterInformation::isHardwired() const {
+bool RegisterInformation::isHardwired() const noexcept {
 	return static_cast<bool>(_constant);
 }
 
-RegisterInformation& RegisterInformation::alias(const std::string& alias) {
+RegisterInformation& RegisterInformation::addAlias(const std::string& alias) {
 	_aliases.emplace_back(alias);
 
 	return *this;
 }
 
 RegisterInformation&
-RegisterInformation::aliases(std::initializer_list<std::string> aliases) {
+RegisterInformation::addAliases(std::initializer_list<std::string> aliases) {
 	_aliases.insert(_aliases.end(), aliases);
 
 	return *this;
 }
 
-const std::vector<std::string>& RegisterInformation::aliases() const {
+const std::vector<std::string>& RegisterInformation::getAliases() const
+		noexcept {
 	return _aliases;
 }
 
-bool RegisterInformation::hasAliases() const {
+bool RegisterInformation::hasAliases() const noexcept {
 	return !_aliases.empty();
 }
 
@@ -87,29 +89,37 @@ RegisterInformation& RegisterInformation::enclosing(id_t id) {
 	return *this;
 }
 
-RegisterInformation::Optional<RegisterInformation::id_t>
-RegisterInformation::enclosing() const {
+Optional<RegisterInformation::id_t> RegisterInformation::getEnclosing() const
+		noexcept {
 	return _enclosing;
 }
 
 RegisterInformation&
-RegisterInformation::constituents(std::initializer_list<id_t> constituents) {
+RegisterInformation::addConstituents(std::initializer_list<id_t> constituents) {
 	_constituents.insert(_constituents.end(), constituents);
 
 	return *this;
 }
 
-RegisterInformation& RegisterInformation::constituent(id_t id) {
+RegisterInformation& RegisterInformation::addConstituent(id_t id) {
 	_constituents.emplace_back(id);
 
 	return *this;
 }
 
 const std::vector<RegisterInformation::id_t>&
-RegisterInformation::constituents() const {
+RegisterInformation::getConstituents() const noexcept {
 	return _constituents;
 }
 
-bool RegisterInformation::hasConstituents() const {
+bool RegisterInformation::hasConstituents() const noexcept {
 	return !_constituents.empty();
+}
+
+bool RegisterInformation::isValid() const noexcept {
+	// Cannot check the ID, because we don't know what it means for an ID to be
+	// valid. One thing to check would be for duplicate IDs of course, but for
+	// that we would need to keep some symbol table.
+	// The type has a default value, so no need to validate.
+	return !_name.empty() && _size;
 }
