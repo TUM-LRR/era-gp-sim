@@ -205,3 +205,6 @@ docs/latex
 
 build/
 .dir-locals.el
+.clang_complete
+.tags
+.tags1
