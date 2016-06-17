@@ -18,22 +18,29 @@
 #ifndef ERAGPSIM_PARSER_PARSER_H_
 #define ERAGPSIM_PARSER_PARSER_H_
 
+#include <memory>
 #include <string>
+#include <vector>
+
+// Temporary typedef
+typedef int AbstractSyntaxTreeNode;
+
 
 enum ParserMode { COMPILE, UPDATE };
 
-// Base Parser class
+/**
+ * Base Parser class
+ */
 class Parser {
  public:
- 
-	// TODO(kreudom) Add some kind of return type.
 	/**
 	 * Parses text into syntax tree.
 	 *
 	 * @param text Text to parse
 	 * @param parserMode Parser Mode
 	 */
-	virtual void parse(std::string text, ParserMode parserMode) = 0;
+	virtual std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
+	parse(std::string &text, ParserMode parserMode) = 0;
 
 	/**
 	 * Creates dialect-specific Regex for syntax highlighting registers.
@@ -41,7 +48,7 @@ class Parser {
 	 * @param name Register name
 	 * @return Dialect-specific Regex
 	 */
-	virtual std::string getSyntaxRegister(std::string name);
+	virtual std::string getSyntaxRegister(std::string &name);
 
 	/**
 	 * Creates dialect-specific Regex for syntax highlighting instructions.
@@ -49,7 +56,14 @@ class Parser {
 	 * @param name Assembler instruction name
 	 * @return Dialect-specific Regex
 	 */
-	virtual std::string getSyntaxInstruction(std::string name);
+	virtual std::string getSyntaxInstruction(std::string &name);
+
+	/**
+	 * Creates dialect-specific Regex for syntax highlighting immediates.
+	 *
+	 * @return Dialect-specific Regex
+	 */
+	virtual std::string getSyntaxImmediate();
 };
 
 #endif// ERAGPSIM_PARSER_PARSER_H_
