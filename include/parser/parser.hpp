@@ -22,8 +22,7 @@
 #include <string>
 #include <vector>
 
-// Temporary typedef
-typedef int AbstractSyntaxTreeNode;
+#include "include/arch/common/abstract_node_factories.hpp"
 
 
 enum ParserMode { COMPILE, UPDATE };
