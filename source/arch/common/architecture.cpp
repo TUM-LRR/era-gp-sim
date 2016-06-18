@@ -8,12 +8,12 @@ Architecture::Architecture(const std::string& name,
 : _validated(false) {
 	assert(base.isValidBase());
 	// Only copy after
-	_base = std::make_unique<ExtensionInformation>(base))
+	_base = std::make_unique<ExtensionInformation>(base);
 	// For constraints
 	this->name(name);
 }
 
-Architecture::Architecture() = default;
+Architecture::Architecture() noexcept = default;
 
 Architecture::Architecture(const Architecture& other)
 : _name(other._name)
@@ -25,7 +25,7 @@ Architecture::Architecture(Architecture&& other) noexcept : Architecture() {
 	swap(other);
 }
 
-Architecture& Architecture::operator=(Architecture& other) {
+Architecture& Architecture::operator=(Architecture other) {
 	swap(other);
 	return *this;
 }
@@ -56,6 +56,15 @@ operator+(const ExtensionInformation& extension) const {
 	return temp;
 }
 
+Architecture& Architecture::extend(const ExtensionInformation& extension) {
+	assert(_base != nullptr);
+
+	_base->merge(extension);
+	_validated = false;
+
+	return *this;
+}
+
 Architecture& Architecture::name(const std::string& name) {
 	assert(!name.empty());
 	_name = name;
@@ -69,12 +78,13 @@ const std::string& Architecture::getName() const noexcept {
 
 Architecture::Endianness Architecture::getEndianness() const noexcept {
 	assert(isValidated());
-	return _base->getEndianness();
+	return *_base->getEndianness();
 }
 
-Architecture::Alignment Architecture::getAlignment() const noexcept {
+Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const
+		noexcept {
 	assert(isValidated());
-	return _base->getAlignment().value();
+	return *_base->getAlignmentBehavior();
 }
 
 /**
@@ -82,7 +92,7 @@ Architecture::Alignment Architecture::getAlignment() const noexcept {
  */
 Architecture::word_size_t Architecture::getWordSize() const noexcept {
 	assert(isValidated());
-	return _base->getWordSize().value();
+	return *_base->getWordSize();
 }
 
 const Architecture::UnitContainer& Architecture::getUnits() const {
@@ -92,21 +102,14 @@ const Architecture::UnitContainer& Architecture::getUnits() const {
 
 const InstructionSet& Architecture::getInstructions() const {
 	assert(isValidated());
-	return _base->getInstructions().value();
-}
-
-Architecture& Architecture::extend(const ExtensionInformation& extension) {
-	assert(_base != nullptr);
-
-	_base->merge(extension);
-	_validated = false;
-
-	return *this;
+	return _base->getInstructions();
 }
 
 Architecture& Architecture::validate() {
-	assert(_isValid());
-	_validated = true;
+	if (!_validated) {
+		assert(isValid());
+		_validated = true;
+	}
 
 	return *this;
 }

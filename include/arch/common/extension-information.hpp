@@ -60,7 +60,7 @@ class ExtensionInformation : public Builder {
 	using UnitList = std::initializer_list<UnitInformation>;
 	using ExtensionList = std::initializer_list<ExtensionInformation>;
 	using Endianness = Information::Endianness;
-	using Alignment = Information::Alignment;
+	using AlignmentBehavior = Information::AlignmentBehavior;
 
 	/**
 	 * Constructs a new `ExtensionInformation` object.
@@ -182,18 +182,19 @@ class ExtensionInformation : public Builder {
 	Optional<Endianness> getEndianness() const noexcept;
 
 	/**
-	 * Sets the alignment for the extension.
+	 * Sets the alignment behavior for the extension.
 	 *
-	 * @param alignment The `Alignment` member to assign to the extension.
+	 * @param alignment behavior The `AlignmentBehavior` member to assign to the
+	 * extension.
 	 *
 	 * @return The current `ExtensionInformation` object.
 	 */
-	ExtensionInformation& alignment(Alignment alignment);
+	ExtensionInformation& alignmentBehavior(AlignmentBehavior alignmentBehavior);
 
 	/**
-	 * Returns the alignment of the extension, if any.
+	 * Returns the alignment behavior of the extension, if any.
 	 */
-	Optional<Alignment> getAlignment() const noexcept;
+	Optional<AlignmentBehavior> getAlignmentBehavior() const noexcept;
 
 	/**
 	 * Sets the word size for the extension, in bits.
@@ -327,7 +328,7 @@ class ExtensionInformation : public Builder {
 	*
 	* If true, this extension can be used as a base extension. This means that it
 	* defines all necessary attributes for a basic ISA, including the endianness,
-	* alignment behaviour and word size, at least one unit and at least one
+	* alignment behavior and word size, at least one unit and at least one
 	* instruction.
 	*/
 	bool isValidBase() const noexcept;
@@ -341,8 +342,8 @@ class ExtensionInformation : public Builder {
 	/** The endianness of the extension, if any. */
 	Optional<Endianness> _endianness;
 
-	/** The alignment of the extension, if any. */
-	Optional<Alignment> _alignment;
+	/** The alignment behavior of the extension, if any. */
+	Optional<AlignmentBehavior> _alignmentBehavior;
 
 	/** The word size of the extension, if any. */
 	Optional<size_t> _wordSize;

@@ -32,7 +32,7 @@ UnitInformation& UnitInformation::addRegister(const RegisterInformation& reg) {
 bool UnitInformation::isValid() const noexcept {
 	if (_name.empty()) return false;
 	// clang-format off
-	return !Utility::allOf(_container, [](auto& reg) {
+	return Utility::allOf(_container, [](auto& reg) {
 		return reg.isValid();
 	});
 	// clang-format on

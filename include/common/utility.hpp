@@ -65,6 +65,43 @@ bool anyOf(const Range& range, Function function) {
 
 	return std::any_of(begin(range), end(range), function);
 }
+
+template <typename T, typename InputRange, typename OutputRange = InputRange>
+OutputRange prepend(T&& value, const InputRange& range) {
+	using std::begin;
+	using std::end;
+
+	// Construct with enough space
+	OutputRange copy(range.size() + 1);
+	copy.insert(end(copy), std::forward<T>(value));
+	copy.insert(end(copy), begin(range), end(range));
+
+	return copy;
+}
+
+template <typename OutputRange, typename T, typename InputRange>
+OutputRange prependOther(T&& value, const InputRange& range) {
+	return prepend<T, InputRange, OutputRange>(std::forward<T>(value), range);
+}
+
+template <typename T, typename InputRange, typename OutputRange = InputRange>
+OutputRange append(T&& value, const InputRange& range) {
+	using std::begin;
+	using std::end;
+
+	// Construct with enough space
+	OutputRange copy(range.size() + 1);
+	copy.insert(end(copy), begin(range), end(range));
+	copy.insert(end(copy), std::forward<T>(value));
+
+	return copy;
+}
+
+
+template <typename OutputRange, typename T, typename InputRange>
+OutputRange appendOther(T&& value, const InputRange& range) {
+	return append<T, InputRange, OutputRange>(std::forward<T>(value), range);
+}
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */

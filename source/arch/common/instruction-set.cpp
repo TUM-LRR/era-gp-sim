@@ -4,17 +4,17 @@
 
 InstructionSet::InstructionSet() = default;
 
-InstructionSet::InstructionSet(List instructions) : getSuper(instructions) {
+InstructionSet::InstructionSet(List instructions) : super(instructions) {
 }
 
-InstructionSet& InstructionSet::getAddinstructions(List instructions) {
+InstructionSet& InstructionSet::addInstructions(List instructions) {
 	assert(instructions.size() > 0);
 	return addInstructions<List>(instructions);
 }
 
 InstructionSet&
-InstructionSet::getAddinstruction(const InstructionInformation& instruction) {
-	_container.getEmplace_back(instruction);
+InstructionSet::addInstruction(const InstructionInformation& instruction) {
+	_container.emplace_back(instruction);
 
 	return *this;
 }

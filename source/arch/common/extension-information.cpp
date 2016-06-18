@@ -4,6 +4,8 @@
 #include "arch/common/instruction-set.hpp"
 #include "common/utility.hpp"
 
+ExtensionInformation::ExtensionInformation() noexcept = default;
+
 ExtensionInformation::ExtensionInformation(const std::string& name)
 : _instructions(std::make_unique<InstructionSet>()) {
 	// For constraint checking
@@ -13,7 +15,7 @@ ExtensionInformation::ExtensionInformation(const std::string& name)
 ExtensionInformation::ExtensionInformation(const ExtensionInformation& other)
 : _name(other._name)
 , _endianness(other._endianness)
-, _alignment(other._alignment)
+, _alignmentBehavior(other._alignmentBehavior)
 , _wordSize(other._wordSize)
 , _instructions(std::make_unique<InstructionSet>(*other._instructions))
 , _units(other._units) {
@@ -39,7 +41,7 @@ void ExtensionInformation::swap(ExtensionInformation& other) noexcept {
 
 	swap(_name, other._name);
 	swap(_endianness, other._endianness);
-	swap(_alignment, other._alignment);
+	swap(_alignmentBehavior, other._alignmentBehavior);
 	swap(_wordSize, other._wordSize);
 	swap(_instructions, other._instructions);
 	swap(_units, other._units);
@@ -74,8 +76,7 @@ const std::string& ExtensionInformation::getName() const noexcept {
 }
 
 ExtensionInformation& ExtensionInformation::endianness(Endianness endianness) {
-	*_endianness = endianness;
-
+	_endianness = endianness;
 	return *this;
 }
 
@@ -84,27 +85,28 @@ ExtensionInformation::getEndianness() const noexcept {
 	return _endianness;
 }
 
-ExtensionInformation& ExtensionInformation::alignment(Alignment alignment) {
-	*_alignment = alignment;
-
+ExtensionInformation&
+ExtensionInformation::alignmentBehavior(AlignmentBehavior alignmentBehavior) {
+	_alignmentBehavior = alignmentBehavior;
 	return *this;
 }
 
-Optional<ExtensionInformation::Alignment>
-ExtensionInformation::getAlignment() const noexcept {
-	return _alignment;
+Optional<ExtensionInformation::AlignmentBehavior>
+ExtensionInformation::getAlignmentBehavior() const noexcept {
+	return _alignmentBehavior;
 }
 
 ExtensionInformation& ExtensionInformation::wordSize(size_t wordSize) {
 	_wordSize = wordSize;
-
 	return *this;
 }
 
-Optional<ExtensionInformation::size_t> ExtensionInformation::getWordSize() const
-		noexcept {
+// clang-format off
+Optional<ExtensionInformation::size_t>
+ExtensionInformation::getWordSize() const noexcept {
 	return _wordSize;
 }
+// clang-format on
 
 ExtensionInformation&
 ExtensionInformation::addInstructions(const InstructionSet& instructions) {
@@ -155,8 +157,8 @@ ExtensionInformation::merge(const ExtensionInformation& otherExtension) {
 		_endianness = otherExtension._endianness;
 	}
 
-	if (otherExtension._alignment) {
-		_alignment = otherExtension._alignment;
+	if (otherExtension._alignmentBehavior) {
+		_alignmentBehavior = otherExtension._alignmentBehavior;
 	}
 
 	if (otherExtension._wordSize) {
@@ -181,7 +183,7 @@ bool ExtensionInformation::isValid() const noexcept {
 
 bool ExtensionInformation::isValidBase() const noexcept {
 	if (!_endianness) return false;
-	if (!_alignment) return false;
+	if (!_alignmentBehavior) return false;
 	if (!_wordSize) return false;
 
 	// Check the basic stuff

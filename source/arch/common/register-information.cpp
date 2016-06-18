@@ -14,13 +14,13 @@ RegisterInformation::RegisterInformation(const std::string& name)
 // clang-format on
 
 RegisterInformation& RegisterInformation::name(const std::string& name) {
-	assert(!_name.empty());
 	_name = name;
 
 	return *this;
 }
 
 const std::string& RegisterInformation::getName() const noexcept {
+	assert(!_name.empty());
 	return _name;
 }
 
@@ -38,7 +38,6 @@ RegisterInformation::size_t RegisterInformation::size() const noexcept {
 
 RegisterInformation& RegisterInformation::id(id_t id) {
 	_id = id;
-
 	return *this;
 }
 
@@ -48,7 +47,6 @@ RegisterInformation::id_t RegisterInformation::getID() const noexcept {
 
 RegisterInformation& RegisterInformation::type(Type type) {
 	_type = type;
-
 	return *this;
 }
 
@@ -97,13 +95,11 @@ Optional<RegisterInformation::id_t> RegisterInformation::getEnclosing() const
 RegisterInformation&
 RegisterInformation::addConstituents(std::initializer_list<id_t> constituents) {
 	_constituents.insert(_constituents.end(), constituents);
-
 	return *this;
 }
 
 RegisterInformation& RegisterInformation::addConstituent(id_t id) {
 	_constituents.emplace_back(id);
-
 	return *this;
 }
 

@@ -67,6 +67,14 @@ class RegisterInformation : public Builder {
 	explicit RegisterInformation(const std::string& name);
 
 	/**
+	 * Constructs the RegisterInformation with the register's name and size.
+	 *
+	 * @param name The name of the register.
+	 * @param size The size of the register.
+	 */
+	RegisterInformation(const std::string& name, size_t size);
+
+	/**
 	 * Sets the name of the register.
 	 *
 	 * @param name The new name for the register.
@@ -189,7 +197,7 @@ class RegisterInformation : public Builder {
 	RegisterInformation& addAliases(const Range& range) {
 		using std::begin;
 		using std::end;
-		_aliases.insert(_aliases.getEnd(), begin(range), end(range));
+		_aliases.insert(_aliases.end(), begin(range), end(range));
 
 		return *this;
 	}

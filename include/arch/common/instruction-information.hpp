@@ -23,11 +23,12 @@
 #include <string>
 
 #include "common/builder.hpp"
+#include "common/optional.hpp"
 
 /**
  * Holds information about an instruction.
  *
- * The information is currently constrained only to the name and opcode of the
+ * The information is currently constrained only to the name and key of the
  * instruction, as everything else (e.g. allowed operands) is hard-coded in the
  * respective implementation class.
  *
@@ -35,15 +36,23 @@
  */
 class InstructionInformation : public Builder {
  public:
-	using opcode_t = unsigned short;
+	// For now
+	using InstructionKey = unsigned short;
 
 	/**
-	 * Constructs an instruction.
+	 * Constructs an instruction with a name.
 	 *
 	 * @param name The name of the instruction (e.g. "add")
-	 * @param opcode The numeric opdocde of the instruction.
 	 */
-	InstructionInformation(const std::string& name, opcode_t opcode);
+	InstructionInformation(const std::string& name);
+
+	/**
+	 * Constructs an instruction with a name and key.
+	 *
+	 * @param name The name of the instruction (e.g. "add")
+	 * @param key The key of the instruction.
+	 */
+	InstructionInformation(const std::string& name, const InstructionKey& key);
 
 	/**
 	 * Sets the name of the instruction.
@@ -56,26 +65,22 @@ class InstructionInformation : public Builder {
 
 	/**
 	 * Returns the name of the instruction.
-	 *
-	 * @return The name of the instruction.
 	 */
 	const std::string& getName() const noexcept;
 
 	/**
-	 * Sets the numeric opcode of the instruction.
+	 * Sets the key of the instruction.
 	 *
-	 * @param opcode The new opcode for the instruction.
+	 * @param key The new key for the instruction.
 	 *
 	 * @return The current instruction object.
 	 */
-	InstructionInformation& opcode(opcode_t opcode);
+	InstructionInformation& key(const InstructionKey& key);
 
 	/**
-	 * Returns the opcode of the instruction.
-	 *
-	 * @return The instruction's current opcode.
+	 * Returns the key of the instruction.
 	 */
-	opcode_t getOpcode() const noexcept;
+	const InstructionKey& getKey() const noexcept;
 
 	/** @copydoc Builder::isValid() */
 	bool isValid() const noexcept override;
@@ -84,8 +89,8 @@ class InstructionInformation : public Builder {
 	/** The name of the instruction. */
 	std::string _name;
 
-	/** The opcode of the instruction. */
-	opcode_t _opcode;
+	/** The key of the instruction. */
+	Optional<InstructionKey> _key;
 };
 
 #endif /* ERAGPSIM_ARCH_INSTRUCTION_INFORMATION_HPP */

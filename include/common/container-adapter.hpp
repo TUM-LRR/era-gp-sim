@@ -31,10 +31,18 @@
  * class and it will take care of some boilerplate methods.
  */
 template <typename T,
-					template <typename, typename> class UnderlyingTemplate = std::vector>
+					template <typename, typename> class UnderlyingTemplate = std::vector,
+					bool makeConst = false>
 class ContainerAdapter {
  public:
-	using Underlying = UnderlyingTemplate<T, std::allocator<T>>;
+	// Choose const or non-const version of container
+	// clang-format off
+	using Underlying = typename std::conditional<
+		makeConst,
+		const UnderlyingTemplate<T, std::allocator<T>>,
+		UnderlyingTemplate<T, std::allocator<T>>
+	>::type;
+	// clang-format on
 	using Iterator = typename Underlying::iterator;
 	using ConstIterator = typename Underlying::const_iterator;
 	using List = std::initializer_list<T>;
@@ -42,7 +50,7 @@ class ContainerAdapter {
 	/**
 	 * Constructs a new empty container adapter.
 	 */
-	ContainerAdapter();
+	ContainerAdapter() noexcept = default;
 
 	/**
 	 * Constructs a new container adapter from a range of elements.

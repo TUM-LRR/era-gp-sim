@@ -2,9 +2,13 @@
 
 #include "arch/common/instruction-information.hpp"
 
+InstructionInformation::InstructionInformation(const std::string& name)
+: _name(name) {
+}
+
 InstructionInformation::InstructionInformation(const std::string& name,
-																							 opcode_t opcode)
-: _name(name), _opcode(opcode) {
+																							 const InstructionKey& key)
+: _name(name), _key(key) {
 }
 
 InstructionInformation& InstructionInformation::name(const std::string& name) {
@@ -18,16 +22,17 @@ const std::string& InstructionInformation::getName() const noexcept {
 	return _name;
 }
 
-InstructionInformation& InstructionInformation::opcode(opcode_t opcode) {
-	_opcode = opcode;
+InstructionInformation& InstructionInformation::key(const InstructionKey& key) {
+	_key = key;
 	return *this;
 }
 
-InstructionInformation::opcode_t InstructionInformation::getOpcode() const
-		noexcept {
-	return _opcode;
+const InstructionInformation::InstructionKey&
+InstructionInformation::getKey() const noexcept {
+	assert(static_cast<bool>(_key));
+	return *_key;
 }
 
 bool InstructionInformation::isValid() const noexcept {
-	return !_name.empty();
+	return !_name.empty() && static_cast<bool>(_key);
 }

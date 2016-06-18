@@ -20,8 +20,8 @@
 #ifndef ERAGPSIM_ARCH_INSTRUCTION_SET_HPP
 #define ERAGPSIM_ARCH_INSTRUCTION_SET_HPP
 
-#include "arch/common/container-adapter.hpp"
 #include "arch/common/instruction-information.hpp"
+#include "common/container-adapter.hpp"
 #include "common/utility.hpp"
 
 /**
@@ -30,7 +30,8 @@
  * It is really just a light-weight wrapper around a vector (it doesn't even
  * have a name).
  */
-class InstructionSet : public ContainerAdapter<InstructionInformation> {
+class InstructionSet : public ContainerAdapter<InstructionInformation>,
+											 public Builder {
  public:
 	using super = ContainerAdapter<InstructionInformation>;
 	using super::_container;
@@ -116,7 +117,6 @@ class InstructionSet : public ContainerAdapter<InstructionInformation> {
 	template <typename Range>
 	InstructionSet& addInstructions(const Range& range) {
 		Utility::concatenate(_container, range);
-
 		return *this;
 	}
 
@@ -128,15 +128,6 @@ class InstructionSet : public ContainerAdapter<InstructionInformation> {
 	 * @return The current instruction object.
 	 */
 	InstructionSet& addInstructions(List instructions);
-
-	/**
-	 * Adds the instructions of the other instruction set to this one.
-	 *
-	 * @param other Another InstructionSet instance.
-	 *
-	 * @return The current instruction object.
-	 */
-	InstructionSet& addInstructions(const InstructionSet& other);
 
 	/**
 	 * Adds a single instruction to the set.
