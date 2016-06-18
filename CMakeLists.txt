@@ -7,11 +7,7 @@ set(CMAKE_BUILD_TYPE_INIT "Debug")
 
 project(era-sim)
 
-########################################
-# DEPENDENCIES
-########################################
-
-#find_package(PkgConfig REQUIRED)
+add_compile_options(-std=c++14)
 
 ########################################
 # INCLUDES
@@ -26,10 +22,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_subdirectory(source)
 
 ########################################
-# TARGET
+# TESTS
 ########################################
 
-add_executable(era-sim main.cpp)
-
-target_link_libraries(era-sim era-sim-arch)
-target_compile_options(era-sim PUBLIC "-std=c++14")
+enable_testing()
+add_subdirectory(tests)
