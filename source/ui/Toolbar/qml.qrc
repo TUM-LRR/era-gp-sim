@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>ToolbarMainWindow.qml</file>
+    </qresource>
+</RCC>
