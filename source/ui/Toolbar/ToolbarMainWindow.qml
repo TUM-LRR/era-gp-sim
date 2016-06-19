@@ -57,37 +57,69 @@ ToolBar {
         anchors.fill: parent        
 
         ToolButton{
-            text:"Button1"
+            id: run
+            //iconSource: "RunButtonWithBorder.svg"
+            iconSource: "Icons/RunButton.svg"
             onClicked: {
-                console.info("Button 1 clicked");
+                console.info("Run clicked");
+                stop.setActive();
             }
         }
 
         /*Let space between the buttons*/
-        Item{ width: 5}
+        Item{ width: 10}
 
         ToolButton{
-            text:"Button2"
+            id: runLine
+            //iconSource: "Icons/RunLineButtonWithBorder.svg"
+            iconSource: "Icons/RunLineButton.svg"
             onClicked: {
-                console.info("Button2 clicked");
+                console.info("runLine clicked");
+                stop.setActive();
             }
         }
 
-        Item{ width: 5}
+        Item{ width: 10}
 
         ToolButton{
-            text:"Button3"
+            id: runBreakpoint
+            //iconSource: "Icons/RunBreakpointButtonWithBorder.svg"
+            iconSource: "Icons/RunBreakpointButton.svg"
             onClicked: {
-                console.info("Button3 clicked");
+                console.info("runBreakpoint clicked");
+                stop.setActive();
             }
         }
 
-        Item{ width: 5}
+        Item{ width: 10}
 
         ToolButton{
-            text:"Button4"
+            id: stop
+            enabled: false
+            //iconSource: "Icons/StopButtonInactiveWithBorder.svg"
+            iconSource: "Icons/StopButtonInactive.svg"
             onClicked: {
-                console.info("Button4 clicked");
+                console.info("Stop clicked");
+                setInactive();
+            }
+
+            /*Functions to enable/disable the Button*/
+            function changeActive(){
+                if(!enabled){
+                    setActive();
+                }else{
+                    setInactive();
+                }
+            }
+
+            function setActive(){
+                enabled=true;
+                iconSource="Icons/StopButtonActive.svg";
+            }
+
+            function setInactive(){
+                enabled=false;
+                iconSource="Icons/StopButtonInactive.svg";
             }
         }
 

@@ -2,5 +2,15 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>ToolbarMainWindow.qml</file>
+        <file>Icons/RunBreakpointButton.svg</file>
+        <file>Icons/RunBreakpointButtonWithBorder.svg</file>
+        <file>Icons/RunButton.svg</file>
+        <file>Icons/RunButtonWithBorder.svg</file>
+        <file>Icons/RunLineButton.svg</file>
+        <file>Icons/RunLineButtonWithBorder.svg</file>
+        <file>Icons/StopButtonActive.svg</file>
+        <file>Icons/StopButtonActiveWithBorder.svg</file>
+        <file>Icons/StopButtonInactive.svg</file>
+        <file>Icons/StopButtonInactiveWithBorder.svg</file>
     </qresource>
 </RCC>
