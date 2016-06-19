@@ -3,9 +3,9 @@
 Register::Register(int width):_data{std::vector<bool>(width,false)}{}
 
 MemoryValue Register::get(const int begin, const int end)const{
-  std::vector<bool> res(end-begin);
-  for(int i=end-begin;i-->0;)res[i]=_data[i+begin];
-  return MemoryValue(res);
+  MemoryValue res{end-begin};
+  for(int i=0;i<end-begin;++i)res[i]=_data[i+begin];
+  return res;
 }
 
 void Register::put(const int begin, const int end, const MemoryValue& value){
