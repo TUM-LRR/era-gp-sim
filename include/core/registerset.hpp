@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 #include "memoryvalue.hpp"
-#include "regp.hpp"
+#include "registerid.hpp"
 #include "registervec.hpp"
 
 //a set of Registers and a map registername->register
