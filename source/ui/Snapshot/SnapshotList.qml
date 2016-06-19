@@ -1,16 +1,39 @@
+/*
+ * C++ Assembler Interpreter
+ * Copyright (C) 2016 Chair of Computer Architecture
+ * at Technical University of Munich
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* This file contains the Snapshots */
+
+
 import QtQuick 2.0
 import QtQuick.Dialogs 1.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
-Item {//Modul, which should be bound to the container
+/*Modul, which should be bound to the container*/
+Item {
 
         width: 250
         height: 300
         anchors.fill: parent
 
-
-        Rectangle{//Name of the Module
+        /*holds the name of the Module*/
+        Rectangle{
             id: modulName
             height:35
             Text {
@@ -22,10 +45,12 @@ Item {//Modul, which should be bound to the container
             }
         }
 
-        Component {//Shows, how the the entries should be presented
+        /*Shows, how the the entries should be presented*/
+        Component {
             id: listDelegate
 
-            MouseArea {//MouseArea ofer every line for showing buttons
+            /*MouseArea ofer every line for showing buttons*/
+            MouseArea {
                 height: 25
                 width: 250
                 hoverEnabled: true
@@ -44,10 +69,8 @@ Item {//Modul, which should be bound to the container
 
 
                 Row {
-
-
-
-                    Column{//Space before the text
+                    /*Space before the text*/
+                    Column{
                         Rectangle{
                             height: 20
                             width: 10
@@ -55,8 +78,8 @@ Item {//Modul, which should be bound to the container
                         }
                     }
 
-                    Column{//Text, Snapshot Name
-
+                    /*Text, Snapshot Name*/
+                    Column{
                         MouseArea{
                             id: mouseText
                             height: 20
@@ -67,7 +90,8 @@ Item {//Modul, which should be bound to the container
                                 font.bold: true
                             }
 
-                            onDoubleClicked: {//open and delete by clicks
+                            /*open and delete by clicks*/
+                            onDoubleClicked: {
                                 if(mouse.button===Qt.LeftButton){
                                     console.info("Left Double Click, load "+name);
                                 }
@@ -77,7 +101,8 @@ Item {//Modul, which should be bound to the container
                              }
                         }
                     }
-                    Column{//Leaving space to the right end of the window
+                    /*Leaving space to the right end of the window*/
+                    Column{
                         id: afterText
                         Rectangle{
                             height: 20
@@ -101,8 +126,9 @@ Item {//Modul, which should be bound to the container
                             }
                         }
                     }
-                    Column{//space between the buttons
 
+                    /*space between the buttons*/
+                    Column{
                         Rectangle{
                             height: 20
                             width: 5
@@ -132,8 +158,8 @@ Item {//Modul, which should be bound to the container
         }
 
 
-
-        ListModel {//Data for the View
+        /*Data for the View*/
+        ListModel {
 
                  id: listModel
 
@@ -211,7 +237,8 @@ Item {//Modul, which should be bound to the container
 
         ListView {
               id: listView
-              anchors.top: modulName.bottom//Leavs place for the moduleName
+              /*Leavs place for the moduleName*/
+              anchors.top: modulName.bottom
               anchors.left: parent.left
               anchors.bottom: parent.bottom
               anchors.right: parent.right
@@ -220,12 +247,13 @@ Item {//Modul, which should be bound to the container
         }
 
 
-
-        function add(name){//Function for adding Data from cpp
+        /*Function for adding Data from cpp*/
+        function add(name){
             listModel.append({name: name});
         }
 
-        function remove(index){//Function for deleting data from cpp !The index must be known!
+        /*Function for deleting data from cpp !The index must be known!*/
+        function remove(index){
             listModel.remove(index);
         }
 }
