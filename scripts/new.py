@@ -13,16 +13,18 @@ def parse(argument):
 
     return root, relative_path, name
 
+
 def get_license(root):
     path = os.path.join(root, 'scripts', 'short-license.txt')
     with open(path, 'r') as short_license:
         return short_license.read() + '\n'
 
 
-def create_header(root, relative_path, name):
+def create_header(argument, root, relative_path, name):
     directory = os.path.join(root, "include", relative_path)
     header_path = os.path.join(directory, '{0}.hpp'.format(name))
-    guard = '{0}_HPP'.format(name.replace('-', '_').upper())
+    guard_name = re.sub(r'[-/]', '_', argument).upper()
+    guard = 'ERAGPSIM_{0}_HPP'.format(guard_name)
     class_name = ''.join([i.capitalize() for i in name.split('-')])
     print("Creating header file for class '{0}' ...".format(class_name))
     with open(header_path, 'w') as header:
@@ -47,7 +49,7 @@ def main():
         raise RuntimeError("Usage: new.py <relative/path/to/file>")
 
     root, relative_path, name = parse(sys.argv[1])
-    create_header(root, relative_path, name)
+    create_header(sys.argv[1], root, relative_path, name)
     create_source(root, relative_path, name)
     print('Done \033[91m<3\033[0m')
 

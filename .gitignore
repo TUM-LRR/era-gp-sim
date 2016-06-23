@@ -200,3 +200,11 @@ CMakeLists.txt.user
 
 docs/html
 docs/latex
+
+# Other
+
+build/
+.dir-locals.el
+.clang_complete
+.tags
+.tags1
