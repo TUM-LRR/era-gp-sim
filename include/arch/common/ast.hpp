@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_AST_HPP
-#define ERAGPSIM_ARCH_AST_HPP
+#ifndef ERAGPSIM_ARCH_COMMON_AST_HPP
+#define ERAGPSIM_ARCH_COMMON_AST_HPP
 
 #include <memory>
 #include <string>
@@ -190,8 +190,13 @@ public:
    */
   virtual MemoryValue assemble() override { return MemoryValue{}; }
 
+  /**
+   * \return The identifier of the register.
+   */
+  virtual std::string getIdentifier() { return _identifier; }
+
 private:
   std::string _identifier;
 };
 
-#endif // ERAGPSIM_ARCH_AST_HPP
+#endif // ERAGPSIM_ARCH_COMMON_AST_HPP
