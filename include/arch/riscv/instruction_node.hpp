@@ -25,36 +25,24 @@ class InstructionNode : public AbstractSyntaxTreeNode {
 public:
   /**
    * Constructs a new node that represents a RISC V specific instruction.
-   *
-   * \param instruction The name of this instruction.
    */
-  RegisterNode(std::string instruction)
-      : AbstractSyntaxTreeNode(NodeType::IMMEDIATE), _instruction(instruction) {
-  }
+  InstructionNode() : AbstractSyntaxTreeNode(NodeType::INSTRUCTION) {}
 
   /* Ensure this class is also pure virtual */
-  virtual MemoryValue getValue(DummyMemoryAccess memory_access) = 0;
+  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) = 0;
   virtual bool validate() = 0;
   virtual MemoryValue assemble() = 0;
   virtual std::string getIdentifier() = 0;
 
   /**
-   * Checks if this node has 3 register nodes as children.
+   * Checks if this node has 'amount' children of type 'type', starting at index
+   * 'startIndex'.
    *
+   * \param startIndex The index to start checking for registers.
+   * \param amount The amount of registers required.
    * \return true if this node matches the requirements.
    */
-  bool requireThreeRegisters();
-
-  /**
-   * Checks if this node has 2 register and 1 immediate node as children (in
-   * that order).
-   *
-   * \return true if this node matches the requirements.
-   */
-  bool requireTwoRegistersAndImmediate();
-
-private:
-  std::string _instruction;
+  bool requireChildren(NodeType type, size_t startIndex, size_t amount);
 };
 
 #endif // ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP

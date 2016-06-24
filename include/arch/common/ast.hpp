@@ -58,7 +58,7 @@ public:
    * \return An memory value, that represents the the result of the execution.
    * The meaning differs between different node types.
    */
-  virtual MemoryValue getValue(DummyMemoryAccess memory_access) = 0;
+  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) = 0;
 
   /**
    * Validates the structure of this syntax tree. This should be called
@@ -96,7 +96,7 @@ public:
    *
    * \param node The node to be added.
    */
-  void addChild(NodePtr node) { _children.push_back(node); }
+  void addChild(NodePtr node) { _children.push_back(std::move(node)); }
 
 protected:
   /**
@@ -127,7 +127,7 @@ public:
   /**
    * \return The concrete value
    */
-  virtual MemoryValue getValue(DummyMemoryAccess memory_access) override {
+  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) override {
     return _value;
   }
 
@@ -170,7 +170,7 @@ public:
   /**
    * \return The content of the register, represented by this node.
    */
-  virtual MemoryValue getValue(DummyMemoryAccess memory_access) override {
+  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) override {
     // TODO Return the actual content of the register using the proper
     // memory access
     return MemoryValue{};
