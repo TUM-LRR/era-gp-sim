@@ -19,7 +19,7 @@
 
 #include <map>
 
-#include "include/arch/common/abstract_node_factories.hpp"
+#include "arch/common/abstract_node_factories.hpp"
 
 /**
  * @brief The RISCVInstructionNodeFactory class is a

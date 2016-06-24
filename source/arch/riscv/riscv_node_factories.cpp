@@ -17,7 +17,7 @@
 
 #include <cctype>
 
-#include "include/arch/riscv/riscv_node_factories.hpp"
+#include "arch/riscv/riscv_node_factories.hpp"
 
 void RISCVInstructionNodeFactory::initializeInstructionMap() {
   // example
