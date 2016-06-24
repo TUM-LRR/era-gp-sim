@@ -51,9 +51,7 @@ public:
 
   virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
 
-  virtual bool validate() {
-    return validateIntegerInstruction(*this, _immediate);
-  }
+  virtual bool validate();
 
   virtual MemoryValue assemble() {
     return MemoryValue{}; // TODO
@@ -77,9 +75,7 @@ public:
 
   virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
 
-  virtual bool validate() {
-    return validateIntegerInstruction(*this, _immediate);
-  }
+  virtual bool validate();
 
   virtual MemoryValue assemble() {
     return MemoryValue{}; // TODO

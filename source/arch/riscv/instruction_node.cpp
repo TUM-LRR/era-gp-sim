@@ -5,7 +5,7 @@ bool InstructionNode::requireChildren(NodeType type, size_t startIndex,
   if (_children.size() - startIndex < amount)
     return false;
 
-  for (size_t i = startIndex; i < amount; i++) {
+  for (size_t i = startIndex; i < startIndex + amount; i++) {
     if (_children.at(i)->getType() != type) {
       return false;
     }

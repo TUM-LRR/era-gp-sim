@@ -7,6 +7,16 @@ static bool validateIntegerInstruction(InstructionNode &node, bool immediate) {
              : node.requireChildren(NodeType::REGISTER, 0, 3);
 }
 
+// validate functions
+bool AddInstructionNode::validate() {
+  return validateIntegerInstruction(*this, _immediate);
+}
+
+bool SubInstructionNode::validate() {
+  return validateIntegerInstruction(*this, _immediate);
+}
+
+// getValue functions
 MemoryValue AddInstructionNode::getValue(DummyMemoryAccess &memory_access) {
   // Get the destination register
   std::string dest = _children.at(0)->getIdentifier();
