@@ -10,6 +10,7 @@ Item {
         id: space
         height: 10
         width: 150
+        visible: false
     }
 
     ComboBox{
@@ -34,6 +35,7 @@ Item {
         anchors.top: box.bottom
         width: 150
         height: 10
+        visible: false
     }
 
     ComponentHolder{
