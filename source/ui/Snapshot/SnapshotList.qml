@@ -74,7 +74,7 @@ Item {
                         Rectangle{
                             height: 20
                             width: 10
-                            color: "white"
+                            visible: false
                         }
                     }
 
@@ -107,7 +107,7 @@ Item {
                         Rectangle{
                             height: 20
                             width: 5
-                            color: "white"
+                            visible: false
                         }
                     }
                     Column{
@@ -132,7 +132,7 @@ Item {
                         Rectangle{
                             height: 20
                             width: 5
-                            color: "white"
+                            visible: false
                         }
                     }
                     Column{
