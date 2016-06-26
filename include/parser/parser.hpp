@@ -15,17 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_PARSER_PARSER_H_
-#define ERAGPSIM_PARSER_PARSER_H_
+#ifndef ERAGPSIM_PARSER_PARSER_HPP_
+#define ERAGPSIM_PARSER_PARSER_HPP_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "include/arch/common/abstract_node_factories.hpp"
+#include "include/arch/common/ast.hpp"
 
 
-enum ParserMode { COMPILE, UPDATE };
+enum ParserMode { kCompile, kUpdate };
 
 /**
  * Base Parser class
@@ -63,8 +63,10 @@ class Parser {
 	 * @return Dialect-specific Regex
 	 */
 	virtual std::string getSyntaxImmediate();
-	
+
+
+	Parser() = default;
 	virtual ~Parser() = default;
 };
 
-#endif// ERAGPSIM_PARSER_PARSER_H_
+#endif// ERAGPSIM_PARSER_PARSER_HPP_
