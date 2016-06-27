@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-#include "include/arch/common/ast.hpp"
+#include "include/arch/common/abstract_node_factories.hpp"
 
 
 enum ParserMode { kCompile, kUpdate };
