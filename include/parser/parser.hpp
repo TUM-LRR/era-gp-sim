@@ -25,7 +25,7 @@
 #include "include/arch/common/abstract_node_factories.hpp"
 
 
-enum ParserMode { kCompile, kUpdate };
+enum class ParserMode { kCompile, kUpdate };
 
 /**
  * Base Parser class
