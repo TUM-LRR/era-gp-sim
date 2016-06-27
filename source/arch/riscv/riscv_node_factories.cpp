@@ -22,14 +22,11 @@
 void RISCVInstructionNodeFactory::initializeInstructionMap() {
   // example
   _instructionMap["ADD"] = []() {
-//      return std::make_shared<AbstractSyntaxTreeNode>();
-    return std::unique_ptr<AbstractSyntaxTreeNode>(
-        new AbstractSyntaxTreeNode());
+    return std::make_unique<AbstractSyntaxTreeNode>();
   };
   // example
   _instructionMap["SUB"] = []() {
-    return std::unique_ptr<AbstractSyntaxTreeNode>(
-        new AbstractSyntaxTreeNode());
+    return std::make_unique<AbstractSyntaxTreeNode>();
   };
 }
 
