@@ -14,6 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+
 #ifndef RISCVNODEFACTORIES_HPP
 #define RISCVNODEFACTORIES_HPP
 
@@ -21,106 +22,109 @@
 
 #include "arch/common/abstract_node_factories.hpp"
 
-/**
- * @brief The RISCVInstructionNodeFactory class is a
- * concrete Implementation of AbstractInstructionNodeFactory for the RISC-V
- * architecture.
- * @see AbstractInstructionNodeFactory
- */
-class RISCVInstructionNodeFactory : public AbstractInstructionNodeFactory {
- public:
-  /**
-   * @brief RISCVInstructionNodeFactory
-   * Creates a Instruction Node Factory for RISC-V architecture
-   */
-  RISCVInstructionNodeFactory() { initializeInstructionMap(); }
+namespace riscv {
 
-  /**
-   * @brief createInstructionNode
-   * Creates and returns a RISC-V Instruction Node for a valid input token, or
-   * nullptr if the token cannot be mapped to a implemented RISC-V instruction
-   * @param token
-   * @return std::uniqe_ptr pointing to the newly created instruction node, or
-   * nullptr if the token cannot be mapped to a implemented RISC-V instruction
-   */
-  std::unique_ptr<AbstractSyntaxTreeNode> createInstructionNode(
-      std::string& token) override;
+    /**
+     * @brief The RISCVInstructionNodeFactory class is a
+     * concrete Implementation of AbstractInstructionNodeFactory for the RISC-V
+     * architecture.
+     * @see AbstractInstructionNodeFactory
+     */
+    class RISCVInstructionNodeFactory : public AbstractInstructionNodeFactory {
+     public:
+      /**
+       * @brief RISCVInstructionNodeFactory
+       * Creates a Instruction Node Factory for RISC-V architecture
+       */
+      RISCVInstructionNodeFactory() { initializeInstructionMap(); }
 
-  ~RISCVInstructionNodeFactory() {}
+      /**
+       * @brief createInstructionNode
+       * Creates and returns a RISC-V Instruction Node for a valid input token, or
+       * nullptr if the token cannot be mapped to a implemented RISC-V instruction
+       * @param token
+       * @return std::uniqe_ptr pointing to the newly created instruction node, or
+       * nullptr if the token cannot be mapped to a implemented RISC-V instruction
+       */
+      std::unique_ptr<AbstractSyntaxTreeNode> createInstructionNode(
+          std::string& token) override;
 
- private:
-  /**
-   * @brief _instructionMap
-   * Table, that maps the instruction identifier (e.g. the token "ADD" for
-   * Addition) to a function that creates the special instruction node (e.g.
-   * AddInstructionNode)
-   */
-  std::map<std::string,
-           std::function<std::unique_ptr<AbstractSyntaxTreeNode>()>>
-      _instructionMap;
+      ~RISCVInstructionNodeFactory() {}
 
-  /**
-   * @brief initializeInstructionMap
-   * Fills instructionMap with values.
-   * Use lambda-functions with no parameters and return type
-   * std::unique_ptr<AbstractSyntaxTreeNode> as value.
-   * Use UPPERCASE instruction identifier as key.
-   */
-  void initializeInstructionMap();
-};
+     private:
+      /**
+       * @brief _instructionMap
+       * Table, that maps the instruction identifier (e.g. the token "ADD" for
+       * Addition) to a function that creates the special instruction node (e.g.
+       * AddInstructionNode)
+       */
+      std::map<std::string,
+               std::function<std::unique_ptr<AbstractSyntaxTreeNode>()>>
+          _instructionMap;
 
-/**
- * @brief The RISCVImmediateNodeFactory class is a concrete implementation of
- * AbstractImmediateNodeFactory for the RISC-V architecture
- */
-class RISCVImmediateNodeFactory : public AbstractImmediateNodeFactory {
- public:
-  /**
-   * @brief RISCVImmediateNodeFactory
-   * Creates a Immediate Node Factory for the RISC-V architecture
-   */
-  RISCVImmediateNodeFactory() {}
+      /**
+       * @brief initializeInstructionMap
+       * Fills instructionMap with values.
+       * Use lambda-functions with no parameters and return type
+       * std::unique_ptr<AbstractSyntaxTreeNode> as value.
+       * Use UPPERCASE instruction identifier as key.
+       */
+      void initializeInstructionMap();
+    };
 
-  ~RISCVImmediateNodeFactory() {}
+    /**
+     * @brief The RISCVImmediateNodeFactory class is a concrete implementation of
+     * AbstractImmediateNodeFactory for the RISC-V architecture
+     */
+    class RISCVImmediateNodeFactory : public AbstractImmediateNodeFactory {
+     public:
+      /**
+       * @brief RISCVImmediateNodeFactory
+       * Creates a Immediate Node Factory for the RISC-V architecture
+       */
+      RISCVImmediateNodeFactory() {}
 
-  /**
-   * @brief createImmediateNode
-   * Creates and returns an immediate node from the given MemoryValue. If the
-   * given input is invalid, a nullptr is returned
-   * @param v MemoryValue, which contains the numerical value of the immediate
-   * to be created
-   * @return std::unique_ptr pointing to the newly created immediate node, or
-   * nullptr if the given MemoryValue is invalid
-   */
-  std::unique_ptr<AbstractSyntaxTreeNode> createImmediateNode(
-      MemoryValue v) override;
-};
+      ~RISCVImmediateNodeFactory() {}
 
-/**
- * @brief The RISCVRegisterAccessNodeFactory class is a concrete implementation
- * of AbstractRegisterAccessNodeFactory for the RISC-V architecture.
- */
-class RISCVRegisterAccessNodeFactory
-    : public AbstractRegisterAccessNodeFactory {
- public:
-  /**
-   * @brief RISCVRegisterAccessNodeFactory
-   * Creates a register access node factory for the RISC-V architecture
-   */
-  RISCVRegisterAccessNodeFactory() {}
+      /**
+       * @brief createImmediateNode
+       * Creates and returns an immediate node from the given MemoryValue. If the
+       * given input is invalid, a nullptr is returned
+       * @param v MemoryValue, which contains the numerical value of the immediate
+       * to be created
+       * @return std::unique_ptr pointing to the newly created immediate node, or
+       * nullptr if the given MemoryValue is invalid
+       */
+      std::unique_ptr<AbstractSyntaxTreeNode> createImmediateNode(
+          MemoryValue v) override;
+    };
 
-  ~RISCVRegisterAccessNodeFactory() {}
+    /**
+     * @brief The RISCVRegisterAccessNodeFactory class is a concrete implementation
+     * of AbstractRegisterAccessNodeFactory for the RISC-V architecture.
+     */
+    class RISCVRegisterAccessNodeFactory
+        : public AbstractRegisterAccessNodeFactory {
+     public:
+      /**
+       * @brief RISCVRegisterAccessNodeFactory
+       * Creates a register access node factory for the RISC-V architecture
+       */
+      RISCVRegisterAccessNodeFactory() {}
 
-  /**
-   * @brief createRegisterAccessNode
-   * Creates and returns a new AbstractSyntaxTreeNode that handles register
-   * access, or nullptr if the given id is invalid
-   * @param id register-id that identifies 1 register of the RISC-V architecture
-   * @return std::unique_ptr pointing to the newly created register access node,
-   * or nullptr if the given id cannot be mapped to a valid RISC-V register
-   */
-  std::unique_ptr<AbstractSyntaxTreeNode> createRegisterAccessNode(
-      const std::string& id) override;
-};
+      ~RISCVRegisterAccessNodeFactory() {}
 
+      /**
+       * @brief createRegisterAccessNode
+       * Creates and returns a new AbstractSyntaxTreeNode that handles register
+       * access, or nullptr if the given id is invalid
+       * @param id register-id that identifies 1 register of the RISC-V architecture
+       * @return std::unique_ptr pointing to the newly created register access node,
+       * or nullptr if the given id cannot be mapped to a valid RISC-V register
+       */
+      std::unique_ptr<AbstractSyntaxTreeNode> createRegisterAccessNode(
+          const std::string& id) override;
+    };
+
+}
 #endif  // RISCVNODEFACTORIES_HPP

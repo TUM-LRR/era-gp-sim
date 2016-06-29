@@ -19,6 +19,8 @@
 
 #include "arch/riscv/riscv_node_factories.hpp"
 
+using namespace riscv;
+
 void RISCVInstructionNodeFactory::initializeInstructionMap() {
   // example
   _instructionMap["ADD"] = []() {
@@ -32,6 +34,8 @@ void RISCVInstructionNodeFactory::initializeInstructionMap() {
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 RISCVInstructionNodeFactory::createInstructionNode(std::string& token) {
+
+  //transform token to uppercase
   std::string upper = token;
   for (auto& c : upper) {
     c = toupper(c);
