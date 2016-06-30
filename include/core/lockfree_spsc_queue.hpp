@@ -17,7 +17,7 @@
  */
 
 #ifndef ERAGPSIM_CORE_LOCKFREE_SPSC_QUEUE_HPP_
-#define ERAGPSIM_LOCKFREE_SPSC_QUEUE_HPP_
+#define ERAGPSIM_CORE_LOCKFREE_SPSC_QUEUE_HPP_
 
 #include <atomic>
 #include <type_traits>
@@ -73,8 +73,19 @@ class LockfreeSPSCQueue {
    */
   template <typename U>
   void push(U&& value) noexcept(std::is_nothrow_constructible<T, decltype(std::forward<U>(value))>::value) {
+    // Create new node
     Node* node = new Node { nullptr, std::forward<U>(value) };
-    appendNode(node);
+    
+    // Append new node
+    _tail.load(std::memory_order_acquire)->next = node;
+    _tail.store(node, std::memory_order_release);
+    
+    // Clean up old nodes
+    while (_head != _divider) {
+      Node* previous = _head;
+      _head = _head->next;
+      delete previous;
+    }
   }
   
   /**
@@ -99,19 +110,15 @@ class LockfreeSPSCQueue {
       
       // Consume this node
       _divider.store(node, std::memory_order_release);
-      size.fetch_sub(1);
-      
       return true;
     } else {
+      // The queue is empty, no nodes are available.
       return false;
     }
   }
   
-  // Size of the internal list. Used for debugging
-  std::atomic<std::size_t> size;
-  
  private:
-  /** \brief A node of the internal linked list */
+  /// \brief A node of the internal linked list
   struct Node {
     Node* next;
     T value;
@@ -128,25 +135,6 @@ class LockfreeSPSCQueue {
    *        \c _divider still need to be cleaned up)
    */
   std::atomic<Node*> _divider;
-  
-  /**
-   * \brief Adds a node to the tail end of the queue.
-   * \pre May only be called in the producer thread.
-   * \see push
-   */
-  void appendNode(Node* node) noexcept {
-    // Append new node
-    _tail.load(std::memory_order_acquire)->next = node;
-    _tail.store(node, std::memory_order_release);
-    size.fetch_add(1);
-    
-    // Clean up old nodes
-    while (_head != _divider) {
-      Node* previous = _head;
-      _head = _head->next;
-      delete previous;
-    }
-  }
 };
 
-#endif // ERAGPSIM_LOCKFREE_SPSC_QUEUE_HPP_
+#endif // ERAGPSIM_CORE_LOCKFREE_SPSC_QUEUE_HPP_
