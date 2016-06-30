@@ -21,6 +21,7 @@
 #define ERAGPSIM_ARCH_UNIT_INFORMATION_HPP
 
 #include <string>
+#include <unordered_map>
 
 #include "arch/common/register-information.hpp"
 #include "common/builder.hpp"
@@ -46,6 +47,7 @@ class UnitInformation : public ContainerAdapter<RegisterInformation>,
   using super::clear;
   using super::size;
   using super::isEmpty;
+  using Type = RegisterInformation::Type;
 
   /**
    * Constructs a new unit.
@@ -103,10 +105,39 @@ class UnitInformation : public ContainerAdapter<RegisterInformation>,
 
   /**
    * Returns the name of the unit.
-   *
-   * @return The name of the unit.
    */
   const std::string& getName() const noexcept;
+
+
+  /**
+   * Gives the unit a special register.
+   *
+   * A special register would usually be something like a program counter
+   * register, link register or flag register. The idea is that these special
+   * registers should be accessable directly without having to inspect the
+   * entire collection of registers in the unit.
+   *
+   * The type of the special register added is deduced from via its `getType()`
+   * member.
+   *
+   * @param specialRegister The information about the special register.
+   * register.
+   *
+   * @return The current unit object.
+   */
+  UnitInformation& specialRegister(const RegisterInformation& specialRegister);
+
+  /**
+   * Returns information about a type of special register, if any such register
+   * was registered.
+   */
+  const RegisterInformation& getSpecialRegister(Type type) const noexcept;
+
+  /**
+   * Returns whether any special register of the given type was set for the
+   * unit.
+   */
+  bool hasSpecialRegister(Type type) const noexcept;
 
   /**
    * Adds a range of RegisterInformation objects to the unit.
@@ -146,8 +177,13 @@ class UnitInformation : public ContainerAdapter<RegisterInformation>,
   bool isValid() const noexcept override;
 
  private:
+  using SpecialMap = std::unordered_map<Type, RegisterInformation>;
+
   /** The name of the unit, e.g. "CPU". */
   std::string _name;
+
+  /** A map of special registers, if any. */
+  SpecialMap _specialRegisters;
 };
 
 #endif /* ERAGPSIM_ARCH_UNIT_INFORMATION_HPP */

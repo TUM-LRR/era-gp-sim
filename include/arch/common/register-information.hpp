@@ -58,7 +58,7 @@ class RegisterInformation : public Builder {
   using size_t = unsigned short;
 
   /** The type of data stored in this register. */
-  enum class Type { INTEGER, FLOAT, VECTOR, FLAG, INSTRUCTION };
+  enum class Type { INTEGER, FLOAT, VECTOR, FLAG, LINK, PROGRAM_COUNTER };
 
   /**
    * Constructs the RegisterInformation with the register's name.

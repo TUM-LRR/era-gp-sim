@@ -39,6 +39,28 @@ const std::string& UnitInformation::getName() const noexcept {
   return _name;
 }
 
+UnitInformation&
+UnitInformation::specialRegister(const RegisterInformation& specialRegister) {
+  assert(specialRegister.getType() != Type::INTEGER);
+  assert(specialRegister.getType() != Type::FLOAT);
+
+  // Using insert() instead of [] to avoid the subscript operator, which
+  // would require a default constructor for RegisterInformation
+  _specialRegisters.insert({specialRegister.getType(), specialRegister});
+
+  return *this;
+}
+
+const RegisterInformation& UnitInformation::getSpecialRegister(Type type) const
+    noexcept {
+  assert(hasSpecialRegister(type));
+  return _specialRegisters.at(type);
+}
+
+bool UnitInformation::hasSpecialRegister(Type type) const noexcept {
+  return _specialRegisters.count(type);
+}
+
 UnitInformation& UnitInformation::addRegisters(List regs) {
   assert(regs.size() > 0);
   return addRegisters<List>(regs);
