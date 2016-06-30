@@ -13,16 +13,15 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "include/arch/riscv/parser/IntermediateRepresentator.hpp"
+#ifndef ERAGPSIM_PARSER_CODE_POSITION_HPP
+#define ERAGPSIM_PARSER_CODE_POSITION_HPP
 
-FinalRepresentation IntermediateRepresentator::transform(const SymbolTable& table)
-{
-    FinalRepresentation representation;
-    for (const auto& i : _commandList)
-    {
-        i->execute(representation, table);
-    }
-    return representation;
-}
+/**
+ * \class CodePosition
+ * \brief Denotes a code position in the format (line, character).
+ */
+using CodePosition = std::pair<unsigned int, unsigned int>; //For now.
+
+#endif

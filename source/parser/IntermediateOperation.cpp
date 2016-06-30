@@ -13,14 +13,21 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_RISCV_PARSER_FINAL_REPRESENTATION_H
-#define ERAGPSIM_ARCH_RISCV_PARSER_FINAL_REPRESENTATION_H
+#include "include/parser/IntermediateOperation.hpp"
 
-#include<vector>
-#include"../../AbstractNodeFactories.hpp"
-
-using FinalRepresentation = std::vector<AbstractSyntaxTreeNode>; //Temporary.
-
-#endif
+void IntermediateOperation::enhanceSymbolTable(SymbolTable& table, CompileState& state)
+{
+    //We assign an address, if we do not have one yet (usually, we should not have one).
+    if (_address == kNullAddress)
+    {
+        determineMemoryPosition();
+    }
+    
+    //Then, we insert all our labels.
+    for (const auto& i : _labels)
+    {
+        table.insertEntry(i, std::to_string(_address), state);
+    }
+}

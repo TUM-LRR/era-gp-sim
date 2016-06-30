@@ -13,14 +13,25 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "include/arch/riscv/parser/IntermediateOperation.hpp"
+#include "include/parser/IntermediateRepresentator.hpp"
 
-void IntermediateOperation::enhanceSymbolTable(SymbolTable& table)
+FinalRepresentation IntermediateRepresentator::transform(CompileState& state)
 {
-    for (const auto& i : _labels)
-    {
-        //table.insert(i);
+    //First of all, we insert all our labels/constants into the SymbolTable.
+    SymbolTable table;
+    for (const auto& i : _commandList){
+        i->enhanceSymbolTable(table, state);
     }
+
+    //Then, we execute their values.
+    FinalRepresentation representation;
+    for (const auto& i : _commandList)
+    {
+        i->execute(representation, table, state);
+    }
+
+    //Now, we are done.
+    return representation;
 }
