@@ -20,6 +20,8 @@
 #ifndef ERAGPSIM_ARCH_INSTRUCTION_SET_HPP
 #define ERAGPSIM_ARCH_INSTRUCTION_SET_HPP
 
+#include <vector>
+
 #include "arch/common/instruction-information.hpp"
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
@@ -30,12 +32,13 @@
  * It is really just a light-weight wrapper around a vector (it doesn't even
  * have a name).
  */
-class InstructionSet : public ContainerAdapter<InstructionInformation>,
-                       public Builder {
+class InstructionSet
+    : public ContainerAdapter<std::vector<InstructionInformation>>,
+      public Builder {
  public:
-  using super = ContainerAdapter<InstructionInformation>;
+  using super = ContainerAdapter<std::vector<InstructionInformation>>;
   using super::_container;
-  using super::List;
+  using super::InitializerList;
   using super::begin;
   using super::cbegin;
   using super::end;
@@ -57,7 +60,7 @@ class InstructionSet : public ContainerAdapter<InstructionInformation>,
    * @param range A range of instructions to add to the set.
    */
   template <typename Range>
-  InstructionSet(const Range& range) : super(range) {
+  explicit InstructionSet(const Range& range) : super(range) {
   }
 
   /**
@@ -65,7 +68,7 @@ class InstructionSet : public ContainerAdapter<InstructionInformation>,
    *
    * @param instructions A list of instructions to add to the set.
    */
-  InstructionSet(List instructions);
+  explicit InstructionSet(InitializerList instructions);
 
   /**
    * Adds a range of InstructionInformation objects to the unit.
@@ -127,7 +130,7 @@ class InstructionSet : public ContainerAdapter<InstructionInformation>,
    *
    * @return The current instruction object.
    */
-  InstructionSet& addInstructions(List instructions);
+  InstructionSet& addInstructions(InitializerList instructions);
 
   /**
    * Adds a single instruction to the set.

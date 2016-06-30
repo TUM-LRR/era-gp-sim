@@ -61,9 +61,9 @@ bool UnitInformation::hasSpecialRegister(Type type) const noexcept {
   return _specialRegisters.count(type);
 }
 
-UnitInformation& UnitInformation::addRegisters(List regs) {
+UnitInformation& UnitInformation::addRegisters(InitializerList regs) {
   assert(regs.size() > 0);
-  return addRegisters<List>(regs);
+  return addRegisters<InitializerList>(regs);
 }
 
 UnitInformation& UnitInformation::addRegister(const RegisterInformation& reg) {

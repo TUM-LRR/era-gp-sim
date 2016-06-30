@@ -22,6 +22,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "arch/common/register-information.hpp"
 #include "common/builder.hpp"
@@ -35,10 +36,11 @@
  * unit brings integer registers and the "FPU" unit brings floating point
  * registers.
  */
-class UnitInformation : public ContainerAdapter<RegisterInformation>,
-                        public Builder {
+class UnitInformation
+    : public ContainerAdapter<std::vector<RegisterInformation>>,
+      public Builder {
  public:
-  using super = ContainerAdapter<RegisterInformation>;
+  using super = ContainerAdapter<std::vector<RegisterInformation>>;
   using super::_container;
   using super::begin;
   using super::cbegin;
@@ -162,7 +164,7 @@ class UnitInformation : public ContainerAdapter<RegisterInformation>,
    *
    * @return The current unit object.
    */
-  UnitInformation& addRegisters(List regs);
+  UnitInformation& addRegisters(InitializerList regs);
 
   /**
    * Adds a single RegisterInformation object to the unit.

@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "arch/common/register-information.hpp"
+#include "common/utility.hpp"
 
 typename RegisterInformation::id_t RegisterInformation::_rollingID = 0;
 
@@ -122,9 +123,8 @@ bool RegisterInformation::hasEnclosing() const noexcept {
 RegisterInformation&
 RegisterInformation::addConstituents(std::initializer_list<id_t> constituents) {
   if (_enclosing) {
-    for (auto& id : constituents) {
-      assert(id != *_enclosing);
-    }
+    assert(Utility::noneOf(constituents,
+                           [this](auto& id) { return id == *_enclosing; }));
   }
   _constituents.insert(_constituents.end(), constituents);
   return *this;

@@ -24,12 +24,12 @@
 
 InstructionSet::InstructionSet() = default;
 
-InstructionSet::InstructionSet(List instructions) : super(instructions) {
+InstructionSet::InstructionSet(InitializerList instructions) : super(instructions) {
 }
 
-InstructionSet& InstructionSet::addInstructions(List instructions) {
+InstructionSet& InstructionSet::addInstructions(InitializerList instructions) {
   assert(instructions.size() > 0);
-  return addInstructions<List>(instructions);
+  return addInstructions<InitializerList>(instructions);
 }
 
 InstructionSet&

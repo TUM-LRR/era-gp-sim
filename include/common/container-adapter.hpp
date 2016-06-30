@@ -21,7 +21,6 @@
 #define ERAGPSIM_COMMON_CONTAINER_ADAPTER_HPP
 
 #include <memory>
-#include <vector>
 
 /**
  * A container-adapter base template.
@@ -30,22 +29,15 @@
  * want to adapt some standard container, you can inherit your adapter from this
  * class and it will take care of some boilerplate methods.
  */
-template <typename T,
-          template <typename, typename> class UnderlyingTemplate = std::vector,
-          bool makeConst = false>
+template <typename UnderlyingTemplate>
 class ContainerAdapter {
  public:
   // Choose const or non-const version of container
-  // clang-format off
-  using Underlying = typename std::conditional<
-    makeConst,
-    const UnderlyingTemplate<T, std::allocator<T>>,
-    UnderlyingTemplate<T, std::allocator<T>>
-  >::type;
-  // clang-format on
-  using Iterator      = typename Underlying::iterator;
-  using ConstIterator = typename Underlying::const_iterator;
-  using List          = std::initializer_list<T>;
+  using Underlying      = UnderlyingTemplate;
+  using Iterator        = typename Underlying::iterator;
+  using ConstIterator   = typename Underlying::const_iterator;
+  using ValueType       = typename Underlying::value_type;
+  using InitializerList = std::initializer_list<ValueType>;
 
   /**
    * Constructs a new empty container adapter.
@@ -60,7 +52,7 @@ class ContainerAdapter {
    * @param range A range of elements to initialize the container adapter with.
    */
   template <typename Range>
-  ContainerAdapter(const Range& range)
+  explicit ContainerAdapter(const Range& range)
   : _container(std::begin(range), std::end(range)) {
   }
 
@@ -70,7 +62,7 @@ class ContainerAdapter {
    * @param instructions A list of elements to initialize the container adapter
    *                     with.
    */
-  ContainerAdapter(List list) : _container(list) {
+  explicit ContainerAdapter(InitializerList list) : _container(list) {
   }
 
   virtual ~ContainerAdapter() = default;

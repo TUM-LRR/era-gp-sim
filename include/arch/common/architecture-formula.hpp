@@ -22,6 +22,7 @@
 
 #include <cassert>
 #include <string>
+#include <vector>
 
 #include "arch/common/architecture.hpp"
 #include "common/container-adapter.hpp"
@@ -34,10 +35,10 @@
  * and optionally any number of further extensions.
  */
 class Architecture::Formula
-    : public ContainerAdapter<std::string, std::vector, true> {
+    : public ContainerAdapter<const std::vector<std::string>> {
  public:
   using ExtensionName = std::string;
-  using super         = ContainerAdapter<std::string, std::vector, true>;
+  using super         = ContainerAdapter<const std::vector<std::string>>;
 
   /**
    * Constructs a new Formula.
