@@ -17,7 +17,6 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <cassert>
 #include <string>
 #include <vector>
 
@@ -52,9 +51,13 @@ RegisterInformation& RegisterInformation::size(size_t bit_size) {
   return *this;
 }
 
-RegisterInformation::size_t RegisterInformation::size() const noexcept {
-  assert(static_cast<bool>(_size));
+RegisterInformation::size_t RegisterInformation::getSize() const noexcept {
+  assert(hasSize());
   return *_size;
+}
+
+bool RegisterInformation::hasSize() const noexcept {
+  return static_cast<bool>(_size);
 }
 
 RegisterInformation& RegisterInformation::id(id_t id) {
@@ -75,7 +78,7 @@ RegisterInformation::Type RegisterInformation::getType() const noexcept {
   return _type;
 }
 
-bool RegisterInformation::isHardwired() const noexcept {
+bool RegisterInformation::isConstant() const noexcept {
   return static_cast<bool>(_constant);
 }
 
@@ -108,13 +111,21 @@ RegisterInformation& RegisterInformation::enclosing(id_t id) {
   return *this;
 }
 
-Optional<RegisterInformation::id_t> RegisterInformation::getEnclosing() const
-    noexcept {
-  return _enclosing;
+RegisterInformation::id_t RegisterInformation::getEnclosing() const noexcept {
+  return *_enclosing;
+}
+
+bool RegisterInformation::hasEnclosing() const noexcept {
+  return static_cast<bool>(_enclosing);
 }
 
 RegisterInformation&
 RegisterInformation::addConstituents(std::initializer_list<id_t> constituents) {
+  if (_enclosing) {
+    for (auto& id : constituents) {
+      assert(id != *_enclosing);
+    }
+  }
   _constituents.insert(_constituents.end(), constituents);
   return *this;
 }

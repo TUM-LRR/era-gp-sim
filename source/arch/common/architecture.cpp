@@ -100,13 +100,13 @@ const std::string& Architecture::getName() const noexcept {
 
 Architecture::Endianness Architecture::getEndianness() const noexcept {
   assert(isValidated());
-  return *_base->getEndianness();
+  return _base->getEndianness();
 }
 
 Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const
     noexcept {
   assert(isValidated());
-  return *_base->getAlignmentBehavior();
+  return _base->getAlignmentBehavior();
 }
 
 /**
@@ -114,7 +114,7 @@ Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const
  */
 Architecture::word_size_t Architecture::getWordSize() const noexcept {
   assert(isValidated());
-  return *_base->getWordSize();
+  return _base->getWordSize();
 }
 
 const Architecture::UnitContainer& Architecture::getUnits() const {

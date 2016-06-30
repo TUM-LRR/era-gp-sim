@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_ARCH_EXTENSION_INFORMATION_HPP
 #define ERAGPSIM_ARCH_EXTENSION_INFORMATION_HPP
 
+#include <algorithm>
 #include <initializer_list>
 #include <memory>
 #include <string>
@@ -177,9 +178,14 @@ class ExtensionInformation : public Builder {
   ExtensionInformation& endianness(Endianness endianness);
 
   /**
-   * Returns the endianness of the extension, if any.
+   * Returns the endianness of the extension.
    */
-  Optional<Endianness> getEndianness() const noexcept;
+  Endianness getEndianness() const noexcept;
+
+  /**
+   * Returns whether any endianness is set.
+   */
+  bool hasEndianness() const noexcept;
 
   /**
    * Sets the alignment behavior for the extension.
@@ -194,7 +200,12 @@ class ExtensionInformation : public Builder {
   /**
    * Returns the alignment behavior of the extension, if any.
    */
-  Optional<AlignmentBehavior> getAlignmentBehavior() const noexcept;
+  AlignmentBehavior getAlignmentBehavior() const noexcept;
+
+  /**
+   * Returns whether any alignment behavior of the extension is set.
+   */
+  bool hasAlignmentBehavior() const noexcept;
 
   /**
    * Sets the word size for the extension, in bits.
@@ -208,7 +219,12 @@ class ExtensionInformation : public Builder {
   /**
    * Returns the word size of the extension (in bits), if any.
    */
-  Optional<size_t> getWordSize() const noexcept;
+  size_t getWordSize() const noexcept;
+
+  /**
+   * Returns whether any word size is set.
+   */
+  bool hasWordSize() const noexcept;
 
   /**
    * Adds the instructions of the instruction set to the extension.

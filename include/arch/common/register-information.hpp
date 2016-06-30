@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP
 #define ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP
 
+#include <cassert>
 #include <cstddef>
 #include <iterator>
 #include <string>
@@ -57,7 +58,7 @@ class RegisterInformation : public Builder {
   using size_t = unsigned short;
 
   /** The type of data stored in this register. */
-  enum class Type { INTEGER, FLOAT, VECTOR, FLAG };
+  enum class Type { INTEGER, FLOAT, VECTOR, FLAG, INSTRUCTION };
 
   /**
    * Constructs the RegisterInformation with the register's name.
@@ -104,7 +105,12 @@ class RegisterInformation : public Builder {
    *
    * @return The size of the register.
    */
-  size_t size() const noexcept;
+  size_t getSize() const noexcept;
+
+  /**
+   * Returns whether the register has a size set.
+   */
+  bool hasSize() const noexcept;
 
   /**
    * Sets the numeric identifier for the register.
@@ -117,8 +123,6 @@ class RegisterInformation : public Builder {
 
   /**
    * Returns the ID of the register.
-   *
-   * @return The ID of the register.
    */
   id_t getID() const noexcept;
 
@@ -151,12 +155,11 @@ class RegisterInformation : public Builder {
    *
    * @return The current register object.
    */
-  template <typename HardwiredType,
+  template <typename ConstantType,
             typename = std::enable_if_t<
-                std::is_convertible<HardwiredType, double>::value>>
-  RegisterInformation& hardwiredTo(const HardwiredType& constant) {
-    _constant = static_cast<HardwiredType>(constant);
-
+                std::is_convertible<ConstantType, double>::value>>
+  RegisterInformation& constant(const ConstantType& constant) {
+    _constant = constant;
     return *this;
   }
 
@@ -164,17 +167,17 @@ class RegisterInformation : public Builder {
    * Returns the constant the register is hardwired to, if any, and converts it
    *  to the given type.
    *
-   * @tparam Hardwired The output type for the constant.
+   * @tparam ConstantType The output type for the constant.
    *
    * @return If a conversion is possible, the current hardwired constant
    *         cast to the given type.
    */
-  template <typename HardwiredType,
+  template <typename ConstantType,
             typename = std::enable_if_t<
-                std::is_convertible<HardwiredType, double>::value>>
-  const Optional<HardwiredType>& hardwiredTo() const noexcept {
-    return isHardwired() ? static_cast<HardwiredType>(_constant)
-                         : Optional<HardwiredType>{};
+                std::is_convertible<ConstantType, double>::value>>
+  ConstantType getConstant() const noexcept {
+    assert(isConstant());
+    return static_cast<ConstantType>(*_constant);
   }
 
   /**
@@ -182,7 +185,7 @@ class RegisterInformation : public Builder {
    *
    * @return True if the register is hardwired to a constant, else false.
    */
-  bool isHardwired() const noexcept;
+  bool isConstant() const noexcept;
 
   /**
    * Adds a range of addAliases to the known aliases for the register.
@@ -255,7 +258,13 @@ class RegisterInformation : public Builder {
    * @return An Optional object, possibly containing an ID for the enclosing
    *         register (if this register has an enclosing register).
    */
-  Optional<id_t> getEnclosing() const noexcept;
+  id_t getEnclosing() const noexcept;
+
+
+  /**
+   * Returns whether or not the register has an enclosing ID set.
+   */
+  bool hasEnclosing() const noexcept;
 
   /**
    * Adds a range of constituent register IDs for the register.

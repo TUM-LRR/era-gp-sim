@@ -102,9 +102,14 @@ ExtensionInformation& ExtensionInformation::endianness(Endianness endianness) {
   return *this;
 }
 
-Optional<ExtensionInformation::Endianness>
-ExtensionInformation::getEndianness() const noexcept {
-  return _endianness;
+ExtensionInformation::Endianness ExtensionInformation::getEndianness() const
+    noexcept {
+  assert(hasEndianness());
+  return *_endianness;
+}
+
+bool ExtensionInformation::hasEndianness() const noexcept {
+  return static_cast<bool>(_endianness);
 }
 
 ExtensionInformation&
@@ -113,22 +118,32 @@ ExtensionInformation::alignmentBehavior(AlignmentBehavior alignmentBehavior) {
   return *this;
 }
 
-Optional<ExtensionInformation::AlignmentBehavior>
+ExtensionInformation::AlignmentBehavior
 ExtensionInformation::getAlignmentBehavior() const noexcept {
-  return _alignmentBehavior;
+  assert(hasAlignmentBehavior());
+  return *_alignmentBehavior;
 }
+
+bool ExtensionInformation::hasAlignmentBehavior() const noexcept {
+  return static_cast<bool>(_alignmentBehavior);
+}
+
 
 ExtensionInformation& ExtensionInformation::wordSize(size_t wordSize) {
   _wordSize = wordSize;
   return *this;
 }
 
-// clang-format off
-Optional<ExtensionInformation::size_t>
-ExtensionInformation::getWordSize() const noexcept {
-  return _wordSize;
+
+ExtensionInformation::size_t ExtensionInformation::getWordSize() const
+    noexcept {
+  assert(hasWordSize());
+  return *_wordSize;
 }
-// clang-format on
+
+bool ExtensionInformation::hasWordSize() const noexcept {
+  return static_cast<bool>(_wordSize);
+}
 
 ExtensionInformation&
 ExtensionInformation::addInstructions(const InstructionSet& instructions) {
@@ -204,9 +219,9 @@ bool ExtensionInformation::isValid() const noexcept {
 }
 
 bool ExtensionInformation::isValidBase() const noexcept {
-  if (!_endianness) return false;
-  if (!_alignmentBehavior) return false;
-  if (!_wordSize) return false;
+  if (!hasEndianness()) return false;
+  if (!hasAlignmentBehavior()) return false;
+  if (!hasWordSize()) return false;
 
   // Check the basic stuff
   return isValid();
