@@ -109,9 +109,9 @@ class LockfreePermanentQueue {
     std::atomic<Node*> next;
     T value;
     
-    Node() = default;
-    Node(const T& t) : value(t) {}
-    Node(T&& t) : value(std::forward<T>(t)) {}
+    Node() : next(nullptr) {}
+    Node(const T& t) : next(nullptr), value(t) {}
+    Node(T&& t) : next(nullptr), value(std::forward<T>(t)) {}
   };
   
   /// \brief The front end of the list (sentinel node)
