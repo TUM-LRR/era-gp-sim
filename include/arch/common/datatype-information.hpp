@@ -40,57 +40,57 @@
  */
 class DataTypeInformation : public Builder {
  public:
-	using size_t = unsigned short;
+  using size_t = unsigned short;
 
-	/**
-	 * Constructs the datatype information object.
-	 *
-	 * @param name The name of the datatype, e.g. "dword".
-	 * @param size The size of the datatype, in bits.
-	 */
-	DataTypeInformation(const std::string& name, size_t size);
+  /**
+   * Constructs the datatype information object.
+   *
+   * @param name The name of the datatype, e.g. "dword".
+   * @param size The size of the datatype, in bits.
+   */
+  DataTypeInformation(const std::string& name, size_t size);
 
-	/**
-	 * Sets the name of the datatype.
-	 *
-	 * @param name The name for the data type.
-	 *
-	 * @return The current datatype object.
-	 */
-	DataTypeInformation& name(const std::string& name);
+  /**
+   * Sets the name of the datatype.
+   *
+   * @param name The name for the data type.
+   *
+   * @return The current datatype object.
+   */
+  DataTypeInformation& name(const std::string& name);
 
-	/**
-	 * Returns the name of the datatype.
-	 *
-	 * @return The name of the datatype.
-	 */
-	const std::string& getName() const noexcept;
+  /**
+   * Returns the name of the datatype.
+   *
+   * @return The name of the datatype.
+   */
+  const std::string& getName() const noexcept;
 
-	/**
-	 * Sets the size of the datatype, in bits.
-	 *
-	 * @param size The new size for the datatype, in bits.
-	 *
-	 * @return The current datatype object.
-	 */
-	DataTypeInformation& size(size_t size);
+  /**
+   * Sets the size of the datatype, in bits.
+   *
+   * @param size The new size for the datatype, in bits.
+   *
+   * @return The current datatype object.
+   */
+  DataTypeInformation& size(size_t size);
 
-	/**
-	 * Returns the size of the datatype.
-	 *
-	 * @return The size of the datatype.
-	 */
-	size_t size() const noexcept;
+  /**
+   * Returns the size of the datatype.
+   *
+   * @return The size of the datatype.
+   */
+  size_t size() const noexcept;
 
-	/** @copydoc Builder::isValid() */
-	bool isValid() const noexcept override;
+  /** @copydoc Builder::isValid() */
+  bool isValid() const noexcept override;
 
  private:
-	/** The name of the datatype. */
-	std::string _name;
+  /** The name of the datatype. */
+  std::string _name;
 
-	/** The size of the datatype, in bits. */
-	size_t _size;
+  /** The size of the datatype, in bits. */
+  size_t _size;
 };
 
 #endif /* ERAGPSIM_ARCH_DATATYPE_INFORMATION_HPP */

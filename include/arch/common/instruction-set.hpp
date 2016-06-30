@@ -31,115 +31,115 @@
  * have a name).
  */
 class InstructionSet : public ContainerAdapter<InstructionInformation>,
-											 public Builder {
+                       public Builder {
  public:
-	using super = ContainerAdapter<InstructionInformation>;
-	using super::_container;
-	using super::List;
-	using super::begin;
-	using super::cbegin;
-	using super::end;
-	using super::cend;
-	using super::clear;
-	using super::size;
-	using super::isEmpty;
+  using super = ContainerAdapter<InstructionInformation>;
+  using super::_container;
+  using super::List;
+  using super::begin;
+  using super::cbegin;
+  using super::end;
+  using super::cend;
+  using super::clear;
+  using super::size;
+  using super::isEmpty;
 
-	/**
-	 * Constructs a new empty construction set.
-	 */
-	InstructionSet();
+  /**
+   * Constructs a new empty construction set.
+   */
+  InstructionSet();
 
-	/**
-	 * Constructs a new instruction set from a range of instructions.
-	 *
-	 * @tparam Range a range-like type.
-	 *
-	 * @param range A range of instructions to add to the set.
-	 */
-	template <typename Range>
-	InstructionSet(const Range& range) : super(range) {
-	}
+  /**
+   * Constructs a new instruction set from a range of instructions.
+   *
+   * @tparam Range a range-like type.
+   *
+   * @param range A range of instructions to add to the set.
+   */
+  template <typename Range>
+  InstructionSet(const Range& range) : super(range) {
+  }
 
-	/**
-	 * Constructs a new instruction set from the list of instructions.
-	 *
-	 * @param instructions A list of instructions to add to the set.
-	 */
-	InstructionSet(List instructions);
+  /**
+   * Constructs a new instruction set from the list of instructions.
+   *
+   * @param instructions A list of instructions to add to the set.
+   */
+  InstructionSet(List instructions);
 
-	/**
-	 * Adds a range of InstructionInformation objects to the unit.
-	 *
-	 * @tparam Range A range-like type.
-	 *
-	 * @param range A range of InstructionInformation objects.
-	 *
-	 * @return The current instruction object.
-	 *
-	 * @see addInstructions
-	 */
-	template <typename Range>
-	InstructionSet& operator+=(const Range& range) {
-		return addInstructions(range);
-	}
+  /**
+   * Adds a range of InstructionInformation objects to the unit.
+   *
+   * @tparam Range A range-like type.
+   *
+   * @param range A range of InstructionInformation objects.
+   *
+   * @return The current instruction object.
+   *
+   * @see addInstructions
+   */
+  template <typename Range>
+  InstructionSet& operator+=(const Range& range) {
+    return addInstructions(range);
+  }
 
-	/**
-	 * Returns the result of adding the instructions to this set, without
-	 * modifying this set.
-	 *
-	 * A copy is made of this object, then modified via +=, then returned.
-	 *
-	 * @tparam Range A range-like type.
-	 *
-	 * @param range The range of InstructionInformation objects to add.
-	 *
-	 * @return The current instruction object.
-	 */
-	template <typename Range>
-	InstructionSet operator+(const Range& other) const {
-		auto temp = *this;
-		temp += other;
+  /**
+   * Returns the result of adding the instructions to this set, without
+   * modifying this set.
+   *
+   * A copy is made of this object, then modified via +=, then returned.
+   *
+   * @tparam Range A range-like type.
+   *
+   * @param range The range of InstructionInformation objects to add.
+   *
+   * @return The current instruction object.
+   */
+  template <typename Range>
+  InstructionSet operator+(const Range& other) const {
+    auto temp = *this;
+    temp += other;
 
-		return temp;
-	}
+    return temp;
+  }
 
-	/**
-	 * Adds a range of InstructionInformation objects to the unit.
-	 *
-	 * @tparam Range A range-like type.
-	 *
-	 * @param range A range of InstructionInformation objects.
-	 *
-	 * @return The current instruction object.
-	 *
-	 * @see operator+=
-	 */
-	template <typename Range>
-	InstructionSet& addInstructions(const Range& range) {
-		Utility::concatenate(_container, range);
-		return *this;
-	}
+  /**
+   * Adds a range of InstructionInformation objects to the unit.
+   *
+   * @tparam Range A range-like type.
+   *
+   * @param range A range of InstructionInformation objects.
+   *
+   * @return The current instruction object.
+   *
+   * @see operator+=
+   */
+  template <typename Range>
+  InstructionSet& addInstructions(const Range& range) {
+    Utility::concatenate(_container, range);
+    return *this;
+  }
 
-	/**
-	 * Adds the list of instructions to the set.
-	 *
-	 * @param list A list of instructions to add to the set.
-	 *
-	 * @return The current instruction object.
-	 */
-	InstructionSet& addInstructions(List instructions);
+  /**
+   * Adds the list of instructions to the set.
+   *
+   * @param list A list of instructions to add to the set.
+   *
+   * @return The current instruction object.
+   */
+  InstructionSet& addInstructions(List instructions);
 
-	/**
-	 * Adds a single instruction to the set.
-	 *
-	 * @param instruction The instruction to add.
-	 *
-	 * @return The current instruction object.
-	 */
-	InstructionSet& addInstruction(const InstructionInformation& instruction);
+  /**
+   * Adds a single instruction to the set.
+   *
+   * @param instruction The instruction to add.
+   *
+   * @return The current instruction object.
+   */
+  InstructionSet& addInstruction(const InstructionInformation& instruction);
 
-	/** @copydoc Builder::isValid() */
-	bool isValid() const noexcept override;
+  /** @copydoc Builder::isValid() */
+  bool isValid() const noexcept override;
 };
 
 #endif /* ERAGPSIM_ARCH_INSTRUCTION_SET_HPP */

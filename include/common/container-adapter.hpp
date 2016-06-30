@@ -31,134 +31,134 @@
  * class and it will take care of some boilerplate methods.
  */
 template <typename T,
-					template <typename, typename> class UnderlyingTemplate = std::vector,
-					bool makeConst = false>
+          template <typename, typename> class UnderlyingTemplate = std::vector,
+          bool makeConst = false>
 class ContainerAdapter {
  public:
-	// Choose const or non-const version of container
-	// clang-format off
-	using Underlying = typename std::conditional<
-		makeConst,
-		const UnderlyingTemplate<T, std::allocator<T>>,
-		UnderlyingTemplate<T, std::allocator<T>>
-	>::type;
-	// clang-format on
-	using Iterator = typename Underlying::iterator;
-	using ConstIterator = typename Underlying::const_iterator;
-	using List = std::initializer_list<T>;
+  // Choose const or non-const version of container
+  // clang-format off
+  using Underlying = typename std::conditional<
+    makeConst,
+    const UnderlyingTemplate<T, std::allocator<T>>,
+    UnderlyingTemplate<T, std::allocator<T>>
+  >::type;
+  // clang-format on
+  using Iterator      = typename Underlying::iterator;
+  using ConstIterator = typename Underlying::const_iterator;
+  using List          = std::initializer_list<T>;
 
-	/**
-	 * Constructs a new empty container adapter.
-	 */
-	ContainerAdapter() noexcept = default;
+  /**
+   * Constructs a new empty container adapter.
+   */
+  ContainerAdapter() noexcept = default;
 
-	/**
-	 * Constructs a new container adapter from a range of elements.
-	 *
-	 * @tparam Range a range-like type.
-	 *
-	 * @param range A range of elements to initialize the container adapter with.
-	 */
-	template <typename Range>
-	ContainerAdapter(const Range& range)
-	: _container(std::begin(range), std::end(range)) {
-	}
+  /**
+   * Constructs a new container adapter from a range of elements.
+   *
+   * @tparam Range a range-like type.
+   *
+   * @param range A range of elements to initialize the container adapter with.
+   */
+  template <typename Range>
+  ContainerAdapter(const Range& range)
+  : _container(std::begin(range), std::end(range)) {
+  }
 
-	/**
-	 * Constructs a new container adapter from the list of elements.
-	 *
-	 * @param instructions A list of elements to initialize the container adapter
-	 *                     with.
-	 */
-	ContainerAdapter(List list) : _container(list) {
-	}
+  /**
+   * Constructs a new container adapter from the list of elements.
+   *
+   * @param instructions A list of elements to initialize the container adapter
+   *                     with.
+   */
+  ContainerAdapter(List list) : _container(list) {
+  }
 
-	virtual ~ContainerAdapter() = default;
+  virtual ~ContainerAdapter() = default;
 
-	/**
-	 * Returns an `Iterator` to the beginning of the container.
-	 */
-	virtual Iterator begin() noexcept {
-		return _container.begin();
-	}
+  /**
+   * Returns an `Iterator` to the beginning of the container.
+   */
+  virtual Iterator begin() noexcept {
+    return _container.begin();
+  }
 
-	/**
-	 * Returns a `ConstIterator` to the beginning of the container.
-	 */
-	virtual ConstIterator begin() const noexcept {
-		return _container.begin();
-	}
+  /**
+   * Returns a `ConstIterator` to the beginning of the container.
+   */
+  virtual ConstIterator begin() const noexcept {
+    return _container.begin();
+  }
 
-	/**
-	 * Returns a `ConstIterator` to the beginning of the container.
-	 *
-	 * This method allows you to get a `ConstIterator` even if your object isn't
-	 * `const`.
-	 */
-	virtual ConstIterator cbegin() const {
-		return _container.cbegin();
-	}
+  /**
+   * Returns a `ConstIterator` to the beginning of the container.
+   *
+   * This method allows you to get a `ConstIterator` even if your object isn't
+   * `const`.
+   */
+  virtual ConstIterator cbegin() const {
+    return _container.cbegin();
+  }
 
-	/**
-	 * Returns an `Iterator` to the beginning of the container.
-	 */
-	virtual Iterator end() noexcept {
-		return _container.end();
-	}
+  /**
+   * Returns an `Iterator` to the beginning of the container.
+   */
+  virtual Iterator end() noexcept {
+    return _container.end();
+  }
 
-	/**
-	 * Returns a `ConstIterator` to the end of the container.
-	 */
-	virtual ConstIterator end() const noexcept {
-		return _container.end();
-	}
+  /**
+   * Returns a `ConstIterator` to the end of the container.
+   */
+  virtual ConstIterator end() const noexcept {
+    return _container.end();
+  }
 
-	/**
-	 * Returns a `ConstIterator` to the end of the container.
-	 *
-	 * This method allows you to get a `ConstIterator` even if your object isn't
-	 * `const`.
-	 */
-	virtual ConstIterator cend() const noexcept {
-		return _container.cend();
-	}
+  /**
+   * Returns a `ConstIterator` to the end of the container.
+   *
+   * This method allows you to get a `ConstIterator` even if your object isn't
+   * `const`.
+   */
+  virtual ConstIterator cend() const noexcept {
+    return _container.cend();
+  }
 
-	/**
-	 * Removes all elements in the container.
-	 */
-	virtual void clear() {
-		_container.clear();
-	}
+  /**
+   * Removes all elements in the container.
+   */
+  virtual void clear() {
+    _container.clear();
+  }
 
-	/**
-	 * Return the number of elements stored in the container.
-	 *
-	 * @return The number of elements stored in the container.
-	 */
-	virtual size_t size() const noexcept {
-		return _container.size();
-	}
+  /**
+   * Return the number of elements stored in the container.
+   *
+   * @return The number of elements stored in the container.
+   */
+  virtual size_t size() const noexcept {
+    return _container.size();
+  }
 
-	/**
-	 * Returns whether or not the container is empty.
-	 *
-	 * @return True if there are no elements stored in the container at all, else
-	 *         false.
-	 */
-	virtual bool isEmpty() const noexcept {
-		return _container.empty();
-	}
+  /**
+   * Returns whether or not the container is empty.
+   *
+   * @return True if there are no elements stored in the container at all, else
+   *         false.
+   */
+  virtual bool isEmpty() const noexcept {
+    return _container.empty();
+  }
 
-	/**
-	* Returns the underlying container.
-	*/
-	virtual const Underlying& getUnderlying() const noexcept {
-		return _container;
-	}
+  /**
+  * Returns the underlying container.
+  */
+  virtual const Underlying& getUnderlying() const noexcept {
+    return _container;
+  }
 
  protected:
-	/** The underlying container. */
-	Underlying _container;
+  /** The underlying container. */
+  Underlying _container;
 };
 
 #endif /* ERAGPSIM_COMMON_CONTAINER_ADAPTER_HPP */

@@ -35,119 +35,119 @@
  * registers.
  */
 class UnitInformation : public ContainerAdapter<RegisterInformation>,
-												public Builder {
+                        public Builder {
  public:
-	using super = ContainerAdapter<RegisterInformation>;
-	using super::_container;
-	using super::begin;
-	using super::cbegin;
-	using super::end;
-	using super::cend;
-	using super::clear;
-	using super::size;
-	using super::isEmpty;
+  using super = ContainerAdapter<RegisterInformation>;
+  using super::_container;
+  using super::begin;
+  using super::cbegin;
+  using super::end;
+  using super::cend;
+  using super::clear;
+  using super::size;
+  using super::isEmpty;
 
-	/**
-	 * Constructs a new unit.
-	 *
-	 * @param name The name of the unit, e.g. "cpu".
-	 */
-	explicit UnitInformation(const std::string& name);
+  /**
+   * Constructs a new unit.
+   *
+   * @param name The name of the unit, e.g. "cpu".
+   */
+  explicit UnitInformation(const std::string& name);
 
-	/**
-	 * Adds a range of RegisterInformation objects to the unit.
-	 *
-	 * @tparam Range A range-like type.
-	 *
-	 * @param range A range of RegisterInformation objects.
-	 *
-	 * @return The current unit object.
-	 *
-	 * @see addInstructions
-	 */
-	template <typename Range>
-	UnitInformation& operator+=(const Range& range) {
-		return addRegisters(range);
-	}
+  /**
+   * Adds a range of RegisterInformation objects to the unit.
+   *
+   * @tparam Range A range-like type.
+   *
+   * @param range A range of RegisterInformation objects.
+   *
+   * @return The current unit object.
+   *
+   * @see addInstructions
+   */
+  template <typename Range>
+  UnitInformation& operator+=(const Range& range) {
+    return addRegisters(range);
+  }
 
-	/**
-	 * Returns the result of adding the registers to this unit, without
-	 * modifying this unit.
-	 *
-	 * A copy is made of this object, then modified via +=, then returned.
-	 *
-	 * @tparam Range A range-like type.
-	 *
-	 * @param range The range of RegisterInformation objects to add.
-	 *
-	 * @return The current unit object.
-	 */
-	template <typename Range>
-	UnitInformation operator+(const Range& other) const {
-		auto temp = *this;
-		temp += other;
+  /**
+   * Returns the result of adding the registers to this unit, without
+   * modifying this unit.
+   *
+   * A copy is made of this object, then modified via +=, then returned.
+   *
+   * @tparam Range A range-like type.
+   *
+   * @param range The range of RegisterInformation objects to add.
+   *
+   * @return The current unit object.
+   */
+  template <typename Range>
+  UnitInformation operator+(const Range& other) const {
+    auto temp = *this;
+    temp += other;
 
-		return temp;
-	}
+    return temp;
+  }
 
-	/**
-	 * Sets the name of the unit.
-	 *
-	 * This would usually be "cpu", "fpu" (floats) or "vpu" (vector processing).
-	 *
-	 * @param name The new name for the unit.
-	 *
-	 * @return The current unit object.
-	 */
-	UnitInformation& name(const std::string& name) noexcept;
+  /**
+   * Sets the name of the unit.
+   *
+   * This would usually be "cpu", "fpu" (floats) or "vpu" (vector processing).
+   *
+   * @param name The new name for the unit.
+   *
+   * @return The current unit object.
+   */
+  UnitInformation& name(const std::string& name) noexcept;
 
-	/**
-	 * Returns the name of the unit.
-	 *
-	 * @return The name of the unit.
-	 */
-	const std::string& getName() const noexcept;
+  /**
+   * Returns the name of the unit.
+   *
+   * @return The name of the unit.
+   */
+  const std::string& getName() const noexcept;
 
-	/**
-	 * Adds a range of RegisterInformation objects to the unit.
-	 *
-	 * @tparam Range A range-like type.
-	 *
-	 * @param range A range of RegisterInformation objects.
-	 *
-	 * @return The current unit object.
-	 */
-	template <typename Range>
-	UnitInformation& addRegisters(const Range& range) {
-		Utility::concatenate(_container, range);
+  /**
+   * Adds a range of RegisterInformation objects to the unit.
+   *
+   * @tparam Range A range-like type.
+   *
+   * @param range A range of RegisterInformation objects.
+   *
+   * @return The current unit object.
+   */
+  template <typename Range>
+  UnitInformation& addRegisters(const Range& range) {
+    Utility::concatenate(_container, range);
 
-		return *this;
-	}
+    return *this;
+  }
 
-	/**
-	 * Adds a list of RegisterInformation objects to the unit.
-	 *
-	 * @param regs A list of RegisterInformation objects.
-	 *
-	 * @return The current unit object.
-	 */
-	UnitInformation& addRegisters(List regs);
+  /**
+   * Adds a list of RegisterInformation objects to the unit.
+   *
+   * @param regs A list of RegisterInformation objects.
+   *
+   * @return The current unit object.
+   */
+  UnitInformation& addRegisters(List regs);
 
-	/**
-	 * Adds a single RegisterInformation object to the unit.
-	 *
-	 * @param reg The RegisterInformation object to add.
-	 *
-	 * @return the current object.
-	 */
-	UnitInformation& addRegister(const RegisterInformation& reg);
+  /**
+   * Adds a single RegisterInformation object to the unit.
+   *
+   * @param reg The RegisterInformation object to add.
+   *
+   * @return the current object.
+   */
+  UnitInformation& addRegister(const RegisterInformation& reg);
 
-	/** @copydoc Builder::isValid() */
-	bool isValid() const noexcept override;
+  /** @copydoc Builder::isValid() */
+  bool isValid() const noexcept override;
 
  private:
-	/** The name of the unit, e.g. "CPU". */
-	std::string _name;
+  /** The name of the unit, e.g. "CPU". */
+  std::string _name;
 };
 
 #endif /* ERAGPSIM_ARCH_UNIT_INFORMATION_HPP */

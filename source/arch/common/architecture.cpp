@@ -1,16 +1,38 @@
-#include <assert.h>
+/*
+* C++ Assembler Interpreter
+* Copyright (C) 2016 Chair of Computer Architecture
+* at Technical University of Munich
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+#include <algorithm>
+#include <cassert>
+#include <string>
 
 #include "arch/common/architecture.hpp"
 #include "arch/common/extension-information.hpp"
 
 Architecture::Architecture(const std::string& name,
-													 const ExtensionInformation& base)
+                           const ExtensionInformation& base)
 : _validated(false) {
-	assert(base.isValidBase());
-	// Only copy after
-	_base = std::make_unique<ExtensionInformation>(base);
-	// For constraints
-	this->name(name);
+  assert(base.isValidBase());
+  // Only copy after
+  _base = std::make_unique<ExtensionInformation>(base);
+  // For constraints
+  this->name(name);
 }
 
 Architecture::Architecture() noexcept = default;
@@ -22,106 +44,106 @@ Architecture::Architecture(const Architecture& other)
 }
 
 Architecture::Architecture(Architecture&& other) noexcept : Architecture() {
-	swap(other);
+  swap(other);
 }
 
 Architecture& Architecture::operator=(Architecture other) {
-	swap(other);
-	return *this;
+  swap(other);
+  return *this;
 }
 
 Architecture::~Architecture() = default;
 
 void Architecture::swap(Architecture& other) noexcept {
-	using std::swap;
+  using std::swap;
 
-	swap(_name, other._name);
-	swap(_base, other._base);
-	swap(_validated, other._validated);
+  swap(_name, other._name);
+  swap(_base, other._base);
+  swap(_validated, other._validated);
 }
 
 void swap(Architecture& first, Architecture& second) noexcept {
-	first.swap(second);
+  first.swap(second);
 }
 
 Architecture& Architecture::operator+=(const ExtensionInformation& extension) {
-	return extend(extension);
+  return extend(extension);
 }
 
 Architecture Architecture::
 operator+(const ExtensionInformation& extension) const {
-	auto temp = *this;
-	temp += extension;
+  auto temp = *this;
+  temp += extension;
 
-	return temp;
+  return temp;
 }
 
 Architecture& Architecture::extend(const ExtensionInformation& extension) {
-	assert(_base != nullptr);
+  assert(_base != nullptr);
 
-	_base->merge(extension);
-	_validated = false;
+  _base->merge(extension);
+  _validated = false;
 
-	return *this;
+  return *this;
 }
 
 Architecture& Architecture::name(const std::string& name) {
-	assert(!name.empty());
-	_name = name;
+  assert(!name.empty());
+  _name = name;
 
-	return *this;
+  return *this;
 }
 
 const std::string& Architecture::getName() const noexcept {
-	return _name;
+  return _name;
 }
 
 Architecture::Endianness Architecture::getEndianness() const noexcept {
-	assert(isValidated());
-	return *_base->getEndianness();
+  assert(isValidated());
+  return *_base->getEndianness();
 }
 
 Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const
-		noexcept {
-	assert(isValidated());
-	return *_base->getAlignmentBehavior();
+    noexcept {
+  assert(isValidated());
+  return *_base->getAlignmentBehavior();
 }
 
 /**
  * Returns the word size of the extension (in bits), if any.
  */
 Architecture::word_size_t Architecture::getWordSize() const noexcept {
-	assert(isValidated());
-	return *_base->getWordSize();
+  assert(isValidated());
+  return *_base->getWordSize();
 }
 
 const Architecture::UnitContainer& Architecture::getUnits() const {
-	assert(isValidated());
-	return _base->getUnits();
+  assert(isValidated());
+  return _base->getUnits();
 }
 
 const InstructionSet& Architecture::getInstructions() const {
-	assert(isValidated());
-	return _base->getInstructions();
+  assert(isValidated());
+  return _base->getInstructions();
 }
 
 Architecture& Architecture::validate() {
-	if (!_validated) {
-		assert(isValid());
-		_validated = true;
-	}
+  if (!_validated) {
+    assert(isValid());
+    _validated = true;
+  }
 
-	return *this;
+  return *this;
 }
 
 bool Architecture::isValidated() const noexcept {
-	return _validated;
+  return _validated;
 }
 
 bool Architecture::isValid() const noexcept {
-	if (_name.empty()) return false;
-	if (_base == nullptr) return false;
-	if (!_base->isValidBase()) return false;
+  if (_name.empty()) return false;
+  if (_base == nullptr) return false;
+  if (!_base->isValidBase()) return false;
 
-	return true;
+  return true;
 }

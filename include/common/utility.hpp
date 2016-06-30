@@ -27,80 +27,80 @@ namespace Utility {
 
 template <typename DestinationRange, typename SourceRange>
 void concatenate(DestinationRange& destination, const SourceRange& source) {
-	using std::begin;
-	using std::end;
-	destination.insert(end(destination), begin(source), end(source));
+  using std::begin;
+  using std::end;
+  destination.insert(end(destination), begin(source), end(source));
 }
 
 template <typename Range, typename Function>
 void forEach(Range&& range, Function function) {
-	using std::begin;
-	using std::end;
+  using std::begin;
+  using std::end;
 
-	std::for_each(begin(std::forward<Range>(range)),
-								end(std::forward<Range>(range)),
-								function);
+  std::for_each(begin(std::forward<Range>(range)),
+                end(std::forward<Range>(range)),
+                function);
 }
 
 template <typename Range, typename Function>
 bool allOf(const Range& range, Function function) {
-	using std::begin;
-	using std::end;
+  using std::begin;
+  using std::end;
 
-	return std::all_of(begin(range), end(range), function);
+  return std::all_of(begin(range), end(range), function);
 }
 
 template <typename Range, typename Function>
 bool noneOf(const Range& range, Function function) {
-	using std::begin;
-	using std::end;
+  using std::begin;
+  using std::end;
 
-	return std::none_of(begin(range), end(range), function);
+  return std::none_of(begin(range), end(range), function);
 }
 
 template <typename Range, typename Function>
 bool anyOf(const Range& range, Function function) {
-	using std::begin;
-	using std::end;
+  using std::begin;
+  using std::end;
 
-	return std::any_of(begin(range), end(range), function);
+  return std::any_of(begin(range), end(range), function);
 }
 
 template <typename T, typename InputRange, typename OutputRange = InputRange>
 OutputRange prepend(T&& value, const InputRange& range) {
-	using std::begin;
-	using std::end;
+  using std::begin;
+  using std::end;
 
-	// Construct with enough space
-	OutputRange copy(range.size() + 1);
-	copy.insert(end(copy), std::forward<T>(value));
-	copy.insert(end(copy), begin(range), end(range));
+  // Construct with enough space
+  OutputRange copy(range.size() + 1);
+  copy.insert(end(copy), std::forward<T>(value));
+  copy.insert(end(copy), begin(range), end(range));
 
-	return copy;
+  return copy;
 }
 
 template <typename OutputRange, typename T, typename InputRange>
 OutputRange prependOther(T&& value, const InputRange& range) {
-	return prepend<T, InputRange, OutputRange>(std::forward<T>(value), range);
+  return prepend<T, InputRange, OutputRange>(std::forward<T>(value), range);
 }
 
 template <typename T, typename InputRange, typename OutputRange = InputRange>
 OutputRange append(T&& value, const InputRange& range) {
-	using std::begin;
-	using std::end;
+  using std::begin;
+  using std::end;
 
-	// Construct with enough space
-	OutputRange copy(range.size() + 1);
-	copy.insert(end(copy), begin(range), end(range));
-	copy.insert(end(copy), std::forward<T>(value));
+  // Construct with enough space
+  OutputRange copy(range.size() + 1);
+  copy.insert(end(copy), begin(range), end(range));
+  copy.insert(end(copy), std::forward<T>(value));
 
-	return copy;
+  return copy;
 }
 
 
 template <typename OutputRange, typename T, typename InputRange>
 OutputRange appendOther(T&& value, const InputRange& range) {
-	return append<T, InputRange, OutputRange>(std::forward<T>(value), range);
+  return append<T, InputRange, OutputRange>(std::forward<T>(value), range);
 }
 }
 

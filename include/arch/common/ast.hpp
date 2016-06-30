@@ -31,13 +31,14 @@ enum struct NodeType {
   IMMEDIATE,
   REGISTER
   /*MEMORY_ACCESS,
-  ARITHMETIC*/ // Not needed for RISC V - Can be added for further
-                   // architectures
+  ARITHMETIC*/// Not needed for RISC V - Can be added for further
+                  // architectures
 };
 
 /* The base class for nodes in an abstract syntax tree */
-template <class IntType> class AbstractSyntaxTreeNode {
-public:
+template <class IntType>
+class AbstractSyntaxTreeNode {
+ public:
   typedef std::unique_ptr<AbstractSyntaxTreeNode> NodePtr;
 
   /**
@@ -69,7 +70,9 @@ public:
    * Getter for the type of this node.
    * @return The type of this node.
    */
-  NodeType getType() { return _node_type; }
+  NodeType getType() {
+    return _node_type;
+  }
 
   /**
    * Adds a child to this node. Note, that the node will be added after
@@ -77,20 +80,23 @@ public:
    *
    * @param node The node to be added.
    */
-  void addChild(NodePtr node) { _children.pushBack(node); }
+  void addChild(NodePtr node) {
+    _children.pushBack(node);
+  }
 
-protected:
+ protected:
   /**
    * Constructs a new node. The constructor is supposed to be called in
    * the subclasses.
    *
    * @param node_type The type of this node.
    */
-  AbstractSyntaxTreeNode(NodeType node_type) : _node_type(node_type) {}
+  AbstractSyntaxTreeNode(NodeType node_type) : _node_type(node_type) {
+  }
 
   std::vector<NodePtr> _children;
 
-private:
+ private:
   NodeType _node_type;
 };
 
@@ -98,7 +104,7 @@ private:
  * and register nodes */
 template <class IntType>
 class ConcreteValueNode : public AbstractSyntaxTreeNode<IntType> {
-public:
+ public:
   /**
    * Constructs a new node that contains a concrete value.
    *
@@ -107,7 +113,8 @@ public:
    * @param value The value of this node.
    */
   ConcreteValueNode(NodeType node_type, IntType value)
-      : AbstractSyntaxTreeNode<IntType>(node_type), _value(value) {}
+  : AbstractSyntaxTreeNode<IntType>(node_type), _value(value) {
+  }
 
   /**
    * @return The concrete value
@@ -128,10 +135,12 @@ public:
    * @return An empty std::vector<bool>, because the instruction has to be
    * assembled in the instruction node.
    */
-  virtual std::vector<bool> assemble() override { return std::vector<bool>{}; }
+  virtual std::vector<bool> assemble() override {
+    return std::vector<bool>{};
+  }
 
-private:
+ private:
   IntType _value;
 };
 
-#endif // ERAGPSIM_ARCH_AST_HPP
+#endif// ERAGPSIM_ARCH_AST_HPP

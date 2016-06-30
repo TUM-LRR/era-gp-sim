@@ -20,12 +20,13 @@
 #ifndef ERAGPSIM_ARCH_COMMON_ARCHITECTURE_FORMULA_HPP
 #define ERAGPSIM_ARCH_COMMON_ARCHITECTURE_FORMULA_HPP
 
-#include <assert.h>
+#include <cassert>
 #include <string>
 
 #include "arch/common/architecture.hpp"
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
+
 /**
  * Describes an Architecture formula.
  *
@@ -33,46 +34,46 @@
  * and optionally any number of further extensions.
  */
 class Architecture::Formula
-		: public ContainerAdapter<std::string, std::vector, true> {
+    : public ContainerAdapter<std::string, std::vector, true> {
  public:
-	using ExtensionName = std::string;
+  using ExtensionName = std::string;
+  using super         = ContainerAdapter<std::string, std::vector, true>;
 
-	/**
-	 * Constructs a new Formula.
-	 *
-	 * @tparam Range A range-like sequence type.
-	 *
-	 * @param base The name of the base extension.
-	 * @param extensions A range of other extensions.
-	 */
-	template <typename Range>
-	Architecture::Formula(const ExtensionName& base, const Range& extensions)
-	: _container(Utility::preprendOther<Underlying>(base, extensions)) {
-		assert(!base.empty());
-	}
+  /**
+   * Constructs a new Formula.
+   *
+   * @tparam Range A range-like sequence type.
+   *
+   * @param base The name of the base extension.
+   * @param extensions A range of other extensions.
+   */
+  template <typename Range>
+  Formula(const ExtensionName& base, const Range& extensions)
+  : super(Utility::prependOther<Underlying>(base, extensions)) {
+    assert(!base.empty());
+  }
 
-	/**
-	 Constructs a new Formula.
-	 *
-	 * The first element of the range must be the base.
-	 *
-	 * @tparam Range A range-like sequence type.
-	 *
-	 * @param all The range of extensions for the formula.
-	 */
-	template <typename Range>
-	Architecture::Formula(const Range& range)
-	: _container(std::begin(range), std::end(range)) {
-	}
+  /**
+   Constructs a new Formula.
+   *
+   * The first element of the range must be the base.
+   *
+   * @tparam Range A range-like sequence type.
+   *
+   * @param all The range of extensions for the formula.
+   */
+  template <typename Range>
+  explicit Formula(const Range& range) : super(range) {
+  }
 
-	/**
-	 * Returns the base extension's name.
-	 *
-	 * Corresponds to the first element in the sequence.
-	 */
-	const ExtensionName& base() const noexcept {
-		return _container.front();
-	}
+  /**
+   * Returns the base extension's name.
+   *
+   * Corresponds to the first element in the sequence.
+   */
+  const ExtensionName& base() const noexcept {
+    return _container.front();
+  }
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_ARCHITECTURE_FORMULA_HPP */

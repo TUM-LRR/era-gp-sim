@@ -39,18 +39,18 @@
  */
 class Builder {
  public:
-	/** Destructor. */
-	virtual ~Builder() = default;
+  /** Destructor. */
+  virtual ~Builder() = default;
 
-	/**
-	 * Returns whether or not the builder's state is valid.
-	 *
-	 * When `isValid()` is true, that means it is safe to call the `build()`
-	 * method or access members of the instance (if it is an "implicit" builder).
-	 *
-	 * @return True if the builder's state is valid, else false.
-	*/
-	virtual bool isValid() const noexcept = 0;
+  /**
+   * Returns whether or not the builder's state is valid.
+   *
+   * When `isValid()` is true, that means it is safe to call the `build()`
+   * method or access members of the instance (if it is an "implicit" builder).
+   *
+   * @return True if the builder's state is valid, else false.
+  */
+  virtual bool isValid() const noexcept = 0;
 };
 
 #endif /* ERAGPSIM_COMMON_BUILDER_HPP */

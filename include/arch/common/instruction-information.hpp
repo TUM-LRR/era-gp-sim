@@ -36,61 +36,61 @@
  */
 class InstructionInformation : public Builder {
  public:
-	// For now
-	using InstructionKey = unsigned short;
+  // For now
+  using InstructionKey = unsigned short;
 
-	/**
-	 * Constructs an instruction with a name.
-	 *
-	 * @param name The name of the instruction (e.g. "add")
-	 */
-	InstructionInformation(const std::string& name);
+  /**
+   * Constructs an instruction with a name.
+   *
+   * @param name The name of the instruction (e.g. "add")
+   */
+  InstructionInformation(const std::string& name);
 
-	/**
-	 * Constructs an instruction with a name and key.
-	 *
-	 * @param name The name of the instruction (e.g. "add")
-	 * @param key The key of the instruction.
-	 */
-	InstructionInformation(const std::string& name, const InstructionKey& key);
+  /**
+   * Constructs an instruction with a name and key.
+   *
+   * @param name The name of the instruction (e.g. "add")
+   * @param key The key of the instruction.
+   */
+  InstructionInformation(const std::string& name, const InstructionKey& key);
 
-	/**
-	 * Sets the name of the instruction.
-	 *
-	 * @param name The new name for the instruction.
-	 *
-	 * @return The current instruction object.
-	 */
-	InstructionInformation& name(const std::string& name);
+  /**
+   * Sets the name of the instruction.
+   *
+   * @param name The new name for the instruction.
+   *
+   * @return The current instruction object.
+   */
+  InstructionInformation& name(const std::string& name);
 
-	/**
-	 * Returns the name of the instruction.
-	 */
-	const std::string& getName() const noexcept;
+  /**
+   * Returns the name of the instruction.
+   */
+  const std::string& getName() const noexcept;
 
-	/**
-	 * Sets the key of the instruction.
-	 *
-	 * @param key The new key for the instruction.
-	 *
-	 * @return The current instruction object.
-	 */
-	InstructionInformation& key(const InstructionKey& key);
+  /**
+   * Sets the key of the instruction.
+   *
+   * @param key The new key for the instruction.
+   *
+   * @return The current instruction object.
+   */
+  InstructionInformation& key(const InstructionKey& key);
 
-	/**
-	 * Returns the key of the instruction.
-	 */
-	const InstructionKey& getKey() const noexcept;
+  /**
+   * Returns the key of the instruction.
+   */
+  const InstructionKey& getKey() const noexcept;
 
-	/** @copydoc Builder::isValid() */
-	bool isValid() const noexcept override;
+  /** @copydoc Builder::isValid() */
+  bool isValid() const noexcept override;
 
  private:
-	/** The name of the instruction. */
-	std::string _name;
+  /** The name of the instruction. */
+  std::string _name;
 
-	/** The key of the instruction. */
-	Optional<InstructionKey> _key;
+  /** The key of the instruction. */
+  Optional<InstructionKey> _key;
 };
 
 #endif /* ERAGPSIM_ARCH_INSTRUCTION_INFORMATION_HPP */

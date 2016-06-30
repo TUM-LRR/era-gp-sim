@@ -53,310 +53,310 @@
  */
 class RegisterInformation : public Builder {
  public:
-	using id_t = std::size_t;
-	using size_t = unsigned short;
+  using id_t   = std::size_t;
+  using size_t = unsigned short;
 
-	/** The type of data stored in this register. */
-	enum class Type { INTEGER, FLOAT, VECTOR, FLAG };
+  /** The type of data stored in this register. */
+  enum class Type { INTEGER, FLOAT, VECTOR, FLAG };
 
-	/**
-	 * Constructs the RegisterInformation with the register's name.
-	 *
-	 * @param name The name of the register.
-	 */
-	explicit RegisterInformation(const std::string& name);
+  /**
+   * Constructs the RegisterInformation with the register's name.
+   *
+   * @param name The name of the register.
+   */
+  explicit RegisterInformation(const std::string& name);
 
-	/**
-	 * Constructs the RegisterInformation with the register's name and size.
-	 *
-	 * @param name The name of the register.
-	 * @param size The size of the register.
-	 */
-	RegisterInformation(const std::string& name, size_t size);
+  /**
+   * Constructs the RegisterInformation with the register's name and size.
+   *
+   * @param name The name of the register.
+   * @param size The size of the register.
+   */
+  RegisterInformation(const std::string& name, size_t size);
 
-	/**
-	 * Sets the name of the register.
-	 *
-	 * @param name The new name for the register.
-	 *
-	 * @return The current register object.
-	 */
-	RegisterInformation& name(const std::string& name);
+  /**
+   * Sets the name of the register.
+   *
+   * @param name The new name for the register.
+   *
+   * @return The current register object.
+   */
+  RegisterInformation& name(const std::string& name);
 
-	/**
-	 * Returns the name of the register.
-	 *
-	 * @return The name of the register.
-	 */
-	const std::string& getName() const noexcept;
+  /**
+   * Returns the name of the register.
+   *
+   * @return The name of the register.
+   */
+  const std::string& getName() const noexcept;
 
-	/**
-	 * Sets the size (width) of the register, in bits.
-	 *
-	 * @param bit_size The new width for the register, in bits.
-	 *
-	 * @return The current register object.
-	 */
-	RegisterInformation& size(size_t bit_size);
+  /**
+   * Sets the size (width) of the register, in bits.
+   *
+   * @param bit_size The new width for the register, in bits.
+   *
+   * @return The current register object.
+   */
+  RegisterInformation& size(size_t bit_size);
 
-	/**
-	 * Returns the size of the register, if any.
-	 *
-	 * @return The size of the register.
-	 */
-	size_t size() const noexcept;
+  /**
+   * Returns the size of the register, if any.
+   *
+   * @return The size of the register.
+   */
+  size_t size() const noexcept;
 
-	/**
-	 * Sets the numeric identifier for the register.
-	 *
-	 * @param id The new numeric ID for the register.
-	 *
-	 * @return The current register object.
-	 */
-	RegisterInformation& id(id_t id);
+  /**
+   * Sets the numeric identifier for the register.
+   *
+   * @param id The new numeric ID for the register.
+   *
+   * @return The current register object.
+   */
+  RegisterInformation& id(id_t id);
 
-	/**
-	 * Returns the ID of the register.
-	 *
-	 * @return The ID of the register.
-	 */
-	id_t getID() const noexcept;
+  /**
+   * Returns the ID of the register.
+   *
+   * @return The ID of the register.
+   */
+  id_t getID() const noexcept;
 
-	/**
-	 * Sets the type of the register.
-	 *
-	 * Must be a member of the `Type` enum and therefore
-	 * one of {INTEGER, FLOAT, VECTOR, FLAG}.
-	 *
-	 * @param type The new type for the register.
-	 *
-	 * @return The current register object.
-	 */
-	RegisterInformation& type(Type type);
+  /**
+   * Sets the type of the register.
+   *
+   * Must be a member of the `Type` enum and therefore
+   * one of {INTEGER, FLOAT, VECTOR, FLAG}.
+   *
+   * @param type The new type for the register.
+   *
+   * @return The current register object.
+   */
+  RegisterInformation& type(Type type);
 
-	/**
-	 * Returns the type of the register.
-	 *
-	 * @return The type of the register.
-	 */
-	Type getType() const noexcept;
+  /**
+   * Returns the type of the register.
+   *
+   * @return The type of the register.
+   */
+  Type getType() const noexcept;
 
-	/**
-	 * Sets the register to be hardwired to the given constant.
-	 *
-	 * The constant value must be convertible to `double` (that is the internal
-	 * storage type, also for integral types).
-	 *
-	 * @param constant The new hardwired constant.
-	 *
-	 * @return The current register object.
-	 */
-	template <typename HardwiredType,
-						typename = std::enable_if_t<
-								std::is_convertible<HardwiredType, double>::value>>
-	RegisterInformation& hardwiredTo(const HardwiredType& constant) {
-		_constant = static_cast<HardwiredType>(constant);
+  /**
+   * Sets the register to be hardwired to the given constant.
+   *
+   * The constant value must be convertible to `double` (that is the internal
+   * storage type, also for integral types).
+   *
+   * @param constant The new hardwired constant.
+   *
+   * @return The current register object.
+   */
+  template <typename HardwiredType,
+            typename = std::enable_if_t<
+                std::is_convertible<HardwiredType, double>::value>>
+  RegisterInformation& hardwiredTo(const HardwiredType& constant) {
+    _constant = static_cast<HardwiredType>(constant);
 
-		return *this;
-	}
+    return *this;
+  }
 
-	/**
-	 * Returns the constant the register is hardwired to, if any, and converts it
-	 *  to the given type.
-	 *
-	 * @tparam Hardwired The output type for the constant.
-	 *
-	 * @return If a conversion is possible, the current hardwired constant
-	 *         cast to the given type.
-	 */
-	template <typename HardwiredType,
-						typename = std::enable_if_t<
-								std::is_convertible<HardwiredType, double>::value>>
-	const Optional<HardwiredType>& hardwiredTo() const noexcept {
-		return isHardwired() ? static_cast<HardwiredType>(_constant)
-												 : Optional<HardwiredType>{};
-	}
+  /**
+   * Returns the constant the register is hardwired to, if any, and converts it
+   *  to the given type.
+   *
+   * @tparam Hardwired The output type for the constant.
+   *
+   * @return If a conversion is possible, the current hardwired constant
+   *         cast to the given type.
+   */
+  template <typename HardwiredType,
+            typename = std::enable_if_t<
+                std::is_convertible<HardwiredType, double>::value>>
+  const Optional<HardwiredType>& hardwiredTo() const noexcept {
+    return isHardwired() ? static_cast<HardwiredType>(_constant)
+                         : Optional<HardwiredType>{};
+  }
 
-	/**
-	 * Returns whether or not the register is currently hardwired to any constant.
-	 *
-	 * @return True if the register is hardwired to a constant, else false.
-	 */
-	bool isHardwired() const noexcept;
+  /**
+   * Returns whether or not the register is currently hardwired to any constant.
+   *
+   * @return True if the register is hardwired to a constant, else false.
+   */
+  bool isHardwired() const noexcept;
 
-	/**
-	 * Adds a range of addAliases to the known aliases for the register.
-	 *
-	 * @tparam Range A range-like type.
-	 *
-	 * @param range A range of new aliases.
-	 *
-	 * @return The current register object.
-	 */
-	template <typename Range>
-	RegisterInformation& addAliases(const Range& range) {
-		using std::begin;
-		using std::end;
-		_aliases.insert(_aliases.end(), begin(range), end(range));
+  /**
+   * Adds a range of addAliases to the known aliases for the register.
+   *
+   * @tparam Range A range-like type.
+   *
+   * @param range A range of new aliases.
+   *
+   * @return The current register object.
+   */
+  template <typename Range>
+  RegisterInformation& addAliases(const Range& range) {
+    using std::begin;
+    using std::end;
+    _aliases.insert(_aliases.end(), begin(range), end(range));
 
-		return *this;
-	}
+    return *this;
+  }
 
-	/**
-	 * Adds the list of aliases to the known aliases for the register.
-	 *
-	 * @param aliases A list of aliases.
-	 *
-	 * @return The current register object.
-	 */
-	RegisterInformation& addAliases(std::initializer_list<std::string> aliases);
+  /**
+   * Adds the list of aliases to the known aliases for the register.
+   *
+   * @param aliases A list of aliases.
+   *
+   * @return The current register object.
+   */
+  RegisterInformation& addAliases(std::initializer_list<std::string> aliases);
 
-	/**
-	 * Adds the given alias to the known aliases for the register.
-	 *
-	 * @param alias The alias to assign to the register.
-	 *
-	 * @return The current register object.
-	 */
-	RegisterInformation& addAlias(const std::string& alias);
+  /**
+   * Adds the given alias to the known aliases for the register.
+   *
+   * @param alias The alias to assign to the register.
+   *
+   * @return The current register object.
+   */
+  RegisterInformation& addAlias(const std::string& alias);
 
-	/**
-	 * Returns the known aliases for the register.
-	 *
-	 * @return The currently known aliases for the register.
-	 */
-	const std::vector<std::string>& getAliases() const noexcept;
+  /**
+   * Returns the known aliases for the register.
+   *
+   * @return The currently known aliases for the register.
+   */
+  const std::vector<std::string>& getAliases() const noexcept;
 
-	/**
-	 * Returns whether or not the register has aliases at all.
-	 *
-	 * @return True if the register has at least one alias, else false.
-	 */
-	bool hasAliases() const noexcept;
+  /**
+   * Returns whether or not the register has aliases at all.
+   *
+   * @return True if the register has at least one alias, else false.
+   */
+  bool hasAliases() const noexcept;
 
-	/**
-	 * Sets the ID of the enclosing register.
-	 *
-	 * This is the numeric identifier of the register that contains this
-	 * register. For example, it would be EAX if this register was AX.
-	 *
-	 * @return The current register object.
-	 */
-	RegisterInformation& enclosing(id_t id);
+  /**
+   * Sets the ID of the enclosing register.
+   *
+   * This is the numeric identifier of the register that contains this
+   * register. For example, it would be EAX if this register was AX.
+   *
+   * @return The current register object.
+   */
+  RegisterInformation& enclosing(id_t id);
 
-	/**
-	 * Returns the enclosing register ID, if any.
-	 *
-	 * If this register is a part of another, enclosing register, then this
-	 * method returns that enclosing register's ID. For example, AX will have
-	 * the ID for EAX in this variable. Note that not all registers have an
-	 * enclosing register ID (e.g. EAX on 32-bit systems).
-	 *
-	 * @return An Optional object, possibly containing an ID for the enclosing
-	 *         register (if this register has an enclosing register).
-	 */
-	Optional<id_t> getEnclosing() const noexcept;
+  /**
+   * Returns the enclosing register ID, if any.
+   *
+   * If this register is a part of another, enclosing register, then this
+   * method returns that enclosing register's ID. For example, AX will have
+   * the ID for EAX in this variable. Note that not all registers have an
+   * enclosing register ID (e.g. EAX on 32-bit systems).
+   *
+   * @return An Optional object, possibly containing an ID for the enclosing
+   *         register (if this register has an enclosing register).
+   */
+  Optional<id_t> getEnclosing() const noexcept;
 
-	/**
-	 * Adds a range of constituent register IDs for the register.
-	 *
-	 * See getConstituents() for a description of a register's consituents.
-	 *
-	 * @tparam A range-like type.
-	 *
-	 * @param range A range of new constituents.
-	 *
-	 * @return The current register object.
-	 */
-	template <typename Range>
-	RegisterInformation& addConstituents(const Range& range) {
-		using std::begin;
-		using std::end;
-		_constituents.insert(_constituents.end(), begin(range), end(range));
+  /**
+   * Adds a range of constituent register IDs for the register.
+   *
+   * See getConstituents() for a description of a register's consituents.
+   *
+   * @tparam A range-like type.
+   *
+   * @param range A range of new constituents.
+   *
+   * @return The current register object.
+   */
+  template <typename Range>
+  RegisterInformation& addConstituents(const Range& range) {
+    using std::begin;
+    using std::end;
+    _constituents.insert(_constituents.end(), begin(range), end(range));
 
-		return *this;
-	}
+    return *this;
+  }
 
-	/**
-	 * Adds a list of constituent register IDs for the register.
-	 *
-	 * See getConstituents() for a description of a register's consituents.
-	 *
-	 * @param constituents The list of constituents to be added for the register.
-	 *
-	 * @return The current register object.
-	 */
-	RegisterInformation&
-	addConstituents(std::initializer_list<id_t> constituents);
+  /**
+   * Adds a list of constituent register IDs for the register.
+   *
+   * See getConstituents() for a description of a register's consituents.
+   *
+   * @param constituents The list of constituents to be added for the register.
+   *
+   * @return The current register object.
+   */
+  RegisterInformation&
+  addConstituents(std::initializer_list<id_t> constituents);
 
-	/**
-	 * Adds a single consituent ID for the register.
-	 *
-	 * See getConstituents() for a description of a register's consituents.
-	 *
-	 * @param id The ID of the constituent register to add.
-	 *
-	 * @return The current register object.
-	 */
-	RegisterInformation& addConstituent(id_t id);
+  /**
+   * Adds a single consituent ID for the register.
+   *
+   * See getConstituents() for a description of a register's consituents.
+   *
+   * @param id The ID of the constituent register to add.
+   *
+   * @return The current register object.
+   */
+  RegisterInformation& addConstituent(id_t id);
 
-	/**
-	 * Returns the constituent IDs of the register.
-	 *
-	 * The constituent IDs are the IDs of the registers that this register
-	 * contains *directly*. *Directly* means that if the register is viewed
-	 * as a node in a tree, only its direct neighbors (distance 1) are contained.
-	 * For example, if this register represents EAX, it would contain only AX and
-	 * not AH or AL, because those are then contained by AX.
-	 *
-	 * @return The constituent IDs of the register.
-	 */
-	const std::vector<id_t>& getConstituents() const noexcept;
+  /**
+   * Returns the constituent IDs of the register.
+   *
+   * The constituent IDs are the IDs of the registers that this register
+   * contains *directly*. *Directly* means that if the register is viewed
+   * as a node in a tree, only its direct neighbors (distance 1) are contained.
+   * For example, if this register represents EAX, it would contain only AX and
+   * not AH or AL, because those are then contained by AX.
+   *
+   * @return The constituent IDs of the register.
+   */
+  const std::vector<id_t>& getConstituents() const noexcept;
 
-	/**
-	 * Returns whether or not the register has constituents at all.
-	 *
-	 * @return True if the register has at least one constituent, else false.
-	 */
-	bool hasConstituents() const noexcept;
+  /**
+   * Returns whether or not the register has constituents at all.
+   *
+   * @return True if the register has at least one constituent, else false.
+   */
+  bool hasConstituents() const noexcept;
 
-	/** @copydoc Builder::isValid() */
-	bool isValid() const noexcept override;
+  /** @copydoc Builder::isValid() */
+  bool isValid() const noexcept override;
 
  private:
-	/** An ID that increments for each new created instance (for default IDs). */
-	static id_t _rollingID;
+  /** An ID that increments for each new created instance (for default IDs). */
+  static id_t _rollingID;
 
-	/*
-	static constexpr Type _typeDefault = std::conditional<
-			std::is_floating_point<HardwiredType>::value,
-			std::integral_constant<Type, Type::FLOAT>,
-			std::integral_constant<Type, Type::INTEGER>>::type::value;
-	*/
+  /*
+  static constexpr Type _typeDefault = std::conditional<
+      std::is_floating_point<HardwiredType>::value,
+      std::integral_constant<Type, Type::FLOAT>,
+      std::integral_constant<Type, Type::INTEGER>>::type::value;
+  */
 
-	/** The numeric ID of the register. */
-	id_t _id;
+  /** The numeric ID of the register. */
+  id_t _id;
 
-	/** The type of the register. */
-	Type _type;
+  /** The type of the register. */
+  Type _type;
 
-	/** The name of the register, e.g. "EAX". */
-	std::string _name;
+  /** The name of the register, e.g. "EAX". */
+  std::string _name;
 
-	/** The size of the register, in bits. */
-	Optional<size_t> _size;
+  /** The size of the register, in bits. */
+  Optional<size_t> _size;
 
-	/** The constant the register is hardwired to, if any. */
-	Optional<double> _constant;
+  /** The constant the register is hardwired to, if any. */
+  Optional<double> _constant;
 
-	/** The ID of the register's enclosing register, if one exists. */
-	Optional<id_t> _enclosing;
+  /** The ID of the register's enclosing register, if one exists. */
+  Optional<id_t> _enclosing;
 
-	/** The IDs of the register's directly constituent registers, if any exist. */
-	std::vector<id_t> _constituents;
+  /** The IDs of the register's directly constituent registers, if any exist. */
+  std::vector<id_t> _constituents;
 
-	/** The aliases of the register, if any. */
-	std::vector<std::string> _aliases;
+  /** The aliases of the register, if any. */
+  std::vector<std::string> _aliases;
 };
 
 #endif /* ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP */
