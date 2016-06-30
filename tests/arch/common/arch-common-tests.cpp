@@ -18,6 +18,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -28,11 +29,12 @@
 #include "arch/common/extension-information.hpp"
 #include "arch/common/information.hpp"
 #include "arch/common/instruction-information.hpp"
+#include "arch/common/instruction-key.hpp"
 #include "arch/common/instruction-set.hpp"
 #include "arch/common/register-information.hpp"
 #include "arch/common/unit-information.hpp"
 
-TEST(arch_common_test, test_register_information) {
+TEST(ArchCommonTest, TestRegisterInformation) {
   auto eax = RegisterInformation("r0")
                  .id(0)
                  .size(32)
@@ -52,6 +54,38 @@ TEST(arch_common_test, test_register_information) {
   EXPECT_TRUE(eax.hasEnclosing());
   EXPECT_EQ(eax.getEnclosing(), 1);
   EXPECT_EQ(eax.getConstituents(), std::vector<std::size_t>({2, 3, 4}));
+}
+
+TEST(ArchCommonTest, TestInstructionKey) {
+  auto key = InstructionKey({{"opcode", 1}})
+                 .add("function", 2)
+                 .add({{"foo", 3}, {"bar", 4}})
+                 .add(std::unordered_map<std::string, std::size_t>{{"baz", 5}});
+
+  EXPECT_TRUE(key.hasKey("opcode"));
+  EXPECT_TRUE(key.hasKey("function"));
+  EXPECT_TRUE(key.hasKey("foo"));
+  EXPECT_TRUE(key.hasKey("bar"));
+  EXPECT_TRUE(key.hasKey("baz"));
+  EXPECT_EQ(key.size(), 5);
+
+  auto keys = key.getKeys();
+  std::sort(keys.begin(), keys.end());
+
+  EXPECT_EQ(
+      keys,
+      std::vector<std::string>({"bar", "baz", "foo", "function", "opcode"}));
+
+  auto values = key.getValues();
+  std::sort(values.begin(), values.end());
+
+  EXPECT_EQ(values, std::vector<std::size_t>({1, 2, 3, 4, 5}));
+
+  EXPECT_EQ(key["opcode"], 1);
+  EXPECT_EQ(key["function"], 2);
+  EXPECT_EQ(key.get("foo"), 3);
+  EXPECT_EQ(key.get("bar"), 4);
+  EXPECT_EQ(key["baz"], 5);
 }
 
 // auto unit = UnitInformation("cpu").addRegister(eax);
