@@ -18,14 +18,16 @@
 #ifndef ERAGPSIM_PARSER_FINAL_REPRESENTATION_HPP
 #define ERAGPSIM_PARSER_FINAL_REPRESENTATION_HPP
 
-#include<vector>
-#include<memory>
-#include"../arch/AbstractNodeFactories.hpp"
+#include <memory>
+#include <vector>
+#include "../arch/AbstractNodeFactories.hpp"
 
 /**
  * \class FinalRepresentation
- * \brief Denotes the temporary output of an IntermediateRepresentator ready to be used by the architecture.
+ * \brief Denotes the temporary output of an IntermediateRepresentator ready to
+ * be used by the architecture.
  */
-using FinalRepresentation = std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>; //Temporary.
+using FinalRepresentation =
+		std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>;// Temporary.
 
 #endif

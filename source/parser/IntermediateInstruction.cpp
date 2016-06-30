@@ -17,26 +17,28 @@
 
 #include "include/parser/IntermediateInstruction.hpp"
 
-void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator, const SymbolTable& table, CompileState& state)
-{
-    //For a machine instruction, it is easy to "execute" it: just insert it into the final form.
-    finalRepresentator.push_back(compileInstruction(table, state));
+void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
+																			const SymbolTable& table,
+																			CompileState& state) {
+	// For a machine instruction, it is easy to "execute" it: just insert it into
+	// the final form.
+	finalRepresentator.push_back(compileInstruction(table, state));
 }
 
-std::unique_ptr<AbstractSyntaxTreeNode> IntermediateInstruction::compileInstruction(const SymbolTable& table, CompileState& state)
-{
-    //We replace all occurenced in target in source (using a copy of them).
-    std::vector<std::string> src(_sources);
-    std::vector<std::string> trg(_targets);
+std::unique_ptr<AbstractSyntaxTreeNode>
+IntermediateInstruction::compileInstruction(const SymbolTable& table,
+																						CompileState& state) {
+	// We replace all occurenced in target in source (using a copy of them).
+	std::vector<std::string> src(_sources);
+	std::vector<std::string> trg(_targets);
 
-    table.replaceSymbols(src, state);
-    table.replaceSymbols(trg, state);
+	table.replaceSymbols(src, state);
+	table.replaceSymbols(trg, state);
 
-    //More to do here (soon^TM).
-    return std::make_unique<AbstractSyntaxTreeNode>();
+	// More to do here (soon^TM).
+	return std::make_unique<AbstractSyntaxTreeNode>();
 }
 
-void IntermediateInstruction::determineMemoryPosition()
-{
-    //To be expanded soon^TM.
+void IntermediateInstruction::determineMemoryPosition() {
+	// To be expanded soon^TM.
 }

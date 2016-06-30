@@ -17,21 +17,19 @@
 
 #include "include/parser/IntermediateRepresentator.hpp"
 
-FinalRepresentation IntermediateRepresentator::transform(CompileState& state)
-{
-    //First of all, we insert all our labels/constants into the SymbolTable.
-    SymbolTable table;
-    for (const auto& i : _commandList){
-        i->enhanceSymbolTable(table, state);
-    }
+FinalRepresentation IntermediateRepresentator::transform(CompileState& state) {
+	// First of all, we insert all our labels/constants into the SymbolTable.
+	SymbolTable table;
+	for (const auto& i : _commandList) {
+		i->enhanceSymbolTable(table, state);
+	}
 
-    //Then, we execute their values.
-    FinalRepresentation representation;
-    for (const auto& i : _commandList)
-    {
-        i->execute(representation, table, state);
-    }
+	// Then, we execute their values.
+	FinalRepresentation representation;
+	for (const auto& i : _commandList) {
+		i->execute(representation, table, state);
+	}
 
-    //Now, we are done.
-    return representation;
+	// Now, we are done.
+	return representation;
 }

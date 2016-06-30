@@ -15,22 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "gtest/gtest.h"
 #include "include/parser/IntermediateRepresentator.hpp"
+#include "gtest/gtest.h"
 #include "include/parser/IntermediateInstruction.hpp"
 
-TEST(IntermediateRepresentator, insertSimple)
-{
-    IntermediateRepresentator ir;
-    ir.insertCommand(IntermediateInstruction(LineInterval(0, 1), { "label1", "label2", "label3" }, "mov", { "eax" }, { "eax" }));
+TEST(IntermediateRepresentator, insertSimple) {
+	IntermediateRepresentator ir;
+	ir.insertCommand(IntermediateInstruction(LineInterval(0, 1),
+																					 {"label1", "label2", "label3"},
+																					 "mov",
+																					 {"eax"},
+																					 {"eax"}));
 }
 
-TEST(IntermediateRepresentator, transformSimple)
-{
-    CompileState state;
-    IntermediateRepresentator ir;
-    ir.insertCommand(IntermediateInstruction(LineInterval(0, 1), { "label1", "label2", "label3" }, "mov", { "eax" }, { "eax" }));
-    ir.insertCommand(IntermediateInstruction(LineInterval(2, 5), { "label4" }, "add", { "eax" }, { "ebx" }));
-    FinalRepresentation fr = ir.transform(state);
-    ASSERT_EQ(fr.size(), 2);
+TEST(IntermediateRepresentator, transformSimple) {
+	CompileState state;
+	IntermediateRepresentator ir;
+	ir.insertCommand(IntermediateInstruction(LineInterval(0, 1),
+																					 {"label1", "label2", "label3"},
+																					 "mov",
+																					 {"eax"},
+																					 {"eax"}));
+	ir.insertCommand(IntermediateInstruction(
+			LineInterval(2, 5), {"label4"}, "add", {"eax"}, {"ebx"}));
+	FinalRepresentation fr = ir.transform(state);
+	ASSERT_EQ(fr.size(), 2);
 }

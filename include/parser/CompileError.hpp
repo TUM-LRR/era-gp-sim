@@ -25,21 +25,23 @@
  * \brief Denotes the severity of a compiler error.
  */
 enum class CompileErrorSeverity {
-    /**
-     * \var CompileErrorSeverity::kError
-     * \brief The severity is an error, i.e. the program will not compile properly.
-     */
-    kError,
-    /**
-     * \var CompileErrorSeverity::kWarning
-     * \brief The severity is a warning, i.e. the program will compile, but might show unexpected behavior.
-     */
-    kWarning,
-    /**
-     * \var CompileErrorSeverity::kInformation
-     * \brief The severity is just an information, e.g. a hint for the user.
-     */
-    kInformation
+	/**
+	 * \var CompileErrorSeverity::kError
+	 * \brief The severity is an error, i.e. the program will not compile
+	 * properly.
+	 */
+	kError,
+	/**
+	 * \var CompileErrorSeverity::kWarning
+	 * \brief The severity is a warning, i.e. the program will compile, but might
+	 * show unexpected behavior.
+	 */
+	kWarning,
+	/**
+	 * \var CompileErrorSeverity::kInformation
+	 * \brief The severity is just an information, e.g. a hint for the user.
+	 */
+	kInformation
 };
 
 /**
@@ -47,109 +49,114 @@ enum class CompileErrorSeverity {
  * \brief Represents a mistake the compiler noticed.
  */
 class CompileError {
-public:
-    /**
-     * \fn CompileError::CompileError(const std::string &message, const CodePosition& position, CompileErrorSeverity severity)
-     * \brief Instantiates a new compile error with the given arguments.
-     * \param message The error message.
-     * \param position The position of the error in the code.
-     * \param severity The severity of the error.
-     */
-    CompileError(const std::string &message, const CodePosition& position, CompileErrorSeverity severity)
-        : _message(message), _position(position), _severity(severity) {}
-    
-    /**
-     * \fn CompileError::CompileError(const char* message, const CodePosition& position, CompileErrorSeverity severity)
-     * \brief Instantiates a new compile error with the given arguments.
-     * \param message The error message.
-     * \param position The position of the error in the code.
-     * \param severity The severity of the error.
-     */
-    CompileError(const char* message, const CodePosition& position, CompileErrorSeverity severity)
-        : CompileError(std::string(message), position, severity) {}
-    
-    /**
-     * \fn CompileError::CompileError(const CompileError& other)
-     * \brief Default copy constructor.
-     * \param other The source CompileError instance.
-     */
-    CompileError(const CompileError& other) = default;
+ public:
+	/**
+	 * \fn CompileError::CompileError(const std::string &message, const
+	 * CodePosition& position, CompileErrorSeverity severity)
+	 * \brief Instantiates a new compile error with the given arguments.
+	 * \param message The error message.
+	 * \param position The position of the error in the code.
+	 * \param severity The severity of the error.
+	 */
+	CompileError(const std::string& message,
+							 const CodePosition& position,
+							 CompileErrorSeverity severity)
+	: _message(message), _position(position), _severity(severity) {
+	}
 
-    /**
-     * \fn CompileError::CompileError(CompileError&& other)
-     * \brief Default move constructor.
-     * \param other The source CompileError instance.
-     */
-    CompileError(CompileError&& other) = default;
+	/**
+	 * \fn CompileError::CompileError(const char* message, const CodePosition&
+	 * position, CompileErrorSeverity severity)
+	 * \brief Instantiates a new compile error with the given arguments.
+	 * \param message The error message.
+	 * \param position The position of the error in the code.
+	 * \param severity The severity of the error.
+	 */
+	CompileError(const char* message,
+							 const CodePosition& position,
+							 CompileErrorSeverity severity)
+	: CompileError(std::string(message), position, severity) {
+	}
 
-    /**
-     * \fn CompileError::operator =(const CompileError& other)
-     * \brief Default copy assignment operator.
-     * \param other The source CompileError instance.
-     */
-    CompileError& operator =(const CompileError& other) = default;
+	/**
+	 * \fn CompileError::CompileError(const CompileError& other)
+	 * \brief Default copy constructor.
+	 * \param other The source CompileError instance.
+	 */
+	CompileError(const CompileError& other) = default;
 
-    /**
-     * \fn CompileError::operator =(CompileError&& other)
-     * \brief Default move assignment operator.
-     * \param other The source CompileError instance.
-     */
-    CompileError& operator =(CompileError&& other) = default;
+	/**
+	 * \fn CompileError::CompileError(CompileError&& other)
+	 * \brief Default move constructor.
+	 * \param other The source CompileError instance.
+	 */
+	CompileError(CompileError&& other) = default;
 
-    /**
-     * \fn CompileError::~CompileError()
-     * \brief Default destructor.
-     */
-    ~CompileError() = default;
+	/**
+	 * \fn CompileError::operator =(const CompileError& other)
+	 * \brief Default copy assignment operator.
+	 * \param other The source CompileError instance.
+	 */
+	CompileError& operator=(const CompileError& other) = default;
 
-    /**
-     * \fn CompileError::message()
-     * \brief Returns the message of this error.
-     * \return The message of the error.
-     */
-    inline const std::string& message() const
-    {
-        return _message;
-    }
+	/**
+	 * \fn CompileError::operator =(CompileError&& other)
+	 * \brief Default move assignment operator.
+	 * \param other The source CompileError instance.
+	 */
+	CompileError& operator=(CompileError&& other) = default;
 
-    /**
-     * \fn CompileError::position()
-     * \brief Returns the position where this error occured.
-     * \return The position of the error.
-     */
-    inline const CodePosition& position() const
-    {
-        return _position;
-    }
+	/**
+	 * \fn CompileError::~CompileError()
+	 * \brief Default destructor.
+	 */
+	~CompileError() = default;
 
-    /**
-     * \fn CompileError::severity()
-     * \brief Returns the severity of the error.
-     * \return The severity of the error.
-     */
-    inline const CompileErrorSeverity severity() const
-    {
-        return _severity;
-    }
+	/**
+	 * \fn CompileError::message()
+	 * \brief Returns the message of this error.
+	 * \return The message of the error.
+	 */
+	inline const std::string& message() const {
+		return _message;
+	}
 
-private:
-    /**
-     * \var CompileError::_message
-     * \brief The internal message attribute.
-     */
-    std::string _message;
+	/**
+	 * \fn CompileError::position()
+	 * \brief Returns the position where this error occured.
+	 * \return The position of the error.
+	 */
+	inline const CodePosition& position() const {
+		return _position;
+	}
 
-    /**
-     * \var CompileError::_position
-     * \brief The internal position attribute.
-     */
-    CodePosition _position;
+	/**
+	 * \fn CompileError::severity()
+	 * \brief Returns the severity of the error.
+	 * \return The severity of the error.
+	 */
+	inline const CompileErrorSeverity severity() const {
+		return _severity;
+	}
 
-    /**
-     * \var CompileError::_severity
-     * \brief The internal severity attribute.
-     */
-    CompileErrorSeverity _severity;
+ private:
+	/**
+	 * \var CompileError::_message
+	 * \brief The internal message attribute.
+	 */
+	std::string _message;
+
+	/**
+	 * \var CompileError::_position
+	 * \brief The internal position attribute.
+	 */
+	CodePosition _position;
+
+	/**
+	 * \var CompileError::_severity
+	 * \brief The internal severity attribute.
+	 */
+	CompileErrorSeverity _severity;
 };
 
 #endif

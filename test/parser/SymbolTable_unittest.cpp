@@ -15,79 +15,72 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "gtest/gtest.h"
 #include "include/parser/SymbolTable.hpp"
+#include "gtest/gtest.h"
 
-TEST(SymbolTable, initSimple)
-{
-    CompileState state;
-    SymbolTable st;
-    st.insertEntry(std::string("Hi"), std::string("Bye"), state);
-    ASSERT_EQ(state.errorList.size(), 0);
+TEST(SymbolTable, initSimple) {
+	CompileState state;
+	SymbolTable st;
+	st.insertEntry(std::string("Hi"), std::string("Bye"), state);
+	ASSERT_EQ(state.errorList.size(), 0);
 }
 
-TEST(SymbolTable, replaceSimple)
-{
-    CompileState state;
-    SymbolTable st;
-    st.insertEntry("A", "B", state);
-    st.insertEntry("B", "C", state);
-    st.insertEntry("C", "D", state);
-    st.insertEntry("E", "C", state);
-    auto result = st.replaceSymbols("A+B+C+c=E-D+X-ABCDEFG-124*12B32#E", state);
-    ASSERT_EQ("D+D+D+c=D-D+X-ABCDEFG-124*12B32#D", result);
-    ASSERT_EQ(state.errorList.size(), 0);
+TEST(SymbolTable, replaceSimple) {
+	CompileState state;
+	SymbolTable st;
+	st.insertEntry("A", "B", state);
+	st.insertEntry("B", "C", state);
+	st.insertEntry("C", "D", state);
+	st.insertEntry("E", "C", state);
+	auto result = st.replaceSymbols("A+B+C+c=E-D+X-ABCDEFG-124*12B32#E", state);
+	ASSERT_EQ("D+D+D+c=D-D+X-ABCDEFG-124*12B32#D", result);
+	ASSERT_EQ(state.errorList.size(), 0);
 }
 
-TEST(SymbolTable, infiniteRecursion)
-{
-    CompileState state;
-    SymbolTable st;
-    st.insertEntry("A", "B", state);
-    st.insertEntry("B", "A", state);
-    auto result = st.replaceSymbols("Lorem ipsum sit amet A", state);
-    ASSERT_EQ(state.errorList.size(), 1);
-    ASSERT_EQ(state.errorList[0].severity(), CompileErrorSeverity::kError);
+TEST(SymbolTable, infiniteRecursion) {
+	CompileState state;
+	SymbolTable st;
+	st.insertEntry("A", "B", state);
+	st.insertEntry("B", "A", state);
+	auto result = st.replaceSymbols("Lorem ipsum sit amet A", state);
+	ASSERT_EQ(state.errorList.size(), 1);
+	ASSERT_EQ(state.errorList[0].severity(), CompileErrorSeverity::kError);
 }
 
-TEST(SymbolTable, doubleInsertion)
-{
-    CompileState state;
-    SymbolTable st;
-    st.insertEntry("A", "B", state);
-    st.insertEntry("A", "C", state);
-    ASSERT_EQ(state.errorList.size(), 1);
-    ASSERT_EQ(state.errorList[0].severity(), CompileErrorSeverity::kError);
+TEST(SymbolTable, doubleInsertion) {
+	CompileState state;
+	SymbolTable st;
+	st.insertEntry("A", "B", state);
+	st.insertEntry("A", "C", state);
+	ASSERT_EQ(state.errorList.size(), 1);
+	ASSERT_EQ(state.errorList[0].severity(), CompileErrorSeverity::kError);
 }
 
-TEST(SymbolTable, correctName)
-{
-    CompileState state;
-    SymbolTable st;
-    st.insertEntry("a", "", state);
-    st.insertEntry("_", "", state);
-    st.insertEntry("hai", "", state);
-    st.insertEntry("_someVariable", "", state);
-    st.insertEntry("LONG", "", state);
-    st.insertEntry("VERY_LONG", "", state);
-    st.insertEntry("capslock", "", state);
-    ASSERT_EQ(state.errorList.size(), 0);
+TEST(SymbolTable, correctName) {
+	CompileState state;
+	SymbolTable st;
+	st.insertEntry("a", "", state);
+	st.insertEntry("_", "", state);
+	st.insertEntry("hai", "", state);
+	st.insertEntry("_someVariable", "", state);
+	st.insertEntry("LONG", "", state);
+	st.insertEntry("VERY_LONG", "", state);
+	st.insertEntry("capslock", "", state);
+	ASSERT_EQ(state.errorList.size(), 0);
 }
 
-TEST(SymbolTable, invalidName)
-{
-    CompileState state;
-    SymbolTable st;
-    st.insertEntry("1A", "", state);
-    st.insertEntry("1_2", "", state);
-    st.insertEntry("#", "", state);
-    st.insertEntry("_---_", "", state);
-    st.insertEntry("-.-", "", state);
-    st.insertEntry("🅱🅻🅾🆇🆇", "", state);
-    st.insertEntry("", "", state);
-    ASSERT_EQ(state.errorList.size(), 7);
-    for (auto i : state.errorList)
-    {
-        ASSERT_EQ(i.severity(), CompileErrorSeverity::kError);
-    }
+TEST(SymbolTable, invalidName) {
+	CompileState state;
+	SymbolTable st;
+	st.insertEntry("1A", "", state);
+	st.insertEntry("1_2", "", state);
+	st.insertEntry("#", "", state);
+	st.insertEntry("_---_", "", state);
+	st.insertEntry("-.-", "", state);
+	st.insertEntry("🅱🅻🅾🆇🆇", "", state);
+	st.insertEntry("", "", state);
+	ASSERT_EQ(state.errorList.size(), 7);
+	for (auto i : state.errorList) {
+		ASSERT_EQ(i.severity(), CompileErrorSeverity::kError);
+	}
 }

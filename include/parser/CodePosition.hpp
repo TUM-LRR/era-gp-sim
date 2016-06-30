@@ -22,6 +22,6 @@
  * \class CodePosition
  * \brief Denotes a code position in the format (line, character).
  */
-using CodePosition = std::pair<unsigned int, unsigned int>; //For now.
+using CodePosition = std::pair<unsigned int, unsigned int>;// For now.
 
 #endif
