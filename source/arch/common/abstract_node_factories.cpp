@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "include/arch/common/abstract_node_factories.hpp"
+#include "arch/common/abstract-node-factories.hpp"
 
 /*
  * Stub implementations for the destructors
