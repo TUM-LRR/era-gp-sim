@@ -18,6 +18,7 @@
 #ifndef ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
 #define ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
 
+#include <cassert>
 #include <memory>
 #include <string>
 
@@ -172,50 +173,60 @@ class AbstractNodeFactoryCollection {
 
   inline std::unique_ptr<AbstractSyntaxTreeNode> createInstructionNode(
       std::string& token) {
+    assert(_instructionF);
     return _instructionF->createInstructionNode(token);
   }
 
   inline std::unique_ptr<AbstractSyntaxTreeNode> createImmediateNode(
       MemoryValue numericalValue) {
+    assert(_immediateF);
     return _immediateF->createImmediateNode(numericalValue);
   }
 
   inline std::unique_ptr<AbstractSyntaxTreeNode> createRegisterAccessNode(
       const std::string& registerAddress) {
+    assert(_registerAccF);
     return _registerAccF->createRegisterAccessNode(registerAddress);
   }
 
   inline std::unique_ptr<AbstractSyntaxTreeNode> createMemoryAccessNode() {
+    assert(_memoryAccF);
     return _memoryAccF->createMemoryAccessNode();
   }
 
   inline std::unique_ptr<AbstractSyntaxTreeNode> createArithmeticOperationNode(
       const int opType) {
+    assert(_arithOpF);
     return _arithOpF->createArithmeticOperationNode(opType);
   }
 
   void setInstructionFactory(
       std::unique_ptr<AbstractInstructionNodeFactory> instructionFactory) {
+    assert(instructionFactory);
     _instructionF = std::move(instructionFactory);
   }
 
   void setImmediateFactory(
       std::unique_ptr<AbstractImmediateNodeFactory> immediateFactory) {
+    assert(immediateFactory);
     _immediateF = std::move(immediateFactory);
   }
 
   void setRegisterFactory(std::unique_ptr<AbstractRegisterAccessNodeFactory>
                               registerAccessFactory) {
+    assert(registerAccessFactory);
     _registerAccF = std::move(registerAccessFactory);
   }
 
   void setMemoryFactory(
       std::unique_ptr<AbstractMemoryAccessNodeFactory> memoryAccessFactory) {
+    assert(memoryAccessFactory);
     _memoryAccF = std::move(memoryAccessFactory);
   }
 
   void setArithmeticOpFactory(
       std::unique_ptr<AbstractArithmeticOpNodeFactory> arithOpFactory) {
+    assert(arithOpFactory);
     _arithOpF = std::move(arithOpFactory);
   }
 
