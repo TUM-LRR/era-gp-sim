@@ -41,6 +41,7 @@ def create_source(root, relative_path, name):
     include_path = os.path.join(relative_path, "{0}.hpp".format(name))
     print('Creating source file ...')
     with open(source_path, 'w') as source:
+        source.write(get_license(root))
         source.write('#include "{0}"\n'.format(include_path))
 
 
