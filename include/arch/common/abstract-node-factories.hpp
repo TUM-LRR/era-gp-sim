@@ -41,8 +41,7 @@ struct MemoryValue {};
  */
 class AbstractInstructionNodeFactory {
  public:
-  AbstractInstructionNodeFactory() {
-  }
+  AbstractInstructionNodeFactory() {}
 
   virtual ~AbstractInstructionNodeFactory();
 
@@ -59,8 +58,8 @@ class AbstractInstructionNodeFactory {
    * nullptr if the given token cannot be mapped to a architecture-specific
    * instruction
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createInstructionNode(std::string& token) = 0;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode> createInstructionNode(
+      std::string& token) = 0;
 };
 
 /**
@@ -69,8 +68,7 @@ class AbstractInstructionNodeFactory {
  */
 class AbstractImmediateNodeFactory {
  public:
-  AbstractImmediateNodeFactory() {
-  }
+  AbstractImmediateNodeFactory() {}
 
   virtual ~AbstractImmediateNodeFactory();
 
@@ -86,8 +84,8 @@ class AbstractImmediateNodeFactory {
    * nullptr if the architecture-specific implementation cannot create an
    * immediate from the given numericalValue
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createImmediateNode(MemoryValue numericalValue) = 0;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode> createImmediateNode(
+      MemoryValue numericalValue) = 0;
 };
 
 /**
@@ -96,8 +94,7 @@ class AbstractImmediateNodeFactory {
  */
 class AbstractRegisterAccessNodeFactory {
  public:
-  AbstractRegisterAccessNodeFactory() {
-  }
+  AbstractRegisterAccessNodeFactory() {}
 
   virtual ~AbstractRegisterAccessNodeFactory();
 
@@ -112,8 +109,8 @@ class AbstractRegisterAccessNodeFactory {
    * @return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given registerAddress is invalid
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createRegisterAccessNode(const std::string& registerAddress) = 0;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode> createRegisterAccessNode(
+      const std::string& registerAddress) = 0;
 };
 
 /**
@@ -122,8 +119,7 @@ class AbstractRegisterAccessNodeFactory {
  */
 class AbstractMemoryAccessNodeFactory {
  public:
-  AbstractMemoryAccessNodeFactory() {
-  }
+  AbstractMemoryAccessNodeFactory() {}
 
   virtual ~AbstractMemoryAccessNodeFactory();
 
@@ -144,13 +140,12 @@ class AbstractMemoryAccessNodeFactory {
  */
 class AbstractArithmeticOpNodeFactory {
  public:
-  static constexpr int ADDITION       = 1;
-  static constexpr int SUBTRACTION    = 2;
+  static constexpr int ADDITION = 1;
+  static constexpr int SUBTRACTION = 2;
   static constexpr int MULTIPLICATION = 3;
-  static constexpr int DIVISION       = 4;
+  static constexpr int DIVISION = 4;
 
-  AbstractArithmeticOpNodeFactory() {
-  }
+  AbstractArithmeticOpNodeFactory() {}
 
   virtual ~AbstractArithmeticOpNodeFactory();
 
@@ -166,8 +161,70 @@ class AbstractArithmeticOpNodeFactory {
    * @return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given opType is invalid
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createArithmeticOperationNode(const int opType) = 0;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode> createArithmeticOperationNode(
+      const int opType) = 0;
 };
 
-#endif// ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
+class AbstractNodeFactoryCollection {
+ public:
+  AbstractNodeFactoryCollection() = default;
+  ~AbstractNodeFactoryCollection() = default;
+
+  inline std::unique_ptr<AbstractSyntaxTreeNode> createInstructionNode(
+      std::string& token) {
+    return _instructionF->createInstructionNode(token);
+  }
+
+  inline std::unique_ptr<AbstractSyntaxTreeNode> createImmediateNode(
+      MemoryValue numericalValue) {
+    return _immediateF->createImmediateNode(numericalValue);
+  }
+
+  inline std::unique_ptr<AbstractSyntaxTreeNode> createRegisterAccessNode(
+      const std::string& registerAddress) {
+    return _registerAccF->createRegisterAccessNode(registerAddress);
+  }
+
+  inline std::unique_ptr<AbstractSyntaxTreeNode> createMemoryAccessNode() {
+    return _memoryAccF->createMemoryAccessNode();
+  }
+
+  inline std::unique_ptr<AbstractSyntaxTreeNode> createArithmeticOperationNode(
+      const int opType) {
+    return _arithOpF->createArithmeticOperationNode(opType);
+  }
+
+  void setInstructionFactory(
+      std::unique_ptr<AbstractInstructionNodeFactory> instructionFactory) {
+    _instructionF = std::move(instructionFactory);
+  }
+
+  void setImmediateFactory(
+      std::unique_ptr<AbstractImmediateNodeFactory> immediateFactory) {
+    _immediateF = std::move(immediateFactory);
+  }
+
+  void setRegisterFactory(std::unique_ptr<AbstractRegisterAccessNodeFactory>
+                              registerAccessFactory) {
+    _registerAccF = std::move(registerAccessFactory);
+  }
+
+  void setMemoryFactory(
+      std::unique_ptr<AbstractMemoryAccessNodeFactory> memoryAccessFactory) {
+    _memoryAccF = std::move(memoryAccessFactory);
+  }
+
+  void setArithmeticOpFactory(
+      std::unique_ptr<AbstractArithmeticOpNodeFactory> arithOpFactory) {
+    _arithOpF = std::move(arithOpFactory);
+  }
+
+ private:
+  std::unique_ptr<AbstractInstructionNodeFactory> _instructionF;
+  std::unique_ptr<AbstractImmediateNodeFactory> _immediateF;
+  std::unique_ptr<AbstractRegisterAccessNodeFactory> _registerAccF;
+  std::unique_ptr<AbstractMemoryAccessNodeFactory> _memoryAccF;
+  std::unique_ptr<AbstractArithmeticOpNodeFactory> _arithOpF;
+};
+
+#endif  // ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
