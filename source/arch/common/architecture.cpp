@@ -27,8 +27,8 @@
 #include "arch/common/architecture.hpp"
 #include "arch/common/extension-information.hpp"
 
-Architecture Architecture::Brew(const Architecture::Formula& formula) {
-  return Architecture::Brewery(formula).brew();
+Architecture Architecture::Brew(const ArchitectureFormula& formula) {
+  return ArchitectureBrewery(formula).brew();
 }
 
 Architecture::Architecture() noexcept : _validated(false) {
@@ -77,8 +77,8 @@ Architecture& Architecture::operator+=(const ExtensionInformation& extension) {
   return extend(extension);
 }
 
-Architecture Architecture::
-operator+(const ExtensionInformation& extension) const {
+Architecture Architecture::operator+(
+    const ExtensionInformation& extension) const {
   auto temp = *this;
   temp += extension;
 

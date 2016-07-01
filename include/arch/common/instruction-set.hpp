@@ -50,11 +50,6 @@ class InstructionSet
   using super::isEmpty;
 
   /**
-   * Constructs a new empty construction set.
-   */
-  InstructionSet() noexcept;
-
-  /**
    * Deserializes and constructs an InstructionSet from the given data.
    *
    * @param data The serialized data.
@@ -77,7 +72,7 @@ class InstructionSet
    *
    * @param instructions A list of instructions to add to the set.
    */
-  explicit InstructionSet(InitializerList instructions);
+  explicit InstructionSet(InitializerList instructions = InitializerList());
 
   /**
    * Deserializes an InstructionSet from the given data.

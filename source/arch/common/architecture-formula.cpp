@@ -21,17 +21,24 @@
 
 #include "arch/common/architecture-formula.hpp"
 
-Architecture::Formula& Architecture::Formula::add(const std::string& name) {
+ArchitectureFormula::ArchitectureFormula(
+    const std::string& architectureName = std::string(),
+    InitializerList list                = InitializerList())
+: super(list), _architectureName(architectureName) {
+}
+
+
+ArchitectureFormula& ArchitectureFormula::add(const std::string& name) {
   assert(!name.empty());
   _container.emplace_back(name);
   return *this;
 }
 
-const std::string& Architecture::Formula::architectureName() const noexcept {
+const std::string& ArchitectureFormula::architectureName() const noexcept {
   return _architectureName;
 }
 
-Architecture::Formula& Architecture::Formula::getArchitectureName(
+ArchitectureFormula& ArchitectureFormula::getArchitectureName(
     const std::string& name) {
   assert(!name.empty());
   _architectureName = name;
@@ -39,6 +46,6 @@ Architecture::Formula& Architecture::Formula::getArchitectureName(
   return *this;
 }
 
-bool Architecture::Formula::isValid() const noexcept override {
+bool ArchitectureFormula::isValid() const noexcept override {
   return !_archtitectureName.empty() && !isEmpty();
 }

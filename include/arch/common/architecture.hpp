@@ -31,6 +31,7 @@
 #include "common/builder-interface.hpp"
 
 class ExtensionInformation;
+class ArchitectureFormula;
 
 /**
  * This class holds all information about an architecture.
@@ -49,9 +50,6 @@ class Architecture : public BuilderInterface {
   using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
   using word_size_t       = ArchitectureProperties::word_size_t;
 
-  class Formula;
-  class Brewery;
-
   /**
    * Brews an architecture given a formula.
    *
@@ -66,7 +64,7 @@ class Architecture : public BuilderInterface {
    *
    * @return A complete architecture instance.
    */
-  static Architecture Brew(const Formula& formula);
+  static Architecture Brew(const ArchitectureFormula& formula);
 
   /**
    * Constructs a new empty architecture.

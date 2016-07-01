@@ -42,14 +42,7 @@ class UnitInformation
       public InformationInterface {
  public:
   using super = ContainerAdapter<std::vector<RegisterInformation>>;
-  using super::_container;
-  using super::begin;
-  using super::cbegin;
-  using super::end;
-  using super::cend;
-  using super::clear;
-  using super::size;
-  using super::isEmpty;
+
   using Type = RegisterInformation::Type;
 
   UnitInformation() noexcept;

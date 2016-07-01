@@ -24,7 +24,6 @@
 #include <string>
 #include <vector>
 
-#include "arch/common/architecture.hpp"
 #include "common/builder-interface.hpp"
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
@@ -35,34 +34,25 @@
  * A formula is just a list of extension names. There must be one base extension
  * and optionally any number of further extensions.
  */
-class Architecture::Formula : public ContainerAdapter<std::vector<std::string>>,
-                              public BuilderInterface {
+class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
+                            public BuilderInterface {
  public:
   using super = ContainerAdapter<std::vector<std::string>>;
-  using super::_container;
-  using super::InitializerList;
-  using super::begin;
-  using super::cbegin;
-  using super::end;
-  using super::cend;
-  using super::clear;
-  using super::size;
-  using super::isEmpty;
+  using CONTAINER_ADAPTER_MEMBERS;
   using index_t = typename Underlying::size_type;
 
   /**
-   * Constructs a new Formula.
+   * Constructs a new ArchitectureFormula.
    *
    * @param architectureName The name of the architecture.
    * @param list A list of extension names.
    */
-  explicit Formula(const std::string& architectureName = std::string(),
-                   InitializerList list                = InitializerList())
-  : super(list), _architectureName(architectureName) {
-  }
+  explicit ArchitectureFormula(
+      const std::string& architectureName = std::string(),
+      InitializerList list                = InitializerList());
 
   /**
-   Constructs a new Formula.
+   Constructs a new ArchitectureFormula.
    *
    * The first element of the range must be the base.
    *
@@ -71,7 +61,8 @@ class Architecture::Formula : public ContainerAdapter<std::vector<std::string>>,
    * @param all The range of extensions for the formula.
    */
   template <typename Range>
-  explicit Formula(const std::string& architectureName, const Range& range)
+  explicit ArchitectureFormula(const std::string& architectureName,
+                               const Range& range)
   : super(range) {
     assert(!isEmpty());
   }
@@ -84,7 +75,7 @@ class Architecture::Formula : public ContainerAdapter<std::vector<std::string>>,
    *
    * @return The current formula.
    */
-  Formula& add(const std::string& name);
+  ArchitectureFormula& add(const std::string& name);
 
   /**
    * Sets the architecture's name.
@@ -93,7 +84,7 @@ class Architecture::Formula : public ContainerAdapter<std::vector<std::string>>,
    *
    * @return The current formula.
    */
-  Formula& architectureName(const std::string& name);
+  ArchitectureFormula& architectureName(const std::string& name);
 
   /**
    * Returns the architecture's identifier (name).

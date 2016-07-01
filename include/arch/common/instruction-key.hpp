@@ -35,15 +35,7 @@ class InstructionKey
       public BuilderInterface {
  public:
   using super = ContainerAdapter<std::unordered_map<std::string, std::size_t>>;
-  using super::_container;
-  using super::InitializerList;
-  using super::begin;
-  using super::cbegin;
-  using super::end;
-  using super::cend;
-  using super::clear;
-  using super::size;
-  using super::isEmpty;
+  using CONTAINER_ADAPTER_MEMBERS;
   using Key             = std::string;
   using Value           = std::size_t;
   using KeyCollection   = std::vector<Key>;

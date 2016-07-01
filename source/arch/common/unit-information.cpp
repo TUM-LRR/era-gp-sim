@@ -23,8 +23,6 @@
 
 #include "arch/common/unit-information.hpp"
 
-UnitInformation::UnitInformation() noexcept = default;
-
 UnitInformation::UnitInformation(const InformationInterface::Format& data) {
   _deserialize(data);
 }
@@ -34,7 +32,8 @@ UnitInformation::UnitInformation(const std::string& name) {
   this->name(name);
 }
 
-UnitInformation& UnitInformation::deserialize(const InformationInterface::Format& data) {
+UnitInformation& UnitInformation::deserialize(
+    const InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -65,8 +64,8 @@ UnitInformation& UnitInformation::addRegisters(InitializerList regs) {
   return addRegisters<InitializerList>(regs);
 }
 
-UnitInformation&
-UnitInformation::addRegister(const RegisterInformation& registerInformation) {
+UnitInformation& UnitInformation::addRegister(
+    const RegisterInformation& registerInformation) {
   if (registerInformation.isSpecial()) {
     // clang-format off
     _specialRegisters.emplace(

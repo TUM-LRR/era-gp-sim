@@ -23,6 +23,31 @@
 #include <memory>
 
 /**
+ * Note: Macros are bad, bad, bad! They are not real code, they make debugging
+ * horrible because you cannot directly see the generated code, they are an
+ * old C construct etc. However, in this case, I must concede that it makes
+ * derivation from ContainerAdapter more legible. Who wants to see 20 using
+ * statements? Also, those 20 using statements in 5-10 subclasses are not
+ * maintainable, at all.
+ *
+ * Use it like this (for example):
+ *
+ * `using CONTAINER_ADAPTER_MEMBERS`
+ */
+#define CONTAINER_ADAPTER_MEMBERS \
+  super::_container;              \
+  using super::begin;             \
+  using super::cbegin;            \
+  using super::end;               \
+  using super::cend;              \
+  using super::clear;             \
+  using super::size;              \
+  using super::isEmpty;           \
+  using super::getUnderlying;     \
+  using super::operator==;        \
+  using super::operator!=;
+
+/**
  * A container-adapter base template.
  *
  * Defines some methods common to all concrete adapter classes. That is, if you
@@ -38,11 +63,6 @@ class ContainerAdapter {
   using ConstIterator   = typename Underlying::const_iterator;
   using ValueType       = typename Underlying::value_type;
   using InitializerList = std::initializer_list<ValueType>;
-
-  /**
-   * Constructs a new empty container adapter.
-   */
-  ContainerAdapter() noexcept = default;
 
   /**
    * Constructs a new container adapter from a range of elements.
@@ -62,17 +82,17 @@ class ContainerAdapter {
    * @param instructions A list of elements to initialize the container adapter
    *                     with.
    */
-  explicit ContainerAdapter(InitializerList list) : _container(list) {
+  explicit ContainerAdapter(InitializerList list = InitializerList())
+  : _container(list) {
   }
 
   virtual ~ContainerAdapter() = default;
 
-  virtual bool operator==(const ContainerAdapter& other) const
-      noexcept(noexcept(Underlying::operator==)) {
+  virtual bool operator==(const ContainerAdapter& other) const {
     return _container == other._container;
   }
 
-  virtual bool operator!=(const ContainerAdapter& other) const noexcept {
+  virtual bool operator!=(const ContainerAdapter& other) const {
     return !(*this == other);
   }
 

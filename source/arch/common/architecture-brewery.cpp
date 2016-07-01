@@ -23,15 +23,15 @@
 #include "arch/common/information-interface.hpp"
 #include "common/utility.hpp"
 
-Architecture::Brewery::Brewery(const Architecture::Formula& formula)
+ArchitectureBrewery::ArchitectureBrewery(const ArchitectureFormula& formula)
 : _formula(formula) {
 }
 
-Architecture Architecture::Brewery::operator()() {
+Architecture ArchitectureBrewery::operator()() {
   return brew();
 }
 
-Architecture Architecture::Brewery::brew() {
+Architecture ArchitectureBrewery::brew() {
   Architecture architecture;
   for (auto& extensionName : _formula) {
     if (!_hull.count(extensionName)) {
@@ -43,7 +43,7 @@ Architecture Architecture::Brewery::brew() {
   return architecture.validate();
 }
 
-ExtensionInformation Architecture::Brewery::_brew(
+ExtensionInformation ArchitectureBrewery::_brew(
     const std::string& extensionName, TraversalStack& traversalStack) {
   auto iterator = _hull.find(extensionName);
   if (iterator != _hull.end()) {
@@ -74,7 +74,7 @@ ExtensionInformation Architecture::Brewery::_brew(
   return extension;
 }
 
-void Architecture::Brewery::_loadDependencies(
+void ArchitectureBrewery::_loadDependencies(
     ExtensionInformation& extension,
     const InformationInterface::Format& data,
     TraversalStack& traversalStack) {
@@ -91,7 +91,7 @@ void Architecture::Brewery::_loadDependencies(
   // clang-format on
 }
 
-void Architecture::Brewery::_handleReset(
+void ArchitectureBrewery::_handleReset(
     ExtensionInformation& extension, const InformationInterface::Format& data) {
   Utility::doIfThere(data, "reset-instructions", [&extension](auto& reset) {
     if (reset) extension.clearInstructions();
@@ -102,7 +102,7 @@ void Architecture::Brewery::_handleReset(
   });
 }
 
-InformationInterface::Format Architecture::Brewery::_load(
+InformationInterface::Format ArchitectureBrewery::_load(
     const std::string extensionName) {
   auto data = InformationInterface::load(
       Utility::joinToRoot(_formula.getArchitectureName(), extensionName));

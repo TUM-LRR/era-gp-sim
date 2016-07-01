@@ -22,8 +22,6 @@
 
 #include "arch/common/instruction-set.hpp"
 
-InstructionSet::InstructionSet() noexcept = default;
-
 InstructionSet::InstructionSet(const InformationInterface::Format& data) {
   _deserialize(data);
 }
@@ -32,7 +30,8 @@ InstructionSet::InstructionSet(InitializerList instructions)
 : super(instructions) {
 }
 
-InstructionSet& InstructionSet::deserialize(const InformationInterface::Format& data) {
+InstructionSet& InstructionSet::deserialize(
+    const InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -42,8 +41,8 @@ InstructionSet& InstructionSet::addInstructions(InitializerList instructions) {
   return addInstructions<InitializerList>(instructions);
 }
 
-InstructionSet&
-InstructionSet::addInstruction(const InstructionInformation& instruction) {
+InstructionSet& InstructionSet::addInstruction(
+    const InstructionInformation& instruction) {
   _container.emplace_back(instruction);
 
   return *this;

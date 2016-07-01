@@ -24,6 +24,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "arch/common/architecture-brewery.hpp"
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/extension-information.hpp"
@@ -53,7 +54,7 @@
  *
  * The class has a functor-like interface.
  */
-class Architecture::Brewery {
+class ArchitectureBrewery {
  public:
   /**
    * Constructs a new Brewery ready to brew an architecture from the given
@@ -61,7 +62,7 @@ class Architecture::Brewery {
    *
    * @param formula The architecture formula to brew from.
    */
-  explicit Brewery(const Architecture::Formula& formula);
+  explicit ArchitectureBrewery(const ArchitectureFormula& formula);
 
   /**
    * Runs the graph algorithm to produce the Architecture object.
@@ -136,7 +137,7 @@ class Architecture::Brewery {
   TransitiveHull _hull;
 
   /** The formula to brew. */
-  Architecture::Formula _formula;
+  ArchitectureFormula _formula;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_ARCHITECTURE_BREWERY_HPP */
