@@ -25,6 +25,10 @@
 #include "arch/common/architecture.hpp"
 #include "arch/common/extension-information.hpp"
 
+Architecture Architecture::Brew(const Architecture::Formula& formula) {
+  return Architecture::Brewery(formula).brew();
+}
+
 Architecture::Architecture(const std::string& name,
                            const ExtensionInformation& base)
 : _validated(false) {

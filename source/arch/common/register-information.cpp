@@ -25,6 +25,10 @@
 
 typename RegisterInformation::id_t RegisterInformation::_rollingID = 0;
 
+RegisterInformation::RegisterInformation(const Information::Format& data) {
+  _deserialize(data);
+}
+
 // clang-format off
 RegisterInformation::RegisterInformation(const std::string& name)
 : _id(_rollingID++)
@@ -33,6 +37,12 @@ RegisterInformation::RegisterInformation(const std::string& name)
   this->name(name);
 }
 // clang-format on
+
+RegisterInformation&
+RegisterInformation::deserialize(const Information::Format& data) {
+  _deserialize(data);
+  return *this;
+}
 
 RegisterInformation& RegisterInformation::name(const std::string& name) {
   _name = name;
@@ -77,6 +87,14 @@ RegisterInformation& RegisterInformation::type(Type type) {
 
 RegisterInformation::Type RegisterInformation::getType() const noexcept {
   return _type;
+}
+
+bool RegisterInformation::isSpecial() const noexcept {
+  // clang-format off
+  return _type != Type::INTEGER &&
+         _type != Type::FLOAT &&
+         _type != Type::VECTOR;
+  // clang-format on
 }
 
 bool RegisterInformation::isConstant() const noexcept {
@@ -150,4 +168,57 @@ bool RegisterInformation::isValid() const noexcept {
   // that we would need to keep some symbol table.
   // The type has a default value, so no need to validate.
   return !_name.empty() && _size;
+}
+
+void RegisterInformation::_deserialize(const Information::Format& data) {
+  assert(data.count("id"));
+  assert(data.count("name"));
+  assert(data.count("size"));
+
+  id(data["id"]);
+  _parseType(data);
+  name(data["name"]);
+  size(data["size"]);
+
+  auto constant = data.find("constant");
+  if (constant != data.end()) {
+    _constant = static_cast<double>(constant.value());
+  }
+
+  auto enclosing = data.find("enclosing");
+  if (enclosing != data.end()) {
+    _enclosing = static_cast<id_t>(enclosing.value());
+  }
+
+  auto constituents = data.find("constituents");
+  if (constituents != data.end()) {
+    addConstituents(data["constituents"]);
+  }
+
+  auto aliases = data.find("constituents");
+  if (aliases != data.end()) {
+    for (auto& alias : data["aliases"]) {
+      addAlias(alias);
+    }
+  }
+}
+
+void RegisterInformation::_parseType(const Information::Format& data) {
+  auto type = data.find("type");
+
+  if (type == data.end() || *type == "integer") {
+    _type = Type::INTEGER;
+  } else if (*type == "float") {
+    _type = Type::FLOAT;
+  } else if (*type == "vector") {
+    _type = Type::VECTOR;
+  } else if (*type == "flag") {
+    _type = Type::FLAG;
+  } else if (*type == "link") {
+    _type = Type::LINK;
+  } else if (*type == "program-counter") {
+    _type = Type::PROGRAM_COUNTER;
+  } else {
+    assert(false);
+  }
 }

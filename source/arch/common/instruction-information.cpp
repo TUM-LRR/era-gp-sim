@@ -22,24 +22,36 @@
 
 #include "arch/common/instruction-information.hpp"
 
-InstructionInformation::InstructionInformation(const std::string& name)
-: _name(name) {
+InstructionInformation::InstructionInformation(
+    const Information::Format& data) {
+  deserialize(data);
 }
 
-InstructionInformation::InstructionInformation(const std::string& name,
+InstructionInformation::InstructionInformation(const std::string& mnemonic)
+: _mnemonic(mnemonic) {
+}
+
+InstructionInformation::InstructionInformation(const std::string& mnemonic,
                                                const InstructionKey& key)
-: _name(name), _key(key) {
+: _mnemonic(mnemonic), _key(key) {
 }
 
-InstructionInformation& InstructionInformation::name(const std::string& name) {
-  assert(!name.empty());
-  _name = name;
+InstructionInformation&
+InstructionInformation::deserialize(const Information::Format& data) {
+  _deserialize(data);
+  return *this;
+}
+
+InstructionInformation&
+InstructionInformation::mnemonic(const std::string& mnemonic) {
+  assert(!mnemonic.empty());
+  _mnemonic = mnemonic;
 
   return *this;
 }
 
 const std::string& InstructionInformation::getName() const noexcept {
-  return _name;
+  return _mnemonic;
 }
 
 InstructionInformation& InstructionInformation::key(const InstructionKey& key) {
@@ -47,12 +59,19 @@ InstructionInformation& InstructionInformation::key(const InstructionKey& key) {
   return *this;
 }
 
-const InstructionInformation::InstructionKey&
-InstructionInformation::getKey() const noexcept {
+const InstructionKey& InstructionInformation::getKey() const noexcept {
   assert(static_cast<bool>(_key));
   return *_key;
 }
 
 bool InstructionInformation::isValid() const noexcept {
-  return !_name.empty() && static_cast<bool>(_key);
+  return !_mnemonic.empty() && static_cast<bool>(_key);
+}
+
+void InstructionInformation::_deserialize(const Information::Format& data) {
+  assert(data.count("mnemonic"));
+  assert(data.count("key"));
+
+  mnemonic(data["mnemonic"]);
+  key(static_cast<InstructionKey>(data["key"]));
 }

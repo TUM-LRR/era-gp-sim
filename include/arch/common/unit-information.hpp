@@ -38,7 +38,8 @@
  */
 class UnitInformation
     : public ContainerAdapter<std::vector<RegisterInformation>>,
-      public Builder {
+      public Builder,
+      public Information {
  public:
   using super = ContainerAdapter<std::vector<RegisterInformation>>;
   using super::_container;
@@ -50,6 +51,13 @@ class UnitInformation
   using super::size;
   using super::isEmpty;
   using Type = RegisterInformation::Type;
+
+  /**
+   * Deserializes the `UnitInformation` from the given data.
+   *
+   * @param data The data to deserialize the unit-information from.
+   */
+  explicit UnitInformation(const Information::Format& data);
 
   /**
    * Constructs a new unit.
@@ -95,6 +103,15 @@ class UnitInformation
   }
 
   /**
+   * Deserializes the `UnitInformation` from the given data.
+   *
+   * @param data The data to deserialize the unit-information from.
+   *
+   * @return The current unit object.
+   */
+  UnitInformation& deserialize(const Information::Format& data);
+
+  /**
    * Sets the name of the unit.
    *
    * This would usually be "cpu", "fpu" (floats) or "vpu" (vector processing).
@@ -109,25 +126,6 @@ class UnitInformation
    * Returns the name of the unit.
    */
   const std::string& getName() const noexcept;
-
-
-  /**
-   * Gives the unit a special register.
-   *
-   * A special register would usually be something like a program counter
-   * register, link register or flag register. The idea is that these special
-   * registers should be accessable directly without having to inspect the
-   * entire collection of registers in the unit.
-   *
-   * The type of the special register added is deduced from via its `getType()`
-   * member.
-   *
-   * @param specialRegister The information about the special register.
-   * register.
-   *
-   * @return The current unit object.
-   */
-  UnitInformation& specialRegister(const RegisterInformation& specialRegister);
 
   /**
    * Returns information about a type of special register, if any such register
@@ -152,13 +150,18 @@ class UnitInformation
    */
   template <typename Range>
   UnitInformation& addRegisters(const Range& range) {
-    Utility::concatenate(_container, range);
-
+    _container.reserve(range.size());
+    for (auto& r : range) {
+      addRegister(r);
+    }
     return *this;
   }
 
   /**
    * Adds a list of RegisterInformation objects to the unit.
+   *
+   * For maximum efficieny, this method does not inspect individual registers to
+   * determine if they are special. Only the single-register version does so.
    *
    * @param regs A list of RegisterInformation objects.
    *
@@ -169,17 +172,24 @@ class UnitInformation
   /**
    * Adds a single RegisterInformation object to the unit.
    *
-   * @param reg The RegisterInformation object to add.
+   * @param registerInformation The RegisterInformation object to add.
    *
    * @return the current object.
    */
-  UnitInformation& addRegister(const RegisterInformation& reg);
+  UnitInformation& addRegister(const RegisterInformation& registerInformation);
 
   /** @copydoc Builder::isValid() */
   bool isValid() const noexcept override;
 
  private:
   using SpecialMap = std::unordered_map<Type, RegisterInformation>;
+
+  /**
+   * Deserializes the `UnitInformation` from the given data.
+   *
+   * @param data The data to deserialize the unit-information from.
+   */
+  void _deserialize(const Information::Format& data) override;
 
   /** The name of the unit, e.g. "CPU". */
   std::string _name;

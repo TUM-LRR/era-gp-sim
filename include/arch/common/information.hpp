@@ -17,40 +17,45 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_INFORMATION_HPP
-#define ERAGPSIM_ARCH_INFORMATION_HPP
+#ifndef ERAGPSIM_ARCH_COMMON_INFORMATION_HPP
+#define ERAGPSIM_ARCH_COMMON_INFORMATION_HPP
+
+#include "third-party/json/json.hpp"
 
 /**
- * Contains some enum and type declarations used for information objects.
- */
-namespace Information {
-
-/** Type for the processor word size, in bits. */
-using word_size_t = unsigned short;
-
-/*
- * The different kinds of endianness an extension may support.
+ * The base class for all information classes.
  *
- * For clarification, let our 32-bit word be 0xDEADBEEF:
- * - Little Endian: low-order values at lower addresses: 0xEFBEADDE
- * - Big Endian: high-order values at lower addresses: 0xDEADBEEF
- * - Mixed Endian: a mixture of the first two, e.g. storing 32-bit words
- * in
- *   little-endian but swapping 16-bit portions (as if the word-size were
- *   actually 16-bit): 0xADDEEFBE
- * - Bi Endian: Allows for dynamic configuration of the system's endianess
- * to
- *   be either little or big endian (usually at startup).
+ * Defines information classes' interface w.r.t to deserialization from JSON.
  */
-enum class Endianness { LITTLE, BIG, MIXED, BI };
+class Information {
+ public:
+  using Format = nlohmann::json;
 
-/**
- * Describes how the architecture handles misaligned accesses.
- *
- * Strict means the architecture does not allow misaligned memory accesses.
- * Relaxed means it does.
- */
-enum class AlignmentBehavior { STRICT, RELAXED };
-}
+  /**
+   * Destructor.
+   */
+  virtual ~Information();
 
-#endif /* ERAGPSIM_ARCH_INFORMATION_HPP */
+  /**
+   * Deserializes an `Information` object from the given data.
+   *
+   * @param data The data to deserialize from.
+   *
+   * @return The current `Information` object.
+   */
+  virtual Information& operator<<(const Format& data);
+
+  /**
+   * Deserializes an `Information` object from the given data.
+   *
+   * @param data The data to deserialize from.
+   *
+   * @return The data after deserialization.
+   */
+  friend Format& operator>>(Format& data, Information& information);
+
+ protected:
+  virtual void _deserialize(const Format& data) = 0;
+};
+
+#endif /* ERAGPSIM_ARCH_COMMON_INFORMATION_HPP */

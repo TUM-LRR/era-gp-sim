@@ -24,7 +24,17 @@
 
 InstructionSet::InstructionSet() = default;
 
-InstructionSet::InstructionSet(InitializerList instructions) : super(instructions) {
+InstructionSet::InstructionSet(const Information::Format& data) {
+  _deserialize(data);
+}
+
+InstructionSet::InstructionSet(InitializerList instructions)
+: super(instructions) {
+}
+
+InstructionSet& InstructionSet::deserialize(const Information::Format& data) {
+  _deserialize(data);
+  return *this;
 }
 
 InstructionSet& InstructionSet::addInstructions(InitializerList instructions) {
@@ -45,4 +55,10 @@ bool InstructionSet::isValid() const noexcept {
     return instruction.isValid();
   });
   // clang-format on
+}
+
+void InstructionSet::_deserialize(const Information::Format& data) {
+  for (auto& instruction : data) {
+    addInstruction(InstructionInformation{data});
+  }
 }

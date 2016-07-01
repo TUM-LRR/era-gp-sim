@@ -24,11 +24,13 @@
 #include <unordered_map>
 #include <vector>
 
+#include "arch/common/information.hpp"
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
 
 class InstructionKey
-    : public ContainerAdapter<std::unordered_map<std::string, std::size_t>> {
+    : public ContainerAdapter<std::unordered_map<std::string, std::size_t>>,
+      public Information {
  public:
   using super = ContainerAdapter<std::unordered_map<std::string, std::size_t>>;
   using super::_container;
@@ -45,11 +47,15 @@ class InstructionKey
   using KeyCollection   = std::vector<Key>;
   using ValueCollection = std::vector<Value>;
 
+  explicit InstructionKey(const Information::Format& data);
+
   template <typename Range>
   explicit InstructionKey(const Range& range) : super(range) {
   }
 
   explicit InstructionKey(InitializerList list);
+
+  InstructionKey& deserialize(const Information::Format& data);
 
   InstructionKey& add(const Key& key, const Value& value);
 
@@ -71,6 +77,9 @@ class InstructionKey
 
   KeyCollection getKeys() const noexcept;
   ValueCollection getValues() const noexcept;
+
+ private:
+  void _deserialize(const Information::Format& data) override;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_INSTRUCTION_KEY_HPP */

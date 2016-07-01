@@ -22,6 +22,10 @@
 
 #include "arch/common/datatype-information.hpp"
 
+DataTypeInformation::DataTypeInformation(const Information::Format& data) {
+  _deserialize(data);
+}
+
 DataTypeInformation::DataTypeInformation(const std::string& name, size_t size) {
   // To check constraints
   this->name(name);
@@ -32,6 +36,12 @@ DataTypeInformation& DataTypeInformation::name(const std::string& name) {
   assert(!_name.empty());
   _name = name;
 
+  return *this;
+}
+
+DataTypeInformation&
+DataTypeInformation::deserialize(const Information::Format& data) {
+  _deserialize(data);
   return *this;
 }
 
@@ -52,4 +62,12 @@ DataTypeInformation::size_t DataTypeInformation::size() const noexcept {
 
 bool DataTypeInformation::isValid() const noexcept {
   return !_name.empty() && _size > 0;
+}
+
+void DataTypeInformation::_deserialize(const Information::Format& data) {
+  assert(data.count("name"));
+  assert(data.count("size"));
+
+  name(data["name"]);
+  size(data["size"]);
 }

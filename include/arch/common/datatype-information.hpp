@@ -22,10 +22,11 @@
 
 #include <string>
 
+#include "arch/common/information.hpp"
 #include "common/builder.hpp"
 
 /**
- * Holds information about a datatype.
+ * Holds information about a data type.
  *
  * This is useful only for libraries that explicitly define different
  * data-types, like x86, where there are `qword`, `dword`, `word` and `byte`
@@ -34,51 +35,67 @@
  * identifiers. the instructions all operate on fixed data-types, e.g. `add`
  * expects 32-bit integers for RVI32 and 64-bit integers for RVI64.
  *
- * A datatype is defined by a name and size in bits, e.g. (dword, 32).
+ * A data type is defined by a name and size in bits, e.g. (dword, 32).
  *
  * The class' interface is intended to support the Builder pattern
  */
-class DataTypeInformation : public Builder {
+class DataTypeInformation : public Builder, public Information {
  public:
   using size_t = unsigned short;
 
   /**
-   * Constructs the datatype information object.
+   * Deserializes the data type from the given data.
    *
-   * @param name The name of the datatype, e.g. "dword".
-   * @param size The size of the datatype, in bits.
+   * @param data The data type to deserialize from.
+   */
+  explicit DataTypeInformation(const Information::Format& data);
+
+  /**
+   * Constructs the data type information object.
+   *
+   * @param name The name of the data type, e.g. "dword".
+   * @param size The size of the data type, in bits.
    */
   DataTypeInformation(const std::string& name, size_t size);
 
   /**
-   * Sets the name of the datatype.
+   * Deserializes the data type from the given data.
+   *
+   * @param data The data type to deserialize from.
+   *
+   * @return The current data type object.
+   */
+  DataTypeInformation& deserialize(const Information::Format& data);
+
+  /**
+   * Sets the name of the data type.
    *
    * @param name The name for the data type.
    *
-   * @return The current datatype object.
+   * @return The current data type object.
    */
   DataTypeInformation& name(const std::string& name);
 
   /**
-   * Returns the name of the datatype.
+   * Returns the name of the data type.
    *
-   * @return The name of the datatype.
+   * @return The name of the data type.
    */
   const std::string& getName() const noexcept;
 
   /**
-   * Sets the size of the datatype, in bits.
+   * Sets the size of the data type, in bits.
    *
-   * @param size The new size for the datatype, in bits.
+   * @param size The new size for the data type, in bits.
    *
-   * @return The current datatype object.
+   * @return The current data type object.
    */
   DataTypeInformation& size(size_t size);
 
   /**
-   * Returns the size of the datatype.
+   * Returns the size of the data type.
    *
-   * @return The size of the datatype.
+   * @return The size of the data type.
    */
   size_t size() const noexcept;
 
@@ -86,10 +103,17 @@ class DataTypeInformation : public Builder {
   bool isValid() const noexcept override;
 
  private:
-  /** The name of the datatype. */
+  /**
+   * Deserializes the data type from the given data.
+   *
+   * @param data The data type to deserialize from.
+   */
+  void _deserialize(const Information::Format& data) override;
+
+  /** The name of the data type. */
   std::string _name;
 
-  /** The size of the datatype, in bits. */
+  /** The size of the data type, in bits. */
   size_t _size;
 };
 

@@ -28,6 +28,10 @@
 
 ExtensionInformation::ExtensionInformation() noexcept = default;
 
+ExtensionInformation::ExtensionInformation(const Information::Format& data) {
+  _deserialize(data);
+}
+
 ExtensionInformation::ExtensionInformation(const std::string& name)
 : _instructions(std::make_unique<InstructionSet>()) {
   // For constraint checking
@@ -84,6 +88,12 @@ operator+(const ExtensionInformation& other) const {
   temp += other;
 
   return temp;
+}
+
+ExtensionInformation&
+ExtensionInformation::deserialize(const Information::Format& data) {
+  _deserialize(data);
+  return *this;
 }
 
 ExtensionInformation& ExtensionInformation::name(const std::string& name) {
@@ -225,4 +235,60 @@ bool ExtensionInformation::isValidBase() const noexcept {
 
   // Check the basic stuff
   return isValid();
+}
+
+void ExtensionInformation::_deserialize(const Information::Format& data) {
+  assert(data.count("name"));
+
+  name(data["name"]);
+  _parseEndianness(data);
+  _parseAlignmentBehavior(data);
+
+  auto wordSize = data.find("word-size");
+  if (wordSize != data.end()) {
+    _wordSize = static_cast<size_t>(*wordSize);
+  }
+
+  auto units = data.find("units");
+  if (units != data.end()) {
+    for (auto& unit : *units) {
+      addUnit(static_cast<UnitInformation>(unit));
+    }
+  }
+
+  auto instructions = data.find("instructions");
+  if (instructions != data.end()) {
+    addInstructions(static_cast<InstructionSet>(*instructions));
+  }
+}
+
+void ExtensionInformation::_parseEndianness(const Information::Format& data) {
+  auto endianness = data.find("endianness");
+  if (endianness == data.end()) return;
+
+  if (*endianness == "little") {
+    _endianness = ArchitectureProperties::Endianness::LITTLE;
+  } else if (*endianness == "big") {
+    _endianness = ArchitectureProperties::Endianness::BIG;
+  } else if (*endianness == "mixed") {
+    _endianness = ArchitectureProperties::Endianness::MIXED;
+  } else if (*endianness == "bi") {
+    _endianness = ArchitectureProperties::Endianness::BI;
+  } else {
+    assert(false);
+  }
+}
+
+void ExtensionInformation::_parseAlignmentBehavior(
+    const Information::Format& data) {
+  auto alignment = data.find("alignment-behavior");
+  if (alignment == data.end()) return;
+
+  if (*alignment == "strict") {
+    _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::STRICT;
+  } else if (*alignment == "relaxed") {
+    _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::RELAXED;
+  } else {
+    assert(false);
+  }
 }

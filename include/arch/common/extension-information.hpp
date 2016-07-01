@@ -26,6 +26,8 @@
 #include <string>
 #include <vector>
 
+#include "arch/common/architecture-properties.hpp"
+#include "arch/common/information.hpp"
 #include "arch/common/information.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/builder.hpp"
@@ -54,14 +56,21 @@ class InstructionSet;
  * An `ExtensionInformation` can be built easily on-top of anther via the
  * supported interface. In general, the API follows the Builder pattern.
  */
-class ExtensionInformation : public Builder {
+class ExtensionInformation : public Builder, public Information {
  public:
   using size_t            = unsigned short;
   using UnitContainer     = std::vector<UnitInformation>;
   using UnitList          = std::initializer_list<UnitInformation>;
   using ExtensionList     = std::initializer_list<ExtensionInformation>;
-  using Endianness        = Information::Endianness;
-  using AlignmentBehavior = Information::AlignmentBehavior;
+  using Endianness        = ArchitectureProperties::Endianness;
+  using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
+
+  /**
+   * Deserializes the `ExtensionInformation` object from the given data.
+   *
+   * @param data The data to deserialize from.
+   */
+  explicit ExtensionInformation(const Information::Format& data);
 
   /**
    * Constructs a new `ExtensionInformation` object.
@@ -153,6 +162,15 @@ class ExtensionInformation : public Builder {
    * @return The current `ExtensionInformation` object.
    */
   ExtensionInformation operator+(const ExtensionInformation& other) const;
+
+  /**
+   * Deserializes the `ExtensionInformation` object from the given data.
+   *
+   * @param data The data to deserialize from.
+   *
+   * @return The current `ExtensionInformation` object.
+   */
+  ExtensionInformation& deserialize(const Information::Format& data);
 
   /**
    * Sets the name of the extension.
@@ -350,7 +368,29 @@ class ExtensionInformation : public Builder {
   bool isValidBase() const noexcept;
 
  private:
+  /** Necessary for the copy-swap idiom. */
   ExtensionInformation() noexcept;
+
+  /**
+   * Deserializes the `ExtensionInformation` object from the given data.
+   *
+   * @param data The data to deserialize from.
+   */
+  void _deserialize(const Information::Format& data) override;
+
+  /**
+   * Parses the endianness property from serialized data.
+   *
+   * @param data The data to deserialize the endianness from.
+   */
+  void _parseEndianness(const Information::Format& data);
+
+  /**
+   * Parses the alignment behavior property from serialized data.
+   *
+   * @param data The data to deserialize the alignment behavior  from.
+   */
+  void _parseAlignmentBehavior(const Information::Format& data);
 
   /** The name of the extension. */
   std::string _name;

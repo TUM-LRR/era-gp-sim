@@ -5,7 +5,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+}* the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -22,6 +22,7 @@
 
 #include <vector>
 
+#include "arch/common/information.hpp"
 #include "arch/common/instruction-information.hpp"
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
@@ -34,7 +35,8 @@
  */
 class InstructionSet
     : public ContainerAdapter<std::vector<InstructionInformation>>,
-      public Builder {
+      public Builder,
+      public Information {
  public:
   using super = ContainerAdapter<std::vector<InstructionInformation>>;
   using super::_container;
@@ -53,6 +55,13 @@ class InstructionSet
   InstructionSet();
 
   /**
+   * Deserializes and constructs an InstructionSet from the given data.
+   *
+   * @param data The serialized data.
+   */
+  explicit InstructionSet(const Information::Format& data);
+
+  /**
    * Constructs a new instruction set from a range of instructions.
    *
    * @tparam Range a range-like type.
@@ -69,6 +78,15 @@ class InstructionSet
    * @param instructions A list of instructions to add to the set.
    */
   explicit InstructionSet(InitializerList instructions);
+
+  /**
+   * Deserializes an InstructionSet from the given data.
+   *
+   * @param data The serialized data.
+   *
+   * @return The current InstructionSet object.
+   */
+  InstructionSet& deserialize(const Information::Format& data);
 
   /**
    * Adds a range of InstructionInformation objects to the unit.
@@ -143,6 +161,14 @@ class InstructionSet
 
   /** @copydoc Builder::isValid() */
   bool isValid() const noexcept override;
+
+ private:
+  /**
+   * Deserializes an InstructionSet from the given data.
+   *
+   * @param data The serialized data.
+   */
+  void _deserialize(const Information::Format& data) override;
 };
 
 #endif /* ERAGPSIM_ARCH_INSTRUCTION_SET_HPP */

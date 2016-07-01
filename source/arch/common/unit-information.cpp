@@ -23,9 +23,18 @@
 
 #include "arch/common/unit-information.hpp"
 
+UnitInformation::UnitInformation(const Information::Format& data) {
+  _deserialize(data);
+}
+
 UnitInformation::UnitInformation(const std::string& name) {
   // To check constraints
   this->name(name);
+}
+
+UnitInformation& UnitInformation::deserialize(const Information::Format& data) {
+  _deserialize(data);
+  return *this;
 }
 
 UnitInformation& UnitInformation::name(const std::string& name) noexcept {
@@ -37,18 +46,6 @@ UnitInformation& UnitInformation::name(const std::string& name) noexcept {
 
 const std::string& UnitInformation::getName() const noexcept {
   return _name;
-}
-
-UnitInformation&
-UnitInformation::specialRegister(const RegisterInformation& specialRegister) {
-  assert(specialRegister.getType() != Type::INTEGER);
-  assert(specialRegister.getType() != Type::FLOAT);
-
-  // Using insert() instead of [] to avoid the subscript operator, which
-  // would require a default constructor for RegisterInformation
-  _specialRegisters.insert({specialRegister.getType(), specialRegister});
-
-  return *this;
 }
 
 const RegisterInformation& UnitInformation::getSpecialRegister(Type type) const
@@ -66,8 +63,18 @@ UnitInformation& UnitInformation::addRegisters(InitializerList regs) {
   return addRegisters<InitializerList>(regs);
 }
 
-UnitInformation& UnitInformation::addRegister(const RegisterInformation& reg) {
-  _container.emplace_back(reg);
+UnitInformation&
+UnitInformation::addRegister(const RegisterInformation& registerInformation) {
+  if (registerInformation.isSpecial()) {
+    // clang-format off
+    _specialRegisters.insert({
+        registerInformation.getType(),
+        registerInformation
+    });
+    // clang-format on
+  } else {
+    _container.emplace_back(registerInformation);
+  }
 
   return *this;
 }
@@ -79,4 +86,16 @@ bool UnitInformation::isValid() const noexcept {
     return reg.isValid();
   });
   // clang-format on
+}
+
+void UnitInformation::_deserialize(const Information::Format& data) {
+  assert(data.count("name"));
+  assert(data.count("registers"));
+  assert(!data["registers"].empty());
+
+  name(data["name"]);
+
+  for (auto& registerInformation : data["registers"]) {
+    addRegister(RegisterInformation{registerInformation});
+  }
 }

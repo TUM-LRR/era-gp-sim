@@ -27,8 +27,10 @@
 #include <type_traits>
 #include <vector>
 
+#include "arch/common/information.hpp"
 #include "common/builder.hpp"
 #include "common/optional.hpp"
+#include "common/utility.hpp"
 
 /**
  * Holds information about a register.
@@ -52,13 +54,20 @@
  * - The type defauls to `Type::INTEGER`.
  * - The ID defaults to an instance-unique (static), incrementing ID.
  */
-class RegisterInformation : public Builder {
+class RegisterInformation : public Builder, public Information {
  public:
   using id_t   = std::size_t;
   using size_t = unsigned short;
 
   /** The type of data stored in this register. */
   enum class Type { INTEGER, FLOAT, VECTOR, FLAG, LINK, PROGRAM_COUNTER };
+
+  /**
+   * Deserializes the RegisterInformation from the given data.
+   *
+   * @param data The data to deserialize from.
+   */
+  explicit RegisterInformation(const Information::Format& data);
 
   /**
    * Constructs the RegisterInformation with the register's name.
@@ -74,6 +83,15 @@ class RegisterInformation : public Builder {
    * @param size The size of the register.
    */
   RegisterInformation(const std::string& name, size_t size);
+
+  /**
+   * Deserializes the RegisterInformation from the given data.
+   *
+   * @param data The data to deserialize from.
+   *
+   * @return The current register object.
+   */
+  RegisterInformation& deserialize(const Information::Format& data);
 
   /**
    * Sets the name of the register.
@@ -146,6 +164,16 @@ class RegisterInformation : public Builder {
   Type getType() const noexcept;
 
   /**
+   * Returns whether or not the register is special.
+   *
+   * A special register is a register that fulfills some extraordinary funciton
+   * within a unit. There can be at most one such register per unit. In detail,
+   * a special register is any whose type is not integer, float or vector.
+   *
+   */
+  bool isSpecial() const noexcept;
+
+  /**
    * Sets the register to be hardwired to the given constant.
    *
    * The constant value must be convertible to `double` (that is the internal
@@ -198,10 +226,7 @@ class RegisterInformation : public Builder {
    */
   template <typename Range>
   RegisterInformation& addAliases(const Range& range) {
-    using std::begin;
-    using std::end;
-    _aliases.insert(_aliases.end(), begin(range), end(range));
-
+    Utility::concatenate(_aliases, range);
     return *this;
   }
 
@@ -336,12 +361,19 @@ class RegisterInformation : public Builder {
   /** An ID that increments for each new created instance (for default IDs). */
   static id_t _rollingID;
 
-  /*
-  static constexpr Type _typeDefault = std::conditional<
-      std::is_floating_point<HardwiredType>::value,
-      std::integral_constant<Type, Type::FLOAT>,
-      std::integral_constant<Type, Type::INTEGER>>::type::value;
-  */
+  /**
+   * Deserializes the RegisterInformation from the given data.
+   *
+   * @param data The data to deserialize from.
+   */
+  void _deserialize(const Information::Format& data) override;
+
+  /**
+   * Parses a `RegisterInformation::Type` specifier.
+   *
+   * @param data The data to parse the type from.
+   */
+  void _parseType(const Information::Format& data);
 
   /** The numeric ID of the register. */
   id_t _id;

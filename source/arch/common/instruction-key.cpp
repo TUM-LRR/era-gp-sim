@@ -21,7 +21,17 @@
 
 #include "arch/common/instruction-key.hpp"
 
+InstructionKey::InstructionKey(const Information::Format& data) {
+  _deserialize(data);
+}
+
+
 InstructionKey::InstructionKey(InitializerList list) : super(list) {
+}
+
+InstructionKey& InstructionKey::deserialize(const Information::Format& data) {
+  _deserialize(data);
+  return *this;
 }
 
 InstructionKey& InstructionKey::add(const Key& key, const Value& value) {
@@ -70,4 +80,10 @@ InstructionKey::ValueCollection InstructionKey::getValues() const noexcept {
   }
 
   return collection;
+}
+
+void InstructionKey::_deserialize(const Information::Format& data) {
+  for (auto pair = data.begin(); pair != data.end(); ++pair) {
+    add(pair.key(), pair.value());
+  }
 }

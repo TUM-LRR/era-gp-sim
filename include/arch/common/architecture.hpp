@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "arch/common/architecture-properties.hpp"
 #include "arch/common/information.hpp"
 #include "arch/common/instruction-set.hpp"
 #include "arch/common/unit-information.hpp"
@@ -44,9 +45,9 @@ class ExtensionInformation;
 class Architecture : public Builder {
  public:
   using UnitContainer     = std::vector<UnitInformation>;
-  using Endianness        = Information::Endianness;
-  using AlignmentBehavior = Information::AlignmentBehavior;
-  using word_size_t       = Information::word_size_t;
+  using Endianness        = ArchitectureProperties::Endianness;
+  using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
+  using word_size_t       = ArchitectureProperties::word_size_t;
 
   class Formula;
 
