@@ -25,7 +25,6 @@
 #include "arch/common/information-interface.hpp"
 #include "arch/common/instruction-key.hpp"
 #include "common/builder-interface.hpp"
-#include "common/optional.hpp"
 
 /**
  * Holds information about an instruction.
@@ -36,10 +35,9 @@
  *
  * The class' interface is intended to support the BuilderInterface pattern.
  */
-class InstructionInformation : public BuilderInterface, public InformationInterface {
+class InstructionInformation : public BuilderInterface,
+                               public InformationInterface {
  public:
-  InstructionInformation() noexcept;
-
   /**
   * Deserializes and constructs the `InstructionInformation` from the given
   * data.
@@ -53,7 +51,7 @@ class InstructionInformation : public BuilderInterface, public InformationInterf
    *
    * @param mnemonic The mnemonic of the instruction (e.g. "add")
    */
-  explicit InstructionInformation(const std::string& mnemonic);
+  explicit InstructionInformation(const std::string& mnemonic = std::string());
 
   /**
    * Constructs an instruction with a mnemonic and key.
@@ -118,7 +116,7 @@ class InstructionInformation : public BuilderInterface, public InformationInterf
   std::string _mnemonic;
 
   /** The key of the instruction. */
-  Optional<InstructionKey> _key;
+  InstructionKey _key;
 };
 
 #endif /* ERAGPSIM_ARCH_INSTRUCTION_INFORMATION_HPP */

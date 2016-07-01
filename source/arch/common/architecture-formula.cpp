@@ -27,25 +27,18 @@ Architecture::Formula& Architecture::Formula::add(const std::string& name) {
   return *this;
 }
 
-std::string Architecture::Formula::operator[](index_t index) {
-  assert(index < _container.size());
-  return _container[index];
-}
-
-
-const std::string& Architecture::Formula::operator[](index_t index) const {
-  assert(index < _container.size());
-  return _container[index];
-}
-
 const std::string& Architecture::Formula::architectureName() const noexcept {
   return _architectureName;
 }
 
-Architecture::Formula&
-Architecture::Formula::getArchitectureName(const std::string& name) {
+Architecture::Formula& Architecture::Formula::getArchitectureName(
+    const std::string& name) {
   assert(!name.empty());
   _architectureName = name;
 
   return *this;
+}
+
+bool Architecture::Formula::isValid() const noexcept override {
+  return !_archtitectureName.empty() && !isEmpty();
 }

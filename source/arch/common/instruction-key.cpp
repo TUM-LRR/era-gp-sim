@@ -21,8 +21,6 @@
 
 #include "arch/common/instruction-key.hpp"
 
-InstructionKey::InstructionKey() noexcept = default;
-
 InstructionKey::InstructionKey(const InformationInterface::Format& data) {
   _deserialize(data);
 }
@@ -31,7 +29,8 @@ InstructionKey::InstructionKey(const InformationInterface::Format& data) {
 InstructionKey::InstructionKey(InitializerList list) : super(list) {
 }
 
-InstructionKey& InstructionKey::deserialize(const InformationInterface::Format& data) {
+InstructionKey& InstructionKey::deserialize(
+    const InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }

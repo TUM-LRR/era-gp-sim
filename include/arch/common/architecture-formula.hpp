@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "arch/common/architecture.hpp"
+#include "common/builder-interface.hpp"
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
 
@@ -34,8 +35,8 @@
  * A formula is just a list of extension names. There must be one base extension
  * and optionally any number of further extensions.
  */
-class Architecture::Formula
-    : public ContainerAdapter<std::vector<std::string>> {
+class Architecture::Formula : public ContainerAdapter<std::vector<std::string>>,
+                              public BuilderInterface {
  public:
   using super = ContainerAdapter<std::vector<std::string>>;
   using super::_container;
@@ -55,10 +56,9 @@ class Architecture::Formula
    * @param architectureName The name of the architecture.
    * @param list A list of extension names.
    */
-  Formula(const std::string& architectureName,
-          InitializerList list = InitializerList())
+  explicit Formula(const std::string& architectureName = std::string(),
+                   InitializerList list                = InitializerList())
   : super(list), _architectureName(architectureName) {
-    assert(!isEmpty());
   }
 
   /**
@@ -87,25 +87,6 @@ class Architecture::Formula
   Formula& add(const std::string& name);
 
   /**
-   * Permits access to the extension name at the given index.
-   *
-   * @param index The index of the extension.
-   */
-  std::string operator[](index_t index);
-
-  /**
-   * Permits const access to the extension name at the given index.
-   *
-   * @param index The index of the extension.
-   */
-  const std::string& operator[](index_t index) const;
-
-  /**
-   * Returns the architecture's identifier (name).
-   */
-  const std::string& getArchitectureName() const noexcept;
-
-  /**
    * Sets the architecture's name.
    *
    * @param name The new architecture name.
@@ -113,6 +94,14 @@ class Architecture::Formula
    * @return The current formula.
    */
   Formula& architectureName(const std::string& name);
+
+  /**
+   * Returns the architecture's identifier (name).
+   */
+  const std::string& getArchitectureName() const noexcept;
+
+  /** @copydoc Builder::isValid() */
+  bool isValid() const noexcept override;
 
  private:
   /** The name of the architecture. */

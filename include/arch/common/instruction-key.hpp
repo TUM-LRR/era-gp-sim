@@ -49,18 +49,13 @@ class InstructionKey
   using KeyCollection   = std::vector<Key>;
   using ValueCollection = std::vector<Value>;
 
-  /**
-   * Constructs a new empty instruction key.
-   */
-  InstructionKey() noexcept;
-
   explicit InstructionKey(const InformationInterface::Format& data);
 
   template <typename Range>
   explicit InstructionKey(const Range& range) : super(range) {
   }
 
-  explicit InstructionKey(InitializerList list);
+  explicit InstructionKey(InitializerList list = InitializerList());
 
   InstructionKey& deserialize(const InformationInterface::Format& data);
 

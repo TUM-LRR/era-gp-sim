@@ -22,8 +22,6 @@
 
 #include "arch/common/instruction-information.hpp"
 
-InstructionInformation::InstructionInformation() noexcept = default;
-
 InstructionInformation::InstructionInformation(
     const InformationInterface::Format& data) {
   deserialize(data);
@@ -38,14 +36,14 @@ InstructionInformation::InstructionInformation(const std::string& mnemonic,
 : _mnemonic(mnemonic), _key(key) {
 }
 
-InstructionInformation&
-InstructionInformation::deserialize(const InformationInterface::Format& data) {
+InstructionInformation& InstructionInformation::deserialize(
+    const InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
 
-InstructionInformation&
-InstructionInformation::mnemonic(const std::string& mnemonic) {
+InstructionInformation& InstructionInformation::mnemonic(
+    const std::string& mnemonic) {
   assert(!mnemonic.empty());
   _mnemonic = mnemonic;
 
@@ -62,15 +60,16 @@ InstructionInformation& InstructionInformation::key(const InstructionKey& key) {
 }
 
 const InstructionKey& InstructionInformation::getKey() const noexcept {
-  assert(static_cast<bool>(_key));
-  return *_key;
+  assert(_key.isValid());
+  return _key;
 }
 
 bool InstructionInformation::isValid() const noexcept {
-  return !_mnemonic.empty() && static_cast<bool>(_key);
+  return !_mnemonic.empty() && _key.isValid();
 }
 
-void InstructionInformation::_deserialize(const InformationInterface::Format& data) {
+void InstructionInformation::_deserialize(
+    const InformationInterface::Format& data) {
   assert(data.count("mnemonic"));
   assert(data.count("key"));
 

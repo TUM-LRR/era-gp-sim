@@ -67,6 +67,15 @@ class ContainerAdapter {
 
   virtual ~ContainerAdapter() = default;
 
+  virtual bool operator==(const ContainerAdapter& other) const
+      noexcept(noexcept(Underlying::operator==)) {
+    return _container == other._container;
+  }
+
+  virtual bool operator!=(const ContainerAdapter& other) const noexcept {
+    return !(*this == other);
+  }
+
   /**
    * Returns an `Iterator` to the beginning of the container.
    */
