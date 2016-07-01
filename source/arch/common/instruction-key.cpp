@@ -21,6 +21,8 @@
 
 #include "arch/common/instruction-key.hpp"
 
+InstructionKey::InstructionKey() noexcept = default;
+
 InstructionKey::InstructionKey(const Information::Format& data) {
   _deserialize(data);
 }
@@ -46,6 +48,10 @@ InstructionKey& InstructionKey::add(InitializerList list) {
   _container.insert(list);
 
   return *this;
+}
+
+const InstructionKey::Value& InstructionKey::opcode() const {
+  return get("opcode");
 }
 
 const InstructionKey::Value& InstructionKey::get(const Key& key) const
@@ -80,6 +86,10 @@ InstructionKey::ValueCollection InstructionKey::getValues() const noexcept {
   }
 
   return collection;
+}
+
+bool InstructionKey::isValid() const noexcept {
+  return hasKey("opcode");
 }
 
 void InstructionKey::_deserialize(const Information::Format& data) {

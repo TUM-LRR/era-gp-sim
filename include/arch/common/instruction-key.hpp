@@ -25,12 +25,14 @@
 #include <vector>
 
 #include "arch/common/information.hpp"
+#include "common/builder.hpp"
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
 
 class InstructionKey
     : public ContainerAdapter<std::unordered_map<std::string, std::size_t>>,
-      public Information {
+      public Information,
+      public Builder {
  public:
   using super = ContainerAdapter<std::unordered_map<std::string, std::size_t>>;
   using super::_container;
@@ -46,6 +48,8 @@ class InstructionKey
   using Value           = std::size_t;
   using KeyCollection   = std::vector<Key>;
   using ValueCollection = std::vector<Value>;
+
+  InstructionKey() noexcept;
 
   explicit InstructionKey(const Information::Format& data);
 
@@ -70,6 +74,9 @@ class InstructionKey
 
   InstructionKey& add(InitializerList list);
 
+
+  const Value& opcode() const;
+
   const Value& get(const Key& key) const noexcept;
   const Value& operator[](const Key& key) const;
 
@@ -77,6 +84,9 @@ class InstructionKey
 
   KeyCollection getKeys() const noexcept;
   ValueCollection getValues() const noexcept;
+
+  /** @copydoc Builder::isValid() */
+  bool isValid() const noexcept override;
 
  private:
   void _deserialize(const Information::Format& data) override;

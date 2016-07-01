@@ -38,6 +38,8 @@
  */
 class InstructionInformation : public Builder, public Information {
  public:
+  InstructionInformation() noexcept;
+
   /**
   * Deserializes and constructs the `InstructionInformation` from the given
   * data.

@@ -52,7 +52,7 @@ class InstructionSet
   /**
    * Constructs a new empty construction set.
    */
-  InstructionSet();
+  InstructionSet() noexcept;
 
   /**
    * Deserializes and constructs an InstructionSet from the given data.

@@ -22,6 +22,8 @@
 
 #include "arch/common/instruction-information.hpp"
 
+InstructionInformation::InstructionInformation() noexcept = default;
+
 InstructionInformation::InstructionInformation(
     const Information::Format& data) {
   deserialize(data);

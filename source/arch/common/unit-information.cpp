@@ -23,6 +23,8 @@
 
 #include "arch/common/unit-information.hpp"
 
+UnitInformation::UnitInformation();
+
 UnitInformation::UnitInformation(const Information::Format& data) {
   _deserialize(data);
 }

@@ -65,6 +65,8 @@ class ExtensionInformation : public Builder, public Information {
   using Endianness        = ArchitectureProperties::Endianness;
   using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
 
+  ExtensionInformation() noexcept;
+
   /**
    * Deserializes the `ExtensionInformation` object from the given data.
    *
@@ -368,9 +370,6 @@ class ExtensionInformation : public Builder, public Information {
   bool isValidBase() const noexcept;
 
  private:
-  /** Necessary for the copy-swap idiom. */
-  ExtensionInformation() noexcept;
-
   /**
    * Deserializes the `ExtensionInformation` object from the given data.
    *

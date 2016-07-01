@@ -62,6 +62,8 @@ class RegisterInformation : public Builder, public Information {
   /** The type of data stored in this register. */
   enum class Type { INTEGER, FLOAT, VECTOR, FLAG, LINK, PROGRAM_COUNTER };
 
+  RegisterInformation();
+
   /**
    * Deserializes the RegisterInformation from the given data.
    *

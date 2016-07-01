@@ -50,6 +50,7 @@ class Architecture : public Builder {
   using word_size_t       = ArchitectureProperties::word_size_t;
 
   class Formula;
+  class Brewery;
 
   /**
    * Brews an architecture given a formula.

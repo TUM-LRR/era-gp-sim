@@ -22,6 +22,8 @@
 
 #include "arch/common/datatype-information.hpp"
 
+DataTypeInformation::DataTypeInformation() noexcept = default;
+
 DataTypeInformation::DataTypeInformation(const Information::Format& data) {
   _deserialize(data);
 }

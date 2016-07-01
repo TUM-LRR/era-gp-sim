@@ -25,6 +25,8 @@
 
 typename RegisterInformation::id_t RegisterInformation::_rollingID = 0;
 
+RegisterInformation::RegisterInformation() = default;
+
 RegisterInformation::RegisterInformation(const Information::Format& data) {
   _deserialize(data);
 }

@@ -52,6 +52,8 @@ class UnitInformation
   using super::isEmpty;
   using Type = RegisterInformation::Type;
 
+  UnitInformation() noexcept;
+
   /**
    * Deserializes the `UnitInformation` from the given data.
    *

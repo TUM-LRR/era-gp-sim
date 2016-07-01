@@ -28,6 +28,8 @@
 
 ExtensionInformation::ExtensionInformation() noexcept = default;
 
+ExtensionInformation::ExtensionInformation() noexcept = default;
+
 ExtensionInformation::ExtensionInformation(const Information::Format& data) {
   _deserialize(data);
 }

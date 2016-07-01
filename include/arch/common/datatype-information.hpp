@@ -43,6 +43,8 @@ class DataTypeInformation : public Builder, public Information {
  public:
   using size_t = unsigned short;
 
+  DataTypeInformation() noexcept;
+
   /**
    * Deserializes the data type from the given data.
    *
