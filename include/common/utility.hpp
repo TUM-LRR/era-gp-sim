@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <string>
 
 namespace Utility {
 
@@ -102,6 +103,47 @@ template <typename OutputRange, typename T, typename InputRange>
 OutputRange appendOther(T&& value, const InputRange& range) {
   return append<T, InputRange, OutputRange>(std::forward<T>(value), range);
 }
+
+template <typename Container, typename Key, typename Action>
+void doIfThere(const Container& container, const Key& key, Action action) {
+  auto iterator = container.find(key);
+  if (iterator != container.end()) {
+    action(*iterator);
+  }
+}
+
+std::string rootPath();
+
+template <typename Single>
+Single&& joinPath(Single&& single) {
+  return std::forward<Single>(single);
+}
+
+template <typename First, typename Second, typename... Tail>
+std::string joinPath(First&& first, Second&& second, Tail&&... tail) {
+  auto intermediary = std::forward<First>(first);
+
+  if (intermediary.back() != '/' && second.front() != '/') {
+    intermediary += "/";
+  } else if (intermediary.back() == '/' && second.front() == '/') {
+    intermediary.pop_back();
+  }
+
+  intermediary += std::forward<Second>(second);
+
+  return joinPath(intermediary, std::forward<Tail>(tail)...);
+}
+
+template <typename... Paths>
+std::string joinToRoot(Paths&&... paths) {
+  return joinPath(rootPath(), std::forward<Paths>(paths)...);
+}
+
+// C++17
+// template<typename... Paths>
+// std::string joinStrings(Paths&&... paths) {
+//   return (paths + ...);
+// }
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */

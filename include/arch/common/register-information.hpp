@@ -27,8 +27,8 @@
 #include <type_traits>
 #include <vector>
 
-#include "arch/common/information.hpp"
-#include "common/builder.hpp"
+#include "arch/common/information-interface.hpp"
+#include "common/builder-interface.hpp"
 #include "common/optional.hpp"
 #include "common/utility.hpp"
 
@@ -48,13 +48,15 @@
  * prevents the need to propagate template parameters into enclosing classes
  * (e.g. `Unit` or `Architecture`).
  *
- * The class' interface is intended to support the Builder pattern. As such, it
+ * The class' interface is intended to support the BuilderInterface pattern. As
+ * such, it
  * defaults certain values internally:
  *
  * - The type defauls to `Type::INTEGER`.
  * - The ID defaults to an instance-unique (static), incrementing ID.
  */
-class RegisterInformation : public Builder, public Information {
+class RegisterInformation : public BuilderInterface,
+                            public InformationInterface {
  public:
   using id_t   = std::size_t;
   using size_t = unsigned short;
@@ -69,7 +71,7 @@ class RegisterInformation : public Builder, public Information {
    *
    * @param data The data to deserialize from.
    */
-  explicit RegisterInformation(const Information::Format& data);
+  explicit RegisterInformation(const InformationInterface::Format& data);
 
   /**
    * Constructs the RegisterInformation with the register's name.
@@ -93,7 +95,7 @@ class RegisterInformation : public Builder, public Information {
    *
    * @return The current register object.
    */
-  RegisterInformation& deserialize(const Information::Format& data);
+  RegisterInformation& deserialize(const InformationInterface::Format& data);
 
   /**
    * Sets the name of the register.
@@ -356,7 +358,7 @@ class RegisterInformation : public Builder, public Information {
    */
   bool hasConstituents() const noexcept;
 
-  /** @copydoc Builder::isValid() */
+  /** @copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
@@ -368,14 +370,14 @@ class RegisterInformation : public Builder, public Information {
    *
    * @param data The data to deserialize from.
    */
-  void _deserialize(const Information::Format& data) override;
+  void _deserialize(const InformationInterface::Format& data) override;
 
   /**
    * Parses a `RegisterInformation::Type` specifier.
    *
    * @param data The data to parse the type from.
    */
-  void _parseType(const Information::Format& data);
+  void _parseType(const InformationInterface::Format& data);
 
   /** The numeric ID of the register. */
   id_t _id;

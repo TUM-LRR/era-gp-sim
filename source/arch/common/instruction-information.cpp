@@ -25,7 +25,7 @@
 InstructionInformation::InstructionInformation() noexcept = default;
 
 InstructionInformation::InstructionInformation(
-    const Information::Format& data) {
+    const InformationInterface::Format& data) {
   deserialize(data);
 }
 
@@ -39,7 +39,7 @@ InstructionInformation::InstructionInformation(const std::string& mnemonic,
 }
 
 InstructionInformation&
-InstructionInformation::deserialize(const Information::Format& data) {
+InstructionInformation::deserialize(const InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -70,7 +70,7 @@ bool InstructionInformation::isValid() const noexcept {
   return !_mnemonic.empty() && static_cast<bool>(_key);
 }
 
-void InstructionInformation::_deserialize(const Information::Format& data) {
+void InstructionInformation::_deserialize(const InformationInterface::Format& data) {
   assert(data.count("mnemonic"));
   assert(data.count("key"));
 

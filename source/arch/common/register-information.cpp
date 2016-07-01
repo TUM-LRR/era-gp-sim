@@ -27,7 +27,7 @@ typename RegisterInformation::id_t RegisterInformation::_rollingID = 0;
 
 RegisterInformation::RegisterInformation() = default;
 
-RegisterInformation::RegisterInformation(const Information::Format& data) {
+RegisterInformation::RegisterInformation(const InformationInterface::Format& data) {
   _deserialize(data);
 }
 
@@ -41,7 +41,7 @@ RegisterInformation::RegisterInformation(const std::string& name)
 // clang-format on
 
 RegisterInformation&
-RegisterInformation::deserialize(const Information::Format& data) {
+RegisterInformation::deserialize(const InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -172,7 +172,7 @@ bool RegisterInformation::isValid() const noexcept {
   return !_name.empty() && _size;
 }
 
-void RegisterInformation::_deserialize(const Information::Format& data) {
+void RegisterInformation::_deserialize(const InformationInterface::Format& data) {
   assert(data.count("id"));
   assert(data.count("name"));
   assert(data.count("size"));
@@ -182,30 +182,26 @@ void RegisterInformation::_deserialize(const Information::Format& data) {
   name(data["name"]);
   size(data["size"]);
 
-  auto constant = data.find("constant");
-  if (constant != data.end()) {
-    _constant = static_cast<double>(constant.value());
-  }
+  Utility::doIfThere(data, "constant", [this](auto& constant) {
+    _constant = static_cast<double>(constant);
+  });
 
-  auto enclosing = data.find("enclosing");
-  if (enclosing != data.end()) {
-    _enclosing = static_cast<id_t>(enclosing.value());
-  }
+  Utility::doIfThere(data, "enclosing", [this](auto& enclosing) {
+    _enclosing = static_cast<id_t>(enclosing);
+  });
 
-  auto constituents = data.find("constituents");
-  if (constituents != data.end()) {
-    addConstituents(data["constituents"]);
-  }
+  Utility::doIfThere(data, "constituents", [this](auto& constituents) {
+    addConstituents(constituents);
+  });
 
-  auto aliases = data.find("constituents");
-  if (aliases != data.end()) {
-    for (auto& alias : data["aliases"]) {
+  Utility::doIfThere(data, "aliases", [this](auto& aliases) {
+    for (auto& alias : aliases) {
       addAlias(alias);
     }
-  }
+  });
 }
 
-void RegisterInformation::_parseType(const Information::Format& data) {
+void RegisterInformation::_parseType(const InformationInterface::Format& data) {
   auto type = data.find("type");
 
   if (type == data.end() || *type == "integer") {

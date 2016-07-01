@@ -25,7 +25,7 @@
 #include <vector>
 
 #include "arch/common/register-information.hpp"
-#include "common/builder.hpp"
+#include "common/builder-interface.hpp"
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
 
@@ -38,8 +38,8 @@
  */
 class UnitInformation
     : public ContainerAdapter<std::vector<RegisterInformation>>,
-      public Builder,
-      public Information {
+      public BuilderInterface,
+      public InformationInterface {
  public:
   using super = ContainerAdapter<std::vector<RegisterInformation>>;
   using super::_container;
@@ -59,7 +59,7 @@ class UnitInformation
    *
    * @param data The data to deserialize the unit-information from.
    */
-  explicit UnitInformation(const Information::Format& data);
+  explicit UnitInformation(const InformationInterface::Format& data);
 
   /**
    * Constructs a new unit.
@@ -111,7 +111,7 @@ class UnitInformation
    *
    * @return The current unit object.
    */
-  UnitInformation& deserialize(const Information::Format& data);
+  UnitInformation& deserialize(const InformationInterface::Format& data);
 
   /**
    * Sets the name of the unit.
@@ -180,7 +180,7 @@ class UnitInformation
    */
   UnitInformation& addRegister(const RegisterInformation& registerInformation);
 
-  /** @copydoc Builder::isValid() */
+  /** @copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
@@ -191,7 +191,7 @@ class UnitInformation
    *
    * @param data The data to deserialize the unit-information from.
    */
-  void _deserialize(const Information::Format& data) override;
+  void _deserialize(const InformationInterface::Format& data) override;
 
   /** The name of the unit, e.g. "CPU". */
   std::string _name;

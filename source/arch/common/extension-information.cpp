@@ -26,16 +26,17 @@
 #include "arch/common/instruction-set.hpp"
 #include "common/utility.hpp"
 
-ExtensionInformation::ExtensionInformation() noexcept = default;
+ExtensionInformation::ExtensionInformation()
+: _instructions(std::make_unique<InstructionSet>()) {
+}
 
-ExtensionInformation::ExtensionInformation() noexcept = default;
-
-ExtensionInformation::ExtensionInformation(const Information::Format& data) {
+ExtensionInformation::ExtensionInformation(const InformationInterface::Format& data)
+: ExtensionInformation() {
   _deserialize(data);
 }
 
 ExtensionInformation::ExtensionInformation(const std::string& name)
-: _instructions(std::make_unique<InstructionSet>()) {
+: ExtensionInformation() {
   // For constraint checking
   this->name(name);
 }
@@ -49,11 +50,12 @@ ExtensionInformation::ExtensionInformation(const ExtensionInformation& other)
 , _units(other._units) {
 }
 
-ExtensionInformation::ExtensionInformation(
-    ExtensionInformation&& other) noexcept
-: ExtensionInformation() {
+// clang-format off
+ExtensionInformation::ExtensionInformation(ExtensionInformation&& other)
+noexcept {
   swap(other);
 }
+// clang-format on
 
 ExtensionInformation& ExtensionInformation::
 operator=(ExtensionInformation other) {
@@ -93,7 +95,7 @@ operator+(const ExtensionInformation& other) const {
 }
 
 ExtensionInformation&
-ExtensionInformation::deserialize(const Information::Format& data) {
+ExtensionInformation::deserialize(const InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -168,7 +170,14 @@ ExtensionInformation::addInstructions(const InstructionSet& instructions) {
 ExtensionInformation&
 ExtensionInformation::setInstructions(const InstructionSet& instructions) {
   assert(_instructions != nullptr);
-  *_instructions += instructions;
+  *_instructions = instructions;
+
+  return *this;
+}
+
+ExtensionInformation& ExtensionInformation::clearInstructions() {
+  assert(_instructions != nullptr);
+  _instructions->clear();
 
   return *this;
 }
@@ -190,6 +199,11 @@ ExtensionInformation::addUnit(const UnitInformation& unit) {
   return *this;
 }
 
+ExtensionInformation& ExtensionInformation::clearUnits() noexcept {
+  _units.clear();
+  return *this;
+}
+
 const ExtensionInformation::UnitContainer&
 ExtensionInformation::getUnits() const noexcept {
   return _units;
@@ -201,21 +215,21 @@ ExtensionInformation& ExtensionInformation::merge(ExtensionList list) {
 }
 
 ExtensionInformation&
-ExtensionInformation::merge(const ExtensionInformation& otherExtension) {
-  if (otherExtension._endianness) {
-    _endianness = otherExtension._endianness;
+ExtensionInformation::merge(const ExtensionInformation& other) {
+  if (other._endianness) {
+    _endianness = other._endianness;
   }
 
-  if (otherExtension._alignmentBehavior) {
-    _alignmentBehavior = otherExtension._alignmentBehavior;
+  if (other._alignmentBehavior) {
+    _alignmentBehavior = other._alignmentBehavior;
   }
 
-  if (otherExtension._wordSize) {
-    _wordSize = otherExtension._wordSize;
+  if (other._wordSize) {
+    _wordSize = other._wordSize;
   }
 
-  *_instructions += otherExtension.getInstructions();
-  Utility::concatenate(_units, otherExtension.getUnits());
+  addInstructions(other.getInstructions());
+  addUnits(other.getUnits());
 
   return *this;
 }
@@ -239,58 +253,54 @@ bool ExtensionInformation::isValidBase() const noexcept {
   return isValid();
 }
 
-void ExtensionInformation::_deserialize(const Information::Format& data) {
+void ExtensionInformation::_deserialize(const InformationInterface::Format& data) {
   assert(data.count("name"));
 
   name(data["name"]);
   _parseEndianness(data);
   _parseAlignmentBehavior(data);
 
-  auto wordSize = data.find("word-size");
-  if (wordSize != data.end()) {
-    _wordSize = static_cast<size_t>(*wordSize);
-  }
+  Utility::doIfThere(data, "word-size", [this](auto& wordSize) {
+    _wordSize = static_cast<size_t>(wordSize);
+  });
 
-  auto units = data.find("units");
-  if (units != data.end()) {
-    for (auto& unit : *units) {
+
+  Utility::doIfThere(data, "units", [this](auto& units) {
+    for (auto& unit : units) {
       addUnit(static_cast<UnitInformation>(unit));
     }
-  }
+  });
 
-  auto instructions = data.find("instructions");
-  if (instructions != data.end()) {
-    addInstructions(static_cast<InstructionSet>(*instructions));
-  }
+  Utility::doIfThere(data, "instructions", [this](auto& instructions) {
+    addInstructions(static_cast<InstructionSet>(instructions));
+  });
 }
 
-void ExtensionInformation::_parseEndianness(const Information::Format& data) {
-  auto endianness = data.find("endianness");
-  if (endianness == data.end()) return;
-
-  if (*endianness == "little") {
-    _endianness = ArchitectureProperties::Endianness::LITTLE;
-  } else if (*endianness == "big") {
-    _endianness = ArchitectureProperties::Endianness::BIG;
-  } else if (*endianness == "mixed") {
-    _endianness = ArchitectureProperties::Endianness::MIXED;
-  } else if (*endianness == "bi") {
-    _endianness = ArchitectureProperties::Endianness::BI;
-  } else {
-    assert(false);
-  }
+void ExtensionInformation::_parseEndianness(const InformationInterface::Format& data) {
+  Utility::doIfThere(data, "endianness", [this](auto& endianness) {
+    if (endianness == "little") {
+      _endianness = ArchitectureProperties::Endianness::LITTLE;
+    } else if (endianness == "big") {
+      _endianness = ArchitectureProperties::Endianness::BIG;
+    } else if (endianness == "mixed") {
+      _endianness = ArchitectureProperties::Endianness::MIXED;
+    } else if (endianness == "bi") {
+      _endianness = ArchitectureProperties::Endianness::BI;
+    } else {
+      assert(false);
+    }
+  });
 }
 
 void ExtensionInformation::_parseAlignmentBehavior(
-    const Information::Format& data) {
-  auto alignment = data.find("alignment-behavior");
-  if (alignment == data.end()) return;
-
-  if (*alignment == "strict") {
-    _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::STRICT;
-  } else if (*alignment == "relaxed") {
-    _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::RELAXED;
-  } else {
-    assert(false);
-  }
+    const InformationInterface::Format& data) {
+  Utility::doIfThere(data, "alignment-behavior", [this](auto& behavior) {
+    if (behavior == "strict") {
+      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::STRICT;
+    } else if (behavior == "relaxed") {
+      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::RELAXED;
+    } else {
+      assert(false);
+    }
+  });
 }

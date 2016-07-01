@@ -27,10 +27,10 @@
 #include <vector>
 
 #include "arch/common/architecture-properties.hpp"
-#include "arch/common/information.hpp"
-#include "arch/common/information.hpp"
+#include "arch/common/information-interface.hpp"
+#include "arch/common/information-interface.hpp"
 #include "arch/common/unit-information.hpp"
-#include "common/builder.hpp"
+#include "common/builder-interface.hpp"
 #include "common/optional.hpp"
 #include "common/utility.hpp"
 
@@ -54,9 +54,11 @@ class InstructionSet;
  * registers).
  *
  * An `ExtensionInformation` can be built easily on-top of anther via the
- * supported interface. In general, the API follows the Builder pattern.
+ * supported interface. In general, the API follows the BuilderInterface
+ * pattern.
  */
-class ExtensionInformation : public Builder, public Information {
+class ExtensionInformation : public BuilderInterface,
+                             public InformationInterface {
  public:
   using size_t            = unsigned short;
   using UnitContainer     = std::vector<UnitInformation>;
@@ -65,14 +67,14 @@ class ExtensionInformation : public Builder, public Information {
   using Endianness        = ArchitectureProperties::Endianness;
   using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
 
-  ExtensionInformation() noexcept;
+  ExtensionInformation();
 
   /**
    * Deserializes the `ExtensionInformation` object from the given data.
    *
    * @param data The data to deserialize from.
    */
-  explicit ExtensionInformation(const Information::Format& data);
+  explicit ExtensionInformation(const InformationInterface::Format& data);
 
   /**
    * Constructs a new `ExtensionInformation` object.
@@ -172,7 +174,7 @@ class ExtensionInformation : public Builder, public Information {
    *
    * @return The current `ExtensionInformation` object.
    */
-  ExtensionInformation& deserialize(const Information::Format& data);
+  ExtensionInformation& deserialize(const InformationInterface::Format& data);
 
   /**
    * Sets the name of the extension.
@@ -265,6 +267,13 @@ class ExtensionInformation : public Builder, public Information {
   ExtensionInformation& setInstructions(const InstructionSet& instructions);
 
   /**
+   * Clears the current instruction set.
+   *
+   * @return The current `ExtensionInformation` object.
+   */
+  ExtensionInformation& clearInstructions();
+
+  /**
    * Returns the instructions of the extension.
    */
   const InstructionSet& getInstructions() const noexcept;
@@ -304,6 +313,11 @@ class ExtensionInformation : public Builder, public Information {
   ExtensionInformation& addUnit(const UnitInformation& unit);
 
   /**
+   * Clears the current collection of units.
+   */
+  ExtensionInformation& clearUnits() noexcept;
+
+  /**
    * Returns the units of the extension.
    */
   const UnitContainer& getUnits() const noexcept;
@@ -323,7 +337,9 @@ class ExtensionInformation : public Builder, public Information {
    */
   template <typename Range>
   ExtensionInformation& merge(const Range& range) {
-    for (auto& extension : range) merge(extension);
+    for (auto& extension : range) {
+      merge(extension);
+    }
 
     return *this;
   }
@@ -350,11 +366,11 @@ class ExtensionInformation : public Builder, public Information {
    * set to override the values stored in this extension. The only exception to
    * this rule is the name member of this extension, which is never overriden.
    *
-   * @param otherExtension The other extension to merge with.
+   * @param other The other extension to merge with.
    *
    * @return The current `ExtensionInformation` object.
    */
-  ExtensionInformation& merge(const ExtensionInformation& otherExtension);
+  ExtensionInformation& merge(const ExtensionInformation& other);
 
   /** @copydoc builder::isValid() */
   bool isValid() const noexcept override;
@@ -375,21 +391,21 @@ class ExtensionInformation : public Builder, public Information {
    *
    * @param data The data to deserialize from.
    */
-  void _deserialize(const Information::Format& data) override;
+  void _deserialize(const InformationInterface::Format& data) override;
 
   /**
    * Parses the endianness property from serialized data.
    *
    * @param data The data to deserialize the endianness from.
    */
-  void _parseEndianness(const Information::Format& data);
+  void _parseEndianness(const InformationInterface::Format& data);
 
   /**
    * Parses the alignment behavior property from serialized data.
    *
    * @param data The data to deserialize the alignment behavior  from.
    */
-  void _parseAlignmentBehavior(const Information::Format& data);
+  void _parseAlignmentBehavior(const InformationInterface::Format& data);
 
   /** The name of the extension. */
   std::string _name;

@@ -11,7 +11,8 @@ set(ARCH_COMMON_SOURCES
   instruction-set.cpp
   instruction-information.cpp
   instruction-key.cpp
-  information.cpp
+  information-interface.cpp
+  architecture-brewery.cpp
 )
 
 ########################################

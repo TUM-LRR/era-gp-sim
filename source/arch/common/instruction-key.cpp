@@ -23,7 +23,7 @@
 
 InstructionKey::InstructionKey() noexcept = default;
 
-InstructionKey::InstructionKey(const Information::Format& data) {
+InstructionKey::InstructionKey(const InformationInterface::Format& data) {
   _deserialize(data);
 }
 
@@ -31,14 +31,14 @@ InstructionKey::InstructionKey(const Information::Format& data) {
 InstructionKey::InstructionKey(InitializerList list) : super(list) {
 }
 
-InstructionKey& InstructionKey::deserialize(const Information::Format& data) {
+InstructionKey& InstructionKey::deserialize(const InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
 
 InstructionKey& InstructionKey::add(const Key& key, const Value& value) {
   assert(!hasKey(key));
-  _container.insert({key, value});
+  _container.emplace(key, value);
 
   return *this;
 }
@@ -92,7 +92,7 @@ bool InstructionKey::isValid() const noexcept {
   return hasKey("opcode");
 }
 
-void InstructionKey::_deserialize(const Information::Format& data) {
+void InstructionKey::_deserialize(const InformationInterface::Format& data) {
   for (auto pair = data.begin(); pair != data.end(); ++pair) {
     add(pair.key(), pair.value());
   }

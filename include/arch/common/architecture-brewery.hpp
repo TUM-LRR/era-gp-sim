@@ -22,24 +22,121 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
+#include "arch/common/extension-information.hpp"
 
+/**
+ * Class to brew (load) an architecture.
+ *
+ * This class is responsible for loading architecture definitions from disk and
+ * deserializes an `Architecture` instance from it. It takes as input an
+ * architecture formula, which contains information about the architecture's
+ * name and requested extensions. It then performs a variant of
+ * depth-first-search to traverse the extension graph. For each extension in
+ * the formula, its dependencies are resolved and the corresponding extension
+ * files are loaded from disk. If the extensions have dependencies themselves
+ * the graph is traversed further. While the algorithm is running, the
+ * transitive hull of all nodes (extensions) loaded so far are kept track of to
+ * avoid multiple loads from disk and re-evaluation of dependencies. I.e., once
+ * an extension's dependencies have been processed and the extension is complete
+ * it is marked, such that dependents of it must not re-load it. Furthermore,
+ * to avoid cycles in the graph, a "traversal stack" of nodes in the current
+ * "dependency queue" is maintained. Whenever a vertex is visited that is not
+ * yet complete, it is put into the traversal stack. When traversing a vertex's
+ * dependencies (i.e. adjacent edges), nodes in the traversal stack are not
+ * revisited. Basically, backward edges are not followed. This ensures that even
+ * if the actual dependency graph is not a DAG, the *effective* graph will be a
+ * DAG.
+ *
+ * The class has a functor-like interface.
+ */
 class Architecture::Brewery {
  public:
+  /**
+   * Constructs a new Brewery ready to brew an architecture from the given
+   * formula.
+   *
+   * @param formula The architecture formula to brew from.
+   */
   explicit Brewery(const Architecture::Formula& formula);
 
-  Architecture operator()() {
-    return brew();
-  }
+  /**
+   * Runs the graph algorithm to produce the Architecture object.
+   *
+   * Calls `brew()`.
+   *
+   * @return The finished (brewed) Architecture.
+   *
+   * @see brew()
+   */
+  Architecture operator()();
 
-  Architecture brew() {
-    Architecture ar
-  }
+  /**
+   * Runs the graph algorithm to produce the Architecture object.
+   *
+   * @return The finished (brewed) Architecture.
+   */
+  Architecture brew();
 
  private:
   using TransitiveHull = std::unordered_map<std::string, ExtensionInformation>;
+  using TraversalStack = std::unordered_set<std::string>;
+
+  /**
+   * The main recursive implementation of the graph traversal.
+   *
+   * If the extension has already been created, it is returned. Otherwise
+   * a new extension is instantiated. Then the extension's data is loaded.
+   * Then its dependencies are resolved and merged into the empty extension.
+   * Finally the extension is deserialized from the rest of the data.
+   *
+   * @param extensionName The name of the extension currenlty under inspection.
+   * @param traversalStack The stack of extensions currently under construction.
+   *
+   * @return The finished extension.
+   */
+  ExtensionInformation _brew(const std::string& extensionName,
+                             TraversalStack& traversalStack);
+
+  /**
+   * Refactors the loading of dependencies (traversing adjacent edges).
+   *
+   * @param extension The current extension.
+   * @param data The data to load from.
+   * @param traversalStack The stack of extensions currently under construction.
+   */
+  void _loadDependencies(ExtensionInformation& extension,
+                         const InformationInterface::Format& data,
+                         TraversalStack& traversalStack);
+
+  /**
+   * Refactors the resetting of units and instructions after loading an
+   * extension.
+   *
+   * @param extension The current extension.
+   * @param data The data to load from.
+   */
+  void _handleReset(ExtensionInformation& extension,
+                    const InformationInterface::Format& data);
+
+  /**
+   * Loads the configuration data of the extension with the given name from
+   * disk.
+   *
+   * @param extensionName The name of the extension to load.
+   *
+   * @return Data in the information interface's format.
+   */
+  InformationInterface::Format _load(const std::string extensionName);
+
+  /** Extensions that have already been visited. */
+  TransitiveHull _hull;
+
+  /** The formula to brew. */
+  Architecture::Formula _formula;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_ARCHITECTURE_BREWERY_HPP */

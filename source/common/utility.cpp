@@ -17,4 +17,27 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <algorithm>
+#include <string>
+
 #include "common/utility.hpp"
+
+namespace Utility {
+std::string rootPath() {
+  static const std::string query("era-gp-sim");
+  static std::string root;
+
+  if (root.empty()) {
+    // Hope it exists
+    root = __FILE__;
+
+    auto index    = root.rfind(query) + query.length();
+    auto iterator = root.begin();
+    std::advance(iterator, index);
+
+    root.erase(iterator, root.end());
+  }
+
+  return root;
+}
+}

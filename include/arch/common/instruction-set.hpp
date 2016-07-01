@@ -22,7 +22,7 @@
 
 #include <vector>
 
-#include "arch/common/information.hpp"
+#include "arch/common/information-interface.hpp"
 #include "arch/common/instruction-information.hpp"
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
@@ -35,8 +35,8 @@
  */
 class InstructionSet
     : public ContainerAdapter<std::vector<InstructionInformation>>,
-      public Builder,
-      public Information {
+      public BuilderInterface,
+      public InformationInterface {
  public:
   using super = ContainerAdapter<std::vector<InstructionInformation>>;
   using super::_container;
@@ -59,7 +59,7 @@ class InstructionSet
    *
    * @param data The serialized data.
    */
-  explicit InstructionSet(const Information::Format& data);
+  explicit InstructionSet(const InformationInterface::Format& data);
 
   /**
    * Constructs a new instruction set from a range of instructions.
@@ -86,7 +86,7 @@ class InstructionSet
    *
    * @return The current InstructionSet object.
    */
-  InstructionSet& deserialize(const Information::Format& data);
+  InstructionSet& deserialize(const InformationInterface::Format& data);
 
   /**
    * Adds a range of InstructionInformation objects to the unit.
@@ -159,7 +159,7 @@ class InstructionSet
    */
   InstructionSet& addInstruction(const InstructionInformation& instruction);
 
-  /** @copydoc Builder::isValid() */
+  /** @copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
@@ -168,7 +168,7 @@ class InstructionSet
    *
    * @param data The serialized data.
    */
-  void _deserialize(const Information::Format& data) override;
+  void _deserialize(const InformationInterface::Format& data) override;
 };
 
 #endif /* ERAGPSIM_ARCH_INSTRUCTION_SET_HPP */

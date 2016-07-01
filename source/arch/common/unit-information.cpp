@@ -23,9 +23,9 @@
 
 #include "arch/common/unit-information.hpp"
 
-UnitInformation::UnitInformation();
+UnitInformation::UnitInformation() noexcept = default;
 
-UnitInformation::UnitInformation(const Information::Format& data) {
+UnitInformation::UnitInformation(const InformationInterface::Format& data) {
   _deserialize(data);
 }
 
@@ -34,7 +34,7 @@ UnitInformation::UnitInformation(const std::string& name) {
   this->name(name);
 }
 
-UnitInformation& UnitInformation::deserialize(const Information::Format& data) {
+UnitInformation& UnitInformation::deserialize(const InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -69,10 +69,10 @@ UnitInformation&
 UnitInformation::addRegister(const RegisterInformation& registerInformation) {
   if (registerInformation.isSpecial()) {
     // clang-format off
-    _specialRegisters.insert({
+    _specialRegisters.emplace(
         registerInformation.getType(),
         registerInformation
-    });
+    );
     // clang-format on
   } else {
     _container.emplace_back(registerInformation);
@@ -90,7 +90,7 @@ bool UnitInformation::isValid() const noexcept {
   // clang-format on
 }
 
-void UnitInformation::_deserialize(const Information::Format& data) {
+void UnitInformation::_deserialize(const InformationInterface::Format& data) {
   assert(data.count("name"));
   assert(data.count("registers"));
   assert(!data["registers"].empty());

@@ -25,10 +25,10 @@
 #include <vector>
 
 #include "arch/common/architecture-properties.hpp"
-#include "arch/common/information.hpp"
+#include "arch/common/information-interface.hpp"
 #include "arch/common/instruction-set.hpp"
 #include "arch/common/unit-information.hpp"
-#include "common/builder.hpp"
+#include "common/builder-interface.hpp"
 
 class ExtensionInformation;
 
@@ -42,7 +42,7 @@ class ExtensionInformation;
  * An `Architecture` is really just a light-weight adapter for an extension.
  *
  */
-class Architecture : public Builder {
+class Architecture : public BuilderInterface {
  public:
   using UnitContainer     = std::vector<UnitInformation>;
   using Endianness        = ArchitectureProperties::Endianness;
@@ -69,6 +69,11 @@ class Architecture : public Builder {
   static Architecture Brew(const Formula& formula);
 
   /**
+   * Constructs a new empty architecture.
+   */
+  Architecture() noexcept;
+
+  /**
    * Constructs an architecture.
    *
    * Every architecture must have a name and consist of at least one (base)
@@ -76,7 +81,7 @@ class Architecture : public Builder {
    * method.
    *
    * @param name The name of the architecture.
-   * @param base The base extension of the archicture.
+   * @param base The base extension of the architecture.
    */
   Architecture(const std::string& name, const ExtensionInformation& base);
 
@@ -239,15 +244,10 @@ class Architecture : public Builder {
    */
   bool isValidated() const noexcept;
 
-  /** @copydoc Builder::isValid() */
+  /** @copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
-  /**
-   * Private constructor for the copy-swap idiom.
-   */
-  Architecture() noexcept;
-
   /** The name of the architecture. */
   std::string _name;
 

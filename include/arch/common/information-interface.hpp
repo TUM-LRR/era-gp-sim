@@ -20,39 +20,59 @@
 #ifndef ERAGPSIM_ARCH_COMMON_INFORMATION_HPP
 #define ERAGPSIM_ARCH_COMMON_INFORMATION_HPP
 
+#include <string>
+
 #include "third-party/json/json.hpp"
+
 
 /**
  * The base class for all information classes.
  *
  * Defines information classes' interface w.r.t to deserialization from JSON.
  */
-class Information {
+class InformationInterface {
  public:
   using Format = nlohmann::json;
 
   /**
-   * Destructor.
+   * Loads data in the InformationInterface's Format from the given file path.
+   *
+   * @param filePath The file path to load data from.
+   *
+   * @return The contained data in the given format.
    */
-  virtual ~Information();
+  static Format load(const std::string& filePath);
 
   /**
-   * Deserializes an `Information` object from the given data.
+   * Stores datain the InformationInterface's Format at the given file path.
+   *
+   * @param filePath The file path to store data at.
+   * @param data The data to store.
+   */
+  static void store(const std::string& filePath, const Format& data);
+
+  /**
+   * Destructor.
+   */
+  virtual ~InformationInterface();
+
+  /**
+   * Deserializes an `InformationInterface` object from the given data.
    *
    * @param data The data to deserialize from.
    *
-   * @return The current `Information` object.
+   * @return The current `InformationInterface` object.
    */
-  virtual Information& operator<<(const Format& data);
+  virtual InformationInterface& operator<<(const Format& data);
 
   /**
-   * Deserializes an `Information` object from the given data.
+   * Deserializes an `InformationInterface` object from the given data.
    *
    * @param data The data to deserialize from.
    *
    * @return The data after deserialization.
    */
-  friend Format& operator>>(Format& data, Information& information);
+  friend Format& operator>>(Format& data, InformationInterface& information);
 
  protected:
   virtual void _deserialize(const Format& data) = 0;

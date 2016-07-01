@@ -22,11 +22,16 @@
 #include <cassert>
 #include <string>
 
+#include "arch/common/architecture-brewery.hpp"
+#include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/extension-information.hpp"
 
 Architecture Architecture::Brew(const Architecture::Formula& formula) {
   return Architecture::Brewery(formula).brew();
+}
+
+Architecture::Architecture() noexcept : _validated(false) {
 }
 
 Architecture::Architecture(const std::string& name,
@@ -38,8 +43,6 @@ Architecture::Architecture(const std::string& name,
   // For constraints
   this->name(name);
 }
-
-Architecture::Architecture() noexcept = default;
 
 Architecture::Architecture(const Architecture& other)
 : _name(other._name)
@@ -83,9 +86,12 @@ operator+(const ExtensionInformation& extension) const {
 }
 
 Architecture& Architecture::extend(const ExtensionInformation& extension) {
-  assert(_base != nullptr);
+  if (_base == nullptr) {
+    _base = std::make_unique<ExtensionInformation>(extension);
+  } else {
+    _base->merge(extension);
+  }
 
-  _base->merge(extension);
   _validated = false;
 
   return *this;

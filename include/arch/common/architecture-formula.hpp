@@ -35,23 +35,30 @@
  * and optionally any number of further extensions.
  */
 class Architecture::Formula
-    : public ContainerAdapter<const std::vector<std::string>> {
+    : public ContainerAdapter<std::vector<std::string>> {
  public:
-  using ExtensionName = std::string;
-  using super         = ContainerAdapter<const std::vector<std::string>>;
+  using super = ContainerAdapter<std::vector<std::string>>;
+  using super::_container;
+  using super::InitializerList;
+  using super::begin;
+  using super::cbegin;
+  using super::end;
+  using super::cend;
+  using super::clear;
+  using super::size;
+  using super::isEmpty;
+  using index_t = typename Underlying::size_type;
 
   /**
    * Constructs a new Formula.
    *
-   * @tparam Range A range-like sequence type.
-   *
-   * @param base The name of the base extension.
-   * @param extensions A range of other extensions.
+   * @param architectureName The name of the architecture.
+   * @param list A list of extension names.
    */
-  template <typename Range>
-  Formula(const ExtensionName& base, const Range& extensions)
-  : super(Utility::prependOther<Underlying>(base, extensions)) {
-    assert(!base.empty());
+  Formula(const std::string& architectureName,
+          InitializerList list = InitializerList())
+  : super(list), _architectureName(architectureName) {
+    assert(!isEmpty());
   }
 
   /**
@@ -64,17 +71,52 @@ class Architecture::Formula
    * @param all The range of extensions for the formula.
    */
   template <typename Range>
-  explicit Formula(const Range& range) : super(range) {
+  explicit Formula(const std::string& architectureName, const Range& range)
+  : super(range) {
+    assert(!isEmpty());
   }
 
+
   /**
-   * Returns the base extension's name.
+   * Adds an extension name to the formula.
    *
-   * Corresponds to the first element in the sequence.
+   * @param name The name of the extension to add.
+   *
+   * @return The current formula.
    */
-  const ExtensionName& base() const noexcept {
-    return _container.front();
-  }
+  Formula& add(const std::string& name);
+
+  /**
+   * Permits access to the extension name at the given index.
+   *
+   * @param index The index of the extension.
+   */
+  std::string operator[](index_t index);
+
+  /**
+   * Permits const access to the extension name at the given index.
+   *
+   * @param index The index of the extension.
+   */
+  const std::string& operator[](index_t index) const;
+
+  /**
+   * Returns the architecture's identifier (name).
+   */
+  const std::string& getArchitectureName() const noexcept;
+
+  /**
+   * Sets the architecture's name.
+   *
+   * @param name The new architecture name.
+   *
+   * @return The current formula.
+   */
+  Formula& architectureName(const std::string& name);
+
+ private:
+  /** The name of the architecture. */
+  std::string _architectureName;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_ARCHITECTURE_FORMULA_HPP */

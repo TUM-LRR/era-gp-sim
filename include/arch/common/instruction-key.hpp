@@ -24,15 +24,15 @@
 #include <unordered_map>
 #include <vector>
 
-#include "arch/common/information.hpp"
-#include "common/builder.hpp"
+#include "arch/common/information-interface.hpp"
+#include "common/builder-interface.hpp"
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
 
 class InstructionKey
     : public ContainerAdapter<std::unordered_map<std::string, std::size_t>>,
-      public Information,
-      public Builder {
+      public InformationInterface,
+      public BuilderInterface {
  public:
   using super = ContainerAdapter<std::unordered_map<std::string, std::size_t>>;
   using super::_container;
@@ -49,9 +49,12 @@ class InstructionKey
   using KeyCollection   = std::vector<Key>;
   using ValueCollection = std::vector<Value>;
 
+  /**
+   * Constructs a new empty instruction key.
+   */
   InstructionKey() noexcept;
 
-  explicit InstructionKey(const Information::Format& data);
+  explicit InstructionKey(const InformationInterface::Format& data);
 
   template <typename Range>
   explicit InstructionKey(const Range& range) : super(range) {
@@ -59,7 +62,7 @@ class InstructionKey
 
   explicit InstructionKey(InitializerList list);
 
-  InstructionKey& deserialize(const Information::Format& data);
+  InstructionKey& deserialize(const InformationInterface::Format& data);
 
   InstructionKey& add(const Key& key, const Value& value);
 
@@ -85,11 +88,11 @@ class InstructionKey
   KeyCollection getKeys() const noexcept;
   ValueCollection getValues() const noexcept;
 
-  /** @copydoc Builder::isValid() */
+  /** @copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
-  void _deserialize(const Information::Format& data) override;
+  void _deserialize(const InformationInterface::Format& data) override;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_INSTRUCTION_KEY_HPP */

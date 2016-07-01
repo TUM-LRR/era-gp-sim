@@ -17,17 +17,35 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "arch/common/information.hpp"
+#include <string>
 
-Information::~Information() = default;
+#include "arch/common/architecture-formula.hpp"
 
-Information& Information::operator<<(const Format& data) {
-  _deserialize(data);
+Architecture::Formula& Architecture::Formula::add(const std::string& name) {
+  assert(!name.empty());
+  _container.emplace_back(name);
   return *this;
 }
 
-Information::Format&
-operator>>(Information::Format& data, Information& information) {
-  information << data;
-  return data;
+std::string Architecture::Formula::operator[](index_t index) {
+  assert(index < _container.size());
+  return _container[index];
+}
+
+
+const std::string& Architecture::Formula::operator[](index_t index) const {
+  assert(index < _container.size());
+  return _container[index];
+}
+
+const std::string& Architecture::Formula::architectureName() const noexcept {
+  return _architectureName;
+}
+
+Architecture::Formula&
+Architecture::Formula::getArchitectureName(const std::string& name) {
+  assert(!name.empty());
+  _architectureName = name;
+
+  return *this;
 }

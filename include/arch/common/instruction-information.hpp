@@ -22,9 +22,9 @@
 
 #include <string>
 
-#include "arch/common/information.hpp"
+#include "arch/common/information-interface.hpp"
 #include "arch/common/instruction-key.hpp"
-#include "common/builder.hpp"
+#include "common/builder-interface.hpp"
 #include "common/optional.hpp"
 
 /**
@@ -34,9 +34,9 @@
  * instruction, as everything else (e.g. allowed operands) is hard-coded in the
  * respective implementation class.
  *
- * The class' interface is intended to support the Builder pattern.
+ * The class' interface is intended to support the BuilderInterface pattern.
  */
-class InstructionInformation : public Builder, public Information {
+class InstructionInformation : public BuilderInterface, public InformationInterface {
  public:
   InstructionInformation() noexcept;
 
@@ -46,7 +46,7 @@ class InstructionInformation : public Builder, public Information {
   *
   * @param data The serialized representation of the `InstructionInformation`.
   */
-  explicit InstructionInformation(const Information::Format& data);
+  explicit InstructionInformation(const InformationInterface::Format& data);
 
   /**
    * Constructs an instruction with a mnemonic.
@@ -72,7 +72,7 @@ class InstructionInformation : public Builder, public Information {
   *
   * @return The current instruction object.
   */
-  InstructionInformation& deserialize(const Information::Format& data);
+  InstructionInformation& deserialize(const InformationInterface::Format& data);
 
   /**
    * Sets the mnemonic of the instruction.
@@ -102,7 +102,7 @@ class InstructionInformation : public Builder, public Information {
    */
   const InstructionKey& getKey() const noexcept;
 
-  /** @copydoc Builder::isValid() */
+  /** @copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
@@ -112,7 +112,7 @@ class InstructionInformation : public Builder, public Information {
   *
   * @param data The serialized representation of the `InstructionInformation`.
   */
-  void _deserialize(const Information::Format& data) override;
+  void _deserialize(const InformationInterface::Format& data) override;
 
   /** The mnemonic of the instruction. */
   std::string _mnemonic;

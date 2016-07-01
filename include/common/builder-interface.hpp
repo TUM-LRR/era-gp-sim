@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_COMMON_BUILDER_HPP
-#define ERAGPSIM_COMMON_BUILDER_HPP
+#ifndef ERAGPSIM_COMMON_BUILDER_INTERFACE_HPP
+#define ERAGPSIM_COMMON_BUILDER_INTERFACE_HPP
 
 /**
  * Abstract builder interface.
@@ -37,10 +37,10 @@
  * simplest case, would just `assert(isValid())`. This could also just be
  * integrated into the `build()` method, if one exists.
  */
-class Builder {
+class BuilderInterface {
  public:
   /** Destructor. */
-  virtual ~Builder() = default;
+  virtual ~BuilderInterface() = default;
 
   /**
    * Returns whether or not the builder's state is valid.
@@ -53,4 +53,4 @@ class Builder {
   virtual bool isValid() const noexcept = 0;
 };
 
-#endif /* ERAGPSIM_COMMON_BUILDER_HPP */
+#endif /* ERAGPSIM_COMMON_BUILDER_INTERFACE_HPP */

@@ -22,8 +22,8 @@
 
 #include <string>
 
-#include "arch/common/information.hpp"
-#include "common/builder.hpp"
+#include "arch/common/information-interface.hpp"
+#include "common/builder-interface.hpp"
 
 /**
  * Holds information about a data type.
@@ -37,9 +37,10 @@
  *
  * A data type is defined by a name and size in bits, e.g. (dword, 32).
  *
- * The class' interface is intended to support the Builder pattern
+ * The class' interface is intended to support the BuilderInterface pattern
  */
-class DataTypeInformation : public Builder, public Information {
+class DataTypeInformation : public BuilderInterface,
+                            public InformationInterface {
  public:
   using size_t = unsigned short;
 
@@ -50,7 +51,7 @@ class DataTypeInformation : public Builder, public Information {
    *
    * @param data The data type to deserialize from.
    */
-  explicit DataTypeInformation(const Information::Format& data);
+  explicit DataTypeInformation(const InformationInterface::Format& data);
 
   /**
    * Constructs the data type information object.
@@ -67,7 +68,7 @@ class DataTypeInformation : public Builder, public Information {
    *
    * @return The current data type object.
    */
-  DataTypeInformation& deserialize(const Information::Format& data);
+  DataTypeInformation& deserialize(const InformationInterface::Format& data);
 
   /**
    * Sets the name of the data type.
@@ -101,7 +102,7 @@ class DataTypeInformation : public Builder, public Information {
    */
   size_t size() const noexcept;
 
-  /** @copydoc Builder::isValid() */
+  /** @copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
@@ -110,7 +111,7 @@ class DataTypeInformation : public Builder, public Information {
    *
    * @param data The data type to deserialize from.
    */
-  void _deserialize(const Information::Format& data) override;
+  void _deserialize(const InformationInterface::Format& data) override;
 
   /** The name of the data type. */
   std::string _name;
