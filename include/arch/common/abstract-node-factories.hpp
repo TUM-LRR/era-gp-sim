@@ -250,12 +250,14 @@ class AbstractNodeFactoryCollection {
    * @param instructionFactory std::unqiue_ptr pointing to an implementation
    * instance of
    * AbstractInstructionNodeFactory; cannot be a nullptr (this is asserted)
+   * @return this instance for method chaining
    * @see createInstructionNode(std::string&)
    */
-  void setInstructionFactory(
+  AbstractNodeFactoryCollection& setInstructionFactory(
       std::unique_ptr<AbstractInstructionNodeFactory> instructionFactory) {
     assert(instructionFactory);
     _instructionF = std::move(instructionFactory);
+    return *this;
   }
 
   /**
@@ -264,12 +266,14 @@ class AbstractNodeFactoryCollection {
    * @param immediateFactory std::unique_ptr pointing to an implementation
    * instance of
    * AbstractImmediateFactory; cannot be a nullptr (this is asserted)
+   * @return this instance for method chaining
    * @see createImmediateNode(MemoryValue)
    */
-  void setImmediateFactory(
+  AbstractNodeFactoryCollection& setImmediateFactory(
       std::unique_ptr<AbstractImmediateNodeFactory> immediateFactory) {
     assert(immediateFactory);
     _immediateF = std::move(immediateFactory);
+    return *this;
   }
 
   /**
@@ -278,12 +282,14 @@ class AbstractNodeFactoryCollection {
    * @param registerAccessFactory std::unique_ptr pointing to an implementation
    * instance of
    * AbstractRegisterAccessFactory; cannot be a nullptr (this is asserted)
+   * @return this instance for method chaining
    * @see createRegisterAccessNode(const std::string&)
    */
-  void setRegisterFactory(std::unique_ptr<AbstractRegisterAccessNodeFactory>
+  AbstractNodeFactoryCollection& setRegisterFactory(std::unique_ptr<AbstractRegisterAccessNodeFactory>
                               registerAccessFactory) {
     assert(registerAccessFactory);
     _registerAccF = std::move(registerAccessFactory);
+    return *this;
   }
 
   /**
@@ -292,12 +298,14 @@ class AbstractNodeFactoryCollection {
    * @param memoryAccessFactory std::unique_ptr pointing to an implementation
    * instance of
    * AbstractMemoryAccessNodeFactory; cannot be a nullptr (this is asserted)
+   * @return this instance for method chaining
    * @see createMemoryAccessNode()
    */
-  void setMemoryFactory(
+  AbstractNodeFactoryCollection& setMemoryFactory(
       std::unique_ptr<AbstractMemoryAccessNodeFactory> memoryAccessFactory) {
     assert(memoryAccessFactory);
     _memoryAccF = std::move(memoryAccessFactory);
+    return *this;
   }
 
   /**
@@ -306,12 +314,14 @@ class AbstractNodeFactoryCollection {
    * @param arithOpFactory std::unique_ptr pointing to an implementation
    * instance of
    * AbstractArithmeticOpFactory; cannot be a nullptr (this is asserted)
+   * @return this instance for method chaining
    * @see createArithemticOperationNode(const int)
    */
-  void setArithmeticOpFactory(
+  AbstractNodeFactoryCollection& setArithmeticOpFactory(
       std::unique_ptr<AbstractArithmeticOpNodeFactory> arithOpFactory) {
     assert(arithOpFactory);
     _arithOpF = std::move(arithOpFactory);
+    return *this;
   }
 
  private:
