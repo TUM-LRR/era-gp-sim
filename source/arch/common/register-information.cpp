@@ -27,7 +27,8 @@ typename RegisterInformation::id_t RegisterInformation::_rollingID = 0;
 
 RegisterInformation::RegisterInformation() = default;
 
-RegisterInformation::RegisterInformation(const InformationInterface::Format& data) {
+RegisterInformation::RegisterInformation(
+    const InformationInterface::Format& data) {
   _deserialize(data);
 }
 
@@ -40,8 +41,27 @@ RegisterInformation::RegisterInformation(const std::string& name)
 }
 // clang-format on
 
-RegisterInformation&
-RegisterInformation::deserialize(const InformationInterface::Format& data) {
+bool RegisterInformation::operator==(const RegisterInformation& other) const
+    noexcept {
+  if (this->_id != other._id) return false;
+  if (this->_type != other._type) return false;
+  if (this->_name != other._name) return false;
+  if (this->_size != other._size) return false;
+  if (this->_constant != other._constant) return false;
+  if (this->_enclosing != other._enclosing) return false;
+  if (this->_constituents != other._constituents) return false;
+  if (this->_aliases != other._aliases) return false;
+
+  return true;
+}
+
+bool RegisterInformation::operator!=(const RegisterInformation& other) const
+    noexcept {
+  return !(*this == other);
+}
+
+RegisterInformation& RegisterInformation::deserialize(
+    const InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -109,8 +129,8 @@ RegisterInformation& RegisterInformation::addAlias(const std::string& alias) {
   return *this;
 }
 
-RegisterInformation&
-RegisterInformation::addAliases(std::initializer_list<std::string> aliases) {
+RegisterInformation& RegisterInformation::addAliases(
+    std::initializer_list<std::string> aliases) {
   _aliases.insert(_aliases.end(), aliases);
 
   return *this;
@@ -140,8 +160,8 @@ bool RegisterInformation::hasEnclosing() const noexcept {
   return static_cast<bool>(_enclosing);
 }
 
-RegisterInformation&
-RegisterInformation::addConstituents(std::initializer_list<id_t> constituents) {
+RegisterInformation& RegisterInformation::addConstituents(
+    std::initializer_list<id_t> constituents) {
   if (_enclosing) {
     assert(Utility::noneOf(constituents,
                            [this](auto& id) { return id == *_enclosing; }));
@@ -155,8 +175,8 @@ RegisterInformation& RegisterInformation::addConstituent(id_t id) {
   return *this;
 }
 
-const std::vector<RegisterInformation::id_t>&
-RegisterInformation::getConstituents() const noexcept {
+const std::vector<RegisterInformation::id_t>& RegisterInformation::
+    getConstituents() const noexcept {
   return _constituents;
 }
 
@@ -172,7 +192,8 @@ bool RegisterInformation::isValid() const noexcept {
   return !_name.empty() && _size;
 }
 
-void RegisterInformation::_deserialize(const InformationInterface::Format& data) {
+void RegisterInformation::_deserialize(
+    const InformationInterface::Format& data) {
   assert(data.count("id"));
   assert(data.count("name"));
   assert(data.count("size"));

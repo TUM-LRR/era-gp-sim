@@ -69,13 +69,27 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
 
 
   /**
+   * Tests for equality of two formulae.
+   *
+   * @param other The other formula
+   */
+  bool operator==(const ArchitectureFormula& other) const noexcept;
+
+  /**
+   * Tests for inequality of two formulae.
+   *
+   * @param other The other formula
+   */
+  bool operator!=(const ArchitectureFormula& other) const noexcept;
+
+  /**
    * Adds an extension name to the formula.
    *
    * @param name The name of the extension to add.
    *
    * @return The current formula.
    */
-  ArchitectureFormula& add(const std::string& name);
+  ArchitectureFormula& addExtension(const std::string& name);
 
   /**
    * Sets the architecture's name.

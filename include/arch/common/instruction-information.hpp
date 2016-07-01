@@ -62,6 +62,25 @@ class InstructionInformation : public BuilderInterface,
   InstructionInformation(const std::string& mnemonic,
                          const InstructionKey& key);
 
+
+  /**
+   * Tests for equality of two instructions.
+   *
+   * The names and keys must match for two instructions to be equal.
+   *
+   * @param other The other instruction.
+   */
+  bool operator==(const InstructionInformation& other) const noexcept;
+
+  /**
+   * Tests for inequality of two instructions.
+   *
+   * The names and keys must match for two instructions to be equal.
+   *
+   * @param other The other instruction.
+   */
+  bool operator!=(const InstructionInformation& other) const noexcept;
+
   /**
   * Deserializes and constructs the `InstructionInformation` from the given
   * data.
@@ -84,7 +103,7 @@ class InstructionInformation : public BuilderInterface,
   /**
    * Returns the mnemonic of the instruction.
    */
-  const std::string& getName() const noexcept;
+  const std::string& getMnemonic() const noexcept;
 
   /**
    * Sets the key of the instruction.

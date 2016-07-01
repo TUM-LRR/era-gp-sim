@@ -27,9 +27,15 @@ UnitInformation::UnitInformation(const InformationInterface::Format& data) {
   _deserialize(data);
 }
 
-UnitInformation::UnitInformation(const std::string& name) {
-  // To check constraints
-  this->name(name);
+UnitInformation::UnitInformation(const std::string& name) : _name(name) {
+}
+
+bool UnitInformation::operator==(const UnitInformation& other) const noexcept {
+  return this->_container == other._container;
+}
+
+bool UnitInformation::operator!=(const UnitInformation& other) const noexcept {
+  return !(*this == other);
 }
 
 UnitInformation& UnitInformation::deserialize(
@@ -82,9 +88,11 @@ UnitInformation& UnitInformation::addRegister(
 
 bool UnitInformation::isValid() const noexcept {
   if (_name.empty()) return false;
+  if (isEmpty()) return false;
   // clang-format off
-  return Utility::allOf(_container, [](auto& reg) {
-    return reg.isValid();
+  return Utility::allOf(_container, [](auto& registerInformation) {
+    assert(registerInformation.isValid());
+    return registerInformation.isValid();
   });
   // clang-format on
 }

@@ -62,6 +62,20 @@ class DataTypeInformation : public BuilderInterface,
   DataTypeInformation(const std::string& name, size_t size);
 
   /**
+   * Tests for equality of two data types.
+   *
+   * @param other The other data type
+   */
+  bool operator==(const DataTypeInformation& other) const noexcept;
+
+  /**
+   * Tests for inequality of two data types.
+   *
+   * @param other The other data type.
+   */
+  bool operator!=(const DataTypeInformation& other) const noexcept;
+
+  /**
    * Deserializes the data type from the given data.
    *
    * @param data The data type to deserialize from.
@@ -100,7 +114,7 @@ class DataTypeInformation : public BuilderInterface,
    *
    * @return The size of the data type.
    */
-  size_t size() const noexcept;
+  size_t getSize() const noexcept;
 
   /** @copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;

@@ -67,12 +67,14 @@ class Architecture : public BuilderInterface {
   static Architecture Brew(const ArchitectureFormula& formula);
 
   /**
-   * Constructs a new empty architecture.
+   * Constructs an architecture with the given name.
+   *
+   * @param name The name of the architecture.
    */
-  Architecture() noexcept;
+  explicit Architecture(const std::string& name = std::string());
 
   /**
-   * Constructs an architecture.
+   * Constructs an architecture with the given name and base extension.
    *
    * Every architecture must have a name and consist of at least one (base)
    * extension. The base extension must return true for its `isValidBase()`
@@ -81,6 +83,7 @@ class Architecture : public BuilderInterface {
    * @param name The name of the architecture.
    * @param base The base extension of the architecture.
    */
+
   Architecture(const std::string& name, const ExtensionInformation& base);
 
   /**
@@ -129,7 +132,7 @@ class Architecture : public BuilderInterface {
    *
    * @return The current architecture instance.
    *
-   * @see extend()
+   * @see extendBy()
    * @see operator+()
    */
   Architecture& operator+=(const ExtensionInformation& extension);
@@ -141,7 +144,7 @@ class Architecture : public BuilderInterface {
    *
    * @return The result of the addition.
    *
-   * @see extend()
+   * @see extendBy()
    * @see operator+=()
    */
   Architecture operator+(const ExtensionInformation& extension) const;
@@ -162,7 +165,7 @@ class Architecture : public BuilderInterface {
    * @see operator+=()
    * @see operator+()
    */
-  Architecture& extend(const ExtensionInformation& extension);
+  Architecture& extendBy(const ExtensionInformation& extension);
 
   /**
    * Sets the name of the archiecture.

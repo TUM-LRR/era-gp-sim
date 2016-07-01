@@ -35,14 +35,14 @@ InstructionKey& InstructionKey::deserialize(
   return *this;
 }
 
-InstructionKey& InstructionKey::add(const Key& key, const Value& value) {
+InstructionKey& InstructionKey::addPair(const Key& key, const Value& value) {
   assert(!hasKey(key));
   _container.emplace(key, value);
 
   return *this;
 }
 
-InstructionKey& InstructionKey::add(InitializerList list) {
+InstructionKey& InstructionKey::addPairs(InitializerList list) {
   assert(list.size() > 0);
   _container.insert(list);
 
@@ -93,6 +93,6 @@ bool InstructionKey::isValid() const noexcept {
 
 void InstructionKey::_deserialize(const InformationInterface::Format& data) {
   for (auto pair = data.begin(); pair != data.end(); ++pair) {
-    add(pair.key(), pair.value());
+    addPair(pair.key(), pair.value());
   }
 }

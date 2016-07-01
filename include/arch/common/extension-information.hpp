@@ -124,8 +124,26 @@ class ExtensionInformation : public BuilderInterface,
    * @param first The one `ExtensionInformation` instance.
    * @param second The other `ExtensionInformation` instance.
    */
-  friend void
-  swap(ExtensionInformation& first, ExtensionInformation& second) noexcept;
+  friend void swap(ExtensionInformation& first,
+                   ExtensionInformation& second) noexcept;
+
+  /**
+   * Tests for equality of two extensions.
+   *
+   * Compares members respectively.
+   *
+   * @param other The other extensions.
+   */
+  bool operator==(const ExtensionInformation& other) const noexcept;
+
+  /**
+   * Tests for inequality of two extensions.
+   *
+   * Compares members respectively.
+   *
+   * @param other The other extensions.
+   */
+  bool operator!=(const ExtensionInformation& other) const noexcept;
 
   /**
    * Merges the information in this instance with those of another

@@ -13,6 +13,7 @@ set(ARCH_COMMON_SOURCES
   instruction-key.cpp
   information-interface.cpp
   architecture-brewery.cpp
+  architecture-formula.cpp
 )
 
 ########################################

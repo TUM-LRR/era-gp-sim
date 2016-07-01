@@ -39,15 +39,7 @@ class InstructionSet
       public InformationInterface {
  public:
   using super = ContainerAdapter<std::vector<InstructionInformation>>;
-  using super::_container;
-  using super::InitializerList;
-  using super::begin;
-  using super::cbegin;
-  using super::end;
-  using super::cend;
-  using super::clear;
-  using super::size;
-  using super::isEmpty;
+  using CONTAINER_ADAPTER_MEMBERS;
 
   /**
    * Deserializes and constructs an InstructionSet from the given data.
@@ -73,6 +65,24 @@ class InstructionSet
    * @param instructions A list of instructions to add to the set.
    */
   explicit InstructionSet(InitializerList instructions = InitializerList());
+
+  /**
+   * Tests for equality of two instruction sets.
+   *
+   * All instructions in the sets must be equal.
+   *
+   * @param other The other instruction set.
+   */
+  bool operator==(const InstructionSet& other) const noexcept;
+
+  /**
+   * Tests for inequality of two instruction sets.
+   *
+   * All instructions in the sets must be equal.
+   *
+   * @param other The other instruction set.
+   */
+  bool operator!=(const InstructionSet& other) const noexcept;
 
   /**
    * Deserializes an InstructionSet from the given data.

@@ -27,11 +27,11 @@
 #include "arch/common/architecture.hpp"
 #include "arch/common/extension-information.hpp"
 
-Architecture Architecture::Brew(const ArchitectureFormula& formula) {
-  return ArchitectureBrewery(formula).brew();
+Architecture::Architecture(const std::string& name) : _name(name) {
 }
 
-Architecture::Architecture() noexcept : _validated(false) {
+Architecture Architecture::Brew(const ArchitectureFormula& formula) {
+  return ArchitectureBrewery(formula).brew();
 }
 
 Architecture::Architecture(const std::string& name,
@@ -74,7 +74,7 @@ void swap(Architecture& first, Architecture& second) noexcept {
 }
 
 Architecture& Architecture::operator+=(const ExtensionInformation& extension) {
-  return extend(extension);
+  return extendBy(extension);
 }
 
 Architecture Architecture::operator+(
@@ -85,7 +85,7 @@ Architecture Architecture::operator+(
   return temp;
 }
 
-Architecture& Architecture::extend(const ExtensionInformation& extension) {
+Architecture& Architecture::extendBy(const ExtensionInformation& extension) {
   if (_base == nullptr) {
     _base = std::make_unique<ExtensionInformation>(extension);
   } else {

@@ -36,6 +36,20 @@ InstructionInformation::InstructionInformation(const std::string& mnemonic,
 : _mnemonic(mnemonic), _key(key) {
 }
 
+bool InstructionInformation::operator==(
+    const InstructionInformation& other) const noexcept {
+  if (this->_mnemonic != other._mnemonic) return false;
+  if (this->_key != other._key) return false;
+
+  return true;
+}
+
+
+bool InstructionInformation::operator!=(
+    const InstructionInformation& other) const noexcept {
+  return !(*this == other);
+}
+
 InstructionInformation& InstructionInformation::deserialize(
     const InformationInterface::Format& data) {
   _deserialize(data);
@@ -50,7 +64,7 @@ InstructionInformation& InstructionInformation::mnemonic(
   return *this;
 }
 
-const std::string& InstructionInformation::getName() const noexcept {
+const std::string& InstructionInformation::getMnemonic() const noexcept {
   return _mnemonic;
 }
 

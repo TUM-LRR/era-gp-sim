@@ -43,9 +43,7 @@
   using super::clear;             \
   using super::size;              \
   using super::isEmpty;           \
-  using super::getUnderlying;     \
-  using super::operator==;        \
-  using super::operator!=;
+  using super::getUnderlying
 
 /**
  * A container-adapter base template.
@@ -87,14 +85,6 @@ class ContainerAdapter {
   }
 
   virtual ~ContainerAdapter() = default;
-
-  virtual bool operator==(const ContainerAdapter& other) const {
-    return _container == other._container;
-  }
-
-  virtual bool operator!=(const ContainerAdapter& other) const {
-    return !(*this == other);
-  }
 
   /**
    * Returns an `Iterator` to the beginning of the container.

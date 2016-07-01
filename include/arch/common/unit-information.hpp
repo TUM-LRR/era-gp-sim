@@ -45,8 +45,6 @@ class UnitInformation
 
   using Type = RegisterInformation::Type;
 
-  UnitInformation() noexcept;
-
   /**
    * Deserializes the `UnitInformation` from the given data.
    *
@@ -59,7 +57,25 @@ class UnitInformation
    *
    * @param name The name of the unit, e.g. "cpu".
    */
-  explicit UnitInformation(const std::string& name);
+  explicit UnitInformation(const std::string& name = std::string());
+
+  /**
+   * Tests for equality of two units.
+   *
+   * The name of the unit and the registers in the unit must be equal.
+   *
+   * @param other The other unit.
+   */
+  bool operator==(const UnitInformation& other) const noexcept;
+
+  /**
+   * Tests for inequality of two units.
+   *
+   * The name of the unit and the registers in the unit must be equal.
+   *
+   * @param other The other unit.
+   */
+  bool operator!=(const UnitInformation& other) const noexcept;
 
   /**
    * Adds a range of RegisterInformation objects to the unit.

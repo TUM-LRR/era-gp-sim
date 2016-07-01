@@ -21,24 +21,36 @@
 
 #include "arch/common/architecture-formula.hpp"
 
-ArchitectureFormula::ArchitectureFormula(
-    const std::string& architectureName = std::string(),
-    InitializerList list                = InitializerList())
+ArchitectureFormula::ArchitectureFormula(const std::string& architectureName,
+                                         InitializerList list)
 : super(list), _architectureName(architectureName) {
 }
 
+bool ArchitectureFormula::operator==(const ArchitectureFormula& other) const
+    noexcept {
+  if (this->_architectureName != other._architectureName) return false;
+  if (this->_container != other._container) return false;
 
-ArchitectureFormula& ArchitectureFormula::add(const std::string& name) {
+  return true;
+}
+
+bool ArchitectureFormula::operator!=(const ArchitectureFormula& other) const
+    noexcept {
+  return !(*this == other);
+}
+
+ArchitectureFormula& ArchitectureFormula::addExtension(
+    const std::string& name) {
   assert(!name.empty());
   _container.emplace_back(name);
   return *this;
 }
 
-const std::string& ArchitectureFormula::architectureName() const noexcept {
+const std::string& ArchitectureFormula::getArchitectureName() const noexcept {
   return _architectureName;
 }
 
-ArchitectureFormula& ArchitectureFormula::getArchitectureName(
+ArchitectureFormula& ArchitectureFormula::architectureName(
     const std::string& name) {
   assert(!name.empty());
   _architectureName = name;
@@ -46,6 +58,6 @@ ArchitectureFormula& ArchitectureFormula::getArchitectureName(
   return *this;
 }
 
-bool ArchitectureFormula::isValid() const noexcept override {
-  return !_archtitectureName.empty() && !isEmpty();
+bool ArchitectureFormula::isValid() const noexcept {
+  return !_architectureName.empty() && !isEmpty();
 }

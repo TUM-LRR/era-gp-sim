@@ -49,20 +49,28 @@ class InstructionKey
 
   explicit InstructionKey(InitializerList list = InitializerList());
 
+  bool operator==(const InstructionKey& other) const {
+    return _container == other._container;
+  }
+
+  bool operator!=(const InstructionKey& other) const {
+    return !(*this == other);
+  }
+
   InstructionKey& deserialize(const InformationInterface::Format& data);
 
-  InstructionKey& add(const Key& key, const Value& value);
+  InstructionKey& addPair(const Key& key, const Value& value);
 
   template <typename Range>
-  InstructionKey& add(const Range& range) {
+  InstructionKey& addPairs(const Range& range) {
     for (auto& pair : range) {
-      add(pair.first, pair.second);
+      addPair(pair.first, pair.second);
     }
 
     return *this;
   }
 
-  InstructionKey& add(InitializerList list);
+  InstructionKey& addPairs(InitializerList list);
 
 
   const Value& opcode() const;

@@ -43,6 +43,32 @@ void forEach(Range&& range, Function function) {
                 function);
 }
 
+template <typename FirstRange, typename SecondRange>
+bool isEqual(const FirstRange& first, const SecondRange& second) {
+  using std::begin;
+  using std::end;
+
+  return std::equal(begin(first), end(first), begin(second), end(second));
+}
+
+template <typename FirstRange, typename SecondRange, typename Predicate>
+bool isEqual(const FirstRange& first,
+             const SecondRange& second,
+             Predicate predicate) {
+  using std::begin;
+  using std::end;
+
+  // clang-format off
+  return std::equal(
+    begin(first),
+    end(first),
+    begin(second),
+    end(second),
+    predicate
+  );
+  // clang-format on
+}
+
 template <typename Range, typename Function>
 bool allOf(const Range& range, Function function) {
   using std::begin;

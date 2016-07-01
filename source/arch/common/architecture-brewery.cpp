@@ -36,7 +36,7 @@ Architecture ArchitectureBrewery::brew() {
   for (auto& extensionName : _formula) {
     if (!_hull.count(extensionName)) {
       TraversalStack stack;
-      architecture.extend(_brew(extensionName, stack));
+      architecture.extendBy(_brew(extensionName, stack));
     }
   }
 

@@ -89,6 +89,20 @@ class RegisterInformation : public BuilderInterface,
   RegisterInformation(const std::string& name, size_t size);
 
   /**
+   * Tests for equality of two registers.
+   *
+   * @param other The other register.
+   */
+  bool operator==(const RegisterInformation& other) const noexcept;
+
+  /**
+   * Tests for inequality of two registers.
+   *
+   * @param other The other register.
+   */
+  bool operator!=(const RegisterInformation& other) const noexcept;
+
+  /**
    * Deserializes the RegisterInformation from the given data.
    *
    * @param data The data to deserialize from.
@@ -324,8 +338,8 @@ class RegisterInformation : public BuilderInterface,
    *
    * @return The current register object.
    */
-  RegisterInformation&
-  addConstituents(std::initializer_list<id_t> constituents);
+  RegisterInformation& addConstituents(
+      std::initializer_list<id_t> constituents);
 
   /**
    * Adds a single consituent ID for the register.

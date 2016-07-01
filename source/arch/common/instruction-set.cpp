@@ -30,6 +30,14 @@ InstructionSet::InstructionSet(InitializerList instructions)
 : super(instructions) {
 }
 
+bool InstructionSet::operator==(const InstructionSet& other) const noexcept {
+  return this->_container == other._container;
+}
+
+bool InstructionSet::operator!=(const InstructionSet& other) const noexcept {
+  return !(*this == other);
+}
+
 InstructionSet& InstructionSet::deserialize(
     const InformationInterface::Format& data) {
   _deserialize(data);
@@ -49,6 +57,8 @@ InstructionSet& InstructionSet::addInstruction(
 }
 
 bool InstructionSet::isValid() const noexcept {
+  if (isEmpty()) return false;
+
   // clang-format off
   return Utility::allOf(_container, [](auto& instruction) {
     return instruction.isValid();
