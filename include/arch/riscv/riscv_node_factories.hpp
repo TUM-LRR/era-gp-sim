@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef RISCVNODEFACTORIES_HPP
-#define RISCVNODEFACTORIES_HPP
+#ifndef ERAGPSIM_ARCH_RISCV_RISCVNODEFACTORIES_HPP_
+#define ERAGPSIM_ARCH_RISCV_RISCVNODEFACTORIES_HPP_
 
-#include <map>
+#include <unordered_map>
 
 #include "arch/common/abstract_node_factories.hpp"
 
@@ -58,7 +58,7 @@ namespace riscv {
        * Addition) to a function that creates the special instruction node (e.g.
        * AddInstructionNode)
        */
-      std::map<std::string,
+      std::unordered_map<std::string,
                std::function<std::unique_ptr<AbstractSyntaxTreeNode>()>>
           _instructionMap;
 
@@ -127,4 +127,4 @@ namespace riscv {
     };
 
 }
-#endif  // RISCVNODEFACTORIES_HPP
+#endif  // ERAGPSIM_ARCH_RISCV_RISCVNODEFACTORIES_HPP_

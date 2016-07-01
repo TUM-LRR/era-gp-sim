@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
+#include <algorithm>
 #include <cctype>
 
 #include "arch/riscv/riscv_node_factories.hpp"
@@ -23,26 +24,26 @@ using namespace riscv;
 
 void RISCVInstructionNodeFactory::initializeInstructionMap() {
   // example
-  _instructionMap["ADD"] = []() {
+  _instructionMap.emplace("ADD", []() {
     return std::make_unique<AbstractSyntaxTreeNode>();
-  };
+  });
   // example
-  _instructionMap["SUB"] = []() {
+  _instructionMap.emplace("SUB", []() {
     return std::make_unique<AbstractSyntaxTreeNode>();
-  };
+  });
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 RISCVInstructionNodeFactory::createInstructionNode(std::string& token) {
+  using std::begin;
+  using std::end;
 
   //transform token to uppercase
   std::string upper = token;
-  for (auto& c : upper) {
-    c = toupper(c);
-  }
+  std::transform(begin(upper), end(upper), begin(upper), toupper);
 
   auto it = _instructionMap.find(upper);  // lookup the uppercase token
-  if (it != _instructionMap.end()) {
+  if (it != end(_instructionMap)) {
     return it->second();  // dereference iterator to the key-value pair and call
                           // the function
   } else {
