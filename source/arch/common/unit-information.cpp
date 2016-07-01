@@ -91,7 +91,6 @@ bool UnitInformation::isValid() const noexcept {
   if (isEmpty()) return false;
   // clang-format off
   return Utility::allOf(_container, [](auto& registerInformation) {
-    assert(registerInformation.isValid());
     return registerInformation.isValid();
   });
   // clang-format on

@@ -37,6 +37,9 @@ class InformationInterface {
   /**
    * Loads data in the InformationInterface's Format from the given file path.
    *
+   * The information interface defines the format, so it's a good idea to leave
+   * this file here and not in the `Utility` namespace.
+   *
    * @param filePath The file path to load data from.
    *
    * @return The contained data in the given format.

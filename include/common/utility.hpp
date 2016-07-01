@@ -21,6 +21,8 @@
 #define ERAGPSIM_COMMON_UTILITY_HPP
 
 #include <algorithm>
+#include <cassert>
+#include <fstream>
 #include <iterator>
 #include <string>
 
@@ -163,6 +165,16 @@ std::string joinPath(First&& first, Second&& second, Tail&&... tail) {
 template <typename... Paths>
 std::string joinToRoot(Paths&&... paths) {
   return joinPath(rootPath(), std::forward<Paths>(paths)...);
+}
+
+std::string loadFromFile(const std::string& filePath);
+
+template <typename Data>
+void storeToFile(const std::string& filePath, Data&& data) {
+  std::ofstream file(filePath);
+  assert(static_cast<bool>(file));
+  file << std::forward<Data>(data);
+  assert(static_cast<bool>(file));
 }
 
 // C++17

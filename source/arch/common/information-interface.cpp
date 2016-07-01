@@ -24,28 +24,16 @@
 #include <string>
 
 #include "arch/common/information-interface.hpp"
+#include "common/utility.hpp"
 
-InformationInterface::Format
-InformationInterface::load(const std::string& filePath) {
-  std::string input;
-  std::ifstream file(filePath);
-
-  assert(static_cast<bool>(file));
-
-  std::copy(std::istreambuf_iterator<char>{file},
-            std::istreambuf_iterator<char>{},
-            std::back_inserter(input));
-
-  return Format::parse(input);
+InformationInterface::Format InformationInterface::load(
+    const std::string& filePath) {
+  return Format::parse(Utility::loadFromFile(filePath));
 }
 
 void InformationInterface::store(const std::string& filePath,
                                  const Format& data) {
-  std::ofstream file(filePath);
-
-  assert(static_cast<bool>(file));
-
-  file << data.dump(4);
+  Utility::storeToFile(filePath, data.dump(4));
 }
 
 InformationInterface::~InformationInterface() = default;
