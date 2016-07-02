@@ -51,7 +51,7 @@ class DataTypeInformation : public BuilderInterface,
    *
    * @param data The data type to deserialize from.
    */
-  explicit DataTypeInformation(const InformationInterface::Format& data);
+  explicit DataTypeInformation(InformationInterface::Format& data);
 
   /**
    * Constructs the data type information object.
@@ -82,7 +82,7 @@ class DataTypeInformation : public BuilderInterface,
    *
    * @return The current data type object.
    */
-  DataTypeInformation& deserialize(const InformationInterface::Format& data);
+  DataTypeInformation& deserialize(InformationInterface::Format& data);
 
   /**
    * Sets the name of the data type.
@@ -125,7 +125,7 @@ class DataTypeInformation : public BuilderInterface,
    *
    * @param data The data type to deserialize from.
    */
-  void _deserialize(const InformationInterface::Format& data) override;
+  void _deserialize(InformationInterface::Format& data) override;
 
   /** The name of the data type. */
   std::string _name;

@@ -32,8 +32,8 @@ Architecture ArchitectureBrewery::operator()() {
 }
 
 Architecture ArchitectureBrewery::brew() {
-  Architecture architecture;
-  for (auto& extensionName : _formula) {
+  Architecture architecture(_formula.getArchitectureName());
+  for (const auto& extensionName : _formula) {
     if (!_hull.count(extensionName)) {
       TraversalStack stack;
       architecture.extendBy(_brew(extensionName, stack));
@@ -62,7 +62,7 @@ ExtensionInformation ArchitectureBrewery::_brew(
   _loadDependencies(extension, data, traversalStack);
   _handleReset(extension, data);
 
-  extension.deserialize(data["information"]);
+  extension.deserialize(data);
 
   _hull[extensionName] = extension;
 
@@ -74,10 +74,9 @@ ExtensionInformation ArchitectureBrewery::_brew(
   return extension;
 }
 
-void ArchitectureBrewery::_loadDependencies(
-    ExtensionInformation& extension,
-    const InformationInterface::Format& data,
-    TraversalStack& traversalStack) {
+void ArchitectureBrewery::_loadDependencies(ExtensionInformation& extension,
+                                            InformationInterface::Format& data,
+                                            TraversalStack& traversalStack) {
   // clang-format off
   Utility::doIfThere(data, "extends",
   [&extension, this, &traversalStack] (auto& dependencies) {
@@ -91,8 +90,8 @@ void ArchitectureBrewery::_loadDependencies(
   // clang-format on
 }
 
-void ArchitectureBrewery::_handleReset(
-    ExtensionInformation& extension, const InformationInterface::Format& data) {
+void ArchitectureBrewery::_handleReset(ExtensionInformation& extension,
+                                       InformationInterface::Format& data) {
   Utility::doIfThere(data, "reset-instructions", [&extension](auto& reset) {
     if (reset) extension.clearInstructions();
   });
@@ -104,11 +103,15 @@ void ArchitectureBrewery::_handleReset(
 
 InformationInterface::Format ArchitectureBrewery::_load(
     const std::string extensionName) {
-  auto data = InformationInterface::load(
-      Utility::joinToRoot(_formula.getArchitectureName(), extensionName));
+  // clang-format off
+  auto data = InformationInterface::load(Utility::joinPaths(
+      _formula.getPath(),
+      extensionName,
+      "config.json"
+  ));
+  // clang-format on
 
   assert(data.count("name"));
-  assert(data.count("information"));
 
   return data;
 }

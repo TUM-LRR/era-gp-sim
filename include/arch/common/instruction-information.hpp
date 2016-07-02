@@ -44,7 +44,7 @@ class InstructionInformation : public BuilderInterface,
   *
   * @param data The serialized representation of the `InstructionInformation`.
   */
-  explicit InstructionInformation(const InformationInterface::Format& data);
+  explicit InstructionInformation(InformationInterface::Format& data);
 
   /**
    * Constructs an instruction with a mnemonic.
@@ -89,7 +89,7 @@ class InstructionInformation : public BuilderInterface,
   *
   * @return The current instruction object.
   */
-  InstructionInformation& deserialize(const InformationInterface::Format& data);
+  InstructionInformation& deserialize(InformationInterface::Format& data);
 
   /**
    * Sets the mnemonic of the instruction.
@@ -129,7 +129,7 @@ class InstructionInformation : public BuilderInterface,
   *
   * @param data The serialized representation of the `InstructionInformation`.
   */
-  void _deserialize(const InformationInterface::Format& data) override;
+  void _deserialize(InformationInterface::Format& data) override;
 
   /** The mnemonic of the instruction. */
   std::string _mnemonic;

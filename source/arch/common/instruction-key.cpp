@@ -21,7 +21,7 @@
 
 #include "arch/common/instruction-key.hpp"
 
-InstructionKey::InstructionKey(const InformationInterface::Format& data) {
+InstructionKey::InstructionKey(InformationInterface::Format& data) {
   _deserialize(data);
 }
 
@@ -30,7 +30,7 @@ InstructionKey::InstructionKey(InitializerList list) : super(list) {
 }
 
 InstructionKey& InstructionKey::deserialize(
-    const InformationInterface::Format& data) {
+    InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -91,7 +91,8 @@ bool InstructionKey::isValid() const noexcept {
   return hasKey("opcode");
 }
 
-void InstructionKey::_deserialize(const InformationInterface::Format& data) {
+void InstructionKey::_deserialize(InformationInterface::Format& data) {
+  assert(!data.empty());
   for (auto pair = data.begin(); pair != data.end(); ++pair) {
     addPair(pair.key(), pair.value());
   }

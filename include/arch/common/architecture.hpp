@@ -77,7 +77,7 @@ class Architecture : public BuilderInterface {
    * Constructs an architecture with the given name and base extension.
    *
    * Every architecture must have a name and consist of at least one (base)
-   * extension. The base extension must return true for its `isValidBase()`
+   * extension. The base extension must return true for its `isComplete()`
    * method.
    *
    * @param name The name of the architecture.
@@ -228,7 +228,7 @@ class Architecture : public BuilderInterface {
    *
    * An architecture is valid if its base extension, extended by all further
    * extensions, is still a valid base extension. That is,
-   * `ExtensionInformation::isValidBase()` return true. See the documentation
+   * `ExtensionInformation::isComplete()` return true. See the documentation
    * for that method to see what constraints are placed on a valid base
    * extension.
    *

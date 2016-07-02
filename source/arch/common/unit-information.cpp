@@ -23,11 +23,16 @@
 
 #include "arch/common/unit-information.hpp"
 
-UnitInformation::UnitInformation(const InformationInterface::Format& data) {
+UnitInformation::UnitInformation(InformationInterface::Format& data) {
   _deserialize(data);
 }
 
 UnitInformation::UnitInformation(const std::string& name) : _name(name) {
+}
+
+UnitInformation::UnitInformation(const std::string& name, InitializerList list)
+: _name(name) {
+  addRegisters(list);
 }
 
 bool UnitInformation::operator==(const UnitInformation& other) const noexcept {
@@ -39,7 +44,7 @@ bool UnitInformation::operator!=(const UnitInformation& other) const noexcept {
 }
 
 UnitInformation& UnitInformation::deserialize(
-    const InformationInterface::Format& data) {
+    InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -96,7 +101,7 @@ bool UnitInformation::isValid() const noexcept {
   // clang-format on
 }
 
-void UnitInformation::_deserialize(const InformationInterface::Format& data) {
+void UnitInformation::_deserialize(InformationInterface::Format& data) {
   assert(data.count("name"));
   assert(data.count("registers"));
   assert(!data["registers"].empty());

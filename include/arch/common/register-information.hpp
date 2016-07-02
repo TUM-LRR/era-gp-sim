@@ -58,8 +58,10 @@
 class RegisterInformation : public BuilderInterface,
                             public InformationInterface {
  public:
-  using id_t   = std::size_t;
-  using size_t = unsigned short;
+  using id_t      = std::size_t;
+  using size_t    = unsigned short;
+  using AliasList = std::initializer_list<std::string>;
+  using IDList    = std::initializer_list<id_t>;
 
   /** The type of data stored in this register. */
   enum class Type { INTEGER, FLOAT, VECTOR, FLAG, LINK, PROGRAM_COUNTER };
@@ -71,7 +73,7 @@ class RegisterInformation : public BuilderInterface,
    *
    * @param data The data to deserialize from.
    */
-  explicit RegisterInformation(const InformationInterface::Format& data);
+  explicit RegisterInformation(InformationInterface::Format& data);
 
   /**
    * Constructs the RegisterInformation with the register's name.
@@ -109,7 +111,7 @@ class RegisterInformation : public BuilderInterface,
    *
    * @return The current register object.
    */
-  RegisterInformation& deserialize(const InformationInterface::Format& data);
+  RegisterInformation& deserialize(InformationInterface::Format& data);
 
   /**
    * Sets the name of the register.
@@ -255,7 +257,7 @@ class RegisterInformation : public BuilderInterface,
    *
    * @return The current register object.
    */
-  RegisterInformation& addAliases(std::initializer_list<std::string> aliases);
+  RegisterInformation& addAliases(AliasList aliases);
 
   /**
    * Adds the given alias to the known aliases for the register.
@@ -338,8 +340,7 @@ class RegisterInformation : public BuilderInterface,
    *
    * @return The current register object.
    */
-  RegisterInformation& addConstituents(
-      std::initializer_list<id_t> constituents);
+  RegisterInformation& addConstituents(IDList constituents);
 
   /**
    * Adds a single consituent ID for the register.
@@ -384,14 +385,14 @@ class RegisterInformation : public BuilderInterface,
    *
    * @param data The data to deserialize from.
    */
-  void _deserialize(const InformationInterface::Format& data) override;
+  void _deserialize(InformationInterface::Format& data) override;
 
   /**
    * Parses a `RegisterInformation::Type` specifier.
    *
    * @param data The data to parse the type from.
    */
-  void _parseType(const InformationInterface::Format& data);
+  void _parseType(InformationInterface::Format& data);
 
   /** The numeric ID of the register. */
   id_t _id;

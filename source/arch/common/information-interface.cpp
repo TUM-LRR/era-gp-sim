@@ -38,7 +38,7 @@ void InformationInterface::store(const std::string& filePath,
 
 InformationInterface::~InformationInterface() = default;
 
-InformationInterface& InformationInterface::operator<<(const Format& data) {
+InformationInterface& InformationInterface::operator<<(Format& data) {
   _deserialize(data);
   return *this;
 }

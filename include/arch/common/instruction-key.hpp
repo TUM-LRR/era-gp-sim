@@ -41,13 +41,13 @@ class InstructionKey
   using KeyCollection   = std::vector<Key>;
   using ValueCollection = std::vector<Value>;
 
-  explicit InstructionKey(const InformationInterface::Format& data);
+  explicit InstructionKey(InformationInterface::Format& data);
 
   template <typename Range>
   explicit InstructionKey(const Range& range) : super(range) {
   }
 
-  explicit InstructionKey(InitializerList list = InitializerList());
+  InstructionKey(InitializerList list = InitializerList());
 
   bool operator==(const InstructionKey& other) const {
     return _container == other._container;
@@ -57,7 +57,7 @@ class InstructionKey
     return !(*this == other);
   }
 
-  InstructionKey& deserialize(const InformationInterface::Format& data);
+  InstructionKey& deserialize(InformationInterface::Format& data);
 
   InstructionKey& addPair(const Key& key, const Value& value);
 
@@ -87,7 +87,7 @@ class InstructionKey
   bool isValid() const noexcept override;
 
  private:
-  void _deserialize(const InformationInterface::Format& data) override;
+  void _deserialize(InformationInterface::Format& data) override;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_INSTRUCTION_KEY_HPP */

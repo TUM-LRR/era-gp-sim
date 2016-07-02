@@ -112,6 +112,10 @@ TEST(ArchCommonTest, TestRegisterInformation) {
   EXPECT_EQ(registerInformation.getEnclosing(), 1);
   EXPECT_EQ(registerInformation.getConstituents(),
             std::vector<std::size_t>({2, 3, 4}));
+
+  EXPECT_FALSE(registerInformation.isSpecial());
+  registerInformation.type(RegisterInformation::Type::LINK);
+  EXPECT_TRUE(registerInformation.isSpecial());
 }
 
 TEST(ArchCommonTest, TestInstructionKey) {
@@ -207,13 +211,13 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   auto extension = ExtensionInformation().name("rvi32");
 
   EXPECT_FALSE(extension.isValid());
-  EXPECT_FALSE(extension.isValidBase());
+  EXPECT_FALSE(extension.isComplete());
 
   extension.addInstructions(instructionSet);
   extension.addUnit(unitInformation);
 
   EXPECT_TRUE(extension.isValid());
-  EXPECT_FALSE(extension.isValidBase());
+  EXPECT_FALSE(extension.isComplete());
 
   extension.wordSize(32);
   extension.endianness(ArchitectureProperties::Endianness::MIXED);
@@ -221,7 +225,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
       ArchitectureProperties::AlignmentBehavior::STRICT);
 
   EXPECT_TRUE(extension.isValid());
-  EXPECT_TRUE(extension.isValidBase());
+  EXPECT_TRUE(extension.isComplete());
 
 
   EXPECT_EQ(extension.getName(), "rvi32");
@@ -236,7 +240,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
 }
 
 TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
-  ASSERT_TRUE(baseExtensionInformation.isValidBase());
+  ASSERT_TRUE(baseExtensionInformation.isComplete());
   ASSERT_TRUE(specialExtensionInformation.isValid());
 
   auto extension = baseExtensionInformation + specialExtensionInformation;

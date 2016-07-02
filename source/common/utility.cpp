@@ -41,6 +41,10 @@ std::string rootPath() {
   return root;
 }
 
+std::string joinPaths(const std::string& single) {
+  return single;
+}
+
 std::string loadFromFile(const std::string& filePath) {
   std::string input;
   std::ifstream file(filePath);

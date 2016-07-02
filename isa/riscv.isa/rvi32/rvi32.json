@@ -1,0 +1,15 @@
+{
+  "name": "rvi32",
+  "extends": [
+    "rvi16",
+    "rva8"
+  ],
+  "instructions": {
+    "lui": {
+      "opcode": 55,
+      "func": 123,
+      "width": 5
+    },
+    "auipc": 23
+  }
+}

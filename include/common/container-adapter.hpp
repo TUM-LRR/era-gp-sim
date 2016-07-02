@@ -80,7 +80,7 @@ class ContainerAdapter {
    * @param instructions A list of elements to initialize the container adapter
    *                     with.
    */
-  explicit ContainerAdapter(InitializerList list = InitializerList())
+  ContainerAdapter(InitializerList list = InitializerList())
   : _container(list) {
   }
 

@@ -22,7 +22,7 @@
 
 #include "arch/common/instruction-set.hpp"
 
-InstructionSet::InstructionSet(const InformationInterface::Format& data) {
+InstructionSet::InstructionSet(InformationInterface::Format& data) {
   _deserialize(data);
 }
 
@@ -39,7 +39,7 @@ bool InstructionSet::operator!=(const InstructionSet& other) const noexcept {
 }
 
 InstructionSet& InstructionSet::deserialize(
-    const InformationInterface::Format& data) {
+    InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -66,8 +66,9 @@ bool InstructionSet::isValid() const noexcept {
   // clang-format on
 }
 
-void InstructionSet::_deserialize(const InformationInterface::Format& data) {
+void InstructionSet::_deserialize(InformationInterface::Format& data) {
+  assert(!data.empty());
   for (auto& instruction : data) {
-    addInstruction(InstructionInformation{data});
+    addInstruction(static_cast<InstructionInformation>(instruction));
   }
 }

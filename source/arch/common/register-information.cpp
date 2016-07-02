@@ -25,18 +25,18 @@
 
 typename RegisterInformation::id_t RegisterInformation::_rollingID = 0;
 
-RegisterInformation::RegisterInformation() = default;
+RegisterInformation::RegisterInformation()
+: _id(_rollingID++), _type(Type::INTEGER) {
+}
 
-RegisterInformation::RegisterInformation(
-    const InformationInterface::Format& data) {
+RegisterInformation::RegisterInformation(InformationInterface::Format& data)
+: RegisterInformation() {
   _deserialize(data);
 }
 
 // clang-format off
 RegisterInformation::RegisterInformation(const std::string& name)
-: _id(_rollingID++)
-, _type(Type::INTEGER)
-, _size(32) {
+: RegisterInformation() {
   this->name(name);
 }
 // clang-format on
@@ -61,7 +61,7 @@ bool RegisterInformation::operator!=(const RegisterInformation& other) const
 }
 
 RegisterInformation& RegisterInformation::deserialize(
-    const InformationInterface::Format& data) {
+    InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -125,14 +125,11 @@ bool RegisterInformation::isConstant() const noexcept {
 
 RegisterInformation& RegisterInformation::addAlias(const std::string& alias) {
   _aliases.emplace_back(alias);
-
   return *this;
 }
 
-RegisterInformation& RegisterInformation::addAliases(
-    std::initializer_list<std::string> aliases) {
+RegisterInformation& RegisterInformation::addAliases(AliasList aliases) {
   _aliases.insert(_aliases.end(), aliases);
-
   return *this;
 }
 
@@ -160,8 +157,7 @@ bool RegisterInformation::hasEnclosing() const noexcept {
   return static_cast<bool>(_enclosing);
 }
 
-RegisterInformation& RegisterInformation::addConstituents(
-    std::initializer_list<id_t> constituents) {
+RegisterInformation& RegisterInformation::addConstituents(IDList constituents) {
   if (_enclosing) {
     assert(Utility::noneOf(constituents,
                            [this](auto& id) { return id == *_enclosing; }));
@@ -192,37 +188,45 @@ bool RegisterInformation::isValid() const noexcept {
   return !_name.empty() && _size;
 }
 
-void RegisterInformation::_deserialize(
-    const InformationInterface::Format& data) {
-  assert(data.count("id"));
+void RegisterInformation::_deserialize(InformationInterface::Format& data) {
   assert(data.count("name"));
   assert(data.count("size"));
 
-  id(data["id"]);
+  Utility::doIfThere(data, "id", [this](auto& id) { this->id(id); });
+
   _parseType(data);
   name(data["name"]);
   size(data["size"]);
 
   Utility::doIfThere(data, "constant", [this](auto& constant) {
-    _constant = static_cast<double>(constant);
+    this->constant(static_cast<double>(constant));
   });
 
   Utility::doIfThere(data, "enclosing", [this](auto& enclosing) {
-    _enclosing = static_cast<id_t>(enclosing);
+    assert(enclosing.is_number());
+    this->enclosing(enclosing);
   });
 
   Utility::doIfThere(data, "constituents", [this](auto& constituents) {
     addConstituents(constituents);
   });
 
-  Utility::doIfThere(data, "aliases", [this](auto& aliases) {
-    for (auto& alias : aliases) {
-      addAlias(alias);
-    }
+  Utility::doIfThere(data, "constituent", [this](auto& constituent) {
+    addConstituent(constituent);
   });
+
+  // clang-format off
+  Utility::doIfThere(data, "aliases", [this](auto& aliases) {
+      for (const auto& alias : aliases) {
+        addAlias(alias);
+      }
+  });
+  // clang-format on
+
+  Utility::doIfThere(data, "alias", [this](auto& alias) { addAlias(alias); });
 }
 
-void RegisterInformation::_parseType(const InformationInterface::Format& data) {
+void RegisterInformation::_parseType(InformationInterface::Format& data) {
   auto type = data.find("type");
 
   if (type == data.end() || *type == "integer") {

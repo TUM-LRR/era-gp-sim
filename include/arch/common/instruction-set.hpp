@@ -46,7 +46,7 @@ class InstructionSet
    *
    * @param data The serialized data.
    */
-  explicit InstructionSet(const InformationInterface::Format& data);
+  explicit InstructionSet(InformationInterface::Format& data);
 
   /**
    * Constructs a new instruction set from a range of instructions.
@@ -64,7 +64,7 @@ class InstructionSet
    *
    * @param instructions A list of instructions to add to the set.
    */
-  explicit InstructionSet(InitializerList instructions = InitializerList());
+  InstructionSet(InitializerList instructions = InitializerList());
 
   /**
    * Tests for equality of two instruction sets.
@@ -91,7 +91,7 @@ class InstructionSet
    *
    * @return The current InstructionSet object.
    */
-  InstructionSet& deserialize(const InformationInterface::Format& data);
+  InstructionSet& deserialize(InformationInterface::Format& data);
 
   /**
    * Adds a range of InstructionInformation objects to the unit.
@@ -173,7 +173,7 @@ class InstructionSet
    *
    * @param data The serialized data.
    */
-  void _deserialize(const InformationInterface::Format& data) override;
+  void _deserialize(InformationInterface::Format& data) override;
 };
 
 #endif /* ERAGPSIM_ARCH_INSTRUCTION_SET_HPP */

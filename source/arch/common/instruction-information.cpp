@@ -23,7 +23,7 @@
 #include "arch/common/instruction-information.hpp"
 
 InstructionInformation::InstructionInformation(
-    const InformationInterface::Format& data) {
+    InformationInterface::Format& data) {
   deserialize(data);
 }
 
@@ -51,7 +51,7 @@ bool InstructionInformation::operator!=(
 }
 
 InstructionInformation& InstructionInformation::deserialize(
-    const InformationInterface::Format& data) {
+    InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -82,11 +82,12 @@ bool InstructionInformation::isValid() const noexcept {
   return !_mnemonic.empty() && _key.isValid();
 }
 
-void InstructionInformation::_deserialize(
-    const InformationInterface::Format& data) {
+void InstructionInformation::_deserialize(InformationInterface::Format& data) {
   assert(data.count("mnemonic"));
-  assert(data.count("key"));
 
-  mnemonic(data["mnemonic"]);
-  key(static_cast<InstructionKey>(data["key"]));
+  auto iterator = data.find("mnemonic");
+  this->mnemonic(*iterator);
+  data.erase(iterator);
+
+  key(static_cast<InstructionKey>(data));
 }

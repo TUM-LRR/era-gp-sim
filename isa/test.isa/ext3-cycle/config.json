@@ -1,0 +1,22 @@
+{
+  "name": "ext3",
+  "extends": [
+    "ext1"
+  ],
+  "information": {
+    "units": [
+      {
+        "name": "fpu",
+        "registers": [
+          {
+            "name": "f0",
+            "id": 13,
+            "size": 64,
+            "type": "program-counter",
+            "alias": "pc"
+          }
+        ]
+      }
+    ]
+  }
+}

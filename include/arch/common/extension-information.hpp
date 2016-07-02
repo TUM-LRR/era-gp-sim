@@ -74,7 +74,7 @@ class ExtensionInformation : public BuilderInterface,
    *
    * @param data The data to deserialize from.
    */
-  explicit ExtensionInformation(const InformationInterface::Format& data);
+  explicit ExtensionInformation(InformationInterface::Format& data);
 
   /**
    * Constructs a new `ExtensionInformation` object.
@@ -192,7 +192,7 @@ class ExtensionInformation : public BuilderInterface,
    *
    * @return The current `ExtensionInformation` object.
    */
-  ExtensionInformation& deserialize(const InformationInterface::Format& data);
+  ExtensionInformation& deserialize(InformationInterface::Format& data);
 
   /**
    * Sets the name of the extension.
@@ -394,14 +394,14 @@ class ExtensionInformation : public BuilderInterface,
   bool isValid() const noexcept override;
 
   /**
-  * Checks if the extension is a valid base extension.
+  * Checks if the extension is a complete extension.
   *
   * If true, this extension can be used as a base extension. This means that it
   * defines all necessary attributes for a basic ISA, including the endianness,
   * alignment behavior and word size, at least one unit and at least one
   * instruction.
   */
-  bool isValidBase() const noexcept;
+  bool isComplete() const noexcept;
 
  private:
   /**
@@ -409,21 +409,21 @@ class ExtensionInformation : public BuilderInterface,
    *
    * @param data The data to deserialize from.
    */
-  void _deserialize(const InformationInterface::Format& data) override;
+  void _deserialize(InformationInterface::Format& data) override;
 
   /**
    * Parses the endianness property from serialized data.
    *
    * @param data The data to deserialize the endianness from.
    */
-  void _parseEndianness(const InformationInterface::Format& data);
+  void _parseEndianness(InformationInterface::Format& data);
 
   /**
    * Parses the alignment behavior property from serialized data.
    *
    * @param data The data to deserialize the alignment behavior  from.
    */
-  void _parseAlignmentBehavior(const InformationInterface::Format& data);
+  void _parseAlignmentBehavior(InformationInterface::Format& data);
 
   /** The name of the extension. */
   std::string _name;

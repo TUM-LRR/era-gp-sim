@@ -105,6 +105,27 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
    */
   const std::string& getArchitectureName() const noexcept;
 
+  /**
+   * Returns the path to the formula's configuration data.
+   *
+   * This is the absolute path to .isa file containing the architecture's
+   * extensions. It consists of the global root path and the formula's
+   * folderName.
+   *
+   * @see getFolderName()
+   */
+  std::string getPath() const noexcept;
+
+  /**
+   * Returns the relative folder name for the formula's configuration data.
+   *
+   * This is the name of the architecture for the formula with a ".isa"
+   * extension.
+   *
+   * @see getPath()
+   */
+  std::string getFolderName() const noexcept;
+
   /** @copydoc Builder::isValid() */
   bool isValid() const noexcept override;
 

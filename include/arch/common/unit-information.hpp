@@ -50,14 +50,35 @@ class UnitInformation
    *
    * @param data The data to deserialize the unit-information from.
    */
-  explicit UnitInformation(const InformationInterface::Format& data);
+  explicit UnitInformation(InformationInterface::Format& data);
 
   /**
-   * Constructs a new unit.
+   * Constructs a new unit with the give name.
    *
    * @param name The name of the unit, e.g. "cpu".
    */
   explicit UnitInformation(const std::string& name = std::string());
+
+  /**
+   * Constructs a new unit with the given name and list of registers.
+   *
+   * @param name The name of the unit, e.g. "cpu".
+   * @param list A list of registers to add to the unit.
+   */
+  UnitInformation(const std::string& name, InitializerList list);
+
+  /**
+   * Constructs a new unit with the given name and range of registers.
+   *
+   * @tparam Range A range-like type.
+   *
+   * @param name The name of the unit, e.g. "cpu".
+   * @param range The range of RegisterInformation objects to add.
+   */
+  template <typename Range>
+  UnitInformation(const std::string& name, const Range& range) : _name(name) {
+    addRegisters(range);
+  }
 
   /**
    * Tests for equality of two units.
@@ -120,7 +141,7 @@ class UnitInformation
    *
    * @return The current unit object.
    */
-  UnitInformation& deserialize(const InformationInterface::Format& data);
+  UnitInformation& deserialize(InformationInterface::Format& data);
 
   /**
    * Sets the name of the unit.
@@ -162,6 +183,9 @@ class UnitInformation
   template <typename Range>
   UnitInformation& addRegisters(const Range& range) {
     _container.reserve(range.size());
+
+    // Add them individually instead of via range insertion
+    // so that we can check for special registers
     for (auto& r : range) {
       addRegister(r);
     }
@@ -171,8 +195,6 @@ class UnitInformation
   /**
    * Adds a list of RegisterInformation objects to the unit.
    *
-   * For maximum efficieny, this method does not inspect individual registers to
-   * determine if they are special. Only the single-register version does so.
    *
    * @param regs A list of RegisterInformation objects.
    *
@@ -200,7 +222,7 @@ class UnitInformation
    *
    * @param data The data to deserialize the unit-information from.
    */
-  void _deserialize(const InformationInterface::Format& data) override;
+  void _deserialize(InformationInterface::Format& data) override;
 
   /** The name of the unit, e.g. "CPU". */
   std::string _name;

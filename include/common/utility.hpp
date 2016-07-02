@@ -133,7 +133,7 @@ OutputRange appendOther(T&& value, const InputRange& range) {
 }
 
 template <typename Container, typename Key, typename Action>
-void doIfThere(const Container& container, const Key& key, Action action) {
+void doIfThere(Container& container, const Key& key, Action action) {
   auto iterator = container.find(key);
   if (iterator != container.end()) {
     action(*iterator);
@@ -141,15 +141,13 @@ void doIfThere(const Container& container, const Key& key, Action action) {
 }
 
 std::string rootPath();
+std::string joinPaths(const std::string& single);
 
-template <typename Single>
-Single&& joinPath(Single&& single) {
-  return std::forward<Single>(single);
-}
-
-template <typename First, typename Second, typename... Tail>
-std::string joinPath(First&& first, Second&& second, Tail&&... tail) {
-  auto intermediary = std::forward<First>(first);
+template <typename... Tail>
+std::string joinPaths(const std::string& first,
+                      const std::string& second,
+                      Tail&&... tail) {
+  auto intermediary = first;
 
   if (intermediary.back() != '/' && second.front() != '/') {
     intermediary += "/";
@@ -157,14 +155,14 @@ std::string joinPath(First&& first, Second&& second, Tail&&... tail) {
     intermediary.pop_back();
   }
 
-  intermediary += std::forward<Second>(second);
+  intermediary += second;
 
-  return joinPath(intermediary, std::forward<Tail>(tail)...);
+  return joinPaths(intermediary, std::forward<Tail>(tail)...);
 }
 
 template <typename... Paths>
 std::string joinToRoot(Paths&&... paths) {
-  return joinPath(rootPath(), std::forward<Paths>(paths)...);
+  return joinPaths(rootPath(), std::forward<Paths>(paths)...);
 }
 
 std::string loadFromFile(const std::string& filePath);

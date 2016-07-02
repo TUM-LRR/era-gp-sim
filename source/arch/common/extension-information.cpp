@@ -30,8 +30,7 @@ ExtensionInformation::ExtensionInformation()
 : _instructions(std::make_unique<InstructionSet>()) {
 }
 
-ExtensionInformation::ExtensionInformation(
-    const InformationInterface::Format& data)
+ExtensionInformation::ExtensionInformation(InformationInterface::Format& data)
 : ExtensionInformation() {
   _deserialize(data);
 }
@@ -113,7 +112,7 @@ ExtensionInformation ExtensionInformation::operator+(
 }
 
 ExtensionInformation& ExtensionInformation::deserialize(
-    const InformationInterface::Format& data) {
+    InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -254,6 +253,7 @@ ExtensionInformation& ExtensionInformation::merge(
 
 bool ExtensionInformation::isValid() const noexcept {
   assert(_instructions != nullptr);
+
   if (_name.empty()) return false;
   if (!_instructions->isValid()) return false;
   if (!Utility::allOf(_units, [](auto& unit) { return unit.isValid(); })) {
@@ -263,7 +263,7 @@ bool ExtensionInformation::isValid() const noexcept {
   return true;
 }
 
-bool ExtensionInformation::isValidBase() const noexcept {
+bool ExtensionInformation::isComplete() const noexcept {
   if (!hasEndianness()) return false;
   if (!hasAlignmentBehavior()) return false;
   if (!hasWordSize()) return false;
@@ -272,8 +272,7 @@ bool ExtensionInformation::isValidBase() const noexcept {
   return isValid();
 }
 
-void ExtensionInformation::_deserialize(
-    const InformationInterface::Format& data) {
+void ExtensionInformation::_deserialize(InformationInterface::Format& data) {
   assert(data.count("name"));
 
   name(data["name"]);
@@ -281,7 +280,7 @@ void ExtensionInformation::_deserialize(
   _parseAlignmentBehavior(data);
 
   Utility::doIfThere(data, "word-size", [this](auto& wordSize) {
-    _wordSize = static_cast<size_t>(wordSize);
+    this->wordSize(static_cast<size_t>(wordSize));
   });
 
 
@@ -297,7 +296,7 @@ void ExtensionInformation::_deserialize(
 }
 
 void ExtensionInformation::_parseEndianness(
-    const InformationInterface::Format& data) {
+    InformationInterface::Format& data) {
   Utility::doIfThere(data, "endianness", [this](auto& endianness) {
     if (endianness == "little") {
       _endianness = ArchitectureProperties::Endianness::LITTLE;
@@ -314,7 +313,7 @@ void ExtensionInformation::_parseEndianness(
 }
 
 void ExtensionInformation::_parseAlignmentBehavior(
-    const InformationInterface::Format& data) {
+    InformationInterface::Format& data) {
   Utility::doIfThere(data, "alignment-behavior", [this](auto& behavior) {
     if (behavior == "strict") {
       _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::STRICT;

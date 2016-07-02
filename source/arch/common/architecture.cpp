@@ -27,19 +27,17 @@
 #include "arch/common/architecture.hpp"
 #include "arch/common/extension-information.hpp"
 
-Architecture::Architecture(const std::string& name) : _name(name) {
-}
-
 Architecture Architecture::Brew(const ArchitectureFormula& formula) {
   return ArchitectureBrewery(formula).brew();
 }
 
+Architecture::Architecture(const std::string& name) : _name(name) {
+}
+
 Architecture::Architecture(const std::string& name,
                            const ExtensionInformation& base)
-: _validated(false) {
-  assert(base.isValidBase());
-  // Only copy after
-  _base = std::make_unique<ExtensionInformation>(base);
+: _base(std::make_unique<ExtensionInformation>(base)), _validated(false) {
+  assert(base.isComplete());
   // For constraints
   this->name(name);
 }
@@ -153,7 +151,7 @@ bool Architecture::isValidated() const noexcept {
 bool Architecture::isValid() const noexcept {
   if (_name.empty()) return false;
   if (_base == nullptr) return false;
-  if (!_base->isValidBase()) return false;
+  if (!_base->isComplete()) return false;
 
   return true;
 }

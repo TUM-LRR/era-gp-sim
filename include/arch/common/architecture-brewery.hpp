@@ -110,7 +110,7 @@ class ArchitectureBrewery {
    * @param traversalStack The stack of extensions currently under construction.
    */
   void _loadDependencies(ExtensionInformation& extension,
-                         const InformationInterface::Format& data,
+                         InformationInterface::Format& data,
                          TraversalStack& traversalStack);
 
   /**
@@ -121,7 +121,7 @@ class ArchitectureBrewery {
    * @param data The data to load from.
    */
   void _handleReset(ExtensionInformation& extension,
-                    const InformationInterface::Format& data);
+                    InformationInterface::Format& data);
 
   /**
    * Loads the configuration data of the extension with the given name from

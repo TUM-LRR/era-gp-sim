@@ -1,0 +1,9 @@
+# Test Extension 1
+
+name: ext1
+extends:
+  - ext3
+
+information:
+  endianness: mixed
+  word-size: 69

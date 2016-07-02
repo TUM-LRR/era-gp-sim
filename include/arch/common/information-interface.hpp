@@ -66,7 +66,7 @@ class InformationInterface {
    *
    * @return The current `InformationInterface` object.
    */
-  virtual InformationInterface& operator<<(const Format& data);
+  virtual InformationInterface& operator<<(Format& data);
 
   /**
    * Deserializes an `InformationInterface` object from the given data.
@@ -78,7 +78,7 @@ class InformationInterface {
   friend Format& operator>>(Format& data, InformationInterface& information);
 
  protected:
-  virtual void _deserialize(const Format& data) = 0;
+  virtual void _deserialize(Format& data) = 0;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_INFORMATION_HPP */

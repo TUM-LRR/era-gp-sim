@@ -1,0 +1,25 @@
+{
+  "martin": {
+    "name": "Martin D'vloper",
+    "job": "Developer",
+    "skills": [
+      {
+        "name": "foo",
+        "bar": "baz"
+      },
+      {
+        "name": "bar",
+        "asdf": "asdfsd"
+      }
+    ]
+  },
+  "tabitha": {
+    "name": "Tabitha Bitumen",
+    "job": "Developer",
+    "skills": [
+      "lisp",
+      "fortran",
+      "erlang"
+    ]
+  }
+}

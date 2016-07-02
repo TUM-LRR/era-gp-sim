@@ -24,8 +24,7 @@
 
 DataTypeInformation::DataTypeInformation() noexcept = default;
 
-DataTypeInformation::DataTypeInformation(
-    const InformationInterface::Format& data) {
+DataTypeInformation::DataTypeInformation(InformationInterface::Format& data) {
   _deserialize(data);
 }
 
@@ -56,7 +55,7 @@ DataTypeInformation& DataTypeInformation::name(const std::string& name) {
 }
 
 DataTypeInformation& DataTypeInformation::deserialize(
-    const InformationInterface::Format& data) {
+    InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -80,8 +79,7 @@ bool DataTypeInformation::isValid() const noexcept {
   return !_name.empty() && _size > 0;
 }
 
-void DataTypeInformation::_deserialize(
-    const InformationInterface::Format& data) {
+void DataTypeInformation::_deserialize(InformationInterface::Format& data) {
   assert(data.count("name"));
   assert(data.count("size"));
 
