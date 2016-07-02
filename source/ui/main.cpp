@@ -15,29 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.*/
 
-#include "registermodel.hpp"
 #include <QApplication>
 #include <QQMLContext>
 #include <QQmlApplicationEngine>
+#include "registermodel.hpp"
 
-int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
+int main(int argc, char *argv[]) {
+  QApplication app(argc, argv);
 
-    QString registerDescription = "EAX\n"
-                                  " AX\n"
-                                  "  AH\n"
-                                  "  AL\n"
-                                  "EBX\n"
-                                  " BX\n"
-                                  "  BH\n"
-                                  "  BL";
-    RegisterModel registerModel(registerDescription);
+  QString registerDescription =
+      "EAX\tAB01CD23\tHH HH HH HH\n"
+      " AX\tAB01\tHH HH\n"
+      "  AH\tAB\tHH\n"
+      "  AL\t01\tHH\n"
+      "EBX\t56AB78CD90\tHH HH HH HH\n"
+      " BX\t56AB\tHH HH\n"
+      "  BH\t56\tHH\n"
+      "  BL\tAB\tHH";
+  RegisterModel registerModel(registerDescription);
 
-    QQmlApplicationEngine engine;
+  QQmlApplicationEngine engine;
 
-    engine.rootContext()->setContextProperty("registerModel", &registerModel);
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+  engine.rootContext()->setContextProperty("registerModel", &registerModel);
+  engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    return app.exec();
+  return app.exec();
 }

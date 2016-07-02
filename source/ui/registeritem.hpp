@@ -20,29 +20,29 @@
 
 #include <QList>
 #include <QVariant>
+#include "registerdata.hpp"
 
 /**
- * Represents the data corresponding to a single register. Belongs to the RegisterModel.
+ * Represents an item in the RegisterModel corresponding to a single register.
  */
-class RegisterItem
-{
-public:
-    explicit RegisterItem(const QList<QVariant> &data, RegisterItem *parentItem = 0);
-    ~RegisterItem();
+class RegisterItem {
+ public:
+  explicit RegisterItem(const RegisterData &data, RegisterItem *parentItem = 0);
+  ~RegisterItem();
 
-    void appendChild(RegisterItem *child);
+  void appendChild(RegisterItem *child);
 
-    RegisterItem *getChild(int row);
-    int childCount() const;
-    int columnCount() const;
-    QVariant getData(int column) const;
-    int getRow() const;
-    RegisterItem *getParentItem();
+  RegisterItem *getChild(int row);
+  int childCount() const;
+  int columnCount() const;
+  RegisterData getData() const;
+  int getRow() const;
+  RegisterItem *getParentItem();
 
-private:
-    QList<RegisterItem*> m_childItems;
-    QList<QVariant> m_itemData;
-    RegisterItem *m_parentItem;
+ private:
+  QList<RegisterItem *> _childItems;
+  RegisterData _itemData;
+  RegisterItem *_parentItem;
 };
 
-#endif // REGISTERITEM_H
+#endif// REGISTERITEM_H

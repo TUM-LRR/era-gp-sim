@@ -6,7 +6,8 @@ CONFIG += c++11
 
 SOURCES += main.cpp \
     registermodel.cpp \
-    registeritem.cpp
+    registeritem.cpp \
+    registerdata.cpp
 
 RESOURCES += qml.qrc
 
@@ -18,4 +19,5 @@ include(deployment.pri)
 
 HEADERS += \
     registermodel.hpp \
-    registeritem.hpp
+    registeritem.hpp \
+    registerdata.hpp

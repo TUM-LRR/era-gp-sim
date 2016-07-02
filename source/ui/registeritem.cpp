@@ -17,42 +17,42 @@
 
 #include "registeritem.hpp"
 
-RegisterItem::RegisterItem(const QList<QVariant> &data, RegisterItem *parent) {
-    m_parentItem = parent;
-    m_itemData = data;
+RegisterItem::RegisterItem(const RegisterData &data, RegisterItem *parent) {
+  _parentItem = parent;
+  _itemData   = data;
 }
 
 RegisterItem::~RegisterItem() {
-    qDeleteAll(m_childItems);
+  qDeleteAll(_childItems);
 }
 
 void RegisterItem::appendChild(RegisterItem *item) {
-    m_childItems.append(item);
+  _childItems.append(item);
 }
 
 RegisterItem *RegisterItem::getChild(int row) {
-    return m_childItems.value(row);
+  return _childItems.value(row);
 }
 
 int RegisterItem::childCount() const {
-    return m_childItems.count();
+  return _childItems.count();
 }
 
 int RegisterItem::columnCount() const {
-    return m_itemData.count();
+  return _itemData.columnCount();
 }
 
-QVariant RegisterItem::getData(int column) const {
-    return m_itemData.value(column);
+RegisterData RegisterItem::getData() const {
+  return _itemData;
 }
 
 RegisterItem *RegisterItem::getParentItem() {
-    return m_parentItem;
+  return _parentItem;
 }
 
 int RegisterItem::getRow() const {
-    if (m_parentItem) {
-        return m_parentItem->m_childItems.indexOf(const_cast<RegisterItem*>(this));
-    }
-    return 0;
+  if (_parentItem) {
+    return _parentItem->_childItems.indexOf(const_cast<RegisterItem *>(this));
+  }
+  return 0;
 }

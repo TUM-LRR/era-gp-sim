@@ -55,7 +55,7 @@ ApplicationWindow {
                 anchors.left: registerTextField.left
                 anchors.leftMargin: 1
                 anchors.top: parent.top
-                text: styleData.value
+                text: model.RegisterTitle
                 font.pointSize: 15
                 font.weight: Font.Bold
                 color: "#585858"
@@ -82,8 +82,8 @@ ApplicationWindow {
                 anchors.left: parent.left
                 anchors.right: dataTypeFormat.left
 
-                text: "A1BC25D3"
-                inputMask: "HH HH HH HH"
+                text: model.RegisterContent
+                inputMask: model.RegisterDisplayFormatString
             }
         }
 
@@ -93,7 +93,6 @@ ApplicationWindow {
 
         TableViewColumn {
             title: "Register"
-            role: "Register"
         }
     }
 }
