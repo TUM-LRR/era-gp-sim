@@ -1,5 +1,5 @@
 {
-  "name": "base-no-deps",
+  "name": "no-deps",
   "endianness": "little",
   "alignment-behavior": "strict",
   "word-size": 32,

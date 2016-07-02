@@ -1,6 +1,4 @@
-# Test Base Extension w/o dependencies
-
-name: base-no-deps
+name: no-deps
 
 endianness: little
 alignment-behavior: strict
