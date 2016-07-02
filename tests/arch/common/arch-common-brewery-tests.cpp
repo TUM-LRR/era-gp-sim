@@ -18,6 +18,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <algorithm>
 #include <vector>
 
 #include "arch/common/architecture-brewery.hpp"
@@ -63,7 +64,7 @@ struct ArchDeserializationTestFixture : public ::testing::Test {
 };
 
 TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
-  ArchitectureFormula formula("test", {"base-no-deps"});
+  ArchitectureFormula formula("test", {"no-deps"});
 
   auto architecture = ArchitectureBrewery(formula).brew();
 
@@ -75,5 +76,85 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
   EXPECT_EQ(architecture.getWordSize(), 32);
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
-  EXPECT_EQ(architecture.getUnits(), units);
+
+  auto expected = architecture.getUnits();
+  for (auto& unit : units) {
+    auto iterator = expected.find(unit);
+    ASSERT_NE(iterator, expected.end());
+    EXPECT_EQ(*iterator, unit);
+  }
+}
+
+TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
+  ArchitectureFormula formula("test", {"with-deps-basic"});
+
+  auto architecture = ArchitectureBrewery(formula).brew();
+
+  EXPECT_TRUE(architecture.isValid());
+  EXPECT_EQ(architecture.getName(), "test");
+  EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
+  EXPECT_EQ(architecture.getAlignmentBehavior(),
+            Architecture::AlignmentBehavior::RELAXED);
+  EXPECT_EQ(architecture.getWordSize(), 32);
+
+  // clang-format off
+  instructionSet.addInstruction({"sll", {
+      {"opcode", 6},
+      {"function", 6},
+      {"width", 6}
+  }});
+  // clang-format on
+
+  EXPECT_EQ(architecture.getInstructions(), instructionSet);
+
+  auto expected = architecture.getUnits();
+  for (auto& unit : units) {
+    auto iterator = expected.find(unit);
+    ASSERT_NE(iterator, expected.end());
+    EXPECT_EQ(*iterator, unit);
+  }
+}
+
+TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
+  ArchitectureFormula formula("test", {"with-deps-complex"});
+
+  auto architecture = ArchitectureBrewery(formula).brew();
+
+  EXPECT_TRUE(architecture.isValid());
+  EXPECT_EQ(architecture.getName(), "test");
+  EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
+  EXPECT_EQ(architecture.getAlignmentBehavior(),
+            Architecture::AlignmentBehavior::RELAXED);
+  EXPECT_EQ(architecture.getWordSize(), 32);
+
+  // clang-format off
+  instructionSet.addInstruction({"sll", {
+      {"opcode", 6},
+      {"function", 6},
+      {"width", 6}
+  }});
+  // clang-format on
+
+  ASSERT_EQ(architecture.getInstructions(), instructionSet);
+
+  // clang-format off
+  auto f0 = RegisterInformation()
+    .name("f0")
+    .id(13)
+    .size(64)
+    .type(RegisterInformation::Type::PROGRAM_COUNTER)
+    .addAlias("pc");
+  // clang-format on
+
+  units.push_back({"fpu", {f0}});
+
+  f0.name("r5");
+  units[0].addRegister(f0);
+
+  auto expected = architecture.getUnits();
+  for (auto& unit : units) {
+    auto iterator = expected.find(unit);
+    ASSERT_NE(iterator, expected.end());
+    EXPECT_EQ(*iterator, unit);
+  }
 }

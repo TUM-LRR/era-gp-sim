@@ -53,7 +53,7 @@ struct ArchCommonTestFixture : ::testing::Test {
     // clang-format off
     instructionSet.addInstructions({
         instructionInformation,
-        InstructionInformation{"mov", InstructionKey({{"opcode", 2}})}
+        {"mov", {{"opcode", 2}}}
     });
     // clang-format on
 
@@ -70,10 +70,10 @@ struct ArchCommonTestFixture : ::testing::Test {
 
     // clang-format off
     specialExtensionInformation.name("rva32");
-    specialExtensionInformation.addInstructions(InstructionSet({
+    specialExtensionInformation.addInstructions({
       {"lr", InstructionKey({{"opcode", 1}, {"function", 2}})},
       {"sc", InstructionKey({{"opcode", 3}, {"function", 4}})}
-    }));
+    });
     // clang-format on
   }
 
@@ -194,7 +194,7 @@ TEST(ArchCommonTest, TestInstructionInformation) {
 TEST_F(ArchCommonTestFixture, TestInstructionSet) {
   InstructionSet set;
 
-  EXPECT_FALSE(set.isValid());
+  EXPECT_TRUE(set.isEmpty());
   set.addInstruction(instructionInformation);
   EXPECT_TRUE(set.isValid());
 }
@@ -210,7 +210,6 @@ TEST_F(ArchCommonTestFixture, TestUnitInformation) {
 TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   auto extension = ExtensionInformation().name("rvi32");
 
-  EXPECT_FALSE(extension.isValid());
   EXPECT_FALSE(extension.isComplete());
 
   extension.addInstructions(instructionSet);
@@ -229,9 +228,11 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
 
 
   EXPECT_EQ(extension.getName(), "rvi32");
-  EXPECT_TRUE(Utility::isEqual(extension.getInstructions(), instructionSet));
-  EXPECT_EQ(extension.getUnits(),
-            std::vector<UnitInformation>{unitInformation});
+  EXPECT_EQ(extension.getInstructions(), instructionSet);
+
+  ASSERT_TRUE(extension.getUnits().count(unitInformation));
+  EXPECT_EQ(*extension.getUnits().find(unitInformation), unitInformation);
+
   EXPECT_EQ(extension.getWordSize(), 32);
   EXPECT_EQ(extension.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
@@ -247,8 +248,10 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
 
   // Same as for the base-only test
   EXPECT_EQ(extension.getName(), "rvi32");
-  EXPECT_EQ(extension.getUnits(),
-            std::vector<UnitInformation>{unitInformation});
+
+  ASSERT_TRUE(extension.getUnits().count(unitInformation));
+  EXPECT_EQ(*extension.getUnits().find(unitInformation), unitInformation);
+
   EXPECT_EQ(extension.getWordSize(), 32);
   EXPECT_EQ(extension.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
@@ -257,7 +260,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
 
   // This should now include the new instructions
   instructionSet += specialExtensionInformation.getInstructions();
-  EXPECT_TRUE(Utility::isEqual(extension.getInstructions(), instructionSet));
+  EXPECT_EQ(extension.getInstructions(), instructionSet);
 }
 
 TEST_F(ArchCommonTestFixture, TestArchitecture) {
@@ -273,8 +276,10 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
   architecture.validate();
 
   EXPECT_EQ(architecture.getName(), "riscv");
-  EXPECT_EQ(architecture.getUnits(),
-            std::vector<UnitInformation>{unitInformation});
+
+  ASSERT_TRUE(architecture.getUnits().count(unitInformation));
+  EXPECT_EQ(*architecture.getUnits().find(unitInformation), unitInformation);
+
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
@@ -282,5 +287,5 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
             ArchitectureProperties::AlignmentBehavior::STRICT);
 
   instructionSet += specialExtensionInformation.getInstructions();
-  EXPECT_TRUE(Utility::isEqual(architecture.getInstructions(), instructionSet));
+  EXPECT_EQ(architecture.getInstructions(), instructionSet);
 }

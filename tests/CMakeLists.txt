@@ -2,7 +2,7 @@
 # CONFIG
 ########################################
 
-add_compile_options(-Os -O3 -g -Werror)
+add_compile_options(-g -Werror)
 
 ########################################
 # SUBDIRECTORIES
