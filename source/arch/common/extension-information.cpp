@@ -57,8 +57,8 @@ noexcept {
 }
 // clang-format on
 
-ExtensionInformation& ExtensionInformation::operator=(
-    ExtensionInformation other) {
+ExtensionInformation& ExtensionInformation::
+operator=(ExtensionInformation other) {
   swap(other);
 
   return *this;
@@ -98,21 +98,21 @@ bool ExtensionInformation::operator!=(const ExtensionInformation& other) const
   return !(*this == other);
 }
 
-ExtensionInformation& ExtensionInformation::operator+=(
-    const ExtensionInformation& other) {
+ExtensionInformation& ExtensionInformation::
+operator+=(const ExtensionInformation& other) {
   return merge(other);
 }
 
-ExtensionInformation ExtensionInformation::operator+(
-    const ExtensionInformation& other) const {
+ExtensionInformation ExtensionInformation::
+operator+(const ExtensionInformation& other) const {
   auto temp = *this;
   temp += other;
 
   return temp;
 }
 
-ExtensionInformation& ExtensionInformation::deserialize(
-    InformationInterface::Format& data) {
+ExtensionInformation&
+ExtensionInformation::deserialize(InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -143,14 +143,14 @@ bool ExtensionInformation::hasEndianness() const noexcept {
   return static_cast<bool>(_endianness);
 }
 
-ExtensionInformation& ExtensionInformation::alignmentBehavior(
-    AlignmentBehavior alignmentBehavior) {
+ExtensionInformation&
+ExtensionInformation::alignmentBehavior(AlignmentBehavior alignmentBehavior) {
   _alignmentBehavior = alignmentBehavior;
   return *this;
 }
 
-ExtensionInformation::AlignmentBehavior ExtensionInformation::
-    getAlignmentBehavior() const noexcept {
+ExtensionInformation::AlignmentBehavior
+ExtensionInformation::getAlignmentBehavior() const noexcept {
   assert(hasAlignmentBehavior());
   return *_alignmentBehavior;
 }
@@ -176,16 +176,16 @@ bool ExtensionInformation::hasWordSize() const noexcept {
   return static_cast<bool>(_wordSize);
 }
 
-ExtensionInformation& ExtensionInformation::addInstructions(
-    const InstructionSet& instructions) {
+ExtensionInformation&
+ExtensionInformation::addInstructions(const InstructionSet& instructions) {
   assert(_instructions != nullptr);
   *_instructions += instructions;
 
   return *this;
 }
 
-ExtensionInformation& ExtensionInformation::setInstructions(
-    const InstructionSet& instructions) {
+ExtensionInformation&
+ExtensionInformation::setInstructions(const InstructionSet& instructions) {
   assert(_instructions != nullptr);
   *_instructions = instructions;
 
@@ -209,9 +209,16 @@ ExtensionInformation& ExtensionInformation::addUnits(UnitList units) {
   return addUnits<UnitList>(units);
 }
 
-ExtensionInformation& ExtensionInformation::addUnit(
-    const UnitInformation& unit) {
-  _units.emplace_back(unit);
+ExtensionInformation&
+ExtensionInformation::addUnit(const UnitInformation& unit) {
+  auto iterator = _units.find(unit);
+  if (iterator != _units.end()) {
+    auto combination = *iterator + unit;
+    _units.erase(iterator);
+    _units.emplace(combination);
+  } else {
+    _units.emplace(unit);
+  }
 
   return *this;
 }
@@ -221,8 +228,7 @@ ExtensionInformation& ExtensionInformation::clearUnits() noexcept {
   return *this;
 }
 
-const ExtensionInformation::UnitContainer& ExtensionInformation::getUnits()
-    const noexcept {
+const UnitContainer& ExtensionInformation::getUnits() const noexcept {
   return _units;
 }
 
@@ -231,17 +237,17 @@ ExtensionInformation& ExtensionInformation::merge(ExtensionList list) {
   return merge<ExtensionList>(list);
 }
 
-ExtensionInformation& ExtensionInformation::merge(
-    const ExtensionInformation& other) {
-  if (other._endianness) {
+ExtensionInformation&
+ExtensionInformation::merge(const ExtensionInformation& other) {
+  if (other.hasEndianness()) {
     _endianness = other._endianness;
   }
 
-  if (other._alignmentBehavior) {
+  if (other.hasAlignmentBehavior()) {
     _alignmentBehavior = other._alignmentBehavior;
   }
 
-  if (other._wordSize) {
+  if (other.hasWordSize()) {
     _wordSize = other._wordSize;
   }
 

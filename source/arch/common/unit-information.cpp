@@ -36,15 +36,19 @@ UnitInformation::UnitInformation(const std::string& name, InitializerList list)
 }
 
 bool UnitInformation::operator==(const UnitInformation& other) const noexcept {
-  return this->_container == other._container;
+  if (this->_name != other._name) return false;
+  if (this->_container != other._container) return false;
+  if (this->_specialRegisters != other._specialRegisters) return false;
+
+  return true;
 }
 
 bool UnitInformation::operator!=(const UnitInformation& other) const noexcept {
   return !(*this == other);
 }
 
-UnitInformation& UnitInformation::deserialize(
-    InformationInterface::Format& data) {
+UnitInformation&
+UnitInformation::deserialize(InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -70,13 +74,17 @@ bool UnitInformation::hasSpecialRegister(Type type) const noexcept {
   return _specialRegisters.count(type);
 }
 
+bool UnitInformation::hasSpecialRegisters() const noexcept {
+  return !_specialRegisters.empty();
+}
+
 UnitInformation& UnitInformation::addRegisters(InitializerList regs) {
   assert(regs.size() > 0);
   return addRegisters<InitializerList>(regs);
 }
 
-UnitInformation& UnitInformation::addRegister(
-    const RegisterInformation& registerInformation) {
+UnitInformation&
+UnitInformation::addRegister(const RegisterInformation& registerInformation) {
   if (registerInformation.isSpecial()) {
     // clang-format off
     _specialRegisters.emplace(
@@ -85,7 +93,7 @@ UnitInformation& UnitInformation::addRegister(
     );
     // clang-format on
   } else {
-    _container.emplace_back(registerInformation);
+    _container.emplace(registerInformation);
   }
 
   return *this;
@@ -93,12 +101,21 @@ UnitInformation& UnitInformation::addRegister(
 
 bool UnitInformation::isValid() const noexcept {
   if (_name.empty()) return false;
-  if (isEmpty()) return false;
+  if (isEmpty() && !hasSpecialRegisters()) return false;
+
   // clang-format off
-  return Utility::allOf(_container, [](auto& registerInformation) {
+  auto registersOK = Utility::allOf(_container, [](auto& registerInformation) {
     return registerInformation.isValid();
   });
   // clang-format on
+
+  // clang-format off
+  auto specialOK = Utility::allOf(_specialRegisters, [](auto& special) {
+    return special.second.isValid();
+  });
+  // clang-format on
+
+  return registersOK && specialOK;
 }
 
 void UnitInformation::_deserialize(InformationInterface::Format& data) {
@@ -109,6 +126,8 @@ void UnitInformation::_deserialize(InformationInterface::Format& data) {
   name(data["name"]);
 
   for (auto& registerInformation : data["registers"]) {
-    addRegister(RegisterInformation{registerInformation});
+    addRegister(static_cast<RegisterInformation>(registerInformation));
   }
+
+  assert(isValid());
 }

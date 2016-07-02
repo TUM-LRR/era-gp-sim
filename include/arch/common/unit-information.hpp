@@ -22,8 +22,9 @@
 
 #include <string>
 #include <unordered_map>
-#include <vector>
+#include <unordered_set>
 
+#include "arch/common/register-container.hpp"
 #include "arch/common/register-information.hpp"
 #include "common/builder-interface.hpp"
 #include "common/container-adapter.hpp"
@@ -32,17 +33,17 @@
 /**
  * This class holds information about a *unit*.
  *
- * A *unit* is basically a named container of registers. For example, the "CPU"
+ * A *unit* is basically a named container of registers. For example, the
+ * "CPU"
  * unit brings integer registers and the "FPU" unit brings floating point
  * registers.
  */
-class UnitInformation
-    : public ContainerAdapter<std::vector<RegisterInformation>>,
-      public BuilderInterface,
-      public InformationInterface {
+class UnitInformation : public ContainerAdapter<RegisterContainer>,
+                        public BuilderInterface,
+                        public InformationInterface {
  public:
-  using super = ContainerAdapter<std::vector<RegisterInformation>>;
-
+  using super = ContainerAdapter<RegisterContainer>;
+  using CONTAINER_ADAPTER_MEMBERS;
   using Type = RegisterInformation::Type;
 
   /**
@@ -172,6 +173,11 @@ class UnitInformation
   bool hasSpecialRegister(Type type) const noexcept;
 
   /**
+   * Returns whether the unit has any special registers at all.
+   */
+  bool hasSpecialRegisters() const noexcept;
+
+  /**
    * Adds a range of RegisterInformation objects to the unit.
    *
    * @tparam Range A range-like type.
@@ -189,6 +195,7 @@ class UnitInformation
     for (auto& r : range) {
       addRegister(r);
     }
+
     return *this;
   }
 

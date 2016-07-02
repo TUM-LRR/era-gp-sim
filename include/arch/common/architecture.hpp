@@ -27,6 +27,7 @@
 #include "arch/common/architecture-properties.hpp"
 #include "arch/common/information-interface.hpp"
 #include "arch/common/instruction-set.hpp"
+#include "arch/common/unit-container.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/builder-interface.hpp"
 
@@ -45,7 +46,6 @@ class ArchitectureFormula;
  */
 class Architecture : public BuilderInterface {
  public:
-  using UnitContainer     = std::vector<UnitInformation>;
   using Endianness        = ArchitectureProperties::Endianness;
   using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
   using word_size_t       = ArchitectureProperties::word_size_t;

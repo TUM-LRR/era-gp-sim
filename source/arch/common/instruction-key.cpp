@@ -21,12 +21,25 @@
 
 #include "arch/common/instruction-key.hpp"
 
+
+// change instruction set to hashset to provide lookup to parser
+// or reimplement comparison == to not respect order
+
+
 InstructionKey::InstructionKey(InformationInterface::Format& data) {
   _deserialize(data);
 }
 
 
 InstructionKey::InstructionKey(InitializerList list) : super(list) {
+}
+
+bool InstructionKey::operator==(const InstructionKey& other) const noexcept {
+  return _container == other._container;
+}
+
+bool InstructionKey::operator!=(const InstructionKey& other) const noexcept {
+  return !(*this == other);
 }
 
 InstructionKey& InstructionKey::deserialize(

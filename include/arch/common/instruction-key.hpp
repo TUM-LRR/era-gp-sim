@@ -49,13 +49,8 @@ class InstructionKey
 
   InstructionKey(InitializerList list = InitializerList());
 
-  bool operator==(const InstructionKey& other) const {
-    return _container == other._container;
-  }
-
-  bool operator!=(const InstructionKey& other) const {
-    return !(*this == other);
-  }
+  bool operator==(const InstructionKey& other) const noexcept;
+  bool operator!=(const InstructionKey& other) const noexcept;
 
   InstructionKey& deserialize(InformationInterface::Format& data);
 

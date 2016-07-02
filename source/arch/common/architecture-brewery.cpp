@@ -17,6 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <iostream>
 #include <string>
 
 #include "arch/common/architecture-brewery.hpp"
@@ -43,8 +44,9 @@ Architecture ArchitectureBrewery::brew() {
   return architecture.validate();
 }
 
-ExtensionInformation ArchitectureBrewery::_brew(
-    const std::string& extensionName, TraversalStack& traversalStack) {
+ExtensionInformation
+ArchitectureBrewery::_brew(const std::string& extensionName,
+                           TraversalStack& traversalStack) {
   auto iterator = _hull.find(extensionName);
   if (iterator != _hull.end()) {
     return iterator->second;
@@ -79,11 +81,16 @@ void ArchitectureBrewery::_loadDependencies(ExtensionInformation& extension,
                                             TraversalStack& traversalStack) {
   // clang-format off
   Utility::doIfThere(data, "extends",
-  [&extension, this, &traversalStack] (auto& dependencies) {
-    for (auto& dependencyName : dependencies) {
-      assert(!traversalStack.count(dependencyName));
+  [&extension, this, &traversalStack, &data] (auto& dependencies) {
+    for (const auto& dependencyName : dependencies) {
       if (!traversalStack.count(dependencyName)) {
         extension.merge(_brew(dependencyName, traversalStack));
+      } else {
+        std::clog << "Detected a cyclic edge from "
+                  << data["name"]
+                  << " to "
+                  << dependencyName
+                  << std::endl;
       }
     }
   });
@@ -101,8 +108,8 @@ void ArchitectureBrewery::_handleReset(ExtensionInformation& extension,
   });
 }
 
-InformationInterface::Format ArchitectureBrewery::_load(
-    const std::string extensionName) {
+InformationInterface::Format
+ArchitectureBrewery::_load(const std::string extensionName) {
   // clang-format off
   auto data = InformationInterface::load(Utility::joinPaths(
       _formula.getPath(),

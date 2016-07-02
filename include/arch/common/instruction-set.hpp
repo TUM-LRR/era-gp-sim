@@ -20,12 +20,16 @@
 #ifndef ERAGPSIM_ARCH_INSTRUCTION_SET_HPP
 #define ERAGPSIM_ARCH_INSTRUCTION_SET_HPP
 
-#include <vector>
+#include <string>
+#include <unordered_map>
 
 #include "arch/common/information-interface.hpp"
 #include "arch/common/instruction-information.hpp"
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
+
+using UnderlyingInstructionSetContainer =
+    ContainerAdapter<std::unordered_map<std::string, InstructionInformation>>;
 
 /**
  * This class holds a set of commands.
@@ -33,13 +37,13 @@
  * It is really just a light-weight wrapper around a vector (it doesn't even
  * have a name).
  */
-class InstructionSet
-    : public ContainerAdapter<std::vector<InstructionInformation>>,
-      public BuilderInterface,
-      public InformationInterface {
+class InstructionSet : public UnderlyingInstructionSetContainer,
+                       public BuilderInterface,
+                       public InformationInterface {
  public:
-  using super = ContainerAdapter<std::vector<InstructionInformation>>;
+  using super = UnderlyingInstructionSetContainer;
   using CONTAINER_ADAPTER_MEMBERS;
+  using InitializerList = std::initializer_list<InstructionInformation>;
 
   /**
    * Deserializes and constructs an InstructionSet from the given data.
@@ -56,7 +60,8 @@ class InstructionSet
    * @param range A range of instructions to add to the set.
    */
   template <typename Range>
-  explicit InstructionSet(const Range& range) : super(range) {
+  explicit InstructionSet(const Range& range) {
+    addInstructions(range);
   }
 
   /**
@@ -85,16 +90,7 @@ class InstructionSet
   bool operator!=(const InstructionSet& other) const noexcept;
 
   /**
-   * Deserializes an InstructionSet from the given data.
-   *
-   * @param data The serialized data.
-   *
-   * @return The current InstructionSet object.
-   */
-  InstructionSet& deserialize(InformationInterface::Format& data);
-
-  /**
-   * Adds a range of InstructionInformation objects to the unit.
+   * Adds a range of InstructionInformation objects to this set.
    *
    * @tparam Range A range-like type.
    *
@@ -108,6 +104,17 @@ class InstructionSet
   InstructionSet& operator+=(const Range& range) {
     return addInstructions(range);
   }
+
+  /**
+   * Adds another instruction set.
+   *
+   * @param other Another instruciton set object.
+   *
+   * @return The current instruction object.
+   *
+   * @see addInstructions()
+   */
+  InstructionSet& operator+=(const InstructionSet& other);
 
   /**
    * Returns the result of adding the instructions to this set, without
@@ -130,6 +137,65 @@ class InstructionSet
   }
 
   /**
+   * Returns the instruction with the given mnemonic in the set.
+   *
+   * Inclusion is asserted.
+   *
+   * @param mnemonic The mnemonic of the instruction to look for.
+   *
+   * @return The full instruction information object.
+   *
+   * @see getInstruction()
+   * @see getInstructionKey()
+   */
+  const InstructionInformation& operator[](const std::string& mnemonic) const;
+
+  /**
+   * Returns the instruction with the given mnemonic in the set.
+   *
+   * Inclusion is asserted.
+   *
+   * @param mnemonic The mnemonic of the instruction to look for.
+   *
+   * @return The full instruction information object.
+   *
+   * @see operator[]()
+   * @see getInstructionKey()
+   */
+  const InstructionInformation&
+  getInstruction(const std::string& mnemonic) const;
+
+  /**
+   * Returns the key of the instruction with the given mnemonic in th set.
+   *
+   * Inclusion is asserted.
+   *
+   * @param mnemonic The mnemonic of the instruction to look for.
+   *
+   * @return Only the `InstructionKey` of the instruction information object.
+   *
+   * @see operator[]()
+   * @see getInstruction()
+   */
+  const InstructionKey& getInstructionKey(const std::string& mnemonic) const;
+
+  /**
+   * Tests if an instruction with the given mnemonic exists in the set.
+   *
+   * @param mnemonic The mnemonic to test inclusion for.
+   */
+  bool hasInstruction(const std::string& mnemonic) const;
+
+  /**
+   * Deserializes an InstructionSet from the given data.
+   *
+   * @param data The serialized data.
+   *
+   * @return The current InstructionSet object.
+   */
+  InstructionSet& deserialize(InformationInterface::Format& data);
+
+  /**
    * Adds a range of InstructionInformation objects to the unit.
    *
    * @tparam Range A range-like type.
@@ -142,9 +208,22 @@ class InstructionSet
    */
   template <typename Range>
   InstructionSet& addInstructions(const Range& range) {
-    Utility::concatenate(_container, range);
+    for (const auto& instruction : range) {
+      addInstruction(instruction);
+    }
     return *this;
   }
+
+  /**
+   * Adds another instruction set.
+   *
+   * @param other Another instruciton set object.
+   *
+   * @return The current instruction object.
+   *
+   * @see operator+=()
+   */
+  InstructionSet& addInstructions(const InstructionSet& other);
 
   /**
    * Adds the list of instructions to the set.

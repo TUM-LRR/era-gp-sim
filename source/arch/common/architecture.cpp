@@ -75,8 +75,8 @@ Architecture& Architecture::operator+=(const ExtensionInformation& extension) {
   return extendBy(extension);
 }
 
-Architecture Architecture::operator+(
-    const ExtensionInformation& extension) const {
+Architecture Architecture::
+operator+(const ExtensionInformation& extension) const {
   auto temp = *this;
   temp += extension;
 
@@ -125,7 +125,7 @@ Architecture::word_size_t Architecture::getWordSize() const noexcept {
   return _base->getWordSize();
 }
 
-const Architecture::UnitContainer& Architecture::getUnits() const {
+const UnitContainer& Architecture::getUnits() const {
   assert(isValidated());
   return _base->getUnits();
 }

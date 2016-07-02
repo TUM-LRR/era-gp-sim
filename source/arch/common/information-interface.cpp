@@ -26,10 +26,12 @@
 #include "arch/common/information-interface.hpp"
 #include "common/utility.hpp"
 
-InformationInterface::Format InformationInterface::load(
-    const std::string& filePath) {
+// clang-format off
+InformationInterface::Format
+InformationInterface::load(const std::string& filePath) {
   return Format::parse(Utility::loadFromFile(filePath));
 }
+// clang-format on
 
 void InformationInterface::store(const std::string& filePath,
                                  const Format& data) {

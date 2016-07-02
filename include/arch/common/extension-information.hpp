@@ -24,11 +24,12 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "arch/common/architecture-properties.hpp"
 #include "arch/common/information-interface.hpp"
-#include "arch/common/information-interface.hpp"
+#include "arch/common/unit-container.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/builder-interface.hpp"
 #include "common/optional.hpp"
@@ -61,7 +62,6 @@ class ExtensionInformation : public BuilderInterface,
                              public InformationInterface {
  public:
   using size_t            = unsigned short;
-  using UnitContainer     = std::vector<UnitInformation>;
   using UnitList          = std::initializer_list<UnitInformation>;
   using ExtensionList     = std::initializer_list<ExtensionInformation>;
   using Endianness        = ArchitectureProperties::Endianness;
@@ -124,8 +124,8 @@ class ExtensionInformation : public BuilderInterface,
    * @param first The one `ExtensionInformation` instance.
    * @param second The other `ExtensionInformation` instance.
    */
-  friend void swap(ExtensionInformation& first,
-                   ExtensionInformation& second) noexcept;
+  friend void
+  swap(ExtensionInformation& first, ExtensionInformation& second) noexcept;
 
   /**
    * Tests for equality of two extensions.
@@ -307,8 +307,9 @@ class ExtensionInformation : public BuilderInterface,
    */
   template <typename Range>
   ExtensionInformation& addUnits(const Range& range) {
-    Utility::concatenate(_units, range);
-
+    for (auto& unit : range) {
+      addUnit(unit);
+    }
     return *this;
   }
 

@@ -19,6 +19,7 @@
 
 
 #include <cassert>
+#include <string>
 
 #include "arch/common/instruction-set.hpp"
 
@@ -26,9 +27,14 @@ InstructionSet::InstructionSet(InformationInterface::Format& data) {
   _deserialize(data);
 }
 
-InstructionSet::InstructionSet(InitializerList instructions)
-: super(instructions) {
+InstructionSet::InstructionSet(InitializerList instructions) {
+  addInstructions(instructions);
 }
+
+InstructionSet& InstructionSet::operator+=(const InstructionSet& other) {
+  return addInstructions(other);
+}
+
 
 bool InstructionSet::operator==(const InstructionSet& other) const noexcept {
   return this->_container == other._container;
@@ -38,30 +44,56 @@ bool InstructionSet::operator!=(const InstructionSet& other) const noexcept {
   return !(*this == other);
 }
 
-InstructionSet& InstructionSet::deserialize(
-    InformationInterface::Format& data) {
+const InstructionInformation& InstructionSet::
+operator[](const std::string& mnemonic) const {
+  return getInstruction(mnemonic);
+}
+
+const InstructionInformation&
+InstructionSet::getInstruction(const std::string& mnemonic) const {
+  assert(_container.count(mnemonic));
+  return _container.find(mnemonic)->second;
+}
+
+const InstructionKey&
+InstructionSet::getInstructionKey(const std::string& mnemonic) const {
+  return getInstruction(mnemonic).getKey();
+}
+
+
+bool InstructionSet::hasInstruction(const std::string& mnemonic) const {
+  return _container.count(mnemonic);
+}
+
+InstructionSet&
+InstructionSet::deserialize(InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
 
+InstructionSet& InstructionSet::addInstructions(const InstructionSet& other) {
+  for (auto& pair : other) {
+    addInstruction(pair.second);
+  }
+
+  return *this;
+}
+
 InstructionSet& InstructionSet::addInstructions(InitializerList instructions) {
-  assert(instructions.size() > 0);
   return addInstructions<InitializerList>(instructions);
 }
 
-InstructionSet& InstructionSet::addInstruction(
-    const InstructionInformation& instruction) {
-  _container.emplace_back(instruction);
+InstructionSet&
+InstructionSet::addInstruction(const InstructionInformation& instruction) {
+  _container.emplace(instruction.getMnemonic(), instruction);
 
   return *this;
 }
 
 bool InstructionSet::isValid() const noexcept {
-  if (isEmpty()) return false;
-
   // clang-format off
-  return Utility::allOf(_container, [](auto& instruction) {
-    return instruction.isValid();
+  return Utility::allOf(_container, [](auto& pair) {
+    return pair.second.isValid();
   });
   // clang-format on
 }
