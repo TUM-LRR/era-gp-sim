@@ -23,8 +23,8 @@
 #include <thread>
 #include <type_traits>
 
-#include "core/lockfree_permanent_queue.hpp"
-#include "core/lockfree_spsc_queue.hpp"
+#include "core/lockfree-permanent-queue.hpp"
+#include "core/lockfree-spsc-queue.hpp"
 #include "core/tls.hpp"
 
 /**
