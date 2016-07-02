@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP
-#define ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP
+#ifndef ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP_
+#define ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP_
 
 #include <string>
 #include <vector>
-#include "CompileState.hpp"
-#include "FinalRepresentation.hpp"
-#include "SymbolTable.hpp"
+#include "compile_state.hpp"
+#include "final_representation.hpp"
+#include "symbol_table.hpp"
 
 /**
  * \class LineInterval
@@ -38,10 +38,10 @@ using LineInterval = std::pair<unsigned int, unsigned int>;
 using DummyMemoryAddress = unsigned int;
 
 /**
- * \var kNullAddress
+ * \var NULL_ADDRESS
  * \brief A substitute for a not-initialized address.
  */
-static constexpr DummyMemoryAddress kNullAddress = 0;
+static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
 
 /**
  * \class IntermediateOperation
@@ -62,7 +62,7 @@ class IntermediateOperation {
 	IntermediateOperation(const LineInterval& lines,
 												const std::vector<std::string>& labels,
 												const std::string& name)
-	: _lines(lines), _labels(labels), _name(name), _address(kNullAddress) {
+	: _lines(lines), _labels(labels), _name(name), _address(NULL_ADDRESS) {
 	}
 
 	/**
@@ -128,7 +128,7 @@ class IntermediateOperation {
 	 * \brief Returns the memory address.
 	 * \return The memory address.
 	 */
-	inline DummyMemoryAddress address() {
+	DummyMemoryAddress address() {
 		return _address;
 	}
 

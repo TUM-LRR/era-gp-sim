@@ -15,15 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_PARSER_COMPILE_STATE_HPP
-#define ERAGPSIM_PARSER_COMPILE_STATE_HPP
+#ifndef ERAGPSIM_PARSER_COMPILE_STATE_HPP_
+#define ERAGPSIM_PARSER_COMPILE_STATE_HPP_
 
 #include <vector>
-#include "CodePosition.hpp"
-#include "CompileError.hpp"
+#include "code_position.hpp"
+#include "compile_error.hpp"
 
 // To be replaced by the enum in the main parser file, therefore: No comments!
-enum class CompileMode { kUpdate, kCompile };
+enum class CompileMode { UPDATE, COMPILE };
 
 /**
  \struct CompileState

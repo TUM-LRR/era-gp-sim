@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "include/parser/IntermediateRepresentator.hpp"
+#include "parser/intermediate_representator.hpp"
 #include "gtest/gtest.h"
-#include "include/parser/IntermediateInstruction.hpp"
+#include "parser/intermediate_instruction.hpp"
 
 TEST(IntermediateRepresentator, insertSimple) {
 	IntermediateRepresentator ir;

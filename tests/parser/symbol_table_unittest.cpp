@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "include/parser/SymbolTable.hpp"
+#include "parser/symbol_table.hpp"
 #include "gtest/gtest.h"
 
 TEST(SymbolTable, initSimple) {
@@ -44,7 +44,7 @@ TEST(SymbolTable, infiniteRecursion) {
 	st.insertEntry("B", "A", state);
 	auto result = st.replaceSymbols("Lorem ipsum sit amet A", state);
 	ASSERT_EQ(state.errorList.size(), 1);
-	ASSERT_EQ(state.errorList[0].severity(), CompileErrorSeverity::kError);
+	ASSERT_EQ(state.errorList[0].severity(), CompileErrorSeverity::ERROR);
 }
 
 TEST(SymbolTable, doubleInsertion) {
@@ -53,7 +53,7 @@ TEST(SymbolTable, doubleInsertion) {
 	st.insertEntry("A", "B", state);
 	st.insertEntry("A", "C", state);
 	ASSERT_EQ(state.errorList.size(), 1);
-	ASSERT_EQ(state.errorList[0].severity(), CompileErrorSeverity::kError);
+	ASSERT_EQ(state.errorList[0].severity(), CompileErrorSeverity::ERROR);
 }
 
 TEST(SymbolTable, correctName) {
@@ -81,6 +81,6 @@ TEST(SymbolTable, invalidName) {
 	st.insertEntry("", "", state);
 	ASSERT_EQ(state.errorList.size(), 7);
 	for (auto i : state.errorList) {
-		ASSERT_EQ(i.severity(), CompileErrorSeverity::kError);
+		ASSERT_EQ(i.severity(), CompileErrorSeverity::ERROR);
 	}
 }

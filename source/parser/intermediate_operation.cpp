@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "include/parser/IntermediateOperation.hpp"
+#include "parser/intermediate_operation.hpp"
 
 void IntermediateOperation::enhanceSymbolTable(SymbolTable& table,
 																							 CompileState& state) {
 	// We assign an address, if we do not have one yet (usually, we should not
 	// have one).
-	if (_address == kNullAddress) {
+	if (_address == NULL_ADDRESS) {
 		determineMemoryPosition();
 	}
 

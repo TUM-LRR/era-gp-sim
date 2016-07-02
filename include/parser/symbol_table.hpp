@@ -15,15 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_PARSER_SYMBOL_TABLE_HPP
-#define ERAGPSIM_PARSER_SYMBOL_TABLE_HPP
+#ifndef ERAGPSIM_PARSER_SYMBOL_TABLE_HPP_
+#define ERAGPSIM_PARSER_SYMBOL_TABLE_HPP_
 
 #include <map>
 #include <regex>
 #include <set>
 #include <string>
 #include <vector>
-#include "CompileState.hpp"
+#include "compile_state.hpp"
 
 /**
  * \class SymbolTable
@@ -98,7 +98,7 @@ class SymbolTable {
 	 * \brief Returns the internal symbol table.
 	 * \return The internal symbol table.
 	 */
-	inline const std::map<std::string, std::string>& table() const {
+	const std::map<std::string, std::string>& table() const {
 		return _table;
 	}
 

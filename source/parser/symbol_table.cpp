@@ -15,19 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "include/parser/SymbolTable.hpp"
+#include "parser/symbol_table.hpp"
 
 #include <cassert>
 
 const std::regex SymbolTable::symbolNameFormat("^[A-Za-z_][A-Za-z0-9_]*$",
 																							 std::regex::ECMAScript);
 
-inline std::regex SymbolTable::makeRegex(const std::string name) const {
+std::regex SymbolTable::makeRegex(const std::string name) const {
 	// Just searches for the word.
 	return std::regex("\\b" + name + "\\b", std::regex::ECMAScript);
 }
 
-inline void SymbolTable::clearTable() {
+void SymbolTable::clearTable() {
 	// Simply clear everything.
 	_table.clear();
 }
@@ -49,7 +49,7 @@ void SymbolTable::insertEntry(const std::string& name,
 		state.errorList.push_back(
 				CompileError("Symbol '" + name + "' does not have a qualified name.",
 										 state.position,
-										 CompileErrorSeverity::kError));
+										 CompileErrorSeverity::ERROR));
 		return;
 	}
 
@@ -59,7 +59,7 @@ void SymbolTable::insertEntry(const std::string& name,
 		state.errorList.push_back(
 				CompileError("Symbol '" + name + "' defined twice.",
 										 state.position,
-										 CompileErrorSeverity::kError));
+										 CompileErrorSeverity::ERROR));
 		return;
 	}
 
@@ -99,7 +99,7 @@ std::string SymbolTable::replaceSymbols(const std::string& source,
 	state.errorList.push_back(
 			CompileError("Exceeded recursion replacement depth.",
 									 state.position,
-									 CompileErrorSeverity::kError));
+									 CompileErrorSeverity::ERROR));
 
 	return result;
 }

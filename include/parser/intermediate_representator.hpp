@@ -15,17 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP
-#define ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP
+#ifndef ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP_
+#define ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP_
 
 #include <memory>
 #include <string>
 #include <vector>
 #include "../arch/AbstractNodeFactories.hpp"
-#include "CompileState.hpp"
-#include "FinalRepresentation.hpp"
-#include "IntermediateOperation.hpp"
-#include "SymbolTable.hpp"
+#include "compile_state.hpp"
+#include "final_representation.hpp"
+#include "intermediate_operation.hpp"
+#include "symbol_table.hpp"
 
 /**
  * \class IntermediateRepresentator
@@ -87,7 +87,7 @@ class IntermediateRepresentator {
 	 * \tparam T The command type.
 	 */
 	template <typename T>
-	inline void insertCommand(const T& command) {
+	void insertCommand(const T& command) {
 		_commandList.push_back(std::make_unique<T>(command));
 	}
 

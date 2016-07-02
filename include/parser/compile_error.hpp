@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_COMPILE_ERROR_HPP
-#define ERAGPSIM_COMPILE_ERROR_HPP
+#ifndef ERAGPSIM_COMPILE_ERROR_HPP_
+#define ERAGPSIM_COMPILE_ERROR_HPP_
 
-#include "CodePosition.hpp"
+#include <string>
+#include "code_position.hpp"
 
 /**
  * \enum CompileErrorSeverity
@@ -26,22 +27,22 @@
  */
 enum class CompileErrorSeverity {
 	/**
-	 * \var CompileErrorSeverity::kError
+	 * \var CompileErrorSeverity::ERROR
 	 * \brief The severity is an error, i.e. the program will not compile
 	 * properly.
 	 */
-	kError,
+	ERROR,
 	/**
-	 * \var CompileErrorSeverity::kWarning
+	 * \var CompileErrorSeverity::WARNING
 	 * \brief The severity is a warning, i.e. the program will compile, but might
 	 * show unexpected behavior.
 	 */
-	kWarning,
+	WARNING,
 	/**
-	 * \var CompileErrorSeverity::kInformation
+	 * \var CompileErrorSeverity::INFORMATION
 	 * \brief The severity is just an information, e.g. a hint for the user.
 	 */
-	kInformation
+	INFORMATION
 };
 
 /**
@@ -117,7 +118,7 @@ class CompileError {
 	 * \brief Returns the message of this error.
 	 * \return The message of the error.
 	 */
-	inline const std::string& message() const {
+	const std::string& message() const {
 		return _message;
 	}
 
@@ -126,7 +127,7 @@ class CompileError {
 	 * \brief Returns the position where this error occured.
 	 * \return The position of the error.
 	 */
-	inline const CodePosition& position() const {
+	const CodePosition& position() const {
 		return _position;
 	}
 
@@ -135,7 +136,7 @@ class CompileError {
 	 * \brief Returns the severity of the error.
 	 * \return The severity of the error.
 	 */
-	inline const CompileErrorSeverity severity() const {
+	const CompileErrorSeverity severity() const {
 		return _severity;
 	}
 
