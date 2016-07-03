@@ -60,8 +60,8 @@ bool RegisterInformation::operator!=(const RegisterInformation& other) const
   return !(*this == other);
 }
 
-RegisterInformation& RegisterInformation::deserialize(
-    InformationInterface::Format& data) {
+RegisterInformation&
+RegisterInformation::deserialize(InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -73,8 +73,12 @@ RegisterInformation& RegisterInformation::name(const std::string& name) {
 }
 
 const std::string& RegisterInformation::getName() const noexcept {
-  assert(!_name.empty());
+  assert(hasName());
   return _name;
+}
+
+bool RegisterInformation::hasName() const noexcept {
+  return !_name.empty();
 }
 
 RegisterInformation& RegisterInformation::size(size_t bit_size) {
@@ -150,6 +154,7 @@ RegisterInformation& RegisterInformation::enclosing(id_t id) {
 }
 
 RegisterInformation::id_t RegisterInformation::getEnclosing() const noexcept {
+  assert(hasEnclosing());
   return *_enclosing;
 }
 
@@ -171,8 +176,8 @@ RegisterInformation& RegisterInformation::addConstituent(id_t id) {
   return *this;
 }
 
-const std::vector<RegisterInformation::id_t>& RegisterInformation::
-    getConstituents() const noexcept {
+const std::vector<RegisterInformation::id_t>&
+RegisterInformation::getConstituents() const noexcept {
   return _constituents;
 }
 

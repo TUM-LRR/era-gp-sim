@@ -29,13 +29,12 @@
 
 #include "arch/common/architecture-properties.hpp"
 #include "arch/common/information-interface.hpp"
+#include "arch/common/instruction-set.hpp"
 #include "arch/common/unit-container.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/builder-interface.hpp"
 #include "common/optional.hpp"
 #include "common/utility.hpp"
-
-class InstructionSet;
 
 /**
  * Holds information about an extension.
@@ -67,8 +66,6 @@ class ExtensionInformation : public BuilderInterface,
   using Endianness        = ArchitectureProperties::Endianness;
   using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
 
-  ExtensionInformation();
-
   /**
    * Deserializes the `ExtensionInformation` object from the given data.
    *
@@ -81,51 +78,7 @@ class ExtensionInformation : public BuilderInterface,
    *
    * @param name The name of the extension.
    */
-  explicit ExtensionInformation(const std::string& name);
-
-  /**
-   * Copies the extension information from another instance.
-   *
-   * @param other Another `ExtensionInformation` object.
-   */
-  ExtensionInformation(const ExtensionInformation& other);
-
-  /**
-   * Move-copies the extension information from another instance.
-   *
-   * @param other Another `ExtensionInformation` object.
-   */
-  ExtensionInformation(ExtensionInformation&& other) noexcept;
-
-  /**
-   * Assigns the extension information to another instance.
-   *
-   * @param other Another `ExtensionInformation` object.
-   */
-  ExtensionInformation& operator=(ExtensionInformation other);
-
-  /**
-   * Destructs the extension information.
-   */
-  ~ExtensionInformation();
-
-  /**
-   * Swaps the contents of this object with another `ExtensionInformation`
-   * instance.
-   *
-   * @param other Another `ExtensionInformation` object.
-   */
-  void swap(ExtensionInformation& other) noexcept;
-
-  /**
-   * Swaps the contents of one `ExtensionInformation` instance with another
-   * instance.
-   *
-   * @param first The one `ExtensionInformation` instance.
-   * @param second The other `ExtensionInformation` instance.
-   */
-  friend void
-  swap(ExtensionInformation& first, ExtensionInformation& second) noexcept;
+  explicit ExtensionInformation(const std::string& name = std::string());
 
   /**
    * Tests for equality of two extensions.
@@ -207,6 +160,11 @@ class ExtensionInformation : public BuilderInterface,
    * Returns the name of the extension.
    */
   const std::string& getName() const noexcept;
+
+  /**
+   * Tests if the extension has a name set.
+   */
+  bool hasName() const noexcept;
 
   /**
    * Sets the endianness for the extension.
@@ -297,6 +255,11 @@ class ExtensionInformation : public BuilderInterface,
   const InstructionSet& getInstructions() const noexcept;
 
   /**
+   * Tests if the extension holds any instructions.
+   */
+  bool hasInstructions() const noexcept;
+
+  /**
    * Adds the units in the range to those of the extension.
    *
    * @tparam Range A range-like sequence.
@@ -340,6 +303,11 @@ class ExtensionInformation : public BuilderInterface,
    * Returns the units of the extension.
    */
   const UnitContainer& getUnits() const noexcept;
+
+  /**
+   * Tests if the extension holds any units.
+   */
+  bool hasUnits() const noexcept;
 
   /**
    * Merges the extension with a range of other extensions.
@@ -436,10 +404,10 @@ class ExtensionInformation : public BuilderInterface,
   Optional<AlignmentBehavior> _alignmentBehavior;
 
   /** The word size of the extension, if any. */
-  Optional<size_t> _wordSize;
+  size_t _wordSize;
 
   /** The instruction set for the extension, if any. */
-  std::unique_ptr<InstructionSet> _instructions;
+  InstructionSet _instructions;
 
   /** The units supplied by the extension, if any. */
   UnitContainer _units;

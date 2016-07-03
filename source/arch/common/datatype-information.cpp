@@ -22,7 +22,8 @@
 
 #include "arch/common/datatype-information.hpp"
 
-DataTypeInformation::DataTypeInformation() noexcept = default;
+DataTypeInformation::DataTypeInformation() noexcept : _size(0) {
+}
 
 DataTypeInformation::DataTypeInformation(InformationInterface::Format& data) {
   _deserialize(data);
@@ -47,6 +48,12 @@ bool DataTypeInformation::operator!=(const DataTypeInformation& other) const
   return !(*this == other);
 }
 
+DataTypeInformation&
+DataTypeInformation::deserialize(InformationInterface::Format& data) {
+  _deserialize(data);
+  return *this;
+}
+
 DataTypeInformation& DataTypeInformation::name(const std::string& name) {
   assert(!name.empty());
   _name = name;
@@ -54,26 +61,31 @@ DataTypeInformation& DataTypeInformation::name(const std::string& name) {
   return *this;
 }
 
-DataTypeInformation& DataTypeInformation::deserialize(
-    InformationInterface::Format& data) {
-  _deserialize(data);
-  return *this;
-}
-
 const std::string& DataTypeInformation::getName() const noexcept {
+  assert(hasName());
   return _name;
 }
 
+bool DataTypeInformation::hasName() const noexcept {
+  return !_name.empty();
+}
+
 DataTypeInformation& DataTypeInformation::size(size_t size) {
-  assert(_size > 0);
+  assert(size > 0);
   _size = size;
 
   return *this;
 }
 
 DataTypeInformation::size_t DataTypeInformation::getSize() const noexcept {
+  assert(hasSize());
   return _size;
 }
+
+bool DataTypeInformation::hasSize() const noexcept {
+  return _size > 0;
+}
+
 
 bool DataTypeInformation::isValid() const noexcept {
   return !_name.empty() && _size > 0;

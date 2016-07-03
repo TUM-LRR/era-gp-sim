@@ -26,59 +26,12 @@
 #include "arch/common/instruction-set.hpp"
 #include "common/utility.hpp"
 
-ExtensionInformation::ExtensionInformation()
-: _instructions(std::make_unique<InstructionSet>()) {
-}
-
-ExtensionInformation::ExtensionInformation(InformationInterface::Format& data)
-: ExtensionInformation() {
+ExtensionInformation::ExtensionInformation(InformationInterface::Format& data) {
   _deserialize(data);
 }
 
 ExtensionInformation::ExtensionInformation(const std::string& name)
-: ExtensionInformation() {
-  // For constraint checking
-  this->name(name);
-}
-
-ExtensionInformation::ExtensionInformation(const ExtensionInformation& other)
-: _name(other._name)
-, _endianness(other._endianness)
-, _alignmentBehavior(other._alignmentBehavior)
-, _wordSize(other._wordSize)
-, _instructions(std::make_unique<InstructionSet>(*other._instructions))
-, _units(other._units) {
-}
-
-// clang-format off
-ExtensionInformation::ExtensionInformation(ExtensionInformation&& other)
-noexcept {
-  swap(other);
-}
-// clang-format on
-
-ExtensionInformation& ExtensionInformation::
-operator=(ExtensionInformation other) {
-  swap(other);
-
-  return *this;
-}
-
-ExtensionInformation::~ExtensionInformation() = default;
-
-void ExtensionInformation::swap(ExtensionInformation& other) noexcept {
-  using std::swap;
-
-  swap(_name, other._name);
-  swap(_endianness, other._endianness);
-  swap(_alignmentBehavior, other._alignmentBehavior);
-  swap(_wordSize, other._wordSize);
-  swap(_instructions, other._instructions);
-  swap(_units, other._units);
-}
-
-void swap(ExtensionInformation& first, ExtensionInformation& second) noexcept {
-  first.swap(second);
+: _name(name), _wordSize(0) {
 }
 
 bool ExtensionInformation::operator==(const ExtensionInformation& other) const
@@ -125,7 +78,12 @@ ExtensionInformation& ExtensionInformation::name(const std::string& name) {
 }
 
 const std::string& ExtensionInformation::getName() const noexcept {
+  assert(hasName());
   return _name;
+}
+
+bool ExtensionInformation::hasName() const noexcept {
+  return !_name.empty();
 }
 
 ExtensionInformation& ExtensionInformation::endianness(Endianness endianness) {
@@ -169,39 +127,39 @@ ExtensionInformation& ExtensionInformation::wordSize(size_t wordSize) {
 ExtensionInformation::size_t ExtensionInformation::getWordSize() const
     noexcept {
   assert(hasWordSize());
-  return *_wordSize;
+  return _wordSize;
 }
 
 bool ExtensionInformation::hasWordSize() const noexcept {
-  return static_cast<bool>(_wordSize);
+  return _wordSize > 0;
 }
 
 ExtensionInformation&
 ExtensionInformation::addInstructions(const InstructionSet& instructions) {
-  assert(_instructions != nullptr);
-  *_instructions += instructions;
+  _instructions += instructions;
 
   return *this;
 }
 
 ExtensionInformation&
 ExtensionInformation::setInstructions(const InstructionSet& instructions) {
-  assert(_instructions != nullptr);
-  *_instructions = instructions;
+  _instructions = instructions;
 
   return *this;
 }
 
 ExtensionInformation& ExtensionInformation::clearInstructions() {
-  assert(_instructions != nullptr);
-  _instructions->clear();
+  _instructions.clear();
 
   return *this;
 }
 
 const InstructionSet& ExtensionInformation::getInstructions() const noexcept {
-  assert(_instructions != nullptr);
-  return *_instructions;
+  return _instructions;
+}
+
+bool ExtensionInformation::hasInstructions() const noexcept {
+  return !_instructions.isEmpty();
 }
 
 ExtensionInformation& ExtensionInformation::addUnits(UnitList units) {
@@ -232,6 +190,10 @@ const UnitContainer& ExtensionInformation::getUnits() const noexcept {
   return _units;
 }
 
+bool ExtensionInformation::hasUnits() const noexcept {
+  return !_units.empty();
+}
+
 ExtensionInformation& ExtensionInformation::merge(ExtensionList list) {
   assert(list.size() > 0);
   return merge<ExtensionList>(list);
@@ -258,10 +220,7 @@ ExtensionInformation::merge(const ExtensionInformation& other) {
 }
 
 bool ExtensionInformation::isValid() const noexcept {
-  assert(_instructions != nullptr);
-
-  if (_name.empty()) return false;
-  if (!_instructions->isValid()) return false;
+  if (!_instructions.isValid()) return false;
   if (!Utility::allOf(_units, [](auto& unit) { return unit.isValid(); })) {
     return false;
   }

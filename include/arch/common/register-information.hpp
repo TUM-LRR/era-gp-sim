@@ -131,6 +131,11 @@ class RegisterInformation : public BuilderInterface,
   const std::string& getName() const noexcept;
 
   /**
+   * Returns whether the register has a name set.
+   */
+  bool hasName() const noexcept;
+
+  /**
    * Sets the size (width) of the register, in bits.
    *
    * @param bit_size The new width for the register, in bits.

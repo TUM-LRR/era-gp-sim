@@ -61,7 +61,12 @@ UnitInformation& UnitInformation::name(const std::string& name) noexcept {
 }
 
 const std::string& UnitInformation::getName() const noexcept {
+  assert(hasName());
   return _name;
+}
+
+bool UnitInformation::hasName() const noexcept {
+  return !_name.empty();
 }
 
 const RegisterInformation& UnitInformation::getSpecialRegister(Type type) const

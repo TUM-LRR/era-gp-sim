@@ -92,6 +92,11 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
   ArchitectureFormula& addExtension(const std::string& name);
 
   /**
+   * Tests if the formula has any extension (names) set.
+   */
+  bool hasExtensions() const noexcept;
+
+  /**
    * Sets the architecture's name.
    *
    * @param name The new architecture name.
@@ -99,6 +104,11 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
    * @return The current formula.
    */
   ArchitectureFormula& architectureName(const std::string& name);
+
+  /**
+   * Tests if the formula has an architecture name set.
+   */
+  bool hasArchitectureName() const noexcept;
 
   /**
    * Returns the architecture's identifier (name).

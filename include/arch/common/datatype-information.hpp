@@ -101,6 +101,11 @@ class DataTypeInformation : public BuilderInterface,
   const std::string& getName() const noexcept;
 
   /**
+   * Returns whether the data type has any name set.
+   */
+  bool hasName() const noexcept;
+
+  /**
    * Sets the size of the data type, in bits.
    *
    * @param size The new size for the data type, in bits.
@@ -115,6 +120,11 @@ class DataTypeInformation : public BuilderInterface,
    * @return The size of the data type.
    */
   size_t getSize() const noexcept;
+
+  /**
+   * Returns whether the data type has any size set.
+   */
+  bool hasSize() const noexcept;
 
   /** @copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;

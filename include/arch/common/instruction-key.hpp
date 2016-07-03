@@ -67,7 +67,6 @@ class InstructionKey
 
   InstructionKey& addPairs(InitializerList list);
 
-
   const Value& opcode() const;
 
   const Value& get(const Key& key) const noexcept;

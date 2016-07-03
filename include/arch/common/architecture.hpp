@@ -25,13 +25,13 @@
 #include <vector>
 
 #include "arch/common/architecture-properties.hpp"
+#include "arch/common/extension-information.hpp"
 #include "arch/common/information-interface.hpp"
 #include "arch/common/instruction-set.hpp"
 #include "arch/common/unit-container.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/builder-interface.hpp"
 
-class ExtensionInformation;
 class ArchitectureFormula;
 
 /**
@@ -85,45 +85,6 @@ class Architecture : public BuilderInterface {
    */
 
   Architecture(const std::string& name, const ExtensionInformation& base);
-
-  /**
-   * Copy-Constructor.
-   *
-   * @param other Another architecture.
-   */
-  Architecture(const Architecture& other);
-
-  /**
-   * Move-Constructor.
-   *
-   * @param other Another architecture.
-   */
-  Architecture(Architecture&& other) noexcept;
-
-  /**
-   * Assignment operator.
-   *
-   * @param other Another architecture.
-   */
-  Architecture& operator=(Architecture other);
-
-  /** Destructor. */
-  ~Architecture();
-
-  /**
-   * Swaps the contents of this architecture with those of another.
-   *
-   * @param other Another architecture.
-   */
-  void swap(Architecture& other) noexcept;
-
-  /**
-   * Swaps two architecture.
-   *
-   * @param first The one architecture.
-   * @param second The other architecture.
-   */
-  friend void swap(Architecture& first, Architecture& second) noexcept;
 
   /**
    * Adds an extension to the architecture.
@@ -253,7 +214,7 @@ class Architecture : public BuilderInterface {
   std::string _name;
 
   /** The base extension of the architecture. */
-  std::unique_ptr<ExtensionInformation> _base;
+  ExtensionInformation _base;
 
   /** Boolean indicating whether the architecture has been validated. */
   bool _validated;

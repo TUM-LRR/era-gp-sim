@@ -40,11 +40,15 @@ bool ArchitectureFormula::operator!=(const ArchitectureFormula& other) const
   return !(*this == other);
 }
 
-ArchitectureFormula& ArchitectureFormula::addExtension(
-    const std::string& name) {
+ArchitectureFormula&
+ArchitectureFormula::addExtension(const std::string& name) {
   assert(!name.empty());
   _container.emplace_back(name);
   return *this;
+}
+
+bool ArchitectureFormula::hasExtensions() const noexcept {
+  return !isEmpty();
 }
 
 const std::string& ArchitectureFormula::getArchitectureName() const noexcept {
@@ -52,16 +56,20 @@ const std::string& ArchitectureFormula::getArchitectureName() const noexcept {
   return _architectureName;
 }
 
-ArchitectureFormula& ArchitectureFormula::architectureName(
-    const std::string& name) {
+ArchitectureFormula&
+ArchitectureFormula::architectureName(const std::string& name) {
   assert(!name.empty());
   _architectureName = name;
 
   return *this;
 }
 
+bool ArchitectureFormula::hasArchitectureName() const noexcept {
+  return !_architectureName.empty();
+}
+
 bool ArchitectureFormula::isValid() const noexcept {
-  return !_architectureName.empty() && !isEmpty();
+  return hasArchitectureName() && hasExtensions();
 }
 
 std::string ArchitectureFormula::getPath() const noexcept {

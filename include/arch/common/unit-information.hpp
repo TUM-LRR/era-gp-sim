@@ -161,6 +161,11 @@ class UnitInformation : public ContainerAdapter<RegisterContainer>,
   const std::string& getName() const noexcept;
 
   /**
+   * Tests whether this unit has any name set.
+   */
+  bool hasName() const noexcept;
+
+  /**
    * Returns information about a type of special register, if any such register
    * was registered.
    */
