@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP
-#define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP
+#ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
+#define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 
 #include "arch/riscv/instruction_node.hpp"
 
@@ -57,7 +57,7 @@ public:
     return MemoryValue{}; // TODO
   }
 
-  virtual std::string getIdentifier() { return _immediate ? "addi" : "add"; }
+  virtual std::string getIdentifier() { return _immediate ? "ADDI" : "ADD"; }
 
 private:
   bool _immediate;
@@ -81,10 +81,10 @@ public:
     return MemoryValue{}; // TODO
   }
 
-  virtual std::string getIdentifier() { return _immediate ? "subi" : "sub"; }
+  virtual std::string getIdentifier() { return _immediate ? "SUBI" : "SUB"; }
 
 private:
   bool _immediate;
 };
 
-#endif /* ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP */
+#endif /* ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_ */

@@ -16,9 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 #include "arch/riscv/integer_instructions.hpp"
+#include "arch/riscv/load_store_instructions.hpp"
 
 #include <gtest/gtest.h>
 #include <memory>
+#include <vector>
 
 TEST(InstructionTest, AddInstruction) {
   AddInstructionNode addiNode{true};
@@ -28,20 +30,20 @@ TEST(InstructionTest, AddInstruction) {
   ASSERT_EQ(NodeType::INSTRUCTION, addiNode.getType());
   ASSERT_EQ(NodeType::INSTRUCTION, addNode.getType());
 
-  ASSERT_EQ("addi", addiNode.getIdentifier());
-  ASSERT_EQ("add", addNode.getIdentifier());
+  ASSERT_EQ("ADDI", addiNode.getIdentifier());
+  ASSERT_EQ("ADD", addNode.getIdentifier());
 
   // Validate the empty syntax trees -> should return false
   ASSERT_FALSE(addiNode.validate());
   ASSERT_FALSE(addNode.validate());
 
   // Create some registers
-  std::unique_ptr<RegisterNode> r1 = std::make_unique<RegisterNode>("zero");
-  std::unique_ptr<RegisterNode> r2 = std::make_unique<RegisterNode>("x1");
-  std::unique_ptr<RegisterNode> r3 = std::make_unique<RegisterNode>("x10");
-  std::unique_ptr<RegisterNode> r4 = std::make_unique<RegisterNode>("x3");
-  std::unique_ptr<RegisterNode> r5 = std::make_unique<RegisterNode>("t0");
-  std::unique_ptr<RegisterNode> r6 = std::make_unique<RegisterNode>("x0");
+  auto r1 = std::make_unique<RegisterNode>("zero");
+  auto r2 = std::make_unique<RegisterNode>("x1");
+  auto r3 = std::make_unique<RegisterNode>("x10");
+  auto r4 = std::make_unique<RegisterNode>("x3");
+  auto r5 = std::make_unique<RegisterNode>("t0");
+  auto r6 = std::make_unique<RegisterNode>("x0");
 
   // Add the registers
   addiNode.addChild(std::move(r1));
@@ -55,6 +57,45 @@ TEST(InstructionTest, AddInstruction) {
   // Validate again
   ASSERT_FALSE(addiNode.validate());
   ASSERT_TRUE(addNode.validate());
+}
+
+TEST(InstructionTest, LoadInstruction) {
+  LoadInstructionNode lw{LoadType::WORD}, lh{LoadType::HALF_WORD},
+      lhu{LoadType::HALF_WORD_UNSIGNED}, lb{LoadType::BYTE},
+      lbu{LoadType::BYTE_UNSIGNED};
+  std::vector<LoadInstructionNode *> nodes{&lw, &lh, &lhu, &lb, &lbu};
+
+  // Basic testing
+  for (auto node : nodes) {
+    ASSERT_EQ(NodeType::INSTRUCTION, node->getType());
+    ASSERT_FALSE(node->validate());
+  }
+
+  ASSERT_EQ("LW", lw.getIdentifier());
+  ASSERT_EQ("LH", lh.getIdentifier());
+  ASSERT_EQ("LHU", lhu.getIdentifier());
+  ASSERT_EQ("LB", lb.getIdentifier());
+  ASSERT_EQ("LBU", lbu.getIdentifier());
+
+  // TODO Make tests for immediate values
+}
+
+TEST(InstructionTest, StoreInstruction) {
+  StoreInstructionNode sw{StoreType::WORD}, sh{StoreType::HALF_WORD},
+      sb{StoreType::BYTE};
+  std::vector<StoreInstructionNode *> nodes{&sw, &sh, &sb};
+
+  // Basic testing
+  for (auto node : nodes) {
+    ASSERT_EQ(NodeType::INSTRUCTION, node->getType());
+    ASSERT_FALSE(node->validate());
+  }
+
+  ASSERT_EQ("SW", sw.getIdentifier());
+  ASSERT_EQ("SH", sh.getIdentifier());
+  ASSERT_EQ("SB", sb.getIdentifier());
+
+  // TODO Make tests for immediate values
 }
 
 int main(int argc, char **argv) {

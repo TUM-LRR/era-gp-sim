@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_COMMON_AST_HPP
-#define ERAGPSIM_ARCH_COMMON_AST_HPP
+#ifndef ERAGPSIM_ARCH_COMMON_AST_HPP_
+#define ERAGPSIM_ARCH_COMMON_AST_HPP_
 
 #include <memory>
 #include <string>
@@ -49,7 +49,7 @@ enum struct NodeType {
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {
 public:
-  typedef std::unique_ptr<AbstractSyntaxTreeNode> NodePtr;
+  using NodePtr = std::unique_ptr<AbstractSyntaxTreeNode>;
 
   /**
    * Executes this node and it's children recursively.
@@ -199,4 +199,4 @@ private:
   std::string _identifier;
 };
 
-#endif // ERAGPSIM_ARCH_COMMON_AST_HPP
+#endif // ERAGPSIM_ARCH_COMMON_AST_HPP_

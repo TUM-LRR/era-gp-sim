@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
-#define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
+#ifndef ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_
+#define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_
 
 #include "arch/common/ast.hpp"
 
@@ -45,4 +45,4 @@ public:
   bool requireChildren(NodeType type, size_t startIndex, size_t amount);
 };
 
-#endif // ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
+#endif // ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_

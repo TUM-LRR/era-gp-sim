@@ -7,6 +7,9 @@ static bool validateIntegerInstruction(InstructionNode &node, bool immediate) {
              : node.requireChildren(NodeType::REGISTER, 0, 3);
 }
 
+// TODO
+// Check if the immediate values are representable by 20 bits
+
 // validate functions
 bool AddInstructionNode::validate() {
   return validateIntegerInstruction(*this, _immediate);
