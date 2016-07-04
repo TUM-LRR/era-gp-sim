@@ -15,6 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
+#ifndef ERAGPSIM_ARCH_COMMON_INSTRUCTION_FORMAT_HPP
+#define ERAGPSIM_ARCH_COMMON_INSTRUCTION_FORMAT_HPP
+
+#include "arch/common/instruction-information.hpp"
+#include "core/common/MemoryValue.hpp"
 
 /*
  * Format is an abstract class, from which all the specific formats inherit.
@@ -25,10 +30,13 @@ struct Format {
   /*
    * @param key Has the information about the bit representation of the opcode
    * function bits.
-   * @param node This gives us access to the arguments in the instruction.
+   * @param args Vector of bit representations of the child nodes..
    * @return Bit representation of the instruction.
    */
   virtual std::vector<bool>
   operator()(const InstructionInformation::InstructionKey& key,
-             const InstructionNode& node) = 0;
+             const std::vector<MemoryValue> args) = 0;
 };
+
+
+#endif /* ERAGPSIM_ARCH_COMMON_INSTRUCTION_FORMAT_HPP */

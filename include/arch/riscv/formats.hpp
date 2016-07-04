@@ -15,6 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
+#ifndef ERAGPSIM_ARCH_RISCV_FORMATS_HPP
+#define ERAGPSIM_ARCH_RISCV_FORMATS_HPP
+
 #include "arch/common/instruction-format.hpp"
 
 /*
@@ -36,3 +39,5 @@ struct SFormat : public Format {};
  * imm[31:12] | rd | opcode
  */
 struct UFormat : public Format {};
+
+#endif /* ERAGPSIM_ARCH_RISCV_FORMATS_HPP */

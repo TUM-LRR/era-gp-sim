@@ -18,26 +18,18 @@
 // There should be a HashMap of instructions to functions for the assembly
 // in the abstract factory.
 
+#ifndef ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP
+#define ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP
+
 #include <functional>
-#include <string>
 #include <vector>
 
-#include "arch/common/architecture.hpp"
 #include "arch/common/instruction-information.hpp"
 #include "arch/common/instruction-node.hpp"
 
-class InstructionAssembler {
-  using InstructionKey = InstructionInformation::InstructionKey;
+using InstructionKey = InstructionInformation::InstructionKey;
 
- public:
-  std::function<std::vector<bool>(InstructionKey, InstructionNode)> assemble;
+using AssemblerFunction =
+    std::function<std::vector<bool>(InstructionKey, InstructionNode)>;
 
-
-  // a reference to the arch object, to get the appropriate assemble method from
-  // the hashmap
-  /*
-   * @param arch Reference to the architecture object
-   * @param format The format of the current instruction
-   */
-  InstructionAssembler(const Architecture& arch, const string& format);
-};
+#endif /* ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP */
