@@ -21,6 +21,43 @@
 #include "arch/common/instruction-node.hpp"
 #include "arch/riscv/formats.hpp"
 #include "common/utility.hpp"
+#include "core/memoryvalue.hpp"
+
+namespace {
+// methods to transform immediates into their specified formats
+// I should possibly reverse the memory values before the following operations
+void immToI(MemoryValue& vec) {
+  for (int i = 10; i >= 0; i--) vec[i] = vec[20 + i];
+  for (int i = 31; i > 10; i--) vec[i] = vec[31];
+}
+
+void immToS(MemoryValue& vec) {
+  vec[0] = vec[7];
+  for (int i = 4; i >= 1; i--) vec[i] = vec[7 + i];
+  for (int i = 10; i >= 5; i--) vec[i] = vec[20 + i];
+  for (int i = 31; i > 10; i--) vec[i] = vec[31];
+}
+
+void immToB(MemoryValue& vec) {
+  immToS(vec);
+  vec[11] = vec[0];
+  vec[0]  = false;
+}
+
+void immToU(MemoryValue& vec) {
+  for (int i = 12; i >= 0; i--) vec[i] = false;
+}
+
+void immToJ(MemoryValue& vec) {
+  // clang-format off
+  for (int i = 4; i >= 1; i--) vec[i] = vec[20 + i];
+  vec[0] = false;
+  for (int i = 10; i >= 5; i--) vec[i] = vec[20 + i];
+  vec[11] = vec[20];
+  for (int i = 31; i >= 20; i--) vec[i] = vec[31];
+  // clang-format on
+}
+}
 
 std::vector<bool> RFormat::
 operator()(const InstructionInformation::InstructionKey& key,
@@ -61,6 +98,8 @@ operator()(const InstructionInformation::InstructionKey& key,
 
   auto imm = args.at(2);
 
+  immToI(imm);
+
   // immediate - 12 bits long
   for (int i = 11; i >= 0; i--) res.push_back(imm[i]);
   // rs1
@@ -88,17 +127,50 @@ operator()(const InstructionInformation::InstructionKey& key,
 
   auto imm = args.at(2);
 
+  immToS(imm);
+
   // immediate[11:5]
   for (int i = 11; i > 4; i--) res.push_back(imm[i]);
   // rs1
   for (auto bit : args.at(1)) res.push_back(bit);
   // funct3 - 3 bits long
-  tmp.clear();
   Utility::convertToBin(tmp, key["funct3"]);
   Utility::push_back_from_end(res, tmp, 3);
 
   // imm[4:0]
   for (int i = 4; i >= 0; i--) res.push_back(imm[i]);
+
+  tmp.clear();
+  Utility::convertToBin(tmp, key["opcode"]);
+  Utility::push_back_from_end(res, tmp, 7);
+
+  return res;
+}
+
+std::vector<bool> SBFormat::
+operator()(const InstructionInformation::InstructionKey& key,
+           const std::vector<MemoryValue> args) {
+  std::vector<bool> res;
+  std::vector<bool> tmp;
+
+  auto imm = args.at(2);
+
+  immToB(imm);
+
+  // imm[12]
+  res.push_back(imm[12]);
+  // immediate[10:5]
+  for (int i = 10; i > 4; i--) res.push_back(imm[i]);
+  // rs1
+  for (auto bit : args.at(1)) res.push_back(bit);
+  // funct3 - 3 bits long
+  Utility::convertToBin(tmp, key["funct3"]);
+  Utility::push_back_from_end(res, tmp, 3);
+
+  // imm[4:1]
+  for (int i = 4; i >= 1; i--) res.push_back(imm[i]);
+  // imm[0]
+  res.push_back(imm[11]);
 
   tmp.clear();
   Utility::convertToBin(tmp, key["opcode"]);
@@ -115,8 +187,38 @@ operator()(const InstructionInformation::InstructionKey& key,
 
   auto imm = args.at(1);
 
-  // immediate[11:5]
+  immToU(imm);
+
+  // immediate[31:12]
   for (int i = 31; i >= 12; i--) res.push_back(imm[i]);
+
+  // rd
+  for (auto bit : args.at(0)) res.push_back(bit);
+
+  Utility::convertToBin(tmp, key["opcode"]);
+  Utility::push_back_from_end(res, tmp, 7);
+
+  return res;
+}
+
+std::vector<bool> UJFormat::
+operator()(const InstructionInformation::InstructionKey& key,
+           const std::vector<MemoryValue> args) {
+  std::vector<bool> res;
+  std::vector<bool> tmp;
+
+  auto imm = args.at(1);
+
+  immToJ(imm);
+
+  // immediate[20]
+  res.push_back(imm[20]);
+  // imm[10:1]
+  for (int i = 10; i >= 1; i--) res.push_back(imm[i]);
+  // imm[11]
+  res.push_back(imm[11]);
+  // imm[19:12]
+  for (int i = 19; i >= 12; i--) res.push_back(imm[i]);
 
   // rd
   for (auto bit : args.at(0)) res.push_back(bit);

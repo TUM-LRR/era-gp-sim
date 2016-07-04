@@ -40,4 +40,14 @@ struct SFormat : public Format {};
  */
 struct UFormat : public Format {};
 
+/*
+ * The same as SFormat except the immediate encoding.
+ */
+struct SBFormat : public Format {};
+
+/*
+ * The same as UFormat except the immediate encoding.
+ */
+struct UJFormat : public Format {};
+
 #endif /* ERAGPSIM_ARCH_RISCV_FORMATS_HPP */
