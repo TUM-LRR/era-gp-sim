@@ -22,6 +22,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.4
 
 MenuBar {
+    /*Adding or deleting components in the tab-View*/
     property var tabView
     property var component
     id: menubar
