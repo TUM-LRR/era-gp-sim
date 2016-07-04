@@ -1,6 +1,9 @@
 import QtQuick 2.0
 import "Snapshots"
 import "Output"
+import "editor"
+import "Memory"
+import "Register"
 
 Item {
     id: holder
@@ -20,6 +23,26 @@ Item {
         }
     }
 
+    Component{
+        id: register
+        Register{
+            anchors.fill: parent
+        }
+    }
+
+    Component{
+        id: memory
+        MemoryComponent{
+            anchors.fill: parent
+        }
+    }
+
+    Component{
+        id: editor
+        Editor{
+            anchors.fill: parent        }
+    }
+
     function change(comp){
         if(comp=="nothing"){
             //console.info(usual);
@@ -35,20 +58,23 @@ Item {
             actuall.destroy();
             actuall=object;
         }
-        else if(comp==2){
-            var object=snapshots.createObject(holder);
+        else if(comp=="editor"){
+            var object=editor.createObject(holder);
             actuall.destroy();
             actuall=object;
         }
-        else if(comp==3){
-            var object=snapshots.createObject(holder);
+        else if(comp=="register"){
+            var object=register.createObject(holder);
             actuall.destroy();
             actuall=object;
         }
-        else if(comp==4){
-            var object=snapshots.createObject(holder);
+        else if(comp=="memory"){
+            var object=memory.createObject(holder);
             actuall.destroy();
             actuall=object;
+        }
+        else{
+            console.info("Unknowen component");
         }
     }
 

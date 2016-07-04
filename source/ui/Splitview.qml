@@ -31,11 +31,11 @@ SplitView{
         Layout.minimumWidth: 10
         width: parent.width/4
         id: splitView1
-        usual1: "leer"
-        usual2: "snapshots"
-        onWidthChanged: {
-            console.info("1 "+parent.width+"   "+width);
-        }
+        faktor: 2
+        quotient: 3
+        usual1: "snapshots"
+        usual2: "output"
+
     }
 
 
@@ -43,22 +43,21 @@ SplitView{
         Layout.minimumWidth: 10
         width: parent.width/4
         id: splitView2
-        usual1: "leer"
+        faktor: 2
+        quotient: 3
+        usual1: "editor"
         usual2: "output"
-        onWidthChanged: {
-            console.info("2 "+parent.width+"   "+width);
-        }
+
     }
 
     InnerSplitviews{
         Layout.minimumWidth: 10
         width: parent.width/4
         id: splitView3
-        usual1: "leer"
-        usual2: "snapshots"
-        onWidthChanged: {
-            console.info("1 "+parent.width+"   "+width);
-        }
+        faktor: 1
+        quotient: 2
+        usual1: "register"
+        usual2: "register"
     }
 
 
@@ -66,15 +65,17 @@ SplitView{
         Layout.minimumWidth: 10
         width: parent.width/4
         id: splitView4
-        usual1: "leer"
-        usual2: "output"
+        faktor: 1
+        quotient: 2
+        usual1: "memory"
+        usual2: "memory"
     }
 
     onWidthChanged: {
-        splitView1.width=width/4;
-        splitView2.width=width/4;
-        splitView3.width=width/4;
-        splitView4.width=width/4;
+        splitView1.width=(width/10);
+        splitView2.width=5*(width/10);
+        splitView3.width=2*(width/10);
+        splitView4.width=2*(width/10);
     }
 
 

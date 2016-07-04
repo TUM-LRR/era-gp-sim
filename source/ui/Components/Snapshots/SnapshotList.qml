@@ -26,7 +26,6 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 /*Modul, which should be bound to the container*/
-
 Item {
 
         width: 250
@@ -75,7 +74,8 @@ Item {
                         Rectangle{
                             height: 20
                             width: 10
-                            color: "white"
+                            //visible: false
+                            color: "#00000000"
                         }
                     }
 
@@ -108,7 +108,8 @@ Item {
                         Rectangle{
                             height: 20
                             width: 5
-                            color: "white"
+                            //visible: false
+                            color: "#00000000"
                         }
                     }
                     Column{
@@ -133,7 +134,8 @@ Item {
                         Rectangle{
                             height: 20
                             width: 5
-                            color: "white"
+                            //visible: false
+                            color: "#00000000"
                         }
                     }
                     Column{
@@ -258,4 +260,3 @@ Item {
             listModel.remove(index);
         }
 }
-

@@ -7,14 +7,16 @@ import QtQuick.Layouts 1.2
     SplitView{
         property var usual1
         property var usual2
+        property int quotient
+        property int faktor
 
 
         orientation: Qt.Vertical
-        Rectangle{
+        SplitviewItem{
             id: item1
             Layout.minimumHeight: 25
-            color: "red"
             height: parent.height/2
+            usual: parent.usual1
         }
 
         SplitviewItem{
@@ -30,7 +32,7 @@ import QtQuick.Layouts 1.2
 
 
         onUsual1Changed: {
-            //console.info(usual1);
+            item1.usual=usual1;
         }
 
         onUsual2Changed: {
@@ -38,8 +40,8 @@ import QtQuick.Layouts 1.2
         }
 
         onHeightChanged: {
-            item1.height=(height/2)-5;
-            item2.height=(height/2)-5;
+            item1.height=faktor*(height/quotient)-5;
+            item2.height=height-item1.height-5;
         }
 
     }
