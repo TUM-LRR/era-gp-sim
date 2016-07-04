@@ -15,6 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
+#ifndef ERAGPSIM_ARCH_COMMON_INSTRUCTION_FORMAT_HPP
+#define ERAGPSIM_ARCH_COMMON_INSTRUCTION_FORMAT_HPP
+
+#include "arch/common/instruction-information.hpp"
+#include "core/common/MemoryValue.hpp"
 
 /*
  * Format is an abstract class, from which all the specific formats inherit.
