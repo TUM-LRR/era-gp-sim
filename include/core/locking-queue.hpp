@@ -51,10 +51,8 @@ class LockingQueue {
   
   /**
    * \brief Try to pop a value from the queue.
-   * 
    * \post If the queue contained an element, \c value now points to it. The
    *       element is removed from the queue.
-   * 
    * \returns \c true if and only if an element was successfully removed from
    *          the queue.
    */

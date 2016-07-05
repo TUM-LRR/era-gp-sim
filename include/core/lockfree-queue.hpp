@@ -34,10 +34,6 @@
  *   "Single-Producer/Single-Consumer Queue", Daniel Vyukov (https://software.intel.com/en-us/articles/single-producer-single-consumer-queue)
  *   "Writing Lock-Free Code: A Corrected Queue", Herb Sutter (http://www.drdobbs.com/parallel/writing-lock-free-code-a-corrected-queue/210604448)
  * 
- * Internally, Nodes exist from \c _head to \c _tail, but only those from
- * \c _divider to \c _tail store values. The remainder (from \c _head to
- * \c _divider) will be cleaned up with the next push operation.
- * 
  * \tparam T The type of values stored within the queue.
  */
 template <class T>
@@ -88,12 +84,15 @@ class LockfreeQueue {
   
   /**
    * \brief Try to pop a value from the queue.
-   * 
    * \post If the queue contained an element, \c value now points to it. The
    *       element is removed from the queue.
-   * 
    * \returns \c true if and only if an element was successfully removed from
    *          the queue.
+   * 
+   * \c pop is not thread-safe with regards to other calls to \c pop - only one
+   * consumer may use the queue concurrently. No such limitations exist on the 
+   * use of \c push, and even multiple invocations of \c push may be concurrent
+   * to one invocation of \c pop.
    */
   bool pop(T& value) {
     if (_head != _tail.load(std::memory_order_acquire)) {
