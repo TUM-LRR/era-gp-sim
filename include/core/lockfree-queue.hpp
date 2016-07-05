@@ -20,32 +20,47 @@
 #define ERAGPSIM_CORE_LOCKFREE_QUEUE_HPP_
 
 #include <atomic>
-#include <thread>
 #include <type_traits>
-
-#include "core/lockfree-permanent-queue.hpp"
-#include "core/lockfree-spsc-queue.hpp"
-#include "core/tls.hpp"
 
 /**
  * \brief A lockfree multi-producer, single-consumer queue.
+ *
+ * This implementation uses atomics to avoid the use of locks, but is only
+ * threadsafe if there is at most one producer and consumer. Data is stored
+ * within a simply linked list.
+ *
+ * For more information on SPSC queues, on which this implementation is based,
+ * see for example
+ *   "Single-Producer/Single-Consumer Queue", Daniel Vyukov (https://software.intel.com/en-us/articles/single-producer-single-consumer-queue)
+ *   "Writing Lock-Free Code: A Corrected Queue", Herb Sutter (http://www.drdobbs.com/parallel/writing-lock-free-code-a-corrected-queue/210604448)
  * 
- * Because \c thread_local is only allowed on variables with \c static storage
- * duration, this impementation maintains an internal (thread-safe) hash table
- * to map thread IDs to subqueues.
+ * Internally, Nodes exist from \c _head to \c _tail, but only those from
+ * \c _divider to \c _tail store values. The remainder (from \c _head to
+ * \c _divider) will be cleaned up with the next push operation.
  * 
  * \tparam T The type of values stored within the queue.
  */
 template <class T>
 class LockfreeQueue {
  public:
- 
+  /// \brief Creates an empty single-producer, single-consumer queue.
   LockfreeQueue() {
-    _tls_spsc_queue = tls::allocate<LockfreeSPSCQueue<T>>();
-    _tls_was_registered = tls::allocate<bool>();
+    _head = _tail = new Node;
   }
-  ~LockfreeQueue() = default;
   
+  ~LockfreeQueue() {
+    // Iterate over the queue nodes and delete them
+    while (_head != nullptr)
+    {
+      Node* next = _head->next;
+      delete _head;
+      _head = next;
+    }
+  }
+  
+  // Queues can neither be moved nor copied, because there is no way to
+  // guarantee a lock-free copy/move of multiple atomics without introducing
+  // locking behavior.
   LockfreeQueue(const LockfreeQueue<T>& other) = delete;
   LockfreeQueue(LockfreeQueue&& other) = delete;
   LockfreeQueue<T>& operator=(const LockfreeQueue<T>& other) = delete;
@@ -57,14 +72,18 @@ class LockfreeQueue {
    * \param value The value to add into the queue.
    */
   template <typename U>
-  void push(U&& value) noexcept(noexcept(LockfreeSPSCQueue<T>::template push<U>)) {
-    // If this producer is not registered yet, register it
-    if (!*_tls_was_registered) {
-      registerProducer();
-      *_tls_was_registered = true;
+  void push(U&& value) noexcept(std::is_nothrow_constructible<T, decltype(std::forward<U>(value))>::value) {
+    // Create new node
+    Node* node = new Node { nullptr, std::forward<U>(value) };
+    
+    // Add the new node
+    while (true) {
+      Node* previous = _tail.load(std::memory_order_acquire);
+      if (_tail.compare_exchange_strong(previous, node)) {
+        previous->next = node;
+        break;
+      }
     }
-    // Fetch the proper sub-queue and push the value into that queue
-    _tls_spsc_queue->push(std::forward<U>(value));
   }
   
   /**
@@ -77,44 +96,43 @@ class LockfreeQueue {
    *          the queue.
    */
   bool pop(T& value) {
-    // Iterate over all valid queues and attempt to pop from them
-    auto visitor = [&value](tls::Pointer<LockfreeSPSCQueue<T>>& pointer) mutable {
-      if (pointer.valid())
-        if (pointer->pop(value))
-          return true;
+    if (_head != _tail.load(std::memory_order_acquire)) {
+      // The first unconsumed node in the queue
+      Node* node = _head->next;
+      
+      if (node == nullptr) return false;
+      
+      // Selects to cast the value to an rvalue reference (like std::move)
+      // if and only if the value type can be move-assigned without an
+      // exception occurring (via std::is_nothrow_move_assignable).
+      using Target = typename std::conditional<std::is_nothrow_move_assignable<T>::value, T&&, T>::type;
+      value = static_cast<Target>(node->value);
+      
+      // Consume this node
+      Node* previous = _head;
+      _head = node;
+      delete previous;
+      
+      // Confirm success
+      return true;
+    } else {
+      // The queue is empty, no nodes are available.
       return false;
-    };
-    return _registered_queues.apply(visitor);
+    }
   }
   
  private:
-  /**
-   * \brief Registers a new producer thread.
-   * This adds the producer thread's local queue to the consumer's queue list
-   */
-  void registerProducer() {
-    _registered_queues.push(_tls_spsc_queue.get());
-  }
+  /// \brief A node of the internal linked list
+  struct Node {
+    Node* next;
+    T value;
+  };
   
-  /**
-   * \brief A thread-local SPSC queue wrapper. This wrapper will be used to
-   *        create the queues when each producer is registered
-   */
-  tls::ThreadLocal<LockfreeSPSCQueue<T>> _tls_spsc_queue;
+  /// \brief The front end of the list, where the consumer will remove nodes
+  Node* _head;
   
-  /**
-   * \brief A boolean value stored in TLS to automatically register queues on
-   *        first use from a specific thread
-   */
-  tls::ThreadLocal<bool> _tls_was_registered;
-  
-  /**
-   * \brief A collection of TLS pointers to the SPSC queue(s).
-   * When registering producers, their queues' \c tls::Pointer wrappers will be
-   * added here. Before the consumer uses the queues, their \c valid() state 
-   * should always be checked.
-   */
-  LockfreePermanentQueue<tls::Pointer<LockfreeSPSCQueue<T>>> _registered_queues;
+  /// \brief The tail end of the list, where the producer will add nodes
+  std::atomic<Node*> _tail;
 };
 
 #endif // ERAGPSIM_CORE_LOCKFREE_QUEUE_HPP_
