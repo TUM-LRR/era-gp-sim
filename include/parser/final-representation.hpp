@@ -15,21 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "parser/intermediate_representator.hpp"
+#ifndef ERAGPSIM_PARSER_FINAL_REPRESENTATION_HPP_
+#define ERAGPSIM_PARSER_FINAL_REPRESENTATION_HPP_
 
-FinalRepresentation IntermediateRepresentator::transform(CompileState& state) {
-	// First of all, we insert all our labels/constants into the SymbolTable.
-	SymbolTable table;
-	for (const auto& i : _commandList) {
-		i->enhanceSymbolTable(table, state);
-	}
+#include <memory>
+#include <vector>
+#include "../arch/common/abstract-node-factories.hpp"
 
-	// Then, we execute their values.
-	FinalRepresentation representation;
-	for (const auto& i : _commandList) {
-		i->execute(representation, table, state);
-	}
+/**
+ * \class FinalRepresentation
+ * \brief Denotes the temporary output of an IntermediateRepresentator ready to
+ * be used by the architecture.
+ */
+using FinalRepresentation =
+    std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>;// Temporary.
 
-	// Now, we are done.
-	return representation;
-}
+#endif

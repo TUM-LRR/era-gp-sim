@@ -5,7 +5,7 @@ import os
 def adjustedFilename(fn, separatorJoiner):
     root, file = os.path.split(fn)
     name, ext = os.path.splitext(file)
-    newname = common.transformCamelCaseLowerCase(name) + ext
+    newname = common.transformCamelCaseLowerCase(name, '-') + ext
     if root == '':
         return separatorJoiner(newname)
     else:

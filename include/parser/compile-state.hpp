@@ -19,8 +19,8 @@
 #define ERAGPSIM_PARSER_COMPILE_STATE_HPP_
 
 #include <vector>
-#include "code_position.hpp"
-#include "compile_error.hpp"
+#include "code-position.hpp"
+#include "compile-error.hpp"
 
 // To be replaced by the enum in the main parser file, therefore: No comments!
 enum class CompileMode { UPDATE, COMPILE };
@@ -30,23 +30,23 @@ enum class CompileMode { UPDATE, COMPILE };
  \brief Contains all relevant information for a compile run.
  */
 struct CompileState {
-	/**
-	 \var CompileState::mode
-	 \brief Denotes the mode of the compiler.
-	 */
-	CompileMode mode;
+  /**
+   \var CompileState::mode
+   \brief Denotes the mode of the compiler.
+   */
+  CompileMode mode;
 
-	/**
-	 \var CompileState::position
-	 \brief Equals the current position in code. TODO: Implement functionality.
-	 */
-	CodePosition position;
+  /**
+   \var CompileState::position
+   \brief Equals the current position in code. TODO: Implement functionality.
+   */
+  CodePosition position;
 
-	/**
-	 \var CompileState::errorList
-	 \brief Contains a list of compiler errors of this pass.
-	 */
-	std::vector<CompileError> errorList;
+  /**
+   \var CompileState::errorList
+   \brief Contains a list of compiler errors of this pass.
+   */
+  std::vector<CompileError> errorList;
 };
 
 #endif

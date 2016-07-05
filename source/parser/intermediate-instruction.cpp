@@ -15,30 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "parser/intermediate_instruction.hpp"
+#include "parser/intermediate-instruction.hpp"
 
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
-																			const SymbolTable& table,
-																			CompileState& state) {
-	// For a machine instruction, it is easy to "execute" it: just insert it into
-	// the final form.
-	finalRepresentator.push_back(compileInstruction(table, state));
+                                      const SymbolTable& table,
+                                      CompileState& state) {
+  // For a machine instruction, it is easy to "execute" it: just insert it into
+  // the final form.
+  finalRepresentator.push_back(compileInstruction(table, state));
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 IntermediateInstruction::compileInstruction(const SymbolTable& table,
-																						CompileState& state) {
-	// We replace all occurenced in target in source (using a copy of them).
-	std::vector<std::string> src(_sources);
-	std::vector<std::string> trg(_targets);
+                                            CompileState& state) {
+  // We replace all occurenced in target in source (using a copy of them).
+  std::vector<std::string> src(_sources);
+  std::vector<std::string> trg(_targets);
 
-	table.replaceSymbols(src, state);
-	table.replaceSymbols(trg, state);
+  table.replaceSymbols(src, state);
+  table.replaceSymbols(trg, state);
 
-	// More to do here (soon^TM).
-	return std::make_unique<AbstractSyntaxTreeNode>();
+  // More to do here (soon^TM).
+  return std::make_unique<AbstractSyntaxTreeNode>();
 }
 
 void IntermediateInstruction::determineMemoryPosition() {
-	// To be expanded soon^TM.
+  // To be expanded soon^TM.
 }

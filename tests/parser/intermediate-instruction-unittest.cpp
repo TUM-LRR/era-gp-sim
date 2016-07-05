@@ -15,38 +15,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "parser/intermediate_instruction.hpp"
+#include "parser/intermediate-instruction.hpp"
 #include "gtest/gtest.h"
 
 // Hehe...
 #define SAMPLE_COMMAND                                                  \
-	LineInterval(0, 1), {"label1", "label2", "label3"}, "mov", {"eax"}, { \
-		"eax"                                                               \
-	}
+  LineInterval(0, 1), {"label1", "label2", "label3"}, "mov", {"eax"}, { \
+    "eax"                                                               \
+  }
 
 TEST(IntermediateInstruction, initSimple) {
-	// I don't know if this is useful, but it might be, so...
-	IntermediateInstruction ii(SAMPLE_COMMAND);
+  // I don't know if this is useful, but it might be, so...
+  IntermediateInstruction ii(SAMPLE_COMMAND);
 }
 
 TEST(IntermediateInstruction, enhance) {
-	// We create an instruction and insert our labels into the symbol table.
-	IntermediateInstruction ii(SAMPLE_COMMAND);
-	SymbolTable st;
-	CompileState state;
-	ii.enhanceSymbolTable(st, state);
-	ASSERT_EQ(state.errorList.size(), 0);
-	ASSERT_EQ(st.table().size(), 3);
-	ASSERT_EQ(st.table().at("label1"), std::to_string(ii.address()));
+  // We create an instruction and insert our labels into the symbol table.
+  IntermediateInstruction ii(SAMPLE_COMMAND);
+  SymbolTable st;
+  CompileState state;
+  ii.enhanceSymbolTable(st, state);
+  ASSERT_EQ(state.errorList.size(), 0);
+  ASSERT_EQ(st.table().size(), 3);
+  ASSERT_EQ(st.table().at("label1"), std::to_string(ii.address()));
 }
 
 TEST(IntermediateInstruction, transformFinal) {
-	IntermediateInstruction ii(SAMPLE_COMMAND);
-	SymbolTable st;
-	CompileState state;
-	ii.enhanceSymbolTable(st, state);
-	FinalRepresentation fr;
-	ii.execute(fr, st, state);
-	ASSERT_EQ(state.errorList.size(), 0);
-	ASSERT_EQ(fr.size(), 1);
+  IntermediateInstruction ii(SAMPLE_COMMAND);
+  SymbolTable st;
+  CompileState state;
+  ii.enhanceSymbolTable(st, state);
+  FinalRepresentation fr;
+  ii.execute(fr, st, state);
+  ASSERT_EQ(state.errorList.size(), 0);
+  ASSERT_EQ(fr.size(), 1);
 }

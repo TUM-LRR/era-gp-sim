@@ -14,11 +14,11 @@ def transformCamelCase(text, transform, joinstr):
     #but so, that the next string is capitalized if possible. Or so. I do not trust it fully yet. But it seems to work. --@DXIS
     return joinstr.join(transform(x) for x in re.findall(r'([A-Z]?[a-z]+|[A-Z]+(?=[^a-z]|\b)|[0-9]+)', text))
 
-def transformCamelCaseUpperCase(text):
-    return transformCamelCase(text, lambda x: x.upper(), '_')
+def transformCamelCaseUpperCase(text, sep):
+    return transformCamelCase(text, lambda x: x.upper(), sep)
 
-def transformCamelCaseLowerCase(text):
-    return transformCamelCase(text, lambda x: x.lower(), '_')
+def transformCamelCaseLowerCase(text, sep):
+    return transformCamelCase(text, lambda x: x.lower(), sep)
 
 def fileBatchMain(handler):
     if len(sys.argv) < 2:

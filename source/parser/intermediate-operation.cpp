@@ -15,18 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "parser/intermediate_operation.hpp"
+#include "parser/intermediate-operation.hpp"
 
 void IntermediateOperation::enhanceSymbolTable(SymbolTable& table,
-																							 CompileState& state) {
-	// We assign an address, if we do not have one yet (usually, we should not
-	// have one).
-	if (_address == NULL_ADDRESS) {
-		determineMemoryPosition();
-	}
+                                               CompileState& state) {
+  // We assign an address, if we do not have one yet (usually, we should not
+  // have one).
+  if (_address == NULL_ADDRESS) {
+    determineMemoryPosition();
+  }
 
-	// Then, we insert all our labels.
-	for (const auto& i : _labels) {
-		table.insertEntry(i, std::to_string(_address), state);
-	}
+  // Then, we insert all our labels.
+  for (const auto& i : _labels) {
+    table.insertEntry(i, std::to_string(_address), state);
+  }
 }
