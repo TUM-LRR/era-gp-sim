@@ -22,10 +22,10 @@
 #include <string>
 #include <vector>
 
-#include "include/arch/common/abstract_node_factories.hpp"
+#include "arch/common/abstract-node-factories.hpp"
 
 
-enum class ParserMode { kCompile, kUpdate };
+enum class ParserMode { COMPILE, UPDATE };
 
 /**
  * Base Parser class

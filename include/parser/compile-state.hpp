@@ -21,9 +21,7 @@
 #include <vector>
 #include "code-position.hpp"
 #include "compile-error.hpp"
-
-// To be replaced by the enum in the main parser file, therefore: No comments!
-enum class CompileMode { UPDATE, COMPILE };
+#include "parser.hpp"
 
 /**
  \struct CompileState
@@ -34,7 +32,7 @@ struct CompileState {
    \var CompileState::mode
    \brief Denotes the mode of the compiler.
    */
-  CompileMode mode;
+  ParserMode mode;
 
   /**
    \var CompileState::position

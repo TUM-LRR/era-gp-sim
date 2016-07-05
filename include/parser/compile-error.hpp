@@ -66,20 +66,6 @@ class CompileError {
   }
 
   /**
-   * \fn CompileError::CompileError(const char* message, const CodePosition&
-   * position, CompileErrorSeverity severity)
-   * \brief Instantiates a new compile error with the given arguments.
-   * \param message The error message.
-   * \param position The position of the error in the code.
-   * \param severity The severity of the error.
-   */
-  CompileError(const char* message,
-               const CodePosition& position,
-               CompileErrorSeverity severity)
-  : CompileError(std::string(message), position, severity) {
-  }
-
-  /**
    * \fn CompileError::CompileError(const CompileError& other)
    * \brief Default copy constructor.
    * \param other The source CompileError instance.
