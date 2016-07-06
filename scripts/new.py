@@ -7,7 +7,7 @@ import sys
 
 
 def parse(argument):
-    root = re.match(r'.*/era-gp-sim', os.getcwd()).group()
+    root = re.match(r'.*(/|\\)era-gp-sim', os.getcwd()).group()
     relative_path = os.path.dirname(argument)
     name = os.path.basename(argument)
 
