@@ -68,7 +68,7 @@ class LockfreeQueue {
    * \param value The value to add into the queue.
    */
   template <typename U>
-  void push(U&& value) noexcept(std::is_nothrow_constructible<T, decltype(std::forward<U>(value))>::value) {
+  void push(U&& value) {
     // Create new node
     Node* node = new Node { nullptr, std::forward<U>(value) };
     
@@ -102,9 +102,9 @@ class LockfreeQueue {
       if (node == nullptr) return false;
       
       // Selects to cast the value to an rvalue reference (like std::move)
-      // if and only if the value type can be move-assigned without an
-      // exception occurring (via std::is_nothrow_move_assignable).
-      using Target = typename std::conditional<std::is_nothrow_move_assignable<T>::value, T&&, T>::type;
+      // if and only if the value type can be move-assigned (via
+      // std::is_move_assignable).
+      using Target = typename std::conditional<std::is_move_assignable<T>::value, T&&, T>::type;
       value = static_cast<Target>(node->value);
       
       // Consume this node
