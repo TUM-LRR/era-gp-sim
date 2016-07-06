@@ -23,6 +23,7 @@ import "Components"
 
 Item {
 
+
     /*default value in the item*/
     property var usual
 
@@ -38,8 +39,8 @@ Item {
     /*Choose*/
     ComboBox{
         id: box
-        visible: true
-        enabled: true
+        visible: false
+        enabled: false
         anchors.top: space.bottom
         width: 150
         height: 20
@@ -64,12 +65,21 @@ Item {
             }
 
         }
+        onPressedChanged: {
+            if(pressed==true){mouseArea.pressed=true;}
+            else{mouseArea.pressed=false;}
+        }
+
+
     }
+
+
+
 
     /*Space befor the component*/
     Rectangle{
         id: rect
-        anchors.top: box.bottom
+        anchors.top: parent.top
         width: 150
         height: 10
         visible: false
@@ -85,7 +95,33 @@ Item {
         usual: parent.usual
     }
 
+    MouseArea{
+        id: mouseArea
+        anchors.top: parent.top
+        height: 40
+        anchors.left:  parent.left
+        anchors.right: parent.right
+        propagateComposedEvents: true
+        property bool pressed: false
+        onEntered: {
+            //console.info("MouseArea entered");
+            box.enabled=true;
+            box.visible=true;
+            //console.info(box.enabled);;
+            rect.anchors.top=box.bottom;
+        }
+        onExited: {
+            if(!pressed){
+            //console.info("exited");
+                box.visible=false;
+                box.enabled=false;
+                rect.anchors.top=parent.top;
+            }
+        }
 
+
+        hoverEnabled: true
+    }
 
 
 
