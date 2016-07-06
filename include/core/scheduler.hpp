@@ -23,37 +23,71 @@
 #include <atomic>
 #include <chrono>
 #include <functional>
+#include <thread>
 
-#include "core/lockfree-queue.hpp"
+#include "lockfree-queue.hpp"
 
 
 class Scheduler {
  public:
+  using Queue = LockfreeQueue<std::function<void()>>;
+
   /**
- * @brief creates new Scheduler
- * @param sleepMillis optional parameter, how long the scheduler tries to sleep
+ * \brief creates new Scheduler
+ * \param sleepMillis optional parameter, how long the scheduler tries to sleep
  * after polling the queue
  */
-  Scheduler(int sleepMillis = 50);
-  ~Scheduler();
+  Scheduler(int sleepMillis = 50)
+  : interrupt_(false)
+  , sleepMilliseconds_(sleepMillis)
+  , schedulerThread_(&Scheduler::run_, this) {
+  }
+
+  ~Scheduler() {
+    this->shutdown_();
+    schedulerThread_.join();
+  }
 
 
   /**
-   * @brief pushes a function-object into the taskQueue
-   * @param task function-object to be pushed
+   * \brief pushes a function-object into the taskQueue
+   * \param task function-object to be pushed
    */
-  void push(std::function<void()> task);
+  void push(std::function<void()>&& task) {
+    taskQueue_.push(std::move(task));
+  }
 
  private:
   /**
-   * @brief scheduler loop
+   * \brief scheduler loop
    */
-  void run_();
+  void run_() {
+    interrupt_ = false;
+    while (!interrupt_) {
+      std::function<void()> task;
+      if (taskQueue_.pop(task)) {
+        // there was something in the queue, ececute the task
+        task();
 
-  LockfreeQueue<function<void()>> taskQueue_;
-  std::atomic<bool> stopRequested_;
+      } else {
+        // the queue is empty, sleep for a bit
+        std::this_thread::sleep_for(sleepMilliseconds_);
+      }
+    }
+  }
+
+  /**
+   * \brief stops the scheduler loop after every task that is currently in the
+   * queue was finished
+   */
+  void shutdown_() {
+    this->push([this]() { interrupt_ = true; });
+  }
+
+  Queue taskQueue_;
+  bool interrupt_;
   std::chrono::milliseconds sleepMilliseconds_;
-  std::atomic<bool> stopped_;
+  std::thread schedulerThread_;
 };
 
 #endif// CORE_SCHEDULER_H_
