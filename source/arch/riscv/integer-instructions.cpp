@@ -1,4 +1,4 @@
-#include "arch/riscv/integer_instructions.hpp"
+#include "arch/riscv/integer-instructions.hpp"
 
 static bool validateIntegerInstruction(InstructionNode &node, bool immediate) {
   return immediate

@@ -20,7 +20,7 @@
 #ifndef ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_
 #define ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_
 
-#include "arch/riscv/instruction_node.hpp"
+#include "arch/riscv/instruction-node.hpp"
 
 /**
  * \brief The LoadType enum

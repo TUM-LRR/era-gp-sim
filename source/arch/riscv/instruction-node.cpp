@@ -1,4 +1,4 @@
-#include "arch/riscv/instruction_node.hpp"
+#include "arch/riscv/instruction-node.hpp"
 
 bool InstructionNode::requireChildren(NodeType type, size_t startIndex,
                                       size_t amount) {

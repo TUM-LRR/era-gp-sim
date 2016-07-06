@@ -20,7 +20,7 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 #define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 
-#include "arch/riscv/instruction_node.hpp"
+#include "arch/riscv/instruction-node.hpp"
 
 /*
  * TODO Instructions: slt sltu and or xor sll srl sra

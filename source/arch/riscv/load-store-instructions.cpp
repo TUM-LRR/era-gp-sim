@@ -1,4 +1,4 @@
-#include "arch/riscv/load_store_instructions.hpp"
+#include "arch/riscv/load-store-instructions.hpp"
 
 bool LoadInstructionNode::validate() {
   if (!requireChildren(NodeType::REGISTER, 0, 2) ||

@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "arch/riscv/integer_instructions.hpp"
-#include "arch/riscv/load_store_instructions.hpp"
+#include "arch/riscv/integer-instructions.hpp"
+#include "arch/riscv/load-store-instructions.hpp"
 
 #include <gtest/gtest.h>
 #include <memory>
