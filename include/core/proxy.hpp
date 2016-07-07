@@ -34,7 +34,7 @@
     auto servant = _servant.get();                                       \
     servant->push(std::move(std::bind(                                   \
         [servant](Args... params) { servant->functionName(params...); }, \
-        args...)));                                                      \
+        std::move(args)...)));                                           \
   }
 
 #define POST_FUTURE(functionName)                                   \
@@ -51,7 +51,7 @@
             promise.set_exception(std::make_exception_ptr(e));      \
           }                                                         \
         },                                                          \
-        args...)));                                                 \
+        std::move(args)...)));                                      \
     return promise.get_future().get();                              \
   }
 
@@ -62,13 +62,17 @@
                     Args... args) {                                           \
     auto servant = _servant.get();                                            \
     servant->push(std::move(std::bind(                                        \
-        [servant, callback, caller](Args... params) {                         \
+        [servant](Args... params,                                             \
+                  std::function<void(Result<R>)> callback,                    \
+                  std::weak_ptr<Scheduler> caller) {                          \
           Result<R> result(std::move(servant->functionName(params...)));      \
           if (std::shared_ptr<Scheduler> callerShared = caller.lock()) {      \
             callerShared.get()->push(std::bind(callback, std::move(result))); \
           }                                                                   \
         },                                                                    \
-        args...)));                                                           \
+        std::forward<Args>(args)...,                                          \
+        std::move(callback),                                                  \
+        std::move(caller))));                                                 \
   }
 
 /**
@@ -92,8 +96,8 @@ class Proxy {
             promise.set_value(std::make_shared<Servant>(
                 std::move(schedulerParam), std::forward<Args>(params)...));
           },
-          scheduler,
-          args...)));
+          std::move(scheduler),
+          std::forward<Args>(args)...)));
     } else {
       assert(false);
     }
