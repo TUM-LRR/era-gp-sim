@@ -34,7 +34,7 @@
     auto servant = _servant.get();                                       \
     servant->push(std::move(std::bind(                                   \
         [servant](Args... params) { servant->functionName(params...); }, \
-        std::move(args)...)));                                           \
+        std::forward<Args>(args)...)));                                  \
   }
 
 #define POST_FUTURE(functionName)                                   \
@@ -51,7 +51,7 @@
             promise.set_exception(std::make_exception_ptr(e));      \
           }                                                         \
         },                                                          \
-        std::move(args)...)));                                      \
+        std::forward<Args>(args)...)));                             \
     return promise.get_future().get();                              \
   }
 
