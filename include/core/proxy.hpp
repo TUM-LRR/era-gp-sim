@@ -17,6 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <cassert>
 #include <functional>
 #include <future>
 #include <memory>
@@ -26,21 +27,22 @@
 #ifndef CORE_PROXY_HPP
 #define CORE_PROXY_HPP
 
+
 #define POST(functionName)                                               \
   template <typename... Args>                                            \
   void functionName(Args... args) {                                      \
-    auto servant = servant_.get();                                       \
-    servant->push(std::bind(                                             \
+    auto servant = _servant.get();                                       \
+    servant->push(std::move(std::bind(                                   \
         [servant](Args... params) { servant->functionName(params...); }, \
-        args...));                                                       \
+        args...)));                                                      \
   }
 
 #define POST_FUTURE(functionName)                                   \
   template <typename... Args>                                       \
   auto functionName(Args... args) {                                 \
-    auto servant = servant_.get();                                  \
+    auto servant = _servant.get();                                  \
     std::promise<decltype(servant->functionName(args...))> promise; \
-    servant->push(std::bind(                                        \
+    servant->push(std::move(std::bind(                              \
         [servant, &promise](Args... params) {                       \
           try {                                                     \
             auto result = servant->functionName(params...);         \
@@ -49,57 +51,72 @@
             promise.set_exception(std::make_exception_ptr(e));      \
           }                                                         \
         },                                                          \
-        args...));                                                  \
+        args...)));                                                 \
     return promise.get_future().get();                              \
   }
 
-#define POST_CALLBACK(functionName)                                      \
-  template <typename R, typename... Args>                                \
-  void functionName(std::function<void(Result<R>)> callback,             \
-                    std::weak_ptr<Scheduler> caller,                     \
-                    Args... args) {                                      \
-    auto servant = servant_.get();                                       \
-    servant->push(std::bind(                                             \
-        [servant, callback, caller](Args... params) {                    \
-          Result<R> result(servant->functionName(params...));            \
-          if (std::shared_ptr<Scheduler> callerShared = caller.lock()) { \
-            callerShared.get()->push(std::bind(callback, result));       \
-          }                                                              \
-        },                                                               \
-        args...));                                                       \
+#define POST_CALLBACK(functionName)                                           \
+  template <typename R, typename... Args>                                     \
+  void functionName(std::function<void(Result<R>)> callback,                  \
+                    std::weak_ptr<Scheduler> caller,                          \
+                    Args... args) {                                           \
+    auto servant = _servant.get();                                            \
+    servant->push(std::move(std::bind(                                        \
+        [servant, callback, caller](Args... params) {                         \
+          Result<R> result(std::move(servant->functionName(params...)));      \
+          if (std::shared_ptr<Scheduler> callerShared = caller.lock()) {      \
+            callerShared.get()->push(std::bind(callback, std::move(result))); \
+          }                                                                   \
+        },                                                                    \
+        args...)));                                                           \
   }
 
+/**
+ * \brief Proxy class which can be used to access a servant from multiple
+ * threads
+ *
+ * This implementation is based on the active object pattern.
+ * TODO guide how to use this
+ */
 template <typename Servant>
 class Proxy {
  public:
   template <typename... Args>
-  Proxy(std::shared_ptr<Scheduler> scheduler, Args&&... args) {
+  Proxy(std::weak_ptr<Scheduler>&& scheduler, Args&&... args) {
     std::promise<std::shared_ptr<Servant>> promise;
     std::future<std::shared_ptr<Servant>> future = promise.get_future();
 
-    scheduler.get()->push(std::bind(
-        [&promise](std::shared_ptr<Scheduler> schedulerParam,
-                   Args&&... params) {
-          promise.set_value(std::make_shared<Servant>(
-              schedulerParam, std::forward<Args>(params)...));
-        },
-        scheduler,
-        std::forward<Args>(args)...));
-    servant_ = future.get();
+    if (std::shared_ptr<Scheduler> sharedScheduler = scheduler.lock()) {
+      sharedScheduler.get()->push(std::move(std::bind(
+          [&promise](std::weak_ptr<Scheduler> schedulerParam, Args... params) {
+            promise.set_value(std::make_shared<Servant>(
+                std::move(schedulerParam), std::forward<Args>(params)...));
+          },
+          scheduler,
+          args...)));
+    } else {
+      assert(false);
+    }
+    _servant = future.get();
   }
 
   ~Proxy() {
     std::promise<void> promise;
     std::future<void> future = promise.get_future();
-    servant_.get()->push([this, &promise]() {
-      this->servant_.reset();
+    _servant.get()->push([this, &promise]() {
+      this->_servant.reset();
       promise.set_value();
     });
     future.get();
   }
 
+  Proxy(const Proxy<Servant>& other) = default;
+  Proxy(Proxy&& other)               = default;
+  Proxy<Servant>& operator=(const Proxy<Servant>& other) = default;
+  Proxy<Servant>& operator=(Proxy&& other) = default;
+
  protected:
-  std::shared_ptr<Servant> servant_;
+  std::shared_ptr<Servant> _servant;
 };
 
 #endif /* CORE_PROXY_HPP */

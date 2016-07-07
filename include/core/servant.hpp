@@ -19,6 +19,7 @@
 
 #include "core/scheduler.hpp"
 
+#include <cassert>
 #include <functional>
 #include <memory>
 
@@ -27,19 +28,22 @@
  */
 class Servant {
  public:
-  Servant(std::shared_ptr<Scheduler> scheduler) : scheduler_(scheduler) {
+  Servant(std::weak_ptr<Scheduler>&& scheduler)
+  : _scheduler(std::move(scheduler)) {
   }
 
   /**
    * \brief if the scheduler is still alive, push a task in its task-queue
    * \param functor to be pushed into the task-queue
    */
-  void push(std::function<void()> &&task) {
-    if (auto scheduler = scheduler_.lock()) {
+  void push(std::function<void()>&& task) {
+    if (auto scheduler = _scheduler.lock()) {
       scheduler.get()->push(std::move(task));
+    } else {
+      assert(false);
     }
   }
 
  private:
-  std::weak_ptr<Scheduler> scheduler_;
+  std::weak_ptr<Scheduler> _scheduler;
 };

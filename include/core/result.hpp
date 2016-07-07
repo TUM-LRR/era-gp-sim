@@ -25,26 +25,26 @@
 template <class ResultType>
 class Result {
  public:
-  Result(ResultType result) : result_(result) {
+  Result(ResultType&& result) : _result(std::move(result)) {
   }
 
-  Result(std::exception_ptr exception) : exception_(exception) {
+  Result(std::exception_ptr exception) : _exception(exception) {
   }
 
   ResultType get() const {
     if (hasException()) {
-      std::rethrow_exception(exception_);
+      std::rethrow_exception(_exception);
     }
-    return result_;
+    return _result;
   }
 
   bool hasException() const {
-    return !!exception_;
+    return !!_exception;
   }
 
  private:
-  ResultType result_;
-  std::exception_ptr exception_;
+  ResultType _result;
+  std::exception_ptr _exception;
 };
 
 #endif /* CORE_RESULT_HPP */

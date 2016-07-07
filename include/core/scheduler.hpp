@@ -38,15 +38,22 @@ class Scheduler {
  * after polling the queue
  */
   Scheduler(int sleepMillis = 50)
-  : interrupt_(false)
-  , sleepMilliseconds_(sleepMillis)
-  , schedulerThread_(&Scheduler::run_, this) {
+  : _interrupt(false)
+  , _sleepMilliseconds(sleepMillis)
+  , _schedulerThread(&Scheduler::_run, this) {
   }
 
   ~Scheduler() {
-    this->shutdown_();
-    schedulerThread_.join();
+    this->_shutdown();
+    _schedulerThread.join();
   }
+
+  // The scheduler can not be moved or copied, as it has a own thread and its
+  // queue can not be copied or moved as well
+  Scheduler(const Scheduler& other)  = delete;
+  Scheduler(const Scheduler&& other) = delete;
+  Scheduler& operator=(const Scheduler& other) = delete;
+  Scheduler& operator=(const Scheduler&& other) = delete;
 
 
   /**
@@ -54,24 +61,24 @@ class Scheduler {
    * \param task function-object to be pushed
    */
   void push(std::function<void()>&& task) {
-    taskQueue_.push(std::move(task));
+    _taskQueue.push(std::move(task));
   }
 
  private:
   /**
    * \brief scheduler loop
    */
-  void run_() {
-    interrupt_ = false;
-    while (!interrupt_) {
+  void _run() {
+    _interrupt = false;
+    while (!_interrupt) {
       std::function<void()> task;
-      if (taskQueue_.pop(task)) {
+      if (_taskQueue.pop(task)) {
         // there was something in the queue, ececute the task
         task();
 
       } else {
         // the queue is empty, sleep for a bit
-        std::this_thread::sleep_for(sleepMilliseconds_);
+        std::this_thread::sleep_for(_sleepMilliseconds);
       }
     }
   }
@@ -80,14 +87,14 @@ class Scheduler {
    * \brief stops the scheduler loop after every task that is currently in the
    * queue was finished
    */
-  void shutdown_() {
-    this->push([this]() { interrupt_ = true; });
+  void _shutdown() {
+    this->push([this]() { _interrupt = true; });
   }
 
-  Queue taskQueue_;
-  bool interrupt_;
-  std::chrono::milliseconds sleepMilliseconds_;
-  std::thread schedulerThread_;
+  Queue _taskQueue;
+  bool _interrupt;
+  std::chrono::milliseconds _sleepMilliseconds;
+  std::thread _schedulerThread;
 };
 
 #endif// CORE_SCHEDULER_H_
