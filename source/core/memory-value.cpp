@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "include/memory-value.hpp"
+#include "core/memory-value.hpp"
 
 MemoryValue::MemoryValue(int width) : _data{std::vector<bool>(width, false)} {}
 
