@@ -22,51 +22,51 @@
 #include <string>
 #include <vector>
 
-#include "include/arch/common/abstract_node_factories.hpp"
+#include "arch/common/abstract-node-factories.hpp"
 
 
-enum class ParserMode { kCompile, kUpdate };
+enum class ParserMode { COMPILE, UPDATE };
 
 /**
  * Base Parser class
  */
 class Parser {
  public:
-	/**
-	 * Parses text into syntax tree.
-	 *
-	 * @param text Text to parse
-	 * @param parserMode Parser Mode
-	 */
-	virtual std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
-	parse(std::string &text, ParserMode parserMode) = 0;
+  /**
+   * Parses text into syntax tree.
+   *
+   * @param text Text to parse
+   * @param parserMode Parser Mode
+   */
+  virtual std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
+  parse(const std::string &text, ParserMode parserMode) = 0;
 
-	/**
-	 * Creates dialect-specific Regex for syntax highlighting registers.
-	 *
-	 * @param name Register name
-	 * @return Dialect-specific Regex
-	 */
-	virtual std::string getSyntaxRegister(std::string &name);
+  /**
+   * Creates dialect-specific Regex for syntax highlighting registers.
+   *
+   * @param name Register name
+   * @return Dialect-specific Regex
+   */
+  virtual std::string getSyntaxRegister(const std::string &name);
 
-	/**
-	 * Creates dialect-specific Regex for syntax highlighting instructions.
-	 *
-	 * @param name Assembler instruction name
-	 * @return Dialect-specific Regex
-	 */
-	virtual std::string getSyntaxInstruction(std::string &name);
+  /**
+   * Creates dialect-specific Regex for syntax highlighting instructions.
+   *
+   * @param name Assembler instruction name
+   * @return Dialect-specific Regex
+   */
+  virtual std::string getSyntaxInstruction(const std::string &name);
 
-	/**
-	 * Creates dialect-specific Regex for syntax highlighting immediates.
-	 *
-	 * @return Dialect-specific Regex
-	 */
-	virtual std::string getSyntaxImmediate();
+  /**
+   * Creates dialect-specific Regex for syntax highlighting immediates.
+   *
+   * @return Dialect-specific Regex
+   */
+  virtual std::string getSyntaxImmediate();
 
 
-	Parser() = default;
-	virtual ~Parser() = default;
+  Parser()          = default;
+  virtual ~Parser() = default;
 };
 
 #endif// ERAGPSIM_PARSER_PARSER_HPP_
