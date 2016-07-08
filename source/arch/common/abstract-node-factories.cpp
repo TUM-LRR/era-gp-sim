@@ -23,25 +23,20 @@
 
 // INSTRUCTION NODE
 
-AbstractInstructionNodeFactory::~AbstractInstructionNodeFactory() {
-}
+AbstractInstructionNodeFactory::~AbstractInstructionNodeFactory() {}
 
 // IMMEDIATE NODE
 
-AbstractImmediateNodeFactory::~AbstractImmediateNodeFactory() {
-}
+AbstractImmediateNodeFactory::~AbstractImmediateNodeFactory() {}
 
 // REGISTER ACCESS NODE
 
-AbstractRegisterAccessNodeFactory::~AbstractRegisterAccessNodeFactory() {
-}
+AbstractRegisterAccessNodeFactory::~AbstractRegisterAccessNodeFactory() {}
 
 // MEMORY ACCESS NODE
 
-AbstractMemoryAccessNodeFactory::~AbstractMemoryAccessNodeFactory() {
-}
+AbstractMemoryAccessNodeFactory::~AbstractMemoryAccessNodeFactory() {}
 
 // ARITHMETIC OPERATION NODE
 
-AbstractArithmeticOpNodeFactory::~AbstractArithmeticOpNodeFactory() {
-}
+AbstractArithmeticOpNodeFactory::~AbstractArithmeticOpNodeFactory() {}
