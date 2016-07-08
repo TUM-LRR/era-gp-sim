@@ -86,7 +86,7 @@ class AbstractImmediateNodeFactory {
    * immediate from the given numericalValue
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode> createImmediateNode(
-      MemoryValue numericalValue) = 0;
+      MemoryValue& numericalValue) = 0;
 };
 
 /**
@@ -167,187 +167,197 @@ class AbstractArithmeticOpNodeFactory {
 };
 
 /**
- * @brief The AbstractNodeFactoryCollection class is a convienience class
+ * \brief The AbstractNodeFactoryCollection class is a convienience class
  * containing an instance of each AbstractNodeFactory.
  * The interface of each AbstractNodeFactory is copied for convienient use.
  */
 class AbstractNodeFactoryCollection {
  public:
   /**
-   * @brief AbstractNodeFactoryCollection
+   * \brief AbstractNodeFactoryCollection
    * Constructs a AbstractFactoryCollection containing no instances.
    * Instances can be added by calling the corresponding set-methods
-   * @see setInstructionFactory
-   * @see setImmediateFactory
-   * @see setRegisterFactory
-   * @see setMemoryFactory
-   * @see setArithmeticOpFactory
+   * \see setInstructionFactory
+   * \see setImmediateFactory
+   * \see setRegisterFactory
+   * \see setMemoryFactory
+   * \see setArithmeticOpFactory
    */
   AbstractNodeFactoryCollection() = default;
 
+  /*! No copy constructor as this class uses std::unique_ptr for holding the
+   * factory-instances. Use std::move instead */
+  AbstractNodeFactoryCollection(AbstractNodeFactoryCollection& copy) = delete;
+
+  /*! Default constructed move constructor */
+  AbstractNodeFactoryCollection(AbstractNodeFactoryCollection&& move) = default;
+
   /**
-   * @brief ~AbstractNodeFactoryCollection default dtor
+   * \brief ~AbstractNodeFactoryCollection default dtor
    */
   ~AbstractNodeFactoryCollection() = default;
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
    * method call, otherwise the assertion will fail
-   * @copydoc AbstractInstructionNodeFactory::createInstructionNode
+   * \copydoc AbstractInstructionNodeFactory::createInstructionNode
    */
   inline std::unique_ptr<AbstractSyntaxTreeNode> createInstructionNode(
       std::string& token) {
-    assert(_instructionF);
-    return _instructionF->createInstructionNode(token);
+    assert(_instructionFactory);
+    return _instructionFactory->createInstructionNode(token);
   }
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
    * method call, otherwise the assertion will fail
-   * @copydoc AbstractImmediateNodeFactory::createImmediateNode
+   * \copydoc AbstractImmediateNodeFactory::createImmediateNode
    */
   inline std::unique_ptr<AbstractSyntaxTreeNode> createImmediateNode(
       MemoryValue numericalValue) {
-    assert(_immediateF);
-    return _immediateF->createImmediateNode(numericalValue);
+    assert(_immediateFactory);
+    return _immediateFactory->createImmediateNode(numericalValue);
   }
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
    * method call, otherwise the assertion will fail
-   * @copydoc AbstractRegisterAccessNodeFactory::createRegisterAccessNode
+   * \copydoc AbstractRegisterAccessNodeFactory::createRegisterAccessNode
    */
   inline std::unique_ptr<AbstractSyntaxTreeNode> createRegisterAccessNode(
       const std::string& registerAddress) {
-    assert(_registerAccF);
-    return _registerAccF->createRegisterAccessNode(registerAddress);
+    assert(_registerAccessFactory);
+    return _registerAccessFactory->createRegisterAccessNode(registerAddress);
   }
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
    * method call, otherwise the assertion will fail
-   * @copydoc AbstractMemoryAccessNodeFactory::createMemoryAccessNode
+   * \copydoc AbstractMemoryAccessNodeFactory::createMemoryAccessNode
    */
   inline std::unique_ptr<AbstractSyntaxTreeNode> createMemoryAccessNode() {
-    assert(_memoryAccF);
-    return _memoryAccF->createMemoryAccessNode();
+    assert(_memoryAccessFactory);
+    return _memoryAccessFactory->createMemoryAccessNode();
   }
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
    * method call, otherwise the assertion will fail
-   * @copydoc AbstractArithmeticOpNodeFactory::createArithmeticOperationNode
+   * \copydoc AbstractArithmeticOpNodeFactory::createArithmeticOperationNode
    */
   inline std::unique_ptr<AbstractSyntaxTreeNode> createArithmeticOperationNode(
       const int opType) {
-    assert(_arithOpF);
-    return _arithOpF->createArithmeticOperationNode(opType);
+    assert(_arithmeticOperationFactory);
+    return _arithmeticOperationFactory->createArithmeticOperationNode(opType);
   }
 
   /**
-   * @brief Sets the given AbstractInstructionNodeFactory implementation
+   * \brief Sets the given AbstractInstructionNodeFactory implementation
    * to be used for creating further InstructionNodes
-   * @param instructionFactory std::unqiue_ptr pointing to an implementation
+   * \param instructionFactory std::unqiue_ptr pointing to an implementation
    * instance of
    * AbstractInstructionNodeFactory; cannot be a nullptr (this is asserted)
-   * @return this instance for method chaining
-   * @see createInstructionNode(std::string&)
+   * \return this instance for method chaining
+   * \see createInstructionNode(std::string&)
    */
   AbstractNodeFactoryCollection& setInstructionFactory(
-      std::unique_ptr<AbstractInstructionNodeFactory> instructionFactory) {
+      std::unique_ptr<AbstractInstructionNodeFactory>&& instructionFactory) {
     assert(instructionFactory);
-    _instructionF = std::move(instructionFactory);
+    _instructionFactory = std::move(instructionFactory);
     return *this;
   }
 
   /**
-   * @brief Sets the given AbstractImmediateNodeFactory implementation
+   * \brief Sets the given AbstractImmediateNodeFactory implementation
    * to be used for creating further ImmediateNodes
-   * @param immediateFactory std::unique_ptr pointing to an implementation
+   * \param immediateFactory std::unique_ptr pointing to an implementation
    * instance of
    * AbstractImmediateFactory; cannot be a nullptr (this is asserted)
-   * @return this instance for method chaining
-   * @see createImmediateNode(MemoryValue)
+   * \return this instance for method chaining
+   * \see createImmediateNode(MemoryValue)
    */
   AbstractNodeFactoryCollection& setImmediateFactory(
-      std::unique_ptr<AbstractImmediateNodeFactory> immediateFactory) {
+      std::unique_ptr<AbstractImmediateNodeFactory>&& immediateFactory) {
     assert(immediateFactory);
-    _immediateF = std::move(immediateFactory);
+    _immediateFactory = std::move(immediateFactory);
     return *this;
   }
 
   /**
-   * @brief Sets the given AbstractRegisterAccessFactory implementation
+   * \brief Sets the given AbstractRegisterAccessFactory implementation
    * to be used for creating further RegisterAccessNodes
-   * @param registerAccessFactory std::unique_ptr pointing to an implementation
+   * \param registerAccessFactory std::unique_ptr pointing to an implementation
    * instance of
    * AbstractRegisterAccessFactory; cannot be a nullptr (this is asserted)
-   * @return this instance for method chaining
-   * @see createRegisterAccessNode(const std::string&)
+   * \return this instance for method chaining
+   * \see createRegisterAccessNode(const std::string&)
    */
-  AbstractNodeFactoryCollection& setRegisterFactory(std::unique_ptr<AbstractRegisterAccessNodeFactory>
-                              registerAccessFactory) {
+  AbstractNodeFactoryCollection& setRegisterFactory(
+      std::unique_ptr<AbstractRegisterAccessNodeFactory>&&
+          registerAccessFactory) {
     assert(registerAccessFactory);
-    _registerAccF = std::move(registerAccessFactory);
+    _registerAccessFactory = std::move(registerAccessFactory);
     return *this;
   }
 
   /**
-   * @brief Sets the given AbstractMemoryAccessNodeFactory implementation
+   * \brief Sets the given AbstractMemoryAccessNodeFactory implementation
    * to be used for creating further MemoryAccessNodes
-   * @param memoryAccessFactory std::unique_ptr pointing to an implementation
+   * \param memoryAccessFactory std::unique_ptr pointing to an implementation
    * instance of
    * AbstractMemoryAccessNodeFactory; cannot be a nullptr (this is asserted)
-   * @return this instance for method chaining
-   * @see createMemoryAccessNode()
+   * \return this instance for method chaining
+   * \see createMemoryAccessNode()
    */
   AbstractNodeFactoryCollection& setMemoryFactory(
-      std::unique_ptr<AbstractMemoryAccessNodeFactory> memoryAccessFactory) {
+      std::unique_ptr<AbstractMemoryAccessNodeFactory>&& memoryAccessFactory) {
     assert(memoryAccessFactory);
-    _memoryAccF = std::move(memoryAccessFactory);
+    _memoryAccessFactory = std::move(memoryAccessFactory);
     return *this;
   }
 
   /**
-   * @brief Sets the given AbstractArithmeticOpNodeFactory implementation
+   * \brief Sets the given AbstractArithmeticOpNodeFactory implementation
    * to be used for creating further ArithmeticOpNodes
-   * @param arithOpFactory std::unique_ptr pointing to an implementation
+   * \param arithOpFactory std::unique_ptr pointing to an implementation
    * instance of
    * AbstractArithmeticOpFactory; cannot be a nullptr (this is asserted)
-   * @return this instance for method chaining
-   * @see createArithemticOperationNode(const int)
+   * \return this instance for method chaining
+   * \see createArithemticOperationNode(const int)
    */
   AbstractNodeFactoryCollection& setArithmeticOpFactory(
-      std::unique_ptr<AbstractArithmeticOpNodeFactory> arithOpFactory) {
+      std::unique_ptr<AbstractArithmeticOpNodeFactory>&& arithOpFactory) {
     assert(arithOpFactory);
-    _arithOpF = std::move(arithOpFactory);
+    _arithmeticOperationFactory = std::move(arithOpFactory);
     return *this;
   }
 
  private:
   /**
-   * @brief _instructionF points to a AbstractInstructionNodeFactory
+   * \brief _instructionFactory points to a AbstractInstructionNodeFactory
    * implementation
    */
-  std::unique_ptr<AbstractInstructionNodeFactory> _instructionF;
+  std::unique_ptr<AbstractInstructionNodeFactory> _instructionFactory;
   /**
-   * @brief _immediateF points to a AbstractImmediateNodeFactory implementation
-   */
-  std::unique_ptr<AbstractImmediateNodeFactory> _immediateF;
-  /**
-   * @brief _registerAccF points to a AbstractRegisterAccessNodeFactory
+   * \brief _immediateFactory points to a AbstractImmediateNodeFactory
    * implementation
    */
-  std::unique_ptr<AbstractRegisterAccessNodeFactory> _registerAccF;
+  std::unique_ptr<AbstractImmediateNodeFactory> _immediateFactory;
   /**
-   * @brief _memoryAccF points to a AbstractMemoryAccessNodeFactory
+   * \brief _registerAccessFactory points to a AbstractRegisterAccessNodeFactory
    * implementation
    */
-  std::unique_ptr<AbstractMemoryAccessNodeFactory> _memoryAccF;
+  std::unique_ptr<AbstractRegisterAccessNodeFactory> _registerAccessFactory;
   /**
-   * @brief _arithOpF points to a AbstractArithmeticOpNodeFactory implementation
+   * \brief _memoryAccessFactory points to a AbstractMemoryAccessNodeFactory
+   * implementation
    */
-  std::unique_ptr<AbstractArithmeticOpNodeFactory> _arithOpF;
+  std::unique_ptr<AbstractMemoryAccessNodeFactory> _memoryAccessFactory;
+  /**
+   * \brief _arithmeticOperationFactory points to a
+   * AbstractArithmeticOpNodeFactory implementation
+   */
+  std::unique_ptr<AbstractArithmeticOpNodeFactory> _arithmeticOperationFactory;
 };
 
 #endif  // ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
