@@ -87,7 +87,7 @@ class AbstractImmediateNodeFactory {
    * immediate from the given numericalValue
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createImmediateNode(MemoryValue numericalValue) = 0;
+  createImmediateNode(MemoryValue& numericalValue) = 0;
 };
 
 /**
