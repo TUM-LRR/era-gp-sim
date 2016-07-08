@@ -20,6 +20,7 @@
 
 #include <memory>
 #include <string>
+#include <cassert>
 
 /**
  * @brief The AbstractSyntaxTreeNode struct
