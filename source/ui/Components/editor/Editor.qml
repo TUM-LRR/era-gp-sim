@@ -26,6 +26,12 @@ ScrollView {
     verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
     horizontalScrollBarPolicy: Qt.ScrollBarAsNeeded
 
+    //background
+    Rectangle {
+        anchors.fill: parent
+        color: "white"
+    }
+
     //the Flickable of ScrollView
     Flickable {
         id: container
@@ -108,13 +114,13 @@ ScrollView {
                     }
                 }
 
-                //updates the size of the TextEdit and the Flickable contentSize, has to be called when the viewport, the zoom or the contentSize changes
+                //updates the size of the TextEdit and the Flickable contentSize, has to be called when the viewport,
+                //the zoom or the contentSize changes
                 function updateSize() {
                     textArea.width = (textArea.unscaledWidth - sidebar.width)*scale.zoom;
                     textArea.height = (textArea.unscaledHeight)*scale.zoom;
                     container.contentWidth = (textArea.contentWidth + sidebar.width)*scale.zoom;
                     container.contentHeight = textArea.contentHeight*scale.zoom;
-                    //console.log(("viewport.height:" + scrollView.viewport.height + " viewport.width: " + scrollView.viewport.width + "item.Height: " + item.height + " item.width: " + item.width + " flickable.contentHeight: " + container.contentHeight + " flickable.contentWidth: " + container.contentWidth + " textArea.height: " + textArea.height + " textArea.width: " + textArea.width + " textArea.contentHeight: " + textArea.contentHeight + " textArea.contentWidth: " + textArea.contentWidth));
                     textArea.cursorScroll(textArea.cursorRectangle);
                 }
 
@@ -222,7 +228,6 @@ ScrollView {
                         }
                         textArea.updateSize();
                         wheel.accepted = true;
-                        //console.log(("viewport.height:" + scrollView.viewport.height + "item.Height: " + item.height + " item.width: " + item.width + " flickable.contentHeight: " + container.contentHeight + " flickable.contentWidth: " + container.contentWidth + " textArea.height: " + textArea.height + " textArea.width: " + textArea.width + " textArea.contentHeight: " + textArea.contentHeight + " textArea.contentWidth: " + textArea.contentWidth));
                     }
                     else {
                         wheel.accepted = false;

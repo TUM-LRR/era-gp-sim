@@ -17,7 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "syntaxhighlighter.hpp"
+#include "ui/syntaxhighlighter.hpp"
 #include <iostream>
 
 SyntaxHighlighter::SyntaxHighlighter(std::vector<KeywordRule> &&keywords,

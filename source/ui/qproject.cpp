@@ -17,10 +17,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "qproject.hpp"
+#include "ui/qproject.hpp"
+#include <QFontMetrics>
 #include <QRegularExpression>
 #include <QTextOption>
-#include <QFontMetrics>
 #include <iostream>
 #include <memory>
 
@@ -54,11 +54,11 @@ QProject::QProject(QObject *parent) : QObject(parent) {
 }
 
 void QProject::createHighlighter(QQuickTextDocument *qDocument) {
-    //set tab width to 4 spaces
-    QTextOption textOptions = qDocument->textDocument()->defaultTextOption();
-    QFontMetrics fontMetrics(qDocument->textDocument()->defaultFont());
-    textOptions.setTabStop(4*fontMetrics.width(' '));
-    qDocument->textDocument()->setDefaultTextOption(textOptions);
+	// set tab width to 4 spaces
+	QTextOption textOptions = qDocument->textDocument()->defaultTextOption();
+	QFontMetrics fontMetrics(qDocument->textDocument()->defaultFont());
+	textOptions.setTabStop(4 * fontMetrics.width(' '));
+	qDocument->textDocument()->setDefaultTextOption(textOptions);
 
 	_highlighters.push_back(std::unique_ptr<SyntaxHighlighter>(
 			new SyntaxHighlighter(std::move(_keywords), qDocument->textDocument())));

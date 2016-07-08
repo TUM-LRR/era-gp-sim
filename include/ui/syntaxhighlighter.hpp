@@ -24,7 +24,7 @@
 #include <QSyntaxHighlighter>
 #include <vector>
 
-//struct for a keyword, consisting of:
+// struct for a keyword, consisting of:
 //  - the QRegularExpression, can be created from a string
 //  - the format for the keyword (color, bold,...) in a QTextCharFormat object
 struct KeywordRule {
@@ -35,8 +35,9 @@ struct KeywordRule {
 class SyntaxHighlighter : QSyntaxHighlighter {
 	Q_OBJECT
  public:
-    //creates a new SyntaxHighlighter with a list of KeywordRule objects and a pointer to the QTextDocument
-    // which should be highlighted
+	// creates a new SyntaxHighlighter with a list of KeywordRule objects and a
+	// pointer to the QTextDocument
+	// which should be highlighted
 	SyntaxHighlighter(std::vector<KeywordRule> &&ruleList,
 										QTextDocument *document);
 	~SyntaxHighlighter() = default;
