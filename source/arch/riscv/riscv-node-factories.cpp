@@ -18,7 +18,7 @@
 #include <algorithm>
 #include <cctype>
 
-#include "arch/riscv/riscv_node_factories.hpp"
+#include "arch/riscv/riscv-node-factories.hpp"
 
 using namespace riscv;
 
@@ -52,7 +52,7 @@ RISCVInstructionNodeFactory::createInstructionNode(std::string& token) {
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
-RISCVImmediateNodeFactory::createImmediateNode(MemoryValue v) {
+RISCVImmediateNodeFactory::createImmediateNode(MemoryValue &value) {
   return nullptr;  // TODO construct Immediate Node
 }
 
