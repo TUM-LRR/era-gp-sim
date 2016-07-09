@@ -126,6 +126,7 @@ Item {
                 else
                     _value += _step
             }
+            //highlight buttons with system colors on mouseover
             onHoveredChanged: {
                 if (containsMouse)
                     parent.border.color = systemColorPalette.highlight
@@ -172,6 +173,7 @@ Item {
                 else
                     _value -= _step
             }
+            //highlight buttons with system colors on mouseover
             onHoveredChanged: {
                 if (containsMouse)
                     parent.border.color = systemColorPalette.highlight
