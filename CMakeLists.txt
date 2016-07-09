@@ -13,6 +13,9 @@ add_compile_options(-std=c++14)
 # INCLUDES
 ########################################
 
+FILE(GLOB_RECURSE HeaderFiles "include/*.hpp")
+add_custom_target(headers SOURCES ${HeaderFiles})
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 ########################################
