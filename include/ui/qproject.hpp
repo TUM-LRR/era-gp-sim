@@ -39,7 +39,7 @@ class QProject : public QObject {
 	Q_INVOKABLE void createHighlighter(QQuickTextDocument *qDocument);
 
  private:
-	std::vector<std::unique_ptr<SyntaxHighlighter>> _highlighters;
+    std::unique_ptr<SyntaxHighlighter> _highlighter;
 	std::vector<KeywordRule> _keywords;
  signals:
 

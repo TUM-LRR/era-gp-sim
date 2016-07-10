@@ -40,7 +40,6 @@ class SyntaxHighlighter : QSyntaxHighlighter {
 	// which should be highlighted
 	SyntaxHighlighter(std::vector<KeywordRule> &&ruleList,
 										QTextDocument *document);
-	~SyntaxHighlighter() = default;
 
  protected:
 	void highlightBlock(const QString &text) Q_DECL_OVERRIDE;

@@ -60,7 +60,6 @@ void QProject::createHighlighter(QQuickTextDocument *qDocument) {
 	textOptions.setTabStop(4 * fontMetrics.width(' '));
 	qDocument->textDocument()->setDefaultTextOption(textOptions);
 
-	_highlighters.push_back(std::unique_ptr<SyntaxHighlighter>(
-			new SyntaxHighlighter(std::move(_keywords), qDocument->textDocument())));
+    _highlighter = (std::make_unique<SyntaxHighlighter>(std::move(_keywords), qDocument->textDocument()));
 	std::cout << "Created new SyntaxHighlighter." << std::endl;
 }
