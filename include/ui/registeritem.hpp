@@ -20,7 +20,7 @@
 
 #include <QList>
 #include <QVariant>
-#include "registerdata.hpp"
+#include "ui/registerdata.hpp"
 
 /**
  * Represents an item in the RegisterModel corresponding to a single register.

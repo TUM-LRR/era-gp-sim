@@ -21,7 +21,7 @@
 #include <QAbstractItemModel>
 #include <QDebug>
 #include <QHash>
-#include "registeritem.hpp"
+#include "ui/registeritem.hpp"
 
 /**
  * Aggregates the data of multiple registers. Subclasses QAbstractItemModel to

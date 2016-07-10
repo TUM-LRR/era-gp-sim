@@ -1,4 +1,4 @@
-#include "registerdata.hpp"
+#include "ui/registerdata.hpp"
 
 RegisterData::RegisterData(QString title,
                            QString content,

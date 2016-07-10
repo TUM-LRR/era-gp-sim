@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.*/
 
-#include "registermodel.hpp"
+#include "ui/registermodel.hpp"
 
 RegisterModel::RegisterModel(const QString &data, QObject *parent)
 : QAbstractItemModel(parent) {
