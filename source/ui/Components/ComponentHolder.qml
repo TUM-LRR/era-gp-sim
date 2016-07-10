@@ -59,12 +59,6 @@ Item {
         }
     }
 
-    Component{
-        id: editor
-        Editor{
-            anchors.fill: parent        }
-    }
-
     function change(comp){
         if(comp=="nothing"){
             //console.info(usual);
@@ -77,11 +71,6 @@ Item {
         }
         else if(comp=="output"){
             var object=output.createObject(holder);
-            actuall.destroy();
-            actuall=object;
-        }
-        else if(comp=="editor"){
-            var object=editor.createObject(holder);
             actuall.destroy();
             actuall=object;
         }

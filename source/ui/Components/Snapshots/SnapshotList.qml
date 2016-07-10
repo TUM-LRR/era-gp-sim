@@ -26,8 +26,8 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 /*Modul, which should be bound to the container*/
-Item {
-
+Rectangle {
+        color: "white"
         width: 250
         height: 300
         anchors.fill: parent

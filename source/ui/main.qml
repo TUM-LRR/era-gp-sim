@@ -21,8 +21,8 @@ import QtQuick 2.6
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import "Components"
-import "Menubar"
-import "Toolbar"
+import "Components/Menubar"
+import "Components/Toolbar"
 
 ApplicationWindow {
     id: window

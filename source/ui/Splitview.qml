@@ -38,15 +38,13 @@ SplitView{
     }
 
 
-    InnerSplitviews{
+    InnerSplitviewsEditor{
         Layout.minimumWidth: 10
         width: parent.width/4
         id: splitView2
         faktor: 2
         quotient: 3
-        usual1: "editor"
         usual2: "output"
-
     }
 
     InnerSplitviews{

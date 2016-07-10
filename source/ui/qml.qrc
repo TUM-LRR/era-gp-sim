@@ -15,17 +15,18 @@
         <file>Components/Memory/MemoryComponent_MenuBar.qml</file>
         <file>Components/Memory/NumericUpDown.qml</file>
         <file>Components/Register/Register.qml</file>
-        <file>Toolbar/ToolbarMainWindow.qml</file>
-        <file>Toolbar/Icons/RunBreakpointButton.svg</file>
-        <file>Toolbar/Icons/RunBreakpointButtonWithBorder.svg</file>
-        <file>Toolbar/Icons/RunButton.svg</file>
-        <file>Toolbar/Icons/RunButtonWithBorder.svg</file>
-        <file>Toolbar/Icons/RunLineButton.svg</file>
-        <file>Toolbar/Icons/RunLineButtonWithBorder.svg</file>
-        <file>Toolbar/Icons/StopButtonActive.svg</file>
-        <file>Toolbar/Icons/StopButtonActiveWithBorder.svg</file>
-        <file>Toolbar/Icons/StopButtonInactive.svg</file>
-        <file>Toolbar/Icons/StopButtonInactiveWithBorder.svg</file>
-        <file>Menubar/Menubar.qml</file>
+        <file>InnerSplitviewsEditor.qml</file>
+        <file>Components/Toolbar/ToolbarMainWindow.qml</file>
+        <file>Components/Menubar/Menubar.qml</file>
+        <file>Components/Toolbar/Icons/RunBreakpointButton.svg</file>
+        <file>Components/Toolbar/Icons/RunBreakpointButtonWithBorder.svg</file>
+        <file>Components/Toolbar/Icons/RunButton.svg</file>
+        <file>Components/Toolbar/Icons/RunButtonWithBorder.svg</file>
+        <file>Components/Toolbar/Icons/RunLineButton.svg</file>
+        <file>Components/Toolbar/Icons/RunLineButtonWithBorder.svg</file>
+        <file>Components/Toolbar/Icons/StopButtonActive.svg</file>
+        <file>Components/Toolbar/Icons/StopButtonActiveWithBorder.svg</file>
+        <file>Components/Toolbar/Icons/StopButtonInactive.svg</file>
+        <file>Components/Toolbar/Icons/StopButtonInactiveWithBorder.svg</file>
     </qresource>
 </RCC>

@@ -44,7 +44,7 @@ Item {
         anchors.top: space.bottom
         width: 150
         height: 20
-        model: ["Choose Component","Snapshots", "Output", "Editor", "Register", "Memory" ]
+        model: ["Choose Component","Snapshots", "Output", /*"Editor",*/ "Register", "Memory" ]
 
         onCurrentIndexChanged:{
             if(currentIndex==0){
@@ -55,9 +55,6 @@ Item {
                 holder.change("output");
             }
             else if(currentIndex==3){
-                holder.change("editor");
-            }
-            else if(currentIndex==4){
                 holder.change("register");
             }
             else{
@@ -98,7 +95,7 @@ Item {
     MouseArea{
         id: mouseArea
         anchors.top: parent.top
-        height: 40
+        height: 30
         anchors.left:  parent.left
         anchors.right: parent.right
         propagateComposedEvents: true
@@ -122,8 +119,6 @@ Item {
 
         hoverEnabled: true
     }
-
-
 
 }
 
