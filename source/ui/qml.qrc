@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Splitview.qml</file>
+        <file>Components/ComponentHolder.qml</file>
+        <file>Components/Snapshots/SnapshotList.qml</file>
+        <file>Components/Output/BlueRectangle.qml</file>
+        <file>Components/Output/GreenRectangle.qml</file>
+        <file>Components/Output/Output.qml</file>
+        <file>Components/Output/RedRectangle.qml</file>
+        <file>SplitviewItem.qml</file>
+        <file>InnerSplitviews.qml</file>
+        <file>Components/editor/Editor.qml</file>
+        <file>Components/Memory/MemoryComponent.qml</file>
+        <file>Components/Memory/MemoryComponent_MenuBar.qml</file>
+        <file>Components/Memory/NumericUpDown.qml</file>
+        <file>Components/Register/Register.qml</file>
+        <file>InnerSplitviewsEditor.qml</file>
+        <file>Components/Toolbar/ToolbarMainWindow.qml</file>
+        <file>Components/Menubar/Menubar.qml</file>
+        <file>Components/Toolbar/Icons/RunBreakpointButton.svg</file>
+        <file>Components/Toolbar/Icons/RunBreakpointButtonWithBorder.svg</file>
+        <file>Components/Toolbar/Icons/RunButton.svg</file>
+        <file>Components/Toolbar/Icons/RunButtonWithBorder.svg</file>
+        <file>Components/Toolbar/Icons/RunLineButton.svg</file>
+        <file>Components/Toolbar/Icons/RunLineButtonWithBorder.svg</file>
+        <file>Components/Toolbar/Icons/StopButtonActive.svg</file>
+        <file>Components/Toolbar/Icons/StopButtonActiveWithBorder.svg</file>
+        <file>Components/Toolbar/Icons/StopButtonInactive.svg</file>
+        <file>Components/Toolbar/Icons/StopButtonInactiveWithBorder.svg</file>
+    </qresource>
+</RCC>
