@@ -3,8 +3,8 @@
         <file>main.qml</file>
         <file>MemoryComponent.qml</file>
         <file>MemoryComponent_MenuBar.qml</file>
-        <file>NumericUpDown.qml</file>
-        <file>ToolTip.qml</file>
-        <file>ToolTip_new.qml</file>
+        <file>../Common/NumericUpDown.qml</file>
+        <file>../Common/ToolTip.qml</file>
+        <file>../Common/ToolTip_new.qml</file>
     </qresource>
 </RCC>
