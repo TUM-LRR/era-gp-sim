@@ -64,17 +64,27 @@ Item {
             onCurrentIndexChanged:{
                 console.log("representation of numbers changed")
             }
+
+            ToolTip_new {
+            id: tooltip1
+            //width: 200
+            //text: "Enter the text here. asdfljas la sjdlöaöls djfaösd jlasdflaksjd fas "
+            }
         }
         NumericUpDown{
             id: memory_size_chooser
             anchors.left: parent.left
             anchors.leftMargin: 150
+
+
         }
         Label {
             id: memory_size
             anchors.right: parent.right
             anchors.rightMargin: 20
             text: memory_size_chooser._value.toString() +" / "+ numericRepresentationChooser.items.get(numericRepresentationChooser.currentIndex).shortform
+
+
         }
     }
 }
