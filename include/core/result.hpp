@@ -25,7 +25,7 @@
 template <class ResultType>
 class Result {
  public:
-  Result(ResultType&& result) : _result(std::move(result)) {
+  Result(ResultType&& result) : _result(std::forward<ResultType>(result)) {
   }
 
   Result(std::exception_ptr exception) : _exception(exception) {

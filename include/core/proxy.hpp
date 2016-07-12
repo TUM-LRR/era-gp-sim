@@ -28,51 +28,53 @@
 #define CORE_PROXY_HPP
 
 
-#define POST(functionName)                                               \
-  template <typename... Args>                                            \
-  void functionName(Args... args) {                                      \
-    auto servant = _servant.get();                                       \
-    servant->push(std::move(std::bind(                                   \
-        [servant](Args... params) { servant->functionName(params...); }, \
-        std::forward<Args>(args)...)));                                  \
+#define POST(functionName)                             \
+  template <typename... Args>                          \
+  void functionName(Args&&... args) {                  \
+    auto servant = _servant.get();                     \
+    servant->push(std::bind(                           \
+        [servant](Args... params) {                    \
+          servant->functionName(std::move(params)...); \
+        },                                             \
+        std::forward<Args>(args)...));                 \
   }
 
-#define POST_FUTURE(functionName)                                   \
-  template <typename... Args>                                       \
-  auto functionName(Args... args) {                                 \
-    auto servant = _servant.get();                                  \
-    std::promise<decltype(servant->functionName(args...))> promise; \
-    servant->push(std::move(std::bind(                              \
-        [servant, &promise](Args... params) {                       \
-          try {                                                     \
-            auto result = servant->functionName(params...);         \
-            promise.set_value(result);                              \
-          } catch (std::exception e) {                              \
-            promise.set_exception(std::make_exception_ptr(e));      \
-          }                                                         \
-        },                                                          \
-        std::forward<Args>(args)...)));                             \
-    return promise.get_future().get();                              \
+#define POST_FUTURE(functionName)                                      \
+  template <typename... Args>                                          \
+  auto functionName(Args&&... args) {                                  \
+    auto servant = _servant.get();                                     \
+    std::promise<decltype(servant->functionName(args...))> promise;    \
+    servant->push(std::bind(                                           \
+        [servant, &promise](Args... params) {                          \
+          try {                                                        \
+            auto result = servant->functionName(std::move(params)...); \
+            promise.set_value(result);                                 \
+          } catch (std::exception e) {                                 \
+            promise.set_exception(std::make_exception_ptr(e));         \
+          }                                                            \
+        },                                                             \
+        std::forward<Args>(args)...));                                 \
+    return promise.get_future().get();                                 \
   }
 
 #define POST_CALLBACK(functionName)                                           \
   template <typename R, typename... Args>                                     \
   void functionName(std::function<void(Result<R>)> callback,                  \
                     std::weak_ptr<Scheduler> caller,                          \
-                    Args... args) {                                           \
+                    Args&&... args) {                                         \
     auto servant = _servant.get();                                            \
-    servant->push(std::move(std::bind(                                        \
+    servant->push(std::bind(                                                  \
         [servant](Args... params,                                             \
                   std::function<void(Result<R>)> callback,                    \
                   std::weak_ptr<Scheduler> caller) {                          \
-          Result<R> result(std::move(servant->functionName(params...)));      \
+          Result<R> result(servant->functionName(std::move(params)...));      \
           if (std::shared_ptr<Scheduler> callerShared = caller.lock()) {      \
             callerShared.get()->push(std::bind(callback, std::move(result))); \
           }                                                                   \
         },                                                                    \
         std::forward<Args>(args)...,                                          \
         std::move(callback),                                                  \
-        std::move(caller))));                                                 \
+        std::move(caller)));                                                  \
   }
 
 /**
@@ -91,13 +93,13 @@ class Proxy {
     std::future<std::shared_ptr<Servant>> future = promise.get_future();
 
     if (std::shared_ptr<Scheduler> sharedScheduler = scheduler.lock()) {
-      sharedScheduler.get()->push(std::move(std::bind(
+      sharedScheduler.get()->push(std::bind(
           [&promise](std::weak_ptr<Scheduler> schedulerParam, Args... params) {
             promise.set_value(std::make_shared<Servant>(
                 std::move(schedulerParam), std::forward<Args>(params)...));
           },
           std::move(scheduler),
-          std::forward<Args>(args)...)));
+          std::forward<Args>(args)...));
     } else {
       assert(false);
     }
