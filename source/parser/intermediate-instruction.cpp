@@ -13,7 +13,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "parser/intermediate-instruction.hpp"
 
@@ -25,6 +26,20 @@ void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
   finalRepresentator.push_back(compileInstruction(table, state));
 }
 
+IntermediateInstruction::transformArgument(const std::string& argument, CompileState& state)
+{
+  
+}
+
+IntermediateInstruction::compileArgumentVector(const std::vector<std::string> &vector, const SymbolTable& table,
+                                            CompileState& state)
+{
+  std::vector cpy(vector);
+  table.replaceSymbols(cpy, state);
+  std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> output;
+  
+}
+
 std::unique_ptr<AbstractSyntaxTreeNode>
 IntermediateInstruction::compileInstruction(const SymbolTable& table,
                                             CompileState& state) {
@@ -34,6 +49,14 @@ IntermediateInstruction::compileInstruction(const SymbolTable& table,
 
   table.replaceSymbols(src, state);
   table.replaceSymbols(trg, state);
+
+  std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> srctree;
+  std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> trgtree;
+
+  for (auto i : src)
+  {
+
+  }
 
   // More to do here (soon^TM).
   return std::make_unique<AbstractSyntaxTreeNode>();

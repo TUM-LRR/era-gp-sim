@@ -13,7 +13,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "parser/symbol-table.hpp"
 
@@ -70,6 +71,8 @@ void SymbolTable::insertEntry(const std::string& name,
 std::string SymbolTable::replaceSymbols(const std::string& source,
                                         CompileState& state) const {
   std::string result = source;
+
+  //If this is too slow, we should do something different, like: Instead of having a map, we take a directed graph (maybe using adjacency lists), each symbol is a node and each edge shows a dependency of a certain symbol when replaced. We might also be able to detect loops to some extent, by just checking if our graph is a DAG (e.g. using DFS and checking for a backlink to an edge currently in a tree... WHY DIDN'T WE HAVE THIS IDEA IN GCPC???).
 
   // Just make a copy and iterate over all defined symbols. If they match,
   // replace them.
