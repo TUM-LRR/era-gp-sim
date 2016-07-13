@@ -94,9 +94,11 @@ Item {
                             onDoubleClicked: {
                                 if(mouse.button===Qt.LeftButton){
                                     console.info("Left Double Click, load "+name);
+                                    snap.deleteClicked(name);
                                 }
                                 else if(mouse.button===Qt.RightButton){
                                     console.info("Right Double Click, delete "+ name);
+                                    snap.deleteClicked(name);
                                 }
                              }
                         }
@@ -123,6 +125,8 @@ Item {
                             }
                             onClicked: {
                                 console.info("Button Delete Clicked, delete "+name);
+                                snap.deleteClicked(name);
+
                             }
                         }
                     }
@@ -148,6 +152,7 @@ Item {
                             }
                             onClicked: {
                                 console.info("Button Load Clicked, load "+name);
+                                snap.loadClicked(name);
                             }
                         }
                     }
@@ -242,7 +247,7 @@ Item {
               anchors.left: parent.left
               anchors.bottom: parent.bottom
               anchors.right: parent.right
-              model: listModel
+              model: snap //listModel
               delegate: listDelegate
         }
 
