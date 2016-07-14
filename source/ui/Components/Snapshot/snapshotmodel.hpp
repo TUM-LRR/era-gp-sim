@@ -29,7 +29,7 @@ class SnapshotModel : public QAbstractListModel{
     Q_OBJECT
 public:
     enum Roles {
-            NameRole
+            NameRole=Qt::UserRole+1
      };
 
     SnapshotModel(QObject *parent = 0);
@@ -38,8 +38,17 @@ public:
 
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
 
+
+    /*
+     * \brief Used for the qml-List, the name can only be used once
+     * \param name of the entry
+    */
     Q_INVOKABLE void deleteClicked(QByteArray i);
 
+    /*
+     * \brief Used for the load-button in the qml-list
+     * \param name of the entry, which should be load
+    */
     Q_INVOKABLE void loadClicked(QByteArray i);
 
     void add(std::string s);

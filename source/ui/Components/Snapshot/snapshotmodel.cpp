@@ -24,8 +24,6 @@
 #include <QQmlApplicationEngine>
 
 
-
-
 SnapshotModel::SnapshotModel(QObject *parent): QAbstractListModel(parent){
 
 }
@@ -33,7 +31,7 @@ SnapshotModel::SnapshotModel(QObject *parent): QAbstractListModel(parent){
 
 void SnapshotModel::add(std::string s){
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    QString st=QString::fromUtf8(s.c_str());/*Converting to QString*/
+    QString st=QString::fromStdString(s);/*Converting to QString*/
     list.append(st);
     list.sort();/*sorting the list*/
     endInsertRows();
@@ -46,29 +44,27 @@ bool SnapshotModel::removeRow(int row, const QModelIndex &parent){
 bool SnapshotModel::removeRows(int row, int count, const QModelIndex &parent){
     Q_UNUSED(parent);
     beginRemoveRows(QModelIndex(), row, row+count-1);
-    bool erfolg=true;
+    bool success=true;
     for(int i=0; i<count; i++){
         list.removeAt(row);
     }
     endRemoveRows();
-    return erfolg;
+    return success;
 }
 
-/*Used for the qml-List, the name can only be used once*/
 void SnapshotModel::deleteClicked(QByteArray i){
     std::string st=i.toStdString();
-    int index=list.indexOf(QString::fromUtf8(st.c_str()));
+    int index=list.indexOf(QString::fromStdString(st));
     removeRow(index);
-    std::cout<<"row "+st+" "+std::to_string(index)<<std::endl;
+    std::cout<<"row "<<st+" "<<std::to_string(index)<<std::endl;
     QString liststring=list.join(", ");
     std::string stri=liststring.toStdString();
     std::cout<<stri<<std::endl;
 }
 
-/*Used for the load-button in the qml-list*/
 void SnapshotModel::loadClicked(QByteArray i){
     std::string st=i.toStdString();
-    std::cout<<"row "+st+" load"<<std::endl;
+    std::cout<<"row "<<st<<" load"<<std::endl;
 }
 
 int SnapshotModel::rowCount(const QModelIndex &parent)const{
