@@ -94,11 +94,11 @@ Item {
                             onDoubleClicked: {
                                 if(mouse.button===Qt.LeftButton){
                                     console.info("Left Double Click, load "+name);
-                                    snap.deleteClicked(name);
+                                    snapshotModel.deleteClicked(name);
                                 }
                                 else if(mouse.button===Qt.RightButton){
                                     console.info("Right Double Click, delete "+ name);
-                                    snap.deleteClicked(name);
+                                    snapshotModel.deleteClicked(name);
                                 }
                              }
                         }
@@ -125,7 +125,7 @@ Item {
                             }
                             onClicked: {
                                 console.info("Button Delete Clicked, delete "+name);
-                                snap.deleteClicked(name);
+                                snapshotModel.deleteClicked(name);
 
                             }
                         }
@@ -152,7 +152,7 @@ Item {
                             }
                             onClicked: {
                                 console.info("Button Load Clicked, load "+name);
-                                snap.loadClicked(name);
+                                snapshotModel.loadClicked(name);
                             }
                         }
                     }
@@ -163,81 +163,8 @@ Item {
         }
 
 
-        /*Data for the View*/
-        ListModel {
 
-                 id: listModel
 
-                 ListElement {
-                     name: "Apple"
-                 }
-                 ListElement {
-                     name: "Banana"
-                 }
-                 ListElement {
-                     name: "Strawberry"
-                 }
-                 ListElement {
-                     name: "Cherry"
-                 }
-                 ListElement {
-                     name: "Tangerine"
-                 }
-                 ListElement {
-                     name: "Pineapple"
-                 }
-                 ListElement {
-                     name: "Mango"
-                 }
-                 ListElement {
-                     name: "Cranberries"
-                 }
-                 ListElement {
-                     name: "Raspberry"
-                 }
-                 ListElement {
-                     name: "Blackberry"
-                 }
-                 ListElement {
-                     name: "Pear"
-                 }
-                 ListElement {
-                     name: "Peach"
-                 }
-                 ListElement {
-                     name: "Lemon"
-                 }
-                 ListElement {
-                     name: "Lime"
-                 }
-                 ListElement {
-                     name: "Aprciot"
-                 }
-                 ListElement {
-                     name: "Kiwi"
-                 }
-                 ListElement {
-                     name: "Melon"
-                 }
-                 ListElement {
-                     name: "Passion fruit"
-                 }
-                 ListElement {
-                     name: "Pomegranate"
-                 }
-                 ListElement {
-                     name: "Coconut"
-                 }
-                 ListElement {
-                     name: "Plum"
-                 }
-                 ListElement {
-                     name: "Grape"
-                 }
-                 ListElement {
-                     name: "Currant"
-                 }
-         }
 
 
         ListView {
@@ -247,7 +174,7 @@ Item {
               anchors.left: parent.left
               anchors.bottom: parent.bottom
               anchors.right: parent.right
-              model: snap //listModel
+              model: snapshotModel //listModel
               delegate: listDelegate
         }
 

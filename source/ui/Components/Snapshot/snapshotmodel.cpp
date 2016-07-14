@@ -1,29 +1,49 @@
+/*
+ * C++ Assembler Interpreter
+ * Copyright (C) 2016 Chair of Computer Architecture
+ * at Technical University of Munich
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "snapshotmodel.hpp"
 #include <QStringList>
 #include <string>
 #include <iostream>
 #include <QQmlApplicationEngine>
 
-QStringList list;
 
 
-snapshotModel::snapshotModel(QObject *parent): QAbstractListModel(parent){
+
+SnapshotModel::SnapshotModel(QObject *parent): QAbstractListModel(parent){
 
 }
 
 
-void snapshotModel::add(std::string s){
+void SnapshotModel::add(std::string s){
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    QString st=QString::fromUtf8(s.c_str());
+    QString st=QString::fromUtf8(s.c_str());/*Converting to QString*/
     list.append(st);
+    list.sort();/*sorting the list*/
     endInsertRows();
 }
 
-bool snapshotModel::removeRow(int row, const QModelIndex &parent){
+bool SnapshotModel::removeRow(int row, const QModelIndex &parent){
     return removeRows(row, 1, parent);
 }
 
-bool snapshotModel::removeRows(int row, int count, const QModelIndex &parent){
+bool SnapshotModel::removeRows(int row, int count, const QModelIndex &parent){
     Q_UNUSED(parent);
     beginRemoveRows(QModelIndex(), row, row+count-1);
     bool erfolg=true;
@@ -34,8 +54,8 @@ bool snapshotModel::removeRows(int row, int count, const QModelIndex &parent){
     return erfolg;
 }
 
-
-void snapshotModel::deleteClicked(QByteArray i){
+/*Used for the qml-List, the name can only be used once*/
+void SnapshotModel::deleteClicked(QByteArray i){
     std::string st=i.toStdString();
     int index=list.indexOf(QString::fromUtf8(st.c_str()));
     removeRow(index);
@@ -45,17 +65,19 @@ void snapshotModel::deleteClicked(QByteArray i){
     std::cout<<stri<<std::endl;
 }
 
-void snapshotModel::loadClicked(QByteArray i){
+/*Used for the load-button in the qml-list*/
+void SnapshotModel::loadClicked(QByteArray i){
     std::string st=i.toStdString();
     std::cout<<"row "+st+" load"<<std::endl;
 }
 
-int snapshotModel::rowCount(const QModelIndex &parent)const{
+int SnapshotModel::rowCount(const QModelIndex &parent)const{
     Q_UNUSED(parent);
     return list.count();
 }
 
-QVariant snapshotModel::data(const QModelIndex &index, int role)const{
+/*returns data of a row*/
+QVariant SnapshotModel::data(const QModelIndex &index, int role)const{
     if (index.row() < 0 || index.row() >= list.count()){
             return QVariant();
     }
@@ -68,7 +90,7 @@ QVariant snapshotModel::data(const QModelIndex &index, int role)const{
 
 }
 
-QHash<int, QByteArray> snapshotModel::roleNames()const{
+QHash<int, QByteArray> SnapshotModel::roleNames()const{
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
     return roles;
