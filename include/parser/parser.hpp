@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "arch/common/abstract-node-factories.hpp"
+#include "parser/compile-error.hpp"
 
 
 enum class ParserMode { COMPILE, UPDATE };
@@ -35,32 +36,37 @@ class Parser {
   /**
    * Parses text into syntax tree.
    *
-   * @param text Text to parse
-   * @param parserMode Parser Mode
+   * \param text Text to parse
+   * \param parserMode Parser Mode
    */
   virtual std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
   parse(const std::string &text, ParserMode parserMode) = 0;
 
   /**
+   * Retrieves the last compiler errors.
+   */
+  virtual std::vector<CompileError> getErrorList() = 0;
+
+  /**
    * Creates dialect-specific Regex for syntax highlighting registers.
    *
-   * @param name Register name
-   * @return Dialect-specific Regex
+   * \param name Register name
+   * \return Dialect-specific Regex
    */
   virtual std::string getSyntaxRegister(const std::string &name);
 
   /**
    * Creates dialect-specific Regex for syntax highlighting instructions.
    *
-   * @param name Assembler instruction name
-   * @return Dialect-specific Regex
+   * \param name Assembler instruction name
+   * \return Dialect-specific Regex
    */
   virtual std::string getSyntaxInstruction(const std::string &name);
 
   /**
    * Creates dialect-specific Regex for syntax highlighting immediates.
    *
-   * @return Dialect-specific Regex
+   * \return Dialect-specific Regex
    */
   virtual std::string getSyntaxImmediate();
 

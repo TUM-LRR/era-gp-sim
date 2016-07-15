@@ -2,6 +2,7 @@ set (TEST_PARSER_SOURCES
   intermediate-instruction-unittest.cpp
   intermediate-representator-unittest.cpp
   symbol-table-unittest.cpp
+  riscv-parser-unittest.cpp
 )
 
 add_executable(era-sim-parser-tests ${TEST_PARSER_SOURCES})

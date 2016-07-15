@@ -22,13 +22,19 @@
 #include <string>
 #include <vector>
 
+#include "parser/compile-state.hpp"
 #include "parser/parser.hpp"
 
 
 class RiscvParser : public Parser {
  public:
+  virtual std::vector<CompileError> getErrorList();
+
   virtual std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
   parse(const std::string &text, ParserMode parserMode);
+
+ protected:
+  CompileState compile_state_;
 };
 
 #endif// ERAGPSIM_PARSER_RISCV_PARSER_HPP_
