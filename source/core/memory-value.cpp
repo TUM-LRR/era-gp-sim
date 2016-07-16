@@ -17,23 +17,156 @@
 
 #include "core/memory-value.hpp"
 
-MemoryValue::MemoryValue(int width) : _data{std::vector<bool>(width, false)} {}
+MemoryValue::MemoryValue() : MemoryValue(1, 8) {
+}
+MemoryValue::MemoryValue(const std::vector<uint8_t> &other,
+                         const std::size_t byteSize)
+: _data{other}, _byteSize{byteSize} {
+}
+MemoryValue::MemoryValue(std::vector<uint8_t> &&other,
+                         const std::size_t byteSize)
+: _data{other}, _byteSize{byteSize} {
+}
+MemoryValue::MemoryValue(size_t byteAmount, std::size_t byteSize)
+: _data(std::size_t{byteAmount * (byteSize / 8 + ((byteSize % 8) > 0 ? 1 : 0))},
+        0)
+, _byteSize{byteSize} {
+}
 
-MemoryValue::MemoryValue(const std::vector<bool> data) : _data{data} {}
+constexpr uint8_t testOr[8]{
+    0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80,
+};
+constexpr uint8_t testAnd[8]{
+    0xFE, 0xFD, 0xFB, 0xF7, 0xEF, 0xDF, 0xBF, 0x7F,
+};
 
-std::vector<bool>::reference MemoryValue::at(const int index) {}
+bool MemoryValue::get(const std::size_t address) const {
+  return ((_data[(address / _byteSize) *
+                     ((_byteSize / 8) + (((_byteSize % 8) > 0) ? 1 : 0)) +
+                 (address - (_byteSize * (address / _byteSize))) / 8]) &
+          testOr[(address - (_byteSize * (address / _byteSize))) % 8]) != 0;
+}
 
-std::vector<bool>::const_reference MemoryValue::at(const int index) const {}
+void MemoryValue::put(const std::size_t address, const bool value) {
+  if (value)
+    _data[((address / _byteSize) *
+           ((_byteSize / 8) + (((_byteSize % 8) > 0) ? 1 : 0))) +
+          ((address - (_byteSize * (address / _byteSize))) / 8)] |=
+        testOr[(address - (_byteSize * (address / _byteSize))) % 8];
+  else
+    _data[(address / _byteSize) *
+              ((_byteSize / 8) + (((_byteSize % 8) > 0) ? 1 : 0)) +
+          (address - (_byteSize * (address / _byteSize))) / 8] &=
+        (testAnd[(address - (_byteSize * (address / _byteSize))) % 8]);
+}
 
-std::vector<bool>::reference MemoryValue::operator[](const int index) {}
+bool MemoryValue::set(const std::size_t address, const bool value) {
+  return (((_data[(address / _byteSize) *
+                      ((_byteSize / 8) + (((_byteSize % 8) > 0) ? 1 : 0)) +
+                  (address - (_byteSize * (address / _byteSize))) / 8]) &
+           testOr[(address - (_byteSize * (address / _byteSize))) % 8]) != 0) ==
+                 value
+             ? value
+             : (!value &
+                (true |
+                 (_data[((address / _byteSize) *
+                         ((_byteSize / 8) + (((_byteSize % 8) > 0) ? 1 : 0))) +
+                        ((address - (_byteSize * (address / _byteSize))) /
+                         8)] ^=
+                  testOr[(address - (_byteSize * (address / _byteSize))) %
+                         8])));
+}
 
-std::vector<bool>::const_reference MemoryValue::
-operator[](const int index) const {}
+std::size_t MemoryValue::getByteSize() const {
+  return _byteSize;
+}
 
-void MemoryValue::flip() {}
+std::size_t MemoryValue::getByteAmount() const {
+  return _data.size() / ((_byteSize / 8) + (((_byteSize % 8) > 0 ? 1 : 0)));
+}
 
-bool MemoryValue::operator==(const MemoryValue &second) const {}
+std::size_t MemoryValue::getSize() const {
+  return _byteSize * getByteAmount();
+}
 
-std::ostream &operator<<(std::ostream &stream, const MemoryValue &value) {}
+const std::vector<uint8_t> &MemoryValue::internal() const {
+  return _data;
+}
 
-int MemoryValue::size() const {}
+constexpr uint8_t testEQ[8]{
+    0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F,
+};
+
+bool MemoryValue::operator==(const MemoryValue &other) const {
+  if (_byteSize != other._byteSize || _data.size() != other._data.size())
+    return false;
+  if (_byteSize % 8 == 0) return _data == other._data;
+  const std::size_t byteByteSize{_byteSize / 8 + 1};
+  const std::size_t shift{_byteSize % 8};
+  for (std::size_t i = 0; i < _data.size(); ++i) {
+    if (i % byteByteSize != byteByteSize - 1) {
+      if (_data[i] != other._data[i]) return false;
+    } else {
+      if ((_data[i] & testEQ[shift]) != (other._data[i] & testEQ[shift]))
+        return false;
+    }
+  }
+  return true;
+}
+
+bool MemoryValue::operator!=(const MemoryValue &other) const {
+  if (_byteSize != other._byteSize || _data.size() != other._data.size())
+    return true;
+  if (_byteSize % 8 == 0) return _data != other._data;
+  const std::size_t byteByteSize{_byteSize / 8 + 1};
+  const std::size_t shift{_byteSize % 8};
+  for (std::size_t i = 0; i < _data.size(); ++i) {
+    if (i % byteByteSize != byteByteSize - 1) {
+      if (_data[i] != other._data[i]) return true;
+    } else {
+      if ((_data[i] & testEQ[shift]) != (other._data[i] & testEQ[shift]))
+        return true;
+    }
+  }
+  return false;
+}
+
+namespace {
+constexpr char hex[16]{
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+};
+std::ostream &tohex(std::ostream &stream, std::uint8_t v) {
+  return stream << hex[(int)v / 16] << hex[(int)v % 16] << ';';
+}
+}
+
+std::ostream &operator<<(std::ostream &stream, const MemoryValue &value) {
+  stream << '\'';
+  constexpr std::size_t intMinPrecision = 1;
+  for (std::size_t i = value.getSize(); i > 0; --i) {
+    if (i % value._byteSize == 0 && i != value.getSize()) stream << '|';
+    if (value.get(i - intMinPrecision))
+      stream << '1';
+    else
+      stream << '0';
+  }
+  stream << "' : " << value._byteSize << " -> [";
+  for (std::size_t i = 0; i < value._data.size(); ++i)
+    tohex(stream, value._data[i]);
+  return stream << "]";
+}
