@@ -20,48 +20,36 @@
 
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       const SymbolTable& table,
+                                      const SyntaxTreeGenerator& generator,
                                       CompileState& state) {
   // For a machine instruction, it is easy to "execute" it: just insert it into
   // the final form.
-  finalRepresentator.push_back(compileInstruction(table, state));
+  finalRepresentator.push_back(compileInstruction(table, generator, state));
 }
 
-IntermediateInstruction::transformArgument(const std::string& argument, CompileState& state)
-{
-  
-}
-
-IntermediateInstruction::compileArgumentVector(const std::vector<std::string> &vector, const SymbolTable& table,
+std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
+IntermediateInstruction::compileArgumentVector(const std::vector<std::string> &vector, const SymbolTable& table, const SyntaxTreeGenerator& generator, 
                                             CompileState& state)
 {
-  std::vector cpy(vector);
+  //First of all, we insert all constants. Then, we convert every single one of them to a syntax tree node.
+  std::vector<std::string> cpy(vector);
   table.replaceSymbols(cpy, state);
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> output;
-  
+  output.reserve(cpy.size());
+  for (const auto& i : cpy)
+  {
+    output.emplace_back(generator.transformOperand(i, state));
+  }
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
-IntermediateInstruction::compileInstruction(const SymbolTable& table,
-                                            CompileState& state) {
+IntermediateInstruction::compileInstruction(const SymbolTable& table, const SyntaxTreeGenerator& generator, CompileState& state) {
   // We replace all occurenced in target in source (using a copy of them).
-  std::vector<std::string> src(_sources);
-  std::vector<std::string> trg(_targets);
-
-  table.replaceSymbols(src, state);
-  table.replaceSymbols(trg, state);
-
-  std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> srctree;
-  std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> trgtree;
-
-  for (auto i : src)
-  {
-
-  }
-
-  // More to do here (soon^TM).
-  return std::make_unique<AbstractSyntaxTreeNode>();
+  auto srcCompiled = compileArgumentVector(_sources, table, generator, state);
+  auto trgCompiled = compileArgumentVector(_targets, table, generator, state);
+  return std::move(generator.transformCommand(_name, srcCompiled, trgCompiled, state));
 }
 
 void IntermediateInstruction::determineMemoryPosition() {
-  // To be expanded soon^TM.
+  // To be expanded soon^TM. As soon as core is ready.
 }

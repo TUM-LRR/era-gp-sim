@@ -18,7 +18,7 @@
 
 #include "parser/intermediate-representator.hpp"
 
-FinalRepresentation IntermediateRepresentator::transform(CompileState& state) {
+FinalRepresentation IntermediateRepresentator::transform(const SyntaxTreeGenerator& generator, CompileState& state) {
   // First of all, we insert all our labels/constants into the SymbolTable.
   SymbolTable table;
   for (const auto& i : _commandList) {
@@ -28,7 +28,7 @@ FinalRepresentation IntermediateRepresentator::transform(CompileState& state) {
   // Then, we execute their values.
   FinalRepresentation representation;
   for (const auto& i : _commandList) {
-    i->execute(representation, table, state);
+    i->execute(representation, table, generator, state);
   }
 
   // Now, we are done.

@@ -24,6 +24,7 @@
 #include "compile-state.hpp"
 #include "final-representation.hpp"
 #include "symbol-table.hpp"
+#include "syntax-tree-generator.hpp"
 
 /**
  * \class LineInterval
@@ -113,6 +114,7 @@ class IntermediateOperation {
    */
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
+                       const SyntaxTreeGenerator& generator,
                        CompileState& state) = 0;
 
   /**

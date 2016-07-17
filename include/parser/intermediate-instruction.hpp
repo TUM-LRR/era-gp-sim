@@ -106,6 +106,7 @@ class IntermediateInstruction : public IntermediateOperation {
    */
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
+                       const SyntaxTreeGenerator& generator,
                        CompileState& state);
 
   /**
@@ -117,7 +118,7 @@ class IntermediateInstruction : public IntermediateOperation {
    * \return The resulting syntax tree of the node.
    */
   std::unique_ptr<AbstractSyntaxTreeNode>
-  compileInstruction(const SymbolTable& table, CompileState& state);
+  compileInstruction(const SymbolTable& table, const SyntaxTreeGenerator& generator, CompileState& state);
 
  protected:
   /**
@@ -125,6 +126,10 @@ class IntermediateInstruction : public IntermediateOperation {
    * \brief Gets the position in program memory space.
    */
   virtual void determineMemoryPosition();
+
+  std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
+  compileArgumentVector(const std::vector<std::string> &vector, const SymbolTable& table, const SyntaxTreeGenerator& generator, 
+                                              CompileState& state);
 
  private:
   /**
