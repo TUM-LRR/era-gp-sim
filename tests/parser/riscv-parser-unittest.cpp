@@ -18,8 +18,13 @@ TEST(RiscParser, SingleInstruction) {
 
 TEST(RiscParser, MultipleInstructions) {
   RiscvParser parser;
-  parser.parse("ADD r13, r4, 7\n label  : SUB r5, r5, 1\nADD r0, r0, 0",
-               ParserMode::COMPILE);
+  parser.parse(
+      "ADD r13, r4, 7 ;kommentar\n"
+      " label  : SUB r5, r5, 1\n"
+	  ";kommentar\n"
+      "addition123:\n\n"
+      "ADD r0, r0, 0; kommentar",
+      ParserMode::COMPILE);
 }
 
 TEST(RiscParser, MalformedInstructions) {

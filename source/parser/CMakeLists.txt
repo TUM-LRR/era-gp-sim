@@ -5,6 +5,7 @@ set (PARSER_SOURCES
   parser.cpp
   riscv-parser.cpp
   symbol-table.cpp
+  riscv-regex.cpp
 )
 
 add_library(era-sim-parser STATIC ${PARSER_SOURCES})

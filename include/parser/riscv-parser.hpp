@@ -25,15 +25,24 @@
 #include "parser/compile-state.hpp"
 #include "parser/parser.hpp"
 
-
+/**
+ * Risc-V Parser Class
+ *
+ * This class parses Risc-V instructions into an abstract syntax tree.
+ */
 class RiscvParser : public Parser {
  public:
+  class RiscvRegex;
+
   virtual std::vector<CompileError> getErrorList();
 
   virtual std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
   parse(const std::string &text, ParserMode parserMode);
 
  protected:
+  /**
+   * Saves an internal compile state.
+   */
   CompileState compile_state_;
 };
 
