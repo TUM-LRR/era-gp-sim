@@ -16,7 +16,7 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(co
     }
 }
 
-std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(const std::string& command_name, const std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources, const std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets, CompileState& state) const
+std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(const std::string& command_name, std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources, std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets, CompileState& state) const
 {
     //Just create an instruction node and add all output and input nodes (operands).
     auto outputNode = _nodeFactories.createInstructionNode(command_name);

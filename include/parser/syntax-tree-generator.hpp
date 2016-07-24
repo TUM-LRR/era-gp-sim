@@ -30,7 +30,7 @@ public:
     SyntaxTreeGenerator(AbstractNodeFactoryCollection&& nodeFactories) : _nodeFactories(std::move(nodeFactories))
     {}
     std::unique_ptr<AbstractSyntaxTreeNode> transformOperand(const std::string& operand, CompileState& state) const;
-    std::unique_ptr<AbstractSyntaxTreeNode> transformCommand(const std::string& command_name, const std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources, const std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets, CompileState& state) const;
+    std::unique_ptr<AbstractSyntaxTreeNode> transformCommand(const std::string& command_name, std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources, std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets, CompileState& state) const;
 private:
     AbstractNodeFactoryCollection _nodeFactories;
 };
