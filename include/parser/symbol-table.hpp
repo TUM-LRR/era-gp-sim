@@ -148,12 +148,6 @@ class SymbolTable {
    * infinite recursion error.
    */
   int _maximumRecursionDepth;
-
-  /**
-   * \var SymbolTable::symbolNameFormat
-   * \brief The required format for symbol names.
-   */
-  static const std::regex symbolNameFormat;// constexpr would be nice here...
 };
 
 #endif

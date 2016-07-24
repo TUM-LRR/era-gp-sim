@@ -20,12 +20,9 @@
 
 #include <cassert>
 
-const std::regex SymbolTable::symbolNameFormat("^[A-Za-z_][A-Za-z0-9_]*$",
-                                               std::regex::ECMAScript);
-
 std::regex SymbolTable::makeRegex(const std::string name) const {
   // Just searches for the word.
-  return std::regex("\\b" + name + "\\b", std::regex::ECMAScript);
+  return std::regex("\\b" + name + "\\b");
 }
 
 void SymbolTable::clearTable() {
@@ -41,11 +38,11 @@ void SymbolTable::insertEntry(const std::string& name,
   // at the end of the string.
 
   assert(!std::regex_search(
-      name, std::regex("(^\\s+|\\s+$)", std::regex::ECMAScript)));
+      name, std::regex("(^\\s+|\\s+$)")));
 
   // First of all, we check for errors with our new symbol.
 
-  if (!std::regex_search(name, symbolNameFormat)) {
+  if (!std::regex_search(name, std::regex("^[A-Za-z_][A-Za-z0-9_]*$"))) {
     // Basically, everything with a leading number is not accepted.
     state.errorList.push_back(
         CompileError("Symbol '" + name + "' does not have a qualified name.",
@@ -64,7 +61,7 @@ void SymbolTable::insertEntry(const std::string& name,
     return;
   }
 
-  // All conditions checked insert!
+  // All conditions checked, insert!
   _table[name] = replacement;
 }
 
