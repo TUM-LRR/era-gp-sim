@@ -7,7 +7,25 @@ set(CMAKE_BUILD_TYPE_INIT "Debug")
 
 project(era-sim)
 
-add_compile_options(-std=c++14)
+########################################
+# C++ Versioning
+########################################
+
+include(CheckCXXCompilerFlag)
+
+check_cxx_compiler_flag("-std=c++1y" COMPILER_SUPPORTS_CXX_1Y)
+check_cxx_compiler_flag("-std=c++14" COMPILER_SUPPORTS_CXX_14)
+check_cxx_compiler_flag("-std=c++1z" COMPILER_SUPPORTS_CXX_1Z)
+
+if (COMPILER_SUPPORTS_CXX_1Z)
+  add_compile_options(-std=c++1z)
+elseif(COMPILER_SUPPORTS_CXX_14)
+  add_compile_options(-std=c++14)
+elseif(COMPILER_SUPPORTS_CXX_1y)
+  add_compile_options(-std=c++1y)
+else()
+  message(FATAL_ERROR "Compiler must support at least C++1y!")
+endif()
 
 ########################################
 # INCLUDES
