@@ -18,12 +18,18 @@
 #ifndef ERAGPSIM_ARCH_ABSTRACT_IMMEDIATE_NODE_FACTORY_HPP
 #define ERAGPSIM_ARCH_ABSTRACT_IMMEDIATE_NODE_FACTORY_HPP
 
+#include <memory>
+
+class MemoryValue;
+
 /**
  * @brief The AbstractImmediateNodeFactory class
  * Abstract factory type for creating SyntaxTreeNodes of type immediate
  */
 class AbstractImmediateNodeFactory {
  public:
+  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+
   AbstractImmediateNodeFactory() {
   }
 
@@ -41,8 +47,7 @@ class AbstractImmediateNodeFactory {
    * nullptr if the architecture-specific implementation cannot create an
    * immediate from the given numericalValue
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createImmediateNode(const MemoryValue &numericalValue) const = 0;
+  virtual Node createImmediateNode(const MemoryValue &numericalValue) const = 0;
 };
 
 #endif /* ERAGPSIM_ARCH_ABSTRACT_IMMEDIATE_NODE_FACTORY_HPP */

@@ -40,46 +40,6 @@ AbstractNodeFactoryCollection::CreateFor(const Architecture &architecture) {
 
 AbstractNodeFactoryCollection::AbstractNodeFactoryCollection() = default;
 
-AbstractNodeFactoryCollection::AbstractNodeFactoryCollection(
-    const AbstractNodeFactoryCollection &other)
-: _instructionFactory(Utility::copyPointer(other._instructionFactory))
-, _immediateFactory(Utility::copyPointer(other._immediateFactory))
-, _memoryAccessFactory(Utility::copyPointer(other._memoryAccessFactory))
-, _registerAccessFactory(Utility::copyPointer(other._registerAccessFactory))
-, _arithmeticFactory(Utility::copyPointer(other._arithmeticFactory)) {
-}
-
-AbstractNodeFactoryCollection::AbstractNodeFactoryCollection(
-    AbstractNodeFactoryCollection &&other) noexcept {
-  swap(other);
-}
-
-AbstractNodeFactoryCollection &AbstractNodeFactoryCollection::
-operator=(AbstractNodeFactoryCollection other) {
-  swap(other);
-  return *this;
-}
-
-void AbstractNodeFactoryCollection::swap(
-    AbstractNodeFactoryCollection &other) noexcept {
-  // Enable ADL
-  using std::swap;
-
-  swap(_instructionFactory, other._instructionFactory);
-  swap(_immediateFactory, other._immediateFactory);
-  swap(_memoryAccessFactory, other._memoryAccessFactory);
-  swap(_registerAccessFactory, other._registerAccessFactory);
-  swap(_arithmeticFactory, other._arithmeticFactory);
-}
-void swap(AbstractNodeFactoryCollection &first,
-          AbstractNodeFactoryCollection &second) noexcept {
-  first.swap(second);
-}
-
-
-AbstractNodeFactoryCollection::~AbstractNodeFactoryCollection() = default;
-
-
 /**
  * It is asserted that a corresponding factory must be set prior to this
  * method call, otherwise the assertion will fail
@@ -111,9 +71,9 @@ AbstractNodeFactoryCollection::createImmediateNode(
  */
 AbstractNodeFactoryCollection::Node
 AbstractNodeFactoryCollection::createRegisterAccessNode(
-    const std::string &registerAddress) const {
-  assert(_registerAccessFactory);
-  return _registerAccessFactory->createRegisterAccessNode(registerAddress);
+    const std::string &registerName) const {
+  assert(static_cast<bool>(_registerAccessFactory));
+  return _registerAccessFactory->createRegisterAccessNode(registerName);
 }
 
 /**
@@ -121,7 +81,8 @@ AbstractNodeFactoryCollection::createRegisterAccessNode(
  * method call, otherwise the assertion will fail
  * \copydoc AbstractMemoryAccessNodeFactory::createMemoryAccessNode
  */
-Node createMemoryAccessNode() const {
+AbstractNodeFactoryCollection::Node
+AbstractNodeFactoryCollection::createMemoryAccessNode() const {
   assert(static_cast<bool>(_memoryAccessFactory));
   return _memoryAccessFactory->createMemoryAccessNode();
 }
@@ -132,17 +93,18 @@ Node createMemoryAccessNode() const {
  * \copydoc AbstractArithmeticNodeFactory::createArithmeticerationNode
  */
 AbstractNodeFactoryCollection::Node
-AbstractNodeFactoryCollection::createArithmeticNode(const int opType) const {
+AbstractNodeFactoryCollection::createArithmeticNode(
+    AbstractArithmeticNodeFactory::Operation operation) const {
   assert(static_cast<bool>(_arithmeticFactory));
-  return _arithmeticFactory->createArithmeticNode(opType);
+  return _arithmeticFactory->createArithmeticNode(operation);
 }
 
 AbstractNodeFactoryCollection::AbstractNodeFactoryCollection(
-    std::unique_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
-    std::unique_ptr<AbstractImmediateNodeFactory> &&immediateFactory,
-    std::unique_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,
-    std::unique_ptr<AbstractRegisterAccessNodeFactory> &&registerAccessFactory,
-    std::unique_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory)
+    std::shared_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
+    std::shared_ptr<AbstractImmediateNodeFactory> &&immediateFactory,
+    std::shared_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,
+    std::shared_ptr<AbstractRegisterAccessNodeFactory> &&registerAccessFactory,
+    std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory)
 : _instructionFactory(std::move(instructionFactory))
 , _immediateFactory(std::move(immediateFactory))
 , _registerAccessFactory(std::move(registerAccessFactory))

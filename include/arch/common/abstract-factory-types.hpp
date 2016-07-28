@@ -22,6 +22,8 @@
 
 #include <memory>
 
+#include "arch/common/instruction-set.hpp"
+
 template <typename ImmediateNodeFactoryTemplate,
           typename ArithmeticNodeFactoryTemplate,
           typename MemoryAccessNodeFactoryTemplate,
@@ -50,19 +52,21 @@ struct AbstractFactoryTypes {
     return makeFactory<RegisterAccessNodeFactoryType>();
   }
 
-  static auto instructionFactory() {
-    return makeFactory<InstructionNodeFactoryType>();
+  static auto instructionFactory(const InstructionSet& instructions) {
+    return makeFactory<InstructionNodeFactoryType>(instructions);
   }
 
   template <typename FactoryType,
+            typename... Args,
             typename = std::enable_if_t<!std::is_void<FactoryType>::value>>
-  static auto makeFactory() {
-    return std::make_unique<FactoryType>();
+  static std::unique_ptr<FactoryType> makeFactory(Args&&... args) {
+    return std::make_unique<FactoryType>(std::forward<Args>(args)...);
   }
 
   template <typename FactoryType,
+            typename... Args,
             typename = std::enable_if_t<std::is_void<FactoryType>::value>>
-  static std::unique_ptr<FactoryType> makeFactory() {
+  static auto makeFactory(Args&&... args) {
     return nullptr;
   }
 };

@@ -20,7 +20,7 @@
 
 #include <unordered_map>
 
-#include "arch/common/abstract-instruction-node-factory.hpp"
+#include "arch/common/abstract-immediate-node-factory.hpp"
 
 namespace riscv {
 
@@ -53,7 +53,7 @@ class ImmediateNodeFactory : public AbstractImmediateNodeFactory {
    * \return std::unique_ptr pointing to the newly created immediate node, or
    * nullptr if the given MemoryValue is invalid
    */
-  virtual Node createImmediateNode(MemoryValue &value) const override;
+  virtual Node createImmediateNode(const MemoryValue &value) const override;
 };
 }
 #endif /* ERAGPSIM_ARCH_RISCV_IMMEDIATE_NODE_FACTORY_HPP */

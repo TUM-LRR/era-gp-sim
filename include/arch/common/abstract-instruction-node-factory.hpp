@@ -32,9 +32,6 @@ class AbstractInstructionNodeFactory {
  public:
   using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
 
-  AbstractInstructionNodeFactory() {
-  }
-
   virtual ~AbstractInstructionNodeFactory();
 
   /**
@@ -50,7 +47,7 @@ class AbstractInstructionNodeFactory {
    * nullptr if the given token cannot be mapped to a architecture-specific
    * instruction
    */
-  virtual Node createInstructionNode(const std::string &mnemonic) const = 0;
+  virtual Node createInstructionNode(const std::string& mnemonic) const = 0;
 };
 
 #endif /* ERAGPSIM_ARCH_ABSTRACT_INSTRUCTION_NODE_FACTORY_HPP */

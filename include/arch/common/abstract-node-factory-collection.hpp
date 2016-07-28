@@ -21,12 +21,12 @@
 #include <memory>
 #include <string>
 
+#include "arch/common/abstract-arithmetic-node-factory.hpp"
 #include "arch/common/instruction-set.hpp"
 
 class Architecture;
 class MemoryValue;
 class AbstractSyntaxTreeNode;
-class AbstractArithmeticNodeFactory;
 class AbstractImmediateNodeFactory;
 class AbstractInstructionNodeFactory;
 class AbstractMemoryAccessNodeFactory;
@@ -53,24 +53,12 @@ class AbstractNodeFactoryCollection {
         FactoryTypes::immediateFactory(),
         FactoryTypes::memoryAccessFactory(),
         FactoryTypes::registerAccessFactory(),
-        FactoryTypes::arithmetic()
+        FactoryTypes::arithmeticFactory()
     );
     // clang-format on
   }
 
   AbstractNodeFactoryCollection();
-
-  AbstractNodeFactoryCollection(const AbstractNodeFactoryCollection &other);
-  AbstractNodeFactoryCollection(AbstractNodeFactoryCollection &&other) noexcept;
-
-  AbstractNodeFactoryCollection &operator=(AbstractNodeFactoryCollection other);
-
-  void swap(AbstractNodeFactoryCollection &other) noexcept;
-  friend void swap(AbstractNodeFactoryCollection &first,
-                   AbstractNodeFactoryCollection &second) noexcept;
-
-  ~AbstractNodeFactoryCollection();
-
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
@@ -91,7 +79,7 @@ class AbstractNodeFactoryCollection {
    * method call, otherwise the assertion will fail
    * \copydoc AbstractRegisterAccessNodeFactory::createRegisterAccessNode
    */
-  Node createRegisterAccessNode(const std::string &registerAddress);
+  Node createRegisterAccessNode(const std::string &registerName) const;
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
@@ -105,22 +93,23 @@ class AbstractNodeFactoryCollection {
    * method call, otherwise the assertion will fail
    * \copydoc AbstractArithmeticNodeFactory::createArithmeticerationNode
    */
-  Node createArithmeticNode(const int opType) const;
+  Node createArithmeticNode(
+      AbstractArithmeticNodeFactory::Operation operation) const;
 
  private:
   AbstractNodeFactoryCollection(
-      std::unique_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
-      std::unique_ptr<AbstractImmediateNodeFactory> &&immediateFactory,
-      std::unique_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,
-      std::unique_ptr<AbstractRegisterAccessNodeFactory>
+      std::shared_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
+      std::shared_ptr<AbstractImmediateNodeFactory> &&immediateFactory,
+      std::shared_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,
+      std::shared_ptr<AbstractRegisterAccessNodeFactory>
           &&registerAccessFactory,
-      std::unique_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory);
+      std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory);
 
-  std::unique_ptr<AbstractInstructionNodeFactory> _instructionFactory;
-  std::unique_ptr<AbstractImmediateNodeFactory> _immediateFactory;
-  std::unique_ptr<AbstractRegisterAccessNodeFactory> _registerAccessFactory;
-  std::unique_ptr<AbstractMemoryAccessNodeFactory> _memoryAccessFactory;
-  std::unique_ptr<AbstractArithmeticNodeFactory> _arithmeticFactory;
+  std::shared_ptr<AbstractInstructionNodeFactory> _instructionFactory;
+  std::shared_ptr<AbstractImmediateNodeFactory> _immediateFactory;
+  std::shared_ptr<AbstractRegisterAccessNodeFactory> _registerAccessFactory;
+  std::shared_ptr<AbstractMemoryAccessNodeFactory> _memoryAccessFactory;
+  std::shared_ptr<AbstractArithmeticNodeFactory> _arithmeticFactory;
 };
 
 #endif /* ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORY_COLLECTION_HPP */

@@ -21,6 +21,7 @@
 #include <unordered_map>
 
 #include "arch/common/abstract-instruction-node-factory.hpp"
+#include "arch/common/instruction-set.hpp"
 
 namespace riscv {
 
@@ -40,7 +41,7 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
    * \brief InstructionNodeFactory
    * Creates a Instruction Node Factory for RISC-V architecture
    */
-  InstructionNodeFactory() {
+  InstructionNodeFactory(const InstructionSet &instructions) {
     initializeInstructionMap();
   }
 
