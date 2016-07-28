@@ -25,30 +25,30 @@
 namespace riscv {
 
 /**
- * \brief The RISCVInstructionNodeFactory class is a
+ * \brief The InstructionNodeFactory class is a
  * concrete Implementation of AbstractInstructionNodeFactory for the RISC-V
  * architecture.
  * \see AbstractInstructionNodeFactory
  */
-class RISCVInstructionNodeFactory : public AbstractInstructionNodeFactory {
+class InstructionNodeFactory : public AbstractInstructionNodeFactory {
  public:
   using InstructionMap = std::unordered_map<
       std::string,
       std::function<std::unique_ptr<AbstractSyntaxTreeNode>()>>;
 
   /**
-   * \brief RISCVInstructionNodeFactory
+   * \brief InstructionNodeFactory
    * Creates a Instruction Node Factory for RISC-V architecture
    */
-  RISCVInstructionNodeFactory() {
+  InstructionNodeFactory() {
     initializeInstructionMap();
   }
 
   /*! Default constructed copy constructor */
-  RISCVInstructionNodeFactory(RISCVInstructionNodeFactory &copy) = default;
+  InstructionNodeFactory(InstructionNodeFactory &copy) = default;
 
   /*! Default constructed move constructor */
-  RISCVInstructionNodeFactory(RISCVInstructionNodeFactory &&move) = default;
+  InstructionNodeFactory(InstructionNodeFactory &&move) = default;
 
   /**
    * \brief createInstructionNode
@@ -61,7 +61,7 @@ class RISCVInstructionNodeFactory : public AbstractInstructionNodeFactory {
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
   createInstructionNode(const std::string &token) const override;
 
-  ~RISCVInstructionNodeFactory() = default;
+  ~InstructionNodeFactory() = default;
 
  private:
   /**

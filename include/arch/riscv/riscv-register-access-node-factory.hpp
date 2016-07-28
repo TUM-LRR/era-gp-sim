@@ -25,27 +25,24 @@
 namespace riscv {
 
 /**
- * \brief The RISCVRegisterAccessNodeFactory class is a concrete implementation
+ * \brief The RegisterAccessNodeFactory class is a concrete implementation
  * of AbstractRegisterAccessNodeFactory for the RISC-V architecture.
  */
-class RISCVRegisterAccessNodeFactory
-    : public AbstractRegisterAccessNodeFactory {
+class RegisterAccessNodeFactory : public AbstractRegisterAccessNodeFactory {
  public:
   /**
-   * \brief RISCVRegisterAccessNodeFactory
+   * \brief RegisterAccessNodeFactory
    * Creates a register access node factory for the RISC-V architecture
    */
-  RISCVRegisterAccessNodeFactory() = default;
+  RegisterAccessNodeFactory() = default;
 
   /*! Default constructed copy constructor */
-  RISCVRegisterAccessNodeFactory(RISCVRegisterAccessNodeFactory &copy) =
-      default;
+  RegisterAccessNodeFactory(RegisterAccessNodeFactory &copy) = default;
 
   /*! Default constructed move constructor */
-  RISCVRegisterAccessNodeFactory(RISCVRegisterAccessNodeFactory &&move) =
-      default;
+  RegisterAccessNodeFactory(RegisterAccessNodeFactory &&move) = default;
 
-  ~RISCVRegisterAccessNodeFactory() = default;
+  ~RegisterAccessNodeFactory() = default;
 
   /**
    * \brief createRegisterAccessNode

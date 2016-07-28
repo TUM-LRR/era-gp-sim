@@ -25,30 +25,30 @@
 namespace riscv {
 
 /**
- * \brief The RISCVInstructionNodeFactory class is a
+ * \brief The InstructionNodeFactory class is a
  * concrete Implementation of AbstractInstructionNodeFactory for the RISC-V
  * architecture.
  * \see AbstractInstructionNodeFactory
  */
-class RISCVInstructionNodeFactory : public AbstractInstructionNodeFactory {
+class InstructionNodeFactory : public AbstractInstructionNodeFactory {
  public:
   using InstructionMap = std::unordered_map<
       std::string,
       std::function<std::unique_ptr<AbstractSyntaxTreeNode>()>>;
 
   /**
-   * \brief RISCVInstructionNodeFactory
+   * \brief InstructionNodeFactory
    * Creates a Instruction Node Factory for RISC-V architecture
    */
-  RISCVInstructionNodeFactory() {
+  InstructionNodeFactory() {
     initializeInstructionMap();
   }
 
   /*! Default constructed copy constructor */
-  RISCVInstructionNodeFactory(RISCVInstructionNodeFactory &copy) = default;
+  InstructionNodeFactory(InstructionNodeFactory &copy) = default;
 
   /*! Default constructed move constructor */
-  RISCVInstructionNodeFactory(RISCVInstructionNodeFactory &&move) = default;
+  InstructionNodeFactory(InstructionNodeFactory &&move) = default;
 
   /**
    * \brief createInstructionNode
@@ -61,7 +61,7 @@ class RISCVInstructionNodeFactory : public AbstractInstructionNodeFactory {
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
   createInstructionNode(const std::string &token) const override;
 
-  ~RISCVInstructionNodeFactory() = default;
+  ~InstructionNodeFactory() = default;
 
  private:
   /**
@@ -83,24 +83,24 @@ class RISCVInstructionNodeFactory : public AbstractInstructionNodeFactory {
 };
 
 /**
- * \brief The RISCVImmediateNodeFactory class is a concrete implementation of
+ * \brief The ImmediateNodeFactory class is a concrete implementation of
  * AbstractImmediateNodeFactory for the RISC-V architecture
  */
-class RISCVImmediateNodeFactory : public AbstractImmediateNodeFactory {
+class ImmediateNodeFactory : public AbstractImmediateNodeFactory {
  public:
   /**
-   * \brief RISCVImmediateNodeFactory
+   * \brief ImmediateNodeFactory
    * Creates a Immediate Node Factory for the RISC-V architecture
    */
-  RISCVImmediateNodeFactory() = default;
+  ImmediateNodeFactory() = default;
 
   /*! Default constructed copy constructor */
-  RISCVImmediateNodeFactory(RISCVImmediateNodeFactory &copy) = default;
+  ImmediateNodeFactory(ImmediateNodeFactory &copy) = default;
 
   /*! Default constructed move constructor */
-  RISCVImmediateNodeFactory(RISCVImmediateNodeFactory &&move) = default;
+  ImmediateNodeFactory(ImmediateNodeFactory &&move) = default;
 
-  ~RISCVImmediateNodeFactory() = default;
+  ~ImmediateNodeFactory() = default;
 
   /**
    * \brief createImmediateNode
