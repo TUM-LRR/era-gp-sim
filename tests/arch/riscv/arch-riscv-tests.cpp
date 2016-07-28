@@ -27,8 +27,8 @@
 using namespace riscv;
 
 TEST(InstructionTest, AddInstruction) {
-  RISCVInstructionNodeFactory instructionFactory;
-  RISCVRegisterAccessNodeFactory registerFactory;
+  InstructionNodeFactory instructionFactory;
+  RegisterAccessNodeFactory registerFactory;
 
   std::string addiToken = "ADDI";
   std::string addToken = "ADD";
@@ -91,7 +91,7 @@ TEST(InstructionTest, LoadInstruction) {
 }
 
 TEST(InstructionTest, StoreInstruction) {
-  RISCVInstructionNodeFactory instructionFactory;
+  InstructionNodeFactory instructionFactory;
 
   auto sw = instructionFactory.createInstructionNode("SW");
   auto sh = instructionFactory.createInstructionNode("SH");
