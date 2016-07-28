@@ -22,6 +22,8 @@
 
 #include "arch/riscv/instruction-node.hpp"
 
+namespace riscv {
+
 /**
  * \brief The LoadType enum
  *
@@ -119,5 +121,6 @@ public:
 private:
   StoreType _type;
 };
+}
 
 #endif /* ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_ */

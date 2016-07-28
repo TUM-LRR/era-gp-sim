@@ -22,19 +22,8 @@
 #include <string>
 #include <cassert>
 
-/**
- * @brief The AbstractSyntaxTreeNode struct
- * Placeholder struct, will be replaced by an #include, when
- * AbstractSyntaxTreeNode-Header is ready
- */
-struct AbstractSyntaxTreeNode {};
-
-/**
- * @brief The MemoryValue struct
- * Placeholder struct, will be replaced by an #include, when MemoryValue-Header
- * is ready
- */
-struct MemoryValue {};
+#include "arch/common/abstract-syntax-tree.hpp"
+#include "core/memory-value.hpp"
 
 /**
  * @brief The AbstractInstructionNodeFactory class

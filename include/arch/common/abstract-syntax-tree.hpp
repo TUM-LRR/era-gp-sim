@@ -22,17 +22,13 @@
 #include <string>
 #include <vector>
 
+#include "core/memory-value.hpp"
+
 /*
  * A dummy memory access. It will be replaced by
  * a proper implementation soon.
  */
 struct DummyMemoryAccess {};
-
-/*
- * A dummy memory value. It will be replaced by
- * a proper implementation soon.
- */
-struct MemoryValue {};
 
 /**
  * The different node types of the Syntax Tree.
@@ -176,7 +172,7 @@ public:
   virtual MemoryValue getValue(DummyMemoryAccess &memory_access) override {
     // TODO Return the actual content of the register using the proper
     // memory access
-    return MemoryValue{};
+    return MemoryValue{8};
   }
 
   /**

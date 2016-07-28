@@ -15,27 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "arch/riscv/integer-instructions.hpp"
-#include "arch/riscv/load-store-instructions.hpp"
-
 #include <gtest/gtest.h>
 #include <memory>
 #include <vector>
 
+#include "arch/riscv/integer-instructions.hpp"
+#include "arch/riscv/load-store-instructions.hpp"
+#include "arch/riscv/riscv-node-factories.hpp"
+#include "arch/riscv/instruction-node.hpp"
+
+using namespace riscv;
+
 TEST(InstructionTest, AddInstruction) {
-  AddInstructionNode addiNode{true};
-  AddInstructionNode addNode{false};
+  RISCVInstructionNodeFactory factory;
+  std::string addiToken = "ADDI";
+  std::string addToken = "ADD";
+  auto addiNode = factory.createInstructionNode(addiToken);
+  auto addNode = factory.createInstructionNode(addToken);
 
   // Basic testing
-  ASSERT_EQ(NodeType::INSTRUCTION, addiNode.getType());
-  ASSERT_EQ(NodeType::INSTRUCTION, addNode.getType());
+  ASSERT_EQ(NodeType::INSTRUCTION, addiNode->getType());
+  ASSERT_EQ(NodeType::INSTRUCTION, addNode->getType());
 
-  ASSERT_EQ("ADDI", addiNode.getIdentifier());
-  ASSERT_EQ("ADD", addNode.getIdentifier());
+  ASSERT_EQ("ADDI", addiNode->getIdentifier());
+  ASSERT_EQ("ADD", addNode->getIdentifier());
 
   // Validate the empty syntax trees -> should return false
-  ASSERT_FALSE(addiNode.validate());
-  ASSERT_FALSE(addNode.validate());
+  ASSERT_FALSE(addiNode->validate());
+  ASSERT_FALSE(addNode->validate());
 
   // Create some registers
   auto r1 = std::make_unique<RegisterNode>("zero");
@@ -46,17 +53,17 @@ TEST(InstructionTest, AddInstruction) {
   auto r6 = std::make_unique<RegisterNode>("x0");
 
   // Add the registers
-  addiNode.addChild(std::move(r1));
-  addiNode.addChild(std::move(r2));
-  addiNode.addChild(std::move(r3));
+  addiNode->addChild(std::move(r1));
+  addiNode->addChild(std::move(r2));
+  addiNode->addChild(std::move(r3));
 
-  addNode.addChild(std::move(r4));
-  addNode.addChild(std::move(r5));
-  addNode.addChild(std::move(r6));
+  addNode->addChild(std::move(r4));
+  addNode->addChild(std::move(r5));
+  addNode->addChild(std::move(r6));
 
   // Validate again
-  ASSERT_FALSE(addiNode.validate());
-  ASSERT_TRUE(addNode.validate());
+  ASSERT_FALSE(addiNode->validate());
+  ASSERT_TRUE(addNode->validate());
 }
 
 TEST(InstructionTest, LoadInstruction) {

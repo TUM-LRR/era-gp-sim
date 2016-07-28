@@ -20,6 +20,8 @@
 
 #include "arch/common/abstract-syntax-tree.hpp"
 
+namespace riscv {
+
 /** A node that represents a RISC V specific instruction */
 class InstructionNode : public AbstractSyntaxTreeNode {
 public:
@@ -44,5 +46,7 @@ public:
    */
   bool requireChildren(NodeType type, size_t startIndex, size_t amount);
 };
+
+}
 
 #endif // ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_

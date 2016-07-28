@@ -18,47 +18,77 @@
 #include <algorithm>
 #include <cctype>
 
+#include "arch/riscv/instruction-node.hpp"
+#include "arch/riscv/integer-instructions.hpp"
+#include "arch/riscv/load-store-instructions.hpp"
 #include "arch/riscv/riscv-node-factories.hpp"
 
 using namespace riscv;
 
 void RISCVInstructionNodeFactory::initializeInstructionMap() {
-  // example
-  _instructionMap.emplace("ADD", []() {
-    return std::make_unique<AbstractSyntaxTreeNode>();
+  // Integer Instructions
+  _instructionMap.emplace(
+      "ADD", []() { return std::make_unique<AddInstructionNode>(false); });
+  _instructionMap.emplace(
+      "ADDI", []() { return std::make_unique<AddInstructionNode>(true); });
+  _instructionMap.emplace(
+      "SUB", []() { return std::make_unique<SubInstructionNode>(false); });
+  _instructionMap.emplace(
+      "SUBI", []() { return std::make_unique<SubInstructionNode>(true); });
+
+  // Load/Store Instructions
+  _instructionMap.emplace("LW", []() {
+      return std::make_unique<LoadInstructionNode>(LoadType::WORD);
   });
-  // example
-  _instructionMap.emplace("SUB", []() {
-    return std::make_unique<AbstractSyntaxTreeNode>();
+  _instructionMap.emplace("LH", []() {
+      return std::make_unique<LoadInstructionNode>(LoadType::HALF_WORD);
+  });
+  _instructionMap.emplace("LHU", []() {
+      return std::make_unique<LoadInstructionNode>(LoadType::HALF_WORD_UNSIGNED);
+  });
+  _instructionMap.emplace("LB", []() {
+      return std::make_unique<LoadInstructionNode>(LoadType::BYTE);
+  });
+  _instructionMap.emplace("LBU", []() {
+      return std::make_unique<LoadInstructionNode>(LoadType::BYTE_UNSIGNED);
+  });
+  _instructionMap.emplace("SW", []() {
+      return std::make_unique<StoreInstructionNode>(StoreType::WORD);
+  });
+  _instructionMap.emplace("SH", []() {
+      return std::make_unique<StoreInstructionNode>(StoreType::HALF_WORD);
+  });
+  _instructionMap.emplace("SB", []() {
+      return std::make_unique<StoreInstructionNode>(StoreType::BYTE);
   });
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
-RISCVInstructionNodeFactory::createInstructionNode(std::string& token) {
+RISCVInstructionNodeFactory::createInstructionNode(std::string &token) {
   using std::begin;
   using std::end;
 
-  //transform token to uppercase
+  // transform token to uppercase
   std::string upper = token;
   std::transform(begin(upper), end(upper), begin(upper), toupper);
 
-  auto it = _instructionMap.find(upper);  // lookup the uppercase token
+  auto it = _instructionMap.find(upper); // lookup the uppercase token
   if (it != end(_instructionMap)) {
-    return it->second();  // dereference iterator to the key-value pair and call
-                          // the function
+    return it->second(); // dereference iterator to the key-value pair and call
+                         // the function
   } else {
-    return nullptr;  // return nullptr as the uppercase token could not be found
+    return nullptr; // return nullptr as the uppercase token could not be found
   }
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 RISCVImmediateNodeFactory::createImmediateNode(MemoryValue &value) {
-  return nullptr;  // TODO construct Immediate Node
+  return nullptr; // TODO construct Immediate Node
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 RISCVRegisterAccessNodeFactory::createRegisterAccessNode(
-    const std::string& id) {
+    const std::string &id) {
   /*
    * TODO Waiting for Register-Access Node to be implemented
    */

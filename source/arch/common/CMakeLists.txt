@@ -10,6 +10,7 @@ set(ARCH_COMMON_SOURCES
   architecture.cpp
   instruction-set.cpp
   instruction-information.cpp
+  abstract-node-factories.cpp
 )
 
 ########################################
@@ -17,3 +18,5 @@ set(ARCH_COMMON_SOURCES
 ########################################
 
 add_library(era-sim-arch-common STATIC ${ARCH_COMMON_SOURCES})
+
+target_link_libraries(era-sim-arch-common era-sim-core)
