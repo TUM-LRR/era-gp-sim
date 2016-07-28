@@ -67,7 +67,6 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
     assert(!isEmpty());
   }
 
-
   /**
    * Tests for equality of two formulae.
    *

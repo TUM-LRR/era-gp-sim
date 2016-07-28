@@ -47,7 +47,7 @@ struct ArchCommonTestFixture : ::testing::Test {
 
     unitInformation.name("cpu").addRegister(registerInformation);
 
-    instructionKey.addPair("opcode", 6).addPair("function", 9);
+    instructionKey.addEntry("opcode", 6).addEntry("function", 9);
     instructionInformation.mnemonic("add").key(instructionKey);
 
     // clang-format off
@@ -116,17 +116,23 @@ TEST(ArchCommonTest, TestRegisterInformation) {
   EXPECT_FALSE(registerInformation.isSpecial());
   registerInformation.type(RegisterInformation::Type::LINK);
   EXPECT_TRUE(registerInformation.isSpecial());
+
+  // clang-format off
+  EXPECT_TRUE(RegisterInformation::isSpecialType(
+    registerInformation.getType()
+  ));
+  // clang-format on
 }
 
 TEST(ArchCommonTest, TestInstructionKey) {
   auto key =
       InstructionKey()
-          .addPair("function", 2)
-          .addPairs({{"foo", 3}, {"bar", 4}})
-          .addPairs(std::unordered_map<std::string, std::size_t>{{"baz", 5}});
+          .addEntry("function", 2)
+          .addEntries({{"foo", 3}, {"bar", 4}})
+          .addEntries(std::unordered_map<std::string, std::size_t>{{"baz", 5}});
 
   EXPECT_FALSE(key.isValid());
-  key.addPair("opcode", 1);
+  key.addEntry("opcode", 1);
   EXPECT_TRUE(key.isValid());
 
   EXPECT_TRUE(key.hasKey("opcode"));
@@ -184,8 +190,11 @@ TEST(ArchCommonTest, TestInstructionInformation) {
   InstructionKey key({{"opcode", 6}, {"function", 9}});
 
   EXPECT_FALSE(instruction.isValid());
+  EXPECT_FALSE(instruction.hasKey());
   instruction.key(key);
   EXPECT_TRUE(instruction.isValid());
+  EXPECT_TRUE(instruction.hasKey());
+  EXPECT_TRUE(instruction.hasMnemonic());
 
   EXPECT_EQ(instruction.getMnemonic(), "add");
   EXPECT_EQ(instruction.getKey(), key);

@@ -39,7 +39,6 @@
  * registers.
  */
 class UnitInformation : public ContainerAdapter<RegisterContainer>,
-                        public BuilderInterface,
                         public InformationInterface {
  public:
   using super = ContainerAdapter<RegisterContainer>;
@@ -207,12 +206,11 @@ class UnitInformation : public ContainerAdapter<RegisterContainer>,
   /**
    * Adds a list of RegisterInformation objects to the unit.
    *
-   *
-   * @param regs A list of RegisterInformation objects.
+   * @param registers A list of RegisterInformation objects.
    *
    * @return The current unit object.
    */
-  UnitInformation& addRegisters(InitializerList regs);
+  UnitInformation& addRegisters(InitializerList registers);
 
   /**
    * Adds a single RegisterInformation object to the unit.

@@ -22,6 +22,7 @@
 
 #include <string>
 
+#include "common/builder-interface.hpp"
 #include "third-party/json/json.hpp"
 
 
@@ -29,8 +30,10 @@
  * The base class for all information classes.
  *
  * Defines information classes' interface w.r.t to deserialization from JSON.
+ * As all information objects support the builder pattern and builder interface,
+ * this class inherits from the `BuilerInterface` class.
  */
-class InformationInterface {
+class InformationInterface : public BuilderInterface {
  public:
   using Format = nlohmann::json;
 
@@ -76,6 +79,12 @@ class InformationInterface {
    * @return The data after deserialization.
    */
   friend Format& operator>>(Format& data, InformationInterface& information);
+
+  /*
+  * Can't make `deserialize()` pure virtual because the
+  * return type should be the concrete class instance,
+  * which cannot be virtualized
+  */
 
  protected:
   virtual void _deserialize(Format& data) = 0;

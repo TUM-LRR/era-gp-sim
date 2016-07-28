@@ -17,7 +17,6 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <cassert>
 #include <string>
 
@@ -83,9 +82,9 @@ bool UnitInformation::hasSpecialRegisters() const noexcept {
   return !_specialRegisters.empty();
 }
 
-UnitInformation& UnitInformation::addRegisters(InitializerList regs) {
-  assert(regs.size() > 0);
-  return addRegisters<InitializerList>(regs);
+UnitInformation& UnitInformation::addRegisters(InitializerList registers) {
+  assert(registers.size() > 0);
+  return addRegisters<InitializerList>(registers);
 }
 
 UnitInformation&

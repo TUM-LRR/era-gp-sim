@@ -65,7 +65,12 @@ InstructionInformation::mnemonic(const std::string& mnemonic) {
 }
 
 const std::string& InstructionInformation::getMnemonic() const noexcept {
+  assert(hasMnemonic());
   return _mnemonic;
+}
+
+bool InstructionInformation::hasMnemonic() const noexcept {
+  return !_mnemonic.empty();
 }
 
 InstructionInformation& InstructionInformation::key(const InstructionKey& key) {
@@ -74,8 +79,12 @@ InstructionInformation& InstructionInformation::key(const InstructionKey& key) {
 }
 
 const InstructionKey& InstructionInformation::getKey() const noexcept {
-  assert(_key.isValid());
+  assert(hasKey());
   return _key;
+}
+
+bool InstructionInformation::hasKey() const noexcept {
+  return _key.isValid();
 }
 
 bool InstructionInformation::isValid() const noexcept {

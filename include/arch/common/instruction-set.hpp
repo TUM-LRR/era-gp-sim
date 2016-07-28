@@ -38,7 +38,6 @@ using UnderlyingInstructionSetContainer =
  * have a name).
  */
 class InstructionSet : public UnderlyingInstructionSetContainer,
-                       public BuilderInterface,
                        public InformationInterface {
  public:
   using super = UnderlyingInstructionSetContainer;

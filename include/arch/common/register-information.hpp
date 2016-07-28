@@ -56,8 +56,7 @@
  * - The type defauls to `Type::INTEGER`.
  * - The ID defaults to an instance-unique (static), incrementing ID.
  */
-class RegisterInformation : public BuilderInterface,
-                            public InformationInterface {
+class RegisterInformation : public InformationInterface {
  public:
   using id_t      = std::size_t;
   using size_t    = unsigned short;
@@ -67,6 +66,21 @@ class RegisterInformation : public BuilderInterface,
   /** The type of data stored in this register. */
   enum class Type { INTEGER, FLOAT, VECTOR, FLAG, LINK, PROGRAM_COUNTER };
 
+  /**
+   * Tests if the given register type is special.
+   *
+   * A register type is "special" if it represents some extraordinary
+   * function within a unit. In detail, this function returns true if the type
+   * is not integer, float or vector.
+   *
+   * param type The type to test.
+   *
+   */
+  static bool isSpecialType(Type type) noexcept;
+
+  /**
+   * Default-constructs the RegisterInformation object.
+   */
   RegisterInformation();
 
   /**
@@ -192,7 +206,7 @@ class RegisterInformation : public BuilderInterface,
   /**
    * Returns whether or not the register is special.
    *
-   * A special register is a register that fulfills some extraordinary funciton
+   * A special register is a register that fulfills some extraordinary function
    * within a unit. There can be at most one such register per unit. In detail,
    * a special register is any whose type is not integer, float or vector.
    *

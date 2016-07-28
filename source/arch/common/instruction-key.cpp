@@ -22,10 +22,6 @@
 #include "arch/common/instruction-key.hpp"
 
 
-// change instruction set to hashset to provide lookup to parser
-// or reimplement comparison == to not respect order
-
-
 InstructionKey::InstructionKey(InformationInterface::Format& data) {
   _deserialize(data);
 }
@@ -42,20 +38,20 @@ bool InstructionKey::operator!=(const InstructionKey& other) const noexcept {
   return !(*this == other);
 }
 
-InstructionKey& InstructionKey::deserialize(
-    InformationInterface::Format& data) {
+InstructionKey&
+InstructionKey::deserialize(InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
 
-InstructionKey& InstructionKey::addPair(const Key& key, const Value& value) {
+InstructionKey& InstructionKey::addEntry(const Key& key, const Value& value) {
   assert(!hasKey(key));
   _container.emplace(key, value);
 
   return *this;
 }
 
-InstructionKey& InstructionKey::addPairs(InitializerList list) {
+InstructionKey& InstructionKey::addEntries(InitializerList list) {
   assert(list.size() > 0);
   _container.insert(list);
 
@@ -107,6 +103,6 @@ bool InstructionKey::isValid() const noexcept {
 void InstructionKey::_deserialize(InformationInterface::Format& data) {
   assert(!data.empty());
   for (auto pair = data.begin(); pair != data.end(); ++pair) {
-    addPair(pair.key(), pair.value());
+    addEntry(pair.key(), pair.value());
   }
 }

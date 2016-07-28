@@ -23,6 +23,7 @@
 #include "common/utility.hpp"
 
 namespace Utility {
+
 std::string rootPath() {
   static const std::string query("era-gp-sim");
   static std::string root;
@@ -31,11 +32,8 @@ std::string rootPath() {
     // Hope it exists
     root = __FILE__;
 
-    auto index    = root.rfind(query) + query.length();
-    auto iterator = root.begin();
-    std::advance(iterator, index);
-
-    root.erase(iterator, root.end());
+    auto index = root.rfind(query) + query.length();
+    root.erase(index);
   }
 
   return root;

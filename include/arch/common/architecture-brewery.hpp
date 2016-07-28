@@ -99,8 +99,8 @@ class ArchitectureBrewery {
    *
    * @return The finished extension.
    */
-  ExtensionInformation _brew(const std::string& extensionName,
-                             TraversalStack& traversalStack);
+  ExtensionInformation
+  _brew(const std::string& extensionName, TraversalStack& traversalStack);
 
   /**
    * Refactors the loading of dependencies (traversing adjacent edges).

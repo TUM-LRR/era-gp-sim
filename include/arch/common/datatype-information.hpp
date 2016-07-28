@@ -39,8 +39,7 @@
  *
  * The class' interface is intended to support the BuilderInterface pattern
  */
-class DataTypeInformation : public BuilderInterface,
-                            public InformationInterface {
+class DataTypeInformation : public InformationInterface {
  public:
   using size_t = unsigned short;
 

@@ -55,7 +55,6 @@
 template <typename UnderlyingTemplate>
 class ContainerAdapter {
  public:
-  // Choose const or non-const version of container
   using Underlying      = UnderlyingTemplate;
   using Iterator        = typename Underlying::iterator;
   using ConstIterator   = typename Underlying::const_iterator;

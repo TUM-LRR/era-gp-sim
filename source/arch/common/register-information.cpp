@@ -25,6 +25,10 @@
 
 typename RegisterInformation::id_t RegisterInformation::_rollingID = 0;
 
+bool RegisterInformation::isSpecialType(Type type) noexcept {
+  return type != Type::INTEGER && type != Type::FLOAT && type != Type::VECTOR;
+}
+
 RegisterInformation::RegisterInformation()
 : _id(_rollingID++), _type(Type::INTEGER) {
 }
@@ -116,11 +120,7 @@ RegisterInformation::Type RegisterInformation::getType() const noexcept {
 }
 
 bool RegisterInformation::isSpecial() const noexcept {
-  // clang-format off
-  return _type != Type::INTEGER &&
-         _type != Type::FLOAT &&
-         _type != Type::VECTOR;
-  // clang-format on
+  return RegisterInformation::isSpecialType(_type);
 }
 
 bool RegisterInformation::isConstant() const noexcept {

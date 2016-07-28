@@ -35,8 +35,7 @@
  *
  * The class' interface is intended to support the BuilderInterface pattern.
  */
-class InstructionInformation : public BuilderInterface,
-                               public InformationInterface {
+class InstructionInformation : public InformationInterface {
  public:
   /**
   * Deserializes and constructs the `InstructionInformation` from the given
@@ -61,7 +60,6 @@ class InstructionInformation : public BuilderInterface,
    */
   InstructionInformation(const std::string& mnemonic,
                          const InstructionKey& key);
-
 
   /**
    * Tests for equality of two instructions.
@@ -106,6 +104,11 @@ class InstructionInformation : public BuilderInterface,
   const std::string& getMnemonic() const noexcept;
 
   /**
+   * Tests if the instruction has a mnemonic set.
+   */
+  bool hasMnemonic() const noexcept;
+
+  /**
    * Sets the key of the instruction.
    *
    * @param key The new key for the instruction.
@@ -118,6 +121,11 @@ class InstructionInformation : public BuilderInterface,
    * Returns the key of the instruction.
    */
   const InstructionKey& getKey() const noexcept;
+
+  /**
+   * Tests if the instruction has an instruction key set.
+   */
+  bool hasKey() const noexcept;
 
   /** @copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;

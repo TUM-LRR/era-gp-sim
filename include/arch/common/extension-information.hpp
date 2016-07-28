@@ -41,24 +41,25 @@
  *
  * In our model, an architecture is split into one or many extensions. An
  * extension is then further composed mainly of three things:
+ *
  * 1. One or more units, such as a CPU.
  * 2. An instruction set.
  * 3. Auxiliary information, such as word size or endiannss.
+ *
  * An architecture can then be built by specifying a base-extension and
  * optionally stacking any further extension on top of that base. This allows
  * for a highly modular design, as envisioned by the creators of RISC-V. Note
  * that this also means that an extension may be a complete architecture in
- * itself, if it defines at least one unit and one instruction, but must not
- * necessarily be. For example, RVA32/64 extensions define only additional
- * instructions (for atomic operations), but no additional unit (hardware
- * registers).
+ * itself, if it defines at least one unit (with at least one register) and one
+ * instruction, but must not necessarily be. For example, RVA32/64 extensions
+ * define only additional instructions (for atomic operations), but no
+ * additional unit (hardware registers).
  *
  * An `ExtensionInformation` can be built easily on-top of anther via the
- * supported interface. In general, the API follows the BuilderInterface
- * pattern.
+ * supported interface (e.g. `extend`). In general, the API follows the
+ * BuilderInterface pattern.
  */
-class ExtensionInformation : public BuilderInterface,
-                             public InformationInterface {
+class ExtensionInformation : public InformationInterface {
  public:
   using size_t            = unsigned short;
   using UnitList          = std::initializer_list<UnitInformation>;
@@ -162,7 +163,7 @@ class ExtensionInformation : public BuilderInterface,
   const std::string& getName() const noexcept;
 
   /**
-   * Tests if the extension has a name set.
+   * Tests if the extension has a name assigned.
    */
   bool hasName() const noexcept;
 
