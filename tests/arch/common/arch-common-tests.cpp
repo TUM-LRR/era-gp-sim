@@ -118,32 +118,9 @@ TEST(ArchCommonTest, TestRegisterInformation) {
   EXPECT_TRUE(registerInformation.isSpecial());
 
   // clang-format off
-<<<<<<< HEAD
   EXPECT_TRUE(RegisterInformation::isSpecialType(
     registerInformation.getType()
   ));
-=======
-  auto eax =
-    RegisterInformation("eax")
-    .id(0)
-    .size(32)
-    .type(RegisterInformation::Type::INTEGER)
-    //.hardwiredTo(5)
-    .addAlias("zero")
-    .enclosing(1)
-    .addConstituents({1, 2, 3});
-  auto unit = UnitInformation("cpu").addRegister(eax);
-  auto add = InstructionInformation("add").key(5);
-  auto set = InstructionSet({add});
-  auto base = ExtensionInformation("rvi32")
-    .alignmentBehavior(Information::AlignmentBehavior::STRICT)
-    .endianness(Information::Endianness::LITTLE)
-    .wordSize(32)
-    .addUnit(unit)
-    .addInstructions(set);
-  auto arch = Architecture("risc-v", base).validate();
->>>>>>> 324908ae885160a67a8d5b6d101c596aba618d3e
-  // clang-format on
 }
 
 TEST(ArchCommonTest, TestInstructionKey) {

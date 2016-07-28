@@ -14,29 +14,3 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
-
-#include "arch/common/abstract-node-factories.hpp"
-
-/*
- * Stub implementations for the destructors
- */
-
-// INSTRUCTION NODE
-
-AbstractInstructionNodeFactory::~AbstractInstructionNodeFactory() {}
-
-// IMMEDIATE NODE
-
-AbstractImmediateNodeFactory::~AbstractImmediateNodeFactory() {}
-
-// REGISTER ACCESS NODE
-
-AbstractRegisterAccessNodeFactory::~AbstractRegisterAccessNodeFactory() {}
-
-// MEMORY ACCESS NODE
-
-AbstractMemoryAccessNodeFactory::~AbstractMemoryAccessNodeFactory() {}
-
-// ARITHMETIC OPERATION NODE
-
-AbstractArithmeticOpNodeFactory::~AbstractArithmeticOpNodeFactory() {}
