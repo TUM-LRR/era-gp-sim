@@ -18,13 +18,12 @@
 #include <algorithm>
 #include <cctype>
 
-#include "arch/common/abstract-syntax-tree.hpp"
+#include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
-#include "arch/riscv/riscv-node-factories.hpp"
 
-using namespace riscv;
+namespace riscv {
 
 void InstructionNodeFactory::initializeInstructionMap() {
   // Integer Instructions
@@ -65,8 +64,7 @@ void InstructionNodeFactory::initializeInstructionMap() {
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
-InstructionNodeFactory::createInstructionNode(
-    const std::string &token) const {
+InstructionNodeFactory::createInstructionNode(const std::string &token) const {
   using std::begin;
   using std::end;
 
@@ -74,22 +72,12 @@ InstructionNodeFactory::createInstructionNode(
   std::string upper = token;
   std::transform(begin(upper), end(upper), begin(upper), toupper);
 
-  auto it = _instructionMap.find(upper); // lookup the uppercase token
+  auto it = _instructionMap.find(upper);// lookup the uppercase token
   if (it != end(_instructionMap)) {
-    return it->second(); // dereference iterator to the key-value pair and call
-                         // the function
+    return it->second();// dereference iterator to the key-value pair and call
+                        // the function
   } else {
-    return nullptr; // return nullptr as the uppercase token could not be found
+    return nullptr;// return nullptr as the uppercase token could not be found
   }
 }
-
-std::unique_ptr<AbstractSyntaxTreeNode>
-ImmediateNodeFactory::createImmediateNode(MemoryValue &value) const {
-  return std::make_unique<ImmediateNode>(value);
-}
-
-std::unique_ptr<AbstractSyntaxTreeNode>
-RegisterAccessNodeFactory::createRegisterAccessNode(
-    const std::string &id) const {
-  return std::make_unique<RegisterNode>(id);
 }

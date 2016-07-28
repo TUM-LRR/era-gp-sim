@@ -15,29 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_
-#define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_
+#ifndef ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
+#define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
 
-#include "arch/common/abstract-syntax-tree.hpp"
+#include "arch/common/abstract-syntax-tree-node.hpp"
+#include "core/memory-value.hpp"
 
 namespace riscv {
-
 /** A node that represents a RISC V specific instruction */
 class InstructionNode : public AbstractSyntaxTreeNode {
-public:
+ public:
   /**
    * Constructs a new node that represents a RISC V specific instruction.
    */
-  InstructionNode() : AbstractSyntaxTreeNode(NodeType::INSTRUCTION) {}
+  InstructionNode() : AbstractSyntaxTreeNode(NodeType::INSTRUCTION) {
+  }
 
   /* Ensure this class is also pure virtual */
   virtual MemoryValue getValue(DummyMemoryAccess &memory_access) = 0;
-  virtual bool validate() = 0;
-  virtual MemoryValue assemble() = 0;
-  virtual std::string getIdentifier() = 0;
+  virtual bool validate()                                        = 0;
+  virtual MemoryValue assemble()                                 = 0;
+  virtual std::string getIdentifier()                            = 0;
 
   /**
-   * Checks if this node has 'amount' children of type 'type', starting at index
+   * Checks if this node has 'amount' children of type 'type', starting at
+   * index
    * 'startIndex'.
    *
    * \param startIndex The index to start checking for registers.
@@ -46,7 +48,6 @@ public:
    */
   bool requireChildren(NodeType type, size_t startIndex, size_t amount);
 };
-
 }
 
-#endif // ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_
+#endif /* ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP */

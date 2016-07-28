@@ -18,16 +18,19 @@
 #ifndef ERAGPSIM_ARCH_ABSTRACT_REGISTER_ACCESS_NODE_FACTORY_HPP
 #define ERAGPSIM_ARCH_ABSTRACT_REGISTER_ACCESS_NODE_FACTORY_HPP
 
+#include <string>
+
+#include "arch/common/abstract-syntax-tree-node.hpp"
+
 /**
  * @brief The AbstractRegisterAccessNodeFactory class
  * Abstract factory type for creating SyntaxTreeNodes of type register access
  */
 class AbstractRegisterAccessNodeFactory {
  public:
-  AbstractRegisterAccessNodeFactory() {
-  }
+  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
 
-  virtual ~AbstractRegisterAccessNodeFactory();
+  virtual ~AbstractRegisterAccessNodeFactory() = default;
 
   /**
    * @brief createRegisterAccessNode
@@ -40,7 +43,7 @@ class AbstractRegisterAccessNodeFactory {
    * @return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given registerAddress is invalid
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
+  virtual Node
   createRegisterAccessNode(const std::string &registerAddress) const = 0;
 };
 

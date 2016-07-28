@@ -14,3 +14,18 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+
+#include <memory>
+#include <string>
+
+#include "arch/riscv/register-access-node-factory.hpp"
+
+namespace riscv {
+
+RegisterAccessNodeFactory::Node
+RegisterAccessNodeFactory::createRegisterAccessNode(
+    const std::string &id) const {
+  // return std::make_unique<RegisterAccessNode>(id);
+  return {};
+}
+}

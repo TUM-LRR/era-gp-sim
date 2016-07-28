@@ -20,6 +20,8 @@
 
 #include <memory>
 
+#include "arch/common/abstract-syntax-tree-node.hpp"
+
 class MemoryValue;
 
 /**
@@ -30,10 +32,7 @@ class AbstractImmediateNodeFactory {
  public:
   using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
 
-  AbstractImmediateNodeFactory() {
-  }
-
-  virtual ~AbstractImmediateNodeFactory();
+  virtual ~AbstractImmediateNodeFactory() = default;
 
   /**
    * @brief createImmediateNode

@@ -31,10 +31,10 @@ TEST(InstructionTest, AddInstruction) {
   RegisterAccessNodeFactory registerFactory;
 
   std::string addiToken = "ADDI";
-  std::string addToken = "ADD";
+  std::string addToken  = "ADD";
 
   auto addiNode = instructionFactory.createInstructionNode(addiToken);
-  auto addNode = instructionFactory.createInstructionNode(addToken);
+  auto addNode  = instructionFactory.createInstructionNode(addToken);
 
   // Basic testing
   ASSERT_EQ(NodeType::INSTRUCTION, addiNode->getType());

@@ -32,7 +32,7 @@ class AbstractInstructionNodeFactory {
  public:
   using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
 
-  virtual ~AbstractInstructionNodeFactory();
+  virtual ~AbstractInstructionNodeFactory() = default;
 
   /**
    * @brief createInstructionNode

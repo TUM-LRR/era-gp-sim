@@ -10,4 +10,4 @@ add_compile_options(-Os -O3 -g -Werror)
 
 add_subdirectory(arch)
 add_subdirectory(common)
-# add_subdirectory(core)
+add_subdirectory(core)
