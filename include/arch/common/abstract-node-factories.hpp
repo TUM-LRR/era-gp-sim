@@ -18,30 +18,19 @@
 #ifndef ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
 #define ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
 
+#include <cassert>
 #include <memory>
 #include <string>
-#include <cassert>
 
-/**
- * @brief The AbstractSyntaxTreeNode struct
- * Placeholder struct, will be replaced by an #include, when
- * AbstractSyntaxTreeNode-Header is ready
- */
-struct AbstractSyntaxTreeNode {};
-
-/**
- * @brief The MemoryValue struct
- * Placeholder struct, will be replaced by an #include, when MemoryValue-Header
- * is ready
- */
-struct MemoryValue {};
+#include "arch/common/abstract-syntax-tree.hpp"
+#include "core/memory-value.hpp"
 
 /**
  * @brief The AbstractInstructionNodeFactory class
  * Abstract factory type for creating SyntaxTreeNodes of type instruction
  */
 class AbstractInstructionNodeFactory {
- public:
+public:
   AbstractInstructionNodeFactory() {}
 
   virtual ~AbstractInstructionNodeFactory();
@@ -60,7 +49,7 @@ class AbstractInstructionNodeFactory {
    * instruction
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createInstructionNode(std::string& token) = 0;
+  createInstructionNode(const std::string &token) const = 0;
 };
 
 /**
@@ -68,7 +57,7 @@ class AbstractInstructionNodeFactory {
  * Abstract factory type for creating SyntaxTreeNodes of type immediate
  */
 class AbstractImmediateNodeFactory {
- public:
+public:
   AbstractImmediateNodeFactory() {}
 
   virtual ~AbstractImmediateNodeFactory();
@@ -86,7 +75,7 @@ class AbstractImmediateNodeFactory {
    * immediate from the given numericalValue
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createImmediateNode(MemoryValue& numericalValue) = 0;
+  createImmediateNode(MemoryValue &numericalValue) const = 0;
 };
 
 /**
@@ -94,7 +83,7 @@ class AbstractImmediateNodeFactory {
  * Abstract factory type for creating SyntaxTreeNodes of type register access
  */
 class AbstractRegisterAccessNodeFactory {
- public:
+public:
   AbstractRegisterAccessNodeFactory() {}
 
   virtual ~AbstractRegisterAccessNodeFactory();
@@ -111,7 +100,7 @@ class AbstractRegisterAccessNodeFactory {
    * nullptr if the given registerAddress is invalid
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createRegisterAccessNode(const std::string& registerAddress) = 0;
+  createRegisterAccessNode(const std::string &registerAddress) const = 0;
 };
 
 /**
@@ -119,7 +108,7 @@ class AbstractRegisterAccessNodeFactory {
  * Abstract factory type for creating SyntaxTreeNodes of type memory access
  */
 class AbstractMemoryAccessNodeFactory {
- public:
+public:
   AbstractMemoryAccessNodeFactory() {}
 
   virtual ~AbstractMemoryAccessNodeFactory();
@@ -131,7 +120,8 @@ class AbstractMemoryAccessNodeFactory {
    *
    * @return std::unique_ptr pointing to the newly created SyntaxTreeNode
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode> createMemoryAccessNode() = 0;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode>
+  createMemoryAccessNode() const = 0;
 };
 
 /**
@@ -140,7 +130,7 @@ class AbstractMemoryAccessNodeFactory {
  * operation
  */
 class AbstractArithmeticOpNodeFactory {
- public:
+public:
   static constexpr int ADDITION = 1;
   static constexpr int SUBTRACTION = 2;
   static constexpr int MULTIPLICATION = 3;
@@ -163,7 +153,7 @@ class AbstractArithmeticOpNodeFactory {
    * nullptr if the given opType is invalid
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createArithmeticOperationNode(const int opType) = 0;
+  createArithmeticOperationNode(const int opType) const = 0;
 };
 
 /**
@@ -172,7 +162,7 @@ class AbstractArithmeticOpNodeFactory {
  * The interface of each AbstractNodeFactory is copied for convienient use.
  */
 class AbstractNodeFactoryCollection {
- public:
+public:
   /**
    * \brief AbstractNodeFactoryCollection
    * Constructs a AbstractFactoryCollection containing no instances.
@@ -187,10 +177,10 @@ class AbstractNodeFactoryCollection {
 
   /*! No copy constructor as this class uses std::unique_ptr for holding the
    * factory-instances. Use std::move instead */
-  AbstractNodeFactoryCollection(AbstractNodeFactoryCollection& copy) = delete;
+  AbstractNodeFactoryCollection(AbstractNodeFactoryCollection &copy) = delete;
 
   /*! Default constructed move constructor */
-  AbstractNodeFactoryCollection(AbstractNodeFactoryCollection&& move) = default;
+  AbstractNodeFactoryCollection(AbstractNodeFactoryCollection &&move) = default;
 
   /**
    * \brief ~AbstractNodeFactoryCollection default dtor
@@ -202,8 +192,8 @@ class AbstractNodeFactoryCollection {
    * method call, otherwise the assertion will fail
    * \copydoc AbstractInstructionNodeFactory::createInstructionNode
    */
-  inline std::unique_ptr<AbstractSyntaxTreeNode> createInstructionNode(
-      std::string& token) {
+  inline std::unique_ptr<AbstractSyntaxTreeNode>
+  createInstructionNode(std::string &token) const {
     assert(_instructionFactory);
     return _instructionFactory->createInstructionNode(token);
   }
@@ -213,8 +203,8 @@ class AbstractNodeFactoryCollection {
    * method call, otherwise the assertion will fail
    * \copydoc AbstractImmediateNodeFactory::createImmediateNode
    */
-  inline std::unique_ptr<AbstractSyntaxTreeNode> createImmediateNode(
-      MemoryValue numericalValue) {
+  inline std::unique_ptr<AbstractSyntaxTreeNode>
+  createImmediateNode(MemoryValue numericalValue) const {
     assert(_immediateFactory);
     return _immediateFactory->createImmediateNode(numericalValue);
   }
@@ -224,8 +214,8 @@ class AbstractNodeFactoryCollection {
    * method call, otherwise the assertion will fail
    * \copydoc AbstractRegisterAccessNodeFactory::createRegisterAccessNode
    */
-  inline std::unique_ptr<AbstractSyntaxTreeNode> createRegisterAccessNode(
-      const std::string& registerAddress) {
+  inline std::unique_ptr<AbstractSyntaxTreeNode>
+  createRegisterAccessNode(const std::string &registerAddress) const {
     assert(_registerAccessFactory);
     return _registerAccessFactory->createRegisterAccessNode(registerAddress);
   }
@@ -235,7 +225,8 @@ class AbstractNodeFactoryCollection {
    * method call, otherwise the assertion will fail
    * \copydoc AbstractMemoryAccessNodeFactory::createMemoryAccessNode
    */
-  inline std::unique_ptr<AbstractSyntaxTreeNode> createMemoryAccessNode() {
+  inline std::unique_ptr<AbstractSyntaxTreeNode>
+  createMemoryAccessNode() const {
     assert(_memoryAccessFactory);
     return _memoryAccessFactory->createMemoryAccessNode();
   }
@@ -245,8 +236,8 @@ class AbstractNodeFactoryCollection {
    * method call, otherwise the assertion will fail
    * \copydoc AbstractArithmeticOpNodeFactory::createArithmeticOperationNode
    */
-  inline std::unique_ptr<AbstractSyntaxTreeNode> createArithmeticOperationNode(
-      const int opType) {
+  inline std::unique_ptr<AbstractSyntaxTreeNode>
+  createArithmeticOperationNode(const int opType) const {
     assert(_arithmeticOperationFactory);
     return _arithmeticOperationFactory->createArithmeticOperationNode(opType);
   }
@@ -260,8 +251,8 @@ class AbstractNodeFactoryCollection {
    * \return this instance for method chaining
    * \see createInstructionNode(std::string&)
    */
-  AbstractNodeFactoryCollection& setInstructionFactory(
-      std::unique_ptr<AbstractInstructionNodeFactory>&& instructionFactory) {
+  AbstractNodeFactoryCollection &setInstructionFactory(
+      std::unique_ptr<AbstractInstructionNodeFactory> &&instructionFactory) {
     assert(instructionFactory);
     _instructionFactory = std::move(instructionFactory);
     return *this;
@@ -276,8 +267,8 @@ class AbstractNodeFactoryCollection {
    * \return this instance for method chaining
    * \see createImmediateNode(MemoryValue)
    */
-  AbstractNodeFactoryCollection& setImmediateFactory(
-      std::unique_ptr<AbstractImmediateNodeFactory>&& immediateFactory) {
+  AbstractNodeFactoryCollection &setImmediateFactory(
+      std::unique_ptr<AbstractImmediateNodeFactory> &&immediateFactory) {
     assert(immediateFactory);
     _immediateFactory = std::move(immediateFactory);
     return *this;
@@ -292,9 +283,9 @@ class AbstractNodeFactoryCollection {
    * \return this instance for method chaining
    * \see createRegisterAccessNode(const std::string&)
    */
-  AbstractNodeFactoryCollection& setRegisterFactory(
-      std::unique_ptr<AbstractRegisterAccessNodeFactory>&&
-          registerAccessFactory) {
+  AbstractNodeFactoryCollection &
+  setRegisterFactory(std::unique_ptr<AbstractRegisterAccessNodeFactory>
+                         &&registerAccessFactory) {
     assert(registerAccessFactory);
     _registerAccessFactory = std::move(registerAccessFactory);
     return *this;
@@ -309,8 +300,8 @@ class AbstractNodeFactoryCollection {
    * \return this instance for method chaining
    * \see createMemoryAccessNode()
    */
-  AbstractNodeFactoryCollection& setMemoryFactory(
-      std::unique_ptr<AbstractMemoryAccessNodeFactory>&& memoryAccessFactory) {
+  AbstractNodeFactoryCollection &setMemoryFactory(
+      std::unique_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory) {
     assert(memoryAccessFactory);
     _memoryAccessFactory = std::move(memoryAccessFactory);
     return *this;
@@ -325,14 +316,14 @@ class AbstractNodeFactoryCollection {
    * \return this instance for method chaining
    * \see createArithemticOperationNode(const int)
    */
-  AbstractNodeFactoryCollection& setArithmeticOpFactory(
-      std::unique_ptr<AbstractArithmeticOpNodeFactory>&& arithOpFactory) {
+  AbstractNodeFactoryCollection &setArithmeticOpFactory(
+      std::unique_ptr<AbstractArithmeticOpNodeFactory> &&arithOpFactory) {
     assert(arithOpFactory);
     _arithmeticOperationFactory = std::move(arithOpFactory);
     return *this;
   }
 
- private:
+private:
   /**
    * \brief _instructionFactory points to a AbstractInstructionNodeFactory
    * implementation
@@ -360,4 +351,4 @@ class AbstractNodeFactoryCollection {
   std::unique_ptr<AbstractArithmeticOpNodeFactory> _arithmeticOperationFactory;
 };
 
-#endif  // ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
+#endif // ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP

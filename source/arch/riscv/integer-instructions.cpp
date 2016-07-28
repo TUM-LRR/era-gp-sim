@@ -1,14 +1,17 @@
 #include "arch/riscv/integer-instructions.hpp"
 
-static bool validateIntegerInstruction(InstructionNode &node, bool immediate) {
+using namespace riscv;
+
+// TODO
+// Check if the immediate values are representable by 20 bits
+
+bool riscv::validateIntegerInstruction(InstructionNode &node,
+                                       bool immediate) {
   return immediate
              ? node.requireChildren(NodeType::REGISTER, 0, 2) &&
                    node.requireChildren(NodeType::IMMEDIATE, 2, 1)
              : node.requireChildren(NodeType::REGISTER, 0, 3);
 }
-
-// TODO
-// Check if the immediate values are representable by 20 bits
 
 // validate functions
 bool AddInstructionNode::validate() {

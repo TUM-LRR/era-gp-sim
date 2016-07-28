@@ -31,7 +31,10 @@ namespace riscv {
  * \see AbstractInstructionNodeFactory
  */
 class RISCVInstructionNodeFactory : public AbstractInstructionNodeFactory {
- public:
+public:
+  using InstructionMap = std::unordered_map<
+      std::string, std::function<std::unique_ptr<AbstractSyntaxTreeNode>()>>;
+
   /**
    * \brief RISCVInstructionNodeFactory
    * Creates a Instruction Node Factory for RISC-V architecture
@@ -39,10 +42,10 @@ class RISCVInstructionNodeFactory : public AbstractInstructionNodeFactory {
   RISCVInstructionNodeFactory() { initializeInstructionMap(); }
 
   /*! Default constructed copy constructor */
-  RISCVInstructionNodeFactory(RISCVInstructionNodeFactory& copy) = default;
+  RISCVInstructionNodeFactory(RISCVInstructionNodeFactory &copy) = default;
 
   /*! Default constructed move constructor */
-  RISCVInstructionNodeFactory(RISCVInstructionNodeFactory&& move) = default;
+  RISCVInstructionNodeFactory(RISCVInstructionNodeFactory &&move) = default;
 
   /**
    * \brief createInstructionNode
@@ -52,21 +55,19 @@ class RISCVInstructionNodeFactory : public AbstractInstructionNodeFactory {
    * \return std::uniqe_ptr pointing to the newly created instruction node, or
    * nullptr if the token cannot be mapped to a implemented RISC-V instruction
    */
-  std::unique_ptr<AbstractSyntaxTreeNode> createInstructionNode(
-      std::string& token) override;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode>
+  createInstructionNode(const std::string &token) const override;
 
   ~RISCVInstructionNodeFactory() = default;
 
- private:
+private:
   /**
    * \brief _instructionMap
    * Table, that maps the instruction identifier (e.g. the token "ADD" for
    * Addition) to a function that creates the special instruction node (e.g.
    * AddInstructionNode)
    */
-  std::unordered_map<std::string,
-                     std::function<std::unique_ptr<AbstractSyntaxTreeNode>()>>
-      _instructionMap;
+  InstructionMap _instructionMap;
 
   /**
    * \brief initializeInstructionMap
@@ -83,7 +84,7 @@ class RISCVInstructionNodeFactory : public AbstractInstructionNodeFactory {
  * AbstractImmediateNodeFactory for the RISC-V architecture
  */
 class RISCVImmediateNodeFactory : public AbstractImmediateNodeFactory {
- public:
+public:
   /**
    * \brief RISCVImmediateNodeFactory
    * Creates a Immediate Node Factory for the RISC-V architecture
@@ -91,10 +92,10 @@ class RISCVImmediateNodeFactory : public AbstractImmediateNodeFactory {
   RISCVImmediateNodeFactory() = default;
 
   /*! Default constructed copy constructor */
-  RISCVImmediateNodeFactory(RISCVImmediateNodeFactory& copy) = default;
+  RISCVImmediateNodeFactory(RISCVImmediateNodeFactory &copy) = default;
 
   /*! Default constructed move constructor */
-  RISCVImmediateNodeFactory(RISCVImmediateNodeFactory&& move) = default;
+  RISCVImmediateNodeFactory(RISCVImmediateNodeFactory &&move) = default;
 
   ~RISCVImmediateNodeFactory() = default;
 
@@ -107,8 +108,8 @@ class RISCVImmediateNodeFactory : public AbstractImmediateNodeFactory {
    * \return std::unique_ptr pointing to the newly created immediate node, or
    * nullptr if the given MemoryValue is invalid
    */
-  std::unique_ptr<AbstractSyntaxTreeNode> createImmediateNode(
-      MemoryValue& value) override;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode>
+  createImmediateNode(MemoryValue &value) const override;
 };
 
 /**
@@ -117,7 +118,7 @@ class RISCVImmediateNodeFactory : public AbstractImmediateNodeFactory {
  */
 class RISCVRegisterAccessNodeFactory
     : public AbstractRegisterAccessNodeFactory {
- public:
+public:
   /**
    * \brief RISCVRegisterAccessNodeFactory
    * Creates a register access node factory for the RISC-V architecture
@@ -125,11 +126,11 @@ class RISCVRegisterAccessNodeFactory
   RISCVRegisterAccessNodeFactory() = default;
 
   /*! Default constructed copy constructor */
-  RISCVRegisterAccessNodeFactory(RISCVRegisterAccessNodeFactory& copy) =
+  RISCVRegisterAccessNodeFactory(RISCVRegisterAccessNodeFactory &copy) =
       default;
 
   /*! Default constructed move constructor */
-  RISCVRegisterAccessNodeFactory(RISCVRegisterAccessNodeFactory&& move) =
+  RISCVRegisterAccessNodeFactory(RISCVRegisterAccessNodeFactory &&move) =
       default;
 
   ~RISCVRegisterAccessNodeFactory() = default;
@@ -142,8 +143,8 @@ class RISCVRegisterAccessNodeFactory
    * \return std::unique_ptr pointing to the newly created register access node,
    * or nullptr if the given id cannot be mapped to a valid RISC-V register
    */
-  std::unique_ptr<AbstractSyntaxTreeNode> createRegisterAccessNode(
-      const std::string& id) override;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode>
+  createRegisterAccessNode(const std::string &id) const override;
 };
 }
-#endif  // ERAGPSIM_ARCH_RISCV_RISCVNODEFACTORIES_HPP_
+#endif // ERAGPSIM_ARCH_RISCV_RISCVNODEFACTORIES_HPP_

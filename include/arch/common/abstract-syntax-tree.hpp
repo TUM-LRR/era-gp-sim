@@ -15,24 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_COMMON_AST_HPP_
-#define ERAGPSIM_ARCH_COMMON_AST_HPP_
+#ifndef ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_HPP_
+#define ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_HPP_
 
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "core/memory-value.hpp"
 
 /*
  * A dummy memory access. It will be replaced by
  * a proper implementation soon.
  */
 struct DummyMemoryAccess {};
-
-/*
- * A dummy memory value. It will be replaced by
- * a proper implementation soon.
- */
-struct MemoryValue {};
 
 /**
  * The different node types of the Syntax Tree.
@@ -158,12 +154,51 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    *
    * \return The string "imm"
    */
+<<<<<<< HEAD:include/arch/common/abstract-syntax-tree.hpp
   virtual std::string getIdentifier() {
     return "Imm";
+=======
+  virtual std::string getIdentifier() { return "Imm"; }
+
+private:
+  MemoryValue _value;
+};
+
+/** A node that represents a register. */
+class RegisterNode : public AbstractSyntaxTreeNode {
+public:
+  /**
+   * Constructs a new node that represents a register.
+   *
+   * \param value The identifier for the register.
+   */
+  RegisterNode(std::string identifier)
+      : AbstractSyntaxTreeNode(NodeType::REGISTER), _identifier(identifier) {}
+
+  /**
+   * \return The content of the register, represented by this node.
+   */
+  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) override {
+    // TODO Return the actual content of the register using the proper
+    // memory access
+    return MemoryValue{8};
+  }
+
+  /**
+   * \return true, if there are no children.
+   */
+  virtual bool validate() override {
+    // Immediate values can't have any children
+    return AbstractSyntaxTreeNode::_children.size() == 0;
+>>>>>>> origin/feature/remove-dummy-code:include/arch/common/abstract-syntax-tree.hpp
   }
 
  private:
   MemoryValue _value;
 };
 
+<<<<<<< HEAD:include/arch/common/abstract-syntax-tree.hpp
 #endif// ERAGPSIM_ARCH_COMMON_AST_HPP_
+=======
+#endif // ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_HPP_
+>>>>>>> origin/feature/remove-dummy-code:include/arch/common/abstract-syntax-tree.hpp

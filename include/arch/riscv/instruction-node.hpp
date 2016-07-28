@@ -18,7 +18,9 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_
 #define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_
 
-#include "arch/common/ast.hpp"
+#include "arch/common/abstract-syntax-tree.hpp"
+
+namespace riscv {
 
 /** A node that represents a RISC V specific instruction */
 class InstructionNode : public AbstractSyntaxTreeNode {
@@ -44,5 +46,7 @@ public:
    */
   bool requireChildren(NodeType type, size_t startIndex, size_t amount);
 };
+
+}
 
 #endif // ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_

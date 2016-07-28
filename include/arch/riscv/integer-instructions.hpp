@@ -27,6 +27,8 @@
  *                    + their respective immediate equivalents
  */
 
+namespace riscv {
+
 /**
  * Validates an integer instruction node. Every RISC V integer instruction is
  * either register-register or a register-immediate. This is a util method, that
@@ -37,7 +39,8 @@
  * \param immediate Whether the node is the register-immediate representation.
  * \return true if the node matches the requirements.
  */
-static bool validateIntegerInstruction(InstructionNode &node, bool immediate);
+bool validateIntegerInstruction(InstructionNode &node,
+                                       bool immediate);
 
 /**
  * This node represents the add/addi instruction.
@@ -86,5 +89,6 @@ public:
 private:
   bool _immediate;
 };
+}
 
 #endif /* ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_ */

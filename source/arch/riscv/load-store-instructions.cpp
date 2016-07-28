@@ -1,5 +1,7 @@
 #include "arch/riscv/load-store-instructions.hpp"
 
+using namespace riscv;
+
 bool LoadInstructionNode::validate() {
   if (!requireChildren(NodeType::REGISTER, 0, 2) ||
       !requireChildren(NodeType::IMMEDIATE, 2, 1)) {
