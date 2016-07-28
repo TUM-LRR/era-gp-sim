@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <cctype>
 
+#include "arch/common/abstract-syntax-tree.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
@@ -38,33 +39,33 @@ void RISCVInstructionNodeFactory::initializeInstructionMap() {
 
   // Load/Store Instructions
   _instructionMap.emplace("LW", []() {
-      return std::make_unique<LoadInstructionNode>(LoadType::WORD);
+    return std::make_unique<LoadInstructionNode>(LoadType::WORD);
   });
   _instructionMap.emplace("LH", []() {
-      return std::make_unique<LoadInstructionNode>(LoadType::HALF_WORD);
+    return std::make_unique<LoadInstructionNode>(LoadType::HALF_WORD);
   });
   _instructionMap.emplace("LHU", []() {
-      return std::make_unique<LoadInstructionNode>(LoadType::HALF_WORD_UNSIGNED);
+    return std::make_unique<LoadInstructionNode>(LoadType::HALF_WORD_UNSIGNED);
   });
   _instructionMap.emplace("LB", []() {
-      return std::make_unique<LoadInstructionNode>(LoadType::BYTE);
+    return std::make_unique<LoadInstructionNode>(LoadType::BYTE);
   });
   _instructionMap.emplace("LBU", []() {
-      return std::make_unique<LoadInstructionNode>(LoadType::BYTE_UNSIGNED);
+    return std::make_unique<LoadInstructionNode>(LoadType::BYTE_UNSIGNED);
   });
   _instructionMap.emplace("SW", []() {
-      return std::make_unique<StoreInstructionNode>(StoreType::WORD);
+    return std::make_unique<StoreInstructionNode>(StoreType::WORD);
   });
   _instructionMap.emplace("SH", []() {
-      return std::make_unique<StoreInstructionNode>(StoreType::HALF_WORD);
+    return std::make_unique<StoreInstructionNode>(StoreType::HALF_WORD);
   });
   _instructionMap.emplace("SB", []() {
-      return std::make_unique<StoreInstructionNode>(StoreType::BYTE);
+    return std::make_unique<StoreInstructionNode>(StoreType::BYTE);
   });
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
-RISCVInstructionNodeFactory::createInstructionNode(std::string &token) {
+RISCVInstructionNodeFactory::createInstructionNode(const std::string &token) {
   using std::begin;
   using std::end;
 
@@ -83,14 +84,11 @@ RISCVInstructionNodeFactory::createInstructionNode(std::string &token) {
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 RISCVImmediateNodeFactory::createImmediateNode(MemoryValue &value) {
-  return nullptr; // TODO construct Immediate Node
+  return std::make_unique<ImmediateNode>(value);
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 RISCVRegisterAccessNodeFactory::createRegisterAccessNode(
     const std::string &id) {
-  /*
-   * TODO Waiting for Register-Access Node to be implemented
-   */
-  return nullptr;
+  return std::make_unique<RegisterNode>(id);
 }

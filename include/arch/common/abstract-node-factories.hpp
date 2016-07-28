@@ -49,7 +49,7 @@ class AbstractInstructionNodeFactory {
    * instruction
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createInstructionNode(std::string& token) = 0;
+  createInstructionNode(const std::string& token) = 0;
 };
 
 /**

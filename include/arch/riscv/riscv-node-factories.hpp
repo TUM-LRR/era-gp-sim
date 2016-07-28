@@ -56,7 +56,7 @@ public:
    * nullptr if the token cannot be mapped to a implemented RISC-V instruction
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createInstructionNode(std::string &token) override;
+  createInstructionNode(const std::string &token) override;
 
   ~RISCVInstructionNodeFactory() = default;
 
