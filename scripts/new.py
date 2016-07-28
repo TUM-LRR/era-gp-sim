@@ -4,6 +4,16 @@
 import os
 import re
 import sys
+import argparse
+
+
+def create_parser():
+    parser = argparse.ArgumentParser(description='Create a new class.')
+    parser.add_argument('path', metavar='P',
+                        help='path/to/class')
+    parser.add_argument('-o', '--header-only', action='store_true',
+                        help='Whether to only create a header')
+    return parser
 
 
 def parse(argument):
@@ -46,12 +56,14 @@ def create_source(root, relative_path, name):
 
 
 def main():
-    if len(sys.argv) < 2:
-        raise RuntimeError("Usage: new.py <relative/path/to/file>")
+    parser = create_parser()
+    args = parser.parse_args(sys.argv[1:])
 
-    root, relative_path, name = parse(sys.argv[1])
-    create_header(sys.argv[1], root, relative_path, name)
-    create_source(root, relative_path, name)
+    root, relative_path, name = parse(args.path)
+    create_header(args.path, root, relative_path, name)
+    if not args.header_only:
+        create_source(root, relative_path, name)
+
     print('Done \033[91m<3\033[0m')
 
 if __name__ == "__main__":
