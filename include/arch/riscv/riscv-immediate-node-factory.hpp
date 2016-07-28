@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_RISCV_RISCVNODEFACTORIES_HPP_
-#define ERAGPSIM_ARCH_RISCV_RISCVNODEFACTORIES_HPP_
+#ifndef ERAGPSIM_ARCH_RISCV_IMMEDIATE_NODE_FACTORY_HPP
+#define ERAGPSIM_ARCH_RISCV_IMMEDIATE_NODE_FACTORY_HPP
 
 #include <unordered_map>
 
@@ -31,15 +31,18 @@ namespace riscv {
  * \see AbstractInstructionNodeFactory
  */
 class RISCVInstructionNodeFactory : public AbstractInstructionNodeFactory {
-public:
+ public:
   using InstructionMap = std::unordered_map<
-      std::string, std::function<std::unique_ptr<AbstractSyntaxTreeNode>()>>;
+      std::string,
+      std::function<std::unique_ptr<AbstractSyntaxTreeNode>()>>;
 
   /**
    * \brief RISCVInstructionNodeFactory
    * Creates a Instruction Node Factory for RISC-V architecture
    */
-  RISCVInstructionNodeFactory() { initializeInstructionMap(); }
+  RISCVInstructionNodeFactory() {
+    initializeInstructionMap();
+  }
 
   /*! Default constructed copy constructor */
   RISCVInstructionNodeFactory(RISCVInstructionNodeFactory &copy) = default;
@@ -60,7 +63,7 @@ public:
 
   ~RISCVInstructionNodeFactory() = default;
 
-private:
+ private:
   /**
    * \brief _instructionMap
    * Table, that maps the instruction identifier (e.g. the token "ADD" for
@@ -84,7 +87,7 @@ private:
  * AbstractImmediateNodeFactory for the RISC-V architecture
  */
 class RISCVImmediateNodeFactory : public AbstractImmediateNodeFactory {
-public:
+ public:
   /**
    * \brief RISCVImmediateNodeFactory
    * Creates a Immediate Node Factory for the RISC-V architecture
@@ -111,40 +114,5 @@ public:
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
   createImmediateNode(MemoryValue &value) const override;
 };
-
-/**
- * \brief The RISCVRegisterAccessNodeFactory class is a concrete implementation
- * of AbstractRegisterAccessNodeFactory for the RISC-V architecture.
- */
-class RISCVRegisterAccessNodeFactory
-    : public AbstractRegisterAccessNodeFactory {
-public:
-  /**
-   * \brief RISCVRegisterAccessNodeFactory
-   * Creates a register access node factory for the RISC-V architecture
-   */
-  RISCVRegisterAccessNodeFactory() = default;
-
-  /*! Default constructed copy constructor */
-  RISCVRegisterAccessNodeFactory(RISCVRegisterAccessNodeFactory &copy) =
-      default;
-
-  /*! Default constructed move constructor */
-  RISCVRegisterAccessNodeFactory(RISCVRegisterAccessNodeFactory &&move) =
-      default;
-
-  ~RISCVRegisterAccessNodeFactory() = default;
-
-  /**
-   * \brief createRegisterAccessNode
-   * Creates and returns a new AbstractSyntaxTreeNode that handles register
-   * access, or nullptr if the given id is invalid
-   * \param id register-id that identifies 1 register of the RISC-V architecture
-   * \return std::unique_ptr pointing to the newly created register access node,
-   * or nullptr if the given id cannot be mapped to a valid RISC-V register
-   */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createRegisterAccessNode(const std::string &id) const override;
-};
 }
-#endif // ERAGPSIM_ARCH_RISCV_RISCVNODEFACTORIES_HPP_
+#endif /* ERAGPSIM_ARCH_RISCV_IMMEDIATE_NODE_FACTORY_HPP */
