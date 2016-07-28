@@ -1,6 +1,5 @@
 name: base3
-extends:
-  - with-deps-complex
+extends: with-deps-complex
 
 units:
   - name: fpu

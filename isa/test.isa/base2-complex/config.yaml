@@ -1,6 +1,5 @@
 name: base2-complex
-extends:
-  - base3-cycle
+extends: base3-cycle
 reset-units: false
 
 instructions:
