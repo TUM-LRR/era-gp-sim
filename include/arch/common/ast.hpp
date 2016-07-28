@@ -15,46 +15,56 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_AST_HPP
-#define ERAGPSIM_ARCH_AST_HPP
+#ifndef ERAGPSIM_ARCH_COMMON_AST_HPP_
+#define ERAGPSIM_ARCH_COMMON_AST_HPP_
 
 #include <memory>
+#include <string>
 #include <vector>
 
-/* A dummy memory access. It will be replaced by
- * a proper implementation soon. */
+/*
+ * A dummy memory access. It will be replaced by
+ * a proper implementation soon.
+ */
 struct DummyMemoryAccess {};
 
-/* The different node types of the Syntax Tree */
+/*
+ * A dummy memory value. It will be replaced by
+ * a proper implementation soon.
+ */
+struct MemoryValue {};
+
+/**
+ * The different node types of the Syntax Tree.
+ * Note, that the last two types are not needed for RISC V.
+ */
 enum struct NodeType {
   INSTRUCTION,
   IMMEDIATE,
-  REGISTER
-  /*MEMORY_ACCESS,
-  ARITHMETIC*/// Not needed for RISC V - Can be added for further
-                  // architectures
+  REGISTER,
+  MEMORY_ACCESS,
+  ARITHMETIC
 };
 
-/* The base class for nodes in an abstract syntax tree */
-template <class IntType>
+/** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {
- public:
-  typedef std::unique_ptr<AbstractSyntaxTreeNode> NodePtr;
+public:
+  using NodePtr = std::unique_ptr<AbstractSyntaxTreeNode>;
 
   /**
    * Executes this node and it's children recursively.
    *
-   * @param memory_access Access to memory and registers
-   * @return An Integer, that represents the the result of the execution.
+   * \param memory_access Access to memory and registers
+   * \return An memory value, that represents the the result of the execution.
    * The meaning differs between different node types.
    */
-  virtual IntType getValue(DummyMemoryAccess memory_access) = 0;
+  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) = 0;
 
   /**
    * Validates the structure of this syntax tree. This should be called
    * before every execution.
    *
-   * @return Whether this syntax tree is valid for execution.
+   * \return Whether this syntax tree is valid for execution.
    */
   virtual bool validate() = 0;
 
@@ -62,13 +72,21 @@ class AbstractSyntaxTreeNode {
    * Assembles this syntax tree into its binary representation. So, this
    * simulates the architecture specific assemblage.
    *
-   * @return The bit representation of this syntax tree.
+   * \return The bit representation of this syntax tree.
    */
-  virtual std::vector<bool> assemble() = 0;
+  virtual MemoryValue assemble() = 0;
+
+  /**
+   * Returns the identifier of this node. The identifier is formatted as a
+   * string and depends on the node type.
+   *
+   * \return The identifier of this node.
+   */
+  virtual std::string getIdentifier() = 0;
 
   /**
    * Getter for the type of this node.
-   * @return The type of this node.
+   * \return The type of this node.
    */
   NodeType getType() {
     return _node_type;
@@ -78,18 +96,16 @@ class AbstractSyntaxTreeNode {
    * Adds a child to this node. Note, that the node will be added after
    * the last node, that has been added.
    *
-   * @param node The node to be added.
+   * \param node The node to be added.
    */
-  void addChild(NodePtr node) {
-    _children.pushBack(node);
-  }
+  void addChild(NodePtr node) { _children.push_back(std::move(node)); }
 
  protected:
   /**
    * Constructs a new node. The constructor is supposed to be called in
    * the subclasses.
    *
-   * @param node_type The type of this node.
+   * \param node_type The type of this node.
    */
   AbstractSyntaxTreeNode(NodeType node_type) : _node_type(node_type) {
   }
@@ -100,47 +116,90 @@ class AbstractSyntaxTreeNode {
   NodeType _node_type;
 };
 
-/* A node that contains a concrete int value. Can be used for immediate
- * and register nodes */
-template <class IntType>
-class ConcreteValueNode : public AbstractSyntaxTreeNode<IntType> {
- public:
+/** A node that contains a concrete memory value. */
+class ImmediateNode : public AbstractSyntaxTreeNode {
+public:
   /**
    * Constructs a new node that contains a concrete value.
    *
-   * @param node_type The type of this node. Should either be
-   * IMMEDIATE or REGISTER
-   * @param value The value of this node.
+   * \param value The value of this node.
    */
-  ConcreteValueNode(NodeType node_type, IntType value)
-  : AbstractSyntaxTreeNode<IntType>(node_type), _value(value) {
-  }
+  ImmediateNode(MemoryValue value)
+      : AbstractSyntaxTreeNode(NodeType::IMMEDIATE), _value(value) {}
 
   /**
-   * @return The concrete value
+   * \return The concrete value
    */
-  virtual IntType getValue(DummyMemoryAccess memory_access) override {
+  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) override {
     return _value;
   }
 
   /**
-   * @return true, if there are no children.
+   * \return true, if there are no children.
    */
   virtual bool validate() override {
     // Immediate values can't have any children
-    return AbstractSyntaxTreeNode<IntType>::_children.size() == 0;
+    return AbstractSyntaxTreeNode::_children.size() == 0;
   }
 
   /**
-   * @return An empty std::vector<bool>, because the instruction has to be
+   * \return An empty MemoryValue, because the instruction has to be
    * assembled in the instruction node.
    */
-  virtual std::vector<bool> assemble() override {
-    return std::vector<bool>{};
-  }
+  virtual MemoryValue assemble() override { return MemoryValue{}; }
 
- private:
-  IntType _value;
+  /**
+   * Returns always the same string: "imm".
+   *
+   * \return The string "imm"
+   */
+  virtual std::string getIdentifier() { return "Imm"; }
+
+private:
+  MemoryValue _value;
 };
 
-#endif// ERAGPSIM_ARCH_AST_HPP
+/** A node that represents a register. */
+class RegisterNode : public AbstractSyntaxTreeNode {
+public:
+  /**
+   * Constructs a new node that represents a register.
+   *
+   * \param value The identifier for the register.
+   */
+  RegisterNode(std::string identifier)
+      : AbstractSyntaxTreeNode(NodeType::REGISTER), _identifier(identifier) {}
+
+  /**
+   * \return The content of the register, represented by this node.
+   */
+  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) override {
+    // TODO Return the actual content of the register using the proper
+    // memory access
+    return MemoryValue{};
+  }
+
+  /**
+   * \return true, if there are no children.
+   */
+  virtual bool validate() override {
+    // Immediate values can't have any children
+    return AbstractSyntaxTreeNode::_children.size() == 0;
+  }
+
+  /**
+   * \return An empty MemoryValue, because the instruction has to be
+   * assembled in the instruction node.
+   */
+  virtual MemoryValue assemble() override { return MemoryValue{}; }
+
+  /**
+   * \return The identifier of the register.
+   */
+  virtual std::string getIdentifier() { return _identifier; }
+
+private:
+  std::string _identifier;
+};
+
+#endif // ERAGPSIM_ARCH_COMMON_AST_HPP_

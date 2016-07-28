@@ -154,7 +154,8 @@ Makefile*
 # QtCtreator CMake
 CMakeLists.txt.user
 
-
+# VS Code
+.vscode/
 
 # Created by https://www.gitignore.io/api/latex
 
