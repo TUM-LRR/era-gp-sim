@@ -19,6 +19,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Layouts 1.1
+import "Common"
 
 Item {
     property alias memory_value: memory_size_chooser._value
