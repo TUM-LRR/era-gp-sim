@@ -36,7 +36,8 @@ IntermediateInstruction::compileInstruction(const SymbolTable& table,
   table.replaceSymbols(trg, state);
 
   // More to do here (soon^TM).
-  return std::make_unique<AbstractSyntaxTreeNode>();
+  // return std::make_unique<AbstractSyntaxTreeNode>();
+  return nullptr;
 }
 
 void IntermediateInstruction::determineMemoryPosition() {

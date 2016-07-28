@@ -22,7 +22,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "../arch/common/abstract-node-factories.hpp"
+#include "arch/common/ast.hpp"
 #include "intermediate-operation.hpp"
 #include "symbol-table.hpp"
 

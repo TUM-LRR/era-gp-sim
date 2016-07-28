@@ -21,7 +21,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "../arch/common/abstract-node-factories.hpp"
+#include "arch/common/ast.hpp"
 #include "compile-state.hpp"
 #include "final-representation.hpp"
 #include "intermediate-operation.hpp"

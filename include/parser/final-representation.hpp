@@ -20,7 +20,7 @@
 
 #include <memory>
 #include <vector>
-#include "../arch/common/abstract-node-factories.hpp"
+#include "arch/common/ast.hpp"
 
 /**
  * \class FinalRepresentation

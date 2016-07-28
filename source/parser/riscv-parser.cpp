@@ -13,9 +13,11 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
   IntermediateRepresentator intermediate;
   std::istringstream stream{text};
 
+  // Initialize compile state
   compile_state_.errorList.clear();
   compile_state_.position = CodePosition(0, 0);
   compile_state_.mode     = parserMode;
+
 
   RiscvRegex line_regex;
   std::vector<std::string> labels, sources, targets;
@@ -24,29 +26,27 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
     compile_state_.position.first++;
     line_regex.matchLine(line);
 
-    std::cout << compile_state_.position.first << "# " << line;
     if (!line_regex.isValid()) {
-      std::cout << "\n\tInvalid\n";
+      // Add syntax error if line regex doesnt match
       compile_state_.errorList.push_back(
           CompileError{"Syntax Error",
                        compile_state_.position,
                        CompileErrorSeverity::ERROR});
     } else {
+      // Collect labels until next instruction
       if (line_regex.hasLabel()) {
-        std::cout << "\n\tLabel: " << line_regex.getLabel();
         labels.push_back(line_regex.getLabel());
       }
 
       if (line_regex.hasInstruction()) {
-        std::cout << "\n\tOP: " << line_regex.getInstruction();
+        // Collect source and target parameters
         for (int i = 0; i < line_regex.getParameterCount(); i++) {
           if (i == 0)
-            sources.push_back(line_regex.getParameter(i));
-          else
             targets.push_back(line_regex.getParameter(i));
-          std::cout << "\n\tPARM" << (i + 1) << ": "
-                    << line_regex.getParameter(i);
+          else
+            sources.push_back(line_regex.getParameter(i));
         }
+
         intermediate.insertCommand(
             IntermediateInstruction{LineInterval{compile_state_.position.first,
                                                  compile_state_.position.first},
@@ -54,9 +54,11 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
                                     line_regex.getInstruction(),
                                     sources,
                                     targets});
-      }
 
-      std::cout << std::endl;
+        labels.clear();
+        targets.clear();
+        sources.clear();
+      }
     }
   }
 
