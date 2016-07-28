@@ -65,7 +65,8 @@ void RISCVInstructionNodeFactory::initializeInstructionMap() {
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
-RISCVInstructionNodeFactory::createInstructionNode(const std::string &token) {
+RISCVInstructionNodeFactory::createInstructionNode(
+    const std::string &token) const {
   using std::begin;
   using std::end;
 
@@ -83,12 +84,12 @@ RISCVInstructionNodeFactory::createInstructionNode(const std::string &token) {
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
-RISCVImmediateNodeFactory::createImmediateNode(MemoryValue &value) {
+RISCVImmediateNodeFactory::createImmediateNode(MemoryValue &value) const {
   return std::make_unique<ImmediateNode>(value);
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 RISCVRegisterAccessNodeFactory::createRegisterAccessNode(
-    const std::string &id) {
+    const std::string &id) const {
   return std::make_unique<RegisterNode>(id);
 }

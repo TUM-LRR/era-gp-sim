@@ -56,7 +56,7 @@ public:
    * nullptr if the token cannot be mapped to a implemented RISC-V instruction
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createInstructionNode(const std::string &token) override;
+  createInstructionNode(const std::string &token) const override;
 
   ~RISCVInstructionNodeFactory() = default;
 
@@ -109,7 +109,7 @@ public:
    * nullptr if the given MemoryValue is invalid
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createImmediateNode(MemoryValue &value) override;
+  createImmediateNode(MemoryValue &value) const override;
 };
 
 /**
@@ -144,7 +144,7 @@ public:
    * or nullptr if the given id cannot be mapped to a valid RISC-V register
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createRegisterAccessNode(const std::string &id) override;
+  createRegisterAccessNode(const std::string &id) const override;
 };
 }
 #endif // ERAGPSIM_ARCH_RISCV_RISCVNODEFACTORIES_HPP_
