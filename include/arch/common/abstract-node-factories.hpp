@@ -18,9 +18,9 @@
 #ifndef ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
 #define ERAGPSIM_ARCH_ABSTRACTNODEFACTORIES_HPP
 
-#include <cassert>
 #include <memory>
 #include <string>
+#include <cassert>
 
 /**
  * @brief The AbstractSyntaxTreeNode struct
@@ -59,8 +59,8 @@ class AbstractInstructionNodeFactory {
    * nullptr if the given token cannot be mapped to a architecture-specific
    * instruction
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode> createInstructionNode(
-      std::string& token) = 0;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode>
+  createInstructionNode(std::string& token) = 0;
 };
 
 /**
@@ -85,8 +85,8 @@ class AbstractImmediateNodeFactory {
    * nullptr if the architecture-specific implementation cannot create an
    * immediate from the given numericalValue
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode> createImmediateNode(
-      MemoryValue& numericalValue) = 0;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode>
+  createImmediateNode(MemoryValue& numericalValue) = 0;
 };
 
 /**
@@ -110,8 +110,8 @@ class AbstractRegisterAccessNodeFactory {
    * @return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given registerAddress is invalid
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode> createRegisterAccessNode(
-      const std::string& registerAddress) = 0;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode>
+  createRegisterAccessNode(const std::string& registerAddress) = 0;
 };
 
 /**
@@ -162,8 +162,8 @@ class AbstractArithmeticOpNodeFactory {
    * @return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given opType is invalid
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode> createArithmeticOperationNode(
-      const int opType) = 0;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode>
+  createArithmeticOperationNode(const int opType) = 0;
 };
 
 /**

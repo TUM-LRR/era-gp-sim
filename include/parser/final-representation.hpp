@@ -13,35 +13,21 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "arch/common/abstract-node-factories.hpp"
+#ifndef ERAGPSIM_PARSER_FINAL_REPRESENTATION_HPP_
+#define ERAGPSIM_PARSER_FINAL_REPRESENTATION_HPP_
 
-/*
- * Stub implementations for the destructors
+#include <memory>
+#include <vector>
+#include "../arch/common/abstract-node-factories.hpp"
+
+/**
+ * \class FinalRepresentation
+ * \brief Denotes the temporary output of an IntermediateRepresentator ready to
+ * be used by the architecture.
  */
+using FinalRepresentation =
+    std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>;// Temporary.
 
-// INSTRUCTION NODE
-
-AbstractInstructionNodeFactory::~AbstractInstructionNodeFactory() {
-}
-
-// IMMEDIATE NODE
-
-AbstractImmediateNodeFactory::~AbstractImmediateNodeFactory() {
-}
-
-// REGISTER ACCESS NODE
-
-AbstractRegisterAccessNodeFactory::~AbstractRegisterAccessNodeFactory() {
-}
-
-// MEMORY ACCESS NODE
-
-AbstractMemoryAccessNodeFactory::~AbstractMemoryAccessNodeFactory() {
-}
-
-// ARITHMETIC OPERATION NODE
-
-AbstractArithmeticOpNodeFactory::~AbstractArithmeticOpNodeFactory() {
-}
+#endif
