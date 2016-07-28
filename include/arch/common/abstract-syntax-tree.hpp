@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_COMMON_AST_HPP_
-#define ERAGPSIM_ARCH_COMMON_AST_HPP_
+#ifndef ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_HPP_
+#define ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_HPP_
 
 #include <memory>
 #include <string>
@@ -202,4 +202,4 @@ private:
   std::string _identifier;
 };
 
-#endif // ERAGPSIM_ARCH_COMMON_AST_HPP_
+#endif // ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_HPP_
