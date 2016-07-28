@@ -34,7 +34,7 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    * \param value The value of this node.
    */
   ImmediateNode(MemoryValue value)
-  : AbstractSyntaxTreeNode(NodeType::IMMEDIATE), _value(value) {
+  : AbstractSyntaxTreeNode(Type::IMMEDIATE), _value(value) {
   }
 
   /**

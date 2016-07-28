@@ -10,11 +10,11 @@ bool validateIntegerInstruction(InstructionNode &node, bool immediate) {
   // Also use enums instead of booleans
   return immediate
              ? node.requireChildren(
-                   AbstractSyntaxTreeNode::NodeType::REGISTER, 0, 2) &&
+                   AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) &&
                    node.requireChildren(
-                       AbstractSyntaxTreeNode::NodeType::IMMEDIATE, 2, 1)
+                       AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)
              : node.requireChildren(
-                   AbstractSyntaxTreeNode::NodeType::REGISTER, 0, 3);
+                   AbstractSyntaxTreeNode::Type::REGISTER, 0, 3);
 }
 
 // validate functions

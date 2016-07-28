@@ -18,15 +18,18 @@
 #ifndef ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_NODE_HPP
 #define ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_NODE_HPP
 
+#include <memory>
+#include <string>
 #include <vector>
 
-class MemoryValue;
+#include "core/memory-value.hpp"
+
 class DummyMemoryAccess;
 
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {
  public:
-  enum struct NodeType {
+  enum struct Type {
     INSTRUCTION,
     IMMEDIATE,
     REGISTER,
@@ -73,7 +76,7 @@ class AbstractSyntaxTreeNode {
    * Getter for the type of this node.
    * \return The type of this node.
    */
-  NodeType getType() {
+  Type getType() {
     return _node_type;
   }
 
@@ -94,13 +97,13 @@ class AbstractSyntaxTreeNode {
    *
    * \param node_type The type of this node.
    */
-  AbstractSyntaxTreeNode(NodeType node_type) : _node_type(node_type) {
+  AbstractSyntaxTreeNode(Type node_type) : _node_type(node_type) {
   }
 
   std::vector<Node> _children;
 
  private:
-  NodeType _node_type;
+  Type _node_type;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_NODE_HPP */

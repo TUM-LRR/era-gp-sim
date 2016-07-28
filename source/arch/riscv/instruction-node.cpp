@@ -2,7 +2,7 @@
 
 using namespace riscv;
 
-bool InstructionNode::requireChildren(NodeType type, size_t startIndex,
+bool InstructionNode::requireChildren(Type type, size_t startIndex,
                                       size_t amount) {
   if (_children.size() - startIndex < amount)
     return false;

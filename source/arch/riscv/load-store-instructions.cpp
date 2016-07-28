@@ -3,8 +3,8 @@
 using namespace riscv;
 
 bool LoadInstructionNode::validate() {
-  if (!requireChildren(NodeType::REGISTER, 0, 2) ||
-      !requireChildren(NodeType::IMMEDIATE, 2, 1)) {
+  if (!requireChildren(Type::REGISTER, 0, 2) ||
+      !requireChildren(Type::IMMEDIATE, 2, 1)) {
     return false;
   }
 
@@ -15,8 +15,8 @@ bool LoadInstructionNode::validate() {
 }
 
 bool StoreInstructionNode::validate() {
-  if (!requireChildren(NodeType::REGISTER, 0, 2) ||
-      !requireChildren(NodeType::IMMEDIATE, 2, 1)) {
+  if (!requireChildren(Type::REGISTER, 0, 2) ||
+      !requireChildren(Type::IMMEDIATE, 2, 1)) {
     return false;
   }
 

@@ -28,7 +28,7 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   /**
    * Constructs a new node that represents a RISC V specific instruction.
    */
-  InstructionNode() : AbstractSyntaxTreeNode(NodeType::INSTRUCTION) {
+  InstructionNode() : AbstractSyntaxTreeNode(Type::INSTRUCTION) {
   }
 
   /* Ensure this class is also pure virtual */
@@ -46,7 +46,7 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \param amount The amount of registers required.
    * \return true if this node matches the requirements.
    */
-  bool requireChildren(NodeType type, size_t startIndex, size_t amount);
+  bool requireChildren(Type type, size_t startIndex, size_t amount);
 };
 }
 

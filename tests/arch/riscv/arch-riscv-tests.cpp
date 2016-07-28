@@ -37,8 +37,8 @@ TEST(InstructionTest, AddInstruction) {
   auto addNode  = instructionFactory.createInstructionNode(addToken);
 
   // Basic testing
-  ASSERT_EQ(NodeType::INSTRUCTION, addiNode->getType());
-  ASSERT_EQ(NodeType::INSTRUCTION, addNode->getType());
+  ASSERT_EQ(Type::INSTRUCTION, addiNode->getType());
+  ASSERT_EQ(Type::INSTRUCTION, addNode->getType());
 
   ASSERT_EQ(addiToken, addiNode->getIdentifier());
   ASSERT_EQ(addToken, addNode->getIdentifier());
@@ -77,7 +77,7 @@ TEST(InstructionTest, LoadInstruction) {
 
   // Basic testing
   for (auto node : nodes) {
-    ASSERT_EQ(NodeType::INSTRUCTION, node->getType());
+    ASSERT_EQ(Type::INSTRUCTION, node->getType());
     ASSERT_FALSE(node->validate());
   }
 
@@ -102,7 +102,7 @@ TEST(InstructionTest, StoreInstruction) {
 
   // Basic testing
   for (auto const node : nodes) {
-    ASSERT_EQ(NodeType::INSTRUCTION, node->getType());
+    ASSERT_EQ(Type::INSTRUCTION, node->getType());
     ASSERT_FALSE(node->validate());
   }
 
