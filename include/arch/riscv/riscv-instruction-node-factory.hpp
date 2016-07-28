@@ -20,7 +20,7 @@
 
 #include <unordered_map>
 
-#include "arch/common/abstract-node-factories.hpp"
+#include "arch/common/abstract-instruction-node-factory.hpp"
 
 namespace riscv {
 

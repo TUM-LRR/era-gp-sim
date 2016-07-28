@@ -14,7 +14,7 @@ set(ARCH_COMMON_SOURCES
   information-interface.cpp
   architecture-brewery.cpp
   architecture-formula.cpp
-  # abstract-node-factories.cpp
+  abstract-node-factory-collection.cpp
 )
 
 ########################################

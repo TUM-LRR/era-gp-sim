@@ -18,26 +18,28 @@
 #ifndef ERAGPSIM_ARCH_ABSTRACT_ARITHMETIC_NODE_FACTORY_HPP
 #define ERAGPSIM_ARCH_ABSTRACT_ARITHMETIC_NODE_FACTORY_HPP
 
+#include <memory>
+
+#include "arch/common/abstract-syntax-tree-node.hpp"
 
 /**
- * @brief The AbstractArithmeticOpNodeFactory class
+ * @brief The AbstractArithmeticNodeFactory class
  * Abstract factory type for creating SyntaxTreeNodes of type arithmetic
  * operation
  */
-class AbstractArithmeticOpNodeFactory {
+class AbstractArithmeticNodeFactory {
  public:
-  static constexpr int ADDITION       = 1;
-  static constexpr int SUBTRACTION    = 2;
-  static constexpr int MULTIPLICATION = 3;
-  static constexpr int DIVISION       = 4;
+  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
 
-  AbstractArithmeticOpNodeFactory() {
+  enum class Operation { ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION };
+
+  AbstractArithmeticNodeFactory() {
   }
 
-  virtual ~AbstractArithmeticOpNodeFactory();
+  virtual ~AbstractArithmeticNodeFactory();
 
   /**
-   * @brief createArithmeticOperationNode
+   * @brief createArithmeticerationNode
    * Creates and returns an architecture-specific implementation of a
    * SyntaxTreeNode of type arithmetic operation. Each operation type
    * can be described by constants defined in this class. If the given opType is
@@ -48,8 +50,7 @@ class AbstractArithmeticOpNodeFactory {
    * @return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given opType is invalid
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createArithmeticOperationNode(const int opType) const = 0;
+  virtual Node createArithmeticNode(Operation operation) const = 0;
 };
 
 #endif /* ERAGPSIM_ARCH_ABSTRACT_ARITHMETIC_NODE_FACTORY_HPP */

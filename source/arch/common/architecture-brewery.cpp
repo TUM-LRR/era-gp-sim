@@ -20,6 +20,8 @@
 #include <iostream>
 #include <string>
 
+#include "arch/common/abstract-factory-types.hpp"
+#include "arch/common/abstract-node-factory-collection.hpp"
 #include "arch/common/architecture-brewery.hpp"
 #include "arch/common/information-interface.hpp"
 #include "common/utility.hpp"
@@ -41,7 +43,12 @@ Architecture ArchitectureBrewery::brew() {
     }
   }
 
-  return architecture.validate();
+  architecture.validate();
+
+  auto factories = AbstractNodeFactoryCollection::CreateFor(architecture);
+  architecture.nodeFactories(factories);
+
+  return architecture;
 }
 
 ExtensionInformation

@@ -144,9 +144,8 @@ std::string rootPath();
 std::string joinPaths(const std::string& single);
 
 template <typename... Tail>
-std::string joinPaths(const std::string& first,
-                      const std::string& second,
-                      Tail&&... tail) {
+std::string
+joinPaths(const std::string& first, const std::string& second, Tail&&... tail) {
   auto intermediary = first;
 
   if (intermediary.back() != '/' && second.front() != '/') {
@@ -173,6 +172,12 @@ void storeToFile(const std::string& filePath, Data&& data) {
   assert(static_cast<bool>(file));
   file << std::forward<Data>(data);
   assert(static_cast<bool>(file));
+}
+
+template <typename T>
+auto copyPointer(const std::unique_ptr<T>& pointer) {
+  assert(static_cast<bool>(pointer));
+  return std::make_unique<T>(*pointer);
 }
 
 // C++17

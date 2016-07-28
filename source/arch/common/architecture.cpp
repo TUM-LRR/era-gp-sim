@@ -102,6 +102,10 @@ const InstructionSet& Architecture::getInstructions() const {
   return _base.getInstructions();
 }
 
+const AbstractNodeFactoryCollection& Architecture::getNodeFactories() const {
+  return _factories;
+}
+
 Architecture& Architecture::validate() {
   if (!_validated) {
     assert(isValid());

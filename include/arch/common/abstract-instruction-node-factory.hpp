@@ -21,7 +21,7 @@
 #include <memory>
 #include <string>
 
-#include "arch/common/abstract-syntax-tree.hpp"
+#include "arch/common/abstract-syntax-tree-node.hpp"
 #include "core/memory-value.hpp"
 
 /**
@@ -30,6 +30,8 @@
  */
 class AbstractInstructionNodeFactory {
  public:
+  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+
   AbstractInstructionNodeFactory() {
   }
 
@@ -48,8 +50,7 @@ class AbstractInstructionNodeFactory {
    * nullptr if the given token cannot be mapped to a architecture-specific
    * instruction
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createInstructionNode(const std::string &token) const = 0;
+  virtual Node createInstructionNode(const std::string &mnemonic) const = 0;
 };
 
 #endif /* ERAGPSIM_ARCH_ABSTRACT_INSTRUCTION_NODE_FACTORY_HPP */

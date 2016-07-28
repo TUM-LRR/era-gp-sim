@@ -439,4 +439,15 @@ class RegisterInformation : public InformationInterface {
   std::vector<std::string> _aliases;
 };
 
+namespace std {
+template <>
+struct hash<RegisterInformation::Type> {
+  using UnderlyingType = std::underlying_type_t<RegisterInformation::Type>;
+  std::size_t operator()(const RegisterInformation::Type& type) const noexcept {
+    auto underlying_value = static_cast<UnderlyingType>(type);
+    return hash<UnderlyingType>{}(underlying_value);
+  }
+};
+}
+
 #endif /* ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP */

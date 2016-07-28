@@ -18,28 +18,23 @@
 #ifndef ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_NODE_HPP
 #define ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_NODE_HPP
 
-/*
- * A dummy memory access. It will be replaced by
- * a proper implementation soon.
- */
-struct DummyMemoryAccess {};
+#include <vector>
 
-/**
- * The different node types of the Syntax Tree.
- * Note, that the last two types are not needed for RISC V.
- */
-enum struct NodeType {
-  INSTRUCTION,
-  IMMEDIATE,
-  REGISTER,
-  MEMORY_ACCESS,
-  ARITHMETIC
-};
+class MemoryValue;
+class DummyMemoryAccess;
 
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {
  public:
-  using NodePtr = std::unique_ptr<AbstractSyntaxTreeNode>;
+  enum struct NodeType {
+    INSTRUCTION,
+    IMMEDIATE,
+    REGISTER,
+    MEMORY_ACCESS,
+    ARITHMETIC
+  };
+
+  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
 
   /**
    * Executes this node and it's children recursively.
@@ -88,7 +83,7 @@ class AbstractSyntaxTreeNode {
    *
    * \param node The node to be added.
    */
-  void addChild(NodePtr node) {
+  void addChild(Node node) {
     _children.push_back(std::move(node));
   }
 
@@ -102,7 +97,7 @@ class AbstractSyntaxTreeNode {
   AbstractSyntaxTreeNode(NodeType node_type) : _node_type(node_type) {
   }
 
-  std::vector<NodePtr> _children;
+  std::vector<Node> _children;
 
  private:
   NodeType _node_type;

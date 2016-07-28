@@ -42,7 +42,7 @@ class AbstractImmediateNodeFactory {
    * immediate from the given numericalValue
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createImmediateNode(MemoryValue &numericalValue) const = 0;
+  createImmediateNode(const MemoryValue &numericalValue) const = 0;
 };
 
 #endif /* ERAGPSIM_ARCH_ABSTRACT_IMMEDIATE_NODE_FACTORY_HPP */

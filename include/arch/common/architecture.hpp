@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "arch/common/abstract-node-factory-collection.hpp"
 #include "arch/common/architecture-properties.hpp"
 #include "arch/common/extension-information.hpp"
 #include "arch/common/information-interface.hpp"
@@ -185,6 +186,29 @@ class Architecture : public BuilderInterface {
   const InstructionSet& getInstructions() const;
 
   /**
+   * Sets the architecture's node factory collection.
+   *
+   * This is a template method to more flexibly copy *or* move another
+   * collection with only a single method rather than two.
+   *
+   * \tparam An AbstractNodeFactoryCollection lvalue or rvalue.
+   *
+   * \param factoryCollection The factoryCollection to move or assign.
+   *
+   * \return The architecture instance.
+   */
+  template <typename FactoryCollection>
+  Architecture& nodeFactories(FactoryCollection&& factoryCollection) {
+    _factories = std::forward<FactoryCollection>(factoryCollection);
+    return *this;
+  }
+
+  /**
+   * Returns the architecture's node factory collection.
+   */
+  const AbstractNodeFactoryCollection& getNodeFactories() const;
+
+  /**
    * Validates the completeness of the architecture.
    *
    * An architecture is valid if its base extension, extended by all further
@@ -215,6 +239,9 @@ class Architecture : public BuilderInterface {
 
   /** The base extension of the architecture. */
   ExtensionInformation _base;
+
+  /** The abstract node factories. */
+  AbstractNodeFactoryCollection _factories;
 
   /** Boolean indicating whether the architecture has been validated. */
   bool _validated;
