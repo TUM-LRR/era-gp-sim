@@ -13,21 +13,48 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see http://www.gnu.org/licenses/.*/
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ */
 
 #include "ui/registermodel.hpp"
 
-RegisterModel::RegisterModel(const QString &data, QObject *parent)
-: QAbstractItemModel(parent) {
-  // The dummy root item can be used to save header information for each column.
-  RegisterData rootData("Title", "Content", "DisplayFormatString");
-  _rootItem = new RegisterItem(rootData);
-  _setupModelData(data.split(QString("\n")), _rootItem);
-}
-
-
-RegisterModel::~RegisterModel() {
-  delete _rootItem;
+RegisterModel::RegisterModel(QObject *parent)
+: QAbstractItemModel(parent)
+, _rootItem(
+      new RegisterItem(RegisterData("Title", "Content", "DisplayFormatString"),
+                       "",
+                       std::vector<std::string>{"EAX", "EBX"})) {
+  // Initializing some example registers.
+  _items["EAX"] = std::unique_ptr<RegisterItem>(
+      new RegisterItem(RegisterData("EAX",
+                                    "AB CD 01 23",
+                                    "HH HH HH HH",
+                                    QStringList() << "Hex"
+                                                  << "Dec"
+                                                  << "Bin"
+                                                  << "Vig"),
+                       "",
+                       std::vector<std::string>{"AX"}));
+  _items["AX"] = std::unique_ptr<RegisterItem>(
+      new RegisterItem(RegisterData("AX", "AB CD", "HH HH"),
+                       "EAX",
+                       std::vector<std::string>{"AL", "AH"}));
+  _items["AL"] = std::unique_ptr<RegisterItem>(new RegisterItem(
+      RegisterData("AL", "CD", "HH"), "AX", std::vector<std::string>()));
+  _items["AH"] = std::unique_ptr<RegisterItem>(new RegisterItem(
+      RegisterData("AH", "AB", "HH"), "AX", std::vector<std::string>()));
+  _items["EBX"] = std::unique_ptr<RegisterItem>(
+      new RegisterItem(RegisterData("EBX", "AB 45 CD 78", "HH HH HH HH"),
+                       "",
+                       std::vector<std::string>{"BX"}));
+  _items["BX"] = std::unique_ptr<RegisterItem>(
+      new RegisterItem(RegisterData("BX", "AB 45", "HH HH"),
+                       "EBX",
+                       std::vector<std::string>{"BL", "BH"}));
+  _items["BL"] = std::unique_ptr<RegisterItem>(new RegisterItem(
+      RegisterData("BL", "45", "HH"), "BX", std::vector<std::string>()));
+  _items["BH"] = std::unique_ptr<RegisterItem>(new RegisterItem(
+      RegisterData("BH", "AB", "HH"), "BX", std::vector<std::string>()));
 }
 
 
@@ -36,6 +63,7 @@ QHash<int, QByteArray> RegisterModel::roleNames() const {
   roles[TitleRole]               = "RegisterTitle";
   roles[ContentRole]             = "RegisterContent";
   roles[DisplayFormatStringRole] = "RegisterDisplayFormatString";
+  roles[DataFormatsListRole]     = "DataFormatsList";
   return roles;
 }
 
@@ -52,6 +80,7 @@ QVariant RegisterModel::data(const QModelIndex &index, int role) const {
     case TitleRole: return data.getTitle();
     case ContentRole: return data.getContent();
     case DisplayFormatStringRole: return data.getDisplayFormatString();
+    case DataFormatsListRole: return data.getDataFormatsList();
   }
   return QVariant();
 }
@@ -63,22 +92,6 @@ Qt::ItemFlags RegisterModel::flags(const QModelIndex &index) const {
   }
   // Tell any views that this model is read-only.
   return QAbstractItemModel::flags(index);
-}
-
-
-QVariant RegisterModel::headerData(int section,
-                                   Qt::Orientation orientation,
-                                   int role) const {
-  // Header data is stored inside the root item for convenience.
-  RegisterData rootData = _rootItem->getData();
-  if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
-    switch (section) {
-      case TitleRole: return rootData.getTitle();
-      case ContentRole: return rootData.getContent();
-      case DisplayFormatStringRole: return rootData.getDisplayFormatString();
-    }
-  }
-  return QVariant();
 }
 
 
@@ -94,48 +107,58 @@ RegisterModel::index(int row, int column, const QModelIndex &parent) const {
   // is being inferred to.
   RegisterItem *parentItem;
   if (!parent.isValid()) {
-    parentItem = _rootItem;
+    parentItem = _rootItem.get();
   } else {
     parentItem = static_cast<RegisterItem *>(parent.internalPointer());
   }
 
   // Return the index for the parent's cell at the given row and column. If such
   // cell does not exist, return an invalid index.
-  RegisterItem *childItem = parentItem->getChild(row);
-  if (childItem) {
+  std::string childItemIdentifier = parentItem->getChildItemIdentifier(row);
+  auto it                         = _items.find(childItemIdentifier);
+  if (it != _items.end()) {
+    RegisterItem *childItem = (it->second).get();
     return createIndex(row, column, childItem);
   } else {
     return QModelIndex();
   }
 }
 
-
 QModelIndex RegisterModel::parent(const QModelIndex &index) const {
   // If the given index is invalid, return an invalid parent index.
   if (!index.isValid()) {
     return QModelIndex();
   }
-  // Load the child items and the corresponding parent item.
+  // Load the child item the given QModelIndex points to and derive the parent
+  // item from it.
   RegisterItem *childItem =
       static_cast<RegisterItem *>(index.internalPointer());
-  RegisterItem *parentItem = childItem->getParentItem();
-  // The rootItem should never be referenced (it's a dummy item), therefore an
-  // invalid index is returned in this case.
-  if (parentItem == _rootItem) {
-    return QModelIndex();
+  std::string parentItemIdentifier = childItem->getParentItemIdentifier();
+  auto it                          = _items.find(parentItemIdentifier);
+  if (it != _items.end()) {
+    RegisterItem *parentItem = (it->second).get();
+    // Determine the parentItem's row among the child items of its own parent.
+    int row;
+    if (parentItem->getParentItemIdentifier() != "") {
+      RegisterItem *parentParentItem =
+          (_items.find(parentItem->getParentItemIdentifier())->second).get();
+      row = parentParentItem->getRowOfChild(parentItemIdentifier);
+    } else {
+      row = _rootItem->getRowOfChild(parentItemIdentifier);
+    }
+    // Return the QModelIndex referencing the parent item. Note that any nesting
+    // is done inside the first column (column 0).
+    return createIndex(row, 0, parentItem);
   }
-  // When creating an index, the required parent's row and column within its one
-  // parent must be specified. The row can be
-  // retrieved from the item itself whereas the column is set to 0 by default
-  // (any nested structure therefore occurs inside the
-  // first column.
-  return createIndex(parentItem->getRow(), 0, parentItem);
+  // If the parentItemIdentifier is invalid we can assume index referenced the
+  // top-level dummy item and therefore return an invalid index.
+  return QModelIndex();
 }
 
 
 int RegisterModel::rowCount(const QModelIndex &parent) const {
   RegisterItem *parentItem;
-  // As specified in RegisterMode::parent, any nested structure occurs inside
+  // As specified in RegisterModel::parent, any nested structure occurs inside
   // the first column. Therefore, any other column
   // does not have any rows.
   if (parent.column() > 0) {
@@ -143,7 +166,7 @@ int RegisterModel::rowCount(const QModelIndex &parent) const {
   }
 
   if (!parent.isValid()) {
-    parentItem = _rootItem;
+    parentItem = _rootItem.get();
   } else {
     parentItem = static_cast<RegisterItem *>(parent.internalPointer());
   }
@@ -152,74 +175,5 @@ int RegisterModel::rowCount(const QModelIndex &parent) const {
 
 
 int RegisterModel::columnCount(const QModelIndex &parent) const {
-  if (parent.isValid()) {
-    return static_cast<RegisterItem *>(parent.internalPointer())->columnCount();
-  } else {// If no parent is specified, assume the rootItem is being referred
-          // to.
-    return _rootItem->columnCount();
-  }
-}
-
-
-void RegisterModel::_setupModelData(const QStringList &lines,
-                                    RegisterItem *parent) {
-  // In the following method this list represents a stack containing the layers
-  // (parents) for each item. If a new indentation occurs,
-  // an item is pushed to this stack in order to be able to add child items to
-  // it, which are defined in later lines.
-  QList<RegisterItem *> parents;
-  parents << parent;
-
-  QList<int> indentations;
-  indentations << 0;
-
-  for (int lineIndex = 0; lineIndex < lines.count(); ++lineIndex) {
-    int characterIndex = 0;
-    // Counts the number of whitespaces and cuts the off the string.
-    for (; characterIndex < lines[lineIndex].length(); ++characterIndex) {
-      if (lines[lineIndex].at(characterIndex) != ' ') {
-        break;
-      }
-    }
-    QString lineData =
-        lines[lineIndex].mid(characterIndex).trimmed();// Removes any
-                                                       // whitespaces from the
-                                                       // start and the end of
-                                                       // the string.
-
-    if (!lineData.isEmpty()) {
-      // The rest of the string contains the information for each column of the
-      // current row.
-      QStringList columnStrings = lineData.split("\t", QString::SkipEmptyParts);
-      QList<QString> columnData;
-      for (int columnIndex = 0; columnIndex < columnStrings.count();
-           ++columnIndex) {
-        columnData << columnStrings[columnIndex];
-      }
-      RegisterData registerData(columnData[0], columnData[1], columnData[2]);
-
-      // If the current line content was indented further than the previous line
-      // content, the new data is supposed
-      // to be the child of the previous data item.
-      if (characterIndex > indentations.last()) {
-        // A new parent is only required if the previous one already contains
-        // any child items.
-        if (parents.last()->childCount() > 0) {
-          parents << parents.last()->getChild(parents.last()->childCount() - 1);
-          indentations << characterIndex;
-        }
-      } else {
-        // If the current indentation is shorter than the previous one, move
-        // upwards on the layer stack until the
-        // correct parent for this indentation is found.
-        while (characterIndex < indentations.last() && parents.count() > 0) {
-          parents.pop_back();
-          indentations.pop_back();
-        }
-      }
-      // Append a new item to the current parent's list of children.
-      parents.last()->appendChild(
-          new RegisterItem(registerData, parents.last()));
-    }
-  }
+  return 1;
 }

@@ -13,13 +13,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see http://www.gnu.org/licenses/.*/
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ */
 
 #ifndef REGISTERITEM_H
 #define REGISTERITEM_H
 
-#include <QList>
-#include <QVariant>
+#include <string>
+#include <vector>
 #include "ui/registerdata.hpp"
 
 /**
@@ -27,22 +28,23 @@
  */
 class RegisterItem {
  public:
-  explicit RegisterItem(const RegisterData &data, RegisterItem *parentItem = 0);
-  ~RegisterItem();
+  explicit RegisterItem(const RegisterData &data,
+                        std::string parentItemIdentifier,
+                        std::vector<std::string> childItemIdentifiers);
 
-  void appendChild(RegisterItem *child);
-
-  RegisterItem *getChild(int row);
+  std::string getParentItemIdentifier();
+  std::string getChildItemIdentifier(int row);
   int childCount() const;
-  int columnCount() const;
   RegisterData getData() const;
-  int getRow() const;
-  RegisterItem *getParentItem();
+  int getRowOfChild(std::string childIdentifier);
 
  private:
-  QList<RegisterItem *> _childItems;
+  /// Register identifier pointing to the register's parent.
+  std::string _parentItemIdentifier;
+  /// Register identifiers each pointing to the register's children.
+  std::vector<std::string> _childItemIdentifiers;
+  /// Holding the register's QML-compatable contents.
   RegisterData _itemData;
-  RegisterItem *_parentItem;
 };
 
 #endif// REGISTERITEM_H

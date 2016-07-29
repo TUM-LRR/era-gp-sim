@@ -13,46 +13,41 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see http://www.gnu.org/licenses/.*/
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ */
 
 #include "ui/registeritem.hpp"
 
-RegisterItem::RegisterItem(const RegisterData &data, RegisterItem *parent) {
-  _parentItem = parent;
-  _itemData   = data;
+RegisterItem::RegisterItem(const RegisterData &data,
+                           std::string parentItemIdentifier,
+                           std::vector<std::string> childItemIdentifiers) {
+  _itemData             = data;
+  _parentItemIdentifier = parentItemIdentifier;
+  _childItemIdentifiers = childItemIdentifiers;
 }
 
-RegisterItem::~RegisterItem() {
-  qDeleteAll(_childItems);
+std::string RegisterItem::getParentItemIdentifier() {
+  return _parentItemIdentifier;
 }
 
-void RegisterItem::appendChild(RegisterItem *item) {
-  _childItems.append(item);
-}
-
-RegisterItem *RegisterItem::getChild(int row) {
-  return _childItems.value(row);
+std::string RegisterItem::getChildItemIdentifier(int row) {
+  return _childItemIdentifiers[row];
 }
 
 int RegisterItem::childCount() const {
-  return _childItems.count();
-}
-
-int RegisterItem::columnCount() const {
-  return _itemData.columnCount();
+  return _childItemIdentifiers.size();
 }
 
 RegisterData RegisterItem::getData() const {
   return _itemData;
 }
 
-RegisterItem *RegisterItem::getParentItem() {
-  return _parentItem;
-}
-
-int RegisterItem::getRow() const {
-  if (_parentItem) {
-    return _parentItem->_childItems.indexOf(const_cast<RegisterItem *>(this));
+int RegisterItem::getRowOfChild(std::string childIdentifier) {
+  auto it = std::find(_childItemIdentifiers.begin(),
+                      _childItemIdentifiers.end(),
+                      childIdentifier);
+  if (it != _childItemIdentifiers.end()) {
+    return std::distance(_childItemIdentifiers.begin(), it);
   }
-  return 0;
+  return -1;
 }

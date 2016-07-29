@@ -13,47 +13,50 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see http://www.gnu.org/licenses/.*/
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ */
 
 #ifndef REGISTERMODEL_H
 #define REGISTERMODEL_H
 
 #include <QAbstractItemModel>
-#include <QDebug>
-#include <QHash>
+#include <map>
+#include <string>
 #include "ui/registeritem.hpp"
 
 /**
  * Aggregates the data of multiple registers. Subclasses QAbstractItemModel to
  * be usable with QML-components.
  *
- * QAbstractItemModel as a table with each cell being referenced by row and
- * column. For RegisterModel, each row is
- * represented by an RegisterItem, which contains a RegisterData object holding
- * a single registers data (e.g. title, content, ...).
+ * QAbstractItemModel is a table with each cell being referenced by row and
+ * column. For RegisterModel, each row is represented by a RegisterItem, which
+ * contains a RegisterData object holding a single register's data (e.g. title,
+ * content, ...). The RegisterModel only uses a single column containing the
+ * register itself.
  *
- * The table can be nested by specifying one row as the parent of several other
- * rows. The parent row holds a reference
- * to all its child rows and each child row holds a reference to its parent row.
- * On its top level, the model holds a dummy row (rootItem) comprising all the
- * actual top level rows. This allows every cell to be
- * referenced by just holding a reference to the dummy row.
+ * Registers of all levels are being held inside the _items-map where they are
+ * identified by a unique register identifier. Nesting is realised by specifying
+ * a parent register identifier and possibly several child register identifiers.
+ * The _rootItem is used as a top-level dummy register not holding any actual
+ * data
+ * but just referencing the visible top-level registers.
  */
 class RegisterModel : public QAbstractItemModel {
   Q_OBJECT
 
  public:
-  explicit RegisterModel(const QString &data, QObject *parent = 0);
-  ~RegisterModel();
+  explicit RegisterModel(QObject *parent = 0);
 
-  enum RegisterModelRole { TitleRole, ContentRole, DisplayFormatStringRole };
+  enum RegisterModelRole {
+    TitleRole,
+    ContentRole,
+    DisplayFormatStringRole,
+    DataFormatsListRole
+  };
 
   QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
   QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
   Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
-  QVariant headerData(int section,
-                      Qt::Orientation orientation,
-                      int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
   QModelIndex
   index(int row,
         int column,
@@ -64,17 +67,11 @@ class RegisterModel : public QAbstractItemModel {
       Q_DECL_OVERRIDE;
 
  private:
-  /**
-   * Loads the model's content from a list of strings each containing a
-   * description of the models' items.
-   * @param lines A list of strings each containing a description of the models'
-   * items.
-   * @param parent Root item used as a reference point for the entire nested
-   * model being built by this method.
-   */
-  void _setupModelData(const QStringList &lines, RegisterItem *parent);
-
-  RegisterItem *_rootItem;
+  /// The dummy top-level item holding references to the visible top-level
+  /// registers.
+  std::unique_ptr<RegisterItem> _rootItem;
+  /// Map of all registers identified by a unique register identifier.
+  std::map<std::string, std::unique_ptr<RegisterItem>> _items;
 };
 
 #endif// REGISTERMODEL_H
