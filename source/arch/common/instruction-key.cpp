@@ -27,8 +27,7 @@ InstructionKey::InstructionKey(InformationInterface::Format& data) {
 }
 
 
-InstructionKey::InstructionKey(InitializerList list) {
-  addEntries(list);
+InstructionKey::InstructionKey(InitializerList list) : super(list) {
 }
 
 bool InstructionKey::operator==(const InstructionKey& other) const noexcept {
