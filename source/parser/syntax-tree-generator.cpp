@@ -5,10 +5,10 @@
 
 std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(const std::string& operand, CompileState& state) const
 {
-    //For now. A very simple generator. We just check: do we have a number? Yes? Else we must have a register... If it does not exist? Well, we failed.
+    //For now. A very simple generator. We just check: do we have a number? Yes? If not, we must have a register... If it does not exist? Well, we failed.
     if (std::regex_search(operand, std::regex("^[0-9]+$")))
     {
-        return std::move(_nodeFactories.createImmediateNode(MemoryValue(std::stoi(operand))));//Temporary. (std::stoi(operand));
+        return std::move(_nodeFactories.createImmediateNode(MemoryValue(std::stoi(operand))));//Temporary.
     }
     else
     {
@@ -20,13 +20,19 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(co
 {
     //Just create an instruction node and add all output and input nodes (operands).
     auto outputNode = _nodeFactories.createInstructionNode(command_name);
-    for (auto&& i : targets)
+
+    //Targets.
+    for (auto& i : targets)
     {
         outputNode->addChild(std::move(i));
     }
-    for (auto&& i : sources)
+
+    //Sources.
+    for (auto& i : sources)
     {
         outputNode->addChild(std::move(i));
     }
+
+    //Return.
     return std::move(outputNode);
 }
