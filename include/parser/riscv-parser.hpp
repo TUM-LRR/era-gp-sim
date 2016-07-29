@@ -34,9 +34,7 @@ class RiscvParser : public Parser {
  public:
   class RiscvRegex;
 
-  virtual std::vector<CompileError> getErrorList();
-
-  virtual std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
+  virtual FinalRepresentation
   parse(const std::string &text, ParserMode parserMode);
 
  protected:

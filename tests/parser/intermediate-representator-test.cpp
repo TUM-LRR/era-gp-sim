@@ -39,5 +39,5 @@ TEST(IntermediateRepresentator, transformSimple) {
   ir.insertCommand(IntermediateInstruction(
       LineInterval(2, 5), {"label4"}, "add", {"eax"}, {"ebx"}));
   FinalRepresentation fr = ir.transform(state);
-  ASSERT_EQ(fr.size(), 2);
+  ASSERT_EQ(fr.commandList.size(), 2);
 }

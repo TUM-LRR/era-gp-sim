@@ -24,6 +24,7 @@
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "parser/compile-error.hpp"
+#include "parser/final-representation.hpp"
 
 
 enum class ParserMode { COMPILE, UPDATE };
@@ -39,13 +40,8 @@ class Parser {
    * \param text Text to parse
    * \param parserMode Parser Mode
    */
-  virtual std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
+  virtual FinalRepresentation
   parse(const std::string &text, ParserMode parserMode) = 0;
-
-  /**
-   * Retrieves the last compiler errors.
-   */
-  virtual std::vector<CompileError> getErrorList() = 0;
 
   /**
    * Creates dialect-specific Regex for syntax highlighting registers.

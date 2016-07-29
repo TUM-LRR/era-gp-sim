@@ -22,10 +22,10 @@ void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       CompileState& state) {
   // For a machine instruction, it is easy to "execute" it: just insert it into
   // the final form.
-  finalRepresentator.push_back(compileInstruction(table, state));
+  finalRepresentator.commandList.push_back(compileInstruction(table, state));
 }
 
-std::unique_ptr<AbstractSyntaxTreeNode>
+FinalCommand
 IntermediateInstruction::compileInstruction(const SymbolTable& table,
                                             CompileState& state) {
   // We replace all occurenced in target in source (using a copy of them).
@@ -37,7 +37,7 @@ IntermediateInstruction::compileInstruction(const SymbolTable& table,
 
   // More to do here (soon^TM).
   // return std::make_unique<AbstractSyntaxTreeNode>();
-  return nullptr;
+  return FinalCommand{};
 }
 
 void IntermediateInstruction::determineMemoryPosition() {

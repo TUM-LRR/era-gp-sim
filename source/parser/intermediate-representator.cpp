@@ -30,6 +30,8 @@ FinalRepresentation IntermediateRepresentator::transform(CompileState& state) {
     i->execute(representation, table, state);
   }
 
+  representation.errorList = state.errorList;
+  
   // Now, we are done.
   return representation;
 }

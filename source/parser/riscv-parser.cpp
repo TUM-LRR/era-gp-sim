@@ -8,7 +8,7 @@
 #include "parser/intermediate-representator.hpp"
 #include "parser/riscv-regex.hpp"
 
-std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
+FinalRepresentation
 RiscvParser::parse(const std::string &text, ParserMode parserMode) {
   IntermediateRepresentator intermediate;
   std::istringstream stream{text};
@@ -63,8 +63,4 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
   }
 
   return intermediate.transform(compile_state_);
-}
-
-std::vector<CompileError> RiscvParser::getErrorList() {
-  return compile_state_.errorList;
 }

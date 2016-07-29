@@ -115,7 +115,7 @@ class IntermediateInstruction : public IntermediateOperation {
    * \param state The CompileState logging all errors occuring.
    * \return The resulting syntax tree of the node.
    */
-  std::unique_ptr<AbstractSyntaxTreeNode>
+  FinalCommand
   compileInstruction(const SymbolTable& table, CompileState& state);
 
  protected:

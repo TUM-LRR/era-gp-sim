@@ -22,12 +22,26 @@
 #include <vector>
 #include "arch/common/abstract-syntax-tree-node.hpp"
 
+
+/**
+ * \class FinalCommand
+ * \brief Denotes the temporary output of an IntermediateRepresentator ready to
+ * be used by the architecture.
+ */
+struct FinalCommand {
+	std::unique_ptr<AbstractSyntaxTreeNode> node;
+	CodePosition position;
+};
+
+
 /**
  * \class FinalRepresentation
  * \brief Denotes the temporary output of an IntermediateRepresentator ready to
  * be used by the architecture.
  */
-using FinalRepresentation =
-    std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>;// Temporary.
+struct FinalRepresentation {
+	std::vector<FinalCommand> commandList;
+	std::vector<CompileError> errorList;
+};
 
 #endif

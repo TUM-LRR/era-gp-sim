@@ -48,5 +48,5 @@ TEST(IntermediateInstruction, transformFinal) {
   FinalRepresentation fr;
   ii.execute(fr, st, state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_EQ(fr.size(), 1);
+  ASSERT_EQ(fr.commandList.size(), 1);
 }
