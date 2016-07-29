@@ -1,0 +1,17 @@
+########################################
+# SOURCES
+########################################
+
+set(PARSER_SOURCES
+  intermediate-instruction.cpp
+  intermediate-operation.cpp
+  intermediate-representator.cpp
+  parser.cpp
+  symbol-table.cpp
+)
+
+########################################
+# TARGET
+########################################
+
+add_library(era-sim-parser STATIC ${PARSER_SOURCES})

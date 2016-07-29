@@ -20,12 +20,16 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 #define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 
+#include <string>
+
 #include "arch/riscv/instruction-node.hpp"
 
 /*
  * TODO Instructions: slt sltu and or xor sll srl sra
  *                    + their respective immediate equivalents
  */
+
+namespace riscv {
 
 /**
  * Validates an integer instruction node. Every RISC V integer instruction is
@@ -37,7 +41,7 @@
  * \param immediate Whether the node is the register-immediate representation.
  * \return true if the node matches the requirements.
  */
-static bool validateIntegerInstruction(InstructionNode &node, bool immediate);
+bool validateIntegerInstruction(InstructionNode &node, bool immediate);
 
 /**
  * This node represents the add/addi instruction.
@@ -45,21 +49,24 @@ static bool validateIntegerInstruction(InstructionNode &node, bool immediate);
  * See RISC V specification for details about the instruction.
  */
 class AddInstructionNode : public InstructionNode {
-public:
+ public:
   AddInstructionNode(bool immediate)
-      : InstructionNode(), _immediate(immediate) {}
+  : InstructionNode(), _immediate(immediate) {
+  }
 
   virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
 
   virtual bool validate();
 
   virtual MemoryValue assemble() {
-    return MemoryValue{}; // TODO
+    return MemoryValue{};// TODO
   }
 
-  virtual std::string getIdentifier() { return _immediate ? "ADDI" : "ADD"; }
+  virtual std::string getIdentifier() {
+    return _immediate ? "ADDI" : "ADD";
+  }
 
-private:
+ private:
   bool _immediate;
 };
 
@@ -69,22 +76,26 @@ private:
  * See RISC V specification for details about the instruction.
  */
 class SubInstructionNode : public InstructionNode {
-public:
+ public:
   SubInstructionNode(bool immediate)
-      : InstructionNode(), _immediate(immediate) {}
+  : InstructionNode(), _immediate(immediate) {
+  }
 
   virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
 
   virtual bool validate();
 
   virtual MemoryValue assemble() {
-    return MemoryValue{}; // TODO
+    return MemoryValue{};// TODO
   }
 
-  virtual std::string getIdentifier() { return _immediate ? "SUBI" : "SUB"; }
+  virtual std::string getIdentifier() {
+    return _immediate ? "SUBI" : "SUB";
+  }
 
-private:
+ private:
   bool _immediate;
 };
+}
 
 #endif /* ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_ */
