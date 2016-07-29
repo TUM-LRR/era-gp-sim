@@ -35,7 +35,7 @@ auto main() -> int {
     .id(0)
     .size(32)
     .type(RegisterInformation::Type::INTEGER)
-    .hardwiredTo(5)
+    //.hardwiredTo(5)
     .addAlias("zero")
     .enclosing(1)
     .addConstituents({1, 2, 3});
