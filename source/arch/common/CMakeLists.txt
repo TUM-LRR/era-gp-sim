@@ -10,6 +10,11 @@ set(ARCH_COMMON_SOURCES
   architecture.cpp
   instruction-set.cpp
   instruction-information.cpp
+  instruction-key.cpp
+  information-interface.cpp
+  architecture-brewery.cpp
+  architecture-formula.cpp
+  abstract-node-factory-collection.cpp
 )
 
 ########################################

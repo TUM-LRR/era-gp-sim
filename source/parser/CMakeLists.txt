@@ -1,4 +1,8 @@
-set (PARSER_SOURCES
+########################################
+# SOURCES
+########################################
+
+set(PARSER_SOURCES
   intermediate-instruction.cpp
   intermediate-operation.cpp
   intermediate-representator.cpp
@@ -7,5 +11,9 @@ set (PARSER_SOURCES
   symbol-table.cpp
   riscv-regex.cpp
 )
+
+########################################
+# TARGET
+########################################
 
 add_library(era-sim-parser STATIC ${PARSER_SOURCES})
