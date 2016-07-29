@@ -19,10 +19,15 @@
 #ifndef ERAGPSIM_CORE_MEMORYVALUE_HPP_
 #define ERAGPSIM_CORE_MEMORYVALUE_HPP_
 
+#include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <iostream>
 #include <vector>
+
+#include "gtest\gtest.h"
 
 class MemoryValue {
  public:
@@ -52,12 +57,12 @@ class MemoryValue {
   MemoryValue &operator=(const MemoryValue &other) = default;
   /**
    * \brief Destroys the MemoryValue and invalidates also the references used
-   * for conversion
+   *        for conversion
    */
   ~MemoryValue() = default;
   /**
    * \brief Constructs a MemoryValue with a copy of other and a
-   * byteSize of byteSize
+   *        byteSize of byteSize
    * \param other
    * \param byteSize
    */
@@ -70,11 +75,20 @@ class MemoryValue {
   MemoryValue(std::vector<uint8_t> &&other, const std::size_t byteSize);
   /**
    * \brief Constructs a empty MemoryValue with byteAmount bytes of size
-   * byteSize
+   *        byteSize
    * \param byteAmount
    * \param byteSize
    */
   MemoryValue(std::size_t byteAmount, std::size_t byteSize);
+
+  MemoryValue(const MemoryValue &other,
+              const std::size_t begin,
+              const std::size_t end,
+              const std::size_t byteSize);
+
+  MemoryValue subSet(const std::size_t begin,
+                     const std::size_t end,
+                     const std::size_t byteSize) const;
 
   /**
    * \brief returns the previous value at address
@@ -98,12 +112,12 @@ class MemoryValue {
   bool set(const std::size_t address, const bool value = true);
 
   /**
-   * \brief returns the size of a single byte in the desired memory structure
-   * \return the size of a single byte in the desired memory structure
+   * \brief returns the size of a single byte in bit of the MemoryValue
+   * \return the size of a single byte in the MemoryValue
    */
   std::size_t getByteSize() const;
   /**
-   * \brief returns the amount of bytes held by the MemoryValue
+   * \brief returns the num of bytes held by the MemoryValue
    * \return the amount of bytes held by the MemoryValue
    */
   std::size_t getByteAmount() const;
@@ -115,7 +129,7 @@ class MemoryValue {
 
   /**
    * \brief returns a reference to the data vector. For internal purposes only.
-   * Do not use or don't complain about crashes.
+   *        Do not use or don't complain about crashes.
    * \return a reference to the data vector
    */
   const std::vector<uint8_t> &internal() const;
@@ -127,8 +141,12 @@ class MemoryValue {
   friend std::ostream &
   operator<<(std::ostream &stream, const MemoryValue &value);
 
+  FRIEND_TEST(TestMemoryValue, charAt);
+  FRIEND_TEST(TestMemoryValue, death);
  private:
   std::size_t _byteSize;
   std::vector<std::uint8_t> _data;
+
+  std::uint8_t getByteAt(std::size_t address) const;
 };
 #endif// ERAGPSIM_CORE_MEMORYVALUE_HPP_
