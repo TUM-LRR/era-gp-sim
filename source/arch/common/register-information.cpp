@@ -226,9 +226,11 @@ void RegisterInformation::_deserialize(InformationInterface::Format& data) {
         this->addAlias(alias);
       }
   });
-  // clang-format on
 
-  Utility::doIfThere(data, "alias", [this](auto& alias) { addAlias(alias); });
+  Utility::doIfThere(data, "alias", [this](auto& alias) {
+      this->addAlias(alias);
+  });
+  // clang-format on
 }
 
 void RegisterInformation::_parseType(InformationInterface::Format& data) {
