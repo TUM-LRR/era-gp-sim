@@ -36,8 +36,8 @@ class Parser {
 	/**
 	 * Parses text into syntax tree.
 	 *
-	 * @param text Text to parse
-	 * @param parserMode Parser Mode
+	 * \param text Text to parse
+	 * \param parserMode Parser Mode
 	 */
 	virtual std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
 	parse(std::string &text, ParserMode parserMode) = 0;
@@ -45,23 +45,23 @@ class Parser {
 	/**
 	 * Creates dialect-specific Regex for syntax highlighting registers.
 	 *
-	 * @param name Register name
-	 * @return Dialect-specific Regex
+	 * \param name Register name
+	 * \return Dialect-specific Regex
 	 */
 	virtual std::string getSyntaxRegister(std::string &name);
 
 	/**
 	 * Creates dialect-specific Regex for syntax highlighting instructions.
 	 *
-	 * @param name Assembler instruction name
-	 * @return Dialect-specific Regex
+	 * \param name Assembler instruction name
+	 * \return Dialect-specific Regex
 	 */
 	virtual std::string getSyntaxInstruction(std::string &name);
 
 	/**
 	 * Creates dialect-specific Regex for syntax highlighting immediates.
 	 *
-	 * @return Dialect-specific Regex
+	 * \return Dialect-specific Regex
 	 */
 	virtual std::string getSyntaxImmediate();
 
