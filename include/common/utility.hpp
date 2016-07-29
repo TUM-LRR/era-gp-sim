@@ -24,6 +24,7 @@
 #include <cassert>
 #include <fstream>
 #include <iterator>
+#include <memory>
 #include <string>
 
 namespace Utility {

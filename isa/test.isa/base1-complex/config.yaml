@@ -1,6 +1,5 @@
 name: base1-complex
-extends:
-  - base3-cycle
+extends: base3-cycle
 reset-units: true
 
 endianness: mixed

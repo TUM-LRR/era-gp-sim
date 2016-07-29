@@ -89,7 +89,8 @@ void ArchitectureBrewery::_loadDependencies(ExtensionInformation& extension,
   // clang-format off
   Utility::doIfThere(data, "extends",
   [&extension, this, &traversalStack, &data] (auto& dependencies) {
-    for (const auto& dependencyName : dependencies) {
+
+    for (const auto& dependencyName : value) {
       if (!traversalStack.count(dependencyName)) {
         extension.merge(_brew(dependencyName, traversalStack));
       } else {

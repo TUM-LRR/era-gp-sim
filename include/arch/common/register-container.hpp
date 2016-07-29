@@ -20,15 +20,17 @@
 #ifndef ERAGPSIM_ARCH_COMMON_REGISTER_INFORMATION_CONTAINER_HPP
 #define ERAGPSIM_ARCH_COMMON_REGISTER_INFORMATION_CONTAINER_HPP
 
+#include <cstddef>
 #include <functional>
 #include <string>
+#include <unordered_set>
 
 #include "arch/common/register-information.hpp"
 
-struct RegisterNameComparator {
+struct RegisterComparator {
   bool operator()(const RegisterInformation& first,
                   const RegisterInformation& second) const {
-    return first.getName() == second.getName();
+    return first.getID() == second.getID();
   }
 };
 
@@ -36,13 +38,13 @@ namespace std {
 template <>
 struct hash<RegisterInformation> {
   std::size_t operator()(const RegisterInformation& unit) const {
-    return std::hash<std::string>()(unit.getName());
+    return std::hash<std::size_t>()(unit.getID());
   }
 };
 }
 
 using RegisterContainer = std::unordered_set<RegisterInformation,
                                              std::hash<RegisterInformation>,
-                                             RegisterNameComparator>;
+                                             RegisterComparator>;
 
 #endif /* ERAGPSIM_ARCH_COMMON_REGISTER_INFORMATION_CONTAINER_HPP */

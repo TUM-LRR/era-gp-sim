@@ -1,0 +1,25 @@
+# RISC-V: RV64M
+
+name: rv64m
+
+instructions:
+  - mnemonic: mulw
+    opcode: 59
+    funct3: 0
+    funct7: 1
+  - mnemonic: divw
+    opcode: 59
+    funct3: 4
+    funct7: 1
+  - mnemonic: divuw
+    opcode: 59
+    funct3: 5
+    funct7: 1
+  - mnemonic: remw
+    opcode: 59
+    funct3: 6
+    funct7: 1
+  - mnemonic: remuw
+    opcode: 59
+    funct3: 7
+    funct7: 1
