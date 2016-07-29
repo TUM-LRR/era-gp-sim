@@ -79,10 +79,6 @@ InstructionSet& InstructionSet::addInstructions(const InstructionSet& other) {
   return *this;
 }
 
-InstructionSet& InstructionSet::addInstructions(InitializerList instructions) {
-  return addInstructions<InitializerList>(instructions);
-}
-
 InstructionSet&
 InstructionSet::addInstruction(const InstructionInformation& instruction) {
   _container.emplace(instruction.getMnemonic(), instruction);

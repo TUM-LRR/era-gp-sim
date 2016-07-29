@@ -24,15 +24,17 @@
 #include "arch/common/architecture-brewery.hpp"
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
+#include "arch/common/instruction-key.hpp"
+#include "arch/common/instruction-set.hpp"
 #include "arch/common/register-information.hpp"
 
 struct ArchDeserializationTestFixture : public ::testing::Test {
   ArchDeserializationTestFixture() {
     // clang-format off
-    instructionSet.addInstructions({
-      {"add", {{"opcode", 6}, {"function", 3}}},
-      {"sub", {{"opcode", 9}, {"function", 3}}}
-    });
+    instructionSet.addInstructions(InstructionSet({
+      {"add", InstructionKey({{"opcode", 6}, {"function", 3}})},
+      {"sub", InstructionKey({{"opcode", 9}, {"function", 3}})}
+    }));
     // clang-format on
 
     // clang-format off
@@ -98,11 +100,11 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
   EXPECT_EQ(architecture.getWordSize(), 32);
 
   // clang-format off
-  instructionSet.addInstruction({"sll", {
+  instructionSet.addInstruction({"sll", InstructionKey({
       {"opcode", 6},
       {"function", 6},
       {"width", 6}
-  }});
+  })});
   // clang-format on
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
@@ -128,11 +130,11 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
   EXPECT_EQ(architecture.getWordSize(), 32);
 
   // clang-format off
-  instructionSet.addInstruction({"sll", {
+  instructionSet.addInstruction({"sll", InstructionKey({
       {"opcode", 6},
       {"function", 6},
       {"width", 6}
-  }});
+  })});
   // clang-format on
 
   ASSERT_EQ(architecture.getInstructions(), instructionSet);

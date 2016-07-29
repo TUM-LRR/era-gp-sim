@@ -38,11 +38,11 @@ void InformationInterface::store(const std::string& filePath,
 InformationInterface::~InformationInterface() = default;
 
 void InformationInterface::operator<<(Format& data) {
-  deserialize(data);
+  _deserialize(data);
 }
 
 InformationInterface::Format& operator>>(InformationInterface::Format& data,
                                          InformationInterface& information) {
-  information.deserialize();
+  information._deserialize(data);
   return data;
 }

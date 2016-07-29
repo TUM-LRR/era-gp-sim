@@ -27,7 +27,8 @@ InstructionKey::InstructionKey(InformationInterface::Format& data) {
 }
 
 
-InstructionKey::InstructionKey(InitializerList list) : super(list) {
+InstructionKey::InstructionKey(InitializerList list) {
+  addEntries(list);
 }
 
 bool InstructionKey::operator==(const InstructionKey& other) const noexcept {
@@ -53,7 +54,7 @@ InstructionKey& InstructionKey::addEntry(const Key& key, const Value& value) {
 
 InstructionKey& InstructionKey::addEntries(InitializerList list) {
   assert(list.size() > 0);
-  _container.insert(list);
+  addEntries<InitializerList>(list);
 
   return *this;
 }

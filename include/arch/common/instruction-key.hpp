@@ -22,6 +22,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "arch/common/information-interface.hpp"
@@ -62,8 +63,10 @@ class InstructionKey
   using CONTAINER_ADAPTER_MEMBERS;
   using Key             = std::string;
   using Value           = std::size_t;
+  using Entry           = std::pair<Key, Value>;
   using KeyCollection   = std::vector<Key>;
   using ValueCollection = std::vector<Value>;
+  using InitializerList = std::initializer_list<Entry>;
 
   /**
    * Constructs an instruction key from the given serialized data.

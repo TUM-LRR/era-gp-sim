@@ -51,10 +51,10 @@ struct ArchCommonTestFixture : ::testing::Test {
     instructionInformation.mnemonic("add").key(instructionKey);
 
     // clang-format off
-    instructionSet.addInstructions({
+    instructionSet.addInstructions(InstructionSet({
         instructionInformation,
-        {"mov", {{"opcode", 2}}}
-    });
+        {"mov", InstructionKey({{"opcode", 2}})}
+    }));
     // clang-format on
 
     baseExtensionInformation.name("rvi32");
@@ -70,10 +70,10 @@ struct ArchCommonTestFixture : ::testing::Test {
 
     // clang-format off
     specialExtensionInformation.name("rva32");
-    specialExtensionInformation.addInstructions({
+    specialExtensionInformation.addInstructions(InstructionSet({
       {"lr", InstructionKey({{"opcode", 1}, {"function", 2}})},
       {"sc", InstructionKey({{"opcode", 3}, {"function", 4}})}
-    });
+    }));
     // clang-format on
   }
 

@@ -75,11 +75,7 @@ class DataTypeInformation : public InformationInterface {
   bool operator!=(const DataTypeInformation& other) const noexcept;
 
   /**
-   * Deserializes the data type from the given data.
-   *
-   * \param data The data type to deserialize from.
-   *
-   * \return The current data type object.
+   * \copydoc InformationInterface::deserialize()
    */
   DataTypeInformation& deserialize(InformationInterface::Format& data);
 

@@ -63,16 +63,13 @@ class InformationInterface : public BuilderInterface {
   virtual ~InformationInterface();
 
   /**
-   * \see deserialize()
-   */
-  virtual void operator<<(Format& data);
-
-  /**
    * Deserializes an `InformationInterface` object from the given data.
    *
    * \param data The data to deserialize from.
+   *
+   * \return The current `InformationInterface` object.
    */
-  virtual void deserialize(Format& data) = 0;
+  virtual void operator<<(Format& data);
 
   /**
    * Deserializes an `InformationInterface` object from the given data.
@@ -82,6 +79,18 @@ class InformationInterface : public BuilderInterface {
    * \return The data after deserialization.
    */
   friend Format& operator>>(Format& data, InformationInterface& information);
+
+ protected:
+  /**
+   * This method should handle the actual deserialization workload.
+   *
+   * Other methods, such as the shift overloads or public deserialize() methods
+   * should call this function to unify the deserialization in one point.
+   *
+   * \param data The data to deserialize.
+   *
+   */
+  virtual void _deserialize(Format& data) = 0;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_INFORMATION_HPP */

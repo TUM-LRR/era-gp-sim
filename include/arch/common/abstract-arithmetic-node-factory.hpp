@@ -39,7 +39,7 @@ class AbstractArithmeticNodeFactory {
   virtual ~AbstractArithmeticNodeFactory();
 
   /**
-   * @brief createArithmeticerationNode
+   * \brief createArithmeticerationNode
    * Creates and returns an architecture-specific implementation of a
    * SyntaxTreeNode of type arithmetic operation. Each operation type
    * can be described by constants defined in this class. If the given opType is
@@ -47,7 +47,7 @@ class AbstractArithmeticNodeFactory {
    *
    * @param opType constant, defined in this class, describing the type of the
    * arithmetical operation
-   * @return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
+   * \return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given opType is invalid
    */
   virtual Node createArithmeticNode(Operation operation) const = 0;

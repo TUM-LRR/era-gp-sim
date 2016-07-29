@@ -225,15 +225,6 @@ class InstructionSet : public UnderlyingInstructionSetContainer,
   InstructionSet& addInstructions(const InstructionSet& other);
 
   /**
-   * Adds the list of instructions to the set.
-   *
-   * \param list A list of instructions to add to the set.
-   *
-   * \return The current instruction object.
-   */
-  InstructionSet& addInstructions(InitializerList instructions);
-
-  /**
    * Adds a single instruction to the set.
    *
    * \param instruction The instruction to add.
