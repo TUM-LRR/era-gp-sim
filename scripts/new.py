@@ -45,14 +45,39 @@ def create_header(argument, root, relative_path, name):
         header.write('#endif /* {0} */\n'.format(guard))
 
 
+def add_to_cmake(directory, file_name):
+    path = os.path.join(directory, 'CMakeLists.txt')
+    with open(path, 'r') as source:
+        contents = source.read()
+
+    def replace_cmake(match):
+        lines = match.group().split('\n')
+        lines.insert(len(lines) - 1, '  {0}'.format(file_name))
+        return '\n'.join(lines)
+
+    contents = re.sub(
+        r'set\(\w+_SOURCES.*?(?:\))',
+        replace_cmake,
+        contents,
+        flags=re.DOTALL
+    )
+
+    print("Adding '{0}' to CMakeLists.txt ...".format(file_name))
+
+    with open(path, 'w') as destination:
+        destination.write(contents)
+
+
 def create_source(root, relative_path, name):
     directory = os.path.join(root, "source", relative_path)
-    source_path = os.path.join(directory, name + ".cpp")
+    file_name = '{0}.cpp'.format(name)
+    source_path = os.path.join(directory, file_name)
     include_path = os.path.join(relative_path, "{0}.hpp".format(name))
     print('Creating source file ...')
     with open(source_path, 'w') as source:
         source.write(get_license(root))
         source.write('#include "{0}"\n'.format(include_path))
+    add_to_cmake(directory, file_name)
 
 
 def main():

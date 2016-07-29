@@ -2,7 +2,7 @@
 # CONFIG
 ########################################
 
-add_compile_options(-Os -O3 -g -Werror)
+add_compile_options(-Os -O2 -g -Werror)
 
 ########################################
 # SUBDIRECTORIES
@@ -11,3 +11,4 @@ add_compile_options(-Os -O3 -g -Werror)
 add_subdirectory(arch)
 add_subdirectory(common)
 add_subdirectory(core)
+# add_subdirectory(parser)
