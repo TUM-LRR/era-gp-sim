@@ -22,7 +22,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "arch/common/ast.hpp"
+#include "arch/common/abstract-syntax-tree-node.hpp"
 #include "intermediate-operation.hpp"
 #include "symbol-table.hpp"
 

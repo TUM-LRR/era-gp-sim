@@ -20,7 +20,7 @@
 
 #include <memory>
 #include <vector>
-#include "arch/common/ast.hpp"
+#include "arch/common/abstract-syntax-tree-node.hpp"
 
 /**
  * \class FinalRepresentation
