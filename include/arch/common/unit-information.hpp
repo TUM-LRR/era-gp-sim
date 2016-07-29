@@ -48,32 +48,32 @@ class UnitInformation : public ContainerAdapter<RegisterContainer>,
   /**
    * Deserializes the `UnitInformation` from the given data.
    *
-   * @param data The data to deserialize the unit-information from.
+   * \param data The data to deserialize the unit-information from.
    */
   explicit UnitInformation(InformationInterface::Format& data);
 
   /**
    * Constructs a new unit with the give name.
    *
-   * @param name The name of the unit, e.g. "cpu".
+   * \param name The name of the unit, e.g. "cpu".
    */
   explicit UnitInformation(const std::string& name = std::string());
 
   /**
    * Constructs a new unit with the given name and list of registers.
    *
-   * @param name The name of the unit, e.g. "cpu".
-   * @param list A list of registers to add to the unit.
+   * \param name The name of the unit, e.g. "cpu".
+   * \param list A list of registers to add to the unit.
    */
   UnitInformation(const std::string& name, InitializerList list);
 
   /**
    * Constructs a new unit with the given name and range of registers.
    *
-   * @tparam Range A range-like type.
+   * \tparam Range A range-like type.
    *
-   * @param name The name of the unit, e.g. "cpu".
-   * @param range The range of RegisterInformation objects to add.
+   * \param name The name of the unit, e.g. "cpu".
+   * \param range The range of RegisterInformation objects to add.
    */
   template <typename Range>
   UnitInformation(const std::string& name, const Range& range) : _name(name) {
@@ -85,7 +85,7 @@ class UnitInformation : public ContainerAdapter<RegisterContainer>,
    *
    * The name of the unit and the registers in the unit must be equal.
    *
-   * @param other The other unit.
+   * \param other The other unit.
    */
   bool operator==(const UnitInformation& other) const noexcept;
 
@@ -94,20 +94,20 @@ class UnitInformation : public ContainerAdapter<RegisterContainer>,
    *
    * The name of the unit and the registers in the unit must be equal.
    *
-   * @param other The other unit.
+   * \param other The other unit.
    */
   bool operator!=(const UnitInformation& other) const noexcept;
 
   /**
    * Adds a range of RegisterInformation objects to the unit.
    *
-   * @tparam Range A range-like type.
+   * \tparam Range A range-like type.
    *
-   * @param range A range of RegisterInformation objects.
+   * \param range A range of RegisterInformation objects.
    *
-   * @return The current unit object.
+   * \return The current unit object.
    *
-   * @see addInstructions
+   * \see addInstructions
    */
   template <typename Range>
   UnitInformation& operator+=(const Range& range) {
@@ -120,11 +120,11 @@ class UnitInformation : public ContainerAdapter<RegisterContainer>,
    *
    * A copy is made of this object, then modified via +=, then returned.
    *
-   * @tparam Range A range-like type.
+   * \tparam Range A range-like type.
    *
-   * @param range The range of RegisterInformation objects to add.
+   * \param range The range of RegisterInformation objects to add.
    *
-   * @return The current unit object.
+   * \return The current unit object.
    */
   template <typename Range>
   UnitInformation operator+(const Range& other) const {
@@ -137,9 +137,9 @@ class UnitInformation : public ContainerAdapter<RegisterContainer>,
   /**
    * Deserializes the `UnitInformation` from the given data.
    *
-   * @param data The data to deserialize the unit-information from.
+   * \param data The data to deserialize the unit-information from.
    *
-   * @return The current unit object.
+   * \return The current unit object.
    */
   UnitInformation& deserialize(InformationInterface::Format& data);
 
@@ -148,9 +148,9 @@ class UnitInformation : public ContainerAdapter<RegisterContainer>,
    *
    * This would usually be "cpu", "fpu" (floats) or "vpu" (vector processing).
    *
-   * @param name The new name for the unit.
+   * \param name The new name for the unit.
    *
-   * @return The current unit object.
+   * \return The current unit object.
    */
   UnitInformation& name(const std::string& name) noexcept;
 
@@ -184,11 +184,11 @@ class UnitInformation : public ContainerAdapter<RegisterContainer>,
   /**
    * Adds a range of RegisterInformation objects to the unit.
    *
-   * @tparam Range A range-like type.
+   * \tparam Range A range-like type.
    *
-   * @param range A range of RegisterInformation objects.
+   * \param range A range of RegisterInformation objects.
    *
-   * @return The current unit object.
+   * \return The current unit object.
    */
   template <typename Range>
   UnitInformation& addRegisters(const Range& range) {
@@ -206,22 +206,22 @@ class UnitInformation : public ContainerAdapter<RegisterContainer>,
   /**
    * Adds a list of RegisterInformation objects to the unit.
    *
-   * @param registers A list of RegisterInformation objects.
+   * \param registers A list of RegisterInformation objects.
    *
-   * @return The current unit object.
+   * \return The current unit object.
    */
   UnitInformation& addRegisters(InitializerList registers);
 
   /**
    * Adds a single RegisterInformation object to the unit.
    *
-   * @param registerInformation The RegisterInformation object to add.
+   * \param registerInformation The RegisterInformation object to add.
    *
-   * @return the current object.
+   * \return the current object.
    */
   UnitInformation& addRegister(const RegisterInformation& registerInformation);
 
-  /** @copydoc BuilderInterface::isValid() */
+  /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
@@ -230,7 +230,7 @@ class UnitInformation : public ContainerAdapter<RegisterContainer>,
   /**
    * Deserializes the `UnitInformation` from the given data.
    *
-   * @param data The data to deserialize the unit-information from.
+   * \param data The data to deserialize the unit-information from.
    */
   void _deserialize(InformationInterface::Format& data) override;
 

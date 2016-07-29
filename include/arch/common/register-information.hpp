@@ -86,61 +86,61 @@ class RegisterInformation : public InformationInterface {
   /**
    * Deserializes the RegisterInformation from the given data.
    *
-   * @param data The data to deserialize from.
+   * \param data The data to deserialize from.
    */
   explicit RegisterInformation(InformationInterface::Format& data);
 
   /**
    * Constructs the RegisterInformation with the register's name.
    *
-   * @param name The name of the register.
+   * \param name The name of the register.
    */
   explicit RegisterInformation(const std::string& name);
 
   /**
    * Constructs the RegisterInformation with the register's name and size.
    *
-   * @param name The name of the register.
-   * @param size The size of the register.
+   * \param name The name of the register.
+   * \param size The size of the register.
    */
   RegisterInformation(const std::string& name, size_t size);
 
   /**
    * Tests for equality of two registers.
    *
-   * @param other The other register.
+   * \param other The other register.
    */
   bool operator==(const RegisterInformation& other) const noexcept;
 
   /**
    * Tests for inequality of two registers.
    *
-   * @param other The other register.
+   * \param other The other register.
    */
   bool operator!=(const RegisterInformation& other) const noexcept;
 
   /**
    * Deserializes the RegisterInformation from the given data.
    *
-   * @param data The data to deserialize from.
+   * \param data The data to deserialize from.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   RegisterInformation& deserialize(InformationInterface::Format& data);
 
   /**
    * Sets the name of the register.
    *
-   * @param name The new name for the register.
+   * \param name The new name for the register.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   RegisterInformation& name(const std::string& name);
 
   /**
    * Returns the name of the register.
    *
-   * @return The name of the register.
+   * \return The name of the register.
    */
   const std::string& getName() const noexcept;
 
@@ -152,16 +152,16 @@ class RegisterInformation : public InformationInterface {
   /**
    * Sets the size (width) of the register, in bits.
    *
-   * @param bit_size The new width for the register, in bits.
+   * \param bit_size The new width for the register, in bits.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   RegisterInformation& size(size_t bit_size);
 
   /**
    * Returns the size of the register, if any.
    *
-   * @return The size of the register.
+   * \return The size of the register.
    */
   size_t getSize() const noexcept;
 
@@ -173,9 +173,9 @@ class RegisterInformation : public InformationInterface {
   /**
    * Sets the numeric identifier for the register.
    *
-   * @param id The new numeric ID for the register.
+   * \param id The new numeric ID for the register.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   RegisterInformation& id(id_t id);
 
@@ -190,16 +190,16 @@ class RegisterInformation : public InformationInterface {
    * Must be a member of the `Type` enum and therefore
    * one of {INTEGER, FLOAT, VECTOR, FLAG}.
    *
-   * @param type The new type for the register.
+   * \param type The new type for the register.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   RegisterInformation& type(Type type);
 
   /**
    * Returns the type of the register.
    *
-   * @return The type of the register.
+   * \return The type of the register.
    */
   Type getType() const noexcept;
 
@@ -219,9 +219,9 @@ class RegisterInformation : public InformationInterface {
    * The constant value must be convertible to `double` (that is the internal
    * storage type, also for integral types).
    *
-   * @param constant The new hardwired constant.
+   * \param constant The new hardwired constant.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   template <typename ConstantType,
             typename = std::enable_if_t<
@@ -235,9 +235,9 @@ class RegisterInformation : public InformationInterface {
    * Returns the constant the register is hardwired to, if any, and converts it
    *  to the given type.
    *
-   * @tparam ConstantType The output type for the constant.
+   * \tparam ConstantType The output type for the constant.
    *
-   * @return If a conversion is possible, the current hardwired constant
+   * \return If a conversion is possible, the current hardwired constant
    *         cast to the given type.
    */
   template <typename ConstantType,
@@ -251,18 +251,18 @@ class RegisterInformation : public InformationInterface {
   /**
    * Returns whether or not the register is currently hardwired to any constant.
    *
-   * @return True if the register is hardwired to a constant, else false.
+   * \return True if the register is hardwired to a constant, else false.
    */
   bool isConstant() const noexcept;
 
   /**
    * Adds a range of addAliases to the known aliases for the register.
    *
-   * @tparam Range A range-like type.
+   * \tparam Range A range-like type.
    *
-   * @param range A range of new aliases.
+   * \param range A range of new aliases.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   template <typename Range>
   RegisterInformation& addAliases(const Range& range) {
@@ -273,32 +273,32 @@ class RegisterInformation : public InformationInterface {
   /**
    * Adds the list of aliases to the known aliases for the register.
    *
-   * @param aliases A list of aliases.
+   * \param aliases A list of aliases.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   RegisterInformation& addAliases(AliasList aliases);
 
   /**
    * Adds the given alias to the known aliases for the register.
    *
-   * @param alias The alias to assign to the register.
+   * \param alias The alias to assign to the register.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   RegisterInformation& addAlias(const std::string& alias);
 
   /**
    * Returns the known aliases for the register.
    *
-   * @return The currently known aliases for the register.
+   * \return The currently known aliases for the register.
    */
   const std::vector<std::string>& getAliases() const noexcept;
 
   /**
    * Returns whether or not the register has aliases at all.
    *
-   * @return True if the register has at least one alias, else false.
+   * \return True if the register has at least one alias, else false.
    */
   bool hasAliases() const noexcept;
 
@@ -308,7 +308,7 @@ class RegisterInformation : public InformationInterface {
    * This is the numeric identifier of the register that contains this
    * register. For example, it would be EAX if this register was AX.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   RegisterInformation& enclosing(id_t id);
 
@@ -320,7 +320,7 @@ class RegisterInformation : public InformationInterface {
    * the ID for EAX in this variable. Note that not all registers have an
    * enclosing register ID (e.g. EAX on 32-bit systems).
    *
-   * @return An Optional object, possibly containing an ID for the enclosing
+   * \return An Optional object, possibly containing an ID for the enclosing
    *         register (if this register has an enclosing register).
    */
   id_t getEnclosing() const noexcept;
@@ -336,11 +336,11 @@ class RegisterInformation : public InformationInterface {
    *
    * See getConstituents() for a description of a register's consituents.
    *
-   * @tparam A range-like type.
+   * \tparam A range-like type.
    *
-   * @param range A range of new constituents.
+   * \param range A range of new constituents.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   template <typename Range>
   RegisterInformation& addConstituents(const Range& range) {
@@ -356,9 +356,9 @@ class RegisterInformation : public InformationInterface {
    *
    * See getConstituents() for a description of a register's consituents.
    *
-   * @param constituents The list of constituents to be added for the register.
+   * \param constituents The list of constituents to be added for the register.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   RegisterInformation& addConstituents(IDList constituents);
 
@@ -367,9 +367,9 @@ class RegisterInformation : public InformationInterface {
    *
    * See getConstituents() for a description of a register's consituents.
    *
-   * @param id The ID of the constituent register to add.
+   * \param id The ID of the constituent register to add.
    *
-   * @return The current register object.
+   * \return The current register object.
    */
   RegisterInformation& addConstituent(id_t id);
 
@@ -382,18 +382,18 @@ class RegisterInformation : public InformationInterface {
    * For example, if this register represents EAX, it would contain only AX and
    * not AH or AL, because those are then contained by AX.
    *
-   * @return The constituent IDs of the register.
+   * \return The constituent IDs of the register.
    */
   const std::vector<id_t>& getConstituents() const noexcept;
 
   /**
    * Returns whether or not the register has constituents at all.
    *
-   * @return True if the register has at least one constituent, else false.
+   * \return True if the register has at least one constituent, else false.
    */
   bool hasConstituents() const noexcept;
 
-  /** @copydoc BuilderInterface::isValid() */
+  /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
@@ -403,14 +403,14 @@ class RegisterInformation : public InformationInterface {
   /**
    * Deserializes the RegisterInformation from the given data.
    *
-   * @param data The data to deserialize from.
+   * \param data The data to deserialize from.
    */
   void _deserialize(InformationInterface::Format& data) override;
 
   /**
    * Parses a `RegisterInformation::Type` specifier.
    *
-   * @param data The data to parse the type from.
+   * \param data The data to parse the type from.
    */
   void _parseType(InformationInterface::Format& data);
 

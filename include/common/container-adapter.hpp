@@ -64,9 +64,9 @@ class ContainerAdapter {
   /**
    * Constructs a new container adapter from a range of elements.
    *
-   * @tparam Range a range-like type.
+   * \tparam Range a range-like type.
    *
-   * @param range A range of elements to initialize the container adapter with.
+   * \param range A range of elements to initialize the container adapter with.
    */
   template <typename Range>
   explicit ContainerAdapter(const Range& range)
@@ -76,7 +76,7 @@ class ContainerAdapter {
   /**
    * Constructs a new container adapter from the list of elements.
    *
-   * @param instructions A list of elements to initialize the container adapter
+   * \param instructions A list of elements to initialize the container adapter
    *                     with.
    */
   ContainerAdapter(InitializerList list = InitializerList())
@@ -143,7 +143,7 @@ class ContainerAdapter {
   /**
    * Return the number of elements stored in the container.
    *
-   * @return The number of elements stored in the container.
+   * \return The number of elements stored in the container.
    */
   virtual size_t size() const noexcept {
     return _container.size();
@@ -152,7 +152,7 @@ class ContainerAdapter {
   /**
    * Returns whether or not the container is empty.
    *
-   * @return True if there are no elements stored in the container at all, else
+   * \return True if there are no elements stored in the container at all, else
    *         false.
    */
   virtual bool isEmpty() const noexcept {

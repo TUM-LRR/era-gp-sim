@@ -21,7 +21,7 @@
 #include <memory>
 
 /**
- * @brief The AbstractMemoryAccessNodeFactory class
+ * \brief The AbstractMemoryAccessNodeFactory class
  * Abstract factory type for creating SyntaxTreeNodes of type memory access
  */
 class AbstractMemoryAccessNodeFactory {
@@ -32,11 +32,11 @@ class AbstractMemoryAccessNodeFactory {
   virtual ~AbstractMemoryAccessNodeFactory();
 
   /**
-   * @brief createMemoryAccessNode
+   * \brief createMemoryAccessNode
    * Creates and returns an architecture-specific implementation of a
    * SyntaxTreeNode of type memory access.
    *
-   * @return std::unique_ptr pointing to the newly created SyntaxTreeNode
+   * \return std::unique_ptr pointing to the newly created SyntaxTreeNode
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
   createMemoryAccessNode() const = 0;

@@ -61,7 +61,7 @@ class ArchitectureBrewery {
    * Constructs a new Brewery ready to brew an architecture from the given
    * formula.
    *
-   * @param formula The architecture formula to brew from.
+   * \param formula The architecture formula to brew from.
    */
   explicit ArchitectureBrewery(const ArchitectureFormula& formula);
 
@@ -70,16 +70,16 @@ class ArchitectureBrewery {
    *
    * Calls `brew()`.
    *
-   * @return The finished (brewed) Architecture.
+   * \return The finished (brewed) Architecture.
    *
-   * @see brew()
+   * \see brew()
    */
   Architecture operator()();
 
   /**
    * Runs the graph algorithm to produce the Architecture object.
    *
-   * @return The finished (brewed) Architecture.
+   * \return The finished (brewed) Architecture.
    */
   Architecture brew();
 
@@ -95,10 +95,10 @@ class ArchitectureBrewery {
    * Then its dependencies are resolved and merged into the empty extension.
    * Finally the extension is deserialized from the rest of the data.
    *
-   * @param extensionName The name of the extension currenlty under inspection.
-   * @param traversalStack The stack of extensions currently under construction.
+   * \param extensionName The name of the extension currenlty under inspection.
+   * \param traversalStack The stack of extensions currently under construction.
    *
-   * @return The finished extension.
+   * \return The finished extension.
    */
   ExtensionInformation
   _brew(const std::string& extensionName, TraversalStack& traversalStack);
@@ -106,9 +106,9 @@ class ArchitectureBrewery {
   /**
    * Refactors the loading of dependencies (traversing adjacent edges).
    *
-   * @param extension The current extension.
-   * @param data The data to load from.
-   * @param traversalStack The stack of extensions currently under construction.
+   * \param extension The current extension.
+   * \param data The data to load from.
+   * \param traversalStack The stack of extensions currently under construction.
    */
   void _loadDependencies(ExtensionInformation& extension,
                          InformationInterface::Format& data,
@@ -118,8 +118,8 @@ class ArchitectureBrewery {
    * Refactors the resetting of units and instructions after loading an
    * extension.
    *
-   * @param extension The current extension.
-   * @param data The data to load from.
+   * \param extension The current extension.
+   * \param data The data to load from.
    */
   void _handleReset(ExtensionInformation& extension,
                     InformationInterface::Format& data);
@@ -128,9 +128,9 @@ class ArchitectureBrewery {
    * Loads the configuration data of the extension with the given name from
    * disk.
    *
-   * @param extensionName The name of the extension to load.
+   * \param extensionName The name of the extension to load.
    *
-   * @return Data in the information interface's format.
+   * \return Data in the information interface's format.
    */
   InformationInterface::Format _load(const std::string extensionName);
 

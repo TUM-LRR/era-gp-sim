@@ -41,22 +41,22 @@ class InstructionInformation : public InformationInterface {
   * Deserializes and constructs the `InstructionInformation` from the given
   * data.
   *
-  * @param data The serialized representation of the `InstructionInformation`.
+  * \param data The serialized representation of the `InstructionInformation`.
   */
   explicit InstructionInformation(InformationInterface::Format& data);
 
   /**
    * Constructs an instruction with a mnemonic.
    *
-   * @param mnemonic The mnemonic of the instruction (e.g. "add")
+   * \param mnemonic The mnemonic of the instruction (e.g. "add")
    */
   explicit InstructionInformation(const std::string& mnemonic = std::string());
 
   /**
    * Constructs an instruction with a mnemonic and key.
    *
-   * @param mnemonic The mnemonic of the instruction (e.g. "add")
-   * @param key The key of the instruction.
+   * \param mnemonic The mnemonic of the instruction (e.g. "add")
+   * \param key The key of the instruction.
    */
   InstructionInformation(const std::string& mnemonic,
                          const InstructionKey& key);
@@ -66,7 +66,7 @@ class InstructionInformation : public InformationInterface {
    *
    * The names and keys must match for two instructions to be equal.
    *
-   * @param other The other instruction.
+   * \param other The other instruction.
    */
   bool operator==(const InstructionInformation& other) const noexcept;
 
@@ -75,7 +75,7 @@ class InstructionInformation : public InformationInterface {
    *
    * The names and keys must match for two instructions to be equal.
    *
-   * @param other The other instruction.
+   * \param other The other instruction.
    */
   bool operator!=(const InstructionInformation& other) const noexcept;
 
@@ -83,18 +83,18 @@ class InstructionInformation : public InformationInterface {
   * Deserializes and constructs the `InstructionInformation` from the given
   * data.
   *
-  * @param data The serialized representation of the `InstructionInformation`.
+  * \param data The serialized representation of the `InstructionInformation`.
   *
-  * @return The current instruction object.
+  * \return The current instruction object.
   */
   InstructionInformation& deserialize(InformationInterface::Format& data);
 
   /**
    * Sets the mnemonic of the instruction.
    *
-   * @param mnemonic The new mnemonic for the instruction.
+   * \param mnemonic The new mnemonic for the instruction.
    *
-   * @return The current instruction object.
+   * \return The current instruction object.
    */
   InstructionInformation& mnemonic(const std::string& mnemonic);
 
@@ -111,9 +111,9 @@ class InstructionInformation : public InformationInterface {
   /**
    * Sets the key of the instruction.
    *
-   * @param key The new key for the instruction.
+   * \param key The new key for the instruction.
    *
-   * @return The current instruction object.
+   * \return The current instruction object.
    */
   InstructionInformation& key(const InstructionKey& key);
 
@@ -127,7 +127,7 @@ class InstructionInformation : public InformationInterface {
    */
   bool hasKey() const noexcept;
 
-  /** @copydoc BuilderInterface::isValid() */
+  /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
@@ -135,7 +135,7 @@ class InstructionInformation : public InformationInterface {
   * Deserializes and constructs the `InstructionInformation` from the given
   * data.
   *
-  * @param data The serialized representation of the `InstructionInformation`.
+  * \param data The serialized representation of the `InstructionInformation`.
   */
   void _deserialize(InformationInterface::Format& data) override;
 

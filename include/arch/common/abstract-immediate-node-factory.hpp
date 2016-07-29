@@ -25,7 +25,7 @@
 class MemoryValue;
 
 /**
- * @brief The AbstractImmediateNodeFactory class
+ * \brief The AbstractImmediateNodeFactory class
  * Abstract factory type for creating SyntaxTreeNodes of type immediate
  */
 class AbstractImmediateNodeFactory {
@@ -35,14 +35,14 @@ class AbstractImmediateNodeFactory {
   virtual ~AbstractImmediateNodeFactory() = default;
 
   /**
-   * @brief createImmediateNode
+   * \brief createImmediateNode
    * Creates and returns an architecture-specific implementation of a
    * SyntaxTreeNode of type immediate with the given numericalValue. If the
    * architecture-specific implementation cannot create an immediate from the
    * given numericalValue, a nullptr is returned
    *
-   * @param numericalValue representation of a number to create the immediate
-   * @return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
+   * \param numericalValue representation of a number to create the immediate
+   * \return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the architecture-specific implementation cannot create an
    * immediate from the given numericalValue
    */

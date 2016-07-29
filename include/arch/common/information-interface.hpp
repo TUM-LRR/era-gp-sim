@@ -43,17 +43,17 @@ class InformationInterface : public BuilderInterface {
    * The information interface defines the format, so it's a good idea to leave
    * this file here and not in the `Utility` namespace.
    *
-   * @param filePath The file path to load data from.
+   * \param filePath The file path to load data from.
    *
-   * @return The contained data in the given format.
+   * \return The contained data in the given format.
    */
   static Format load(const std::string& filePath);
 
   /**
    * Stores datain the InformationInterface's Format at the given file path.
    *
-   * @param filePath The file path to store data at.
-   * @param data The data to store.
+   * \param filePath The file path to store data at.
+   * \param data The data to store.
    */
   static void store(const std::string& filePath, const Format& data);
 
@@ -63,31 +63,25 @@ class InformationInterface : public BuilderInterface {
   virtual ~InformationInterface();
 
   /**
-   * Deserializes an `InformationInterface` object from the given data.
-   *
-   * @param data The data to deserialize from.
-   *
-   * @return The current `InformationInterface` object.
+   * \see deserialize()
    */
-  virtual InformationInterface& operator<<(Format& data);
+  virtual void operator<<(Format& data);
 
   /**
    * Deserializes an `InformationInterface` object from the given data.
    *
-   * @param data The data to deserialize from.
+   * \param data The data to deserialize from.
+   */
+  virtual void deserialize(Format& data) = 0;
+
+  /**
+   * Deserializes an `InformationInterface` object from the given data.
    *
-   * @return The data after deserialization.
+   * \param data The data to deserialize from.
+   *
+   * \return The data after deserialization.
    */
   friend Format& operator>>(Format& data, InformationInterface& information);
-
-  /*
-  * Can't make `deserialize()` pure virtual because the
-  * return type should be the concrete class instance,
-  * which cannot be virtualized
-  */
-
- protected:
-  virtual void _deserialize(Format& data) = 0;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_INFORMATION_HPP */

@@ -48,54 +48,54 @@ class DataTypeInformation : public InformationInterface {
   /**
    * Deserializes the data type from the given data.
    *
-   * @param data The data type to deserialize from.
+   * \param data The data type to deserialize from.
    */
   explicit DataTypeInformation(InformationInterface::Format& data);
 
   /**
    * Constructs the data type information object.
    *
-   * @param name The name of the data type, e.g. "dword".
-   * @param size The size of the data type, in bits.
+   * \param name The name of the data type, e.g. "dword".
+   * \param size The size of the data type, in bits.
    */
   DataTypeInformation(const std::string& name, size_t size);
 
   /**
    * Tests for equality of two data types.
    *
-   * @param other The other data type
+   * \param other The other data type
    */
   bool operator==(const DataTypeInformation& other) const noexcept;
 
   /**
    * Tests for inequality of two data types.
    *
-   * @param other The other data type.
+   * \param other The other data type.
    */
   bool operator!=(const DataTypeInformation& other) const noexcept;
 
   /**
    * Deserializes the data type from the given data.
    *
-   * @param data The data type to deserialize from.
+   * \param data The data type to deserialize from.
    *
-   * @return The current data type object.
+   * \return The current data type object.
    */
   DataTypeInformation& deserialize(InformationInterface::Format& data);
 
   /**
    * Sets the name of the data type.
    *
-   * @param name The name for the data type.
+   * \param name The name for the data type.
    *
-   * @return The current data type object.
+   * \return The current data type object.
    */
   DataTypeInformation& name(const std::string& name);
 
   /**
    * Returns the name of the data type.
    *
-   * @return The name of the data type.
+   * \return The name of the data type.
    */
   const std::string& getName() const noexcept;
 
@@ -107,16 +107,16 @@ class DataTypeInformation : public InformationInterface {
   /**
    * Sets the size of the data type, in bits.
    *
-   * @param size The new size for the data type, in bits.
+   * \param size The new size for the data type, in bits.
    *
-   * @return The current data type object.
+   * \return The current data type object.
    */
   DataTypeInformation& size(size_t size);
 
   /**
    * Returns the size of the data type.
    *
-   * @return The size of the data type.
+   * \return The size of the data type.
    */
   size_t getSize() const noexcept;
 
@@ -125,14 +125,14 @@ class DataTypeInformation : public InformationInterface {
    */
   bool hasSize() const noexcept;
 
-  /** @copydoc BuilderInterface::isValid() */
+  /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
   /**
    * Deserializes the data type from the given data.
    *
-   * @param data The data type to deserialize from.
+   * \param data The data type to deserialize from.
    */
   void _deserialize(InformationInterface::Format& data) override;
 

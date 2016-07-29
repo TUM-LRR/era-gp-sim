@@ -44,8 +44,8 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
   /**
    * Constructs a new ArchitectureFormula.
    *
-   * @param architectureName The name of the architecture.
-   * @param list A list of extension names.
+   * \param architectureName The name of the architecture.
+   * \param list A list of extension names.
    */
   explicit ArchitectureFormula(
       const std::string& architectureName = std::string(),
@@ -56,9 +56,9 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
    *
    * The first element of the range must be the base.
    *
-   * @tparam Range A range-like sequence type.
+   * \tparam Range A range-like sequence type.
    *
-   * @param all The range of extensions for the formula.
+   * \param all The range of extensions for the formula.
    */
   template <typename Range>
   explicit ArchitectureFormula(const std::string& architectureName,
@@ -70,23 +70,23 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
   /**
    * Tests for equality of two formulae.
    *
-   * @param other The other formula
+   * \param other The other formula
    */
   bool operator==(const ArchitectureFormula& other) const noexcept;
 
   /**
    * Tests for inequality of two formulae.
    *
-   * @param other The other formula
+   * \param other The other formula
    */
   bool operator!=(const ArchitectureFormula& other) const noexcept;
 
   /**
    * Adds an extension name to the formula.
    *
-   * @param name The name of the extension to add.
+   * \param name The name of the extension to add.
    *
-   * @return The current formula.
+   * \return The current formula.
    */
   ArchitectureFormula& addExtension(const std::string& name);
 
@@ -98,9 +98,9 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
   /**
    * Sets the architecture's name.
    *
-   * @param name The new architecture name.
+   * \param name The new architecture name.
    *
-   * @return The current formula.
+   * \return The current formula.
    */
   ArchitectureFormula& architectureName(const std::string& name);
 
@@ -121,7 +121,7 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
    * extensions. It consists of the global root path and the formula's
    * folderName.
    *
-   * @see getFolderName()
+   * \see getFolderName()
    */
   std::string getPath() const noexcept;
 
@@ -131,11 +131,11 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
    * This is the name of the architecture for the formula with a ".isa"
    * extension.
    *
-   * @see getPath()
+   * \see getPath()
    */
   std::string getFolderName() const noexcept;
 
-  /** @copydoc Builder::isValid() */
+  /** \copydoc Builder::isValid() */
   bool isValid() const noexcept override;
 
  private:

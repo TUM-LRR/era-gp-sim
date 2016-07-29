@@ -25,7 +25,7 @@
 #include "core/memory-value.hpp"
 
 /**
- * @brief The AbstractInstructionNodeFactory class
+ * \brief The AbstractInstructionNodeFactory class
  * Abstract factory type for creating SyntaxTreeNodes of type instruction
  */
 class AbstractInstructionNodeFactory {
@@ -35,15 +35,15 @@ class AbstractInstructionNodeFactory {
   virtual ~AbstractInstructionNodeFactory() = default;
 
   /**
-   * @brief createInstructionNode
+   * \brief createInstructionNode
    * Creates and returns an architecture-specific implementation of a
    * SyntaxTreeNode of type instruction for
    * the given token. If the architecture-specific implementation cannot find a
    * instruction with the given token, a nullptr is returned
    *
-   * @param token std::string, that contains the identifer of a instruction
+   * \param token std::string, that contains the identifer of a instruction
    * (e.g. "ADD" for Add-Instruction) in upper-case
-   * @return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
+   * \return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given token cannot be mapped to a architecture-specific
    * instruction
    */

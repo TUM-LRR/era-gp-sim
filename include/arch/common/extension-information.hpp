@@ -70,14 +70,14 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Deserializes the `ExtensionInformation` object from the given data.
    *
-   * @param data The data to deserialize from.
+   * \param data The data to deserialize from.
    */
   explicit ExtensionInformation(InformationInterface::Format& data);
 
   /**
    * Constructs a new `ExtensionInformation` object.
    *
-   * @param name The name of the extension.
+   * \param name The name of the extension.
    */
   explicit ExtensionInformation(const std::string& name = std::string());
 
@@ -86,7 +86,7 @@ class ExtensionInformation : public InformationInterface {
    *
    * Compares members respectively.
    *
-   * @param other The other extensions.
+   * \param other The other extensions.
    */
   bool operator==(const ExtensionInformation& other) const noexcept;
 
@@ -95,7 +95,7 @@ class ExtensionInformation : public InformationInterface {
    *
    * Compares members respectively.
    *
-   * @param other The other extensions.
+   * \param other The other extensions.
    */
   bool operator!=(const ExtensionInformation& other) const noexcept;
 
@@ -103,11 +103,11 @@ class ExtensionInformation : public InformationInterface {
    * Merges the information in this instance with those of another
    * `ExtensionInformation` object.
    *
-   * @param other Another `ExtensionInformation` object.
+   * \param other Another `ExtensionInformation` object.
    *
-   * @return The current
+   * \return The current
    *
-   * @see getMerge()
+   * \see getMerge()
    */
   ExtensionInformation& operator+=(const ExtensionInformation& other);
 
@@ -116,13 +116,13 @@ class ExtensionInformation : public InformationInterface {
    *
    * See getMerge() for exact information on how an extension is merged.
    *
-   * @tparam A range-like sequence type.
+   * \tparam A range-like sequence type.
    *
-   * @param range The range of extensions to merge to merge.
+   * \param range The range of extensions to merge to merge.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    *
-   * @see getMerge()
+   * \see getMerge()
    */
   template <typename Range>
   ExtensionInformation& operator+=(const Range& range) {
@@ -133,27 +133,27 @@ class ExtensionInformation : public InformationInterface {
    * Returns a copy of the object resulting from merging this one with another
    * `ExtensionInformation` instance, without modifying this instance.
    *
-   * @param other Another ExtensionInformation object.
+   * \param other Another ExtensionInformation object.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation operator+(const ExtensionInformation& other) const;
 
   /**
    * Deserializes the `ExtensionInformation` object from the given data.
    *
-   * @param data The data to deserialize from.
+   * \param data The data to deserialize from.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& deserialize(InformationInterface::Format& data);
 
   /**
    * Sets the name of the extension.
    *
-   * @param name The new name for the extension.
+   * \param name The new name for the extension.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& name(const std::string& name);
 
@@ -170,9 +170,9 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Sets the endianness for the extension.
    *
-   * @param endianness The `Endianness` member to assign to the extension.
+   * \param endianness The `Endianness` member to assign to the extension.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& endianness(Endianness endianness);
 
@@ -189,10 +189,10 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Sets the alignment behavior for the extension.
    *
-   * @param alignment behavior The `AlignmentBehavior` member to assign to the
+   * \param alignment behavior The `AlignmentBehavior` member to assign to the
    * extension.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& alignmentBehavior(AlignmentBehavior alignmentBehavior);
 
@@ -209,9 +209,9 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Sets the word size for the extension, in bits.
    *
-   * @param wordSize The word size for the extension, in bits.
+   * \param wordSize The word size for the extension, in bits.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& wordSize(size_t wordSize);
 
@@ -228,25 +228,25 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Adds the instructions of the instruction set to the extension.
    *
-   * @param instructions The instructions to add to the extension.
+   * \param instructions The instructions to add to the extension.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& addInstructions(const InstructionSet& instructions);
 
   /**
    * Sets the instructions of the extension to those given.
    *
-   * @param instructions The instructions to assign for the extension.
+   * \param instructions The instructions to assign for the extension.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& setInstructions(const InstructionSet& instructions);
 
   /**
    * Clears the current instruction set.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& clearInstructions();
 
@@ -263,11 +263,11 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Adds the units in the range to those of the extension.
    *
-   * @tparam Range A range-like sequence.
+   * \tparam Range A range-like sequence.
    *
-   * @param range The range of units to add.
+   * \param range The range of units to add.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   template <typename Range>
   ExtensionInformation& addUnits(const Range& range) {
@@ -280,18 +280,18 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Adds the units in the list to those of the extension.
    *
-   * @param list The list of units to add.
+   * \param list The list of units to add.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& addUnits(UnitList units);
 
   /**
    * Adds the unit in the list to those of the extension.
    *
-   * @param unit The unit to add.
+   * \param unit The unit to add.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& addUnit(const UnitInformation& unit);
 
@@ -315,13 +315,13 @@ class ExtensionInformation : public InformationInterface {
    *
    * See getMerge() for exact information on how an extension is merged.
    *
-   * @tparam A range-like sequence type.
+   * \tparam A range-like sequence type.
    *
-   * @param range The range of extensions to merge to merge.
+   * \param range The range of extensions to merge to merge.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    *
-   * @see getMerge()
+   * \see getMerge()
    */
   template <typename Range>
   ExtensionInformation& merge(const Range& range) {
@@ -337,11 +337,11 @@ class ExtensionInformation : public InformationInterface {
    *
    * See getMerge() for exact information on how an extension is merged.
    *
-   * @param list The list of extensions to merge.
+   * \param list The list of extensions to merge.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    *
-   * @see getMerge()
+   * \see getMerge()
    */
   ExtensionInformation& merge(ExtensionList list);
 
@@ -354,13 +354,13 @@ class ExtensionInformation : public InformationInterface {
    * set to override the values stored in this extension. The only exception to
    * this rule is the name member of this extension, which is never overriden.
    *
-   * @param other The other extension to merge with.
+   * \param other The other extension to merge with.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& merge(const ExtensionInformation& other);
 
-  /** @copydoc builder::isValid() */
+  /** \copydoc builder::isValid() */
   bool isValid() const noexcept override;
 
   /**
@@ -377,21 +377,21 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Deserializes the `ExtensionInformation` object from the given data.
    *
-   * @param data The data to deserialize from.
+   * \param data The data to deserialize from.
    */
   void _deserialize(InformationInterface::Format& data) override;
 
   /**
    * Parses the endianness property from serialized data.
    *
-   * @param data The data to deserialize the endianness from.
+   * \param data The data to deserialize the endianness from.
    */
   void _parseEndianness(InformationInterface::Format& data);
 
   /**
    * Parses the alignment behavior property from serialized data.
    *
-   * @param data The data to deserialize the alignment behavior  from.
+   * \param data The data to deserialize the alignment behavior  from.
    */
   void _parseAlignmentBehavior(InformationInterface::Format& data);
 

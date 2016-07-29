@@ -47,16 +47,16 @@ class InstructionSet : public UnderlyingInstructionSetContainer,
   /**
    * Deserializes and constructs an InstructionSet from the given data.
    *
-   * @param data The serialized data.
+   * \param data The serialized data.
    */
   explicit InstructionSet(InformationInterface::Format& data);
 
   /**
    * Constructs a new instruction set from a range of instructions.
    *
-   * @tparam Range a range-like type.
+   * \tparam Range a range-like type.
    *
-   * @param range A range of instructions to add to the set.
+   * \param range A range of instructions to add to the set.
    */
   template <typename Range>
   explicit InstructionSet(const Range& range) {
@@ -66,7 +66,7 @@ class InstructionSet : public UnderlyingInstructionSetContainer,
   /**
    * Constructs a new instruction set from the list of instructions.
    *
-   * @param instructions A list of instructions to add to the set.
+   * \param instructions A list of instructions to add to the set.
    */
   InstructionSet(InitializerList instructions = InitializerList());
 
@@ -75,7 +75,7 @@ class InstructionSet : public UnderlyingInstructionSetContainer,
    *
    * All instructions in the sets must be equal.
    *
-   * @param other The other instruction set.
+   * \param other The other instruction set.
    */
   bool operator==(const InstructionSet& other) const noexcept;
 
@@ -84,20 +84,20 @@ class InstructionSet : public UnderlyingInstructionSetContainer,
    *
    * All instructions in the sets must be equal.
    *
-   * @param other The other instruction set.
+   * \param other The other instruction set.
    */
   bool operator!=(const InstructionSet& other) const noexcept;
 
   /**
    * Adds a range of InstructionInformation objects to this set.
    *
-   * @tparam Range A range-like type.
+   * \tparam Range A range-like type.
    *
-   * @param range A range of InstructionInformation objects.
+   * \param range A range of InstructionInformation objects.
    *
-   * @return The current instruction object.
+   * \return The current instruction object.
    *
-   * @see addInstructions
+   * \see addInstructions
    */
   template <typename Range>
   InstructionSet& operator+=(const Range& range) {
@@ -107,11 +107,11 @@ class InstructionSet : public UnderlyingInstructionSetContainer,
   /**
    * Adds another instruction set.
    *
-   * @param other Another instruciton set object.
+   * \param other Another instruciton set object.
    *
-   * @return The current instruction object.
+   * \return The current instruction object.
    *
-   * @see addInstructions()
+   * \see addInstructions()
    */
   InstructionSet& operator+=(const InstructionSet& other);
 
@@ -121,11 +121,11 @@ class InstructionSet : public UnderlyingInstructionSetContainer,
    *
    * A copy is made of this object, then modified via +=, then returned.
    *
-   * @tparam Range A range-like type.
+   * \tparam Range A range-like type.
    *
-   * @param range The range of InstructionInformation objects to add.
+   * \param range The range of InstructionInformation objects to add.
    *
-   * @return The current instruction object.
+   * \return The current instruction object.
    */
   template <typename Range>
   InstructionSet operator+(const Range& other) const {
@@ -140,12 +140,12 @@ class InstructionSet : public UnderlyingInstructionSetContainer,
    *
    * Inclusion is asserted.
    *
-   * @param mnemonic The mnemonic of the instruction to look for.
+   * \param mnemonic The mnemonic of the instruction to look for.
    *
-   * @return The full instruction information object.
+   * \return The full instruction information object.
    *
-   * @see getInstruction()
-   * @see getInstructionKey()
+   * \see getInstruction()
+   * \see getInstructionKey()
    */
   const InstructionInformation& operator[](const std::string& mnemonic) const;
 
@@ -154,12 +154,12 @@ class InstructionSet : public UnderlyingInstructionSetContainer,
    *
    * Inclusion is asserted.
    *
-   * @param mnemonic The mnemonic of the instruction to look for.
+   * \param mnemonic The mnemonic of the instruction to look for.
    *
-   * @return The full instruction information object.
+   * \return The full instruction information object.
    *
-   * @see operator[]()
-   * @see getInstructionKey()
+   * \see operator[]()
+   * \see getInstructionKey()
    */
   const InstructionInformation&
   getInstruction(const std::string& mnemonic) const;
@@ -169,41 +169,41 @@ class InstructionSet : public UnderlyingInstructionSetContainer,
    *
    * Inclusion is asserted.
    *
-   * @param mnemonic The mnemonic of the instruction to look for.
+   * \param mnemonic The mnemonic of the instruction to look for.
    *
-   * @return Only the `InstructionKey` of the instruction information object.
+   * \return Only the `InstructionKey` of the instruction information object.
    *
-   * @see operator[]()
-   * @see getInstruction()
+   * \see operator[]()
+   * \see getInstruction()
    */
   const InstructionKey& getInstructionKey(const std::string& mnemonic) const;
 
   /**
    * Tests if an instruction with the given mnemonic exists in the set.
    *
-   * @param mnemonic The mnemonic to test inclusion for.
+   * \param mnemonic The mnemonic to test inclusion for.
    */
   bool hasInstruction(const std::string& mnemonic) const;
 
   /**
    * Deserializes an InstructionSet from the given data.
    *
-   * @param data The serialized data.
+   * \param data The serialized data.
    *
-   * @return The current InstructionSet object.
+   * \return The current InstructionSet object.
    */
   InstructionSet& deserialize(InformationInterface::Format& data);
 
   /**
    * Adds a range of InstructionInformation objects to the unit.
    *
-   * @tparam Range A range-like type.
+   * \tparam Range A range-like type.
    *
-   * @param range A range of InstructionInformation objects.
+   * \param range A range of InstructionInformation objects.
    *
-   * @return The current instruction object.
+   * \return The current instruction object.
    *
-   * @see operator+=
+   * \see operator+=
    */
   template <typename Range>
   InstructionSet& addInstructions(const Range& range) {
@@ -216,40 +216,40 @@ class InstructionSet : public UnderlyingInstructionSetContainer,
   /**
    * Adds another instruction set.
    *
-   * @param other Another instruciton set object.
+   * \param other Another instruciton set object.
    *
-   * @return The current instruction object.
+   * \return The current instruction object.
    *
-   * @see operator+=()
+   * \see operator+=()
    */
   InstructionSet& addInstructions(const InstructionSet& other);
 
   /**
    * Adds the list of instructions to the set.
    *
-   * @param list A list of instructions to add to the set.
+   * \param list A list of instructions to add to the set.
    *
-   * @return The current instruction object.
+   * \return The current instruction object.
    */
   InstructionSet& addInstructions(InitializerList instructions);
 
   /**
    * Adds a single instruction to the set.
    *
-   * @param instruction The instruction to add.
+   * \param instruction The instruction to add.
    *
-   * @return The current instruction object.
+   * \return The current instruction object.
    */
   InstructionSet& addInstruction(const InstructionInformation& instruction);
 
-  /** @copydoc BuilderInterface::isValid() */
+  /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
   /**
    * Deserializes an InstructionSet from the given data.
    *
-   * @param data The serialized data.
+   * \param data The serialized data.
    */
   void _deserialize(InformationInterface::Format& data) override;
 };

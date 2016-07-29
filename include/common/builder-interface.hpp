@@ -48,7 +48,7 @@ class BuilderInterface {
    * When `isValid()` is true, that means it is safe to call the `build()`
    * method or access members of the instance (if it is an "implicit" builder).
    *
-   * @return True if the builder's state is valid, else false.
+   * \return True if the builder's state is valid, else false.
   */
   virtual bool isValid() const noexcept = 0;
 };

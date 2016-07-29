@@ -61,16 +61,16 @@ class Architecture : public BuilderInterface {
    * loaded and deserialized to produce an Architecture (via its builder
    * interface).
    *
-   * @param formula The formula describing how to brew the architecture.
+   * \param formula The formula describing how to brew the architecture.
    *
-   * @return A complete architecture instance.
+   * \return A complete architecture instance.
    */
   static Architecture Brew(const ArchitectureFormula& formula);
 
   /**
    * Constructs an architecture with the given name.
    *
-   * @param name The name of the architecture.
+   * \param name The name of the architecture.
    */
   explicit Architecture(const std::string& name = std::string());
 
@@ -81,8 +81,8 @@ class Architecture : public BuilderInterface {
    * extension. The base extension must return true for its `isComplete()`
    * method.
    *
-   * @param name The name of the architecture.
-   * @param base The base extension of the architecture.
+   * \param name The name of the architecture.
+   * \param base The base extension of the architecture.
    */
 
   Architecture(const std::string& name, const ExtensionInformation& base);
@@ -90,24 +90,24 @@ class Architecture : public BuilderInterface {
   /**
    * Adds an extension to the architecture.
    *
-   * @param extension The extension to extend the architecture with.
+   * \param extension The extension to extend the architecture with.
    *
-   * @return The current architecture instance.
+   * \return The current architecture instance.
    *
-   * @see extendBy()
-   * @see operator+()
+   * \see extendBy()
+   * \see operator+()
    */
   Architecture& operator+=(const ExtensionInformation& extension);
 
   /**
    * Returns a copy of the result of extending this architecture.
    *
-   * @param extension The extension to extend the architecture with.
+   * \param extension The extension to extend the architecture with.
    *
-   * @return The result of the addition.
+   * \return The result of the addition.
    *
-   * @see extendBy()
-   * @see operator+=()
+   * \see extendBy()
+   * \see operator+=()
    */
   Architecture operator+(const ExtensionInformation& extension) const;
 
@@ -120,21 +120,21 @@ class Architecture : public BuilderInterface {
    * endianness and similar general properties (of which an architecture must
    * have only one) are overriden by the properties of the extension.
    *
-   * @param extension The extension to extend the architecture with.
+   * \param extension The extension to extend the architecture with.
    *
-   * @return The current architecture instance.
+   * \return The current architecture instance.
    *
-   * @see operator+=()
-   * @see operator+()
+   * \see operator+=()
+   * \see operator+()
    */
   Architecture& extendBy(const ExtensionInformation& extension);
 
   /**
    * Sets the name of the archiecture.
    *
-   * @param name The new name for the architecture.
+   * \param name The new name for the architecture.
    *
-   * @return The current architecture instance.
+   * \return The current architecture instance.
    */
   Architecture& name(const std::string& name);
 
@@ -217,7 +217,7 @@ class Architecture : public BuilderInterface {
    * for that method to see what constraints are placed on a valid base
    * extension.
    *
-   * @return The current architecture instance.
+   * \return The current architecture instance.
    */
   Architecture& validate();
 
@@ -230,7 +230,7 @@ class Architecture : public BuilderInterface {
    */
   bool isValidated() const noexcept;
 
-  /** @copydoc BuilderInterface::isValid() */
+  /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:

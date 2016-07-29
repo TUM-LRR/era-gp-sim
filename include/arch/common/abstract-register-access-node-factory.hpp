@@ -23,7 +23,7 @@
 #include "arch/common/abstract-syntax-tree-node.hpp"
 
 /**
- * @brief The AbstractRegisterAccessNodeFactory class
+ * \brief The AbstractRegisterAccessNodeFactory class
  * Abstract factory type for creating SyntaxTreeNodes of type register access
  */
 class AbstractRegisterAccessNodeFactory {
@@ -33,14 +33,14 @@ class AbstractRegisterAccessNodeFactory {
   virtual ~AbstractRegisterAccessNodeFactory() = default;
 
   /**
-   * @brief createRegisterAccessNode
+   * \brief createRegisterAccessNode
    * Creates and returns an architecture-specific implementation of a
    * SyntaxTreeNode of type register access, linked to the given
    * registerAddress. If the given registerAddress is invalid a nullptr is
    * returned.
    *
-   * @param registerAdress Identifier or alias linking to a valid register
-   * @return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
+   * \param registerAdress Identifier or alias linking to a valid register
+   * \return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given registerAddress is invalid
    */
   virtual Node

@@ -91,7 +91,7 @@ void ArchitectureBrewery::_loadDependencies(ExtensionInformation& extension,
   [&extension, this, &traversalStack, &data] (auto& dependencies) {
     for (const auto& dependencyName : dependencies) {
       if (!traversalStack.count(dependencyName)) {
-        extension.merge(_brew(dependencyName, traversalStack));
+        extension.merge(this->_brew(dependencyName, traversalStack));
       } else {
         std::clog << "Detected a cyclic edge from "
                   << data["name"]

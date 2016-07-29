@@ -17,10 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <algorithm>
 #include <cassert>
-#include <fstream>
-#include <istream>
 #include <string>
 
 #include "arch/common/information-interface.hpp"
@@ -40,13 +37,12 @@ void InformationInterface::store(const std::string& filePath,
 
 InformationInterface::~InformationInterface() = default;
 
-InformationInterface& InformationInterface::operator<<(Format& data) {
-  _deserialize(data);
-  return *this;
+void InformationInterface::operator<<(Format& data) {
+  deserialize(data);
 }
 
 InformationInterface::Format& operator>>(InformationInterface::Format& data,
                                          InformationInterface& information) {
-  information << data;
+  information.deserialize();
   return data;
 }

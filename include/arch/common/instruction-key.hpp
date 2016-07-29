@@ -212,11 +212,11 @@ class InstructionKey
    */
   ValueCollection getValues() const noexcept;
 
-  /** @copydoc BuilderInterface::isValid() */
+  /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
-  /** @copydoc InformationInterface::_deserialize() */
+  /** \copydoc InformationInterface::_deserialize() */
   void _deserialize(InformationInterface::Format& data) override;
 };
 
