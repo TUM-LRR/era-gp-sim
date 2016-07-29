@@ -19,25 +19,40 @@
 #include "parser/syntax-tree-generator.hpp"
 #include <regex>
 
-//TODO: Error handling.
-
 std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(const std::string& operand, CompileState& state) const
 {
-    //For now. A very simple generator. We just check: do we have a number? Yes? If not, we must have a register... If it does not exist? Well, we failed.
+    //For now. A very simple generator. We just check: do we have a base-10 number? Yes? If not, we must have a register... If it does not exist? Well, we failed.
+    //For the future, we got to: support several number types (simple), maybe parse full-grown arithmetic expressions (done, not so easy..., lots of work).
+    std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
     if (std::regex_search(operand, std::regex("^[0-9]+$")))
     {
-        return std::move(_nodeFactories.createImmediateNode(MemoryValue{}));//(std::stoi(operand))));//Temporary.
+        outputNode = _nodeFactories.createImmediateNode(MemoryValue{});// std::stoi(operand) Temporary.
     }
     else
     {
-        return std::move(_nodeFactories.createRegisterAccessNode(operand));
+        outputNode = _nodeFactories.createRegisterAccessNode(operand);
     }
+
+    //according to the architecture group, we get a nullptr if the creation failed.
+    if (!outputNode)
+    {
+        state.errorList.push_back(CompileError("Invalid argument: " + operand, state.position, CompileErrorSeverity::ERROR));
+    }
+
+    return std::move(outputNode);
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(const std::string& command_name, std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources, std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets, CompileState& state) const
 {
     //Just create an instruction node and add all output and input nodes (operands).
     auto outputNode = _nodeFactories.createInstructionNode(command_name);
+
+    if (!outputNode)
+    {
+        //The node creation failed!
+        state.errorList.push_back(CompileError("Invalid operation: " + command_name, state.position, CompileErrorSeverity::ERROR));
+        return std::move(outputNode);
+    }
 
     //Targets.
     for (auto& i : targets)
