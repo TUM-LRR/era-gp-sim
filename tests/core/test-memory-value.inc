@@ -3,12 +3,30 @@
 
 #include <random>
 
-#include "core\memory-value.hpp"
 #include "gtest\gtest.h"
+#include "core/memory-value.hpp"
 
-namespace{
+namespace {
 constexpr std::size_t scale = 1;
 }
+
+TEST(TestMemoryValue, getSize) {
+  constexpr std::size_t b = 8;    // byteAmount
+  constexpr std::size_t s = 64;   // byteSize
+  constexpr std::size_t t = scale;// testAmount
+  for (std::size_t i = 1; i < b; ++i) {
+    for (std::size_t j = 1; j < s; ++j) {
+      for (std::size_t l = 0; l < t; ++l) {
+        MemoryValue instance{i, j};
+        ASSERT_EQ(j, instance.getByteSize());
+        ASSERT_EQ(i, instance.getByteAmount());
+        ASSERT_EQ(i * j, instance.getSize());
+      }
+    }
+  }
+}
+
+
 TEST(TestMemoryValue, flip) {
   constexpr std::size_t b = 8;    // byteAmount
   constexpr std::size_t s = 64;   // byteSize
@@ -83,9 +101,9 @@ TEST(TestMemoryValue, equals) {
   constexpr std::size_t s = 64;       // byteSize
   constexpr std::size_t t = scale * s;// testAmount
   std::mt19937 rand{19930726u};       // Very important number, don't change
+  std::uniform_int_distribution<std::size_t> dist{};
   for (std::size_t i = 1; i < b; ++i) {
     for (std::size_t j = 1; j < s; ++j) {
-      const std::uniform_int_distribution<std::size_t> dist{};
       for (std::size_t l = 0; l < t; ++l) {
         const std::size_t bytes{i * ((j / 8 + ((j % 8) > 0 ? 1 : 0)))};
         std::vector<std::uint8_t> initializer0{};
@@ -110,6 +128,140 @@ TEST(TestMemoryValue, equals) {
         ASSERT_EQ(instance0, instance1);
         ASSERT_NE(instance0, instance2);
         ASSERT_NE(instance0, instance3);
+      }
+    }
+  }
+}
+
+namespace {
+constexpr char hex[16]{
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+};
+std::ostream &tohex(std::ostream &stream, std::uint8_t v) {
+  return stream << hex[(int)v / 16] << hex[(int)v % 16] << ';';
+}
+}
+
+TEST(TestMemoryValue, charAt) {
+  constexpr std::size_t b = 8;        // byteAmount
+  constexpr std::size_t s = 64;       // byteSize
+  constexpr std::size_t t = scale * s;// testAmount
+  std::mt19937 rand{19930726u};       // I need new numbers!
+  std::uniform_int_distribution<std::size_t> dist{};
+  for (std::size_t i = 1; i < b; ++i) {
+    for (std::size_t j = 1; j < s; ++j) {
+      if (i * j < 8) continue;
+      for (std::size_t l = 0; l < t; ++l) {
+        MemoryValue instance0{i, j};
+        MemoryValue instance1{i, j};
+        for (std::size_t k = 0; k < i * j; ++k) {
+          bool b{dist(rand) % 2 == 0};
+          instance0.put(k, b);
+          instance1.put(i * j - k - 1, b);
+        }
+        // std::cout << instance0 << std::endl;
+        // std::cout << instance1 << std::endl;
+        for (std::size_t k = 0; k < i * j - 7; ++k) {
+          std::uint8_t extract0{instance0.getByteAt(k)};
+          std::uint8_t extract1{instance1.getByteAt((i * j) - k - 8)};
+          std::uint8_t extractR{static_cast<std::uint8_t>(
+              (extract1 * 0x0202020202ULL & 0x010884422010ULL) %
+              1023)};// reversed byte
+          // tohex(std::cout, extract0);
+          // tohex(std::cout, extract1);
+          // tohex(std::cout, extractR);
+          // std::cout << ' ' << i << "; " << j << std::endl;
+          ASSERT_EQ(extract0, extractR);
+        }
+      }
+    }
+  }
+}
+
+TEST(TestMemoryValue, subSet) {
+  constexpr std::size_t b = 8;    // byteAmount
+  constexpr std::size_t s = 64;   // byteSize
+  constexpr std::size_t t = scale;// testAmount
+  constexpr std::size_t c = s;    // subSetAmount
+  std::mt19937 rand{19930726u};   // I need new numbers!
+  std::uniform_int_distribution<std::size_t> dist0{};
+  for (std::size_t i = 1; i < b; ++i) {
+    for (std::size_t j = 1; j < s; ++j) {
+      std::uniform_int_distribution<std::size_t> dist1{0, i * j - 1};
+      for (std::size_t l = 0; l < t; ++l) {
+        MemoryValue instance0{i, j};
+        MemoryValue instance1{i, j};
+        for (std::size_t k = 0; k < i * j; ++k) {
+          bool b{dist0(rand) % 2 == 0};
+          instance0.put(k, b);
+          instance1.put(i * j - k - 1, b);
+        }
+        // std::cout << instance0 << std::endl;
+        // std::cout << instance1 << std::endl;
+        for (std::size_t k = 0; k < c; ++k) {
+          std::size_t address0{dist1(rand)};
+          std::size_t address1{dist1(rand)};
+          std::size_t tempAddress{std::max(address0, address1)};
+          address0 = std::min(address0, address1);
+          address1 = tempAddress;
+          std::size_t phi{1};// todo
+          MemoryValue subSet0{instance0.subSet(address0, address1, phi)};
+          MemoryValue subSet1{
+              instance1.subSet(i * j - address1, i * j - address0, phi)};
+          MemoryValue subSetR{(address1 - address0) / phi, phi};
+          // std::cout << subSet0 << std::endl;
+          // std::cout << subSet1 << std::endl;
+          // std::cout << subSetR << std::endl;
+          // std::cout << "--------" << std::endl;
+          for (std::size_t h = 0; h < address1 - address0; ++h)
+            subSetR.put((address1 - address0) - h - 1, subSet1.get(h));
+          ASSERT_EQ(subSet0, subSetR);
+        }
+      }
+    }
+  }
+}
+
+TEST(TestMemoryValue, death) {
+  constexpr std::size_t b = 8;    // byteAmount
+  constexpr std::size_t s = 32;   // byteSize
+  constexpr std::size_t t = scale;// testAmount
+  constexpr std::size_t c = 1;    // deathAmount
+  std::mt19937 rand{19930726u};   // I need new numbers!
+  std::uniform_int_distribution<std::size_t> dist{};
+  for (std::size_t i = 1; i < b; ++i) {
+    for (std::size_t j = 1; j < s; ++j) {
+      const std::size_t bytes{i * ((j / 8 + ((j % 8) > 0 ? 1 : 0)))};
+      for (std::size_t l = 0; l < t; ++l) {
+        std::vector<std::uint8_t> initializer{};
+        for (std::size_t k = 0; k < bytes; ++k) {
+          initializer.push_back(static_cast<std::uint8_t>(dist(rand)));
+        }
+        MemoryValue instance{initializer, j};
+
+        for (std::size_t k = 0; k < c; ++k) {
+          ASSERT_DEATH(instance.get(i * j + k), "");
+          ASSERT_DEATH(instance.put(i * j + k, (dist(rand) % 2 == 0)), "");
+          ASSERT_DEATH(instance.set(i * j + k, (dist(rand) % 2 == 0)), "");
+          ASSERT_DEATH(instance.getByteAt(i * j + k), "");
+          ASSERT_DEATH(instance.subSet(0, i * j + k + 1, 8), "");
+          ASSERT_DEATH(instance.subSet(k + 1, 0, 8), "");
+        }
       }
     }
   }
