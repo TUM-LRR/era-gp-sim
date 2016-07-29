@@ -8,7 +8,7 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(co
     //For now. A very simple generator. We just check: do we have a number? Yes? If not, we must have a register... If it does not exist? Well, we failed.
     if (std::regex_search(operand, std::regex("^[0-9]+$")))
     {
-        return std::move(_nodeFactories.createImmediateNode(MemoryValue(std::stoi(operand))));//Temporary.
+        return std::move(_nodeFactories.createImmediateNode(MemoryValue{}));//(std::stoi(operand))));//Temporary.
     }
     else
     {
