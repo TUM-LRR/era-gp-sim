@@ -251,12 +251,12 @@ void ExtensionInformation::_deserialize(InformationInterface::Format& data) {
 
   Utility::doIfThere(data, "units", [this](auto& units) {
     for (auto& unit : units) {
-      addUnit(static_cast<UnitInformation>(unit));
+      this->addUnit(static_cast<UnitInformation>(unit));
     }
   });
 
   Utility::doIfThere(data, "instructions", [this](auto& instructions) {
-    addInstructions(static_cast<InstructionSet>(instructions));
+    this->addInstructions(static_cast<InstructionSet>(instructions));
   });
 }
 
