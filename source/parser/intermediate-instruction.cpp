@@ -40,6 +40,7 @@ IntermediateInstruction::compileArgumentVector(const std::vector<std::string> &v
   {
     output.emplace_back(generator.transformOperand(i, state));
   }
+  return output;
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
