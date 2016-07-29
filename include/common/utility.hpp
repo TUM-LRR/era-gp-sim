@@ -21,7 +21,11 @@
 #define ERAGPSIM_COMMON_UTILITY_HPP
 
 #include <algorithm>
+#include <cassert>
+#include <fstream>
 #include <iterator>
+#include <memory>
+#include <string>
 
 namespace Utility {
 
@@ -40,6 +44,32 @@ void forEach(Range&& range, Function function) {
   std::for_each(begin(std::forward<Range>(range)),
                 end(std::forward<Range>(range)),
                 function);
+}
+
+template <typename FirstRange, typename SecondRange>
+bool isEqual(const FirstRange& first, const SecondRange& second) {
+  using std::begin;
+  using std::end;
+
+  return std::equal(begin(first), end(first), begin(second), end(second));
+}
+
+template <typename FirstRange, typename SecondRange, typename Predicate>
+bool isEqual(const FirstRange& first,
+             const SecondRange& second,
+             Predicate predicate) {
+  using std::begin;
+  using std::end;
+
+  // clang-format off
+  return std::equal(
+    begin(first),
+    end(first),
+    begin(second),
+    end(second),
+    predicate
+  );
+  // clang-format on
 }
 
 template <typename Range, typename Function>
@@ -102,6 +132,60 @@ template <typename OutputRange, typename T, typename InputRange>
 OutputRange appendOther(T&& value, const InputRange& range) {
   return append<T, InputRange, OutputRange>(std::forward<T>(value), range);
 }
+
+template <typename Container, typename Key, typename Action>
+void doIfThere(Container& container, const Key& key, Action action) {
+  auto iterator = container.find(key);
+  if (iterator != container.end()) {
+    action(*iterator);
+  }
+}
+
+std::string rootPath();
+std::string joinPaths(const std::string& single);
+
+template <typename... Tail>
+std::string
+joinPaths(const std::string& first, const std::string& second, Tail&&... tail) {
+  auto intermediary = first;
+
+  if (intermediary.back() != '/' && second.front() != '/') {
+    intermediary += "/";
+  } else if (intermediary.back() == '/' && second.front() == '/') {
+    intermediary.pop_back();
+  }
+
+  intermediary += second;
+
+  return joinPaths(intermediary, std::forward<Tail>(tail)...);
+}
+
+template <typename... Paths>
+std::string joinToRoot(Paths&&... paths) {
+  return joinPaths(rootPath(), std::forward<Paths>(paths)...);
+}
+
+std::string loadFromFile(const std::string& filePath);
+
+template <typename Data>
+void storeToFile(const std::string& filePath, Data&& data) {
+  std::ofstream file(filePath);
+  assert(static_cast<bool>(file));
+  file << std::forward<Data>(data);
+  assert(static_cast<bool>(file));
+}
+
+template <typename T>
+auto copyPointer(const std::unique_ptr<T>& pointer) {
+  assert(static_cast<bool>(pointer));
+  return std::make_unique<T>(*pointer);
+}
+
+// C++17
+// template<typename... Paths>
+// std::string joinStrings(Paths&&... paths) {
+//   return (paths + ...);
+// }
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */

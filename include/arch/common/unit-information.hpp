@@ -21,49 +21,93 @@
 #define ERAGPSIM_ARCH_UNIT_INFORMATION_HPP
 
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 
+#include "arch/common/register-container.hpp"
 #include "arch/common/register-information.hpp"
-#include "common/builder.hpp"
+#include "common/builder-interface.hpp"
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
 
 /**
  * This class holds information about a *unit*.
  *
- * A *unit* is basically a named container of registers. For example, the "CPU"
+ * A *unit* is basically a named container of registers. For example, the
+ * "CPU"
  * unit brings integer registers and the "FPU" unit brings floating point
  * registers.
  */
-class UnitInformation : public ContainerAdapter<RegisterInformation>,
-                        public Builder {
+class UnitInformation : public ContainerAdapter<RegisterContainer>,
+                        public InformationInterface {
  public:
-  using super = ContainerAdapter<RegisterInformation>;
-  using super::_container;
-  using super::begin;
-  using super::cbegin;
-  using super::end;
-  using super::cend;
-  using super::clear;
-  using super::size;
-  using super::isEmpty;
+  using super = ContainerAdapter<RegisterContainer>;
+  using CONTAINER_ADAPTER_MEMBERS;
+  using Type = RegisterInformation::Type;
 
   /**
-   * Constructs a new unit.
+   * Deserializes the `UnitInformation` from the given data.
    *
-   * @param name The name of the unit, e.g. "cpu".
+   * \param data The data to deserialize the unit-information from.
    */
-  explicit UnitInformation(const std::string& name);
+  explicit UnitInformation(InformationInterface::Format& data);
+
+  /**
+   * Constructs a new unit with the give name.
+   *
+   * \param name The name of the unit, e.g. "cpu".
+   */
+  explicit UnitInformation(const std::string& name = std::string());
+
+  /**
+   * Constructs a new unit with the given name and list of registers.
+   *
+   * \param name The name of the unit, e.g. "cpu".
+   * \param list A list of registers to add to the unit.
+   */
+  UnitInformation(const std::string& name, InitializerList list);
+
+  /**
+   * Constructs a new unit with the given name and range of registers.
+   *
+   * \tparam Range A range-like type.
+   *
+   * \param name The name of the unit, e.g. "cpu".
+   * \param range The range of RegisterInformation objects to add.
+   */
+  template <typename Range>
+  UnitInformation(const std::string& name, const Range& range) : _name(name) {
+    addRegisters(range);
+  }
+
+  /**
+   * Tests for equality of two units.
+   *
+   * The name of the unit and the registers in the unit must be equal.
+   *
+   * \param other The other unit.
+   */
+  bool operator==(const UnitInformation& other) const noexcept;
+
+  /**
+   * Tests for inequality of two units.
+   *
+   * The name of the unit and the registers in the unit must be equal.
+   *
+   * \param other The other unit.
+   */
+  bool operator!=(const UnitInformation& other) const noexcept;
 
   /**
    * Adds a range of RegisterInformation objects to the unit.
    *
-   * @tparam Range A range-like type.
+   * \tparam Range A range-like type.
    *
-   * @param range A range of RegisterInformation objects.
+   * \param range A range of RegisterInformation objects.
    *
-   * @return The current unit object.
+   * \return The current unit object.
    *
-   * @see addInstructions
+   * \see addInstructions
    */
   template <typename Range>
   UnitInformation& operator+=(const Range& range) {
@@ -76,11 +120,11 @@ class UnitInformation : public ContainerAdapter<RegisterInformation>,
    *
    * A copy is made of this object, then modified via +=, then returned.
    *
-   * @tparam Range A range-like type.
+   * \tparam Range A range-like type.
    *
-   * @param range The range of RegisterInformation objects to add.
+   * \param range The range of RegisterInformation objects to add.
    *
-   * @return The current unit object.
+   * \return The current unit object.
    */
   template <typename Range>
   UnitInformation operator+(const Range& other) const {
@@ -91,35 +135,70 @@ class UnitInformation : public ContainerAdapter<RegisterInformation>,
   }
 
   /**
+   * Deserializes the `UnitInformation` from the given data.
+   *
+   * \param data The data to deserialize the unit-information from.
+   *
+   * \return The current unit object.
+   */
+  UnitInformation& deserialize(InformationInterface::Format& data);
+
+  /**
    * Sets the name of the unit.
    *
    * This would usually be "cpu", "fpu" (floats) or "vpu" (vector processing).
    *
-   * @param name The new name for the unit.
+   * \param name The new name for the unit.
    *
-   * @return The current unit object.
+   * \return The current unit object.
    */
   UnitInformation& name(const std::string& name) noexcept;
 
   /**
    * Returns the name of the unit.
-   *
-   * @return The name of the unit.
    */
   const std::string& getName() const noexcept;
 
   /**
+   * Tests whether this unit has any name set.
+   */
+  bool hasName() const noexcept;
+
+  /**
+   * Returns information about a type of special register, if any such register
+   * was registered.
+   */
+  const RegisterInformation& getSpecialRegister(Type type) const noexcept;
+
+  /**
+   * Returns whether any special register of the given type was set for the
+   * unit.
+   */
+  bool hasSpecialRegister(Type type) const noexcept;
+
+  /**
+   * Returns whether the unit has any special registers at all.
+   */
+  bool hasSpecialRegisters() const noexcept;
+
+  /**
    * Adds a range of RegisterInformation objects to the unit.
    *
-   * @tparam Range A range-like type.
+   * \tparam Range A range-like type.
    *
-   * @param range A range of RegisterInformation objects.
+   * \param range A range of RegisterInformation objects.
    *
-   * @return The current unit object.
+   * \return The current unit object.
    */
   template <typename Range>
   UnitInformation& addRegisters(const Range& range) {
-    Utility::concatenate(_container, range);
+    _container.reserve(range.size());
+
+    // Add them individually instead of via range insertion
+    // so that we can check for special registers
+    for (auto& r : range) {
+      addRegister(r);
+    }
 
     return *this;
   }
@@ -127,27 +206,39 @@ class UnitInformation : public ContainerAdapter<RegisterInformation>,
   /**
    * Adds a list of RegisterInformation objects to the unit.
    *
-   * @param regs A list of RegisterInformation objects.
+   * \param registers A list of RegisterInformation objects.
    *
-   * @return The current unit object.
+   * \return The current unit object.
    */
-  UnitInformation& addRegisters(List regs);
+  UnitInformation& addRegisters(InitializerList registers);
 
   /**
    * Adds a single RegisterInformation object to the unit.
    *
-   * @param reg The RegisterInformation object to add.
+   * \param registerInformation The RegisterInformation object to add.
    *
-   * @return the current object.
+   * \return the current object.
    */
-  UnitInformation& addRegister(const RegisterInformation& reg);
+  UnitInformation& addRegister(const RegisterInformation& registerInformation);
 
-  /** @copydoc Builder::isValid() */
+  /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
+  using SpecialMap = std::unordered_map<Type, RegisterInformation>;
+
+  /**
+   * Deserializes the `UnitInformation` from the given data.
+   *
+   * \param data The data to deserialize the unit-information from.
+   */
+  void _deserialize(InformationInterface::Format& data) override;
+
   /** The name of the unit, e.g. "CPU". */
   std::string _name;
+
+  /** A map of special registers, if any. */
+  SpecialMap _specialRegisters;
 };
 
 #endif /* ERAGPSIM_ARCH_UNIT_INFORMATION_HPP */

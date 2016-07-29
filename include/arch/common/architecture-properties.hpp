@@ -17,13 +17,13 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_INFORMATION_HPP
-#define ERAGPSIM_ARCH_INFORMATION_HPP
+#ifndef ERAGPSIM_ARCH_ARCHITECTURE_PROPERTIES_HPP
+#define ERAGPSIM_ARCH_ARCHITECTURE_PROPERTIES_HPP
 
 /**
  * Contains some enum and type declarations used for information objects.
  */
-namespace Information {
+namespace ArchitectureProperties {
 
 /** Type for the processor word size, in bits. */
 using word_size_t = unsigned short;
@@ -53,4 +53,4 @@ enum class Endianness { LITTLE, BIG, MIXED, BI };
 enum class AlignmentBehavior { STRICT, RELAXED };
 }
 
-#endif /* ERAGPSIM_ARCH_INFORMATION_HPP */
+#endif /* ERAGPSIM_ARCH_ARCHITECTURE_PROPERTIES_HPP */

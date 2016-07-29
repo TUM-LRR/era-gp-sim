@@ -8,6 +8,10 @@ set(ARCH_RISCV_SOURCES
 	integer-instructions.cpp
 	load-store-instructions.cpp
 	mul-div-instructions.cpp
+  instruction-node-factory.cpp
+  immediate-node-factory.cpp
+  register-access-node-factory.cpp
+  instruction-node-factory.cpp
 )
 
 ########################################

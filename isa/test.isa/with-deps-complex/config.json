@@ -1,0 +1,50 @@
+{
+  "name": "with-deps-complex",
+  "extends": [
+    "base1-complex",
+    "base2-complex"
+  ],
+  "endianness": "little",
+  "word-size": 32,
+  "units": [
+    {
+      "name": "cpu",
+      "registers": [
+        {
+          "name": "r0",
+          "id": 0,
+          "size": 32,
+          "constituents": [
+            1,
+            2
+          ],
+          "alias": "zero"
+        },
+        {
+          "name": "r1",
+          "id": 1,
+          "size": 16,
+          "type": "float",
+          "enclosing": 0,
+          "constant": 3.14,
+          "aliases": [
+            "foo",
+            "bar"
+          ]
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "mnemonic": "add",
+      "opcode": 6,
+      "function": 3
+    },
+    {
+      "mnemonic": "sub",
+      "opcode": 9,
+      "function": 3
+    }
+  ]
+}
