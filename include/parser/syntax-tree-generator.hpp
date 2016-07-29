@@ -22,7 +22,7 @@
 
 #include <memory>
 #include <vector>
-#include "arch/common/abstract-node-factories.hpp"
+#include "arch/common/abstract-node-factory-collection.hpp"
 #include "compile-state.hpp"
 
 class SyntaxTreeGenerator {
