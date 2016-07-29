@@ -27,7 +27,7 @@
 
 class SyntaxTreeGenerator {
 public:
-    SyntaxTreeGenerator(AbstractNodeFactoryCollection&& nodeFactories) : _nodeFactories(std::move(nodeFactories))
+    SyntaxTreeGenerator(const AbstractNodeFactoryCollection& nodeFactories) : _nodeFactories(nodeFactories)
     {}
     std::unique_ptr<AbstractSyntaxTreeNode> transformOperand(const std::string& operand, CompileState& state) const;
     std::unique_ptr<AbstractSyntaxTreeNode> transformCommand(const std::string& command_name, std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources, std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets, CompileState& state) const;
