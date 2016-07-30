@@ -65,6 +65,7 @@ class IntermediateOperation {
    * \brief Executes the given operation (somehow).
    * \param finalRepresentator The FinalRepresentation for possible output.
    * \param table The SymbolTable for possible replacements.
+   * \param generator The generator to transform the instructions.
    * \param state The CompileState to log possible errors.
    */
   virtual void execute(FinalRepresentation& finalRepresentator,

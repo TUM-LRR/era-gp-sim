@@ -56,6 +56,7 @@ class IntermediateInstruction : public IntermediateOperation {
    * final representation.
    * \param finalRepresentator The FinalRepresentation to insert into.
    * \param table The SymbolTable required for replacing the arguments.
+   * \param generator The generator to transform the instructions.
    * \param state The CompileState logging all errors occuring.
    */
   virtual void execute(FinalRepresentation& finalRepresentator,
@@ -66,6 +67,7 @@ class IntermediateInstruction : public IntermediateOperation {
   /**
    * \brief Converts this instruction into a syntax tree.
    * \param table The SymbolTable required for replacing the arguments.
+   * \param generator The generator to transform the instructions.
    * \param state The CompileState logging all errors occuring.
    * \return The resulting syntax tree of the node.
    */
@@ -78,6 +80,14 @@ class IntermediateInstruction : public IntermediateOperation {
    */
   virtual void determineMemoryPosition();
 
+  /**
+   * \brief Compiles a vector of arguments (i.e. inserts symbols and converts to syntax tree nodes).
+   * \param vector The vector to compile.
+   * \param table The SymbolTable required for replacing the arguments.
+   * \param generator The generator to transform the instructions.
+   * \param state The CompileState logging all errors occuring.
+   * \return The compiled vector of arguments.
+   */
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
   compileArgumentVector(const std::vector<std::string> &vector, const SymbolTable& table, const SyntaxTreeGenerator& generator, 
                                               CompileState& state);

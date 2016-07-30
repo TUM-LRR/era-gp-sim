@@ -48,9 +48,9 @@ class IntermediateRepresentator {
     _commandList.push_back(std::make_unique<T>(command));
   }
 
-  /*
-   * \fn IntermediateRepresentator::transform(CompileState& state)
+  /**
    * \brief Transforms the commands to a syntax tree list.
+   * \param generator A syntax tree generator to transform the instructions into a readable format for the architecture module.
    * \param state The compile state to report errors.
    * \return The list of syntax trees to be interpreted by the architecture.
    */
