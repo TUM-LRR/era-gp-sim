@@ -25,13 +25,39 @@
 #include "arch/common/node-factory-collection.hpp"
 #include "compile-state.hpp"
 
+/**
+ * \brief A connector class for turning arguments and commands into syntax tree nodes.
+ */
 class SyntaxTreeGenerator {
 public:
+    /**
+     * \brief Creates a new syntax tree generator with the given node factory collection.
+     * \param nodeFactories The node factory collection to instantiate the nodes from.
+     */
     SyntaxTreeGenerator(const NodeFactoryCollection& nodeFactories) : _nodeFactories(nodeFactories)
     {}
+
+    /**
+     * \brief Transforms the given operand as string into a syntax tree node and writes down any occuring errors.
+     * \param operand The operand in pure-string form.
+     * \param state The compile state to denote errors and other stuff.
+     * \return The transformed operand.
+     */
     std::unique_ptr<AbstractSyntaxTreeNode> transformOperand(const std::string& operand, CompileState& state) const;
+
+    /**
+     * \brief Transforms the given instruction/command into a syntax tree, adds any source and target nodes and denotes any occuring errors.
+     * \param command_name The opcode of the instruction.
+     * \param sources The source arguments.
+     * \param targets The target arguments.
+     * \param state The compile state to denote errors.
+     * \return The transformed command.
+     */
     std::unique_ptr<AbstractSyntaxTreeNode> transformCommand(const std::string& command_name, std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources, std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets, CompileState& state) const;
 private:
+    /**
+     * \brief The internal storage of the node factory collection.
+     */
     NodeFactoryCollection _nodeFactories;
 };
 

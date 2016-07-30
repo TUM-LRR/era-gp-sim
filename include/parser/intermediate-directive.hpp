@@ -23,14 +23,11 @@
 
 // This is a dummy class for a future implementation.
 /**
- * \class IntermediateDirective
  * \brief Represents a directive in the parser-internal intermediate form.
  */
 class IntermediateDirective : public IntermediateOperation {
  public:
   /**
-   * \fn IntermediateDirective::IntermediateDirective(const LineInterval& lines,
-   * const std::vector<std::string>& labels, const std::string& name)
    * \brief Instantiates a new IntermediateDirective with the given arguments.
    * (only for subclass use!)
    * \param lines The line interval the operation occupies.

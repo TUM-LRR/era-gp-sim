@@ -27,34 +27,28 @@
 #include "syntax-tree-generator.hpp"
 
 /**
- * \class LineInterval
  * \brief Representa an interval of lines, denoted by an upper and lower line
  * bound.
  */
 using LineInterval = std::pair<unsigned int, unsigned int>;
 
 /**
- * \class DummyMemoryAddress
  * \brief A memory address substitute as long as we do not have one.
  */
 using DummyMemoryAddress = unsigned int;
 
 /**
- * \var NULL_ADDRESS
  * \brief A substitute for a not-initialized address.
  */
 static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
 
 /**
- * \class IntermediateOperation
  * \brief Represents an abstract assembler operation in the parser-internal
  * intermediate form.
  */
 class IntermediateOperation {
  public:
   /**
-   * \fn IntermediateOperation::IntermediateOperation(const LineInterval& lines,
-   * const std::vector<std::string>& labels, const std::string& name)
    * \brief Instantiates a new IntermediateOperation with the given arguments.
    * (only for subclass use!)
    * \param lines The line interval the operation occupies.
@@ -68,8 +62,6 @@ class IntermediateOperation {
   }
 
   /**
-   * \fn IntermediateOperation::execute(FinalRepresentation& finalRepresentator,
-   * const SymbolTable& table, CompileState& state)
    * \brief Executes the given operation (somehow).
    * \param finalRepresentator The FinalRepresentation for possible output.
    * \param table The SymbolTable for possible replacements.
@@ -81,8 +73,6 @@ class IntermediateOperation {
                        CompileState& state) = 0;
 
   /**
-   * \fn IntermediateOperation::enhanceSymbolTable(SymbolTable& table,
-   * CompileState& state)
    * \brief Enhances the symbol table by the labels of the operation.
    * \param table The SymbolTable to insert into.
    * \param state The CompileState to log possible errors.
@@ -90,7 +80,6 @@ class IntermediateOperation {
   virtual void enhanceSymbolTable(SymbolTable& table, CompileState& state);
 
   /**
-   * \fn IntermediateOperation::address()
    * \brief Returns the memory address.
    * \return The memory address.
    */
@@ -100,31 +89,26 @@ class IntermediateOperation {
 
  protected:
   /**
-   * \fn IntermediateOperation::determineMemoryPosition()
    * \brief Reserves space in memory for the operation and sets the address.
    */
   virtual void determineMemoryPosition() = 0;
 
   /**
-   * \var IntermediateOperation::_lines
    * \brief The internal line interval.
    */
   LineInterval _lines;
 
   /**
-   * \var IntermediateOperation::_labels
    * \brief The internal label list.
    */
   std::vector<std::string> _labels;
 
   /**
-   * \var IntermediateOperation::_name
    * \brief The internal operation name.
    */
   std::string _name;
 
   /**
-   * \var IntermediateOperation::_address
    * \brief The internal memory address.
    */
   DummyMemoryAddress _address;

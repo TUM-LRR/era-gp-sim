@@ -28,17 +28,12 @@
 #include "symbol-table.hpp"
 
 /**
- * \class IntermediateInstruction
  * \brief Represents a machine instruction in the parser-internal intermediate
  * form.
  */
 class IntermediateInstruction : public IntermediateOperation {
  public:
   /**
-   * \fn IntermediateInstruction::IntermediateInstruction(const LineInterval&
-   * lines, const std::vector<std::string>& labels, const std::string& name,
-   * const std::vector<std::string>& sources, const std::vector<std::string>&
-   * targets)
    * \brief Instantiates a new compile error with the given arguments.
    * \param lines The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
@@ -57,8 +52,6 @@ class IntermediateInstruction : public IntermediateOperation {
   }
 
   /**
-   * \fn IntermediateInstruction::execute(FinalRepresentation&
-   * finalRepresentator, const SymbolTable& table, CompileState& state)
    * \brief Converts this instruction into a syntax tree and inserts it into the
    * final representation.
    * \param finalRepresentator The FinalRepresentation to insert into.
@@ -71,8 +64,6 @@ class IntermediateInstruction : public IntermediateOperation {
                        CompileState& state);
 
   /**
-   * \fn IntermediateInstruction::compileInstruction(const SymbolTable& table,
-   * CompileState& state)
    * \brief Converts this instruction into a syntax tree.
    * \param table The SymbolTable required for replacing the arguments.
    * \param state The CompileState logging all errors occuring.
@@ -83,7 +74,6 @@ class IntermediateInstruction : public IntermediateOperation {
 
  protected:
   /**
-   * \fn IntermediateInstruction::determineMemoryPosition()
    * \brief Gets the position in program memory space.
    */
   virtual void determineMemoryPosition();
@@ -94,13 +84,11 @@ class IntermediateInstruction : public IntermediateOperation {
 
  private:
   /**
-   * \var IntermediateInstruction::_sources
    * \brief The internal source arguments.
    */
   std::vector<std::string> _sources;
 
   /**
-   * \var IntermediateInstruction::_targets
    * \brief The internal target arguments.
    */
   std::vector<std::string> _targets;

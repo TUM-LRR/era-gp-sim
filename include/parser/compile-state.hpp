@@ -24,25 +24,23 @@
 #include "compile-error.hpp"
 #include "parser.hpp"
 
+//Note: this class should be reworked and rebuilt to a full-grown class...
+
 /**
- \struct CompileState
  \brief Contains all relevant information for a compile run.
  */
 struct CompileState {
   /**
-   \var CompileState::mode
    \brief Denotes the mode of the compiler.
    */
   ParserMode mode;
 
   /**
-   \var CompileState::position
    \brief Equals the current position in code. TODO: Implement functionality.
    */
   CodePosition position;
 
   /**
-   \var CompileState::errorList
    \brief Contains a list of compiler errors of this pass.
    */
   std::vector<CompileError> errorList;

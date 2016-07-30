@@ -24,7 +24,6 @@
 #include "../arch/common/abstract-node-factories.hpp"
 
 /**
- * \class FinalRepresentation
  * \brief Denotes the temporary output of an IntermediateRepresentator ready to
  * be used by the architecture.
  */

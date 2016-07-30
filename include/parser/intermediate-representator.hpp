@@ -29,19 +29,16 @@
 #include "symbol-table.hpp"
 
 /**
- * \class IntermediateRepresentator
  * \brief Provides methods for collecting and compiling a command list.
  */
 class IntermediateRepresentator {
  public:
   /**
-   * \fn IntermediateRepresentator::IntermediateRepresentator()
    * \brief Instantiates an IntermediateRepresentator with the default values.
    */
   IntermediateRepresentator() = default;
 
   /**
-   * \fn IntermediateRepresentator::insertCommand(const T& command)
    * \brief Inserts the given command into the command list.
    * \param command The given command.
    * \tparam T The command type.
@@ -51,7 +48,7 @@ class IntermediateRepresentator {
     _commandList.push_back(std::make_unique<T>(command));
   }
 
-  /**
+  /*
    * \fn IntermediateRepresentator::transform(CompileState& state)
    * \brief Transforms the commands to a syntax tree list.
    * \param state The compile state to report errors.
@@ -61,7 +58,6 @@ class IntermediateRepresentator {
 
  private:
   /**
-   * \var IntermediateRepresentator::_commandList
    * \brief The internal command list.
    */
   std::vector<std::unique_ptr<IntermediateOperation>> _commandList;
