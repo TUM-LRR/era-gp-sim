@@ -16,6 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "arch/common/node-factory-collection-maker.hpp"
 #include "parser/syntax-tree-generator.hpp"
 #include "arch/common/immediate-node.hpp"
 #include "arch/common/register-node.hpp"
@@ -28,7 +29,7 @@
 static SyntaxTreeGenerator buildGenerator()
 {
   Architecture testArch("risc-v");
-  AbstractNodeFactoryCollection factoryCollection = AbstractNodeFactoryCollection::CreateFor(testArch);
+  auto factoryCollection = NodeFactoryCollectionMaker::CreateFor(testArch);
   SyntaxTreeGenerator generator(factoryCollection);
   return generator;
 }
