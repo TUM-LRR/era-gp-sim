@@ -3,6 +3,8 @@
 
 language: cpp
 sudo: true
+notifications:
+  slack: era-tum:H6XLebbfxen7b1oqUO1nNVny
 
 matrix:
   include:

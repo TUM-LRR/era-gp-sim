@@ -102,7 +102,7 @@ const InstructionSet& Architecture::getInstructions() const {
   return _base.getInstructions();
 }
 
-const AbstractNodeFactoryCollection& Architecture::getNodeFactories() const {
+const NodeFactoryCollection& Architecture::getNodeFactories() const {
   return _factories;
 }
 
