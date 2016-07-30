@@ -42,7 +42,7 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   virtual MemoryValue getValue(DummyMemoryAccess &memory_access) override {
     // TODO Return the actual content of the register using the proper
     // memory access
-    return MemoryValue{8};
+    return MemoryValue{};
   }
 
   /**
