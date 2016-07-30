@@ -43,40 +43,6 @@ class SymbolTable {
   }
 
   /**
-   * \fn SymbolTable::SymbolTable(const SymbolTable& other)
-   * \brief Default copy constructor.
-   * \param other The source SymbolTable instance.
-   */
-  SymbolTable(const SymbolTable& other) = default;
-
-  /**
-   * \fn SymbolTable::SymbolTable(SymbolTable&& other)
-   * \brief Default move constructor.
-   * \param other The source SymbolTable instance.
-   */
-  SymbolTable(SymbolTable&& other) = default;
-
-  /**
-   * \fn SymbolTable::operator =(const SymbolTable& other)
-   * \brief Default copy assignment operator.
-   * \param other The source SymbolTable instance.
-   */
-  SymbolTable& operator=(const SymbolTable& other) = default;
-
-  /**
-   * \fn SymbolTable::operator =(SymbolTable&& other)
-   * \brief Default move assignment operator.
-   * \param other The source SymbolTable instance.
-   */
-  SymbolTable& operator=(SymbolTable&& other) = default;
-
-  /**
-   * \fn SymbolTable::~SymbolTable()
-   * \brief Default destructor.
-   */
-  ~SymbolTable() = default;
-
-  /**
    * \fn SymbolTable::insertEntry(const std::string& name, const std::string&
    * replacement, CompileState& state)
    * \brief Inserts an entry into the SymbolTable and checks for any errors.

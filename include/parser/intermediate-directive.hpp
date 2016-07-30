@@ -42,43 +42,6 @@ class IntermediateDirective : public IntermediateOperation {
                         const std::string& name)
   : IntermediateOperation(lines, labels, name) {
   }
-
-  /**
-   * \fn IntermediateDirective::IntermediateDirective(const
-   * IntermediateDirective& other)
-   * \brief Default copy constructor.
-   * \param other The source IntermediateDirective instance.
-   */
-  IntermediateDirective(const IntermediateDirective& other) = default;
-
-  /**
-   * \fn IntermediateDirective::IntermediateDirective(IntermediateDirective&&
-   * other)
-   * \brief Default move constructor.
-   * \param other The source IntermediateDirective instance.
-   */
-  IntermediateDirective(IntermediateDirective&& other) = default;
-
-  /**
-   * \fn IntermediateDirective::operator =(const IntermediateDirective& other)
-   * \brief Default copy assignment operator.
-   * \param other The source IntermediateDirective instance.
-   */
-  IntermediateDirective&
-  operator=(const IntermediateDirective& other) = default;
-
-  /**
-   * \fn IntermediateDirective::operator =(IntermediateDirective&& other)
-   * \brief Default move assignment operator.
-   * \param other The source IntermediateDirective instance.
-   */
-  IntermediateDirective& operator=(IntermediateDirective&& other) = default;
-
-  /**
-   * \fn IntermediateDirective::~IntermediateDirective()
-   * \brief Default destructor.
-   */
-  ~IntermediateDirective() = default;
 };
 
 #endif

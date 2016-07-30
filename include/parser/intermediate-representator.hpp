@@ -41,47 +41,6 @@ class IntermediateRepresentator {
   IntermediateRepresentator() = default;
 
   /**
-   * \fn IntermediateRepresentator::IntermediateRepresentator(const
-   * IntermediateRepresentator& other)
-   * \brief Default copy constructor.
-   * \param other The source IntermediateRepresentator instance.
-   */
-  IntermediateRepresentator(const IntermediateRepresentator& other) = default;
-
-  /**
-   * \fn
-   * IntermediateRepresentator::IntermediateRepresentator(IntermediateRepresentator&&
-   * other)
-   * \brief Default move constructor.
-   * \param other The source IntermediateRepresentator instance.
-   */
-  IntermediateRepresentator(IntermediateRepresentator&& other) = default;
-
-  /**
-   * \fn IntermediateRepresentator::operator =(const IntermediateRepresentator&
-   * other)
-   * \brief Default copy assignment operator.
-   * \param other The source IntermediateRepresentator instance.
-   */
-  IntermediateRepresentator&
-  operator=(const IntermediateRepresentator& other) = default;
-
-  /**
-   * \fn IntermediateRepresentator::operator =(IntermediateRepresentator&&
-   * other)
-   * \brief Default move assignment operator.
-   * \param other The source IntermediateRepresentator instance.
-   */
-  IntermediateRepresentator&
-  operator=(IntermediateRepresentator&& other) = default;
-
-  /**
-   * \fn IntermediateRepresentator::~IntermediateRepresentator()
-   * \brief Default destructor.
-   */
-  ~IntermediateRepresentator() = default;
-
-  /**
    * \fn IntermediateRepresentator::insertCommand(const T& command)
    * \brief Inserts the given command into the command list.
    * \param command The given command.

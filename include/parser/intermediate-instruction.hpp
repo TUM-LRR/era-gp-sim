@@ -57,45 +57,6 @@ class IntermediateInstruction : public IntermediateOperation {
   }
 
   /**
-   * \fn IntermediateInstruction::IntermediateInstruction(const
-   * IntermediateInstruction& other)
-   * \brief Default copy constructor.
-   * \param other The source IntermediateInstruction instance.
-   */
-  IntermediateInstruction(const IntermediateInstruction& other) = default;
-
-  /**
-   * \fn
-   * IntermediateInstruction::IntermediateInstruction(IntermediateInstruction&&
-   * other)
-   * \brief Default move constructor.
-   * \param other The source IntermediateInstruction instance.
-   */
-  IntermediateInstruction(IntermediateInstruction&& other) = default;
-
-  /**
-   * \fn IntermediateInstruction::operator =(const IntermediateInstruction&
-   * other)
-   * \brief Default copy assignment operator.
-   * \param other The source IntermediateInstruction instance.
-   */
-  IntermediateInstruction&
-  operator=(const IntermediateInstruction& other) = default;
-
-  /**
-   * \fn IntermediateInstruction::operator =(IntermediateInstruction&& other)
-   * \brief Default move assignment operator.
-   * \param other The source IntermediateInstruction instance.
-   */
-  IntermediateInstruction& operator=(IntermediateInstruction&& other) = default;
-
-  /**
-   * \fn IntermediateInstruction::~IntermediateInstruction()
-   * \brief Default destructor.
-   */
-  ~IntermediateInstruction() = default;
-
-  /**
    * \fn IntermediateInstruction::execute(FinalRepresentation&
    * finalRepresentator, const SymbolTable& table, CompileState& state)
    * \brief Converts this instruction into a syntax tree and inserts it into the

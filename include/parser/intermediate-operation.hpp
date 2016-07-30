@@ -68,43 +68,6 @@ class IntermediateOperation {
   }
 
   /**
-   * \fn IntermediateOperation::IntermediateOperation(const
-   * IntermediateOperation& other)
-   * \brief Default copy constructor.
-   * \param other The source IntermediateOperation instance.
-   */
-  IntermediateOperation(const IntermediateOperation& other) = default;
-
-  /**
-   * \fn IntermediateOperation::IntermediateOperation(IntermediateOperation&&
-   * other)
-   * \brief Default move constructor.
-   * \param other The source IntermediateOperation instance.
-   */
-  IntermediateOperation(IntermediateOperation&& other) = default;
-
-  /**
-   * \fn IntermediateOperation::operator =(const IntermediateOperation& other)
-   * \brief Default copy assignment operator.
-   * \param other The source IntermediateOperation instance.
-   */
-  IntermediateOperation&
-  operator=(const IntermediateOperation& other) = default;
-
-  /**
-   * \fn IntermediateOperation::operator =(IntermediateOperation&& other)
-   * \brief Default move assignment operator.
-   * \param other The source IntermediateOperation instance.
-   */
-  IntermediateOperation& operator=(IntermediateOperation&& other) = default;
-
-  /**
-   * \fn IntermediateOperation::~IntermediateOperation()
-   * \brief Default destructor.
-   */
-  ~IntermediateOperation() = default;
-
-  /**
    * \fn IntermediateOperation::execute(FinalRepresentation& finalRepresentator,
    * const SymbolTable& table, CompileState& state)
    * \brief Executes the given operation (somehow).

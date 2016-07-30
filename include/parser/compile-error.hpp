@@ -60,35 +60,6 @@ class CompileError {
   }
 
   /**
-   * \brief Default copy constructor.
-   * \param other The source CompileError instance.
-   */
-  CompileError(const CompileError& other) = default;
-
-  /**
-   * \brief Default move constructor.
-   * \param other The source CompileError instance.
-   */
-  CompileError(CompileError&& other) = default;
-
-  /**
-   * \brief Default copy assignment operator.
-   * \param other The source CompileError instance.
-   */
-  CompileError& operator=(const CompileError& other) = default;
-
-  /**
-   * \brief Default move assignment operator.
-   * \param other The source CompileError instance.
-   */
-  CompileError& operator=(CompileError&& other) = default;
-
-  /**
-   * \brief Default destructor.
-   */
-  ~CompileError() = default;
-
-  /**
    * \brief Returns the message of this error.
    * \return The message of the error.
    */
