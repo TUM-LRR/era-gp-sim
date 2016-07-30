@@ -26,7 +26,7 @@ import QtQuick.Controls 1.4
 Item {
 
     /*Dummys, created by starting the window because of time reasons. They will not be active unless they are choosen*/
-    GreenRectangle{
+    LightStrip{
         id: greenBackground
         anchors.fill: parent
         visible: false
@@ -50,7 +50,7 @@ Item {
     /*Drop-Down button*/
     ComboBox{
         width: 150
-        model: ["Choose Output","Red Rectangle", "Blue Rectangle", "GreenRectangle" ]
+        model: ["Choose Output","Red Rectangle", "Blue Rectangle", "Light Strip"]
 
         onCurrentIndexChanged:{
             /*If another line is choosen, an other Output will be set active, al others stay inactive*/

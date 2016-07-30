@@ -18,7 +18,7 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 1.5
-import QtQuick.Layouts 1.1
+import QtQuick.Layouts 1.3
 import "../Common"
 
 Item {
