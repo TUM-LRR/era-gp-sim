@@ -21,17 +21,17 @@ import QtQuick 2.6
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import "Components"
-//import "Components/Menubar"
+import "Components/Menubar"
 import "Components/Toolbar"
 
 ApplicationWindow {
     id: window
     visible: true
 
-    /*menuBar: Menubar{
+    menuBar: Menubar{
         component: tabs
         tabView: tabView
-    }*/
+    }
     toolBar: ToolbarMainWindow{
         id: toolbar
     }

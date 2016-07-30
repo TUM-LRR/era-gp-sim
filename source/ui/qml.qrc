@@ -27,5 +27,7 @@
         <file>Components/Toolbar/Icons/StopButtonActiveWithBorder.svg</file>
         <file>Components/Toolbar/Icons/StopButtonInactive.svg</file>
         <file>Components/Toolbar/Icons/StopButtonInactiveWithBorder.svg</file>
+        <file>Components/Menubar/ToolbarMainWindow.qml</file>
+        <file>Components/Menubar/Menubar.qml</file>
     </qresource>
 </RCC>
