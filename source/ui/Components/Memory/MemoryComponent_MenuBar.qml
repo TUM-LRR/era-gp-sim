@@ -19,7 +19,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Layouts 1.1
-import "Common"
+import "../Common"
 
 Item {
     property alias memory_value: memory_size_chooser._value
@@ -66,18 +66,16 @@ Item {
                 console.log("representation of numbers changed")
             }
 
-            ToolTip_new {
+            /*ToolTip_new {
             id: tooltip1
             //width: 200
             //text: "Enter the text here. asdfljas la sjdlöaöls djfaösd jlasdflaksjd fas "
-            }
+            }*/
         }
-        NumericUpDown{
+        NumericUpDown {
             id: memory_size_chooser
             anchors.left: parent.left
             anchors.leftMargin: 150
-
-
         }
         Label {
             id: memory_size

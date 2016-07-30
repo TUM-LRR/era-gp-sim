@@ -17,13 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QGUIApplication>
-#include <QQMLContext>
+#include <QGuiApplication>
+#include <QQmlContext>
 #include <QQmlApplicationEngine>
 #include <QQmlEngine>
 
-#include "registermodel.hpp"
-#include "qproject.hpp"
+#include "ui/registermodel.hpp"
+#include "ui/qproject.hpp"
 
 int main(int argc, char *argv[])
 {

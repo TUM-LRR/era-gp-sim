@@ -20,8 +20,7 @@
 #include "ui/syntaxhighlighter.hpp"
 #include <iostream>
 
-SyntaxHighlighter::SyntaxHighlighter(std::vector<KeywordRule> &&keywords,
-																		 QTextDocument *document)
+SyntaxHighlighter::SyntaxHighlighter(std::vector<KeywordRule> &&keywords, QTextDocument *document)
 : QSyntaxHighlighter(document), _keywords(keywords) {
 }
 

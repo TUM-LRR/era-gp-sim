@@ -38,8 +38,7 @@ class SyntaxHighlighter : QSyntaxHighlighter {
 	// creates a new SyntaxHighlighter with a list of KeywordRule objects and a
 	// pointer to the QTextDocument
 	// which should be highlighted
-	SyntaxHighlighter(std::vector<KeywordRule> &&ruleList,
-										QTextDocument *document);
+        SyntaxHighlighter(std::vector<KeywordRule> &&ruleList, QTextDocument *document);
 
  protected:
 	void highlightBlock(const QString &text) Q_DECL_OVERRIDE;

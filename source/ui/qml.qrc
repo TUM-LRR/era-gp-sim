@@ -13,11 +13,10 @@
         <file>Components/editor/Editor.qml</file>
         <file>Components/Memory/MemoryComponent.qml</file>
         <file>Components/Memory/MemoryComponent_MenuBar.qml</file>
-        <file>Components/Memory/NumericUpDown.qml</file>
+        <file>Components/Common/NumericUpDown.qml</file>
         <file>Components/Register/Register.qml</file>
         <file>InnerSplitviewsEditor.qml</file>
         <file>Components/Toolbar/ToolbarMainWindow.qml</file>
-        <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Toolbar/Icons/RunBreakpointButton.svg</file>
         <file>Components/Toolbar/Icons/RunBreakpointButtonWithBorder.svg</file>
         <file>Components/Toolbar/Icons/RunButton.svg</file>

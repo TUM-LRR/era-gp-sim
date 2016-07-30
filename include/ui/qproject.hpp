@@ -30,7 +30,7 @@
 #include <QTextCharFormat>
 #include <QTextDocument>
 #include <memory>
-#include "syntaxhighlighter.hpp"
+#include "ui/syntaxhighlighter.hpp"
 
 class QProject : public QObject {
 	Q_OBJECT
