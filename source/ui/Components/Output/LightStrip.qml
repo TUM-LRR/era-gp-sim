@@ -40,16 +40,27 @@ Item {
         id: strips
     }
 
-    ListView {
-        spacing: 10
-        anchors.fill: parent
-        anchors.topMargin: 50
-        anchors.leftMargin: 20
-        anchors.rightMargin: 20
-        orientation: ListView.Horizontal
+    Rectangle{
+        color: "#C7C7C7"
+        y: 50
+        height: 110
+        anchors.left: parent.left
+        anchors.right: parent.right
 
-        model: strips
-        delegate: light
+        ListView {
+            spacing: 10
+            anchors.fill: parent
+            anchors.leftMargin: 20
+            anchors.rightMargin: 20
+            anchors.topMargin: 5
+            anchors.bottomMargin: 5
+
+            orientation: ListView.Horizontal
+            interactive: false
+
+            model: strips
+            delegate: light
+        }
     }
 
     Component {
@@ -93,10 +104,10 @@ Item {
                                                            "colorChooser");
                     }
                     else {
-                        if(_color == "yellow")
-                            strips.set(_index,{_color: "white"});
-                        else
+                        if(_color == "white")
                             strips.set(_index,{_color: "yellow"});
+                        else
+                            strips.set(_index,{_color: "white"});
                     }
                 }
                 onEntered: {
