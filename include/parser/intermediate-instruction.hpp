@@ -72,7 +72,9 @@ class IntermediateInstruction : public IntermediateOperation {
    * \return The resulting syntax tree of the node.
    */
   std::unique_ptr<AbstractSyntaxTreeNode>
-  compileInstruction(const SymbolTable& table, const SyntaxTreeGenerator& generator, CompileState& state);
+  compileInstruction(const SymbolTable& table,
+                     const SyntaxTreeGenerator& generator,
+                     CompileState& state);
 
  protected:
   /**
@@ -81,7 +83,8 @@ class IntermediateInstruction : public IntermediateOperation {
   virtual void determineMemoryPosition();
 
   /**
-   * \brief Compiles a vector of arguments (i.e. inserts symbols and converts to syntax tree nodes).
+   * \brief Compiles a vector of arguments (i.e. inserts symbols and converts to
+   * syntax tree nodes).
    * \param vector The vector to compile.
    * \param table The SymbolTable required for replacing the arguments.
    * \param generator The generator to transform the instructions.
@@ -89,8 +92,10 @@ class IntermediateInstruction : public IntermediateOperation {
    * \return The compiled vector of arguments.
    */
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
-  compileArgumentVector(const std::vector<std::string> &vector, const SymbolTable& table, const SyntaxTreeGenerator& generator, 
-                                              CompileState& state);
+  compileArgumentVector(const std::vector<std::string>& vector,
+                        const SymbolTable& table,
+                        const SyntaxTreeGenerator& generator,
+                        CompileState& state);
 
  private:
   /**

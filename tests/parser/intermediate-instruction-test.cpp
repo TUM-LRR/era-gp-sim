@@ -41,7 +41,7 @@ TEST(IntermediateInstruction, enhance) {
   ASSERT_EQ(st.table().at("label1"), std::to_string(ii.address()));
 }
 
-//For now, disable.
+// For now, disable.
 /*TEST(IntermediateInstruction, transformFinal) {
   IntermediateInstruction ii(SAMPLE_COMMAND);
   SymbolTable st;

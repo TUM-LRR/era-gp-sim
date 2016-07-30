@@ -50,11 +50,13 @@ class IntermediateRepresentator {
 
   /**
    * \brief Transforms the commands to a syntax tree list.
-   * \param generator A syntax tree generator to transform the instructions into a readable format for the architecture module.
+   * \param generator A syntax tree generator to transform the instructions into
+   * a readable format for the architecture module.
    * \param state The compile state to report errors.
    * \return The list of syntax trees to be interpreted by the architecture.
    */
-  FinalRepresentation transform(const SyntaxTreeGenerator& generator, CompileState& state);
+  FinalRepresentation
+  transform(const SyntaxTreeGenerator& generator, CompileState& state);
 
  private:
   /**

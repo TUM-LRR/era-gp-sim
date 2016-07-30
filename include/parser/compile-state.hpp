@@ -24,7 +24,7 @@
 #include "compile-error.hpp"
 #include "parser.hpp"
 
-//Note: this class should be reworked and rebuilt to a full-grown class...
+// Note: this class should be reworked and rebuilt to a full-grown class...
 
 /**
  \brief Contains all relevant information for a compile run.

@@ -33,13 +33,13 @@ void SymbolTable::clearTable() {
 void SymbolTable::insertEntry(const std::string& name,
                               const std::string& replacement,
                               CompileState& state) {
-  // Note: this method seems to be really slow. I feel like it is the regexes... We could check them by hand, if it matters.
+  // Note: this method seems to be really slow. I feel like it is the regexes...
+  // We could check them by hand, if it matters.
   // Expects a trimmed string.
   // To explain the regex: We just look if there are spaces at the beginning OR
   // at the end of the string.
 
-  assert(!std::regex_search(
-      name, std::regex("(^\\s+|\\s+$)")));
+  assert(!std::regex_search(name, std::regex("(^\\s+|\\s+$)")));
 
   // First of all, we check for errors with our new symbol.
 
@@ -70,7 +70,12 @@ std::string SymbolTable::replaceSymbols(const std::string& source,
                                         CompileState& state) const {
   std::string result = source;
 
-  //If this is too slow, we should do something different, like: Instead of having a map, we take a directed graph (maybe using adjacency lists), each symbol is a node and each edge shows a dependency of a certain symbol when replaced. We might also be able to detect loops to some extent, by just checking if our graph is a DAG (e.g. using DFS and checking for a backlink to an edge currently in a tree... WHY DIDN'T WE HAVE THIS IDEA IN GCPC???).
+  // If this is too slow, we should do something different, like: Instead of
+  // having a map, we take a directed graph (maybe using adjacency lists), each
+  // symbol is a node and each edge shows a dependency of a certain symbol when
+  // replaced. We might also be able to detect loops to some extent, by just
+  // checking if our graph is a DAG (e.g. using DFS and checking for a backlink
+  // to an edge currently in a tree... WHY DIDN'T WE HAVE THIS IDEA IN GCPC???).
 
   // Just make a copy and iterate over all defined symbols. If they match,
   // replace them.

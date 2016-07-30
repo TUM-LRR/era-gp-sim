@@ -24,6 +24,8 @@
 /**
  * \brief Denotes a code position in the format (line, character).
  */
-using CodePosition = std::pair<unsigned int, unsigned int>;// For now. To be replaced by a real class, inheriting from pair.
+using CodePosition =
+    std::pair<unsigned int, unsigned int>;// For now. To be replaced by a real
+                                          // class, inheriting from pair.
 
 #endif
