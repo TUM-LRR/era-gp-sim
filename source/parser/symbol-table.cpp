@@ -33,6 +33,7 @@ void SymbolTable::clearTable() {
 void SymbolTable::insertEntry(const std::string& name,
                               const std::string& replacement,
                               CompileState& state) {
+  // Note: this method seems to be really slow. I feel like it is the regexes... We could check them by hand, if it matters.
   // Expects a trimmed string.
   // To explain the regex: We just look if there are spaces at the beginning OR
   // at the end of the string.
