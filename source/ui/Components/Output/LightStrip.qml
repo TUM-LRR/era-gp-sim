@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.3
+import QtQuick.Dialogs 1.0
 
 import "../Common"
 
@@ -67,11 +68,36 @@ Item {
             MouseArea{
                 anchors.fill: parent
                 hoverEnabled: true
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onClicked: {
-                    if(_color == "yellow")
-                        strips.set(_index,{_color: "white"});
-                    else
-                        strips.set(_index,{_color: "yellow"});
+                    if(mouse.button === Qt.RightButton){
+                        var newObject = Qt.createQmlObject('import QtQuick 2.2
+                                                            import QtQuick.Dialogs 1.0
+
+                                                            ColorDialog {
+                                                                id: colorDialog
+                                                                width: 300
+                                                                height: 200
+                                                                title: "Please choose a color"
+                                                                currentColor: rect.color
+                                                                onAccepted: {
+                                                                    strips.set(rect._index,{_color: colorDialog.color.toString()});
+                                                                    colorDialog.close();
+                                                                }
+                                                                onRejected: {
+                                                                    colorDialog.close();
+                                                                }
+                                                                Component.onCompleted: visible = true
+                                                            }',
+                                                           light,
+                                                           "colorChooser");
+                    }
+                    else {
+                        if(_color == "yellow")
+                            strips.set(_index,{_color: "white"});
+                        else
+                            strips.set(_index,{_color: "yellow"});
+                    }
                 }
                 onEntered: {
                     rect.border.width=1
