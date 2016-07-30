@@ -29,7 +29,7 @@ Item {
     property int _value: 0
     property int _minValue: 0
     property int _maxValue: 10000
-    property int _step: 12
+    property int _step: 1
 
     signal valueChanged(int value)
     signal valueBoundariesChanged(int minValue, int maxValue)

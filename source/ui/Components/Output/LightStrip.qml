@@ -5,11 +5,29 @@ import "../Common"
 
 Item {
 
-    property int maxStrips: 10
+    property int maxStrips: numUpDown._value
+    onMaxStripsChanged: {
+        if (maxStrips < 0) {
+            maxStrips = 0
+        }
+        while (strips.count < maxStrips) {
+            strips.append({ _color: "white" })
+        }
+        while (strips.count > maxStrips) {
+            strips.remove(strips.count - 1, 1)
+        }
+    }
 
     NumericUpDown{
         id: numUpDown
-        y: 50
+        anchors.right: parent.right
+        anchors.rightMargin: 15
+        y: 10
+
+        _step: 1
+        _value: 8
+        _minValue: 0
+        _maxValue: 16
     }
 
     SystemPalette {
@@ -19,36 +37,14 @@ Item {
 
     ListModel {
         id: strips
-
-        ListElement {
-            _color: "yellow"
-        }
-        ListElement {
-            _color: "yellow"
-        }
-        ListElement {
-            _color: "yellow"
-        }
-        ListElement {
-            _color: "yellow"
-        }
-        ListElement {
-            _color: "yellow"
-        }
-        ListElement {
-            _color: "white"
-        }
-        ListElement {
-            _color: "white"
-        }
-        ListElement {
-            _color: "white"
-        }
     }
 
     ListView {
-        spacing: 8
-        width: 180; height: 200
+        spacing: 10
+        anchors.fill: parent
+        anchors.topMargin: 50
+        anchors.leftMargin: 20
+        anchors.rightMargin: 20
         orientation: ListView.Horizontal
 
         model: strips
