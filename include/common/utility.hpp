@@ -29,6 +29,35 @@
 
 namespace Utility {
 
+std::string toLower(const std::string& string);
+std::string toUpper(const std::string& string);
+
+template <typename Range, typename Iterator, typename Transformer>
+void transformInto(Range& range, Iterator destination, Transformer transform) {
+  using std::begin;
+  using std::end;
+  std::transform(begin(range), end(range), destination, transform);
+}
+
+template <typename Range, typename Transformer>
+void transformInPlace(Range& range, Transformer transform) {
+  using std::begin;
+  transformInto(range, begin(range), transform);
+}
+
+template <typename InputRange,
+          typename Transformer,
+          typename OutputRange = InputRange>
+OutputRange transform(const InputRange& range, Transformer transform) {
+  using std::begin;
+  using std::end;
+
+  OutputRange output;
+  transformInto(range, std::back_inserter(output), transform);
+
+  return output;
+}
+
 template <typename DestinationRange, typename SourceRange>
 void concatenate(DestinationRange& destination, const SourceRange& source) {
   using std::begin;
