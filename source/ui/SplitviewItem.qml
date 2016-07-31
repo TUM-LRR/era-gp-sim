@@ -30,13 +30,15 @@ Item {
 
     onIsExpandedChanged: {
         if(isExpanded==true){
-            header.height=30
+            headerFadeIn.start()
             componentSelector.visible=true
         }else{
             header.height=10
             componentSelector.visible=false
         }
     }
+    PropertyAnimation {id: headerFadeIn; target: header; properties: "height"; to: "24"; duration: 100}
+
 
     Rectangle {
         id: header
@@ -52,11 +54,12 @@ Item {
             propagateComposedEvents: true
 
             onHoveredChanged: {
-                if(containsMouse || componentSelector.pressed || componentSelector.hovered){
+                if(containsMouse || componentSelector.hovered){
                     isExpanded=true
                 }else{
                     isExpanded=false
                 }
+                console.log("combobox: "+componentSelector.hovered+" contains: "+containsMouse)
             }
 
             onClicked: {
@@ -72,6 +75,8 @@ Item {
             enabled: true
             width: 150
             height: 20
+            y: 2
+            x: 2
             model: ["Choose Component","Snapshots", "Output", /*"Editor",*/ "Register", "Memory" ]
 
             onCurrentIndexChanged:{
@@ -88,51 +93,14 @@ Item {
                 else{
                     holder.change("memory");
                 }
-
             }
             onPressedChanged: {
                 if(!pressed) {
                     isExpanded=false
                 }
             }
-
-            /*onPressedChanged: {
-                if(pressed==true){mouseArea.pressed=true;}
-                else{mouseArea.pressed=false;}
-            }*/
-
         }
-
-
     }
-
-    /*Space befot the combobox*/
-//    Rectangle{
-//        id: space
-//        height: 10
-//        width: 150
-//        //visible: false
-//        color: "red"
-//    }
-
-
-
-
-
-//    }
-
-
-
-
-//    /*Space befor the component*/
-//    Rectangle{
-//        id: rect
-//        anchors.top: parent.top
-//        width: 150
-//        height: 10
-//        //visible: false
-//        color:  "blue"
-//    }
 
     /*holds the actual component*/
     ComponentHolder{
@@ -143,34 +111,5 @@ Item {
         anchors.bottom: parent.bottom
         usual: parent.usual
     }
-
- /*   MouseArea{
-        id: mouseArea
-        anchors.top: parent.top
-        height: 10
-        anchors.left:  parent.left
-        anchors.right: parent.right
-        propagateComposedEvents: true
-        property bool pressed: false
-        onEntered: {
-            //console.info("MouseArea entered");
-            box.enabled=true;
-            box.visible=true;
-            //console.info(box.enabled);;
-            rect.anchors.top=box.bottom;
-        }
-        onExited: {
-            if(!pressed){
-            //console.info("exited");
-                box.visible=false;
-                box.enabled=false;
-                rect.anchors.top=parent.top;
-            }
-        }
-
-
-        hoverEnabled: true
-    }*/
-
 }
 
