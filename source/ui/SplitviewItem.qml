@@ -30,15 +30,27 @@ Item {
 
     onIsExpandedChanged: {
         if(isExpanded==true){
+            headerFadeOut.stop()
             headerFadeIn.start()
-            componentSelector.visible=true
         }else{
             headerFadeIn.stop()
-            header.height=10
-            componentSelector.visible=false
+            headerFadeOut.start()
         }
     }
-    PropertyAnimation {id: headerFadeIn; target: header; properties: "height"; to: "24"; duration: 100}
+    SequentialAnimation{
+        id: headerFadeIn
+        PauseAnimation { duration: 100 }
+        PropertyAnimation { target: header; properties: "height"; to: "24"; duration: 100}
+        PropertyAnimation { target: componentSelector; properties: "visible"; to: true; duration: 0}
+    }
+    SequentialAnimation{
+        id: headerFadeOut
+        PauseAnimation { duration: 100 }
+        PropertyAnimation { target: componentSelector; properties: "visible"; to: false; duration: 0}
+        PropertyAnimation { target: header; properties: "height"; to: "10"; duration: 100}
+    }
+
+
 
 
     Rectangle {
