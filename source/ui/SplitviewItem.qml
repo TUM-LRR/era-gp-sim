@@ -26,76 +26,128 @@ Item {
 
     /*default value in the item*/
     property var usual
+    property bool isExpanded: false
+
+    onIsExpandedChanged: {
+        if(isExpanded==true){
+            header.height=30
+            componentSelector.visible=true
+        }else{
+            header.height=10
+            componentSelector.visible=false
+        }
+    }
+
+    Rectangle {
+        id: header
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        height: 10
+        color: "gray"
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            propagateComposedEvents: true
+
+            onHoveredChanged: {
+                if(containsMouse || componentSelector.pressed || componentSelector.hovered){
+                    isExpanded=true
+                }else{
+                    isExpanded=false
+                }
+            }
+
+            onClicked: {
+                mouse.accepted=false
+            }
+        }
+
+        /*Choose*/
+        ComboBox{
+            id: componentSelector
+
+            visible: false
+            enabled: true
+            width: 150
+            height: 20
+            model: ["Choose Component","Snapshots", "Output", /*"Editor",*/ "Register", "Memory" ]
+
+            onCurrentIndexChanged:{
+                if(currentIndex==0){
+                    holder.change("nothing");
+                }else if(currentIndex==1){
+                    holder.change("snapshots");
+                }else if(currentIndex==2){
+                    holder.change("output");
+                }
+                else if(currentIndex==3){
+                    holder.change("register");
+                }
+                else{
+                    holder.change("memory");
+                }
+
+            }
+            onPressedChanged: {
+                if(!pressed) {
+                    isExpanded=false
+                }
+            }
+
+            /*onPressedChanged: {
+                if(pressed==true){mouseArea.pressed=true;}
+                else{mouseArea.pressed=false;}
+            }*/
+
+        }
+
+
+    }
 
     /*Space befot the combobox*/
-    Rectangle{
-        id: space
-        height: 10
-        width: 150
-        visible: false
-    }
-
-
-    /*Choose*/
-    ComboBox{
-        id: box
-        visible: false
-        enabled: false
-        anchors.top: space.bottom
-        width: 150
-        height: 20
-        model: ["Choose Component","Snapshots", "Output", /*"Editor",*/ "Register", "Memory" ]
-
-        onCurrentIndexChanged:{
-            if(currentIndex==0){
-                holder.change("nothing");
-            }else if(currentIndex==1){
-                holder.change("snapshots");
-            }else if(currentIndex==2){
-                holder.change("output");
-            }
-            else if(currentIndex==3){
-                holder.change("register");
-            }
-            else{
-                holder.change("memory");
-            }
-
-        }
-        onPressedChanged: {
-            if(pressed==true){mouseArea.pressed=true;}
-            else{mouseArea.pressed=false;}
-        }
-
-
-    }
+//    Rectangle{
+//        id: space
+//        height: 10
+//        width: 150
+//        //visible: false
+//        color: "red"
+//    }
 
 
 
 
-    /*Space befor the component*/
-    Rectangle{
-        id: rect
-        anchors.top: parent.top
-        width: 150
-        height: 10
-        visible: false
-    }
+
+//    }
+
+
+
+
+//    /*Space befor the component*/
+//    Rectangle{
+//        id: rect
+//        anchors.top: parent.top
+//        width: 150
+//        height: 10
+//        //visible: false
+//        color:  "blue"
+//    }
 
     /*holds the actual component*/
     ComponentHolder{
         id: holder
-        anchors.top: rect.bottom
+        anchors.top: header.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         usual: parent.usual
     }
 
-    MouseArea{
+ /*   MouseArea{
         id: mouseArea
         anchors.top: parent.top
-        height: 30
+        height: 10
         anchors.left:  parent.left
         anchors.right: parent.right
         propagateComposedEvents: true
@@ -118,7 +170,7 @@ Item {
 
 
         hoverEnabled: true
-    }
+    }*/
 
 }
 
