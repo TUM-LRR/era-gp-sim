@@ -33,6 +33,7 @@ Item {
             headerFadeIn.start()
             componentSelector.visible=true
         }else{
+            headerFadeIn.stop()
             header.height=10
             componentSelector.visible=false
         }
@@ -54,16 +55,11 @@ Item {
             propagateComposedEvents: true
 
             onHoveredChanged: {
-                if(containsMouse || componentSelector.hovered){
+                if(containsMouse || componentSelector.hovered || componentSelector.pressed){
                     isExpanded=true
                 }else{
                     isExpanded=false
                 }
-                console.log("combobox: "+componentSelector.hovered+" contains: "+containsMouse)
-            }
-
-            onClicked: {
-                mouse.accepted=false
             }
         }
 
@@ -95,9 +91,16 @@ Item {
                 }
             }
             onPressedChanged: {
-                if(!pressed) {
+                if(pressed)
+                    isExpanded=true
+                else if(!hovered)
                     isExpanded=false
-                }
+            }
+            onHoveredChanged: {
+                if(hovered)
+                    isExpanded=true
+                else if(!pressed)
+                    isExpanded=false
             }
         }
     }
