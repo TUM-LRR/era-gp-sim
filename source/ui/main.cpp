@@ -29,16 +29,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    QString registerDescription =
-        "EAX\tAB01CD23\tHH HH HH HH\n"
-        " AX\tAB01\tHH HH\n"
-        "  AH\tAB\tHH\n"
-        "  AL\t01\tHH\n"
-        "EBX\t56AB78CD90\tHH HH HH HH\n"
-        " BX\t56AB\tHH HH\n"
-        "  BH\t56\tHH\n"
-        "  BL\tAB\tHH";
-    RegisterModel registerModel(registerDescription);
+    RegisterModel registerModel;
 
     QQmlApplicationEngine engine;
 
