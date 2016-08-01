@@ -135,8 +135,6 @@ class IntegerInstructionNode : public InstructionNode {
     return validateIntegerInstruction(*this, _isImmediate);
   }
 
-  virtual MemoryValue assemble() = 0;
-
   virtual SizeType performIntegerOperation(SizeType op1, SizeType op2) = 0;
 
  private:
