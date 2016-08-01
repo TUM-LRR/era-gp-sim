@@ -4,7 +4,7 @@
 #include <random>
 
 #include "gtest\gtest.h"
-#include "memory-value.hpp"
+#include "core\memory-value.hpp"
 
 namespace {
 constexpr std::size_t scale = 100;
