@@ -19,65 +19,86 @@
 #include <cctype>
 
 #include "arch/riscv/instruction-node-factory.hpp"
-#include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
 
 namespace riscv {
 
-void InstructionNodeFactory::initializeInstructionMap() {
+//unnamed namespace for this helper function in order not to pollute riscv namespace
+namespace {
+    template<typename WordSize>
+    void initializeIntegerInstructions(InstructionNodeFactory::InstructionMap& _instructionMap) {
+        _instructionMap.emplace(
+            "add", [](InstructionInformation info){ return std::make_unique<AddInstructionNode<WordSize>>(info, false);});
+        _instructionMap.emplace(
+            "addi", [](InstructionInformation info) { return std::make_unique<AddInstructionNode<WordSize>>(info, true); });
+    }
+}
+
+void InstructionNodeFactory::initializeInstructionMap(const Architecture& architecture) {
+    assert(architecture.isValid());
+
+
+    Architecture::word_size_t wordSize = architecture.getWordSize();
   // Integer Instructions
+    if(wordSize == InstructionNodeFactory::RV32) {
+        initializeIntegerInstructions<InstructionNodeFactory::RV32_integral_t>(_instructionMap);
+    }else if(wordSize == InstructionNodeFactory::RV64) {
+        initializeIntegerInstructions<InstructionNodeFactory::RV64_integral_t>(_instructionMap);
+    }else{
+        //The given architecture does not define a valid word_size to create IntegerInstructions
+        assert(false);
+    }
   _instructionMap.emplace(
-      "ADD", []() { return std::make_unique<AddInstructionNode>(false); });
+      "sub", [](InstructionInformation info) { return std::make_unique<SubInstructionNode>(false); });
   _instructionMap.emplace(
-      "ADDI", []() { return std::make_unique<AddInstructionNode>(true); });
-  _instructionMap.emplace(
-      "SUB", []() { return std::make_unique<SubInstructionNode>(false); });
-  _instructionMap.emplace(
-      "SUBI", []() { return std::make_unique<SubInstructionNode>(true); });
+      "subi", [](InstructionInformation info) { return std::make_unique<SubInstructionNode>(true); });
 
   // Load/Store Instructions
-  _instructionMap.emplace("LW", []() {
+  _instructionMap.emplace("lw", [](InstructionInformation info) {
     return std::make_unique<LoadInstructionNode>(LoadType::WORD);
   });
-  _instructionMap.emplace("LH", []() {
+  _instructionMap.emplace("lh", [](InstructionInformation info) {
     return std::make_unique<LoadInstructionNode>(LoadType::HALF_WORD);
   });
-  _instructionMap.emplace("LHU", []() {
+  _instructionMap.emplace("lhu", [](InstructionInformation info) {
     return std::make_unique<LoadInstructionNode>(LoadType::HALF_WORD_UNSIGNED);
   });
-  _instructionMap.emplace("LB", []() {
+  _instructionMap.emplace("lb", [](InstructionInformation info) {
     return std::make_unique<LoadInstructionNode>(LoadType::BYTE);
   });
-  _instructionMap.emplace("LBU", []() {
+  _instructionMap.emplace("lbu", [](InstructionInformation info) {
     return std::make_unique<LoadInstructionNode>(LoadType::BYTE_UNSIGNED);
   });
-  _instructionMap.emplace("SW", []() {
+  _instructionMap.emplace("sw", [](InstructionInformation info) {
     return std::make_unique<StoreInstructionNode>(StoreType::WORD);
   });
-  _instructionMap.emplace("SH", []() {
+  _instructionMap.emplace("sh", [](InstructionInformation info) {
     return std::make_unique<StoreInstructionNode>(StoreType::HALF_WORD);
   });
-  _instructionMap.emplace("SB", []() {
+  _instructionMap.emplace("sb", [](InstructionInformation info) {
     return std::make_unique<StoreInstructionNode>(StoreType::BYTE);
   });
 }
+
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 InstructionNodeFactory::createInstructionNode(const std::string &token) const {
   using std::begin;
   using std::end;
 
-  // transform token to uppercase
-  std::string upper = token;
-  std::transform(begin(upper), end(upper), begin(upper), toupper);
+  // transform token to lowercase
+  std::string lower = token;
+  std::transform(begin(lower), end(lower), begin(lower), tolower);
 
-  auto it = _instructionMap.find(upper);// lookup the uppercase token
-  if (it != end(_instructionMap)) {
-    return it->second();// dereference iterator to the key-value pair and call
-                        // the function
-  } else {
-    return nullptr;// return nullptr as the uppercase token could not be found
+  if(!_instrSet.hasInstruction(lower)) {
+      return nullptr;// return nullptr as the lowercase token could not be found
   }
+
+  auto it = _instructionMap.find(lower);// lookup the token
+  assert(it != end(_instructionMap));
+  return it->second(_instrSet.getInstruction(lower));// dereference iterator to the key-value pair and call
+                        // the function providing the correct InstructionInformation for the instruction
+
 }
 }

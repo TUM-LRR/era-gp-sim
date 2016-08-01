@@ -33,7 +33,7 @@ MemoryValue LoadInstructionNode::getValue(DummyMemoryAccess &memory_access) {
 
   // TODO Replace this with actual implementation
   // TODO Ensure the correct amount of bytes are loaded from memory
-  return {};
+  return MemoryValue();
 }
 
 MemoryValue StoreInstructionNode::getValue(DummyMemoryAccess &memory_access) {
@@ -44,5 +44,5 @@ MemoryValue StoreInstructionNode::getValue(DummyMemoryAccess &memory_access) {
   // TODO Replace this with actual implementation
   // memory_access.putMemory(base + offset, src);
   // TODO Ensure the correct amount of bytes are written into memory
-  return {};
+  return MemoryValue();
 }

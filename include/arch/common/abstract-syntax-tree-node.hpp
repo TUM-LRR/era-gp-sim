@@ -24,7 +24,11 @@
 
 #include "core/memory-value.hpp"
 
-class DummyMemoryAccess;
+class DummyMemoryAccess {
+public:
+    virtual MemoryValue getRegisterValue(std::string& token) = 0;
+    virtual void setRegisterValue(std::string& token, MemoryValue value) = 0;
+};
 
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {

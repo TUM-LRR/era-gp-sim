@@ -47,6 +47,8 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \return true if this node matches the requirements.
    */
   bool requireChildren(Type type, size_t startIndex, size_t amount);
+
+  size_t getChildrenCount()const;
 };
 }
 

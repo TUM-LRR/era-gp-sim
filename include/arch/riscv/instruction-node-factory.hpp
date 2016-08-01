@@ -19,9 +19,12 @@
 #define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_FACTORY_HPP
 
 #include <unordered_map>
+#include <cstdint>
 
 #include "arch/common/abstract-instruction-node-factory.hpp"
 #include "arch/common/instruction-set.hpp"
+#include "arch/common/instruction-information.hpp"
+#include "arch/common/architecture.hpp"
 
 namespace riscv {
 
@@ -35,14 +38,15 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
  public:
   using InstructionMap = std::unordered_map<
       std::string,
-      std::function<std::unique_ptr<AbstractSyntaxTreeNode>()>>;
+      std::function<std::unique_ptr<AbstractSyntaxTreeNode>(InstructionInformation)>>;
 
   /**
    * \brief InstructionNodeFactory
    * Creates a Instruction Node Factory for RISC-V architecture
    */
-  InstructionNodeFactory(const InstructionSet &instructions) {
-    initializeInstructionMap();
+  InstructionNodeFactory(const InstructionSet &instructions, const Architecture &architecture) : _instrSet(instructions) {
+      assert(_instrSet.isValid());
+    initializeInstructionMap(architecture);
   }
 
   /*! Default constructed copy constructor */
@@ -65,13 +69,6 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   ~InstructionNodeFactory() = default;
 
  private:
-  /**
-   * \brief _instructionMap
-   * Table, that maps the instruction identifier (e.g. the token "ADD" for
-   * Addition) to a function that creates the special instruction node (e.g.
-   * AddInstructionNode)
-   */
-  InstructionMap _instructionMap;
 
   /**
    * \brief initializeInstructionMap
@@ -80,7 +77,22 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
    * std::unique_ptr<AbstractSyntaxTreeNode> as value.
    * Use UPPERCASE instruction identifier as key.
    */
-  void initializeInstructionMap();
+  void initializeInstructionMap(const Architecture& architecture);
+
+  /**
+   * \brief _instructionMap
+   * Table, that maps the instruction identifier (e.g. the token "ADD" for
+   * Addition) to a function that creates the special instruction node (e.g.
+   * AddInstructionNode)
+   */
+  InstructionMap _instructionMap;
+
+  InstructionSet _instrSet;
+
+  static constexpr Architecture::word_size_t RV32 = 32;
+  using RV32_integral_t = uint32_t;
+  static constexpr Architecture::word_size_t RV64 = 64;
+  using RV64_integral_t = uint64_t;
 };
 }
 

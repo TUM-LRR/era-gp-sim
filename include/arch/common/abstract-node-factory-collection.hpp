@@ -46,10 +46,10 @@ class AbstractNodeFactoryCollection {
 
   template <typename FactoryTypes>
   static AbstractNodeFactoryCollection
-  Create(const InstructionSet &instructionSet) {
+  Create(const InstructionSet &instructionSet, const Architecture& architecture) {
     // clang-format off
     return AbstractNodeFactoryCollection(
-        FactoryTypes::instructionFactory(instructionSet),
+        FactoryTypes::instructionFactory(instructionSet, architecture),
         FactoryTypes::immediateFactory(),
         FactoryTypes::memoryAccessFactory(),
         FactoryTypes::registerAccessFactory(),

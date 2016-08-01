@@ -14,3 +14,7 @@ bool InstructionNode::requireChildren(Type type, size_t startIndex,
   }
   return true;
 }
+
+size_t InstructionNode::getChildrenCount() const{
+    return _children.size();
+}

@@ -20,8 +20,10 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 #define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 
+#include <cassert>
 #include <string>
 
+#include "arch/common/instruction-information.hpp"
 #include "arch/riscv/instruction-node.hpp"
 
 /*
@@ -41,34 +43,34 @@ namespace riscv {
  * \param immediate Whether the node is the register-immediate representation.
  * \return true if the node matches the requirements.
  */
-bool validateIntegerInstruction(InstructionNode &node, bool immediate);
+bool validateIntegerInstruction(InstructionNode& node, bool immediate);
 
-/**
- * This node represents the add/addi instruction.
- *
- * See RISC V specification for details about the instruction.
- */
-class AddInstructionNode : public InstructionNode {
- public:
-  AddInstructionNode(bool immediate)
-  : InstructionNode(), _immediate(immediate) {
-  }
+///**
+// * This node represents the add/addi instruction.
+// *
+// * See RISC V specification for details about the instruction.
+// */
+// class AddInstructionNode : public InstructionNode {
+// public:
+//  AddInstructionNode(bool immediate)
+//  : InstructionNode(), _immediate(immediate) {
+//  }
 
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
+//  virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
 
-  virtual bool validate();
+//  virtual bool validate();
 
-  virtual MemoryValue assemble() {
-    return MemoryValue{};// TODO
-  }
+//  virtual MemoryValue assemble() {
+//    return MemoryValue{};// TODO
+//  }
 
-  virtual std::string getIdentifier() {
-    return _immediate ? "ADDI" : "ADD";
-  }
+//  virtual std::string getIdentifier() {
+//    return _immediate ? "ADDI" : "ADD";
+//  }
 
- private:
-  bool _immediate;
-};
+// private:
+//  bool _immediate;
+//};
 
 /**
  * This node represents the sub/subi instruction.
@@ -78,23 +80,81 @@ class AddInstructionNode : public InstructionNode {
 class SubInstructionNode : public InstructionNode {
  public:
   SubInstructionNode(bool immediate)
-  : InstructionNode(), _immediate(immediate) {
-  }
+      : InstructionNode(), _immediate(immediate) {}
 
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
+  virtual MemoryValue getValue(DummyMemoryAccess& memory_access);
 
   virtual bool validate();
 
   virtual MemoryValue assemble() {
-    return MemoryValue{};// TODO
+    return MemoryValue();  // TODO
   }
 
-  virtual std::string getIdentifier() {
-    return _immediate ? "SUBI" : "SUB";
-  }
+  virtual std::string getIdentifier() { return _immediate ? "SUBI" : "SUB"; }
 
  private:
   bool _immediate;
+};
+
+template <typename SizeType>
+class IntegerInstructionNode : public InstructionNode {
+ public:
+  IntegerInstructionNode(InstructionInformation info, bool immediateInstruction)
+      : _instructionInformation(info), _isImmediate(immediateInstruction) {}
+
+  IntegerInstructionNode(IntegerInstructionNode& copy) = default;
+  IntegerInstructionNode(IntegerInstructionNode&& move) = default;
+  ~IntegerInstructionNode() = default;
+
+  MemoryValue getValue(DummyMemoryAccess& memory_access) override {
+    assert(validate());
+    // Get the destination register
+    std::string destination = _children.at(0)->getIdentifier();
+
+    // Evaluate the operands
+    MemoryValue memoryV1 = _children.at(1)->getValue(memory_access);
+    MemoryValue memoryV2 = _children.at(2)->getValue(memory_access);
+
+    SizeType operand1 = convert<SizeType>(memoryV1, ByteOrder::kBigEndian);
+    SizeType operand2 = convert<SizeType>(memoryV2, ByteOrder::kBigEndian);
+
+    SizeType result = performIntegerOperation(operand1, operand2);
+
+    MemoryValue resultValue = convert(result, 8, ByteOrder::kBigEndian);
+    memory_access.setRegisterValue(destination, resultValue);
+    return MemoryValue();
+  }
+
+  std::string getIdentifier() override {
+    assert(_instructionInformation.isValid() &&
+           _instructionInformation.hasMnemonic());
+    return _instructionInformation.getMnemonic();
+  }
+
+  bool validate() override {
+    return validateIntegerInstruction(*this, _isImmediate);
+  }
+
+  virtual MemoryValue assemble() = 0;
+
+  virtual SizeType performIntegerOperation(SizeType op1, SizeType op2) = 0;
+
+ private:
+  InstructionInformation _instructionInformation;
+  bool _isImmediate;
+};
+
+template <typename SizeType>
+class AddInstructionNode : public IntegerInstructionNode<SizeType> {
+ public:
+  AddInstructionNode(InstructionInformation info, bool immediateInstruction)
+      : IntegerInstructionNode<SizeType>(info, immediateInstruction) {}
+
+  MemoryValue assemble() override { return MemoryValue(); }
+
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) override {
+    return op1 + op2;
+  }
 };
 }
 

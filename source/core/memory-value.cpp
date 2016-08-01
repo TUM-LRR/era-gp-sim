@@ -16,3 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
 #include "core/memory-value.hpp"
+
+MemoryValue::MemoryValue(uint64_t i) {
+    _value = i;
+}
+
+uint64_t MemoryValue::getValue() const {
+    return _value;
+}

@@ -32,7 +32,7 @@
 AbstractNodeFactoryCollection
 AbstractNodeFactoryCollection::CreateFor(const Architecture &architecture) {
   if (architecture.getName() == "risc-v") {
-    return Create<riscv::FactoryTypes>(architecture.getInstructions());
+    return Create<riscv::FactoryTypes>(architecture.getInstructions(), architecture);
   } else {
     return {};
   }

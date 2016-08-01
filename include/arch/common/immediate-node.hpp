@@ -57,7 +57,7 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    * assembled in the instruction node.
    */
   virtual MemoryValue assemble() override {
-    return MemoryValue{};
+    return MemoryValue();
   }
 
   /**

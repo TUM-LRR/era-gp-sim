@@ -19,12 +19,12 @@
 #include <string>
 
 #include "arch/riscv/immediate-node-factory.hpp"
+#include "arch/common/immediate-node.hpp"
 
 namespace riscv {
 
 ImmediateNodeFactory::Node
 ImmediateNodeFactory::createImmediateNode(const MemoryValue &value) const {
-  // return std::make_unique<ImmediateNode>(value);
-  return {};
+   return std::make_unique<ImmediateNode>(value);
 }
 }
