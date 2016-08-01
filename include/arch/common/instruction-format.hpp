@@ -28,10 +28,10 @@
  */
 struct Format {
   /*
-   * @param key Has the information about the bit representation of the opcode
+   * \param key Has the information about the bit representation of the opcode
    * function bits.
-   * @param args Vector of bit representations of the child nodes..
-   * @return Bit representation of the instruction.
+   * \param args Vector of bit representations of the child nodes..
+   * \return Bit representation of the instruction.
    */
   virtual std::vector<bool>
   operator()(const InstructionInformation::InstructionKey& key,

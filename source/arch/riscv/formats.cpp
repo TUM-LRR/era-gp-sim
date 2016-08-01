@@ -17,13 +17,14 @@
 
 #include <vector>
 
-#include "arch/common/instrction-information.hpp"
+#include "arch/common/instruction-information.hpp"
 #include "arch/common/instruction-node.hpp"
 #include "arch/riscv/formats.hpp"
 #include "common/utility.hpp"
 #include "core/memoryvalue.hpp"
 
-namespace {
+namespace riscv {
+
 // methods to transform immediates into their specified formats
 // I should possibly reverse the memory values before the following operations
 void immToI(MemoryValue& vec) {
@@ -56,7 +57,6 @@ void immToJ(MemoryValue& vec) {
   vec[11] = vec[20];
   for (int i = 31; i >= 20; i--) vec[i] = vec[31];
   // clang-format on
-}
 }
 
 std::vector<bool> RFormat::
@@ -227,4 +227,5 @@ operator()(const InstructionInformation::InstructionKey& key,
   Utility::push_back_from_end(res, tmp, 7);
 
   return res;
+}
 }
