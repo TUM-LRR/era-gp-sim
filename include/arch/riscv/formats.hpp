@@ -20,6 +20,7 @@
 
 #include "arch/common/instruction-format.hpp"
 
+namespace riscv {
 /*
  * funct7 | rs2 | rs1 | funct3 | rd | opcode
  */
@@ -49,5 +50,6 @@ struct SBFormat : public Format {};
  * The same as UFormat except the immediate encoding.
  */
 struct UJFormat : public Format {};
+}
 
 #endif /* ERAGPSIM_ARCH_RISCV_FORMATS_HPP */
