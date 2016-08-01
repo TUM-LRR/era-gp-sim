@@ -1,3 +1,4 @@
+
 /*
  * C++ Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
@@ -16,12 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 import QtQuick 2.0
 
-
 Item {
-    Rectangle{
+    Rectangle {
         id: number
         x: 100
         y: 50
@@ -40,7 +39,11 @@ Item {
             color: number.forground_color
             width: number.thicknes
             height: number.width - number.thicknes - 2
-            transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
+            transform: Rotation {
+                origin.x: top.width / 2
+                origin.y: 0
+                angle: -90
+            }
             Text {
                 id: top_text
                 text: "0"
@@ -50,7 +53,11 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
                 visible: false
-                transform: Rotation {origin.x: top.width/2; origin.y: top.height/2; angle: 90}
+                transform: Rotation {
+                    origin.x: top.width / 2
+                    origin.y: top.height / 2
+                    angle: 90
+                }
             }
         }
         SevenSegment_Segment {
@@ -59,7 +66,7 @@ Item {
             y: number.thicknes / 2 + 1
             color: number.forground_color
             width: number.thicknes
-            height: number.height /2 - number.thicknes / 2 - 2
+            height: number.height / 2 - number.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
             Text {
                 id: left_top_text
@@ -78,7 +85,7 @@ Item {
             y: number.thicknes / 2 + 1
             color: number.forground_color
             width: number.thicknes
-            height: number.height /2 - number.thicknes / 2 - 2
+            height: number.height / 2 - number.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
             Text {
                 id: right_top_text
@@ -98,7 +105,11 @@ Item {
             color: number.forground_color
             width: number.thicknes
             height: number.width - number.thicknes - 2
-            transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
+            transform: Rotation {
+                origin.x: top.width / 2
+                origin.y: 0
+                angle: -90
+            }
             Text {
                 id: middle_text
                 text: "6"
@@ -108,7 +119,11 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
                 visible: false
-                transform: Rotation {origin.x: middle.width/2; origin.y: middle.height/2; angle: 90}
+                transform: Rotation {
+                    origin.x: middle.width / 2
+                    origin.y: middle.height / 2
+                    angle: 90
+                }
             }
         }
         SevenSegment_Segment {
@@ -117,7 +132,7 @@ Item {
             y: number.height / 2 + 1
             color: number.forground_color
             width: number.thicknes
-            height: number.height /2 - number.thicknes / 2 - 2
+            height: number.height / 2 - number.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
             Text {
                 id: left_bottom_text
@@ -136,7 +151,7 @@ Item {
             y: number.height / 2 + 1
             color: number.forground_color
             width: number.thicknes
-            height: number.height /2 - number.thicknes / 2 - 2
+            height: number.height / 2 - number.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
             Text {
                 id: right_bottom_text
@@ -152,11 +167,15 @@ Item {
         SevenSegment_Segment {
             id: bottom
             x: 1
-            y: number.height - number.thicknes/2
+            y: number.height - number.thicknes / 2
             color: number.forground_color
             width: number.thicknes
             height: number.width - number.thicknes - 2
-            transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
+            transform: Rotation {
+                origin.x: top.width / 2
+                origin.y: 0
+                angle: -90
+            }
             Text {
                 id: bottom_text
                 text: "3"
@@ -166,41 +185,43 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
                 visible: false
-                transform: Rotation {origin.x: bottom.width/2; origin.y: bottom.height/2; angle: 90}
+                transform: Rotation {
+                    origin.x: bottom.width / 2
+                    origin.y: bottom.height / 2
+                    angle: 90
+                }
             }
         }
-
 
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
             onHoveredChanged: {
-                if(containsMouse) {
+                if (containsMouse) {
                     number.setTextVisibility(true)
-                }else {
+                } else {
                     number.setTextVisibility(false)
                 }
             }
         }
 
-
-        function setTextVisibility (visible) {
-            if(visible) {
-                top_text.visible=true
-                middle_text.visible=true
-                bottom_text.visible=true
-                left_top_text.visible=true
-                right_top_text.visible=true
-                left_bottom_text.visible=true
-                right_bottom_text.visible=true
-            }else {
-                top_text.visible=false
-                middle_text.visible=false
-                bottom_text.visible=false
-                left_top_text.visible=false
-                right_top_text.visible=false
-                left_bottom_text.visible=false
-                right_bottom_text.visible=false
+        function setTextVisibility(visible) {
+            if (visible) {
+                top_text.visible = true
+                middle_text.visible = true
+                bottom_text.visible = true
+                left_top_text.visible = true
+                right_top_text.visible = true
+                left_bottom_text.visible = true
+                right_bottom_text.visible = true
+            } else {
+                top_text.visible = false
+                middle_text.visible = false
+                bottom_text.visible = false
+                left_top_text.visible = false
+                right_top_text.visible = false
+                left_bottom_text.visible = false
+                right_bottom_text.visible = false
             }
         }
     }
