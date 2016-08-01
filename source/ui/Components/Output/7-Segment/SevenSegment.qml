@@ -30,7 +30,8 @@ Item {
         property int thicknes: 20
         property alias background_color: number.color
         property color forground_color: "yellow"
-        background_color: "black"
+        property color text_color: "gray"
+        background_color: "gray"
 
         SevenSegment_Segment {
             id: top
@@ -40,6 +41,17 @@ Item {
             width: number.thicknes
             height: number.width - number.thicknes - 2
             transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
+            Text {
+                id: top_text
+                text: "0"
+                color: text_color
+                font.pixelSize: number.thicknes
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                anchors.fill: parent
+                visible: false
+                transform: Rotation {origin.x: top.width/2; origin.y: top.height/2; angle: 90}
+            }
         }
         SevenSegment_Segment {
             id: left_top
@@ -49,6 +61,16 @@ Item {
             width: number.thicknes
             height: number.height /2 - number.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
+            Text {
+                id: left_top_text
+                text: "5"
+                color: text_color
+                font.pixelSize: number.thicknes
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                anchors.fill: parent
+                visible: false
+            }
         }
         SevenSegment_Segment {
             id: right_top
@@ -58,6 +80,16 @@ Item {
             width: number.thicknes
             height: number.height /2 - number.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
+            Text {
+                id: right_top_text
+                text: "1"
+                color: text_color
+                font.pixelSize: number.thicknes
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                anchors.fill: parent
+                visible: false
+            }
         }
         SevenSegment_Segment {
             id: middle
@@ -67,6 +99,17 @@ Item {
             width: number.thicknes
             height: number.width - number.thicknes - 2
             transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
+            Text {
+                id: middle_text
+                text: "6"
+                color: text_color
+                font.pixelSize: number.thicknes
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                anchors.fill: parent
+                visible: false
+                transform: Rotation {origin.x: middle.width/2; origin.y: middle.height/2; angle: 90}
+            }
         }
         SevenSegment_Segment {
             id: left_bottom
@@ -76,6 +119,16 @@ Item {
             width: number.thicknes
             height: number.height /2 - number.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
+            Text {
+                id: left_bottom_text
+                text: "4"
+                color: text_color
+                font.pixelSize: number.thicknes
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                anchors.fill: parent
+                visible: false
+            }
         }
         SevenSegment_Segment {
             id: right_bottom
@@ -85,6 +138,16 @@ Item {
             width: number.thicknes
             height: number.height /2 - number.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
+            Text {
+                id: right_bottom_text
+                text: "2"
+                color: text_color
+                font.pixelSize: number.thicknes
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                anchors.fill: parent
+                visible: false
+            }
         }
         SevenSegment_Segment {
             id: bottom
@@ -94,10 +157,51 @@ Item {
             width: number.thicknes
             height: number.width - number.thicknes - 2
             transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
+            Text {
+                id: bottom_text
+                text: "3"
+                color: text_color
+                font.pixelSize: number.thicknes
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                anchors.fill: parent
+                visible: false
+                transform: Rotation {origin.x: bottom.width/2; origin.y: bottom.height/2; angle: 90}
+            }
         }
 
+
         MouseArea {
+            anchors.fill: parent
             hoverEnabled: true
+            onHoveredChanged: {
+                if(containsMouse) {
+                    number.setTextVisibility(true)
+                }else {
+                    number.setTextVisibility(false)
+                }
+            }
+        }
+
+
+        function setTextVisibility (visible) {
+            if(visible) {
+                top_text.visible=true
+                middle_text.visible=true
+                bottom_text.visible=true
+                left_top_text.visible=true
+                right_top_text.visible=true
+                left_bottom_text.visible=true
+                right_bottom_text.visible=true
+            }else {
+                top_text.visible=false
+                middle_text.visible=false
+                bottom_text.visible=false
+                left_top_text.visible=false
+                right_top_text.visible=false
+                left_bottom_text.visible=false
+                right_bottom_text.visible=false
+            }
         }
     }
 }
