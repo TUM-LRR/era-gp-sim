@@ -20,17 +20,23 @@
 import QtQuick 2.0
 
 Item {
+Rectangle {
+    id: digit
+    x: 100
+    y: 50
+    width: 100
+    height: 200
+
+    property int thicknes: 20
+    property color background_color: "gray"
+    property color forground_color: "yellow"
+    property color text_color: "gray"
+
     Rectangle {
-        id: digit
-        x: 100
-        y: 50
-        width: 100
-        height: 200
-        property int thicknes: 20
-        property alias background_color: digit.color
-        property color forground_color: "yellow"
-        property color text_color: "gray"
-        background_color: "gray"
+        id: canvas
+        width: parent.width
+        height: parent.height - 20
+        color: digit.background_color
 
         SevenSegment_Segment {
             id: top
@@ -38,7 +44,7 @@ Item {
             y: digit.thicknes / 2
             color: digit.forground_color
             width: digit.thicknes
-            height: digit.width - digit.thicknes - 2
+            height: canvas.width - digit.thicknes - 2
             transform: Rotation {
                 origin.x: top.width / 2
                 origin.y: 0
@@ -66,7 +72,7 @@ Item {
             y: digit.thicknes / 2 + 1
             color: digit.forground_color
             width: digit.thicknes
-            height: digit.height / 2 - digit.thicknes / 2 - 2
+            height: canvas.height / 2 - digit.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
             Text {
                 id: left_top_text
@@ -81,11 +87,11 @@ Item {
         }
         SevenSegment_Segment {
             id: right_top
-            x: digit.width - digit.thicknes
+            x: canvas.width - digit.thicknes
             y: digit.thicknes / 2 + 1
             color: digit.forground_color
             width: digit.thicknes
-            height: digit.height / 2 - digit.thicknes / 2 - 2
+            height: canvas.height / 2 - digit.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
             Text {
                 id: right_top_text
@@ -101,10 +107,10 @@ Item {
         SevenSegment_Segment {
             id: middle
             x: 1
-            y: digit.height / 2
+            y: canvas.height / 2
             color: digit.forground_color
             width: digit.thicknes
-            height: digit.width - digit.thicknes - 2
+            height: canvas.width - digit.thicknes - 2
             transform: Rotation {
                 origin.x: top.width / 2
                 origin.y: 0
@@ -129,10 +135,10 @@ Item {
         SevenSegment_Segment {
             id: left_bottom
             x: 0
-            y: digit.height / 2 + 1
+            y: canvas.height / 2 + 1
             color: digit.forground_color
             width: digit.thicknes
-            height: digit.height / 2 - digit.thicknes / 2 - 2
+            height: canvas.height / 2 - digit.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
             Text {
                 id: left_bottom_text
@@ -147,11 +153,11 @@ Item {
         }
         SevenSegment_Segment {
             id: right_bottom
-            x: digit.width - digit.thicknes
-            y: digit.height / 2 + 1
+            x: canvas.width - digit.thicknes
+            y: canvas.height / 2 + 1
             color: digit.forground_color
             width: digit.thicknes
-            height: digit.height / 2 - digit.thicknes / 2 - 2
+            height: canvas.height / 2 - digit.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
             Text {
                 id: right_bottom_text
@@ -167,10 +173,10 @@ Item {
         SevenSegment_Segment {
             id: bottom
             x: 1
-            y: digit.height - digit.thicknes / 2
+            y: canvas.height - digit.thicknes / 2
             color: digit.forground_color
             width: digit.thicknes
-            height: digit.width - digit.thicknes - 2
+            height: canvas.width - digit.thicknes - 2
             transform: Rotation {
                 origin.x: top.width / 2
                 origin.y: 0
@@ -193,6 +199,18 @@ Item {
             }
         }
 
+        Text {
+            id: binRepresentation
+            text: "01001110"
+            anchors.top: canvas.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            font.pointSize: 50
+            horizontalAlignment: Text.AlignHCenter
+            fontSizeMode: Text.VerticalFit
+        }
+
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
@@ -202,14 +220,6 @@ Item {
                 } else {
                     digit.setTextVisibility(false)
                 }
-            }
-        }
-
-        function setTextVisibility(visible) {
-            if (visible) {
-                make_text_visible.start()
-            } else {
-                make_text_invisible.start()
             }
         }
 
@@ -230,4 +240,13 @@ Item {
             duration: 100
         }
     }
+
+    function setTextVisibility(visible) {
+        if (visible) {
+            make_text_visible.start()
+        } else {
+            make_text_invisible.start()
+        }
+    }
+}
 }
