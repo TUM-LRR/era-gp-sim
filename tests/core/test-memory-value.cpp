@@ -3,7 +3,7 @@
 
 #include <random>
 
-#include "gtest\gtest_prod.h"
+#include "gtest\gtest.h"
 #include "memory-value.hpp"
 
 namespace {
