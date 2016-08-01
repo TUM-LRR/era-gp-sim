@@ -21,13 +21,13 @@ import QtQuick 2.0
 
 Item {
     Rectangle {
-        id: number
+        id: digit
         x: 100
         y: 50
         width: 100
         height: 200
         property int thicknes: 20
-        property alias background_color: number.color
+        property alias background_color: digit.color
         property color forground_color: "yellow"
         property color text_color: "gray"
         background_color: "gray"
@@ -35,10 +35,10 @@ Item {
         SevenSegment_Segment {
             id: top
             x: 1
-            y: number.thicknes / 2
-            color: number.forground_color
-            width: number.thicknes
-            height: number.width - number.thicknes - 2
+            y: digit.thicknes / 2
+            color: digit.forground_color
+            width: digit.thicknes
+            height: digit.width - digit.thicknes - 2
             transform: Rotation {
                 origin.x: top.width / 2
                 origin.y: 0
@@ -47,8 +47,8 @@ Item {
             Text {
                 id: top_text
                 text: "0"
-                color: number.text_color
-                font.pixelSize: number.thicknes
+                color: digit.text_color
+                font.pixelSize: digit.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
@@ -63,16 +63,16 @@ Item {
         SevenSegment_Segment {
             id: left_top
             x: 0
-            y: number.thicknes / 2 + 1
-            color: number.forground_color
-            width: number.thicknes
-            height: number.height / 2 - number.thicknes / 2 - 2
+            y: digit.thicknes / 2 + 1
+            color: digit.forground_color
+            width: digit.thicknes
+            height: digit.height / 2 - digit.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
             Text {
                 id: left_top_text
                 text: "5"
-                color: number.text_color
-                font.pixelSize: number.thicknes
+                color: digit.text_color
+                font.pixelSize: digit.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
@@ -81,17 +81,17 @@ Item {
         }
         SevenSegment_Segment {
             id: right_top
-            x: number.width - number.thicknes
-            y: number.thicknes / 2 + 1
-            color: number.forground_color
-            width: number.thicknes
-            height: number.height / 2 - number.thicknes / 2 - 2
+            x: digit.width - digit.thicknes
+            y: digit.thicknes / 2 + 1
+            color: digit.forground_color
+            width: digit.thicknes
+            height: digit.height / 2 - digit.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
             Text {
                 id: right_top_text
                 text: "1"
-                color: number.text_color
-                font.pixelSize: number.thicknes
+                color: digit.text_color
+                font.pixelSize: digit.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
@@ -101,10 +101,10 @@ Item {
         SevenSegment_Segment {
             id: middle
             x: 1
-            y: number.height / 2
-            color: number.forground_color
-            width: number.thicknes
-            height: number.width - number.thicknes - 2
+            y: digit.height / 2
+            color: digit.forground_color
+            width: digit.thicknes
+            height: digit.width - digit.thicknes - 2
             transform: Rotation {
                 origin.x: top.width / 2
                 origin.y: 0
@@ -113,8 +113,8 @@ Item {
             Text {
                 id: middle_text
                 text: "6"
-                color: number.text_color
-                font.pixelSize: number.thicknes
+                color: digit.text_color
+                font.pixelSize: digit.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
@@ -129,16 +129,16 @@ Item {
         SevenSegment_Segment {
             id: left_bottom
             x: 0
-            y: number.height / 2 + 1
-            color: number.forground_color
-            width: number.thicknes
-            height: number.height / 2 - number.thicknes / 2 - 2
+            y: digit.height / 2 + 1
+            color: digit.forground_color
+            width: digit.thicknes
+            height: digit.height / 2 - digit.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
             Text {
                 id: left_bottom_text
                 text: "4"
-                color: number.text_color
-                font.pixelSize: number.thicknes
+                color: digit.text_color
+                font.pixelSize: digit.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
@@ -147,17 +147,17 @@ Item {
         }
         SevenSegment_Segment {
             id: right_bottom
-            x: number.width - number.thicknes
-            y: number.height / 2 + 1
-            color: number.forground_color
-            width: number.thicknes
-            height: number.height / 2 - number.thicknes / 2 - 2
+            x: digit.width - digit.thicknes
+            y: digit.height / 2 + 1
+            color: digit.forground_color
+            width: digit.thicknes
+            height: digit.height / 2 - digit.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
             Text {
                 id: right_bottom_text
                 text: "2"
-                color: number.text_color
-                font.pixelSize: number.thicknes
+                color: digit.text_color
+                font.pixelSize: digit.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
@@ -167,10 +167,10 @@ Item {
         SevenSegment_Segment {
             id: bottom
             x: 1
-            y: number.height - number.thicknes / 2
-            color: number.forground_color
-            width: number.thicknes
-            height: number.width - number.thicknes - 2
+            y: digit.height - digit.thicknes / 2
+            color: digit.forground_color
+            width: digit.thicknes
+            height: digit.width - digit.thicknes - 2
             transform: Rotation {
                 origin.x: top.width / 2
                 origin.y: 0
@@ -179,8 +179,8 @@ Item {
             Text {
                 id: bottom_text
                 text: "3"
-                color: number.text_color
-                font.pixelSize: number.thicknes
+                color: digit.text_color
+                font.pixelSize: digit.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
@@ -198,9 +198,9 @@ Item {
             hoverEnabled: true
             onHoveredChanged: {
                 if (containsMouse) {
-                    number.setTextVisibility(true)
+                    digit.setTextVisibility(true)
                 } else {
-                    number.setTextVisibility(false)
+                    digit.setTextVisibility(false)
                 }
             }
         }
