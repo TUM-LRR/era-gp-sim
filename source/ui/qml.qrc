@@ -31,6 +31,6 @@
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Output/7-Segment/SevenSegment.qml</file>
-        <file>Components/Output/7-Segment/SevenSegment_part.qml</file>
+        <file>Components/Output/7-Segment/SevenSegment_Segment.qml</file>
     </qresource>
 </RCC>

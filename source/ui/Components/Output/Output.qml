@@ -51,7 +51,7 @@ Item {
     /*Drop-Down button*/
     ComboBox{
         width: 150
-        model: ["Choose Output","Red Rectangle", "Blue Rectangle", "Light Strip"]
+        model: ["Choose Output","Red Rectangle", "7-Segment", "Light Strip"]
 
         onCurrentIndexChanged:{
             /*If another line is choosen, an other Output will be set active, al others stay inactive*/
