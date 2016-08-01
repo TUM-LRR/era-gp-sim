@@ -205,7 +205,7 @@ TEST(TestMemoryValue, death) {
   constexpr std::size_t b = 8; // byteAmount
   constexpr std::size_t s = 32;// byteSize
   constexpr std::size_t c = 1; // deathAmount
-  std::mt19937 rand{20131012u};// I need new numbers!
+  std::mt19937 rand{20131012u};// Very important number, don't change
   std::uniform_int_distribution<std::size_t> dist{};
   for (std::size_t i = 1; i < b; ++i) {
     for (std::size_t j = 1; j < s; ++j) {
