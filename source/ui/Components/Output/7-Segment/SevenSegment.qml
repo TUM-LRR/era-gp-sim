@@ -47,12 +47,12 @@ Item {
             Text {
                 id: top_text
                 text: "0"
-                color: text_color
+                color: number.text_color
                 font.pixelSize: number.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
-                visible: false
+                opacity: 0
                 transform: Rotation {
                     origin.x: top.width / 2
                     origin.y: top.height / 2
@@ -71,12 +71,12 @@ Item {
             Text {
                 id: left_top_text
                 text: "5"
-                color: text_color
+                color: number.text_color
                 font.pixelSize: number.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
-                visible: false
+                opacity: 0
             }
         }
         SevenSegment_Segment {
@@ -90,12 +90,12 @@ Item {
             Text {
                 id: right_top_text
                 text: "1"
-                color: text_color
+                color: number.text_color
                 font.pixelSize: number.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
-                visible: false
+                opacity: 0
             }
         }
         SevenSegment_Segment {
@@ -113,12 +113,12 @@ Item {
             Text {
                 id: middle_text
                 text: "6"
-                color: text_color
+                color: number.text_color
                 font.pixelSize: number.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
-                visible: false
+                opacity: 0
                 transform: Rotation {
                     origin.x: middle.width / 2
                     origin.y: middle.height / 2
@@ -137,12 +137,12 @@ Item {
             Text {
                 id: left_bottom_text
                 text: "4"
-                color: text_color
+                color: number.text_color
                 font.pixelSize: number.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
-                visible: false
+                opacity: 0
             }
         }
         SevenSegment_Segment {
@@ -156,12 +156,12 @@ Item {
             Text {
                 id: right_bottom_text
                 text: "2"
-                color: text_color
+                color: number.text_color
                 font.pixelSize: number.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
-                visible: false
+                opacity: 0
             }
         }
         SevenSegment_Segment {
@@ -179,12 +179,12 @@ Item {
             Text {
                 id: bottom_text
                 text: "3"
-                color: text_color
+                color: number.text_color
                 font.pixelSize: number.thicknes
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
-                visible: false
+                opacity: 0
                 transform: Rotation {
                     origin.x: bottom.width / 2
                     origin.y: bottom.height / 2
@@ -207,22 +207,27 @@ Item {
 
         function setTextVisibility(visible) {
             if (visible) {
-                top_text.visible = true
-                middle_text.visible = true
-                bottom_text.visible = true
-                left_top_text.visible = true
-                right_top_text.visible = true
-                left_bottom_text.visible = true
-                right_bottom_text.visible = true
+                make_text_visible.start()
             } else {
-                top_text.visible = false
-                middle_text.visible = false
-                bottom_text.visible = false
-                left_top_text.visible = false
-                right_top_text.visible = false
-                left_bottom_text.visible = false
-                right_bottom_text.visible = false
+                make_text_invisible.start()
             }
+        }
+
+        NumberAnimation {
+            id: make_text_visible
+            targets: [top_text, middle_text, bottom_text, left_top_text, right_top_text, left_bottom_text, right_bottom_text]
+            properties: "opacity"
+            from: 0
+            to: 1
+            duration: 100
+        }
+        NumberAnimation {
+            id: make_text_invisible
+            targets: [top_text, middle_text, bottom_text, left_top_text, right_top_text, left_bottom_text, right_bottom_text]
+            properties: "opacity"
+            from: 1
+            to: 0
+            duration: 100
         }
     }
 }
