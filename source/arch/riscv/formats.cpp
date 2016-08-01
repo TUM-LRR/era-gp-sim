@@ -18,10 +18,9 @@
 #include <vector>
 
 #include "arch/common/instruction-information.hpp"
-#include "arch/common/instruction-node.hpp"
 #include "arch/riscv/formats.hpp"
 #include "common/utility.hpp"
-#include "core/memoryvalue.hpp"
+#include "core/memory-value.hpp"
 
 namespace riscv {
 
