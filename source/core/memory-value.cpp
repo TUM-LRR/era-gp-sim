@@ -73,34 +73,41 @@ constexpr uint8_t testOr[8]{
 constexpr uint8_t testAnd[8]{
     0xFE, 0xFD, 0xFB, 0xF7, 0xEF, 0xDF, 0xBF, 0x7F,
 };
+std::size_t constexpr byteAddress(const std::size_t address,
+                                  const std::size_t byteSize) {
+  return (address / byteSize) * SizeOfByte(byteSize) + (address % byteSize) / 8;
+}
+std::size_t constexpr offset(const std::size_t address,
+                             const std::size_t byteSize) {
+  return (address % byteSize) % 8;
+}
 }
 
 bool MemoryValue::get(const std::size_t address) const {
   assert(address < getSize());
-  return ((_data[(address / _byteSize) * SizeOfByte(_byteSize) +
-                 (address % _byteSize) / 8]) &
-          testOr[(address % _byteSize) % 8]) != 0;
+  return ((_data[byteAddress(address, _byteSize)]) &
+          testOr[offset(address, _byteSize)]) != 0;
 }
 
 void MemoryValue::put(const std::size_t address, const bool value) {
   assert(address < getSize());
-  std::size_t byteAddress{(address / _byteSize) * SizeOfByte(_byteSize) +
-                          (address % _byteSize) / 8};
-  std::size_t offset{(address % _byteSize) % 8};
   if (value)
-    _data[byteAddress] |= testOr[offset];
+    _data[byteAddress(address, _byteSize)] |=
+        testOr[offset(address, _byteSize)];
   else
-    _data[byteAddress] &= testAnd[offset];
+    _data[byteAddress(address, _byteSize)] &=
+        testAnd[offset(address, _byteSize)];
 }
 
 bool MemoryValue::set(const std::size_t address, const bool value) {
   assert(address < getSize());
-  std::size_t byteAddress{(address / _byteSize) * SizeOfByte(_byteSize) +
-                          (address % _byteSize) / 8};
-  std::size_t offset{(address % _byteSize) % 8};
-  return (((_data[byteAddress]) & testOr[offset]) != 0) == value
-             ? value
-             : (!value & (true | (_data[byteAddress] ^= testOr[offset])));
+  if ((((_data[byteAddress(address, _byteSize)]) &
+        testOr[offset(address, _byteSize)]) != 0) == value)
+    return value;
+  else
+    _data[byteAddress(address, _byteSize)] ^=
+        testOr[offset(address, _byteSize)];
+  return !value;
 }
 
 std::size_t MemoryValue::getByteSize() const {
