@@ -5,54 +5,29 @@ namespace riscv {
 // TODO
 // Check if the immediate values are representable by 20 bits
 
-bool validateIntegerInstruction(InstructionNode &node, bool immediate) {
-  // this looks bad, change it!
-  // Also use enums instead of booleans
-  return immediate
-             ? node.requireChildren(
-                   AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) &&
-                   node.requireChildren(
-                       AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)
-             : node.requireChildren(
-                   AbstractSyntaxTreeNode::Type::REGISTER, 0, 3);
+bool IntegerInstructionNode::validate() const {
+  if (_immediate) {
+    // If this is an immediate integer instruction, two registers and one
+    // immmediate node is required (in that order)
+    return requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) &&
+           requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1);
+  } else {
+    // If this is not an immediate integer instruction, three registers are
+    // required
+    return requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3);
+  }
 }
 
-// validate functions
-bool AddInstructionNode::validate() {
-  return validateIntegerInstruction(*this, _immediate);
-}
-
-bool SubInstructionNode::validate() {
-  return validateIntegerInstruction(*this, _immediate);
-}
-
-// getValue functions
-MemoryValue AddInstructionNode::getValue(DummyMemoryAccess &memory_access) {
-  // Get the destination register
+MemoryValue
+IntegerInstructionNode::getValue(DummyMemoryAccess& memoryAccess) const {
+  // Get dest register
   std::string dest = _children.at(0)->getIdentifier();
 
-  // Evaluate the operands
-  MemoryValue op1 = _children.at(1)->getValue(memory_access);
-  MemoryValue op2 = _children.at(2)->getValue(memory_access);
+  // Eval the operands
+  MemoryValue op1 = _children.at(1)->getValue(memoryAccess);
+  MemoryValue op2 = _children.at(2)->getValue(memoryAccess);
 
-  // TODO Replace this pseudo code by actual implementation
-  // MemoryValue sum = op1 + op2;
-  // memory_access.storeRegister(dest, sum);
-
-  return MemoryValue{};
-}
-
-MemoryValue SubInstructionNode::getValue(DummyMemoryAccess &memory_access) {
-  // Get the destination register
-  std::string dest = _children.at(0)->getIdentifier();
-
-  // Evaluate the operands
-  MemoryValue op1 = _children.at(1)->getValue(memory_access);
-  MemoryValue op2 = _children.at(2)->getValue(memory_access);
-
-  // TODO Replace this pseudo code by actual implementation
-  // MemoryValue sub = op1 - op2;
-  // memory_access.storeRegister(dest, sub);
+  // TODO To the magic computation
 
   return MemoryValue{};
 }

@@ -25,77 +25,37 @@
 #include "arch/riscv/instruction-node.hpp"
 
 /*
- * TODO Instructions: slt sltu and or xor sll srl sra
+ * TODO Instructions: add sub lt sltu and or xor sll srl sra
  *                    + their respective immediate equivalents
  */
 
 namespace riscv {
 
-/**
- * Validates an integer instruction node. Every RISC V integer instruction is
- * either register-register or a register-immediate. This is a util method, that
- * checks, if the given node fulfills these requirements. See RISC V
- * specification for more information.
- *
- * \param node The node to check.
- * \param immediate Whether the node is the register-immediate representation.
- * \return true if the node matches the requirements.
- */
-bool validateIntegerInstruction(InstructionNode &node, bool immediate);
+class IntegerInstructionNode : public InstructionNode {
+  /* Different types of integer instructions within RISC V.
+     See RISC V specification for reference. */
+  enum struct Type { ADD, SLT, SLTU, AND, OR, XOR, SLI, SRL, SRA };
 
-/**
- * This node represents the add/addi instruction.
- *
- * See RISC V specification for details about the instruction.
- */
-class AddInstructionNode : public InstructionNode {
  public:
-  AddInstructionNode(bool immediate)
-  : InstructionNode(), _immediate(immediate) {
+  IntegerInstruction(InstructionInformation& instructionInformation,
+                     Type type,
+                     bool immediate)
+  : InstructionNode(instructionInformation)
+  , _type(type)
+  , _immediate(immediate) {
   }
 
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
+  virtual MemoryValue getValue(DummyMemoryAccess& memoryAccess) const;
 
-  virtual bool validate();
+  virtual bool validate() const;
 
-  virtual MemoryValue assemble() {
+  virtual MemoryValue assemble() const {
     return MemoryValue{};// TODO
   }
 
-  virtual std::string getIdentifier() {
-    return _immediate ? "ADDI" : "ADD";
-  }
-
  private:
-  bool _immediate;
-};
-
-/**
- * This node represents the sub/subi instruction.
- *
- * See RISC V specification for details about the instruction.
- */
-class SubInstructionNode : public InstructionNode {
- public:
-  SubInstructionNode(bool immediate)
-  : InstructionNode(), _immediate(immediate) {
-  }
-
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
-
-  virtual bool validate();
-
-  virtual MemoryValue assemble() {
-    return MemoryValue{};// TODO
-  }
-
-  virtual std::string getIdentifier() {
-    return _immediate ? "SUBI" : "SUB";
-  }
-
- private:
+  Type _type;
   bool _immediate;
 };
 }
-
 #endif /* ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_ */

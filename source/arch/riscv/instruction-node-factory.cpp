@@ -28,7 +28,7 @@ namespace riscv {
 void InstructionNodeFactory::initializeInstructionMap() {
   // Integer Instructions
   _instructionMap.emplace(
-      "ADD", []() { return std::make_unique<AddInstructionNode>(false); });
+      "ADD", []() { return std::make_unique<IntegerInstructionNode>(false); });
   _instructionMap.emplace(
       "ADDI", []() { return std::make_unique<AddInstructionNode>(true); });
   _instructionMap.emplace(
@@ -37,7 +37,7 @@ void InstructionNodeFactory::initializeInstructionMap() {
       "SUBI", []() { return std::make_unique<SubInstructionNode>(true); });
 
   // Load/Store Instructions
-  _instructionMap.emplace("LW", []() {
+  /*_instructionMap.emplace("LW", []() {
     return std::make_unique<LoadInstructionNode>(LoadType::WORD);
   });
   _instructionMap.emplace("LH", []() {
@@ -60,7 +60,7 @@ void InstructionNodeFactory::initializeInstructionMap() {
   });
   _instructionMap.emplace("SB", []() {
     return std::make_unique<StoreInstructionNode>(StoreType::BYTE);
-  });
+  });*/
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>

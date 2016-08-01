@@ -40,14 +40,15 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
   /**
    * \return The concrete value
    */
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) override {
+  virtual MemoryValue
+  getValue(DummyMemoryAccess& memory_access) const override {
     return _value;
   }
 
   /**
    * \return true, if there are no children.
    */
-  virtual bool validate() override {
+  virtual bool validate() const override {
     // Immediate values can't have any children
     return AbstractSyntaxTreeNode::_children.size() == 0;
   }
@@ -56,7 +57,7 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    * \return An empty MemoryValue, because the instruction has to be
    * assembled in the instruction node.
    */
-  virtual MemoryValue assemble() override {
+  virtual MemoryValue assemble() const override {
     return MemoryValue{};
   }
 
@@ -66,7 +67,7 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    * \return The string "imm"
    */
 
-  virtual std::string getIdentifier() override {
+  virtual const std::string& getIdentifier() const override {
     return "Imm";
   }
 

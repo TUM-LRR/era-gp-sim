@@ -27,62 +27,36 @@
 namespace riscv {
 
 /**
- * \brief The LoadType enum
- *
- * The different types of a load instruction. See RISC V specification
- * for reference.
- */
-enum struct LoadType {
-  WORD,              // LW
-  HALF_WORD,         // LH
-  HALF_WORD_UNSIGNED,// LHU
-  BYTE,              // LB
-  BYTE_UNSIGNED      // LBU
-};
-
-/**
- * \brief The StoreType enum
- *
- * The different types of a store instruction. See RISC V specification
- * for reference.
- */
-enum struct StoreType {
-  WORD,     // SW
-  HALF_WORD,// SH
-  BYTE      // SB
-};
-
-/**
  * \brief The LoadInstructionNode class
  *
  * Represents a load instruction.
  */
 class LoadInstructionNode : public InstructionNode {
  public:
-  LoadInstructionNode(LoadType type) : InstructionNode(), _type(type) {
+  /* The different types of a load instruction. See RISC V specification
+     for reference.*/
+  enum struct Type {
+    WORD,              // LW
+    HALF_WORD,         // LH
+    HALF_WORD_UNSIGNED,// LHU
+    BYTE,              // LB
+    BYTE_UNSIGNED      // LBU
+  };
+
+  LoadInstructionNode(InstructionInformation& instructionInformation, Type type)
+  : InstructionNode(instructionInformation), _type(type) {
   }
 
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
+  virtual MemoryValue getValue(DummyMemoryAccess& memory_access) const;
 
-  virtual bool validate();
+  virtual bool validate() const;
 
-  virtual MemoryValue assemble() {
+  virtual MemoryValue assemble() const {
     return MemoryValue{};// TODO
   }
 
-  virtual std::string getIdentifier() {
-    switch (_type) {
-      case LoadType::WORD: return "LW";
-      case LoadType::HALF_WORD: return "LH";
-      case LoadType::HALF_WORD_UNSIGNED: return "LHU";
-      case LoadType::BYTE: return "LB";
-      case LoadType::BYTE_UNSIGNED: return "LBU";
-      default: return "Illegal load type";
-    }
-  }
-
  private:
-  LoadType _type;
+  Type _type;
 };
 
 /**
@@ -92,28 +66,29 @@ class LoadInstructionNode : public InstructionNode {
  */
 class StoreInstructionNode : public InstructionNode {
  public:
-  StoreInstructionNode(StoreType type) : InstructionNode(), _type(type) {
+  /* The different types of a store instruction. See RISC V specification
+     for reference. */
+  enum struct Type {
+    WORD,     // SW
+    HALF_WORD,// SH
+    BYTE      // SB
+  };
+
+  StoreInstructionNode(InstructionInformation& instructionInformation,
+                       Type type)
+  : InstructionNode(instructionInformation), _type(type) {
   }
 
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
+  virtual MemoryValue getValue(DummyMemoryAccess& memory_access) const;
 
-  virtual bool validate();
+  virtual bool validate() const;
 
-  virtual MemoryValue assemble() {
+  virtual MemoryValue assemble() const {
     return MemoryValue{};// TODO
   }
 
-  virtual std::string getIdentifier() {
-    switch (_type) {
-      case StoreType::WORD: return "SW";
-      case StoreType::HALF_WORD: return "SH";
-      case StoreType::BYTE: return "SB";
-      default: return "Illegal store type";
-    }
-  }
-
  private:
-  StoreType _type;
+  Type _type;
 };
 }
 
