@@ -26,7 +26,7 @@
 #include <iostream>
 #include <vector>
 
-#include "gtest\gtest.h"
+#include "gtest\gtest_prod.h"
 
 class MemoryValue {
  public:
@@ -80,11 +80,28 @@ class MemoryValue {
    */
   MemoryValue(std::size_t byteAmount, std::size_t byteSize);
 
+  /**
+   * \brief Constructs a MemoryValue with the data of other between begin and
+   *        end with a _byteSize of byteSize
+   * \param other the MemoryValue the data to be copied of
+   * \param begin the begin index to be copied
+   * \param end the first index no longer to be copied
+   * \param byteSize The size of a byte in bit
+   */
   MemoryValue(const MemoryValue &other,
               const std::size_t begin,
               const std::size_t end,
               const std::size_t byteSize);
 
+  /**
+  * \brief returns a MemoryValue with the data of this between begin and
+  *        end with a _byteSize of byteSize
+  * \param begin the begin index to be copied
+  * \param end the first index no longer to be copied
+  * \param byteSize The size of a byte in bit
+  * \return a MemoryValue with the data of this between begin and end
+  *         with a _byteSize of byteSize
+  */
   MemoryValue subSet(const std::size_t begin,
                      const std::size_t end,
                      const std::size_t byteSize) const;
