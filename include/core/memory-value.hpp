@@ -23,7 +23,6 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include <functional>
 #include <iostream>
 #include <vector>
 
@@ -37,22 +36,22 @@ class MemoryValue {
   MemoryValue();
   /**
    * \brief Constructs an MemoryValue that acquires the data of other
-   * \param other
+   * \param other The MemoryValue to acquire the data of
    */
   MemoryValue(MemoryValue &&other) = default;
   /**
    * \brief Constructs an MemoryValue that acquires the data of other
-   * \param other
+   * \param other The MemoryValue to acquire the data of
    */
   MemoryValue &operator=(MemoryValue &&other) = default;
   /**
    * \brief Constructs an MemoryValue with a copy of the data of other
-   * \param other
+   * \param other The MemoryValue to copy the data of
    */
   MemoryValue(const MemoryValue &other) = default;
   /**
    * \brief Constructs an MemoryValue with a copy of the data of other
-   * \param other
+   * \param other The MemoryValue to copy the data of
    */
   MemoryValue &operator=(const MemoryValue &other) = default;
   /**
@@ -63,21 +62,21 @@ class MemoryValue {
   /**
    * \brief Constructs a MemoryValue with a copy of other and a
    *        byteSize of byteSize
-   * \param other
-   * \param byteSize
+   * \param other The vector to be copied and held by this
+   * \param byteSize The size of a byte in bit
    */
   MemoryValue(const std::vector<uint8_t> &other, const std::size_t byteSize);
   /**
    * \brief Constructs an MemoryValue with other and a ByteSize of byteSize
-   * \param other
-   * \param byteSize
+   * \param other The vector to acquire the data of
+   * \param byteSize The size of a byte in bit
    */
   MemoryValue(std::vector<uint8_t> &&other, const std::size_t byteSize);
   /**
    * \brief Constructs a empty MemoryValue with byteAmount bytes of size
    *        byteSize
-   * \param byteAmount
-   * \param byteSize
+   * \param byteAmount Amount of Bytes
+   * \param byteSize The size of a byte in bit
    */
   MemoryValue(std::size_t byteAmount, std::size_t byteSize);
 
@@ -92,21 +91,21 @@ class MemoryValue {
 
   /**
    * \brief returns the previous value at address
-   * \param address
+   * \param address The address of the bit
    * \return the value at address
    */
   bool get(const std::size_t address) const;
   /**
    * \brief sets the value at address to value
-   * \param address
-   * \param value
+   * \param address The address of the bit
+   * \param value The Value to be written
    */
   void put(const std::size_t address, const bool value = true);
 
   /**
    * \brief sets the value at address to value and returns the previous value
-   * \param address
-   * \param value
+   * \param address The address of the bit
+   * \param value The Value to be written
    * \return the previous value at address
    */
   bool set(const std::size_t address, const bool value = true);
@@ -143,6 +142,7 @@ class MemoryValue {
 
   FRIEND_TEST(TestMemoryValue, charAt);
   FRIEND_TEST(TestMemoryValue, death);
+
  private:
   std::size_t _byteSize;
   std::vector<std::uint8_t> _data;
