@@ -22,6 +22,7 @@
 
 import QtQuick 2.0
 import QtQuick.Controls 1.4
+import "7-Segment"
 
 Item {
 
@@ -33,7 +34,7 @@ Item {
         enabled: false
     }
 
-    BlueRectangle{
+    SevenSegment {
         id: blueBackground
         anchors.fill: parent
         visible: false

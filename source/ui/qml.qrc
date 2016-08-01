@@ -30,5 +30,7 @@
         <file>Components/Menubar/ToolbarMainWindow.qml</file>
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Output/LightStrip.qml</file>
+        <file>Components/Output/7-Segment/SevenSegment.qml</file>
+        <file>Components/Output/7-Segment/SevenSegment_part.qml</file>
     </qresource>
 </RCC>
