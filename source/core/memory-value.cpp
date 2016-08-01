@@ -1,20 +1,20 @@
 /* C++ Assembler Interpreter
-* Copyright (C) 2016 Chair of Computer Architecture
-* at Technical University of Munich
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2016 Chair of Computer Architecture
+ * at Technical University of Munich
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "core/memory-value.hpp"
 namespace {
@@ -31,7 +31,7 @@ MemoryValue::MemoryValue(const std::vector<uint8_t> &other,
 }
 MemoryValue::MemoryValue(std::vector<uint8_t> &&other,
                          const std::size_t byteSize)
-: _byteSize{byteSize}, _data{other} {
+: _byteSize{byteSize}, _data{std::move(other)} {
 }
 MemoryValue::MemoryValue(size_t byteAmount, std::size_t byteSize)
 : _byteSize{byteSize}
@@ -84,12 +84,13 @@ bool MemoryValue::get(const std::size_t address) const {
 
 void MemoryValue::put(const std::size_t address, const bool value) {
   assert(address < getSize());
+  std::size_t byteAddress{(address / _byteSize) * SizeOfByte(_byteSize) +
+                          (address % _byteSize) / 8};
+  std::size_t offset{(address % _byteSize) % 8};
   if (value)
-    _data[(address / _byteSize) * SizeOfByte(_byteSize) +
-          (address % _byteSize) / 8] |= testOr[(address % _byteSize) % 8];
+    _data[byteAddress] |= testOr[offset];
   else
-    _data[(address / _byteSize) * SizeOfByte(_byteSize) +
-          (address % _byteSize) / 8] &= testAnd[(address % _byteSize) % 8];
+    _data[byteAddress] &= testAnd[offset];
 }
 
 bool MemoryValue::set(const std::size_t address, const bool value) {
