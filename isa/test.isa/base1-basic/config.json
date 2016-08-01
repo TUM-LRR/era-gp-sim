@@ -1,0 +1,6 @@
+{
+  "name": "base1-basic",
+  "endianness": "mixed",
+  "word-size": 123,
+  "alignment-behavior": "relaxed"
+}
