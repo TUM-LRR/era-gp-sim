@@ -25,41 +25,42 @@
 #include <memory>
 
 QProject::QProject(QObject *parent) : QObject(parent) {
-	QTextCharFormat format;
-	format.setForeground(Qt::darkBlue);
-	format.setFontWeight(QFont::Bold);
-	_keywords.push_back(
-			KeywordRule{QRegularExpression("\\badd\\b",
-																		 QRegularExpression::CaseInsensitiveOption),
-									format});
-	_keywords.push_back(
-			KeywordRule{QRegularExpression("\\baddi\\b",
-																		 QRegularExpression::CaseInsensitiveOption),
-									format});
-	_keywords.push_back(
-			KeywordRule{QRegularExpression("\\bmul\\b",
-																		 QRegularExpression::CaseInsensitiveOption),
-									format});
-	_keywords.push_back(
-			KeywordRule{QRegularExpression("\\bdiv\\b",
-																		 QRegularExpression::CaseInsensitiveOption),
-									format});
-	_keywords.push_back(
-			KeywordRule{QRegularExpression("\\band\\b",
-																		 QRegularExpression::CaseInsensitiveOption),
-									format});
-	_keywords.push_back(KeywordRule{
-			QRegularExpression("\\bor\\b", QRegularExpression::CaseInsensitiveOption),
-			format});
+  QTextCharFormat format;
+  format.setForeground(Qt::darkBlue);
+  format.setFontWeight(QFont::Bold);
+  _keywords.push_back(
+      KeywordRule{QRegularExpression("\\badd\\b",
+                                     QRegularExpression::CaseInsensitiveOption),
+                  format});
+  _keywords.push_back(
+      KeywordRule{QRegularExpression("\\baddi\\b",
+                                     QRegularExpression::CaseInsensitiveOption),
+                  format});
+  _keywords.push_back(
+      KeywordRule{QRegularExpression("\\bmul\\b",
+                                     QRegularExpression::CaseInsensitiveOption),
+                  format});
+  _keywords.push_back(
+      KeywordRule{QRegularExpression("\\bdiv\\b",
+                                     QRegularExpression::CaseInsensitiveOption),
+                  format});
+  _keywords.push_back(
+      KeywordRule{QRegularExpression("\\band\\b",
+                                     QRegularExpression::CaseInsensitiveOption),
+                  format});
+  _keywords.push_back(KeywordRule{
+      QRegularExpression("\\bor\\b", QRegularExpression::CaseInsensitiveOption),
+      format});
 }
 
 void QProject::createHighlighter(QQuickTextDocument *qDocument) {
-	// set tab width to 4 spaces
-	QTextOption textOptions = qDocument->textDocument()->defaultTextOption();
-	QFontMetrics fontMetrics(qDocument->textDocument()->defaultFont());
-	textOptions.setTabStop(4 * fontMetrics.width(' '));
-	qDocument->textDocument()->setDefaultTextOption(textOptions);
+  // set tab width to 4 spaces
+  QTextOption textOptions = qDocument->textDocument()->defaultTextOption();
+  QFontMetrics fontMetrics(qDocument->textDocument()->defaultFont());
+  textOptions.setTabStop(4 * fontMetrics.width(' '));
+  qDocument->textDocument()->setDefaultTextOption(textOptions);
 
-    _highlighter = (std::make_unique<SyntaxHighlighter>(std::move(_keywords), qDocument->textDocument()));
-	std::cout << "Created new SyntaxHighlighter." << std::endl;
+  _highlighter = (std::make_unique<SyntaxHighlighter>(
+      std::move(_keywords), qDocument->textDocument()));
+  std::cout << "Created new SyntaxHighlighter." << std::endl;
 }

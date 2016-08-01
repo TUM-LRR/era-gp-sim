@@ -32,16 +32,43 @@ class RegisterItem {
                         std::string parentItemIdentifier,
                         std::vector<std::string> childItemIdentifiers);
 
+  /**
+   * @brief getParentItemIdentifier Returns the identifier of the register's
+   * parent register.
+   * @return The parent register's identifier.
+   */
   std::string getParentItemIdentifier();
+
+  /**
+   * @brief getChildItemIdentifier Returns the identifier of the register's
+   * child register at a given row index.
+   * @param row The row index of the requested child register.
+   * @return The child register's identifier.
+   */
   std::string getChildItemIdentifier(int row);
+
+  /**
+   * @brief childCount Returns the number of children of this register.
+   */
   int childCount() const;
+
+  /**
+   * @brief getData Returns this item's associated QML-compatable data object.
+   */
   RegisterData getData() const;
+
+  /**
+   * @brief getRowOfChild Returns the row index for a child register specified
+   * by the given identifier.
+   * @param childIdentifier The child's identifier whose row is requested.
+   * @return The row index of the child.
+   */
   int getRowOfChild(std::string childIdentifier);
 
  private:
   /// Register identifier pointing to the register's parent.
   std::string _parentItemIdentifier;
-  /// Register identifiers each pointing to the register's children.
+  /// Register identifiers each pointing to one of the register's children.
   std::vector<std::string> _childItemIdentifiers;
   /// Holding the register's QML-compatable contents.
   RegisterData _itemData;

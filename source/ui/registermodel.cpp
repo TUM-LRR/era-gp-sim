@@ -86,18 +86,9 @@ QVariant RegisterModel::data(const QModelIndex &index, int role) const {
 }
 
 
-Qt::ItemFlags RegisterModel::flags(const QModelIndex &index) const {
-  if (!index.isValid()) {
-    return 0;
-  }
-  // Tell any views that this model is read-only.
-  return QAbstractItemModel::flags(index);
-}
-
-
 QModelIndex
 RegisterModel::index(int row, int column, const QModelIndex &parent) const {
-  // Check if a valid index is being referred to. If not, return an invalid
+  // Check if a valid item is being referred to. If not, return an invalid
   // index.
   if (!hasIndex(row, column, parent)) {
     return QModelIndex();
@@ -129,7 +120,7 @@ QModelIndex RegisterModel::parent(const QModelIndex &index) const {
   if (!index.isValid()) {
     return QModelIndex();
   }
-  // Load the child item the given QModelIndex points to and derive the parent
+  // Load the child item the given QModelIndex refers to and derive the parent
   // item from it.
   RegisterItem *childItem =
       static_cast<RegisterItem *>(index.internalPointer());

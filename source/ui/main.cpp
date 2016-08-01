@@ -18,27 +18,26 @@
  */
 
 #include <QApplication>
-#include <QQmlContext>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include <QQmlEngine>
 
-#include "ui/registermodel.hpp"
 #include "ui/qproject.hpp"
+#include "ui/registermodel.hpp"
 
-int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
+int main(int argc, char *argv[]) {
+  QApplication app(argc, argv);
 
-    RegisterModel registerModel;
+  RegisterModel registerModel;
 
-    QQmlApplicationEngine engine;
+  QQmlApplicationEngine engine;
 
-    QProject project;
-    // TODO: set only for one component
-    engine.rootContext()->setContextProperty("project", &project);
+  QProject project;
+  // TODO: set only for one component
+  engine.rootContext()->setContextProperty("project", &project);
 
-    engine.rootContext()->setContextProperty("registerModel", &registerModel);
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+  engine.rootContext()->setContextProperty("registerModel", &registerModel);
+  engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    return app.exec();
+  return app.exec();
 }

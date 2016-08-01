@@ -33,14 +33,14 @@
 #include "ui/syntaxhighlighter.hpp"
 
 class QProject : public QObject {
-	Q_OBJECT
+  Q_OBJECT
  public:
-	explicit QProject(QObject *parent = 0);
-	Q_INVOKABLE void createHighlighter(QQuickTextDocument *qDocument);
+  explicit QProject(QObject *parent = 0);
+  Q_INVOKABLE void createHighlighter(QQuickTextDocument *qDocument);
 
  private:
-    std::unique_ptr<SyntaxHighlighter> _highlighter;
-	std::vector<KeywordRule> _keywords;
+  std::unique_ptr<SyntaxHighlighter> _highlighter;
+  std::vector<KeywordRule> _keywords;
  signals:
 
  public slots:

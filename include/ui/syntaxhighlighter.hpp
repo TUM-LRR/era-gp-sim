@@ -28,23 +28,24 @@
 //  - the QRegularExpression, can be created from a string
 //  - the format for the keyword (color, bold,...) in a QTextCharFormat object
 struct KeywordRule {
-	QRegularExpression rulePattern;
-	QTextCharFormat ruleTextFormat;
+  QRegularExpression rulePattern;
+  QTextCharFormat ruleTextFormat;
 };
 
 class SyntaxHighlighter : QSyntaxHighlighter {
-	Q_OBJECT
+  Q_OBJECT
  public:
-	// creates a new SyntaxHighlighter with a list of KeywordRule objects and a
-	// pointer to the QTextDocument
-	// which should be highlighted
-        SyntaxHighlighter(std::vector<KeywordRule> &&ruleList, QTextDocument *document);
+  // creates a new SyntaxHighlighter with a list of KeywordRule objects and a
+  // pointer to the QTextDocument
+  // which should be highlighted
+  SyntaxHighlighter(std::vector<KeywordRule> &&ruleList,
+                    QTextDocument *document);
 
  protected:
-	void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
+  void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
 
  private:
-	std::vector<KeywordRule> _keywords;
+  std::vector<KeywordRule> _keywords;
 };
 
 #endif// INCLUDE_UI_EDITOR_SYNTAXHIGHLIGHTER_H

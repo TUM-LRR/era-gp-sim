@@ -38,8 +38,7 @@
  * identified by a unique register identifier. Nesting is realised by specifying
  * a parent register identifier and possibly several child register identifiers.
  * The _rootItem is used as a top-level dummy register not holding any actual
- * data
- * but just referencing the visible top-level registers.
+ * data but just referencing the visible top-level registers.
  */
 class RegisterModel : public QAbstractItemModel {
   Q_OBJECT
@@ -47,6 +46,7 @@ class RegisterModel : public QAbstractItemModel {
  public:
   explicit RegisterModel(QObject *parent = 0);
 
+  /// Identifies different kinds of data stored for each register.
   enum RegisterModelRole {
     TitleRole,
     ContentRole,
@@ -54,15 +54,68 @@ class RegisterModel : public QAbstractItemModel {
     DataFormatsListRole
   };
 
-  QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
-  QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
-  Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
+  /**
+   * @brief index Returns a QModelIndex for the specified item inside the
+   * model.
+   * A model must provide an index to each item (i.e. register) it contains.
+   * QModelIndexes provide a common interface for delegates to access data
+   * inside a model independent of its internal structure. Each index contains
+   * the item's parent, its row and column relative to its parent and a pointer
+   * to the item it refers to.
+   *
+   * @param row The item's row relative to its parent item.
+   * @param column The item's column.
+   * @param parent The item's parent item.
+   */
   QModelIndex
   index(int row,
         int column,
         const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+
+  /**
+   * @brief roleNames Returns the available role names of this model, which
+   * the delegate (refer to corresponding QML delegate) can bind to.
+   *
+   * Data roles represent different types of representations of an item.
+   * They can be used to differentiate between several parts of an item's
+   * data.
+   */
+  QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
+
+  /**
+   * @brief data The data for the register referenced by the given
+   * QModelIndex and specified by the given data role.
+   *
+   * @param index The QModelIndex which points to the register item whose
+   * data is requested.
+   * @param role The data role specifying the requested type of data (e.g.
+   * content, title).
+   * @return The QML-compatable piece of data (e.g. QString, QStringList).
+   */
+  QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
+
+  /**
+   * @brief parent Returns an index refering to the register item's parent
+   * register, if available.
+   *
+   * @param index The QModelIndex of the register item whose parent register
+   * item is requested.
+   */
   QModelIndex parent(const QModelIndex &index) const Q_DECL_OVERRIDE;
+
+  /**
+   * @brief rowCount The number of rows a given register item contains.
+   * @param parent The register item's whose number of rows is requested.
+   */
   int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+
+  /**
+   * @brief columnCount The number of columns for each register item. Set
+   * to 1 for this model as only one column containing the register itself
+   * is available.
+   * @param parent The parent register item whose children's column count is
+   * requested.
+   */
   int columnCount(const QModelIndex &parent = QModelIndex()) const
       Q_DECL_OVERRIDE;
 
@@ -70,7 +123,7 @@ class RegisterModel : public QAbstractItemModel {
   /// The dummy top-level item holding references to the visible top-level
   /// registers.
   std::unique_ptr<RegisterItem> _rootItem;
-  /// Map of all registers identified by a unique register identifier.
+  /// Map of all registers each identified by a unique register identifier.
   std::map<std::string, std::unique_ptr<RegisterItem>> _items;
 };
 

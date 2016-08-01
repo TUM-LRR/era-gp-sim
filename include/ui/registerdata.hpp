@@ -41,9 +41,14 @@ class RegisterData {
   QStringList getDataFormatsList() const;
 
  private:
+  /// The register's title (e.g. "EAX")
   QString _title;
+  /// The register's content (e.g. "AB 01 CD 20" or "10011001")
   QString _content;
+  /// A formatting rule for aligning the register's content (e.g. "HH HH HH HH"
+  /// for Hex-alignment)
   QString _displayFormatString;
+  /// A list of available data formats (e.g. "Dec, Hex, Bin")
   QStringList _dataFormatsList;
 };
 
