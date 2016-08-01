@@ -21,65 +21,83 @@ import QtQuick 2.0
 
 
 Item {
-    Item{
+    Rectangle{
+        id: number
         x: 100
         y: 50
-        id: number
+        width: 100
+        height: 200
+        property int thicknes: 20
+        property alias background_color: number.color
+        property color forground_color: "yellow"
+        background_color: "black"
+
         SevenSegment_Segment {
             id: top
             x: 1
-            y: 0
-            width: 20
-            height: 100
+            y: number.thicknes / 2
+            color: number.forground_color
+            width: number.thicknes
+            height: number.width - number.thicknes - 2
             transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
         }
         SevenSegment_Segment {
             id: left_top
             x: 0
-            y: 1
-            width: 20
-            height: 100
+            y: number.thicknes / 2 + 1
+            color: number.forground_color
+            width: number.thicknes
+            height: number.height /2 - number.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
         }
         SevenSegment_Segment {
             id: right_top
-            x: 102
-            y: 1
-            width: 20
-            height: 100
+            x: number.width - number.thicknes
+            y: number.thicknes / 2 + 1
+            color: number.forground_color
+            width: number.thicknes
+            height: number.height /2 - number.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
         }
         SevenSegment_Segment {
             id: middle
             x: 1
-            y: 102
-            width: 20
-            height: 100
+            y: number.height / 2
+            color: number.forground_color
+            width: number.thicknes
+            height: number.width - number.thicknes - 2
             transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
         }
         SevenSegment_Segment {
             id: left_bottom
             x: 0
-            y: 102
-            width: 20
-            height: 100
+            y: number.height / 2 + 1
+            color: number.forground_color
+            width: number.thicknes
+            height: number.height /2 - number.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
         }
         SevenSegment_Segment {
             id: right_bottom
-            x: 102
-            y: 102
-            width: 20
-            height: 100
+            x: number.width - number.thicknes
+            y: number.height / 2 + 1
+            color: number.forground_color
+            width: number.thicknes
+            height: number.height /2 - number.thicknes / 2 - 2
             //transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
         }
         SevenSegment_Segment {
             id: bottom
             x: 1
-            y: 204
-            width: 20
-            height: 100
+            y: number.height - number.thicknes/2
+            color: number.forground_color
+            width: number.thicknes
+            height: number.width - number.thicknes - 2
             transform: Rotation {origin.x: top.width/2; origin.y: 0; angle: -90}
+        }
+
+        MouseArea {
+            hoverEnabled: true
         }
     }
 }
