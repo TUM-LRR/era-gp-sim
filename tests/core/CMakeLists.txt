@@ -3,7 +3,7 @@
 ########################################
 
 set(TEST_CORE_SOURCES
-  test-memory-value.cpp
+  memory-value-test.cpp
 )
 
 ########################################
