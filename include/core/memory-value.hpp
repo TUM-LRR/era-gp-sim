@@ -27,7 +27,8 @@ enum class ByteOrder {
   kLittleEndian
 };
 
-// Set of bits for in/out-putting to/from memory/registers
+// Stub implementation, used in arch/riscv/integer-instructions
+//this can be replaced at any time
 class MemoryValue {
 private:
     uint64_t _value;
@@ -38,6 +39,8 @@ public:
     uint64_t getValue()const;
 };
 
+// Stub implementation, used in arch/riscv/integer-instructions
+//this can be replaced/removed at any time
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, T>::type
 convert(const MemoryValue& memoryValue, ByteOrder byteOrder) {

@@ -4,16 +4,20 @@ namespace riscv {
 
 // TODO
 // Check if the immediate values are representable by 20 bits
-
 bool validateIntegerInstruction(InstructionNode &node, bool immediate) {
+    //a integer instruction needs exactly 3 operands
     if(node.getChildrenCount() != 3) {
         return false;
     }
-    // this looks bad, change it!
-  // Also use enums instead of booleans
+    //check if all operands are valid themselves
+    if(!node.validateAllChildren()) {
+        return false;
+    }
+    //a immediate integer instruction needs two register operands followed by one immediate operand
     if(immediate) {
         return node.requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) &&node.requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1);
     }else {
+        //a register integer instruction needs three register operands
         return node.requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3);
     }
 }

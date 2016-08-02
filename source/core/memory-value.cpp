@@ -17,6 +17,7 @@
 
 #include "core/memory-value.hpp"
 
+//this also belongs to the stub implementation of MemoryValue and can therefore be removed
 MemoryValue::MemoryValue(uint64_t i) {
     _value = i;
 }

@@ -48,6 +48,12 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    */
   bool requireChildren(Type type, size_t startIndex, size_t amount);
 
+  bool validateAllChildren();
+
+  /*!
+   * Returns how many children this instruction node has.
+   * \return
+   */
   size_t getChildrenCount()const;
 };
 }

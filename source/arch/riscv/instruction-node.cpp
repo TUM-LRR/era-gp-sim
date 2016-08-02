@@ -18,3 +18,12 @@ bool InstructionNode::requireChildren(Type type, size_t startIndex,
 size_t InstructionNode::getChildrenCount() const{
     return _children.size();
 }
+
+bool InstructionNode::validateAllChildren() {
+    for(auto &child : _children) {
+        if(!child->validate()) {
+            return false;
+        }
+    }
+    return true;
+}

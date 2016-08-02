@@ -24,35 +24,57 @@
 
 namespace riscv {
 
-//unnamed namespace for this helper function in order not to pollute riscv namespace
+// unnamed namespace for this helper function in order not to pollute riscv
+// namespace
 namespace {
-    template<typename WordSize>
-    void initializeIntegerInstructions(InstructionNodeFactory::InstructionMap& _instructionMap) {
-        _instructionMap.emplace(
-            "add", [](InstructionInformation info){ return std::make_unique<AddInstructionNode<WordSize>>(info, false);});
-        _instructionMap.emplace(
-            "addi", [](InstructionInformation info) { return std::make_unique<AddInstructionNode<WordSize>>(info, true); });
-    }
+
+//this function is placed here (and not in instruction-node-factory.h) to have all
+//"instructionMap filling" in one file
+/*!
+ * \brief initializeIntegerInstructions fills the given InstructionMap with
+ * lambdas creating arithmetic integer instruction nodes (e.g. add/sub/and/or
+ * ...)
+ * The template parameter indicates on what word size these instructions will
+ * operate.
+ * \tparam WordSize A integral type that can hold exactly as many bits as the
+ * instructions should perform arithmetic operations with
+ * \param _instructionMap Map to fill in, use lowercase mnemonics
+ */
+template <typename WordSize>
+void initializeIntegerInstructions(
+    InstructionNodeFactory::InstructionMap& _instructionMap) {
+  _instructionMap.emplace("add", [](InstructionInformation info) {
+    return std::make_unique<AddInstructionNode<WordSize>>(info, false);
+  });
+  _instructionMap.emplace("addi", [](InstructionInformation info) {
+    return std::make_unique<AddInstructionNode<WordSize>>(info, true);
+  });
+}
 }
 
-void InstructionNodeFactory::initializeInstructionMap(const Architecture& architecture) {
-    assert(architecture.isValid());
+void InstructionNodeFactory::initializeInstructionMap(
+    const Architecture& architecture) {
+  assert(architecture.isValid());
 
-
-    Architecture::word_size_t wordSize = architecture.getWordSize();
-  // Integer Instructions
-    if(wordSize == InstructionNodeFactory::RV32) {
-        initializeIntegerInstructions<InstructionNodeFactory::RV32_integral_t>(_instructionMap);
-    }else if(wordSize == InstructionNodeFactory::RV64) {
-        initializeIntegerInstructions<InstructionNodeFactory::RV64_integral_t>(_instructionMap);
-    }else{
-        //The given architecture does not define a valid word_size to create IntegerInstructions
-        assert(false);
-    }
-  _instructionMap.emplace(
-      "sub", [](InstructionInformation info) { return std::make_unique<SubInstructionNode>(false); });
-  _instructionMap.emplace(
-      "subi", [](InstructionInformation info) { return std::make_unique<SubInstructionNode>(true); });
+  Architecture::word_size_t wordSize = architecture.getWordSize();
+  // create integer instructions depending on the word size of the architecture (e.g. r32i or r64i)
+  if (wordSize == InstructionNodeFactory::RV32) {
+    initializeIntegerInstructions<InstructionNodeFactory::RV32_integral_t>(
+        _instructionMap);
+  } else if (wordSize == InstructionNodeFactory::RV64) {
+    initializeIntegerInstructions<InstructionNodeFactory::RV64_integral_t>(
+        _instructionMap);
+  } else {
+    // The given architecture does not define a valid word_size to create
+    // IntegerInstructions
+    assert(false);
+  }
+  _instructionMap.emplace("sub", [](InstructionInformation info) {
+    return std::make_unique<SubInstructionNode>(false);
+  });
+  _instructionMap.emplace("subi", [](InstructionInformation info) {
+    return std::make_unique<SubInstructionNode>(true);
+  });
 
   // Load/Store Instructions
   _instructionMap.emplace("lw", [](InstructionInformation info) {
@@ -81,9 +103,8 @@ void InstructionNodeFactory::initializeInstructionMap(const Architecture& archit
   });
 }
 
-
 std::unique_ptr<AbstractSyntaxTreeNode>
-InstructionNodeFactory::createInstructionNode(const std::string &token) const {
+InstructionNodeFactory::createInstructionNode(const std::string& token) const {
   using std::begin;
   using std::end;
 
@@ -91,14 +112,15 @@ InstructionNodeFactory::createInstructionNode(const std::string &token) const {
   std::string lower = token;
   std::transform(begin(lower), end(lower), begin(lower), tolower);
 
-  if(!_instrSet.hasInstruction(lower)) {
-      return nullptr;// return nullptr as the lowercase token could not be found
+  if (!_instrSet.hasInstruction(lower)) {
+    return nullptr;  // return nullptr as the lowercase token could not be found
   }
 
-  auto it = _instructionMap.find(lower);// lookup the token
+  auto it = _instructionMap.find(lower);  // lookup the token
   assert(it != end(_instructionMap));
-  return it->second(_instrSet.getInstruction(lower));// dereference iterator to the key-value pair and call
-                        // the function providing the correct InstructionInformation for the instruction
-
+  return it->second(_instrSet.getInstruction(
+      lower));  // dereference iterator to the key-value pair and call
+  // the function providing the correct InstructionInformation for the
+  // instruction
 }
 }

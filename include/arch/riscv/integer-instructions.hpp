@@ -45,33 +45,6 @@ namespace riscv {
  */
 bool validateIntegerInstruction(InstructionNode& node, bool immediate);
 
-///**
-// * This node represents the add/addi instruction.
-// *
-// * See RISC V specification for details about the instruction.
-// */
-// class AddInstructionNode : public InstructionNode {
-// public:
-//  AddInstructionNode(bool immediate)
-//  : InstructionNode(), _immediate(immediate) {
-//  }
-
-//  virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
-
-//  virtual bool validate();
-
-//  virtual MemoryValue assemble() {
-//    return MemoryValue{};// TODO
-//  }
-
-//  virtual std::string getIdentifier() {
-//    return _immediate ? "ADDI" : "ADD";
-//  }
-
-// private:
-//  bool _immediate;
-//};
-
 /**
  * This node represents the sub/subi instruction.
  *
@@ -96,14 +69,35 @@ class SubInstructionNode : public InstructionNode {
   bool _immediate;
 };
 
+/*!
+ * \brief The IntegerInstructionNode is a superclass for all integer arithmetic
+ * instructions.
+ * As the behaviour of all of these instructions is very similar, this class
+ * summarizes the common behaviour
+ * to avoid code redundancy.
+ * The instruction internally converts the MemoryValues of their operands to a
+ * built-in integer type, performs the operation with this built-in type and
+ * converts the result to a MemoryValue which is stored in the destination
+ * register
+ * \tparam SizeType built-in integer type on which the actual operation is
+ * performed
+ */
 template <typename SizeType>
 class IntegerInstructionNode : public InstructionNode {
  public:
+  /*!
+ * Creates a IntegerInstructionNode using the specified InstructionInformation
+ * to describe the instruction
+ * \param info InstructionInformation that holds the mnemonic of this
+ * instruction
+ * \param immediateInstruction when the instruction is labeled as immediate
+ * instruction, 2 register and one immediate operand are expected for
+ * validation, if not 3 register operands are expected
+ */
   IntegerInstructionNode(InstructionInformation info, bool immediateInstruction)
       : _instructionInformation(info), _isImmediate(immediateInstruction) {}
 
-  IntegerInstructionNode(IntegerInstructionNode& copy) = default;
-  IntegerInstructionNode(IntegerInstructionNode&& move) = default;
+  /** Default destructor*/
   ~IntegerInstructionNode() = default;
 
   MemoryValue getValue(DummyMemoryAccess& memory_access) override {
@@ -115,12 +109,13 @@ class IntegerInstructionNode : public InstructionNode {
     MemoryValue memoryV1 = _children.at(1)->getValue(memory_access);
     MemoryValue memoryV2 = _children.at(2)->getValue(memory_access);
 
-    SizeType operand1 = convert<SizeType>(memoryV1, ByteOrder::kBigEndian);
-    SizeType operand2 = convert<SizeType>(memoryV2, ByteOrder::kBigEndian);
+    SizeType operand1 = convert<SizeType>(memoryV1, RISCV_BYTEORDER);
+    SizeType operand2 = convert<SizeType>(memoryV2, RISCV_BYTEORDER);
 
     SizeType result = performIntegerOperation(operand1, operand2);
 
-    MemoryValue resultValue = convert(result, 8, ByteOrder::kBigEndian);
+    MemoryValue resultValue =
+        convert(result, RISCV_BITS_PER_BYTE, RISCV_BYTEORDER);
     memory_access.setRegisterValue(destination, resultValue);
     return MemoryValue();
   }
@@ -128,6 +123,7 @@ class IntegerInstructionNode : public InstructionNode {
   std::string getIdentifier() override {
     assert(_instructionInformation.isValid() &&
            _instructionInformation.hasMnemonic());
+    //return the mnemonic
     return _instructionInformation.getMnemonic();
   }
 
@@ -135,13 +131,36 @@ class IntegerInstructionNode : public InstructionNode {
     return validateIntegerInstruction(*this, _isImmediate);
   }
 
+  /*!
+   * performs the specific arithmetic integer operation (such as +, -, and, or, etc) and returns the result
+   * \param op1 first operand for the arithmetic operation
+   * \param op2 second operand for the arithmetic operation
+   * \return result of op1 <arithmeticOperation> op2
+   */
   virtual SizeType performIntegerOperation(SizeType op1, SizeType op2) = 0;
 
  private:
+  /** byte order used in RISC-V architecture*/
+  static constexpr ByteOrder RISCV_BYTEORDER = ByteOrder::kLittleEndian;
+  /** bits per byte in RISC-V architecture*/
+  static constexpr std::size_t RISCV_BITS_PER_BYTE = 8;
+
+  /*!
+   * Holds information about this instruction (e.g. mnemonic)
+   */
   InstructionInformation _instructionInformation;
+  /*!
+   * Indicates if this instruction is a register-immediate instruction.
+   * If false this instruction is a register-register instruction.
+   * This value is used for validation of operands
+   */
   bool _isImmediate;
 };
 
+/*!
+ * Represents a RISC-V "add/addi" instruction. For more information see RISC-V specification
+ * \tparam integer type that can hold exactly the range of values that this operation should operate
+ */
 template <typename SizeType>
 class AddInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
@@ -150,6 +169,12 @@ class AddInstructionNode : public IntegerInstructionNode<SizeType> {
 
   MemoryValue assemble() override { return MemoryValue(); }
 
+  /*!
+   * Adds the two operands
+   * \param op1 summand
+   * \param op2 summand
+   * \return op1 + op2
+   */
   SizeType performIntegerOperation(SizeType op1, SizeType op2) override {
     return op1 + op2;
   }

@@ -58,6 +58,9 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   }
 
  private:
+  /*!
+   * Identifies a register
+   */
   std::string _identifier;
 };
 

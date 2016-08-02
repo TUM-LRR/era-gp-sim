@@ -24,6 +24,7 @@
 
 #include "core/memory-value.hpp"
 
+//Dummy definition of a memory-access
 class DummyMemoryAccess {
 public:
     virtual MemoryValue getRegisterValue(std::string& token) = 0;
