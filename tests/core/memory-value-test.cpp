@@ -1,8 +1,11 @@
 
 #include <random>
 
+// Gtest has to be included before memory-value.
+// clang-format off
 #include "gtest/gtest.h"
 #include "core/memory-value.hpp"
+// clang-format on
 
 namespace {
 constexpr std::size_t scale = 1;
@@ -199,7 +202,7 @@ TEST(TestMemoryValue, subSet) {
   }
 }
 
-//Failed to die (and took way too long), disabled.
+// Failed to die (and took way too long), disabled.
 /*TEST(TestMemoryValue, death) {
   constexpr std::size_t b = 8; // byteAmount
   constexpr std::size_t s = 32;// byteSize
