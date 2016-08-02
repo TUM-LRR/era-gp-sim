@@ -49,6 +49,27 @@ void initializeIntegerInstructions(
   _instructionMap.emplace("addi", [](InstructionInformation info) {
     return std::make_unique<AddInstructionNode<WordSize>>(info, true);
   });
+  _instructionMap.emplace("sub", [](InstructionInformation info) {
+      return std::make_unique<SubInstructionNode<WordSize>>(info);
+  });
+  _instructionMap.emplace("and", [](InstructionInformation info) {
+    return std::make_unique<AndInstructionNode<WordSize>>(info, false);
+  });
+  _instructionMap.emplace("andi", [](InstructionInformation info) {
+    return std::make_unique<AndInstructionNode<WordSize>>(info, true);
+  });
+  _instructionMap.emplace("or", [](InstructionInformation info) {
+    return std::make_unique<OrInstructionNode<WordSize>>(info, false);
+  });
+  _instructionMap.emplace("ori", [](InstructionInformation info) {
+    return std::make_unique<OrInstructionNode<WordSize>>(info, true);
+  });
+  _instructionMap.emplace("xor", [](InstructionInformation info) {
+    return std::make_unique<XorInstructionNode<WordSize>>(info, false);
+  });
+  _instructionMap.emplace("xori", [](InstructionInformation info) {
+    return std::make_unique<XorInstructionNode<WordSize>>(info, true);
+  });
 }
 }
 
@@ -69,12 +90,7 @@ void InstructionNodeFactory::initializeInstructionMap(
     // IntegerInstructions
     assert(false);
   }
-  _instructionMap.emplace("sub", [](InstructionInformation info) {
-    return std::make_unique<SubInstructionNode>(false);
-  });
-  _instructionMap.emplace("subi", [](InstructionInformation info) {
-    return std::make_unique<SubInstructionNode>(true);
-  });
+
 
   // Load/Store Instructions
   _instructionMap.emplace("lw", [](InstructionInformation info) {

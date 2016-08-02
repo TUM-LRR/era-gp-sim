@@ -45,30 +45,6 @@ namespace riscv {
  */
 bool validateIntegerInstruction(InstructionNode& node, bool immediate);
 
-/**
- * This node represents the sub/subi instruction.
- *
- * See RISC V specification for details about the instruction.
- */
-class SubInstructionNode : public InstructionNode {
- public:
-  SubInstructionNode(bool immediate)
-      : InstructionNode(), _immediate(immediate) {}
-
-  virtual MemoryValue getValue(DummyMemoryAccess& memory_access);
-
-  virtual bool validate();
-
-  virtual MemoryValue assemble() {
-    return MemoryValue();  // TODO
-  }
-
-  virtual std::string getIdentifier() { return _immediate ? "SUBI" : "SUB"; }
-
- private:
-  bool _immediate;
-};
-
 /*!
  * \brief The IntegerInstructionNode is a superclass for all integer arithmetic
  * instructions.
@@ -123,7 +99,7 @@ class IntegerInstructionNode : public InstructionNode {
   std::string getIdentifier() override {
     assert(_instructionInformation.isValid() &&
            _instructionInformation.hasMnemonic());
-    //return the mnemonic
+    // return the mnemonic
     return _instructionInformation.getMnemonic();
   }
 
@@ -132,7 +108,8 @@ class IntegerInstructionNode : public InstructionNode {
   }
 
   /*!
-   * performs the specific arithmetic integer operation (such as +, -, and, or, etc) and returns the result
+   * performs the specific arithmetic integer operation (such as +, -, and, or,
+   * etc) and returns the result
    * \param op1 first operand for the arithmetic operation
    * \param op2 second operand for the arithmetic operation
    * \return result of op1 <arithmeticOperation> op2
@@ -158,8 +135,10 @@ class IntegerInstructionNode : public InstructionNode {
 };
 
 /*!
- * Represents a RISC-V "add/addi" instruction. For more information see RISC-V specification
- * \tparam integer type that can hold exactly the range of values that this operation should operate
+ * Represents a RISC-V "add/addi" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
  */
 template <typename SizeType>
 class AddInstructionNode : public IntegerInstructionNode<SizeType> {
@@ -179,6 +158,109 @@ class AddInstructionNode : public IntegerInstructionNode<SizeType> {
     return op1 + op2;
   }
 };
+
+/*!
+ * Represents a RISC-V "sub" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
+ */
+template <typename SizeType>
+class SubInstructionNode : public IntegerInstructionNode<SizeType> {
+ public:
+  SubInstructionNode(InstructionInformation info)
+      : IntegerInstructionNode<SizeType>(info, false) //RISC-V does not specifiy a subi
+  {}
+
+  MemoryValue assemble() override { return MemoryValue(); }
+
+  /*!
+   * Subtracts op2 from op1
+   * \param op1
+   * \param op2
+   * \return op1 - op2
+   */
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) override {
+    return op1 - op2;
+  }
+};
+
+/*!
+ * Represents a RISC-V "and/andi" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
+ */
+template <typename SizeType>
+class AndInstructionNode : public IntegerInstructionNode<SizeType> {
+ public:
+    AndInstructionNode(InstructionInformation info, bool isImmediateInstruction)
+      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+
+  MemoryValue assemble() override { return MemoryValue(); }
+
+  /*!
+   * Performs a bitwise logical and with op1, op2
+   * \param op1
+   * \param op2
+   * \return op1 bitand op2
+   */
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) override {
+    return op1 & op2;
+  }
+};
+
+/*!
+ * Represents a RISC-V "or/ori" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
+ */
+template <typename SizeType>
+class OrInstructionNode : public IntegerInstructionNode<SizeType> {
+ public:
+    OrInstructionNode(InstructionInformation info, bool isImmediateInstruction)
+      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+
+  MemoryValue assemble() override { return MemoryValue(); }
+
+  /*!
+   * Performs a bitwise logical or with op1, op2
+   * \param op1
+   * \param op2
+   * \return op1 bitor op2
+   */
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) override {
+    return op1 | op2;
+  }
+};
+
+/*!
+ * Represents a RISC-V "xor/xori" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
+ */
+template <typename SizeType>
+class XorInstructionNode : public IntegerInstructionNode<SizeType> {
+ public:
+    XorInstructionNode(InstructionInformation info, bool isImmediateInstruction)
+      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+
+  MemoryValue assemble() override { return MemoryValue(); }
+
+  /*!
+   * Performs a bitwise logical xor with op1, op2
+   * \param op1
+   * \param op2
+   * \return op1 xor op2
+   */
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) override {
+    return op1 ^ op2;
+  }
+};
+
+
 }
 
 #endif /* ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_ */
