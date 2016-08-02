@@ -29,8 +29,8 @@
  * be used by the architecture.
  */
 struct FinalCommand {
-	std::unique_ptr<AbstractSyntaxTreeNode> node;
-	CodePosition position;
+  std::unique_ptr<AbstractSyntaxTreeNode> node;
+  CodePosition position;
 };
 
 
@@ -40,8 +40,8 @@ struct FinalCommand {
  * be used by the architecture.
  */
 struct FinalRepresentation {
-	std::vector<FinalCommand> commandList;
-	std::vector<CompileError> errorList;
+  std::vector<FinalCommand> commandList;
+  std::vector<CompileError> errorList;
 };
 
 #endif

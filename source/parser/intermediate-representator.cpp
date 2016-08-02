@@ -31,7 +31,7 @@ FinalRepresentation IntermediateRepresentator::transform(CompileState& state) {
   }
 
   representation.errorList = state.errorList;
-  
+
   // Now, we are done.
   return representation;
 }

@@ -13,8 +13,8 @@ RiscvParser::RiscvRegex::RiscvRegex()
       "(\\w+)"// Parameter group
       "\\s*,\\s*"
       "(\\w+)"// Parameter group
-      "\\s*,\\s*"
-      "(\\w+))?"// Parameter group
+      "(?:\\s*,\\s*"
+      "(\\w+))?)?"// Parameter group
       "\\s*"
       "(?:;.*)?"// Comment group
   } {
@@ -51,5 +51,5 @@ std::string RiscvParser::RiscvRegex::getParameter(int n) {
 }
 
 int RiscvParser::RiscvRegex::getParameterCount() {
-  return 3;
+  return matches_[6].matched ? 3 : 2;
 }

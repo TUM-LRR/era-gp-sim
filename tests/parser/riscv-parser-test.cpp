@@ -32,19 +32,19 @@ TEST(RiscParser, MultipleInstructions) {
   res = parser.parse(
       "ADD r13, r4, 7 ;kommentar\n"
       " label  : SUB r5, r5, 1\n"
-      ";kommentar\n"
+      "LUI r5, 123;kommentar\n"
       "addition123:\n"
       "\n"
       "ADD r0, r0, 0; kommentar",
       ParserMode::COMPILE);
   EXPECT_EQ(res.errorList.size(), 0);
-  EXPECT_EQ(res.commandList.size(), 3);
+  EXPECT_EQ(res.commandList.size(), 4);
 }
 
 TEST(RiscParser, MalformedInstructions) {
   RiscvParser parser;
   FinalRepresentation res;
-  res = parser.parse("label ADD r13, r4,7\nadd r13 r4 ,7\nble r15 , 7",
+  res = parser.parse("label ADD r13, r4,7\nadd r13 r4 ,7\nble r15 ",
                        ParserMode::COMPILE);
   EXPECT_EQ(res.errorList.size(), 3);
   EXPECT_EQ(res.commandList.size(), 0);
@@ -65,7 +65,7 @@ TEST(RiscParser, MixedErrors) {
       "ADD r13, r4, 7 ;kommentar\n"
       " label  : SUB r5, r5, 1\n"
       ";kommentar\n"
-      "sub r2, r3 ;oops missing argument\n"
+      "sub r2 ;oops missing argument\n"
       "dfklgdjflj\n"
       "addition123:\n"
       "\n"

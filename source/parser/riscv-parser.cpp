@@ -25,7 +25,6 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
   for (std::string line; std::getline(stream, line);) {
     compile_state_.position.first++;
     line_regex.matchLine(line);
-
     if (!line_regex.isValid()) {
       // Add syntax error if line regex doesnt match
       compile_state_.errorList.push_back(
