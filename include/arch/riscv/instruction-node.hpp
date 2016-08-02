@@ -55,6 +55,13 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \return
    */
   size_t getChildrenCount()const;
+
+  /*!
+   * returns the children at index
+   * \param index index boundaries are asserted
+   * \return
+   */
+  AbstractSyntaxTreeNode& getChild(size_t index);
 };
 }
 

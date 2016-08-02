@@ -30,6 +30,14 @@ public:
     virtual MemoryValue getRegisterValue(std::string& token) = 0;
     virtual void setRegisterValue(std::string& token, MemoryValue value) = 0;
 };
+//Dummy implementation of a memory-access
+class DummyMemoryAccessStub : public DummyMemoryAccess {
+public:
+    MemoryValue getRegisterValue(std::string& token) override {
+        return MemoryValue();
+     }
+    void setRegisterValue(std::string& token, MemoryValue value) override {}
+};
 
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {

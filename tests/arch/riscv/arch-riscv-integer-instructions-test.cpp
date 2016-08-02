@@ -216,6 +216,25 @@ void testIntegerInstructionValidation(DummyMemoryAccess& memAccess,
   ASSERT_FALSE(instructionNode3->validate());
   ASSERT_DEATH(instructionNode3->getValue(memAccess), "");
 }
+
+void test20BitImmediateBounds(InstructionNodeFactory& instrF, std::string instructionToken, ImmediateNodeFactory& immF) {
+    constexpr uint64_t boundary = 2097151;
+    std::string registerId = "not relevant";
+    auto node = instrF.createInstructionNode(instructionToken);
+    node->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
+    node->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
+    auto immediateNodeIn = immF.createImmediateNode(MemoryValue(boundary));
+    node->addChild(std::move(immediateNodeIn));
+    ASSERT_TRUE(node->validate());
+    auto node2 = instrF.createInstructionNode(instructionToken);
+    node2->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
+    node2->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
+    auto immediateNodeOut = immF.createImmediateNode(MemoryValue(boundary+1));
+    node->addChild(std::move(immediateNodeOut));
+    ASSERT_FALSE(node->validate());
+    DummyMemoryAccessImpl memAccess;
+    ASSERT_DEATH(node->getValue(memAccess), "");
+}
 }
 
 TEST(IntegerInstructionTest, ADDIntruction_testAdd) {
@@ -285,8 +304,8 @@ TEST(IntegerInstructionTest, ADDIntruction_testAddi) {
   regOp1.set(4294967295U);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "addi",
                              "d2", "r1", 1, 0);
-  assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "addi",
-                             "d3", "r2", 4294967295U, 0);
+  //test immediate boundary
+  test20BitImmediateBounds(factory32, "addi", immediateFactory);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
@@ -303,8 +322,8 @@ TEST(IntegerInstructionTest, ADDIntruction_testAddi) {
   regOp1.set(18446744073709551615ULL);
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "addi",
                              "d2", "r1", 1, 0);
-  assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "addi",
-                             "d3", "r2", 18446744073709551615ULL, 0);
+  //test immediate boundary
+  test20BitImmediateBounds(factory64, "addi", immediateFactory);
 }
 
 TEST(IntegerInstructionTest, ADDInstruction_testValidation) {

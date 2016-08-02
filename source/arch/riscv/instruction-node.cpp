@@ -1,4 +1,5 @@
 #include "arch/riscv/instruction-node.hpp"
+#include <cassert>
 
 using namespace riscv;
 
@@ -26,4 +27,9 @@ bool InstructionNode::validateAllChildren() {
         }
     }
     return true;
+}
+
+AbstractSyntaxTreeNode& InstructionNode::getChild(size_t index) {
+    assert(index > 0 && index < _children.size());
+    return *(_children.at(index));
 }
