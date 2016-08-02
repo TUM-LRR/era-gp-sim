@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
 #ifndef ERAGPSIM_PARSER_RISCV_PARSER_HPP_
 #define ERAGPSIM_PARSER_RISCV_PARSER_HPP_
@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "arch/common/node-factory-collection.hpp"
 #include "parser/compile-state.hpp"
 #include "parser/parser.hpp"
 
@@ -34,6 +35,8 @@ class RiscvParser : public Parser {
  public:
   class RiscvRegex;
 
+  RiscvParser();
+
   virtual FinalRepresentation
   parse(const std::string &text, ParserMode parserMode);
 
@@ -42,6 +45,7 @@ class RiscvParser : public Parser {
    * Saves an internal compile state.
    */
   CompileState compile_state_;
+  NodeFactoryCollection factory_collection_;
 };
 
 #endif// ERAGPSIM_PARSER_RISCV_PARSER_HPP_

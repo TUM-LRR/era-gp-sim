@@ -4,9 +4,18 @@
 #include <iostream>
 #include <regex>
 #include <sstream>
+#include "arch/common/architecture-formula.hpp"
+#include "arch/common/node-factory-collection-maker.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/intermediate-representator.hpp"
 #include "parser/riscv-regex.hpp"
+#include "parser/syntax-tree-generator.hpp"
+
+RiscvParser::RiscvParser() {
+  ArchitectureFormula arch_form{"riscv", {"rv32i"}};
+  factory_collection_ =
+      NodeFactoryCollectionMaker::CreateFor(Architecture::Brew(arch_form));
+}
 
 FinalRepresentation
 RiscvParser::parse(const std::string &text, ParserMode parserMode) {
@@ -61,5 +70,6 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
     }
   }
 
-  return intermediate.transform(compile_state_);
+  return intermediate.transform(SyntaxTreeGenerator{factory_collection_},
+                                compile_state_);
 }

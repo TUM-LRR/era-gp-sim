@@ -53,8 +53,11 @@ FinalCommand IntermediateInstruction::compileInstruction(
   // We replace all occurenced in target in source (using a copy of them).
   auto srcCompiled = compileArgumentVector(_sources, table, generator, state);
   auto trgCompiled = compileArgumentVector(_targets, table, generator, state);
-  return std::move(
+  FinalCommand result;
+  result.node = std::move(
       generator.transformCommand(_name, srcCompiled, trgCompiled, state));
+  result.position = _lines;
+  return result;
 }
 
 void IntermediateInstruction::determineMemoryPosition() {

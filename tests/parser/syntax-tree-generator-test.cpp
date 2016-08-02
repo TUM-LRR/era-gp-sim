@@ -27,7 +27,7 @@
 #include "gtest/gtest.h"
 
 static SyntaxTreeGenerator buildGenerator() {
-  Architecture testArch("risc-v");
+  Architecture testArch("riscv");
   auto factoryCollection = NodeFactoryCollectionMaker::CreateFor(testArch);
   SyntaxTreeGenerator generator(factoryCollection);
   return generator;
@@ -86,5 +86,5 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
 
   ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((instanceOf<riscv::InstructionNode, AbstractSyntaxTreeNode>(
-      output.get())));
+     output.get())));
 }

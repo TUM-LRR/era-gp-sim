@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_COMPILE_ERROR_HPP_
-#define ERAGPSIM_COMPILE_ERROR_HPP_
+#ifndef ERAGPSIM_PARSER_COMPILE_ERROR_HPP_
+#define ERAGPSIM_PARSER_COMPILE_ERROR_HPP_
 
 #include <string>
 #include "code-position.hpp"

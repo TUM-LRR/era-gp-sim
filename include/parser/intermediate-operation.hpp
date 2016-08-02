@@ -42,6 +42,7 @@ using DummyMemoryAddress = unsigned int;
  */
 static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
 
+
 /**
  * \brief Represents an abstract assembler operation in the parser-internal
  * intermediate form.

@@ -22,7 +22,9 @@
 #include <memory>
 #include <vector>
 #include "arch/common/abstract-syntax-tree-node.hpp"
+#include "parser/compile-error.hpp"
 
+using LineInterval = std::pair<unsigned int, unsigned int>;
 
 /**
  * \class FinalCommand
@@ -31,7 +33,7 @@
  */
 struct FinalCommand {
   std::unique_ptr<AbstractSyntaxTreeNode> node;
-  CodePosition position;
+  LineInterval position;
 };
 
 
