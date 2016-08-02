@@ -84,6 +84,12 @@ Item {
                         angle: 90
                     }
                 }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+
+                    }
+                }
             }
             SevenSegment_Segment {
                 id: left_top
@@ -102,6 +108,12 @@ Item {
                     anchors.fill: parent
                     opacity: 0
                 }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+
+                    }
+                }
             }
             SevenSegment_Segment {
                 id: right_top
@@ -119,6 +131,12 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     anchors.fill: parent
                     opacity: 0
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+
+                    }
                 }
             }
             SevenSegment_Segment {
@@ -148,6 +166,12 @@ Item {
                         angle: 90
                     }
                 }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+
+                    }
+                }
             }
             SevenSegment_Segment {
                 id: left_bottom
@@ -166,6 +190,12 @@ Item {
                     anchors.fill: parent
                     opacity: 0
                 }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+
+                    }
+                }
             }
             SevenSegment_Segment {
                 id: right_bottom
@@ -183,6 +213,12 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     anchors.fill: parent
                     opacity: 0
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+
+                    }
                 }
             }
             SevenSegment_Segment {
@@ -212,6 +248,12 @@ Item {
                         angle: 90
                     }
                 }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+
+                    }
+                }
             }
 
             Text {
@@ -230,6 +272,7 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
+                propagateComposedEvents: true
                 onHoveredChanged: {
                     if (containsMouse) {
                         digit.setTextVisibility(true)
