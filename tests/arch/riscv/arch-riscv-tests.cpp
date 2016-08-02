@@ -15,53 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-<<<<<<< HEAD
-#include "arch/riscv/integer-instructions.hpp"
-#include "arch/riscv/load-store-instructions.hpp"
-
-=======
->>>>>>> master
 #include <gtest/gtest.h>
 #include <memory>
 #include <vector>
 
-<<<<<<< HEAD
-TEST(InstructionTest, AddInstruction) {
-  AddInstructionNode addiNode{true};
-  AddInstructionNode addNode{false};
-
-  // Basic testing
-  ASSERT_EQ(NodeType::INSTRUCTION, addiNode.getType());
-  ASSERT_EQ(NodeType::INSTRUCTION, addNode.getType());
-
-  ASSERT_EQ("ADDI", addiNode.getIdentifier());
-  ASSERT_EQ("ADD", addNode.getIdentifier());
-
-  // Validate the empty syntax trees -> should return false
-  ASSERT_FALSE(addiNode.validate());
-  ASSERT_FALSE(addNode.validate());
-
-  // Create some registers
-  auto r1 = std::make_unique<RegisterNode>("zero");
-  auto r2 = std::make_unique<RegisterNode>("x1");
-  auto r3 = std::make_unique<RegisterNode>("x10");
-  auto r4 = std::make_unique<RegisterNode>("x3");
-  auto r5 = std::make_unique<RegisterNode>("t0");
-  auto r6 = std::make_unique<RegisterNode>("x0");
-
-  // Add the registers
-  addiNode.addChild(std::move(r1));
-  addiNode.addChild(std::move(r2));
-  addiNode.addChild(std::move(r3));
-
-  addNode.addChild(std::move(r4));
-  addNode.addChild(std::move(r5));
-  addNode.addChild(std::move(r6));
-
-  // Validate again
-  ASSERT_FALSE(addiNode.validate());
-  ASSERT_TRUE(addNode.validate());
-=======
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
@@ -110,7 +67,6 @@ TEST(InstructionTest, AddInstruction) {
   // Validate again
   ASSERT_FALSE(addiNode->validate());
   ASSERT_TRUE(addNode->validate());
->>>>>>> master
 }
 
 TEST(InstructionTest, LoadInstruction) {
@@ -121,11 +77,7 @@ TEST(InstructionTest, LoadInstruction) {
 
   // Basic testing
   for (auto node : nodes) {
-<<<<<<< HEAD
-    ASSERT_EQ(NodeType::INSTRUCTION, node->getType());
-=======
     ASSERT_EQ(Type::INSTRUCTION, node->getType());
->>>>>>> master
     ASSERT_FALSE(node->validate());
   }
 
@@ -139,21 +91,6 @@ TEST(InstructionTest, LoadInstruction) {
 }
 
 TEST(InstructionTest, StoreInstruction) {
-<<<<<<< HEAD
-  StoreInstructionNode sw{StoreType::WORD}, sh{StoreType::HALF_WORD},
-      sb{StoreType::BYTE};
-  std::vector<StoreInstructionNode *> nodes{&sw, &sh, &sb};
-
-  // Basic testing
-  for (auto node : nodes) {
-    ASSERT_EQ(NodeType::INSTRUCTION, node->getType());
-    ASSERT_FALSE(node->validate());
-  }
-
-  ASSERT_EQ("SW", sw.getIdentifier());
-  ASSERT_EQ("SH", sh.getIdentifier());
-  ASSERT_EQ("SB", sb.getIdentifier());
-=======
   InstructionNodeFactory instructionFactory;
 
   auto sw = instructionFactory.createInstructionNode("SW");
@@ -172,16 +109,12 @@ TEST(InstructionTest, StoreInstruction) {
   ASSERT_EQ("SW", sw->getIdentifier());
   ASSERT_EQ("SH", sh->getIdentifier());
   ASSERT_EQ("SB", sb->getIdentifier());
->>>>>>> master
 
   // TODO Make tests for immediate values
 }
 
-<<<<<<< HEAD
-=======
 /* TODO Test more commands */
 
->>>>>>> master
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
