@@ -22,6 +22,13 @@
 
 #include "arch/riscv/instruction-node.hpp"
 
+<<<<<<< HEAD
+=======
+#include <string>
+
+namespace riscv {
+
+>>>>>>> master
 /**
  * \brief The LoadType enum
  *
@@ -29,11 +36,19 @@
  * for reference.
  */
 enum struct LoadType {
+<<<<<<< HEAD
   WORD,               // LW
   HALF_WORD,          // LH
   HALF_WORD_UNSIGNED, // LHU
   BYTE,               // LB
   BYTE_UNSIGNED       // LBU
+=======
+  WORD,              // LW
+  HALF_WORD,         // LH
+  HALF_WORD_UNSIGNED,// LHU
+  BYTE,              // LB
+  BYTE_UNSIGNED      // LBU
+>>>>>>> master
 };
 
 /**
@@ -43,9 +58,15 @@ enum struct LoadType {
  * for reference.
  */
 enum struct StoreType {
+<<<<<<< HEAD
   WORD,      // SW
   HALF_WORD, // SH
   BYTE       // SB
+=======
+  WORD,     // SW
+  HALF_WORD,// SH
+  BYTE      // SB
+>>>>>>> master
 };
 
 /**
@@ -54,19 +75,30 @@ enum struct StoreType {
  * Represents a load instruction.
  */
 class LoadInstructionNode : public InstructionNode {
+<<<<<<< HEAD
 public:
   LoadInstructionNode(LoadType type) : InstructionNode(), _type(type) {}
+=======
+ public:
+  LoadInstructionNode(LoadType type) : InstructionNode(), _type(type) {
+  }
+>>>>>>> master
 
   virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
 
   virtual bool validate();
 
   virtual MemoryValue assemble() {
+<<<<<<< HEAD
     return MemoryValue{}; // TODO
+=======
+    return MemoryValue{};// TODO
+>>>>>>> master
   }
 
   virtual std::string getIdentifier() {
     switch (_type) {
+<<<<<<< HEAD
     case LoadType::WORD:
       return "LW";
     case LoadType::HALF_WORD:
@@ -83,6 +115,18 @@ public:
   }
 
 private:
+=======
+      case LoadType::WORD: return "LW";
+      case LoadType::HALF_WORD: return "LH";
+      case LoadType::HALF_WORD_UNSIGNED: return "LHU";
+      case LoadType::BYTE: return "LB";
+      case LoadType::BYTE_UNSIGNED: return "LBU";
+      default: return "Illegal load type";
+    }
+  }
+
+ private:
+>>>>>>> master
   LoadType _type;
 };
 
@@ -92,19 +136,30 @@ private:
  * Represents a store instruction.
  */
 class StoreInstructionNode : public InstructionNode {
+<<<<<<< HEAD
 public:
   StoreInstructionNode(StoreType type) : InstructionNode(), _type(type) {}
+=======
+ public:
+  StoreInstructionNode(StoreType type) : InstructionNode(), _type(type) {
+  }
+>>>>>>> master
 
   virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
 
   virtual bool validate();
 
   virtual MemoryValue assemble() {
+<<<<<<< HEAD
     return MemoryValue{}; // TODO
+=======
+    return MemoryValue{};// TODO
+>>>>>>> master
   }
 
   virtual std::string getIdentifier() {
     switch (_type) {
+<<<<<<< HEAD
     case StoreType::WORD:
       return "SW";
     case StoreType::HALF_WORD:
@@ -119,5 +174,18 @@ public:
 private:
   StoreType _type;
 };
+=======
+      case StoreType::WORD: return "SW";
+      case StoreType::HALF_WORD: return "SH";
+      case StoreType::BYTE: return "SB";
+      default: return "Illegal store type";
+    }
+  }
+
+ private:
+  StoreType _type;
+};
+}
+>>>>>>> master
 
 #endif /* ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_ */

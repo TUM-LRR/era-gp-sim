@@ -22,58 +22,98 @@
 
 #include <string>
 
-#include "common/builder.hpp"
-#include "common/optional.hpp"
+#include "arch/common/information-interface.hpp"
+#include "arch/common/instruction-key.hpp"
+#include "common/builder-interface.hpp"
 
 /**
  * Holds information about an instruction.
  *
- * The information is currently constrained only to the name and key of the
+ * The information is currently constrained only to the mnemonic and key of the
  * instruction, as everything else (e.g. allowed operands) is hard-coded in the
  * respective implementation class.
  *
- * The class' interface is intended to support the Builder pattern.
+ * The class' interface is intended to support the BuilderInterface pattern.
  */
-class InstructionInformation : public Builder {
+class InstructionInformation : public InformationInterface {
  public:
-  // For now
-  using InstructionKey = unsigned short;
+  /**
+  * Deserializes and constructs the `InstructionInformation` from the given
+  * data.
+  *
+  * \param data The serialized representation of the `InstructionInformation`.
+  */
+  explicit InstructionInformation(InformationInterface::Format& data);
 
   /**
-   * Constructs an instruction with a name.
+   * Constructs an instruction with a mnemonic.
    *
-   * @param name The name of the instruction (e.g. "add")
+   * \param mnemonic The mnemonic of the instruction (e.g. "add")
    */
-  InstructionInformation(const std::string& name);
+  explicit InstructionInformation(const std::string& mnemonic = std::string());
 
   /**
-   * Constructs an instruction with a name and key.
+   * Constructs an instruction with a mnemonic and key.
    *
-   * @param name The name of the instruction (e.g. "add")
-   * @param key The key of the instruction.
+   * \param mnemonic The mnemonic of the instruction (e.g. "add")
+   * \param key The key of the instruction.
    */
-  InstructionInformation(const std::string& name, const InstructionKey& key);
+  InstructionInformation(const std::string& mnemonic,
+                         const InstructionKey& key);
 
   /**
-   * Sets the name of the instruction.
+   * Tests for equality of two instructions.
    *
-   * @param name The new name for the instruction.
+   * The names and keys must match for two instructions to be equal.
    *
-   * @return The current instruction object.
+   * \param other The other instruction.
    */
-  InstructionInformation& name(const std::string& name);
+  bool operator==(const InstructionInformation& other) const noexcept;
 
   /**
-   * Returns the name of the instruction.
+   * Tests for inequality of two instructions.
+   *
+   * The names and keys must match for two instructions to be equal.
+   *
+   * \param other The other instruction.
    */
-  const std::string& getName() const noexcept;
+  bool operator!=(const InstructionInformation& other) const noexcept;
+
+  /**
+  * Deserializes and constructs the `InstructionInformation` from the given
+  * data.
+  *
+  * \param data The serialized representation of the `InstructionInformation`.
+  *
+  * \return The current instruction object.
+  */
+  InstructionInformation& deserialize(InformationInterface::Format& data);
+
+  /**
+   * Sets the mnemonic of the instruction.
+   *
+   * \param mnemonic The new mnemonic for the instruction.
+   *
+   * \return The current instruction object.
+   */
+  InstructionInformation& mnemonic(const std::string& mnemonic);
+
+  /**
+   * Returns the mnemonic of the instruction.
+   */
+  const std::string& getMnemonic() const noexcept;
+
+  /**
+   * Tests if the instruction has a mnemonic set.
+   */
+  bool hasMnemonic() const noexcept;
 
   /**
    * Sets the key of the instruction.
    *
-   * @param key The new key for the instruction.
+   * \param key The new key for the instruction.
    *
-   * @return The current instruction object.
+   * \return The current instruction object.
    */
   InstructionInformation& key(const InstructionKey& key);
 
@@ -82,15 +122,28 @@ class InstructionInformation : public Builder {
    */
   const InstructionKey& getKey() const noexcept;
 
-  /** @copydoc Builder::isValid() */
+  /**
+   * Tests if the instruction has an instruction key set.
+   */
+  bool hasKey() const noexcept;
+
+  /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
-  /** The name of the instruction. */
-  std::string _name;
+  /**
+  * Deserializes and constructs the `InstructionInformation` from the given
+  * data.
+  *
+  * \param data The serialized representation of the `InstructionInformation`.
+  */
+  void _deserialize(InformationInterface::Format& data) override;
+
+  /** The mnemonic of the instruction. */
+  std::string _mnemonic;
 
   /** The key of the instruction. */
-  Optional<InstructionKey> _key;
+  InstructionKey _key;
 };
 
 #endif /* ERAGPSIM_ARCH_INSTRUCTION_INFORMATION_HPP */

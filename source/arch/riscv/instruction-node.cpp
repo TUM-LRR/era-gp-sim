@@ -1,6 +1,12 @@
 #include "arch/riscv/instruction-node.hpp"
 
+<<<<<<< HEAD
 bool InstructionNode::requireChildren(NodeType type, size_t startIndex,
+=======
+using namespace riscv;
+
+bool InstructionNode::requireChildren(Type type, size_t startIndex,
+>>>>>>> master
                                       size_t amount) {
   if (_children.size() - startIndex < amount)
     return false;

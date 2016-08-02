@@ -22,34 +22,79 @@
 
 #include "arch/common/datatype-information.hpp"
 
+DataTypeInformation::DataTypeInformation() noexcept : _size(0) {
+}
+
+DataTypeInformation::DataTypeInformation(InformationInterface::Format& data) {
+  _deserialize(data);
+}
+
 DataTypeInformation::DataTypeInformation(const std::string& name, size_t size) {
   // To check constraints
   this->name(name);
   this->size(size);
 }
 
+bool DataTypeInformation::operator==(const DataTypeInformation& other) const
+    noexcept {
+  if (this->_name != other._name) return false;
+  if (this->_size != other._size) return false;
+
+  return true;
+}
+
+bool DataTypeInformation::operator!=(const DataTypeInformation& other) const
+    noexcept {
+  return !(*this == other);
+}
+
+DataTypeInformation&
+DataTypeInformation::deserialize(InformationInterface::Format& data) {
+  _deserialize(data);
+  return *this;
+}
+
 DataTypeInformation& DataTypeInformation::name(const std::string& name) {
-  assert(!_name.empty());
+  assert(!name.empty());
   _name = name;
 
   return *this;
 }
 
 const std::string& DataTypeInformation::getName() const noexcept {
+  assert(hasName());
   return _name;
 }
 
+bool DataTypeInformation::hasName() const noexcept {
+  return !_name.empty();
+}
+
 DataTypeInformation& DataTypeInformation::size(size_t size) {
-  assert(_size > 0);
+  assert(size > 0);
   _size = size;
 
   return *this;
 }
 
-DataTypeInformation::size_t DataTypeInformation::size() const noexcept {
+DataTypeInformation::size_t DataTypeInformation::getSize() const noexcept {
+  assert(hasSize());
   return _size;
 }
 
+bool DataTypeInformation::hasSize() const noexcept {
+  return _size > 0;
+}
+
+
 bool DataTypeInformation::isValid() const noexcept {
   return !_name.empty() && _size > 0;
+}
+
+void DataTypeInformation::_deserialize(InformationInterface::Format& data) {
+  assert(data.count("name"));
+  assert(data.count("size"));
+
+  name(data["name"]);
+  size(data["size"]);
 }

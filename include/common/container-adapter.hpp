@@ -21,7 +21,29 @@
 #define ERAGPSIM_COMMON_CONTAINER_ADAPTER_HPP
 
 #include <memory>
-#include <vector>
+
+/**
+ * Note: Macros are bad, bad, bad! They are not real code, they make debugging
+ * horrible because you cannot directly see the generated code, they are an
+ * old C construct etc. However, in this case, I must concede that it makes
+ * derivation from ContainerAdapter more legible. Who wants to see 20 using
+ * statements? Also, those 20 using statements in 5-10 subclasses are not
+ * maintainable, at all.
+ *
+ * Use it like this (for example):
+ *
+ * `using CONTAINER_ADAPTER_MEMBERS`
+ */
+#define CONTAINER_ADAPTER_MEMBERS \
+  super::_container;              \
+  using super::begin;             \
+  using super::cbegin;            \
+  using super::end;               \
+  using super::cend;              \
+  using super::clear;             \
+  using super::size;              \
+  using super::isEmpty;           \
+  using super::getUnderlying
 
 /**
  * A container-adapter base template.
@@ -30,47 +52,35 @@
  * want to adapt some standard container, you can inherit your adapter from this
  * class and it will take care of some boilerplate methods.
  */
-template <typename T,
-          template <typename, typename> class UnderlyingTemplate = std::vector,
-          bool makeConst = false>
+template <typename UnderlyingTemplate>
 class ContainerAdapter {
  public:
-  // Choose const or non-const version of container
-  // clang-format off
-  using Underlying = typename std::conditional<
-    makeConst,
-    const UnderlyingTemplate<T, std::allocator<T>>,
-    UnderlyingTemplate<T, std::allocator<T>>
-  >::type;
-  // clang-format on
-  using Iterator      = typename Underlying::iterator;
-  using ConstIterator = typename Underlying::const_iterator;
-  using List          = std::initializer_list<T>;
-
-  /**
-   * Constructs a new empty container adapter.
-   */
-  ContainerAdapter() noexcept = default;
+  using Underlying      = UnderlyingTemplate;
+  using Iterator        = typename Underlying::iterator;
+  using ConstIterator   = typename Underlying::const_iterator;
+  using ValueType       = typename Underlying::value_type;
+  using InitializerList = std::initializer_list<ValueType>;
 
   /**
    * Constructs a new container adapter from a range of elements.
    *
-   * @tparam Range a range-like type.
+   * \tparam Range a range-like type.
    *
-   * @param range A range of elements to initialize the container adapter with.
+   * \param range A range of elements to initialize the container adapter with.
    */
   template <typename Range>
-  ContainerAdapter(const Range& range)
+  explicit ContainerAdapter(const Range& range)
   : _container(std::begin(range), std::end(range)) {
   }
 
   /**
    * Constructs a new container adapter from the list of elements.
    *
-   * @param instructions A list of elements to initialize the container adapter
+   * \param instructions A list of elements to initialize the container adapter
    *                     with.
    */
-  ContainerAdapter(List list) : _container(list) {
+  ContainerAdapter(InitializerList list = InitializerList())
+  : _container(list) {
   }
 
   virtual ~ContainerAdapter() = default;
@@ -133,7 +143,7 @@ class ContainerAdapter {
   /**
    * Return the number of elements stored in the container.
    *
-   * @return The number of elements stored in the container.
+   * \return The number of elements stored in the container.
    */
   virtual size_t size() const noexcept {
     return _container.size();
@@ -142,7 +152,7 @@ class ContainerAdapter {
   /**
    * Returns whether or not the container is empty.
    *
-   * @return True if there are no elements stored in the container at all, else
+   * \return True if there are no elements stored in the container at all, else
    *         false.
    */
   virtual bool isEmpty() const noexcept {

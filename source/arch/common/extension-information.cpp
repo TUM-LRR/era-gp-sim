@@ -26,51 +26,29 @@
 #include "arch/common/instruction-set.hpp"
 #include "common/utility.hpp"
 
-ExtensionInformation::ExtensionInformation() noexcept = default;
+ExtensionInformation::ExtensionInformation(InformationInterface::Format& data) {
+  _deserialize(data);
+}
 
 ExtensionInformation::ExtensionInformation(const std::string& name)
-: _instructions(std::make_unique<InstructionSet>()) {
-  // For constraint checking
-  this->name(name);
+: _name(name), _wordSize(0) {
 }
 
-ExtensionInformation::ExtensionInformation(const ExtensionInformation& other)
-: _name(other._name)
-, _endianness(other._endianness)
-, _alignmentBehavior(other._alignmentBehavior)
-, _wordSize(other._wordSize)
-, _instructions(std::make_unique<InstructionSet>(*other._instructions))
-, _units(other._units) {
+bool ExtensionInformation::operator==(const ExtensionInformation& other) const
+    noexcept {
+  if (this->_name != other._name) return false;
+  if (this->_endianness != other._endianness) return false;
+  if (this->_alignmentBehavior != other._alignmentBehavior) return false;
+  if (this->_wordSize != other._wordSize) return false;
+  if (this->_instructions != other._instructions) return false;
+  if (this->_units != other._units) return false;
+
+  return true;
 }
 
-ExtensionInformation::ExtensionInformation(
-    ExtensionInformation&& other) noexcept
-: ExtensionInformation() {
-  swap(other);
-}
-
-ExtensionInformation& ExtensionInformation::
-operator=(ExtensionInformation other) {
-  swap(other);
-
-  return *this;
-}
-
-ExtensionInformation::~ExtensionInformation() = default;
-
-void ExtensionInformation::swap(ExtensionInformation& other) noexcept {
-  using std::swap;
-
-  swap(_name, other._name);
-  swap(_endianness, other._endianness);
-  swap(_alignmentBehavior, other._alignmentBehavior);
-  swap(_wordSize, other._wordSize);
-  swap(_instructions, other._instructions);
-  swap(_units, other._units);
-}
-
-void swap(ExtensionInformation& first, ExtensionInformation& second) noexcept {
-  first.swap(second);
+bool ExtensionInformation::operator!=(const ExtensionInformation& other) const
+    noexcept {
+  return !(*this == other);
 }
 
 ExtensionInformation& ExtensionInformation::
@@ -86,6 +64,12 @@ operator+(const ExtensionInformation& other) const {
   return temp;
 }
 
+ExtensionInformation&
+ExtensionInformation::deserialize(InformationInterface::Format& data) {
+  _deserialize(data);
+  return *this;
+}
+
 ExtensionInformation& ExtensionInformation::name(const std::string& name) {
   assert(!name.empty());
   _name = name;
@@ -94,7 +78,12 @@ ExtensionInformation& ExtensionInformation::name(const std::string& name) {
 }
 
 const std::string& ExtensionInformation::getName() const noexcept {
+  assert(hasName());
   return _name;
+}
+
+bool ExtensionInformation::hasName() const noexcept {
+  return !_name.empty();
 }
 
 ExtensionInformation& ExtensionInformation::endianness(Endianness endianness) {
@@ -138,32 +127,39 @@ ExtensionInformation& ExtensionInformation::wordSize(size_t wordSize) {
 ExtensionInformation::size_t ExtensionInformation::getWordSize() const
     noexcept {
   assert(hasWordSize());
-  return *_wordSize;
+  return _wordSize;
 }
 
 bool ExtensionInformation::hasWordSize() const noexcept {
-  return static_cast<bool>(_wordSize);
+  return _wordSize > 0;
 }
 
 ExtensionInformation&
 ExtensionInformation::addInstructions(const InstructionSet& instructions) {
-  assert(_instructions != nullptr);
-  *_instructions += instructions;
+  _instructions += instructions;
 
   return *this;
 }
 
 ExtensionInformation&
 ExtensionInformation::setInstructions(const InstructionSet& instructions) {
-  assert(_instructions != nullptr);
-  *_instructions += instructions;
+  _instructions = instructions;
+
+  return *this;
+}
+
+ExtensionInformation& ExtensionInformation::clearInstructions() {
+  _instructions.clear();
 
   return *this;
 }
 
 const InstructionSet& ExtensionInformation::getInstructions() const noexcept {
-  assert(_instructions != nullptr);
-  return *_instructions;
+  return _instructions;
+}
+
+bool ExtensionInformation::hasInstructions() const noexcept {
+  return !_instructions.isEmpty();
 }
 
 ExtensionInformation& ExtensionInformation::addUnits(UnitList units) {
@@ -173,14 +169,29 @@ ExtensionInformation& ExtensionInformation::addUnits(UnitList units) {
 
 ExtensionInformation&
 ExtensionInformation::addUnit(const UnitInformation& unit) {
-  _units.emplace_back(unit);
+  auto iterator = _units.find(unit);
+  if (iterator != _units.end()) {
+    auto combination = *iterator + unit;
+    _units.erase(iterator);
+    _units.emplace(combination);
+  } else {
+    _units.emplace(unit);
+  }
 
   return *this;
 }
 
-const ExtensionInformation::UnitContainer&
-ExtensionInformation::getUnits() const noexcept {
+ExtensionInformation& ExtensionInformation::clearUnits() noexcept {
+  _units.clear();
+  return *this;
+}
+
+const UnitContainer& ExtensionInformation::getUnits() const noexcept {
   return _units;
+}
+
+bool ExtensionInformation::hasUnits() const noexcept {
+  return !_units.empty();
 }
 
 ExtensionInformation& ExtensionInformation::merge(ExtensionList list) {
@@ -189,28 +200,27 @@ ExtensionInformation& ExtensionInformation::merge(ExtensionList list) {
 }
 
 ExtensionInformation&
-ExtensionInformation::merge(const ExtensionInformation& otherExtension) {
-  if (otherExtension._endianness) {
-    _endianness = otherExtension._endianness;
+ExtensionInformation::merge(const ExtensionInformation& other) {
+  if (other.hasEndianness()) {
+    _endianness = other._endianness;
   }
 
-  if (otherExtension._alignmentBehavior) {
-    _alignmentBehavior = otherExtension._alignmentBehavior;
+  if (other.hasAlignmentBehavior()) {
+    _alignmentBehavior = other._alignmentBehavior;
   }
 
-  if (otherExtension._wordSize) {
-    _wordSize = otherExtension._wordSize;
+  if (other.hasWordSize()) {
+    _wordSize = other._wordSize;
   }
 
-  *_instructions += otherExtension.getInstructions();
-  Utility::concatenate(_units, otherExtension.getUnits());
+  addInstructions(other.getInstructions());
+  addUnits(other.getUnits());
 
   return *this;
 }
 
 bool ExtensionInformation::isValid() const noexcept {
-  if (_name.empty()) return false;
-  if (!_instructions->isValid()) return false;
+  if (!_instructions.isValid()) return false;
   if (!Utility::allOf(_units, [](auto& unit) { return unit.isValid(); })) {
     return false;
   }
@@ -218,11 +228,64 @@ bool ExtensionInformation::isValid() const noexcept {
   return true;
 }
 
-bool ExtensionInformation::isValidBase() const noexcept {
+bool ExtensionInformation::isComplete() const noexcept {
   if (!hasEndianness()) return false;
   if (!hasAlignmentBehavior()) return false;
   if (!hasWordSize()) return false;
 
   // Check the basic stuff
   return isValid();
+}
+
+void ExtensionInformation::_deserialize(InformationInterface::Format& data) {
+  assert(data.count("name"));
+
+  name(data["name"]);
+  _parseEndianness(data);
+  _parseAlignmentBehavior(data);
+
+  Utility::doIfThere(data, "word-size", [this](auto& wordSize) {
+    this->wordSize(static_cast<size_t>(wordSize));
+  });
+
+
+  Utility::doIfThere(data, "units", [this](auto& units) {
+    for (auto& unit : units) {
+      this->addUnit(static_cast<UnitInformation>(unit));
+    }
+  });
+
+  Utility::doIfThere(data, "instructions", [this](auto& instructions) {
+    this->addInstructions(static_cast<InstructionSet>(instructions));
+  });
+}
+
+void ExtensionInformation::_parseEndianness(
+    InformationInterface::Format& data) {
+  Utility::doIfThere(data, "endianness", [this](auto& endianness) {
+    if (endianness == "little") {
+      _endianness = ArchitectureProperties::Endianness::LITTLE;
+    } else if (endianness == "big") {
+      _endianness = ArchitectureProperties::Endianness::BIG;
+    } else if (endianness == "mixed") {
+      _endianness = ArchitectureProperties::Endianness::MIXED;
+    } else if (endianness == "bi") {
+      _endianness = ArchitectureProperties::Endianness::BI;
+    } else {
+      assert(false);
+    }
+  });
+}
+
+void ExtensionInformation::_parseAlignmentBehavior(
+    InformationInterface::Format& data) {
+  Utility::doIfThere(data, "alignment-behavior", [this](auto& behavior) {
+    if (behavior == "strict") {
+      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::STRICT;
+    } else if (behavior == "relaxed") {
+      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::RELAXED;
+    } else {
+      assert(false);
+    }
+  });
 }

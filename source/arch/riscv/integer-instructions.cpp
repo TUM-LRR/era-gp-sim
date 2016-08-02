@@ -1,15 +1,34 @@
 #include "arch/riscv/integer-instructions.hpp"
 
+<<<<<<< HEAD
 static bool validateIntegerInstruction(InstructionNode &node, bool immediate) {
   return immediate
              ? node.requireChildren(NodeType::REGISTER, 0, 2) &&
                    node.requireChildren(NodeType::IMMEDIATE, 2, 1)
              : node.requireChildren(NodeType::REGISTER, 0, 3);
 }
+=======
+namespace riscv {
+>>>>>>> master
 
 // TODO
 // Check if the immediate values are representable by 20 bits
 
+<<<<<<< HEAD
+=======
+bool validateIntegerInstruction(InstructionNode &node, bool immediate) {
+  // this looks bad, change it!
+  // Also use enums instead of booleans
+  return immediate
+             ? node.requireChildren(
+                   AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) &&
+                   node.requireChildren(
+                       AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)
+             : node.requireChildren(
+                   AbstractSyntaxTreeNode::Type::REGISTER, 0, 3);
+}
+
+>>>>>>> master
 // validate functions
 bool AddInstructionNode::validate() {
   return validateIntegerInstruction(*this, _immediate);
@@ -49,3 +68,7 @@ MemoryValue SubInstructionNode::getValue(DummyMemoryAccess &memory_access) {
 
   return MemoryValue{};
 }
+<<<<<<< HEAD
+=======
+}
+>>>>>>> master

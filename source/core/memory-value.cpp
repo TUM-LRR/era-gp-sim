@@ -17,6 +17,7 @@
  */
 
 #include "core/memory-value.hpp"
+<<<<<<< HEAD
 namespace {
 std::size_t constexpr SizeOfByte(const std::size_t byteSize) {
   return (byteSize + 7) / 8;
@@ -208,3 +209,5 @@ std::ostream &operator<<(std::ostream &stream, const MemoryValue &value) {
     tohex(stream, value._data[i]);
   return stream << "]";
 }
+=======
+>>>>>>> master

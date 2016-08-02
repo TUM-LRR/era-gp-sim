@@ -15,28 +15,17 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "arch/common/abstract-node-factories.hpp"
+#include <memory>
+#include <string>
 
-/*
- * Stub implementations for the destructors
- */
+#include "arch/riscv/register-access-node-factory.hpp"
 
-// INSTRUCTION NODE
+namespace riscv {
 
-AbstractInstructionNodeFactory::~AbstractInstructionNodeFactory() {}
-
-// IMMEDIATE NODE
-
-AbstractImmediateNodeFactory::~AbstractImmediateNodeFactory() {}
-
-// REGISTER ACCESS NODE
-
-AbstractRegisterAccessNodeFactory::~AbstractRegisterAccessNodeFactory() {}
-
-// MEMORY ACCESS NODE
-
-AbstractMemoryAccessNodeFactory::~AbstractMemoryAccessNodeFactory() {}
-
-// ARITHMETIC OPERATION NODE
-
-AbstractArithmeticOpNodeFactory::~AbstractArithmeticOpNodeFactory() {}
+RegisterAccessNodeFactory::Node
+RegisterAccessNodeFactory::createRegisterAccessNode(
+    const std::string &id) const {
+  // return std::make_unique<RegisterAccessNode>(id);
+  return {};
+}
+}
