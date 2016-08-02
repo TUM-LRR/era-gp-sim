@@ -175,6 +175,7 @@ class MemoryValue {
   friend std::ostream &
   operator<<(std::ostream &stream, const MemoryValue &value);
 
+//This is not beautiful at all... But I think it is better than including a gtest header (i.e. external dependency).
 #ifndef FRIEND_TEST
 #define FRIEND_TEST(a,b)
 #endif
