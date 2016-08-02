@@ -1,8 +1,8 @@
 
 #include <random>
 
-#include "gtest\gtest.h"
-#include "core\memory-value.hpp"
+#include "gtest/gtest.h"
+#include "core/memory-value.hpp"
 
 namespace {
 constexpr std::size_t scale = 1;
