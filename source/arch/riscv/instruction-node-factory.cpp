@@ -26,41 +26,8 @@
 namespace riscv {
 
 void InstructionNodeFactory::initializeInstructionMap() {
-  // Integer Instructions
-  _instructionMap.emplace(
-      "ADD", []() { return std::make_unique<IntegerInstructionNode>(false); });
-  _instructionMap.emplace(
-      "ADDI", []() { return std::make_unique<AddInstructionNode>(true); });
-  _instructionMap.emplace(
-      "SUB", []() { return std::make_unique<SubInstructionNode>(false); });
-  _instructionMap.emplace(
-      "SUBI", []() { return std::make_unique<SubInstructionNode>(true); });
-
-  // Load/Store Instructions
-  /*_instructionMap.emplace("LW", []() {
-    return std::make_unique<LoadInstructionNode>(LoadType::WORD);
-  });
-  _instructionMap.emplace("LH", []() {
-    return std::make_unique<LoadInstructionNode>(LoadType::HALF_WORD);
-  });
-  _instructionMap.emplace("LHU", []() {
-    return std::make_unique<LoadInstructionNode>(LoadType::HALF_WORD_UNSIGNED);
-  });
-  _instructionMap.emplace("LB", []() {
-    return std::make_unique<LoadInstructionNode>(LoadType::BYTE);
-  });
-  _instructionMap.emplace("LBU", []() {
-    return std::make_unique<LoadInstructionNode>(LoadType::BYTE_UNSIGNED);
-  });
-  _instructionMap.emplace("SW", []() {
-    return std::make_unique<StoreInstructionNode>(StoreType::WORD);
-  });
-  _instructionMap.emplace("SH", []() {
-    return std::make_unique<StoreInstructionNode>(StoreType::HALF_WORD);
-  });
-  _instructionMap.emplace("SB", []() {
-    return std::make_unique<StoreInstructionNode>(StoreType::BYTE);
-  });*/
+  // TODO Init the map and pass the instruction nodes their
+  // respective InstructionInformation objects
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>

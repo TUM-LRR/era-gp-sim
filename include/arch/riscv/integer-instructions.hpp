@@ -32,14 +32,15 @@
 namespace riscv {
 
 class IntegerInstructionNode : public InstructionNode {
+ public:
   /* Different types of integer instructions within RISC V.
      See RISC V specification for reference. */
-  enum struct Type { ADD, SLT, SLTU, AND, OR, XOR, SLI, SRL, SRA };
+  enum struct Type { ADD, SUB, SLT, SLTU, AND, OR, XOR, SLI, SRL, SRA };
 
  public:
-  IntegerInstruction(InstructionInformation& instructionInformation,
-                     Type type,
-                     bool immediate)
+  IntegerInstructionNode(InstructionInformation& instructionInformation,
+                         Type type,
+                         bool immediate)
   : InstructionNode(instructionInformation)
   , _type(type)
   , _immediate(immediate) {
