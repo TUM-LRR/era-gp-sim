@@ -1,6 +1,6 @@
 {
   "name": "rv64i",
-  "extends": "rvi32",
+  "extends": "rv32i",
   "word-size": 64,
   "reset-units": true,
   "instructions": [
