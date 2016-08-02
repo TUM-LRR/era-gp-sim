@@ -17,11 +17,33 @@
  */
 
 #include "core/memory-value.hpp"
-namespace {
-std::size_t constexpr SizeOfByte(const std::size_t byteSize) {
+
+static std::size_t constexpr sizeOfBytesStored(const std::size_t byteSize) {
+  // We round up to the next byte border.
   return (byteSize + 7) / 8;
 }
+
+static std::size_t constexpr byteAddress(const std::size_t address,
+                                  const std::size_t byteSize) {
+  // Address of first index + address in Byte = real address
+  return (address / byteSize) * sizeOfBytesStored(byteSize) + (address % byteSize) / 8;
 }
+
+static std::size_t constexpr offset(const std::size_t address,
+                             const std::size_t byteSize) {
+  // Offset in byte.
+  return (address % byteSize) % 8;
+}
+
+static constexpr char hex[16]{
+    '0', '1', '2', '3', '4', '5', '6', '7',
+    '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+};
+
+static std::ostream &tohex(std::ostream &stream, std::uint8_t v) {
+  return stream << hex[(int)v / 16] << hex[(int)v % 16] << ';';
+}
+
 
 MemoryValue::MemoryValue() : MemoryValue(1u, 8u) {
 }
@@ -35,7 +57,7 @@ MemoryValue::MemoryValue(std::vector<uint8_t> &&other,
 }
 MemoryValue::MemoryValue(size_t byteAmount, std::size_t byteSize)
 : _byteSize{byteSize}
-, _data(std::size_t{byteAmount * SizeOfByte(byteSize)}, 0) {
+, _data(std::size_t{byteAmount * sizeOfBytesStored(byteSize)}, 0) {
 }
 
 
@@ -45,16 +67,16 @@ MemoryValue::MemoryValue(const MemoryValue &other,
                          const std::size_t byteSize)
 : _byteSize{byteSize}
 , _data(std::size_t{(end - begin + byteSize - 1) / byteSize *
-                    SizeOfByte(byteSize)},
+                    sizeOfBytesStored(byteSize)},
         0) {
   assert(begin <= end);
   assert(end <= other.getSize());
-  std::size_t sizeOfByte{SizeOfByte(_byteSize)};
-  std::size_t byteAmount{_data.size() / sizeOfByte};
+  std::size_t sizeOfBytes{sizeOfBytesStored(_byteSize)};
+  std::size_t byteAmount{_data.size() / sizeOfBytes};
   std::size_t pos{0};
   for (std::size_t i = 0; i < byteAmount; ++i) {
-    for (std::size_t j = 0; j < sizeOfByte; ++j) {
-      _data[i * sizeOfByte + j] = other.getByteAt(begin + pos + 8 * j);
+    for (std::size_t j = 0; j < sizeOfBytes; ++j) {
+      _data[i * sizeOfBytes + j] = other.getByteAt(begin + pos + 8 * j);
     }
     pos += _byteSize;
   }
@@ -66,48 +88,28 @@ MemoryValue MemoryValue::subSet(const std::size_t begin,
   return MemoryValue(*this, begin, end, byteSize);
 }
 
-namespace {
-constexpr uint8_t testOr[8]{
-    0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80,
-};
-constexpr uint8_t testAnd[8]{
-    0xFE, 0xFD, 0xFB, 0xF7, 0xEF, 0xDF, 0xBF, 0x7F,
-};
-std::size_t constexpr byteAddress(const std::size_t address,
-                                  const std::size_t byteSize) {
-  return (address / byteSize) * SizeOfByte(byteSize) + (address % byteSize) / 8;
-}
-std::size_t constexpr offset(const std::size_t address,
-                             const std::size_t byteSize) {
-  return (address % byteSize) % 8;
-}
-}
-
 bool MemoryValue::get(const std::size_t address) const {
   assert(address < getSize());
-  return ((_data[byteAddress(address, _byteSize)]) &
-          testOr[offset(address, _byteSize)]) != 0;
+  assert(address >= 0);
+  return _data[byteAddress(address, _byteSize)] &
+          (1 << offset(address, _byteSize));
 }
 
 void MemoryValue::put(const std::size_t address, const bool value) {
   assert(address < getSize());
+  assert(address >= 0);
   if (value)
     _data[byteAddress(address, _byteSize)] |=
-        testOr[offset(address, _byteSize)];
+        (1 << offset(address, _byteSize));
   else
     _data[byteAddress(address, _byteSize)] &=
-        testAnd[offset(address, _byteSize)];
+        ~(1 << offset(address, _byteSize));
 }
 
 bool MemoryValue::set(const std::size_t address, const bool value) {
-  assert(address < getSize());
-  if ((((_data[byteAddress(address, _byteSize)]) &
-        testOr[offset(address, _byteSize)]) != 0) == value)
-    return value;
-  else
-    _data[byteAddress(address, _byteSize)] ^=
-        testOr[offset(address, _byteSize)];
-  return !value;
+  auto prev = get(address);
+  put(address, value);
+  return prev;
 }
 
 std::size_t MemoryValue::getByteSize() const {
@@ -115,7 +117,7 @@ std::size_t MemoryValue::getByteSize() const {
 }
 
 std::size_t MemoryValue::getByteAmount() const {
-  return _data.size() / SizeOfByte(_byteSize);
+  return _data.size() / sizeOfBytesStored(_byteSize);
 }
 
 std::size_t MemoryValue::getSize() const {
@@ -124,12 +126,6 @@ std::size_t MemoryValue::getSize() const {
 
 const std::vector<uint8_t> &MemoryValue::internal() const {
   return _data;
-}
-
-namespace {
-constexpr uint8_t testEQ[8]{
-    0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F,
-};
 }
 
 bool MemoryValue::operator==(const MemoryValue &other) const {
@@ -142,7 +138,8 @@ bool MemoryValue::operator==(const MemoryValue &other) const {
     if (i % byteByteSize != byteByteSize - 1) {
       if (_data[i] != other._data[i]) return false;
     } else {
-      if ((_data[i] & testEQ[shift]) != (other._data[i] & testEQ[shift]))
+      int testEq = ((1 << shift) - 1);
+      if ((_data[i] & testEq) != (other._data[i] & testEq))
         return false;
     }
   }
@@ -155,42 +152,18 @@ bool MemoryValue::operator!=(const MemoryValue &other) const {
 
 std::uint8_t MemoryValue::getByteAt(std::size_t address) const {
   assert(address < getSize());
-  std::size_t pos{(address / _byteSize) * SizeOfByte(_byteSize) +
+  std::size_t pos{(address / _byteSize) * sizeOfBytesStored(_byteSize) +
                   (address % _byteSize) / 8};
   std::uint8_t result{
       static_cast<std::uint8_t>(_data[pos++] >> ((address % _byteSize) % 8))};
   std::size_t filled{std::min((_byteSize - (address % _byteSize)),
                               8 - ((address % _byteSize) % 8))};
   while (filled < 8 && pos < _data.size()) {
-    result &= testEQ[filled];
+    result &= (1 << filled) - 1;
     result |= _data[pos++] << (filled);
     filled += _byteSize - ((address + filled) % _byteSize);
   }
   return result;
-}
-
-namespace {
-constexpr char hex[16]{
-    '0',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-};
-std::ostream &tohex(std::ostream &stream, std::uint8_t v) {
-  return stream << hex[(int)v / 16] << hex[(int)v % 16] << ';';
-}
 }
 
 std::ostream &operator<<(std::ostream &stream, const MemoryValue &value) {
