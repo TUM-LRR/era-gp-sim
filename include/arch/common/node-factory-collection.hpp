@@ -23,9 +23,9 @@
 
 #include "arch/common/abstract-arithmetic-node-factory.hpp"
 #include "arch/common/instruction-set.hpp"
+#include "core/memory-value.hpp"
 
 class Architecture;
-class MemoryValue;
 class AbstractSyntaxTreeNode;
 class AbstractImmediateNodeFactory;
 class AbstractInstructionNodeFactory;

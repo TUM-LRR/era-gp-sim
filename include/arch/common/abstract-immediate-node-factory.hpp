@@ -21,8 +21,7 @@
 #include <memory>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
-
-class MemoryValue;
+#include "core/memory-value.hpp"
 
 /**
  * \brief The AbstractImmediateNodeFactory class
