@@ -15,29 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-<<<<<<< HEAD
-#ifndef ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_
-#define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_
-
-#include "arch/common/ast.hpp"
-
-/** A node that represents a RISC V specific instruction */
-class InstructionNode : public AbstractSyntaxTreeNode {
-public:
-  /**
-   * Constructs a new node that represents a RISC V specific instruction.
-   */
-  InstructionNode() : AbstractSyntaxTreeNode(NodeType::INSTRUCTION) {}
-
-  /* Ensure this class is also pure virtual */
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) = 0;
-  virtual bool validate() = 0;
-  virtual MemoryValue assemble() = 0;
-  virtual std::string getIdentifier() = 0;
-
-  /**
-   * Checks if this node has 'amount' children of type 'type', starting at index
-=======
 #ifndef ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
 #define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
 
@@ -63,22 +40,14 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   /**
    * Checks if this node has 'amount' children of type 'type', starting at
    * index
->>>>>>> master
    * 'startIndex'.
    *
    * \param startIndex The index to start checking for registers.
    * \param amount The amount of registers required.
    * \return true if this node matches the requirements.
    */
-<<<<<<< HEAD
-  bool requireChildren(NodeType type, size_t startIndex, size_t amount);
-};
-
-#endif // ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP_
-=======
   bool requireChildren(Type type, size_t startIndex, size_t amount);
 };
 }
 
 #endif /* ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP */
->>>>>>> master

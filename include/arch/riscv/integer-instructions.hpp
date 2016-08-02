@@ -20,11 +20,8 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 #define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 
-<<<<<<< HEAD
-=======
 #include <string>
 
->>>>>>> master
 #include "arch/riscv/instruction-node.hpp"
 
 /*
@@ -32,11 +29,8 @@
  *                    + their respective immediate equivalents
  */
 
-<<<<<<< HEAD
-=======
 namespace riscv {
 
->>>>>>> master
 /**
  * Validates an integer instruction node. Every RISC V integer instruction is
  * either register-register or a register-immediate. This is a util method, that
@@ -47,11 +41,7 @@ namespace riscv {
  * \param immediate Whether the node is the register-immediate representation.
  * \return true if the node matches the requirements.
  */
-<<<<<<< HEAD
-static bool validateIntegerInstruction(InstructionNode &node, bool immediate);
-=======
 bool validateIntegerInstruction(InstructionNode &node, bool immediate);
->>>>>>> master
 
 /**
  * This node represents the add/addi instruction.
@@ -59,30 +49,16 @@ bool validateIntegerInstruction(InstructionNode &node, bool immediate);
  * See RISC V specification for details about the instruction.
  */
 class AddInstructionNode : public InstructionNode {
-<<<<<<< HEAD
-public:
-  AddInstructionNode(bool immediate)
-      : InstructionNode(), _immediate(immediate) {}
-=======
  public:
   AddInstructionNode(bool immediate)
   : InstructionNode(), _immediate(immediate) {
   }
->>>>>>> master
 
   virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
 
   virtual bool validate();
 
   virtual MemoryValue assemble() {
-<<<<<<< HEAD
-    return MemoryValue{}; // TODO
-  }
-
-  virtual std::string getIdentifier() { return _immediate ? "ADDI" : "ADD"; }
-
-private:
-=======
     return MemoryValue{};// TODO
   }
 
@@ -91,7 +67,6 @@ private:
   }
 
  private:
->>>>>>> master
   bool _immediate;
 };
 
@@ -101,32 +76,16 @@ private:
  * See RISC V specification for details about the instruction.
  */
 class SubInstructionNode : public InstructionNode {
-<<<<<<< HEAD
-public:
-  SubInstructionNode(bool immediate)
-      : InstructionNode(), _immediate(immediate) {}
-=======
  public:
   SubInstructionNode(bool immediate)
   : InstructionNode(), _immediate(immediate) {
   }
->>>>>>> master
 
   virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
 
   virtual bool validate();
 
   virtual MemoryValue assemble() {
-<<<<<<< HEAD
-    return MemoryValue{}; // TODO
-  }
-
-  virtual std::string getIdentifier() { return _immediate ? "SUBI" : "SUB"; }
-
-private:
-  bool _immediate;
-};
-=======
     return MemoryValue{};// TODO
   }
 
@@ -138,6 +97,5 @@ private:
   bool _immediate;
 };
 }
->>>>>>> master
 
 #endif /* ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_ */
