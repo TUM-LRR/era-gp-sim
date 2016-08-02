@@ -13,7 +13,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP_
 #define ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP_
@@ -28,60 +29,16 @@
 #include "symbol-table.hpp"
 
 /**
- * \class IntermediateRepresentator
  * \brief Provides methods for collecting and compiling a command list.
  */
 class IntermediateRepresentator {
  public:
   /**
-   * \fn IntermediateRepresentator::IntermediateRepresentator()
    * \brief Instantiates an IntermediateRepresentator with the default values.
    */
   IntermediateRepresentator() = default;
 
   /**
-   * \fn IntermediateRepresentator::IntermediateRepresentator(const
-   * IntermediateRepresentator& other)
-   * \brief Default copy constructor.
-   * \param other The source IntermediateRepresentator instance.
-   */
-  IntermediateRepresentator(const IntermediateRepresentator& other) = default;
-
-  /**
-   * \fn
-   * IntermediateRepresentator::IntermediateRepresentator(IntermediateRepresentator&&
-   * other)
-   * \brief Default move constructor.
-   * \param other The source IntermediateRepresentator instance.
-   */
-  IntermediateRepresentator(IntermediateRepresentator&& other) = default;
-
-  /**
-   * \fn IntermediateRepresentator::operator =(const IntermediateRepresentator&
-   * other)
-   * \brief Default copy assignment operator.
-   * \param other The source IntermediateRepresentator instance.
-   */
-  IntermediateRepresentator&
-  operator=(const IntermediateRepresentator& other) = default;
-
-  /**
-   * \fn IntermediateRepresentator::operator =(IntermediateRepresentator&&
-   * other)
-   * \brief Default move assignment operator.
-   * \param other The source IntermediateRepresentator instance.
-   */
-  IntermediateRepresentator&
-  operator=(IntermediateRepresentator&& other) = default;
-
-  /**
-   * \fn IntermediateRepresentator::~IntermediateRepresentator()
-   * \brief Default destructor.
-   */
-  ~IntermediateRepresentator() = default;
-
-  /**
-   * \fn IntermediateRepresentator::insertCommand(const T& command)
    * \brief Inserts the given command into the command list.
    * \param command The given command.
    * \tparam T The command type.
@@ -92,16 +49,17 @@ class IntermediateRepresentator {
   }
 
   /**
-   * \fn IntermediateRepresentator::transform(CompileState& state)
    * \brief Transforms the commands to a syntax tree list.
+   * \param generator A syntax tree generator to transform the instructions into
+   * a readable format for the architecture module.
    * \param state The compile state to report errors.
    * \return The list of syntax trees to be interpreted by the architecture.
    */
-  FinalRepresentation transform(CompileState& state);
+  FinalRepresentation
+  transform(const SyntaxTreeGenerator& generator, CompileState& state);
 
  private:
   /**
-   * \var IntermediateRepresentator::_commandList
    * \brief The internal command list.
    */
   std::vector<std::unique_ptr<IntermediateOperation>> _commandList;

@@ -13,7 +13,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef ERAGPSIM_PARSER_CODE_POSITION_HPP_
 #define ERAGPSIM_PARSER_CODE_POSITION_HPP_
@@ -21,9 +22,10 @@
 #include <utility>
 
 /**
- * \class CodePosition
  * \brief Denotes a code position in the format (line, character).
  */
-using CodePosition = std::pair<unsigned int, unsigned int>;// For now.
+using CodePosition =
+    std::pair<unsigned int, unsigned int>;// For now. To be replaced by a real
+                                          // class, inheriting from pair.
 
 #endif

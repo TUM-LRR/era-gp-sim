@@ -13,7 +13,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef ERAGPSIM_PARSER_FINAL_REPRESENTATION_HPP_
 #define ERAGPSIM_PARSER_FINAL_REPRESENTATION_HPP_
@@ -35,7 +36,6 @@ struct FinalCommand {
 
 
 /**
- * \class FinalRepresentation
  * \brief Denotes the temporary output of an IntermediateRepresentator ready to
  * be used by the architecture.
  */

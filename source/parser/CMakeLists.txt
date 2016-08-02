@@ -10,6 +10,7 @@ set(PARSER_SOURCES
   riscv-parser.cpp
   symbol-table.cpp
   riscv-regex.cpp
+  syntax-tree-generator.cpp
 )
 
 ########################################
