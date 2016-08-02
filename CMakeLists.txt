@@ -25,14 +25,8 @@ endif()
 # INCLUDES
 ########################################
 
-<<<<<<< HEAD
-FILE(GLOB_RECURSE HeaderFiles "include/*.hpp")
-add_custom_target(headers SOURCES ${HeaderFiles})
-
-=======
 # For third-party includes (need relative to root)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
->>>>>>> master
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 ########################################

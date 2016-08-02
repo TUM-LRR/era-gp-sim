@@ -13,15 +13,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
-<<<<<<< HEAD
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-=======
- * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
-
-#ifndef ERAGPSIM_CORE_MEMORYVALUE_H
-#define ERAGPSIM_CORE_MEMORYVALUE_H
->>>>>>> master
 
 #ifndef ERAGPSIM_CORE_MEMORYVALUE_HPP_
 #define ERAGPSIM_CORE_MEMORYVALUE_HPP_
@@ -33,7 +26,6 @@
 #include <iostream>
 #include <vector>
 
-<<<<<<< HEAD
 #include "gtest\gtest_prod.h"
 
 class MemoryValue {
@@ -195,9 +187,3 @@ class MemoryValue {
   std::uint8_t getByteAt(std::size_t address) const;
 };
 #endif// ERAGPSIM_CORE_MEMORYVALUE_HPP_
-=======
-// Set of bits for in/out-putting to/from memory/registers
-class MemoryValue {};
-
-#endif// ERAGPSIM_CORE_MEMORYVALUE_H
->>>>>>> master
