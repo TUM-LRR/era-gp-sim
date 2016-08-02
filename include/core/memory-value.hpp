@@ -26,8 +26,6 @@
 #include <iostream>
 #include <vector>
 
-#include "gtest\gtest_prod.h"
-
 class MemoryValue {
  public:
   /**
@@ -177,8 +175,12 @@ class MemoryValue {
   friend std::ostream &
   operator<<(std::ostream &stream, const MemoryValue &value);
 
+#ifndef FRIEND_TEST
+#define FRIEND_TEST(a,b)
+#endif
   FRIEND_TEST(TestMemoryValue, charAt);
   FRIEND_TEST(TestMemoryValue, death);
+#undef FRIEND_TEST
 
  private:
   std::size_t _byteSize;
