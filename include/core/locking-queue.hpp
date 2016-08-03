@@ -46,7 +46,9 @@ class LockingQueue {
   template <typename U>
   void push(U&& value) {
     std::lock_guard<std::mutex> lock(_mutex);
-    _queue.emplace_back(std::forward<U>(value));
+    using Target = typename std::conditional<std::is_move_assignable<U>::value,
+                                             U&&, const U&>::type;
+    _queue.emplace_back(static_cast<Target>(value));
   }
   
   /**
@@ -61,7 +63,8 @@ class LockingQueue {
     // If the queue is empty, return false
     if (_queue.size() == 0) return false;
     // Otherwise, cast the value to the proper target type (T&& or const T&)
-    using Target = typename std::conditional<std::is_move_assignable<T>::value, T&&, const T&>::type;
+    using Target = typename std::conditional<std::is_move_assignable<T>::value,
+                                             T&&, const T&>::type;
     value = static_cast<Target>(_queue.front());
     // Remove the value from the queue and confirm success
     _queue.pop_front();

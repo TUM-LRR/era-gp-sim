@@ -70,7 +70,9 @@ class LockfreeQueue {
   template <typename U>
   void push(U&& value) {
     // Create new node
-    Node* node = new Node { nullptr, std::forward<U>(value) };
+    using Target = typename std::conditional<std::is_move_assignable<U>::value, 
+                                             U&&, const U&>::type;
+    Node* node = new Node { nullptr, static_cast<Target>(value) };
     
     // Add the new node
     while (true) {
@@ -103,8 +105,9 @@ class LockfreeQueue {
       
       // Selects to cast the value to an rvalue reference (like std::move)
       // if and only if the value type can be move-assigned (via
-      // std::is_move_assignable).
-      using Target = typename std::conditional<std::is_move_assignable<T>::value, T&&, T>::type;
+      // std::is_move_assignable), otherwise use the normal copy constructor.
+      using Target = typename std::conditional<std::is_move_assignable<T>::value, 
+                                               T&&, const T&>::type;
       value = static_cast<Target>(node->value);
       
       // Consume this node
