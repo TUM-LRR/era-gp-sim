@@ -17,7 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser\string-parser.hpp"
+#include "parser/string-parser.hpp"
 #include <functional>
 #include <algorithm>
 
