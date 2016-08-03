@@ -1,4 +1,3 @@
-
 # Created by https://www.gitignore.io/api/emacs,c++,sass,c,qt
 
 ### Emacs ###
@@ -155,7 +154,11 @@ Makefile*
 # QtCtreator CMake
 CMakeLists.txt.user
 
+# VS Code
+.vscode/
 
+# Py Cache
+__pycache__/
 
 # Created by https://www.gitignore.io/api/latex
 
@@ -196,3 +199,16 @@ CMakeLists.txt.user
 *.xdy
 *.tdo
 *.pdf
+
+# Documentation
+
+docs/html
+docs/latex
+
+# Other
+
+build/
+.dir-locals.el
+.clang_complete
+.tags
+.tags1

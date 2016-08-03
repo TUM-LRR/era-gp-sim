@@ -9,6 +9,9 @@ AllowShortFunctionsOnASingleLine: false
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
 
+AlignOperands: true
+AlignConsecutiveAssignments: true
+
 BinPackArguments: false
 BinPackParameters: false
 BreakConstructorInitializersBeforeComma: true
@@ -23,7 +26,7 @@ NamespaceIndentation: None
 PointerAlignment: Left
 SpacesBeforeTrailingComments: 0
 TabWidth: 2
-UseTab: Always
+UseTab: Never
 
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 10
