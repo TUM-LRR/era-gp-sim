@@ -22,52 +22,28 @@
 #include <cassert>
 #include <string>
 
+#include "arch/common/architecture-brewery.hpp"
+#include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/extension-information.hpp"
+
+Architecture Architecture::Brew(const ArchitectureFormula& formula) {
+  return ArchitectureBrewery(formula).brew();
+}
+
+Architecture::Architecture(const std::string& name) : _name(name) {
+}
 
 Architecture::Architecture(const std::string& name,
                            const ExtensionInformation& base)
 : _validated(false) {
-  assert(base.isValidBase());
-  // Only copy after
-  _base = std::make_unique<ExtensionInformation>(base);
+  assert(base.isComplete());
   // For constraints
   this->name(name);
 }
 
-Architecture::Architecture() noexcept = default;
-
-Architecture::Architecture(const Architecture& other)
-: _name(other._name)
-, _base(std::make_unique<ExtensionInformation>(*other._base))
-, _validated(other._validated) {
-}
-
-Architecture::Architecture(Architecture&& other) noexcept : Architecture() {
-  swap(other);
-}
-
-Architecture& Architecture::operator=(Architecture other) {
-  swap(other);
-  return *this;
-}
-
-Architecture::~Architecture() = default;
-
-void Architecture::swap(Architecture& other) noexcept {
-  using std::swap;
-
-  swap(_name, other._name);
-  swap(_base, other._base);
-  swap(_validated, other._validated);
-}
-
-void swap(Architecture& first, Architecture& second) noexcept {
-  first.swap(second);
-}
-
 Architecture& Architecture::operator+=(const ExtensionInformation& extension) {
-  return extend(extension);
+  return extendBy(extension);
 }
 
 Architecture Architecture::
@@ -78,10 +54,8 @@ operator+(const ExtensionInformation& extension) const {
   return temp;
 }
 
-Architecture& Architecture::extend(const ExtensionInformation& extension) {
-  assert(_base != nullptr);
-
-  _base->merge(extension);
+Architecture& Architecture::extendBy(const ExtensionInformation& extension) {
+  _base.merge(extension);
   _validated = false;
 
   return *this;
@@ -95,18 +69,19 @@ Architecture& Architecture::name(const std::string& name) {
 }
 
 const std::string& Architecture::getName() const noexcept {
+  assert(isValidated());
   return _name;
 }
 
 Architecture::Endianness Architecture::getEndianness() const noexcept {
   assert(isValidated());
-  return _base->getEndianness();
+  return _base.getEndianness();
 }
 
 Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const
     noexcept {
   assert(isValidated());
-  return _base->getAlignmentBehavior();
+  return _base.getAlignmentBehavior();
 }
 
 /**
@@ -114,17 +89,21 @@ Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const
  */
 Architecture::word_size_t Architecture::getWordSize() const noexcept {
   assert(isValidated());
-  return _base->getWordSize();
+  return _base.getWordSize();
 }
 
-const Architecture::UnitContainer& Architecture::getUnits() const {
+const UnitContainer& Architecture::getUnits() const {
   assert(isValidated());
-  return _base->getUnits();
+  return _base.getUnits();
 }
 
 const InstructionSet& Architecture::getInstructions() const {
   assert(isValidated());
-  return _base->getInstructions();
+  return _base.getInstructions();
+}
+
+const NodeFactoryCollection& Architecture::getNodeFactories() const {
+  return _factories;
 }
 
 Architecture& Architecture::validate() {
@@ -142,8 +121,7 @@ bool Architecture::isValidated() const noexcept {
 
 bool Architecture::isValid() const noexcept {
   if (_name.empty()) return false;
-  if (_base == nullptr) return false;
-  if (!_base->isValidBase()) return false;
+  if (!_base.isComplete()) return false;
 
   return true;
 }

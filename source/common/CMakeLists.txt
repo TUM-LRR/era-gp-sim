@@ -3,7 +3,7 @@
 ########################################
 
 set(COMMON_SOURCES
-  # Only headers right now :P
+  ${CMAKE_CURRENT_SOURCE_DIR}/utility.cpp
 )
 
 ########################################

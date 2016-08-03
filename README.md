@@ -1,5 +1,7 @@
-[![Stories in Ready](https://badge.waffle.io/TUM-LRR/era-gp-sim.png?label=ready&title=Ready)](https://waffle.io/TUM-LRR/era-gp-sim)
 # era-gp-sim
+
+[![Stories in Ready](https://badge.waffle.io/TUM-LRR/era-gp-sim.png?label=ready&title=Ready)](https://waffle.io/TUM-LRR/era-gp-sim) [![Build Status](https://travis-ci.org/TUM-LRR/era-gp-sim.svg?branch=master)](https://travis-ci.org/TUM-LRR/era-gp-sim) [![AUR](https://img.shields.io/aur/license/yaourt.svg?maxAge=2592000)]()
+
 ERA-Großpraktikum Simulatorentwicklung
 
 # License
