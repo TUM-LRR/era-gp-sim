@@ -6,6 +6,7 @@ set(TEST_PARSER_SOURCES
   intermediate-instruction-test.cpp
   intermediate-representator-test.cpp
   symbol-table-test.cpp
+  string-parser-test.cpp
 )
 
 ########################################
