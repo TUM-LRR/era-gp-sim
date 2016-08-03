@@ -116,6 +116,12 @@ class IntegerInstructionNode : public InstructionNode {
    */
   virtual SizeType performIntegerOperation(SizeType op1, SizeType op2) = 0;
 
+ protected:
+  SizeType getLower5Bit(SizeType op) const {
+    constexpr SizeType andValue = 0b11111;
+    return op & andValue;
+  }
+
  private:
   /** byte order used in RISC-V architecture*/
   static constexpr ByteOrder RISCV_BYTEORDER = ByteOrder::kLittleEndian;
@@ -169,7 +175,8 @@ template <typename SizeType>
 class SubInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
   SubInstructionNode(InstructionInformation info)
-      : IntegerInstructionNode<SizeType>(info, false) //RISC-V does not specifiy a subi
+      : IntegerInstructionNode<SizeType>(
+            info, false)  // RISC-V does not specifiy a subi
   {}
 
   MemoryValue assemble() override { return MemoryValue(); }
@@ -194,7 +201,7 @@ class SubInstructionNode : public IntegerInstructionNode<SizeType> {
 template <typename SizeType>
 class AndInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
-    AndInstructionNode(InstructionInformation info, bool isImmediateInstruction)
+  AndInstructionNode(InstructionInformation info, bool isImmediateInstruction)
       : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
 
   MemoryValue assemble() override { return MemoryValue(); }
@@ -219,7 +226,7 @@ class AndInstructionNode : public IntegerInstructionNode<SizeType> {
 template <typename SizeType>
 class OrInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
-    OrInstructionNode(InstructionInformation info, bool isImmediateInstruction)
+  OrInstructionNode(InstructionInformation info, bool isImmediateInstruction)
       : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
 
   MemoryValue assemble() override { return MemoryValue(); }
@@ -244,7 +251,7 @@ class OrInstructionNode : public IntegerInstructionNode<SizeType> {
 template <typename SizeType>
 class XorInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
-    XorInstructionNode(InstructionInformation info, bool isImmediateInstruction)
+  XorInstructionNode(InstructionInformation info, bool isImmediateInstruction)
       : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
 
   MemoryValue assemble() override { return MemoryValue(); }
@@ -260,7 +267,109 @@ class XorInstructionNode : public IntegerInstructionNode<SizeType> {
   }
 };
 
+/*!
+ * Represents a RISC-V "sll/slli" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
+ */
+template <typename SizeType>
+class ShiftLogicalLeftInstructionNode
+    : public IntegerInstructionNode<SizeType> {
+ public:
+  ShiftLogicalLeftInstructionNode(InstructionInformation info,
+                                  bool isImmediateInstruction)
+      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
 
+  MemoryValue assemble() override { return MemoryValue(); }
+
+  /*!
+   * Shifts bits in op1 logical left (shifts zeros into the lower part). How
+   * many zeros are shifted in is
+   * determined by the lower 5bit of op2
+   * \param op1
+   * \param op2
+   * \return op1 << lower5bit(op2)
+   */
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) override {
+    return op1 << this->getLower5Bit(op2);
+  }
+};
+
+/*!
+ * Represents a RISC-V "srl/srli" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
+ */
+template <typename SizeType>
+class ShiftLogicalRightInstructionNode
+    : public IntegerInstructionNode<SizeType> {
+ public:
+  ShiftLogicalRightInstructionNode(InstructionInformation info,
+                                   bool isImmediateInstruction)
+      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction)
+  {
+      //For logical right shift, SizeType must be a unsigned integral type
+      //Due to the fact that signed right shift is implementation/compiler specific
+      //and can be either a logical shift or a arithmetical shift
+      assert((SizeType(0)-1) >= 0);
+  }
+
+  MemoryValue assemble() override { return MemoryValue(); }
+
+  /*!
+   * Shifts bits in op1 logical right (shifts zeros into the upper part). How
+   * many zeros are shifted in is
+   * determined by the lower 5bit of op2
+   * \param op1
+   * \param op2
+   * \return op1 >> lower5bit(op2)
+   */
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) override {
+    return op1 >> this->getLower5Bit(op2);
+  }
+};
+
+/*!
+ * Represents a RISC-V "sra/srai" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
+ */
+template <typename SizeType>
+class ShiftArithmeticRightInstructionNode
+    : public IntegerInstructionNode<SizeType> {
+ public:
+  ShiftArithmeticRightInstructionNode(InstructionInformation info,
+                                      bool isImmediateInstruction)
+      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+
+  MemoryValue assemble() override { return MemoryValue(); }
+
+  /*!
+   * Shifts bits in op1 arithmetic right (shifts sign bit into the upper part).
+   * How
+   * many bits are shifted in is determined by the lower 5bit of op2
+   * \param op1
+   * \param op2
+   * \return op1 >> lower5bit(op2)
+   */
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) override {
+    // c++ standard does not define a arithemtic shift operator
+    constexpr auto length = sizeof(SizeType) * 8;
+    SizeType sign = (op1 & (SizeType(1) << (length-1))) >> (length-1);
+    SizeType shiftCount = this->getLower5Bit(op2);
+    SizeType tmp = op1 >> shiftCount;
+    // erase upper shiftCount bits
+    // put in sign bit
+    for (auto i = length - shiftCount; i < length; ++i) {
+      tmp = tmp & ~(SizeType(1) << i);
+      tmp = tmp | (sign << i);
+    }
+    return tmp;
+  }
+};
 }
 
 #endif /* ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_ */

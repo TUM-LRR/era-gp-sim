@@ -562,6 +562,7 @@ TEST(IntegerInstructionTest, ORInstruction_testValidation) {
   testIntegerInstructionValidation(memAccess, instructionFactory,
                                    immediateFactory, "ori", true);
 }
+
 TEST(IntegerInstructionTest, XORIntruction_testXor) {
   FakeRegister destination1;
   FakeRegister destination2;
@@ -653,4 +654,235 @@ TEST(IntegerInstructionTest, XORInstruction_testValidation) {
                                    immediateFactory, "xor", false);
   testIntegerInstructionValidation(memAccess, instructionFactory,
                                    immediateFactory, "xori", true);
+}
+
+TEST(IntegerInstructionTest, ShiftLeftIntruction_testSll) {
+  FakeRegister destination1;
+  FakeRegister destination2;
+  FakeRegister firstOp(0b110110);
+  FakeRegister secondOp(3);
+  DummyMemoryAccessImpl memoryImpl;
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  memoryImpl.addRegister("d0", destination1);
+  memoryImpl.addRegister("d1", destination2);
+  memoryImpl.addRegister("r1", firstOp);
+  memoryImpl.addRegister("r2", secondOp);
+
+  // Test 32Bit versions
+  auto factory32 = setUpFactory({"rv32i"});
+  assertRegisterInstruction(memoryImpl, factory32, "sll", "d0", "r1", "r2", 0b110110000);
+  //shifts use only the lower 5bit of the second operand
+  assertRegisterInstruction(memoryImpl, factory32, "sll", "d1", "r2", "r1", 3 << 22);
+
+  // Test 64Bit versions
+  auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  destination1.set(0);
+  destination2.set(0);
+  firstOp.set(0b110110L << 32);
+  secondOp.set(3);
+  assertRegisterInstruction(memoryImpl, factory64, "sll", "d0", "r1", "r2", 0b110110000L<<32);
+  //shifts use only the lower 5bit of the second operand
+  assertRegisterInstruction(memoryImpl, factory64, "sll", "d1", "r2", "r1", 3);
+}
+
+TEST(IntegerInstructionTest, ShiftLeftIntruction_testSlli) {
+  FakeRegister destination1;
+  FakeRegister destination2;
+  FakeRegister regOp1(0b110110);
+  FakeRegister regOp2(1);
+  DummyMemoryAccessImpl memoryImpl;
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  memoryImpl.addRegister("d0", destination1);
+  memoryImpl.addRegister("d1", destination2);
+  memoryImpl.addRegister("r1", regOp1);
+  memoryImpl.addRegister("r2", regOp2);
+
+  auto immediateFactory = ImmediateNodeFactory();
+  // Test 32Bit versions
+  auto factory32 = setUpFactory({"rv32i"});
+  assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "slli",
+                             "d0", "r1", 3, 0b110110000);
+   //shifts use only the lower 5bit of the second operand
+  assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "slli",
+                             "d1", "r2", 0b11100001, 2);
+  //test immediate boundary
+  test20BitImmediateBounds(factory32, "slli", immediateFactory);
+
+  // Test 64Bit versions
+  auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  destination1.set(0);
+  destination2.set(0);
+  regOp1.set(0b110110L<<32);
+  regOp2.set(0b1L<<32);
+  assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "slli",
+                             "d0", "r1", 3, 0b110110000L<<32);
+  //shifts use only the lower 5bit of the second operand
+  assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "slli", "d1", "r2", 0b11100001, 0b10L<<32);
+
+  //test immediate boundary
+  test20BitImmediateBounds(factory64, "slli", immediateFactory);
+}
+
+TEST(IntegerInstructionTest, ShiftLeftInstruction_testValidation) {
+  auto instructionFactory = setUpFactory({"rv32i"});
+  auto immediateFactory = ImmediateNodeFactory();
+  auto memAccess = DummyMemoryAccessImpl();
+  testIntegerInstructionValidation(memAccess, instructionFactory,
+                                   immediateFactory, "sll", false);
+  testIntegerInstructionValidation(memAccess, instructionFactory,
+                                   immediateFactory, "slli", true);
+}
+
+TEST(IntegerInstructionTest, ShiftRightIntruction_testSrl) {
+  FakeRegister destination1;
+  FakeRegister destination2;
+  FakeRegister firstOp(0b110110);
+  FakeRegister secondOp(3);
+  DummyMemoryAccessImpl memoryImpl;
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  memoryImpl.addRegister("d0", destination1);
+  memoryImpl.addRegister("d1", destination2);
+  memoryImpl.addRegister("r1", firstOp);
+  memoryImpl.addRegister("r2", secondOp);
+
+  // Test 32Bit versions
+  auto factory32 = setUpFactory({"rv32i"});
+  assertRegisterInstruction(memoryImpl, factory32, "srl", "d0", "r1", "r2", 0b110);
+  //shifts use only the lower 5bit of the second operand
+  assertRegisterInstruction(memoryImpl, factory32, "srl", "d1", "r2", "r1", 0);
+
+  // Test 64Bit versions
+  auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  destination1.set(0);
+  destination2.set(0);
+  firstOp.set(0b110110L << 32);
+  secondOp.set(3);
+  assertRegisterInstruction(memoryImpl, factory64, "srl", "d0", "r1", "r2", 0b110110L<<29);
+  //shifts use only the lower 5bit of the second operand
+  assertRegisterInstruction(memoryImpl, factory64, "srl", "d1", "r2", "r1", 3);
+}
+
+TEST(IntegerInstructionTest, ShiftRightIntruction_testSrli) {
+  FakeRegister destination1;
+  FakeRegister destination2;
+  FakeRegister regOp1(0b110110);
+  FakeRegister regOp2(1);
+  DummyMemoryAccessImpl memoryImpl;
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  memoryImpl.addRegister("d0", destination1);
+  memoryImpl.addRegister("d1", destination2);
+  memoryImpl.addRegister("r1", regOp1);
+  memoryImpl.addRegister("r2", regOp2);
+
+  auto immediateFactory = ImmediateNodeFactory();
+  // Test 32Bit versions
+  auto factory32 = setUpFactory({"rv32i"});
+  assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "srli",
+                             "d0", "r1", 3, 0b110);
+   //shifts use only the lower 5bit of the second operand
+  assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "srli",
+                             "d1", "r1", 0b11100001, 0b11011);
+  //test immediate boundary
+  test20BitImmediateBounds(factory32, "srli", immediateFactory);
+
+  // Test 64Bit versions
+  auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  destination1.set(0);
+  destination2.set(0);
+  regOp1.set(0b110110L<<32);
+  regOp2.set(0b11L<<32);
+  assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "srli",
+                             "d0", "r1", 3, 0b110110L<<29);
+  //shifts use only the lower 5bit of the second operand
+  assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "srli", "d1", "r2", 0b11100001, 0b11L<<31);
+
+  //test immediate boundary
+  test20BitImmediateBounds(factory64, "srli", immediateFactory);
+}
+
+TEST(IntegerInstructionTest, ShiftRightInstruction_testValidation) {
+  auto instructionFactory = setUpFactory({"rv32i"});
+  auto immediateFactory = ImmediateNodeFactory();
+  auto memAccess = DummyMemoryAccessImpl();
+  testIntegerInstructionValidation(memAccess, instructionFactory,
+                                   immediateFactory, "srl", false);
+  testIntegerInstructionValidation(memAccess, instructionFactory,
+                                   immediateFactory, "srli", true);
+}
+
+TEST(IntegerInstructionTest, ShiftRightArithmeticIntruction_testSra) {
+  FakeRegister destination1;
+  FakeRegister destination2;
+  FakeRegister firstOp(0b10000000000000000000000000110110);
+  FakeRegister secondOp(3);
+  DummyMemoryAccessImpl memoryImpl;
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  memoryImpl.addRegister("d0", destination1);
+  memoryImpl.addRegister("d1", destination2);
+  memoryImpl.addRegister("r1", firstOp);
+  memoryImpl.addRegister("r2", secondOp);
+
+  // Test 32Bit versions
+  auto factory32 = setUpFactory({"rv32i"});
+  assertRegisterInstruction(memoryImpl, factory32, "sra", "d0", "r1", "r2", 0b11110000000000000000000000000110);
+  //shifts use only the lower 5bit of the second operand
+  assertRegisterInstruction(memoryImpl, factory32, "sra", "d1", "r2", "r1", 0);
+
+  // Test 64Bit versions
+  auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  destination1.set(0);
+  destination2.set(0);
+  firstOp.set(0b1000000000000000000000000001101100000000000000000000000000000000L);
+  secondOp.set(3);
+  assertRegisterInstruction(memoryImpl, factory64, "sra", "d0", "r1", "r2", 0b1111000000000000000000000000001101100000000000000000000000000000L);
+  //shifts use only the lower 5bit of the second operand
+  assertRegisterInstruction(memoryImpl, factory64, "srl", "d1", "r2", "r1", 3);
+}
+
+TEST(IntegerInstructionTest, ShiftRightIntruction_testSrai) {
+  FakeRegister destination1;
+  FakeRegister destination2;
+  FakeRegister regOp1(0b10000000000000000000000000110110);
+  FakeRegister regOp2(1);
+  DummyMemoryAccessImpl memoryImpl;
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  memoryImpl.addRegister("d0", destination1);
+  memoryImpl.addRegister("d1", destination2);
+  memoryImpl.addRegister("r1", regOp1);
+  memoryImpl.addRegister("r2", regOp2);
+
+  auto immediateFactory = ImmediateNodeFactory();
+  // Test 32Bit versions
+  auto factory32 = setUpFactory({"rv32i"});
+  assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "srai",
+                             "d0", "r1", 3, 0b11110000000000000000000000000110);
+   //shifts use only the lower 5bit of the second operand
+  assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "srai",
+                             "d1", "r1", 0b11100001, 0b11000000000000000000000000011011);
+  //test immediate boundary
+  test20BitImmediateBounds(factory32, "srai", immediateFactory);
+
+  // Test 64Bit versions
+  auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  destination1.set(0);
+  destination2.set(0);
+  regOp1.set(0b1000000000000000000000000001101100000000000000000000000000000000L);
+  regOp2.set(0b11L<<32);
+  assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "srai",
+                             "d0", "r1", 3, 0b1111000000000000000000000000001101100000000000000000000000000000L);
+  //shifts use only the lower 5bit of the second operand
+  assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "srai", "d1", "r2", 0b11100001, 0b11L<<31);
+
+  //test immediate boundary
+  test20BitImmediateBounds(factory64, "srai", immediateFactory);
+}
+
+TEST(IntegerInstructionTest, ShiftRightArithmeticInstruction_testValidation) {
+  auto instructionFactory = setUpFactory({"rv32i"});
+  auto immediateFactory = ImmediateNodeFactory();
+  auto memAccess = DummyMemoryAccessImpl();
+  testIntegerInstructionValidation(memAccess, instructionFactory,
+                                   immediateFactory, "sra", false);
+  testIntegerInstructionValidation(memAccess, instructionFactory,
+                                   immediateFactory, "srai", true);
 }

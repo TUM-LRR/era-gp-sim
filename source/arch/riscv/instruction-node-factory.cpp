@@ -70,6 +70,24 @@ void initializeIntegerInstructions(
   _instructionMap.emplace("xori", [](InstructionInformation info) {
     return std::make_unique<XorInstructionNode<WordSize>>(info, true);
   });
+  _instructionMap.emplace("sll", [](InstructionInformation info) {
+    return std::make_unique<ShiftLogicalLeftInstructionNode<WordSize>>(info, false);
+  });
+  _instructionMap.emplace("slli", [](InstructionInformation info) {
+    return std::make_unique<ShiftLogicalLeftInstructionNode<WordSize>>(info, true);
+  });
+  _instructionMap.emplace("srl", [](InstructionInformation info) {
+    return std::make_unique<ShiftLogicalRightInstructionNode<WordSize>>(info, false);
+  });
+  _instructionMap.emplace("srli", [](InstructionInformation info) {
+    return std::make_unique<ShiftLogicalRightInstructionNode<WordSize>>(info, true);
+  });
+  _instructionMap.emplace("sra", [](InstructionInformation info) {
+    return std::make_unique<ShiftArithmeticRightInstructionNode<WordSize>>(info, false);
+  });
+  _instructionMap.emplace("srai", [](InstructionInformation info) {
+    return std::make_unique<ShiftArithmeticRightInstructionNode<WordSize>>(info, true);
+  });
 }
 }
 
