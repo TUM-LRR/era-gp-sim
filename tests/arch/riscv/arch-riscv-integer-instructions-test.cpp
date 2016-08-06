@@ -49,13 +49,13 @@ class FakeRegisterNode : public RegisterNode {
   explicit FakeRegisterNode(std::string& regId)
       : RegisterNode(regId), _id(regId) {}
 
-  MemoryValue getValue(DummyMemoryAccess& access) override {
+  MemoryValue getValue(DummyMemoryAccess& access)const override {
     return access.getRegisterValue(_id);
   }
 
-  MemoryValue assemble() override { return MemoryValue(); }
+  MemoryValue assemble()const override { return MemoryValue{}; }
 
-  std::string getIdentifier() override { return _id; }
+  const std::string& getIdentifier()const override { return _id; }
 
  private:
   std::string& _id;
@@ -218,7 +218,7 @@ void testIntegerInstructionValidation(DummyMemoryAccess& memAccess,
 }
 
 void test20BitImmediateBounds(InstructionNodeFactory& instrF, std::string instructionToken, ImmediateNodeFactory& immF) {
-    constexpr uint64_t boundary = 2097151;
+    constexpr uint64_t boundary = 0xFFFFF;
     std::string registerId = "not relevant";
     auto node = instrF.createInstructionNode(instructionToken);
     node->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));

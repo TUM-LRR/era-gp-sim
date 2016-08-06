@@ -34,21 +34,21 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    * \param value The value of this node.
    */
   ImmediateNode(MemoryValue value)
-  : AbstractSyntaxTreeNode(Type::IMMEDIATE), _value(value) {
-  }
+      : AbstractSyntaxTreeNode(Type::IMMEDIATE), _value(value), IMMEDIATE_IDENTIFIER("Imm") {}
+
+  ~ImmediateNode() = default;
 
   /**
    * \return The concrete value
    */
-  virtual MemoryValue
-  getValue(DummyMemoryAccess& memory_access) const override {
+  MemoryValue getValue(DummyMemoryAccess& memory_access) const override {
     return _value;
   }
 
   /**
    * \return true, if there are no children.
    */
-  virtual bool validate() const override {
+  bool validate() const override {
     // Immediate values can't have any children
     return AbstractSyntaxTreeNode::_children.size() == 0;
   }
@@ -57,9 +57,7 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    * \return An empty MemoryValue, because the instruction has to be
    * assembled in the instruction node.
    */
-  virtual MemoryValue assemble() const override {
-    return MemoryValue();
-  }
+  MemoryValue assemble() const override { return MemoryValue{}; }
 
   /**
    * Returns always the same string: "imm".
@@ -67,13 +65,14 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    * \return The string "imm"
    */
 
-  virtual const std::string& getIdentifier() const override {
-    return "Imm";
+  const std::string& getIdentifier() const override {
+    return IMMEDIATE_IDENTIFIER;
   }
 
  private:
   MemoryValue _value;
+  // needed, because getIdentifier returns a reference
+  const std::string IMMEDIATE_IDENTIFIER;
 };
-
 
 #endif /* ERAGPSIM_ARCH_COMMON_IMMEDIATE_NODE_HPP */

@@ -39,7 +39,7 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   /**
    * \return The content of the register, represented by this node.
    */
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) override {
+  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) const override {
     // TODO Return the actual content of the register using the proper
     // memory access
     return MemoryValue(8);
@@ -48,12 +48,12 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   /**
    * \return true, if there are no children.
    */
-  virtual bool validate() override {
+  virtual bool validate() const override {
     // Immediate values can't have any children
     return AbstractSyntaxTreeNode::_children.size() == 0;
   }
 
-  std::string getIdentifier() override {
+  const std::string& getIdentifier() const override {
       return _identifier;
   }
 

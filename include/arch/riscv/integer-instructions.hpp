@@ -43,7 +43,7 @@ namespace riscv {
  * \param immediate Whether the node is the register-immediate representation.
  * \return true if the node matches the requirements.
  */
-bool validateIntegerInstruction(InstructionNode& node, bool immediate);
+bool validateIntegerInstruction(const InstructionNode &node, bool immediate);
 
 /*!
  * \brief The IntegerInstructionNode is a superclass for all integer arithmetic
@@ -71,7 +71,7 @@ class IntegerInstructionNode : public InstructionNode {
  * validation, if not 3 register operands are expected
  */
   IntegerInstructionNode(InstructionInformation info, bool immediateInstruction)
-      : _instructionInformation(info), _isImmediate(immediateInstruction) {}
+      : InstructionNode(info), _isImmediate(immediateInstruction) {}
 
   /** Default destructor*/
   ~IntegerInstructionNode() = default;
@@ -94,13 +94,6 @@ class IntegerInstructionNode : public InstructionNode {
         convert(result, RISCV_BITS_PER_BYTE, RISCV_BYTEORDER);
     memory_access.setRegisterValue(destination, resultValue);
     return MemoryValue();
-  }
-
-  std::string getIdentifier() const override {
-    assert(_instructionInformation.isValid() &&
-           _instructionInformation.hasMnemonic());
-    // return the mnemonic
-    return _instructionInformation.getMnemonic();
   }
 
   bool validate() const override {
@@ -127,11 +120,6 @@ class IntegerInstructionNode : public InstructionNode {
   static constexpr ByteOrder RISCV_BYTEORDER = ByteOrder::kLittleEndian;
   /** bits per byte in RISC-V architecture*/
   static constexpr std::size_t RISCV_BITS_PER_BYTE = 8;
-
-  /*!
-   * Holds information about this instruction (e.g. mnemonic)
-   */
-  InstructionInformation _instructionInformation;
   /*!
    * Indicates if this instruction is a register-immediate instruction.
    * If false this instruction is a register-register instruction.
@@ -151,8 +139,6 @@ class AddInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
   AddInstructionNode(InstructionInformation info, bool immediateInstruction)
       : IntegerInstructionNode<SizeType>(info, immediateInstruction) {}
-
-  MemoryValue assemble() override { return MemoryValue(); }
 
   /*!
    * Adds the two operands
@@ -179,8 +165,6 @@ class SubInstructionNode : public IntegerInstructionNode<SizeType> {
             info, false)  // RISC-V does not specifiy a subi
   {}
 
-  MemoryValue assemble() const override { return MemoryValue(); }
-
   /*!
    * Subtracts op2 from op1
    * \param op1
@@ -204,21 +188,160 @@ class AndInstructionNode : public IntegerInstructionNode<SizeType> {
   AndInstructionNode(InstructionInformation info, bool isImmediateInstruction)
       : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
 
-  MemoryValue assemble() const override { return MemoryValue(); }
-
   /*!
    * Performs a bitwise logical and with op1, op2
    * \param op1
    * \param op2
    * \return op1 bitand op2
    */
-  SizeType performIntegerOperation(SizeType op1, SizeType op2) override {
+  SizeType performIntegerOperation(SizeType op1, SizeType op2)const override {
     return op1 & op2;
   }
 };
 
- private:
-  bool _immediate;
+/*!
+ * Represents a RISC-V "or/ori" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
+ */
+template <typename SizeType>
+class OrInstructionNode : public IntegerInstructionNode<SizeType> {
+ public:
+  OrInstructionNode(InstructionInformation info, bool isImmediateInstruction)
+      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+
+  /*!
+   * Performs a bitwise logical or with op1, op2
+   * \param op1
+   * \param op2
+   * \return op1 bitor op2
+   */
+  SizeType performIntegerOperation(SizeType op1, SizeType op2)const override {
+    return op1 | op2;
+  }
+};
+
+/*!
+ * Represents a RISC-V "xor/xori" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
+ */
+template <typename SizeType>
+class XorInstructionNode : public IntegerInstructionNode<SizeType> {
+ public:
+  XorInstructionNode(InstructionInformation info, bool isImmediateInstruction)
+      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+
+  /*!
+   * Performs a bitwise logical xor with op1, op2
+   * \param op1
+   * \param op2
+   * \return op1 xor op2
+   */
+  SizeType performIntegerOperation(SizeType op1, SizeType op2)const override {
+    return op1 ^ op2;
+  }
+};
+
+/*!
+ * Represents a RISC-V "sll/slli" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
+ */
+template <typename SizeType>
+class ShiftLogicalLeftInstructionNode
+    : public IntegerInstructionNode<SizeType> {
+ public:
+  ShiftLogicalLeftInstructionNode(InstructionInformation info,
+                                  bool isImmediateInstruction)
+      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+
+  /*!
+   * Shifts bits in op1 logical left (shifts zeros into the lower part). How
+   * many zeros are shifted in is
+   * determined by the lower 5bit of op2
+   * \param op1
+   * \param op2
+   * \return op1 << lower5bit(op2)
+   */
+  SizeType performIntegerOperation(SizeType op1, SizeType op2)const override {
+    return op1 << this->getLower5Bit(op2);
+  }
+};
+
+/*!
+ * Represents a RISC-V "srl/srli" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
+ */
+template <typename SizeType>
+class ShiftLogicalRightInstructionNode
+    : public IntegerInstructionNode<SizeType> {
+ public:
+  ShiftLogicalRightInstructionNode(InstructionInformation info,
+                                   bool isImmediateInstruction)
+      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction)
+  {
+      //For logical right shift, SizeType must be a unsigned integral type
+      //Due to the fact that signed right shift is implementation/compiler specific
+      //and can be either a logical shift or a arithmetical shift
+      assert((SizeType(0)-1) >= 0);
+  }
+
+
+  /*!
+   * Shifts bits in op1 logical right (shifts zeros into the upper part). How
+   * many zeros are shifted in is
+   * determined by the lower 5bit of op2
+   * \param op1
+   * \param op2
+   * \return op1 >> lower5bit(op2)
+   */
+  SizeType performIntegerOperation(SizeType op1, SizeType op2)const override {
+    return op1 >> this->getLower5Bit(op2);
+  }
+};
+
+/*!
+ * Represents a RISC-V "sra/srai" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
+ */
+template <typename SizeType>
+class ShiftArithmeticRightInstructionNode
+    : public IntegerInstructionNode<SizeType> {
+ public:
+  ShiftArithmeticRightInstructionNode(InstructionInformation info,
+                                      bool isImmediateInstruction)
+      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+
+  /*!
+   * Shifts bits in op1 arithmetic right (shifts sign bit into the upper part).
+   * How
+   * many bits are shifted in is determined by the lower 5bit of op2
+   * \param op1
+   * \param op2
+   * \return op1 >> lower5bit(op2)
+   */
+  SizeType performIntegerOperation(SizeType op1, SizeType op2)const override {
+    // c++ standard does not define a arithemtic shift operator
+    constexpr auto length = sizeof(SizeType) * 8;
+    SizeType sign = (op1 & (SizeType(1) << (length-1))) >> (length-1);
+    SizeType shiftCount = this->getLower5Bit(op2);
+    SizeType tmp = op1 >> shiftCount;
+    // erase upper shiftCount bits
+    // put in sign bit
+    for (auto i = length - shiftCount; i < length; ++i) {
+      tmp = tmp & ~(SizeType(1) << i);
+      tmp = tmp | (sign << i);
+    }
+    return tmp;
+  }
 };
 }
 

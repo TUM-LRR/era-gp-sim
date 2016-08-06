@@ -30,14 +30,13 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * Constructs a new node that represents a RISC V specific instruction.
    */
   InstructionNode(InstructionInformation& instructionInformation)
-  : AbstractSyntaxTreeNode(Type::INSTRUCTION)
-  , _instructionInformation(instructionInformation) {
-  }
+      : AbstractSyntaxTreeNode(Type::INSTRUCTION),
+        _instructionInformation(instructionInformation) {}
 
   /* Ensure this class is also pure virtual */
   virtual MemoryValue getValue(DummyMemoryAccess& memory_access) const = 0;
-  virtual bool validate() const                                        = 0;
-  virtual MemoryValue assemble() const                                 = 0;
+  virtual bool validate() const = 0;
+  virtual MemoryValue assemble() const override;
 
   /* Can be retreived using the InstructionInformation */
   virtual const std::string& getIdentifier() const;
@@ -52,6 +51,25 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \return true if this node matches the requirements.
    */
   bool requireChildren(Type type, size_t startIndex, size_t amount) const;
+
+  /**
+   * Calls validate() on all children
+   * \return
+   */
+  bool validateAllChildren()const;
+
+  /*!
+   * Returns how many children this instruction node has.
+   * \return
+   */
+  size_t getChildrenCount() const;
+
+  /*!
+   * returns the children at index
+   * \param index index boundaries are asserted
+   * \return
+   */
+  AbstractSyntaxTreeNode& getChild(size_t index)const;
 
  private:
   InstructionInformation& _instructionInformation;

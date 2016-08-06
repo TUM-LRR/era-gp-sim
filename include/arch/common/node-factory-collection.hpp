@@ -44,13 +44,13 @@ class NodeFactoryCollection {
   /**
    * Default-constructs a NodeFactoryCollection.
    */
-  NodeFactoryCollection();
+  NodeFactoryCollection() = default;
 
   template <typename FactoryTypes>
-  static AbstractNodeFactoryCollection
+  static NodeFactoryCollection
   Create(const InstructionSet &instructionSet, const Architecture& architecture) {
     // clang-format off
-    return AbstractNodeFactoryCollection(
+    return NodeFactoryCollection(
         FactoryTypes::instructionFactory(instructionSet, architecture),
         FactoryTypes::immediateFactory(),
         FactoryTypes::memoryAccessFactory(),
@@ -59,8 +59,6 @@ class NodeFactoryCollection {
     );
     // clang-format on
   }
-
-  AbstractNodeFactoryCollection();
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
@@ -99,7 +97,7 @@ class NodeFactoryCollection {
       AbstractArithmeticNodeFactory::Operation operation) const;
 
  private:
-  AbstractNodeFactoryCollection(
+  NodeFactoryCollection(
       std::shared_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
       std::shared_ptr<AbstractImmediateNodeFactory> &&immediateFactory,
       std::shared_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,

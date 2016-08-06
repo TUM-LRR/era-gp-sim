@@ -4,7 +4,7 @@ namespace riscv {
 
 // TODO
 // Check if the immediate values are representable by 20 bits
-bool validateIntegerInstruction(InstructionNode &node, bool immediate) {
+bool validateIntegerInstruction(const InstructionNode &node, bool immediate) {
   // a integer instruction needs exactly 3 operands
   if (node.getChildrenCount() != 3) {
     return false;
@@ -20,7 +20,7 @@ bool validateIntegerInstruction(InstructionNode &node, bool immediate) {
     DummyMemoryAccessStub stub;
     MemoryValue value = node.getChild(2).getValue(
         stub);  // no memory access is needed for a immediate node
-    auto bits20 = value.getValue() & (~2097151);  // 2097151 = 0b11111...1 (20
+    auto bits20 = value.getValue() & (~0xFFFFF);  // 2097151 = 0b11111...1 (20
                                                   // times a 1) -> erase lower
                                                   // 20 bits
     if (bits20 != 0) {

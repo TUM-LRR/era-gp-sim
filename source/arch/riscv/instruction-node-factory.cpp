@@ -113,28 +113,28 @@ void InstructionNodeFactory::initializeInstructionMap(
 
   // Load/Store Instructions
   _instructionMap.emplace("lw", [](InstructionInformation info) {
-    return std::make_unique<LoadInstructionNode>(LoadType::WORD);
+    return std::make_unique<LoadInstructionNode>(info, LoadInstructionNode::Type::WORD);
   });
   _instructionMap.emplace("lh", [](InstructionInformation info) {
-    return std::make_unique<LoadInstructionNode>(LoadType::HALF_WORD);
+    return std::make_unique<LoadInstructionNode>(info, LoadInstructionNode::Type::HALF_WORD);
   });
   _instructionMap.emplace("lhu", [](InstructionInformation info) {
-    return std::make_unique<LoadInstructionNode>(LoadType::HALF_WORD_UNSIGNED);
+    return std::make_unique<LoadInstructionNode>(info, LoadInstructionNode::Type::HALF_WORD_UNSIGNED);
   });
   _instructionMap.emplace("lb", [](InstructionInformation info) {
-    return std::make_unique<LoadInstructionNode>(LoadType::BYTE);
+    return std::make_unique<LoadInstructionNode>(info, LoadInstructionNode::Type::BYTE);
   });
   _instructionMap.emplace("lbu", [](InstructionInformation info) {
-    return std::make_unique<LoadInstructionNode>(LoadType::BYTE_UNSIGNED);
+    return std::make_unique<LoadInstructionNode>(info, LoadInstructionNode::Type::BYTE_UNSIGNED);
   });
   _instructionMap.emplace("sw", [](InstructionInformation info) {
-    return std::make_unique<StoreInstructionNode>(StoreType::WORD);
+    return std::make_unique<StoreInstructionNode>(info, StoreInstructionNode::Type::WORD);
   });
   _instructionMap.emplace("sh", [](InstructionInformation info) {
-    return std::make_unique<StoreInstructionNode>(StoreType::HALF_WORD);
+    return std::make_unique<StoreInstructionNode>(info, StoreInstructionNode::Type::HALF_WORD);
   });
   _instructionMap.emplace("sb", [](InstructionInformation info) {
-    return std::make_unique<StoreInstructionNode>(StoreType::BYTE);
+    return std::make_unique<StoreInstructionNode>(info, StoreInstructionNode::Type::BYTE);
   });
 }
 
