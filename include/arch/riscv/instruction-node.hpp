@@ -19,6 +19,7 @@
 #define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/instruction-information.hpp"
 #include "core/memory-value.hpp"
 
 namespace riscv {
@@ -28,14 +29,18 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   /**
    * Constructs a new node that represents a RISC V specific instruction.
    */
-  InstructionNode() : AbstractSyntaxTreeNode(Type::INSTRUCTION) {
+  InstructionNode(InstructionInformation& instructionInformation)
+  : AbstractSyntaxTreeNode(Type::INSTRUCTION)
+  , _instructionInformation(instructionInformation) {
   }
 
   /* Ensure this class is also pure virtual */
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) = 0;
-  virtual bool validate()                                        = 0;
-  virtual MemoryValue assemble()                                 = 0;
-  virtual std::string getIdentifier()                            = 0;
+  virtual MemoryValue getValue(DummyMemoryAccess& memory_access) const = 0;
+  virtual bool validate() const                                        = 0;
+  virtual MemoryValue assemble() const                                 = 0;
+
+  /* Can be retreived using the InstructionInformation */
+  virtual const std::string& getIdentifier() const;
 
   /**
    * Checks if this node has 'amount' children of type 'type', starting at
@@ -46,22 +51,10 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \param amount The amount of registers required.
    * \return true if this node matches the requirements.
    */
-  bool requireChildren(Type type, size_t startIndex, size_t amount);
+  bool requireChildren(Type type, size_t startIndex, size_t amount) const;
 
-  bool validateAllChildren();
-
-  /*!
-   * Returns how many children this instruction node has.
-   * \return
-   */
-  size_t getChildrenCount()const;
-
-  /*!
-   * returns the children at index
-   * \param index index boundaries are asserted
-   * \return
-   */
-  AbstractSyntaxTreeNode& getChild(size_t index);
+ private:
+  InstructionInformation& _instructionInformation;
 };
 }
 

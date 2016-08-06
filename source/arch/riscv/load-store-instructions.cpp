@@ -2,9 +2,9 @@
 
 using namespace riscv;
 
-bool LoadInstructionNode::validate() {
-  if (!requireChildren(Type::REGISTER, 0, 2) ||
-      !requireChildren(Type::IMMEDIATE, 2, 1)) {
+bool LoadInstructionNode::validate() const {
+  if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
+      !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
     return false;
   }
 
@@ -14,9 +14,9 @@ bool LoadInstructionNode::validate() {
   return true;
 }
 
-bool StoreInstructionNode::validate() {
-  if (!requireChildren(Type::REGISTER, 0, 2) ||
-      !requireChildren(Type::IMMEDIATE, 2, 1)) {
+bool StoreInstructionNode::validate() const {
+  if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
+      !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
     return false;
   }
 
@@ -26,7 +26,8 @@ bool StoreInstructionNode::validate() {
   return true;
 }
 
-MemoryValue LoadInstructionNode::getValue(DummyMemoryAccess &memory_access) {
+MemoryValue
+LoadInstructionNode::getValue(DummyMemoryAccess &memory_access) const {
   std::string dest   = _children.at(0)->getIdentifier();
   MemoryValue base   = _children.at(1)->getValue(memory_access);
   MemoryValue offset = _children.at(2)->getValue(memory_access);
@@ -36,7 +37,8 @@ MemoryValue LoadInstructionNode::getValue(DummyMemoryAccess &memory_access) {
   return MemoryValue();
 }
 
-MemoryValue StoreInstructionNode::getValue(DummyMemoryAccess &memory_access) {
+MemoryValue
+StoreInstructionNode::getValue(DummyMemoryAccess &memory_access) const {
   MemoryValue base   = _children.at(0)->getValue(memory_access);
   MemoryValue src    = _children.at(1)->getValue(memory_access);
   MemoryValue offset = _children.at(2)->getValue(memory_access);

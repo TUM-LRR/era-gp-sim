@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORY_COLLECTION_HPP
-#define ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORY_COLLECTION_HPP
+#ifndef ERAGPSIM_ARCH_NODE_FACTORY_COLLECTION_HPP
+#define ERAGPSIM_ARCH_NODE_FACTORY_COLLECTION_HPP
 
 #include <memory>
 #include <string>
@@ -33,16 +33,18 @@ class AbstractMemoryAccessNodeFactory;
 class AbstractRegisterAccessNodeFactory;
 
 /**
- * \brief The AbstractNodeFactoryCollection class is a convienience class
+ * \brief The NodeFactoryCollection class is a convienience class
  * containing an instance of each AbstractNodeFactory.
  * The interface ofeach AbstractNodeFactory is copied for convienient use.
  */
-class AbstractNodeFactoryCollection {
+class NodeFactoryCollection {
  public:
   using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
 
-  static AbstractNodeFactoryCollection
-  CreateFor(const Architecture &architecture);
+  /**
+   * Default-constructs a NodeFactoryCollection.
+   */
+  NodeFactoryCollection();
 
   template <typename FactoryTypes>
   static AbstractNodeFactoryCollection
@@ -112,4 +114,4 @@ class AbstractNodeFactoryCollection {
   std::shared_ptr<AbstractArithmeticNodeFactory> _arithmeticFactory;
 };
 
-#endif /* ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORY_COLLECTION_HPP */
+#endif /* ERAGPSIM_ARCH_NODE_FACTORY_COLLECTION_HPP */

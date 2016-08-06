@@ -200,8 +200,8 @@ void RegisterInformation::_deserialize(InformationInterface::Format& data) {
   Utility::doIfThere(data, "id", [this](auto& id) { this->id(id); });
 
   _parseType(data);
-  name(data["name"]);
-  size(data["size"]);
+  this->name(Utility::toLower(data["name"]));
+  this->size(data["size"]);
 
   Utility::doIfThere(data, "constant", [this](auto& constant) {
     this->constant(static_cast<double>(constant));

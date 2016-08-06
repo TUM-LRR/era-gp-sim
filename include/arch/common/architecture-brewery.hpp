@@ -24,7 +24,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "arch/common/abstract-node-factory-collection.hpp"
+#include "arch/common/node-factory-collection.hpp"
 #include "arch/common/architecture-brewery.hpp"
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"

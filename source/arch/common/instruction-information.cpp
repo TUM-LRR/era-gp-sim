@@ -95,7 +95,7 @@ void InstructionInformation::_deserialize(InformationInterface::Format& data) {
   assert(data.count("mnemonic"));
 
   auto iterator = data.find("mnemonic");
-  this->mnemonic(*iterator);
+  this->mnemonic(Utility::toLower(*iterator));
   data.erase(iterator);
 
   key(static_cast<InstructionKey>(data));

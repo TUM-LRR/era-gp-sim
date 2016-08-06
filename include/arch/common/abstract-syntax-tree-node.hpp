@@ -59,7 +59,7 @@ class AbstractSyntaxTreeNode {
    * \return An memory value, that represents the the result of the execution.
    * The meaning differs between different node types.
    */
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) = 0;
+  virtual MemoryValue getValue(DummyMemoryAccess& memory_access) const = 0;
 
   /**
    * Validates the structure of this syntax tree. This should be called
@@ -67,7 +67,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return Whether this syntax tree is valid for execution.
    */
-  virtual bool validate() = 0;
+  virtual bool validate() const = 0;
 
   /**
    * Assembles this syntax tree into its binary representation. So, this
@@ -75,7 +75,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return The bit representation of this syntax tree.
    */
-  virtual MemoryValue assemble() = 0;
+  virtual MemoryValue assemble() const = 0;
 
   /**
    * Returns the identifier of this node. The identifier is formatted as a
@@ -83,7 +83,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return The identifier of this node.
    */
-  virtual std::string getIdentifier() = 0;
+  virtual const std::string& getIdentifier() const = 0;
 
   /**
    * Getter for the type of this node.

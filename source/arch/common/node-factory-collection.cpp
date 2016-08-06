@@ -48,7 +48,7 @@ AbstractNodeFactoryCollection::AbstractNodeFactoryCollection() = default;
 AbstractNodeFactoryCollection::Node
 AbstractNodeFactoryCollection::createInstructionNode(
     const std::string &mnemonic) const {
-  assert(_instructionFactory);
+  assert(static_cast<bool>(_instructionFactory));
   return _instructionFactory->createInstructionNode(mnemonic);
 }
 
@@ -60,7 +60,7 @@ AbstractNodeFactoryCollection::createInstructionNode(
 AbstractNodeFactoryCollection::Node
 AbstractNodeFactoryCollection::createImmediateNode(
     const MemoryValue &numericalValue) const {
-  assert(_immediateFactory);
+  assert(static_cast<bool>(_immediateFactory));
   return _immediateFactory->createImmediateNode(numericalValue);
 }
 

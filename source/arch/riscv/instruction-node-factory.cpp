@@ -19,6 +19,7 @@
 #include <cctype>
 
 #include "arch/riscv/instruction-node-factory.hpp"
+#include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
 
