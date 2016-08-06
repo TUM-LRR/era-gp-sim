@@ -34,7 +34,7 @@ public:
 class DummyMemoryAccessStub : public DummyMemoryAccess {
 public:
     MemoryValue getRegisterValue(std::string& token) override {
-        return MemoryValue();
+        return MemoryValue{};
      }
     void setRegisterValue(std::string& token, MemoryValue value) override {}
 };
@@ -101,6 +101,18 @@ class AbstractSyntaxTreeNode {
    */
   void addChild(Node node) {
     _children.push_back(std::move(node));
+  }
+  /**
+   * Calls validate() on all children
+   * \return true, if all children return true, otherwise false
+   */
+  bool validateAllChildren() const {
+      for(auto &child : _children) {
+          if(!child->validate()) {
+              return false;
+          }
+      }
+      return true;
   }
 
  protected:

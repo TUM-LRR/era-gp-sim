@@ -39,7 +39,7 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   using InstructionMap =
       std::unordered_map<std::string,
                          std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
-                             InstructionInformation)>>;
+                             InstructionInformation&)>>;
 
   /**
    * \brief InstructionNodeFactory

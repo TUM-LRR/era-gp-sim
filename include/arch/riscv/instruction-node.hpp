@@ -33,6 +33,7 @@ class InstructionNode : public AbstractSyntaxTreeNode {
       : AbstractSyntaxTreeNode(Type::INSTRUCTION),
         _instructionInformation(instructionInformation) {}
 
+
   /* Ensure this class is also pure virtual */
   virtual MemoryValue getValue(
       DummyMemoryAccess& memory_access) const override = 0;
@@ -53,25 +54,6 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \return true if this node matches the requirements.
    */
   bool requireChildren(Type type, size_t startIndex, size_t amount) const;
-
-  /**
-   * Calls validate() on all children
-   * \return
-   */
-  bool validateAllChildren() const;
-
-  /*!
-   * Returns how many children this instruction node has.
-   * \return
-   */
-  size_t getChildrenCount() const;
-
-  /*!
-   * returns the children at index
-   * \param index index boundaries are asserted
-   * \return
-   */
-  AbstractSyntaxTreeNode& getChild(size_t index) const;
 
  private:
   InstructionInformation& _instructionInformation;

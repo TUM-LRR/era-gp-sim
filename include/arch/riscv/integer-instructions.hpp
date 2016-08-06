@@ -33,18 +33,6 @@
 
 namespace riscv {
 
-/**
- * Validates an integer instruction node. Every RISC V integer instruction is
- * either register-register or a register-immediate. This is a util method, that
- * checks, if the given node fulfills these requirements. See RISC V
- * specification for more information.
- *
- * \param node The node to check.
- * \param immediate Whether the node is the register-immediate representation.
- * \return true if the node matches the requirements.
- */
-bool validateIntegerInstruction(const InstructionNode &node, bool immediate);
-
 /*!
  * \brief The IntegerInstructionNode is a superclass for all integer arithmetic
  * instructions.
@@ -70,7 +58,8 @@ class IntegerInstructionNode : public InstructionNode {
  * instruction, 2 register and one immediate operand are expected for
  * validation, if not 3 register operands are expected
  */
-  IntegerInstructionNode(InstructionInformation info, bool immediateInstruction)
+  IntegerInstructionNode(InstructionInformation& info,
+                         bool immediateInstruction)
       : InstructionNode(info), _isImmediate(immediateInstruction) {}
 
   /** Default destructor*/
@@ -93,11 +82,44 @@ class IntegerInstructionNode : public InstructionNode {
     MemoryValue resultValue =
         convert(result, RISCV_BITS_PER_BYTE, RISCV_BYTEORDER);
     memory_access.setRegisterValue(destination, resultValue);
-    return MemoryValue();
+    return MemoryValue{};
   }
 
   bool validate() const override {
-    return validateIntegerInstruction(*this, _isImmediate);
+    // a integer instruction needs exactly 3 operands
+    if (_children.size() != 3) {
+      return false;
+    }
+    // check if all operands are valid themselves
+    if (!validateAllChildren()) {
+      return false;
+    }
+
+    if (_isImmediate &&
+        _children.at(2)->getType() == AbstractSyntaxTreeNode::Type::IMMEDIATE) {
+      // check if immediate operand is represented by only 20 bits
+      DummyMemoryAccessStub stub;
+      // no memory access is needed for a immediate node
+      MemoryValue value = _children.at(2)->getValue(stub);
+      auto bits20 = value.getValue() & (~0xFFFFF);  // 2097151 = 0b11111...1 (20
+                                                    // times a 1) -> erase lower
+                                                    // 20 bits
+      if (bits20 != 0) {
+        // there is a 1 somewhere in bit 20 to x => the value is not represented
+        // by only bit 0...19
+        return false;
+      }
+    }
+
+    // a immediate integer instruction needs two register operands followed by
+    // one immediate operand
+    if (_isImmediate) {
+      return requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) &&
+             requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1);
+    } else {
+      // a register integer instruction needs three register operands
+      return requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3);
+    }
   }
 
   /*!
@@ -107,7 +129,8 @@ class IntegerInstructionNode : public InstructionNode {
    * \param op2 second operand for the arithmetic operation
    * \return result of op1 <arithmeticOperation> op2
    */
-  virtual SizeType performIntegerOperation(SizeType op1, SizeType op2) const = 0;
+  virtual SizeType performIntegerOperation(SizeType op1,
+                                           SizeType op2) const = 0;
 
  protected:
   SizeType getLower5Bit(SizeType op) const {
@@ -194,7 +217,7 @@ class AndInstructionNode : public IntegerInstructionNode<SizeType> {
    * \param op2
    * \return op1 bitand op2
    */
-  SizeType performIntegerOperation(SizeType op1, SizeType op2)const override {
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
     return op1 & op2;
   }
 };
@@ -217,7 +240,7 @@ class OrInstructionNode : public IntegerInstructionNode<SizeType> {
    * \param op2
    * \return op1 bitor op2
    */
-  SizeType performIntegerOperation(SizeType op1, SizeType op2)const override {
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
     return op1 | op2;
   }
 };
@@ -240,7 +263,7 @@ class XorInstructionNode : public IntegerInstructionNode<SizeType> {
    * \param op2
    * \return op1 xor op2
    */
-  SizeType performIntegerOperation(SizeType op1, SizeType op2)const override {
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
     return op1 ^ op2;
   }
 };
@@ -267,7 +290,7 @@ class ShiftLogicalLeftInstructionNode
    * \param op2
    * \return op1 << lower5bit(op2)
    */
-  SizeType performIntegerOperation(SizeType op1, SizeType op2)const override {
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
     return op1 << this->getLower5Bit(op2);
   }
 };
@@ -284,14 +307,13 @@ class ShiftLogicalRightInstructionNode
  public:
   ShiftLogicalRightInstructionNode(InstructionInformation info,
                                    bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction)
-  {
-      //For logical right shift, SizeType must be a unsigned integral type
-      //Due to the fact that signed right shift is implementation/compiler specific
-      //and can be either a logical shift or a arithmetical shift
-      assert((SizeType(0)-1) >= 0);
+      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+    // For logical right shift, SizeType must be a unsigned integral type
+    // Due to the fact that signed right shift is implementation/compiler
+    // specific
+    // and can be either a logical shift or a arithmetical shift
+    assert((SizeType(0) - 1) >= 0);
   }
-
 
   /*!
    * Shifts bits in op1 logical right (shifts zeros into the upper part). How
@@ -301,7 +323,7 @@ class ShiftLogicalRightInstructionNode
    * \param op2
    * \return op1 >> lower5bit(op2)
    */
-  SizeType performIntegerOperation(SizeType op1, SizeType op2)const override {
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
     return op1 >> this->getLower5Bit(op2);
   }
 };
@@ -328,10 +350,10 @@ class ShiftArithmeticRightInstructionNode
    * \param op2
    * \return op1 >> lower5bit(op2)
    */
-  SizeType performIntegerOperation(SizeType op1, SizeType op2)const override {
+  SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
     // c++ standard does not define a arithemtic shift operator
     constexpr auto length = sizeof(SizeType) * 8;
-    SizeType sign = (op1 & (SizeType(1) << (length-1))) >> (length-1);
+    SizeType sign = (op1 & (SizeType(1) << (length - 1))) >> (length - 1);
     SizeType shiftCount = this->getLower5Bit(op2);
     SizeType tmp = op1 >> shiftCount;
     // erase upper shiftCount bits

@@ -22,24 +22,6 @@ bool InstructionNode::requireChildren(Type type,
   return true;
 }
 
-size_t InstructionNode::getChildrenCount() const{
-    return _children.size();
-}
-
-bool InstructionNode::validateAllChildren() const {
-    for(auto &child : _children) {
-        if(!child->validate()) {
-            return false;
-        }
-    }
-    return true;
-}
-
-AbstractSyntaxTreeNode& InstructionNode::getChild(size_t index) const{
-    assert(index > 0 && index < _children.size());
-    return *(_children.at(index));
-}
-
 MemoryValue InstructionNode::assemble() const {
     return MemoryValue{};
 }

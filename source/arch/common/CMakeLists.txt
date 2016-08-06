@@ -16,7 +16,6 @@ set(ARCH_COMMON_SOURCES
   architecture-formula.cpp
   node-factory-collection.cpp
   node-factory-collection-maker.cpp
-  immediate-node.cpp
 )
 
 ########################################
