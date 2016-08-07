@@ -21,10 +21,6 @@
 #include <random>
 #include <tuple>
 
-#include <bitset>
-#include <limits>
-template<class T>auto bin(T t){return std::bitset<std::numeric_limits<T>::digits>(t).to_string();}
-
 // Include Google Test first, do not reorder includes
 // clang-format off
 #include "gtest/gtest.h"
