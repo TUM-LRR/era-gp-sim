@@ -28,16 +28,16 @@ Item {
             memory_size = 0
         }
 
-        while (libraryModel.count < memory_size) {
-            libraryModel.append({
+        while (MemoryModel.count < memory_size) {
+            MemoryModel.append({
                                     address: "0x" + pad(
-                                                 libraryModel.count.toString(
+                                                 MemoryModel.count.toString(
                                                      16).toUpperCase(), 5),
                                     info: "info"
                                 })
         }
-        while (libraryModel.count > memory_size) {
-            libraryModel.remove(libraryModel.count - 1, 1)
+        while (MemoryModel.count > memory_size) {
+            MemoryModel.remove(MemoryModel.count - 1, 1)
         }
     }
 
@@ -49,7 +49,7 @@ Item {
     }
 
     ListModel {
-        id: libraryModel
+        id: MemoryModel
     }
 
     TableView {
@@ -85,7 +85,7 @@ Item {
             resizable: false
             width: parent.width - 200
         }
-        model: libraryModel
+        model: MemoryModel
     }
 
     Component {
