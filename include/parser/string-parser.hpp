@@ -20,9 +20,432 @@
 #ifndef ERAGPSIM_PARSER_STRING_PARSER_HPP_
 #define ERAGPSIM_PARSER_STRING_PARSER_HPP_
 
+#include "compile-state.hpp"
 #include <string>
 #include <vector>
+#include <functional>
+#include <algorithm>
 
-bool parseString(const std::string& inputString, std::vector<char>& output);
+#include <iostream>
+
+/**
+ * \internal
+ */
+template<typename CharType, typename OutType>
+class StringParserInternal {
+public:
+    using String = std::basic_string<CharType>;
+    using Output = std::vector<OutType>;
+
+    static void invokeError(const std::string& message, size_t position, CompileState& state, CompileErrorSeverity severity = CompileErrorSeverity::ERROR)
+    {
+        auto newPosition = state.position;
+        newPosition.second += position;
+        state.errorList.push_back(CompileError(message, newPosition, severity));
+    }
+
+    static bool checkIfWrapped(const String& inputString, char separator, CompileState& state)
+    {
+        if (inputString.size() < 2)
+        {
+            invokeError("The supposed string literal is too small!", 0, state);
+            return false;
+        }
+
+        if (inputString[0] != separator)
+        {
+            invokeError(std::string("Something supposed to be a string does not begin with ") + separator, 0, state);
+            return false;
+        }
+
+        if (inputString[inputString.size() - 1] != separator)
+        {
+            invokeError(std::string("Something supposed to be a string does not end with ") + separator, inputString.size() - 1, state);
+            return false;
+        }
+
+        return true;
+    }
+
+    static bool requireCharacter(const String& inputString, size_t& index)
+    {
+        ++index;
+        return index < inputString.size() - 1;
+    }
+
+    static bool decodeUTF8CodePoint(const String& inputString, size_t& index, uint32_t& codePoint, CompileState& state)
+    {
+        auto chr = inputString[index];
+        if ((chr & 0x80) == 0)
+        {
+            codePoint = chr;
+            return true;
+        }
+        else
+        {            
+            int size = 0;
+            uint32_t value = 0;
+            while ((chr & 0x40) != 0)
+            {
+                if (!requireCharacter(inputString, index))
+                {
+                    invokeError("Reached end of string with unfinished code point.", index, state);
+                    return false;
+                }
+
+                if ((chr & 0xb0) != 0x80)
+                {
+                    invokeError("Erroneous in-code point character.", index, state);
+                    return false;
+                }
+
+                value <<= 6;
+                value |= chr & 0x3f;
+
+                ++size;
+            }
+
+            if (size == 0)
+            {
+                invokeError("Invalid formed code point detected!", index, state);
+                return false;
+            }
+            else
+            {
+                uint32_t rest = chr & ((1 << (6 - size)) - 1);
+                value |= rest << (size * 6);
+                codePoint = value;
+                if (codePoint > 0x10ffff)
+                {
+                    //ERROR
+                    return false;
+                }
+                return true;
+            }
+        }
+    }
+
+    static bool decodeUTF16CodePoint(const String& inputString, size_t& index, uint32_t& codePoint, CompileState& state)
+    {
+        auto chr = inputString[index] & 0xffff;
+        if (chr <= 0xd7ff || chr >= 0xe000)
+        {
+            codePoint = chr;
+            return true;
+        }
+        else
+        {
+            if (chr & 0xfc00 == 0xd8)
+            {
+                //ERROR
+                return false;
+            }
+
+            if (!requireCharacter(inputString, index))
+            {
+                //ERROR
+                return false;
+            }
+
+            auto lchr = inputString[index];
+
+            if (chr & 0xfc00 != 0xdc)
+            {
+                //ERROR
+                return false;
+            }
+
+            uint32_t hvalue = chr & 0x3ff;
+            uint32_t lvalue = chr & 0x3ff;
+            codePoint = ((hvalue << 10) | lvalue) + 0x10000;
+            return true;
+        }
+    }
+
+    static bool decodeUTF32CodePoint(const String& inputString, size_t& index, uint32_t& codePoint, CompileState& state)
+    {
+        codePoint = inputString[index];
+        if (codePoint > 0x10ffff)
+        {
+            //ERROR
+            return false;
+        }
+        return true;
+    }
+
+    static bool decodeCodePoint(const String& inputString, size_t& index, uint32_t& codePoint, CompileState& state)
+    {
+        if (sizeof(CharType) >= 4)
+        {
+            return decodeUTF32CodePoint(inputString, index, codePoint, state);
+        }
+        else if (sizeof(CharType) >= 2)
+        {
+            return decodeUTF16CodePoint(inputString, index, codePoint, state);
+        }
+        else if (sizeof(CharType) == 1)
+        {
+            return decodeUTF8CodePoint(inputString, index, codePoint, state);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    static bool isHex(CharType chr)
+    {
+        return (chr >= '0' && chr <= '9') || (chr >= 'A' && chr <= 'F') || (chr >= 'a' && chr <= 'f');
+    }
+
+    static bool isOctal(CharType chr)
+    {
+        return chr >= '0' && chr <= '7';
+    }
+
+    static int crawlIndex(const String& inputString, size_t& index, std::function<bool(char)> rangeCheck, int maxLength)
+    {
+        int length = 0;
+        for (int i = 0; i < maxLength || maxLength == -1; ++i)
+        {
+            if (!(requireCharacter(inputString, index) && rangeCheck(inputString[index])))
+            {
+                break;
+            }
+            ++length;
+        }
+        if (length == maxLength)
+        {
+            ++index;
+        }
+        return length;
+    }
+
+    static bool parseEscapeCharacter(const String& inputString, size_t& index, uint32_t& codePoint, CompileState& state)
+    {
+        if (!requireCharacter(inputString, index))
+        {
+            //ERROR
+            return false;
+        }
+
+        size_t startIndex = index;
+        auto chr = inputString[index];
+
+        switch(chr)
+        {
+            case 'a': codePoint = '\a'; ++index; break;
+            case 'b': codePoint = '\b'; ++index; break;
+            case 'e': codePoint = '\e'; ++index; break;
+            case 'f': codePoint = '\f'; ++index; break;
+            case 'n': codePoint = '\n'; ++index; break;
+            case 'r': codePoint = '\r'; ++index; break;
+            case 't': codePoint = '\t'; ++index; break;
+            case 'v': codePoint = '\v'; ++index; break;
+            case 'x':
+            {
+                auto len = crawlIndex(inputString, index, isHex, sizeof(OutType) * 2);
+                codePoint = std::stol(inputString.substr(startIndex + 1, len), nullptr, 16);
+            }
+            break;
+            case 'u':
+            {
+                auto len = crawlIndex(inputString, index, isHex, 4);
+                if (len != 4)
+                {
+                    return false;
+                }
+                codePoint = std::stol(inputString.substr(startIndex + 1, len), nullptr, 16);
+            }
+            break;
+            case 'U':
+            {
+                auto len = crawlIndex(inputString, index, isHex, 8);
+                if (len != 8)
+                {
+                    return false;
+                }
+                codePoint = std::stol(inputString.substr(startIndex + 1, len), nullptr, 16);
+            }
+            break;
+            default:
+                if (isOctal(chr))
+                {
+                    auto len = crawlIndex(inputString, index, isOctal, 2) + 1;
+                    int ret = std::stoi(inputString.substr(startIndex, len), nullptr, 8);
+                    if (ret > 0xff)
+                    {
+                        //ERROR
+                        return false;
+                    }
+                    codePoint = ret;
+                }
+                else
+                {
+                    //ERROR
+                    return false;
+                }
+                break;
+        }
+        return true;
+    }
+
+    static bool stringDecodeCharacter(const String& inputString, size_t& index, uint32_t& codePoint, CompileState& state)
+    {
+        auto chr = inputString[index];
+        if (chr == '\\')
+        {
+            //This is, where the fun begins!
+            if (!parseEscapeCharacter(inputString, index, codePoint, state))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (!decodeCodePoint(inputString, index, codePoint, state))
+            {
+                return false;
+            }
+            ++index;
+        }
+        return true;
+    }
+
+    static bool encodeUTF8CodePoint(const String& inputString, uint32_t codePoint, Output& output, CompileState& state)
+    {
+        if (codePoint <= 0x7f)
+        {
+            output.push_back(codePoint);
+        }
+        else
+        {
+            int bytes = 1;
+            int restSize = 6;
+            while (codePoint >= (1 << restSize))
+            {
+                output.push_back(0x80 | (codePoint & 0x3f));
+                codePoint >>= 6;
+                --restSize;
+                ++bytes;
+            }
+            int mask = ~((1 << (restSize + 1)) - 1);
+            output.push_back(mask | codePoint);
+            std::cout << bytes << ";" << codePoint << std::endl;
+            std::reverse(output.end() - bytes, output.end());
+        }
+        return true;
+    }
+
+    static bool encodeUTF16CodePoint(const String& inputString, uint32_t codePoint, Output& output, CompileState& state)
+    {
+        if (codePoint <= 0xffff)
+        {
+            output.push_back((uint16_t)codePoint);
+        }
+        else
+        {
+            uint16_t upper = (uint32_t)(0xd800 | (codePoint >> 10));
+            uint16_t lower = (uint32_t)(0xdc00 | (codePoint & 0x3ff));
+            output.push_back(upper);
+            output.push_back(lower);
+        }
+        return true;
+    }
+
+    static bool encodeUTF32CodePoint(const String& inputString, uint32_t codePoint, Output& output, CompileState& state)
+    {
+        output.push_back(codePoint);
+        return true;
+    }
+
+    static bool stringEncodeCharacter(const String& inputString, uint32_t codePoint, Output& output, CompileState& state)
+    {
+        if (codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff))
+        {
+            //ERROR
+            return false;
+        }
+        if (sizeof(OutType) >= 4)
+        {
+            return encodeUTF32CodePoint(inputString, codePoint, output, state);
+        }
+        else if (sizeof(OutType) >= 2)
+        {
+            return encodeUTF16CodePoint(inputString, codePoint, output, state);
+        }
+        else if (sizeof(OutType) == 1)
+        {
+            return encodeUTF8CodePoint(inputString, codePoint, output, state);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    static bool stringParseCharacter(const String& inputString, size_t& index, char separator, Output& output, CompileState& state)
+    {
+        auto chr = inputString[index];
+        if (chr == separator)
+        {
+            invokeError("Found an unescaped separator in a string", index, state);
+            return false;
+        }
+        else
+        {
+            uint32_t codePoint;
+            if (!stringDecodeCharacter(inputString, index, codePoint, state))
+            {
+                return false;
+            }
+            if (!stringEncodeCharacter(inputString, codePoint, output, state))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+/**
+ * \endinternal
+ */
+
+template<typename CharType, typename OutType>
+static bool parseString(const std::basic_string<CharType>& inputString, std::vector<OutType>& output, CompileState& state)
+{
+    if (!StringParserInternal<CharType, OutType>::checkIfWrapped(inputString, '\"', state))
+    {
+        return false;
+    }
+
+    size_t index = 1;
+    while (inputString.size() - 1 > index)
+    {
+        if (!StringParserInternal<CharType, OutType>::stringParseCharacter(inputString, index, '\"', output, state))
+        {
+            return false;
+        }
+    }
+
+    return index == inputString.size() - 1;
+}
+
+template<typename CharType, typename OutType>
+static bool parseCharacter(const std::basic_string<CharType>& inputString, std::vector<OutType>& output, CompileState& state)
+{
+    if (!StringParserInternal<CharType, OutType>::checkIfWrapped(inputString, '\'', state))
+    {
+        return false;
+    }
+
+    size_t index = 1;
+    if (!StringParserInternal<CharType, OutType>::stringParseCharacter(inputString, index, '\'', output, state))
+    {
+        return false;
+    }
+
+    return index == inputString.size() - 1;
+}
 
 #endif /* ERAGPSIM_PARSER_STRING_PARSER_HPP_ */

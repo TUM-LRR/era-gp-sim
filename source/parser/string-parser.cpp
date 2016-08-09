@@ -21,6 +21,9 @@
 #include <functional>
 #include <algorithm>
 
+/*
+//TODO: change for variable integer sizes!
+
 static bool require(const std::string& inputString, size_t& index)
 {
     ++index;
@@ -219,3 +222,4 @@ bool parseString(const std::string& inputString, std::vector<char>& output)
     }
     return true;
 }
+*/
