@@ -24,11 +24,12 @@ void doTest(const std::string& provided, const std::string& expected, bool succe
     CompileState state;
     std::vector<char> output;
     bool result = parseString(provided, output, state);
-    ASSERT_EQ(succeed, result);
     if (succeed)
     {
         ASSERT_EQ(expected, std::string(output.begin(), output.end()));
+        ASSERT_EQ(0, state.errorList.size());
     }
+    ASSERT_EQ(succeed, result);
 }
 
 TEST(StringParser, emptyInput)
@@ -38,7 +39,7 @@ TEST(StringParser, emptyInput)
 
 TEST(StringParser, wrongInput)
 {
-    doTest(R"(abcdefghijklmnopqrstuvwxyz1234567890!§$%&/()=?)", "", false);
+    doTest(u8R"(abcdefghijklmnopqrstuvwxyz1234567890!§$%&/()=?)", "", false);
 }
 
 TEST(StringParser, emptyString)
@@ -48,7 +49,7 @@ TEST(StringParser, emptyString)
 
 TEST(StringParser, noSpecialsString)
 {
-    doTest(R"("abcdefghijklmnopqrstuvwxyz1234567890!§$%&/()=?")", "abcdefghijklmnopqrstuvwxyz1234567890!§$%&/()=?", true);
+    doTest(u8R"("abcdefghijklmnopqrstuvwxyz1234567890!§$%&/()=?")", u8"abcdefghijklmnopqrstuvwxyz1234567890!§$%&/()=?", true);
 }
 
 TEST(StringParser, genericErrors)

@@ -26,8 +26,6 @@
 #include <functional>
 #include <algorithm>
 
-#include <iostream>
-
 /**
  * \internal
  */
@@ -85,7 +83,8 @@ public:
         {            
             int size = 0;
             uint32_t value = 0;
-            while ((chr & 0x40) != 0)
+            auto wchr = chr;
+            while ((wchr & 0x40) != 0)
             {
                 if (!requireCharacter(inputString, index))
                 {
@@ -93,16 +92,20 @@ public:
                     return false;
                 }
 
-                if ((chr & 0xb0) != 0x80)
+                auto nchr = inputString[index];
+
+                if ((nchr & 0xc0) != 0x80)
                 {
                     invokeError("Erroneous in-code point character.", index, state);
                     return false;
                 }
 
                 value <<= 6;
-                value |= chr & 0x3f;
+                value |= nchr & 0x3f;
 
                 ++size;
+
+                wchr <<= 1;
             }
 
             if (size == 0)
@@ -221,7 +224,7 @@ public:
         return length;
     }
 
-    static bool parseEscapeCharacter(const String& inputString, size_t& index, uint32_t& codePoint, CompileState& state)
+    static bool parseEscapeCharacter(const String& inputString, size_t& index, Output& output, CompileState& state)
     {
         if (!requireCharacter(inputString, index))
         {
@@ -234,18 +237,23 @@ public:
 
         switch(chr)
         {
-            case 'a': codePoint = '\a'; ++index; break;
-            case 'b': codePoint = '\b'; ++index; break;
-            case 'e': codePoint = '\e'; ++index; break;
-            case 'f': codePoint = '\f'; ++index; break;
-            case 'n': codePoint = '\n'; ++index; break;
-            case 'r': codePoint = '\r'; ++index; break;
-            case 't': codePoint = '\t'; ++index; break;
-            case 'v': codePoint = '\v'; ++index; break;
+            case 'a': output.push_back('\a'); ++index; break;
+            case 'b': output.push_back('\b'); ++index; break;
+            case 'e': output.push_back('\e'); ++index; break;
+            case 'f': output.push_back('\f'); ++index; break;
+            case 'n': output.push_back('\n'); ++index; break;
+            case 'r': output.push_back('\r'); ++index; break;
+            case 't': output.push_back('\t'); ++index; break;
+            case 'v': output.push_back('\v'); ++index; break;
+            case '?': output.push_back('?'); ++index; break;
+            case '\'': output.push_back('\''); ++index; break;
+            case '\"': output.push_back('\"'); ++index; break;
+            case '\\': output.push_back('\\'); ++index; break;
             case 'x':
             {
                 auto len = crawlIndex(inputString, index, isHex, sizeof(OutType) * 2);
-                codePoint = std::stol(inputString.substr(startIndex + 1, len), nullptr, 16);
+                OutType value = std::stol(inputString.substr(startIndex + 1, len), nullptr, 16);
+                output.push_back(value);
             }
             break;
             case 'u':
@@ -255,7 +263,8 @@ public:
                 {
                     return false;
                 }
-                codePoint = std::stol(inputString.substr(startIndex + 1, len), nullptr, 16);
+                uint32_t codePoint = std::stol(inputString.substr(startIndex + 1, len), nullptr, 16);
+                return encodeCodePoint(inputString, codePoint, output, state);
             }
             break;
             case 'U':
@@ -265,7 +274,8 @@ public:
                 {
                     return false;
                 }
-                codePoint = std::stol(inputString.substr(startIndex + 1, len), nullptr, 16);
+                uint32_t codePoint = std::stol(inputString.substr(startIndex + 1, len), nullptr, 16);
+                return encodeCodePoint(inputString, codePoint, output, state);
             }
             break;
             default:
@@ -273,12 +283,12 @@ public:
                 {
                     auto len = crawlIndex(inputString, index, isOctal, 2) + 1;
                     int ret = std::stoi(inputString.substr(startIndex, len), nullptr, 8);
-                    if (ret > 0xff)
+                    if (ret > 0xff && sizeof(OutType) == 1)
                     {
                         //ERROR
                         return false;
                     }
-                    codePoint = ret;
+                    output.push_back(ret);
                 }
                 else
                 {
@@ -290,20 +300,25 @@ public:
         return true;
     }
 
-    static bool stringDecodeCharacter(const String& inputString, size_t& index, uint32_t& codePoint, CompileState& state)
+    static bool stringConvertCharacter(const String& inputString, size_t& index, Output& output, CompileState& state)
     {
         auto chr = inputString[index];
         if (chr == '\\')
         {
             //This is, where the fun begins!
-            if (!parseEscapeCharacter(inputString, index, codePoint, state))
+            if (!parseEscapeCharacter(inputString, index, output, state))
             {
                 return false;
             }
         }
         else
         {
+            uint32_t codePoint;
             if (!decodeCodePoint(inputString, index, codePoint, state))
+            {
+                return false;
+            }
+            if (!encodeCodePoint(inputString, codePoint, output, state))
             {
                 return false;
             }
@@ -331,7 +346,6 @@ public:
             }
             int mask = ~((1 << (restSize + 1)) - 1);
             output.push_back(mask | codePoint);
-            std::cout << bytes << ";" << codePoint << std::endl;
             std::reverse(output.end() - bytes, output.end());
         }
         return true;
@@ -359,7 +373,7 @@ public:
         return true;
     }
 
-    static bool stringEncodeCharacter(const String& inputString, uint32_t codePoint, Output& output, CompileState& state)
+    static bool encodeCodePoint(const String& inputString, uint32_t codePoint, Output& output, CompileState& state)
     {
         if (codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff))
         {
@@ -394,12 +408,7 @@ public:
         }
         else
         {
-            uint32_t codePoint;
-            if (!stringDecodeCharacter(inputString, index, codePoint, state))
-            {
-                return false;
-            }
-            if (!stringEncodeCharacter(inputString, codePoint, output, state))
+            if (!stringConvertCharacter(inputString, index, output, state))
             {
                 return false;
             }
