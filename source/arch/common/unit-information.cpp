@@ -17,15 +17,39 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <cassert>
 #include <string>
 
 #include "arch/common/unit-information.hpp"
 
-UnitInformation::UnitInformation(const std::string& name) {
-  // To check constraints
-  this->name(name);
+UnitInformation::UnitInformation(InformationInterface::Format& data) {
+  _deserialize(data);
+}
+
+UnitInformation::UnitInformation(const std::string& name) : _name(name) {
+}
+
+UnitInformation::UnitInformation(const std::string& name, InitializerList list)
+: _name(name) {
+  addRegisters(list);
+}
+
+bool UnitInformation::operator==(const UnitInformation& other) const noexcept {
+  if (this->_name != other._name) return false;
+  if (this->_container != other._container) return false;
+  if (this->_specialRegisters != other._specialRegisters) return false;
+
+  return true;
+}
+
+bool UnitInformation::operator!=(const UnitInformation& other) const noexcept {
+  return !(*this == other);
+}
+
+UnitInformation&
+UnitInformation::deserialize(InformationInterface::Format& data) {
+  _deserialize(data);
+  return *this;
 }
 
 UnitInformation& UnitInformation::name(const std::string& name) noexcept {
@@ -36,25 +60,78 @@ UnitInformation& UnitInformation::name(const std::string& name) noexcept {
 }
 
 const std::string& UnitInformation::getName() const noexcept {
+  assert(hasName());
   return _name;
 }
 
-UnitInformation& UnitInformation::addRegisters(List regs) {
-  assert(regs.size() > 0);
-  return addRegisters<List>(regs);
+bool UnitInformation::hasName() const noexcept {
+  return !_name.empty();
 }
 
-UnitInformation& UnitInformation::addRegister(const RegisterInformation& reg) {
-  _container.emplace_back(reg);
+const RegisterInformation& UnitInformation::getSpecialRegister(Type type) const
+    noexcept {
+  assert(hasSpecialRegister(type));
+  return _specialRegisters.at(type);
+}
+
+bool UnitInformation::hasSpecialRegister(Type type) const noexcept {
+  return _specialRegisters.count(type);
+}
+
+bool UnitInformation::hasSpecialRegisters() const noexcept {
+  return !_specialRegisters.empty();
+}
+
+UnitInformation& UnitInformation::addRegisters(InitializerList registers) {
+  assert(registers.size() > 0);
+  return addRegisters<InitializerList>(registers);
+}
+
+UnitInformation&
+UnitInformation::addRegister(const RegisterInformation& registerInformation) {
+  if (registerInformation.isSpecial()) {
+    // clang-format off
+    _specialRegisters.emplace(
+        registerInformation.getType(),
+        registerInformation
+    );
+    // clang-format on
+  } else {
+    _container.emplace(registerInformation);
+  }
 
   return *this;
 }
 
 bool UnitInformation::isValid() const noexcept {
   if (_name.empty()) return false;
+  if (isEmpty() && !hasSpecialRegisters()) return false;
+
   // clang-format off
-  return Utility::allOf(_container, [](auto& reg) {
-    return reg.isValid();
+  auto registersOK = Utility::allOf(_container, [](auto& registerInformation) {
+    return registerInformation.isValid();
   });
   // clang-format on
+
+  // clang-format off
+  auto specialOK = Utility::allOf(_specialRegisters, [](auto& special) {
+    return special.second.isValid();
+  });
+  // clang-format on
+
+  return registersOK && specialOK;
+}
+
+void UnitInformation::_deserialize(InformationInterface::Format& data) {
+  assert(data.count("name"));
+  assert(data.count("registers"));
+  assert(!data["registers"].empty());
+
+  name(data["name"]);
+
+  for (auto& registerInformation : data["registers"]) {
+    addRegister(static_cast<RegisterInformation>(registerInformation));
+  }
+
+  assert(isValid());
 }

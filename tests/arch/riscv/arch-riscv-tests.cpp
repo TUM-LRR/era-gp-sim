@@ -15,48 +15,58 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "arch/riscv/integer-instructions.hpp"
-#include "arch/riscv/load-store-instructions.hpp"
-
 #include <gtest/gtest.h>
 #include <memory>
 #include <vector>
 
+#include "arch/riscv/instruction-node.hpp"
+#include "arch/riscv/integer-instructions.hpp"
+#include "arch/riscv/load-store-instructions.hpp"
+#include "arch/riscv/riscv-node-factories.hpp"
+
+using namespace riscv;
+
 TEST(InstructionTest, AddInstruction) {
-  AddInstructionNode addiNode{true};
-  AddInstructionNode addNode{false};
+  InstructionNodeFactory instructionFactory;
+  RegisterAccessNodeFactory registerFactory;
+
+  std::string addiToken = "ADDI";
+  std::string addToken  = "ADD";
+
+  auto addiNode = instructionFactory.createInstructionNode(addiToken);
+  auto addNode  = instructionFactory.createInstructionNode(addToken);
 
   // Basic testing
-  ASSERT_EQ(NodeType::INSTRUCTION, addiNode.getType());
-  ASSERT_EQ(NodeType::INSTRUCTION, addNode.getType());
+  ASSERT_EQ(Type::INSTRUCTION, addiNode->getType());
+  ASSERT_EQ(Type::INSTRUCTION, addNode->getType());
 
-  ASSERT_EQ("ADDI", addiNode.getIdentifier());
-  ASSERT_EQ("ADD", addNode.getIdentifier());
+  ASSERT_EQ(addiToken, addiNode->getIdentifier());
+  ASSERT_EQ(addToken, addNode->getIdentifier());
 
   // Validate the empty syntax trees -> should return false
-  ASSERT_FALSE(addiNode.validate());
-  ASSERT_FALSE(addNode.validate());
+  ASSERT_FALSE(addiNode->validate());
+  ASSERT_FALSE(addNode->validate());
 
   // Create some registers
-  auto r1 = std::make_unique<RegisterNode>("zero");
-  auto r2 = std::make_unique<RegisterNode>("x1");
-  auto r3 = std::make_unique<RegisterNode>("x10");
-  auto r4 = std::make_unique<RegisterNode>("x3");
-  auto r5 = std::make_unique<RegisterNode>("t0");
-  auto r6 = std::make_unique<RegisterNode>("x0");
+  auto r1 = registerFactory.createRegisterAccessNode("x0");
+  auto r2 = registerFactory.createRegisterAccessNode("x1");
+  auto r3 = registerFactory.createRegisterAccessNode("x2");
+  auto r4 = registerFactory.createRegisterAccessNode("x3");
+  auto r5 = registerFactory.createRegisterAccessNode("x4");
+  auto r6 = registerFactory.createRegisterAccessNode("x5");
 
   // Add the registers
-  addiNode.addChild(std::move(r1));
-  addiNode.addChild(std::move(r2));
-  addiNode.addChild(std::move(r3));
+  addiNode->addChild(std::move(r1));
+  addiNode->addChild(std::move(r2));
+  addiNode->addChild(std::move(r3));
 
-  addNode.addChild(std::move(r4));
-  addNode.addChild(std::move(r5));
-  addNode.addChild(std::move(r6));
+  addNode->addChild(std::move(r4));
+  addNode->addChild(std::move(r5));
+  addNode->addChild(std::move(r6));
 
   // Validate again
-  ASSERT_FALSE(addiNode.validate());
-  ASSERT_TRUE(addNode.validate());
+  ASSERT_FALSE(addiNode->validate());
+  ASSERT_TRUE(addNode->validate());
 }
 
 TEST(InstructionTest, LoadInstruction) {
@@ -67,7 +77,7 @@ TEST(InstructionTest, LoadInstruction) {
 
   // Basic testing
   for (auto node : nodes) {
-    ASSERT_EQ(NodeType::INSTRUCTION, node->getType());
+    ASSERT_EQ(Type::INSTRUCTION, node->getType());
     ASSERT_FALSE(node->validate());
   }
 
@@ -81,22 +91,29 @@ TEST(InstructionTest, LoadInstruction) {
 }
 
 TEST(InstructionTest, StoreInstruction) {
-  StoreInstructionNode sw{StoreType::WORD}, sh{StoreType::HALF_WORD},
-      sb{StoreType::BYTE};
-  std::vector<StoreInstructionNode *> nodes{&sw, &sh, &sb};
+  InstructionNodeFactory instructionFactory;
+
+  auto sw = instructionFactory.createInstructionNode("SW");
+  auto sh = instructionFactory.createInstructionNode("SH");
+  auto sb = instructionFactory.createInstructionNode("SB");
+
+  // Create a vector over the nodes to make testing easier
+  auto nodes = {sw.get(), sh.get(), sb.get()};
 
   // Basic testing
-  for (auto node : nodes) {
-    ASSERT_EQ(NodeType::INSTRUCTION, node->getType());
+  for (auto const node : nodes) {
+    ASSERT_EQ(Type::INSTRUCTION, node->getType());
     ASSERT_FALSE(node->validate());
   }
 
-  ASSERT_EQ("SW", sw.getIdentifier());
-  ASSERT_EQ("SH", sh.getIdentifier());
-  ASSERT_EQ("SB", sb.getIdentifier());
+  ASSERT_EQ("SW", sw->getIdentifier());
+  ASSERT_EQ("SH", sh->getIdentifier());
+  ASSERT_EQ("SB", sb->getIdentifier());
 
   // TODO Make tests for immediate values
 }
+
+/* TODO Test more commands */
 
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);

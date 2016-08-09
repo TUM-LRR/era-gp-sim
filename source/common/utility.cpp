@@ -17,4 +17,49 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <algorithm>
+#include <string>
+
 #include "common/utility.hpp"
+
+namespace Utility {
+
+std::string toLower(const std::string& string) {
+  return transform(string, [](auto& c) { return std::tolower(c); });
+}
+std::string toUpper(const std::string& string) {
+  return transform(string, [](auto& c) { return std::toupper(c); });
+}
+
+std::string rootPath() {
+  static const std::string query("era-gp-sim");
+  static std::string root;
+
+  if (root.empty()) {
+    // Hope it exists
+    root = __FILE__;
+
+    auto index = root.rfind(query) + query.length();
+    root.erase(index);
+  }
+
+  return root;
+}
+
+std::string joinPaths(const std::string& single) {
+  return single;
+}
+
+std::string loadFromFile(const std::string& filePath) {
+  std::string input;
+  std::ifstream file(filePath);
+
+  assert(static_cast<bool>(file));
+
+  std::copy(std::istreambuf_iterator<char>{file},
+            std::istreambuf_iterator<char>{},
+            std::back_inserter(input));
+
+  return input;
+}
+}
