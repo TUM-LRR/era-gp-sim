@@ -138,7 +138,7 @@ public:
         }
         else
         {
-            if (chr & 0xfc00 == 0xd8)
+            if ((chr & 0xfc00) == 0xd8)
             {
                 //ERROR
                 return false;
@@ -152,7 +152,7 @@ public:
 
             auto lchr = inputString[index];
 
-            if (chr & 0xfc00 != 0xdc)
+            if ((chr & 0xfc00) != 0xdc)
             {
                 //ERROR
                 return false;
