@@ -30,16 +30,27 @@
  * \internal
  */
 template<typename CharType, typename OutType>
-class StringParserInternal {
+class StringParserEngine {
 public:
     using String = std::basic_string<CharType>;
     using Output = std::vector<OutType>;
 
-    static void invokeError(const std::string& message, size_t position, CompileState& state, CompileErrorSeverity severity = CompileErrorSeverity::ERROR)
+    static bool stringParseCharacter(const String& inputString, size_t& index, char separator, Output& output, CompileState& state)
     {
-        auto newPosition = state.position;
-        newPosition.second += position;
-        state.errorList.push_back(CompileError(message, newPosition, severity));
+        auto chr = inputString[index];
+        if (chr == separator)
+        {
+            invokeError("Found an unescaped separator in a string", index, state);
+            return false;
+        }
+        else
+        {
+            if (!stringConvertCharacter(inputString, index, output, state))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     static bool checkIfWrapped(const String& inputString, char separator, CompileState& state)
@@ -63,6 +74,14 @@ public:
         }
 
         return true;
+    }
+
+private:
+    static void invokeError(const std::string& message, size_t position, CompileState& state, CompileErrorSeverity severity = CompileErrorSeverity::ERROR)
+    {
+        auto newPosition = state.position;
+        newPosition.second += position;
+        state.errorList.push_back(CompileError(message, newPosition, severity));
     }
 
     static bool requireCharacter(const String& inputString, size_t& index)
@@ -120,7 +139,7 @@ public:
                 codePoint = value;
                 if (codePoint > 0x10ffff)
                 {
-                    //ERROR
+                    invokeError("The specified code point is outside the Unicode range!", index, state);
                     return false;
                 }
                 return true;
@@ -138,28 +157,28 @@ public:
         }
         else
         {
-            if ((chr & 0xfc00) == 0xd8)
+            if ((chr & 0xfc00) != 0xd800)
             {
-                //ERROR
+                invokeError("Invalid-formed code point detected (one-short-sized code point does not begin with a high surrogate character)!", index, state);
                 return false;
             }
 
             if (!requireCharacter(inputString, index))
             {
-                //ERROR
+                invokeError("End of string detecten while decoding code point!", index, state);
                 return false;
             }
 
             auto lchr = inputString[index];
 
-            if ((chr & 0xfc00) != 0xdc)
+            if ((lchr & 0xfc00) != 0xdc00)
             {
-                //ERROR
+                invokeError("Invalid-formed code point detected (second short of code point is not a low surrogate character)!", index, state);
                 return false;
             }
 
             uint32_t hvalue = chr & 0x3ff;
-            uint32_t lvalue = chr & 0x3ff;
+            uint32_t lvalue = lchr & 0x3ff;
             codePoint = ((hvalue << 10) | lvalue) + 0x10000;
             return true;
         }
@@ -170,7 +189,7 @@ public:
         codePoint = inputString[index];
         if (codePoint > 0x10ffff)
         {
-            //ERROR
+            invokeError("The specified code point is outside the Unicode range!", index, state);
             return false;
         }
         return true;
@@ -224,11 +243,34 @@ public:
         return length;
     }
 
+    static uint32_t simpleNumberParse(const String& inputString, size_t start, size_t length, int base)
+    {
+        uint32_t value = 0;
+        for (auto i = inputString.begin() + start; i != inputString.begin() + start + length; ++i)
+        {
+            value *= base;
+            auto chr = *i;
+            if (chr >= '0' && chr <= '9')
+            {
+                value += (uint32_t)(chr - '0');
+            }
+            else if (chr >= 'A' && chr <= 'Z')
+            {
+                value += (uint32_t)(chr - 'A') + 10;
+            }
+            else if (chr >= 'a' && chr <= 'z')
+            {
+                value += (uint32_t)(chr - 'a') + 10;
+            }
+        }
+        return value;
+    }
+
     static bool parseEscapeCharacter(const String& inputString, size_t& index, Output& output, CompileState& state)
     {
         if (!requireCharacter(inputString, index))
         {
-            //ERROR
+            invokeError("Unfinished escape sequence!", index, state);
             return false;
         }
 
@@ -252,7 +294,7 @@ public:
             case 'x':
             {
                 auto len = crawlIndex(inputString, index, isHex, sizeof(OutType) * 2);
-                OutType value = std::stol(inputString.substr(startIndex + 1, len), nullptr, 16);
+                OutType value = simpleNumberParse(inputString, startIndex + 1, len, 16);
                 output.push_back(value);
             }
             break;
@@ -263,8 +305,8 @@ public:
                 {
                     return false;
                 }
-                uint32_t codePoint = std::stol(inputString.substr(startIndex + 1, len), nullptr, 16);
-                return encodeCodePoint(inputString, codePoint, output, state);
+                uint32_t codePoint = simpleNumberParse(inputString, startIndex + 1, len, 16);
+                return encodeCodePoint(inputString, codePoint, index, output, state);
             }
             break;
             case 'U':
@@ -274,25 +316,25 @@ public:
                 {
                     return false;
                 }
-                uint32_t codePoint = std::stol(inputString.substr(startIndex + 1, len), nullptr, 16);
-                return encodeCodePoint(inputString, codePoint, output, state);
+                uint32_t codePoint = simpleNumberParse(inputString, startIndex + 1, len, 16);
+                return encodeCodePoint(inputString, codePoint, index, output, state);
             }
             break;
             default:
                 if (isOctal(chr))
                 {
                     auto len = crawlIndex(inputString, index, isOctal, 2) + 1;
-                    int ret = std::stoi(inputString.substr(startIndex, len), nullptr, 8);
+                    int ret = simpleNumberParse(inputString, startIndex, len, 8);
                     if (ret > 0xff && sizeof(OutType) == 1)
                     {
-                        //ERROR
+                        invokeError("The specified octal sequence wants to encode a character out of byte size.", index, state);
                         return false;
                     }
                     output.push_back(ret);
                 }
                 else
                 {
-                    //ERROR
+                    invokeError("Detected invalid escape sequence!", index, state);
                     return false;
                 }
                 break;
@@ -318,7 +360,7 @@ public:
             {
                 return false;
             }
-            if (!encodeCodePoint(inputString, codePoint, output, state))
+            if (!encodeCodePoint(inputString, codePoint, index, output, state))
             {
                 return false;
             }
@@ -359,7 +401,8 @@ public:
         }
         else
         {
-            uint16_t upper = (uint32_t)(0xd800 | (codePoint >> 10));
+            codePoint -= 0x10000;
+            uint16_t upper = (uint32_t)(0xd800 | ((codePoint >> 10) & 0x3ff));
             uint16_t lower = (uint32_t)(0xdc00 | (codePoint & 0x3ff));
             output.push_back(upper);
             output.push_back(lower);
@@ -373,11 +416,11 @@ public:
         return true;
     }
 
-    static bool encodeCodePoint(const String& inputString, uint32_t codePoint, Output& output, CompileState& state)
+    static bool encodeCodePoint(const String& inputString, uint32_t codePoint, size_t& index, Output& output, CompileState& state)
     {
         if (codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff))
         {
-            //ERROR
+            invokeError("The specified code point is outside the Unicode range!", index, state);
             return false;
         }
         if (sizeof(OutType) >= 4)
@@ -397,24 +440,6 @@ public:
             return false;
         }
     }
-
-    static bool stringParseCharacter(const String& inputString, size_t& index, char separator, Output& output, CompileState& state)
-    {
-        auto chr = inputString[index];
-        if (chr == separator)
-        {
-            invokeError("Found an unescaped separator in a string", index, state);
-            return false;
-        }
-        else
-        {
-            if (!stringConvertCharacter(inputString, index, output, state))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
 };
 /**
  * \endinternal
@@ -423,7 +448,7 @@ public:
 template<typename CharType, typename OutType>
 static bool parseString(const std::basic_string<CharType>& inputString, std::vector<OutType>& output, CompileState& state)
 {
-    if (!StringParserInternal<CharType, OutType>::checkIfWrapped(inputString, '\"', state))
+    if (!StringParserEngine<CharType, OutType>::checkIfWrapped(inputString, '\"', state))
     {
         return false;
     }
@@ -431,7 +456,7 @@ static bool parseString(const std::basic_string<CharType>& inputString, std::vec
     size_t index = 1;
     while (inputString.size() - 1 > index)
     {
-        if (!StringParserInternal<CharType, OutType>::stringParseCharacter(inputString, index, '\"', output, state))
+        if (!StringParserEngine<CharType, OutType>::stringParseCharacter(inputString, index, '\"', output, state))
         {
             return false;
         }
@@ -443,13 +468,13 @@ static bool parseString(const std::basic_string<CharType>& inputString, std::vec
 template<typename CharType, typename OutType>
 static bool parseCharacter(const std::basic_string<CharType>& inputString, std::vector<OutType>& output, CompileState& state)
 {
-    if (!StringParserInternal<CharType, OutType>::checkIfWrapped(inputString, '\'', state))
+    if (!StringParserEngine<CharType, OutType>::checkIfWrapped(inputString, '\'', state))
     {
         return false;
     }
 
     size_t index = 1;
-    if (!StringParserInternal<CharType, OutType>::stringParseCharacter(inputString, index, '\'', output, state))
+    if (!StringParserEngine<CharType, OutType>::stringParseCharacter(inputString, index, '\'', output, state))
     {
         return false;
     }
