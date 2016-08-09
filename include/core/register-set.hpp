@@ -24,8 +24,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "memory-value.hpp"
-#include "register-id.hpp"
+#include "core/memory-value.hpp"
+#include "core/register-id.hpp"
 
 class RegisterSet {
  public:
@@ -44,7 +44,7 @@ class RegisterSet {
   void put(const std::string &name, const MemoryValue &value);
   MemoryValue set(const std::string &name, const MemoryValue &value);
   MemoryValue set(const std::string &name, MemoryValue &&value);
-  MemoryValue &exchange(const std::string &name, MemoryValue &value);
+  void exchange(const std::string &name, MemoryValue &value);
 
   void createRegister(const std::string &name, const std::size_t width);
   void createRegister(const std::string &name,

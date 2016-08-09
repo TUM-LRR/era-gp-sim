@@ -16,7 +16,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "register-set.hpp"
+#include "core/register-set.hpp"
 
 RegisterSet::RegisterSet(const std::size_t defaultByteSize)
 : _dict{}, _defaultByteSize{defaultByteSize}, _register{} {
@@ -55,9 +55,7 @@ MemoryValue RegisterSet::set(const std::string &name, MemoryValue &&value) {
   return MemoryValue{};
 }
 
-MemoryValue &
-RegisterSet::exchange(const std::string &name, MemoryValue &value) {
-  return value;
+void RegisterSet::exchange(const std::string &name, MemoryValue &value) {
 }
 
 void RegisterSet::createRegister(const std::string &name,
