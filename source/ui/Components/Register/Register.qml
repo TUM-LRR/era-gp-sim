@@ -24,6 +24,12 @@ Item {
     TreeView {
         anchors.fill: parent
         backgroundVisible: false
+        style: TreeViewStyle {
+            frame: Rectangle {
+                border.width: 0
+                color: "#00000000"
+            }
+        }
         alternatingRowColors: false
         headerVisible: false
         selectionMode: SelectionMode.NoSelection
