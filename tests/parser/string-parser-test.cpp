@@ -173,7 +173,7 @@ TEST(StringParser, practicalString) {
 #define SMALL_BLOCK_16 u"🆇🆈🆉"
 #define SMALL_BLOCK_32 U"🆇🆈🆉"
 
-// The text has been taken to Wikipedia.
+// The text has been taken from Wikipedia.
 #define SAMPLE_LATIN_8                                                         \
   u8"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " \
   u8"tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim "    \
