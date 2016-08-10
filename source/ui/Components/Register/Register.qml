@@ -57,14 +57,14 @@ Item {
                 width: 70
                 height: 1.2*registerTextField.height
                 model: ListModel {
-                        id: dataTypeFormatModel
-                        Component.onCompleted: {
-                            // Creates a ListModel from the list of data formats provided by the RegisterModel.
-                            var list = model.DataFormatsList;
-                            list.forEach(function(entry) {
-                                append({"text": entry});
-                            });
-                        }
+                    id: dataTypeFormatModel
+                    Component.onCompleted: {
+                        // Creates a ListModel from the list of data formats provided by the RegisterModel.
+                        var list = model.DataFormatsList;
+                        list.forEach(function(entry) {
+                            append({"text": entry});
+                        });
+                    }
                 }
             }
             // The register content.

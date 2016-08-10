@@ -37,6 +37,10 @@ RegisterData::RegisterData() {
                                    << "Bin";
 }
 
+void RegisterData::setContent(QString content) {
+  _content = content;
+}
+
 QString RegisterData::getTitle() const {
   return _title;
 }

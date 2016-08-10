@@ -26,6 +26,10 @@ RegisterItem::RegisterItem(const RegisterData &data,
   _childItemIdentifiers = childItemIdentifiers;
 }
 
+void RegisterItem::setContent(std::string value) {
+  _itemData.setContent(QString::fromStdString(value));
+}
+
 std::string RegisterItem::getParentItemIdentifier() {
   return _parentItemIdentifier;
 }

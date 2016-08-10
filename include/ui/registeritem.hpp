@@ -32,6 +32,8 @@ class RegisterItem {
                         std::string parentItemIdentifier,
                         std::vector<std::string> childItemIdentifiers);
 
+  void setContent(std::string value);
+
   /**
    * @brief getParentItemIdentifier Returns the identifier of the register's
    * parent register.

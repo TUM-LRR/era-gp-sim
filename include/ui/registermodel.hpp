@@ -22,6 +22,7 @@
 #include <QAbstractItemModel>
 #include <map>
 #include <string>
+#include "core/memory-value.hpp"
 #include "ui/registeritem.hpp"
 
 /**
@@ -53,6 +54,14 @@ class RegisterModel : public QAbstractItemModel {
     DisplayFormatStringRole,
     DataFormatsListRole
   };
+
+  /**
+   * @brief setContent Sets the content (i.e. AB01DE23) of a specified register.
+   * @param registerIdentifier The unique identifier of the register whose
+   * content shall be altered.
+   * @param registerContent The new register value.
+   */
+  void setContent(std::string registerIdentifier, MemoryValue registerContent);
 
   /**
    * @brief index Returns a QModelIndex for the specified item inside the

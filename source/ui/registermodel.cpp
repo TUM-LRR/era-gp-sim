@@ -58,6 +58,27 @@ RegisterModel::RegisterModel(QObject *parent)
 }
 
 
+void RegisterModel::setContent(std::string registerIdentifier,
+                               MemoryValue registerContent) {
+  RegisterItem *registerItem = _items[registerIdentifier].get();
+  // TODO: Convert MemoryValue to suitable string representation
+  registerItem->setContent("01 AB CD 23");
+  // Notify the model about the change
+  // Notifying requires the model index of the altered item. It can be found by
+  // the unique identifier of the altered register.
+  QModelIndexList alteredItems =
+      match(this->index(0, 0),
+            TitleRole,
+            QString::fromStdString(registerIdentifier),
+            1,
+            Qt::MatchExactly);
+  if (!alteredItems.isEmpty()) {
+    QModelIndex alteredItem = alteredItems.first();
+    dataChanged(alteredItem, alteredItem);
+  }
+}
+
+
 QHash<int, QByteArray> RegisterModel::roleNames() const {
   QHash<int, QByteArray> roles;
   roles[TitleRole]               = "RegisterTitle";

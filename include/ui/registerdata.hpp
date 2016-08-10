@@ -39,6 +39,7 @@ class RegisterData {
   QString getContent() const;
   QString getDisplayFormatString() const;
   QStringList getDataFormatsList() const;
+  void setContent(QString content);
 
  private:
   /// The register's title (e.g. "EAX")
