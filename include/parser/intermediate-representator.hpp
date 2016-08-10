@@ -23,10 +23,11 @@
 #include <string>
 #include <vector>
 #include "arch/common/abstract-syntax-tree-node.hpp"
-#include "compile-state.hpp"
-#include "final-representation.hpp"
-#include "intermediate-operation.hpp"
-#include "symbol-table.hpp"
+#include "parser/compile-state.hpp"
+#include "parser/final-representation.hpp"
+#include "parser/intermediate-operation.hpp"
+
+class SyntaxTreeGenerator;
 
 /**
  * \brief Provides methods for collecting and compiling a command list.

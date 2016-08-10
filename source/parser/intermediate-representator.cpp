@@ -18,6 +18,8 @@
 
 #include "parser/intermediate-representator.hpp"
 
+#include "parser/symbol-table.hpp"
+
 FinalRepresentation
 IntermediateRepresentator::transform(const SyntaxTreeGenerator& generator,
                                      CompileState& state) {

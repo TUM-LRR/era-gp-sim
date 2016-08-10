@@ -22,13 +22,9 @@
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "arch/common/abstract-syntax-tree-node.hpp"
-#include "parser/compile-error.hpp"
 #include "parser/final-representation.hpp"
+#include "parser/parser-mode.hpp"
 
-
-enum class ParserMode { COMPILE, UPDATE };
 
 /**
  * Base Parser class

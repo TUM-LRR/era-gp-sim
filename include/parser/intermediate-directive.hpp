@@ -19,7 +19,7 @@
 #ifndef ERAGPSIM_PARSER_INTERMEDIATE_DIRECTIVE_HPP_
 #define ERAGPSIM_PARSER_INTERMEDIATE_DIRECTIVE_HPP_
 
-#include "intermediate-operation.hpp"
+#include "parser/intermediate-operation.hpp"
 
 // This is a dummy class for a future implementation.
 /**

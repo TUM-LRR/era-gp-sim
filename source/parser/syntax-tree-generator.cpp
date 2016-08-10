@@ -17,6 +17,7 @@
  */
 
 #include "parser/syntax-tree-generator.hpp"
+
 #include <regex>
 
 std::unique_ptr<AbstractSyntaxTreeNode>

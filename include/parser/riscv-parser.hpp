@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "arch/common/node-factory-collection.hpp"
+
 #include "parser/compile-state.hpp"
 #include "parser/parser.hpp"
 

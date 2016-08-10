@@ -23,7 +23,7 @@
 #include <memory>
 #include <vector>
 #include "arch/common/node-factory-collection.hpp"
-#include "compile-state.hpp"
+#include "parser/compile-state.hpp"
 
 /**
  * \brief A connector class for turning arguments and commands into syntax tree

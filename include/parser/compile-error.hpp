@@ -20,7 +20,8 @@
 #define ERAGPSIM_PARSER_COMPILE_ERROR_HPP_
 
 #include <string>
-#include "code-position.hpp"
+
+#include "parser/code-position.hpp"
 
 /**
  * \brief Denotes the severity of a compiler error.

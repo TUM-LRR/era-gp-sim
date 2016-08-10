@@ -18,10 +18,10 @@
 #ifndef ERAGPSIM_PARSER_RISCV_REGEX_HPP_
 #define ERAGPSIM_PARSER_RISCV_REGEX_HPP_
 
-#include "parser/riscv-parser.hpp"
-
 #include <regex>
 #include <string>
+
+#include "parser/riscv-parser.hpp"
 
 /**
  * Wrapper class for the RegExp used for parsing.

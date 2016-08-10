@@ -24,7 +24,7 @@
 #include <set>
 #include <string>
 #include <vector>
-#include "compile-state.hpp"
+#include "parser/compile-state.hpp"
 
 /**
  * \brief Contains methods to manage symbols and replace them in strings. It

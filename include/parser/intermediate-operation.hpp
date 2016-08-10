@@ -21,10 +21,11 @@
 
 #include <string>
 #include <vector>
-#include "compile-state.hpp"
-#include "final-representation.hpp"
-#include "symbol-table.hpp"
-#include "syntax-tree-generator.hpp"
+#include "parser/final-representation.hpp"
+#include "parser/symbol-table.hpp"
+#include "parser/syntax-tree-generator.hpp"
+
+struct CompileState;
 
 /**
  * \brief Representa an interval of lines, denoted by an upper and lower line
