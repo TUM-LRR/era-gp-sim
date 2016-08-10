@@ -47,6 +47,12 @@ struct CompileState {
    \brief Contains a list of compiler errors of this pass.
    */
   std::vector<CompileError> errorList;
+
+  /**
+   \var CompileState::section
+   \brief Specifies the section the compiler is currently in.
+   */
+  std::string section = "text";
 };
 
 #endif

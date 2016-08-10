@@ -8,6 +8,7 @@ set(PARSER_SOURCES
   intermediate-representator.cpp
   parser.cpp
   symbol-table.cpp
+  section-directive.cpp
 )
 
 ########################################
