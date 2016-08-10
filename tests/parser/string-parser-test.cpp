@@ -85,17 +85,17 @@ void doTest(const std::u32string& provided, const std::u32string& expected, bool
 
 TEST(StringParser, emptyInput)
 {
-    doTest(R"()", "", false);
+    doTest(u8R"()", u8"", false);
 }
 
 TEST(StringParser, wrongInput)
 {
-    doTest(u8R"(abcdefghijklmnopqrstuvwxyz1234567890!§$%&/()=?)", "", false);
+    doTest(u8R"(abcdefghijklmnopqrstuvwxyz1234567890!§$%&/()=?)", u8"", false);
 }
 
 TEST(StringParser, emptyString)
 {
-    doTest(R"("")", "", true);
+    doTest(u8R"("")", u8"", true);
 }
 
 TEST(StringParser, noSpecialsString)
@@ -105,67 +105,63 @@ TEST(StringParser, noSpecialsString)
 
 TEST(StringParser, genericErrors)
 {
-    doTest("\"\"\"", "", false);
-    doTest("\"\\\"", "", false);
+    doTest("\"\"\"", u8"", false);
+    doTest("\"\\\"", u8"", false);
 }
 
 TEST(StringParser, simpleEscape)
 {
-    doTest(R"("\a")", "\a", true);
-    doTest(R"("\b")", "\b", true);
-    doTest(R"("\n")", "\n", true);
-    doTest(R"("\r")", "\r", true);
-    doTest(R"("\?")", "\?", true);
-    doTest(R"("\"")", "\"", true);
-    doTest(R"("\'")", "\'", true); //"' // <-- just a syntax highlighting fix.
-    doTest(R"("\\")", "\\", true);
-    doTest(R"("\ö")", "", false);
+    doTest(u8R"("\a")", u8"\a", true);
+    doTest(u8R"("\b")", u8"\b", true);
+    doTest(u8R"("\n")", u8"\n", true);
+    doTest(u8R"("\r")", u8"\r", true);
+    doTest(u8R"("\?")", u8"\?", true);
+    doTest(u8R"("\"")", u8"\"", true);
+    doTest(u8R"("\'")", u8"\'", true); //"' // <-- just a syntax highlighting fix.
+    doTest(u8R"("\\")", u8"\\", true);
+    doTest(u8R"("\ö")", u8"", false);
 }
 
 TEST(StringParser, octalString)
 {
-    doTest(R"("\7")", "\7", true);
-    doTest(R"("\77")", "\77", true);
-    doTest(R"("\377")", "\377", true);
-    doTest(R"("\048")", "\048", true);
-    doTest(R"("\047")", "\047", true);
-    doTest(R"("\352")", "\352", true);
-    doTest(R"("\352\352")", "\352\352", true);
-    doTest(R"("#\352#\352#")", "#\352#\352#", true);
+    doTest(u8R"("\7")", u8"\7", true);
+    doTest(u8R"("\77")", u8"\77", true);
+    doTest(u8R"("\377")", u8"\377", true);
+    doTest(u8R"("\048")", u8"\048", true);
+    doTest(u8R"("\047")", u8"\047", true);
+    doTest(u8R"("\352")", u8"\352", true);
+    doTest(u8R"("\352\352")", u8"\352\352", true);
+    doTest(u8R"("#\352#\352#")", u8"#\352#\352#", true);
 }
 
 TEST(StringParser, hexXString)
 {
-    /*doTest(R"("\xf48e")", "\xf4", true);
-    doTest(R"("\x048")", "\x04", true);
-    doTest(R"("\x047")", "\x04", true);
-    doTest(R"("\x352")", "\x35", true);*/
-    doTest(R"("\xf4")", "\xf4", true);
-    doTest(R"("\x14")", "\x14", true);
-    doTest(R"("\xf4\x12")", "\xf4\x12", true);
+    doTest(u8R"("\xf4")", u8"\xf4", true);
+    doTest(u8R"("\x14")", u8"\x14", true);
+    doTest(u8R"("\xf4\x12")", u8"\xf4\x12", true);
 }
 
 TEST(StringParser, hexU4String)
 {
-    doTest(R"("\u0123")", "\u0123", true);
-    doTest(R"("\uaffe")", "\uaffe", true);
-    doTest(R"("\ubef")", "", false);
+    doTest(u8R"("\u0123")", u8"\u0123", true);
+    doTest(u8R"("\uaffe")", u8"\uaffe", true);
+    doTest(u8R"("\ubef")", u8"", false);
 }
 
 TEST(StringParser, hexU8String)
 {
-    doTest(R"("\U000dbeef")", "\U000dbeef", true);
-    doTest(R"("\U00000123")", "\U00000123", true);
-    doTest(R"("\U0000affe")", "\U0000affe", true);
-    doTest(R"("\U0000bef")", "", false);
-    doTest(R"("\Ubef")", "", false);
-    doTest(R"("\Ubeef")", "", false);
+    doTest(u8R"("\U000dbeef")", u8"\U000dbeef", true);
+    doTest(u8R"("\U00000123")", u8"\U00000123", true);
+    doTest(u8R"("\U0000affe")", u8"\U0000affe", true);
+    doTest(u8R"("\U0000bef")", u8"", false);
+    doTest(u8R"("\Ubef")", u8"", false);
+    doTest(u8R"("\Ubeef")", u8"", false);
 }
 
 TEST(StringParser, practicalString)
 {
-    doTest(R"("\r\n")", "\r\n", true);
-    doTest(R"("\033[1m")", "\033[1m", true);
+    doTest(u8R"("\r\n")", u8"\r\n", true);
+    doTest(u8R"("\033[1m")", u8"\033[1m", true);
 }
 
 //Sorry for the macro mess. But it was simpler like that.
