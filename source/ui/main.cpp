@@ -23,7 +23,7 @@
 #include <QQmlEngine>
 
 #include "ui/registermodel.hpp"
-#include "ui/qproject.hpp"
+#include "ui/editor-component.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -42,9 +42,9 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    QProject project;
+    EditorComponent editor;
     // TODO: set only for one component
-    engine.rootContext()->setContextProperty("project", &project);
+    engine.rootContext()->setContextProperty("editor", &editor);
 
     engine.rootContext()->setContextProperty("registerModel", &registerModel);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

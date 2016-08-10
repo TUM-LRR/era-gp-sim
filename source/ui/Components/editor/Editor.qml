@@ -69,7 +69,7 @@ ScrollView {
                 wrapMode: TextEdit.NoWrap
                 Component.onCompleted: {
                     updateSize();
-                    project.createHighlighter(textDocument);
+                    editor.init(textDocument);
                 }
                 visible: true
                 onCursorRectangleChanged: cursorScroll(cursorRectangle)
@@ -131,6 +131,13 @@ ScrollView {
                     onHeightChanged: textArea.updateSize();
                 }
 
+                Connections {
+                    target: editor
+                    onAddError: {
+                        errorBar.addError(line, color);
+                    }
+                }
+
                 //information about the font
                 FontMetrics {
                     id: fontMetrics
@@ -173,36 +180,42 @@ ScrollView {
                     x: 0
                     y: textArea.textMargin/2
                     width: 5
-                    //test
-                    Component.onCompleted: {
-                        addError(10);
-                        addError(50);
-                    }
 
                     Component {
                         id: errorComponent
                         Item {
+                            id: errorItem
+                            property color color : "red";
                             //TODO use a symbol instead of a red rectangle
                             Rectangle {
                                 width: errorBar.width
                                 height: fontMetrics.height
-                                color: "red"
+                                color: parent.color
                             }
 
                             //highlight the line
                             Rectangle {
                                 height: textArea.cursorRectangle.height
                                 width: scrollView.width
-                                color: "#33ff0019"
-                                border.color: "#33ff3300"
+                                //color: "#33ff0019"
+                                color: Qt.rgba(parent.color.r, parent.color.g, parent.color.b, 0.3)
+                                border.color: Qt.tint(parent.color, "#33ff3300")
+                            }
+
+                            Connections {
+                                target: editor
+                                onDeleteErrors: {
+                                    errorItem.destroy();
+                                }
                             }
                         }
                     }
 
-                    function addError(lineNumber) {
+                    function addError(lineNumber, errorColor) {
                         var newError = errorComponent.createObject();
                         newError.y = (lineNumber-1)*fontMetrics.height;
                         newError.parent = errorBar;
+                        newError.color = errorColor;
                     }
                 }
             }
