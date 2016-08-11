@@ -39,11 +39,13 @@ class RegisterSet {
 
   MemoryValue get(const std::string &name) const;
   MemoryValue get(const std::string &name, const std::size_t byteSize) const;
+  //Don'tuse yet, potential threading issues
   void get(const std::string &name, MemoryValue &out) const;
   MemoryValue get(const std::string &name, MemoryValue &&out) const;
   void put(const std::string &name, const MemoryValue &value);
   MemoryValue set(const std::string &name, const MemoryValue &value);
   MemoryValue set(const std::string &name, MemoryValue &&value);
+  //Don'tuse yet, potential threading issues
   void exchange(const std::string &name, MemoryValue &value);
 
   void createRegister(const std::string &name, const std::size_t width);
