@@ -246,3 +246,36 @@ TEST(TestMemoryValue, subSet) {
     }
   }
 }*/
+
+TEST(TestMemoryValue, charAt2) {
+  constexpr std::size_t b = 8;        // byteAmount
+  constexpr std::size_t s = 64;       // byteSize
+  constexpr std::size_t t = scale * 4;// testAmount
+  std::mt19937 rand{20141121u};       // Very important number, don't change
+  std::uniform_int_distribution<std::uint16_t> dist{255};
+  for (std::size_t i = 1; i < b; ++i) {
+    for (std::size_t j = 1; j < s; ++j) {
+      if (i * j < 8) continue;
+      for (std::size_t l = 0; l < t; ++l) {
+        MemoryValue instance{i, j};
+        std::vector<uint8_t> raw{};
+        for (std::size_t k = 0; k < (i * j + 7) / 8; ++k) {
+          raw.push_back(static_cast<std::uint8_t>(dist(rand)));
+        }
+        raw[((i * j + 7) / 8) - 1] &= (1 << (i * j % 8)) - 1;
+        raw.push_back(0);
+        for (std::size_t k = 0; k < i * j; ++k) {
+          if (raw[k / 8] & 1 << (k % 8)) {
+            instance.put(k);
+          }
+        }
+        for (std::size_t k = 0; k < i * j; ++k) {
+          std::uint16_t compare16{
+              static_cast<std::uint16_t>(((raw[k / 8 + 1]) << 8) | raw[k / 8])};
+          ASSERT_EQ(instance.getByteAt(k),
+                    static_cast<uint8_t>(compare16 >> (k % 8)));
+        }
+      }
+    }
+  }
+}

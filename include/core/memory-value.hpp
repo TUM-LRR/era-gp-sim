@@ -182,6 +182,7 @@ class MemoryValue {
 #endif
   FRIEND_TEST(TestMemoryValue, charAt);
   FRIEND_TEST(TestMemoryValue, death);
+  FRIEND_TEST(TestMemoryValue, charAt2);
 #undef FRIEND_TEST
 
  private:
