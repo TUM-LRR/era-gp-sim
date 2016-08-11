@@ -28,7 +28,7 @@ class MemoryComponentPresenter : public QObject{
        explicit MemoryComponentPresenter(/* Coreschnittstelle *core */ QQmlContext *context);
        void setSize(int newSize);
        void setValue(int address, /*MemoryValue*/ int newValue);
-
+       void setContextInformation(int addressStart, int length, int identifier);
 };
 
 #endif /* MEMORYCOMPONENTPRESENTER_HPP_ */

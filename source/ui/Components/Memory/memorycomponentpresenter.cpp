@@ -20,7 +20,7 @@
 #include "../../include/ui/memorycomponentpresenter.hpp"
 
 MemoryComponentPresenter::MemoryComponentPresenter(/* Coreschnittstelle *core */ QQmlContext *context) {
-    // Register callback functions
+    // register callback functions
     //core->onMemorySizeChanged(setSize);
     //core->onMemoryValueChanged(setValue);
 
