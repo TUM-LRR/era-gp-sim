@@ -56,9 +56,9 @@ void EditorComponent::init(QQuickTextDocument *qDocument) {
     if(this->_highlighter) {
         assert(false);
     }
-    //test
+    //test/demonstration of errors
     std::vector<CompileError> list;
-    list.push_back(CompileError("error", CodePosition(10, 10), CompileErrorSeverity::ERROR));
+    list.push_back(CompileError("<b>error</b>", CodePosition(10, 10), CompileErrorSeverity::ERROR));
     list.push_back(CompileError("warning", CodePosition(20, 20), CompileErrorSeverity::WARNING));
     list.push_back(CompileError("information", CodePosition(30, 30), CompileErrorSeverity::INFORMATION));
     setErrorList(std::move(list));
