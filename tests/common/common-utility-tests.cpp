@@ -19,6 +19,7 @@
 
 #include <gtest/gtest.h>
 #include <string>
+#include <vector>
 
 #include "common/utility.hpp"
 
@@ -31,4 +32,35 @@ TEST(UtilityTests, TestFileIO) {
   EXPECT_EQ(Utility::loadFromFile("file"), testString);
 
   std::remove("file");
+}
+
+TEST(UtilityTest, TestTransformInPlace) {
+  std::vector<int> v = {1, 2, 3, 4, 5};
+  Utility::transformInPlace(v, [](auto& i) { return i + 1; });
+  for (int i = 0; i < v.size(); ++i) {
+    EXPECT_EQ(v[i], i + 2);
+  }
+}
+
+TEST(UtilityTest, TestTransformInto) {
+  std::vector<int> v = {1, 2, 3, 4, 5};
+  std::vector<int> w(5);
+  Utility::transformInto(v, w.begin(), [](auto& i) { return i + 1; });
+  for (int i = 0; i < v.size(); ++i) {
+    EXPECT_EQ(w[i], i + 2);
+  }
+}
+
+TEST(UtilityTest, TestTransform) {
+  std::vector<int> v = {1, 2, 3, 4, 5};
+  auto w             = Utility::transform(v, [](auto& i) { return i + 1; });
+  for (int i = 0; i < v.size(); ++i) {
+    EXPECT_EQ(w[i], i + 2);
+  }
+}
+
+TEST(UtilityTest, TestStringTransforms) {
+  EXPECT_EQ(Utility::toLower("FOOBAR"), "foobar");
+  EXPECT_EQ(Utility::toUpper("foobar"), "FOOBAR");
+  EXPECT_EQ(Utility::toLower(Utility::toUpper("foobar")), "foobar");
 }
