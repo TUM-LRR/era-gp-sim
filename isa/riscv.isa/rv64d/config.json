@@ -1,0 +1,41 @@
+{
+  "name": "rv64d",
+  "instructions": [
+    {
+      "mnemonic": "fcvtld",
+      "opcode": 83,
+      "rs2": 2,
+      "funct7": 97
+    },
+    {
+      "mnemonic": "fcvtlud",
+      "opcode": 83,
+      "rs2": 3,
+      "funct7": 97
+    },
+    {
+      "mnemonic": "fmvxd",
+      "opcode": 83,
+      "rs2": 0,
+      "funct7": 113
+    },
+    {
+      "mnemonic": "fcvtdl",
+      "opcode": 83,
+      "rs2": 2,
+      "funct7": 105
+    },
+    {
+      "mnemonic": "fcvtslu",
+      "opcode": 83,
+      "rs2": 3,
+      "funct7": 105
+    },
+    {
+      "mnemonic": "fmvdx",
+      "opcode": 83,
+      "rs2": 0,
+      "funct7": 121
+    }
+  ]
+}

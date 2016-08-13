@@ -24,12 +24,16 @@
 #include <string>
 #include <vector>
 
-#include "arch/common/information.hpp"
+#include "arch/common/node-factory-collection.hpp"
+#include "arch/common/architecture-properties.hpp"
+#include "arch/common/extension-information.hpp"
+#include "arch/common/information-interface.hpp"
 #include "arch/common/instruction-set.hpp"
+#include "arch/common/unit-container.hpp"
 #include "arch/common/unit-information.hpp"
-#include "common/builder.hpp"
+#include "common/builder-interface.hpp"
 
-class ExtensionInformation;
+class ArchitectureFormula;
 
 /**
  * This class holds all information about an architecture.
@@ -41,14 +45,11 @@ class ExtensionInformation;
  * An `Architecture` is really just a light-weight adapter for an extension.
  *
  */
-class Architecture : public Builder {
+class Architecture : public BuilderInterface {
  public:
-  using UnitContainer     = std::vector<UnitInformation>;
-  using Endianness        = Information::Endianness;
-  using AlignmentBehavior = Information::AlignmentBehavior;
-  using word_size_t       = Information::word_size_t;
-
-  class Formula;
+  using Endianness        = ArchitectureProperties::Endianness;
+  using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
+  using word_size_t       = ArchitectureProperties::word_size_t;
 
   /**
    * Brews an architecture given a formula.
@@ -60,84 +61,53 @@ class Architecture : public Builder {
    * loaded and deserialized to produce an Architecture (via its builder
    * interface).
    *
-   * @param formula The formula describing how to brew the architecture.
+   * \param formula The formula describing how to brew the architecture.
    *
-   * @return A complete architecture instance.
+   * \return A complete architecture instance.
    */
-  static Architecture Brew(const Formula& formula);
+  static Architecture Brew(const ArchitectureFormula& formula);
 
   /**
-   * Constructs an architecture.
+   * Constructs an architecture with the given name.
+   *
+   * \param name The name of the architecture.
+   */
+  explicit Architecture(const std::string& name = std::string());
+
+  /**
+   * Constructs an architecture with the given name and base extension.
    *
    * Every architecture must have a name and consist of at least one (base)
-   * extension. The base extension must return true for its `isValidBase()`
+   * extension. The base extension must return true for its `isComplete()`
    * method.
    *
-   * @param name The name of the architecture.
-   * @param base The base extension of the archicture.
+   * \param name The name of the architecture.
+   * \param base The base extension of the architecture.
    */
+
   Architecture(const std::string& name, const ExtensionInformation& base);
-
-  /**
-   * Copy-Constructor.
-   *
-   * @param other Another architecture.
-   */
-  Architecture(const Architecture& other);
-
-  /**
-   * Move-Constructor.
-   *
-   * @param other Another architecture.
-   */
-  Architecture(Architecture&& other) noexcept;
-
-  /**
-   * Assignment operator.
-   *
-   * @param other Another architecture.
-   */
-  Architecture& operator=(Architecture other);
-
-  /** Destructor. */
-  ~Architecture();
-
-  /**
-   * Swaps the contents of this architecture with those of another.
-   *
-   * @param other Another architecture.
-   */
-  void swap(Architecture& other) noexcept;
-
-  /**
-   * Swaps two architecture.
-   *
-   * @param first The one architecture.
-   * @param second The other architecture.
-   */
-  friend void swap(Architecture& first, Architecture& second) noexcept;
 
   /**
    * Adds an extension to the architecture.
    *
-   * @param extension The extension to extend the architecture with.
+   * \param extension The extension to extend the architecture with.
    *
-   * @return The current architecture instance.
+   * \return The current architecture instance.
    *
-   * @see extend()
-   * @see operator+()
+   * \see extendBy()
+   * \see operator+()
    */
   Architecture& operator+=(const ExtensionInformation& extension);
 
   /**
    * Returns a copy of the result of extending this architecture.
    *
-   * @param extension The extension to extend the architecture with.
+   * \param extension The extension to extend the architecture with.
    *
-   * @return The result of the addition.
+   * \return The result of the addition.
    *
-   * @see extend()
-   * @see operator+=()
+   * \see extendBy()
+   * \see operator+=()
    */
   Architecture operator+(const ExtensionInformation& extension) const;
 
@@ -150,21 +120,21 @@ class Architecture : public Builder {
    * endianness and similar general properties (of which an architecture must
    * have only one) are overriden by the properties of the extension.
    *
-   * @param extension The extension to extend the architecture with.
+   * \param extension The extension to extend the architecture with.
    *
-   * @return The current architecture instance.
+   * \return The current architecture instance.
    *
-   * @see operator+=()
-   * @see operator+()
+   * \see operator+=()
+   * \see operator+()
    */
-  Architecture& extend(const ExtensionInformation& extension);
+  Architecture& extendBy(const ExtensionInformation& extension);
 
   /**
    * Sets the name of the archiecture.
    *
-   * @param name The new name for the architecture.
+   * \param name The new name for the architecture.
    *
-   * @return The current architecture instance.
+   * \return The current architecture instance.
    */
   Architecture& name(const std::string& name);
 
@@ -216,15 +186,38 @@ class Architecture : public Builder {
   const InstructionSet& getInstructions() const;
 
   /**
+   * Sets the architecture's node factory collection.
+   *
+   * This is a template method to more flexibly copy *or* move another
+   * collection with only a single method rather than two.
+   *
+   * \tparam An NodeFactoryCollection lvalue or rvalue.
+   *
+   * \param factoryCollection The factoryCollection to move or assign.
+   *
+   * \return The architecture instance.
+   */
+  template <typename FactoryCollection>
+  Architecture& nodeFactories(FactoryCollection&& factoryCollection) {
+    _factories = std::forward<FactoryCollection>(factoryCollection);
+    return *this;
+  }
+
+  /**
+   * Returns the architecture's node factory collection.
+   */
+  const NodeFactoryCollection& getNodeFactories() const;
+
+  /**
    * Validates the completeness of the architecture.
    *
    * An architecture is valid if its base extension, extended by all further
    * extensions, is still a valid base extension. That is,
-   * `ExtensionInformation::isValidBase()` return true. See the documentation
+   * `ExtensionInformation::isComplete()` return true. See the documentation
    * for that method to see what constraints are placed on a valid base
    * extension.
    *
-   * @return The current architecture instance.
+   * \return The current architecture instance.
    */
   Architecture& validate();
 
@@ -237,20 +230,18 @@ class Architecture : public Builder {
    */
   bool isValidated() const noexcept;
 
-  /** @copydoc Builder::isValid() */
+  /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
-  /**
-   * Private constructor for the copy-swap idiom.
-   */
-  Architecture() noexcept;
-
   /** The name of the architecture. */
   std::string _name;
 
   /** The base extension of the architecture. */
-  std::unique_ptr<ExtensionInformation> _base;
+  ExtensionInformation _base;
+
+  /** The abstract node factories. */
+  NodeFactoryCollection _factories;
 
   /** Boolean indicating whether the architecture has been validated. */
   bool _validated;

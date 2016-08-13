@@ -24,105 +24,90 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
-#include "arch/common/information.hpp"
+#include "arch/common/architecture-properties.hpp"
+#include "arch/common/information-interface.hpp"
+#include "arch/common/instruction-set.hpp"
+#include "arch/common/unit-container.hpp"
 #include "arch/common/unit-information.hpp"
-#include "common/builder.hpp"
+#include "common/builder-interface.hpp"
 #include "common/optional.hpp"
 #include "common/utility.hpp"
-
-class InstructionSet;
 
 /**
  * Holds information about an extension.
  *
  * In our model, an architecture is split into one or many extensions. An
  * extension is then further composed mainly of three things:
+ *
  * 1. One or more units, such as a CPU.
  * 2. An instruction set.
  * 3. Auxiliary information, such as word size or endiannss.
+ *
  * An architecture can then be built by specifying a base-extension and
  * optionally stacking any further extension on top of that base. This allows
  * for a highly modular design, as envisioned by the creators of RISC-V. Note
  * that this also means that an extension may be a complete architecture in
- * itself, if it defines at least one unit and one instruction, but must not
- * necessarily be. For example, RVA32/64 extensions define only additional
- * instructions (for atomic operations), but no additional unit (hardware
- * registers).
+ * itself, if it defines at least one unit (with at least one register) and one
+ * instruction, but must not necessarily be. For example, RVA32/64 extensions
+ * define only additional instructions (for atomic operations), but no
+ * additional unit (hardware registers).
  *
  * An `ExtensionInformation` can be built easily on-top of anther via the
- * supported interface. In general, the API follows the Builder pattern.
+ * supported interface (e.g. `extend`). In general, the API follows the
+ * BuilderInterface pattern.
  */
-class ExtensionInformation : public Builder {
+class ExtensionInformation : public InformationInterface {
  public:
   using size_t            = unsigned short;
-  using UnitContainer     = std::vector<UnitInformation>;
   using UnitList          = std::initializer_list<UnitInformation>;
   using ExtensionList     = std::initializer_list<ExtensionInformation>;
-  using Endianness        = Information::Endianness;
-  using AlignmentBehavior = Information::AlignmentBehavior;
+  using Endianness        = ArchitectureProperties::Endianness;
+  using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
+
+  /**
+   * Deserializes the `ExtensionInformation` object from the given data.
+   *
+   * \param data The data to deserialize from.
+   */
+  explicit ExtensionInformation(InformationInterface::Format& data);
 
   /**
    * Constructs a new `ExtensionInformation` object.
    *
-   * @param name The name of the extension.
+   * \param name The name of the extension.
    */
-  explicit ExtensionInformation(const std::string& name);
+  explicit ExtensionInformation(const std::string& name = std::string());
 
   /**
-   * Copies the extension information from another instance.
+   * Tests for equality of two extensions.
    *
-   * @param other Another `ExtensionInformation` object.
-   */
-  ExtensionInformation(const ExtensionInformation& other);
-
-  /**
-   * Move-copies the extension information from another instance.
+   * Compares members respectively.
    *
-   * @param other Another `ExtensionInformation` object.
+   * \param other The other extensions.
    */
-  ExtensionInformation(ExtensionInformation&& other) noexcept;
+  bool operator==(const ExtensionInformation& other) const noexcept;
 
   /**
-   * Assigns the extension information to another instance.
+   * Tests for inequality of two extensions.
    *
-   * @param other Another `ExtensionInformation` object.
-   */
-  ExtensionInformation& operator=(ExtensionInformation other);
-
-  /**
-   * Destructs the extension information.
-   */
-  ~ExtensionInformation();
-
-  /**
-   * Swaps the contents of this object with another `ExtensionInformation`
-   * instance.
+   * Compares members respectively.
    *
-   * @param other Another `ExtensionInformation` object.
+   * \param other The other extensions.
    */
-  void swap(ExtensionInformation& other) noexcept;
-
-  /**
-   * Swaps the contents of one `ExtensionInformation` instance with another
-   * instance.
-   *
-   * @param first The one `ExtensionInformation` instance.
-   * @param second The other `ExtensionInformation` instance.
-   */
-  friend void
-  swap(ExtensionInformation& first, ExtensionInformation& second) noexcept;
+  bool operator!=(const ExtensionInformation& other) const noexcept;
 
   /**
    * Merges the information in this instance with those of another
    * `ExtensionInformation` object.
    *
-   * @param other Another `ExtensionInformation` object.
+   * \param other Another `ExtensionInformation` object.
    *
-   * @return The current
+   * \return The current
    *
-   * @see getMerge()
+   * \see getMerge()
    */
   ExtensionInformation& operator+=(const ExtensionInformation& other);
 
@@ -131,13 +116,13 @@ class ExtensionInformation : public Builder {
    *
    * See getMerge() for exact information on how an extension is merged.
    *
-   * @tparam A range-like sequence type.
+   * \tparam A range-like sequence type.
    *
-   * @param range The range of extensions to merge to merge.
+   * \param range The range of extensions to merge to merge.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    *
-   * @see getMerge()
+   * \see getMerge()
    */
   template <typename Range>
   ExtensionInformation& operator+=(const Range& range) {
@@ -148,18 +133,27 @@ class ExtensionInformation : public Builder {
    * Returns a copy of the object resulting from merging this one with another
    * `ExtensionInformation` instance, without modifying this instance.
    *
-   * @param other Another ExtensionInformation object.
+   * \param other Another ExtensionInformation object.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation operator+(const ExtensionInformation& other) const;
 
   /**
+   * Deserializes the `ExtensionInformation` object from the given data.
+   *
+   * \param data The data to deserialize from.
+   *
+   * \return The current `ExtensionInformation` object.
+   */
+  ExtensionInformation& deserialize(InformationInterface::Format& data);
+
+  /**
    * Sets the name of the extension.
    *
-   * @param name The new name for the extension.
+   * \param name The new name for the extension.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& name(const std::string& name);
 
@@ -169,11 +163,16 @@ class ExtensionInformation : public Builder {
   const std::string& getName() const noexcept;
 
   /**
+   * Tests if the extension has a name assigned.
+   */
+  bool hasName() const noexcept;
+
+  /**
    * Sets the endianness for the extension.
    *
-   * @param endianness The `Endianness` member to assign to the extension.
+   * \param endianness The `Endianness` member to assign to the extension.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& endianness(Endianness endianness);
 
@@ -190,10 +189,10 @@ class ExtensionInformation : public Builder {
   /**
    * Sets the alignment behavior for the extension.
    *
-   * @param alignment behavior The `AlignmentBehavior` member to assign to the
+   * \param alignment behavior The `AlignmentBehavior` member to assign to the
    * extension.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& alignmentBehavior(AlignmentBehavior alignmentBehavior);
 
@@ -210,9 +209,9 @@ class ExtensionInformation : public Builder {
   /**
    * Sets the word size for the extension, in bits.
    *
-   * @param wordSize The word size for the extension, in bits.
+   * \param wordSize The word size for the extension, in bits.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& wordSize(size_t wordSize);
 
@@ -229,20 +228,27 @@ class ExtensionInformation : public Builder {
   /**
    * Adds the instructions of the instruction set to the extension.
    *
-   * @param instructions The instructions to add to the extension.
+   * \param instructions The instructions to add to the extension.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& addInstructions(const InstructionSet& instructions);
 
   /**
    * Sets the instructions of the extension to those given.
    *
-   * @param instructions The instructions to assign for the extension.
+   * \param instructions The instructions to assign for the extension.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& setInstructions(const InstructionSet& instructions);
+
+  /**
+   * Clears the current instruction set.
+   *
+   * \return The current `ExtensionInformation` object.
+   */
+  ExtensionInformation& clearInstructions();
 
   /**
    * Returns the instructions of the extension.
@@ -250,38 +256,49 @@ class ExtensionInformation : public Builder {
   const InstructionSet& getInstructions() const noexcept;
 
   /**
+   * Tests if the extension holds any instructions.
+   */
+  bool hasInstructions() const noexcept;
+
+  /**
    * Adds the units in the range to those of the extension.
    *
-   * @tparam Range A range-like sequence.
+   * \tparam Range A range-like sequence.
    *
-   * @param range The range of units to add.
+   * \param range The range of units to add.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   template <typename Range>
   ExtensionInformation& addUnits(const Range& range) {
-    Utility::concatenate(_units, range);
-
+    for (auto& unit : range) {
+      addUnit(unit);
+    }
     return *this;
   }
 
   /**
    * Adds the units in the list to those of the extension.
    *
-   * @param list The list of units to add.
+   * \param list The list of units to add.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& addUnits(UnitList units);
 
   /**
    * Adds the unit in the list to those of the extension.
    *
-   * @param unit The unit to add.
+   * \param unit The unit to add.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& addUnit(const UnitInformation& unit);
+
+  /**
+   * Clears the current collection of units.
+   */
+  ExtensionInformation& clearUnits() noexcept;
 
   /**
    * Returns the units of the extension.
@@ -289,21 +306,28 @@ class ExtensionInformation : public Builder {
   const UnitContainer& getUnits() const noexcept;
 
   /**
+   * Tests if the extension holds any units.
+   */
+  bool hasUnits() const noexcept;
+
+  /**
    * Merges the extension with a range of other extensions.
    *
    * See getMerge() for exact information on how an extension is merged.
    *
-   * @tparam A range-like sequence type.
+   * \tparam A range-like sequence type.
    *
-   * @param range The range of extensions to merge to merge.
+   * \param range The range of extensions to merge to merge.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    *
-   * @see getMerge()
+   * \see getMerge()
    */
   template <typename Range>
   ExtensionInformation& merge(const Range& range) {
-    for (auto& extension : range) merge(extension);
+    for (auto& extension : range) {
+      merge(extension);
+    }
 
     return *this;
   }
@@ -313,11 +337,11 @@ class ExtensionInformation : public Builder {
    *
    * See getMerge() for exact information on how an extension is merged.
    *
-   * @param list The list of extensions to merge.
+   * \param list The list of extensions to merge.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    *
-   * @see getMerge()
+   * \see getMerge()
    */
   ExtensionInformation& merge(ExtensionList list);
 
@@ -330,27 +354,46 @@ class ExtensionInformation : public Builder {
    * set to override the values stored in this extension. The only exception to
    * this rule is the name member of this extension, which is never overriden.
    *
-   * @param otherExtension The other extension to merge with.
+   * \param other The other extension to merge with.
    *
-   * @return The current `ExtensionInformation` object.
+   * \return The current `ExtensionInformation` object.
    */
-  ExtensionInformation& merge(const ExtensionInformation& otherExtension);
+  ExtensionInformation& merge(const ExtensionInformation& other);
 
-  /** @copydoc builder::isValid() */
+  /** \copydoc builder::isValid() */
   bool isValid() const noexcept override;
 
   /**
-  * Checks if the extension is a valid base extension.
+  * Checks if the extension is a complete extension.
   *
   * If true, this extension can be used as a base extension. This means that it
   * defines all necessary attributes for a basic ISA, including the endianness,
   * alignment behavior and word size, at least one unit and at least one
   * instruction.
   */
-  bool isValidBase() const noexcept;
+  bool isComplete() const noexcept;
 
  private:
-  ExtensionInformation() noexcept;
+  /**
+   * Deserializes the `ExtensionInformation` object from the given data.
+   *
+   * \param data The data to deserialize from.
+   */
+  void _deserialize(InformationInterface::Format& data) override;
+
+  /**
+   * Parses the endianness property from serialized data.
+   *
+   * \param data The data to deserialize the endianness from.
+   */
+  void _parseEndianness(InformationInterface::Format& data);
+
+  /**
+   * Parses the alignment behavior property from serialized data.
+   *
+   * \param data The data to deserialize the alignment behavior  from.
+   */
+  void _parseAlignmentBehavior(InformationInterface::Format& data);
 
   /** The name of the extension. */
   std::string _name;
@@ -362,10 +405,10 @@ class ExtensionInformation : public Builder {
   Optional<AlignmentBehavior> _alignmentBehavior;
 
   /** The word size of the extension, if any. */
-  Optional<size_t> _wordSize;
+  size_t _wordSize;
 
   /** The instruction set for the extension, if any. */
-  std::unique_ptr<InstructionSet> _instructions;
+  InstructionSet _instructions;
 
   /** The units supplied by the extension, if any. */
   UnitContainer _units;

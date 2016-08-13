@@ -22,10 +22,11 @@
 
 #include <string>
 
-#include "common/builder.hpp"
+#include "arch/common/information-interface.hpp"
+#include "common/builder-interface.hpp"
 
 /**
- * Holds information about a datatype.
+ * Holds information about a data type.
  *
  * This is useful only for libraries that explicitly define different
  * data-types, like x86, where there are `qword`, `dword`, `word` and `byte`
@@ -34,62 +35,107 @@
  * identifiers. the instructions all operate on fixed data-types, e.g. `add`
  * expects 32-bit integers for RVI32 and 64-bit integers for RVI64.
  *
- * A datatype is defined by a name and size in bits, e.g. (dword, 32).
+ * A data type is defined by a name and size in bits, e.g. (dword, 32).
  *
- * The class' interface is intended to support the Builder pattern
+ * The class' interface is intended to support the BuilderInterface pattern
  */
-class DataTypeInformation : public Builder {
+class DataTypeInformation : public InformationInterface {
  public:
   using size_t = unsigned short;
 
+  DataTypeInformation() noexcept;
+
   /**
-   * Constructs the datatype information object.
+   * Deserializes the data type from the given data.
    *
-   * @param name The name of the datatype, e.g. "dword".
-   * @param size The size of the datatype, in bits.
+   * \param data The data type to deserialize from.
+   */
+  explicit DataTypeInformation(InformationInterface::Format& data);
+
+  /**
+   * Constructs the data type information object.
+   *
+   * \param name The name of the data type, e.g. "dword".
+   * \param size The size of the data type, in bits.
    */
   DataTypeInformation(const std::string& name, size_t size);
 
   /**
-   * Sets the name of the datatype.
+   * Tests for equality of two data types.
    *
-   * @param name The name for the data type.
+   * \param other The other data type
+   */
+  bool operator==(const DataTypeInformation& other) const noexcept;
+
+  /**
+   * Tests for inequality of two data types.
    *
-   * @return The current datatype object.
+   * \param other The other data type.
+   */
+  bool operator!=(const DataTypeInformation& other) const noexcept;
+
+  /**
+   * \copydoc InformationInterface::deserialize()
+   */
+  DataTypeInformation& deserialize(InformationInterface::Format& data);
+
+  /**
+   * Sets the name of the data type.
+   *
+   * \param name The name for the data type.
+   *
+   * \return The current data type object.
    */
   DataTypeInformation& name(const std::string& name);
 
   /**
-   * Returns the name of the datatype.
+   * Returns the name of the data type.
    *
-   * @return The name of the datatype.
+   * \return The name of the data type.
    */
   const std::string& getName() const noexcept;
 
   /**
-   * Sets the size of the datatype, in bits.
+   * Returns whether the data type has any name set.
+   */
+  bool hasName() const noexcept;
+
+  /**
+   * Sets the size of the data type, in bits.
    *
-   * @param size The new size for the datatype, in bits.
+   * \param size The new size for the data type, in bits.
    *
-   * @return The current datatype object.
+   * \return The current data type object.
    */
   DataTypeInformation& size(size_t size);
 
   /**
-   * Returns the size of the datatype.
+   * Returns the size of the data type.
    *
-   * @return The size of the datatype.
+   * \return The size of the data type.
    */
-  size_t size() const noexcept;
+  size_t getSize() const noexcept;
 
-  /** @copydoc Builder::isValid() */
+  /**
+   * Returns whether the data type has any size set.
+   */
+  bool hasSize() const noexcept;
+
+  /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
-  /** The name of the datatype. */
+  /**
+   * Deserializes the data type from the given data.
+   *
+   * \param data The data type to deserialize from.
+   */
+  void _deserialize(InformationInterface::Format& data) override;
+
+  /** The name of the data type. */
   std::string _name;
 
-  /** The size of the datatype, in bits. */
+  /** The size of the data type, in bits. */
   size_t _size;
 };
 
