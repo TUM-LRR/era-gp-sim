@@ -3,6 +3,7 @@
 ########################################
 
 set(TEST_PARSER_SOURCES
+  expression-compiler-test.cpp
   intermediate-instruction-test.cpp
   intermediate-representator-test.cpp
   symbol-table-test.cpp
