@@ -4,6 +4,7 @@
 
 set(TEST_CORE_SOURCES
   memory-value-test.cpp
+  # queue-test.cpp # Sorry, they did fail sometimes. :(
 )
 
 ########################################
