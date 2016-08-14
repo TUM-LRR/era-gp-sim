@@ -27,6 +27,9 @@
 #include <memory>
 #include <string>
 
+#define STRINGIFY_INTERNAL(str) #str
+#define STRINGIFY(str) STRINGIFY_INTERNAL(str)
+
 namespace Utility {
 
 std::string toLower(const std::string& string);
