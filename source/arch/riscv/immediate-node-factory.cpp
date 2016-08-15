@@ -25,6 +25,6 @@ namespace riscv {
 
 ImmediateNodeFactory::Node
 ImmediateNodeFactory::createImmediateNode(const MemoryValue &value) const {
-  return std::make_unique<ImmediateNode>(value);
+   return std::make_unique<ImmediateNode>(value);
 }
 }
