@@ -21,6 +21,7 @@
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/instruction-information.hpp"
 #include "core/memory-value.hpp"
+#include "arch/riscv/conversion-stub.hpp"
 
 namespace riscv {
 /** A node that represents a RISC V specific instruction */
