@@ -25,6 +25,7 @@
 
 #include "arch/common/instruction-information.hpp"
 #include "arch/riscv/instruction-node.hpp"
+#include "arch/riscv/conversion-stub.hpp"
 
 /*
  * TODO Instructions: slt sltu and or xor sll srl sra
@@ -101,14 +102,20 @@ class IntegerInstructionNode : public InstructionNode {
       DummyMemoryAccessStub stub;
       // no memory access is needed for a immediate node
       MemoryValue value = _children.at(2)->getValue(stub);
-      auto bits20 = value.getValue() & (~0xFFFFF);  // 2097151 = 0b11111...1 (20
-                                                    // times a 1) -> erase lower
-                                                    // 20 bits
-      if (bits20 != 0) {
-        // there is a 1 somewhere in bit 20 to x => the value is not represented
-        // by only bit 0...19
-        return false;
+      //look for 1 in bits 20...value.getSize()
+      for(std::size_t index = 20; index < value.getByteSize(); ++index) {
+          if(value.get(index)) {
+              return false;//1 detected
+          }
       }
+//      auto bits20 = value.getValue() & (~0xFFFFF);  // 2097151 = 0b11111...1 (20
+//                                                    // times a 1) -> erase lower
+//                                                    // 20 bits
+//      if (value != lower20bit) {
+//        // there is a 1 somewhere in bit 20 to x => the value is not represented
+//        // by only bit 0...19
+//        return false;
+//      }
     }
 
     // a immediate integer instruction needs two register operands followed by
@@ -139,10 +146,6 @@ class IntegerInstructionNode : public InstructionNode {
   }
 
  private:
-  /** byte order used in RISC-V architecture*/
-  static constexpr ByteOrder RISCV_BYTEORDER = ByteOrder::kLittleEndian;
-  /** bits per byte in RISC-V architecture*/
-  static constexpr std::size_t RISCV_BITS_PER_BYTE = 8;
   /*!
    * Indicates if this instruction is a register-immediate instruction.
    * If false this instruction is a register-register instruction.
