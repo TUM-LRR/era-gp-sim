@@ -21,6 +21,7 @@
 #define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 
 #include <cassert>
+#include <climits>
 #include <string>
 
 #include "arch/common/instruction-information.hpp"
@@ -355,7 +356,7 @@ class ShiftArithmeticRightInstructionNode
    */
   SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
     // c++ standard does not define a arithemtic shift operator
-    constexpr auto length = sizeof(SizeType) * 8;
+    constexpr auto length = sizeof(SizeType) * CHAR_BIT;
     SizeType sign = (op1 & (SizeType(1) << (length - 1))) >> (length - 1);
     SizeType shiftCount = this->getLower5Bit(op2);
     SizeType tmp = op1 >> shiftCount;
