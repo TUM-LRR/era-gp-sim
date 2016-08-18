@@ -18,6 +18,7 @@
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
+#include "arch/riscv/mul-div-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
 
 #include "common/utility.hpp"
@@ -94,6 +95,18 @@ void initializeIntegerInstructions(
   _instructionMap.emplace("srai", [](InstructionInformation& info) {
     return std::make_unique<ShiftArithmeticRightInstructionNode<WordSize>>(
         info, true);
+  });
+  _instructionMap.emplace("mul", [](InstructionInformation& info) {
+      return std::make_unique<MultiplicationInstruction<WordSize>>(info, MultiplicationInstruction<WordSize>::LOW);
+  });
+  _instructionMap.emplace("mulh", [](InstructionInformation& info) {
+      return std::make_unique<MultiplicationInstruction<WordSize>>(info, MultiplicationInstruction<WordSize>::HIGH);
+  });
+  _instructionMap.emplace("mulhu", [](InstructionInformation& info) {
+      return std::make_unique<MultiplicationInstruction<WordSize>>(info, MultiplicationInstruction<WordSize>::HIGH);
+  });
+  _instructionMap.emplace("mulhsu", [](InstructionInformation& info) {
+      return std::make_unique<MultiplicationInstruction<WordSize>>(info, MultiplicationInstruction<WordSize>::HIGH);
   });
 }
 }
