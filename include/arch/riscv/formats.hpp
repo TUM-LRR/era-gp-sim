@@ -19,37 +19,69 @@
 #define ERAGPSIM_ARCH_RISCV_FORMATS_HPP
 
 #include "arch/common/instruction-format.hpp"
+#include "arch/common/instruction-key.hpp"
+#include "core/memory-value.hpp"
 
 namespace riscv {
+
+// Immediate transformation functions
+void immToI(MemoryValue& vec);
+
+void immToS(MemoryValue& vec);
+
+void immToB(MemoryValue& vec);
+
+void immToU(MemoryValue& vec);
+
+void immToJ(MemoryValue& vec);
+
 /*
  * funct7 | rs2 | rs1 | funct3 | rd | opcode
  */
-struct RFormat : public Format {};
+struct RFormat : public Format {
+  virtual std::vector<bool>
+  operator()(const InstructionKey& key, const std::vector<MemoryValue> args);
+};
 
 /*
  * imm[11:0] | rs1 | funct3 | rd | opcode
  */
-struct IFormat : public Format {};
+struct IFormat : public Format {
+  virtual std::vector<bool>
+  operator()(const InstructionKey& key, const std::vector<MemoryValue> args);
+};
 
 /*
  * imm[11:5] | rs2 | rs1 | funct3 | imm[4:0] | opcode
  */
-struct SFormat : public Format {};
+struct SFormat : public Format {
+  virtual std::vector<bool>
+  operator()(const InstructionKey& key, const std::vector<MemoryValue> args);
+};
 
 /*
  * imm[31:12] | rd | opcode
  */
-struct UFormat : public Format {};
+struct UFormat : public Format {
+  virtual std::vector<bool>
+  operator()(const InstructionKey& key, const std::vector<MemoryValue> args);
+};
 
 /*
  * The same as SFormat except the immediate encoding.
  */
-struct SBFormat : public Format {};
+struct SBFormat : public Format {
+  virtual std::vector<bool>
+  operator()(const InstructionKey& key, const std::vector<MemoryValue> args);
+};
 
 /*
  * The same as UFormat except the immediate encoding.
  */
-struct UJFormat : public Format {};
+struct UJFormat : public Format {
+  virtual std::vector<bool>
+  operator()(const InstructionKey& key, const std::vector<MemoryValue> args);
+};
 }
 
 #endif /* ERAGPSIM_ARCH_RISCV_FORMATS_HPP */

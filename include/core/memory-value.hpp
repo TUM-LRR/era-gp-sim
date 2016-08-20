@@ -13,8 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
 #ifndef ERAGPSIM_CORE_MEMORYVALUE_HPP_
 #define ERAGPSIM_CORE_MEMORYVALUE_HPP_
@@ -23,6 +22,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <iostream>
 #include <vector>
 
@@ -34,22 +34,22 @@ class MemoryValue {
   MemoryValue();
   /**
    * \brief Constructs an MemoryValue that acquires the data of other
-   * \param other The MemoryValue to acquire the data of
+   * \param other
    */
   MemoryValue(MemoryValue &&other) = default;
   /**
    * \brief Constructs an MemoryValue that acquires the data of other
-   * \param other The MemoryValue to acquire the data of
+   * \param other
    */
   MemoryValue &operator=(MemoryValue &&other) = default;
   /**
    * \brief Constructs an MemoryValue with a copy of the data of other
-   * \param other The MemoryValue to copy the data of
+   * \param other
    */
   MemoryValue(const MemoryValue &other) = default;
   /**
    * \brief Constructs an MemoryValue with a copy of the data of other
-   * \param other The MemoryValue to copy the data of
+   * \param other
    */
   MemoryValue &operator=(const MemoryValue &other) = default;
   /**
@@ -60,67 +60,50 @@ class MemoryValue {
   /**
    * \brief Constructs a MemoryValue with a copy of other and a
    *        byteSize of byteSize
-   * \param other The vector to be copied and held by this
-   * \param byteSize The size of a byte in bit
+   * \param other
+   * \param byteSize
    */
   MemoryValue(const std::vector<uint8_t> &other, const std::size_t byteSize);
   /**
    * \brief Constructs an MemoryValue with other and a ByteSize of byteSize
-   * \param other The vector to acquire the data of
-   * \param byteSize The size of a byte in bit
+   * \param other
+   * \param byteSize
    */
   MemoryValue(std::vector<uint8_t> &&other, const std::size_t byteSize);
   /**
    * \brief Constructs a empty MemoryValue with byteAmount bytes of size
    *        byteSize
-   * \param byteAmount Amount of Bytes
-   * \param byteSize The size of a byte in bit
+   * \param byteAmount
+   * \param byteSize
    */
   MemoryValue(std::size_t byteAmount, std::size_t byteSize);
 
-  /**
-   * \brief Constructs a MemoryValue with the data of other between begin and
-   *        end with a _byteSize of byteSize
-   * \param other the MemoryValue the data to be copied of
-   * \param begin the begin index to be copied
-   * \param end the first index no longer to be copied
-   * \param byteSize The size of a byte in bit
-   */
   MemoryValue(const MemoryValue &other,
               const std::size_t begin,
               const std::size_t end,
               const std::size_t byteSize);
 
-  /**
-  * \brief returns a MemoryValue with the data of this between begin and
-  *        end with a _byteSize of byteSize
-  * \param begin the begin index to be copied
-  * \param end the first index no longer to be copied
-  * \param byteSize The size of a byte in bit
-  * \return a MemoryValue with the data of this between begin and end
-  *         with a _byteSize of byteSize
-  */
   MemoryValue subSet(const std::size_t begin,
                      const std::size_t end,
                      const std::size_t byteSize) const;
 
   /**
    * \brief returns the previous value at address
-   * \param address The address of the bit
+   * \param address
    * \return the value at address
    */
   bool get(const std::size_t address) const;
   /**
    * \brief sets the value at address to value
-   * \param address The address of the bit
-   * \param value The Value to be written
+   * \param address
+   * \param value
    */
   void put(const std::size_t address, const bool value = true);
 
   /**
    * \brief sets the value at address to value and returns the previous value
-   * \param address The address of the bit
-   * \param value The Value to be written
+   * \param address
+   * \param value
    * \return the previous value at address
    */
   bool set(const std::size_t address, const bool value = true);
@@ -148,41 +131,12 @@ class MemoryValue {
    */
   const std::vector<uint8_t> &internal() const;
 
-  /**
-   * \brief returns true if this and other have the same _byteSize and
-   *        _data.size() and the values representing the MemoryValue are
-   *        identical, else returns false
-   * \param the MemoryValue to be compared with
-   * \return the equality of this and MemoryValue
-   */
   bool operator==(const MemoryValue &other) const;
 
-  /**
-   * \brief returns false if this and other have the same _byteSize and
-   *        _data.size() and the values representing the MemoryValue are
-   *        identical, else returns true
-   * \param other the MemoryValue to be compared with
-   * \return the inequality of this and MemoryValue
-   */
   bool operator!=(const MemoryValue &other) const;
 
-  /**
-   * \brief outputs the value onto the stream
-   * \param stream stream to output value to
-   * \param value the value to be outputted
-   * \return the stream
-   */
   friend std::ostream &
   operator<<(std::ostream &stream, const MemoryValue &value);
-
-// This is not beautiful at all... But I think it is better than including a
-// gtest header (i.e. external dependency).
-#ifndef FRIEND_TEST
-#define FRIEND_TEST(a, b)
-#endif
-  FRIEND_TEST(TestMemoryValue, charAt);
-  FRIEND_TEST(TestMemoryValue, death);
-#undef FRIEND_TEST
 
  private:
   std::size_t _byteSize;

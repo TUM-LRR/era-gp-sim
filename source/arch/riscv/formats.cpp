@@ -17,7 +17,7 @@
 
 #include <vector>
 
-#include "arch/common/instruction-information.hpp"
+#include "arch/common/instruction-key.hpp"
 #include "arch/riscv/formats.hpp"
 #include "common/utility.hpp"
 #include "core/memory-value.hpp"
@@ -27,71 +27,73 @@ namespace riscv {
 // methods to transform immediates into their specified formats
 // I should possibly reverse the memory values before the following operations
 void immToI(MemoryValue& vec) {
-  for (int i = 10; i >= 0; i--) vec[i] = vec[20 + i];
-  for (int i = 31; i > 10; i--) vec[i] = vec[31];
+  for (int i = 10; i >= 0; i--) vec.put(i, vec.get(20 + i));
+  for (int i = 31; i > 10; i--) vec.put(i, vec.get(31));
 }
 
 void immToS(MemoryValue& vec) {
-  vec[0] = vec[7];
-  for (int i = 4; i >= 1; i--) vec[i] = vec[7 + i];
-  for (int i = 10; i >= 5; i--) vec[i] = vec[20 + i];
-  for (int i = 31; i > 10; i--) vec[i] = vec[31];
+  vec.put(0, vec.get(7));
+  for (int i = 4; i >= 1; i--) vec.put(i, vec.get(7 + i));
+  for (int i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
+  for (int i = 31; i > 10; i--) vec.put(i, vec.get(31));
 }
 
 void immToB(MemoryValue& vec) {
   immToS(vec);
-  vec[11] = vec[0];
-  vec[0]  = false;
+  vec.put(11, vec.get(0));
+  vec.put(0, false);
 }
 
 void immToU(MemoryValue& vec) {
-  for (int i = 12; i >= 0; i--) vec[i] = false;
+  for (int i = 12; i >= 0; i--) vec.put(i, false);
 }
 
 void immToJ(MemoryValue& vec) {
   // clang-format off
-  for (int i = 4; i >= 1; i--) vec[i] = vec[20 + i];
-  vec[0] = false;
-  for (int i = 10; i >= 5; i--) vec[i] = vec[20 + i];
-  vec[11] = vec[20];
-  for (int i = 31; i >= 20; i--) vec[i] = vec[31];
+  for (int i = 4; i >= 1; i--) vec.put(i, vec.get(20 + i));
+  vec.put(0, false);
+  for (int i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
+  vec.put(11, vec.get(20));
+  for (int i = 31; i >= 20; i--) vec.put(i, vec.get(31));
   // clang-format on
 }
 
 std::vector<bool> RFormat::
-operator()(const InstructionInformation::InstructionKey& key,
-           const std::vector<MemoryValue> args) {
+operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   std::vector<bool> res;
 
   // funct7 - 6 bits long
   std::vector<bool> tmp;
   Utility::convertToBin(tmp, key["funct7"]);
   // push the last 6 bits
-  Utility::push_back_from_end(res, tmp, 7);
+  Utility::pushBackFromEnd(res, tmp, 7);
+
+  auto argument = args.at(2);
 
   // rs2
-  for (auto bit : args.at(2)) res.push_back(bit);
+  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
   // rs1
-  for (auto bit : args.at(1)) res.push_back(bit);
+  argument = args.at(1);
+  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   tmp.clear();
   Utility::convertToBin(tmp, key["funct3"]);
-  Utility::push_back_from_end(res, tmp, 3);
+  Utility::pushBackFromEnd(res, tmp, 3);
 
   // destination
-  for (auto bit : args.at(0)) res.push_back(bit);
+  argument = args.at(0);
+  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
 
   tmp.clear();
   Utility::convertToBin(tmp, key["opcode"]);
-  Utility::push_back_from_end(res, tmp, 7);
+  Utility::pushBackFromEnd(res, tmp, 7);
 
   return res;
 }
 
 
 std::vector<bool> IFormat::
-operator()(const InstructionInformation::InstructionKey& key,
-           const std::vector<MemoryValue> args) {
+operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   std::vector<bool> res;
   std::vector<bool> tmp;
 
@@ -100,27 +102,28 @@ operator()(const InstructionInformation::InstructionKey& key,
   immToI(imm);
 
   // immediate - 12 bits long
-  for (int i = 11; i >= 0; i--) res.push_back(imm[i]);
+  for (int i = 11; i >= 0; i--) res.push_back(imm.get(i));
   // rs1
-  for (auto bit : args.at(1)) res.push_back(bit);
+  auto argument = args.at(1);
+  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   tmp.clear();
   Utility::convertToBin(tmp, key["funct3"]);
-  Utility::push_back_from_end(res, tmp, 3);
+  Utility::pushBackFromEnd(res, tmp, 3);
 
   // destination
-  for (auto bit : args.at(0)) res.push_back(bit);
+  argument = args.at(0);
+  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
 
   tmp.clear();
   Utility::convertToBin(tmp, key["opcode"]);
-  Utility::push_back_from_end(res, tmp, 7);
+  Utility::pushBackFromEnd(res, tmp, 7);
 
   return res;
 }
 
 std::vector<bool> SFormat::
-operator()(const InstructionInformation::InstructionKey& key,
-           const std::vector<MemoryValue> args) {
+operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   std::vector<bool> res;
   std::vector<bool> tmp;
 
@@ -129,26 +132,26 @@ operator()(const InstructionInformation::InstructionKey& key,
   immToS(imm);
 
   // immediate[11:5]
-  for (int i = 11; i > 4; i--) res.push_back(imm[i]);
+  for (int i = 11; i > 4; i--) res.push_back(imm.get(i));
   // rs1
-  for (auto bit : args.at(1)) res.push_back(bit);
+  auto argument = args.at(1);
+  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   Utility::convertToBin(tmp, key["funct3"]);
-  Utility::push_back_from_end(res, tmp, 3);
+  Utility::pushBackFromEnd(res, tmp, 3);
 
   // imm[4:0]
-  for (int i = 4; i >= 0; i--) res.push_back(imm[i]);
+  for (int i = 4; i >= 0; i--) res.push_back(imm.get(i));
 
   tmp.clear();
   Utility::convertToBin(tmp, key["opcode"]);
-  Utility::push_back_from_end(res, tmp, 7);
+  Utility::pushBackFromEnd(res, tmp, 7);
 
   return res;
 }
 
 std::vector<bool> SBFormat::
-operator()(const InstructionInformation::InstructionKey& key,
-           const std::vector<MemoryValue> args) {
+operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   std::vector<bool> res;
   std::vector<bool> tmp;
 
@@ -157,30 +160,30 @@ operator()(const InstructionInformation::InstructionKey& key,
   immToB(imm);
 
   // imm[12]
-  res.push_back(imm[12]);
+  res.push_back(imm.get(12));
   // immediate[10:5]
-  for (int i = 10; i > 4; i--) res.push_back(imm[i]);
+  for (int i = 10; i > 4; i--) res.push_back(imm.get(i));
   // rs1
-  for (auto bit : args.at(1)) res.push_back(bit);
+  auto argument = args.at(1);
+  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   Utility::convertToBin(tmp, key["funct3"]);
-  Utility::push_back_from_end(res, tmp, 3);
+  Utility::pushBackFromEnd(res, tmp, 3);
 
   // imm[4:1]
-  for (int i = 4; i >= 1; i--) res.push_back(imm[i]);
+  for (int i = 4; i >= 1; i--) res.push_back(imm.get(i));
   // imm[0]
-  res.push_back(imm[11]);
+  res.push_back(imm.get(11));
 
   tmp.clear();
   Utility::convertToBin(tmp, key["opcode"]);
-  Utility::push_back_from_end(res, tmp, 7);
+  Utility::pushBackFromEnd(res, tmp, 7);
 
   return res;
 }
 
 std::vector<bool> UFormat::
-operator()(const InstructionInformation::InstructionKey& key,
-           const std::vector<MemoryValue> args) {
+operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   std::vector<bool> res;
   std::vector<bool> tmp;
 
@@ -189,20 +192,20 @@ operator()(const InstructionInformation::InstructionKey& key,
   immToU(imm);
 
   // immediate[31:12]
-  for (int i = 31; i >= 12; i--) res.push_back(imm[i]);
+  for (int i = 31; i >= 12; i--) res.push_back(imm.get(i));
 
   // rd
-  for (auto bit : args.at(0)) res.push_back(bit);
+  auto argument = args.at(0);
+  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
 
   Utility::convertToBin(tmp, key["opcode"]);
-  Utility::push_back_from_end(res, tmp, 7);
+  Utility::pushBackFromEnd(res, tmp, 7);
 
   return res;
 }
 
 std::vector<bool> UJFormat::
-operator()(const InstructionInformation::InstructionKey& key,
-           const std::vector<MemoryValue> args) {
+operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   std::vector<bool> res;
   std::vector<bool> tmp;
 
@@ -211,19 +214,20 @@ operator()(const InstructionInformation::InstructionKey& key,
   immToJ(imm);
 
   // immediate[20]
-  res.push_back(imm[20]);
+  res.push_back(imm.get(20));
   // imm[10:1]
-  for (int i = 10; i >= 1; i--) res.push_back(imm[i]);
+  for (int i = 10; i >= 1; i--) res.push_back(imm.get(i));
   // imm[11]
-  res.push_back(imm[11]);
+  res.push_back(imm.get(11));
   // imm[19:12]
-  for (int i = 19; i >= 12; i--) res.push_back(imm[i]);
+  for (int i = 19; i >= 12; i--) res.push_back(imm.get(i));
 
   // rd
-  for (auto bit : args.at(0)) res.push_back(bit);
+  auto argument = args.at(0);
+  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
 
   Utility::convertToBin(tmp, key["opcode"]);
-  Utility::push_back_from_end(res, tmp, 7);
+  Utility::pushBackFromEnd(res, tmp, 7);
 
   return res;
 }

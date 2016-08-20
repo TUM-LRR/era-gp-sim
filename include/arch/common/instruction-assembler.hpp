@@ -24,12 +24,11 @@
 #include <functional>
 #include <vector>
 
-#include "arch/common/instruction-information.hpp"
+#include "arch/common/instruction-key.hpp"
 #include "arch/common/instruction-node.hpp"
-
-using InstructionKey = InstructionInformation::InstructionKey;
+#include "core/memory-value.hpp"
 
 using AssemblerFunction =
-    std::function<std::vector<bool>(InstructionKey, InstructionNode)>;
+    std::function<std::vector<bool>(InstructionKey, std::vector<MemoryValue>)>;
 
 #endif /* ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP */
