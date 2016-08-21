@@ -34,7 +34,7 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
  public:
   enum RESULT { LOW, HIGH };
 
-  MultiplicationInstruction(InstructionInformation info,
+  MultiplicationInstruction(InstructionInformation& info,
                             RESULT partOfResultReturned)
       : IntegerInstructionNode<SizeType>(info, false),
         _usePart(partOfResultReturned) {
@@ -107,6 +107,61 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
   }
 
   RESULT _usePart;
+};
+
+template<typename SizeType>
+class DivisionInstruction : public IntegerInstructionNode<SizeType> {
+  public:
+    DivisionInstruction(InstructionInformation& info) : IntegerInstructionNode<SizeType>(info, false) {
+        _isSignedDivision = SizeType(0) -1 < 0;
+    }
+
+    SizeType performIntegerOperation(SizeType op1, SizeType op2) const {
+        //Semantics for division is defined in RISC-V specification in table 5.1
+
+        if(op2 == 0) {
+            //Division by zero
+            //TODO kann vermutlich zusammengefasst werden
+            if(_isSignedDivision) {
+                return SizeType(-1);
+            }else{
+                return -SizeType(1);
+            }
+        }
+        if(_isSignedDivision && op1 == SizeType(1) << ((sizeof(SizeType)*CHAR_BIT)-1) && op2 == SizeType(-1)) {
+            //Signed Division overflow
+            return op1;//op1 is exactly -2^(n-1)
+        }
+        return op1/op2;
+    }
+
+private:
+    bool _isSignedDivision;
+};
+
+template<typename SizeType>
+class RemainderInstruction : public IntegerInstructionNode<SizeType> {
+public:
+    RemainderInstruction(InstructionInformation& info) : IntegerInstructionNode<SizeType>(info, false) {
+        _isSignedRemainder = SizeType(0)-1 < 0;
+    }
+
+    SizeType performIntegerOperation(SizeType op1, SizeType op2) const {
+        //Semantics for division is defined in RISC-V specification in table 5.1
+
+        if(op2 == 0) {
+            //Division by zero
+            return op1;
+        }
+        if(_isSignedRemainder && op1 == SizeType(1) << ((sizeof(SizeType)*CHAR_BIT)-1) && op2 == SizeType(-1)) {
+            //Signed Division overflow
+            return 0;
+        }
+        return op1%op2;
+    }
+
+private:
+    bool _isSignedRemainder;
 };
 }
 #endif /* ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP_ */
