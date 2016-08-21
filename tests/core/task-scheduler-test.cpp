@@ -39,7 +39,7 @@ class Testservant2 : public Servant {
   : Servant(std::move(scheduler)), counterServant2(0) {
   }
 
-  int testPost(int counter,
+  void testPost(int counter,
                std::thread::id testThreadId,
                std::thread::id servant1ThreadId) {
     EXPECT_EQ(counter, counterServant2);
