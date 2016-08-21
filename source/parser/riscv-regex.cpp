@@ -21,7 +21,7 @@
 #include <cassert>
 
 RiscvParser::RiscvRegex::RiscvRegex()
-: line_regex_{
+: _line_regex{
       "\\s*"
       "(?:(\\w+)\\s*\\:)?"// Label group
       "\\s*"
@@ -38,35 +38,35 @@ RiscvParser::RiscvRegex::RiscvRegex()
 }
 
 void RiscvParser::RiscvRegex::matchLine(const std::string &line) {
-  std::regex_match(line, matches_, line_regex_);
+  std::regex_match(line, _matches, _line_regex);
 }
 
 bool RiscvParser::RiscvRegex::isValid() {
-  return !matches_.empty();
+  return !_matches.empty();
 }
 
 bool RiscvParser::RiscvRegex::hasLabel() {
-  return matches_[1].matched;
+  return _matches[1].matched;
 }
 
 bool RiscvParser::RiscvRegex::hasInstruction() {
-  return matches_[2].matched;
+  return _matches[2].matched;
 }
 
 std::string RiscvParser::RiscvRegex::getLabel() {
-  return matches_[1].str();
+  return _matches[1].str();
 }
 
 std::string RiscvParser::RiscvRegex::getInstruction() {
-  return matches_[3].str();
+  return _matches[3].str();
 }
 
 std::string RiscvParser::RiscvRegex::getParameter(int n) {
   assert(n >= 0 && n < getParameterCount());
-  assert(4 + n < matches_.size());
-  return matches_[4 + n];
+  assert(4 + n < _matches.size());
+  return _matches[4 + n];
 }
 
 int RiscvParser::RiscvRegex::getParameterCount() {
-  return matches_[6].matched ? 3 : 2;
+  return _matches[6].matched ? 3 : 2;
 }
