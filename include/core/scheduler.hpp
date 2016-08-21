@@ -35,9 +35,9 @@ class Scheduler {
   /**
  * \brief creates new Scheduler
  * \param sleepMillis optional parameter, how long the scheduler tries to sleep
- * after polling the queue
+ * if there are no tasks in the queue, default is 5ms
  */
-  Scheduler(int sleepMillis = 50)
+  Scheduler(int sleepMillis = 5)
   : _interrupt(false)
   , _sleepMilliseconds(sleepMillis)
   , _schedulerThread(&Scheduler::_run, this) {
@@ -64,9 +64,17 @@ class Scheduler {
     _taskQueue.push(std::move(task));
   }
 
+  /**
+   * returns the id of the scheduler thread
+   *
+   */
+  std::thread::id getThreadId() {
+    return _schedulerThread.get_id();
+  }
+
  private:
   /**
-   * \brief scheduler loop
+   * \brief scheduler loop, executes every task in the queue
    */
   void _run() {
     _interrupt = false;
