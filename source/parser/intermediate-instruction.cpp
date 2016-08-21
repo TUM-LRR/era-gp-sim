@@ -41,7 +41,8 @@ IntermediateInstruction::compileArgumentVector(
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> output;
   output.reserve(cpy.size());
   for (const auto& i : cpy) {
-    auto argument{generator.transformOperand(i, state)};
+    std::unique_ptr<AbstractSyntaxTreeNode> argument{
+        generator.transformOperand(i, state)};
 
     // Only add argument node if creation was successfull.
     // Otherwise AbstractSyntaxTreeNode::validate() segfaults.
