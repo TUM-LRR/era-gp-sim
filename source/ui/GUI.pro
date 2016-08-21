@@ -9,7 +9,7 @@ SOURCES += main.cpp \
     registerdata.cpp \
     qproject.cpp \
     syntaxhighlighter.cpp \
-    Components/Memory/memorycomponentpresenter.cpp
+    memorycomponentpresenter.cpp
 
 
 RESOURCES += qml.qrc

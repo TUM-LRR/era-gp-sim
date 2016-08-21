@@ -21,14 +21,25 @@
 #define MEMORYCOMPONENTPRESENTER_HPP_
 
 #include <QQmlContext>
+#include <QVariant>
+#include <QObject>
+#include <QAbstractTableModel>
+#include <QModelIndex>
 //#include "MemoryValue"
 
-class MemoryComponentPresenter : public QObject{
+class MemoryComponentPresenter : public QAbstractTableModel{
+    Q_OBJECT
+
     public:
-       explicit MemoryComponentPresenter(/* Coreschnittstelle *core */ QQmlContext *context);
+       explicit MemoryComponentPresenter(/* Coreschnittstelle *core */ QQmlContext *context, QObject *parent = 0);
+       ~MemoryComponentPresenter();
        void setSize(int newSize);
        void setValue(int address, /*MemoryValue*/ int newValue);
        void setContextInformation(int addressStart, int length, int identifier);
+
+       int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+       int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+       QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 };
 
 #endif /* MEMORYCOMPONENTPRESENTER_HPP_ */

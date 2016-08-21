@@ -17,16 +17,20 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../include/ui/memorycomponentpresenter.hpp"
+#include "ui/memorycomponentpresenter.hpp"
 
-MemoryComponentPresenter::MemoryComponentPresenter(/* Coreschnittstelle *core */ QQmlContext *context) {
+MemoryComponentPresenter::MemoryComponentPresenter(/* Coreschnittstelle *core */ QQmlContext *context, QObject *parent)
+: QAbstractTableModel(parent){
     // register callback functions
     //core->onMemorySizeChanged(setSize);
     //core->onMemoryValueChanged(setValue);
 
     // create new View
-    context->setContextProperty("MemoryComponent", this);
+    //context->setContextProperty("MemoryComponent", this);
 }
+
+
+MemoryComponentPresenter::~MemoryComponentPresenter() { }
 
 void MemoryComponentPresenter::setSize(int newSize) {
 
@@ -34,4 +38,23 @@ void MemoryComponentPresenter::setSize(int newSize) {
 
 void MemoryComponentPresenter::setValue(int address, /*MemoryValue*/ int newValue) {
 
+}
+
+void MemoryComponentPresenter::setContextInformation(int addressStart, int length, int identifier) {
+
+}
+
+
+
+int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
+    return 0;
+}
+int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
+    return 0;
+}
+QVariant MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
+    if (!index.isValid()) {
+      return QVariant();
+    }
+    return QVariant();
 }
