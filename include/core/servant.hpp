@@ -17,16 +17,18 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "core/scheduler.hpp"
-
 #include <cassert>
 #include <functional>
 #include <memory>
 
+#include "core/proxy.hpp"
+#include "core/result.hpp"
+#include "core/scheduler.hpp"
+
 /**
- * \brief Servant Superclass
+ * \brief Servant Superclass, inherit from this in every Servant class
  */
-class Servant {
+class Servant : public std::enable_shared_from_this<Servant> {
  public:
   Servant(std::weak_ptr<Scheduler>&& scheduler)
   : _scheduler(std::move(scheduler)) {
@@ -38,12 +40,52 @@ class Servant {
    */
   void push(std::function<void()>&& task) {
     if (auto scheduler = _scheduler.lock()) {
-      scheduler.get()->push(std::move(task));
+      scheduler->push(std::move(task));
     } else {
       assert(false);
     }
   }
 
- private:
+
+ protected:
+  /**
+   * \brief creates a safe callback functor, to be used with
+   * POST_CALLBACK_UNSAFE
+   * Creates a callback which is posted to the correct thread and only called,
+   * if this servant is still alive.
+   *
+   * \param callback a std::function object which accepts a Result<T> as
+   * argument, the result object can either have a value of type T or an
+   * exception. Create the std::function object like this:
+   * std::function<void(Result<T>)> callback = std::bind(&Foo::bar, this,
+   * std::placeholders::_1);
+   */
+  template <typename Arg>
+  std::function<void(Result<Arg>)>
+  makeSafeCallback(std::function<void(Result<Arg>)>&& callback) {
+    return std::bind(
+        [](std::weak_ptr<Servant> weak,
+           std::function<void(Result<Arg>)> cb,
+           Result<Arg> result) {
+          // TODO only push into correct thread if necessary
+          if (auto servant = weak.lock()) {
+            servant->push(std::bind(
+                [](std::weak_ptr<Servant> weakServant,
+                   std::function<void(Result<Arg>)> cb,
+                   Result<Arg> result) {
+                  if (auto servant = weakServant.lock()) {
+                    cb(result);
+                  }
+                },
+                weak,
+                std::move(cb),
+                std::move(result)));
+          }
+        },
+        shared_from_this(),
+        std::move(callback),
+        std::placeholders::_1);
+  }
+
   std::weak_ptr<Scheduler> _scheduler;
 };

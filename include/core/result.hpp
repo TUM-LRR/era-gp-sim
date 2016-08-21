@@ -20,18 +20,43 @@
 #ifndef CORE_RESULT_HPP
 #define CORE_RESULT_HPP
 
+#include <cassert>
 #include <exception>
 
 template <class ResultType>
+
+/**
+ * A class to store either a value of type ResultType or an exception
+ *
+ */
 class Result {
  public:
-  Result(ResultType&& result) : _result(std::forward<ResultType>(result)) {
+  Result() : _empty(true) {
   }
 
-  Result(std::exception_ptr exception) : _exception(exception) {
+  Result(ResultType&& result)
+  : _result(std::forward<ResultType>(result)), _empty(false) {
+  }
+
+  Result(std::exception_ptr exception) : _exception(exception), _empty(false) {
+  }
+
+  void setValue(ResultType&& value) {
+    _result = std::forward<ResultType>(value);
+    _empty  = false;
+  }
+
+  void setException(std::exception_ptr exception) {
+    _exception = exception;
+    _empty     = false;
+  }
+
+  const bool isEmpty() const {
+    return _empty;
   }
 
   ResultType get() const {
+    assert(!isEmpty());
     if (hasException()) {
       std::rethrow_exception(_exception);
     }
@@ -39,10 +64,11 @@ class Result {
   }
 
   bool hasException() const {
-    return !!_exception;
+    return !_empty & !!_exception;
   }
 
  private:
+  bool _empty;
   ResultType _result;
   std::exception_ptr _exception;
 };
