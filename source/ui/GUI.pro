@@ -27,4 +27,5 @@ HEADERS += \
     ../../include/ui/qproject.hpp \
     ../../include/ui/syntaxhighlighter.hpp \
     ../../include/ui/registerdata.hpp \
-    ../../include/ui/editor-component.hpp
+    ../../include/ui/editor-component.hpp \
+    ../../include/ui/keyword-rule.hpp
