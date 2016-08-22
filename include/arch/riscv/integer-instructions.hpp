@@ -25,7 +25,7 @@
 
 #include "arch/common/instruction-information.hpp"
 #include "arch/riscv/instruction-node.hpp"
-#include "arch/riscv/conversion-stub.hpp"
+#include "core/conversions.hpp"
 
 /*
  * TODO Instructions: slt sltu and or xor sll srl sra
@@ -75,13 +75,13 @@ class IntegerInstructionNode : public InstructionNode {
     MemoryValue memoryV1 = _children.at(1)->getValue(memory_access);
     MemoryValue memoryV2 = _children.at(2)->getValue(memory_access);
 
-    SizeType operand1 = convert<SizeType>(memoryV1, RISCV_BYTEORDER);
-    SizeType operand2 = convert<SizeType>(memoryV2, RISCV_BYTEORDER);
+    SizeType operand1 = convert<SizeType>(memoryV1, RISCV_ENDIANNESS);
+    SizeType operand2 = convert<SizeType>(memoryV2, RISCV_ENDIANNESS);
 
     SizeType result = performIntegerOperation(operand1, operand2);
 
     MemoryValue resultValue =
-        convert(result, RISCV_BITS_PER_BYTE, RISCV_BYTEORDER);
+        convert(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
     memory_access.setRegisterValue(destination, resultValue);
     return MemoryValue{};
   }

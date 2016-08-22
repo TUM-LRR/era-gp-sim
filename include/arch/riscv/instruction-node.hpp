@@ -21,7 +21,7 @@
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/instruction-information.hpp"
 #include "core/memory-value.hpp"
-#include "arch/riscv/conversion-stub.hpp"
+#include "core/conversions.hpp"
 
 namespace riscv {
 /** A node that represents a RISC V specific instruction */
@@ -57,9 +57,11 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   bool requireChildren(Type type, size_t startIndex, size_t amount) const;
 
   /** byte order used in RISC-V architecture*/
-  static constexpr ByteOrder RISCV_BYTEORDER = ByteOrder::kLittleEndian;
+  static constexpr Endianness RISCV_ENDIANNESS = Endianness::LITTLE;
   /** bits per byte in RISC-V architecture*/
   static constexpr std::size_t RISCV_BITS_PER_BYTE = 8;
+
+  static constexpr SignedRepresentation RISCV_SIGNED_REPRESENTATION = SignedRepresentation::TWOS_COMPLEMENT;
 
  private:
   InstructionInformation& _instructionInformation;
