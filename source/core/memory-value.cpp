@@ -32,7 +32,7 @@ static std::size_t constexpr byteAddress(const std::size_t address,
 static std::size_t constexpr offset(const std::size_t address,
                                     const std::size_t byteSize) {
   // Offset in byte.
-  return (address % byteSize) % 8;
+  return 7 - ((address % byteSize) % 8);
 }
 
 static constexpr char hex[16]{'0',
@@ -159,7 +159,7 @@ bool MemoryValue::operator==(const MemoryValue &other) const {
   const std::size_t byteStoredSize = sizeOfBytesStored(_byteSize);
 
   // To compare the rest of the two bytes.
-  const std::size_t shift = _byteSize % 8;
+  const std::size_t shift = 8 - (_byteSize % 8);
 
   for (std::size_t i = 0; i < _data.size(); ++i) {
     if (i % byteStoredSize != byteStoredSize - 1) {
@@ -169,8 +169,7 @@ bool MemoryValue::operator==(const MemoryValue &other) const {
       }
     } else {
       // The last byte, we just compare the rest of the byte.
-      int testEq = ((1 << shift) - 1);
-      if ((_data[i] & testEq) != (other._data[i] & testEq)) {
+      if ((_data[i] >> shift) != (other._data[i] >> shift)) {
         return false;
       }
     }
@@ -187,21 +186,30 @@ std::uint8_t MemoryValue::getByteAt(std::size_t address) const {
   assert(address < getSize());
   assert(address >= 0);
   std::size_t pos = byteAddress(address, _byteSize);
-
-  // Filling our byte with the available rest coming after it.
-  std::uint8_t result =
-      static_cast<std::uint8_t>(_data[pos] >> offset(address, _byteSize));
-  std::size_t filled = std::min((_byteSize - (address % _byteSize)),
-                                8 - offset(address, _byteSize));
-  ++pos;
-
-  // We look into the byte(s) which follow.
+  
+  auto paddingInPos = [byteSize = _byteSize](std::size_t position) {
+    auto internalBytesPerByte = sizeOfBytesStored(byteSize);
+    if (byteSize % 8 != 0 &&
+        position % internalBytesPerByte == internalBytesPerByte - 1) {
+      // This byte has padding
+      return 8 - (byteSize % 8);
+    } else {
+      return 0ul;
+    }
+  };
+  
+  std::uint8_t result = 0;
+  std::size_t filled = 0;
   while (filled < 8 && pos < _data.size()) {
-    result &= (1 << filled) - 1;
-    result |= _data[pos++] << (filled);
-    filled += _byteSize - ((address + filled) % _byteSize);
+    std::uint8_t currentByte = _data[pos];
+    std::size_t padding = paddingInPos(pos);
+    std::size_t dataBits = 8 - padding;
+    currentByte >>= padding; // Remove padding
+    currentByte <<= 8 - filled - dataBits; // Shift to fit to the end of result
+    filled += dataBits;
+    ++pos;
   }
-
+  
   return result;
 }
 

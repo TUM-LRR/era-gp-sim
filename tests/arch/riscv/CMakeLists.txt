@@ -4,7 +4,7 @@
 
 set(TEST_ARCH_RISCV_SOURCES
 	#arch-riscv-tests.cpp These must be adapted, at the moment they do not compile
-	#arch-riscv-integer-instructions-test.cpp Must be adapted as well
+	arch-riscv-integer-instructions-test.cpp
 )
 
 ########################################
