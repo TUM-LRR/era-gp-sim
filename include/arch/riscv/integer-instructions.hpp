@@ -159,7 +159,7 @@ class IntegerInstructionNode : public InstructionNode {
  * Represents a RISC-V "add/addi" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 class AddInstructionNode : public IntegerInstructionNode<SizeType> {
@@ -182,7 +182,7 @@ class AddInstructionNode : public IntegerInstructionNode<SizeType> {
  * Represents a RISC-V "sub" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 class SubInstructionNode : public IntegerInstructionNode<SizeType> {
@@ -207,7 +207,7 @@ class SubInstructionNode : public IntegerInstructionNode<SizeType> {
  * Represents a RISC-V "and/andi" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 class AndInstructionNode : public IntegerInstructionNode<SizeType> {
@@ -230,7 +230,7 @@ class AndInstructionNode : public IntegerInstructionNode<SizeType> {
  * Represents a RISC-V "or/ori" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 class OrInstructionNode : public IntegerInstructionNode<SizeType> {
@@ -253,7 +253,7 @@ class OrInstructionNode : public IntegerInstructionNode<SizeType> {
  * Represents a RISC-V "xor/xori" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 class XorInstructionNode : public IntegerInstructionNode<SizeType> {
@@ -276,7 +276,7 @@ class XorInstructionNode : public IntegerInstructionNode<SizeType> {
  * Represents a RISC-V "sll/slli" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 class ShiftLogicalLeftInstructionNode
@@ -303,7 +303,7 @@ class ShiftLogicalLeftInstructionNode
  * Represents a RISC-V "srl/srli" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 class ShiftLogicalRightInstructionNode
@@ -336,7 +336,7 @@ class ShiftLogicalRightInstructionNode
  * Represents a RISC-V "sra/srai" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 class ShiftArithmeticRightInstructionNode
