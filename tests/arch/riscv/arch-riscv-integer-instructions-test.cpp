@@ -17,6 +17,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <iostream>
 #include <unordered_map>
 
 #include "gtest/gtest.h"
@@ -45,13 +46,9 @@ class FakeRegister {
   FakeRegister(MemoryValue& v) : _value(v) {}
 
   void set(uint64_t newValue) { _value = convertToMem<uint64_t>(newValue); }
-  void set(MemoryValue& v) {
-      _value = v;
-  }
+  void set(MemoryValue& v) { _value = v; }
 
-  MemoryValue get() {
-      return _value;
-  }
+  MemoryValue get() { return _value; }
 
  private:
   MemoryValue _value;
@@ -237,13 +234,15 @@ void test20BitImmediateBounds(InstructionNodeFactory& instrF,
   auto node = instrF.createInstructionNode(instructionToken);
   node->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
   node->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
-  auto immediateNodeIn = immF.createImmediateNode(convertToMem<uint64_t>(boundary));
+  auto immediateNodeIn =
+      immF.createImmediateNode(convertToMem<uint64_t>(boundary));
   node->addChild(std::move(immediateNodeIn));
   ASSERT_TRUE(node->validate());
   auto node2 = instrF.createInstructionNode(instructionToken);
   node2->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
   node2->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
-  auto immediateNodeOut = immF.createImmediateNode(convertToMem<uint64_t>(boundary + 1));
+  auto immediateNodeOut =
+      immF.createImmediateNode(convertToMem<uint64_t>(boundary + 1));
   node->addChild(std::move(immediateNodeOut));
   ASSERT_FALSE(node->validate());
 }
@@ -348,7 +347,7 @@ TEST(IntegerInstructionTest, ADDInstruction_testValidation) {
                                    immediateFactory, "addi", true);
 }
 
-TEST(IntegerInstructionTest, SUBIntruction_testSub) {
+TEST(IntegerInstructionTest, SUBInstruction_testSub) {
   FakeRegister destination1;
   FakeRegister destination2(123);
   FakeRegister firstOp(43);
@@ -388,7 +387,7 @@ TEST(IntegerInstructionTest, SUBInstruction_testValidation) {
                                    immediateFactory, "sub", false);
 }
 
-TEST(IntegerInstructionTest, ANDIntruction_testAnd) {
+TEST(IntegerInstructionTest, ANDInstruction_testAnd) {
   FakeRegister destination1;
   FakeRegister destination2;
   FakeRegister destination3(123);
@@ -433,7 +432,7 @@ TEST(IntegerInstructionTest, ANDIntruction_testAnd) {
   assertRegisterInstruction(memoryImpl, factory64, "and", "d3", "r2", "r1", 0);
 }
 
-TEST(IntegerInstructionTest, ANDIntruction_testAndi) {
+TEST(IntegerInstructionTest, ANDInstruction_testAndi) {
   FakeRegister destination1(4444);
   FakeRegister destination2;
   FakeRegister destination3(123);
@@ -491,7 +490,7 @@ TEST(IntegerInstructionTest, ANDInstruction_testValidation) {
                                    immediateFactory, "andi", true);
 }
 
-TEST(IntegerInstructionTest, ORIntruction_testOr) {
+TEST(IntegerInstructionTest, ORInstruction_testOr) {
   FakeRegister destination1;
   FakeRegister destination2;
   FakeRegister destination3(123);
@@ -540,7 +539,7 @@ TEST(IntegerInstructionTest, ORIntruction_testOr) {
                             0b111111L << 32);
 }
 
-TEST(IntegerInstructionTest, ORIntruction_testOri) {
+TEST(IntegerInstructionTest, ORInstruction_testOri) {
   FakeRegister destination1(4444);
   FakeRegister destination2;
   FakeRegister destination3(123);
@@ -592,7 +591,7 @@ TEST(IntegerInstructionTest, ORInstruction_testValidation) {
                                    immediateFactory, "ori", true);
 }
 
-TEST(IntegerInstructionTest, XORIntruction_testXor) {
+TEST(IntegerInstructionTest, XORInstruction_testXor) {
   FakeRegister destination1;
   FakeRegister destination2;
   FakeRegister destination3(123);
@@ -641,7 +640,7 @@ TEST(IntegerInstructionTest, XORIntruction_testXor) {
                             0b111111L << 32);
 }
 
-TEST(IntegerInstructionTest, XORIntruction_testXori) {
+TEST(IntegerInstructionTest, XORInstruction_testXori) {
   FakeRegister destination1(4444);
   FakeRegister destination2;
   FakeRegister destination3(123);
@@ -694,7 +693,7 @@ TEST(IntegerInstructionTest, XORInstruction_testValidation) {
                                    immediateFactory, "xori", true);
 }
 
-TEST(IntegerInstructionTest, ShiftLeftIntruction_testSll) {
+TEST(IntegerInstructionTest, ShiftLeftInstruction_testSll) {
   FakeRegister destination1;
   FakeRegister destination2;
   FakeRegister firstOp(0b110110);
@@ -726,7 +725,7 @@ TEST(IntegerInstructionTest, ShiftLeftIntruction_testSll) {
   assertRegisterInstruction(memoryImpl, factory64, "sll", "d1", "r2", "r1", 3);
 }
 
-TEST(IntegerInstructionTest, ShiftLeftIntruction_testSlli) {
+TEST(IntegerInstructionTest, ShiftLeftInstruction_testSlli) {
   FakeRegister destination1;
   FakeRegister destination2;
   FakeRegister regOp1(0b110110);
@@ -806,7 +805,7 @@ TEST(IntegerInstructionTest, ShiftRightIntruction_testSrl) {
   assertRegisterInstruction(memoryImpl, factory64, "srl", "d1", "r2", "r1", 3);
 }
 
-TEST(IntegerInstructionTest, ShiftRightIntruction_testSrli) {
+TEST(IntegerInstructionTest, ShiftRightInstruction_testSrli) {
   FakeRegister destination1;
   FakeRegister destination2;
   FakeRegister regOp1(0b110110);
@@ -888,7 +887,7 @@ TEST(IntegerInstructionTest, ShiftRightArithmeticIntruction_testSra) {
   assertRegisterInstruction(memoryImpl, factory64, "srl", "d1", "r2", "r1", 3);
 }
 
-TEST(IntegerInstructionTest, ShiftRightIntruction_testSrai) {
+TEST(IntegerInstructionTest, ShiftRightInstruction_testSrai) {
   FakeRegister destination1;
   FakeRegister destination2;
   FakeRegister regOp1(0b10000000000000000000000000110110);
@@ -938,4 +937,67 @@ TEST(IntegerInstructionTest, ShiftRightArithmeticInstruction_testValidation) {
                                    immediateFactory, "sra", false);
   testIntegerInstructionValidation(memAccess, instructionFactory,
                                    immediateFactory, "srai", true);
+}
+
+TEST(MulDivInstructionTest, Multiplication_testMUL) {
+  FakeRegister destination1, destination2;
+  FakeRegister op1, op2;
+  DummyMemoryAccessImpl memoryImpl;
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  memoryImpl.addRegister("d0", destination1);
+  memoryImpl.addRegister("d1", destination2);
+  memoryImpl.addRegister("r1", op1);
+  memoryImpl.addRegister("r2", op2);
+  auto factory32 = setUpFactory({"rv32i", "rv32m"});
+
+  // 42 x 0 => 0
+  // 0 x 42 => 0
+  op1.set(42);
+  op2.set(0);
+  assertRegisterInstruction(memoryImpl, factory32, "mul", "d0", "r1", "r2", 0);
+  assertRegisterInstruction(memoryImpl, factory32, "mul", "d1", "r2", "r1", 0);
+
+  //13 x 17 => 221
+  op1.set(13);
+  op2.set(17);
+  assertRegisterInstruction(memoryImpl, factory32, "mul", "d0", "r1", "r2", 221);
+
+  //-13 x 17 => -221
+  std::cout << "-13x17, ";
+  op1.set(-13);
+  op2.set(17);
+  assertRegisterInstruction(memoryImpl, factory32, "mul", "d0", "r1", "r2", -221);
+
+  //13 x -17 => -221
+  std::cout << "13x-17, ";
+  op1.set(13);
+  op2.set(-17);
+  assertRegisterInstruction(memoryImpl, factory32, "mul", "d0", "r1", "r2", -221);
+
+  //-13 x -17 => 221
+  std::cout << "-13x-17" << std::endl;
+  op1.set(-13);
+  op2.set(-17);
+  assertRegisterInstruction(memoryImpl, factory32, "mul", "d0", "r1", "r2", 221);
+
+  // test 32bit bounds
+  // 2^30 x 2 => 2^31
+  // 2^31 x 2 => 0
+  op1.set(1 << 30);
+  op2.set(2);
+  assertRegisterInstruction(memoryImpl, factory32, "mul", "d0", "r1", "r2",
+                            (1U << 31));
+  destination2.set(1234);  // set the destination register to some random number
+                           // != 0, so that the test will fail if the
+                           // instruction would not change the register value
+  op1.set(1 << 31);
+  assertRegisterInstruction(memoryImpl, factory32, "mul", "d1", "r1", "r2", 0);
+}
+
+TEST(MulDivInstructionTest, Multiplication_testValidation) {
+    auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
+    auto immediateFactory = ImmediateNodeFactory();
+    auto memAccess = DummyMemoryAccessImpl();
+    testIntegerInstructionValidation(memAccess, instructionFactory,
+                                     immediateFactory, "mul", false);
 }

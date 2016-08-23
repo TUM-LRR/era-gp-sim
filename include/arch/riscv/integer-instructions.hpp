@@ -83,6 +83,7 @@ class IntegerInstructionNode : public InstructionNode {
 
     MemoryValue resultValue =
         convert(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+    SizeType checkResult = convert<SizeType>(resultValue, RISCV_ENDIANNESS);
     memory_access.setRegisterValue(destination, resultValue);
     return MemoryValue{};
   }
