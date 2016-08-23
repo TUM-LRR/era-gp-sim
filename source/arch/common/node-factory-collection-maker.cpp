@@ -23,7 +23,7 @@
 
 namespace NodeFactoryCollectionMaker {
 NodeFactoryCollection CreateFor(const Architecture& architecture) {
-  if (architecture.getName() == "risc-v") {
+  if (architecture.getName() == "riscv") {
     return Create<riscv::FactoryTypes>(architecture);
   } else {
     return {};
