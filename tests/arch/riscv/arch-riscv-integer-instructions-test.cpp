@@ -54,6 +54,14 @@ class FakeRegister {
   MemoryValue _value;
 };
 
+MemoryValue to32BitMemoryValue(uint32_t value) {
+  return convertToMem<uint32_t>(value);
+}
+
+MemoryValue to64BitMemoryValue(uint64_t value) {
+  return convertToMem<uint64_t>(value);
+}
+
 class FakeRegisterNode : public RegisterNode {
  public:
   explicit FakeRegisterNode(std::string& regId)
@@ -94,7 +102,7 @@ void assertRegisterInstruction(DummyMemoryAccess& memAccess,
                                std::string instructionToken,
                                std::string destinationReg,
                                std::string operand1Reg, std::string operand2Reg,
-                               uint64_t expectedResult) {
+                               MemoryValue expectedResult) {
   // Create the nodes for the instruction
   auto instrNode = fact.createInstructionNode(instructionToken);
   ASSERT_FALSE(instrNode->validate());
@@ -123,22 +131,20 @@ void assertRegisterInstruction(DummyMemoryAccess& memAccess,
 
   // Read result from destination register
   MemoryValue result = memAccess.getRegisterValue(destinationReg);
-  MemoryValue exp = convertToMem<uint64_t>(expectedResult);
-  ASSERT_EQ(exp, result);
+  ASSERT_EQ(expectedResult, result);
 }
 
 void assertImmediateInstruction(
     DummyMemoryAccess& memAccess, InstructionNodeFactory& instructionFactory,
     ImmediateNodeFactory& immediateFactory, std::string instructionToken,
     std::string destinationReg, std::string registerOperand,
-    uint64_t immediateValue, uint64_t expectedResult) {
+    MemoryValue immediateValue, MemoryValue expectedResult) {
   // create instruction node
   auto instrNode = instructionFactory.createInstructionNode(instructionToken);
   ASSERT_FALSE(instrNode->validate());
   auto destination = std::make_unique<FakeRegisterNode>(destinationReg);
   auto registerOp = std::make_unique<FakeRegisterNode>(registerOperand);
-  auto immediateOp = immediateFactory.createImmediateNode(
-      convertToMem<uint64_t>(immediateValue));
+  auto immediateOp = immediateFactory.createImmediateNode(immediateValue);
   // Add them step-by-step
   instrNode->addChild(std::move(destination));
   ASSERT_FALSE(instrNode->validate());
@@ -159,8 +165,7 @@ void assertImmediateInstruction(
 
   // Read result from destination register
   MemoryValue result = memAccess.getRegisterValue(destinationReg);
-  MemoryValue exp = convertToMem<uint64_t>(expectedResult);
-  ASSERT_EQ(exp, result);
+  ASSERT_EQ(result, expectedResult);
 }
 
 InstructionNodeFactory setUpFactory(
@@ -266,26 +271,38 @@ TEST(IntegerInstructionTest, ADDIntruction_testAdd) {
 
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
-  assertRegisterInstruction(memoryImpl, factory32, "add", "d0", "r1", "r2", 42);
-  assertRegisterInstruction(memoryImpl, factory32, "add", "d1", "r2", "r1", 42);
+  auto v42_32b = to32BitMemoryValue(42);
+  auto v0_32b = to32BitMemoryValue(0);
+  assertRegisterInstruction(memoryImpl, factory32, "add", "d0", "r1", "r2",
+                            v42_32b);
+  assertRegisterInstruction(memoryImpl, factory32, "add", "d1", "r2", "r1",
+                            v42_32b);
   // test 32bit (unsigned) boundary: (2^32 -1) + 1 = 4294967295 + 1 = 0
   firstOp.set(4294967295U);
-  assertRegisterInstruction(memoryImpl, factory32, "add", "d2", "r1", "r2", 0);
-  assertRegisterInstruction(memoryImpl, factory32, "add", "d3", "r2", "r1", 0);
+  assertRegisterInstruction(memoryImpl, factory32, "add", "d2", "r1", "r2",
+                            v0_32b);
+  assertRegisterInstruction(memoryImpl, factory32, "add", "d3", "r2", "r1",
+                            v0_32b);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  auto v42_64b = to64BitMemoryValue(42);
+  auto v0_64b = to64BitMemoryValue(0);
   destination1.set(0);
   destination2.set(0);
   destination3.set(123);
   destination4.set(123);
   firstOp.set(41);
-  assertRegisterInstruction(memoryImpl, factory64, "add", "d0", "r1", "r2", 42);
-  assertRegisterInstruction(memoryImpl, factory64, "add", "d1", "r2", "r1", 42);
+  assertRegisterInstruction(memoryImpl, factory64, "add", "d0", "r1", "r2",
+                            v42_64b);
+  assertRegisterInstruction(memoryImpl, factory64, "add", "d1", "r2", "r1",
+                            v42_64b);
   // test 64bit (unsigned) boundary: (2^64 -1) +1 = 18446744073709551615 + 1 = 0
   firstOp.set(18446744073709551615ULL);
-  assertRegisterInstruction(memoryImpl, factory64, "add", "d2", "r1", "r2", 0);
-  assertRegisterInstruction(memoryImpl, factory64, "add", "d3", "r2", "r1", 0);
+  assertRegisterInstruction(memoryImpl, factory64, "add", "d2", "r1", "r2",
+                            v0_64b);
+  assertRegisterInstruction(memoryImpl, factory64, "add", "d3", "r2", "r1",
+                            v0_64b);
 }
 
 TEST(IntegerInstructionTest, ADDIntruction_testAddi) {
@@ -307,32 +324,38 @@ TEST(IntegerInstructionTest, ADDIntruction_testAddi) {
   auto immediateFactory = ImmediateNodeFactory();
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto v42_32b = to32BitMemoryValue(42);
+  auto v1 = to32BitMemoryValue(1);
+  auto v41 = to32BitMemoryValue(41);
+  auto v0_32b = to32BitMemoryValue(0);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "addi",
-                             "d0", "r1", 1, 42);
+                             "d0", "r1", v1, v42_32b);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "addi",
-                             "d1", "r2", 41, 42);
+                             "d1", "r2", v41, v42_32b);
   // test 32bit (unsigned) boundary: (2^32 -1) + 1 = 4294967295 + 1 = 0
   regOp1.set(4294967295U);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "addi",
-                             "d2", "r1", 1, 0);
+                             "d2", "r1", v1, v0_32b);
   // test immediate boundary
   test20BitImmediateBounds(factory32, "addi", immediateFactory);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  auto v42_64b = to64BitMemoryValue(42);
+  auto v0_64b = to64BitMemoryValue(0);
   destination1.set(0);
   destination2.set(0);
   destination3.set(123);
   destination4.set(123);
   regOp1.set(41);
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "addi",
-                             "d0", "r1", 1, 42);
+                             "d0", "r1", v1, v42_64b);
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "addi",
-                             "d1", "r2", 41, 42);
+                             "d1", "r2", v41, v42_64b);
   // test 64bit (unsigned) boundary: (2^64 -1) +1 = 18446744073709551615 + 1 = 0
   regOp1.set(18446744073709551615ULL);
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "addi",
-                             "d2", "r1", 1, 0);
+                             "d2", "r1", v1, v0_64b);
   // test immediate boundary
   test20BitImmediateBounds(factory64, "addi", immediateFactory);
 }
@@ -361,22 +384,28 @@ TEST(IntegerInstructionTest, SUBInstruction_testSub) {
 
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
-  assertRegisterInstruction(memoryImpl, factory32, "sub", "d0", "r1", "r2", 42);
+  auto v42_32b = to32BitMemoryValue(42);
+  auto max32bitValue = to32BitMemoryValue(0xFFFFFFFFU);
+  assertRegisterInstruction(memoryImpl, factory32, "sub", "d0", "r1", "r2",
+                            v42_32b);
   // test 32bit (unsigned) boundary: 0 - 1 = (2^32 -1)= 4294967295
   firstOp.set(0);
   assertRegisterInstruction(memoryImpl, factory32, "sub", "d1", "r1", "r2",
-                            4294967295U);
+                            max32bitValue);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  auto v42_64b = to64BitMemoryValue(42);
+  auto max64bitValue = to64BitMemoryValue(0xFFFFFFFFFFFFFFFFULL);
   destination1.set(0);
   destination2.set(123);
   firstOp.set(43);
-  assertRegisterInstruction(memoryImpl, factory64, "sub", "d0", "r1", "r2", 42);
+  assertRegisterInstruction(memoryImpl, factory64, "sub", "d0", "r1", "r2",
+                            v42_64b);
   // test 64bit (unsigned) boundary: 0-1 = (2^64 -1) = 18446744073709551615
   firstOp.set(0);
   assertRegisterInstruction(memoryImpl, factory64, "sub", "d1", "r1", "r2",
-                            18446744073709551615ULL);
+                            max64bitValue);
 }
 
 TEST(IntegerInstructionTest, SUBInstruction_testValidation) {
@@ -405,17 +434,23 @@ TEST(IntegerInstructionTest, ANDInstruction_testAnd) {
 
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto expPattern32b = to32BitMemoryValue(0b100100);
+  auto v0_32b = to32BitMemoryValue(0);
   assertRegisterInstruction(memoryImpl, factory32, "and", "d0", "r1", "r2",
-                            0b100100);
+                            expPattern32b);
   assertRegisterInstruction(memoryImpl, factory32, "and", "d1", "r2", "r1",
-                            0b100100);
+                            expPattern32b);
   firstOp.set(0b101010);
   secondOp.set(0b010101);
-  assertRegisterInstruction(memoryImpl, factory32, "and", "d2", "r1", "r2", 0);
-  assertRegisterInstruction(memoryImpl, factory32, "and", "d3", "r2", "r1", 0);
+  assertRegisterInstruction(memoryImpl, factory32, "and", "d2", "r1", "r2",
+                            v0_32b);
+  assertRegisterInstruction(memoryImpl, factory32, "and", "d3", "r2", "r1",
+                            v0_32b);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  auto expPattern64b = to64BitMemoryValue(0b100100L << 32);
+  auto v0_64b = to64BitMemoryValue(0);
   destination1.set(0);
   destination2.set(0);
   destination3.set(123);
@@ -423,13 +458,15 @@ TEST(IntegerInstructionTest, ANDInstruction_testAnd) {
   firstOp.set(0b110110L << 32);
   secondOp.set(0b100100L << 32);
   assertRegisterInstruction(memoryImpl, factory64, "and", "d0", "r1", "r2",
-                            0b100100L << 32);
+                            expPattern64b);
   assertRegisterInstruction(memoryImpl, factory64, "and", "d1", "r2", "r1",
-                            0b100100L << 32);
+                            expPattern64b);
   firstOp.set(0b101010L << 32);
   secondOp.set(0b010101L << 32);
-  assertRegisterInstruction(memoryImpl, factory64, "and", "d2", "r1", "r2", 0);
-  assertRegisterInstruction(memoryImpl, factory64, "and", "d3", "r2", "r1", 0);
+  assertRegisterInstruction(memoryImpl, factory64, "and", "d2", "r1", "r2",
+                            v0_64b);
+  assertRegisterInstruction(memoryImpl, factory64, "and", "d3", "r2", "r1",
+                            v0_64b);
 }
 
 TEST(IntegerInstructionTest, ANDInstruction_testAndi) {
@@ -451,13 +488,18 @@ TEST(IntegerInstructionTest, ANDInstruction_testAndi) {
   auto immediateFactory = ImmediateNodeFactory();
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto immediatePattern32b_1 = to32BitMemoryValue(0b100100);
+  auto immediatePattern32b_2 = to32BitMemoryValue(0b110110);
+  auto immediatePattern32b_3 = to32BitMemoryValue(0b01010101);
+  auto expPattern32b = to32BitMemoryValue(0b100100);
+  auto v0_32b = to32BitMemoryValue(0);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "andi",
-                             "d0", "r1", 0b100100, 0b100100);
+                             "d0", "r1", immediatePattern32b_1, expPattern32b);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "andi",
-                             "d1", "r2", 0b110110, 0b100100);
+                             "d1", "r2", immediatePattern32b_2, expPattern32b);
   regOp1.set(0b10101010);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "andi",
-                             "d2", "r1", 0b01010101, 0);
+                             "d2", "r1", immediatePattern32b_3, v0_32b);
   // test immediate boundary
   test20BitImmediateBounds(factory32, "andi", immediateFactory);
 
@@ -472,10 +514,14 @@ TEST(IntegerInstructionTest, ANDInstruction_testAndi) {
   // it is difficult to test 64bit version, because immediate values cannot be
   // greater than 20bit
   // therefore no upper 32bit testing can be done, except for testing against 0
+  auto pattern64b_1 = to64BitMemoryValue(0b100100);
+  auto pattern64b_2 = to64BitMemoryValue(0b110110L);
+  auto v0_64b = to64BitMemoryValue(0);
+  auto expPattern64b = to64BitMemoryValue(0b100100L);
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "andi",
-                             "d0", "r1", 0b100100, 0);
+                             "d0", "r1", pattern64b_1, v0_64b);
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "andi",
-                             "d1", "r2", 0b110110L, 0b100100L);
+                             "d1", "r2", pattern64b_2, expPattern64b);
   // test immediate boundary
   test20BitImmediateBounds(factory64, "andi", immediateFactory);
 }
@@ -508,16 +554,18 @@ TEST(IntegerInstructionTest, ORInstruction_testOr) {
 
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto pattern32b_1 = to32BitMemoryValue(0b110110);
+  auto pattern32b_2 = to32BitMemoryValue(0b111111);
   assertRegisterInstruction(memoryImpl, factory32, "or", "d0", "r1", "r2",
-                            0b110110);
+                            pattern32b_1);
   assertRegisterInstruction(memoryImpl, factory32, "or", "d1", "r2", "r1",
-                            0b110110);
+                            pattern32b_1);
   firstOp.set(0b101010);
   secondOp.set(0b010101);
   assertRegisterInstruction(memoryImpl, factory32, "or", "d2", "r1", "r2",
-                            0b111111);
+                            pattern32b_2);
   assertRegisterInstruction(memoryImpl, factory32, "or", "d3", "r2", "r1",
-                            0b111111);
+                            pattern32b_2);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
@@ -527,16 +575,18 @@ TEST(IntegerInstructionTest, ORInstruction_testOr) {
   destination4.set(123);
   firstOp.set(0b110110L << 32);
   secondOp.set(0b100100L << 32);
+  auto pattern64b_1 = to64BitMemoryValue(0b110110L << 32);
+  auto pattern64b_2 = to64BitMemoryValue(0b111111L << 32);
   assertRegisterInstruction(memoryImpl, factory64, "or", "d0", "r1", "r2",
-                            0b110110L << 32);
+                            pattern64b_1);
   assertRegisterInstruction(memoryImpl, factory64, "or", "d1", "r2", "r1",
-                            0b110110L << 32);
+                            pattern64b_1);
   firstOp.set(0b101010L << 32);
   secondOp.set(0b010101L << 32);
   assertRegisterInstruction(memoryImpl, factory64, "or", "d2", "r1", "r2",
-                            0b111111L << 32);
+                            pattern64b_2);
   assertRegisterInstruction(memoryImpl, factory64, "or", "d3", "r2", "r1",
-                            0b111111L << 32);
+                            pattern64b_2);
 }
 
 TEST(IntegerInstructionTest, ORInstruction_testOri) {
@@ -558,13 +608,17 @@ TEST(IntegerInstructionTest, ORInstruction_testOri) {
   auto immediateFactory = ImmediateNodeFactory();
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto pattern32b_1 = to32BitMemoryValue(0b100100);
+  auto exp32b_1 = to32BitMemoryValue(0b110110);
+  auto pattern32b_2 = to32BitMemoryValue(0b01010101);
+  auto exp32b_2 = to32BitMemoryValue(0b11111111);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "ori",
-                             "d0", "r1", 0b100100, 0b110110);
+                             "d0", "r1", pattern32b_1, exp32b_1);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "ori",
-                             "d1", "r2", 0b110110, 0b110110);
+                             "d1", "r2", exp32b_1, exp32b_1);
   regOp1.set(0b10101010);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "ori",
-                             "d2", "r1", 0b01010101, 0b11111111);
+                             "d2", "r1", pattern32b_2, exp32b_2);
   // test immediate boundary
   test20BitImmediateBounds(factory32, "ori", immediateFactory);
 
@@ -575,8 +629,10 @@ TEST(IntegerInstructionTest, ORInstruction_testOri) {
   destination3.set(123);
   destination4.set(123);
   regOp1.set(0b1010110L << 32);
+  auto pattern64b_1 = to64BitMemoryValue(0b10);
+  auto exp64b_1 = to64BitMemoryValue((0b1010110L << 32) + 2);
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "ori",
-                             "d0", "r1", 0b10, ((0b1010110L << 32) + 2));
+                             "d0", "r1", pattern64b_1, exp64b_1);
   // test immediate boundary
   test20BitImmediateBounds(factory64, "ori", immediateFactory);
 }
@@ -609,16 +665,18 @@ TEST(IntegerInstructionTest, XORInstruction_testXor) {
 
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto exp32b_1 = to32BitMemoryValue(0b010010);
+  auto exp32b_2 = to32BitMemoryValue(0b111111);
   assertRegisterInstruction(memoryImpl, factory32, "xor", "d0", "r1", "r2",
-                            0b010010);
+                            exp32b_1);
   assertRegisterInstruction(memoryImpl, factory32, "xor", "d1", "r2", "r1",
-                            0b010010);
+                            exp32b_1);
   firstOp.set(0b101010);
   secondOp.set(0b010101);
   assertRegisterInstruction(memoryImpl, factory32, "xor", "d2", "r1", "r2",
-                            0b111111);
+                            exp32b_2);
   assertRegisterInstruction(memoryImpl, factory32, "xor", "d3", "r2", "r1",
-                            0b111111);
+                            exp32b_2);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
@@ -628,16 +686,18 @@ TEST(IntegerInstructionTest, XORInstruction_testXor) {
   destination4.set(123);
   firstOp.set(0b110110L << 32);
   secondOp.set(0b100100L << 32);
+  auto exp64b_1 = to64BitMemoryValue(0b010010L << 32);
+  auto exp64b_2 = to64BitMemoryValue(0b111111L << 32);
   assertRegisterInstruction(memoryImpl, factory64, "xor", "d0", "r1", "r2",
-                            0b010010L << 32);
+                            exp64b_1);
   assertRegisterInstruction(memoryImpl, factory64, "xor", "d1", "r2", "r1",
-                            0b010010L << 32);
+                            exp64b_1);
   firstOp.set(0b101010L << 32);
   secondOp.set(0b010101L << 32);
   assertRegisterInstruction(memoryImpl, factory64, "xor", "d2", "r1", "r2",
-                            0b111111L << 32);
+                            exp64b_2);
   assertRegisterInstruction(memoryImpl, factory64, "xor", "d3", "r2", "r1",
-                            0b111111L << 32);
+                            exp64b_2);
 }
 
 TEST(IntegerInstructionTest, XORInstruction_testXori) {
@@ -659,26 +719,32 @@ TEST(IntegerInstructionTest, XORInstruction_testXori) {
   auto immediateFactory = ImmediateNodeFactory();
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto pattern32b_1 = to32BitMemoryValue(0b100100);
+  auto pattern32b_2 = to32BitMemoryValue(0b110110);
+  auto exp32b_1 = to32BitMemoryValue(0b010010);
+  auto pattern32b_3 = to32BitMemoryValue(0b01010101);
+  auto exp32b_2 = to32BitMemoryValue(0b11111111);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "xori",
-                             "d0", "r1", 0b100100, 0b010010);
+                             "d0", "r1", pattern32b_1, exp32b_1);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "xori",
-                             "d1", "r2", 0b110110, 0b010010);
+                             "d1", "r2", pattern32b_2, exp32b_1);
   regOp1.set(0b10101010);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "xori",
-                             "d2", "r1", 0b01010101, 0b11111111);
+                             "d2", "r1", pattern32b_3, exp32b_2);
   // test immediate boundary
   test20BitImmediateBounds(factory32, "xori", immediateFactory);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  auto pattern64b_1 = to64BitMemoryValue(0b10 << 18);
+  auto exp64b_1 = to64BitMemoryValue(0b100000001010100L << 18);
   destination1.set(0);
   destination2.set(0);
   destination3.set(123);
   destination4.set(123);
   regOp1.set(0b100000001010110L << 18);
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "xori",
-                             "d0", "r1", 0b10 << 18,
-                             (0b100000001010100L << 18));
+                             "d0", "r1", pattern64b_1, exp64b_1);
   // test immediate boundary
   test20BitImmediateBounds(factory64, "xori", immediateFactory);
 }
@@ -707,11 +773,13 @@ TEST(IntegerInstructionTest, ShiftLeftInstruction_testSll) {
 
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto exp32b_1 = to32BitMemoryValue(0b110110000);
+  auto exp32b_2 = to32BitMemoryValue(3 << 22);
   assertRegisterInstruction(memoryImpl, factory32, "sll", "d0", "r1", "r2",
-                            0b110110000);
+                            exp32b_1);
   // shifts use only the lower 5bit of the second operand
   assertRegisterInstruction(memoryImpl, factory32, "sll", "d1", "r2", "r1",
-                            3 << 22);
+                            exp32b_2);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
@@ -719,10 +787,13 @@ TEST(IntegerInstructionTest, ShiftLeftInstruction_testSll) {
   destination2.set(0);
   firstOp.set(0b110110L << 32);
   secondOp.set(3);
+  auto exp64b_1 = to64BitMemoryValue(0b110110000L << 32);
+  auto v3_64b = to64BitMemoryValue(3);
   assertRegisterInstruction(memoryImpl, factory64, "sll", "d0", "r1", "r2",
-                            0b110110000L << 32);
+                            exp64b_1);
   // shifts use only the lower 5bit of the second operand
-  assertRegisterInstruction(memoryImpl, factory64, "sll", "d1", "r2", "r1", 3);
+  assertRegisterInstruction(memoryImpl, factory64, "sll", "d1", "r2", "r1",
+                            v3_64b);
 }
 
 TEST(IntegerInstructionTest, ShiftLeftInstruction_testSlli) {
@@ -740,11 +811,15 @@ TEST(IntegerInstructionTest, ShiftLeftInstruction_testSlli) {
   auto immediateFactory = ImmediateNodeFactory();
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto v3_32b = to32BitMemoryValue(3);
+  auto exp32b_1 = to32BitMemoryValue(0b110110000);
+  auto immediate32b = to32BitMemoryValue(0b11100001);
+  auto v2_32b = to32BitMemoryValue(2);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "slli",
-                             "d0", "r1", 3, 0b110110000);
+                             "d0", "r1", v3_32b, exp32b_1);
   // shifts use only the lower 5bit of the second operand
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "slli",
-                             "d1", "r2", 0b11100001, 2);
+                             "d1", "r2", immediate32b, v2_32b);
   // test immediate boundary
   test20BitImmediateBounds(factory32, "slli", immediateFactory);
 
@@ -754,11 +829,15 @@ TEST(IntegerInstructionTest, ShiftLeftInstruction_testSlli) {
   destination2.set(0);
   regOp1.set(0b110110L << 32);
   regOp2.set(0b1L << 32);
+  auto v3_64b = to64BitMemoryValue(3);
+  auto exp64b_1 = to64BitMemoryValue(0b110110000L << 32);
+  auto immediate64b = to64BitMemoryValue(0b11100001);
+  auto exp64b_2 = to64BitMemoryValue(0b10L << 32);
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "slli",
-                             "d0", "r1", 3, 0b110110000L << 32);
+                             "d0", "r1", v3_64b, exp64b_1);
   // shifts use only the lower 5bit of the second operand
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "slli",
-                             "d1", "r2", 0b11100001, 0b10L << 32);
+                             "d1", "r2", immediate64b, exp64b_2);
 
   // test immediate boundary
   test20BitImmediateBounds(factory64, "slli", immediateFactory);
@@ -788,21 +867,27 @@ TEST(IntegerInstructionTest, ShiftRightIntruction_testSrl) {
 
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto exp32b_1 = to32BitMemoryValue(0b110);
+  auto v0_32b = to32BitMemoryValue(0);
   assertRegisterInstruction(memoryImpl, factory32, "srl", "d0", "r1", "r2",
-                            0b110);
+                            exp32b_1);
   // shifts use only the lower 5bit of the second operand
-  assertRegisterInstruction(memoryImpl, factory32, "srl", "d1", "r2", "r1", 0);
+  assertRegisterInstruction(memoryImpl, factory32, "srl", "d1", "r2", "r1",
+                            v0_32b);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  auto exp64b_1 = to64BitMemoryValue(0b110110L << 29);
+  auto v3_64b = to64BitMemoryValue(3);
   destination1.set(0);
   destination2.set(0);
   firstOp.set(0b110110L << 32);
   secondOp.set(3);
   assertRegisterInstruction(memoryImpl, factory64, "srl", "d0", "r1", "r2",
-                            0b110110L << 29);
+                            exp64b_1);
   // shifts use only the lower 5bit of the second operand
-  assertRegisterInstruction(memoryImpl, factory64, "srl", "d1", "r2", "r1", 3);
+  assertRegisterInstruction(memoryImpl, factory64, "srl", "d1", "r2", "r1",
+                            v3_64b);
 }
 
 TEST(IntegerInstructionTest, ShiftRightInstruction_testSrli) {
@@ -820,25 +905,33 @@ TEST(IntegerInstructionTest, ShiftRightInstruction_testSrli) {
   auto immediateFactory = ImmediateNodeFactory();
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto v3_32b = to32BitMemoryValue(3);
+  auto exp32b_1 = to32BitMemoryValue(0b110);
+  auto immediate32b = to32BitMemoryValue(0b11100001);
+  auto exp32b_2 = to32BitMemoryValue(0b11011);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "srli",
-                             "d0", "r1", 3, 0b110);
+                             "d0", "r1", v3_32b, exp32b_1);
   // shifts use only the lower 5bit of the second operand
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "srli",
-                             "d1", "r1", 0b11100001, 0b11011);
+                             "d1", "r1", immediate32b, exp32b_2);
   // test immediate boundary
   test20BitImmediateBounds(factory32, "srli", immediateFactory);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  auto v3_64b = to64BitMemoryValue(3);
+  auto exp64b_1 = to64BitMemoryValue(0b110110L << 29);
+  auto immediate64b = to64BitMemoryValue(0b11100001);
+  auto exp64b_2 = to64BitMemoryValue(0b11L << 31);
   destination1.set(0);
   destination2.set(0);
   regOp1.set(0b110110L << 32);
   regOp2.set(0b11L << 32);
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "srli",
-                             "d0", "r1", 3, 0b110110L << 29);
+                             "d0", "r1", v3_64b, exp64b_1);
   // shifts use only the lower 5bit of the second operand
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "srli",
-                             "d1", "r2", 0b11100001, 0b11L << 31);
+                             "d1", "r2", immediate64b, exp64b_2);
 
   // test immediate boundary
   test20BitImmediateBounds(factory64, "srli", immediateFactory);
@@ -868,23 +961,29 @@ TEST(IntegerInstructionTest, ShiftRightArithmeticIntruction_testSra) {
 
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto exp32b_1 = to32BitMemoryValue(0b11110000000000000000000000000110);
+  auto v0_32b = to32BitMemoryValue(0);
   assertRegisterInstruction(memoryImpl, factory32, "sra", "d0", "r1", "r2",
-                            0b11110000000000000000000000000110);
+                            exp32b_1);
   // shifts use only the lower 5bit of the second operand
-  assertRegisterInstruction(memoryImpl, factory32, "sra", "d1", "r2", "r1", 0);
+  assertRegisterInstruction(memoryImpl, factory32, "sra", "d1", "r2", "r1",
+                            v0_32b);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  auto exp64b_1 = to64BitMemoryValue(
+      0b1111000000000000000000000000001101100000000000000000000000000000L);
+  auto v3_64b = to64BitMemoryValue(3);
   destination1.set(0);
   destination2.set(0);
   firstOp.set(
       0b1000000000000000000000000001101100000000000000000000000000000000L);
   secondOp.set(3);
-  assertRegisterInstruction(
-      memoryImpl, factory64, "sra", "d0", "r1", "r2",
-      0b1111000000000000000000000000001101100000000000000000000000000000L);
+  assertRegisterInstruction(memoryImpl, factory64, "sra", "d0", "r1", "r2",
+                            exp64b_1);
   // shifts use only the lower 5bit of the second operand
-  assertRegisterInstruction(memoryImpl, factory64, "srl", "d1", "r2", "r1", 3);
+  assertRegisterInstruction(memoryImpl, factory64, "srl", "d1", "r2", "r1",
+                            v3_64b);
 }
 
 TEST(IntegerInstructionTest, ShiftRightInstruction_testSrai) {
@@ -902,28 +1001,35 @@ TEST(IntegerInstructionTest, ShiftRightInstruction_testSrai) {
   auto immediateFactory = ImmediateNodeFactory();
   // Test 32Bit versions
   auto factory32 = setUpFactory({"rv32i"});
+  auto v3_32b = to32BitMemoryValue(3);
+  auto exp32b_1 = to32BitMemoryValue(0b11110000000000000000000000000110);
+  auto immediate32b = to32BitMemoryValue(0b11100001);
+  auto exp32b_2 = to32BitMemoryValue(0b11000000000000000000000000011011);
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "srai",
-                             "d0", "r1", 3, 0b11110000000000000000000000000110);
+                             "d0", "r1", v3_32b, exp32b_1);
   // shifts use only the lower 5bit of the second operand
   assertImmediateInstruction(memoryImpl, factory32, immediateFactory, "srai",
-                             "d1", "r1", 0b11100001,
-                             0b11000000000000000000000000011011);
+                             "d1", "r1", immediate32b, exp32b_2);
   // test immediate boundary
   test20BitImmediateBounds(factory32, "srai", immediateFactory);
 
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
+  auto v3_64b = to64BitMemoryValue(3);
+  auto exp64b_1 = to64BitMemoryValue(0b1111000000000000000000000000001101100000000000000000000000000000L);
+  auto immediate64b = to64BitMemoryValue(0b11100001);
+  auto exp64b_2 = to64BitMemoryValue(0b11L << 31);
   destination1.set(0);
   destination2.set(0);
   regOp1.set(
       0b1000000000000000000000000001101100000000000000000000000000000000L);
   regOp2.set(0b11L << 32);
   assertImmediateInstruction(
-      memoryImpl, factory64, immediateFactory, "srai", "d0", "r1", 3,
-      0b1111000000000000000000000000001101100000000000000000000000000000L);
+      memoryImpl, factory64, immediateFactory, "srai", "d0", "r1", v3_64b,
+      exp64b_1);
   // shifts use only the lower 5bit of the second operand
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "srai",
-                             "d1", "r2", 0b11100001, 0b11L << 31);
+                             "d1", "r2", immediate64b, exp64b_2);
 
   // test immediate boundary
   test20BitImmediateBounds(factory64, "srai", immediateFactory);
