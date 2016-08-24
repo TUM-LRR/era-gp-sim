@@ -16,16 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/parser.hpp"
+#ifndef ERAGPSIM_PARSER_PARSER_MODE_HPP_
+#define ERAGPSIM_PARSER_PARSER_MODE_HPP_
 
-std::string Parser::getSyntaxRegister(const std::string &name) {
-  return "\\b" + name + "\\b";
-}
+enum class ParserMode { COMPILE, UPDATE };
 
-std::string Parser::getSyntaxInstruction(const std::string &name) {
-  return "\\b" + name + "\\b";
-}
-
-std::string Parser::getSyntaxImmediate() {
-  return R"(\b\d+\b)";
-}
+#endif
