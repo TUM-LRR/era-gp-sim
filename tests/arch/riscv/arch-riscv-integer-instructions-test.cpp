@@ -251,57 +251,101 @@ void test20BitImmediateBounds(InstructionNodeFactory& instrF,
   ASSERT_FALSE(node->validate());
 }
 }
+/**
+  * This macro performs a register-register test for the given instruction,
+ * operands.
+  * Apart from the parameters, this macro needs certain exactly named
+ * declaration of certain types to compile. This is done, to keep the macro
+ * argument list short.
+ * dest: std::string token, that defines the name of the destination register
+ * op1: std::string token, that defines the name of the first operand register
+ * op2: std::string token, that defines the name of the second operand register
+ * memoryAccess DummyMemoryAccess, where the required registers are added
+ * instructionFactory InstructionFactory where nodes with the given
+ * instruction-token can be created
+ *
+ * \param contextNbr running number for variable naming
+ * \param memoryValueConverter function that returns a MemoryValue for a given
+ * operand-value
+ * \param instruction instruction to test (as string literal)
+ * \param operand1 first operand value (as literal)
+ * \param operand2 second operand value (as literal)
+ * \param result expected result of the operation (as literal)
+  */
+#define TEST_RR(contextNbr, memoryValueConverter, instruction, operand1,       \
+                operand2, result)                                              \
+  /* Put operand values into register */                                       \
+  memoryAccess.setRegisterValue(op1, memoryValueConverter(operand1));          \
+  memoryAccess.setRegisterValue(op2, memoryValueConverter(operand2));          \
+  auto cmd_##contextNbr =                                                      \
+      instructionFactory.createInstructionNode(instruction);                   \
+  ASSERT_FALSE(cmd_##contextNbr->validate());                                  \
+  /*Assemble instruction with destination & operands*/                         \
+  cmd_##contextNbr->addChild(std::make_unique<FakeRegisterNode>(dest));        \
+  ASSERT_FALSE(cmd_##contextNbr->validate());                                  \
+  cmd_##contextNbr->addChild(std::make_unique<FakeRegisterNode>(op1));         \
+  ASSERT_FALSE(cmd_##contextNbr->validate());                                  \
+  cmd_##contextNbr->addChild(std::make_unique<FakeRegisterNode>(op2));         \
+  ASSERT_TRUE(cmd_##contextNbr->validate());                                   \
+  /* Save values of operand registers to determine change*/                    \
+  MemoryValue preOp1_##contextNbr = memoryAccess.getRegisterValue(op1);        \
+  MemoryValue preOp2_##contextNbr = memoryAccess.getRegisterValue(op2);        \
+  /* Perform instruction*/                                                     \
+  MemoryValue returnValue_##contextNbr =                                       \
+      cmd_##contextNbr->getValue(memoryAccess);                                \
+  ASSERT_EQ(memoryValueConverter(0), returnValue_##contextNbr);                \
+  /* Check that operand registers stayed the same*/                            \
+  ASSERT_EQ(preOp1_##contextNbr, memoryAccess.getRegisterValue(op1));          \
+  ASSERT_EQ(preOp2_##contextNbr, memoryAccess.getRegisterValue(op2));          \
+  /* Read result from destination register*/                                   \
+  MemoryValue actualResult_##contextNbr = memoryAccess.getRegisterValue(dest); \
+  ASSERT_EQ(memoryValueConverter(result), actualResult_##contextNbr);
 
-TEST(IntegerInstructionTest, ADDIntruction_testAdd) {
-  FakeRegister destination1;
-  FakeRegister destination2;
-  FakeRegister destination3(123);
-  FakeRegister destination4(123);
-  FakeRegister firstOp(41);
-  FakeRegister secondOp(1);
-  DummyMemoryAccessImpl memoryImpl;
+TEST(makrotest, m1) {
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i"});
+  TEST_RR(0, to32BitMemoryValue, "add", 1, 41, 42);
+  TEST_RR(1, to32BitMemoryValue, "add", 41, 1, 42);
+  TEST_RR(2, to32BitMemoryValue, "add", 0, 42, 42);
+}
+
+TEST(IntegerInstructionTest, ADDInstruction_testAdd32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  memoryImpl.addRegister("d0", destination1);
-  memoryImpl.addRegister("d1", destination2);
-  memoryImpl.addRegister("d2", destination3);
-  memoryImpl.addRegister("d3", destination4);
-  memoryImpl.addRegister("r1", firstOp);
-  memoryImpl.addRegister("r2", secondOp);
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i"});
 
-  // Test 32Bit versions
-  auto factory32 = setUpFactory({"rv32i"});
-  auto v42_32b = to32BitMemoryValue(42);
-  auto v0_32b = to32BitMemoryValue(0);
-  assertRegisterInstruction(memoryImpl, factory32, "add", "d0", "r1", "r2",
-                            v42_32b);
-  assertRegisterInstruction(memoryImpl, factory32, "add", "d1", "r2", "r1",
-                            v42_32b);
+  TEST_RR(0, to32BitMemoryValue, "add", 41, 1, 42);
+  TEST_RR(1, to32BitMemoryValue, "add", 1, 41, 42);
   // test 32bit (unsigned) boundary: (2^32 -1) + 1 = 4294967295 + 1 = 0
-  firstOp.set(4294967295U);
-  assertRegisterInstruction(memoryImpl, factory32, "add", "d2", "r1", "r2",
-                            v0_32b);
-  assertRegisterInstruction(memoryImpl, factory32, "add", "d3", "r2", "r1",
-                            v0_32b);
+  TEST_RR(2, to32BitMemoryValue, "add", 0xFFFFFFFFU, 1, 0);
+  TEST_RR(3, to32BitMemoryValue, "add", 1, 0xFFFFFFFFU, 0);
+}
 
-  // Test 64Bit versions
-  auto factory64 = setUpFactory({"rv32i", "rv64i"});
-  auto v42_64b = to64BitMemoryValue(42);
-  auto v0_64b = to64BitMemoryValue(0);
-  destination1.set(0);
-  destination2.set(0);
-  destination3.set(123);
-  destination4.set(123);
-  firstOp.set(41);
-  assertRegisterInstruction(memoryImpl, factory64, "add", "d0", "r1", "r2",
-                            v42_64b);
-  assertRegisterInstruction(memoryImpl, factory64, "add", "d1", "r2", "r1",
-                            v42_64b);
+TEST(IntegerInstructionTest, ADDInstruction_testAdd64) {
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
+
+  TEST_RR(0, to64BitMemoryValue, "add", 41, 1, 42);
+  TEST_RR(1, to64BitMemoryValue, "add", 1, 41, 42);
   // test 64bit (unsigned) boundary: (2^64 -1) +1 = 18446744073709551615 + 1 = 0
-  firstOp.set(18446744073709551615ULL);
-  assertRegisterInstruction(memoryImpl, factory64, "add", "d2", "r1", "r2",
-                            v0_64b);
-  assertRegisterInstruction(memoryImpl, factory64, "add", "d3", "r2", "r1",
-                            v0_64b);
+  TEST_RR(2, to64BitMemoryValue, "add", 0xFFFFFFFFFFFFFFFFULL, 1, 0);
+  TEST_RR(3, to64BitMemoryValue, "add", 1, 0xFFFFFFFFFFFFFFFFULL, 0);
 }
 
 TEST(IntegerInstructionTest, ADDIntruction_testAddi) {
@@ -369,42 +413,34 @@ TEST(IntegerInstructionTest, ADDInstruction_testValidation) {
                                    immediateFactory, "addi", true);
 }
 
-TEST(IntegerInstructionTest, SUBIntruction_testSub) {
-  FakeRegister destination1;
-  FakeRegister destination2(123);
-  FakeRegister firstOp(43);
-  FakeRegister secondOp(1);
-  DummyMemoryAccessImpl memoryImpl;
+TEST(IntegerInstructionTest, SUBInstruction_testSub32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  memoryImpl.addRegister("d0", destination1);
-  memoryImpl.addRegister("d1", destination2);
-  memoryImpl.addRegister("r1", firstOp);
-  memoryImpl.addRegister("r2", secondOp);
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i"});
 
-  // Test 32Bit versions
-  auto factory32 = setUpFactory({"rv32i"});
-  auto v42_32b = to32BitMemoryValue(42);
-  auto max32bitValue = to32BitMemoryValue(0xFFFFFFFFU);
-  assertRegisterInstruction(memoryImpl, factory32, "sub", "d0", "r1", "r2",
-                            v42_32b);
+  TEST_RR(0, to32BitMemoryValue, "sub", 43, 1, 42);
   // test 32bit (unsigned) boundary: 0 - 1 = (2^32 -1)= 4294967295
-  firstOp.set(0);
-  assertRegisterInstruction(memoryImpl, factory32, "sub", "d1", "r1", "r2",
-                            max32bitValue);
+  TEST_RR(1, to32BitMemoryValue, "sub", 0, 1, 0xFFFFFFFFU);
+}
 
-  // Test 64Bit versions
-  auto factory64 = setUpFactory({"rv32i", "rv64i"});
-  auto v42_64b = to64BitMemoryValue(42);
-  auto max64bitValue = to64BitMemoryValue(0xFFFFFFFFFFFFFFFFULL);
-  destination1.set(0);
-  destination2.set(123);
-  firstOp.set(43);
-  assertRegisterInstruction(memoryImpl, factory64, "sub", "d0", "r1", "r2",
-                            v42_64b);
+TEST(IntegerInstructionTest, SUBInstruction_testSub64) {
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
+
+  TEST_RR(0, to64BitMemoryValue, "sub", 43, 1, 42);
   // test 64bit (unsigned) boundary: 0-1 = (2^64 -1) = 18446744073709551615
-  firstOp.set(0);
-  assertRegisterInstruction(memoryImpl, factory64, "sub", "d1", "r1", "r2",
-                            max64bitValue);
+  TEST_RR(1, to64BitMemoryValue, "sub", 0, 1, 0xFFFFFFFFFFFFFFFFULL);
 }
 
 TEST(IntegerInstructionTest, SUBInstruction_testValidation) {
@@ -415,57 +451,38 @@ TEST(IntegerInstructionTest, SUBInstruction_testValidation) {
                                    immediateFactory, "sub", false);
 }
 
-TEST(IntegerInstructionTest, ANDIntruction_testAnd) {
-  FakeRegister destination1;
-  FakeRegister destination2;
-  FakeRegister destination3(123);
-  FakeRegister destination4(123);
-  FakeRegister firstOp(0b110110);
-  FakeRegister secondOp(0b100100);
-  DummyMemoryAccessImpl memoryImpl;
+TEST(IntegerInstructionTest, ANDInstruction_testAnd32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  memoryImpl.addRegister("d0", destination1);
-  memoryImpl.addRegister("d1", destination2);
-  memoryImpl.addRegister("d2", destination3);
-  memoryImpl.addRegister("d3", destination4);
-  memoryImpl.addRegister("r1", firstOp);
-  memoryImpl.addRegister("r2", secondOp);
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i"});
 
-  // Test 32Bit versions
-  auto factory32 = setUpFactory({"rv32i"});
-  auto expPattern32b = to32BitMemoryValue(0b100100);
-  auto v0_32b = to32BitMemoryValue(0);
-  assertRegisterInstruction(memoryImpl, factory32, "and", "d0", "r1", "r2",
-                            expPattern32b);
-  assertRegisterInstruction(memoryImpl, factory32, "and", "d1", "r2", "r1",
-                            expPattern32b);
-  firstOp.set(0b101010);
-  secondOp.set(0b010101);
-  assertRegisterInstruction(memoryImpl, factory32, "and", "d2", "r1", "r2",
-                            v0_32b);
-  assertRegisterInstruction(memoryImpl, factory32, "and", "d3", "r2", "r1",
-                            v0_32b);
+  TEST_RR(0, to32BitMemoryValue, "and", 0b110110, 0b100100, 0b100100);
+  TEST_RR(1, to32BitMemoryValue, "and", 0b100100, 0b110110, 0b100100);
+  TEST_RR(2, to32BitMemoryValue, "and", 0b101010, 0b010101, 0b000000);
+  TEST_RR(3, to32BitMemoryValue, "and", 0b010101, 0b101010, 0b000000);
+}
 
-  // Test 64Bit versions
-  auto factory64 = setUpFactory({"rv32i", "rv64i"});
-  auto expPattern64b = to64BitMemoryValue(0b100100L << 32);
-  auto v0_64b = to64BitMemoryValue(0);
-  destination1.set(0);
-  destination2.set(0);
-  destination3.set(123);
-  destination4.set(123);
-  firstOp.set(0b110110L << 32);
-  secondOp.set(0b100100L << 32);
-  assertRegisterInstruction(memoryImpl, factory64, "and", "d0", "r1", "r2",
-                            expPattern64b);
-  assertRegisterInstruction(memoryImpl, factory64, "and", "d1", "r2", "r1",
-                            expPattern64b);
-  firstOp.set(0b101010L << 32);
-  secondOp.set(0b010101L << 32);
-  assertRegisterInstruction(memoryImpl, factory64, "and", "d2", "r1", "r2",
-                            v0_64b);
-  assertRegisterInstruction(memoryImpl, factory64, "and", "d3", "r2", "r1",
-                            v0_64b);
+TEST(IntegerInstructionTest, ANDInstruction_testAnd64) {
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
+
+  TEST_RR(0, to64BitMemoryValue, "and", 0b110110L << 32, 0b100100L << 32,
+          0b100100L << 32);
+  TEST_RR(1, to64BitMemoryValue, "and", 0b100100L << 32, 0b110110L << 32,
+          0b100100L << 32);
+  TEST_RR(2, to64BitMemoryValue, "and", 0b101010L << 32, 0b010101L << 32, 0);
+  TEST_RR(3, to64BitMemoryValue, "and", 0b010101L << 32, 0b101010L << 32, 0);
 }
 
 TEST(IntegerInstructionTest, ANDIntruction_testAndi) {
@@ -535,57 +552,40 @@ TEST(IntegerInstructionTest, ANDInstruction_testValidation) {
                                    immediateFactory, "andi", true);
 }
 
-TEST(IntegerInstructionTest, ORIntruction_testOr) {
-  FakeRegister destination1;
-  FakeRegister destination2;
-  FakeRegister destination3(123);
-  FakeRegister destination4(123);
-  FakeRegister firstOp(0b110110);
-  FakeRegister secondOp(0b100100);
-  DummyMemoryAccessImpl memoryImpl;
+TEST(IntegerInstructionTest, ORInstruction_testOr32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  memoryImpl.addRegister("d0", destination1);
-  memoryImpl.addRegister("d1", destination2);
-  memoryImpl.addRegister("d2", destination3);
-  memoryImpl.addRegister("d3", destination4);
-  memoryImpl.addRegister("r1", firstOp);
-  memoryImpl.addRegister("r2", secondOp);
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i"});
 
-  // Test 32Bit versions
-  auto factory32 = setUpFactory({"rv32i"});
-  auto pattern32b_1 = to32BitMemoryValue(0b110110);
-  auto pattern32b_2 = to32BitMemoryValue(0b111111);
-  assertRegisterInstruction(memoryImpl, factory32, "or", "d0", "r1", "r2",
-                            pattern32b_1);
-  assertRegisterInstruction(memoryImpl, factory32, "or", "d1", "r2", "r1",
-                            pattern32b_1);
-  firstOp.set(0b101010);
-  secondOp.set(0b010101);
-  assertRegisterInstruction(memoryImpl, factory32, "or", "d2", "r1", "r2",
-                            pattern32b_2);
-  assertRegisterInstruction(memoryImpl, factory32, "or", "d3", "r2", "r1",
-                            pattern32b_2);
+  TEST_RR(0, to32BitMemoryValue, "or", 0b110110, 0b100100, 0b110110);
+  TEST_RR(1, to32BitMemoryValue, "or", 0b100100, 0b110110, 0b110110);
+  TEST_RR(2, to32BitMemoryValue, "or", 0b101010, 0b010101, 0b111111);
+  TEST_RR(3, to32BitMemoryValue, "or", 0b010101, 0b101010, 0b111111);
+}
 
-  // Test 64Bit versions
-  auto factory64 = setUpFactory({"rv32i", "rv64i"});
-  destination1.set(0);
-  destination2.set(0);
-  destination3.set(123);
-  destination4.set(123);
-  firstOp.set(0b110110L << 32);
-  secondOp.set(0b100100L << 32);
-  auto pattern64b_1 = to64BitMemoryValue(0b110110L << 32);
-  auto pattern64b_2 = to64BitMemoryValue(0b111111L << 32);
-  assertRegisterInstruction(memoryImpl, factory64, "or", "d0", "r1", "r2",
-                            pattern64b_1);
-  assertRegisterInstruction(memoryImpl, factory64, "or", "d1", "r2", "r1",
-                            pattern64b_1);
-  firstOp.set(0b101010L << 32);
-  secondOp.set(0b010101L << 32);
-  assertRegisterInstruction(memoryImpl, factory64, "or", "d2", "r1", "r2",
-                            pattern64b_2);
-  assertRegisterInstruction(memoryImpl, factory64, "or", "d3", "r2", "r1",
-                            pattern64b_2);
+TEST(IntegerInstructionTest, ORINstruction_testOr64) {
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
+
+  TEST_RR(0, to64BitMemoryValue, "or", 0b110110L << 32, 0b100100L << 32,
+          0b110110L << 32);
+  TEST_RR(1, to64BitMemoryValue, "or", 0b100100L << 32, 0b110110L << 32,
+          0b110110L << 32);
+  TEST_RR(2, to64BitMemoryValue, "or", 0b101010L << 32, 0b010101L << 32,
+          0b111111L << 32);
+  TEST_RR(3, to64BitMemoryValue, "or", 0b010101L << 32, 0b101010L << 32,
+          0b111111L << 32);
 }
 
 TEST(IntegerInstructionTest, ORIntruction_testOri) {
@@ -646,57 +646,39 @@ TEST(IntegerInstructionTest, ORInstruction_testValidation) {
                                    immediateFactory, "ori", true);
 }
 
-TEST(IntegerInstructionTest, XORIntruction_testXor) {
-  FakeRegister destination1;
-  FakeRegister destination2;
-  FakeRegister destination3(123);
-  FakeRegister destination4(123);
-  FakeRegister firstOp(0b110110);
-  FakeRegister secondOp(0b100100);
-  DummyMemoryAccessImpl memoryImpl;
+TEST(IntegerInstructionTest, XORInstruction_testXor32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  memoryImpl.addRegister("d0", destination1);
-  memoryImpl.addRegister("d1", destination2);
-  memoryImpl.addRegister("d2", destination3);
-  memoryImpl.addRegister("d3", destination4);
-  memoryImpl.addRegister("r1", firstOp);
-  memoryImpl.addRegister("r2", secondOp);
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i"});
 
-  // Test 32Bit versions
-  auto factory32 = setUpFactory({"rv32i"});
-  auto exp32b_1 = to32BitMemoryValue(0b010010);
-  auto exp32b_2 = to32BitMemoryValue(0b111111);
-  assertRegisterInstruction(memoryImpl, factory32, "xor", "d0", "r1", "r2",
-                            exp32b_1);
-  assertRegisterInstruction(memoryImpl, factory32, "xor", "d1", "r2", "r1",
-                            exp32b_1);
-  firstOp.set(0b101010);
-  secondOp.set(0b010101);
-  assertRegisterInstruction(memoryImpl, factory32, "xor", "d2", "r1", "r2",
-                            exp32b_2);
-  assertRegisterInstruction(memoryImpl, factory32, "xor", "d3", "r2", "r1",
-                            exp32b_2);
+  TEST_RR(0, to32BitMemoryValue, "xor", 0b110110, 0b100100, 0b010010);
+  TEST_RR(1, to32BitMemoryValue, "xor", 0b100100, 0b110110, 0b010010);
+  TEST_RR(2, to32BitMemoryValue, "xor", 0b101010, 0b010101, 0b111111);
+  TEST_RR(3, to32BitMemoryValue, "xor", 0b010101, 0b101010, 0b111111);
+}
+TEST(IntegerInstructionTest, XORInstruction_testXor64) {
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
 
-  // Test 64Bit versions
-  auto factory64 = setUpFactory({"rv32i", "rv64i"});
-  destination1.set(0);
-  destination2.set(0);
-  destination3.set(123);
-  destination4.set(123);
-  firstOp.set(0b110110L << 32);
-  secondOp.set(0b100100L << 32);
-  auto exp64b_1 = to64BitMemoryValue(0b010010L << 32);
-  auto exp64b_2 = to64BitMemoryValue(0b111111L << 32);
-  assertRegisterInstruction(memoryImpl, factory64, "xor", "d0", "r1", "r2",
-                            exp64b_1);
-  assertRegisterInstruction(memoryImpl, factory64, "xor", "d1", "r2", "r1",
-                            exp64b_1);
-  firstOp.set(0b101010L << 32);
-  secondOp.set(0b010101L << 32);
-  assertRegisterInstruction(memoryImpl, factory64, "xor", "d2", "r1", "r2",
-                            exp64b_2);
-  assertRegisterInstruction(memoryImpl, factory64, "xor", "d3", "r2", "r1",
-                            exp64b_2);
+  TEST_RR(0, to64BitMemoryValue, "xor", 0b110110L << 32, 0b100100L << 32,
+          0b010010L << 32);
+  TEST_RR(1, to64BitMemoryValue, "xor", 0b100100L << 32, 0b110110L << 32,
+          0b010010L << 32);
+  TEST_RR(2, to64BitMemoryValue, "xor", 0b101010L << 32, 0b010101L << 32,
+          0b111111L << 32);
+  TEST_RR(3, to64BitMemoryValue, "xor", 0b010101L << 32, 0b101010L << 32,
+          0b111111L << 32);
 }
 
 TEST(IntegerInstructionTest, XORIntruction_testXori) {
@@ -758,41 +740,34 @@ TEST(IntegerInstructionTest, XORInstruction_testValidation) {
                                    immediateFactory, "xori", true);
 }
 
-TEST(IntegerInstructionTest, ShiftLeftIntruction_testSll) {
-  FakeRegister destination1;
-  FakeRegister destination2;
-  FakeRegister firstOp(0b110110);
-  FakeRegister secondOp(3);
-  DummyMemoryAccessImpl memoryImpl;
+TEST(IntegerInstructionTest, ShiftLeftInstruction_testSll32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  memoryImpl.addRegister("d0", destination1);
-  memoryImpl.addRegister("d1", destination2);
-  memoryImpl.addRegister("r1", firstOp);
-  memoryImpl.addRegister("r2", secondOp);
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i"});
 
-  // Test 32Bit versions
-  auto factory32 = setUpFactory({"rv32i"});
-  auto exp32b_1 = to32BitMemoryValue(0b110110000);
-  auto exp32b_2 = to32BitMemoryValue(3 << 22);
-  assertRegisterInstruction(memoryImpl, factory32, "sll", "d0", "r1", "r2",
-                            exp32b_1);
+  TEST_RR(0, to32BitMemoryValue, "sll", 0b110110, 3, 0b110110000);
   // shifts use only the lower 5bit of the second operand
-  assertRegisterInstruction(memoryImpl, factory32, "sll", "d1", "r2", "r1",
-                            exp32b_2);
+  TEST_RR(1, to32BitMemoryValue, "sll", 3, 0b110110, 3 << 22);
+}
 
-  // Test 64Bit versions
-  auto factory64 = setUpFactory({"rv32i", "rv64i"});
-  destination1.set(0);
-  destination2.set(0);
-  firstOp.set(0b110110L << 32);
-  secondOp.set(3);
-  auto exp64b_1 = to64BitMemoryValue(0b110110000L << 32);
-  auto v3_64b = to64BitMemoryValue(3);
-  assertRegisterInstruction(memoryImpl, factory64, "sll", "d0", "r1", "r2",
-                            exp64b_1);
+TEST(IntegerInstructionTest, ShiftLeftInstruction_testSll64) {
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
+
+  TEST_RR(0, to64BitMemoryValue, "sll", 0b110110L << 32, 3, 0b110110000L << 32);
   // shifts use only the lower 5bit of the second operand
-  assertRegisterInstruction(memoryImpl, factory64, "sll", "d1", "r2", "r1",
-                            v3_64b);
+  TEST_RR(1, to64BitMemoryValue, "sll", 3, 0b110110L << 32, 3);
 }
 
 TEST(IntegerInstructionTest, ShiftLeftIntruction_testSlli) {
@@ -852,41 +827,34 @@ TEST(IntegerInstructionTest, ShiftLeftInstruction_testValidation) {
                                    immediateFactory, "slli", true);
 }
 
-TEST(IntegerInstructionTest, ShiftRightIntruction_testSrl) {
-  FakeRegister destination1;
-  FakeRegister destination2;
-  FakeRegister firstOp(0b110110);
-  FakeRegister secondOp(3);
-  DummyMemoryAccessImpl memoryImpl;
+TEST(IntegerInstructionTest, ShiftRightInstruction_testSrl32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  memoryImpl.addRegister("d0", destination1);
-  memoryImpl.addRegister("d1", destination2);
-  memoryImpl.addRegister("r1", firstOp);
-  memoryImpl.addRegister("r2", secondOp);
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i"});
 
-  // Test 32Bit versions
-  auto factory32 = setUpFactory({"rv32i"});
-  auto exp32b_1 = to32BitMemoryValue(0b110);
-  auto v0_32b = to32BitMemoryValue(0);
-  assertRegisterInstruction(memoryImpl, factory32, "srl", "d0", "r1", "r2",
-                            exp32b_1);
+  TEST_RR(0, to32BitMemoryValue, "srl", 0b110110, 3, 0b110);
   // shifts use only the lower 5bit of the second operand
-  assertRegisterInstruction(memoryImpl, factory32, "srl", "d1", "r2", "r1",
-                            v0_32b);
+  TEST_RR(1, to32BitMemoryValue, "srl", 3, 0b110110, 0);
+}
 
-  // Test 64Bit versions
-  auto factory64 = setUpFactory({"rv32i", "rv64i"});
-  auto exp64b_1 = to64BitMemoryValue(0b110110L << 29);
-  auto v3_64b = to64BitMemoryValue(3);
-  destination1.set(0);
-  destination2.set(0);
-  firstOp.set(0b110110L << 32);
-  secondOp.set(3);
-  assertRegisterInstruction(memoryImpl, factory64, "srl", "d0", "r1", "r2",
-                            exp64b_1);
+TEST(IntegerInstructionTest, ShiftRightInstruction_testSrl64) {
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
+
+  TEST_RR(0, to64BitMemoryValue, "srl", 0b110110L << 32, 3, 0b110110L << 29);
   // shifts use only the lower 5bit of the second operand
-  assertRegisterInstruction(memoryImpl, factory64, "srl", "d1", "r2", "r1",
-                            v3_64b);
+  TEST_RR(1, to64BitMemoryValue, "srl", 3, 0b110110L << 32, 3);
 }
 
 TEST(IntegerInstructionTest, ShiftRightIntruction_testSrli) {
@@ -946,43 +914,41 @@ TEST(IntegerInstructionTest, ShiftRightInstruction_testValidation) {
                                    immediateFactory, "srli", true);
 }
 
-TEST(IntegerInstructionTest, ShiftRightArithmeticIntruction_testSra) {
-  FakeRegister destination1;
-  FakeRegister destination2;
-  FakeRegister firstOp(0b10000000000000000000000000110110);
-  FakeRegister secondOp(3);
-  DummyMemoryAccessImpl memoryImpl;
+TEST(IntegerInstructionTest, ShiftRightArithmeticInstruction_testSra32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  memoryImpl.addRegister("d0", destination1);
-  memoryImpl.addRegister("d1", destination2);
-  memoryImpl.addRegister("r1", firstOp);
-  memoryImpl.addRegister("r2", secondOp);
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i"});
 
-  // Test 32Bit versions
-  auto factory32 = setUpFactory({"rv32i"});
-  auto exp32b_1 = to32BitMemoryValue(0b11110000000000000000000000000110);
-  auto v0_32b = to32BitMemoryValue(0);
-  assertRegisterInstruction(memoryImpl, factory32, "sra", "d0", "r1", "r2",
-                            exp32b_1);
+  TEST_RR(0, to32BitMemoryValue, "sra", 0b10000000000000000000000000110110, 3,
+          0b11110000000000000000000000000110);
   // shifts use only the lower 5bit of the second operand
-  assertRegisterInstruction(memoryImpl, factory32, "sra", "d1", "r2", "r1",
-                            v0_32b);
+  TEST_RR(1, to32BitMemoryValue, "sra", 3, 0b10000000000000000000000000110110,
+          0);
+}
 
-  // Test 64Bit versions
-  auto factory64 = setUpFactory({"rv32i", "rv64i"});
-  auto exp64b_1 = to64BitMemoryValue(
-      0b1111000000000000000000000000001101100000000000000000000000000000L);
-  auto v3_64b = to64BitMemoryValue(3);
-  destination1.set(0);
-  destination2.set(0);
-  firstOp.set(
-      0b1000000000000000000000000001101100000000000000000000000000000000L);
-  secondOp.set(3);
-  assertRegisterInstruction(memoryImpl, factory64, "sra", "d0", "r1", "r2",
-                            exp64b_1);
+TEST(IntegerInstructionTest, ShiftRightArithmeticInstruction_testSra64) {
+  // No real risc-v register names are used as Memory/RegisterAccess is faked
+  FakeRegister destination, operand1, operand2;
+  std::string dest("d0"), op1("r1"), op2("r2");
+  DummyMemoryAccessImpl memoryAccess;
+  memoryAccess.addRegister(dest, destination);
+  memoryAccess.addRegister(op1, operand1);
+  memoryAccess.addRegister(op2, operand2);
+  auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
+
+  TEST_RR(0, to64BitMemoryValue, "sra",
+          0b1000000000000000000000000001101100000000000000000000000000000000L,
+          3,
+          0b1111000000000000000000000000001101100000000000000000000000000000L);
   // shifts use only the lower 5bit of the second operand
-  assertRegisterInstruction(memoryImpl, factory64, "srl", "d1", "r2", "r1",
-                            v3_64b);
+  TEST_RR(1, to64BitMemoryValue, "sra", 3,
+          0b1000000000000000000000000001101100000000000000000000000000000000L,
+          3);
 }
 
 TEST(IntegerInstructionTest, ShiftRightIntruction_testSrai) {
@@ -1015,7 +981,8 @@ TEST(IntegerInstructionTest, ShiftRightIntruction_testSrai) {
   // Test 64Bit versions
   auto factory64 = setUpFactory({"rv32i", "rv64i"});
   auto v3_64b = to64BitMemoryValue(3);
-  auto exp64b_1 = to64BitMemoryValue(0b1111000000000000000000000000001101100000000000000000000000000000L);
+  auto exp64b_1 = to64BitMemoryValue(
+      0b1111000000000000000000000000001101100000000000000000000000000000L);
   auto immediate64b = to64BitMemoryValue(0b11100001);
   auto exp64b_2 = to64BitMemoryValue(0b11L << 31);
   destination1.set(0);
@@ -1023,9 +990,8 @@ TEST(IntegerInstructionTest, ShiftRightIntruction_testSrai) {
   regOp1.set(
       0b1000000000000000000000000001101100000000000000000000000000000000L);
   regOp2.set(0b11L << 32);
-  assertImmediateInstruction(
-      memoryImpl, factory64, immediateFactory, "srai", "d0", "r1", v3_64b,
-      exp64b_1);
+  assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "srai",
+                             "d0", "r1", v3_64b, exp64b_1);
   // shifts use only the lower 5bit of the second operand
   assertImmediateInstruction(memoryImpl, factory64, immediateFactory, "srai",
                              "d1", "r2", immediate64b, exp64b_2);
