@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
+#include <iostream>
+
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
@@ -174,6 +176,8 @@ InstructionNodeFactory::createInstructionNode(const std::string& token) const {
   std::string lower = Utility::toLower(token);
 
   if (!_instrSet.hasInstruction(lower)) {
+      std::cout << "Instruction-Set does not have a instruction named " << token << std::endl;
+      std::cout.flush();
     return nullptr;  // return nullptr as the lowercase token could not be found
   }
 
