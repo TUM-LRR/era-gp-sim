@@ -59,7 +59,7 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
 
   if (!outputNode) {
     // The node creation failed!
-    state.errorList.push_back(CompileError("Invalid operation: " + command_name,
+    state.errorList.push_back(CompileError("Unknown operation: " + command_name,
                                            state.position,
                                            CompileErrorSeverity::ERROR));
     return std::move(outputNode);
@@ -73,6 +73,13 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
   // Sources.
   for (auto& i : sources) {
     outputNode->addChild(std::move(i));
+  }
+
+  // Validate node
+  if (!outputNode->validate()) {
+    state.errorList.push_back(CompileError("Invalid operation: " + command_name,
+                                           state.position,
+                                           CompileErrorSeverity::ERROR));
   }
 
   // Return.

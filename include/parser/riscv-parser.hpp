@@ -36,7 +36,7 @@ class RiscvParser : public Parser {
  public:
   class RiscvRegex;
 
-  RiscvParser();
+  RiscvParser(const Architecture &architecture);
 
   virtual FinalRepresentation
   parse(const std::string &text, ParserMode parserMode);
@@ -45,8 +45,8 @@ class RiscvParser : public Parser {
   /**
    * Saves an internal compile state.
    */
-  CompileState compile_state_;
-  NodeFactoryCollection factory_collection_;
+  CompileState _compile_state;
+  NodeFactoryCollection _factory_collection;
 };
 
 #endif// ERAGPSIM_PARSER_RISCV_PARSER_HPP_

@@ -1,34 +1,42 @@
 #include "parser/riscv-parser.hpp"
+#include "arch/common/architecture-formula.hpp"
+#include "arch/common/architecture.hpp"
 #include "gtest/gtest.h"
 
 // Tests will be refined, once arch classes are ready.
 
-TEST(RiscParser, EmptyString) {
+class RiscParserTest : public ::testing::Test {
+ public:
   RiscvParser parser;
+
+  RiscParserTest()
+  : parser{Architecture::Brew(ArchitectureFormula{"riscv", {"rv32i"}})} {
+  }
+};
+
+
+TEST_F(RiscParserTest, EmptyString) {
   FinalRepresentation res;
   res = parser.parse("", ParserMode::COMPILE);
   // EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 0);
 }
 
-TEST(RiscParser, EmptyMultilineString) {
-  RiscvParser parser;
+TEST_F(RiscParserTest, EmptyMultilineString) {
   FinalRepresentation res;
   res = parser.parse("\n\n", ParserMode::COMPILE);
   // EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 0);
 }
 
-TEST(RiscParser, SingleInstruction) {
-  RiscvParser parser;
+TEST_F(RiscParserTest, SingleInstruction) {
   FinalRepresentation res;
   res = parser.parse("ADD x13, x4,7", ParserMode::COMPILE);
   // EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 1);
 }
 
-TEST(RiscParser, MultipleInstructions) {
-  RiscvParser parser;
+TEST_F(RiscParserTest, MultipleInstructions) {
   FinalRepresentation res;
   res = parser.parse(
       "ADD x13, x4, 7 ;kommentar\n"
@@ -42,8 +50,7 @@ TEST(RiscParser, MultipleInstructions) {
   EXPECT_EQ(res.commandList.size(), 4);
 }
 
-TEST(RiscParser, MalformedInstructions) {
-  RiscvParser parser;
+TEST_F(RiscParserTest, MalformedInstructions) {
   FinalRepresentation res;
   res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7\nble x15 ",
                      ParserMode::COMPILE);
@@ -51,16 +58,14 @@ TEST(RiscParser, MalformedInstructions) {
   EXPECT_EQ(res.commandList.size(), 0);
 }
 
-TEST(RiscParser, BadCharacters) {
-  RiscvParser parser;
+TEST_F(RiscParserTest, BadCharacters) {
   FinalRepresentation res;
   res = parser.parse("ðŸ…±ðŸ…»ðŸ…¾ðŸ†‡ðŸ†‡ x13, x4,7", ParserMode::COMPILE);
   // EXPECT_EQ(res.errorList.size(), 1);
   EXPECT_EQ(res.commandList.size(), 0);
 }
 
-TEST(RiscParser, MixedErrors) {
-  RiscvParser parser;
+TEST_F(RiscParserTest, MixedErrors) {
   FinalRepresentation res;
   res = parser.parse(
       "ADD x13, x4, 7 ;kommentar\n"

@@ -22,16 +22,13 @@
 #include <iostream>
 #include <regex>
 #include <sstream>
-#include "arch/common/architecture-formula.hpp"
 #include "arch/common/node-factory-collection-maker.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/intermediate-representator.hpp"
 #include "parser/riscv-regex.hpp"
 
-RiscvParser::RiscvParser() {
-  ArchitectureFormula arch_form{"riscv", {"rv32i"}};
-  factory_collection_ =
-      NodeFactoryCollectionMaker::CreateFor(Architecture::Brew(arch_form));
+RiscvParser::RiscvParser(const Architecture &architecture) {
+  _factory_collection = NodeFactoryCollectionMaker::CreateFor(architecture);
 }
 
 FinalRepresentation
@@ -40,22 +37,22 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
   std::istringstream stream{text};
 
   // Initialize compile state
-  compile_state_.errorList.clear();
-  compile_state_.position = CodePosition(0, 0);
-  compile_state_.mode     = parserMode;
+  _compile_state.errorList.clear();
+  _compile_state.position = CodePosition(0, 0);
+  _compile_state.mode     = parserMode;
 
 
   RiscvRegex line_regex;
   std::vector<std::string> labels, sources, targets;
 
   for (std::string line; std::getline(stream, line);) {
-    compile_state_.position.first++;
+    _compile_state.position.first++;
     line_regex.matchLine(line);
     if (!line_regex.isValid()) {
       // Add syntax error if line regex doesnt match
-      compile_state_.errorList.push_back(
+      _compile_state.errorList.push_back(
           CompileError{"Syntax Error",
-                       compile_state_.position,
+                       _compile_state.position,
                        CompileErrorSeverity::ERROR});
     } else {
       // Collect labels until next instruction
@@ -73,8 +70,8 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
         }
 
         intermediate.insertCommand(
-            IntermediateInstruction{LineInterval{compile_state_.position.first,
-                                                 compile_state_.position.first},
+            IntermediateInstruction{LineInterval{_compile_state.position.first,
+                                                 _compile_state.position.first},
                                     labels,
                                     line_regex.getInstruction(),
                                     sources,
@@ -87,6 +84,6 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
     }
   }
 
-  return intermediate.transform(SyntaxTreeGenerator{factory_collection_},
-                                compile_state_);
+  return intermediate.transform(SyntaxTreeGenerator{_factory_collection},
+                                _compile_state);
 }
