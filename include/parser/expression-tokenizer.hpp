@@ -29,6 +29,7 @@ class ExpressionTokenizer
 public:
 	ExpressionTokenizer(std::vector<ExpressionTokenDefinition> definitions)
 	{
+		//TODO: Maybe combine to one giant regex! (w/ groups) If this improves performance...
 		_definitions.reserve(definitions.size());
 		for (const auto& i : definitions)
 		{
