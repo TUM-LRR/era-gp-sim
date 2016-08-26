@@ -81,9 +81,7 @@ class IntegerInstructionNode : public InstructionNode {
 
     SizeType result = performIntegerOperation(operand1, operand2);
 
-    MemoryValue resultValue =
-        convert(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
-    SizeType checkResult = convert<SizeType>(resultValue, RISCV_ENDIANNESS);
+    MemoryValue resultValue = convert<SizeType>(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
     memory_access.setRegisterValue(destination, resultValue);
     return MemoryValue{};
   }
@@ -104,20 +102,23 @@ class IntegerInstructionNode : public InstructionNode {
       DummyMemoryAccessStub stub;
       // no memory access is needed for a immediate node
       MemoryValue value = _children.at(2)->getValue(stub);
-      //look for 1 in bits 20...value.getSize()
-      for(std::size_t index = 20; index < value.getByteSize(); ++index) {
-          if(value.get(index)) {
-              return false;//1 detected
-          }
+      // look for 1 in bits 20...value.getSize()
+      for (std::size_t index = 20; index < value.getByteSize(); ++index) {
+        if (value.get(index)) {
+          return false;  // 1 detected
+        }
       }
-//      auto bits20 = value.getValue() & (~0xFFFFF);  // 2097151 = 0b11111...1 (20
-//                                                    // times a 1) -> erase lower
-//                                                    // 20 bits
-//      if (value != lower20bit) {
-//        // there is a 1 somewhere in bit 20 to x => the value is not represented
-//        // by only bit 0...19
-//        return false;
-//      }
+      //      auto bits20 = value.getValue() & (~0xFFFFF);  // 2097151 =
+      //      0b11111...1 (20
+      //                                                    // times a 1) ->
+      //                                                    erase lower
+      //                                                    // 20 bits
+      //      if (value != lower20bit) {
+      //        // there is a 1 somewhere in bit 20 to x => the value is not
+      //        represented
+      //        // by only bit 0...19
+      //        return false;
+      //      }
     }
 
     // a immediate integer instruction needs two register operands followed by
@@ -148,6 +149,34 @@ class IntegerInstructionNode : public InstructionNode {
   }
 
  private:
+//  std::enable_if<std::is_signed<SizeType>::value, SizeType>
+//  convertToNativeSignedType(MemoryValue v) const {
+//    return convert<SizeType>(v, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS,
+//                             RISCV_SIGNED_REPRESENTATION);
+//  }
+
+//  std::enable_if<!std::is_signed<SizeType>::value, SizeType>
+//  convertToNativeUnsignedType(MemoryValue v) const {
+//    return convert<SizeType>(v, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+//  }
+
+//  SizeType convertToNativeType(MemoryValue v) const {
+//      if(std::is_signed<SizeType>::value) {
+//          return convertToNativeSignedType(v);
+//      }else{
+//          return convertToNativeUnsignedType(v);
+//      }
+//  }
+
+//  MemoryValue convertToMemoryValue(SizeType t) const {
+//    if (std::is_signed<SizeType>::value) {
+//      return convert<SizeType>(t, RISCV_ENDIANNESS,
+//                               RISCV_SIGNED_REPRESENTATION);
+//    } else {
+//      return convert<SizeType>(t, RISCV_ENDIANNESS);
+//    }
+//  }
+
   /*!
    * Indicates if this instruction is a register-immediate instruction.
    * If false this instruction is a register-register instruction.

@@ -134,31 +134,36 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
   MultiplicationResultPart _usePart;
 };
 
-template <typename SizeType>
-class DivisionInstruction : public IntegerInstructionNode<SizeType> {
+template <typename UnsignedSizeType, typename SignedSizeType>
+class DivisionInstruction : public IntegerInstructionNode<UnsignedSizeType> {
  public:
-  DivisionInstruction(InstructionInformation& info)
-      : IntegerInstructionNode<SizeType>(info, false) {
-    _isSignedDivision = SizeType(0) - 1 < 0;
-  }
+  DivisionInstruction(InstructionInformation& info, bool isSignedDivision)
+      : IntegerInstructionNode<UnsignedSizeType>(info, false), _isSignedDivision(isSignedDivision) {}
 
-  SizeType performIntegerOperation(SizeType op1, SizeType op2) const {
+  UnsignedSizeType performIntegerOperation(UnsignedSizeType op1, UnsignedSizeType op2) const {
     // Semantics for division is defined in RISC-V specification in table 5.1
 
     if (op2 == 0) {
       // Division by zero
       // TODO kann vermutlich zusammengefasst werden
       if (_isSignedDivision) {
-        return SizeType(-1);
+        return UnsignedSizeType(-1);
       } else {
-        return -SizeType(1);
+        return -UnsignedSizeType(1);
       }
     }
     if (_isSignedDivision &&
-        op1 == SizeType(1) << ((sizeof(SizeType) * CHAR_BIT) - 1) &&
-        op2 == SizeType(-1)) {
+        op1 == UnsignedSizeType(1) << ((sizeof(UnsignedSizeType) * CHAR_BIT) - 1) &&
+        op2 == UnsignedSizeType(-1)) {
       // Signed Division overflow
       return op1;  // op1 is exactly -2^(n-1)
+    }
+
+    if(_isSignedDivision) {
+        SignedSizeType sop1 = static_cast<SignedSizeType>(op1);
+        SignedSizeType sop2 = static_cast<SignedSizeType>(op2);
+        SignedSizeType result = sop1/sop2;
+        return static_cast<UnsignedSizeType>(result);
     }
     return op1 / op2;
   }
@@ -167,15 +172,13 @@ class DivisionInstruction : public IntegerInstructionNode<SizeType> {
   bool _isSignedDivision;
 };
 
-template <typename SizeType>
-class RemainderInstruction : public IntegerInstructionNode<SizeType> {
+template <typename UnsignedSizeType, typename SignedSizeType>
+class RemainderInstruction : public IntegerInstructionNode<UnsignedSizeType> {
  public:
-  RemainderInstruction(InstructionInformation& info)
-      : IntegerInstructionNode<SizeType>(info, false) {
-    _isSignedRemainder = SizeType(0) - 1 < 0;
-  }
+  RemainderInstruction(InstructionInformation& info, bool isSignedRemainder)
+      : IntegerInstructionNode<UnsignedSizeType>(info, false), _isSignedRemainder(isSignedRemainder) {}
 
-  SizeType performIntegerOperation(SizeType op1, SizeType op2) const {
+  UnsignedSizeType performIntegerOperation(UnsignedSizeType op1, UnsignedSizeType op2) const {
     // Semantics for division is defined in RISC-V specification in table 5.1
 
     if (op2 == 0) {
@@ -183,10 +186,16 @@ class RemainderInstruction : public IntegerInstructionNode<SizeType> {
       return op1;
     }
     if (_isSignedRemainder &&
-        op1 == SizeType(1) << ((sizeof(SizeType) * CHAR_BIT) - 1) &&
-        op2 == SizeType(-1)) {
+        op1 == UnsignedSizeType(1) << ((sizeof(UnsignedSizeType) * CHAR_BIT) - 1) &&
+        op2 == UnsignedSizeType(-1)) {
       // Signed Division overflow
       return 0;
+    }
+    if(_isSignedRemainder) {
+        SignedSizeType sop1 = static_cast<SignedSizeType>(op1);
+        SignedSizeType sop2 = static_cast<SignedSizeType>(op2);
+        SignedSizeType result = sop1%sop2;
+        return static_cast<UnsignedSizeType>(result);
     }
     return op1 % op2;
   }

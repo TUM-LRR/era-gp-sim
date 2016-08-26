@@ -44,7 +44,7 @@ namespace {
  * instructions should perform arithmetic operations with
  * \param _instructionMap Map to fill in, use lowercase mnemonics
  */
-template <typename WordSize>
+template <typename WordSize, typename WordSizeSigned>
 void initializeIntegerInstructions(
     InstructionNodeFactory::InstructionMap& _instructionMap) {
   _instructionMap.emplace("add", [](InstructionInformation& info) {
@@ -115,16 +115,16 @@ void initializeIntegerInstructions(
         info, MultiplicationInstruction<WordSize>::HIGH);
   });
   _instructionMap.emplace("div", [](InstructionInformation& info) {
-    return std::make_unique<DivisionInstruction<WordSize>>(info);
+    return std::make_unique<DivisionInstruction<WordSize, WordSizeSigned>>(info, true);
   });
   _instructionMap.emplace("divu", [](InstructionInformation& info) {
-    return std::make_unique<DivisionInstruction<WordSize>>(info);
+    return std::make_unique<DivisionInstruction<WordSize, WordSizeSigned>>(info, false);
   });
   _instructionMap.emplace("rem", [](InstructionInformation& info) {
-    return std::make_unique<RemainderInstruction<WordSize>>(info);
+    return std::make_unique<RemainderInstruction<WordSize, WordSizeSigned>>(info, true);
   });
   _instructionMap.emplace("remu", [](InstructionInformation& info) {
-    return std::make_unique<RemainderInstruction<WordSize>>(info);
+    return std::make_unique<RemainderInstruction<WordSize, WordSizeSigned>>(info, false);
   });
 }
 }
@@ -137,11 +137,13 @@ void InstructionNodeFactory::initializeInstructionMap(
   // create integer instructions depending on the word size of the architecture
   // (e.g. r32i or r64i)
   if (wordSize == InstructionNodeFactory::RV32) {
-    initializeIntegerInstructions<InstructionNodeFactory::RV32_integral_t>(
-        _instructionMap);
+    initializeIntegerInstructions<
+        InstructionNodeFactory::RV32_integral_t,
+        InstructionNodeFactory::RV32_signed_integral_t>(_instructionMap);
   } else if (wordSize == InstructionNodeFactory::RV64) {
-    initializeIntegerInstructions<InstructionNodeFactory::RV64_integral_t>(
-        _instructionMap);
+    initializeIntegerInstructions<
+        InstructionNodeFactory::RV64_integral_t,
+        InstructionNodeFactory::RV64_signed_integral_t>(_instructionMap);
   } else {
     // The given architecture does not define a valid word_size to create
     // IntegerInstructions
