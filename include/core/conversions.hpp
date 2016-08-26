@@ -16,9 +16,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_CONVERSIONS_HPP_
-#define ERAGPSIM_CORE_CONVERSIONS_HPP_
+#ifndef ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP_
+#define ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP_
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -61,7 +62,29 @@ MemoryValue permute(const MemoryValue& memoryValue,
                     const std::size_t byteSize,
                     const std::function<std::size_t(std::size_t)> permutation);
 
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value, MemoryValue>::type
+convert(T value,
+        const std::function<MemoryValue(
+            const std::vector<std::uint8_t>&, std::size_t, bool)> sgn,
+        std::size_t size) {
+  // T abs{ std::min(value) };
+  T abs{value};
+  if (abs < 0) abs = -abs;
+  std::size_t sizeInByte{(size + 7) / 8};
+  std::vector<std::uint8_t> raw{};
+  for (std::size_t i = 0; i < sizeInByte; ++i) {
+    raw.push_back(static_cast<std::uint8_t>(abs & 0xFF));
+    abs >>= 8;
+  }
+  return sgn(raw, size, value < 0);
+}
+
+bool unSignum(const MemoryValue& memoryValue);
+
 bool signum(const MemoryValue& memoryValue);
+
+MemoryValue nonsigned(const MemoryValue& memoryValue);
 
 MemoryValue signBit(const MemoryValue& memoryValue);
 
@@ -69,4 +92,18 @@ MemoryValue onesComplement(const MemoryValue& memoryValue);
 
 MemoryValue twosComplement(const MemoryValue& memoryValue);
 
-#endif// ERAGPSIM_CORE_CONVERSIONS_HPP_
+MemoryValue
+nonsigned(const std::vector<std::uint8_t>& value, std::size_t size, bool sign);
+
+MemoryValue
+signBit(const std::vector<std::uint8_t>& value, std::size_t size, bool sign);
+
+MemoryValue onesComplement(const std::vector<std::uint8_t>& value,
+                           std::size_t size,
+                           bool sign);
+
+MemoryValue twosComplement(const std::vector<std::uint8_t>& value,
+                           std::size_t size,
+                           bool sign);
+
+#endif// ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP_
