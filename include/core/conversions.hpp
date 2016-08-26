@@ -29,7 +29,6 @@
 
 #include "core/memory-value.hpp"
 
-
 // Unsigned and little endian
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, T>::type
@@ -37,7 +36,8 @@ convert(const MemoryValue& memoryValue) {
   T result = 0;
   for (std::size_t i = memoryValue.internal().size(); i > 0; --i) {
     result <<= 8;
-    result |= memoryValue.getByteAt(i * 8);
+    result |= getByteAt(memoryValue, i * 8);
+    // result |= memoryValue.getByteAt(i * 8);
   }
   return result;
 }
@@ -50,7 +50,7 @@ convert(const MemoryValue& memoryValue,
         const std::function<bool(const MemoryValue&)> sgn,
         const std::function<MemoryValue(const MemoryValue&)> abs) {
   T result = convert<T>(abs(memoryValue));
-  if (sgn(memoryValue) ^ result < 0) return -result;
+  if (sgn(memoryValue) ^ (result < 0)) return -result;
   return result;
 }
 

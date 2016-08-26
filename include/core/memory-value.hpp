@@ -167,6 +167,11 @@ class MemoryValue {
   friend MemoryValue permute(const MemoryValue &memoryValue,
                              const std::size_t byteSize,
                              const std::vector<std::size_t> permutation);
+  // I know this is extremely inelegant
+  friend std::uint8_t getByteAt(MemoryValue memoryValue, std::size_t address) {
+    return memoryValue.getByteAt(address);
+  }
+
 
 #ifdef FRIEND_TEST
   FRIEND_TEST(TestMemoryValue, charAt);
