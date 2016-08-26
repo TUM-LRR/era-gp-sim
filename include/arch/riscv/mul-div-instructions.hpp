@@ -24,9 +24,6 @@
 
 #include "arch/riscv/integer-instructions.hpp"
 
-/*
- * TODO Instructions: mul mulh mulhu mulhsu div divu rem remu
- */
 namespace riscv {
 
 /**
@@ -46,10 +43,21 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
  */
   enum MultiplicationResultPart { LOW, HIGH };
 
+  /**
+   * Describes the type of this multiplication instruction.
+   * UNSIGNED: all operands are treated as unsigned values
+   * SIGNED: all operands are treated as signed values
+   * SIGNED_UNSIGNED: the first operand is a signed value, the second operand is
+   * a unsigned value
+   */
+  enum Type { UNSIGNED, SIGNED, SIGNED_UNSIGNED };
+
   MultiplicationInstruction(InstructionInformation& info,
-                            MultiplicationResultPart partOfResultReturned)
+                            MultiplicationResultPart partOfResultReturned,
+                            Type type)
       : IntegerInstructionNode<SizeType>(info, false),
-        _usePart(partOfResultReturned) {
+        _usePart(partOfResultReturned),
+        _type(type) {
     // assert that SizeType is an unsigned integer type
     assert(SizeType(0) - 1 >= 0);
   }
@@ -64,22 +72,119 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
    */
   SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
     if (_usePart == LOW) {
+      /*
+       * The "signedness" of the operation is ignored, as the sign does not
+       * affect multiplying the lower part
+       */
       return op1 * op2;
     } else if (_usePart == HIGH) {
       /*
        * Native * multiplication only leads to the low order bits.
-       * For 32bit a cast to 64bit, multiplication and then shifting could done,
+       * For 32bit a cast to 64bit, multiplication and then shifting could be
+       * done,
        * but 64bit x 64bit multiplication would need 128bit integer types which
        * are not included in the c++ standard. So we do this manually for all
        * sizes
        */
-      return computeHighOrderBitsOfMultiplication(op1, op2);
+
+      if (_type == UNSIGNED) {
+        return computeHighOrderBitsOfMultiplication(op1, op2);
+      } else if (_type == SIGNED) {
+        /*
+         * We can only get the high part for a unsigned x unsigned
+         * multiplication.
+         * For a signed multiplication we convert the signed value into an
+         * unsigned value (every signed value fits into the unsigned version
+         * with the same size without losing data) with the same magnitude, get
+         * ordinary the high part and possibly negate the result, depending on
+         * the sign rules
+         *
+         * The same applies for signed x unsigned multiplication. Here just the
+         * first operand is treated as signed and converted
+         */
+
+        SizeType unsignedOp1 = toUnsigned(op1);
+        SizeType unsignedOp2 = toUnsigned(op2);
+        SizeType result =
+            computeHighOrderBitsOfMultiplication(unsignedOp1, unsignedOp2);
+        if (getSign(op1) != getSign(op2)) {
+          // the signs are either +,- or -,+ -> result will be negative
+          return negateUpperPart(result, unsignedOp1, unsignedOp2);
+        } else {
+          return result;
+        }
+      } else if (_type == SIGNED_UNSIGNED) {
+        // convert op1 to unsigned
+        SizeType unsignedOp1 = toUnsigned(op1);
+        SizeType result =
+            computeHighOrderBitsOfMultiplication(unsignedOp1, op2);
+        // unsigned type has always sign +
+        if (getSign(op1) != 0) {
+          // singed type has sign - -> result will be negative
+          return negateUpperPart(result, unsignedOp1, op2);
+        } else {
+          return result;
+        }
+      } else {
+        assert(false);  // invalid _type
+      }
     }
-    // Invalid enum
-    assert(false);
+    assert(false);  // invalid MultiplicationResultPart
   }
 
  private:
+  /** The index of the sign bit of the given SizeType, for 32bit SizeType
+   * signIndex == 31*/
+  static constexpr SizeType signIndex =
+      sizeof(SizeType) * CHAR_BIT - SizeType(1);
+  /** A and-mask for cutting out everything except the sign bit*/
+  static constexpr SizeType signMask = SizeType(1) << signIndex;
+
+  /**
+   * Returns the magnitude of the given value t. Specificly returns the same
+   * value, if the sign bit of t is 0, t itself is returned. If the sign bit is
+   * 1, t is negated by using two's complement
+   * @param t value to be converted to an unsigned value
+   * @return value v, so that v = |t|
+   */
+  SizeType toUnsigned(SizeType t) const {
+    if (getSign(t) == 0) {
+      return t;
+    } else {
+      return (~t) + 1;
+    }
+  }
+
+  /**
+   * Returns the sign bit of t at index 0
+   * @param t value to get the sign bit from
+   * @return 0, if the sign bit of t is 0; 1, if the sign bit of t is 1
+   */
+  SizeType getSign(SizeType t) const {
+    SizeType sign = (t & signMask) >> signIndex;
+    return sign;
+  }
+
+  /**
+   * Returns the negated value of upper by using two's complement. upper is
+   * treated to be the upper part of the unsigned x unsigned multiplication of a
+   * and b. a and b are needed to retrieve the carry bit of the lower part of
+   * the multiplication result when adding 1
+   * @param upper value to be negated
+   * @param a factor of multiplication
+   * @param b factor of multiplication
+   * @return
+   */
+  SizeType negateUpperPart(SizeType upper, SizeType a, SizeType b) const {
+    SizeType signedUpper = ~upper;
+    // when adding 1, a carry bit to the upper part can only occur, when the
+    // lower part is 0 (after flipping 11..11 +1 => 1 00..00)
+    if (a * b == SizeType(0)) {
+      signedUpper += 1;
+    }
+    return signedUpper;
+  }
+
   /**
    * \brief A n-bit x n-bit multiplication leads up to a n+n-bit result.
    * "Normal" multiplication (*) only yields the lower n-bit part.
@@ -132,15 +237,23 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
    * when _usePart == LOW, this instruction is the mul instructions
    */
   MultiplicationResultPart _usePart;
+
+  /**
+   * Defines behaviour of the h extension in addition of "/u/su" for signed x
+   * signed, unsigned x unsigned, signed x unsigned multiplication.
+   */
+  Type _type;
 };
 
 template <typename UnsignedSizeType, typename SignedSizeType>
 class DivisionInstruction : public IntegerInstructionNode<UnsignedSizeType> {
  public:
   DivisionInstruction(InstructionInformation& info, bool isSignedDivision)
-      : IntegerInstructionNode<UnsignedSizeType>(info, false), _isSignedDivision(isSignedDivision) {}
+      : IntegerInstructionNode<UnsignedSizeType>(info, false),
+        _isSignedDivision(isSignedDivision) {}
 
-  UnsignedSizeType performIntegerOperation(UnsignedSizeType op1, UnsignedSizeType op2) const {
+  UnsignedSizeType performIntegerOperation(UnsignedSizeType op1,
+                                           UnsignedSizeType op2) const {
     // Semantics for division is defined in RISC-V specification in table 5.1
 
     if (op2 == 0) {
@@ -153,17 +266,19 @@ class DivisionInstruction : public IntegerInstructionNode<UnsignedSizeType> {
       }
     }
     if (_isSignedDivision &&
-        op1 == UnsignedSizeType(1) << ((sizeof(UnsignedSizeType) * CHAR_BIT) - 1) &&
+        op1 ==
+            UnsignedSizeType(1)
+                << ((sizeof(UnsignedSizeType) * CHAR_BIT) - 1) &&
         op2 == UnsignedSizeType(-1)) {
       // Signed Division overflow
       return op1;  // op1 is exactly -2^(n-1)
     }
 
-    if(_isSignedDivision) {
-        SignedSizeType sop1 = static_cast<SignedSizeType>(op1);
-        SignedSizeType sop2 = static_cast<SignedSizeType>(op2);
-        SignedSizeType result = sop1/sop2;
-        return static_cast<UnsignedSizeType>(result);
+    if (_isSignedDivision) {
+      SignedSizeType sop1 = static_cast<SignedSizeType>(op1);
+      SignedSizeType sop2 = static_cast<SignedSizeType>(op2);
+      SignedSizeType result = sop1 / sop2;
+      return static_cast<UnsignedSizeType>(result);
     }
     return op1 / op2;
   }
@@ -176,9 +291,11 @@ template <typename UnsignedSizeType, typename SignedSizeType>
 class RemainderInstruction : public IntegerInstructionNode<UnsignedSizeType> {
  public:
   RemainderInstruction(InstructionInformation& info, bool isSignedRemainder)
-      : IntegerInstructionNode<UnsignedSizeType>(info, false), _isSignedRemainder(isSignedRemainder) {}
+      : IntegerInstructionNode<UnsignedSizeType>(info, false),
+        _isSignedRemainder(isSignedRemainder) {}
 
-  UnsignedSizeType performIntegerOperation(UnsignedSizeType op1, UnsignedSizeType op2) const {
+  UnsignedSizeType performIntegerOperation(UnsignedSizeType op1,
+                                           UnsignedSizeType op2) const {
     // Semantics for division is defined in RISC-V specification in table 5.1
 
     if (op2 == 0) {
@@ -186,16 +303,18 @@ class RemainderInstruction : public IntegerInstructionNode<UnsignedSizeType> {
       return op1;
     }
     if (_isSignedRemainder &&
-        op1 == UnsignedSizeType(1) << ((sizeof(UnsignedSizeType) * CHAR_BIT) - 1) &&
+        op1 ==
+            UnsignedSizeType(1)
+                << ((sizeof(UnsignedSizeType) * CHAR_BIT) - 1) &&
         op2 == UnsignedSizeType(-1)) {
       // Signed Division overflow
       return 0;
     }
-    if(_isSignedRemainder) {
-        SignedSizeType sop1 = static_cast<SignedSizeType>(op1);
-        SignedSizeType sop2 = static_cast<SignedSizeType>(op2);
-        SignedSizeType result = sop1%sop2;
-        return static_cast<UnsignedSizeType>(result);
+    if (_isSignedRemainder) {
+      SignedSizeType sop1 = static_cast<SignedSizeType>(op1);
+      SignedSizeType sop2 = static_cast<SignedSizeType>(op2);
+      SignedSizeType result = sop1 % sop2;
+      return static_cast<UnsignedSizeType>(result);
     }
     return op1 % op2;
   }

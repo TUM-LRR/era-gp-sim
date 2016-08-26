@@ -100,31 +100,39 @@ void initializeIntegerInstructions(
   });
   _instructionMap.emplace("mul", [](InstructionInformation& info) {
     return std::make_unique<MultiplicationInstruction<WordSize>>(
-        info, MultiplicationInstruction<WordSize>::LOW);
+        info, MultiplicationInstruction<WordSize>::LOW,
+        MultiplicationInstruction<WordSize>::SIGNED);
   });
   _instructionMap.emplace("mulh", [](InstructionInformation& info) {
     return std::make_unique<MultiplicationInstruction<WordSize>>(
-        info, MultiplicationInstruction<WordSize>::HIGH);
+        info, MultiplicationInstruction<WordSize>::HIGH,
+        MultiplicationInstruction<WordSize>::SIGNED);
   });
   _instructionMap.emplace("mulhu", [](InstructionInformation& info) {
     return std::make_unique<MultiplicationInstruction<WordSize>>(
-        info, MultiplicationInstruction<WordSize>::HIGH);
+        info, MultiplicationInstruction<WordSize>::HIGH,
+        MultiplicationInstruction<WordSize>::UNSIGNED);
   });
   _instructionMap.emplace("mulhsu", [](InstructionInformation& info) {
     return std::make_unique<MultiplicationInstruction<WordSize>>(
-        info, MultiplicationInstruction<WordSize>::HIGH);
+        info, MultiplicationInstruction<WordSize>::HIGH,
+        MultiplicationInstruction<WordSize>::SIGNED_UNSIGNED);
   });
   _instructionMap.emplace("div", [](InstructionInformation& info) {
-    return std::make_unique<DivisionInstruction<WordSize, WordSizeSigned>>(info, true);
+    return std::make_unique<DivisionInstruction<WordSize, WordSizeSigned>>(
+        info, true);
   });
   _instructionMap.emplace("divu", [](InstructionInformation& info) {
-    return std::make_unique<DivisionInstruction<WordSize, WordSizeSigned>>(info, false);
+    return std::make_unique<DivisionInstruction<WordSize, WordSizeSigned>>(
+        info, false);
   });
   _instructionMap.emplace("rem", [](InstructionInformation& info) {
-    return std::make_unique<RemainderInstruction<WordSize, WordSizeSigned>>(info, true);
+    return std::make_unique<RemainderInstruction<WordSize, WordSizeSigned>>(
+        info, true);
   });
   _instructionMap.emplace("remu", [](InstructionInformation& info) {
-    return std::make_unique<RemainderInstruction<WordSize, WordSizeSigned>>(info, false);
+    return std::make_unique<RemainderInstruction<WordSize, WordSizeSigned>>(
+        info, false);
   });
 }
 }
