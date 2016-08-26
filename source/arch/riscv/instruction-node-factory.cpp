@@ -20,8 +20,8 @@
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
-#include "arch/riscv/mul-div-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
+#include "arch/riscv/mul-div-instructions.hpp"
 
 #include "common/utility.hpp"
 
@@ -99,16 +99,32 @@ void initializeIntegerInstructions(
         info, true);
   });
   _instructionMap.emplace("mul", [](InstructionInformation& info) {
-      return std::make_unique<MultiplicationInstruction<WordSize>>(info, MultiplicationInstruction<WordSize>::LOW);
+    return std::make_unique<MultiplicationInstruction<WordSize>>(
+        info, MultiplicationInstruction<WordSize>::LOW);
   });
   _instructionMap.emplace("mulh", [](InstructionInformation& info) {
-      return std::make_unique<MultiplicationInstruction<WordSize>>(info, MultiplicationInstruction<WordSize>::HIGH);
+    return std::make_unique<MultiplicationInstruction<WordSize>>(
+        info, MultiplicationInstruction<WordSize>::HIGH);
   });
   _instructionMap.emplace("mulhu", [](InstructionInformation& info) {
-      return std::make_unique<MultiplicationInstruction<WordSize>>(info, MultiplicationInstruction<WordSize>::HIGH);
+    return std::make_unique<MultiplicationInstruction<WordSize>>(
+        info, MultiplicationInstruction<WordSize>::HIGH);
   });
   _instructionMap.emplace("mulhsu", [](InstructionInformation& info) {
-      return std::make_unique<MultiplicationInstruction<WordSize>>(info, MultiplicationInstruction<WordSize>::HIGH);
+    return std::make_unique<MultiplicationInstruction<WordSize>>(
+        info, MultiplicationInstruction<WordSize>::HIGH);
+  });
+  _instructionMap.emplace("div", [](InstructionInformation& info) {
+    return std::make_unique<DivisionInstruction<WordSize>>(info);
+  });
+  _instructionMap.emplace("divu", [](InstructionInformation& info) {
+    return std::make_unique<DivisionInstruction<WordSize>>(info);
+  });
+  _instructionMap.emplace("rem", [](InstructionInformation& info) {
+    return std::make_unique<RemainderInstruction<WordSize>>(info);
+  });
+  _instructionMap.emplace("remu", [](InstructionInformation& info) {
+    return std::make_unique<RemainderInstruction<WordSize>>(info);
   });
 }
 }
@@ -176,8 +192,9 @@ InstructionNodeFactory::createInstructionNode(const std::string& token) const {
   std::string lower = Utility::toLower(token);
 
   if (!_instrSet.hasInstruction(lower)) {
-      std::cout << "Instruction-Set does not have a instruction named " << token << std::endl;
-      std::cout.flush();
+    std::cout << "Instruction-Set does not have a instruction named " << token
+              << std::endl;
+    std::cout.flush();
     return nullptr;  // return nullptr as the lowercase token could not be found
   }
 
