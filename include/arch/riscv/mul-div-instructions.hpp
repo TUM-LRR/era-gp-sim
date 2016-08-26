@@ -245,6 +245,14 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
   Type _type;
 };
 
+/**
+ * Represents a RISC-V "div/divu" instruction. For more information see RISC-V
+ * specification
+ * \tparam unsigned integer type that can hold exactly the range of values that
+ * divu should operate on
+ * \tparam signed integer type that can hold exactly the range of values that
+ * div should operate on
+ */
 template <typename UnsignedSizeType, typename SignedSizeType>
 class DivisionInstruction : public IntegerInstructionNode<UnsignedSizeType> {
  public:
@@ -258,23 +266,22 @@ class DivisionInstruction : public IntegerInstructionNode<UnsignedSizeType> {
 
     if (op2 == 0) {
       // Division by zero
-      // TODO kann vermutlich zusammengefasst werden
-      if (_isSignedDivision) {
-        return UnsignedSizeType(-1);
-      } else {
-        return -UnsignedSizeType(1);
-      }
+      return UnsignedSizeType(-1);
     }
-    if (_isSignedDivision &&
-        op1 ==
-            UnsignedSizeType(1)
-                << ((sizeof(UnsignedSizeType) * CHAR_BIT) - 1) &&
-        op2 == UnsignedSizeType(-1)) {
+    if (_isSignedDivision && op1 == OVERFLOW_DIVIDENT &&
+        op2 == OVERFLOW_DIVISOR) {
       // Signed Division overflow
       return op1;  // op1 is exactly -2^(n-1)
     }
 
     if (_isSignedDivision) {
+      // this is a rather ugly solution to perform a native signed division. The
+      // class cannot be instatiated with a signed template parameter, because
+      // the conversions do not allow (at the moment) a distinction for
+      // unsigned/signed conversion at runtime. Such a distinction if(isSigned)
+      // then convertSigned(type) else convertUnsigned(type) will not compile,
+      // as e.g. convertSigned() won't compile for a unsigned type and vice
+      // versa
       SignedSizeType sop1 = static_cast<SignedSizeType>(op1);
       SignedSizeType sop2 = static_cast<SignedSizeType>(op2);
       SignedSizeType result = sop1 / sop2;
@@ -284,9 +291,20 @@ class DivisionInstruction : public IntegerInstructionNode<UnsignedSizeType> {
   }
 
  private:
+  static constexpr UnsignedSizeType OVERFLOW_DIVIDENT =
+      UnsignedSizeType(1) << (sizeof(UnsignedSizeType) * CHAR_BIT - 1);
+  static constexpr UnsignedSizeType OVERFLOW_DIVISOR = UnsignedSizeType(-1);
   bool _isSignedDivision;
 };
 
+/**
+ * Represents a RISC-V "rem/remu" instruction. For more information see RISC-V
+ * specification
+ * \tparam unsigned integer type that can hold exactly the range of values that
+ * remu should operate on
+ * \tparam signed integer type that can hold exactly the range of values that
+ * rem should operate on
+ */
 template <typename UnsignedSizeType, typename SignedSizeType>
 class RemainderInstruction : public IntegerInstructionNode<UnsignedSizeType> {
  public:
@@ -302,15 +320,20 @@ class RemainderInstruction : public IntegerInstructionNode<UnsignedSizeType> {
       // Division by zero
       return op1;
     }
-    if (_isSignedRemainder &&
-        op1 ==
-            UnsignedSizeType(1)
-                << ((sizeof(UnsignedSizeType) * CHAR_BIT) - 1) &&
-        op2 == UnsignedSizeType(-1)) {
+    if (_isSignedRemainder && op1 == OVERFLOW_DIVIDENT &&
+        op2 == OVERFLOW_DIVISOR) {
       // Signed Division overflow
       return 0;
     }
     if (_isSignedRemainder) {
+      // this is a rather ugly solution to perform a native signed modulus
+      // operation. The
+      // class cannot be instatiated with a signed template parameter, because
+      // the conversions do not allow (at the moment) a distinction for
+      // unsigned/signed conversion at runtime. Such a distinction if(isSigned)
+      // then convertSigned(type) else convertUnsigned(type) will not compile,
+      // as e.g. convertSigned() won't compile for a unsigned type and vice
+      // versa
       SignedSizeType sop1 = static_cast<SignedSizeType>(op1);
       SignedSizeType sop2 = static_cast<SignedSizeType>(op2);
       SignedSizeType result = sop1 % sop2;
@@ -320,6 +343,9 @@ class RemainderInstruction : public IntegerInstructionNode<UnsignedSizeType> {
   }
 
  private:
+  static constexpr UnsignedSizeType OVERFLOW_DIVIDENT =
+      UnsignedSizeType(1) << (sizeof(UnsignedSizeType) * CHAR_BIT - 1);
+  static constexpr UnsignedSizeType OVERFLOW_DIVISOR = UnsignedSizeType(-1);
   bool _isSignedRemainder;
 };
 }
