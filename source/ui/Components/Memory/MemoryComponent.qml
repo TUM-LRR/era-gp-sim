@@ -48,9 +48,9 @@ Item {
                                        z) + n
     }
 
-    ListModel {
+    /*ListModel {
         id: memoryModel
-    }
+    }*/
 
     TableView {
         id: tableView
@@ -71,7 +71,7 @@ Item {
             width: 70
         }
         TableViewColumn {
-            role: "content"
+            role: "value"
             title: "Inhalt"
             movable: false
             resizable: false

@@ -24,6 +24,7 @@
 
 #include "ui/registermodel.hpp"
 #include "ui/qproject.hpp"
+#include "ui/memorycomponentpresenter.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -47,7 +48,11 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("project", &project);
 
     engine.rootContext()->setContextProperty("registerModel", &registerModel);
+    MemoryComponentPresenter memory(engine.rootContext());
+    engine.rootContext()->setContextProperty("memoryModel", &memory);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+
+
 
     return app.exec();
 }

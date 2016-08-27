@@ -18,15 +18,18 @@
 */
 
 #include "ui/memorycomponentpresenter.hpp"
+#include <iostream>
+#include <QDebug>
 
-MemoryComponentPresenter::MemoryComponentPresenter(/* Coreschnittstelle *core */ QQmlContext *context, QObject *parent)
+MemoryComponentPresenter::MemoryComponentPresenter(/* TODO interface *core */ QQmlContext *context, QObject *parent)
 : QAbstractTableModel(parent){
-    // register callback functions
+    // TODO register callback functions
     //core->onMemorySizeChanged(setSize);
     //core->onMemoryValueChanged(setValue);
 
-    // create new View
+    // TODO create new View
     //context->setContextProperty("MemoryComponent", this);
+    this->insertRow(0);
 }
 
 
@@ -36,7 +39,7 @@ void MemoryComponentPresenter::setSize(int newSize) {
 
 }
 
-void MemoryComponentPresenter::setValue(int address, /*MemoryValue*/ int newValue) {
+void MemoryComponentPresenter::setValue(int address, /*TODO MemoryValue*/ int newValue) {
 
 }
 
@@ -47,14 +50,39 @@ void MemoryComponentPresenter::setContextInformation(int addressStart, int lengt
 
 
 int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
-    return 0;
+    Q_UNUSED(parent)
+    return 5;
 }
 int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
-    return 0;
+    Q_UNUSED(parent)
+    // 3: address + value + additional information
+    return 3;
 }
 QVariant MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
+    // check boundaries
     if (!index.isValid()) {
-      return QVariant();
+        qWarning() << "Warning: " << index.row() << ", " << index.column();
+        return QVariant();
     }
-    return QVariant();
+
+    switch(role)
+    {
+        case AddressRole:
+            return QString("address");
+        case ValueRole:
+            return  QString("value");
+        case InfoRole:
+            return  QString("information");
+        default:
+            qWarning() << "unknown column role";
+            return QVariant();
+    }
+}
+QHash<int, QByteArray> MemoryComponentPresenter::roleNames() const {
+    // connect TableColumns in View with columns in this model
+    QHash<int, QByteArray> roles;
+    roles[AddressRole] = "address";
+    roles[ValueRole] = "value";
+    roles[InfoRole] = "info";
+    return roles;
 }
