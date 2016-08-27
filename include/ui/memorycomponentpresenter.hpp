@@ -44,6 +44,7 @@ class MemoryComponentPresenter : public QAbstractTableModel{
        int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
        QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
        QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
+
        enum ColumnRoles {
            AddressRole=Qt::UserRole,//avoid collisions with predefined roles
            ValueRole,

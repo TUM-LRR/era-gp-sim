@@ -29,29 +29,31 @@ MemoryComponentPresenter::MemoryComponentPresenter(/* TODO interface *core */ QQ
 
     // TODO create new View
     //context->setContextProperty("MemoryComponent", this);
-    this->insertRow(0);
+    this->setValue(5,10);
 }
 
 
 MemoryComponentPresenter::~MemoryComponentPresenter() { }
 
 void MemoryComponentPresenter::setSize(int newSize) {
-
+    // TODO
 }
 
 void MemoryComponentPresenter::setValue(int address, /*TODO MemoryValue*/ int newValue) {
-
+    this->dataChanged(this->index(address, 0), this->index(address, 2));
 }
 
 void MemoryComponentPresenter::setContextInformation(int addressStart, int length, int identifier) {
-
+    this->dataChanged(this->index(addressStart, 0), this->index(addressStart + length, 2));
+    // TODO
 }
 
 
 
 int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
     Q_UNUSED(parent)
-    return 5;
+    // TODO fetch length from core
+    return 500;
 }
 int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
     Q_UNUSED(parent)
@@ -68,10 +70,13 @@ QVariant MemoryComponentPresenter::data(const QModelIndex &index, int role) cons
     switch(role)
     {
         case AddressRole:
-            return QString("address");
+            // format index as hex value and return it
+            return QString("%1").arg(index.row(), 4, 16, QLatin1Char('0')).toUpper().prepend("0x");
         case ValueRole:
+            // TODO fetch value from core
             return  QString("value");
         case InfoRole:
+            // TODO fetch value from core
             return  QString("information");
         default:
             qWarning() << "unknown column role";
