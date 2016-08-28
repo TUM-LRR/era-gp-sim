@@ -1,5 +1,4 @@
-/*
-* C++ Assembler Interpreter
+/* C++ Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,16 +16,23 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "arch/common/node-factory-collection-maker.hpp"
-#include "arch/common/architecture.hpp"
-#include "arch/riscv/factory-types.hpp"
+#ifndef ERAGPSIM_CORE_REGP_HPP_
+#define ERAGPSIM_CORE_REGP_HPP_
 
-namespace NodeFactoryCollectionMaker {
-NodeFactoryCollection CreateFor(const Architecture& architecture) {
-  if (architecture.getName() == "riscv") {
-    return Create<riscv::FactoryTypes>(architecture);
-  } else {
-    return {};
+// The information to uniquely identify a register
+struct RegisterID {
+  int _adress;
+  int _begin;
+  int _end;
+  RegisterID() = default;
+  RegisterID(int adress, int begin, int end)
+  : _adress{adress}, _begin{begin}, _end{end} {
   }
-}
-}
+  RegisterID(RegisterID&& other)      = default;
+  RegisterID(const RegisterID& other) = default;
+  RegisterID& operator=(RegisterID&& other) = default;
+  RegisterID& operator=(const RegisterID& other) = default;
+  ~RegisterID()                                  = default;
+};
+
+#endif// ERAGPSIM_CORE_REGP_HPP_
