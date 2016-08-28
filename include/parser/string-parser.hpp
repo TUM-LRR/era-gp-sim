@@ -23,10 +23,10 @@
 #include <algorithm>
 #include <functional>
 #include <string>
-#include <vector>
 #include <unordered_map>
-#include "compile-state.hpp"
+#include <vector>
 #include "common/utility.hpp"
+#include "compile-state.hpp"
 
 /**
  * \brief Provides help methods for parsing strings.
@@ -45,9 +45,9 @@ template <typename CharT, typename OutT>
 class StringParserEngine {
  public:
   using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
-  using OutType = Utility::TypeBarrier<OutT, std::is_integral>;
-  using String = std::basic_string<CharType>;
-  using Output = std::vector<OutType>;
+  using OutType  = Utility::TypeBarrier<OutT, std::is_integral>;
+  using String   = std::basic_string<CharType>;
+  using Output   = std::vector<OutType>;
 
   /**
    * \brief Decodes and re-encodes a code point at the given position in the
@@ -361,47 +361,51 @@ class StringParserEngine {
     return value;
   }
 
-  //Parses an escape sequence encoding a Unicode code point.
-  static bool parseUnicodeEscapeSequence(const String& inputString, size_t& index, Output& output, int size, CompileState& state)
-  {
+  // Parses an escape sequence encoding a Unicode code point.
+  static bool parseUnicodeEscapeSequence(const String& inputString,
+                                         size_t& index,
+                                         Output& output,
+                                         int size,
+                                         CompileState& state) {
     size_t startIndex = index;
 
     auto len = crawlIndex(inputString, index, isHex, size);
 
-    //Important: The size of the specified index in the string must equal to the maximum size.
+    // Important: The size of the specified index in the string must equal to
+    // the maximum size.
     if (len != size) {
       invokeError("Not the right size for the escape sequence", index, state);
       return false;
     }
 
-    //Then we get and encode the code point.
+    // Then we get and encode the code point.
     uint32_t codePoint =
         simpleNumberParse<uint32_t>(inputString, startIndex + 1, len, 16);
     return encodeCodePoint(inputString, codePoint, index, output, state);
   }
 
-  //Gets the corresponding character for a simple one-byte long escape sequence, such as \n .
-  static int parseOneByteEscapeSequence(char chr)
-  {
-    int match = -1;
+  // Gets the corresponding character for a simple one-byte long escape
+  // sequence, such as \n .
+  static int parseOneByteEscapeSequence(char chr) {
+    int match;
 
-    //Just a switch case.
-    switch(chr)
-    {
-    //clang-format off
-      case 'a':  match = '\a'; break;
-      case 'b':  match = '\b'; break;
-      case 'e':  match = '\e'; break;
-      case 'f':  match = '\f'; break;
-      case 'n':  match = '\n'; break;
-      case 'r':  match = '\r'; break;
-      case 't':  match = '\t'; break;
-      case 'v':  match = '\v'; break;
-      case '?':  match = '\?'; break;
+    // Just a switch case.
+    switch (chr) {
+      // clang-format off
+      case 'a': match  = '\a'; break;
+      case 'b': match  = '\b'; break;
+      case 'e': match  = '\e'; break;
+      case 'f': match  = '\f'; break;
+      case 'n': match  = '\n'; break;
+      case 'r': match  = '\r'; break;
+      case 't': match  = '\t'; break;
+      case 'v': match  = '\v'; break;
+      case '?': match  = '\?'; break;
       case '\"': match = '\"'; break;
       case '\'': match = '\''; break;
       case '\\': match = '\\'; break;
-    //clang-format on
+      default: match = -1; break;
+        // clang-format on
     }
 
     return match;
@@ -423,33 +427,26 @@ class StringParserEngine {
     char cchr         = (char)chr;
 
     int match = parseOneByteEscapeSequence(cchr);
-    if (match != -1)
-    {
-      //One-byte escape sequence.
+    if (match != -1) {
+      // One-byte escape sequence.
       output.push_back(match);
       ++index;
       return true;
-    }
-    else if (chr == 'u')
-    {
+    } else if (chr == 'u') {
       // Decoding a Unicode code point in the range  up to 65535.
       return parseUnicodeEscapeSequence(inputString, index, output, 4, state);
-    }
-    else if (chr == 'U')
-    {
+    } else if (chr == 'U') {
       // Decoding an arbitrary Unicode code point.
       return parseUnicodeEscapeSequence(inputString, index, output, 8, state);
-    }
-    else if (chr == 'x')
-    {
+    } else if (chr == 'x') {
       // Decoding a unit-sized character, ignoring all UTF alignments.
       auto len = crawlIndex(inputString, index, isHex, sizeof(OutType) * 2);
       OutType value =
           simpleNumberParse<OutType>(inputString, startIndex + 1, len, 16);
       output.push_back(value);
-    }
-    else if (isOctal(chr)) {
-      // Decoding an octal character sequence. (e.g. special case is: \0, but can also be \000)
+    } else if (isOctal(chr)) {
+      // Decoding an octal character sequence. (e.g. special case is: \0, but
+      // can also be \000)
       auto len = crawlIndex(inputString, index, isOctal, 2) + 1;
       int ret  = simpleNumberParse<int>(inputString, startIndex, len, 8);
       if (ret > 0xff && sizeof(OutType) == 1) {
@@ -586,67 +583,67 @@ class StringParserEngine {
  * \brief Provides some basic methods for string parsing.
  */
 namespace StringParser {
-  /**
-  * \brief Parses a trimmed C-like string literal in UTF format.
-  * \tparam CharT The input character type.
-  * \tparam OutT The output integer type.
-  * \param inputString The input data.
-  * \param output The output vector to append to.
-  * \param state The compile state to note errors down.
-  * \return True, if the conversion has been successful, else false.
-  */
-  template <typename CharT, typename OutT>
-  static bool parseString(const std::basic_string<CharT>& inputString,
-                          std::vector<OutT>& output,
-                          CompileState& state) {
-    using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
-    using OutType = Utility::TypeBarrier<OutT, std::is_integral>;
+/**
+* \brief Parses a trimmed C-like string literal in UTF format.
+* \tparam CharT The input character type.
+* \tparam OutT The output integer type.
+* \param inputString The input data.
+* \param output The output vector to append to.
+* \param state The compile state to note errors down.
+* \return True, if the conversion has been successful, else false.
+*/
+template <typename CharT, typename OutT>
+static bool parseString(const std::basic_string<CharT>& inputString,
+                        std::vector<OutT>& output,
+                        CompileState& state) {
+  using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
+  using OutType  = Utility::TypeBarrier<OutT, std::is_integral>;
 
-    if (!StringParserEngine<CharType, OutType>::checkIfWrapped(
-            inputString, '\"', state)) {
-      return false;
-    }
-
-    size_t index = 1;
-    while (inputString.size() - 1 > index) {
-      if (!StringParserEngine<CharType, OutType>::stringParseCharacter(
-              inputString, index, '\"', output, state)) {
-        return false;
-      }
-    }
-
-    return index == inputString.size() - 1;
+  if (!StringParserEngine<CharType, OutType>::checkIfWrapped(
+          inputString, '\"', state)) {
+    return false;
   }
 
-  /**
-  * \brief Parses a trimmed C-like character literal in UTF format.
-  * \tparam CharT The input character type.
-  * \tparam OutT The output integer type.
-  * \param inputString The input data.
-  * \param output The output vector to append to.
-  * \param state The compile state to note errors down.
-  * \return True, if the conversion has been successful, else false.
-  */
-  template <typename CharT, typename OutT>
-  static bool parseCharacter(const std::basic_string<CharT>& inputString,
-                            std::vector<OutT>& output,
-                            CompileState& state) {
-    using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
-    using OutType = Utility::TypeBarrier<OutT, std::is_integral>;
-
-    if (!StringParserEngine<CharType, OutType>::checkIfWrapped(
-            inputString, '\'', state)) {
-      return false;
-    }
-
-    size_t index = 1;
+  size_t index = 1;
+  while (inputString.size() - 1 > index) {
     if (!StringParserEngine<CharType, OutType>::stringParseCharacter(
-            inputString, index, '\'', output, state)) {
+            inputString, index, '\"', output, state)) {
       return false;
     }
-
-    return index == inputString.size() - 1;
   }
+
+  return index == inputString.size() - 1;
+}
+
+/**
+* \brief Parses a trimmed C-like character literal in UTF format.
+* \tparam CharT The input character type.
+* \tparam OutT The output integer type.
+* \param inputString The input data.
+* \param output The output vector to append to.
+* \param state The compile state to note errors down.
+* \return True, if the conversion has been successful, else false.
+*/
+template <typename CharT, typename OutT>
+static bool parseCharacter(const std::basic_string<CharT>& inputString,
+                           std::vector<OutT>& output,
+                           CompileState& state) {
+  using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
+  using OutType  = Utility::TypeBarrier<OutT, std::is_integral>;
+
+  if (!StringParserEngine<CharType, OutType>::checkIfWrapped(
+          inputString, '\'', state)) {
+    return false;
+  }
+
+  size_t index = 1;
+  if (!StringParserEngine<CharType, OutType>::stringParseCharacter(
+          inputString, index, '\'', output, state)) {
+    return false;
+  }
+
+  return index == inputString.size() - 1;
+}
 };
 
 #endif /* ERAGPSIM_PARSER_STRING_PARSER_HPP_ */
