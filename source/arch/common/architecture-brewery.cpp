@@ -21,9 +21,9 @@
 #include <string>
 
 #include "arch/common/abstract-factory-types.hpp"
-#include "arch/common/abstract-node-factory-collection.hpp"
 #include "arch/common/architecture-brewery.hpp"
 #include "arch/common/information-interface.hpp"
+#include "arch/common/node-factory-collection-maker.hpp"
 #include "common/utility.hpp"
 
 ArchitectureBrewery::ArchitectureBrewery(const ArchitectureFormula& formula)
@@ -45,7 +45,7 @@ Architecture ArchitectureBrewery::brew() {
 
   architecture.validate();
 
-  auto factories = AbstractNodeFactoryCollection::CreateFor(architecture);
+  auto factories = NodeFactoryCollectionMaker::CreateFor(architecture);
   architecture.nodeFactories(factories);
 
   return architecture;
