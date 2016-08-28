@@ -8,7 +8,8 @@ SOURCES += main.cpp \
     registermodel.cpp \
     registerdata.cpp \
     qproject.cpp \
-    syntaxhighlighter.cpp
+    syntaxhighlighter.cpp \
+    editor-component.cpp
 
 RESOURCES += qml.qrc
 
@@ -25,4 +26,5 @@ HEADERS += \
     ../../include/ui/registermodel.hpp \
     ../../include/ui/qproject.hpp \
     ../../include/ui/syntaxhighlighter.hpp \
-    ../../include/ui/registerdata.hpp
+    ../../include/ui/registerdata.hpp \
+    ../../include/ui/editor-component.hpp

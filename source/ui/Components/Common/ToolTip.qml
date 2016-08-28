@@ -1,93 +1,241 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.1
-import QtGraphicalEffects 1.0
+import QtQuick 2.6
 
+//the size of this item is the size of the tooltip trigger area
 Item {
-    id: toolTipRoot
-    width: toolTip.contentWidth
-    height: toolTipContainer.height
-    visible: false
-    clip: false
-    z: 999999999
+    id: toolTipItem
 
-    property alias text: toolTip.text
-    property alias radius: content.radius
-    property alias backgroundColor: content.color
-    property alias textColor: toolTip.color
-    property alias font: toolTip.font
+    property alias text: toolTipText.text
+    property alias textColor: toolTipText.color
+    property alias font: toolTipText.font
+    property alias fontPointSize: toolTipText.font.pointSize
+    property alias fontPixelSize: toolTipText.font.pixelSize
+    property alias textFormat: toolTipText.textFormat
+
+    //delay for triggering the animations
+    property real showDelay: 200
+    property real hideDelay: 500
+
+    //duration of the animations
+    property real showDuration: 250
+    property real hideDuration: 200
+
+    property color color: "lightgray"
+    property color borderColor: "steelblue"
+
+    property bool moveTooltipWithMouse: false;
+
+    //MouseArea for showing the tooltip, includes the area of the parent object/specified height and length of the tooltip trigger and the tooltip itself
+    MouseArea{
+        id: errorArea
+        anchors.fill: parent
+        hoverEnabled: true
+        propagateComposedEvents: true
+        acceptedButtons: Qt.LeftButton
+
+        onEntered: {
+            if(!toolTipRect.visible) {
+                toolTipRect.show();
+                toolTipRect.x = mouseX + 10;
+            }
+            else if(toolTipRect.visible && (hideAnimation.running || hideWithoutPause.running)){
+                toolTipRect.show();
+            }
+        }
+
+        onClicked: {
+            mouse.accepted = false;
+        }
+
+        onPressed: {
+            mouse.accepted = false;
+        }
+
+        onReleased: mouse.accepted = false;
+        onDoubleClicked: mouse.accepted = false;
+        onPressAndHold: mouse.accepted = false;
+
+        onExited: {
+            if(!toolTipArea.focus){
+                toolTipRect.hide();
+            }
+        }
+
+        onPositionChanged: {
+            if(moveTooltipWithMouse){
+                toolTipRect.x = mouseX + 10
+                toolTipRect.y = mouseY - 10
+            }
+            mouse.accepted = false;
+        }
+
+        //rectangle around the tooltip text
+        Rectangle{
+            id: toolTipRect
+            y: toolTipItem.height
+            property color transparentColor: Qt.rgba(toolTipItem.color.r, toolTipItem.color.g, toolTipItem.color.b, 0.2)
+            property color activeColor: toolTipItem.color
+            property real widthMax: toolTipText.contentWidth + toolTipText.leftPadding*2
+            property real heightMax: toolTipText.contentHeight + toolTipText.topPadding*2
+            width: widthMax
+            height: heightMax
+            color: transparentColor
+            border.color: Qt.rgba(toolTipItem.borderColor.r, toolTipItem.borderColor.g, toolTipItem.borderColor.b, 0.2)
+            visible: false
 
 
-    function onVisibleStatus(flag) {
-        toolTipRoot.visible = flag;
+            //show
+            function show() {
+                if(!hideAnimation.running && !hideWithoutPause.running) {
+                    toolTipRect.height = 0;
+                    toolTipText.height = 0;
+                }
+                if(hideAnimation.running || hideWithoutPause.running) {
+                    hideAnimation.stop();
+                    hideWithoutPause.stop();
+                    toolTipRect.visible = true;
+                    showWithoutPause.start();
+                }
+                else{
+                    toolTipRect.visible = true;
+                    showAnimation.start();
+                }
+            }
 
-        toolTipRoot.x=0
-        toolTipRoot.y=parent.height/2
+            SequentialAnimation {
+                id: showAnimation
 
-        if(flag)
-            fadeInAnimation.start()
-    }
+                PauseAnimation {
+                    duration: showDelay
+                }
 
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: toolTipRect
+                        property: "height"
+                        duration: showDuration
+                        to: toolTipRect.heightMax
+                    }
 
-    NumberAnimation {
-        id: fadeInAnimation
-        target: toolTipRoot
-        property: "opacity"
-        duration: 200
-        easing.type: Easing.InOutQuad
-        from: 0
-        to: 1
-    }
+                    NumberAnimation {
+                        target: toolTipText
+                        property: "height"
+                        to: toolTipText.contentHeight + toolTipText.topPadding
+                        duration: showDuration
+                    }
+                }
+            }
 
-    Component.onCompleted: {
-        var itemParent = toolTipRoot.parent;
+            ParallelAnimation {
+                id: showWithoutPause
+                NumberAnimation {
+                    target: toolTipRect
+                    property: "height"
+                    duration: showDuration
+                    to: toolTipRect.heightMax
+                }
 
-        var newObject = Qt.createQmlObject('import QtQuick 2.0;
-            MouseArea {signal mouserHover(int x, int y);
-            signal showChanged(bool flag);
-            anchors.fill:parent;
-            hoverEnabled: true;
-            onEntered: {showChanged(true)}
-            onExited:{showChanged(false)}
-            onClicked:{parent.focus = true}}',
-        itemParent, "mouseItem");
-        newObject.showChanged.connect(onVisibleStatus);
-    }
+                NumberAnimation {
+                    target: toolTipText
+                    property: "height"
+                    to: toolTipText.contentHeight + toolTipText.topPadding
+                    duration: showDuration
+                }
+            }
 
-    Item {
-     id: toolTipContainer
-     z: toolTipRoot.z + 1
-     width: content.width + (2*toolTipShadow.radius)
-     height: content.height + (2*toolTipShadow.radius)
+            //hide
+            function hide() {
+                if(showAnimation.running || showWithoutPause.running){
+                    showAnimation.stop();
+                    showWithoutPause.stop();
+                    hideWithoutPause.start();
+                }
+                else {
+                    hideAnimation.start();
+                }
+            }
 
-        Rectangle {
-             id: content
-             anchors.centerIn: parent
-             width: toolTipRoot.width
-             height: toolTip.contentHeight + 10
-             radius: 3
+            SequentialAnimation {
+                id: hideAnimation
 
+                PauseAnimation {
+                    duration: hideDelay
+                }
+
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: toolTipRect
+                        property: "height"
+                        to: 0.0
+                        duration: hideDuration
+                    }
+
+                    NumberAnimation {
+                        target: toolTipText
+                        property: "height"
+                        to: 0.0
+                        duration: hideDuration
+                    }
+                }
+                onStopped: {
+                    toolTipRect.visible = false;
+                }
+            }
+
+            ParallelAnimation {
+                id: hideWithoutPause
+                NumberAnimation {
+                    target: toolTipRect
+                    property: "height"
+                    to: 0.0
+                    duration: hideDuration
+                }
+
+                NumberAnimation {
+                    target: toolTipText
+                    property: "height"
+                    to: 0.0
+                    duration: hideDuration
+                }
+                onStopped: {
+                    toolTipRect.visible = false;
+                }
+            }
+
+            //text of the tooltip
             Text {
-                 id: toolTip
-                 anchors {fill: parent; margins: 5}
-                 wrapMode: Text.WrapAnywhere
-             }
+                id: toolTipText
+                width: toolTipItem.width/2
+                clip: true
+                wrapMode: Text.WrapAnywhere
+                textFormat: Text.StyledText
+                leftPadding: font.pixelSize/4
+                topPadding: font.pixelSize/4
+            }
+        }
+
+        //MouseArea the same size as the tooltip itself, for focusing on the tooltip
+        MouseArea {
+            id: toolTipArea
+            x: toolTipRect.x
+            y: toolTipRect.y
+            width: toolTipRect.width
+            height: toolTipRect.height
+            visible: toolTipRect.visible
+            hoverEnabled: true
+            onFocusChanged: {
+                if(focus) {
+                    toolTipRect.color = toolTipRect.activeColor;
+                }
+                if(!focus) {
+                    toolTipRect.color = toolTipRect.transparentColor;
+                    if(!errorArea.containsMouse) {
+                        toolTipRect.hide();
+                    }
+                }
+            }
+            onClicked: {
+                focus = true;
+            }
         }
     }
-
-    DropShadow {
-         id: toolTipShadow
-         z: toolTipRoot.z + 1
-         anchors.fill: source
-         cached: true
-         horizontalOffset: 4
-         verticalOffset: 4
-         radius: 8.0
-         samples: 16
-         color: "#969696"
-         smooth: true
-         source: toolTipContainer
-    }
-
-  //  Behavior on visible {
-  //      NumberAnimation { duration: 1000 }}
 }
