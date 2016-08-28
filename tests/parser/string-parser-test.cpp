@@ -26,7 +26,7 @@ void doTestInternal(const std::basic_string<CharTypeIn>& provided,
                     bool succeed) {
   CompileState state;
   std::vector<CharTypeOut> output;
-  bool result = parseString(provided, output, state);
+  bool result = StringParser::parseString(provided, output, state);
   if (succeed) {
     for (const auto& i : state.errorList) {
       std::cout << i.message() << std::endl;
