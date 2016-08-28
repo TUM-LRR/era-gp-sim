@@ -17,3 +17,19 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "ui/qproject.hpp"
+
+QProject::QProject(QQmlContext* projectContext, QObject* parent)
+: QObject(parent)
+, _registerDescription(
+      "EAX\tAB01CD23\tHH HH HH HH\n"
+      " AX\tAB01\tHH HH\n"
+      "  AH\tAB\tHH\n"
+      "  AL\t01\tHH\n"
+      "EBX\t56AB78CD90\tHH HH HH HH\n"
+      " BX\t56AB\tHH HH\n"
+      "  BH\t56\tHH\n"
+      "  BL\tAB\tHH")
+, _registerModel(_registerDescription)
+, _editor(projectContext) {
+}

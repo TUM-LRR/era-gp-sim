@@ -21,13 +21,21 @@
 #define INCLUDE_UI_EDITOR_QPROJECT_H
 
 #include <QObject>
+#include <QQmlContext>
+
+#include "ui/editor-component.hpp"
+#include "ui/registermodel.hpp"
 
 class QProject : public QObject {
-	Q_OBJECT
+  Q_OBJECT
  public:
+  explicit QProject(QQmlContext* projectContext, QObject* parent = 0);
 
 
  private:
+  QString _registerDescription;
+  RegisterModel _registerModel;
+  EditorComponent _editor;
 
  signals:
 
