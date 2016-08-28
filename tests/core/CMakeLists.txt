@@ -3,7 +3,8 @@
 ########################################
 
 set(TEST_CORE_SOURCES
-  empty.cpp
+  memory-value-test.cpp
+  # queue-test.cpp # Sorry, they did fail sometimes. :(
 )
 
 ########################################

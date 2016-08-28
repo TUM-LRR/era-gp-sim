@@ -16,35 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_COMPILE_STATE_HPP_
-#define ERAGPSIM_PARSER_COMPILE_STATE_HPP_
+#ifndef ERAGPSIM_PARSER_PARSER_MODE_HPP_
+#define ERAGPSIM_PARSER_PARSER_MODE_HPP_
 
-#include <vector>
-
-#include "parser/code-position.hpp"
-#include "parser/compile-error.hpp"
-#include "parser/parser-mode.hpp"
-
-// Note: this class should be reworked and rebuilt to a full-grown class...
-
-/**
- \brief Contains all relevant information for a compile run.
- */
-struct CompileState {
-  /**
-   \brief Denotes the mode of the compiler.
-   */
-  ParserMode mode;
-
-  /**
-   \brief Equals the current position in code. TODO: Implement functionality.
-   */
-  CodePosition position;
-
-  /**
-   \brief Contains a list of compiler errors of this pass.
-   */
-  std::vector<CompileError> errorList;
-};
+enum class ParserMode { COMPILE, UPDATE };
 
 #endif

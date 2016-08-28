@@ -4,6 +4,7 @@
 
 set(CORE_SOURCES
   memory-value.cpp
+  register-set.cpp
 )
 
 ########################################
