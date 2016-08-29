@@ -38,7 +38,7 @@ MenuBar {
             text: "New..."
             onTriggered: {
                 console.info("New triggerd");
-                main.createProject("test");
+                main.createProject();
             }
         }
         MenuItem{
@@ -89,4 +89,3 @@ MenuBar {
     }
 
 }
-
