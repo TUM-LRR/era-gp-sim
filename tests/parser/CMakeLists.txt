@@ -8,6 +8,7 @@ set(TEST_PARSER_SOURCES
   symbol-table-test.cpp
   riscv-parser-test.cpp
   syntax-tree-generator-test.cpp
+  int-parser-test.cpp
 )
 
 ########################################

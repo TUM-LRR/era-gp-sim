@@ -11,6 +11,7 @@ set(PARSER_SOURCES
   symbol-table.cpp
   riscv-regex.cpp
   syntax-tree-generator.cpp
+  int-parser.cpp
 )
 
 ########################################
