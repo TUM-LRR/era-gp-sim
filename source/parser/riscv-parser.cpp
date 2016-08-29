@@ -46,7 +46,7 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
   std::vector<std::string> labels, sources, targets;
 
   for (std::string line; std::getline(stream, line);) {
-    _compile_state.position.first++;
+    ++_compile_state.position.y;
     line_regex.matchLine(line);
     if (!line_regex.isValid()) {
       // Add syntax error if line regex doesnt match
@@ -70,8 +70,8 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
         }
 
         intermediate.insertCommand(
-            IntermediateInstruction{LineInterval{_compile_state.position.first,
-                                                 _compile_state.position.first},
+            IntermediateInstruction{LineInterval{_compile_state.position.line(),
+                                                 _compile_state.position.line()},
                                     labels,
                                     line_regex.getInstruction(),
                                     sources,
