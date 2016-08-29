@@ -75,8 +75,7 @@ private:
 			literalRegex += "|(" + i.regex + ")";
 		}
 		tokens.push_back(ExpressionTokenDefinition{ literalRegex.substr(1), ExpressionTokenType::LITERAL });
-
-		tokens.push_back(ExpressionTokenDefinition{ definition.helpers.name, ExpressionTokenType::NAME });
+		
 		tokens.push_back(ExpressionTokenDefinition{ definition.helpers.leftBracket, ExpressionTokenType::LEFT_BRACKET });
 		tokens.push_back(ExpressionTokenDefinition{ definition.helpers.rightBracket, ExpressionTokenType::RIGHT_BRACKET });
 

@@ -137,8 +137,6 @@ private:
 			return parseLiteral(state);
 		case ExpressionTokenType::RIGHT_BRACKET:
 			return handleBorder(state, IToken{ ITokenType::BRACKET, "" });
-		case ExpressionTokenType::NAME:
-			//TODO: Convert name into literal using symbol table.
 		default:
 			recordError(state, "Invalid token found!");
 			return false;

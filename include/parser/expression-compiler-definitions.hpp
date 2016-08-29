@@ -31,8 +31,7 @@ enum class ExpressionTokenType
 	OPERATOR,
 	LITERAL,
 	LEFT_BRACKET,
-	RIGHT_BRACKET,
-	NAME
+	RIGHT_BRACKET
 };
 
 enum class ExpressionOperatorAssociativity

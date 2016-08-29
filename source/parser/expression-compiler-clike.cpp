@@ -248,7 +248,7 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				"0x[0-9a-fA-F]+",
 					[](const std::string& number)->ExpressionBigIntType
 				{
-					return std::stoi(number.substr(2), nullptr, 16);
+					return std::stol(number.substr(2), nullptr, 16);
 				}
 			},
 				ExpressionLiteralDecoder<ExpressionBigIntType>
@@ -256,7 +256,7 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 					"0b[01]+",
 						[](const std::string& number)->ExpressionBigIntType
 					{
-						return std::stoi(number.substr(2), nullptr, 2);
+						return std::stol(number.substr(2), nullptr, 2);
 					}
 				},
 					ExpressionLiteralDecoder<ExpressionBigIntType>
@@ -264,7 +264,7 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 						"[0-9]+",
 							[](const std::string& number)->ExpressionBigIntType
 						{
-							return std::stoi(number, nullptr, 10);
+							return std::stol(number, nullptr, 10);
 						}
 					}
 		}
@@ -272,7 +272,6 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 	ExpressionHelpRegexes
 	{
 		"\\(",
-		"\\)",
-		"[A-Za-z_][A-Za-z_0-9]*"
+		"\\)"
 	}
 });

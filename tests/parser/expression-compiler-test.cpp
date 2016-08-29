@@ -19,41 +19,60 @@
 #include "parser/expression-compiler-clike.hpp"
 #include "common/utility.hpp"
 #include "gtest/gtest.h"
+#include <iostream>
 
-#define TEST_CASE(expr, errcnt) \
+#define TEST_CASE_P(expr) \
   { \
     CompileState state;\
     auto output = EXPRESSION_COMPILER_CLIKE.compile(STRINGIFY(expr), state); \
     auto expected = (expr); \
-    if (errcnt) \
-    { \
-      ASSERT_TRUE(!state.errorList.empty()); \
-    } \
-    else \
-    { \
-      ASSERT_EQ(output, expected); \
-      ASSERT_TRUE(state.errorList.empty()); \
-    } \
+    ASSERT_EQ(output, expected); \
+    ASSERT_TRUE(state.errorList.empty()); \
+  }
+
+#define TEST_CASE_E(expr) \
+  { \
+    CompileState state; \
+    auto output = EXPRESSION_COMPILER_CLIKE.compile(expr, state); \
+    ASSERT_TRUE(!state.errorList.empty()); \
   }
 
 TEST(ExpressionCompilerClike, simple)
 {
-  TEST_CASE(1, 0)
-  TEST_CASE(0xff, 0)
-  TEST_CASE(65536, 0)
+  TEST_CASE_P(1)
+  TEST_CASE_P(0xff)
+  TEST_CASE_P(65536)
 }
 
 TEST(ExpressionCompilerClike, simpleExpression)
 {
-  TEST_CASE(1+1, 0)
-  TEST_CASE(1+2*3, 0)
-  TEST_CASE(1<<16, 0)
-  TEST_CASE(0x2b || !0x2b, 0)
+  TEST_CASE_P(1+1)
+  TEST_CASE_P(1+2*3)
+  TEST_CASE_P(1<<16)
+  TEST_CASE_P(0x2b || !0x2b)
 }
 
 TEST(ExpressionCompilerClike, bracketsExpression)
 {
-  TEST_CASE((2+3)*(4+5), 0)
-  TEST_CASE(((((((((((((((((((1)))))))))))))))))), 0)
-  TEST_CASE(312 * ((1 << 16) | 123), 0)
+  TEST_CASE_P((2+3)*(4+5))
+  TEST_CASE_P(((((((((((((((((((1)))))))))))))))))))
+  TEST_CASE_P(312 * ((1 << 16) | 123))
+}
+
+TEST(ExpressionCompilerClike, complexExpression)
+{
+  TEST_CASE_P((0b101 << 12) & 0xaaaa - 1)
+  TEST_CASE_P(1 | 2 ^ 3 & 4 << 5 >> 6 + 7 - 8 * 9 / 10 % 11)
+  TEST_CASE_P(1+-1+ +2+ +3+ +4+ + + + +5+ + + + + + +6+ +-+-+-+-+-+-+-+7+-+-+-+-+- -+-+-+-8)
+  TEST_CASE_P((1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 & 0xff) ^ 0xaa == (0x55 << 1))
+  TEST_CASE_P(-10*~10*-10*~10*-10*~10*-10*~10 / ~(1*2*3*4*5*6*7*8*9*10) + !0)
+}
+
+TEST(ExpressionCompilerClike, errors)
+{
+  TEST_CASE_E("1+")
+  TEST_CASE_E("(1+2)*(3+4")
+  TEST_CASE_E("1+2)*(3+4)")
+  TEST_CASE_E("****1")
+  TEST_CASE_E("Hi!")
 }
