@@ -138,10 +138,10 @@ class MemoryValue {
   friend std::ostream &
   operator<<(std::ostream &stream, const MemoryValue &value);
 
+  std::uint8_t getByteAt(std::size_t address) const;
+
  private:
   std::size_t _byteSize;
   std::vector<std::uint8_t> _data;
-
-  std::uint8_t getByteAt(std::size_t address) const;
 };
 #endif// ERAGPSIM_CORE_MEMORYVALUE_HPP_

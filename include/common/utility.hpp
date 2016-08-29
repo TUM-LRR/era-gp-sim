@@ -216,18 +216,17 @@ auto copyPointer(const std::unique_ptr<T>& pointer) {
 // std::string joinStrings(Paths&&... paths) {
 //   return (paths + ...);
 // }
-}
 
 
 template <typename T>
 void convertToBin(std::vector<bool>& binary,
-                  T& value,
+                  const T& value,
                   std::size_t minSize = 0) {
-  T oldValue = value;
+  T copyValue = value;
 
-  while (value != 0) {
-    value <<= 1;
-    binary.push_back(oldValue > value);
+  while (copyValue != 0) {
+    copyValue <<= 1;
+    binary.push_back(value > copyValue);
   }
 
   int k = minSize - binary.size();
@@ -235,14 +234,9 @@ void convertToBin(std::vector<bool>& binary,
   if (k > 0) binary.insert(binary.cbegin(), k, false);
 }
 
-void push_back_from_end(std::vector<bool>& dest,
-                        const std::vector<bool>& src,
-                        size_t n) {
-  for (int i = src.size() - n - 1; i < src.size(); i++)
-    if (i < 0)
-      dest.push_back(false);
-    else
-      dest.push_back(src.at(i));
+void pushBackFromEnd(std::vector<bool>& dest,
+                     const std::vector<bool>& src,
+                     size_t n);
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */

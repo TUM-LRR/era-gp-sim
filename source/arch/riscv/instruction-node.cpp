@@ -1,6 +1,9 @@
 #include <cassert>
+#include <string>
 
+#include "arch/common/instruction-assembler.hpp"
 #include "arch/common/instruction-key.hpp"
+#include "arch/riscv/formats.hpp"
 #include "arch/riscv/instruction-node.hpp"
 
 using namespace riscv;
@@ -29,20 +32,34 @@ MemoryValue InstructionNode::assemble() const {
 
   InstructionKey instructionKey = _instructionInformation.getKey();
 
-  switch (instructionKey["format"]) {
-    case "R": assembler  = RFormat(); break;
-    case "I": assembler  = IFormat(); break;
-    case "S": assembler  = SFormat(); break;
-    case "U": assembler  = UFormat(); break;
-    case "SB": assembler = SBFormat(); break;
-    case "UJ": assembler = UJFormat(); break;
-    default: assembler   = RFormat(); break;
+  int format = 1;
+
+  // switch (instructionKey["format"]) {
+  // jut for now
+  // switch (format) {
+  //   case "R": assembler  = RFormat(); break;
+  //   case "I": assembler  = IFormat(); break;
+  //   case "S": assembler  = SFormat(); break;
+  //   case "U": assembler  = UFormat(); break;
+  //   case "SB": assembler = SBFormat(); break;
+  //   case "UJ": assembler = UJFormat(); break;
+  //   default: assembler   = RFormat(); break;
+  // }
+
+  switch (format) {
+    case 1: assembler  = RFormat(); break;
+    case 2: assembler  = IFormat(); break;
+    case 3: assembler  = SFormat(); break;
+    case 4: assembler  = UFormat(); break;
+    case 5: assembler  = SBFormat(); break;
+    case 6: assembler  = UJFormat(); break;
+    default: assembler = RFormat(); break;
   }
 
   std::vector<MemoryValue> args;
 
   for (int i = 0; i < _children.size(); i++) {
-    args.push_back(_children.at(i).assemble());
+    args.push_back(_children.at(i)->assemble());
   }
 
   auto boolResult = assembler(instructionKey, args);
@@ -50,7 +67,7 @@ MemoryValue InstructionNode::assemble() const {
   MemoryValue result(boolResult.size() / RISCV_BITS_PER_BYTE,
                      RISCV_BITS_PER_BYTE);
 
-  for (int i = 0; i < boolResult.size()) result.put(i, boolResult.at(i));
+  for (int i = 0; i < boolResult.size(); i++) result.put(i, boolResult.at(i));
 
   return result;
 }

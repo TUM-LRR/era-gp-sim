@@ -25,7 +25,7 @@
 #include <vector>
 
 #include "arch/common/instruction-key.hpp"
-#include "arch/common/instruction-node.hpp"
+#include "arch/riscv/instruction-node.hpp"
 #include "core/memory-value.hpp"
 
 using AssemblerFunction =

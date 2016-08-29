@@ -62,7 +62,8 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    */
   // DummyMemoryAccess problem
   MemoryValue assemble() const override {
-    return getValue();
+    DummyMemoryAccessStub emptyAccess;
+    return getValue(emptyAccess);
   }
 
   /**
