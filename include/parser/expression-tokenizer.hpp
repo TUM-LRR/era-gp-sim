@@ -23,65 +23,68 @@
 #include "expression-compiler-definitions.hpp"
 
 #include <regex>
+#include <unordered_map>
 
 class ExpressionTokenizer
 {
 public:
-	ExpressionTokenizer(std::vector<ExpressionTokenDefinition> definitions)
-	{
-		//TODO: Maybe combine to one giant regex! (w/ groups) If this improves performance...
-		_definitions.reserve(definitions.size());
-		for (const auto& i : definitions)
-		{
-			_definitions.push_back(ITokenDefinition{ std::regex("^(" + i.regex + ")"), i.type });
-		}
-	}
+	ExpressionTokenizer(const std::vector<ExpressionTokenDefinition>& definitions)
+		: _typeMapping(), _tokenizeRegex(buildRegexString(definitions), std::regex::optimize)
+	{}
 
 	std::vector<ExpressionToken> tokenize(const std::string& data, CompileState& state) const
 	{
 		std::vector<ExpressionToken> output;
-		size_t index = 0;
-		while (index < data.size())
+		std::smatch match;
+		std::string temp = data;
+		while (std::regex_search(temp, match, _tokenizeRegex))
 		{
-			auto subSpace = data.substr(index);
-			std::smatch spaceMatch;
-			if (std::regex_search(subSpace, spaceMatch, std::regex("^\\s+")))
+			size_t targetLength = match.length(0);
+			for (size_t i = 2; i < match.size(); ++i)
 			{
-				index += spaceMatch.length(0);
-			}
-
-			std::smatch match;
-			auto sub = data.substr(index);
-			bool matched = false;
-			for (const auto& i : _definitions)
-			{
-				if (std::regex_search(sub, match, i.regex))
+				if (match.length(i) == targetLength)
 				{
-					output.push_back(ExpressionToken{ match[0].str(), i.type, index });
-					index += match.length(0);
-					matched = true;
+					if (i != 2)
+					{
+						output.push_back(ExpressionToken { match.str() , _typeMapping.at(i) });
+					}
 					break;
 				}
 			}
-			if (!matched)
-			{
-                auto pos = state.position;
-                pos.second += index;
-				state.errorList.push_back(CompileError("Unrecognized token at: " + sub.substr(0, 20), pos, CompileErrorSeverity::ERROR));
-				return output;
-			}
+			temp = match.suffix().str();
 		}
-		return output;
+		if (temp.empty())
+		{
+			return output;
+		}
+		else
+		{
+			//TODO: Make a bit more beautiful
+			CodePosition position = state.position;
+			position.second += data.length() - temp.length();
+			state.errorList.push_back(CompileError("Unrecognized token at: " + temp.substr(0, 20), position, CompileErrorSeverity::ERROR));
+			return std::vector<ExpressionToken>();
+		}
 	}
 
 private:
-	struct ITokenDefinition
+	std::string buildRegexString(const std::vector<ExpressionTokenDefinition>& definitions)
 	{
-		std::regex regex;
-		ExpressionTokenType type;
-	};
+		std::string regexBuildString = "(\\s+)";
+		int id = 2;
+		for (const auto& i : definitions)
+		{
+			++id;
+			_typeMapping[id] = i.type;
+			regexBuildString += "|(" + i.regex + ")";
+			std::regex groupCount("(^|[^\\\\])\\(([^\\?]|$)");
+			id += std::distance(std::sregex_iterator(i.regex.begin(), i.regex.end(), groupCount), std::sregex_iterator());
+		}
+		return "^(" + regexBuildString + ")";
+	}
 
-	std::vector<ITokenDefinition> _definitions;
+	std::unordered_map<int, ExpressionTokenType> _typeMapping; 
+	std::regex _tokenizeRegex;
 };
 
 #endif /* ERAGPSIM_PARSER_EXPRESSION_TOKENIZER_HPP */
