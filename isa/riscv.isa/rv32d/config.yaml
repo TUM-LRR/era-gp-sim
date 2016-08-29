@@ -8,96 +8,121 @@ reset-units: true
 
 instructions:
   - mnemonic: fld
-    opcode: 7
-    funct3: 3
+    key:
+      opcode: 7
+      funct3: 3
   - mnemonic: fsd
-    opcode: 39
-    funct3: 3
+    key:
+      opcode: 39
+      funct3: 3
   - mnemonic: fmaddd
-    opcode: 67
-    funct2: 1
+    key:
+      opcode: 67
+      funct2: 1
   - mnemonic: fmsubd
-    opcode: 71
-    funct2: 1
+    key:
+      opcode: 71
+      funct2: 1
   - mnemonic: fnsubd
-    opcode: 75
-    funct2: 1
+    key:
+      opcode: 75
+      funct2: 1
   - mnemonic: fnmaddd
-    opcode: 79
-    funct7: 1
+    key:
+      opcode: 79
+      funct7: 1
   - mnemonic: faddd
-    opcode: 83
-    funct7: 1
+    key:
+      opcode: 83
+      funct7: 1
   - mnemonic: fsubd
-    opcode: 83
-    funct7: 5
+    key:
+      opcode: 83
+      funct7: 5
   - mnemonic: fmuld
-    opcode: 83
-    funct7: 9
+    key:
+      opcode: 83
+      funct7: 9
   - mnemonic: fdivd
-    opcode: 83
-    funct7: 13
+    key:
+      opcode: 83
+      funct7: 13
   - mnemonic: fsqrtd
-    opcode: 83
-    funct7: 45
-    rs2: 0
+    key:
+      opcode: 83
+      funct7: 45
+      rs2: 0
   - mnemonic: fsgnjd
-    opcode: 83
-    funct3: 0
-    funct7: 17
+    key:
+      opcode: 83
+      funct3: 0
+      funct7: 17
   - mnemonic: fsgnjnd
-    opcode: 83
-    funct3: 1
-    funct7: 17
+    key:
+      opcode: 83
+      funct3: 1
+      funct7: 17
   - mnemonic: fsgnjxd
-    opcode: 83
-    funct3: 2
-    funct7: 17
+    key:
+      opcode: 83
+      funct3: 2
+      funct7: 17
   - mnemonic: fmind
-    opcode: 83
-    funct3: 0
-    funct7: 21
+    key:
+      opcode: 83
+      funct3: 0
+      funct7: 21
   - mnemonic: fcvtsd
-    opcode: 83
-    funct7: 32
-    rs2: 1
+    key:
+      opcode: 83
+      funct7: 32
+      rs2: 1
   - mnemonic: fcvtds
-    opcode: 83
-    funct7: 33
-    rs2: 0
+    key:
+      opcode: 83
+      funct7: 33
+      rs2: 0
   - mnemonic: feqd
-    opcode: 83
-    funct3: 2
-    funct7: 81
+    key:
+      opcode: 83
+      funct3: 2
+      funct7: 81
   - mnemonic: fltd
-    opcode: 83
-    funct3: 1
-    funct7: 81
+    key:
+      opcode: 83
+      funct3: 1
+      funct7: 81
   - mnemonic: fled
-    opcode: 83
-    funct3: 0
-    funct7: 81
+    key:
+      opcode: 83
+      funct3: 0
+      funct7: 81
   - mnemonic: fclassd
-    opcode: 83
-    funct3: 1
-    funct7: 113
-    rs2: 0
+    key:
+      opcode: 83
+      funct3: 1
+      funct7: 113
+      rs2: 0
   - mnemonic: fcvtwd
-    opcode: 83
-    funct7: 97
-    rs2: 0
+    key:
+      opcode: 83
+      funct7: 97
+      rs2: 0
   - mnemonic: fcvtwud
-    opcode: 83
-    funct7: 97
-    rs2: 1
+    key:
+      opcode: 83
+      funct7: 97
+      rs2: 1
   - mnemonic: fcvtdw
-    opcode: 83
-    funct7: 105
-    rs2: 0
+    key:
+      opcode: 83
+      funct7: 105
+      rs2: 0
   - mnemonic: fcvtdwu
-    opcode: 83
-    funct7: 105
-    rs2: 1
+    key:
+      opcode: 83
+      funct7: 105
+      rs2: 1
 units:
   - name: cpu
     registers:
