@@ -70,7 +70,6 @@ ScrollView {
                 wrapMode: TextEdit.NoWrap
                 Component.onCompleted: {
                     updateSize();
-                    editor.init(textDocument);
                 }
                 visible: true
                 onCursorRectangleChanged: cursorScroll(cursorRectangle)
@@ -132,13 +131,6 @@ ScrollView {
                     onHeightChanged: textArea.updateSize();
                 }
 
-                Connections {
-                    target: editor
-                    onAddError: {
-                        errorBar.addError(message, line, color);
-                    }
-                }
-
                 //information about the font
                 FontMetrics {
                     id: fontMetrics
@@ -181,6 +173,17 @@ ScrollView {
                     x: 0
                     y: textArea.textMargin/2
                     width: 5
+
+                    Connections {
+                        target: editor
+                        onAddError: {
+                            errorBar.addError(message, line, color);
+                        }
+
+                        Component.onCompleted: {
+                            editor.init(textArea.textDocument);
+                        }
+                    }
 
                     Component {
                         id: errorComponent
