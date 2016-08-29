@@ -149,7 +149,7 @@ class MemoryValue {
   const std::vector<uint8_t> &internal() const;
 
   /**
-   * \brief returns true iff this and other have the same _byteSize and
+   * \brief returns true if this and other have the same _byteSize and
    *        _data.size() and the values representing the MemoryValue are
    *        identical, else returns false
    * \param the MemoryValue to be compared with
@@ -158,7 +158,7 @@ class MemoryValue {
   bool operator==(const MemoryValue &other) const;
 
   /**
-   * \brief returns false iff this and other have the same _byteSize and
+   * \brief returns false if this and other have the same _byteSize and
    *        _data.size() and the values representing the MemoryValue are
    *        identical, else returns true
    * \param other the MemoryValue to be compared with

@@ -31,7 +31,7 @@ Architecture Architecture::Brew(const ArchitectureFormula& formula) {
   return ArchitectureBrewery(formula).brew();
 }
 
-Architecture::Architecture(const std::string& name) : _name(name) {
+Architecture::Architecture(const std::string& name) : _name(name), _factories() {
 }
 
 Architecture::Architecture(const std::string& name,

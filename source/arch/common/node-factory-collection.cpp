@@ -24,28 +24,11 @@
 #include "arch/common/abstract-memory-access-node-factory.hpp"
 #include "arch/common/abstract-register-access-node-factory.hpp"
 #include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/architecture.hpp"
 #include "arch/common/node-factory-collection.hpp"
+#include "arch/riscv/factory-types.hpp"
 #include "common/utility.hpp"
 
-NodeFactoryCollection::NodeFactoryCollection() = default;
-
-NodeFactoryCollection::NodeFactoryCollection(
-    const std::shared_ptr<AbstractInstructionNodeFactory> &instructionFactory,
-    const std::shared_ptr<AbstractImmediateNodeFactory> &immediateFactory,
-    const std::shared_ptr<AbstractMemoryAccessNodeFactory> &memoryAccessFactory,
-    const std::shared_ptr<AbstractRegisterAccessNodeFactory>
-        &registerAccessFactory,
-    const std::shared_ptr<AbstractArithmeticNodeFactory> &arithmeticFactory)
-: _instructionFactory(std::move(instructionFactory))
-, _immediateFactory(std::move(immediateFactory))
-, _registerAccessFactory(std::move(registerAccessFactory))
-, _memoryAccessFactory(std::move(memoryAccessFactory))
-, _arithmeticFactory(std::move(arithmeticFactory)) {
-  // We should at least have these factories
-  assert(static_cast<bool>(instructionFactory));
-  assert(static_cast<bool>(registerAccessFactory));
-  assert(static_cast<bool>(immediateFactory));
-}
 
 /**
  * It is asserted that a corresponding factory must be set prior to this
@@ -85,8 +68,8 @@ NodeFactoryCollection::Node NodeFactoryCollection::createRegisterAccessNode(
  * method call, otherwise the assertion will fail
  * \copydoc AbstractMemoryAccessNodeFactory::createMemoryAccessNode
  */
-NodeFactoryCollection::Node
-NodeFactoryCollection::createMemoryAccessNode() const {
+NodeFactoryCollection::Node NodeFactoryCollection::createMemoryAccessNode()
+    const {
   assert(static_cast<bool>(_memoryAccessFactory));
   return _memoryAccessFactory->createMemoryAccessNode();
 }
@@ -100,4 +83,21 @@ NodeFactoryCollection::Node NodeFactoryCollection::createArithmeticNode(
     AbstractArithmeticNodeFactory::Operation operation) const {
   assert(static_cast<bool>(_arithmeticFactory));
   return _arithmeticFactory->createArithmeticNode(operation);
+}
+
+NodeFactoryCollection::NodeFactoryCollection(
+    std::shared_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
+    std::shared_ptr<AbstractImmediateNodeFactory> &&immediateFactory,
+    std::shared_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,
+    std::shared_ptr<AbstractRegisterAccessNodeFactory> &&registerAccessFactory,
+    std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory)
+    : _instructionFactory(std::move(instructionFactory)),
+      _immediateFactory(std::move(immediateFactory)),
+      _registerAccessFactory(std::move(registerAccessFactory)),
+      _memoryAccessFactory(std::move(memoryAccessFactory)),
+      _arithmeticFactory(std::move(arithmeticFactory)) {
+  // We should at least have these factories
+  assert(static_cast<bool>(instructionFactory));
+  assert(static_cast<bool>(registerAccessFactory));
+  assert(static_cast<bool>(immediateFactory));
 }

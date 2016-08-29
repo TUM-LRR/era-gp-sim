@@ -26,49 +26,6 @@
 
 using namespace riscv;
 
-TEST(InstructionTest, AddInstruction) {
-  InstructionNodeFactory instructionFactory;
-  RegisterAccessNodeFactory registerFactory;
-
-  std::string addiToken = "ADDI";
-  std::string addToken  = "ADD";
-
-  auto addiNode = instructionFactory.createInstructionNode(addiToken);
-  auto addNode  = instructionFactory.createInstructionNode(addToken);
-
-  // Basic testing
-  ASSERT_EQ(Type::INSTRUCTION, addiNode->getType());
-  ASSERT_EQ(Type::INSTRUCTION, addNode->getType());
-
-  ASSERT_EQ(addiToken, addiNode->getIdentifier());
-  ASSERT_EQ(addToken, addNode->getIdentifier());
-
-  // Validate the empty syntax trees -> should return false
-  ASSERT_FALSE(addiNode->validate());
-  ASSERT_FALSE(addNode->validate());
-
-  // Create some registers
-  auto r1 = registerFactory.createRegisterAccessNode("x0");
-  auto r2 = registerFactory.createRegisterAccessNode("x1");
-  auto r3 = registerFactory.createRegisterAccessNode("x2");
-  auto r4 = registerFactory.createRegisterAccessNode("x3");
-  auto r5 = registerFactory.createRegisterAccessNode("x4");
-  auto r6 = registerFactory.createRegisterAccessNode("x5");
-
-  // Add the registers
-  addiNode->addChild(std::move(r1));
-  addiNode->addChild(std::move(r2));
-  addiNode->addChild(std::move(r3));
-
-  addNode->addChild(std::move(r4));
-  addNode->addChild(std::move(r5));
-  addNode->addChild(std::move(r6));
-
-  // Validate again
-  ASSERT_FALSE(addiNode->validate());
-  ASSERT_TRUE(addNode->validate());
-}
-
 TEST(InstructionTest, LoadInstruction) {
   LoadInstructionNode lw{LoadType::WORD}, lh{LoadType::HALF_WORD},
       lhu{LoadType::HALF_WORD_UNSIGNED}, lb{LoadType::BYTE},
