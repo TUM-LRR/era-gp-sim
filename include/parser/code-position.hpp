@@ -144,7 +144,7 @@ struct CodePosition
      */
     CodePosition moveDown(CodeCoordinate c) const
     {
-        return CodePosition(a.y + c, a.x);
+        return CodePosition(y + c, x);
     }
 
     /**
@@ -154,7 +154,7 @@ struct CodePosition
      */
     CodePosition moveUp(CodeCoordinate c) const
     {
-        return CodePosition(a.y - c, a.x);
+        return CodePosition(y - c, x);
     }
 
     /**
@@ -164,7 +164,7 @@ struct CodePosition
      */
     CodePosition moveLeft(CodeCoordinate c) const
     {
-        return CodePosition(a.y, a.x - c);
+        return CodePosition(y, x - c);
     }
 
     /**
@@ -174,7 +174,7 @@ struct CodePosition
      */
     CodePosition moveRight(CodeCoordinate c) const
     {
-        return CodePosition(a.y, a.x + c);
+        return CodePosition(y, x + c);
     }
 };                                
 
