@@ -27,16 +27,26 @@
  * Provides methods for integer parsing.
  */
 namespace IntParser {
+
+///@{
 /**
- * Parses an input string to a 64-bit integer.
+ * Parses an input string to a number.
  * \param input The input string.
  * \param state The compile state to record errors.
- * \param output The resulting integer will be stored here.
+ * \param output The resulting number will be stored here.
  * \return Returns if the conversion was successful.
  */
+bool parseInteger(const std::string &input, int &output, CompileState &state);
+bool parseInteger(const std::string &input, long &output, CompileState &state);
 bool parseInteger(const std::string &input,
                   long long &output,
                   CompileState &state);
+bool parseInteger(const std::string &input,
+                  unsigned long &output,
+                  CompileState &state);
+bool parseInteger(const std::string &input,
+                  unsigned long long &output,
+                  CompileState &state);
+///@}
 }
-
 #endif /* ERAGPSIM_PARSER_INT_PARSER_HPP */

@@ -18,6 +18,8 @@
 */
 #include "parser/int-parser.hpp"
 
+#include <cctype>
+#include <limits>
 #include <stdexcept>
 
 static void addError(const std::string &message, CompileState &state) {
@@ -25,15 +27,32 @@ static void addError(const std::string &message, CompileState &state) {
       CompileError{message, state.position, CompileErrorSeverity::ERROR});
 }
 
-bool IntParser::parseInteger(const std::string &input,
-                             long long &output,
-                             CompileState &state) {
-  long long result;
+template <typename InputT, typename OutputT>
+static bool
+parseIntegerInternal(const InputT &input,
+                     OutputT &output,
+                     CompileState &state,
+                     OutputT (*func)(const InputT &, std::size_t *, int)) {
+  OutputT result;
   std::size_t parsed_length;
   bool success = false;
 
+  // Preventing spaces at the start the of string.
+  if (std::isspace(static_cast<unsigned char>(input[0]))) {
+    addError("Not a valid integer.", state);
+    return false;
+  }
+
+  // Preventing negative integers for unsigned parsing, because std::stoul
+  // doesn't fail on negative integers.
+  if (!std::numeric_limits<OutputT>::is_signed &&
+      static_cast<unsigned char>(input[0]) == '-') {
+    addError("Integer out of range.", state);
+    return false;
+  }
+
   try {
-    result = std::stoll(input, &parsed_length, 0);
+    result = func(input, &parsed_length, 0);
     if (parsed_length < input.length()) {
       addError("Not a valid integer.", state);
     } else {
@@ -45,9 +64,40 @@ bool IntParser::parseInteger(const std::string &input,
     addError("Not a valid integer.", state);
   }
 
+
   if (success) {
     output = result;
   }
 
   return success;
+}
+
+bool IntParser::parseInteger(const std::string &input,
+                             int &output,
+                             CompileState &state) {
+  return parseIntegerInternal(input, output, state, std::stoi);
+}
+
+bool IntParser::parseInteger(const std::string &input,
+                             long &output,
+                             CompileState &state) {
+  return parseIntegerInternal(input, output, state, std::stol);
+}
+
+bool IntParser::parseInteger(const std::string &input,
+                             long long &output,
+                             CompileState &state) {
+  return parseIntegerInternal(input, output, state, std::stoll);
+}
+
+bool IntParser::parseInteger(const std::string &input,
+                             unsigned long &output,
+                             CompileState &state) {
+  return parseIntegerInternal(input, output, state, std::stoul);
+}
+
+bool IntParser::parseInteger(const std::string &input,
+                             unsigned long long &output,
+                             CompileState &state) {
+  return parseIntegerInternal(input, output, state, std::stoull);
 }
