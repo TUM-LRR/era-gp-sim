@@ -36,6 +36,8 @@
     ASSERT_TRUE(!state.errorList.empty()); \
   }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Werror"
 TEST(ExpressionCompilerClike, simple)
 {
   TEST_CASE_P(1)
@@ -75,3 +77,4 @@ TEST(ExpressionCompilerClike, errors)
   TEST_CASE_E("****1")
   TEST_CASE_E("Hi!")
 }
+#pragma clang diagnostic pop
