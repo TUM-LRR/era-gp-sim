@@ -19,7 +19,6 @@
 #include "parser/expression-compiler-clike.hpp"
 #include "common/utility.hpp"
 #include "gtest/gtest.h"
-#include <iostream>
 
 #define TEST_CASE_P(expr) \
   { \

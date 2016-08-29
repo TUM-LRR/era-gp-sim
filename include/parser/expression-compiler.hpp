@@ -64,7 +64,7 @@ private:
 		for (auto it = operatorStrings.rbegin(); it != operatorStrings.rend(); ++it)
 		{
 			operatorRegex += "|(";
-			operatorRegex += std::regex_replace(*it, std::regex("(\\^|\\$|\\\\|\\.|\\*|\\+|\\?|\\(|\\)|\\[|\\]|\\{|\\}|\\|)"), "\\$1");
+			operatorRegex += std::regex_replace(*it, std::regex("(\\/|\\^|\\$|\\\\|\\.|\\*|\\+|\\?|\\(|\\)|\\[|\\]|\\{|\\}|\\|)"), "\\$1");
 			operatorRegex += ")";
 		}
 		tokens.push_back(ExpressionTokenDefinition{ operatorRegex.substr(1), ExpressionTokenType::OPERATOR });
@@ -75,7 +75,7 @@ private:
 			literalRegex += "|(" + i.regex + ")";
 		}
 		tokens.push_back(ExpressionTokenDefinition{ literalRegex.substr(1), ExpressionTokenType::LITERAL });
-		
+
 		tokens.push_back(ExpressionTokenDefinition{ definition.helpers.leftBracket, ExpressionTokenType::LEFT_BRACKET });
 		tokens.push_back(ExpressionTokenDefinition{ definition.helpers.rightBracket, ExpressionTokenType::RIGHT_BRACKET });
 
