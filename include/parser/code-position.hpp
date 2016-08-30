@@ -176,6 +176,15 @@ struct CodePosition
     {
         return CodePosition(y, x + c);
     }
+
+    /**
+     * \brief Increments the line position, but sets the x coordinate to 0 again.
+     * \return The transformed code position.
+     */
+    CodePosition newLine() const
+    {
+        return CodePosition(y + 1, 0);
+    }
 };                                
 
 #endif
