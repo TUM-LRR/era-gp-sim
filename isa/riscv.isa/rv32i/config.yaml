@@ -1,165 +1,203 @@
-r# RISC-V: RV32I
+# RISC-V: RV32I
 
 name: rv32i
 
 alignment-behavior: relaxed
 endianness: little
 word-size: 32
+byte-size: 8
 
 instructions:
   - mnemonic: lui
+    format: U
     key:
       opcode: 55
   - mnemonic: auipc
+    format: U
     key:
       opcode: 23
   - mnemonic: jal
+    format: UJ
     key:
       opcode: 111
   - mnemonic: jalr
+    format: I
     key:
       opcode: 103
   - mnemonic: beq
+    format: SB
     key:
       opcode: 99
       funct3: 0
   - mnemonic: bne
+    format: SB
     key:
       opcode: 99
       funct3: 1
   - mnemonic: blt
+    format: SB
     key:
       opcode: 99
       funct3: 4
   - mnemonic: bge
+    format: SB
     key:
       opcode: 99
       funct3: 5
   - mnemonic: bltu
+    format: SB
     key:
       opcode: 99
       funct3: 6
   - mnemonic: bgeu
+    format: SB
     key:
       opcode: 99
       funct3: 7
   - mnemonic: lb
+    format: I
     key:
       opcode: 3
       funct3: 0
   - mnemonic: lh
+    format: I
     key:
       opcode: 3
       funct3: 1
   - mnemonic: lw
+    format: I
     key:
       opcode: 3
       funct3: 2
   - mnemonic: lbu
+    format: I
     key:
       opcode: 3
       funct3: 4
   - mnemonic: lhu
+    format: I
     key:
       opcode: 3
       funct3: 5
   - mnemonic: sb
+    format: S
     key:
       opcode: 35
     funct: 0
   - mnemonic: sh
+    format: S
     key:
       opcode: 35
     funct: 1
   - mnemonic: sw
+    format: S
     key:
       opcode: 35
     funct: 2
   - mnemonic: addi
+    format: I
     key:
       opcode: 19
       funct3: 0
   - mnemonic: slti
+    format: I
     key:
       opcode: 19
       funct3: 2
   - mnemonic: sltiu
+    format: I
     key:
       opcode: 19
       funct3: 3
   - mnemonic: xori
+    format: I
     key:
       opcode: 19
       funct3: 4
   - mnemonic: ori
+    format: I
     key:
       opcode: 19
       funct3: 6
   - mnemonic: andi
+    format: I
     key:
       opcode: 19
       funct3: 7
   - mnemonic: slli
+    format: R
     key:
       opcode: 19
       funct3: 1
       funct7: 0
   - mnemonic: srli
+    format: R
     key:
       opcode: 19
       funct3: 5
       funct7: 0
   - mnemonic: srai
+    format: R
     key:
       opcode: 19
       funct3: 5
       funct7: 32
   - mnemonic: add
+    format: R
     key:
       opcode: 51
       funct3: 0
       funct7: 0
   - mnemonic: sub
+    format: R
     key:
       opcode: 51
       funct3: 0
       funct7: 32
   - mnemonic: sll
+    format: R
     key:
       opcode: 51
       funct3: 1
       funct7: 0
   - mnemonic: slt
+    format: R
     key:
       opcode: 51
       funct3: 2
       funct7: 0
   - mnemonic: sltu
+    format: R
     key:
       opcode: 51
       funct3: 3
       funct7: 0
   - mnemonic: xor
+    format: R
     key:
       opcode: 51
       funct3: 4
       funct7: 0
   - mnemonic: srl
+    format: R
     key:
       opcode: 51
       funct3: 5
       funct7: 0
   - mnemonic: sra
+    format: R
     key:
       opcode: 51
       funct3: 5
       funct7: 32
   - mnemonic: or
+    format: R
     key:
       opcode: 51
       funct3: 6
       funct7: 0
   - mnemonic: and
+    format: R
     key:
       opcode: 51
       funct3: 0

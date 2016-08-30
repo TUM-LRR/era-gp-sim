@@ -7,6 +7,8 @@ extends:
 
 endianness: little
 word-size: 32
+byte-size: 8
+
 units:
   - name: cpu
     registers:
@@ -24,10 +26,12 @@ units:
       aliases: [foo, bar]
 instructions:
   - mnemonic: add
+    format: R
     key:
       opcode: 6
-    function: 3
+      function: 3
   - mnemonic: sub
+    format: R
     key:
       opcode: 9
-    function: 3
+      function: 3
