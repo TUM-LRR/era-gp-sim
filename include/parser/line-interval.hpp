@@ -56,17 +56,9 @@ struct LineInterval {
   }
 
   /**
-   * \brief Creates an empty line interval.
+   * \brief Creates a line interval containing only line 0.
    */
-  LineInterval() : LineInterval(-1, -1) {
-  }
-
-  /**
-   * \brief Denotes if the line interval is considered empty.
-   * \return True, if the line interval is empty, else false.
-   */
-  bool empty() {
-    return lineEnd < 0 || lineStart < 0;
+  LineInterval() : LineInterval(0, 0) {
   }
 };
 
