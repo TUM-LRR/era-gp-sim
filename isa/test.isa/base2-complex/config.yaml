@@ -4,7 +4,8 @@ reset-units: false
 
 instructions:
   - mnemonic: sll
+    format: R
     key:
       opcode: 6
-    function: 6
-    width: 6
+      function: 6
+      width: 6

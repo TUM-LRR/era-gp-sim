@@ -6,6 +6,7 @@
   ],
   "endianness": "little",
   "word-size": 32,
+  "byte-size": 8,
   "units": [
     {
       "name": "cpu",
@@ -38,15 +39,19 @@
   "instructions": [
     {
       "mnemonic": "add",
-      "key:
-      opcode": 6,
-      "function": 3
+      "format": "R",
+      "key": {
+        "opcode": 6,
+        "function": 3
+      }
     },
     {
       "mnemonic": "sub",
-      "key:
-      opcode": 9,
-      "function": 3
+      "format": "R",
+      "key": {
+        "opcode": 9,
+        "function": 3
+      }
     }
   ]
 }

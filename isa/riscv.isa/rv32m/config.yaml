@@ -4,41 +4,49 @@ name: rv32m
 
 instructions:
   - mnemonic: mul
+    format: R
     key:
       opcode: 51
       funct3: 0
       funct7: 1
   - mnemonic: mulh
+    format: R
     key:
       opcode: 51
       funct3: 1
       funct7: 1
   - mnemonic: mulhsu
+    format: R
     key:
       opcode: 51
       funct3: 2
       funct7: 1
   - mnemonic: mulhu
+    format: R
     key:
       opcode: 51
       funct3: 3
       funct7: 1
   - mnemonic: div
+    format: R
     key:
       opcode: 51
       funct3: 4
       funct7: 1
   - mnemonic: divu
+    format: R
     key:
       opcode: 51
       funct3: 5
       funct7: 1
   - mnemonic: rem
+    format: R
     key:
       opcode: 51
       funct3: 6
       funct7: 1
   - mnemonic: remu
+    format: R
     key:
       opcode: 51
       funct3: 7
