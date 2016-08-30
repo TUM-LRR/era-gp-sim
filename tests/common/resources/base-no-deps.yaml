@@ -5,6 +5,8 @@ name: base-no-deps
 endianness: little
 alignment-behavior: strict
 word-size: 32
+byte-size: 8
+
 units:
   - name: cpu
     registers:

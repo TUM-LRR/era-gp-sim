@@ -19,7 +19,9 @@
 #define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/instruction-information.hpp"
 #include "core/memory-value.hpp"
+#include "core/conversions.hpp"
 
 namespace riscv {
 /** A node that represents a RISC V specific instruction */
@@ -28,14 +30,20 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   /**
    * Constructs a new node that represents a RISC V specific instruction.
    */
-  InstructionNode() : AbstractSyntaxTreeNode(Type::INSTRUCTION) {
-  }
+  InstructionNode(InstructionInformation& instructionInformation)
+      : AbstractSyntaxTreeNode(Type::INSTRUCTION),
+        _instructionInformation(instructionInformation) {}
+
 
   /* Ensure this class is also pure virtual */
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) = 0;
-  virtual bool validate()                                        = 0;
-  virtual MemoryValue assemble()                                 = 0;
-  virtual std::string getIdentifier()                            = 0;
+  virtual MemoryValue getValue(
+      DummyMemoryAccess& memory_access) const override = 0;
+  virtual bool validate() const override = 0;
+
+  MemoryValue assemble() const override;
+
+  /* Can be retreived using the InstructionInformation */
+  const std::string& getIdentifier() const override;
 
   /**
    * Checks if this node has 'amount' children of type 'type', starting at
@@ -46,7 +54,17 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \param amount The amount of registers required.
    * \return true if this node matches the requirements.
    */
-  bool requireChildren(Type type, size_t startIndex, size_t amount);
+  bool requireChildren(Type type, size_t startIndex, size_t amount) const;
+
+  /** byte order used in RISC-V architecture*/
+  static constexpr Endianness RISCV_ENDIANNESS = Endianness::LITTLE;
+  /** bits per byte in RISC-V architecture*/
+  static constexpr std::size_t RISCV_BITS_PER_BYTE = 8;
+
+  static constexpr SignedRepresentation RISCV_SIGNED_REPRESENTATION = SignedRepresentation::TWOS_COMPLEMENT;
+
+ private:
+  InstructionInformation& _instructionInformation;
 };
 }
 

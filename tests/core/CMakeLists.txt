@@ -3,6 +3,7 @@
 ########################################
 
 set(TEST_CORE_SOURCES
+  conversions-test.cpp
   memory-value-test.cpp
   # queue-test.cpp # Sorry, they did fail sometimes. :(
 )
