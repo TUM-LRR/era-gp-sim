@@ -29,9 +29,11 @@
 /**
  * Holds information about an instruction.
  *
- * The information is currently constrained only to the mnemonic and key of the
- * instruction, as everything else (e.g. allowed operands) is hard-coded in the
- * respective implementation class.
+ * This information includes the *instruction key* of the instruction, which
+ * holds the opcode and other codes to identify an instruction in the ISA, the
+ * mnemonic string describing the instruction as well as the instruction format
+ * specifier. The latter is an architecture-dependent string such as "F", for
+ * the F-type instruction format in the RISC-V architecture.
  *
  * The class' interface is intended to support the BuilderInterface pattern.
  */
@@ -46,20 +48,15 @@ class InstructionInformation : public InformationInterface {
   explicit InstructionInformation(InformationInterface::Format& data);
 
   /**
-   * Constructs an instruction with a mnemonic.
-   *
-   * \param mnemonic The mnemonic of the instruction (e.g. "add")
-   */
-  explicit InstructionInformation(const std::string& mnemonic = std::string());
-
-  /**
    * Constructs an instruction with a mnemonic and key.
    *
    * \param mnemonic The mnemonic of the instruction (e.g. "add")
    * \param key The key of the instruction.
+   * \param format The format of the instruction.
    */
-  InstructionInformation(const std::string& mnemonic,
-                         const InstructionKey& key);
+  InstructionInformation(const std::string& mnemonic = std::string(),
+                         const InstructionKey& key   = InstructionKey(),
+                         const std::string& format   = std::string());
 
   /**
    * Tests for equality of two instructions.
@@ -127,6 +124,29 @@ class InstructionInformation : public InformationInterface {
    */
   bool hasKey() const noexcept;
 
+
+  /**
+   * Sets the format of the instruction.
+   *
+   * This format is an architecture-dependent string, such as "F" for F-type
+   * instructions in RISC-V.
+   *
+   * \param format The format string specifier.
+   *
+   * \return The current instruction object.
+   */
+  InstructionInformation& format(const std::string& format);
+
+  /**
+   * Returns the format string of the instruction.
+   */
+  const std::string& getFormat() const noexcept;
+
+  /**
+   * Tests if the instruction has a format set.
+   */
+  bool hasFormat() const noexcept;
+
   /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
@@ -141,6 +161,9 @@ class InstructionInformation : public InformationInterface {
 
   /** The mnemonic of the instruction. */
   std::string _mnemonic;
+
+  /** The format of the instruction (e.g. type "F"). */
+  std::string _format;
 
   /** The key of the instruction. */
   InstructionKey _key;
