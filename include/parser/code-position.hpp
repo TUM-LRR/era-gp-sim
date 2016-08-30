@@ -19,8 +19,6 @@
 #ifndef ERAGPSIM_PARSER_CODE_POSITION_HPP_
 #define ERAGPSIM_PARSER_CODE_POSITION_HPP_
 
-#include <utility>
-
 /**
  * \brief The coordinate component type for denoting positions in code. 
  */
