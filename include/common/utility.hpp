@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cassert>
 #include <fstream>
+#include <iostream>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -217,16 +218,24 @@ auto copyPointer(const std::unique_ptr<T>& pointer) {
 //   return (paths + ...);
 // }
 
-
+// convert some integral value into a vector of boolean
 template <typename T>
 void convertToBin(std::vector<bool>& binary,
                   const T& value,
                   std::size_t minSize = 0) {
   T copyValue = value;
 
+  std::vector<bool> tmp;
+
   while (copyValue != 0) {
-    copyValue <<= 1;
-    binary.push_back(value > copyValue);
+    tmp.push_back(copyValue % 2);
+    copyValue >>= 1;
+  }
+
+  auto size = tmp.size();
+  for (int i = 0; i < size; i++) {
+    binary.push_back(tmp.back());
+    tmp.pop_back();
   }
 
   int k = minSize - binary.size();
@@ -234,6 +243,7 @@ void convertToBin(std::vector<bool>& binary,
   if (k > 0) binary.insert(binary.cbegin(), k, false);
 }
 
+// push_back n elements from the end of the src vector
 void pushBackFromEnd(std::vector<bool>& dest,
                      const std::vector<bool>& src,
                      size_t n);

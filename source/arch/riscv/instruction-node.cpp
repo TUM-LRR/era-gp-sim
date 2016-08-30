@@ -29,7 +29,6 @@ bool InstructionNode::requireChildren(Type type,
 
 MemoryValue InstructionNode::assemble() const {
   AssemblerFunction assembler;
-
   InstructionKey instructionKey = _instructionInformation.getKey();
 
   int format = 1;
@@ -67,7 +66,8 @@ MemoryValue InstructionNode::assemble() const {
   MemoryValue result(boolResult.size() / RISCV_BITS_PER_BYTE,
                      RISCV_BITS_PER_BYTE);
 
-  for (int i = 0; i < boolResult.size(); i++) result.put(i, boolResult.at(i));
+  int k = boolResult.size();
+  for (int i = 0; i < boolResult.size(); i++) result.put(--k, boolResult.at(i));
 
   return result;
 }

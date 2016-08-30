@@ -18,11 +18,20 @@
 #include <gtest/gtest.h>
 #include <cstdint>
 #include <iostream>
+#include <iterator>
 #include <memory>
 #include <vector>
 
+#include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/immediate-node.hpp"
 #include "arch/common/instruction-format.hpp"
+#include "arch/common/instruction-key.hpp"
+#include "arch/common/instruction-set.hpp"
+#include "arch/common/register-node.hpp"
+#include "arch/common/register-node.hpp"
 #include "arch/riscv/formats.hpp"
+#include "arch/riscv/instruction-node.hpp"
+#include "arch/riscv/integer-instructions.hpp"
 #include "core/memory-value.hpp"
 
 using namespace riscv;
@@ -74,18 +83,45 @@ TEST_F(ImmediateFormatTestFixture, JFormat) {
   ASSERT_EQ(*valueP[5], *valueP[0]);
 }
 
+struct InstructionFormatTestFixture : public ::testing::Test {
+  InstructionFormatTestFixture() {
+    instructionSet.addInstructions(InstructionSet(
+        {{"add", InstructionKey({{"opcode", 6}, {"function", 3}})},
+         {"sub", InstructionKey({{"opcode", 9}, {"function", 3}})}}));
+  }
+
+  ~InstructionFormatTestFixture() {
+  }
+
+  InstructionSet instructionSet;
+};
+
 // testing the different formats
-TEST(InstructionFormatTest, IFormat) {
+TEST_F(InstructionFormatTestFixture, RFormat) {
+  auto addInfo = instructionSet.getInstruction("add");
+  AddInstructionNode<int> addInstr(addInfo, false);
+  auto key = addInfo.getKey();
+  AbstractSyntaxTreeNode::Node r1(new RegisterNode("1"));
+  AbstractSyntaxTreeNode::Node r2(new RegisterNode("2"));
+  AbstractSyntaxTreeNode::Node rd(new RegisterNode("3"));
+  addInstr.addChild(std::move(r1));
+  addInstr.addChild(std::move(r2));
+  addInstr.addChild(std::move(rd));
+
+  std::cout << addInstr.assemble() << std::endl;
 }
 
-TEST(InstructionFormatTest, SFormat) {
+TEST_F(InstructionFormatTestFixture, IFormat) {
 }
 
-TEST(InstructionFormatTest, SBFormat) {
+TEST_F(InstructionFormatTestFixture, SFormat) {
 }
 
-TEST(InstructionFormatTest, UFormat) {
+TEST_F(InstructionFormatTestFixture, SBFormat) {
 }
 
-TEST(InstructionFormatTest, UJFormat) {
+TEST_F(InstructionFormatTestFixture, UFormat) {
+}
+
+TEST_F(InstructionFormatTestFixture, UJFormat) {
 }

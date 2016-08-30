@@ -66,10 +66,8 @@ std::string loadFromFile(const std::string& filePath) {
 void pushBackFromEnd(std::vector<bool>& dest,
                      const std::vector<bool>& src,
                      size_t n) {
-  for (int i = src.size() - n - 1; i < src.size(); i++)
-    if (i < 0)
-      dest.push_back(false);
-    else
-      dest.push_back(src.at(i));
+  int i = src.size() - n - 1;
+  while (++i < 0) dest.push_back(false);
+  for (; i < src.size(); i++) dest.push_back(src.at(i));
 }
 }

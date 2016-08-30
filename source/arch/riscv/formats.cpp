@@ -24,6 +24,8 @@
 
 namespace riscv {
 
+const std::size_t REGISTER_SIZE = 4;
+
 // methods to transform immediates into their specified formats
 // I should possibly reverse the memory values before the following operations
 void immToI(MemoryValue& vec) {
@@ -64,25 +66,27 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
 
   // funct7 - 6 bits long
   std::vector<bool> tmp;
-  Utility::convertToBin(tmp, key["funct7"]);
+  //  Utility::convertToBin(tmp, key["funct7"]);
+  Utility::convertToBin(tmp, key["function"]);
   // push the last 6 bits
   Utility::pushBackFromEnd(res, tmp, 7);
 
   auto argument = args.at(2);
 
   // rs2
-  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // rs1
   argument = args.at(1);
-  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   tmp.clear();
-  Utility::convertToBin(tmp, key["funct3"]);
+  // Utility::convertToBin(tmp, key["funct3"]);
+  Utility::convertToBin(tmp, key["function"]);
   Utility::pushBackFromEnd(res, tmp, 3);
 
   // destination
   argument = args.at(0);
-  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
 
   tmp.clear();
   Utility::convertToBin(tmp, key["opcode"]);

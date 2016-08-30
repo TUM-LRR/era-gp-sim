@@ -60,7 +60,17 @@ class RegisterNode : public AbstractSyntaxTreeNode {
 
   // DummyMemoryAccess problem
   MemoryValue assemble() const override {
-    return getValue();
+    // real implementation
+    // just have to convert string to MemoryValue
+    // return getIdentifier();
+
+    // dummy
+    MemoryValue memValue(1, 8);
+    memValue.put(0, true);
+    memValue.put(1, true);
+    memValue.put(2, true);
+    memValue.put(3, true);
+    return memValue;
   }
 
  private:
