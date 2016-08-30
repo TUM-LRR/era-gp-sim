@@ -29,48 +29,45 @@
  * bound.
  */
 struct LineInterval {
-    /**
-     * \brief The upper line bound of the interval.
-     */
-    CodeCoordinate lineStart;
+  /**
+   * \brief The upper line bound of the interval.
+   */
+  CodeCoordinate lineStart;
 
-    /**
-     * \brief The lower line bound of the interval.
-     */
-    CodeCoordinate lineEnd;
+  /**
+   * \brief The lower line bound of the interval.
+   */
+  CodeCoordinate lineEnd;
 
-    /**
-     * \brief Creates a new line interval with a given upper and lower bound.
-     * \param start The lower bound of the interval.
-     * \param end The upper bound of the interval.
-     */
-    LineInterval(CodeCoordinate start, CodeCoordinate end)
-        : lineStart(start), lineEnd(end)
-    {}
+  /**
+   * \brief Creates a new line interval with a given upper and lower bound.
+   * \param start The lower bound of the interval.
+   * \param end The upper bound of the interval.
+   */
+  LineInterval(CodeCoordinate start, CodeCoordinate end)
+  : lineStart(start), lineEnd(end) {
+  }
 
-    /**
-     * \brief Creates a new line interval containing only one line.
-     * \param line The upper and lower bound of the interval.
-     */
-    LineInterval(CodeCoordinate line)
-        : LineInterval(line, line)
-    {}
+  /**
+   * \brief Creates a new line interval containing only one line.
+   * \param line The upper and lower bound of the interval.
+   */
+  LineInterval(CodeCoordinate line) : LineInterval(line, line) {
+  }
 
-    /**
-     * \brief Creates an empty line interval.
-     */
-    LineInterval()
-        : LineInterval(-1, -1)
-    {}
+  /**
+   * \brief Creates an empty line interval.
+   */
+  LineInterval() : LineInterval(-1, -1) {
+  }
 
-    /**
-     * \brief Denotes if the line interval is considered empty.
-     * \return True, if the line interval is empty, else false.
-     */
-    bool empty()
-    {
-        return lineEnd < 0 || lineStart < 0;
-    }
+  /**
+   * \brief Denotes if the line interval is considered empty.
+   * \return True, if the line interval is empty, else false.
+   */
+  bool empty() {
+    return lineEnd < 0 || lineStart < 0;
+  }
 };
 
 #endif /* ERAGPSIM_PARSER_LINE_INTERVAL_HPP */

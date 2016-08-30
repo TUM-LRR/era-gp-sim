@@ -51,9 +51,9 @@ struct CompileState {
    * \param message The message for the error.
    * \param position The position where the error occurred.
    */
-  void addError(const std::string& message, const CodePosition& position)
-  {
-    errorList.push_back(CompileError(message, position, CompileErrorSeverity::ERROR));
+  void addError(const std::string& message, const CodePosition& position) {
+    errorList.push_back(
+        CompileError(message, position, CompileErrorSeverity::ERROR));
   }
 
   /**
@@ -61,9 +61,9 @@ struct CompileState {
    * \param message The message for the warning.
    * \param position The position where the warning occurred.
    */
-  void addWarning(const std::string& message, const CodePosition& position)
-  {
-    errorList.push_back(CompileError(message, position, CompileErrorSeverity::WARNING));
+  void addWarning(const std::string& message, const CodePosition& position) {
+    errorList.push_back(
+        CompileError(message, position, CompileErrorSeverity::WARNING));
   }
 
   /**
@@ -71,9 +71,10 @@ struct CompileState {
    * \param message The message for the information.
    * \param position The position where the information is needed.
    */
-  void addInformation(const std::string& message, const CodePosition& position)
-  {
-    errorList.push_back(CompileError(message, position, CompileErrorSeverity::INFORMATION));
+  void
+  addInformation(const std::string& message, const CodePosition& position) {
+    errorList.push_back(
+        CompileError(message, position, CompileErrorSeverity::INFORMATION));
   }
 };
 

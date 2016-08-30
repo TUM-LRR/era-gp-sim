@@ -22,9 +22,9 @@
 #include <string>
 #include <vector>
 #include "parser/final-representation.hpp"
+#include "parser/line-interval.hpp"
 #include "parser/symbol-table.hpp"
 #include "parser/syntax-tree-generator.hpp"
-#include "parser/line-interval.hpp"
 
 struct CompileState;
 
