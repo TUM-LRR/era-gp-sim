@@ -22,22 +22,26 @@
 #include <QAbstractItemModel>
 #include <map>
 #include <string>
-#include "core/memory-value.hpp"
-#include "ui/registeritem.hpp"
+#include "arch/common/register-information.hpp"
 
 /**
  * Aggregates the data of multiple registers. Subclasses QAbstractItemModel to
  * be usable with QML-components.
  *
  * QAbstractItemModel is a table with each cell being referenced by row and
- * column. For RegisterModel, each row is represented by a RegisterItem, which
- * contains a RegisterData object holding a single register's data (e.g. title,
- * content, ...). The RegisterModel only uses a single column containing the
- * register itself.
+ * column. For RegisterModel, each row is represented by a RegisterInformation
+ * object containing the register's constant data (e.g. title, constituents,
+ * ...).
+ * The RegisterModel only uses a single column containing the register itself.
+ * Data that won't change over the lifetime of the model (e.g. register's title)
+ * are stored within the model inside the RegisterInformation objects. Dynamic
+ * data (i.e. register's content) is fetched from core when requested (see data-
+ * method).
  *
  * Registers of all levels are being held inside the _items-map where they are
  * identified by a unique register identifier. Nesting is realised by specifying
- * a parent register identifier and possibly several child register identifiers.
+ * a parent register identifier and possibly several child register identifiers
+ * inside the RegisterInformation obejcts.
  * The _rootItem is used as a top-level dummy register not holding any actual
  * data but just referencing the visible top-level registers.
  */
@@ -56,12 +60,13 @@ class RegisterModel : public QAbstractItemModel {
   };
 
   /**
-   * @brief setContent Sets the content (i.e. AB01DE23) of a specified register.
+   * @brief updateContent Sets the content (i.e. AB01DE23) of a specified
+   * register.
    * @param registerIdentifier The unique identifier of the register whose
    * content shall be altered.
    * @param registerContent The new register value.
    */
-  void setContent(std::string registerIdentifier, MemoryValue registerContent);
+  void updateContent(id_t registerIdentifier);
 
   /**
    * @brief index Returns a QModelIndex for the specified item inside the
@@ -70,7 +75,8 @@ class RegisterModel : public QAbstractItemModel {
    * QModelIndexes provide a common interface for delegates to access data
    * inside a model independent of its internal structure. Each index contains
    * the item's parent, its row and column relative to its parent and a pointer
-   * to the item it refers to.
+   * to the item it refers to. In this case, the item is a RegisterInformation
+   * object.
    *
    * @param row The item's row relative to its parent item.
    * @param column The item's column.
@@ -131,9 +137,9 @@ class RegisterModel : public QAbstractItemModel {
  private:
   /// The dummy top-level item holding references to the visible top-level
   /// registers.
-  std::unique_ptr<RegisterItem> _rootItem;
+  std::unique_ptr<RegisterInformation> _rootItem;
   /// Map of all registers each identified by a unique register identifier.
-  std::map<std::string, std::unique_ptr<RegisterItem>> _items;
+  std::map<id_t, std::unique_ptr<RegisterInformation>> _items;
 };
 
 #endif// REGISTERMODEL_H

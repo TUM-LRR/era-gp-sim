@@ -18,62 +18,34 @@
 
 #include "ui/registermodel.hpp"
 
-RegisterModel::RegisterModel(QObject *parent)
-: QAbstractItemModel(parent)
-, _rootItem(
-      new RegisterItem(RegisterData("Title", "Content", "DisplayFormatString"),
-                       "",
-                       std::vector<std::string>{"EAX", "EBX"})) {
-  // Initializing some example registers.
-  _items["EAX"] = std::unique_ptr<RegisterItem>(
-      new RegisterItem(RegisterData("EAX",
-                                    "AB CD 01 23",
-                                    "HH HH HH HH",
-                                    QStringList() << "Hex"
-                                                  << "Dec"
-                                                  << "Bin"
-                                                  << "Vig"),
-                       "",
-                       std::vector<std::string>{"AX"}));
-  _items["AX"] = std::unique_ptr<RegisterItem>(
-      new RegisterItem(RegisterData("AX", "AB CD", "HH HH"),
-                       "EAX",
-                       std::vector<std::string>{"AL", "AH"}));
-  _items["AL"] = std::unique_ptr<RegisterItem>(new RegisterItem(
-      RegisterData("AL", "CD", "HH"), "AX", std::vector<std::string>()));
-  _items["AH"] = std::unique_ptr<RegisterItem>(new RegisterItem(
-      RegisterData("AH", "AB", "HH"), "AX", std::vector<std::string>()));
-  _items["EBX"] = std::unique_ptr<RegisterItem>(
-      new RegisterItem(RegisterData("EBX", "AB 45 CD 78", "HH HH HH HH"),
-                       "",
-                       std::vector<std::string>{"BX"}));
-  _items["BX"] = std::unique_ptr<RegisterItem>(
-      new RegisterItem(RegisterData("BX", "AB 45", "HH HH"),
-                       "EBX",
-                       std::vector<std::string>{"BL", "BH"}));
-  _items["BL"] = std::unique_ptr<RegisterItem>(new RegisterItem(
-      RegisterData("BL", "45", "HH"), "BX", std::vector<std::string>()));
-  _items["BH"] = std::unique_ptr<RegisterItem>(new RegisterItem(
-      RegisterData("BH", "AB", "HH"), "BX", std::vector<std::string>()));
+RegisterModel::RegisterModel(QObject *parent) : QAbstractItemModel(parent), _rootItem(new RegisterInformation()) {
+    // TODO: Retrieve registers from core.
+    // Some temporary test registers.
+    RegisterInformation *eax = new RegisterInformation("EAX");
+    eax->type(RegisterInformation::Type::INTEGER);
+    _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(eax->getID(), std::unique_ptr<RegisterInformation>(eax)));
+    _rootItem->addConstituent(eax->getID());
+    RegisterInformation *ax = new RegisterInformation("AX");
+    eax->type(RegisterInformation::Type::INTEGER);
+    _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(ax->getID(), std::unique_ptr<RegisterInformation>(ax)));
+    eax->addConstituent(ax->getID());
 }
 
 
-void RegisterModel::setContent(std::string registerIdentifier,
-                               MemoryValue registerContent) {
-  RegisterItem *registerItem = _items[registerIdentifier].get();
-  // TODO: Convert MemoryValue to suitable string representation
-  registerItem->setContent("01 AB CD 23");
+void RegisterModel::updateContent(id_t registerIdentifier) {
+  RegisterInformation *registerItem = _items[registerIdentifier].get();
   // Notify the model about the change
-  // Notifying requires the model index of the altered item. It can be found by
-  // the unique identifier of the altered register.
+  // Notifying requires the model index of the altered item.
+  // The only reasonable way of accomplishing this is by filtering the registers by their title.
   QModelIndexList alteredItems =
       match(this->index(0, 0),
             TitleRole,
-            QString::fromStdString(registerIdentifier),
+            QString::fromStdString(registerItem->getName()),
             1,
             Qt::MatchExactly);
   if (!alteredItems.isEmpty()) {
     QModelIndex alteredItem = alteredItems.first();
+    // The data method will be called, fetching the updated content.
     dataChanged(alteredItem, alteredItem);
   }
 }
@@ -94,14 +66,24 @@ QVariant RegisterModel::data(const QModelIndex &index, int role) const {
     return QVariant();
   }
 
-  // Return the row's correponding RegisterItem's data.
-  RegisterData data =
-      static_cast<RegisterItem *>(index.internalPointer())->getData();
+  // Return the row's correponding RegisterItem's information.
+  RegisterInformation *information =
+      static_cast<RegisterInformation *>(index.internalPointer());
   switch (role) {
-    case TitleRole: return data.getTitle();
-    case ContentRole: return data.getContent();
-    case DisplayFormatStringRole: return data.getDisplayFormatString();
-    case DataFormatsListRole: return data.getDataFormatsList();
+    case TitleRole: return QString::fromStdString(information->getName());
+    // TODO: Retrieve actual data from core.
+    case ContentRole: return "AB 01 CD 23";
+    // TODO: Move to core.
+    case DisplayFormatStringRole: return "HH HH HH HH";
+    case DataFormatsListRole:
+      switch (information->getType()) {
+        case RegisterInformation::Type::INTEGER: return QStringList() << "Binary" << "Hex" << "Signed Integer" << "Unsigned Integer";
+        case RegisterInformation::Type::FLOAT: return QStringList() << "Binary" << "Hex" << "Float";
+        case RegisterInformation::Type::VECTOR: return QStringList() << "Binary" << "Hex" << "Vector";
+        case RegisterInformation::Type::FLAG: return QStringList() << "Binary" << "Flag";
+        case RegisterInformation::Type::LINK: return QStringList() << "Binary" << "Hex";
+        case RegisterInformation::Type::PROGRAM_COUNTER: return QStringList() << "Binary" << "Hex";
+      }
   }
   return QVariant();
 }
@@ -114,26 +96,22 @@ RegisterModel::index(int row, int column, const QModelIndex &parent) const {
   if (!hasIndex(row, column, parent)) {
     return QModelIndex();
   }
-
-  // Load the parent item. If no valid parent is specified, assume the rootItem
-  // is being inferred to.
-  RegisterItem *parentItem;
+  // Get the requested register's parent register.
+  RegisterInformation *parentItem;
   if (!parent.isValid()) {
-    parentItem = _rootItem.get();
+      parentItem = _rootItem.get();
   } else {
-    parentItem = static_cast<RegisterItem *>(parent.internalPointer());
+      parentItem = static_cast<RegisterInformation *>(parent.internalPointer());
   }
-
   // Return the index for the parent's cell at the given row and column. If such
   // cell does not exist, return an invalid index.
-  std::string childItemIdentifier = parentItem->getChildItemIdentifier(row);
+  id_t childItemIdentifier = parentItem->getConstituents().at(row);
   auto it                         = _items.find(childItemIdentifier);
   if (it != _items.end()) {
-    RegisterItem *childItem = (it->second).get();
+    RegisterInformation *childItem = (it->second).get();
     return createIndex(row, column, childItem);
-  } else {
-    return QModelIndex();
   }
+  return QModelIndex();
 }
 
 QModelIndex RegisterModel::parent(const QModelIndex &index) const {
@@ -141,35 +119,40 @@ QModelIndex RegisterModel::parent(const QModelIndex &index) const {
   if (!index.isValid()) {
     return QModelIndex();
   }
-  // Load the child item the given QModelIndex refers to and derive the parent
-  // item from it.
-  RegisterItem *childItem =
-      static_cast<RegisterItem *>(index.internalPointer());
-  std::string parentItemIdentifier = childItem->getParentItemIdentifier();
-  auto it                          = _items.find(parentItemIdentifier);
-  if (it != _items.end()) {
-    RegisterItem *parentItem = (it->second).get();
-    // Determine the parentItem's row among the child items of its own parent.
-    int row;
-    if (parentItem->getParentItemIdentifier() != "") {
-      RegisterItem *parentParentItem =
-          (_items.find(parentItem->getParentItemIdentifier())->second).get();
-      row = parentParentItem->getRowOfChild(parentItemIdentifier);
-    } else {
-      row = _rootItem->getRowOfChild(parentItemIdentifier);
-    }
-    // Return the QModelIndex referencing the parent item. Note that any nesting
-    // is done inside the first column (column 0).
-    return createIndex(row, 0, parentItem);
+  // Load the child item the given QModelIndex refers to.
+  RegisterInformation *childItem = static_cast<RegisterInformation *>(index.internalPointer());
+  // If the child item has no parent item, return an invalid parent index.
+  if (childItem->hasEnclosing()) {
+      // Load the requested parent item.
+      id_t parentItemIdentifier = childItem->getEnclosing();
+      auto it = _items.find(parentItemIdentifier);
+      if (it != _items.end()) {
+        RegisterInformation *parentItem = (it->second).get();
+        // Determine the parentItem's row among the child items of its own parent.
+        RegisterInformation *parentParentItem;
+        if (parentItem->hasEnclosing()) {
+          parentParentItem = (_items.find(parentItem->getEnclosing())->second).get();
+        } else {
+          parentParentItem = _rootItem.get();
+        }
+        auto it = std::find(parentParentItem->getConstituents().begin(),
+                            parentParentItem->getConstituents().end(),
+                            parentItemIdentifier);
+        if (it != parentParentItem->getConstituents().end()) {
+          int row = std::distance(parentParentItem->getConstituents().begin(), it);
+
+          // Return the QModelIndex referencing the parent item. Note that any nesting
+          // is done inside the first column (column 0).
+          return createIndex(row, 0, parentItem);
+        }
+      }
   }
-  // If the parentItemIdentifier is invalid we can assume index referenced the
-  // top-level dummy item and therefore return an invalid index.
   return QModelIndex();
 }
 
 
 int RegisterModel::rowCount(const QModelIndex &parent) const {
-  RegisterItem *parentItem;
+  RegisterInformation *parentItem;
   // As specified in RegisterModel::parent, any nested structure occurs inside
   // the first column. Therefore, any other column
   // does not have any rows.
@@ -178,11 +161,12 @@ int RegisterModel::rowCount(const QModelIndex &parent) const {
   }
 
   if (!parent.isValid()) {
-    parentItem = _rootItem.get();
+    return _rootItem->getConstituents().size();
   } else {
-    parentItem = static_cast<RegisterItem *>(parent.internalPointer());
+    parentItem = static_cast<RegisterInformation *>(parent.internalPointer());
+    return parentItem->getConstituents().size();
   }
-  return parentItem->childCount();
+  return 0;
 }
 
 
