@@ -137,7 +137,7 @@ class Project {
    * Returns the number of bits in a byte
    *
    */
-  int getByteSize() const;
+  Architecture::byte_size_t getByteSize() const;
 
   /**
    * Returns the number of memory cells(number of bytes)

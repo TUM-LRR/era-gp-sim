@@ -71,8 +71,8 @@ RegisterContainer Project::getRegisterSet() const {
   return RegisterContainer();
 }
 
-int Project::getByteSize() const {
-  return 8;
+Architecture::byte_size_t Project::getByteSize() const {
+  return _architecture.getByteSize();
 }
 
 int Project::getMemorySize() const {
