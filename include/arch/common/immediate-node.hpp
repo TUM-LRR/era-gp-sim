@@ -34,7 +34,10 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    * \param value The value of this node.
    */
   ImmediateNode(MemoryValue value)
-      : AbstractSyntaxTreeNode(Type::IMMEDIATE), _value(value), IMMEDIATE_IDENTIFIER("Imm") {}
+  : AbstractSyntaxTreeNode(Type::IMMEDIATE)
+  , _value(value)
+  , IMMEDIATE_IDENTIFIER("Imm") {
+  }
 
   ~ImmediateNode() = default;
 
@@ -57,7 +60,11 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    * \return An empty MemoryValue, because the instruction has to be
    * assembled in the instruction node.
    */
-  MemoryValue assemble() const override { return MemoryValue{}; }
+  // DummyMemoryAccess problem
+  MemoryValue assemble() const override {
+    DummyMemoryAccessStub emptyAccess;
+    return getValue(emptyAccess);
+  }
 
   /**
    * Returns always the same string: "imm".

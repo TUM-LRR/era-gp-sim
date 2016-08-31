@@ -24,19 +24,20 @@
 
 #include "core/memory-value.hpp"
 
-//Dummy definition of a memory-access
+// Dummy definition of a memory-access
 class DummyMemoryAccess {
-public:
-    virtual MemoryValue getRegisterValue(std::string& token) = 0;
-    virtual void setRegisterValue(std::string& token, MemoryValue value) = 0;
+ public:
+  virtual MemoryValue getRegisterValue(std::string& token) = 0;
+  virtual void setRegisterValue(std::string& token, MemoryValue value) = 0;
 };
-//Dummy implementation of a memory-access
+// Dummy implementation of a memory-access
 class DummyMemoryAccessStub : public DummyMemoryAccess {
-public:
-    MemoryValue getRegisterValue(std::string& token) override {
-        return MemoryValue{};
-     }
-    void setRegisterValue(std::string& token, MemoryValue value) override {}
+ public:
+  MemoryValue getRegisterValue(std::string& token) override {
+    return MemoryValue{};
+  }
+  void setRegisterValue(std::string& token, MemoryValue value) override {
+  }
 };
 
 /** The base class for nodes in the abstract syntax tree */
@@ -107,12 +108,12 @@ class AbstractSyntaxTreeNode {
    * \return true, if all children return true, otherwise false
    */
   bool validateAllChildren() const {
-      for(auto &child : _children) {
-          if(!child->validate()) {
-              return false;
-          }
+    for (auto& child : _children) {
+      if (!child->validate()) {
+        return false;
       }
-      return true;
+    }
+    return true;
   }
 
  protected:

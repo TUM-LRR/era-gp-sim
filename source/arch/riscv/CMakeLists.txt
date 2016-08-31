@@ -12,6 +12,7 @@ set(ARCH_RISCV_SOURCES
   immediate-node-factory.cpp
   register-access-node-factory.cpp
   instruction-node-factory.cpp
+	formats.cpp
 )
 
 ########################################

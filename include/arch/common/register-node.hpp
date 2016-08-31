@@ -39,7 +39,8 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   /**
    * \return The content of the register, represented by this node.
    */
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) const override {
+  virtual MemoryValue
+  getValue(DummyMemoryAccess& memory_access) const override {
     // TODO Return the actual content of the register using the proper
     // memory access
     return MemoryValue();
@@ -54,7 +55,22 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   }
 
   const std::string& getIdentifier() const override {
-      return _identifier;
+    return _identifier;
+  }
+
+  // DummyMemoryAccess problem
+  MemoryValue assemble() const override {
+    // real implementation
+    // just have to convert string to MemoryValue
+    // return getIdentifier();
+
+    // dummy
+    MemoryValue memValue(1, 8);
+    memValue.put(0, true);
+    memValue.put(1, true);
+    memValue.put(2, true);
+    memValue.put(3, true);
+    return memValue;
   }
 
  private:
