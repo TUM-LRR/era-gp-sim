@@ -24,10 +24,10 @@
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/immediate-node.hpp"
+#include "arch/common/immediate-node.hpp"
 #include "arch/common/instruction-format.hpp"
 #include "arch/common/instruction-key.hpp"
 #include "arch/common/instruction-set.hpp"
-#include "arch/common/register-node.hpp"
 #include "arch/common/register-node.hpp"
 #include "arch/riscv/formats.hpp"
 #include "arch/riscv/instruction-node.hpp"
@@ -95,7 +95,7 @@ struct InstructionFormatTestFixture : public ::testing::Test {
 
   InstructionSet instructionSet;
 };
-
+/*
 // testing the different formats
 TEST_F(InstructionFormatTestFixture, RFormat) {
   auto addInfo = instructionSet.getInstruction("add");
@@ -104,14 +104,28 @@ TEST_F(InstructionFormatTestFixture, RFormat) {
   AbstractSyntaxTreeNode::Node r1(new RegisterNode("1"));
   AbstractSyntaxTreeNode::Node r2(new RegisterNode("2"));
   AbstractSyntaxTreeNode::Node rd(new RegisterNode("3"));
-  addInstr.addChild(std::move(r1));
-  addInstr.addChild(std::move(r2));
   addInstr.addChild(std::move(rd));
+  addInstr.addChild(std::move(r2));
+  addInstr.addChild(std::move(r1));
 
   std::cout << addInstr.assemble() << std::endl;
 }
-
+*/
 TEST_F(InstructionFormatTestFixture, IFormat) {
+  auto addInfo = instructionSet.getInstruction("add");
+  AddInstructionNode<int> addInstr(addInfo, true);
+  auto key = addInfo.getKey();
+  MemoryValue val(4, 8);
+  val.put(22, true);
+  val.put(23, true);
+  AbstractSyntaxTreeNode::Node imm(new ImmediateNode(val));
+  AbstractSyntaxTreeNode::Node r2(new RegisterNode("2"));
+  AbstractSyntaxTreeNode::Node rd(new RegisterNode("3"));
+  addInstr.addChild(std::move(rd));
+  addInstr.addChild(std::move(r2));
+  addInstr.addChild(std::move(imm));
+
+  std::cout << addInstr.assemble() << std::endl;
 }
 
 TEST_F(InstructionFormatTestFixture, SFormat) {

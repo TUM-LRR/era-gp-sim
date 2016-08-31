@@ -31,7 +31,7 @@ MemoryValue InstructionNode::assemble() const {
   AssemblerFunction assembler;
   InstructionKey instructionKey = _instructionInformation.getKey();
 
-  int format = 1;
+  int format = 2;
 
   // switch (instructionKey["format"]) {
   // jut for now

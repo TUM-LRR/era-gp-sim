@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
+#include <iostream>
 #include <vector>
 
 #include "arch/common/instruction-key.hpp"
@@ -109,15 +110,16 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   for (int i = 11; i >= 0; i--) res.push_back(imm.get(i));
   // rs1
   auto argument = args.at(1);
-  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   tmp.clear();
-  Utility::convertToBin(tmp, key["funct3"]);
+  // Utility::convertToBin(tmp, key["funct3"]);
+  Utility::convertToBin(tmp, key["function"]);
   Utility::pushBackFromEnd(res, tmp, 3);
 
   // destination
   argument = args.at(0);
-  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
 
   tmp.clear();
   Utility::convertToBin(tmp, key["opcode"]);
@@ -139,9 +141,10 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   for (int i = 11; i > 4; i--) res.push_back(imm.get(i));
   // rs1
   auto argument = args.at(1);
-  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
-  Utility::convertToBin(tmp, key["funct3"]);
+  // Utility::convertToBin(tmp, key["funct3"]);
+  Utility::convertToBin(tmp, key["function"]);
   Utility::pushBackFromEnd(res, tmp, 3);
 
   // imm[4:0]
@@ -169,14 +172,15 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   for (int i = 10; i > 4; i--) res.push_back(imm.get(i));
   // rs1
   auto argument = args.at(1);
-  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
-  Utility::convertToBin(tmp, key["funct3"]);
+  // Utility::convertToBin(tmp, key["funct3"]);
+  Utility::convertToBin(tmp, key["function"]);
   Utility::pushBackFromEnd(res, tmp, 3);
 
   // imm[4:1]
   for (int i = 4; i >= 1; i--) res.push_back(imm.get(i));
-  // imm[0]
+  // imm[11]
   res.push_back(imm.get(11));
 
   tmp.clear();
@@ -200,7 +204,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
 
   // rd
   auto argument = args.at(0);
-  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
 
   Utility::convertToBin(tmp, key["opcode"]);
   Utility::pushBackFromEnd(res, tmp, 7);
@@ -228,7 +232,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
 
   // rd
   auto argument = args.at(0);
-  for (int i = 0; i < argument.getSize(); i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
 
   Utility::convertToBin(tmp, key["opcode"]);
   Utility::pushBackFromEnd(res, tmp, 7);
