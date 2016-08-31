@@ -20,6 +20,7 @@
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/instruction-information.hpp"
+#include "arch/riscv/conversion-stub.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-value.hpp"
 

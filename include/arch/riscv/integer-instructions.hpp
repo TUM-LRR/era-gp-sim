@@ -24,6 +24,7 @@
 #include <string>
 
 #include "arch/common/instruction-information.hpp"
+#include "arch/riscv/conversion-stub.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "core/conversions.hpp"
 
