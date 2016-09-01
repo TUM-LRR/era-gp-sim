@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_SCHEDULER_H_
-#define ERAGPSIM_CORE_SCHEDULER_H_
+#ifndef ERAGPSIM_CORE_SCHEDULER_HPP
+#define ERAGPSIM_CORE_SCHEDULER_HPP
 
 #include <atomic>
 #include <chrono>
@@ -35,7 +35,6 @@
  * If all calls to the servant are pushed into the queue, which can be easily
  * done by using a proxy, this ensures thread safety for the servant, as only
  * one task can be executed at any given moment.
- *
  */
 class Scheduler {
  public:
@@ -105,4 +104,4 @@ class Scheduler {
   std::thread _schedulerThread;
 };
 
-#endif// ERAGPSIM_CORE_SCHEDULER_H_
+#endif /* ERAGPSIM_CORE_SCHEDULER_HPP */

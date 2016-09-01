@@ -17,6 +17,9 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef ERAGPSIM_CORE_SERVANT_HPP
+#define ERAGPSIM_CORE_SERVANT_HPP
+
 #include <cassert>
 #include <functional>
 #include <memory>
@@ -27,6 +30,15 @@
 
 /**
  * \brief Servant Superclass, inherit from this in every Servant class
+ *
+ * A servant class is an active object, as it has its own scheduler and
+ * therefore its own thread.
+ *
+ * It is a separate class from the scheduler to allow for more flexibility, as
+ * this can allow multiple servants to run on the same scheduler.
+ * However, this could be dangerous with the current implementation.
+ *
+ *
  */
 class Servant : public std::enable_shared_from_this<Servant> {
  public:
@@ -35,10 +47,11 @@ class Servant : public std::enable_shared_from_this<Servant> {
   }
 
   /**
-   * \brief if the scheduler is still alive, push a task in its task-queue
-   * \param functor to be pushed into the task-queue
+   * \brief if the scheduler is still alive, push a task into its task-queue.
+   * An assertion fails otherwise.
+   * \param task The task which is pushed into the task-queue.
    */
-  void push(std::function<void()>&& task) {
+  void push(Scheduler::Task&& task) {
     if (auto scheduler = _scheduler.lock()) {
       scheduler->push(std::move(task));
     } else {
@@ -50,42 +63,49 @@ class Servant : public std::enable_shared_from_this<Servant> {
  protected:
   /**
    * \brief creates a safe callback functor, to be used with
-   * POST_CALLBACK_UNSAFE
+   * POST_CALLBACK_UNSAFE(functionName)
    * Creates a callback which is posted to the correct thread and only called,
    * if this servant is still alive.
    *
-   * \param callback a std::function object which accepts a Result<T> as
-   * argument, the result object can either have a value of type T or an
-   * exception. Create the std::function object like this:
-   * std::function<void(Result<T>)> callback = std::bind(&Foo::bar, this,
-   * std::placeholders::_1);
+   * \param callback a std::function object which accepts a something as
+   * argument, for use with POST_CALLBACK_UNSAFE it has to be a Result<T>
+   * object. Create the std::function object like this:
+   *
+   * \code
+   * //use the a real type instead of T
+   * std::function<void(Result<T>)> callback = [this](Result<T> result) {
+   * //call a member method wich accepts a Result<T> object as paramter
+   * callback(result);};
+   * \endcode
    */
-  template <typename Arg>
-  std::function<void(Result<Arg>)>
-  makeSafeCallback(std::function<void(Result<Arg>)>&& callback) {
-    return std::bind(
-        [](std::weak_ptr<Servant> weak,
-           std::function<void(Result<Arg>)> cb,
-           Result<Arg> result) {
-          // TODO only push into correct thread if necessary
+  template <typename... Args>
+  std::function<void(Args...)>
+  makeSafeCallback(std::function<void(Args...)>&& callback) {
+    std::weak_ptr<Servant> weak = shared_from_this();
+    /* create a task which in turn creates a safe callback task when called and
+     * puts it into the scheduler queue of this servant. */
+    auto task = [ weak, callback = std::move(callback) ](Args && ... args) {
+      if (auto servant = weak.lock()) {
+        /* This callback task captures the arguments, which were given to the
+         * "outer task" as paramters, and applies them to the callback
+         * function.*/
+        auto callbackTask = [
+          weak,
+          callback = std::move(callback),
+          tuple    = std::make_tuple(std::forward<Args>(args)...)
+        ]() mutable {
           if (auto servant = weak.lock()) {
-            servant->push(std::bind(
-                [](std::weak_ptr<Servant> weakServant,
-                   std::function<void(Result<Arg>)> cb,
-                   Result<Arg> result) {
-                  if (auto servant = weakServant.lock()) {
-                    cb(result);
-                  }
-                },
-                weak,
-                std::move(cb),
-                std::move(result)));
+            std::experimental::apply(std::move(callback), std::move(tuple));
           }
-        },
-        shared_from_this(),
-        std::move(callback),
-        std::placeholders::_1);
+        };
+        servant->push(callbackTask);
+      }
+    };
+    return task;
   }
 
+  /** A weak_ptr to the scheduler of this servant. */
   std::weak_ptr<Scheduler> _scheduler;
 };
+
+#endif /* ERAGPSIM_CORE_SERVANT_HPP */
