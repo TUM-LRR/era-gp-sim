@@ -18,9 +18,9 @@
 #ifndef ERAGPSIM_ARCH_COMMON_IMMEDIATE_NODE_HPP
 #define ERAGPSIM_ARCH_COMMON_IMMEDIATE_NODE_HPP
 
+#include <QtGlobal>
 #include <memory>
 #include <string>
-#include <QtGlobal>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "core/memory-value.hpp"
@@ -34,7 +34,10 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    * \param value The value of this node.
    */
   ImmediateNode(MemoryValue value)
-      : AbstractSyntaxTreeNode(Type::IMMEDIATE), _value(value), IMMEDIATE_IDENTIFIER("Imm") {}
+  : AbstractSyntaxTreeNode(Type::IMMEDIATE)
+  , _value(value)
+  , IMMEDIATE_IDENTIFIER("Imm") {
+  }
 
   ~ImmediateNode() = default;
 
@@ -61,7 +64,9 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    * \return An empty MemoryValue, because the instruction has to be
    * assembled in the instruction node.
    */
-  MemoryValue assemble() const override { return MemoryValue{}; }
+  MemoryValue assemble() const override {
+    return MemoryValue{};
+  }
 
   /**
    * Returns always the same string: "imm".
