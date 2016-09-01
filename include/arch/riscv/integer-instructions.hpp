@@ -25,7 +25,6 @@
 #include <string>
 
 #include "arch/common/instruction-information.hpp"
-#include "arch/riscv/conversion-stub.hpp"
 #include "arch/riscv/instruction-node.hpp"
 
 /*
@@ -83,7 +82,7 @@ class IntegerInstructionNode : public InstructionNode {
     SizeType result = performIntegerOperation(operand1, operand2);
 
     MemoryValue resultValue =
-        convert(result, RISCV_BITS_PER_BYTE, RISCV_BYTEORDER);
+        convert<SizeType>(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
     memory_access.setRegisterValue(destination, resultValue);
     return MemoryValue{};
   }

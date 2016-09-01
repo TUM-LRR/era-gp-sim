@@ -113,7 +113,7 @@ TEST_F(InstructionFormatTestFixture, RFormat) {
 */
 TEST_F(InstructionFormatTestFixture, IFormat) {
   auto addInfo = instructionSet.getInstruction("add");
-  AddInstructionNode<int> addInstr(addInfo, true);
+  AddInstructionNode<uint32_t> addInstr(addInfo, true);
   auto key = addInfo.getKey();
   MemoryValue val(4, 8);
   val.put(22, true);
