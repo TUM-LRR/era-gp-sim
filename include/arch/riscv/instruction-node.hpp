@@ -20,9 +20,8 @@
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/instruction-information.hpp"
-#include "arch/riscv/conversion-stub.hpp"
-#include "core/conversions.hpp"
 #include "core/memory-value.hpp"
+#include "arch/riscv/conversion-stub.hpp"
 
 namespace riscv {
 /** A node that represents a RISC V specific instruction */
@@ -32,15 +31,14 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * Constructs a new node that represents a RISC V specific instruction.
    */
   InstructionNode(InstructionInformation& instructionInformation)
-  : AbstractSyntaxTreeNode(Type::INSTRUCTION)
-  , _instructionInformation(instructionInformation) {
-  }
+      : AbstractSyntaxTreeNode(Type::INSTRUCTION),
+        _instructionInformation(instructionInformation) {}
 
 
   /* Ensure this class is also pure virtual */
-  virtual MemoryValue
-  getValue(DummyMemoryAccess& memory_access) const override = 0;
-  virtual bool validate() const override                    = 0;
+  virtual MemoryValue getValue(
+      DummyMemoryAccess& memory_access) const override = 0;
+  virtual const ValidationResult validate() const override = 0;
 
   MemoryValue assemble() const override;
 
@@ -59,15 +57,12 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   bool requireChildren(Type type, size_t startIndex, size_t amount) const;
 
   /** byte order used in RISC-V architecture*/
-  static constexpr Endianness RISCV_ENDIANNESS = Endianness::LITTLE;
+  static constexpr ByteOrder RISCV_BYTEORDER = ByteOrder::kLittleEndian;
   /** bits per byte in RISC-V architecture*/
   static constexpr std::size_t RISCV_BITS_PER_BYTE = 8;
 
-  static constexpr SignedRepresentation RISCV_SIGNED_REPRESENTATION =
-      SignedRepresentation::TWOS_COMPLEMENT;
-
  private:
-  InstructionInformation _instructionInformation;
+  InstructionInformation& _instructionInformation;
 };
 }
 

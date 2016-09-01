@@ -20,7 +20,7 @@
 
 #include <memory>
 #include <string>
-#include <vector>
+#include <QtGlobal>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "core/memory-value.hpp"
@@ -34,10 +34,7 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    * \param value The value of this node.
    */
   ImmediateNode(MemoryValue value)
-  : AbstractSyntaxTreeNode(Type::IMMEDIATE)
-  , _value(value)
-  , IMMEDIATE_IDENTIFIER("Imm") {
-  }
+      : AbstractSyntaxTreeNode(Type::IMMEDIATE), _value(value), IMMEDIATE_IDENTIFIER("Imm") {}
 
   ~ImmediateNode() = default;
 
@@ -51,27 +48,26 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
   /**
    * \return true, if there are no children.
    */
-  bool validate() const override {
+  const ValidationResult validate() const override {
     // Immediate values can't have any children
-    return AbstractSyntaxTreeNode::_children.size() == 0;
+    return AbstractSyntaxTreeNode::_children.size() == 0
+               ? ValidationResult::success()
+               : ValidationResult::fail(QT_TRANSLATE_NOOP(
+                     "Syntax-Tree-Validation",
+                     "The immediate node must not have any children"));
   }
 
   /**
    * \return An empty MemoryValue, because the instruction has to be
    * assembled in the instruction node.
    */
-  // DummyMemoryAccess problem
-  MemoryValue assemble() const override {
-    DummyMemoryAccessStub emptyAccess;
-    return getValue(emptyAccess);
-  }
+  MemoryValue assemble() const override { return MemoryValue{}; }
 
   /**
    * Returns always the same string: "imm".
    *
    * \return The string "imm"
    */
-
   const std::string& getIdentifier() const override {
     return IMMEDIATE_IDENTIFIER;
   }

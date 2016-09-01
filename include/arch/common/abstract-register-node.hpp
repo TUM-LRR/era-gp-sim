@@ -18,6 +18,10 @@
 #ifndef ERAGPSIM_ARCH_COMMON_ABSTRACT_REGISTER_NODE_HPP
 #define ERAGPSIM_ARCH_COMMON_ABSTRACT_REGISTER_NODE_HPP
 
+#include <string>
+
+#include "arch/common/abstract-syntax-tree-node.hpp"
+#include "core/memory-value.hpp"
 
 /** A node that represents a register. */
 class RegisterNode : public AbstractSyntaxTreeNode {
@@ -44,7 +48,7 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   /**
    * \return true, if there are no children.
    */
-  virtual bool validate() const override {
+  virtual const ValidationResult validate() const override {
     // Registers can't have any children
     return AbstractSyntaxTreeNode::_children.size() == 0;
   }
