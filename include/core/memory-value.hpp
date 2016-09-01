@@ -156,6 +156,8 @@ class MemoryValue {
    */
   bool operator!=(const MemoryValue &other) const;
 
+  void write(const MemoryValue &other, std::size_t begin = 0);
+
   /**
    * \brief outputs the value onto the stream
    * \param stream stream to output value to

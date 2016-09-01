@@ -108,24 +108,24 @@ MemoryValue permute(const MemoryValue& memoryValue,
   return permute(memoryValue, byteSize, permutationVector);
 }
 
-bool unSignum(const MemoryValue& memoryValue) {
+bool unSignumA(const MemoryValue& memoryValue) {
   return false;
 }
 
-bool signum(const MemoryValue& memoryValue) {
+bool signumA(const MemoryValue& memoryValue) {
   return memoryValue.get(memoryValue.getSize() - 1);
 }
 
-MemoryValue nonsigned(const MemoryValue& memoryValue) {
+MemoryValue nonsignedB(const MemoryValue& memoryValue) {
   return memoryValue;
 }
 
-MemoryValue signBit(const MemoryValue& memoryValue) {
+MemoryValue signBitB(const MemoryValue& memoryValue) {
   assert(memoryValue.getSize() > 1);
   return memoryValue.subSet(0, memoryValue.getSize() - 1);
 }
 
-MemoryValue onesComplement(const MemoryValue& memoryValue) {
+MemoryValue onesComplementB(const MemoryValue& memoryValue) {
   assert(memoryValue.getSize() > 1);
   std::vector<std::uint8_t> raw{memoryValue.internal()};
   // cut last byte if necessary
@@ -139,9 +139,9 @@ MemoryValue onesComplement(const MemoryValue& memoryValue) {
   return MemoryValue{raw, memoryValue.getSize() - 1};
 }
 
-MemoryValue twosComplement(const MemoryValue& memoryValue) {
+MemoryValue twosComplementB(const MemoryValue& memoryValue) {
   // invert
-  MemoryValue result{onesComplement(memoryValue)};
+  MemoryValue result{onesComplementB(memoryValue)};
   // add one
   for (std::size_t i = 0; i < result.getSize() - 1; ++i) {
     if (!result.flip(i)) return result;
@@ -149,23 +149,24 @@ MemoryValue twosComplement(const MemoryValue& memoryValue) {
   return result;
 }
 
-MemoryValue
-nonsigned(const std::vector<std::uint8_t>& value, std::size_t size, bool sign) {
+MemoryValue nonsignedC(const std::vector<std::uint8_t>& value,
+                       std::size_t size,
+                       bool sign) {
   assert(!sign);// don't convert signed values via nonsigned
   return MemoryValue{value, size};
 }
 
 MemoryValue
-signBit(const std::vector<std::uint8_t>& value, std::size_t size, bool sign) {
+signBitC(const std::vector<std::uint8_t>& value, std::size_t size, bool sign) {
   MemoryValue result{value, size};
   // set the sign bit
   result.set(size - 1, sign);
   return result;
 }
 
-MemoryValue onesComplement(const std::vector<std::uint8_t>& value,
-                           std::size_t size,
-                           bool sign) {
+MemoryValue onesComplementC(const std::vector<std::uint8_t>& value,
+                            std::size_t size,
+                            bool sign) {
   std::vector<std::uint8_t> raw{value};
   // invert all bits
   for (std::size_t i = 0; i < raw.size(); ++i) {
@@ -177,11 +178,11 @@ MemoryValue onesComplement(const std::vector<std::uint8_t>& value,
   return result;
 }
 
-MemoryValue twosComplement(const std::vector<std::uint8_t>& value,
-                           std::size_t size,
-                           bool sign) {
+MemoryValue twosComplementC(const std::vector<std::uint8_t>& value,
+                            std::size_t size,
+                            bool sign) {
   // invert
-  MemoryValue result{onesComplement(value, size, sign)};
+  MemoryValue result{onesComplementC(value, size, sign)};
   // subtract one
   for (std::size_t i = 0; i < result.getSize() - 1; ++i) {
     if (result.flip(i)) return result;

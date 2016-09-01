@@ -25,7 +25,7 @@
 // clang-format on
 
 namespace {
-constexpr std::size_t scale = 1000;
+constexpr std::size_t scale = 1;
 }
 
 TEST(TestMemoryValue, getSize) {
@@ -250,6 +250,42 @@ TEST(TestMemoryValue, charAt2) {
             static_cast<std::uint16_t>(((raw[l / 8 + 1]) << 8) | raw[l / 8])};
         ASSERT_EQ(instance.getByteAt(l),
                   static_cast<uint8_t>(compare16 >> (l % 8)));
+      }
+    }
+  }
+}
+
+TEST(TestMemoryValue, write) {
+  constexpr std::size_t b = 128;  // Size
+  constexpr std::size_t t = scale;// testAmount
+  std::mt19937 rand{20141121u};   // I need a new Number
+  std::uniform_int_distribution<std::uint16_t> dist0{0, 255};
+  for (std::size_t i = 2; i < b; ++i) {// Length Of MemoryValue
+    std::vector<uint8_t> initializer0{};
+    for (std::size_t j = 0; j < ((i + 7) / 8); ++j) {
+      initializer0.push_back(static_cast<std::uint8_t>(dist0(rand)));
+    }
+    MemoryValue parent{initializer0, i};
+    for (std::size_t j = 1; j <= i; ++j) {// Length of SubSet
+      std::uniform_int_distribution<std::size_t> dist1{0, i - j};
+      for (std::size_t l = 0; l < t; ++l) {
+        std::vector<uint8_t> initializer1{};
+        for (std::size_t k = 0; k < ((j + 7) / 8); ++k) {
+          initializer1.push_back(static_cast<std::uint8_t>(dist0(rand)));
+        }
+        MemoryValue parentCopy{parent};
+        MemoryValue instance0{initializer1, j};
+        std::size_t address{dist1(rand)};
+        parent.write(instance0, address);
+        MemoryValue instance1{parent.subSet(address, address + j)};
+        ASSERT_EQ(instance0, instance1);
+        if (address > 0) {
+          ASSERT_EQ(parentCopy.subSet(0, address), parent.subSet(0, address));
+        }
+        if (i - j - address > 0) {
+          ASSERT_EQ(parentCopy.subSet(address + j, i),
+                    parent.subSet(address + j, i));
+        }
       }
     }
   }

@@ -164,6 +164,42 @@ bool MemoryValue::operator!=(const MemoryValue &other) const {
   return !((*this) == other);
 }
 
+namespace {
+constexpr uint8_t write0[8]{
+    0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F,
+};
+constexpr uint8_t write1[8]{
+    0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80, 0x00,
+};
+}
+
+
+void MemoryValue::write(const MemoryValue &other, std::size_t begin) {
+  std::size_t end{begin + other._size};
+  assert(begin < end);// _size > 0
+  assert(end <= _size);
+  // wipe clean
+  if (begin / 8 == (end - 1) / 8) {// begin & end are same byte
+    _data[begin / 8] &= write0[begin % 8] | write1[(end - 1) % 8];
+  } else {
+    // clear first byte
+    _data[begin / 8] &= write0[begin % 8];
+    // clear last byte
+    _data[(end - 1) / 8] &= write1[(end - 1) % 8];
+    // clear in between
+    for (std::size_t i = (begin / 8) + 1; i < (end - 1) / 8; ++i) {
+      _data[i] = 0x00;
+    }
+  }
+  // fill first byte
+  _data[begin / 8] |= other.getByteAt(0) << (begin % 8);
+  std::size_t filled{8 - (begin % 8)};
+  while (filled < other._size) {
+    _data[(begin + filled) / 8] |= other.getByteAt(filled);
+    filled += 8;
+  }
+}
+
 std::uint8_t MemoryValue::getByteAt(std::size_t address) const {
   assert(address < getSize());
   assert(address >= 0);
