@@ -4,31 +4,39 @@
   "instructions": [
     {
       "mnemonic": "fcvtls",
-      "key:
-      opcode": 83,
-      "  rs2": 2,
-      "  funct7": 96
+      "format": "R",
+      "key": {
+        "opcode": 83,
+        "rs2": 2,
+        "funct7": 96
+      }
     },
     {
       "mnemonic": "fcvtlus",
-      "key:
-      opcode": 83,
-      "  rs2": 3,
-      "  funct7": 96
+      "format": "R",
+      "key": {
+        "opcode": 83,
+        "rs2": 3,
+        "funct7": 96
+      }
     },
     {
       "mnemonic": "fcvtsl",
-      "key:
-      opcode": 83,
-      "  rs2": 2,
-      "  funct7": 104
+      "format": "R",
+      "key": {
+        "opcode": 83,
+        "rs2": 2,
+        "funct7": 104
+      }
     },
     {
       "mnemonic": "fcvtslu",
-      "key:
-      opcode": 83,
-      "  rs2": 3,
-      "  funct7": 104
+      "format": "R",
+      "key": {
+        "opcode": 83,
+        "rs2": 3,
+        "funct7": 104
+      }
     }
   ]
 }
