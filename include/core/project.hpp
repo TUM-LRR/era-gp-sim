@@ -30,6 +30,7 @@
 //#include "core/memory.hpp"
 #include "core/memory-value.hpp"
 #include "core/register-set.hpp"
+#include "core/servant.hpp"
 #include "parser/compile-error.hpp"
 #include "parser/final-representation.hpp"
 #include "parser/parser.hpp"
@@ -44,7 +45,7 @@
  * It provides memory and register access, and an interface for the ui. The ui
  * is updated with callbacks, which can be registered through this class.
  */
-class Project {
+class Project : public Servant {
  public:
   /**
    * Creates a new Project
@@ -55,7 +56,9 @@ class Project {
    * \param memorySize The number of memory cells
    *
    */
-  Project(ArchitectureFormula &&architectureFormula, int memorySize);
+  Project(std::weak_ptr<Scheduler> &&scheduler,
+          ArchitectureFormula &&architectureFormula,
+          int memorySize);
 
 
   // memory access (WARNING: Memory is not on master, might change!)
@@ -91,8 +94,8 @@ class Project {
    * const
    *
    */
-  MemoryValue
-  getRegisterValue(const std::string &name, const std::size_t byteSize) const;
+  MemoryValue getRegisterValue(const std::string &name,
+                               const std::size_t byteSize = 8) const;
 
   /**
    * Calls RegisterSet::get(const std::string& name, MemoryValue&& out) const
@@ -146,7 +149,7 @@ class Project {
   int getMemorySize() const;
 
   /**
-   * Sets the number of memory cells, might not be supported later TODO
+   * Sets the number of memory cells, might not be supported later
    *
    */
   void setMemorySize(int size);
@@ -160,89 +163,16 @@ class Project {
   InstructionSet getInstructionSet() const;
 
   /**
-   * Sets a breakpoint
-   *
-   * \param line the line at which the breakpoint is set
+   * Reset the state of the memory
    *
    */
-  void setBreakpoint(int line);
+  void resetMemory();
 
   /**
-   * Parses the given code
-   *
-   * \param code the std::string to parse
+   * Reset the state of the registers
    *
    */
-  void parse(std::string code);
-
-  /**
-   * Not sure if this is needed! How to decide if you call update or parse? TODO
-   * updates the finalRepresentation
-   *
-   * \param code the updated code as std::string
-   *
-   */
-  void update(std::string code);
-
-  // snapshot component
-
-  /**
-   * Creates a new snapshot of all data of this project
-   *
-   * \param name the name of the snapshot
-   *
-   */
-  void createSnapshot(std::string name);
-
-  // Snapshot loadSnapshot(std::string name);
-
-  /**
-   * Deletes a snapshot
-   *
-   * \param name The name of the snapshot which should be deleted
-   *
-   */
-  void deleteSnapshot(std::string name);
-
-  // toolbar component
-
-  /**
-   * Execute the whole assembler program
-   *
-   */
-  void execute();
-
-  /**
-   * Execute the next line of the assembler program
-   *
-   */
-  void executeNextLine();
-
-  /**
-   * Execute the assembler program to the next breakpoint
-   *
-   */
-  void executeToBreakpoint();
-
-  /**
-   * Stop/Pause the assembler program as soon as possible
-   *
-   */
-  void stop();
-
-  /**
-   * Set the line which should be executed with any execute...() method
-   *
-   * \param line
-   *
-   */
-  void setExecutionPoint(int line);
-
-  /**
-   * Reset the state of memory, registers and execution point
-   *
-   */
-  void reset();
+  void resetRegisters();
 
   // guiProject/QProject
 

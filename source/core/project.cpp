@@ -20,8 +20,11 @@
 #include "core/project.hpp"
 
 
-Project::Project(ArchitectureFormula &&architectureFormula, int memorySize)
-: _architecture(Architecture::Brew(std::move(architectureFormula)))
+Project::Project(std::weak_ptr<Scheduler> &&scheduler,
+                 ArchitectureFormula &&architectureFormula,
+                 int memorySize)
+: Servant(std::move(scheduler))
+, _architecture(Architecture::Brew(std::move(architectureFormula)))
 , _registerSet() {
   _architecture.validate();
 }
@@ -86,40 +89,10 @@ InstructionSet Project::getInstructionSet() const {
   return _architecture.getInstructions();
 }
 
-void Project::setBreakpoint(int line) {
+void Project::resetMemory() {
 }
 
-void Project::parse(std::string code) {
-}
-
-void Project::update(std::string code) {
-}
-
-void Project::createSnapshot(std::string name) {
-}
-
-/*Snapshot Project::loadSnapshot(std::string name) {
-}*/
-
-void Project::deleteSnapshot(std::string name) {
-}
-
-void Project::execute() {
-}
-
-void Project::executeNextLine() {
-}
-
-void Project::executeToBreakpoint() {
-}
-
-void Project::stop() {
-}
-
-void Project::setExecutionPoint(int line) {
-}
-
-void Project::reset() {
+void Project::resetRegisters() {
 }
 
 std::function<std::string(MemoryValue)>
