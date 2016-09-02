@@ -41,21 +41,21 @@ Item {
             // Register Title
             Label {
                 id: registerTitleLabel
-                anchors.left: registerTextField.left
+                anchors.left: registerContentItem.left
                 anchors.leftMargin: 1
                 anchors.top: parent.top
-                text: model.RegisterTitle
+                text: model.Title
                 font.pointSize: 15
                 font.weight: Font.Bold
                 color: "#585858"
             }
             // The list of available data formats.
             ComboBox {
-                id: dataTypeFormat
-                anchors.verticalCenter: registerTextField.verticalCenter
+                id: dataTypeFormatComboBox
+                anchors.verticalCenter: registerContentItem.verticalCenter
                 anchors.right: parent.right
-                width: 70
-                height: 1.2*registerTextField.height
+                width: 18
+                height: registerContentItem.height
                 model: ListModel {
                     id: dataTypeFormatModel
                     Component.onCompleted: {
@@ -66,17 +66,44 @@ Item {
                         });
                     }
                 }
+
+
+                style: ComboBoxStyle {
+                    // Selection Indicator
+                    label: Item {
+                        id: comboBoxSelectionIndicator
+                        // Triangle Up
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.top: parent.top
+                            anchors.topMargin: -3
+                            text: "\u25b2"
+                            font.pointSize: 7
+                        }
+                        // Triangle Down
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: -3
+                            text: "\u25bc"
+                            font.pointSize: 7
+                        }
+                    }
+                    // Remove ComboBox-background
+                    background: Rectangle {
+                        visible: false
+                    }
+                }
             }
-            // The register content.
-            TextField {
-                id: registerTextField
+            Loader {
+                id: registerContentItem
+
                 anchors.top: registerTitleLabel.bottom
                 anchors.topMargin: 3
                 anchors.left: parent.left
-                anchors.right: dataTypeFormat.left
+                anchors.right: dataTypeFormatComboBox.left
 
-                text: model.RegisterContent
-                inputMask: model.RegisterDisplayFormatString
+                source: "DefaultRegister.qml"
             }
         }
 

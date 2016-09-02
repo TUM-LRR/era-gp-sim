@@ -20,9 +20,11 @@
 #define REGISTERMODEL_H
 
 #include <QAbstractItemModel>
+#include <QDebug>
 #include <map>
 #include <string>
 #include "arch/common/register-information.hpp"
+#include "common/optional.hpp"
 
 /**
  * Aggregates the data of multiple registers. Subclasses QAbstractItemModel to
@@ -51,22 +53,13 @@ class RegisterModel : public QAbstractItemModel {
  public:
   explicit RegisterModel(QObject *parent = 0);
 
-  /// Identifies different kinds of data stored for each register.
-  enum RegisterModelRole {
-    TitleRole,
-    ContentRole,
-    DisplayFormatStringRole,
-    DataFormatsListRole
-  };
-
   /**
-   * @brief updateContent Sets the content (i.e. AB01DE23) of a specified
-   * register.
-   * @param registerIdentifier The unique identifier of the register whose
-   * content shall be altered.
-   * @param registerContent The new register value.
+   * @brief The RegisterModelRole enum Identifies different kinds of data stored
+   * for each register.
+   * There is no role for the register's content; refer to data method's
+   * description for an explanation.
    */
-  void updateContent(id_t registerIdentifier);
+  enum RegisterModelRole { IdentifierRole, TitleRole, DataFormatsListRole };
 
   /**
    * @brief index Returns a QModelIndex for the specified item inside the
@@ -101,6 +94,22 @@ class RegisterModel : public QAbstractItemModel {
    * @brief data The data for the register referenced by the given
    * QModelIndex and specified by the given data role.
    *
+   * RegisterModel purposely has no role for the register's content and
+   * therefore does not
+   * expose it via its data-method. This is due to the fact that there might
+   * be two views of the same RegisterModel visible on screen for which the user
+   * can independently set the data format (e.g. EAX has Hex-format in first
+   * view and Bin-format in second view). Even though the memory value is the
+   * same for both presentations the actual content-string varies significantly
+   * and can therefore not be fed by the same data-role. To achieve the desired
+   * behavior, the register's content properties (such as text and input mask
+   * for regular text fields) are connected (refer to QML-files
+   * DefaultRegister.qml and similar) to methods responsible for fetching and
+   * converting the required data (refer to `contentStringForRegister`or
+   * `displayFormatStringForRegister`) whenever the corresponding component is
+   * loaded or reloaded taking into consideration the currently selected format
+   * of the exact view of the register.
+   *
    * @param index The QModelIndex which points to the register item whose
    * data is requested.
    * @param role The data role specifying the requested type of data (e.g.
@@ -134,12 +143,129 @@ class RegisterModel : public QAbstractItemModel {
   int columnCount(const QModelIndex &parent = QModelIndex()) const
       Q_DECL_OVERRIDE;
 
+  /**
+   * @brief updateContent Sets the content (i.e. AB01DE23) of a specified
+   * register.
+   * @param registerIdentifier The unique identifier of the register whose
+   * content shall be altered.
+   * @param registerContent The new register value.
+   */
+  void updateContent(id_t registerIdentifier);
+
+  /**
+   * @brief registerContentChanged Notifies the Core when a register's content
+   * was changed by the use.
+   * @param registerContent The register's new content value.
+   */
+  Q_INVOKABLE void registerContentChanged(const QString &registerContent);
+
+  /**
+   * @brief contentStringForRegister Fetches the current memory value of the
+   * given register from the Core and converts it to a string with the
+   * data format currently selected for the given register.
+   * For a detailed explanation of the use of this method, refer to the
+   * description of `data`.
+   * @param registerIdentifierContainer QVariant-value containing the identifier
+   * of the register whose content is requested.
+   * @param currentDataFormatIndex Index of the data format currently active for
+   * the register whose content is requested. Required for performing
+   * a correct conversion to QString.
+   * @return QString-representation of the register's content with the currently
+   * active data format.
+   */
+  Q_INVOKABLE QString
+  contentStringForRegister(const QVariant &registerIdentifierContainer,
+                           unsigned int currentDataFormatIndex) const;
+
+  /**
+   * @brief displayFormatStringForRegister Computes a string used for formatting
+   * a QTextField via its inputMask-property fitting the currently
+   * active data format and the register's properties (e.g. "HH HH HH HH" for
+   * 32-bit register with Hex-format).
+   * For a detailed explanation of the use of this method, refer to the
+   * description of `data`.
+   * @param registerIdentifierContainer QVariant-value containing the identifier
+   * of the register whose display format string is requested.
+   * @param currentDataFormatIndex Index of the data format currently active for
+   * the register whose display format string is requested.
+   * @return A QString-value in the correct format to be used with the
+   * register's QTextField's inputMask-property.
+   */
+  Q_INVOKABLE QString
+  displayFormatStringForRegister(const QVariant &registerIdentifierContainer,
+                                 unsigned int currentDataFormatIndex) const;
+
+
  private:
   /// The dummy top-level item holding references to the visible top-level
   /// registers.
   std::unique_ptr<RegisterInformation> _rootItem;
+
   /// Map of all registers each identified by a unique register identifier.
   std::map<id_t, std::unique_ptr<RegisterInformation>> _items;
+
+  /// Associates each register type with a list of avilable data formats.
+  const std::map<RegisterInformation::Type, QStringList> _dataFormatLists = {
+      {RegisterInformation::Type::INTEGER,
+       QStringList() << "Binary"
+                     << "Hexadecimal"
+                     << "Decimal (Signed)"
+                     << "Decimal (Unsigned)"},
+      {RegisterInformation::Type::FLOAT,
+       QStringList() << "Binary"
+                     << "Hexadecimal"
+                     << "Float"},
+      {RegisterInformation::Type::FLAG,
+       QStringList() << "Binary"
+                     << "Flag"},
+      {RegisterInformation::Type::VECTOR,
+       QStringList() << "Binary"
+                     << "Hexadecimal"
+                     << "Vector"},
+      {RegisterInformation::Type::LINK,
+       QStringList() << "Binary"
+                     << "Hexadecimal"},
+      {RegisterInformation::Type::PROGRAM_COUNTER,
+       QStringList() << "Binary"
+                     << "Hexadecimal"}};
+
+  /**
+   * @brief registerItemForIdentifierContainer Retrieves the RegisterInformation
+   * object corresponding to the identifier.
+   * @param registerIdentifierContainer The QVariant container storing the
+   * item's identifier.
+   * @return The RegisterInformation object corresponding to the given
+   * identifier or no value if no corresponding object was found.
+   */
+  Optional<RegisterInformation> registerItemForIdentifierContainer(
+      const QVariant &registerIdentifierContainer) const;
+
+  /**
+   * @brief dataFormatForRegisterItem Retrieves the data format which is
+   * currently selected in a certain view of the register.
+   * @param registerItem The RegisterInformation object corresponding to the
+   * register whose data format is requested.
+   * @param currentDataFormatIndex The index of the data format currently
+   * selected in a certain view of the register relative to its dataFormat-list
+   * (refer to _dataFormatLists).
+   * @return The currently selected data format as a QString-value.
+   */
+  Optional<QString>
+  dataFormatForRegisterItem(const RegisterInformation &registerItem,
+                            unsigned int currentDataFormatIndex) const;
+
+  /**
+   * @brief computeDisplayFormatString Computes a string used for formatting a
+   * QTextField via its inputMask-property fitting the given data format.
+   * @param dataFormat The currently active data format.
+   * @param size The register's size.
+   * @param byteSize The size of one byte in bits.
+   * @return A QString-value in the correct format to be used with a
+   * QTextField's inputMask-property.
+   */
+  QString computeDisplayFormatString(const QString &dataFormat,
+                                     size_t size,
+                                     size_t byteSize) const;
 };
 
 #endif// REGISTERMODEL_H
