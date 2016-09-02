@@ -41,6 +41,18 @@ class MemoryAccess : public Proxy<Project> {
   POST_FUTURE(getMemory)
 
   /**
+   * Returns a number of memory cells at a given address as
+   * MemoryValue through a callback.
+   *
+   * \param callback std::function<void(Result<R>)> callback to call with the
+   * value(s).
+   * \param callerServant std::weak_ptr<Servant> servant which called this.
+   * \param address address of the memory cells.
+   * \param length number of memory cells to return, default is 1.
+   */
+  POST_CALLBACK_SAFE(getMemory)
+
+  /**
    * Puts a value into a memory cell.
    *
    * \param address The value is written to this address.
@@ -55,6 +67,17 @@ class MemoryAccess : public Proxy<Project> {
    * \param value The MemoryValue to write.
    */
   POST_FUTURE(setMemoryCell)
+
+  /**
+   * Set a memory cell to a value and return the old value through a callback.
+   *
+   * \param callback std::function<void(Result<R>)> callback to call with the
+   * value(s).
+   * \param callerServant std::weak_ptr<Servant> servant which called this.
+   * \param address The value is written to this address.
+   * \param value The MemoryValue to write.
+   */
+  POST_CALLBACK_SAFE(setMemoryCell)
 
   /**
    * Returns the number of memory cells(number of bytes)
