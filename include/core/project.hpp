@@ -39,7 +39,7 @@
 /**
  * This class holds all information about a project
  *
- * It wraps the architecture, memory, register and parser in one object, which
+ * It wraps the architecture, memory and register in one object, which
  * is one servant and lives in its own thread.
  *
  * It provides memory and register access, and an interface for the ui. The ui
@@ -219,7 +219,7 @@ class Project : public Servant {
   std::function<MemoryValue(std::string)> getFloatToMemoryValue() const;
 
 
-  // set gui callbacks
+  // set gui callbacks for registers and memory
 
   // register
 
@@ -253,67 +253,27 @@ class Project : public Servant {
    */
   void setUpdateMemoryCellCallback(std::function<void(int)> callback);
 
-  /**
-   * Set the callback which is used to signal the gui that context information
-   * for a memory cell was changed/added
-   *
-   * \param callback
-   *
-   */
-  void setSetContextInformationCallback(
-      std::function<void(int, int, int, std::string)> callback);
-
-  // editor
-
-  /**
-   * Set the callback which is used to set the error list in the gui(editor)
-   *
-   * \param callback
-   *
-   */
-  void setSetErrorListCallback(
-      std::function<void(std::vector<CompileError> &&)> callback);
-
-  // void setSetMacroListCallback(std::function<void(std::vector)> callback);
-  // TODO not yet know how macros are passed on by the parser
-
-  /**
-   * Set the callback which is used to inform the gui about the execution point
-   * to highlight it in the editor
-   *
-   * \param callback
-   *
-   */
-  void setSetCurrentLineCallback(std::function<void(int)> callback);
-
-  // snapshots
-  // TODO
-
-  // toolbar
-  // TODO
-
-
-  // parser interface?
-
 
  private:
+  /** An Architecture object, stores all information about the architecture of
+   * this project. */
   Architecture _architecture;
 
-  // Parser _parser;
-  FinalRepresentation _representation;
+  /** A memory object, manages the memory of this project. Not on the master
+   * branch at the moment. */
+  // Memory _memory;
 
-  // Memory _memory; not yet on master
+  /** A set of registers, manages the registers of this project. */
   RegisterSet _registerSet;
 
-
-  // gui callbacks
+  /** Callback to update a single register in the ui. */
   std::function<void(std::string)> _updateRegister;
+
+  /** Callback to update multiple registers in the ui at the same time. */
   std::function<void(std::vector<std::string> &&)> _updateRegisters;
+
+  /** Callback to update a memory cell in the ui. */
   std::function<void(int)> _updateMemoryCell;
-  std::function<void(int, int, int, std::string)> _setContextInformation;
-  std::function<void(std::vector<CompileError> &&)> _setErrorList;
-  // std::function<void(std::vector)>               _setMacroList;
-  std::function<void(int)> _setCurrentLine;
 };
 
 #endif /* ERAGPSIM_CORE_PROJECT_HPP_ */

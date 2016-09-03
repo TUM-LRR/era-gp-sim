@@ -58,23 +58,6 @@ class CallbackManager : public Proxy<Project> {
    *
    */
   POST(setUpdateMemoryCellCallback)
-
-  /**
-   * Set the callback which is used to set the error list in the gui(editor)
-   *
-   * \param callback std::function<void(std::vector<CompileError>
-   *
-   */
-  POST(setSetErrorListCallback)
-
-  /**
-   * Set the callback which is used to inform the gui about the execution point
-   * to highlight it in the editor
-   *
-   * \param callback std::function<void(int)>
-   *
-   */
-  POST(setSetCurrentLineCallback)
 };
 
 #endif /* ERAGPSIM_CORE_CALLBACK_MANAGER_HPP */

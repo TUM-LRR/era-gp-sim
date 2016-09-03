@@ -136,22 +136,3 @@ void Project::setUpdateRegistersCallback(
 void Project::setUpdateMemoryCellCallback(std::function<void(int)> callback) {
   _updateMemoryCell = callback;
 }
-
-void Project::setSetContextInformationCallback(
-    std::function<void(int, int, int, std::string)> callback) {
-  _setContextInformation = callback;
-}
-
-void Project::setSetErrorListCallback(
-    std::function<void(std::vector<CompileError> &&)> callback) {
-  _setErrorList = callback;
-}
-
-/*void Project::setSetMacroListCallback(
-    std::function<void(std::vector)> callback) {
-    _setMacroList = callback;
-}*/
-
-void Project::setSetCurrentLineCallback(std::function<void(int)> callback) {
-  _setCurrentLine = callback;
-}
