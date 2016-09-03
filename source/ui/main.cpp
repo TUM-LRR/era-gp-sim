@@ -22,7 +22,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 
-#include "ui/registermodel.hpp"
+#include "ui/register-model.hpp"
 #include "ui/editor-component.hpp"
 
 int main(int argc, char *argv[]) {

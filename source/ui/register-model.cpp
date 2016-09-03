@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-#include "ui/registermodel.hpp"
+#include "ui/register-model.hpp"
 
 RegisterModel::RegisterModel(QObject *parent)
 : QAbstractItemModel(parent), _rootItem(new RegisterInformation()) {

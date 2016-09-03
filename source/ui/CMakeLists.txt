@@ -4,14 +4,14 @@
 
 set(UI_SOURCES
     main.cpp
-    registermodel.cpp
+    register-model.cpp
     qproject.cpp
     syntaxhighlighter.cpp
     editor-component.cpp
 )
 
 set(UI_HEADERS
-    ../../include/ui/registermodel.hpp
+    ../../include/ui/register-model.hpp
     ../../include/ui/qproject.hpp
     ../../include/ui/syntaxhighlighter.hpp
     ../../include/ui/editor-component.hpp
