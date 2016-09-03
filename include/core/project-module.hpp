@@ -65,6 +65,12 @@ class ProjectModule {
    */
   ArchitectureAccess getArchitectureAccess();
 
+  /**
+   * Resets the state of registers, memory and the execution point
+   *
+   */
+  void reset();
+
 
  private:
   /** Scheduler for the project servant (active-object). */

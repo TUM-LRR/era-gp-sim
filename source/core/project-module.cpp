@@ -47,3 +47,9 @@ CallbackManager ProjectModule::getCallbackManager() {
 ArchitectureAccess ProjectModule::getArchitectureAccess() {
   return _architectureAccess;
 }
+
+void ProjectModule::reset() {
+    _memoryAccess.resetMemory();
+    _registerAccess.resetRegisters();
+    //set execution point to line 0
+}
