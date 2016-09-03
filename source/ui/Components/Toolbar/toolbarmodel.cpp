@@ -22,7 +22,9 @@
 #include <string>
 #include <iostream>
 
-ToolbarModel::ToolbarModel(): QObject(){
+ToolbarModel::ToolbarModel(QQmlContext* context): QObject(){
+    this->context=context;
+    context->setContextProperty("toolbarModel",  this);
 }
 
 void ToolbarModel::run(){
@@ -44,4 +46,8 @@ void ToolbarModel::stop(){
 void ToolbarModel::changeSystem(QByteArray s){
     std::string st=s.toStdString();
     std::cout<<"C++ changeSystem to "<<st<<" called"<<std::endl;
+}
+
+void ToolbarModel::finishExecution(){
+    emit disableStop();
 }

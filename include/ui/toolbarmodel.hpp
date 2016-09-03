@@ -21,16 +21,24 @@
 #define TOOLBARMODEL_H
 
 #include <QObject>
+#include <QQmlContext>
 
 class ToolbarModel: public QObject{
     Q_OBJECT
 public:
-    ToolbarModel();
+    ToolbarModel(QQmlContext* context);
     Q_INVOKABLE void run();
     Q_INVOKABLE void runLine();
     Q_INVOKABLE void runBreakpoint();
     Q_INVOKABLE void stop();
     Q_INVOKABLE void changeSystem(QByteArray s);
+    void finishExecution();
+
+private:
+    QQmlContext* context;
+
+signals:
+    void disableStop();
 };
 
 #endif // TOOLBARMODEL_H
