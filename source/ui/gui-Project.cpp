@@ -13,50 +13,50 @@ void GuiProject::changeSystem(std::string base){
 }
 
 
-std::function<std::string(int)> GuiProject::getHexConversion(){
+std::function<std::string (MemoryValue)> GuiProject::getHexConversion(){
     return hexConversion;
 }
 
-std::function<std::string(int)> GuiProject::getBinConversion(){
+std::function<std::string(MemoryValue)> GuiProject::getBinConversion(){
     return binConversion;
 }
 
-std::function<std::string(int)> GuiProject::getOctConversion(){
+std::function<std::string(MemoryValue)> GuiProject::getOctConversion(){
     return octConversion;
 }
 
-std::function<std::string(int)> GuiProject::getSignedDecimalConversion(){
+std::function<std::string(MemoryValue)> GuiProject::getSignedDecimalConversion(){
     return signedDecimalConversion;
 }
 
-std::function<std::string(int)> GuiProject::getUnsignedDecimalConversion(){
+std::function<std::string(MemoryValue)> GuiProject::getUnsignedDecimalConversion(){
     return unsignedDecimalConversion;
 }
 
-std::function<std::string(int)> GuiProject::getDecimalFloatConversion(){
+std::function<std::string(MemoryValue)> GuiProject::getDecimalFloatConversion(){
     return decimalFloatConversion;
 }
 
-std::function<int(std::string)> GuiProject::getSignedToMemoryValue(){
+std::function<MemoryValue(std::string)> GuiProject::getSignedToMemoryValue(){
     return signedToMemoryValue;
 }
 
-std::function<int(std::string)> GuiProject::getHexToMemoryValue(){
+std::function<MemoryValue(std::string)> GuiProject::getHexToMemoryValue(){
     return hexToMemoryValue;
 }
 
-std::function<int(std::string)> GuiProject::getBinToMemoryValue(){
+std::function<MemoryValue(std::string)> GuiProject::getBinToMemoryValue(){
     return binToMemoryValue;
 }
 
-std::function<int(std::string)> GuiProject::getOctToMemoryValue(){
+std::function<MemoryValue(std::string)> GuiProject::getOctToMemoryValue(){
     return octToMemoryValue;
 }
 
-std::function<int(std::string)> GuiProject::getUnsignedToMemoryValue(){
+std::function<MemoryValue(std::string)> GuiProject::getUnsignedToMemoryValue(){
     return unsignedToMemoryValue;
 }
 
-std::function<int(std::string)> GuiProject::getFloatToMemoryValue(){
+std::function<MemoryValue(std::string)> GuiProject::getFloatToMemoryValue(){
     return floatToMemoryValue;
 }
