@@ -120,8 +120,7 @@ bool MemoryValue::set(const std::size_t address, const bool value) {
       value) {
     return value;
   } else {
-    _data[byteAddressOfBit(address)] ^= testOr[offset(address)];
-    return !value;
+    return flip(address);
   }
 }
 

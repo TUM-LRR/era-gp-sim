@@ -156,6 +156,12 @@ class MemoryValue {
    */
   bool operator!=(const MemoryValue &other) const;
 
+  /**
+  * \brief returns writes the data of other into this starting with the
+  *        begin-th bit
+  * \param other the MemoryValue to be written
+  * \param begin the index of the first bit to be written to
+  */
   void write(const MemoryValue &other, std::size_t begin = 0);
 
   /**
@@ -182,8 +188,9 @@ class MemoryValue {
 #endif
 
  private:
-  std::size_t _size;
-  std::vector<std::uint8_t> _data;
+  std::size_t _size; /**< Brief Size of the MemoryValue in Bit*/
+  std::vector<std::uint8_t>
+      _data; /**< Brief The Data stored by the MemoryValue*/
 
   std::uint8_t getByteAt(std::size_t address) const;
 };

@@ -28,6 +28,9 @@ namespace {
 constexpr std::size_t scale = 1;
 }
 
+/**
+ * \Brief tests the getSize() method
+ */
 TEST(TestMemoryValue, getSize) {
   constexpr std::size_t b = 1024; // size
   constexpr std::size_t t = scale;// testAmount
@@ -41,6 +44,9 @@ TEST(TestMemoryValue, getSize) {
 }
 
 
+/**
+ * \Brief tests the put() method by inverting single bits
+ */
 TEST(TestMemoryValue, flip) {
   constexpr std::size_t b = 512;  // Size
   constexpr std::size_t t = scale;// testAmount
@@ -63,6 +69,10 @@ TEST(TestMemoryValue, flip) {
   }
 }
 
+/**
+ * \Brief tests the put() method by writing single bits
+ *        and then reading them
+ */
 TEST(TestMemoryValue, put) {
   constexpr std::size_t b = 512;  // Size
   constexpr std::size_t t = scale;// testAmount
@@ -81,6 +91,10 @@ TEST(TestMemoryValue, put) {
   }
 }
 
+/**
+ * \Brief tests the set() method by reading single bit,
+ *        setting this bit and then reading again
+ */
 TEST(TestMemoryValue, set) {
   constexpr std::size_t b = 512;  // Size
   constexpr std::size_t t = scale;// testAmount
@@ -101,6 +115,12 @@ TEST(TestMemoryValue, set) {
   }
 }
 
+/**
+ * \Brief tests the operator== by creating 4 memory values
+ *        A,B,C,D with A == c and B == C then filling
+ *        A and B with the same bits. Write single bit into C and D
+ *        that is the inverse of Aat the same index=> D != A == B != C
+ */
 TEST(TestMemoryValue, equals) {
   constexpr std::size_t b = 512;      // Size
   constexpr std::size_t t = scale * 4;// testAmount
@@ -135,6 +155,12 @@ TEST(TestMemoryValue, equals) {
   }
 }
 
+/**
+ * \Brief tests the getByteAt() method by creating
+ *        a random MemoryValue and an identical memoryValue
+ *        with reversed indices => reading from both should
+ *        result in mirrored bytes
+ */
 TEST(TestMemoryValue, charAt) {
   constexpr std::size_t b = 512;      // Size
   constexpr std::size_t t = scale * 4;// testAmount
@@ -163,6 +189,12 @@ TEST(TestMemoryValue, charAt) {
 }
 
 
+/**
+ * \Brief tests the subSet() method by creating
+ *        a random MemoryValue and an identical memoryValue
+ *        with reversed indices => reading from both should
+ *        result in mirrored MemoryValues
+ */
 TEST(TestMemoryValue, subSet) {
   constexpr std::size_t b = 512;  // byteAmount
   constexpr std::size_t t = scale;// testAmount
@@ -225,6 +257,12 @@ TEST(TestMemoryValue, subSet) {
   }
 }*/
 
+/**
+ * \Brief tests the getByteAt() method by creating
+ *        a random MemoryValue and saving the noise it
+ *        was created from and comparing it to the results
+ *        of reading.
+ */
 TEST(TestMemoryValue, charAt2) {
   constexpr std::size_t b = 512;      // Size
   constexpr std::size_t t = scale * 4;// testAmount
@@ -255,6 +293,9 @@ TEST(TestMemoryValue, charAt2) {
   }
 }
 
+/**
+* \Brief tests the write() method by writing and reading.
+*/
 TEST(TestMemoryValue, write) {
   constexpr std::size_t b = 128;  // Size
   constexpr std::size_t t = scale;// testAmount
