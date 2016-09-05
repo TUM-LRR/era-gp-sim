@@ -7,6 +7,7 @@ set(CORE_SOURCES
   register-set.cpp
   project.cpp
   project-module.cpp
+  parsing-and-execution-unit.cpp
 )
 
 ########################################

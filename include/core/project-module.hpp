@@ -24,8 +24,11 @@
 
 #include "arch/common/architecture-formula.hpp"
 #include "core/architecture-access.hpp"
+#include "core/command-interface.hpp"
 #include "core/memory-access.hpp"
 #include "core/memory-manager.hpp"
+#include "core/parser-interface.hpp"
+#include "core/parsing-and-execution-unit.hpp"
 #include "core/project.hpp"
 #include "core/proxy.hpp"
 #include "core/scheduler.hpp"
@@ -59,6 +62,18 @@ class ProjectModule {
   ArchitectureAccess getArchitectureAccess();
 
   /**
+   * Returns the CommandInterface proxy.
+   *
+   */
+  CommandInterface getCommandInterface();
+
+  /**
+   * Returns the ParserInterface proxy.
+   *
+   */
+  ParserInterface getParserInterface();
+
+  /**
    * Resets the state of registers, memory and the execution point
    *
    */
@@ -85,7 +100,14 @@ class ProjectModule {
   /** Proxy to access the architecture. */
   ArchitectureAccess _architectureAccess;
 
+  /** Proxy object used to create the parser-and-execution servant and initialize its proxies. */
+  Proxy<ParsingAndExecutionUnit> _proxyParsingAndExecution;
+
   /** ParseAndExecution proxy, will be added later. */
+  CommandInterface _commandInterface;
+
+  /** Proxy to access information of the parser. */
+  ParserInterface _parserInterface;
 };
 
 #endif /* ERAGPSIM_CORE_PROJECT_MODULE_HPP */

@@ -17,6 +17,9 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef ERAGPSIM_CORE_SERVANT_HPP_
+#define ERAGPSIM_CORE_SERVANT_HPP_
+
 #include <cassert>
 #include <functional>
 #include <memory>
@@ -89,3 +92,5 @@ class Servant : public std::enable_shared_from_this<Servant> {
 
   std::weak_ptr<Scheduler> _scheduler;
 };
+
+#endif /* ERAGPSIM_CORE_SERVANT_HPP_ */

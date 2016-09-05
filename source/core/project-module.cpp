@@ -28,7 +28,9 @@ ProjectModule::ProjectModule(ArchitectureFormula &&architectureFormula,
 , _memoryAccess(_proxyProject)
 , _memoryManager(_proxyProject)
 , _architectureAccess(_proxyProject)
- {
+, _proxyParsingAndExecution(std::move(_schedulerParsingAndExecution), _memoryAccess)
+, _commandInterface(_proxyParsingAndExecution)
+, _parserInterface(_proxyParsingAndExecution) {
 }
 
 
@@ -42,6 +44,14 @@ MemoryManager ProjectModule::getMemoryManager() {
 
 ArchitectureAccess ProjectModule::getArchitectureAccess() {
   return _architectureAccess;
+}
+
+CommandInterface ProjectModule::getCommandInterface() {
+    return _commandInterface;
+}
+
+ParserInterface ProjectModule::getParserInterface() {
+    return _parserInterface;
 }
 
 void ProjectModule::reset() {
