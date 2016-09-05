@@ -133,7 +133,7 @@ class IntegerInstructionNode : public InstructionNode {
     // one immediate operand
     if (_isImmediate) {
       if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
-          !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 3, 1)) {
+          !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
         return ValidationResult::fail(
             QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                               "The immediate-integer instructions must have 2 "
