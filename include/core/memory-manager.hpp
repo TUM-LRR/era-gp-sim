@@ -17,20 +17,46 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_CALLBACK_MANAGER_HPP
-#define ERAGPSIM_CORE_CALLBACK_MANAGER_HPP
+#ifndef ERAGPSIM_CORE_MEMORY_MANAGER_HPP
+#define ERAGPSIM_CORE_MEMORY_MANAGER_HPP
 
 #include "core/project.hpp"
 #include "core/proxy.hpp"
 
 /**
- * A Proxy to set the ui callbacks of a project safely.
+ * A proxy to manage the memory and registers of a project safely.
  *
  */
-class CallbackManager : public Proxy<Project> {
+class MemoryManager : public Proxy<Project> {
  public:
-  CallbackManager(const Proxy<Project>& proxy) : Proxy(proxy) {
+  MemoryManager(const Proxy<Project>& proxy) : Proxy(proxy) {
   }
+
+  /**
+   * Returns the number of memory cells(number of bytes)
+   *
+   */
+  POST_FUTURE(getMemorySize)
+
+  /**
+   * Sets the number of memory cells
+   * WARNING: might not be supported later
+   *
+   * \param size Number of memory cells
+   */
+  POST(setMemorySize)
+
+  /**
+   * Reset the state of the memory
+   *
+   */
+  POST(resetMemory)
+
+  /**
+   * Reset the state of the registers
+   *
+   */
+  POST(resetRegisters)
 
   /**
    * Set the callback which is used to signal the gui that a register was
@@ -60,4 +86,4 @@ class CallbackManager : public Proxy<Project> {
   POST(setUpdateMemoryCellCallback)
 };
 
-#endif /* ERAGPSIM_CORE_CALLBACK_MANAGER_HPP */
+#endif /* ERAGPSIM_CORE_MEMORY_MANAGER_HPP */

@@ -80,24 +80,69 @@ class MemoryAccess : public Proxy<Project> {
   POST_CALLBACK_SAFE(setMemoryCell)
 
   /**
-   * Returns the number of memory cells(number of bytes)
+   * Returns the content of a register as MemoryValue.
    *
+   * WARNING: the second paramter might dissappear in future versions
+   *
+   * Two overloads exist:
+   * First version:
+   * \param name The name of the register as std::string.
+   * \param byteSize The number of bits in one byte for this register, defaults
+   * to 8.
+   *
+   * Second version:
+   * \param name The name of the register as std::string.
+   * \param out rvalue ref of MemoryValue to write to.
    */
-  POST_FUTURE(getMemorySize)
+  POST_FUTURE(getRegisterValue)
 
   /**
-   * Sets the number of memory cells
-   * WARNING: might not be supported later
+   * Returns the content of a register as a MemoryValue through a callback.
    *
-   * \param size Number of memory cells
+   * \param callback std::function<void(Result<R>)> callback to call with the
+   * value(s).
+   * \param callerServant std::weak_ptr<Servant> servant which called this.
+   *
+   * first version:
+   * \param name The name of the register as std::string.
+   * \param byteSize The number of bits in one byte for this register, defaults
+   *
+   * second version:
+   * \param name The name of the register as std::string.
+   * \param out rvalue ref of MemoryValue to write to.
    */
-  POST(setMemorySize)
+  POST_CALLBACK_SAFE(getRegisterValue)
 
   /**
-   * Reset the state of the memory
+   * Puts a value in a register.
+   *
+   * \param name The name of the register as std::string.
+   * \param value The MemoryValue which is written in the register.
    *
    */
-  POST(resetMemory)
+  POST(putRegisterValue)
+
+  /**
+   * Sets a register to a value and returns the old value
+   *
+   * \param name The name of the register as std::string.
+   * \param value lvalue or rvalue reference to a MemoryValue object which is
+   * written to the register.
+   */
+  POST_FUTURE(setRegisterValue)
+
+  /**
+   * Sets a register to a value and returns the old value through a callback.
+   *
+   * \param callback std::function<void(Result<R>)> callback to call with the
+   * value(s).
+   * \param callerServant std::weak_ptr<Servant> servant which called this.
+   * \param name The name of the register as std::string.
+   * \param value lvalue or rvalue reference to a MemoryValue object which is
+   * written to the register.
+   */
+  POST_CALLBACK_SAFE(setRegisterValue)
+
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_ACCESS_HPP */

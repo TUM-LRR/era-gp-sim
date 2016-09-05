@@ -24,11 +24,10 @@
 
 #include "arch/common/architecture-formula.hpp"
 #include "core/architecture-access.hpp"
-#include "core/callback-manager.hpp"
 #include "core/memory-access.hpp"
+#include "core/memory-manager.hpp"
 #include "core/project.hpp"
 #include "core/proxy.hpp"
-#include "core/register-access.hpp"
 #include "core/scheduler.hpp"
 
 /**
@@ -48,16 +47,10 @@ class ProjectModule {
   MemoryAccess getMemoryAccess();
 
   /**
-   * Returns the RegisterAccess proxy.
+   * Returns the MemoryManager proxy.
    *
    */
-  RegisterAccess getRegisterAccess();
-
-  /**
-   * Returns the CallbackManager proxy.
-   *
-   */
-  CallbackManager getCallbackManager();
+  MemoryManager getMemoryManager();
 
   /**
    * Returns the ArchitectureAccess proxy.
@@ -81,16 +74,13 @@ class ProjectModule {
 
   /** Proxy object used to create project servant and initialize the other
    * proxies. */
-  Proxy<Project> _proxy;
+  Proxy<Project> _proxyProject;
 
-  /** Proxy to access the memory component. */
+  /** Proxy to access the memory and registers. */
   MemoryAccess _memoryAccess;
 
-  /** Proxy to access the register component. */
-  RegisterAccess _registerAccess;
-
-  /** Proxy to set the ui callbacks. */
-  CallbackManager _callbackManager;
+  /** Proxy to manage the memory and registers. */
+  MemoryManager _memoryManager;
 
   /** Proxy to access the architecture. */
   ArchitectureAccess _architectureAccess;

@@ -22,13 +22,13 @@
 ProjectModule::ProjectModule(ArchitectureFormula &&architectureFormula,
                              int memorySize)
 : _schedulerProject(std::make_shared<Scheduler>())
-, _schedulerParsingAndExecution()
-, _proxy(
+, _schedulerParsingAndExecution(std::make_shared<Scheduler>())
+, _proxyProject(
       std::move(_schedulerProject), std::move(architectureFormula), memorySize)
-, _memoryAccess(_proxy)
-, _registerAccess(_proxy)
-, _callbackManager(_proxy)
-, _architectureAccess(_proxy) {
+, _memoryAccess(_proxyProject)
+, _memoryManager(_proxyProject)
+, _architectureAccess(_proxyProject)
+ {
 }
 
 
@@ -36,12 +36,8 @@ MemoryAccess ProjectModule::getMemoryAccess() {
   return _memoryAccess;
 }
 
-RegisterAccess ProjectModule::getRegisterAccess() {
-  return _registerAccess;
-}
-
-CallbackManager ProjectModule::getCallbackManager() {
-  return _callbackManager;
+MemoryManager ProjectModule::getMemoryManager() {
+  return _memoryManager;
 }
 
 ArchitectureAccess ProjectModule::getArchitectureAccess() {
@@ -49,7 +45,7 @@ ArchitectureAccess ProjectModule::getArchitectureAccess() {
 }
 
 void ProjectModule::reset() {
-    _memoryAccess.resetMemory();
-    _registerAccess.resetRegisters();
-    //set execution point to line 0
+  _memoryManager.resetMemory();
+  _memoryManager.resetRegisters();
+  // set execution point to line 0
 }
