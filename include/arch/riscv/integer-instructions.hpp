@@ -76,8 +76,8 @@ class IntegerInstructionNode : public InstructionNode {
     MemoryValue memoryV1 = _children.at(1)->getValue(memory_access);
     MemoryValue memoryV2 = _children.at(2)->getValue(memory_access);
 
-    SizeType operand1 = convert<SizeType>(memoryV1, RISCV_BYTEORDER);
-    SizeType operand2 = convert<SizeType>(memoryV2, RISCV_BYTEORDER);
+    SizeType operand1 = convert<SizeType>(memoryV1, RISCV_ENDIANNESS);
+    SizeType operand2 = convert<SizeType>(memoryV2, RISCV_ENDIANNESS);
 
     SizeType result = performIntegerOperation(operand1, operand2);
 
@@ -92,7 +92,7 @@ class IntegerInstructionNode : public InstructionNode {
     if (_children.size() != 3) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(
           "Syntax-Tree-Validation",
-          "Integer instructions must have exactly 3 children"));
+          "Integer instructions must have exactly 3 operands"));
     }
     // check if all operands are valid themselves
     ValidationResult resultAll = validateAllChildren();
@@ -110,9 +110,10 @@ class IntegerInstructionNode : public InstructionNode {
       for (std::size_t index = 12; index < value.getByteSize(); ++index) {
         if (value.get(index)) {
           // 1 detected
-          return ValidationResult::fail(QT_TRANSLATE_NOOP(
-              "Syntax-Tree-Validation",
-              "The immediate value must be representable by 12 bits"));
+          return ValidationResult::fail(
+              QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                                "The immediate value of this instruction must "
+                                "be representable by 12 bits"));
         }
       }
       //      auto bits20 = value.getValue() & (~0xFFFFF);  // 2097151 =
@@ -136,14 +137,14 @@ class IntegerInstructionNode : public InstructionNode {
         return ValidationResult::fail(
             QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                               "The immediate-integer instructions must have 2 "
-                              "registers and 1 immediate"));
+                              "registers and 1 immediate as operands"));
       }
     } else {
       // a register integer instruction needs three register operands
       if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3)) {
         return ValidationResult::fail(QT_TRANSLATE_NOOP(
             "Syntax-Tree-Validation",
-            "The register-integer instructions must have 3 registers"));
+            "The register-integer instructions must have 3 registers as operands"));
       }
     }
     return ValidationResult::success();

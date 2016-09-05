@@ -58,7 +58,7 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   bool requireChildren(Type type, size_t startIndex, size_t amount) const;
 
   /** byte order used in RISC-V architecture*/
-  static constexpr ByteOrder RISCV_BYTEORDER = ByteOrder::kLittleEndian;
+  static constexpr Endianness RISCV_ENDIANNESS = Endianness::LITTLE;
   /** bits per byte in RISC-V architecture*/
   static constexpr std::size_t RISCV_BITS_PER_BYTE = 8;
 
