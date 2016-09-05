@@ -33,13 +33,15 @@ namespace riscv {
  *
  * Represents a load instruction.
  */
-template <typename SizeType>
+template <typename SignedType, typename UnsignedType>
 class LoadInstructionNode : public InstructionNode {
  public:
   /* The different types of a load instruction. See RISC V specification
      for reference.*/
   enum struct Type {
+    DOUBLE_WORD,       // LD (Only in RVI64)
     WORD,              // LW
+    WORD_UNSIGNED,     // LWU (Only in RVI64)
     HALF_WORD,         // LH
     HALF_WORD_UNSIGNED,// LHU
     BYTE,              // LB
@@ -50,22 +52,88 @@ class LoadInstructionNode : public InstructionNode {
   : InstructionNode(instructionInformation), _type(type) {
   }
 
+  void performUnsignedLoad(DummyMemoryAccess& memoryAccess,
+                           std::size_t address,
+                           std::size_t byteAmount,
+                           std::string destination) {
+    MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
+
+    // Check if zero-expansion is needed. This is the case, if the amount of
+    // bits loaded from memory is not equal to the amount of bits, a register
+    // can hold.
+    if (result.getSize() != sizeof(UnsignedType) * RISCV_BITS_PER_BYTE) {
+      // Do the zero-expansion by converting to an int and converting back
+      // to a memory value.
+      // TODO This can be made faster, by copying the bits into a new memory
+      // value of proper size. This can't be done yet, because the interface
+      // of the memory value is not quite clear in that sense.
+      UnsignedType converted = convert<UnsignedType>(mv, RISCV_ENDIANNESS);
+      result                 = convert<UnsignedType>(
+          converted, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+    }
+    memoryAccess.setRegisterValue(destination, expanded);
+  }
+
+  void performSignedLoad(DummyMemoryAccess& memoryAccess,
+                         std::size_t address,
+                         std::size_t byteAmount,
+                         std::string destination) {
+    MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
+
+    // Check if sign-expansion is needed. This is the case, if the amount of
+    // bits loaded from memory is not equal to the amount of bits, a register
+    // can hold.
+    if (result.getSize() != sizeof(SignedType) * RISCV_BITS_PER_BYTE) {
+      // Do a sign-expansion by converting the memory value to an integer
+      // and back to a memory value.
+      SignedType converted = convert<SignedType>(
+          result, RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
+      result = convert<SignedType>(converted,
+                                   RISCV_BITS_PER_BYTE,
+                                   RISCV_ENDIANNESS,
+                                   RISCV_SIGNED_REPRESENTATION);
+    }
+    memoryAccess.setRegisterValue(destination, result);
+  }
+
   MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
 
     std::string dest   = _children.at(0)->getIdentifier();
-    MemoryValue base   = _children.at(1)->getValue(memory_access);
-    MemoryValue offset = _children.at(2)->getValue(memory_access);
+    MemoryValue base   = _children.at(1)->getValue(memoryAccess);
+    MemoryValue offset = _children.at(2)->getValue(memoryAccess);
 
-    SizeType baseConverted   = convert<SizeType>(base, RISCV_ENDIANNESS);
-    SizeType offsetConverted = convert<SizeType>(offset, RISCV_ENDIANESS);
+    // The base (that comes from a register) has to be converted using an
+    // unsigned integer, to be able to address the whole address space
+    UnsignedType baseConverted = convert<UnsignedType>(base, RISCV_ENDIANNESS);
+    // The offset (that comes from the immediate value) has to be converted
+    // using an unsigned integer, to be able to have negative offsets
+    SignedType offsetConverted = convert<SignedType>(
+        offset, RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
 
-    SizeType effectiveAddress = baseConverted + offsetConverted;
+    std::size_t effectiveAddress = baseConverted + offsetConverted;
 
     switch (_type) {
-      case WORD:
-        memoryAccess.setRegisterValue(
-            dest, memoryAccess.getMemoryValueAt(effectiveAddress, 4));
+      case Type::DOUBLE_WORD:
+        performSignedLoad(memoryAccess, effectiveAddress, 8, dest);
+        break;
+      case Type::WORD:
+        performSignedLoad(memoryAccess, effectiveAddress, 4, dest);
+        break;
+      case Type::WORD_UNSIGNED:
+        performUnsignedLoad(memoryAccess, effectiveAddres, 4, dest);
+        break;
+      case Type::HALF_WORD:
+        performSignedLoad(memoryAccess, effectiveAddres, 2, dest);
+        break;
+      case Type::HALF_WORD_UNSIGNED:
+        performUnsignedLoad(memoryAccess, effectiveAddress, 2, dest);
+        break;
+      case Type::BYTE:
+        performSignedLoad(memoryAccess, effectiveAddress, 1, dest);
+        break;
+      case Type::BYTE_UNSIGNED:
+        performUnsignedLoad(memoryAccess, effectiveAddress, 1, dest);
         break;
     }
   }
@@ -115,9 +183,10 @@ class StoreInstructionNode : public InstructionNode {
   /* The different types of a store instruction. See RISC V specification
      for reference. */
   enum struct Type {
-    WORD,     // SW
-    HALF_WORD,// SH
-    BYTE      // SB
+    DOUBLE_WORD,// SD (Only in RVI64)
+    WORD,       // SW
+    HALF_WORD,  // SH
+    BYTE        // SB
   };
 
   StoreInstructionNode(InstructionInformation& instructionInformation,
