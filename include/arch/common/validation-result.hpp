@@ -38,7 +38,7 @@ class ValidationResult {
    * validation failed. A message, describing the problem, should be
    * given.
    *
-   * \param message The message indicating the problem. Should not be empty.
+   * \param message The message indicating the problem. Must not be empty.
    */
   static const ValidationResult fail(std::string message);
 
@@ -50,8 +50,7 @@ class ValidationResult {
   bool isSuccess() const;
 
   /**
-   * Returns the message, that describes the validation result. The string is
-   * empty, if the validation succeeded.
+   * Returns the message, that describes the validation result.
    * \return The message of the validation.
    */
   const std::string& getMessage() const;
