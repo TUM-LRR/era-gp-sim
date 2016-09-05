@@ -76,8 +76,8 @@ class IntegerInstructionNode : public InstructionNode {
     MemoryValue memoryV1 = _children.at(1)->getValue(memory_access);
     MemoryValue memoryV2 = _children.at(2)->getValue(memory_access);
 
-    SizeType operand1 = convert<SizeType>(memoryV1, RISCV_BYTEORDER);
-    SizeType operand2 = convert<SizeType>(memoryV2, RISCV_BYTEORDER);
+    SizeType operand1 = convert<SizeType>(memoryV1, RISCV_ENDIANESS);
+    SizeType operand2 = convert<SizeType>(memoryV2, RISCV_ENDIANESS);
 
     SizeType result = performIntegerOperation(operand1, operand2);
 

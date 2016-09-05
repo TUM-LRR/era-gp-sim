@@ -23,6 +23,7 @@
 #include "arch/riscv/instruction-node.hpp"
 
 #include <QtGlobal>
+#include <cassert>
 #include <string>
 
 namespace riscv {
@@ -32,6 +33,7 @@ namespace riscv {
  *
  * Represents a load instruction.
  */
+template <typename SizeType>
 class LoadInstructionNode : public InstructionNode {
  public:
   /* The different types of a load instruction. See RISC V specification
@@ -48,12 +50,54 @@ class LoadInstructionNode : public InstructionNode {
   : InstructionNode(instructionInformation), _type(type) {
   }
 
-  MemoryValue getValue(DummyMemoryAccess& memory_access) const override;
+  MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
+    assert(validate().isSuccess());
 
-  const ValidationResult validate() const override;
+    std::string dest   = _children.at(0)->getIdentifier();
+    MemoryValue base   = _children.at(1)->getValue(memory_access);
+    MemoryValue offset = _children.at(2)->getValue(memory_access);
 
-  MemoryValue assemble() const override {
-    return MemoryValue{};// TODO
+    SizeType baseConverted   = convert<SizeType>(base, RISCV_ENDIANNESS);
+    SizeType offsetConverted = convert<SizeType>(offset, RISCV_ENDIANESS);
+
+    SizeType effectiveAddress = baseConverted + offsetConverted;
+
+    switch (_type) {
+      case WORD:
+        memoryAccess.setRegisterValue(
+            dest, memoryAccess.getMemoryValueAt(effectiveAddress, 4));
+        break;
+    }
+  }
+
+  const ValidationResult validate() const override {
+    if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
+        !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
+      return ValidationResult::fail(QT_TRANSLATE_NOOP(
+          "Syntax-Tree-Validation",
+          "Load instructions must have 2 registers and 1 immediate"));
+    }
+
+    ValidationResult resultAll = validateAllChildren();
+    if (!resultAll.isSuccess()) {
+      return resultAll;
+    }
+
+    // Check if the immediate value is representable by 12 bits
+    // We can use an empty stub here, because immediate values don't need to
+    // access the memory
+    DummyMemoryAccessStub stub;
+    MemoryValue immediateValue = _children.at(2)->getValue(stub);
+
+    for (std::size_t index = 12; index < value.getSize(); ++index) {
+      if (value.get(index)) {
+        return ValidationResult::fail(QT_TRANSLATE_NOOP(
+            "Syntax-Tree-Validation",
+            "The immediate value must be representable by 12 bits"));
+      }
+    }
+
+    return ValidationResult::success();
   }
 
  private:
@@ -65,6 +109,7 @@ class LoadInstructionNode : public InstructionNode {
  *
  * Represents a store instruction.
  */
+template <typename SizeType>
 class StoreInstructionNode : public InstructionNode {
  public:
   /* The different types of a store instruction. See RISC V specification
@@ -80,12 +125,47 @@ class StoreInstructionNode : public InstructionNode {
   : InstructionNode(instructionInformation), _type(type) {
   }
 
-  MemoryValue getValue(DummyMemoryAccess& memory_access) const override;
+  MemoryValue getValue(DummyMemoryAccess& memory_access) const override {
+    assert(validate().isSuccess());
 
-  const ValidationResult validate() const override;
+    std::string dest   = _children.at(0)->getIdentifier();
+    MemoryValue base   = _children.at(1)->getValue(memory_access);
+    MemoryValue offset = _children.at(2)->getValue(memory_access);
 
-  MemoryValue assemble() const override {
-    return MemoryValue{};// TODO
+    SizeType baseConverted = convert<SizeType>(base, RISCV_ENDIANNESS);
+    // TODO Replace this with actual implementation
+    // TODO Ensure the correct amount of bytes are loaded from memory
+    return MemoryValue{};
+  }
+
+  const ValidationResult validate() const override {
+    if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
+        !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
+      return ValidationResult::fail(QT_TRANSLATE_NOOP(
+          "Syntax-Tree-Validation",
+          "Store instructions must have 2 registers and 1 immediate"));
+    }
+
+    ValidationResult resultAll = validateAllChildren();
+    if (!resultAll.isSuccess()) {
+      return resultAll;
+    }
+
+    // Check if the immediate value is representable by 12 bits
+    // We can use an empty stub here, because immediate values don't need to
+    // access the memory
+    DummyMemoryAccessStub stub;
+    MemoryValue immediateValue = _children.at(2)->getValue(stub);
+
+    for (std::size_t index = 12; index < value.getSize(); ++index) {
+      if (value.get(index)) {
+        return ValidationResult::fail(QT_TRANSLATE_NOOP(
+            "Syntax-Tree-Validation",
+            "The immediate value must be representable by 12 bits"));
+      }
+    }
+
+    return ValidationResult::success();
   }
 
  private:

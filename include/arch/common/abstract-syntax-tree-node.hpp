@@ -39,6 +39,17 @@ class DummyMemoryAccessStub : public DummyMemoryAccess {
   }
   void setRegisterValue(std::string& token, MemoryValue value) override {
   }
+
+  /**
+   * Retrieve 'amount' of bytes from the memory at address 'address'.
+   */
+  virtual MemoryValue
+  getMemoryValueAt(std::size_t address, std::size_t amount) = 0;
+
+  /**
+   * Write 'value' into the memory at address 'address'.
+   */
+  virtual void setMemoryValueAt(std::size_t address, MemoryValue value) = 0;
 };
 
 /** The base class for nodes in the abstract syntax tree */
