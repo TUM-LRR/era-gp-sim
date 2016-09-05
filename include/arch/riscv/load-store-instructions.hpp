@@ -55,7 +55,7 @@ class LoadInstructionNode : public InstructionNode {
   void performUnsignedLoad(DummyMemoryAccess& memoryAccess,
                            std::size_t address,
                            std::size_t byteAmount,
-                           std::string destination) {
+                           std::string destination) const {
     MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
 
     // Check if zero-expansion is needed. This is the case, if the amount of
@@ -67,17 +67,17 @@ class LoadInstructionNode : public InstructionNode {
       // TODO This can be made faster, by copying the bits into a new memory
       // value of proper size. This can't be done yet, because the interface
       // of the memory value is not quite clear in that sense.
-      UnsignedType converted = convert<UnsignedType>(mv, RISCV_ENDIANNESS);
+      UnsignedType converted = convert<UnsignedType>(result, RISCV_ENDIANNESS);
       result                 = convert<UnsignedType>(
           converted, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
     }
-    memoryAccess.setRegisterValue(destination, expanded);
+    memoryAccess.setRegisterValue(destination, result);
   }
 
   void performSignedLoad(DummyMemoryAccess& memoryAccess,
                          std::size_t address,
                          std::size_t byteAmount,
-                         std::string destination) {
+                         std::string destination) const {
     MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
 
     // Check if sign-expansion is needed. This is the case, if the amount of
@@ -121,10 +121,10 @@ class LoadInstructionNode : public InstructionNode {
         performSignedLoad(memoryAccess, effectiveAddress, 4, dest);
         break;
       case Type::WORD_UNSIGNED:
-        performUnsignedLoad(memoryAccess, effectiveAddres, 4, dest);
+        performUnsignedLoad(memoryAccess, effectiveAddress, 4, dest);
         break;
       case Type::HALF_WORD:
-        performSignedLoad(memoryAccess, effectiveAddres, 2, dest);
+        performSignedLoad(memoryAccess, effectiveAddress, 2, dest);
         break;
       case Type::HALF_WORD_UNSIGNED:
         performUnsignedLoad(memoryAccess, effectiveAddress, 2, dest);
@@ -155,7 +155,7 @@ class LoadInstructionNode : public InstructionNode {
     // We can use an empty stub here, because immediate values don't need to
     // access the memory
     DummyMemoryAccessStub stub;
-    MemoryValue immediateValue = _children.at(2)->getValue(stub);
+    MemoryValue value = _children.at(2)->getValue(stub);
 
     for (std::size_t index = 12; index < value.getSize(); ++index) {
       if (value.get(index)) {
@@ -224,7 +224,7 @@ class StoreInstructionNode : public InstructionNode {
     // We can use an empty stub here, because immediate values don't need to
     // access the memory
     DummyMemoryAccessStub stub;
-    MemoryValue immediateValue = _children.at(2)->getValue(stub);
+    MemoryValue value = _children.at(2)->getValue(stub);
 
     for (std::size_t index = 12; index < value.getSize(); ++index) {
       if (value.get(index)) {

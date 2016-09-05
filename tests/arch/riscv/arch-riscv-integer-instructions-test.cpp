@@ -92,6 +92,12 @@ class DummyMemoryAccessImpl : public DummyMemoryAccess {
     desiredRegister.set(value);
   }
 
+  MemoryValue getMemoryValueAt(std::size_t address, std::size_t amount) {
+      return MemoryValue{};
+  }
+
+  void setMemoryValueAt(std::size_t address, MemoryValue value) {}
+
  private:
   std::unordered_map<std::string, FakeRegister&> _register;
 };
