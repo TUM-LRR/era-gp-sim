@@ -57,7 +57,7 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
                ? ValidationResult::success()
                : ValidationResult::fail(QT_TRANSLATE_NOOP(
                      "Syntax-Tree-Validation",
-                     "The immediate node must not have any children"));
+                     "The immediate node must not have any arguments"));
   }
 
   /**
