@@ -51,11 +51,11 @@ class DummyMemoryAccessStub : public DummyMemoryAccess {
   void setRegisterValue(const std::string& token, MemoryValue value) override {
   }
 
-  MemoryValue getMemoryValueAt(std::size_t address, std::size_t amount) {
+  MemoryValue getMemoryValueAt(std::size_t address, std::size_t amount) override {
     return MemoryValue{};
   }
 
-  void setMemoryValueAt(std::size_t address, MemoryValue value) {
+  void setMemoryValueAt(std::size_t address, MemoryValue value) override {
   }
 };
 
