@@ -113,6 +113,11 @@ void initializeLoadStoreInstructions(
           info,
           LoadInstructionNode<SignedType, UnsignedType>::Type::WORD_UNSIGNED);
     });
+    _instructionMap.emplace("sd", [](InstructionInformation& info) {
+      return std::make_unique<StoreInstructionNode<SignedType, UnsignedType>>(
+          info,
+          StoreInstructionNode<SignedType, UnsignedType>::Type::DOUBLE_WORD);
+    });
   }
 
   // The following load instructions exist in every RISC V architecture
@@ -138,6 +143,19 @@ void initializeLoadStoreInstructions(
     return std::make_unique<LoadInstructionNode<SignedType, UnsignedType>>(
         info,
         LoadInstructionNode<SignedType, UnsignedType>::Type::BYTE_UNSIGNED);
+  });
+
+  _instructionMap.emplace("sw", [](InstructionInformation& info) {
+    return std::make_unique<StoreInstructionNode<SignedType, UnsignedType>>(
+        info, StoreInstructionNode<SignedType, UnsignedType>::Type::WORD);
+  });
+  _instructionMap.emplace("sh", [](InstructionInformation& info) {
+    return std::make_unique<StoreInstructionNode<SignedType, UnsignedType>>(
+        info, StoreInstructionNode<SignedType, UnsignedType>::Type::HALF_WORD);
+  });
+  _instructionMap.emplace("sb", [](InstructionInformation& info) {
+    return std::make_unique<StoreInstructionNode<SignedType, UnsignedType>>(
+        info, StoreInstructionNode<SignedType, UnsignedType>::Type::BYTE);
   });
 }
 

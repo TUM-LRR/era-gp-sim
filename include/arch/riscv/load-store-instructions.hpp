@@ -99,9 +99,9 @@ class LoadInstructionNode : public InstructionNode {
   MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
 
-    std::string dest   = _children.at(0)->getIdentifier();
-    MemoryValue base   = _children.at(1)->getValue(memoryAccess);
-    MemoryValue offset = _children.at(2)->getValue(memoryAccess);
+    const std::string& dest = _children.at(0)->getIdentifier();
+    MemoryValue base        = _children.at(1)->getValue(memoryAccess);
+    MemoryValue offset      = _children.at(2)->getValue(memoryAccess);
 
     // The base (that comes from a register) has to be converted using an
     // unsigned integer, to be able to address the whole address space
@@ -135,7 +135,9 @@ class LoadInstructionNode : public InstructionNode {
       case Type::BYTE_UNSIGNED:
         performUnsignedLoad(memoryAccess, effectiveAddress, 1, dest);
         break;
+      default: assert(false); break;
     }
+    return MemoryValue{};
   }
 
   const ValidationResult validate() const override {
@@ -177,7 +179,7 @@ class LoadInstructionNode : public InstructionNode {
  *
  * Represents a store instruction.
  */
-template <typename SizeType>
+template <typename SignedType, typename UnsignedType>
 class StoreInstructionNode : public InstructionNode {
  public:
   /* The different types of a store instruction. See RISC V specification
@@ -194,16 +196,33 @@ class StoreInstructionNode : public InstructionNode {
   : InstructionNode(instructionInformation), _type(type) {
   }
 
-  MemoryValue getValue(DummyMemoryAccess& memory_access) const override {
+  MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
 
-    std::string dest   = _children.at(0)->getIdentifier();
-    MemoryValue base   = _children.at(1)->getValue(memory_access);
-    MemoryValue offset = _children.at(2)->getValue(memory_access);
+    MemoryValue base       = _children.at(0)->getValue(memoryAccess);
+    const std::string& src = _children.at(1)->getIdentifier();
+    MemoryValue offset     = _children.at(2)->getValue(memoryAccess);
 
-    SizeType baseConverted = convert<SizeType>(base, RISCV_ENDIANNESS);
-    // TODO Replace this with actual implementation
-    // TODO Ensure the correct amount of bytes are loaded from memory
+    // Unsigned to be able to address the whole address space
+    UnsignedType baseConverted = convert<UnsignedType>(base, RISCV_ENDIANNESS);
+    // Signed to be able to have negative offsets
+    SignedType offsetConverted = convert<SignedType>(
+        base, RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
+
+    std::size_t effectiveAddress = baseConverted + offsetConverted;
+    std::size_t byteAmount;
+    switch (_type) {
+      case Type::DOUBLE_WORD: byteAmount = 8; break;
+      case Type::WORD: byteAmount        = 4; break;
+      case Type::HALF_WORD: byteAmount   = 2; break;
+      case Type::BYTE: byteAmount        = 1; break;
+      default: assert(false); break;
+    }
+
+    memoryAccess.setMemoryValueAt(
+        effectiveAddress,
+        memoryAccess.getRegisterValue(src).subSet(
+            0, byteAmount * RISCV_BITS_PER_BYTE, RISCV_BITS_PER_BYTE));
     return MemoryValue{};
   }
 

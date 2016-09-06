@@ -28,8 +28,8 @@
 // Dummy definition of a memory-access
 class DummyMemoryAccess {
  public:
-  virtual MemoryValue getRegisterValue(std::string& token) = 0;
-  virtual void setRegisterValue(std::string& token, MemoryValue value) = 0;
+  virtual MemoryValue getRegisterValue(const std::string& token) = 0;
+  virtual void setRegisterValue(const std::string& token, MemoryValue value) = 0;
 
   /**
    * Retrieve 'amount' of bytes from the memory at address 'address'.
@@ -45,10 +45,10 @@ class DummyMemoryAccess {
 // Dummy implementation of a memory-access
 class DummyMemoryAccessStub : public DummyMemoryAccess {
  public:
-  MemoryValue getRegisterValue(std::string& token) override {
+  MemoryValue getRegisterValue(const std::string& token) override {
     return MemoryValue{};
   }
-  void setRegisterValue(std::string& token, MemoryValue value) override {
+  void setRegisterValue(const std::string& token, MemoryValue value) override {
   }
 
   MemoryValue getMemoryValueAt(std::size_t address, std::size_t amount) {

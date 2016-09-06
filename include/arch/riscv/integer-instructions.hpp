@@ -70,7 +70,7 @@ class IntegerInstructionNode : public InstructionNode {
   MemoryValue getValue(DummyMemoryAccess& memory_access) const override {
     assert(validate().isSuccess());
     // Get the destination register
-    std::string destination = _children.at(0)->getIdentifier();
+    const std::string& destination = _children.at(0)->getIdentifier();
 
     // Evaluate the operands
     MemoryValue memoryV1 = _children.at(1)->getValue(memory_access);
