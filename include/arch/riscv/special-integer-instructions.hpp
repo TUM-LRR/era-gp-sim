@@ -104,6 +104,7 @@ class LuiInstructionNode : public SpecialIntegerInstructionNode {
         offsetConverted, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
 
     memoryAccess.setRegisterValue(destination, result);
+    return MemoryValue{};
   }
 };
 
@@ -138,6 +139,7 @@ class AuipcInstructionNode : public SpecialIntegerInstructionNode {
         programCounterConverted, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
 
     memoryAccess.setRegisterValue(destination, result);
+    return MemoryValue{};
   }
 };
 
