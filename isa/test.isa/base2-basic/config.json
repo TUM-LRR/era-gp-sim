@@ -4,9 +4,12 @@
   "instructions": [
     {
       "mnemonic": "sll",
-      "opcode": 6,
-      "function": 6,
-      "width": 6
+      "format": "R",
+      "key": {
+        "opcode": 6,
+        "function": 6,
+        "width": 6
+      }
     }
   ]
 }
