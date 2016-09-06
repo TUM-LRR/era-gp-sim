@@ -19,6 +19,7 @@
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
+#include "arch/riscv/special-integer-instructions.hpp"
 
 #include "common/utility.hpp"
 
@@ -94,6 +95,12 @@ void initializeIntegerInstructions(
   _instructionMap.emplace("srai", [](InstructionInformation& info) {
     return std::make_unique<ShiftArithmeticRightInstructionNode<WordSize>>(
         info, true);
+  });
+  _instructionMap.emplace("lui", [](InstructionInformation& info) {
+    return std::make_unique<LuiInstructionNode<WordSize>>(info);
+  });
+  _instructionMap.emplace("auipc", [](InstructionInformation& info) {
+    return std::make_unique<AuipcInstructionNode<WordSize>>(info);
   });
 }
 
