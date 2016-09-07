@@ -16,21 +16,4 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP_
-#define ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP_
-
-#include <algorithm>
-#include <cassert>
-#include <cstddef>
-#include <cstdint>
-#include <functional>
-#include <type_traits>
-#include <vector>
-
-#include "core/memory-value.hpp"
-
-MemoryValue permute(const MemoryValue& memoryValue,
-                    const std::size_t byteSize,
-                    const std::vector<std::size_t> permutation);
-
-#endif// ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP_
+#include "core/conversions.hpp"
