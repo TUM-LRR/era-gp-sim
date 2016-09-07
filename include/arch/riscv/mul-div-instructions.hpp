@@ -32,8 +32,8 @@ namespace riscv {
  * \tparam integer type that can hold exactly the range of values that this
  * operation should operate on
  */
-template <typename SizeType>
-class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
+template <typename SizeType, typename ResultType = SizeType>
+class MultiplicationInstruction : public IntegerInstructionNode<SizeType, ResultType> {
  public:
   /**
  * Describes what part of the result will be saved in the result register.
@@ -55,7 +55,7 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
   MultiplicationInstruction(InstructionInformation& info,
                             MultiplicationResultPart partOfResultReturned,
                             Type type)
-      : IntegerInstructionNode<SizeType>(info, false),
+      : IntegerInstructionNode<SizeType, ResultType>(info, false),
         _usePart(partOfResultReturned),
         _type(type) {
     // assert that SizeType is an unsigned integer type
@@ -253,11 +253,11 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
  * \tparam signed integer type that can hold exactly the range of values that
  * div should operate on
  */
-template <typename UnsignedSizeType, typename SignedSizeType>
-class DivisionInstruction : public IntegerInstructionNode<UnsignedSizeType> {
+template <typename UnsignedSizeType, typename SignedSizeType, typename ResultType = UnsignedSizeType>
+class DivisionInstruction : public IntegerInstructionNode<UnsignedSizeType, ResultType> {
  public:
   DivisionInstruction(InstructionInformation& info, bool isSignedDivision)
-      : IntegerInstructionNode<UnsignedSizeType>(info, false),
+      : IntegerInstructionNode<UnsignedSizeType, ResultType>(info, false),
         _isSignedDivision(isSignedDivision) {}
 
   UnsignedSizeType performIntegerOperation(UnsignedSizeType op1,
@@ -305,11 +305,11 @@ class DivisionInstruction : public IntegerInstructionNode<UnsignedSizeType> {
  * \tparam signed integer type that can hold exactly the range of values that
  * rem should operate on
  */
-template <typename UnsignedSizeType, typename SignedSizeType>
-class RemainderInstruction : public IntegerInstructionNode<UnsignedSizeType> {
+template <typename UnsignedSizeType, typename SignedSizeType, typename ResultType = UnsignedSizeType>
+class RemainderInstruction : public IntegerInstructionNode<UnsignedSizeType, ResultType> {
  public:
   RemainderInstruction(InstructionInformation& info, bool isSignedRemainder)
-      : IntegerInstructionNode<UnsignedSizeType>(info, false),
+      : IntegerInstructionNode<UnsignedSizeType, ResultType>(info, false),
         _isSignedRemainder(isSignedRemainder) {}
 
   UnsignedSizeType performIntegerOperation(UnsignedSizeType op1,
