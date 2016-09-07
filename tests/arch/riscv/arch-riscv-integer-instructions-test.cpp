@@ -1084,29 +1084,6 @@ TEST(MulDivInstructionTest, Multiplication_testMULHSU64) {
           0xffffffffffff8000, 0xffffffff80000000);
 }
 
-TEST(MulDivInstructionTest, Multiplication_testMULW) {
-  // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
-  std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
-  memoryAccess.addRegister(dest, destination);
-  memoryAccess.addRegister(op1, operand1);
-  memoryAccess.addRegister(op2, operand2);
-  auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
-
-  TEST_RR(0, to64BitMemoryValue, "mulw", 0x00000000, 0x00000000, 0x00000000);
-  TEST_RR(1, to64BitMemoryValue, "mulw", 0x00000001, 0x00000001, 0x00000001);
-  TEST_RR(2, to64BitMemoryValue, "mulw", 0x00000003, 0x00000007, 0x00000015);
-  TEST_RR(6, to64BitMemoryValue, "mulw", 2, -1LL, -2LL);
-
-  TEST_RR(3, to64BitMemoryValue, "mulw", 0x0000000000000000, 0xffffffffffff8000,
-          0x0000000000000000);
-  TEST_RR(4, to64BitMemoryValue, "mulw", 0xffffffff80000000, 0x00000000,
-          0x0000000000000000);
-  TEST_RR(5, to64BitMemoryValue, "mulw", 0xffffffff80000000, 0xffffffffffff8000,
-          0x0000000000000000);
-}
-
 TEST(MulDivInstructionTest, Multiplication_testValidation) {
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
   auto immediateFactory = ImmediateNodeFactory();
@@ -1213,52 +1190,6 @@ TEST(MulDivInstructionTest, Division_testDIVU64) {
   TEST_RR(8, to64BitMemoryValue, "divu", 0, 0, -1LL);
 }
 
-TEST(MulDivInstructionTest, Division_testDIVW) {
-  // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
-  std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
-  memoryAccess.addRegister(dest, destination);
-  memoryAccess.addRegister(op1, operand1);
-  memoryAccess.addRegister(op2, operand2);
-  auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
-
-  TEST_RR(0, to64BitMemoryValue, "divw", 20, 6, 3);
-  TEST_RR(1, to64BitMemoryValue, "divw", -20, 6, -3);
-  TEST_RR(2, to64BitMemoryValue, "divw", 20, -6, -3);
-  TEST_RR(3, to64BitMemoryValue, "divw", -20, -6, 3);
-
-  TEST_RR(4, to64BitMemoryValue, "divw", -1LL << 31, 1, -1LL << 31);
-  TEST_RR(5, to64BitMemoryValue, "divw", -1LL << 31, -1, -1LL << 31);
-
-  TEST_RR(6, to64BitMemoryValue, "divw", -1LL << 31, 0, -1LL);
-  TEST_RR(7, to64BitMemoryValue, "divw", 1, 0, -1);
-  TEST_RR(8, to64BitMemoryValue, "divw", 0, 0, -1);
-}
-
-TEST(MulDivInstructionTest, Division_testDIVUW) {
-  // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
-  std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
-  memoryAccess.addRegister(dest, destination);
-  memoryAccess.addRegister(op1, operand1);
-  memoryAccess.addRegister(op2, operand2);
-  auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
-
-  TEST_RR(0, to64BitMemoryValue, "divuw", 20, 6, 3);
-  TEST_RR(1, to64BitMemoryValue, "divuw", -20LL << 32 >> 32, 6, 715827879);
-  TEST_RR(2, to64BitMemoryValue, "divuw", 20, -6, 0);
-  TEST_RR(3, to64BitMemoryValue, "divuw", -20, -6, 0);
-
-  TEST_RR(4, to64BitMemoryValue, "divuw", -1LL << 31, 1, -1LL << 31);
-  TEST_RR(5, to64BitMemoryValue, "divuw", -1LL << 31, -1, 0);
-
-  TEST_RR(6, to64BitMemoryValue, "divuw", -1LL << 31, 0, -1);
-  TEST_RR(7, to64BitMemoryValue, "divuw", 1, 0, -1);
-  TEST_RR(8, to64BitMemoryValue, "divuw", 0, 0, -1);
-}
-
 TEST(MulDivInstructionTest, Division_testValidation) {
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
   auto immediateFactory = ImmediateNodeFactory();
@@ -1360,54 +1291,6 @@ TEST(MulDivInstructionTest, Remainder_testREMU64) {
   TEST_RR(6, to64BitMemoryValue, "remu", -1LL << 63, 0, -1LL << 63);
   TEST_RR(7, to64BitMemoryValue, "remu", 1, 0, 1);
   TEST_RR(8, to64BitMemoryValue, "remu", 0, 0, 0);
-}
-
-TEST(MulDivInstructionTest, Remainder_testREMW) {
-  // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
-  std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
-  memoryAccess.addRegister(dest, destination);
-  memoryAccess.addRegister(op1, operand1);
-  memoryAccess.addRegister(op2, operand2);
-  auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
-
-  TEST_RR(0, to64BitMemoryValue, "remw", 20, 6, 2);
-  TEST_RR(1, to64BitMemoryValue, "remw", -20, 6, -2);
-  TEST_RR(2, to64BitMemoryValue, "remw", 20, -6, 2);
-  TEST_RR(3, to64BitMemoryValue, "remw", -20, -6, -2);
-
-  TEST_RR(4, to64BitMemoryValue, "remw", -1LL << 31, 1, 0);
-  TEST_RR(5, to64BitMemoryValue, "remw", -1LL << 31, -1, 0);
-
-  TEST_RR(6, to64BitMemoryValue, "remw", -1LL << 31, 0, -1LL << 31);
-  TEST_RR(7, to64BitMemoryValue, "remw", 1, 0, 1);
-  TEST_RR(8, to64BitMemoryValue, "remw", 0, 0, 0);
-  TEST_RR(9, to64BitMemoryValue, "remw", 0xfffffffffffff897LL, 0,
-          0xfffffffffffff897LL);
-}
-
-TEST(MulDivInstructionTest, Remainder_testREMUW) {
-  // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
-  std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
-  memoryAccess.addRegister(dest, destination);
-  memoryAccess.addRegister(op1, operand1);
-  memoryAccess.addRegister(op2, operand2);
-  auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
-
-  TEST_RR(0, to64BitMemoryValue, "remuw", 20, 6, 2);
-  TEST_RR(1, to64BitMemoryValue, "remuw", -20, 6, 2);
-  TEST_RR(2, to64BitMemoryValue, "remuw", 20, -6, 20);
-  TEST_RR(3, to64BitMemoryValue, "remuw", -20, -6, -20);
-
-  TEST_RR(4, to64BitMemoryValue, "remuw", -1LL << 31, 1, 0);
-  TEST_RR(5, to64BitMemoryValue, "remuw", -1LL << 31, -1, -1LL << 31);
-
-  TEST_RR(6, to64BitMemoryValue, "remuw", -1LL << 31, 0, -1LL << 31);
-  TEST_RR(7, to64BitMemoryValue, "remuw", 1, 0, 1);
-  TEST_RR(8, to64BitMemoryValue, "remuw", 0, 0, 0);
 }
 
 TEST(MulDivInstructionTest, Remainder_testValidation) {
