@@ -85,6 +85,14 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   void initializeInstructionMap(const Architecture &architecture);
 
   /**
+   * Checks if the given architecture has the 'M' Multiplication/Division Extension loaded.
+   * If so, all instructions of the extension are filled into the InstructionMap
+   * \param architecture current loaded architecture
+   * \param wordsize The wordsize of the architecture (e.g. 32 or 64bit)
+   */
+  void initializeMExtensionIfPresent(const Architecture& architecture, Architecture::word_size_t wordsize);
+
+  /**
    * \brief _instructionMap
    * Table, that maps the instruction identifier (e.g. the token "add" for
    * Addition) to a function that creates the special instruction node (e.g.

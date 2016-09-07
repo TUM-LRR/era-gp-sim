@@ -44,7 +44,7 @@ namespace {
  * instructions should perform arithmetic operations with
  * \param _instructionMap Map to fill in, use lowercase mnemonics
  */
-template <typename WordSize, typename WordSizeSigned>
+template <typename WordSize>
 void initializeIntegerInstructions(
     InstructionNodeFactory::InstructionMap& _instructionMap) {
   _instructionMap.emplace("add", [](InstructionInformation& info) {
@@ -98,41 +98,43 @@ void initializeIntegerInstructions(
     return std::make_unique<ShiftArithmeticRightInstructionNode<WordSize>>(
         info, true);
   });
+}
+
+template <typename Signed, typename Unsigned>
+void initializeMultiplicationInstructions(
+    InstructionNodeFactory::InstructionMap& _instructionMap) {
   _instructionMap.emplace("mul", [](InstructionInformation& info) {
-    return std::make_unique<MultiplicationInstruction<WordSize>>(
-        info, MultiplicationInstruction<WordSize>::LOW,
-        MultiplicationInstruction<WordSize>::SIGNED);
+    return std::make_unique<MultiplicationInstruction<Unsigned>>(
+        info, MultiplicationInstruction<Unsigned>::LOW,
+        MultiplicationInstruction<Unsigned>::SIGNED);
   });
   _instructionMap.emplace("mulh", [](InstructionInformation& info) {
-    return std::make_unique<MultiplicationInstruction<WordSize>>(
-        info, MultiplicationInstruction<WordSize>::HIGH,
-        MultiplicationInstruction<WordSize>::SIGNED);
+    return std::make_unique<MultiplicationInstruction<Unsigned>>(
+        info, MultiplicationInstruction<Unsigned>::HIGH,
+        MultiplicationInstruction<Unsigned>::SIGNED);
   });
   _instructionMap.emplace("mulhu", [](InstructionInformation& info) {
-    return std::make_unique<MultiplicationInstruction<WordSize>>(
-        info, MultiplicationInstruction<WordSize>::HIGH,
-        MultiplicationInstruction<WordSize>::UNSIGNED);
+    return std::make_unique<MultiplicationInstruction<Unsigned>>(
+        info, MultiplicationInstruction<Unsigned>::HIGH,
+        MultiplicationInstruction<Unsigned>::UNSIGNED);
   });
   _instructionMap.emplace("mulhsu", [](InstructionInformation& info) {
-    return std::make_unique<MultiplicationInstruction<WordSize>>(
-        info, MultiplicationInstruction<WordSize>::HIGH,
-        MultiplicationInstruction<WordSize>::SIGNED_UNSIGNED);
+    return std::make_unique<MultiplicationInstruction<Unsigned>>(
+        info, MultiplicationInstruction<Unsigned>::HIGH,
+        MultiplicationInstruction<Unsigned>::SIGNED_UNSIGNED);
   });
   _instructionMap.emplace("div", [](InstructionInformation& info) {
-    return std::make_unique<DivisionInstruction<WordSize, WordSizeSigned>>(
-        info, true);
+    return std::make_unique<DivisionInstruction<Unsigned, Signed>>(info, true);
   });
   _instructionMap.emplace("divu", [](InstructionInformation& info) {
-    return std::make_unique<DivisionInstruction<WordSize, WordSizeSigned>>(
-        info, false);
+    return std::make_unique<DivisionInstruction<Unsigned, Signed>>(info, false);
   });
   _instructionMap.emplace("rem", [](InstructionInformation& info) {
-    return std::make_unique<RemainderInstruction<WordSize, WordSizeSigned>>(
-        info, true);
+    return std::make_unique<RemainderInstruction<Unsigned, Signed>>(info, true);
   });
   _instructionMap.emplace("remu", [](InstructionInformation& info) {
-    return std::make_unique<RemainderInstruction<WordSize, WordSizeSigned>>(
-        info, false);
+    return std::make_unique<RemainderInstruction<Unsigned, Signed>>(info,
+                                                                    false);
   });
 }
 }
@@ -144,14 +146,10 @@ void InstructionNodeFactory::initializeInstructionMap(
   Architecture::word_size_t wordSize = architecture.getWordSize();
   // create integer instructions depending on the word size of the architecture
   // (e.g. r32i or r64i)
-  if (wordSize == InstructionNodeFactory::RV32) {
-    initializeIntegerInstructions<
-        InstructionNodeFactory::RV32_integral_t,
-        InstructionNodeFactory::RV32_signed_integral_t>(_instructionMap);
-  } else if (wordSize == InstructionNodeFactory::RV64) {
-    initializeIntegerInstructions<
-        InstructionNodeFactory::RV64_integral_t,
-        InstructionNodeFactory::RV64_signed_integral_t>(_instructionMap);
+  if (wordSize == RV32) {
+    initializeIntegerInstructions<RV32_integral_t>(_instructionMap);
+  } else if (wordSize == RV64) {
+    initializeIntegerInstructions<RV64_integral_t>(_instructionMap);
   } else {
     // The given architecture does not define a valid word_size to create
     // IntegerInstructions
@@ -191,6 +189,28 @@ void InstructionNodeFactory::initializeInstructionMap(
     return std::make_unique<StoreInstructionNode>(
         info, StoreInstructionNode::Type::BYTE);
   });
+
+  // Extension 'M'
+  initializeMExtensionIfPresent(architecture, wordSize);
+}
+
+void InstructionNodeFactory::initializeMExtensionIfPresent(
+    const Architecture& architecture, Architecture::word_size_t wordsize) {
+  // TODO replace check by proper architecture.isExtendedBy("rvi32m")
+  if (architecture.getInstructions().hasInstruction("mul")) {
+    switch (wordsize) {
+      case RV32:
+        initializeMultiplicationInstructions<RV32_signed_integral_t,
+                                             RV32_integral_t>(_instructionMap);
+        break;
+      case RV64:
+        initializeMultiplicationInstructions<RV64_signed_integral_t,
+                                             RV64_integral_t>(_instructionMap);
+        break;
+      default:
+        assert(false);  // invalid wordsize
+    }
+  }
 }
 
 std::unique_ptr<AbstractSyntaxTreeNode>
