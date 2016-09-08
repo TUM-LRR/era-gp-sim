@@ -32,5 +32,6 @@
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
         <file>Components/Register/DefaultRegister.qml</file>
+        <file>Components/Register/FlagRegister.qml</file>
     </qresource>
 </RCC>

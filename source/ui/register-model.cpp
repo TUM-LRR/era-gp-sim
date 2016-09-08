@@ -34,6 +34,27 @@ RegisterModel::RegisterModel(QObject *parent)
   _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
       ax->getID(), std::unique_ptr<RegisterInformation>(ax)));
   eax->addConstituent(ax->getID());
+  // Status-Register
+  RegisterInformation *statusReg = new RegisterInformation("Statusregister");
+  statusReg->type(RegisterInformation::Type::INTEGER);
+  statusReg->size(8);
+  _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
+      statusReg->getID(), std::unique_ptr<RegisterInformation>(statusReg)));
+  _rootItem->addConstituent(statusReg->getID());
+  // Status-Register, Flag 1
+  RegisterInformation *flag1 = new RegisterInformation("Sign");
+  flag1->type(RegisterInformation::Type::FLAG);
+  flag1->size(1);
+  _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
+      flag1->getID(), std::unique_ptr<RegisterInformation>(flag1)));
+  statusReg->addConstituent(flag1->getID());
+  // Status-Register, Flag 2
+  RegisterInformation *flag2 = new RegisterInformation("Zero");
+  flag2->type(RegisterInformation::Type::FLAG);
+  flag2->size(1);
+  _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
+      flag2->getID(), std::unique_ptr<RegisterInformation>(flag2)));
+  statusReg->addConstituent(flag2->getID());
 }
 
 
@@ -179,21 +200,31 @@ int RegisterModel::columnCount(const QModelIndex &parent) const {
 
 
 void RegisterModel::registerContentChanged(const QString &registerContent) {
-  qDebug() << registerContent;
+  qDebug() << "registerContentChanged: " << registerContent;
   // TODO: Convert to MemoryValue.
   // TODO: Notify Core.
 }
 
 
-QString RegisterModel::contentStringForRegister(
-    const QVariant &registerIdentifierContainer,
-    unsigned int currentDataFormatIndex) const {
+QStringList
+RegisterModel::dataFormatListForRegister(const QModelIndex &index) const {
+  RegisterInformation *registerItem =
+      static_cast<RegisterInformation *>(index.internalPointer());
+  if (registerItem != nullptr) {
+    return _dataFormatLists.at(registerItem->getType());
+  }
+  return QStringList();
+}
+
+
+QVariant RegisterModel::contentStringForRegister(
+    const QModelIndex &index, unsigned int currentDataFormatIndex) const {
   // TODO: Fetch memory value from core.
   // TODO: Convert memory value to string with format as specified by
   // currentDataFormatIndex.
-  Optional<RegisterInformation> registerItem =
-      registerItemForIdentifierContainer(registerIdentifierContainer);
-  if (registerItem) {
+  if (index.internalPointer() != nullptr) {
+    RegisterInformation *registerItem =
+        static_cast<RegisterInformation *>(index.internalPointer());
     Optional<QString> dataFormat =
         dataFormatForRegisterItem(*registerItem, currentDataFormatIndex);
     if (dataFormat) {
@@ -206,6 +237,8 @@ QString RegisterModel::contentStringForRegister(
         return "2869021987";
       } else if (*dataFormat == "Decimal (Signed)") {
         return "-1425945309";
+      } else if (*dataFormat == "Flag") {
+        return QVariant(false);
       }
     }
   }
@@ -214,11 +247,10 @@ QString RegisterModel::contentStringForRegister(
 
 
 QString RegisterModel::displayFormatStringForRegister(
-    const QVariant &registerIdentifierContainer,
-    unsigned int currentDataFormatIndex) const {
-  Optional<RegisterInformation> registerItem =
-      registerItemForIdentifierContainer(registerIdentifierContainer);
-  if (registerItem) {
+    const QModelIndex &index, unsigned int currentDataFormatIndex) const {
+  if (index.internalPointer() != nullptr) {
+    RegisterInformation *registerItem =
+        static_cast<RegisterInformation *>(index.internalPointer());
     Optional<QString> dataFormat =
         dataFormatForRegisterItem(*registerItem, currentDataFormatIndex);
 
@@ -229,18 +261,6 @@ QString RegisterModel::displayFormatStringForRegister(
     }
   }
   return "";
-}
-
-
-Optional<RegisterInformation> RegisterModel::registerItemForIdentifierContainer(
-    const QVariant &registerIdentifierContainer) const {
-  id_t registerIdentifier = registerIdentifierContainer.value<id_t>();
-  // Search for corresponding RegisterInformation-object inside _items-map.
-  auto search = _items.find(registerIdentifier);
-  if (search != _items.end()) {
-    return *search->second.get();
-  }
-  return Optional<RegisterInformation>();
 }
 
 

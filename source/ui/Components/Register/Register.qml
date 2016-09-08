@@ -22,6 +22,8 @@ import QtQuick.Controls.Styles 1.4
 Item {
     // Displays the registers in a tree-like structure.
     TreeView {
+        id: registerTreeView
+
         anchors.fill: parent
         backgroundVisible: false
         style: TreeViewStyle {
@@ -60,20 +62,32 @@ Item {
                     id: dataTypeFormatModel
                     Component.onCompleted: {
                         // Creates a ListModel from the list of data formats provided by the RegisterModel.
-                        var list = model.DataFormatsList;
+                        // The corresponding list of data formats has to be fetched manually instead of
+                        // being exposed through a data role (such as model.Title) as the TreeView-model gets
+                        // released automatically at some point (i.e. when expanding, collapsing and expanding
+                        // an item). Likely a QML-bug.
+                        var list = registerModel.dataFormatListForRegister(styleData.index);
                         list.forEach(function(entry) {
                             append({"text": entry});
                         });
                     }
                 }
-
-
+                onCurrentIndexChanged: {
+                    // Certain registers require a different content item than a text field.
+                    // They are loaded when such a data format is selected.
+                    if (currentText == "Flag") {
+                        registerContentItem.source = "FlagRegister.qml"
+                    } else {
+                        registerContentItem.source = "DefaultRegister.qml"
+                    }
+                }
                 style: ComboBoxStyle {
                     // Selection Indicator
                     label: Item {
                         id: comboBoxSelectionIndicator
                         // Triangle Up
                         Text {
+                            id: triangleUp
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.top: parent.top
                             anchors.topMargin: -3
@@ -82,9 +96,10 @@ Item {
                         }
                         // Triangle Down
                         Text {
+                            id: triangleDown
                             anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: -3
+                            anchors.top: triangleUp.bottom
+                            anchors.topMargin: 2
                             text: "\u25bc"
                             font.pointSize: 7
                         }
@@ -102,8 +117,6 @@ Item {
                 anchors.topMargin: 3
                 anchors.left: parent.left
                 anchors.right: dataTypeFormatComboBox.left
-
-                source: "DefaultRegister.qml"
             }
         }
 

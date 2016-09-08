@@ -160,6 +160,17 @@ class RegisterModel : public QAbstractItemModel {
   Q_INVOKABLE void registerContentChanged(const QString &registerContent);
 
   /**
+   * @brief dataFormatListForRegister Returns the list of available data
+   * format names for the register with the given index to be available to the
+   * user for selection. Refer to Register.qml::dataTypeFormatComboBox::model
+   * for why this method exists.
+   * @param index The index the list of data formats is requested for.
+   * @return The list of data format names as QStrings.
+   */
+  Q_INVOKABLE QStringList
+  dataFormatListForRegister(const QModelIndex &index) const;
+
+  /**
    * @brief contentStringForRegister Fetches the current memory value of the
    * given register from the Core and converts it to a string with the
    * data format currently selected for the given register.
@@ -173,9 +184,8 @@ class RegisterModel : public QAbstractItemModel {
    * @return QString-representation of the register's content with the currently
    * active data format.
    */
-  Q_INVOKABLE QString
-  contentStringForRegister(const QVariant &registerIdentifierContainer,
-                           unsigned int currentDataFormatIndex) const;
+  Q_INVOKABLE QVariant contentStringForRegister(
+      const QModelIndex &index, unsigned int currentDataFormatIndex) const;
 
   /**
    * @brief displayFormatStringForRegister Computes a string used for formatting
@@ -191,9 +201,8 @@ class RegisterModel : public QAbstractItemModel {
    * @return A QString-value in the correct format to be used with the
    * register's QTextField's inputMask-property.
    */
-  Q_INVOKABLE QString
-  displayFormatStringForRegister(const QVariant &registerIdentifierContainer,
-                                 unsigned int currentDataFormatIndex) const;
+  Q_INVOKABLE QString displayFormatStringForRegister(
+      const QModelIndex &index, unsigned int currentDataFormatIndex) const;
 
 
  private:
@@ -216,8 +225,8 @@ class RegisterModel : public QAbstractItemModel {
                      << "Hexadecimal"
                      << "Float"},
       {RegisterInformation::Type::FLAG,
-       QStringList() << "Binary"
-                     << "Flag"},
+       QStringList() << "Flag"
+                     << "Binary"},
       {RegisterInformation::Type::VECTOR,
        QStringList() << "Binary"
                      << "Hexadecimal"
@@ -228,17 +237,6 @@ class RegisterModel : public QAbstractItemModel {
       {RegisterInformation::Type::PROGRAM_COUNTER,
        QStringList() << "Binary"
                      << "Hexadecimal"}};
-
-  /**
-   * @brief registerItemForIdentifierContainer Retrieves the RegisterInformation
-   * object corresponding to the identifier.
-   * @param registerIdentifierContainer The QVariant container storing the
-   * item's identifier.
-   * @return The RegisterInformation object corresponding to the given
-   * identifier or no value if no corresponding object was found.
-   */
-  Optional<RegisterInformation> registerItemForIdentifierContainer(
-      const QVariant &registerIdentifierContainer) const;
 
   /**
    * @brief dataFormatForRegisterItem Retrieves the data format which is

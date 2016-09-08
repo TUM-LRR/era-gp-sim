@@ -20,11 +20,8 @@ import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
 
-TextField {
-    id: registerTextField
+CheckBox {
+    id: registerCheckBox
 
-    inputMask: registerModel.displayFormatStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
-    text: registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
-
-    onEditingFinished: registerModel.registerContentChanged(registerTextField.text)
+    checked: registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
 }
