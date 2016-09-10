@@ -1,4 +1,4 @@
-r# RISC-V: RV32I
+# RISC-V: RV32I
 
 name: rv32i
 
@@ -8,162 +8,125 @@ word-size: 32
 
 instructions:
   - mnemonic: lui
-    key:
-      opcode: 55
+    opcode: 55
   - mnemonic: auipc
-    key:
-      opcode: 23
+    opcode: 23
   - mnemonic: jal
-    key:
-      opcode: 111
+    opcode: 111
   - mnemonic: jalr
-    key:
-      opcode: 103
+    opcode: 103
   - mnemonic: beq
-    key:
-      opcode: 99
-      funct3: 0
+    opcode: 99
+    funct3: 0
   - mnemonic: bne
-    key:
-      opcode: 99
-      funct3: 1
+    opcode: 99
+    funct3: 1
   - mnemonic: blt
-    key:
-      opcode: 99
-      funct3: 4
+    opcode: 99
+    funct3: 4
   - mnemonic: bge
-    key:
-      opcode: 99
-      funct3: 5
+    opcode: 99
+    funct3: 5
   - mnemonic: bltu
-    key:
-      opcode: 99
-      funct3: 6
+    opcode: 99
+    funct3: 6
   - mnemonic: bgeu
-    key:
-      opcode: 99
-      funct3: 7
+    opcode: 99
+    funct3: 7
   - mnemonic: lb
-    key:
-      opcode: 3
-      funct3: 0
+    opcode: 3
+    funct3: 0
   - mnemonic: lh
-    key:
-      opcode: 3
-      funct3: 1
+    opcode: 3
+    funct3: 1
   - mnemonic: lw
-    key:
-      opcode: 3
-      funct3: 2
+    opcode: 3
+    funct3: 2
   - mnemonic: lbu
-    key:
-      opcode: 3
-      funct3: 4
+    opcode: 3
+    funct3: 4
   - mnemonic: lhu
-    key:
-      opcode: 3
-      funct3: 5
+    opcode: 3
+    funct3: 5
   - mnemonic: sb
-    key:
-      opcode: 35
+    opcode: 35
     funct: 0
   - mnemonic: sh
-    key:
-      opcode: 35
+    opcode: 35
     funct: 1
   - mnemonic: sw
-    key:
-      opcode: 35
+    opcode: 35
     funct: 2
   - mnemonic: addi
-    key:
-      opcode: 19
-      funct3: 0
+    opcode: 19
+    funct3: 0
   - mnemonic: slti
-    key:
-      opcode: 19
-      funct3: 2
+    opcode: 19
+    funct3: 2
   - mnemonic: sltiu
-    key:
-      opcode: 19
-      funct3: 3
+    opcode: 19
+    funct3: 3
   - mnemonic: xori
-    key:
-      opcode: 19
-      funct3: 4
+    opcode: 19
+    funct3: 4
   - mnemonic: ori
-    key:
-      opcode: 19
-      funct3: 6
+    opcode: 19
+    funct3: 6
   - mnemonic: andi
-    key:
-      opcode: 19
-      funct3: 7
+    opcode: 19
+    funct3: 7
   - mnemonic: slli
-    key:
-      opcode: 19
-      funct3: 1
-      funct7: 0
+    opcode: 19
+    funct3: 1
+    func7: 0
   - mnemonic: srli
-    key:
-      opcode: 19
-      funct3: 5
-      funct7: 0
+    opcode: 19
+    funct3: 5
+    func7: 0
   - mnemonic: srai
-    key:
-      opcode: 19
-      funct3: 5
-      funct7: 32
+    opcode: 19
+    funct3: 5
+    func7: 32
   - mnemonic: add
-    key:
-      opcode: 51
-      funct3: 0
-      funct7: 0
+    opcode: 51
+    funct3: 0
+    func7: 0
   - mnemonic: sub
-    key:
-      opcode: 51
-      funct3: 0
-      funct7: 32
+    opcode: 51
+    funct3: 0
+    func7: 32
   - mnemonic: sll
-    key:
-      opcode: 51
-      funct3: 1
-      funct7: 0
+    opcode: 51
+    funct3: 1
+    func7: 0
   - mnemonic: slt
-    key:
-      opcode: 51
-      funct3: 2
-      funct7: 0
+    opcode: 51
+    funct3: 2
+    func7: 0
   - mnemonic: sltu
-    key:
-      opcode: 51
-      funct3: 3
-      funct7: 0
+    opcode: 51
+    funct3: 3
+    func7: 0
   - mnemonic: xor
-    key:
-      opcode: 51
-      funct3: 4
-      funct7: 0
+    opcode: 51
+    funct3: 4
+    func7: 0
   - mnemonic: srl
-    key:
-      opcode: 51
-      funct3: 5
-      funct7: 0
+    opcode: 51
+    funct3: 5
+    func7: 0
   - mnemonic: sra
-    key:
-      opcode: 51
-      funct3: 5
-      funct7: 32
+    opcode: 51
+    funct3: 5
+    func7: 32
   - mnemonic: or
-    key:
-      opcode: 51
-      funct3: 6
-      funct7: 0
+    opcode: 51
+    funct3: 6
+    func7: 0
   - mnemonic: and
-    key:
-      opcode: 51
-      funct3: 0
-      funct7: 7
+    opcode: 51
+    funct3: 0
+    func7: 7
 units:
   - name: cpu
     registers:

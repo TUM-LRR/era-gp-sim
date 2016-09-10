@@ -5,8 +5,7 @@
   "instructions": [
     {
       "mnemonic": "sll",
-      "key:
-      opcode": 6,
+      "opcode": 6,
       "function": 6,
       "width": 6
     }

@@ -4,27 +4,22 @@ name: rv64m
 
 instructions:
   - mnemonic: mulw
-    key:
-      opcode: 59
-      funct3: 0
-      funct7: 1
+    opcode: 59
+    funct3: 0
+    funct7: 1
   - mnemonic: divw
-    key:
-      opcode: 59
-      funct3: 4
-      funct7: 1
+    opcode: 59
+    funct3: 4
+    funct7: 1
   - mnemonic: divuw
-    key:
-      opcode: 59
-      funct3: 5
-      funct7: 1
+    opcode: 59
+    funct3: 5
+    funct7: 1
   - mnemonic: remw
-    key:
-      opcode: 59
-      funct3: 6
-      funct7: 1
+    opcode: 59
+    funct3: 6
+    funct7: 1
   - mnemonic: remuw
-    key:
-      opcode: 59
-      funct3: 7
-      funct7: 1
+    opcode: 59
+    funct3: 7
+    funct7: 1

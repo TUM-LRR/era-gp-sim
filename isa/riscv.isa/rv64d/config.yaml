@@ -4,32 +4,26 @@ name: rv64d
 
 instructions:
   - mnemonic: fcvtld
-    key:
-      opcode: 83
-      rs2: 2
-      funct7: 97
+    opcode: 83
+    rs2: 2
+    funct7: 97
   - mnemonic: fcvtlud
-    key:
-      opcode: 83
-      rs2: 3
-      funct7: 97
+    opcode: 83
+    rs2: 3
+    funct7: 97
   - mnemonic: fmvxd
-    key:
-      opcode: 83
-      rs2: 0
-      funct7: 113
+    opcode: 83
+    rs2: 0
+    funct7: 113
   - mnemonic: fcvtdl
-    key:
-      opcode: 83
-      rs2: 2
-      funct7: 105
+    opcode: 83
+    rs2: 2
+    funct7: 105
   - mnemonic: fcvtslu
-    key:
-      opcode: 83
-      rs2: 3
-      funct7: 105
+    opcode: 83
+    rs2: 3
+    funct7: 105
   - mnemonic: fmvdx
-    key:
-      opcode: 83
-      rs2: 0
-      funct7: 121
+    opcode: 83
+    rs2: 0
+    funct7: 121

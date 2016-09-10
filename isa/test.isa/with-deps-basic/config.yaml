@@ -22,10 +22,8 @@ units:
       aliases: [foo, bar]
 instructions:
   - mnemonic: add
-    key:
-      opcode: 6
+    opcode: 6
     function: 3
   - mnemonic: sub
-    key:
-      opcode: 9
+    opcode: 9
     function: 3

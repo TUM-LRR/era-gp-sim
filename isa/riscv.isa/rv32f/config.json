@@ -3,232 +3,199 @@
   "instructions": [
     {
       "mnemonic": "flw",
-      "key:
-      opcode": 7,
-      "  funct3": 2
+      "opcode": 7,
+      "funct3": 2
     },
     {
       "mnemonic": "fsw",
-      "key:
-      opcode": 39,
-      "  funct3": 2
+      "opcode": 39,
+      "funct3": 2
     },
     {
       "mnemonic": "fmadds",
-      "key:
-      opcode": 67,
-      "  funct2": 0
+      "opcode": 67,
+      "funct2": 0
     },
     {
       "mnemonic": "fmsubs",
-      "key:
-      opcode": 71,
-      "  funct2": 0
+      "opcode": 71,
+      "funct2": 0
     },
     {
       "mnemonic": "fnsubs",
-      "key:
-      opcode": 75,
-      "  funct2": 0
+      "opcode": 75,
+      "funct2": 0
     },
     {
       "mnemonic": "fnmadds",
-      "key:
-      opcode": 79,
-      "  funct7": 0
+      "opcode": 79,
+      "funct7": 0
     },
     {
       "mnemonic": "fadds",
-      "key:
-      opcode": 83,
-      "  funct7": 0
+      "opcode": 83,
+      "funct7": 0
     },
     {
       "mnemonic": "fsubs",
-      "key:
-      opcode": 83,
-      "  funct7": 4
+      "opcode": 83,
+      "funct7": 4
     },
     {
       "mnemonic": "fmuls",
-      "key:
-      opcode": 83,
-      "  funct7": 8
+      "opcode": 83,
+      "funct7": 8
     },
     {
       "mnemonic": "fdivs",
-      "key:
-      opcode": 83,
-      "  funct7": 12
+      "opcode": 83,
+      "funct7": 12
     },
     {
       "mnemonic": "fsqrts",
-      "key:
-      opcode": 83,
-      "  funct7": 44,
-      "  rs2": 0
+      "opcode": 83,
+      "funct7": 44,
+      "rs2": 0
     },
     {
       "mnemonic": "fsgnjs",
-      "key:
-      opcode": 83,
-      "  funct3": 0,
-      "  funct7": 16
+      "opcode": 83,
+      "funct3": 0,
+      "funct7": 16
     },
     {
       "mnemonic": "fsgnjns",
-      "key:
-      opcode": 83,
-      "  funct3": 1,
-      "  funct7": 16
+      "opcode": 83,
+      "funct3": 1,
+      "funct7": 16
     },
     {
       "mnemonic": "fsgnjxs",
-      "key:
-      opcode": 83,
-      "  funct3": 2,
-      "  funct7": 16
+      "opcode": 83,
+      "funct3": 2,
+      "funct7": 16
     },
     {
       "mnemonic": "fmins",
-      "key:
-      opcode": 83,
-      "  funct3": 0,
-      "  funct7": 20
+      "opcode": 83,
+      "funct3": 0,
+      "funct7": 20
     },
     {
       "mnemonic": "fcvtws",
-      "key:
-      opcode": 83,
-      "  funct7": 96,
-      "  rs2": 0
+      "opcode": 83,
+      "funct7": 96,
+      "rs2": 0
     },
     {
       "mnemonic": "fcvtwus",
-      "key:
-      opcode": 83,
-      "  funct7": 96,
-      "  rs2": 1
+      "opcode": 83,
+      "funct7": 96,
+      "rs2": 1
     },
     {
       "mnemonic": "fmvxs",
-      "key:
-      opcode": 83,
-      "  funct3": 0,
-      "  funct7": 112,
-      "  rs2": 0
+      "opcode": 83,
+      "funct3": 0,
+      "funct7": 112,
+      "rs2": 0
     },
     {
       "mnemonic": "feqs",
-      "key:
-      opcode": 83,
-      "  funct3": 2,
-      "  funct7": 80
+      "opcode": 83,
+      "funct3": 2,
+      "funct7": 80
     },
     {
       "mnemonic": "flts",
-      "key:
-      opcode": 83,
-      "  funct3": 1,
-      "  funct7": 80
+      "opcode": 83,
+      "funct3": 1,
+      "funct7": 80
     },
     {
       "mnemonic": "fles",
-      "key:
-      opcode": 83,
-      "  funct3": 0,
-      "  funct7": 80
+      "opcode": 83,
+      "funct3": 0,
+      "funct7": 80
     },
     {
       "mnemonic": "fclasss",
-      "key:
-      opcode": 83,
-      "  funct3": 1,
-      "  funct7": 112,
-      "  rs2": 0
+      "opcode": 83,
+      "funct3": 1,
+      "funct7": 112,
+      "rs2": 0
     },
     {
       "mnemonic": "fcvtsw",
-      "key:
-      opcode": 83,
-      "  funct7": 104,
-      "  rs2": 0
+      "opcode": 83,
+      "funct7": 104,
+      "rs2": 0
     },
     {
       "mnemonic": "fcvtswu",
-      "key:
-      opcode": 83,
-      "  funct7": 104,
-      "  rs2": 1
+      "opcode": 83,
+      "funct7": 104,
+      "rs2": 1
     },
     {
       "mnemonic": "fmvsx",
-      "key:
-      opcode": 83,
-      "  funct3": 0,
-      "  funct7": 120,
-      "  rs2": 0
+      "opcode": 83,
+      "funct3": 0,
+      "funct7": 120,
+      "rs2": 0
     },
     {
       "mnemonic": "frcsr",
-      "key:
-      opcode": 115,
-      "  funct3": 2,
-      "  funct7": 3,
-      "  rs1": 0
+      "opcode": 115,
+      "funct3": 2,
+      "funct7": 3,
+      "rs1": 0
     },
     {
       "mnemonic": "frrm",
-      "key:
-      opcode": 115,
-      "  funct3": 2,
-      "  funct7": 2,
-      "  rs1": 0
+      "opcode": 115,
+      "funct3": 2,
+      "funct7": 2,
+      "rs1": 0
     },
     {
       "mnemonic": "frflags",
-      "key:
-      opcode": 115,
-      "  funct3": 2,
-      "  funct7": 1,
-      "  rs1": 0
+      "opcode": 115,
+      "funct3": 2,
+      "funct7": 1,
+      "rs1": 0
     },
     {
       "mnemonic": "fscsr",
-      "key:
-      opcode": 115,
-      "  funct3": 1,
-      "  funct7": 3
+      "opcode": 115,
+      "funct3": 1,
+      "funct7": 3
     },
     {
       "mnemonic": "fsrm",
-      "key:
-      opcode": 115,
-      "  funct3": 1,
-      "  funct7": 2
+      "opcode": 115,
+      "funct3": 1,
+      "funct7": 2
     },
     {
       "mnemonic": "fsflags",
-      "key:
-      opcode": 115,
-      "  funct3": 1,
-      "  funct7": 1
+      "opcode": 115,
+      "funct3": 1,
+      "funct7": 1
     },
     {
       "mnemonic": "fsrmi",
-      "key:
-      opcode": 115,
-      "  funct3": 5,
-      "  funct7": 2,
-      "  rs1": 0
+      "opcode": 115,
+      "funct3": 5,
+      "funct7": 2,
+      "rs1": 0
     },
     {
       "mnemonic": "fsflagsi",
-      "key:
-      opcode": 115,
-      "  funct3": 5,
-      "  funct7": 1,
-      "  rs1": 0
+      "opcode": 115,
+      "funct3": 5,
+      "funct7": 1,
+      "rs1": 0
     }
   ],
   "units": [
