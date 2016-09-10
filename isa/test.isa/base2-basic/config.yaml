@@ -2,8 +2,7 @@ name: base2-basic
 word-size: 69
 instructions:
   - mnemonic: sll
-    format: R
     key:
       opcode: 6
-      function: 6
-      width: 6
+    function: 6
+    width: 6
