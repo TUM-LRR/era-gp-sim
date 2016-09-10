@@ -281,6 +281,7 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
 
   EXPECT_TRUE(architecture.isBasedOn(baseExtensionInformation.getName()));
   EXPECT_TRUE(architecture.isBasedOn(specialExtensionInformation.getName()));
+  EXPECT_FALSE(architecture.isBasedOn("foo"));
 
   Architecture::ExtensionNameCollection expected = {
     baseExtensionInformation.getName(),
