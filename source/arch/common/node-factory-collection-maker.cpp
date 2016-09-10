@@ -26,9 +26,7 @@ NodeFactoryCollection CreateFor(const Architecture& architecture) {
   if (architecture.getName() == "riscv") {
     return Create<riscv::FactoryTypes>(architecture);
   } else {
-    //assert(false);  // the architecture provided does not seem to have defined
-                    // concrete FactoryTypes
-    return NodeFactoryCollection{};
+    return {};
   }
 }
 }
