@@ -1,307 +1,264 @@
 {
-    "extends": "rv32i",
-    "name": "rv64i",
-    "reset-units": true,
     "word-size": 64,
-    "byte-size": 8,
     "units": [
         {
-            "name": "cpu",
             "registers": [
                 {
                     "constant": 0,
-                    "id": 0,
-                    "name": "x0",
-                    "alias": "zero",
-                    "size": 64
-                },
-                {
-                    "id": 1,
-                    "name": "x1",
-                    "size": 64
-                },
-                {
-                    "id": 2,
-                    "name": "x2",
-                    "size": 64
-                },
-                {
-                    "id": 3,
-                    "name": "x3",
-                    "size": 64
-                },
-                {
-                    "id": 4,
-                    "name": "x4",
-                    "size": 64
-                },
-                {
-                    "id": 5,
-                    "name": "x5",
-                    "size": 64
-                },
-                {
-                    "id": 6,
-                    "name": "x6",
-                    "size": 64
-                },
-                {
-                    "id": 7,
-                    "name": "x7",
-                    "size": 64
-                },
-                {
-                    "id": 8,
-                    "name": "x8",
-                    "size": 64
-                },
-                {
-                    "id": 9,
-                    "name": "x9",
-                    "size": 64
-                },
-                {
-                    "id": 10,
-                    "name": "x10",
-                    "size": 64
-                },
-                {
-                    "id": 11,
-                    "name": "x11",
-                    "size": 64
-                },
-                {
-                    "id": 12,
-                    "name": "x12",
-                    "size": 64
-                },
-                {
-                    "id": 13,
-                    "name": "x13",
-                    "size": 64
-                },
-                {
-                    "id": 14,
-                    "name": "x14",
-                    "size": 64
-                },
-                {
-                    "id": 15,
-                    "name": "x15",
-                    "size": 64
-                },
-                {
-                    "id": 16,
-                    "name": "x16",
-                    "size": 64
-                },
-                {
-                    "id": 17,
-                    "name": "x17",
-                    "size": 64
-                },
-                {
-                    "id": 18,
-                    "name": "x18",
-                    "size": 64
-                },
-                {
-                    "id": 19,
-                    "name": "x19",
-                    "size": 64
-                },
-                {
-                    "id": 20,
-                    "name": "x20",
-                    "size": 64
-                },
-                {
-                    "id": 21,
-                    "name": "x21",
-                    "size": 64
-                },
-                {
-                    "id": 22,
-                    "name": "x22",
-                    "size": 64
-                },
-                {
-                    "id": 23,
-                    "name": "x23",
-                    "size": 64
-                },
-                {
-                    "id": 24,
-                    "name": "x24",
-                    "size": 64
-                },
-                {
-                    "id": 25,
-                    "name": "x25",
-                    "size": 64
-                },
-                {
-                    "id": 26,
-                    "name": "x26",
-                    "size": 64
-                },
-                {
-                    "id": 27,
-                    "name": "x27",
-                    "size": 64
-                },
-                {
-                    "id": 28,
-                    "name": "x28",
-                    "size": 64
-                },
-                {
-                    "id": 29,
-                    "name": "x29",
-                    "size": 64
-                },
-                {
-                    "id": 30,
-                    "name": "x30",
-                    "size": 64
-                },
-                {
-                    "id": 31,
-                    "name": "x31",
-                    "size": 64
-                },
-                {
-                    "id": 32,
-                    "name": "pc",
                     "size": 64,
-                    "type": "program-counter"
+                    "alias": "zero",
+                    "id": 0,
+                    "name": "x0"
+                },
+                {
+                    "size": 64,
+                    "id": 1,
+                    "name": "x1"
+                },
+                {
+                    "size": 64,
+                    "id": 2,
+                    "name": "x2"
+                },
+                {
+                    "size": 64,
+                    "id": 3,
+                    "name": "x3"
+                },
+                {
+                    "size": 64,
+                    "id": 4,
+                    "name": "x4"
+                },
+                {
+                    "size": 64,
+                    "id": 5,
+                    "name": "x5"
+                },
+                {
+                    "size": 64,
+                    "id": 6,
+                    "name": "x6"
+                },
+                {
+                    "size": 64,
+                    "id": 7,
+                    "name": "x7"
+                },
+                {
+                    "size": 64,
+                    "id": 8,
+                    "name": "x8"
+                },
+                {
+                    "size": 64,
+                    "id": 9,
+                    "name": "x9"
+                },
+                {
+                    "size": 64,
+                    "id": 10,
+                    "name": "x10"
+                },
+                {
+                    "size": 64,
+                    "id": 11,
+                    "name": "x11"
+                },
+                {
+                    "size": 64,
+                    "id": 12,
+                    "name": "x12"
+                },
+                {
+                    "size": 64,
+                    "id": 13,
+                    "name": "x13"
+                },
+                {
+                    "size": 64,
+                    "id": 14,
+                    "name": "x14"
+                },
+                {
+                    "size": 64,
+                    "id": 15,
+                    "name": "x15"
+                },
+                {
+                    "size": 64,
+                    "id": 16,
+                    "name": "x16"
+                },
+                {
+                    "size": 64,
+                    "id": 17,
+                    "name": "x17"
+                },
+                {
+                    "size": 64,
+                    "id": 18,
+                    "name": "x18"
+                },
+                {
+                    "size": 64,
+                    "id": 19,
+                    "name": "x19"
+                },
+                {
+                    "size": 64,
+                    "id": 20,
+                    "name": "x20"
+                },
+                {
+                    "size": 64,
+                    "id": 21,
+                    "name": "x21"
+                },
+                {
+                    "size": 64,
+                    "id": 22,
+                    "name": "x22"
+                },
+                {
+                    "size": 64,
+                    "id": 23,
+                    "name": "x23"
+                },
+                {
+                    "size": 64,
+                    "id": 24,
+                    "name": "x24"
+                },
+                {
+                    "size": 64,
+                    "id": 25,
+                    "name": "x25"
+                },
+                {
+                    "size": 64,
+                    "id": 26,
+                    "name": "x26"
+                },
+                {
+                    "size": 64,
+                    "id": 27,
+                    "name": "x27"
+                },
+                {
+                    "size": 64,
+                    "id": 28,
+                    "name": "x28"
+                },
+                {
+                    "size": 64,
+                    "id": 29,
+                    "name": "x29"
+                },
+                {
+                    "size": 64,
+                    "id": 30,
+                    "name": "x30"
+                },
+                {
+                    "size": 64,
+                    "id": 31,
+                    "name": "x31"
+                },
+                {
+                    "size": 64,
+                    "id": 32,
+                    "type": "program-counter",
+                    "name": "pc"
                 }
-            ]
+            ],
+            "name": "cpu"
         }
     ],
+    "extends": "rv32i",
+    "reset-units": true,
+    "name": "rv64i",
     "instructions": [
         {
-            "format": "I",
+            "funct3": 6,
             "mnemonic": "lwu",
-            "key": {
-                "opcode": 3,
-                "funct3": 6
-            }
+            "opcode": 3
         },
         {
-            "format": "I",
+            "funct3": 3,
             "mnemonic": "ld",
-            "key": {
-                "opcode": 3,
-                "funct3": 3
-            }
+            "opcode": 3
         },
         {
-            "format": "S",
+            "funct3": 1,
             "mnemonic": "sd",
-            "key": {
-                "opcode": 35,
-                "funct3": 1,
-                "funct7": 0
-            }
+            "opcode": 35,
+            "func7": 0
         },
         {
-            "format": "R",
+            "funct3": 1,
             "mnemonic": "slli",
-            "key": {
-                "opcode": 19,
-                "funct3": 1,
-                "funct7": 0
-            }
+            "opcode": 19,
+            "func7": 0
         },
         {
-            "format": "R",
+            "funct3": 5,
             "mnemonic": "srai",
-            "key": {
-                "opcode": 19,
-                "funct3": 5,
-                "funct7": 1
-            }
+            "opcode": 19,
+            "func7": 1
         },
         {
-            "format": "I",
+            "funct3": 0,
             "mnemonic": "addiw",
-            "key": {
-                "opcode": 27,
-                "funct3": 0
-            }
+            "opcode": 27
         },
         {
-            "format": "R",
+            "funct3": 1,
             "mnemonic": "slliw",
-            "key": {
-                "opcode": 27,
-                "funct3": 1,
-                "funct7": 0
-            }
+            "opcode": 27,
+            "func7": 0
         },
         {
-            "format": "R",
+            "funct3": 5,
             "mnemonic": "srliw",
-            "key": {
-                "opcode": 27,
-                "funct3": 5,
-                "funct7": 0
-            }
+            "opcode": 27,
+            "func7": 0
         },
         {
-            "format": "R",
+            "funct3": 5,
             "mnemonic": "sraiw",
-            "key": {
-                "opcode": 27,
-                "funct3": 5,
-                "funct7": 32
-            }
+            "opcode": 27,
+            "func7": 32
         },
         {
-            "format": "R",
+            "funct3": 0,
             "mnemonic": "addw",
-            "key": {
-                "opcode": 59,
-                "funct3": 0,
-                "funct7": 0
-            }
+            "opcode": 59,
+            "func7": 0
         },
         {
-            "format": "R",
+            "funct3": 0,
             "mnemonic": "subw",
-            "key": {
-                "opcode": 59,
-                "funct3": 0,
-                "funct7": 32
-            }
+            "opcode": 59,
+            "func7": 32
         },
         {
-            "format": "R",
+            "funct3": 1,
             "mnemonic": "sllw",
-            "key": {
-                "opcode": 59,
-                "funct3": 1,
-                "funct7": 0
-            }
+            "opcode": 59,
+            "func7": 0
         },
         {
-            "format": "R",
+            "funct3": 5,
             "mnemonic": "srlw",
-            "key": {
-                "opcode": 59,
-                "funct3": 5,
-                "funct7": 0
-            }
+            "opcode": 59,
+            "func7": 0
         },
         {
-            "format": "R",
+            "funct3": 5,
             "mnemonic": "sraw",
-            "key": {
-                "opcode": 59,
-                "funct3": 5,
-                "funct7": 32
-            }
+            "opcode": 59,
+            "func7": 32
         }
     ]
 }

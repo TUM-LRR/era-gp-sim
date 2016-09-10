@@ -1,8 +1,8 @@
 {
-    "extends": "base3-cycle",
-    "name": "base1-complex",
     "reset-units": true,
     "word-size": 69,
-    "alignment-behavior": "relaxed",
-    "endianness": "mixed"
+    "extends": "base3-cycle",
+    "endianness": "mixed",
+    "name": "base1-complex",
+    "alignment-behavior": "relaxed"
 }
