@@ -39,7 +39,7 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   using InstructionMap =
       std::unordered_map<std::string,
                          std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
-                             InstructionInformation &)>>;
+                             InstructionInformation&)>>;
 
   /**
    * \brief InstructionNodeFactory
@@ -47,7 +47,7 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
    */
   InstructionNodeFactory(const InstructionSet &instructions,
                          const Architecture &architecture)
-  : _instrSet(instructions) {
+      : _instrSet(instructions) {
     assert(_instrSet.isValid());
     initializeInstructionMap(architecture);
   }
@@ -66,8 +66,8 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
    * \return std::uniqe_ptr pointing to the newly created instruction node, or
    * nullptr if the token cannot be mapped to a implemented RISC-V instruction
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createInstructionNode(const std::string &token) const override;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode> createInstructionNode(
+      const std::string &token) const override;
 
   ~InstructionNodeFactory() = default;
 

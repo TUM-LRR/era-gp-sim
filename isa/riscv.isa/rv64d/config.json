@@ -3,57 +3,45 @@
   "instructions": [
     {
       "mnemonic": "fcvtld",
-      "format": "R",
-      "key": {
-        "opcode": 83,
-        "rs2": 2,
-        "funct7": 97
-      }
+      "key:
+      opcode": 83,
+      "  rs2": 2,
+      "  funct7": 97
     },
     {
       "mnemonic": "fcvtlud",
-      "format": "R",
-      "key": {
-        "opcode": 83,
-        "rs2": 3,
-        "funct7": 97
-      }
+      "key:
+      opcode": 83,
+      "  rs2": 3,
+      "  funct7": 97
     },
     {
       "mnemonic": "fmvxd",
-      "format": "R",
-      "key": {
-        "opcode": 83,
-        "rs2": 0,
-        "funct7": 113
-      }
+      "key:
+      opcode": 83,
+      "  rs2": 0,
+      "  funct7": 113
     },
     {
       "mnemonic": "fcvtdl",
-      "format": "R",
-      "key": {
-        "opcode": 83,
-        "rs2": 2,
-        "funct7": 105
-      }
+      "key:
+      opcode": 83,
+      "  rs2": 2,
+      "  funct7": 105
     },
     {
       "mnemonic": "fcvtslu",
-      "format": "R",
-      "key": {
-        "opcode": 83,
-        "rs2": 3,
-        "funct7": 105
-      }
+      "key:
+      opcode": 83,
+      "  rs2": 3,
+      "  funct7": 105
     },
     {
       "mnemonic": "fmvdx",
-      "format": "R",
-      "key": {
-        "opcode": 83,
-        "rs2": 0,
-        "funct7": 121
-      }
+      "key:
+      opcode": 83,
+      "  rs2": 0,
+      "  funct7": 121
     }
   ]
 }

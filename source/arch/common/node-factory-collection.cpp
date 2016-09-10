@@ -32,7 +32,7 @@
 
 /**
  * It is asserted that a corresponding factory must be set prior to this
- * method call, otherwise the assertion will fail.
+ * method call, otherwise the assertion will fail
  * \copydoc AbstractInstructionNodeFactory::createInstructionNode
  */
 NodeFactoryCollection::Node NodeFactoryCollection::createInstructionNode(
@@ -68,8 +68,8 @@ NodeFactoryCollection::Node NodeFactoryCollection::createRegisterAccessNode(
  * method call, otherwise the assertion will fail
  * \copydoc AbstractMemoryAccessNodeFactory::createMemoryAccessNode
  */
-NodeFactoryCollection::Node
-NodeFactoryCollection::createMemoryAccessNode() const {
+NodeFactoryCollection::Node NodeFactoryCollection::createMemoryAccessNode()
+    const {
   assert(static_cast<bool>(_memoryAccessFactory));
   return _memoryAccessFactory->createMemoryAccessNode();
 }
@@ -91,13 +91,13 @@ NodeFactoryCollection::NodeFactoryCollection(
     std::shared_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,
     std::shared_ptr<AbstractRegisterAccessNodeFactory> &&registerAccessFactory,
     std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory)
-: _instructionFactory(std::move(instructionFactory))
-, _immediateFactory(std::move(immediateFactory))
-, _registerAccessFactory(std::move(registerAccessFactory))
-, _memoryAccessFactory(std::move(memoryAccessFactory))
-, _arithmeticFactory(std::move(arithmeticFactory)) {
+    : _instructionFactory(std::move(instructionFactory)),
+      _immediateFactory(std::move(immediateFactory)),
+      _registerAccessFactory(std::move(registerAccessFactory)),
+      _memoryAccessFactory(std::move(memoryAccessFactory)),
+      _arithmeticFactory(std::move(arithmeticFactory)) {
   // We should at least have these factories
-  assert(static_cast<bool>(_instructionFactory));
-  assert(static_cast<bool>(_registerAccessFactory));
-  assert(static_cast<bool>(_immediateFactory));
+  assert(static_cast<bool>(instructionFactory));
+  assert(static_cast<bool>(registerAccessFactory));
+  assert(static_cast<bool>(immediateFactory));
 }

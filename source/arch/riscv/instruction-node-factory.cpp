@@ -157,17 +157,16 @@ InstructionNodeFactory::createInstructionNode(const std::string& token) const {
   using std::begin;
   using std::end;
 
-
   // transform token to lowercase
   std::string lower = Utility::toLower(token);
 
   if (!_instrSet.hasInstruction(lower)) {
-    return nullptr;// return nullptr as the lowercase token could not be found
+    return nullptr;  // return nullptr as the lowercase token could not be found
   }
 
-  auto it = _instructionMap.find(lower);// lookup the token
+  auto it = _instructionMap.find(lower);  // lookup the token
   assert(it != end(_instructionMap));
-  auto info = _instrSet.getInstruction(lower);
+  InstructionInformation info = _instrSet.getInstruction(lower);
   return it->second(info);
   // dereference iterator to the key-value pair and call
   // the function providing the correct InstructionInformation for the

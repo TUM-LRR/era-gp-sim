@@ -69,3 +69,10 @@ TEST(InstructionTest, StoreInstruction) {
 
   // TODO Make tests for immediate values
 }
+
+/* TODO Test more commands */
+
+int main(int argc, char **argv) {
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
