@@ -20,12 +20,12 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 #define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 
+#include <QtGlobal>
 #include <cassert>
 #include <string>
 
 #include "arch/common/instruction-information.hpp"
 #include "arch/riscv/instruction-node.hpp"
-#include "core/conversions.hpp"
 
 /*
  * TODO Instructions: slt sltu and or xor sll srl sra
@@ -61,13 +61,14 @@ class IntegerInstructionNode : public InstructionNode {
  */
   IntegerInstructionNode(InstructionInformation& info,
                          bool immediateInstruction)
-      : InstructionNode(info), _isImmediate(immediateInstruction) {}
+  : InstructionNode(info), _isImmediate(immediateInstruction) {
+  }
 
   /** Default destructor*/
   ~IntegerInstructionNode() = default;
 
   MemoryValue getValue(DummyMemoryAccess& memory_access) const override {
-    assert(validate());
+    assert(validate().isSuccess());
     // Get the destination register
     std::string destination = _children.at(0)->getIdentifier();
 
@@ -81,52 +82,72 @@ class IntegerInstructionNode : public InstructionNode {
     SizeType result = performIntegerOperation(operand1, operand2);
 
     MemoryValue resultValue =
-        convert(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+        convert<SizeType>(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
     memory_access.setRegisterValue(destination, resultValue);
     return MemoryValue{};
   }
 
-  bool validate() const override {
+  const ValidationResult validate() const override {
     // a integer instruction needs exactly 3 operands
     if (_children.size() != 3) {
-      return false;
+      return ValidationResult::fail(QT_TRANSLATE_NOOP(
+          "Syntax-Tree-Validation",
+          "Integer instructions must have exactly 3 operands"));
     }
     // check if all operands are valid themselves
-    if (!validateAllChildren()) {
-      return false;
+    ValidationResult resultAll = validateAllChildren();
+    if (!resultAll.isSuccess()) {
+      return resultAll;
     }
 
     if (_isImmediate &&
         _children.at(2)->getType() == AbstractSyntaxTreeNode::Type::IMMEDIATE) {
-      // check if immediate operand is represented by only 20 bits
+      // check if immediate operand is represented by only 12 bits
       DummyMemoryAccessStub stub;
       // no memory access is needed for a immediate node
       MemoryValue value = _children.at(2)->getValue(stub);
-      //look for 1 in bits 20...value.getSize()
-      for(std::size_t index = 20; index < value.getByteSize(); ++index) {
-          if(value.get(index)) {
-              return false;//1 detected
-          }
+      // look for 1 in bits 12...value.getSize()
+      for (std::size_t index = 12; index < value.getByteSize(); ++index) {
+        if (value.get(index)) {
+          // 1 detected
+          return ValidationResult::fail(
+              QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                                "The immediate value of this instruction must "
+                                "be representable by 12 bits"));
+        }
       }
-//      auto bits20 = value.getValue() & (~0xFFFFF);  // 2097151 = 0b11111...1 (20
-//                                                    // times a 1) -> erase lower
-//                                                    // 20 bits
-//      if (value != lower20bit) {
-//        // there is a 1 somewhere in bit 20 to x => the value is not represented
-//        // by only bit 0...19
-//        return false;
-//      }
+      //      auto bits20 = value.getValue() & (~0xFFFFF);  // 2097151 =
+      //      0b11111...1 (20
+      //                                                    // times a 1) ->
+      //                                                    erase lower
+      //                                                    // 20 bits
+      //      if (value != lower20bit) {
+      //        // there is a 1 somewhere in bit 20 to x => the value is not
+      //        represented
+      //        // by only bit 0...19
+      //        return false;
+      //      }
     }
 
     // a immediate integer instruction needs two register operands followed by
     // one immediate operand
     if (_isImmediate) {
-      return requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) &&
-             requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1);
+      if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
+          !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
+        return ValidationResult::fail(
+            QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                              "The immediate-integer instructions must have 2 "
+                              "registers and 1 immediate as operands"));
+      }
     } else {
       // a register integer instruction needs three register operands
-      return requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3);
+      if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3)) {
+        return ValidationResult::fail(QT_TRANSLATE_NOOP(
+            "Syntax-Tree-Validation",
+            "The register-integer instructions must have 3 registers as operands"));
+      }
     }
+    return ValidationResult::success();
   }
 
   /*!
@@ -136,8 +157,8 @@ class IntegerInstructionNode : public InstructionNode {
    * \param op2 second operand for the arithmetic operation
    * \return result of op1 <arithmeticOperation> op2
    */
-  virtual SizeType performIntegerOperation(SizeType op1,
-                                           SizeType op2) const = 0;
+  virtual SizeType
+  performIntegerOperation(SizeType op1, SizeType op2) const = 0;
 
  protected:
   SizeType getLower5Bit(SizeType op) const {
@@ -164,7 +185,8 @@ template <typename SizeType>
 class AddInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
   AddInstructionNode(InstructionInformation info, bool immediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, immediateInstruction) {}
+  : IntegerInstructionNode<SizeType>(info, immediateInstruction) {
+  }
 
   /*!
    * Adds the two operands
@@ -187,9 +209,10 @@ template <typename SizeType>
 class SubInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
   SubInstructionNode(InstructionInformation info)
-      : IntegerInstructionNode<SizeType>(
-            info, false)  // RISC-V does not specifiy a subi
-  {}
+  : IntegerInstructionNode<SizeType>(info,
+                                     false)// RISC-V does not specifiy a subi
+  {
+  }
 
   /*!
    * Subtracts op2 from op1
@@ -212,7 +235,8 @@ template <typename SizeType>
 class AndInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
   AndInstructionNode(InstructionInformation info, bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  }
 
   /*!
    * Performs a bitwise logical and with op1, op2
@@ -235,7 +259,8 @@ template <typename SizeType>
 class OrInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
   OrInstructionNode(InstructionInformation info, bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  }
 
   /*!
    * Performs a bitwise logical or with op1, op2
@@ -258,7 +283,8 @@ template <typename SizeType>
 class XorInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
   XorInstructionNode(InstructionInformation info, bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  }
 
   /*!
    * Performs a bitwise logical xor with op1, op2
@@ -283,7 +309,8 @@ class ShiftLogicalLeftInstructionNode
  public:
   ShiftLogicalLeftInstructionNode(InstructionInformation info,
                                   bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  }
 
   /*!
    * Shifts bits in op1 logical left (shifts zeros into the lower part). How
@@ -310,7 +337,7 @@ class ShiftLogicalRightInstructionNode
  public:
   ShiftLogicalRightInstructionNode(InstructionInformation info,
                                    bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
     // For logical right shift, SizeType must be a unsigned integral type
     // Due to the fact that signed right shift is implementation/compiler
     // specific
@@ -343,7 +370,8 @@ class ShiftArithmeticRightInstructionNode
  public:
   ShiftArithmeticRightInstructionNode(InstructionInformation info,
                                       bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  }
 
   /*!
    * Shifts bits in op1 arithmetic right (shifts sign bit into the upper part).
@@ -356,9 +384,9 @@ class ShiftArithmeticRightInstructionNode
   SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
     // c++ standard does not define a arithemtic shift operator
     constexpr auto length = sizeof(SizeType) * 8;
-    SizeType sign = (op1 & (SizeType(1) << (length - 1))) >> (length - 1);
+    SizeType sign       = (op1 & (SizeType(1) << (length - 1))) >> (length - 1);
     SizeType shiftCount = this->getLower5Bit(op2);
-    SizeType tmp = op1 >> shiftCount;
+    SizeType tmp        = op1 >> shiftCount;
     // erase upper shiftCount bits
     // put in sign bit
     for (auto i = length - shiftCount; i < length; ++i) {

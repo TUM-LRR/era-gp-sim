@@ -22,21 +22,23 @@
 #include <string>
 #include <vector>
 
+#include "arch/common/validation-result.hpp"
 #include "core/memory-value.hpp"
 
-//Dummy definition of a memory-access
+// Dummy definition of a memory-access
 class DummyMemoryAccess {
-public:
-    virtual MemoryValue getRegisterValue(std::string& token) = 0;
-    virtual void setRegisterValue(std::string& token, MemoryValue value) = 0;
+ public:
+  virtual MemoryValue getRegisterValue(std::string& token) = 0;
+  virtual void setRegisterValue(std::string& token, MemoryValue value) = 0;
 };
-//Dummy implementation of a memory-access
+// Dummy implementation of a memory-access
 class DummyMemoryAccessStub : public DummyMemoryAccess {
-public:
-    MemoryValue getRegisterValue(std::string& token) override {
-        return MemoryValue{};
-     }
-    void setRegisterValue(std::string& token, MemoryValue value) override {}
+ public:
+  MemoryValue getRegisterValue(std::string& token) override {
+    return MemoryValue{};
+  }
+  void setRegisterValue(std::string& token, MemoryValue value) override {
+  }
 };
 
 /** The base class for nodes in the abstract syntax tree */
@@ -67,7 +69,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return Whether this syntax tree is valid for execution.
    */
-  virtual bool validate() const = 0;
+  virtual const ValidationResult validate() const = 0;
 
   /**
    * Assembles this syntax tree into its binary representation. So, this
@@ -102,17 +104,19 @@ class AbstractSyntaxTreeNode {
   void addChild(Node node) {
     _children.push_back(std::move(node));
   }
+
   /**
    * Calls validate() on all children
    * \return true, if all children return true, otherwise false
    */
-  bool validateAllChildren() const {
-      for(auto &child : _children) {
-          if(!child->validate()) {
-              return false;
-          }
+  const ValidationResult validateAllChildren() const {
+    for (auto& child : _children) {
+      ValidationResult result = child->validate();
+      if (!result.isSuccess()) {
+        return result;
       }
-      return true;
+    }
+    return ValidationResult::success();
   }
 
  protected:
