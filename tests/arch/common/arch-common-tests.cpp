@@ -279,6 +279,16 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
   architecture.extendBy(baseExtensionInformation);
   architecture.extendBy(specialExtensionInformation);
 
+  EXPECT_TRUE(architecture.isBasedOn(baseExtensionInformation.getName()));
+  EXPECT_TRUE(architecture.isBasedOn(specialExtensionInformation.getName()));
+
+  Architecture::ExtensionNameCollection expected = {
+    baseExtensionInformation.getName(),
+    specialExtensionInformation.getName()
+  };
+
+  EXPECT_EQ(architecture.getBaseExtensionNames(), expected);
+
   EXPECT_TRUE(architecture.isValid());
 
   architecture.validate();

@@ -61,11 +61,12 @@
  */
 class ExtensionInformation : public InformationInterface {
  public:
-  using size_t            = unsigned short;
-  using UnitList          = std::initializer_list<UnitInformation>;
-  using ExtensionList     = std::initializer_list<ExtensionInformation>;
-  using Endianness        = ArchitectureProperties::Endianness;
-  using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
+  using size_t                  = unsigned short;
+  using UnitList                = std::initializer_list<UnitInformation>;
+  using ExtensionList           = std::initializer_list<ExtensionInformation>;
+  using Endianness              = ArchitectureProperties::Endianness;
+  using AlignmentBehavior       = ArchitectureProperties::AlignmentBehavior;
+  using ExtensionNameCollection = std::unordered_set<std::string>;
 
   /**
    * Deserializes the `ExtensionInformation` object from the given data.
@@ -360,6 +361,17 @@ class ExtensionInformation : public InformationInterface {
    */
   ExtensionInformation& merge(const ExtensionInformation& other);
 
+  /**
+   * Tests if the extension is based on a certain extension.
+   */
+  bool isBasedOn(const std::string& extension_name) const noexcept;
+
+  /**
+   * Returns a collection of names of the extensions
+   * the extension was merged with.
+   */
+  const ExtensionNameCollection& getBaseExtensionNames() const noexcept;
+
   /** \copydoc builder::isValid() */
   bool isValid() const noexcept override;
 
@@ -412,6 +424,9 @@ class ExtensionInformation : public InformationInterface {
 
   /** The units supplied by the extension, if any. */
   UnitContainer _units;
+
+  /** The names of the extensions this extension was extended by. */
+  ExtensionNameCollection _baseNames;
 };
 
 #endif /* ERAGPSIM_ARCH_EXTENSION_INFORMATION_HPP */
