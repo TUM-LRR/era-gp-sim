@@ -6,26 +6,18 @@ extends: rv32f
 
 instructions:
   - mnemonic: fcvtls
-    format: R
-    key:
-      opcode: 83
-      rs2: 2
-      funct7: 96
+    opcode: 83
+    rs2: 2
+    funct7: 96
   - mnemonic: fcvtlus
-    format: R
-    key:
-      opcode: 83
-      rs2: 3
-      funct7: 96
+    opcode: 83
+    rs2: 3
+    funct7: 96
   - mnemonic: fcvtsl
-    format: R
-    key:
-      opcode: 83
-      rs2: 2
-      funct7: 104
+    opcode: 83
+    rs2: 2
+    funct7: 104
   - mnemonic: fcvtslu
-    format: R
-    key:
-      opcode: 83
-      rs2: 3
-      funct7: 104
+    opcode: 83
+    rs2: 3
+    funct7: 104

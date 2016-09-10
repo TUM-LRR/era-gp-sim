@@ -38,19 +38,21 @@
  *
  * This class contains all the necessary information about a register, as may be
  * required by other modules. For example, it provides configuration of the
- * name, size, numeric ID and aliases. Every register is always associated with
- * a certain *type*, describing the characteristics of the register. Most often
+ * name, size, numeric ID or aliases. Every register is always associated with a
+ * certain *type*, describing the characteristics of the register. Most often
  * the register will be a processor-register and thus of integral type. However,
  * the register could also be an FPU register or hold vector data. As an ISA may
  * require that certain registers are hardwired to some constant, like 0 (the x0
- * register in RISC-V) or pi, this class can also store information about any
+ * register in RISC-V) or Pi, this class can also store information about any
  * hardwired constant. To keep the class template-less, the constant is stored
  * as a floating-point value. This is most certainly a hack and quite ugly, but
  * prevents the need to propagate template parameters into enclosing classes
  * (e.g. `Unit` or `Architecture`).
  *
  * The class' interface is intended to support the BuilderInterface pattern. As
- * such, it defaults certain values internally:
+ * such, it
+ * defaults certain values internally:
+ *
  * - The type defauls to `Type::INTEGER`.
  * - The ID defaults to an instance-unique (static), incrementing ID.
  */
@@ -322,6 +324,7 @@ class RegisterInformation : public InformationInterface {
    *         register (if this register has an enclosing register).
    */
   id_t getEnclosing() const noexcept;
+
 
   /**
    * Returns whether or not the register has an enclosing ID set.

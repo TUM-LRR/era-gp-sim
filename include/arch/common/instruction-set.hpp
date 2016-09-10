@@ -34,7 +34,8 @@ using UnderlyingInstructionSetContainer =
 /**
  * This class holds a set of commands.
  *
- * It has a hash-table like interface for maximum flexibility.
+ * It is really just a light-weight wrapper around a vector (it doesn't even
+ * have a name).
  */
 class InstructionSet : public UnderlyingInstructionSetContainer,
                        public InformationInterface {

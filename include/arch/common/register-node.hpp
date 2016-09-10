@@ -33,13 +33,13 @@ class RegisterNode : public AbstractSyntaxTreeNode {
    * \param value The identifier for the register.
    */
   RegisterNode(std::string identifier)
-  : AbstractSyntaxTreeNode(Type::REGISTER), _identifier(identifier) {
+  : AbstractSyntaxTreeNode(Type::REGISTER) {
   }
 
   /**
    * \return The content of the register, represented by this node.
    */
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) const override {
+  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) override {
     // TODO Return the actual content of the register using the proper
     // memory access
     return MemoryValue();
@@ -48,20 +48,13 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   /**
    * \return true, if there are no children.
    */
-  virtual bool validate() const override {
+  virtual bool validate() override {
     // Immediate values can't have any children
     return AbstractSyntaxTreeNode::_children.size() == 0;
   }
 
-  const std::string& getIdentifier() const override {
-      return _identifier;
-  }
-
  private:
-  /*!
-   * Identifies a register
-   */
-  std::string _identifier;
+  MemoryValue _value;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP */
