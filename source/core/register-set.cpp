@@ -18,71 +18,100 @@
 
 #include "core/register-set.hpp"
 
-RegisterSet::RegisterSet(const std::size_t defaultByteSize)
-: _dict{}, _defaultByteSize{defaultByteSize}, _register{} {
+RegisterSet::RegisterSet() : _dict{}, _register{}, _updateSet{} {
 }
 
-RegisterSet::RegisterSet(const std::size_t defaultByteSize,
-                         const std::size_t bucketCount)
-: _dict{bucketCount}, _defaultByteSize{defaultByteSize}, _register{} {
+RegisterSet::RegisterSet(const std::size_t bucketCount)
+: _dict{bucketCount}, _register{}, _updateSet{} {
 }
 
 MemoryValue RegisterSet::get(const std::string &name) const {
-  return MemoryValue{};
-}
-
-MemoryValue
-RegisterSet::get(const std::string &name, const std::size_t byteSize) const {
-  return MemoryValue{};
+  auto registerIterator = _dict.find(name);
+  assert(registerIterator != _dict.end());
+  return _register[registerIterator->second.adress].subSet(
+      registerIterator->second.begin, registerIterator->second.end);
 }
 
 void RegisterSet::get(const std::string &name, MemoryValue &out) const {
-}
-
-MemoryValue RegisterSet::get(const std::string &name, MemoryValue &&out) const {
-  return MemoryValue{};
+  // I don't see much need for this anymore, probably should be removed entirely
+  auto registerIterator = _dict.find(name);
+  assert(registerIterator != _dict.end());
+  out = _register[registerIterator->second.adress].subSet(
+      registerIterator->second.begin, registerIterator->second.end);
 }
 
 void RegisterSet::put(const std::string &name, const MemoryValue &value) {
+  auto registerIterator = _dict.find(name);
+  assert(registerIterator != _dict.end());
+  assert(value.getSize() ==
+         (registerIterator->second.end - registerIterator->second.begin));
+  _register[registerIterator->second.adress].write(
+      value, registerIterator->second.begin);
+  wasUpdated(registerIterator->second.adress);
 }
 
 MemoryValue
 RegisterSet::set(const std::string &name, const MemoryValue &value) {
-  return MemoryValue{};
+  auto registerIterator = _dict.find(name);
+  assert(registerIterator != _dict.end());
+  assert(value.getSize() ==
+         (registerIterator->second.end - registerIterator->second.begin));
+  MemoryValue previous{_register[registerIterator->second.adress].subSet(
+      registerIterator->second.begin, registerIterator->second.end)};
+  _register[registerIterator->second.adress].write(
+      value, registerIterator->second.begin);
+  wasUpdated(registerIterator->second.adress);
+  return previous;
 }
 
-MemoryValue RegisterSet::set(const std::string &name, MemoryValue &&value) {
-  return MemoryValue{};
-}
 
-void RegisterSet::exchange(const std::string &name, MemoryValue &value) {
+MemoryValue &
+RegisterSet::exchange(const std::string &name, MemoryValue &value) {
+  // I don't see much need for this, probably should be removed entirely
+  return value = set(name, value);
 }
 
 void RegisterSet::createRegister(const std::string &name,
-                                 const std::size_t width) {
-  createRegister(name, width, _defaultByteSize);
-}
-
-void RegisterSet::createRegister(const std::string &name,
-                                 const std::size_t width,
-                                 const std::size_t byteSize) {
+                                 const std::size_t size) {
+  // could optimize this using moves
+  createRegister(name, MemoryValue{size});
 }
 
 void RegisterSet::createRegister(const std::string &name,
                                  const MemoryValue &value) {
-}
-
-void RegisterSet::createRegister(const std::string &name,
-                                 const MemoryValue &&value) {
+  _dict.emplace(name, RegisterID(_register.size(), 0, value.getSize()));
+  _register.emplace_back(MemoryValue(value));
+  _updateSet.push_back(std::set<std::string>{name});
+  wasUpdated(_register.size() - 1);
 }
 
 void RegisterSet::aliasRegister(const std::string &name,
                                 const std::string &parent,
                                 const std::size_t begin,
                                 std::size_t end) {
+  auto parentIterator = _dict.find(parent);
+  assert(parentIterator != _dict.end());
+  assert(begin >= 0);
+  assert(end <= _register[parentIterator->second.adress].getSize());
+  assert(end - begin > 0);
+  _dict.emplace(name,
+                RegisterID(parentIterator->second.adress,
+                           begin + parentIterator->second.begin,
+                           end + parentIterator->second.begin));
+  _updateSet[parentIterator->second.adress].emplace(name);
 }
 
 void RegisterSet::aliasRegister(const std::string &name,
                                 const std::string &parent,
                                 const std::size_t begin) {
+  auto parentIterator = _dict.find(parent);
+  assert(parentIterator != _dict.end());
+  assert(begin >= 0);
+  assert(_register[parentIterator->second.adress].getSize() - begin > 0);
+  _dict.emplace(
+      name,
+      RegisterID(parentIterator->second.adress,
+                 begin + parentIterator->second.begin,
+                 parentIterator->second.end + parentIterator->second.begin));
+  _updateSet[parentIterator->second.adress].emplace(name);
 }

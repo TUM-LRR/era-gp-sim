@@ -16,11 +16,12 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_REGISTERSET_HPP_
-#define ERAGPSIM_CORE_REGISTERSET_HPP_
+#ifndef ERAGPSIM_CORE_REGISTERSET_HPP
+#define ERAGPSIM_CORE_REGISTERSET_HPP
 
 #include <cassert>
 #include <cstddef>
+#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -29,35 +30,99 @@
 
 class RegisterSet {
  public:
-  RegisterSet(const std::size_t defaultByteSize = 8);
-  RegisterSet(const std::size_t defaultByteSize, const std::size_t bucketCount);
-  RegisterSet(RegisterSet &&) = default;
-  RegisterSet &operator=(RegisterSet &&) = default;
-  RegisterSet(const RegisterSet &)       = default;
-  RegisterSet &operator=(const RegisterSet &) = default;
-  ~RegisterSet()                              = default;
+  /**
+   * \brief
+   */
+  RegisterSet();
+  /**
+   * \brief
+   * \param bucketCount
+   */
+  RegisterSet(const std::size_t bucketCount);
+  /**
+   * \brief
+   * \param other
+   */
+  RegisterSet(RegisterSet &&other) = default;
+  /**
+   * \brief
+   * \param other
+   */
+  RegisterSet &operator=(RegisterSet &&other) = default;
+  /**
+   * \brief
+   * \param other
+   */
+  RegisterSet(const RegisterSet &other) = default;
+  /**
+   * \brief
+   * \param other
+   */
+  RegisterSet &operator=(const RegisterSet &other) = default;
+  /**
+   * \brief
+   */
+  ~RegisterSet() = default;
 
+  /**
+   * \brief
+   * \param name
+   */
   MemoryValue get(const std::string &name) const;
-  MemoryValue get(const std::string &name, const std::size_t byteSize) const;
-  //Don'tuse yet, potential threading issues
+  /**
+   * \brief
+   * \param name
+   * \param out
+   */
   void get(const std::string &name, MemoryValue &out) const;
-  MemoryValue get(const std::string &name, MemoryValue &&out) const;
+  /**
+   * \brief
+   * \param name
+   * \param value
+   */
   void put(const std::string &name, const MemoryValue &value);
+  /**
+   * \brief
+   * \param name
+   * \param value
+   */
   MemoryValue set(const std::string &name, const MemoryValue &value);
-  MemoryValue set(const std::string &name, MemoryValue &&value);
-  //Don'tuse yet, potential threading issues
-  void exchange(const std::string &name, MemoryValue &value);
+  /**
+   * \brief
+   * \param name
+   * \param value
+   */
+  MemoryValue &exchange(const std::string &name, MemoryValue &value);
 
-  void createRegister(const std::string &name, const std::size_t width);
-  void createRegister(const std::string &name,
-                      const std::size_t width,
-                      const std::size_t byteSize);
+  /**
+   * \brief
+   * \param name
+   * \param size
+   */
+  void createRegister(const std::string &name, const std::size_t size);
+  /**
+   * \brief
+   * \param name
+   * \param value
+   */
   void createRegister(const std::string &name, const MemoryValue &value);
-  void createRegister(const std::string &name, const MemoryValue &&value);
+  /**
+   * \brief
+   * \param name
+   * \param parent
+   * \param begin
+   * \param end
+   */
   void aliasRegister(const std::string &name,
                      const std::string &parent,
                      const std::size_t begin,
-                     std::size_t end);
+                     const std::size_t end);
+  /**
+   * \brief
+   * \param name
+   * \param parent
+   * \param begin
+   */
   void aliasRegister(const std::string &name,
                      const std::string &parent,
                      const std::size_t begin = 0);
@@ -65,7 +130,11 @@ class RegisterSet {
  private:
   std::unordered_map<std::string, RegisterID> _dict;
   std::vector<MemoryValue> _register;
-  std::size_t _defaultByteSize;
+  // I'm using set because that makes implementing the option to delete
+  // registers way easier, vector would've been enough at this moment
+  std::vector<std::set<std::string>> _updateSet;
+  void wasUpdated(const std::size_t address) {
+  }
 };
 
-#endif// ERAGPSIM_CORE_REGISTERSET_HPP_
+#endif// ERAGPSIM_CORE_REGISTERSET_HPP

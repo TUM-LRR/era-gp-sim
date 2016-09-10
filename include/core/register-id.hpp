@@ -16,17 +16,17 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_REGP_HPP_
-#define ERAGPSIM_CORE_REGP_HPP_
+#ifndef ERAGPSIM_CORE_REGISTERID_HPP_
+#define ERAGPSIM_CORE_REGISTERID_HPP_
 
 // The information to uniquely identify a register
 struct RegisterID {
-  int _adress;
-  int _begin;
-  int _end;
+  int adress;
+  int begin;
+  int end;
   RegisterID() = default;
   RegisterID(int adress, int begin, int end)
-  : _adress{adress}, _begin{begin}, _end{end} {
+  : adress{adress}, begin{begin}, end{end} {
   }
   RegisterID(RegisterID&& other)      = default;
   RegisterID(const RegisterID& other) = default;
@@ -35,4 +35,4 @@ struct RegisterID {
   ~RegisterID()                                  = default;
 };
 
-#endif// ERAGPSIM_CORE_REGP_HPP_
+#endif// ERAGPSIM_CORE_REGISTERID_HPP_
