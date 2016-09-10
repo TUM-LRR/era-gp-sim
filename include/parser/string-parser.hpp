@@ -83,7 +83,7 @@ class StringParserEngine {
   }
 
   /**
-   * \brief Checks, if a string begins with two separators.
+   * \brief Checks, if a string is wrapped by two separators.
    * \param inputString The string to check.
    * \param separator The separator which should wrap the string.
    * \param state The compile state to note down any errors.
