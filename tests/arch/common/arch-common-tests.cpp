@@ -48,28 +48,31 @@ struct ArchCommonTestFixture : ::testing::Test {
     unitInformation.name("cpu").addRegister(registerInformation);
 
     instructionKey.addEntry("opcode", 6).addEntry("function", 9);
-    instructionInformation.mnemonic("add").key(instructionKey).format("R");
+    instructionInformation.mnemonic("add").key(instructionKey);
 
     // clang-format off
     instructionSet.addInstructions(InstructionSet({
         instructionInformation,
-        {"mov", InstructionKey({{"opcode", 2}}), "R"}
+        {"mov", InstructionKey({{"opcode", 2}})}
     }));
     // clang-format on
 
-    baseExtensionInformation.name("rvi32")
-        .addInstructions(instructionSet)
-        .addUnit(unitInformation)
-        .wordSize(32)
-        .byteSize(8)
-        .endianness(ArchitectureProperties::Endianness::MIXED)
-        .alignmentBehavior(ArchitectureProperties::AlignmentBehavior::STRICT);
+    baseExtensionInformation.name("rvi32");
+
+    baseExtensionInformation.addInstructions(instructionSet);
+    baseExtensionInformation.addUnit(unitInformation);
+
+    baseExtensionInformation.wordSize(32);
+    baseExtensionInformation.endianness(
+        ArchitectureProperties::Endianness::MIXED);
+    baseExtensionInformation.alignmentBehavior(
+        ArchitectureProperties::AlignmentBehavior::STRICT);
 
     // clang-format off
-    specialExtensionInformation.name("rva32")
-      .addInstructions(InstructionSet({
-      {"lr", InstructionKey({{"opcode", 1}, {"function", 2}}), "R"},
-      {"sc", InstructionKey({{"opcode", 3}, {"function", 4}}), "R"}
+    specialExtensionInformation.name("rva32");
+    specialExtensionInformation.addInstructions(InstructionSet({
+      {"lr", InstructionKey({{"opcode", 1}, {"function", 2}})},
+      {"sc", InstructionKey({{"opcode", 3}, {"function", 4}})}
     }));
     // clang-format on
   }
@@ -181,15 +184,13 @@ TEST(ArchCommonTest, TestArchitectureFormula) {
 }
 
 TEST(ArchCommonTest, TestInstructionInformation) {
-  auto instruction = InstructionInformation().mnemonic("add").format("R");
+  auto instruction = InstructionInformation().mnemonic("add");
 
   InstructionKey key({{"opcode", 6}, {"function", 9}});
 
   EXPECT_FALSE(instruction.isValid());
   EXPECT_FALSE(instruction.hasKey());
-
   instruction.key(key);
-
   EXPECT_TRUE(instruction.isValid());
   EXPECT_TRUE(instruction.hasKey());
   EXPECT_TRUE(instruction.hasMnemonic());
@@ -226,7 +227,6 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   EXPECT_FALSE(extension.isComplete());
 
   extension.wordSize(32);
-  extension.byteSize(8);
   extension.endianness(ArchitectureProperties::Endianness::MIXED);
   extension.alignmentBehavior(
       ArchitectureProperties::AlignmentBehavior::STRICT);
@@ -289,7 +289,6 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
   EXPECT_EQ(*architecture.getUnits().find(unitInformation), unitInformation);
 
   EXPECT_EQ(architecture.getWordSize(), 32);
-  EXPECT_EQ(architecture.getByteSize(), 8);
   EXPECT_EQ(architecture.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
