@@ -24,20 +24,7 @@
 
 #include "core/memory-value.hpp"
 
-//Dummy definition of a memory-access
-class DummyMemoryAccess {
-public:
-    virtual MemoryValue getRegisterValue(std::string& token) = 0;
-    virtual void setRegisterValue(std::string& token, MemoryValue value) = 0;
-};
-//Dummy implementation of a memory-access
-class DummyMemoryAccessStub : public DummyMemoryAccess {
-public:
-    MemoryValue getRegisterValue(std::string& token) override {
-        return MemoryValue{};
-     }
-    void setRegisterValue(std::string& token, MemoryValue value) override {}
-};
+class DummyMemoryAccess;
 
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {
@@ -59,7 +46,7 @@ class AbstractSyntaxTreeNode {
    * \return An memory value, that represents the the result of the execution.
    * The meaning differs between different node types.
    */
-  virtual MemoryValue getValue(DummyMemoryAccess& memory_access) const = 0;
+  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) = 0;
 
   /**
    * Validates the structure of this syntax tree. This should be called
@@ -67,7 +54,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return Whether this syntax tree is valid for execution.
    */
-  virtual bool validate() const = 0;
+  virtual bool validate() = 0;
 
   /**
    * Assembles this syntax tree into its binary representation. So, this
@@ -75,7 +62,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return The bit representation of this syntax tree.
    */
-  virtual MemoryValue assemble() const = 0;
+  virtual MemoryValue assemble() = 0;
 
   /**
    * Returns the identifier of this node. The identifier is formatted as a
@@ -83,7 +70,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return The identifier of this node.
    */
-  virtual const std::string& getIdentifier() const = 0;
+  virtual std::string getIdentifier() = 0;
 
   /**
    * Getter for the type of this node.
@@ -101,18 +88,6 @@ class AbstractSyntaxTreeNode {
    */
   void addChild(Node node) {
     _children.push_back(std::move(node));
-  }
-  /**
-   * Calls validate() on all children
-   * \return true, if all children return true, otherwise false
-   */
-  bool validateAllChildren() const {
-      for(auto &child : _children) {
-          if(!child->validate()) {
-              return false;
-          }
-      }
-      return true;
   }
 
  protected:
