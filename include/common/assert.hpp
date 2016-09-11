@@ -21,6 +21,7 @@
 #define ERAGPSIM_COMMON_ASSERT_HPP
 
 #include <cstddef>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -49,7 +50,23 @@ namespace assert {
  */
 struct AssertionError : public std::runtime_error {
   using super = std::runtime_error;
+
+  /**
+   * Constructs an AssertionError from a string object and prints the message.
+   *
+   * \param what A message describing the cause of the assertion error.
+   */
   explicit AssertionError(const std::string& what) : super(what) {
+    std::cerr << what << std::endl;
+  }
+
+  /**
+   * Constructs an AssertionError from a string literal and prints the message.
+   *
+   * \param what A message describing the cause of the assertion error.
+   */
+  explicit AssertionError(const char*& what) : super(what) {
+    std::cerr << what << std::endl;
   }
 };
 #endif
@@ -75,20 +92,43 @@ void execute(Function function) {
 
 /**
  * This macro passes a lambda containing code to check the given expression.
+ *
  * It is a macro so we can use the "#<argument>" macro operator to turn the
  * condition into a string. If the condition evaluates to false, an
  * `AssertionError` is thrown with its message formatted as:
  * "Assertion Failed: (<condition>) at line <line number> in file <file name>".
+ *
+ * \param condition A condition to assert.
  */
-#define that(condition)                                             \
-  execute([] {                                                      \
-    if (!(condition)) {                                             \
-      throw assert::AssertionError(                                 \
-          ("Assertion failed: (" #condition ") at line "_s) +       \
-          std::to_string(__LINE__) + " in file " + __FILE__ + "."); \
-    }                                                               \
+#define that(condition)                                       \
+  execute([] {                                                \
+    if (!(condition)) {                                       \
+      throw assert::AssertionError(                           \
+          "Assertion failed: (" #condition ") at line "_s +   \
+          std::to_string(__LINE__) + " in file " + __FILE__); \
+    }                                                         \
   })
+
+/**
+ * Like `that()`, but uses gtest's FAIL() instead of throwing an error.
+ *
+ * \param condition A condition to assert.
+ *
+ * \see assert::that()
+ */
+#define test(condition)                                              \
+  execute([] {                                                       \
+    if (!(condition)) {                                              \
+      FAIL() << "TEST assertion failed: (" #condition ") at line "   \
+             << std::to_string(__LINE__) << " in file " << __FILE__; \
+    }                                                                \
+  })
+
 #else
+
+/**
+ * A magical dummy function that does absolutely nothing.
+ */
 void unicorn() {
 }
 #define that(condition) unicorn()
