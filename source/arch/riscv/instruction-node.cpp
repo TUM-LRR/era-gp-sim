@@ -9,26 +9,36 @@
 namespace riscv {
 
 const std::string& InstructionNode::getIdentifier() const {
-  assert(_instructionInformation.isValid() &&
-         _instructionInformation.hasMnemonic(§));
   return _instructionInformation.getMnemonic();
 }
 
 bool InstructionNode::_requireChildren(Type type,
                                        size_t startIndex,
                                        size_t amount) const {
-  if (_children.size() - startIndex < amount) return false;
+  auto first = _children.begin();
+  std::advance(start, startIndex);
 
-  for (size_t i = startIndex; i < startIndex + amount; i++) {
-    if (_children.at(i)->getType() != type) {
-      return false;
-    }
-  }
-  return true;
+  auto last = first;
+  std::advance(last, amount);
+
+  // clang-format off
+  return std::all_of(first, last, [] (const auto& child) {
+    return child.getType() == type;
+  });
+  // clang-format on
+}
+
+bool InstructionNode::_requireChildren(TypeList list, size_t startIndex) {
+  auto view = Utility::viewFrom(_children, startIndex));
+
+  // clang-format off
+  return Utilty::isEqualBy(list, view, [](const auto& child) {
+    return child->getKey();
+  });
+  // clang-format on
 }
 
 MemoryValue InstructionNode::assemble() const {
-<<<<<<< Updated upstream
   AssemblerFunction assembler;
   InstructionKey instructionKey = _instructionInformation.getKey();
 
@@ -71,8 +81,5 @@ MemoryValue InstructionNode::assemble() const {
   for (int i = 0; i < boolResult.size(); i++) result.put(--k, boolResult.at(i));
 
   return result;
-=======
-  return MemoryValue{};
->>>>>>> Stashed changes
 }
 }

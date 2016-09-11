@@ -18,6 +18,8 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
 #define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
 
+#include <initializer_list>
+
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/instruction-information.hpp"
 #include "core/conversions.hpp"
@@ -47,6 +49,8 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   const std::string& getIdentifier() const override;
 
  protected:
+  using TypeList = std::initializer_list<super::Type>;
+
   /** Byte order used in RISC-V architecture. */
   static const Endianness RISCV_ENDIANNESS = Endianness::LITTLE;
   /** Bits per byte in RISC-V architecture. */
@@ -59,10 +63,21 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    *
    * \param startIndex The index to start checking for registers.
    * \param amount The amount of registers required.
-   * \return true if this node matches the requirements.
+   *
+   * \return True if the children match the given types, else false.
    */
-  // Reference as super::Type
   bool _requireChildren(Type type, size_t startIndex, size_t amount) const;
+
+
+  /**
+   * Checks if the node's children are of the given types.
+   *
+   * \param list A list of types.
+   * \param startIndex An optional starting index from where to check types.
+   *
+   * \return True if the children match the given types, else false.
+   */
+  bool _requireChildren(TypeList list, size_t startIndex = 0) const;
 
   /** The information object associated with the instruction. */
   InstructionInformation _information;
