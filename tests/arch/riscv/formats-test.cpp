@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/architecture.hpp"
 #include "arch/common/immediate-node.hpp"
 #include "arch/common/immediate-node.hpp"
 #include "arch/common/instruction-format.hpp"
@@ -34,7 +35,7 @@
 #include "arch/riscv/integer-instructions.hpp"
 #include "core/memory-value.hpp"
 
-using namespace riscv;
+namespace riscv {
 
 // testing the immediate transformations
 struct ImmediateFormatTestFixture : public ::testing::Test {
@@ -112,8 +113,9 @@ TEST_F(InstructionFormatTestFixture, RFormat) {
 }
 */
 TEST_F(InstructionFormatTestFixture, IFormat) {
-  auto addInfo = instructionSet.getInstruction("add");
-  AddInstructionNode<uint32_t> addInstr(addInfo, true);
+  using Operands = IntegerInstructionNode<uint32_t>::Operands;
+  auto addInfo   = instructionSet.getInstruction("add");
+  AddInstructionNode<uint32_t> addInstr(addInfo, Operands::IMMEDIATES);
   auto key = addInfo.getKey();
   MemoryValue val(4, 8);
   val.put(22, true);
@@ -138,4 +140,5 @@ TEST_F(InstructionFormatTestFixture, UFormat) {
 }
 
 TEST_F(InstructionFormatTestFixture, UJFormat) {
+}
 }

@@ -8,39 +8,43 @@
 
 namespace riscv {
 
+InstructionNode::InstructionNode(const InstructionInformation& information)
+: super(Type::INSTRUCTION), _information(information) {
+}
+
 const std::string& InstructionNode::getIdentifier() const {
-  return _instructionInformation.getMnemonic();
+  return _information.getMnemonic();
 }
 
 bool InstructionNode::_requireChildren(Type type,
                                        size_t startIndex,
                                        size_t amount) const {
   auto first = _children.begin();
-  std::advance(start, startIndex);
+  std::advance(first, startIndex);
 
   auto last = first;
   std::advance(last, amount);
 
   // clang-format off
-  return std::all_of(first, last, [] (const auto& child) {
-    return child.getType() == type;
+  return std::all_of(first, last, [type] (const auto& child) {
+    return child->getType() == type;
   });
   // clang-format on
 }
 
-bool InstructionNode::_requireChildren(TypeList list, size_t startIndex) {
-  auto view = Utility::viewFrom(_children, startIndex));
+bool InstructionNode::_requireChildren(TypeList list, size_t startIndex) const {
+  auto view = Utility::viewFrom(_children, startIndex);
 
   // clang-format off
-  return Utilty::isEqualBy(list, view, [](const auto& child) {
-    return child->getKey();
+  return Utility::isEqual(list, view, [](auto type, const auto& child) {
+    return type == child->getType();
   });
   // clang-format on
 }
 
 MemoryValue InstructionNode::assemble() const {
   AssemblerFunction assembler;
-  InstructionKey instructionKey = _instructionInformation.getKey();
+  InstructionKey instructionKey = _information.getKey();
 
   int format = 2;
 

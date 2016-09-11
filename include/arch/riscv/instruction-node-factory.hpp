@@ -69,7 +69,7 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   using RV64_integral_t = uint64_t;
 
   using Factory = std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
-      InstructionInformation &)>;
+      const InstructionInformation &)>;
 
   /**
    * An internal utility class to map instruction names to their factory
@@ -93,33 +93,31 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
      * \param hasImmediateVersion If true, also create an immediate version of
      *        the instruction.
      */
-    template <typename InstructionType>
-    std::enable_if_t<
-        std::is_base_of<IntegerInstructionNode, InstructionType>::value>
+    template <template <typename...> class InstructionType, typename SizeType>
+    void
     add(const std::string &instructionName, bool hasImmediateVersion = true) {
+      using Operands = typename InstructionType<SizeType>::Operands;
+
+      // clang-format off
+      _map.emplace(instructionName, [](const auto &information) {
+        return std::make_unique<InstructionType<SizeType>>(
+          information, Operands::REGISTERS);
+      });
+
       if (hasImmediateVersion) {
-        _map.emplace(instructionName, [](const auto &information) {
-          return std::make_unique<InstructionType>(
-              information, InstructionNode::For::REGISTERS);
-        });
         _map.emplace(instructionName + 'i', [](const auto &information) {
-          return std::make_unique<InstructionType>(
-              information, InstructionNode::For::IMMEDIATES);
+          return std::make_unique<InstructionType<SizeType>>(
+              information, Operands::IMMEDIATES);
         });
-      } else {
-        _map.emplace(instructionName, [](const auto &information) {
-          return std::make_unique<InstructionType>(information);
-        });
+        // clang-format on
       }
     }
 
     template <typename InstructionType, typename... Args>
-    std::enable_if_t<
-        !std::is_base_of<IntegerInstructionNode, InstructionType>::value>
-    add(const std::string &instructionName, Args &&... args) {
-      _map.emplace(instructionName, [](const auto &information) {
-        return std::make_unique<InstructionType>(information,
-                                                 std::forward<Args>(args)...);
+    void add(const std::string &instructionName, Args &&... args) {
+      // Cannot preserve value category (simply) unfortunately
+      _map.emplace(instructionName, [args...](const auto &information) {
+        return std::make_unique<InstructionType>(information, args...);
       });
     }
 
@@ -151,7 +149,8 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
                 const InstructionInformation &information) const;
 
     /** \copydoc create() */
-    Node operator()(const std::string &instructionName) const;
+    Node operator()(const std::string &instructionName,
+                    const InstructionInformation &information) const;
 
    private:
     /** The actual underlying string to factory mapping. */
@@ -160,26 +159,34 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
 
   /**
    * \brief Sets up non-integer instructions.
-   *
-   * \param architecture The architecture currently used.
    */
-  void _setupOtherInstructions(const Architecture &architecture);
+  void _setupOtherInstructions();
+
+  /**
+   * \brief Sets load instructions.
+   */
+  void _setupLoadInstructions();
+
+  /**
+   * \brief Sets store instructions.
+   */
+  void _setupStoreInstructions();
 
   /**
    * Sets up the integer instructions.
    *
-   * \tparam WordSize The word size of the architecture.
+   * \tparam SizeType The word size of the architecture.
    */
-  template <typename WordSize>
+  template <typename SizeType>
   void _setupIntegerInstructions() {
-    _factories.add<AddInstructionNode<WordSize>>("add");
-    _factories.add<SubInstructionNode<WordSize>>("sub", false);
-    _factories.add<AndInstructionNode<WordSize>>("and");
-    _factories.add<OrInstructionNode<WordSize>>("or");
-    _factories.add<XorInstructionNode<WordSize>>("xor");
-    _factories.add<ShiftLeftLogicalInstructionNode<WordSize>>("sll");
-    _factories.add<ShiftRightLogicalInstructionNode<WordSize>>("srl");
-    _factories.add<ShiftRightArithmeticInstructionNode<WordSize>>("sra");
+    _factories.add<AddInstructionNode, SizeType>("add");
+    _factories.add<SubInstructionNode, SizeType>("sub", false);
+    _factories.add<AndInstructionNode, SizeType>("and");
+    _factories.add<OrInstructionNode, SizeType>("or");
+    _factories.add<XorInstructionNode, SizeType>("xor");
+    _factories.add<ShiftLeftLogicalInstructionNode, SizeType>("sll");
+    _factories.add<ShiftRightLogicalInstructionNode, SizeType>("srl");
+    _factories.add<ShiftRightArithmeticInstructionNode, SizeType>("sra");
   }
 
   /**

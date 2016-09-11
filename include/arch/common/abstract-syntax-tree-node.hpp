@@ -23,8 +23,16 @@
 #include <vector>
 
 #include "arch/common/validation-result.hpp"
-#include "core/memory-access.hpp"
+//#include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
+
+struct MemoryAccess {
+  virtual MemoryValue getRegisterValue(std::string& token) {
+    return {};
+  }
+  virtual void setRegisterValue(std::string& token, MemoryValue value) {
+  }
+};
 
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {
@@ -105,7 +113,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return True if all children are valid, else false.
    */
-  const ValidationResult _validateChildren() const;
+  ValidationResult _validateChildren() const;
 
   /** The child nodes of this node. */
   std::vector<Node> _children;

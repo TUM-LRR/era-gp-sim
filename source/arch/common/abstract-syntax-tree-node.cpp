@@ -36,7 +36,7 @@ void AbstractSyntaxTreeNode::addChild(Node node) {
   _children.emplace_back(std::move(node));
 }
 
-const ValidationResult AbstractSyntaxTreeNode::_validateChildren() const {
+ValidationResult AbstractSyntaxTreeNode::_validateChildren() const {
   for (auto& child : _children) {
     auto result = child->validate();
     if (!result.isSuccess()) {

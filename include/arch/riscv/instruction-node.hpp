@@ -31,14 +31,17 @@ class InstructionNode : public AbstractSyntaxTreeNode {
  public:
   using super = AbstractSyntaxTreeNode;
 
+  /** Byte order used in RISC-V architecture. */
+  static const Endianness RISCV_ENDIANNESS = Endianness::LITTLE;
+  /** Bits per byte in RISC-V architecture. */
+  static const std::size_t RISCV_BITS_PER_BYTE = 8;
+
   /**
    * Constructs a new node that represents a RISC V specific instruction.
    *
    * \param The information object associated with the instruction.
    */
-  InstructionNode(InstructionInformation& information)
-  : super(Type::INSTRUCTION), _information(information) {
-  }
+  InstructionNode(const InstructionInformation& information);
 
   virtual ~InstructionNode() = default;
 
@@ -50,11 +53,6 @@ class InstructionNode : public AbstractSyntaxTreeNode {
 
  protected:
   using TypeList = std::initializer_list<super::Type>;
-
-  /** Byte order used in RISC-V architecture. */
-  static const Endianness RISCV_ENDIANNESS = Endianness::LITTLE;
-  /** Bits per byte in RISC-V architecture. */
-  static const std::size_t RISCV_BITS_PER_BYTE = 8;
 
   /**
    * Checks if this node has 'amount' children of type 'type', starting at

@@ -20,15 +20,13 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP
 #define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP
 
-#include <QtGlobal>
 #include <cassert>
 #include <string>
 #include <type_traits>
 
 #include "arch/common/instruction-information.hpp"
 #include "arch/riscv/instruction-node.hpp"
-#include "common/assert.hpp"
-#include "core/memory-access.hpp"
+#include "arch/riscv/integer-instruction-node.hpp"
 
 namespace riscv {
 
@@ -39,10 +37,12 @@ namespace riscv {
  * operation should operate
  */
 template <typename SizeType>
-class AddInstructionNode : public IntegerInstructionNode<SizeType> {
- public:
-  AddInstructionNode(const InstructionInformation& information, bool immediate)
-  : super(information, immediate, [](auto& first, auto& second) {
+struct AddInstructionNode : public IntegerInstructionNode<SizeType> {
+  using super = IntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit AddInstructionNode(const InstructionInformation& information,
+                              Operands operands)
+  : super(information, operands, [](const auto& first, const auto& second) {
     return first + second;
   }) {
   }
@@ -55,12 +55,15 @@ class AddInstructionNode : public IntegerInstructionNode<SizeType> {
  * operation should operate
  */
 template <typename SizeType>
-class SubInstructionNode : public IntegerInstructionNode<SizeType> {
- public:
-  SubInstructionNode(const InstructionInformation& information)
-  : super(information, immediate, [](auto& first, auto& second) {
-    return first - second;
-  }) {
+struct SubInstructionNode : public IntegerInstructionNode<SizeType> {
+  using super = IntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit SubInstructionNode(const InstructionInformation& information,
+                              Operands)
+  : super(
+        information,
+        super::Operands::REGISTERS,
+        [](const auto& first, const auto& second) { return first - second; }) {
   }
 };
 
@@ -71,10 +74,12 @@ class SubInstructionNode : public IntegerInstructionNode<SizeType> {
  * operation should operate
  */
 template <typename SizeType>
-class AndInstructionNode : public IntegerInstructionNode<SizeType> {
- public:
-  AndInstructionNode(const InstructionInformation& information)
-  : super(information, immediate, [](auto& first, auto& second) {
+struct AndInstructionNode : public IntegerInstructionNode<SizeType> {
+  using super = IntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit AndInstructionNode(const InstructionInformation& information,
+                              Operands operands)
+  : super(information, operands, [](const auto& first, const auto& second) {
     return first & second;
   }) {
   }
@@ -87,10 +92,12 @@ class AndInstructionNode : public IntegerInstructionNode<SizeType> {
  * operation should operate
  */
 template <typename SizeType>
-class OrInstructionNode : public IntegerInstructionNode<SizeType> {
- public:
-  OrInstructionNode(const InstructionInformation& information, bool immediate)
-  : super(information, immediate, [](auto& first, auto& second) {
+struct OrInstructionNode : public IntegerInstructionNode<SizeType> {
+  using super = IntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit OrInstructionNode(const InstructionInformation& information,
+                             Operands operands)
+  : super(information, operands, [](const auto& first, const auto& second) {
     return first | second;
   }) {
   }
@@ -103,10 +110,12 @@ class OrInstructionNode : public IntegerInstructionNode<SizeType> {
  * operation should operate
  */
 template <typename SizeType>
-class XorInstructionNode : public IntegerInstructionNode<SizeType> {
- public:
-  XorInstructionNode(const InstructionInformation& information, bool immediate)
-  : super(information, immediate, [](auto& first, auto& second) {
+struct XorInstructionNode : public IntegerInstructionNode<SizeType> {
+  using super = IntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit XorInstructionNode(const InstructionInformation& information,
+                              Operands operands)
+  : super(information, operands, [](const auto& first, const auto& second) {
     return first ^ second;
   }) {
   }
@@ -119,12 +128,13 @@ class XorInstructionNode : public IntegerInstructionNode<SizeType> {
  * operation should operate
  */
 template <typename SizeType>
-class ShiftLogicalLeftInstructionNode
+struct ShiftLeftLogicalInstructionNode
     : public IntegerInstructionNode<SizeType> {
- public:
-  ShiftLogicalLeftInstructionNode(const InstructionInformation& information,
-                                  bool immediate)
-  : super(information, immediate, [](auto& first, auto& second) {
+  using super = IntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit ShiftLeftLogicalInstructionNode(
+      const InstructionInformation& information, Operands operands)
+  : super(information, operands, [this](const auto& first, const auto& second) {
     return first << super::_getLower5Bits(second);
   }) {
   }
@@ -138,12 +148,13 @@ class ShiftLogicalLeftInstructionNode
  */
 template <typename SizeType,
           typename = std::enable_if_t<std::is_unsigned<SizeType>::value>>
-class ShiftLogicalRightInstructionNode
+struct ShiftRightLogicalInstructionNode
     : public IntegerInstructionNode<SizeType> {
- public:
-  ShiftLogicalRightInstructionNode(const InstructionInformation& information,
-                                   bool immediate)
-  : super(information, immediate, [](auto& first, auto& second) {
+  using super = IntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit ShiftRightLogicalInstructionNode(
+      const InstructionInformation& information, Operands operands)
+  : super(information, operands, [this](const auto& first, const auto& second) {
     return first >> super::_getLower5Bits(second);
   }) {
   }
@@ -156,12 +167,13 @@ class ShiftLogicalRightInstructionNode
  * operation should operate
  */
 template <typename SizeType>
-class ShiftArithmeticRightInstructionNode
+struct ShiftRightArithmeticInstructionNode
     : public IntegerInstructionNode<SizeType> {
- public:
-  ShiftArithmeticRightInstructionNode(const InstructionInformation& information,
-                                      bool immediate)
-  : super(information, immediate) {
+  using super = IntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit ShiftRightArithmeticInstructionNode(
+      const InstructionInformation& information, Operands operands)
+  : super(information, operands) {
   }
 
   /** \copydoc IntegerInstructionNode::_compute() */

@@ -22,7 +22,7 @@
 
 #include "arch/riscv/instruction-node.hpp"
 
-#include <QtGlobal>
+#include <QtCore/qglobal.h>
 #include <string>
 
 namespace riscv {
@@ -44,13 +44,14 @@ class LoadInstructionNode : public InstructionNode {
     BYTE_UNSIGNED      // LBU
   };
 
-  LoadInstructionNode(InstructionInformation& instructionInformation, Type type)
+  LoadInstructionNode(const InstructionInformation& instructionInformation,
+                      Type type)
   : InstructionNode(instructionInformation), _type(type) {
   }
 
-  MemoryValue getValue(DummyMemoryAccess& memory_access) const override;
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override;
 
-  const ValidationResult validate() const override;
+  ValidationResult validate() const override;
 
   MemoryValue assemble() const override {
     return MemoryValue{};// TODO
@@ -75,14 +76,14 @@ class StoreInstructionNode : public InstructionNode {
     BYTE      // SB
   };
 
-  StoreInstructionNode(InstructionInformation& instructionInformation,
+  StoreInstructionNode(const InstructionInformation& instructionInformation,
                        Type type)
   : InstructionNode(instructionInformation), _type(type) {
   }
 
-  MemoryValue getValue(DummyMemoryAccess& memory_access) const override;
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override;
 
-  const ValidationResult validate() const override;
+  ValidationResult validate() const override;
 
   MemoryValue assemble() const override {
     return MemoryValue{};// TODO

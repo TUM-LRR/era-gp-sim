@@ -5,7 +5,6 @@
 set(ARCH_RISCV_SOURCES
     control-flow-instructions.cpp
     instruction-node.cpp
-    integer-instructions.cpp
     load-store-instructions.cpp
     mul-div-instructions.cpp
     instruction-node-factory.cpp

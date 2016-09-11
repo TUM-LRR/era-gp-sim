@@ -30,17 +30,14 @@
 #include <vector>
 
 namespace Utility {
-using std::begin;
-using std::end;
-
 template <typename Range>
 class View {
  public:
-  using Iterator = decltype(Range::begin());
+  using Iterator = decltype(((Range*)nullptr)->begin());
   using size_t   = std::size_t;
 
-  View(Range& range, size_t beginIndex, size_t lastIndex)
-  : _begin(begin(range)), _end(begin(range)) {
+  View(const Range& range, size_t beginIndex, size_t lastIndex)
+  : _begin(std::begin(range)), _end(std::begin(range)) {
     std::advance(_begin, beginIndex);
     std::advance(_begin, lastIndex);
   }
@@ -67,13 +64,13 @@ class View {
 };
 
 template <typename Range>
-View<Range> viewUpTo(const Range& range, std::size_t index) {
+View<Range> viewUpTo(Range& range, std::size_t index) {
   return {range, 0, index};
 }
 
 template <typename Range>
-View<Range> viewFrom(const Range& range, std::size_t index) {
-  return {range, index, std::distance(begin(range), end(range))};
+auto viewFrom(Range& range, std::size_t index) {
+  return View<Range>(range, index, std::distance(begin(range), end(range)));
 }
 
 

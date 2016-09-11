@@ -17,10 +17,9 @@
 
 #include <string>
 
-#include "arch/riscv/architecture.hpp"
+#include "arch/common/architecture.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
 
-#include "common/assert.hpp"
 #include "common/utility.hpp"
 
 namespace riscv {
@@ -29,12 +28,12 @@ InstructionNodeFactory::InstructionNodeFactory(
     const InstructionSet& instructions, const Architecture& architecture)
 : _instructionSet(instructions) {
   auto wordSize = architecture.getWordSize();
-  assert::that(wordSize == 32 || wordSize == 64);
+  assert(wordSize == 32 || wordSize == 64);
 
   if (wordSize == 32) {
-    _setupIntegerInstructions<RV32_integral_t>(_instructionMap);
+    _setupIntegerInstructions<RV32_integral_t>();
   } else if (wordSize == 64) {
-    _setupIntegerInstructions<RV64_integral_t>(_instructionMap);
+    _setupIntegerInstructions<RV64_integral_t>();
   }
 
   _setupOtherInstructions();
@@ -46,7 +45,7 @@ void InstructionNodeFactory::_setupOtherInstructions() {
 }
 
 void InstructionNodeFactory::_setupLoadInstructions() {
-  using LoadInstructionNode::Type;
+  using Type = LoadInstructionNode::Type;
 
   _factories.add<LoadInstructionNode>("lw", Type::WORD);
   _factories.add<LoadInstructionNode>("lh", Type::HALF_WORD);
@@ -56,7 +55,7 @@ void InstructionNodeFactory::_setupLoadInstructions() {
 }
 
 void InstructionNodeFactory::_setupStoreInstructions() {
-  using StoreInstructionNode::Type;
+  using Type = StoreInstructionNode::Type;
 
   _factories.add<StoreInstructionNode>("sw", Type::WORD);
   _factories.add<StoreInstructionNode>("sh", Type::HALF_WORD);
@@ -65,19 +64,20 @@ void InstructionNodeFactory::_setupStoreInstructions() {
 
 InstructionNodeFactory::Node InstructionNodeFactory::createInstructionNode(
     const std::string& mnemonic) const {
-  auto lower       = Utility::toLower(mnemonic);
-  auto information = _instructionSet.find(lower);
-  assert::that(information != _instructionSet.end());
+  auto lower = Utility::toLower(mnemonic);
 
-  return _factories.create(information);
+  assert(_instructionSet.hasInstruction(lower));
+  auto information = _instructionSet.getInstruction(lower);
+
+  return _factories.create(lower, information);
 }
 
 const InstructionNodeFactory::Factory& InstructionNodeFactory::FactoryMap::get(
     const std::string& instructionName) const {
   auto iterator = _map.find(instructionName);
-  assert::that(iterator != _map.end());
+  assert(iterator != _map.end());
 
-  return *iterator;
+  return iterator->second;
 }
 
 const InstructionNodeFactory::Factory& InstructionNodeFactory::FactoryMap::

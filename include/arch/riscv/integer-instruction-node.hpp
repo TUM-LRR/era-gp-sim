@@ -20,14 +20,12 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTION_NODE_HPP
 #define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTION_NODE_HPP
 
-#include <QtGlobal>
+#include <QtCore/qglobal.h>
 #include <functional>
 #include <string>
 #include <type_traits>
 
 #include "arch/riscv/instruction-node.hpp"
-#include "common/assert.hpp"
-#include "core/memory-access.hpp"
 
 namespace riscv {
 
@@ -48,30 +46,15 @@ template <typename SizeType,
           typename = std::enable_if_t<std::is_integral<SizeType>::value>>
 class IntegerInstructionNode : public InstructionNode {
  public:
+  enum class Operands { IMMEDIATES, REGISTERS };
   using Operation = std::function<SizeType(SizeType, SizeType)>;
-  /**
- * Creates an integer instructino with the given information.
- *
- * \param information InstructionInformation that holds the mnemonic of this
- * instruction
- * \param immediate when the instruction is labeled as immediate
- * instruction, 2 register and one immediate operand are expected for
- * validation, if not 3 register operands are expected
- */
-  IntegerInstructionNode(InstructionInformation& information,
-                         bool immediate,
-                         Operation operation = Operation())
-  : InstructionNode(information)
-  , _isImmediate(immediate)
-  , _operation(operation) {
-  }
 
   /** Default destructor*/
   virtual ~IntegerInstructionNode() = default;
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     // Get the destination register
-    auto destination = _children[0]->getIdentifier();
+    auto destination = _children.at(0)->getIdentifier();
 
     auto first  = _child(1, memoryAccess);
     auto second = _child(2, memoryAccess);
@@ -84,17 +67,17 @@ class IntegerInstructionNode : public InstructionNode {
     return {};
   }
 
-  const ValidationResult validate() const override {
+  ValidationResult validate() const override {
     auto result = _validateNumberOfChildren();
     if (!result.isSuccess()) return result;
 
     // check if all operands are valid themselves
-    auto childrenResult = validateChildren();
+    auto childrenResult = _validateChildren();
     if (!childrenResult.isSuccess()) {
       return childrenResult;
     }
 
-    if (_isImmediate) {
+    if (_operands == Operands::IMMEDIATES) {
       result = _validateOperandsForImmediateInstructions();
       if (!result.isSuccess()) return result;
 
@@ -109,8 +92,20 @@ class IntegerInstructionNode : public InstructionNode {
   }
 
  protected:
-  // Since all children will definitely be final classes, we can do this here.
-  using super = IntegerInstructionNode<SizeType>;
+  /**
+ * Creates an integer instructino with the given information.
+ *
+ * \param information InstructionInformation that holds the mnemonic of this
+ * instruction
+ * \param immediate when the instruction is labeled as immediate
+ * instruction, 2 register and one immediate operand are expected for
+ * validation, if not 3 register operands are expected
+ */
+  IntegerInstructionNode(const InstructionInformation& information,
+                         Operands operands,
+                         Operation operation = Operation())
+  : InstructionNode(information), _operands(operands), _operation(operation) {
+  }
 
   /**
    * Performs the actual computation of the instruction.
@@ -124,8 +119,8 @@ class IntegerInstructionNode : public InstructionNode {
    * \return The result of the computation.
    */
   virtual SizeType _compute(SizeType first, SizeType second) const noexcept {
-    assert::that(static_cast<bool>(_operation));
-    return operation(first, second);
+    assert(static_cast<bool>(_operation));
+    return _operation(first, second);
   }
 
   SizeType _getLower5Bits(SizeType op) const {
@@ -133,12 +128,18 @@ class IntegerInstructionNode : public InstructionNode {
   }
 
  private:
-  SizeType _child(size_t index, MemoryAccess& memoryAccess) {
-    auto memory = _children[index]->getValue(memoryAccess);
+  SizeType _child(size_t index, MemoryAccess& memoryAccess) const {
+    auto memory = _children.at(index)->getValue(memoryAccess);
     return convert<SizeType>(memory, RISCV_ENDIANNESS);
   }
 
-  ValidationResult _validateNumberOfChildren() {
+  SizeType _child(size_t index) const {
+    MemoryAccess dummy;
+    auto memory = _children[index]->getValue(dummy);
+    return convert<SizeType>(memory, RISCV_ENDIANNESS);
+  }
+
+  ValidationResult _validateNumberOfChildren() const {
     // a integer instruction needs exactly 3 operands
     if (_children.size() != 3) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(
@@ -149,23 +150,21 @@ class IntegerInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
-  ValidationResult _validateImmediateSize() {
-    if (_isImmediate && _children[2]->getType() == Type::IMMEDIATE) {
-      // no memory access is needed for a immediate node
-      MemoryValue value = _children.at(2)->getValue(stub);
+  ValidationResult _validateImmediateSize() const {
+    assert(_children[2]->getType() == Type::IMMEDIATE);
+    auto value = _child(2);
 
-      if ((value & ~0xFFF) > 0) {
-        return ValidationResult::fail(
-            QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                              "The immediate value of this instruction must "
-                              "be representable by 12 bits"));
-      }
+    if ((value & ~static_cast<SizeType>(0xFFFFF)) > 0) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "The immediate value of this instruction must "
+                            "be representable by 12 bits"));
     }
 
     return ValidationResult::success();
   }
 
-  ValidationResult _validateOperandsForImmediateInstructions() {
+  ValidationResult _validateOperandsForImmediateInstructions() const {
     if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
         !_requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
       return ValidationResult::fail(
@@ -177,7 +176,7 @@ class IntegerInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
-  ValidationResult _validateOperandsForNonImmediateInstructions() {
+  ValidationResult _validateOperandsForNonImmediateInstructions() const {
     // a register integer instruction needs three register operands
     if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3)) {
       return ValidationResult::fail(
@@ -189,12 +188,8 @@ class IntegerInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
-  /**
-   * Indicates if this instruction is a register-immediate instruction.
-   * If false this instruction is a register-register instruction.
-   * This value is used for validation of operands
-   */
-  bool _isImmediate;
+  /** The type of operands this command takes (registers or immediates). */
+  Operands _operands;
 
   /** An optional function with which the node can be constructed. */
   Operation _operation;

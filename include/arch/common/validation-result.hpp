@@ -31,7 +31,7 @@ class ValidationResult {
    * Creates a new ValidationResult object that indicates, that the
    * validation succeded.
    */
-  static const ValidationResult success();
+  static ValidationResult success();
 
   /**
    * Creates a new ValidationResult object that indicates, that the
@@ -40,7 +40,7 @@ class ValidationResult {
    *
    * \param message The message indicating the problem. Must not be empty.
    */
-  static const ValidationResult fail(std::string message);
+  static ValidationResult fail(std::string message);
 
   /**
    * Check if this validation result indicates, that the validation

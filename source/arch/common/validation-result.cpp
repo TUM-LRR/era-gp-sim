@@ -20,11 +20,11 @@
 #include "arch/common/validation-result.hpp"
 #include <cassert>
 
-const ValidationResult ValidationResult::success() {
+ValidationResult ValidationResult::success() {
   return ValidationResult{true, ""};
 }
 
-const ValidationResult ValidationResult::fail(std::string message) {
+ValidationResult ValidationResult::fail(std::string message) {
   assert(message != "");
   return ValidationResult{false, message};
 }
