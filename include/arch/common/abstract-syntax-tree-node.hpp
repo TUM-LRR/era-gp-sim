@@ -23,28 +23,13 @@
 #include <vector>
 
 #include "arch/common/validation-result.hpp"
+#include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
-
-// Dummy definition of a memory-access
-class DummyMemoryAccess {
- public:
-  virtual MemoryValue getRegisterValue(std::string& token) = 0;
-  virtual void setRegisterValue(std::string& token, MemoryValue value) = 0;
-};
-// Dummy implementation of a memory-access
-class DummyMemoryAccessStub : public DummyMemoryAccess {
- public:
-  MemoryValue getRegisterValue(std::string& token) override {
-    return MemoryValue{};
-  }
-  void setRegisterValue(std::string& token, MemoryValue value) override {
-  }
-};
 
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {
  public:
-  enum struct Type {
+  enum class Type {
     INSTRUCTION,
     IMMEDIATE,
     REGISTER,
@@ -55,13 +40,23 @@ class AbstractSyntaxTreeNode {
   using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
 
   /**
-   * Executes this node and it's children recursively.
+   * Constructs a new node. The constructor is supposed to be called in
+   * the subclasses.
    *
-   * \param memory_access Access to memory and registers
-   * \return An memory value, that represents the the result of the execution.
-   * The meaning differs between different node types.
+   * \param nodeType The type of this node.
    */
-  virtual MemoryValue getValue(DummyMemoryAccess& memory_access) const = 0;
+  AbstractSyntaxTreeNode(Type nodeType) : _nodeType(nodeType) {
+  }
+
+  /**
+   * Executes this node recursively and returns a value.
+   *
+   * \param memoryAccess An access object to memory and registers.
+   *
+   * \return A type-dependent memory value, representing the the result of
+   * the execution.
+   */
+  virtual MemoryValue getValue(MemoryAccess& memoryAccess) const = 0;
 
   /**
    * Validates the structure of this syntax tree. This should be called
@@ -69,7 +64,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return Whether this syntax tree is valid for execution.
    */
-  virtual const ValidationResult validate() const = 0;
+  virtual ValidationResult validate() const = 0;
 
   /**
    * Assembles this syntax tree into its binary representation. So, this
@@ -80,8 +75,7 @@ class AbstractSyntaxTreeNode {
   virtual MemoryValue assemble() const = 0;
 
   /**
-   * Returns the identifier of this node. The identifier is formatted as a
-   * string and depends on the node type.
+   * Returns the type-dependent identifier of this node.
    *
    * \return The identifier of this node.
    */
@@ -91,13 +85,10 @@ class AbstractSyntaxTreeNode {
    * Getter for the type of this node.
    * \return The type of this node.
    */
-  Type getType() {
-    return _node_type;
-  }
+  Type getType() const noexcept;
 
   /**
-   * Adds a child to this node. Note, that the node will be added after
-   * the last node, that has been added.
+   * Appends a child to the node.
    *
    * \param node The node to be added.
    */
@@ -105,34 +96,19 @@ class AbstractSyntaxTreeNode {
     _children.push_back(std::move(node));
   }
 
-  /**
-   * Calls validate() on all children
-   * \return true, if all children return true, otherwise false
-   */
-  const ValidationResult validateAllChildren() const {
-    for (auto& child : _children) {
-      ValidationResult result = child->validate();
-      if (!result.isSuccess()) {
-        return result;
-      }
-    }
-    return ValidationResult::success();
-  }
-
  protected:
   /**
-   * Constructs a new node. The constructor is supposed to be called in
-   * the subclasses.
+   * Calls validate() on all children
    *
-   * \param node_type The type of this node.
+   * \return True if all children are valid, else false.
    */
-  AbstractSyntaxTreeNode(Type node_type) : _node_type(node_type) {
-  }
+  const ValidationResult _validateAllChildren() const;
 
+  /** The child nodes of this node. */
   std::vector<Node> _children;
 
  private:
-  Type _node_type;
+  Type _nodeType;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_NODE_HPP */

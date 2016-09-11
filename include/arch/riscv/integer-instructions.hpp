@@ -34,34 +34,35 @@
 
 namespace riscv {
 
-/*!
+/**
  * \brief The IntegerInstructionNode is a superclass for all integer arithmetic
  * instructions.
+ *
  * As the behaviour of all of these instructions is very similar, this class
- * summarizes the common behaviour
- * to avoid code redundancy.
+ * summarizes the common behaviour to avoid code redundancy.
  * The instruction internally converts the MemoryValues of their operands to a
  * built-in integer type, performs the operation with this built-in type and
  * converts the result to a MemoryValue which is stored in the destination
- * register
- * \tparam SizeType built-in integer type on which the actual operation is
- * performed
+ * register.
+ *
+ * \tparam SizeType An integral type to perform the actual operations on.
  */
-template <typename SizeType>
+template <typename SizeType,
+          typename = std::enable_if_t<std::is_integral<SizeType>::value>>
 class IntegerInstructionNode : public InstructionNode {
  public:
-  /*!
- * Creates a IntegerInstructionNode using the specified InstructionInformation
- * to describe the instruction
- * \param info InstructionInformation that holds the mnemonic of this
+  /**
+ * Creates an integer instructino with the given information.
+ *
+ * \param information InstructionInformation that holds the mnemonic of this
  * instruction
  * \param immediateInstruction when the instruction is labeled as immediate
  * instruction, 2 register and one immediate operand are expected for
  * validation, if not 3 register operands are expected
  */
-  IntegerInstructionNode(InstructionInformation& info,
+  IntegerInstructionNode(InstructionInformation& information,
                          bool immediateInstruction)
-  : InstructionNode(info), _isImmediate(immediateInstruction) {
+  : InstructionNode(information), _isImmediate(immediateInstruction) {
   }
 
   /** Default destructor*/
@@ -106,6 +107,7 @@ class IntegerInstructionNode : public InstructionNode {
       DummyMemoryAccessStub stub;
       // no memory access is needed for a immediate node
       MemoryValue value = _children.at(2)->getValue(stub);
+<<<<<<< Updated upstream
       // look for 1 in bits 12...value.getSize()
       for (std::size_t index = 12; index < value.getByteSize(); ++index) {
         if (value.get(index)) {
@@ -114,6 +116,12 @@ class IntegerInstructionNode : public InstructionNode {
               QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                                 "The immediate value of this instruction must "
                                 "be representable by 12 bits"));
+=======
+      // look for 1 in bits 20...value.getSize()
+      for (std::size_t index = 20; index < value.getByteSize(); ++index) {
+        if (value.get(index)) {
+          return false;// 1 detected
+>>>>>>> Stashed changes
         }
       }
       //      auto bits20 = value.getValue() & (~0xFFFFF);  // 2097151 =
@@ -142,15 +150,16 @@ class IntegerInstructionNode : public InstructionNode {
     } else {
       // a register integer instruction needs three register operands
       if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3)) {
-        return ValidationResult::fail(QT_TRANSLATE_NOOP(
-            "Syntax-Tree-Validation",
-            "The register-integer instructions must have 3 registers as operands"));
+        return ValidationResult::fail(
+            QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                              "The register-integer instructions must have 3 "
+                              "registers as operands"));
       }
     }
     return ValidationResult::success();
   }
 
-  /*!
+  /**
    * performs the specific arithmetic integer operation (such as +, -, and, or,
    * etc) and returns the result
    * \param op1 first operand for the arithmetic operation
@@ -167,7 +176,7 @@ class IntegerInstructionNode : public InstructionNode {
   }
 
  private:
-  /*!
+  /**
    * Indicates if this instruction is a register-immediate instruction.
    * If false this instruction is a register-register instruction.
    * This value is used for validation of operands
@@ -175,7 +184,7 @@ class IntegerInstructionNode : public InstructionNode {
   bool _isImmediate;
 };
 
-/*!
+/**
  * Represents a RISC-V "add/addi" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -184,11 +193,12 @@ class IntegerInstructionNode : public InstructionNode {
 template <typename SizeType>
 class AddInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
-  AddInstructionNode(InstructionInformation info, bool immediateInstruction)
-  : IntegerInstructionNode<SizeType>(info, immediateInstruction) {
+  AddInstructionNode(InstructionInformation information,
+                     bool immediateInstruction)
+  : IntegerInstructionNode<SizeType>(information, immediateInstruction) {
   }
 
-  /*!
+  /**
    * Adds the two operands
    * \param op1 summand
    * \param op2 summand
@@ -199,7 +209,7 @@ class AddInstructionNode : public IntegerInstructionNode<SizeType> {
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "sub" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -208,13 +218,13 @@ class AddInstructionNode : public IntegerInstructionNode<SizeType> {
 template <typename SizeType>
 class SubInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
-  SubInstructionNode(InstructionInformation info)
-  : IntegerInstructionNode<SizeType>(info,
+  SubInstructionNode(InstructionInformation information)
+  : IntegerInstructionNode<SizeType>(information,
                                      false)// RISC-V does not specifiy a subi
   {
   }
 
-  /*!
+  /**
    * Subtracts op2 from op1
    * \param op1
    * \param op2
@@ -225,7 +235,7 @@ class SubInstructionNode : public IntegerInstructionNode<SizeType> {
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "and/andi" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -234,11 +244,12 @@ class SubInstructionNode : public IntegerInstructionNode<SizeType> {
 template <typename SizeType>
 class AndInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
-  AndInstructionNode(InstructionInformation info, bool isImmediateInstruction)
-  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  AndInstructionNode(InstructionInformation information,
+                     bool isImmediateInstruction)
+  : IntegerInstructionNode<SizeType>(information, isImmediateInstruction) {
   }
 
-  /*!
+  /**
    * Performs a bitwise logical and with op1, op2
    * \param op1
    * \param op2
@@ -249,7 +260,7 @@ class AndInstructionNode : public IntegerInstructionNode<SizeType> {
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "or/ori" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -258,11 +269,12 @@ class AndInstructionNode : public IntegerInstructionNode<SizeType> {
 template <typename SizeType>
 class OrInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
-  OrInstructionNode(InstructionInformation info, bool isImmediateInstruction)
-  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  OrInstructionNode(InstructionInformation information,
+                    bool isImmediateInstruction)
+  : IntegerInstructionNode<SizeType>(information, isImmediateInstruction) {
   }
 
-  /*!
+  /**
    * Performs a bitwise logical or with op1, op2
    * \param op1
    * \param op2
@@ -273,7 +285,7 @@ class OrInstructionNode : public IntegerInstructionNode<SizeType> {
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "xor/xori" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -282,11 +294,12 @@ class OrInstructionNode : public IntegerInstructionNode<SizeType> {
 template <typename SizeType>
 class XorInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
-  XorInstructionNode(InstructionInformation info, bool isImmediateInstruction)
-  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  XorInstructionNode(InstructionInformation information,
+                     bool isImmediateInstruction)
+  : IntegerInstructionNode<SizeType>(information, isImmediateInstruction) {
   }
 
-  /*!
+  /**
    * Performs a bitwise logical xor with op1, op2
    * \param op1
    * \param op2
@@ -297,7 +310,7 @@ class XorInstructionNode : public IntegerInstructionNode<SizeType> {
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "sll/slli" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -307,12 +320,12 @@ template <typename SizeType>
 class ShiftLogicalLeftInstructionNode
     : public IntegerInstructionNode<SizeType> {
  public:
-  ShiftLogicalLeftInstructionNode(InstructionInformation info,
+  ShiftLogicalLeftInstructionNode(InstructionInformation information,
                                   bool isImmediateInstruction)
-  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  : IntegerInstructionNode<SizeType>(information, isImmediateInstruction) {
   }
 
-  /*!
+  /**
    * Shifts bits in op1 logical left (shifts zeros into the lower part). How
    * many zeros are shifted in is
    * determined by the lower 5bit of op2
@@ -325,7 +338,7 @@ class ShiftLogicalLeftInstructionNode
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "srl/srli" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -335,9 +348,9 @@ template <typename SizeType>
 class ShiftLogicalRightInstructionNode
     : public IntegerInstructionNode<SizeType> {
  public:
-  ShiftLogicalRightInstructionNode(InstructionInformation info,
+  ShiftLogicalRightInstructionNode(InstructionInformation information,
                                    bool isImmediateInstruction)
-  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  : IntegerInstructionNode<SizeType>(information, isImmediateInstruction) {
     // For logical right shift, SizeType must be a unsigned integral type
     // Due to the fact that signed right shift is implementation/compiler
     // specific
@@ -345,7 +358,7 @@ class ShiftLogicalRightInstructionNode
     assert((SizeType(0) - 1) >= 0);
   }
 
-  /*!
+  /**
    * Shifts bits in op1 logical right (shifts zeros into the upper part). How
    * many zeros are shifted in is
    * determined by the lower 5bit of op2
@@ -358,7 +371,7 @@ class ShiftLogicalRightInstructionNode
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "sra/srai" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -368,12 +381,12 @@ template <typename SizeType>
 class ShiftArithmeticRightInstructionNode
     : public IntegerInstructionNode<SizeType> {
  public:
-  ShiftArithmeticRightInstructionNode(InstructionInformation info,
+  ShiftArithmeticRightInstructionNode(InstructionInformation information,
                                       bool isImmediateInstruction)
-  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  : IntegerInstructionNode<SizeType>(information, isImmediateInstruction) {
   }
 
-  /*!
+  /**
    * Shifts bits in op1 arithmetic right (shifts sign bit into the upper part).
    * How
    * many bits are shifted in is determined by the lower 5bit of op2
@@ -384,6 +397,10 @@ class ShiftArithmeticRightInstructionNode
   SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
     // c++ standard does not define a arithemtic shift operator
     constexpr auto length = sizeof(SizeType) * 8;
+<<<<<<< Updated upstream
+=======
+                       // std::signbit
+>>>>>>> Stashed changes
     SizeType sign       = (op1 & (SizeType(1) << (length - 1))) >> (length - 1);
     SizeType shiftCount = this->getLower5Bit(op2);
     SizeType tmp        = op1 >> shiftCount;

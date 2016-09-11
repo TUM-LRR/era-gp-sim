@@ -6,6 +6,7 @@
 #include "arch/riscv/formats.hpp"
 #include "arch/riscv/instruction-node.hpp"
 
+// fix
 using namespace riscv;
 
 const std::string& InstructionNode::getIdentifier() const {
@@ -28,6 +29,7 @@ bool InstructionNode::requireChildren(Type type,
 }
 
 MemoryValue InstructionNode::assemble() const {
+<<<<<<< Updated upstream
   AssemblerFunction assembler;
   InstructionKey instructionKey = _instructionInformation.getKey();
 
@@ -70,4 +72,7 @@ MemoryValue InstructionNode::assemble() const {
   for (int i = 0; i < boolResult.size(); i++) result.put(--k, boolResult.at(i));
 
   return result;
+=======
+  return MemoryValue{};
+>>>>>>> Stashed changes
 }

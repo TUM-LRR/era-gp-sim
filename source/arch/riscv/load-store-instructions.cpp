@@ -32,6 +32,8 @@ const ValidationResult StoreInstructionNode::validate() const {
 
 MemoryValue
 LoadInstructionNode::getValue(DummyMemoryAccess &memory_access) const {
+  // auto
+  // []
   std::string dest   = _children.at(0)->getIdentifier();
   MemoryValue base   = _children.at(1)->getValue(memory_access);
   MemoryValue offset = _children.at(2)->getValue(memory_access);

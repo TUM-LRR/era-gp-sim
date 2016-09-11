@@ -27,24 +27,28 @@ namespace riscv {
 /** A node that represents a RISC V specific instruction */
 class InstructionNode : public AbstractSyntaxTreeNode {
  public:
+  using super = AbstractSyntaxTreeNode;
+
   /**
    * Constructs a new node that represents a RISC V specific instruction.
+   *
+   * \param The information object associated with the instruction.
    */
-  InstructionNode(InstructionInformation& instructionInformation)
-  : AbstractSyntaxTreeNode(Type::INSTRUCTION)
-  , _instructionInformation(instructionInformation) {
+  InstructionNode(InstructionInformation& information)
+  : super(Type::INSTRUCTION), _information(information) {
   }
 
-
-  /* Ensure this class is also pure virtual */
-  virtual MemoryValue
-  getValue(DummyMemoryAccess& memory_access) const override = 0;
-  virtual const ValidationResult validate() const override  = 0;
-
+  /** \copydoc AbstractSyntaxTreeNode::assemble() */
   MemoryValue assemble() const override;
 
-  /* Can be retreived using the InstructionInformation */
+  /** \copydoc AbstractSyntaxTreeNode::getIdentifier() */
   const std::string& getIdentifier() const override;
+
+ protected:
+  /** Byte order used in RISC-V architecture. */
+  static const Endianness RISCV_ENDIANNESS = Endianness::LITTLE;
+  /** Bits per byte in RISC-V architecture. */
+  static const std::size_t RISCV_BITS_PER_BYTE = 8;
 
   /**
    * Checks if this node has 'amount' children of type 'type', starting at
@@ -55,15 +59,11 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \param amount The amount of registers required.
    * \return true if this node matches the requirements.
    */
+  // Reference as super::Type
   bool requireChildren(Type type, size_t startIndex, size_t amount) const;
 
-  /** byte order used in RISC-V architecture*/
-  static constexpr Endianness RISCV_ENDIANNESS = Endianness::LITTLE;
-  /** bits per byte in RISC-V architecture*/
-  static constexpr std::size_t RISCV_BITS_PER_BYTE = 8;
-
- private:
-  InstructionInformation& _instructionInformation;
+  /** The information object associated with the instruction. */
+  InstructionInformation _information;
 };
 }
 
