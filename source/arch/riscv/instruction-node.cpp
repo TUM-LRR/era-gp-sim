@@ -6,18 +6,17 @@
 #include "arch/riscv/formats.hpp"
 #include "arch/riscv/instruction-node.hpp"
 
-// fix
-using namespace riscv;
+namespace riscv {
 
 const std::string& InstructionNode::getIdentifier() const {
   assert(_instructionInformation.isValid() &&
-         _instructionInformation.hasMnemonic());
+         _instructionInformation.hasMnemonic(§));
   return _instructionInformation.getMnemonic();
 }
 
-bool InstructionNode::requireChildren(Type type,
-                                      size_t startIndex,
-                                      size_t amount) const {
+bool InstructionNode::_requireChildren(Type type,
+                                       size_t startIndex,
+                                       size_t amount) const {
   if (_children.size() - startIndex < amount) return false;
 
   for (size_t i = startIndex; i < startIndex + amount; i++) {
@@ -75,4 +74,5 @@ MemoryValue InstructionNode::assemble() const {
 =======
   return MemoryValue{};
 >>>>>>> Stashed changes
+}
 }

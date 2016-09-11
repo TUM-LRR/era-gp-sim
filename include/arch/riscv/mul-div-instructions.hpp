@@ -17,11 +17,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP_
-#define ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP_
+#ifndef ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP
+#define ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP
 
 /*
  * TODO Instructions: mul mulh mulhu mulhsu div divu rem remu
  */
 
-#endif /* ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP_ */
+#endif /* ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP */

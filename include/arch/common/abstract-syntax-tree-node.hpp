@@ -29,6 +29,9 @@
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {
  public:
+  using Node   = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using size_t = std::size_t;
+
   enum class Type {
     INSTRUCTION,
     IMMEDIATE,
@@ -37,16 +40,15 @@ class AbstractSyntaxTreeNode {
     ARITHMETIC
   };
 
-  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
-
   /**
    * Constructs a new node. The constructor is supposed to be called in
    * the subclasses.
    *
    * \param nodeType The type of this node.
    */
-  AbstractSyntaxTreeNode(Type nodeType) : _nodeType(nodeType) {
-  }
+  AbstractSyntaxTreeNode(Type nodeType);
+
+  virtual ~AbstractSyntaxTreeNode() = default;
 
   /**
    * Executes this node recursively and returns a value.
@@ -57,6 +59,9 @@ class AbstractSyntaxTreeNode {
    * the execution.
    */
   virtual MemoryValue getValue(MemoryAccess& memoryAccess) const = 0;
+
+  /** \copydoc getValue() */
+  MemoryValue operator()(MemoryAccess& memoryAccess) const;
 
   /**
    * Validates the structure of this syntax tree. This should be called
@@ -92,9 +97,7 @@ class AbstractSyntaxTreeNode {
    *
    * \param node The node to be added.
    */
-  void addChild(Node node) {
-    _children.push_back(std::move(node));
-  }
+  void addChild(Node node);
 
  protected:
   /**
@@ -102,12 +105,13 @@ class AbstractSyntaxTreeNode {
    *
    * \return True if all children are valid, else false.
    */
-  const ValidationResult _validateAllChildren() const;
+  const ValidationResult _validateChildren() const;
 
   /** The child nodes of this node. */
   std::vector<Node> _children;
 
  private:
+  /** The (enum) type of the node. */
   Type _nodeType;
 };
 

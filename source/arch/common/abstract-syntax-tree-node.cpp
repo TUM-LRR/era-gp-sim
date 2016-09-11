@@ -23,6 +23,11 @@ AbstractSyntaxTreeNode::AbstractSyntaxTreeNode(Type nodeType)
 : _nodeType(nodeType) {
 }
 
+MemoryValue AbstractSyntaxTreeNode::
+operator()(MemoryAccess& memoryAccess) const {
+  return getValue(memoryAccess);
+}
+
 AbstractSyntaxTreeNode::Type AbstractSyntaxTreeNode::getType() const noexcept {
   return _nodeType;
 }
@@ -31,7 +36,7 @@ void AbstractSyntaxTreeNode::addChild(Node node) {
   _children.emplace_back(std::move(node));
 }
 
-const ValidationResult AbstractSyntaxTreeNode::_validateAllChildren() const {
+const ValidationResult AbstractSyntaxTreeNode::_validateChildren() const {
   for (auto& child : _children) {
     auto result = child->validate();
     if (!result.isSuccess()) {

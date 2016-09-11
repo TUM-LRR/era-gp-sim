@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_CORE_MEMORYVALUE_HPP_
-#define ERAGPSIM_CORE_MEMORYVALUE_HPP_
+#ifndef ERAGPSIM_CORE_MEMORYVALUE_HPP
+#define ERAGPSIM_CORE_MEMORYVALUE_HPP
 
 #include <algorithm>
 #include <cassert>
@@ -144,4 +144,4 @@ class MemoryValue {
   std::size_t _byteSize;
   std::vector<std::uint8_t> _data;
 };
-#endif// ERAGPSIM_CORE_MEMORYVALUE_HPP_
+#endif// ERAGPSIM_CORE_MEMORYVALUE_HPP

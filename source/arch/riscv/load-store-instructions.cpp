@@ -3,8 +3,8 @@
 using namespace riscv;
 
 const ValidationResult LoadInstructionNode::validate() const {
-  if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
-      !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
+  if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
+      !_requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
     return ValidationResult::fail(QT_TRANSLATE_NOOP(
         "Syntax-Tree-Validation",
         "Load instructions must have 2 registers and 1 immediate"));
@@ -17,8 +17,8 @@ const ValidationResult LoadInstructionNode::validate() const {
 }
 
 const ValidationResult StoreInstructionNode::validate() const {
-  if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 1, 2) ||
-      !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 3, 1)) {
+  if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 1, 2) ||
+      !_requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 3, 1)) {
     return ValidationResult::fail(QT_TRANSLATE_NOOP(
         "Syntax-Tree-Validation",
         "Store instructions must have 2 registers and 1 immediate"));

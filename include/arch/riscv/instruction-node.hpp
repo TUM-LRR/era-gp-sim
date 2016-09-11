@@ -38,6 +38,8 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   : super(Type::INSTRUCTION), _information(information) {
   }
 
+  virtual ~InstructionNode() = default;
+
   /** \copydoc AbstractSyntaxTreeNode::assemble() */
   MemoryValue assemble() const override;
 
@@ -60,7 +62,7 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \return true if this node matches the requirements.
    */
   // Reference as super::Type
-  bool requireChildren(Type type, size_t startIndex, size_t amount) const;
+  bool _requireChildren(Type type, size_t startIndex, size_t amount) const;
 
   /** The information object associated with the instruction. */
   InstructionInformation _information;

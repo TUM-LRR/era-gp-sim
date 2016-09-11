@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP_
-#define ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP_
+#ifndef ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP
+#define ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP
 
 #include <memory>
 #include <string>
