@@ -22,6 +22,7 @@
 #include "arch/riscv/integer-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
 #include "arch/riscv/mul-div-instructions.hpp"
+#include "arch/riscv/word-instruction-wrapper.hpp"
 
 #include "common/utility.hpp"
 
@@ -136,30 +137,34 @@ void initializeIntegerInstructions(
   });
 }
 
-template <typename UnsignedWordSize, typename SignedWordSize, typename ResultType>
 void initialize64BitWordInstructions(
     InstructionNodeFactory::InstructionMap& _instructionMap) {
+  using Signed = InstructionNodeFactory::RV64_signed_integral_t;
+  using Unsigned = InstructionNodeFactory::RV64_integral_t;
+
   _instructionMap.emplace("mulw", [](InstructionInformation& info) {
-    return std::make_unique<MultiplicationInstruction<UnsignedWordSize, ResultType>>(
-        info, MultiplicationInstruction<UnsignedWordSize, ResultType>::LOW,
-        MultiplicationInstruction<UnsignedWordSize, ResultType>::SIGNED);
+    return std::make_unique<
+        WordInstructionWrapper<MultiplicationInstruction<Unsigned>>>(
+        true, info, false, info, MultiplicationInstruction<Unsigned>::LOW,
+        MultiplicationInstruction<Unsigned>::SIGNED);
   });
   _instructionMap.emplace("divw", [](InstructionInformation& info) {
     return std::make_unique<
-        DivisionInstruction<UnsignedWordSize, SignedWordSize, ResultType>>(info, true);
+        WordInstructionWrapper<DivisionInstruction<Unsigned, Signed>>>(
+        true, info, false, info, true);
   });
-  _instructionMap.emplace("divuw", [](InstructionInformation& info) {
-    return std::make_unique<
-        DivisionInstruction<UnsignedWordSize, SignedWordSize, ResultType>>(info, false);
-  });
-  _instructionMap.emplace("remw", [](InstructionInformation& info) {
-    return std::make_unique<
-        RemainderInstruction<UnsignedWordSize, SignedWordSize, ResultType>>(info, true);
-  });
-  _instructionMap.emplace("remuw", [](InstructionInformation& info) {
-    return std::make_unique<
-        RemainderInstruction<UnsignedWordSize, SignedWordSize, ResultType>>(info, true);
-  });
+    _instructionMap.emplace("divuw", [](InstructionInformation& info) {
+      return std::make_unique<
+          WordInstructionWrapper<DivisionInstruction<Unsigned, Signed>>>(false, info, false, info, false);
+    });
+    _instructionMap.emplace("remw", [](InstructionInformation& info) {
+      return std::make_unique<WordInstructionWrapper<
+          RemainderInstruction<Unsigned, Signed>>>(true, info, false, info, true);
+    });
+    _instructionMap.emplace("remuw", [](InstructionInformation& info) {
+      return std::make_unique<WordInstructionWrapper<
+          RemainderInstruction<Unsigned, Signed>>>(false, info, false, info, false);
+    });
 }
 }
 
@@ -178,7 +183,7 @@ void InstructionNodeFactory::initializeInstructionMap(
         InstructionNodeFactory::RV64_integral_t,
         InstructionNodeFactory::RV64_signed_integral_t>(_instructionMap);
 
-    initialize64BitWordInstructions<InstructionNodeFactory::RV32_integral_t, InstructionNodeFactory::RV32_signed_integral_t, InstructionNodeFactory::RV64_signed_integral_t>(_instructionMap);
+    initialize64BitWordInstructions(_instructionMap);
   } else {
     // The given architecture does not define a valid word_size to create
     // IntegerInstructions

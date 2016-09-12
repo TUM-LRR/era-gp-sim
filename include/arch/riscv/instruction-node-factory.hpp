@@ -71,6 +71,19 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
 
   ~InstructionNodeFactory() = default;
 
+  /*! Word size constant to be expected when using 32bit instructions*/
+  static constexpr Architecture::word_size_t RV32 = 32;
+  /*! Internal integer type to represent 32bit for unsigned arithmetic operations*/
+  using RV32_integral_t = uint32_t;
+  /** Internal integer type to represent 32bit for signed arithmetic operations*/
+  using RV32_signed_integral_t = int32_t;
+  /*! Word size constant to be expected when using 64bit instructions*/
+  static constexpr Architecture::word_size_t RV64 = 64;
+  /*! Internal integer type to represent 64bit for unsigned arithmetic operations*/
+  using RV64_integral_t = uint64_t;
+  /** Internal integer type to represent 64bit for signed arithmetic operations*/
+  using RV64_signed_integral_t = int64_t;
+
  private:
   /**
    * \brief initializeInstructionMap
@@ -97,19 +110,6 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
    * Description of all instructions that can be created by this factory
    */
   InstructionSet _instrSet;
-
-  /*! Word size constant to be expected when using 32bit instructions*/
-  static constexpr Architecture::word_size_t RV32 = 32;
-  /*! Internal integer type to represent 32bit for unsigned arithmetic operations*/
-  using RV32_integral_t = uint32_t;
-  /** Internal integer type to represent 32bit for signed arithmetic operations*/
-  using RV32_signed_integral_t = int32_t;
-  /*! Word size constant to be expected when using 64bit instructions*/
-  static constexpr Architecture::word_size_t RV64 = 64;
-  /*! Internal integer type to represent 64bit for unsigned arithmetic operations*/
-  using RV64_integral_t = uint64_t;
-  /** Internal integer type to represent 64bit for signed arithmetic operations*/
-  using RV64_signed_integral_t = int64_t;
 };
 }
 

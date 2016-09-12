@@ -50,7 +50,7 @@ namespace riscv {
  * \tparam SizeType built-in integer type on which the actual operation is
  * performed
  */
-template <typename SizeType, typename ResultType = SizeType>
+template <typename SizeType>
 class IntegerInstructionNode : public InstructionNode {
  public:
   /*!
@@ -81,10 +81,9 @@ class IntegerInstructionNode : public InstructionNode {
     SizeType operand1 = convert<SizeType>(memoryV1, RISCV_ENDIANNESS);
     SizeType operand2 = convert<SizeType>(memoryV2, RISCV_ENDIANNESS);
 
-    ResultType result = performIntegerOperation(operand1, operand2);
-    std::cout << "result: " << result<<std::endl;
+    SizeType result = performIntegerOperation(operand1, operand2);
 
-    MemoryValue resultValue = convert<ResultType>(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+    MemoryValue resultValue = convert<SizeType>(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
     memory_access.setRegisterValue(destination, resultValue);
     return MemoryValue{};
   }
