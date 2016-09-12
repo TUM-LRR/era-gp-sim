@@ -20,9 +20,12 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 #define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
 
+#include <QtGlobal>
 #include <cassert>
-#include <climits>
 #include <string>
+#include <climits>
+
+#include <iostream>
 
 #include "arch/common/instruction-information.hpp"
 #include "arch/riscv/instruction-node.hpp"
@@ -68,7 +71,7 @@ class IntegerInstructionNode : public InstructionNode {
   ~IntegerInstructionNode() = default;
 
   MemoryValue getValue(DummyMemoryAccess& memory_access) const override {
-    assert(validate());
+    assert(validate().isSuccess());
     // Get the destination register
     std::string destination = _children.at(0)->getIdentifier();
 
@@ -81,55 +84,71 @@ class IntegerInstructionNode : public InstructionNode {
 
     SizeType result = performIntegerOperation(operand1, operand2);
 
-    MemoryValue resultValue = convert<SizeType>(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+    MemoryValue resultValue =
+        convert<SizeType>(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
     memory_access.setRegisterValue(destination, resultValue);
     return MemoryValue{};
   }
 
-  bool validate() const override {
+  const ValidationResult validate() const override {
     // a integer instruction needs exactly 3 operands
     if (_children.size() != 3) {
-      return false;
+      return ValidationResult::fail(QT_TRANSLATE_NOOP(
+          "Syntax-Tree-Validation",
+          "Integer instructions must have exactly 3 operands"));
     }
     // check if all operands are valid themselves
-    if (!validateAllChildren()) {
-      return false;
+    ValidationResult resultAll = validateAllChildren();
+    if (!resultAll.isSuccess()) {
+      return resultAll;
     }
 
     if (_isImmediate &&
         _children.at(2)->getType() == AbstractSyntaxTreeNode::Type::IMMEDIATE) {
-      // check if immediate operand is represented by only 20 bits
+      // check if immediate operand is represented by only 12 bits
       DummyMemoryAccessStub stub;
       // no memory access is needed for a immediate node
       MemoryValue value = _children.at(2)->getValue(stub);
-      // look for 1 in bits 20...value.getSize()
-      for (std::size_t index = 20; index < value.getByteSize(); ++index) {
-        if (value.get(index)) {
-          return false;  // 1 detected
+      // only check for boundary if more than 12 bits are used
+      if (value.getSize() > 12) {
+        // look for the sign bit to determine what bits to expect in the "upper"
+        // region (e.g. 12...size)
+        bool isSignBitSet = value.get(value.getSize() - 1);
+        for (std::size_t index = 12; index < value.getSize(); ++index) {
+          // MemoryValue::get(index): Index 0 gets the bit of 2^(size-1)
+          if ((isSignBitSet && value.get(value.getSize() - 1 - index)) ||
+              (!isSignBitSet && !value.get(value.getSize() - 1 - index))) {
+            // bit detected which does not belong to a (possible) sign extension
+            //->fail validation
+            return ValidationResult::fail(QT_TRANSLATE_NOOP(
+                "Syntax-Tree-Validation",
+                "The immediate value of this instruction must "
+                "be representable by 12 bits"));
+          }
         }
       }
-      //      auto bits20 = value.getValue() & (~0xFFFFF);  // 2097151 =
-      //      0b11111...1 (20
-      //                                                    // times a 1) ->
-      //                                                    erase lower
-      //                                                    // 20 bits
-      //      if (value != lower20bit) {
-      //        // there is a 1 somewhere in bit 20 to x => the value is not
-      //        represented
-      //        // by only bit 0...19
-      //        return false;
-      //      }
     }
 
     // a immediate integer instruction needs two register operands followed by
     // one immediate operand
     if (_isImmediate) {
-      return requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) &&
-             requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1);
+      if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
+          !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
+        return ValidationResult::fail(
+            QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                              "The immediate-integer instructions must have 2 "
+                              "registers and 1 immediate as operands"));
+      }
     } else {
       // a register integer instruction needs three register operands
-      return requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3);
+      if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3)) {
+        return ValidationResult::fail(
+            QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                              "The register-integer instructions must have 3 "
+                              "registers as operands"));
+      }
     }
+    return ValidationResult::success();
   }
 
   /**
@@ -143,11 +162,6 @@ class IntegerInstructionNode : public InstructionNode {
                                            SizeType op2) const = 0;
 
  protected:
-  /**
-   * Returns the lower 5 bit of op
-   * \param op value
-   * \return
-   */
   SizeType getLower5Bit(SizeType op) const {
     constexpr SizeType andValue = 0b11111;
     return op & andValue;

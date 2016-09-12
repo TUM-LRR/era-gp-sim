@@ -16,6 +16,7 @@ set(ARCH_COMMON_SOURCES
   architecture-formula.cpp
   node-factory-collection.cpp
   node-factory-collection-maker.cpp
+  validation-result.cpp
 )
 
 ########################################
@@ -23,3 +24,6 @@ set(ARCH_COMMON_SOURCES
 ########################################
 
 add_library(era-sim-arch-common STATIC ${ARCH_COMMON_SOURCES})
+
+qt5_use_modules(era-sim-arch-common Widgets)
+# target_link_libraries(era-sim-arch-common Qt5::Core)
