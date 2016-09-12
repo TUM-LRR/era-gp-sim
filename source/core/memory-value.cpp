@@ -17,6 +17,7 @@
  */
 
 #include "core/memory-value.hpp"
+#include "common/assert.hpp"
 
 namespace {
 constexpr char hex[16]{'0',
@@ -56,6 +57,7 @@ MemoryValue::MemoryValue() : MemoryValue(8) {
 MemoryValue::MemoryValue(const std::vector<uint8_t> &other,
                          const std::size_t size)
 : _size{size}, _data{other} {
+  assert::that(true);
   assert(size > 0);
   assert(_data.size() == (size + 7) / 8);
 }
