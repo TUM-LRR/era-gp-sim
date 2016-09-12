@@ -113,7 +113,7 @@ TEST_F(InstructionFormatTestFixture, RFormat) {
 }
 */
 TEST_F(InstructionFormatTestFixture, IFormat) {
-  using Operands = IntegerInstructionNode<uint32_t>::Operands;
+  using Operands = AbstractIntegerInstructionNode<uint32_t>::Operands;
   auto addInfo   = instructionSet.getInstruction("add");
   AddInstructionNode<uint32_t> addInstr(addInfo, Operands::IMMEDIATES);
   auto key = addInfo.getKey();

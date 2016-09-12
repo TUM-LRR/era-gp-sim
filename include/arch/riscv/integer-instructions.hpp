@@ -37,8 +37,8 @@ namespace riscv {
  * operation should operate
  */
 template <typename SizeType>
-struct AddInstructionNode : public IntegerInstructionNode<SizeType> {
-  using super = IntegerInstructionNode<SizeType>;
+struct AddInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
   using typename super::Operands;
   explicit AddInstructionNode(const InstructionInformation& information,
                               Operands operands)
@@ -55,8 +55,8 @@ struct AddInstructionNode : public IntegerInstructionNode<SizeType> {
  * operation should operate
  */
 template <typename SizeType>
-struct SubInstructionNode : public IntegerInstructionNode<SizeType> {
-  using super = IntegerInstructionNode<SizeType>;
+struct SubInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
   using typename super::Operands;
   explicit SubInstructionNode(const InstructionInformation& information,
                               Operands)
@@ -74,8 +74,8 @@ struct SubInstructionNode : public IntegerInstructionNode<SizeType> {
  * operation should operate
  */
 template <typename SizeType>
-struct AndInstructionNode : public IntegerInstructionNode<SizeType> {
-  using super = IntegerInstructionNode<SizeType>;
+struct AndInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
   using typename super::Operands;
   explicit AndInstructionNode(const InstructionInformation& information,
                               Operands operands)
@@ -92,8 +92,8 @@ struct AndInstructionNode : public IntegerInstructionNode<SizeType> {
  * operation should operate
  */
 template <typename SizeType>
-struct OrInstructionNode : public IntegerInstructionNode<SizeType> {
-  using super = IntegerInstructionNode<SizeType>;
+struct OrInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
   using typename super::Operands;
   explicit OrInstructionNode(const InstructionInformation& information,
                              Operands operands)
@@ -110,8 +110,8 @@ struct OrInstructionNode : public IntegerInstructionNode<SizeType> {
  * operation should operate
  */
 template <typename SizeType>
-struct XorInstructionNode : public IntegerInstructionNode<SizeType> {
-  using super = IntegerInstructionNode<SizeType>;
+struct XorInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
   using typename super::Operands;
   explicit XorInstructionNode(const InstructionInformation& information,
                               Operands operands)
@@ -129,8 +129,8 @@ struct XorInstructionNode : public IntegerInstructionNode<SizeType> {
  */
 template <typename SizeType>
 struct ShiftLeftLogicalInstructionNode
-    : public IntegerInstructionNode<SizeType> {
-  using super = IntegerInstructionNode<SizeType>;
+    : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
   using typename super::Operands;
   explicit ShiftLeftLogicalInstructionNode(
       const InstructionInformation& information, Operands operands)
@@ -149,8 +149,8 @@ struct ShiftLeftLogicalInstructionNode
 template <typename SizeType,
           typename = std::enable_if_t<std::is_unsigned<SizeType>::value>>
 struct ShiftRightLogicalInstructionNode
-    : public IntegerInstructionNode<SizeType> {
-  using super = IntegerInstructionNode<SizeType>;
+    : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
   using typename super::Operands;
   explicit ShiftRightLogicalInstructionNode(
       const InstructionInformation& information, Operands operands)
@@ -168,15 +168,15 @@ struct ShiftRightLogicalInstructionNode
  */
 template <typename SizeType>
 struct ShiftRightArithmeticInstructionNode
-    : public IntegerInstructionNode<SizeType> {
-  using super = IntegerInstructionNode<SizeType>;
+    : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
   using typename super::Operands;
   explicit ShiftRightArithmeticInstructionNode(
       const InstructionInformation& information, Operands operands)
   : super(information, operands) {
   }
 
-  /** \copydoc IntegerInstructionNode::_compute() */
+  /** \copydoc AbstractIntegerInstructionNode::_compute() */
   SizeType _compute(SizeType first, SizeType second) const noexcept override {
     static const auto width = sizeof(SizeType) * 8;
     static const auto one   = static_cast<SizeType>(1);

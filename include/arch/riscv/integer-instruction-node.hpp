@@ -30,7 +30,8 @@
 namespace riscv {
 
 /**
- * \brief The IntegerInstructionNode is a superclass for all integer arithmetic
+ * \brief The AbstractIntegerInstructionNode is a superclass for all integer
+ * arithmetic
  * instructions.
  *
  * As the behaviour of all of these instructions is very similar, this class
@@ -44,13 +45,13 @@ namespace riscv {
  */
 template <typename SizeType,
           typename = std::enable_if_t<std::is_integral<SizeType>::value>>
-class IntegerInstructionNode : public InstructionNode {
+class AbstractIntegerInstructionNode : public InstructionNode {
  public:
   enum class Operands { IMMEDIATES, REGISTERS };
   using Operation = std::function<SizeType(SizeType, SizeType)>;
 
   /** Default destructor*/
-  virtual ~IntegerInstructionNode() = default;
+  virtual ~AbstractIntegerInstructionNode() = default;
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     // Get the destination register
@@ -101,16 +102,17 @@ class IntegerInstructionNode : public InstructionNode {
  * instruction, 2 register and one immediate operand are expected for
  * validation, if not 3 register operands are expected
  */
-  IntegerInstructionNode(const InstructionInformation& information,
-                         Operands operands,
-                         Operation operation = Operation())
+  AbstractIntegerInstructionNode(const InstructionInformation& information,
+                                 Operands operands,
+                                 Operation operation = Operation())
   : InstructionNode(information), _operands(operands), _operation(operation) {
   }
 
   /**
    * Performs the actual computation of the instruction.
    *
-   * This method can only be called on IntegerInstructionNode itself if the
+   * This method can only be called on AbstractIntegerInstructionNode itself if
+   * the
    * appropriate constructor was called.
    *
    * \first The first operand.

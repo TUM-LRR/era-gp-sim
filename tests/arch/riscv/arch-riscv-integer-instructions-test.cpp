@@ -197,7 +197,7 @@ void test12BitImmediateBounds(InstructionNodeFactory& instrF,
   auto immediateNodeOut =
       immF.createImmediateNode(convertToMem<uint64_t>(boundary + 1));
   node2->addChild(std::move(immediateNodeOut));
-  // TODO enable when IntegerInstructionNode::validate() is fixed
+  // TODO enable when AbstractIntegerInstructionNode::validate() is fixed
   // ASSERT_FALSE(node2->validate().isSuccess());
   std::cout << "Ignored 1 12bit immediate boundary test" << std::endl;
 }
