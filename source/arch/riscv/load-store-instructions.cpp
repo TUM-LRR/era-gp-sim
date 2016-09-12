@@ -30,8 +30,7 @@ ValidationResult StoreInstructionNode::validate() const {
   return ValidationResult::success();
 }
 
-MemoryValue
-LoadInstructionNode::getValue(MemoryAccess &MemoryAccess) const {
+MemoryValue LoadInstructionNode::getValue(MemoryAccess &MemoryAccess) const {
   // auto
   // []
   std::string dest   = _children.at(0)->getIdentifier();
@@ -43,8 +42,7 @@ LoadInstructionNode::getValue(MemoryAccess &MemoryAccess) const {
   return MemoryValue{};
 }
 
-MemoryValue
-StoreInstructionNode::getValue(MemoryAccess &MemoryAccess) const {
+MemoryValue StoreInstructionNode::getValue(MemoryAccess &MemoryAccess) const {
   MemoryValue base   = _children.at(0)->getValue(MemoryAccess);
   MemoryValue src    = _children.at(1)->getValue(MemoryAccess);
   MemoryValue offset = _children.at(2)->getValue(MemoryAccess);

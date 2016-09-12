@@ -11,6 +11,7 @@ set(ARCH_RISCV_SOURCES
     register-access-node-factory.cpp
     instruction-node-factory.cpp
     formats.cpp
+  factory-map.cpp
 )
 
 ########################################

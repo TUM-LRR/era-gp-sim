@@ -24,26 +24,47 @@
 #include "arch/riscv/abstract-branch-instruction-node.hpp"
 
 namespace riscv {
+
+/**
+ * The `BEQ` equality branch instruction.
+ */
 template <typename UnsignedWord, typename SignedWord>
 struct BranchEqualInstructionNode
     : public AbstractBranchInstructionNode<UnsignedWord, SignedWord> {
   using super = AbstractBranchInstructionNode<UnsignedWord, SignedWord>;
   using super::_convert;
 
+  /**
+   * Constructs the branch instruction.
+   *
+   * \param information The information object for the instruction.
+   */
   explicit BranchEqualInstructionNode(const InstructionInformation& information)
   : super(information, [](const auto& first, const auto& second) {
+    // Note the necessity of the `template` before the template function
+    // This is because `super` is template type and the template function
+    // dependent on it
+    // For more information: http://bit.ly/2coIPmu
     return super::template _convert<UnsignedWord>(first) ==
            super::template _convert<UnsignedWord>(second);
   }) {
   }
 };
 
+/**
+ * The `BNE` inequality branch instruction.
+ */
 template <typename UnsignedWord, typename SignedWord>
 struct BranchNotEqualInstructionNode
     : public AbstractBranchInstructionNode<UnsignedWord, SignedWord> {
   using super = AbstractBranchInstructionNode<UnsignedWord, SignedWord>;
   using super::_convert;
 
+  /**
+   * Constructs the branch instruction.
+   *
+   * \param information The information object for the instruction.
+   */
   explicit BranchNotEqualInstructionNode(
       const InstructionInformation& information)
   : super(information, [this](const auto& first, const auto& second) {
@@ -53,17 +74,28 @@ struct BranchNotEqualInstructionNode
   }
 };
 
+/**
+ * The `BLE[U]` "less than" branch instruction.
+ *
+ * This instruction handles both signed and unsigned comparison.
+ */
 template <typename UnsignedWord, typename SignedWord>
 struct BranchLessThanInstructionNode
     : public AbstractBranchInstructionNode<UnsignedWord, SignedWord> {
   using super = AbstractBranchInstructionNode<UnsignedWord, SignedWord>;
   using super::_convert;
-  using typename super::Operands;
+  using typename super::OperandTypes;
 
+  /**
+   * Constructs the branch instruction.
+   *
+   * \param information The information object for the instruction.
+   * \param operandTypes An enum member describing the types of operands.
+   */
   explicit BranchLessThanInstructionNode(
-      const InstructionInformation& information, Operands operands)
-  : super(information, [operands](const auto& first, const auto& second) {
-    if (operands == Operands::SIGNED) {
+      const InstructionInformation& information, OperandTypes operandTypes)
+  : super(information, [operandTypes](const auto& first, const auto& second) {
+    if (operandTypes == OperandTypes::SIGNED) {
       return super::template _convert<SignedWord>(first) <
              super::template _convert<SignedWord>(second);
     } else {
@@ -74,17 +106,28 @@ struct BranchLessThanInstructionNode
   }
 };
 
+/**
+ * The `BGE[U]` "greater than or equal" branch instruction.
+ *
+ * This instruction handles both signed and unsigned comparison.
+ */
 template <typename UnsignedWord, typename SignedWord>
 struct BranchGreaterEqualInstructionNode
     : public AbstractBranchInstructionNode<UnsignedWord, SignedWord> {
   using super = AbstractBranchInstructionNode<UnsignedWord, SignedWord>;
   using super::_convert;
-  using typename super::Operands;
+  using typename super::OperandTypes;
 
+  /**
+   * Constructs the branch instruction.
+   *
+   * \param information The information object for the instruction.
+   * \param operandTypes An enum member describing the types of operands.
+   */
   explicit BranchGreaterEqualInstructionNode(
-      const InstructionInformation& information, Operands operands)
-  : super(information, [operands](const auto& first, const auto& second) {
-    if (operands == Operands::SIGNED) {
+      const InstructionInformation& information, OperandTypes operandTypes)
+  : super(information, [operandTypes](const auto& first, const auto& second) {
+    if (operandTypes == OperandTypes::SIGNED) {
       return super::template _convert<SignedWord>(first) >=
              super::template _convert<SignedWord>(second);
     } else {

@@ -24,11 +24,68 @@
 #include "arch/riscv/instruction-node.hpp"
 
 namespace riscv {
+
+/**
+ * The abstract base class for jump instructions.
+ *
+ * Jump instructions mean any of the `JAL` and `JALR` assembler instructions as
+ * well as the `J` pseudo instruction. This parent class handles the validation
+ * checks, delegating the actual verifications to polymorphic calls. Moreover,
+ * it handles the common part of jump instructions, such as storing the return
+ * address in the destination register.
+ *
+ * On the instructions themselves: jump instructions are *unconditional* jumps,
+ * as opposed to the `B-` class of instructions. They are intended for function
+ * calls, like `CALL` in x86. All jump instructions take a destination or *link*
+ * register, in which the return address of the jump is stored. This address is
+ * always 4 bytes after the current program counter, since all instructions in
+ * the base RISC-V ISA are 4 bytes long ^1. Then, JAL and JALR differ in the
+ * second operand:
+ * - `JAL` takes a 20 bit signed immediate as an offset relative to the program
+ *   counter. The immediate specifies an offset in multiples of two. An example
+ *   would be `JAL x2, -50`, which jumps 100 bytes backwards in the program and
+ *   writes the return address into `x2`.
+ * - `JALR` takes a base register and a 12 bit signed immediate that is added to
+ *   the base register. The result of this is then the absolute target for the
+ *   jump. An example command would be `JALR x4, x1, -50`, which sets the
+ *   program counter to the value stored in `x1`, minus 50 bytes. Note how the
+ *   immediate is __not__ a multiple of two. However, the specification does
+ *   require the LSB of the resulting program counter value to be unset, i.e.
+ *   the resulting address will never be odd. Using `JALR` with `pc` as the base
+ *   register, combined with `AUIPC` lets you jump to 32-bit target relative to
+ *   the program counter. `JALR` with any other register, combined with `LUI`,
+ *   lets you access any 32-bit *absolute* target (i.e. absolute in the address
+ *   space, from 0 to 2^32 - 1).
+ * - `J` is a recommended pseudo-operation based on `JAL` that takes a single 20
+ *   bit immediate and links the return address into `x0`, i.e. discards it.
+ *
+ * Note that the standard software calling convention will want to use `x1` as
+ * the link register.
+ *
+ * ^1: While in the base RISC-V extensions we are implementing instructions
+ *     definitely are 32 bits wide, RISC-V also supports compressed or extended
+ *     formats, specified in multiples of 16 bit parcels. As such, adding 4 to
+ *     the program counter may not be correct under certain exotic extension. It
+ *     is noteworthy that only the size of the *jump instructions* themselves
+ *     matters, since we are linking the address of the next instruction
+ *     following the jump. Therefore, if there were to exist an extension in
+ *     which the `JAL` instruction does not occupy 32 bits, but 16 or more than
+ *     32, we could add this information to the `InstructionInformation` objects
+ *     and add the offset dynamically. However, at this point, this is not
+ *     neccessary.
+ */
 template <typename UnsignedWord, typename SignedWord>
 class AbstractJumpAndLinkInstructionNode : public InstructionNode {
  public:
   using super = InstructionNode;
 
+  /**
+   * Constructs the jump and link instruction.
+   *
+   * Since this class is abstract, only children may use it.
+   *
+   * \param information The information object for the instruction.
+   */
   explicit AbstractJumpAndLinkInstructionNode(
       const InstructionInformation& information)
   : super(information) {
@@ -41,22 +98,36 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    */
   virtual ~AbstractJumpAndLinkInstructionNode() = 0;
 
+  /**
+   * Performs the branch instruction.
+   *
+   * The actual condition check is delegated polymorphically.
+   *
+   * \param memoryAccess The memory access object.
+   *
+   * \return An empty memory value.
+   */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    // JAL rd, imm
-
     auto destination    = _children[0]->getIdentifier();
-    auto programCounter = _loadRegister<UnsignedWord>("pc", memoryAccess);
+    auto programCounter = _loadRegister<UnsignedWord>(memoryAccess, "pc");
 
     // Store the return address (pc + 4) in the destination register
-    memoryAccess.setRegisterValue(destination, programCounter + 4);
+    _storeRegister<UnsignedWord>(memoryAccess, destination, programCounter + 4);
 
     auto result = _jump(programCounter, memoryAccess);
 
-    memoryAccess.setRegisterValue("pc", result);
+    _storeRegister<UnsignedWord>(memoryAccess, "pc", result);
 
     return {};
   }
 
+  /**
+   * Validates the jump instruction node.
+   *
+   * The actual checks are delegated polymorphically.
+   *
+   * \return A `ValidationResult` indicating the validity of the node.
+   */
   ValidationResult validate() const override {
     auto result = _validateNumberOfChildren();
     if (!result.isSuccess()) return result;
@@ -77,11 +148,53 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
   }
 
  protected:
+  /**
+   * The actual, instruction-specific jump code.
+   *
+   * This method is called polymorphically in `getValue()`.
+   *
+   * \param programCounter The old program counter value as an unsigned integer.
+   * \param memoryAccess A memory access object.
+   *
+   * \return The new program counter.
+   */
   virtual UnsignedWord
   _jump(UnsignedWord programCounter, MemoryAccess& memoryAccess) const = 0;
-  virtual ValidationResult _validateNumberOfChildren() const        = 0;
-  virtual ValidationResult _validateOperandTypes() const            = 0;
-  virtual ValidationResult _validateOffset() const                  = 0;
+
+  /**
+   * Validates the number of children of then node.
+   *
+   * This method is called polymorphically.
+   *
+   * \return A `ValidationResult` indicating the result of the check.
+   */
+  virtual ValidationResult _validateNumberOfChildren() const = 0;
+
+  /**
+   * Validates the operand types of the node.
+   *
+   * This method is called polymorphically.
+   *
+   * \return A `ValidationResult` indicating the result of the check.
+   */
+  virtual ValidationResult _validateOperandTypes() const = 0;
+
+  /**
+   * Validates the immediate offset.
+   *
+   * This method is called polymorphically.
+   *
+   * \return A `ValidationResult` indicating the result of the check.
+   */
+  virtual ValidationResult _validateOffset() const = 0;
+
+  /**
+   * Validates the program counter that would resulting from the instruction.
+   *
+   * This method is called polymorphically.
+   *
+   * \return A `ValidationResult` indicating the result of the check.
+   */
   virtual ValidationResult _validateResultingProgramCounter() const = 0;
 };
 

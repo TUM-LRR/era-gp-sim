@@ -29,6 +29,12 @@
 
 namespace riscv {
 
+/**
+ * The `JAL` instruction node.
+ *
+ * The JAL instruction takes a link register and 20 bit immediate, specifying an
+ * offset relative to the program counter, in multiples of two bytes.
+ */
 template <typename UnsignedWord, typename SignedWord>
 class JumpAndLinkImmediateInstructionNode
     : public AbstractJumpAndLinkInstructionNode<UnsignedWord, SignedWord> {
@@ -43,16 +49,31 @@ class JumpAndLinkImmediateInstructionNode
   using super::_compareChildTypes;
   using super::_child;
 
+  /**
+   * Performs the actual jump operation.
+   *
+   * `JAL` will add its immediate operand to the old program counter.
+   *
+   * \param programCounter The current program counter.
+   * \param memoryAccess A memory access object.
+   *
+   * \return The new program counter.
+   */
   UnsignedWord _jump(UnsignedWord programCounter,
-                     MemoryAccess& MemoryAccess) const override {
+                     MemoryAccess& memoryAccess) const override {
     // Load the immediate
-    auto offset = super::template _child<SignedWord>(1);
+    auto offset = super::template _child<SignedWord>(memoryAccess, 1);
 
     // The 20-bit immediate specifies an offset in multiples
     // of two, relative to the program counter.
     return programCounter + (offset * 2);
   }
 
+  /**
+   * Validates that the instruction has two children.
+   *
+   * \return A `ValidationResult` reflecting the result of the check.
+   */
   ValidationResult _validateNumberOfChildren() const override {
     if (_children.size() != 2) {
       return ValidationResult::fail(
@@ -64,6 +85,15 @@ class JumpAndLinkImmediateInstructionNode
     return ValidationResult::success();
   }
 
+  /**
+   * Validates the types of the operands.
+   *
+   * This check passes iff:
+   * - The first operand is a register (link register).
+   * - The second operand is an immediate (offset).
+   *
+   * \return A `ValidationResult` reflecting the result of the check.
+   */
   ValidationResult _validateOperandTypes() const override {
     using Type = AbstractSyntaxTreeNode::Type;
 
@@ -77,9 +107,18 @@ class JumpAndLinkImmediateInstructionNode
     return ValidationResult::success();
   }
 
+  /**
+   * Range-checks the immediate operand.
+   *
+   * The immediate must not occupy more than 20 bit for `JAL`.
+   *
+   * \return A `ValidationResult` reflecting the result of the check.
+   */
   ValidationResult _validateOffset() const override {
+    MemoryAccess memoryAccess;
+
     // Load the immediate
-    auto offset = super::template _child<SignedWord>(1);
+    auto offset = super::template _child<SignedWord>(memoryAccess, 1);
 
     // Mask off the top 12 bit and check if they are non-zero
     // If so the immediate is not 20 bit, but larger
@@ -92,7 +131,15 @@ class JumpAndLinkImmediateInstructionNode
     return ValidationResult::success();
   }
 
-  ValidationResult _validateResultingProgramCounter() const {
+  /**
+   * Range-checks the program counter that would result from the instruction.
+   *
+   * This checks if adding the immediate offset would make the program counter
+   * negative or exceed the address space.
+   *
+   * \return A `ValidationResult` reflecting the result of the check.
+   */
+  ValidationResult _validateResultingProgramCounter() const override {
     static const auto addressBoundary =
         std::numeric_limits<UnsignedWord>::max();
 
@@ -113,6 +160,12 @@ class JumpAndLinkImmediateInstructionNode
   }
 };
 
+/**
+ * The `JALR` instruction node.
+ *
+ * The JALR instruction takes a link register, a base register and a 12 bit
+ * immediate offset in multiples of __one__ byte.
+ */
 template <typename UnsignedWord, typename SignedWord>
 class JumpAndLinkRegisterInstructionNode
     : public AbstractJumpAndLinkInstructionNode<UnsignedWord, SignedWord> {
@@ -127,10 +180,21 @@ class JumpAndLinkRegisterInstructionNode
   using super::_children;
   using super::_compareChildTypes;
 
-  UnsignedWord _jump(UnsignedWord programCounter,
-                     MemoryAccess& memoryAccess) const override {
-    auto base   = super::template _child<UnsignedWord>(1, memoryAccess);
-    auto offset = super::template _child<SignedWord>(2, memoryAccess);
+  /**
+   * Performs the actual jump operation.
+   *
+   * `JALR` will *assign* the program counter to the value stored in the base
+   * register, plus the 12 bit signed immediate offset. Note that it is *not*
+   * interpreted as multiples of two.
+   *
+   * \param programCounter The current program counter.
+   * \param memoryAccess A memory access object.
+   *
+   * \return The new program counter.
+   */
+  UnsignedWord _jump(UnsignedWord, MemoryAccess& memoryAccess) const override {
+    auto base   = super::template _child<UnsignedWord>(memoryAccess, 1);
+    auto offset = super::template _child<SignedWord>(memoryAccess, 2);
 
     auto address = base + offset;
 
@@ -139,6 +203,11 @@ class JumpAndLinkRegisterInstructionNode
     return address & ~1;
   }
 
+  /**
+   * Validates that the instruction has two children.
+   *
+   * \return A `ValidationResult` reflecting the result of the check.
+   */
   ValidationResult _validateNumberOfChildren() const override {
     if (_children.size() != 2) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(
@@ -150,6 +219,16 @@ class JumpAndLinkRegisterInstructionNode
     return ValidationResult::success();
   }
 
+  /**
+   * Validates the types of the operands.
+   *
+   * This check passes iff:
+   * - The first operand is a register (link register).
+   * - The second operand is a register (base register).
+   * - The third operand is an immediate (the offset).
+   *
+   * \return A `ValidationResult` reflecting the result of the check.
+   */
   ValidationResult _validateOperandTypes() const override {
     using Type = AbstractSyntaxTreeNode::Type;
 
@@ -171,9 +250,17 @@ class JumpAndLinkRegisterInstructionNode
     return ValidationResult::success();
   }
 
+  /**
+   * Range-checks the immediate operand.
+   *
+   * The immediate must not occupy more than 12 bit for `JALR`.
+   *
+   * \return A `ValidationResult` reflecting the result of the check.
+   */
   ValidationResult _validateOffset() const override {
+    MemoryAccess memoryAccess;
     // Load the immediate
-    auto offset = super::template _child<SignedWord>(2);
+    auto offset = super::template _child<SignedWord>(memoryAccess, 2);
 
     // Mask off the top 20 bit and check if they are non-zero
     // If so the immediate is not 12 bit, but larger
@@ -186,7 +273,15 @@ class JumpAndLinkRegisterInstructionNode
     return ValidationResult::success();
   }
 
-  ValidationResult _validateResultingProgramCounter() const {
+  /**
+   * Range-checks the program counter that would result from the instruction.
+   *
+   * This checks if adding the immediate offset would make the program counter
+   * negative or exceed the address space.
+   *
+   * \return A `ValidationResult` reflecting the result of the check.
+   */
+  ValidationResult _validateResultingProgramCounter() const override {
     static const auto addressBoundary =
         std::numeric_limits<UnsignedWord>::max();
 
@@ -206,15 +301,30 @@ class JumpAndLinkRegisterInstructionNode
   }
 };
 
+/**
+ * The `J` instruction node.
+ *
+ * The `J` instruction is a pseudo-operation representing `JAL` with `rd` set to
+ * zero, i.e. discarding the return address. It is like a `JMP` in x86. As such,
+ * its only operand is a 20 bit signed immediate offset in multiples of two
+ * bytes, relative to the program counter.
+ */
 template <typename UnsignedWord, typename SignedWord>
 class JumpInstructionNode
     : public JumpAndLinkImmediateInstructionNode<UnsignedWord, SignedWord> {
  public:
   using super = JumpAndLinkImmediateInstructionNode<UnsignedWord, SignedWord>;
+
+  /**
+   * Constructs the `J` node.
+   *
+   * \param information The information object for the instruction.
+   */
   explicit JumpInstructionNode(const InstructionInformation& information)
   : super(information) {
+    // Create a register node and insert it a the first operand to `JAL`.
     auto zero = std::make_unique<RegisterNode>("x0");
-    super::insertChild(0, zero);
+    super::insertChild(0, std::move(zero));
   }
 };
 }

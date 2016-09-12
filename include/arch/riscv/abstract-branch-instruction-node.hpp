@@ -27,12 +27,56 @@
 #include "arch/riscv/instruction-node.hpp"
 
 namespace riscv {
+
+/**
+ * The abstract base class for branch instructions.
+ *
+ * Branch instrutions include `BEQ`, `BNE`, `BLT[U]` and `BGT[U]`. This class
+ * facilitates implementation of any branching subclasses by requiring them to
+ * instantiate their parent (this class) only with a comparison predicate
+ * lambda. This class takes care of common validation checks and the common
+ * branching code, such as loading the branch offset and adding it to the
+ * program counter.
+ *
+ * Note that subclasses can either construct this abstract parent with a lambda
+ * *or* by overriding the _checkCondition method, for more heavy lifting.
+ *
+ * On the instructions themselves: branch instructions are suffixed by a
+ * condition, such as `EQ`, specifying the comparison that is to be performed
+ * between the first and second register operands. The third operand of any
+ * branch instruction is a 12-bit immediate specifying a relative offset from
+ * the current program counter. It is __important__ to note that the offset is
+ * counted in multiples of two. As such specifying `16` denotes an offset of 32
+ * bytes and not 16, relative to the program counter. This results in a total
+ * range of 13 bit, or +- 18 KiB. With the sign bit, we are back at 12 bit in
+ * either the positive or negative direction, i.e. +- 12KiB.
+ * As such, a typical instruction would be:
+ * `BEQ r6, r9, 16`, which compares `r6` and `r9` for equality
+ */
 template <typename UnsignedWord, typename SignedWord>
 class AbstractBranchInstructionNode : public InstructionNode {
  public:
   using super     = InstructionNode;
   using Condition = std::function<bool(const MemoryValue&, const MemoryValue&)>;
 
+  /**
+   * An enum indicating whether the
+   * instruction performs signed or unsigned
+   * comparison.
+   */
+  enum class OperandTypes { SIGNED, UNSIGNED };
+
+  /**
+   * Constructs an abstract branch instruction.
+   *
+   * As this class is abstract, only subclasses
+   * are allowed to call this constructor.
+   *
+   * \param information The information object for this instruction.
+   * \param condition An optional condition predicate lambda.
+   *
+   * \return
+   */
   explicit AbstractBranchInstructionNode(
       const InstructionInformation& information,
       Condition condition = Condition())
@@ -46,13 +90,23 @@ class AbstractBranchInstructionNode : public InstructionNode {
    */
   virtual ~AbstractBranchInstructionNode() = 0;
 
+  /**
+   * Performs the branch instruction.
+   *
+   * The acutal condition check is delegated polymorphically.
+   *
+   * \param memoryAccess The memory access object.
+   *
+   * \return An empty memory value.
+   */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     auto first  = _children[0]->getValue(memoryAccess);
     auto second = _children[1]->getValue(memoryAccess);
 
     if (_checkCondition(first, second)) {
-      auto programCounter = _loadRegister<UnsignedWord>(memoryAccess, "pc");
-      auto offset         = _child<SignedWord>(2, memoryAccess);
+      auto programCounter =
+          super::_loadRegister<UnsignedWord>(memoryAccess, "pc");
+      auto offset = super::_child<SignedWord>(memoryAccess, 2);
 
       // The 12-bit immediate specifies an offset in multiples
       // of two, relative to the program counter.
@@ -67,12 +121,25 @@ class AbstractBranchInstructionNode : public InstructionNode {
       // one might think: http://bit.ly/2c8sfdh
       programCounter += (offset * 2);
 
-      memoryAccess.setRegisterValue("pc", programCounter);
+      _storeRegister<UnsignedWord>(memoryAccess, "pc", programCounter);
     }
 
     return {};
   }
 
+  /**
+   * Validates the instruction node.
+   *
+   * A branch instruction is considered valid iff:
+   * - It has three children: two registers to compare and 12-bit branch offset.
+   * - The first two children are of register type and the third of immediate
+   *   type.
+   * - The offset does not occupy more than 12 bit.
+   * - The resulting program counter would still be a valid address.
+   *
+   * \return A ValidationResult reflecting the validity according to the above
+   *         criteria.
+   */
   ValidationResult validate() const override {
     auto result = _validateNumberOfChildren();
     if (!result.isSuccess()) return result;
@@ -94,19 +161,38 @@ class AbstractBranchInstructionNode : public InstructionNode {
 
 
  protected:
-  enum class Operands { SIGNED, UNSIGNED };
-
   // Idea: refactor all validation into a validator class, which just takes
   // `this` as a reference and performs all the checks on its children. For this
   // we could either make the validator a friend or give the noder a friendlier
   // interface
 
+  /**
+   * Checks a condition predicate between two operands.
+   *
+   * This method can either be overriden or, if not, will attempt to call the
+   * condition lambda passed by the subclass. If neither is possible, an
+   * AssertionError is thrown. The operands are passed as memory values because
+   * it is not clear at this point if they should be converted to signed or
+   * unsigned types.
+   *
+   * \param first The first operand's memory value.
+   * \param second The second operand's memory value.
+   *
+   * \return True if the condition w.r.t. the operands holds, else false.
+   */
   virtual bool
   _checkCondition(const MemoryValue& first, const MemoryValue& second) const {
     assert(static_cast<bool>(_condition));
     return _condition(first, second);
   }
 
+  /**
+   * Validates that the branch instruction has exactly three children.
+   *
+   * Branch instructions must have two register and one immediate operand.
+   *
+   * \return A ValidationResult reflectingt the result of the check.
+   */
   ValidationResult _validateNumberOfChildren() const {
     if (_children.size() != 3) {
       return ValidationResult::fail(
@@ -118,6 +204,13 @@ class AbstractBranchInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
+  /**
+   * Validates the types of the branch instruction's operands.
+   *
+   * Branch instructions must have two register and one immediate operand.
+   *
+   * \return A ValidationResult reflecting the result of the check.
+   */
   ValidationResult _validateOperandTypes() const {
     using Type = AbstractSyntaxTreeNode::Type;
 
@@ -139,8 +232,14 @@ class AbstractBranchInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
+  /**
+   * Validates that the offset immediate has the right number of bits (12).
+   *
+   * \return A ValidationResult reflecting the result of the check.
+   */
   ValidationResult _validateOffset() const {
-    auto offset = _child<SignedWord>(2);
+    MemoryAccess memoryAccess;
+    auto offset = _child<SignedWord>(memoryAccess, 2);
     if ((offset & ~0xFFF) > 0) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
@@ -150,6 +249,14 @@ class AbstractBranchInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
+  /**
+   * Boundary check the program counter resulting from the operation.
+   *
+   * This check ensures the program counter would neither underflow (become
+   * negative) or overflow (exceed the edge of the address space).
+   *
+   * \return A ValidationResult reflecting the result of the check.
+   */
   ValidationResult _validateResultingProgramCounter() const {
     static const auto addressBoundary =
         std::numeric_limits<UnsignedWord>::max();

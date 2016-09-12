@@ -36,6 +36,7 @@ InstructionNodeFactory::InstructionNodeFactory(
     _setupIntegerInstructions<RV64_integral_t>();
   }
 
+  _setupControlFlowInstructions<uint32_t, int32_t>();
   _setupOtherInstructions();
 }
 
@@ -70,30 +71,5 @@ InstructionNodeFactory::Node InstructionNodeFactory::createInstructionNode(
   auto information = _instructionSet.getInstruction(lower);
 
   return _factories.create(lower, information);
-}
-
-const InstructionNodeFactory::Factory& InstructionNodeFactory::FactoryMap::get(
-    const std::string& instructionName) const {
-  auto iterator = _map.find(instructionName);
-  assert(iterator != _map.end());
-
-  return iterator->second;
-}
-
-const InstructionNodeFactory::Factory& InstructionNodeFactory::FactoryMap::
-operator[](const std::string& instructionName) const {
-  return this->get(instructionName);
-}
-
-InstructionNodeFactory::Node InstructionNodeFactory::FactoryMap::create(
-    const std::string& instructionName,
-    const InstructionInformation& information) const {
-  return get(instructionName)(information);
-}
-
-InstructionNodeFactory::Node InstructionNodeFactory::FactoryMap::
-operator()(const std::string& instructionName,
-           const InstructionInformation& information) const {
-  return create(instructionName, information);
 }
 }

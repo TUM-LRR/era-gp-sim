@@ -146,8 +146,7 @@ struct ShiftLeftLogicalInstructionNode
  * \tparam integer type that can hold exactly the range of values that this
  * operation should operate
  */
-template <typename SizeType,
-          typename = std::enable_if_t<std::is_unsigned<SizeType>::value>>
+template <typename SizeType>
 struct ShiftRightLogicalInstructionNode
     : public AbstractIntegerInstructionNode<SizeType> {
   using super = AbstractIntegerInstructionNode<SizeType>;
