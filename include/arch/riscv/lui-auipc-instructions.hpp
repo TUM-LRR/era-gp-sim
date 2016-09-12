@@ -23,6 +23,7 @@
 #include <QtGlobal>
 #include <cassert>
 #include <cstdint>
+#include <climits>
 
 #include "arch/riscv/instruction-node.hpp"
 
@@ -118,8 +119,11 @@ class LuiInstructionNode : public SpecialIntegerInstructionNode {
       if (sign > 0) {
         // Sign-expansion is quite easy here: All the bits above the lower
         // 32 bits are set to 1.
-        result |= ~UnsignedType{0}
-                  << (sizeof(InternalUnsigned) * RISCV_BITS_PER_BYTE);
+        UnsignedType mask = ~0;
+        for (size_t i = 0; i < sizeof(InternalUnsigned); ++i) {
+          mask <<= CHAR_BIT;
+        }
+        result |= mask;
       }
     }
 
