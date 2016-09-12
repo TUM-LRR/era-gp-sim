@@ -25,6 +25,8 @@
 #include "arch/common/abstract-instruction-node-factory.hpp"
 #include "arch/common/instruction-information.hpp"
 #include "arch/common/instruction-set.hpp"
+#include "arch/riscv/control-flow-instructions.hpp"
+#include "arch/riscv/factory-map.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
 
@@ -72,92 +74,6 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
       const InstructionInformation &)>;
 
   /**
-   * An internal utility class to map instruction names to their factory
-   * functions.
-   *
-   * The purpose of this class is to reduce the boilerplate for adding nodes  *
-   * to the factory mapping, as well as for accessing factories to create new
-   * nodes.
-   */
-  class FactoryMap {
-   public:
-    /**
-     * Adds an integer instruction to the factory map.
-     *
-     * This method makes it easy to create both a register and immediate version
-     * for a given instruction. If this feature is activated, an instruction
-     * with the 'i' suffix will be created as well.
-     *
-     * \tparam The instruction class to associate the instruction (name) with.
-     * \param name The name of the instruction.
-     * \param hasImmediateVersion If true, also create an immediate version of
-     *        the instruction.
-     */
-    template <template <typename...> class InstructionType, typename SizeType>
-    void
-    add(const std::string &instructionName, bool hasImmediateVersion = true) {
-      using Operands = typename InstructionType<SizeType>::Operands;
-
-      // clang-format off
-      _map.emplace(instructionName, [](const auto &information) {
-        return std::make_unique<InstructionType<SizeType>>(
-          information, Operands::REGISTERS);
-      });
-
-      if (hasImmediateVersion) {
-        _map.emplace(instructionName + 'i', [](const auto &information) {
-          return std::make_unique<InstructionType<SizeType>>(
-              information, Operands::IMMEDIATES);
-        });
-        // clang-format on
-      }
-    }
-
-    template <typename InstructionType, typename... Args>
-    void add(const std::string &instructionName, Args &&... args) {
-      // Cannot preserve value category (simply) unfortunately
-      _map.emplace(instructionName, [args...](const auto &information) {
-        return std::make_unique<InstructionType>(information, args...);
-      });
-    }
-
-    /**
-     * Returns the factory for a given instruction name.
-     *
-     * Error (existence) checking is performed inside this function.
-     *
-     * \param instructionName The name of the instruction to retrieve.
-     *
-     * \return The factory fucntion for the given instruction.
-     */
-    const Factory &get(const std::string &instructionName) const;
-
-    /** \copydoc get() */
-    const Factory &operator[](const std::string &instructionName) const;
-
-    /**
-     * Creates an instruction node for the given instruction name.
-     *
-     * Calling this function is the same as invoking the result of `get()`.
-     *
-     * \param instructionName The name of the instruction to retrieve.
-     * \param information The information object for the instruction.
-     *
-     * \return An abstract syntax tree node for the instruction.
-     */
-    Node create(const std::string &instructionName,
-                const InstructionInformation &information) const;
-
-    /** \copydoc create() */
-    Node operator()(const std::string &instructionName,
-                    const InstructionInformation &information) const;
-
-   private:
-    /** The actual underlying string to factory mapping. */
-    std::unordered_map<std::string, Factory> _map;
-  };
-
-  /**
    * \brief Sets up non-integer instructions.
    */
   void _setupOtherInstructions();
@@ -179,14 +95,79 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
    */
   template <typename SizeType>
   void _setupIntegerInstructions() {
-    _factories.add<AddInstructionNode, SizeType>("add");
-    _factories.add<SubInstructionNode, SizeType>("sub", false);
-    _factories.add<AndInstructionNode, SizeType>("and");
-    _factories.add<OrInstructionNode, SizeType>("or");
-    _factories.add<XorInstructionNode, SizeType>("xor");
-    _factories.add<ShiftLeftLogicalInstructionNode, SizeType>("sll");
-    _factories.add<ShiftRightLogicalInstructionNode, SizeType>("srl");
-    _factories.add<ShiftRightArithmeticInstructionNode, SizeType>("sra");
+    auto facade = _factories.integerInstructionFacade<SizeType>();
+
+    facade.template add<AddInstructionNode>("add");
+    facade.template add<SubInstructionNode>("sub", false);
+    facade.template add<AndInstructionNode>("and");
+    facade.template add<OrInstructionNode>("or");
+    facade.template add<XorInstructionNode>("xor");
+    facade.template add<ShiftLeftLogicalInstructionNode>("sll");
+    facade.template add<ShiftRightLogicalInstructionNode>("srl");
+    facade.template add<ShiftRightArithmeticInstructionNode>("sra");
+  }
+
+  template <typename UnsignedWord, typename SignedWord>
+  void _setupControlFlowInstructions() {
+    _setupBranchInstructions<UnsignedWord, SignedWord>();
+    _setupJumpInstructions<UnsignedWord, SignedWord>();
+  }
+
+  /**
+   * Sets up branch instructions.
+   *
+   * Jump instructions include `BEQ`, `BNE`, `BLT[U]` and `BG[U]`.
+   *
+   * \tparam UnsignedWord An unsigned word type.
+   * \tparam SignedWord A signed word type.
+   */
+  template <typename UnsignedWord, typename SignedWord>
+  void _setupBranchInstructions() {
+    using OperandTypes =
+        typename AbstractBranchInstructionNode<UnsignedWord,
+                                               SignedWord>::OperandTypes;
+
+    auto facade = _factories.typeFacade<UnsignedWord, SignedWord>();
+    facade.template add<BranchEqualInstructionNode>("beq");
+    facade.template add<BranchNotEqualInstructionNode>("bne");
+
+    // clang-format off
+    facade.template add<BranchLessThanInstructionNode>(
+      "blt",
+      OperandTypes::SIGNED
+    );
+
+    facade.template add<BranchLessThanInstructionNode>(
+      "bltu",
+      OperandTypes::UNSIGNED
+    );
+
+    facade.template add<BranchGreaterEqualInstructionNode>(
+        "bge",
+        OperandTypes::SIGNED
+    );
+
+    facade.template add<BranchGreaterEqualInstructionNode>(
+        "bgeu",
+        OperandTypes::UNSIGNED
+    );
+    // clang-format on
+  }
+
+  /**
+   * Sets up the jump instructions in the map.
+   *
+   * Jump instructions include `JAL`, `JALR` and `J`.
+   *
+   * \tparam UnsignedWord An unsigned word type.
+   * \tparam SignedWord A signed word type.
+   */
+  template <typename UnsignedWord, typename SignedWord>
+  void _setupJumpInstructions() {
+    auto facade = _factories.typeFacade<UnsignedWord, SignedWord>();
+    facade.template add<JumpAndLinkImmediateInstructionNode>("jal");
+    facade.template add<JumpAndLinkRegisterInstructionNode>("jalr");
+    facade.template add<JumpInstructionNode>("j");
   }
 
   /**
