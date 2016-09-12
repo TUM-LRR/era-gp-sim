@@ -202,6 +202,7 @@ void MemoryValue::write(const MemoryValue &other, std::size_t begin) {
 std::uint8_t MemoryValue::getByteAt(std::size_t address) const {
   assert(address < getSize());
   assert(address >= 0);
+
   // first half byte
   std::uint8_t result{static_cast<std::uint8_t>(
       _data[byteAddressOfBit(address)] >> offset(address))};
