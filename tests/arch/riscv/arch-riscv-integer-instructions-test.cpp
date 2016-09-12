@@ -31,7 +31,7 @@
 #include "arch/riscv/instruction-node.hpp"
 #include "core/conversions.hpp"
 
-using namespace riscv;
+namespace riscv {
 
 namespace {
 template <typename IntType>
@@ -101,10 +101,10 @@ class MemoryAccessImpl : public MemoryAccess {
     _register.emplace(token, reg);
   }
 
-  MemoryValue getRegisterValue(std::string& token) override {
+  MemoryValue getRegisterValue(const std::string& token) override {
     return _register.at(token).get();
   }
-  void setRegisterValue(std::string& token, MemoryValue value) override {
+  void setRegisterValue(const std::string& token, MemoryValue value) override {
     FakeRegister& desiredRegister = _register.at(token);
     desiredRegister.set(value);
   }
@@ -962,4 +962,5 @@ TEST(IntegerInstructionTest, ShiftRightArithmeticInstruction_testValidation) {
       memAccess, instructionFactory, immediateFactory, "sra", false);
   testIntegerInstructionValidation(
       memAccess, instructionFactory, immediateFactory, "srai", true);
+}
 }

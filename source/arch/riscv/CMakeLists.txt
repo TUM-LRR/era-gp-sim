@@ -3,7 +3,6 @@
 ########################################
 
 set(ARCH_RISCV_SOURCES
-    control-flow-instructions.cpp
     instruction-node.cpp
     load-store-instructions.cpp
     mul-div-instructions.cpp

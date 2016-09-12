@@ -32,8 +32,25 @@ AbstractSyntaxTreeNode::Type AbstractSyntaxTreeNode::getType() const noexcept {
   return _nodeType;
 }
 
-void AbstractSyntaxTreeNode::addChild(Node node) {
+size_t AbstractSyntaxTreeNode::numberOfChildren() const noexcept {
+  return _children.size();
+}
+
+bool AbstractSyntaxTreeNode::hasChildren() const noexcept {
+  return !_children.empty();
+}
+
+void AbstractSyntaxTreeNode::addChild(Node&& node) {
   _children.emplace_back(std::move(node));
+}
+
+void AbstractSyntaxTreeNode::insertChild(size_t index, Node&& node) {
+  assert(index < _children.size());
+
+  auto iterator = _children.cbegin();
+  std::advance(iterator, index);
+
+  _children.emplace(iterator, std::move(node));
 }
 
 ValidationResult AbstractSyntaxTreeNode::_validateChildren() const {

@@ -32,7 +32,8 @@ bool InstructionNode::_requireChildren(Type type,
   // clang-format on
 }
 
-bool InstructionNode::_requireChildren(TypeList list, size_t startIndex) const {
+bool InstructionNode::_compareChildTypes(TypeList list,
+                                         size_t startIndex) const {
   auto view = Utility::viewFrom(_children, startIndex);
 
   // clang-format off

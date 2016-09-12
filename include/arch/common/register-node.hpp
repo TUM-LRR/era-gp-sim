@@ -19,6 +19,7 @@
 #define ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
 
 #include <memory>
+#include <string>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 
@@ -32,18 +33,15 @@ class RegisterNode : public AbstractSyntaxTreeNode {
    *
    * \param value The identifier for the register.
    */
-  RegisterNode(std::string identifier)
+  explicit RegisterNode(const std::string& identifier)
   : AbstractSyntaxTreeNode(Type::REGISTER), _identifier(identifier) {
   }
 
   /**
    * \return The content of the register, represented by this node.
    */
-  MemoryValue
-  getValue(MemoryAccess& MemoryAccess) const override {
-    // TODO Return the actual content of the register using the proper
-    // memory access
-    return MemoryValue();
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override {
+    return memoryAccess.getRegisterValue(_identifier);
   }
 
   /**
@@ -51,12 +49,12 @@ class RegisterNode : public AbstractSyntaxTreeNode {
    */
   ValidationResult validate() const override {
     // Registers can't have any children
-    return AbstractSyntaxTreeNode::_children.size() == 0
-               ? ValidationResult::success()
-               : ValidationResult::fail(QT_TRANSLATE_NOOP(
-                     "Syntax-Tree-Validation",
-                     "The register node must not have any arguments"));
-
+    if (AbstractSyntaxTreeNode::_children.size() == 0) {
+      return ValidationResult::success();
+    }
+    return ValidationResult::fail(
+        QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                          "The register node must not have any arguments"));
   }
 
   const std::string& getIdentifier() const override {
@@ -79,7 +77,7 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   }
 
  private:
-  /*!
+  /**
    * Identifies a register
    */
   std::string _identifier;

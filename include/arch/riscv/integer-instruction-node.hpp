@@ -43,15 +43,33 @@ namespace riscv {
  *
  * \tparam SizeType An integral type to perform the actual operations on.
  */
-template <typename SizeType,
-          typename = std::enable_if_t<std::is_integral<SizeType>::value>>
+template <typename SizeType>
 class AbstractIntegerInstructionNode : public InstructionNode {
  public:
   enum class Operands { IMMEDIATES, REGISTERS };
   using Operation = std::function<SizeType(SizeType, SizeType)>;
 
-  /** Default destructor*/
-  virtual ~AbstractIntegerInstructionNode() = default;
+  /**
+ * Creates an integer instruction with the given information.
+ *
+ * \param information InstructionInformation that holds the mnemonic of this
+ * instruction
+ * \param immediate when the instruction is labeled as immediate
+ * instruction, 2 register and one immediate operand are expected for
+ * validation, if not 3 register operands are expected
+ */
+  AbstractIntegerInstructionNode(const InstructionInformation& information,
+                                 Operands operands,
+                                 Operation operation = Operation())
+  : InstructionNode(information), _operands(operands), _operation(operation) {
+  }
+
+  /**
+   * Make the constructor pure virtual so that the class is abstract.
+   * This is necessary since the class, in itself, has no pure virtual methods.
+   * Note the implementation outside (below) the class definition.
+   */
+  virtual ~AbstractIntegerInstructionNode() = 0;
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     // Get the destination register
@@ -73,10 +91,8 @@ class AbstractIntegerInstructionNode : public InstructionNode {
     if (!result.isSuccess()) return result;
 
     // check if all operands are valid themselves
-    auto childrenResult = _validateChildren();
-    if (!childrenResult.isSuccess()) {
-      return childrenResult;
-    }
+    result = _validateChildren();
+    if (!result.isSuccess()) return result;
 
     if (_operands == Operands::IMMEDIATES) {
       result = _validateOperandsForImmediateInstructions();
@@ -94,32 +110,17 @@ class AbstractIntegerInstructionNode : public InstructionNode {
 
  protected:
   /**
- * Creates an integer instructino with the given information.
- *
- * \param information InstructionInformation that holds the mnemonic of this
- * instruction
- * \param immediate when the instruction is labeled as immediate
- * instruction, 2 register and one immediate operand are expected for
- * validation, if not 3 register operands are expected
- */
-  AbstractIntegerInstructionNode(const InstructionInformation& information,
-                                 Operands operands,
-                                 Operation operation = Operation())
-  : InstructionNode(information), _operands(operands), _operation(operation) {
-  }
-
-  /**
-   * Performs the actual computation of the instruction.
-   *
-   * This method can only be called on AbstractIntegerInstructionNode itself if
-   * the
-   * appropriate constructor was called.
-   *
-   * \first The first operand.
-   * \second The second operand.
-   *
-   * \return The result of the computation.
-   */
+  * Performs the actual computation of the instruction.
+  *
+  * This method can only be called on AbstractIntegerInstructionNode itself if
+  * the
+  * appropriate constructor was called.
+  *
+  * \first The first operand.
+  * \second The second operand.
+  *
+  * \return The result of the computation.
+  */
   virtual SizeType _compute(SizeType first, SizeType second) const noexcept {
     assert(static_cast<bool>(_operation));
     return _operation(first, second);
@@ -131,14 +132,13 @@ class AbstractIntegerInstructionNode : public InstructionNode {
 
  private:
   SizeType _child(size_t index, MemoryAccess& memoryAccess) const {
-    auto memory = _children.at(index)->getValue(memoryAccess);
-    return convert<SizeType>(memory, RISCV_ENDIANNESS);
+    auto memory = _children[index]->getValue(memoryAccess);
+    return _convert<SizeType>(memory);
   }
 
   SizeType _child(size_t index) const {
     MemoryAccess dummy;
-    auto memory = _children[index]->getValue(dummy);
-    return convert<SizeType>(memory, RISCV_ENDIANNESS);
+    return _child(index, dummy);
   }
 
   ValidationResult _validateNumberOfChildren() const {
@@ -196,6 +196,11 @@ class AbstractIntegerInstructionNode : public InstructionNode {
   /** An optional function with which the node can be constructed. */
   Operation _operation;
 };
+
+// clang-format off
+template <typename SizeType>
+AbstractIntegerInstructionNode<SizeType>::~AbstractIntegerInstructionNode<SizeType>() = default;
+// clang-format on
 }
 
 #endif /* ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTION_NODE_HPP */

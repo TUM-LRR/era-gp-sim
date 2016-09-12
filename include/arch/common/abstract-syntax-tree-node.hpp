@@ -27,10 +27,10 @@
 #include "core/memory-value.hpp"
 
 struct MemoryAccess {
-  virtual MemoryValue getRegisterValue(std::string& token) {
+  virtual MemoryValue getRegisterValue(const std::string&) {
     return {};
   }
-  virtual void setRegisterValue(std::string& token, MemoryValue value) {
+  virtual void setRegisterValue(const std::string&, MemoryValue) {
   }
 };
 
@@ -98,14 +98,33 @@ class AbstractSyntaxTreeNode {
    * Getter for the type of this node.
    * \return The type of this node.
    */
-  Type getType() const noexcept;
+  virtual Type getType() const noexcept;
 
   /**
    * Appends a child to the node.
    *
    * \param node The node to be added.
    */
-  void addChild(Node node);
+  virtual void addChild(Node&& node);
+
+
+  /**
+   * Inserts the the child node at the given index.
+   *
+   * \param index The index to insert at.
+   * \param node The child node to insert.
+   */
+  virtual void insertChild(size_t index, Node&& node);
+
+  /**
+   * Returns the number of children this node has.
+   */
+  virtual size_t numberOfChildren() const noexcept;
+
+  /**
+   * Returns true if the node has children, else false.
+   */
+  virtual bool hasChildren() const noexcept;
 
  protected:
   /**

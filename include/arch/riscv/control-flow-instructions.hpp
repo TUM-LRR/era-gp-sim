@@ -20,8 +20,7 @@
 #ifndef ERAGPSIM_ARCH_RISCV_CONTROL_FLOW_INSTRUCTIONS_HPP
 #define ERAGPSIM_ARCH_RISCV_CONTROL_FLOW_INSTRUCTIONS_HPP
 
-/*
- * TODO Instructions: jal jalr beq bne blt bltu bge bgeu
- */
+#include "arch/riscv/branch-instructions.hpp"
+#include "arch/riscv/jump-instructions.hpp"
 
 #endif /* ERAGPSIM_ARCH_RISCV_CONTROL_FLOW_INSTRUCTIONS_HPP */

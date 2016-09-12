@@ -55,6 +55,58 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   using TypeList = std::initializer_list<super::Type>;
 
   /**
+   * Utility function to convert a memory value for RISC-V.
+   *
+   * The RISCV_ENDIANNESS is used.
+   *
+   * \tparam T The type to convert to.
+   * \param memory The memory value to convert.
+   *
+   * \return The converted memory value.
+   */
+  template <typename T>
+  static T _convert(const MemoryValue& memory) {
+    return convert<T>(memory, RISCV_ENDIANNESS);
+  }
+
+  /**
+   * Utility function to retrieve a register value for RISC-V.
+   *
+   * The RISCV_ENDIANNESS is used.
+   *
+   * \tparam T The type to convert to.
+   * \param name The name of the register to access.
+   * \param memoryAccess The memory access object.
+   *
+   * \return The value fo the child.
+   */
+  template <typename T>
+  static T
+  _loadRegister(const std::string& registerName, MemoryAccess& memoryAccess) {
+    auto memory = memoryAccess.getRegisterValue(registerName);
+    return _convert<T>(memory);
+  }
+
+  /**
+   * Utility function to retrieve a child node for RISC-V.
+   *
+   * The RISCV_ENDIANNESS is used.
+   *
+   * \tparam T The type to convert to.
+   * \param index The index of the child to retrieve.
+   * \param memoryAccess The memory access object.
+   *
+   * \return The value fo the child.
+   */
+  template <typename T>
+  T _child(size_t index, MemoryAccess& memoryAccess) {
+    assert(index < _children.size());
+    auto memory = _children[index]->getValue(memoryAccess);
+    return _convert<T>(memory);
+  }
+
+  // TODO: Leaving it like so to avoid conflicts for now
+  /**
    * Checks if this node has 'amount' children of type 'type', starting at
    * index
    * 'startIndex'.
@@ -75,7 +127,7 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    *
    * \return True if the children match the given types, else false.
    */
-  bool _requireChildren(TypeList list, size_t startIndex = 0) const;
+  bool _compareChildTypes(TypeList list, size_t startIndex = 0) const;
 
   /** The information object associated with the instruction. */
   InstructionInformation _information;
