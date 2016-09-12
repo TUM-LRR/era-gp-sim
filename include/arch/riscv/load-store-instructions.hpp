@@ -52,49 +52,6 @@ class LoadInstructionNode : public InstructionNode {
   : InstructionNode(instructionInformation), _type(type) {
   }
 
-  void performUnsignedLoad(DummyMemoryAccess& memoryAccess,
-                           std::size_t address,
-                           std::size_t byteAmount,
-                           std::string destination) const {
-    MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
-
-    // Check if zero-expansion is needed. This is the case, if the amount of
-    // bits loaded from memory is not equal to the amount of bits, a register
-    // can hold.
-    if (result.getSize() != sizeof(UnsignedType) * RISCV_BITS_PER_BYTE) {
-      // Do the zero-expansion by converting to an int and converting back
-      // to a memory value.
-      // TODO This can be made faster, by copying the bits into a new memory
-      // value of proper size. This can't be done yet, because the interface
-      // of the memory value is not quite clear in that sense.
-      UnsignedType converted = convert<UnsignedType>(result, RISCV_ENDIANNESS);
-      result                 = convert<UnsignedType>(
-          converted, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
-    }
-    memoryAccess.setRegisterValue(destination, result);
-  }
-
-  void performSignedLoad(DummyMemoryAccess& memoryAccess,
-                         std::size_t address,
-                         std::size_t byteAmount,
-                         std::string destination) const {
-    MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
-
-    // Check if sign-expansion is needed. This is the case, if the amount of
-    // bits loaded from memory is not equal to the amount of bits, a register
-    // can hold.
-    if (result.getSize() != sizeof(SignedType) * RISCV_BITS_PER_BYTE) {
-      // Do a sign-expansion by converting the memory value to an integer
-      // and back to a memory value.
-      SignedType converted = convert<SignedType>(
-          result, RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
-      result = convert<SignedType>(converted,
-                                   RISCV_BITS_PER_BYTE,
-                                   RISCV_ENDIANNESS,
-                                   RISCV_SIGNED_REPRESENTATION);
-    }
-    memoryAccess.setRegisterValue(destination, result);
-  }
 
   MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
@@ -171,6 +128,51 @@ class LoadInstructionNode : public InstructionNode {
   }
 
  private:
+  void performUnsignedLoad(DummyMemoryAccess& memoryAccess,
+                           std::size_t address,
+                           std::size_t byteAmount,
+                           std::string destination) const {
+    MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
+
+    // Check if zero-expansion is needed. This is the case, if the amount of
+    // bits loaded from memory is not equal to the amount of bits, a register
+    // can hold.
+    if (result.getSize() != sizeof(UnsignedType) * RISCV_BITS_PER_BYTE) {
+      // Do the zero-expansion by converting to an int and converting back
+      // to a memory value.
+      // TODO This can be made faster, by copying the bits into a new memory
+      // value of proper size. This can't be done yet, because the interface
+      // of the memory value is not quite clear in that sense.
+      UnsignedType converted = convert<UnsignedType>(result, RISCV_ENDIANNESS);
+      result                 = convert<UnsignedType>(
+          converted, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+    }
+    memoryAccess.setRegisterValue(destination, result);
+  }
+
+  void performSignedLoad(DummyMemoryAccess& memoryAccess,
+                         std::size_t address,
+                         std::size_t byteAmount,
+                         std::string destination) const {
+    MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
+
+    // Check if sign-expansion is needed. This is the case, if the amount of
+    // bits loaded from memory is not equal to the amount of bits, a register
+    // can hold.
+    if (result.getSize() != sizeof(SignedType) * RISCV_BITS_PER_BYTE) {
+      // Do a sign-expansion by converting the memory value to an integer
+      // and back to a memory value.
+      SignedType converted = convert<SignedType>(
+          result, RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
+      result = convert<SignedType>(converted,
+                                   RISCV_BITS_PER_BYTE,
+                                   RISCV_ENDIANNESS,
+                                   RISCV_SIGNED_REPRESENTATION);
+    }
+    memoryAccess.setRegisterValue(destination, result);
+  }
+
+
   Type _type;
 };
 

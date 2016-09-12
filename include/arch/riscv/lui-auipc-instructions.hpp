@@ -22,12 +22,14 @@
 
 #include <QtGlobal>
 #include <cassert>
+#include <cstdint>
+
 #include "arch/riscv/instruction-node.hpp"
 
 namespace riscv {
 
 /**
- * \brief A superclass for special integer instructions
+ * \brief A superclass for LUI, AUIPC
  *
  * A superclass for special integer instructions, that require 2 operands
  * (register and 20 bit immediate).
@@ -35,7 +37,8 @@ namespace riscv {
  */
 class SpecialIntegerInstructionNode : public InstructionNode {
  public:
-  SpecialIntegerInstructionNode(InstructionInformation& info) : InstructionNode(info) {
+  SpecialIntegerInstructionNode(InstructionInformation& info)
+  : InstructionNode(info) {
   }
 
   MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override = 0;
@@ -64,13 +67,14 @@ class SpecialIntegerInstructionNode : public InstructionNode {
     // 20 bits
     DummyMemoryAccessStub stub;
     MemoryValue value = _children.at(1)->getValue(stub);
-    for (std::size_t index = 20; index < value.getSize(); ++index) {
-      if (value.get(index)) {
-        return ValidationResult::fail(
-            QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                              "The immediate value of this instruction "
-                              "must be representable by 20 bits"));
-      }
+    // Convert into a signed integer type, that holds at least 20 bits
+    uint32_t valueConverted = convert<uint32_t>(value, RISCV_ENDIANNESS);
+    // Check if the converted value is inside [0, 2^20[
+    if (valueConverted > 1048575) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "The immediate value of this instruction must be "
+                            "representable by 20 bits"));
     }
 
     return ValidationResult::success();
@@ -94,18 +98,43 @@ class LuiInstructionNode : public SpecialIntegerInstructionNode {
     const std::string& destination = _children.at(0)->getIdentifier();
     MemoryValue offset             = _children.at(1)->getValue(memoryAccess);
 
-    // Convert to the unsigned type of the architecture
-    UnsignedType offsetConverted =
-        convert<UnsignedType>(offset, RISCV_ENDIANNESS);
+    // Convert the offset to an internal integer representation
+    InternalUnsigned offsetConverted =
+        convert<InternalUnsigned>(offset, RISCV_ENDIANNESS);
     // Perform a bitwise shift, filling the lower 12 bits with zeros
     offsetConverted <<= 12;
-    // Convert back into a memory value
-    MemoryValue result = convert<UnsignedType>(
-        offsetConverted, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
 
-    memoryAccess.setRegisterValue(destination, result);
+    // Now it gets ugly! On non-RV32 architectures, the result of the last
+    // operation (that has always a width of 32 bits) must be sign expanded,
+    // to the architectures word size (e.g. 64 bit)
+    UnsignedType result = offsetConverted;
+    // Check if sign-expansion is needed
+    if ((sizeof(UnsignedType) - sizeof(InternalUnsigned)) > 0) {
+      // Aquire the sign bit
+      constexpr auto length = sizeof(InternalUnsigned) * RISCV_BITS_PER_BYTE;
+      InternalUnsigned sign =
+          (offsetConverted & (InternalUnsigned{1} << (length - 1)));
+      // Do sign-expansion if needed
+      if (sign > 0) {
+        // Sign-expansion is quite easy here: All the bits above the lower
+        // 32 bits are set to 1.
+        result |= ~UnsignedType{0}
+                  << (sizeof(InternalUnsigned) * RISCV_BITS_PER_BYTE);
+      }
+    }
+
+    // Convert back into a memory value and store it in the register
+    MemoryValue resultValue =
+        convert<UnsignedType>(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+    memoryAccess.setRegisterValue(destination, resultValue);
     return MemoryValue{};
   }
+
+ private:
+  /* The LUI instruction performs its operation ALWAYS on 32 bits
+   * (See RISC-V specification for reference). So a custom datatype is
+   * defined to use in the getValue() method. */
+  using InternalUnsigned = uint32_t;
 };
 
 /**

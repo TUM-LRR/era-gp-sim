@@ -19,7 +19,7 @@
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
-#include "arch/riscv/special-integer-instructions.hpp"
+#include "arch/riscv/lui-auipc-instructions.hpp"
 
 #include "common/utility.hpp"
 
