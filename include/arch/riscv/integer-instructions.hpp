@@ -35,7 +35,7 @@
 
 namespace riscv {
 
-/*!
+/**
  * \brief The IntegerInstructionNode is a superclass for all integer arithmetic
  * instructions.
  * As the behaviour of all of these instructions is very similar, this class
@@ -51,7 +51,7 @@ namespace riscv {
 template <typename SizeType>
 class IntegerInstructionNode : public InstructionNode {
  public:
-  /*!
+  /**
  * Creates a IntegerInstructionNode using the specified InstructionInformation
  * to describe the instruction
  * \param info InstructionInformation that holds the mnemonic of this
@@ -132,7 +132,7 @@ class IntegerInstructionNode : public InstructionNode {
     }
   }
 
-  /*!
+  /**
    * performs the specific arithmetic integer operation (such as +, -, and, or,
    * etc) and returns the result
    * \param op1 first operand for the arithmetic operation
@@ -143,41 +143,19 @@ class IntegerInstructionNode : public InstructionNode {
                                            SizeType op2) const = 0;
 
  protected:
+  /**
+   * Returns the lower 5 bit of op
+   * \param op value
+   * \return
+   */
   SizeType getLower5Bit(SizeType op) const {
     constexpr SizeType andValue = 0b11111;
     return op & andValue;
   }
 
  private:
-//  std::enable_if<std::is_signed<SizeType>::value, SizeType>
-//  convertToNativeSignedType(MemoryValue v) const {
-//    return convert<SizeType>(v, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS,
-//                             RISCV_SIGNED_REPRESENTATION);
-//  }
 
-//  std::enable_if<!std::is_signed<SizeType>::value, SizeType>
-//  convertToNativeUnsignedType(MemoryValue v) const {
-//    return convert<SizeType>(v, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
-//  }
-
-//  SizeType convertToNativeType(MemoryValue v) const {
-//      if(std::is_signed<SizeType>::value) {
-//          return convertToNativeSignedType(v);
-//      }else{
-//          return convertToNativeUnsignedType(v);
-//      }
-//  }
-
-//  MemoryValue convertToMemoryValue(SizeType t) const {
-//    if (std::is_signed<SizeType>::value) {
-//      return convert<SizeType>(t, RISCV_ENDIANNESS,
-//                               RISCV_SIGNED_REPRESENTATION);
-//    } else {
-//      return convert<SizeType>(t, RISCV_ENDIANNESS);
-//    }
-//  }
-
-  /*!
+  /**
    * Indicates if this instruction is a register-immediate instruction.
    * If false this instruction is a register-register instruction.
    * This value is used for validation of operands
@@ -185,7 +163,7 @@ class IntegerInstructionNode : public InstructionNode {
   bool _isImmediate;
 };
 
-/*!
+/**
  * Represents a RISC-V "add/addi" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -197,7 +175,7 @@ class AddInstructionNode : public IntegerInstructionNode<SizeType> {
   AddInstructionNode(InstructionInformation info, bool immediateInstruction)
       : IntegerInstructionNode<SizeType>(info, immediateInstruction) {}
 
-  /*!
+  /**
    * Adds the two operands
    * \param op1 summand
    * \param op2 summand
@@ -208,7 +186,7 @@ class AddInstructionNode : public IntegerInstructionNode<SizeType> {
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "sub" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -222,7 +200,7 @@ class SubInstructionNode : public IntegerInstructionNode<SizeType> {
             info, false)  // RISC-V does not specifiy a subi
   {}
 
-  /*!
+  /**
    * Subtracts op2 from op1
    * \param op1
    * \param op2
@@ -233,7 +211,7 @@ class SubInstructionNode : public IntegerInstructionNode<SizeType> {
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "and/andi" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -256,7 +234,7 @@ class AndInstructionNode : public IntegerInstructionNode<SizeType> {
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "or/ori" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -268,7 +246,7 @@ class OrInstructionNode : public IntegerInstructionNode<SizeType> {
   OrInstructionNode(InstructionInformation info, bool isImmediateInstruction)
       : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
 
-  /*!
+  /**
    * Performs a bitwise logical or with op1, op2
    * \param op1
    * \param op2
@@ -279,7 +257,7 @@ class OrInstructionNode : public IntegerInstructionNode<SizeType> {
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "xor/xori" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -291,7 +269,7 @@ class XorInstructionNode : public IntegerInstructionNode<SizeType> {
   XorInstructionNode(InstructionInformation info, bool isImmediateInstruction)
       : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
 
-  /*!
+  /**
    * Performs a bitwise logical xor with op1, op2
    * \param op1
    * \param op2
@@ -302,7 +280,7 @@ class XorInstructionNode : public IntegerInstructionNode<SizeType> {
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "sll/slli" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -316,7 +294,7 @@ class ShiftLogicalLeftInstructionNode
                                   bool isImmediateInstruction)
       : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
 
-  /*!
+  /**
    * Shifts bits in op1 logical left (shifts zeros into the lower part). How
    * many zeros are shifted in is
    * determined by the lower 5bit of op2
@@ -329,7 +307,7 @@ class ShiftLogicalLeftInstructionNode
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "srl/srli" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -349,7 +327,7 @@ class ShiftLogicalRightInstructionNode
     assert((SizeType(0) - 1) >= 0);
   }
 
-  /*!
+  /**
    * Shifts bits in op1 logical right (shifts zeros into the upper part). How
    * many zeros are shifted in is
    * determined by the lower 5bit of op2
@@ -362,7 +340,7 @@ class ShiftLogicalRightInstructionNode
   }
 };
 
-/*!
+/**
  * Represents a RISC-V "sra/srai" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
@@ -376,7 +354,7 @@ class ShiftArithmeticRightInstructionNode
                                       bool isImmediateInstruction)
       : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
 
-  /*!
+  /**
    * Shifts bits in op1 arithmetic right (shifts sign bit into the upper part).
    * How
    * many bits are shifted in is determined by the lower 5bit of op2

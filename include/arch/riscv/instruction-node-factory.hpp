@@ -39,10 +39,9 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   using InstructionMap =
       std::unordered_map<std::string,
                          std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
-                             InstructionInformation&)>>;
+                             InstructionInformation &)>>;
 
   /**
-   * \brief InstructionNodeFactory
    * Creates a Instruction Node Factory for RISC-V architecture
    */
   InstructionNodeFactory(const InstructionSet &instructions,
@@ -52,14 +51,13 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
     initializeInstructionMap(architecture);
   }
 
-  /*! Default constructed copy constructor */
+  /** Default constructed copy constructor */
   InstructionNodeFactory(InstructionNodeFactory &copy) = default;
 
-  /*! Default constructed move constructor */
+  /** Default constructed move constructor */
   InstructionNodeFactory(InstructionNodeFactory &&move) = default;
 
   /**
-   * \brief createInstructionNode
    * Creates and returns a RISC-V Instruction Node for a valid input token, or
    * nullptr if the token cannot be mapped to a implemented RISC-V instruction
    * \param token
@@ -73,11 +71,9 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
 
  private:
   /**
-   * \brief initializeInstructionMap
    * Fills instructionMap with values.
    * Use lambda-functions with InstructionInformation as parameter and return
-   * type
-   * std::unique_ptr<AbstractSyntaxTreeNode> as value.
+   * type std::unique_ptr<AbstractSyntaxTreeNode> as value.
    * Use lowercase instruction identifier as key.
    * \param architecture The architecture currently used. With this the factory
    * can determine, for what word size instructions are created
@@ -85,38 +81,42 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   void initializeInstructionMap(const Architecture &architecture);
 
   /**
-   * Checks if the given architecture has the 'M' Multiplication/Division Extension loaded.
+   * Checks if the given architecture has the 'M' Multiplication/Division
+   * Extension loaded.
    * If so, all instructions of the extension are filled into the InstructionMap
    * \param architecture current loaded architecture
    * \param wordsize The wordsize of the architecture (e.g. 32 or 64bit)
    */
-  void initializeMExtensionIfPresent(const Architecture& architecture, Architecture::word_size_t wordsize);
+  void initializeMExtensionIfPresent(const Architecture &architecture,
+                                     Architecture::word_size_t wordsize);
 
   /**
-   * \brief _instructionMap
    * Table, that maps the instruction identifier (e.g. the token "add" for
    * Addition) to a function that creates the special instruction node (e.g.
    * AddInstructionNode)
    */
   InstructionMap _instructionMap;
 
-  /*!
-   * \brief _instrSet
+  /**
    * Description of all instructions that can be created by this factory
    */
   InstructionSet _instrSet;
 
-  /*! Word size constant to be expected when using 32bit instructions*/
+  /** Word size constant to be expected when using 32bit instructions*/
   static constexpr Architecture::word_size_t RV32 = 32;
-  /*! Internal integer type to represent 32bit for unsigned arithmetic operations*/
+  /** Internal integer type to represent 32bit for unsigned arithmetic
+   * operations*/
   using RV32_integral_t = uint32_t;
-  /** Internal integer type to represent 32bit for signed arithmetic operations*/
+  /** Internal integer type to represent 32bit for signed arithmetic
+   * operations*/
   using RV32_signed_integral_t = int32_t;
-  /*! Word size constant to be expected when using 64bit instructions*/
+  /** Word size constant to be expected when using 64bit instructions*/
   static constexpr Architecture::word_size_t RV64 = 64;
-  /*! Internal integer type to represent 64bit for unsigned arithmetic operations*/
+  /** Internal integer type to represent 64bit for unsigned arithmetic
+   * operations*/
   using RV64_integral_t = uint64_t;
-  /** Internal integer type to represent 64bit for signed arithmetic operations*/
+  /** Internal integer type to represent 64bit for signed arithmetic
+   * operations*/
   using RV64_signed_integral_t = int64_t;
 };
 }

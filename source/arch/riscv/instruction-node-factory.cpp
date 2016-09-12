@@ -15,8 +15,6 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <iostream>
-
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
@@ -100,6 +98,13 @@ void initializeIntegerInstructions(
   });
 }
 
+/**
+ * Fills the InstructionMap with all instructions related to the "M" Multiplication/Division Extension in the RISC-V architecture.
+ * Note that the 64bit only "word" instructions of "M" will be filled into the InstructionMap using a different function.
+ * \tparam A signed integer type that can hold exaclty as many bits as the instructions should perform multiplication/division with
+ * \tparam A unsigned integer type that can hold exaclty as many bits as the instructions should perform multiplication/division with
+ * \param The InstructionMap to fill the "M"-Instructions into
+ */
 template <typename Signed, typename Unsigned>
 void initializeMultiplicationInstructions(
     InstructionNodeFactory::InstructionMap& _instructionMap) {
