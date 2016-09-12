@@ -163,24 +163,32 @@ void testIntegerInstructionValidation(DummyMemoryAccess& memAccess,
 void test12BitImmediateBounds(InstructionNodeFactory& instrF,
                               std::string instructionToken,
                               ImmediateNodeFactory& immF) {
-  constexpr uint64_t boundary = 0xFFFFF;
+  constexpr uint64_t boundary = 0xFFF;
+  constexpr uint64_t negative_boundary = -2048;//smallest negative integer in 12bit
   std::string registerId = "not relevant";
-  auto node = instrF.createInstructionNode(instructionToken);
-  node->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
-  node->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
+  auto nodeTrue = instrF.createInstructionNode(instructionToken);
+  nodeTrue->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
+  nodeTrue->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
   auto immediateNodeIn =
       immF.createImmediateNode(convertToMem<uint64_t>(boundary));
-  node->addChild(std::move(immediateNodeIn));
-  ASSERT_TRUE(node->validate().isSuccess());
-  auto node2 = instrF.createInstructionNode(instructionToken);
-  node2->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
-  node2->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
+  nodeTrue->addChild(std::move(immediateNodeIn));
+  ASSERT_TRUE(nodeTrue->validate().isSuccess());
+
+  auto nodeTrueNegative = instrF.createInstructionNode(instructionToken);
+  nodeTrueNegative->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
+  nodeTrueNegative->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
+  auto immediateNodeNegative =
+      immF.createImmediateNode(convertToMem<uint64_t>(negative_boundary));
+  nodeTrueNegative->addChild(std::move(immediateNodeNegative));
+  ASSERT_TRUE(nodeTrueNegative->validate().isSuccess());
+
+  auto nodeFalse = instrF.createInstructionNode(instructionToken);
+  nodeFalse->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
+  nodeFalse->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
   auto immediateNodeOut =
       immF.createImmediateNode(convertToMem<uint64_t>(boundary + 1));
-  node2->addChild(std::move(immediateNodeOut));
-  // TODO enable when IntegerInstructionNode::validate() is fixed
-  // ASSERT_FALSE(node2->validate().isSuccess());
-  std::cout << "Ignored 1 12bit immediate boundary test" << std::endl;
+  nodeFalse->addChild(std::move(immediateNodeOut));
+  ASSERT_FALSE(nodeFalse->validate().isSuccess());
 }
 }
 /**
@@ -625,8 +633,8 @@ TEST(IntegerInstructionTest, XORInstruction_testXori64) {
   auto immediateFactory = ImmediateNodeFactory();
   auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
 
-  TEST_RI(0, to64BitMemoryValue, "xori", (0b100000001010110L << 18),
-          (0b10L << 18), (0b100000001010100L << 18));
+  TEST_RI(0, to64BitMemoryValue, "xori", (0b100000001010110L << 5),
+          (0b10L << 5), (0b100000001010100L << 5));
   // test immediate boundary
   test12BitImmediateBounds(instructionFactory, "xori", immediateFactory);
 }
