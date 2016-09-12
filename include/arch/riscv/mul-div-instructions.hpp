@@ -23,6 +23,7 @@
 #include <climits>
 
 #include "arch/riscv/integer-instructions.hpp"
+#include "arch/riscv/word-instruction-wrapper.hpp"
 
 namespace riscv {
 
@@ -245,6 +246,36 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
   Type _type;
 };
 
+template<typename SizeType>
+class WordableIntegerInstruction : public IntegerInstructionNode<SizeType> {
+public:
+    WordableIntegerInstruction(InstructionInformation& info, bool isWordInstruction) : IntegerInstructionNode<SizeType>(info, false), _isWordInstruction(isWordInstruction) {}
+    virtual ~WordableIntegerInstruction() = default;
+protected:
+    SizeType toWord(SizeType n, bool isSignedOperation, bool signExtendAnyway) const {
+      bool negative = (n & SIGN_MASK) > 0;
+      if (signExtendAnyway || (isSignedOperation && negative)) {
+        n = n | SIGN_EXTENSION;
+      } else {
+        n = n & WORD_MASK;
+      }
+      return n;
+    }
+
+    bool isWordInstruction() const {
+     return _isWordInstruction;
+    }
+
+private:
+    static constexpr SizeType SIGN_MASK =
+        SizeType(1) << (sizeof(SizeType) * CHAR_BIT - 1);
+    static constexpr SizeType WORD_MASK =
+        SizeType(-1) >> ((sizeof(SizeType) * CHAR_BIT) / 2);
+    static constexpr SizeType SIGN_EXTENSION =
+        SizeType(-1) << ((sizeof(SizeType) * CHAR_BIT) / 2);
+    bool _isWordInstruction;
+};
+
 /**
  * Represents a RISC-V "div/divu" instruction. For more information see RISC-V
  * specification
@@ -254,24 +285,33 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
  * div should operate on
  */
 template <typename UnsignedSizeType, typename SignedSizeType>
-class DivisionInstruction : public IntegerInstructionNode<UnsignedSizeType> {
+class DivisionInstruction : public WordableIntegerInstruction<UnsignedSizeType>{
  public:
-  DivisionInstruction(InstructionInformation& info, bool isSignedDivision)
-      : IntegerInstructionNode<UnsignedSizeType>(info, false),
+  DivisionInstruction(InstructionInformation& info, bool isSignedDivision, bool isWordInstruction)
+      : WordableIntegerInstruction<UnsignedSizeType>(info, isWordInstruction),
         _isSignedDivision(isSignedDivision) {}
 
-  UnsignedSizeType performIntegerOperation(UnsignedSizeType op1,
-                                           UnsignedSizeType op2) const {
+  UnsignedSizeType performIntegerOperation(UnsignedSizeType operand1,
+                                           UnsignedSizeType operand2) const {
     // Semantics for division is defined in RISC-V specification in table 5.1
+
+      UnsignedSizeType op1 = operand1;
+      UnsignedSizeType op2 = operand2;
+      if (this->isWordInstruction()) {
+        op1 = this->toWord(op1, _isSignedDivision, false);
+        op2 = this->toWord(op2, _isSignedDivision, false);
+      }
 
     if (op2 == 0) {
       // Division by zero
       return UnsignedSizeType(-1);
     }
+    UnsignedSizeType result = 0;
+    bool resultIsNegative = false;
     if (_isSignedDivision && op1 == OVERFLOW_DIVIDENT &&
         op2 == OVERFLOW_DIVISOR) {
       // Signed Division overflow
-      return op1;  // op1 is exactly -2^(n-1)
+      return operand1;  // op1 is exactly -2^(n-1)
     }
 
     if (_isSignedDivision) {
@@ -284,10 +324,17 @@ class DivisionInstruction : public IntegerInstructionNode<UnsignedSizeType> {
       // versa
       SignedSizeType sop1 = static_cast<SignedSizeType>(op1);
       SignedSizeType sop2 = static_cast<SignedSizeType>(op2);
-      SignedSizeType result = sop1 / sop2;
-      return static_cast<UnsignedSizeType>(result);
+      SignedSizeType sresult = sop1 / sop2;
+      result = static_cast<UnsignedSizeType>(sresult);
+      resultIsNegative = sresult < 0;
+    }else{
+        result = op1 / op2;
     }
-    return op1 / op2;
+    if (this->isWordInstruction()) {
+      result = this->toWord(result, _isSignedDivision, resultIsNegative);
+    }
+
+    return result;
   }
 
  private:
@@ -306,25 +353,35 @@ class DivisionInstruction : public IntegerInstructionNode<UnsignedSizeType> {
  * rem should operate on
  */
 template <typename UnsignedSizeType, typename SignedSizeType>
-class RemainderInstruction : public IntegerInstructionNode<UnsignedSizeType> {
+class RemainderInstruction : public WordableIntegerInstruction<UnsignedSizeType> {
  public:
-  RemainderInstruction(InstructionInformation& info, bool isSignedRemainder)
-      : IntegerInstructionNode<UnsignedSizeType>(info, false),
+  RemainderInstruction(InstructionInformation& info, bool isSignedRemainder,
+                       bool isWordInstruction)
+      : WordableIntegerInstruction<UnsignedSizeType>(info, isWordInstruction),
         _isSignedRemainder(isSignedRemainder) {}
 
-  UnsignedSizeType performIntegerOperation(UnsignedSizeType op1,
-                                           UnsignedSizeType op2) const {
+  UnsignedSizeType performIntegerOperation(UnsignedSizeType operand1,
+                                           UnsignedSizeType operand2) const {
     // Semantics for division is defined in RISC-V specification in table 5.1
-
+    UnsignedSizeType op1 = operand1;
+    UnsignedSizeType op2 = operand2;
+    if (this->isWordInstruction()) {
+      op1 = this->toWord(op1, _isSignedRemainder, false);
+      op2 = this->toWord(op2, _isSignedRemainder, false);
+    }
     if (op2 == 0) {
       // Division by zero
-      return op1;
+      return operand1;
     }
+
     if (_isSignedRemainder && op1 == OVERFLOW_DIVIDENT &&
         op2 == OVERFLOW_DIVISOR) {
       // Signed Division overflow
       return 0;
     }
+
+    UnsignedSizeType result = 0;
+    bool resultIsNegative = false;
     if (_isSignedRemainder) {
       // this is a rather ugly solution to perform a native signed modulus
       // operation. The
@@ -336,13 +393,21 @@ class RemainderInstruction : public IntegerInstructionNode<UnsignedSizeType> {
       // versa
       SignedSizeType sop1 = static_cast<SignedSizeType>(op1);
       SignedSizeType sop2 = static_cast<SignedSizeType>(op2);
-      SignedSizeType result = sop1 % sop2;
-      return static_cast<UnsignedSizeType>(result);
+      SignedSizeType sresult = sop1 % sop2;
+      resultIsNegative = sresult < 0;
+      result = static_cast<UnsignedSizeType>(sresult);
+    } else {
+      result = op1 % op2;
     }
-    return op1 % op2;
+
+    if (this->isWordInstruction()) {
+      result = this->toWord(result, _isSignedRemainder, resultIsNegative);
+    }
+    return result;
   }
 
  private:
+
   static constexpr UnsignedSizeType OVERFLOW_DIVIDENT =
       UnsignedSizeType(1) << (sizeof(UnsignedSizeType) * CHAR_BIT - 1);
   static constexpr UnsignedSizeType OVERFLOW_DIVISOR = UnsignedSizeType(-1);

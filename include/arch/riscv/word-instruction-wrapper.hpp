@@ -19,6 +19,7 @@
 
 #include <climits>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 #include "arch/riscv/instruction-node-factory.hpp"
@@ -29,27 +30,43 @@
 
 namespace riscv {
 
-using SizeType = InstructionNodeFactory::RV64_integral_t;
+template <typename SizeType>
+class ISpecialcaseWordInstruction {
+ public:
+  virtual ~ISpecialcaseWordInstruction() = default;
+  virtual bool signExtensionNeeded(SizeType op1, SizeType op2)const  = 0;
+};
+
+using ResultSizeType = InstructionNodeFactory::RV64_integral_t;
+using OperandSizeType = InstructionNodeFactory::RV32_integral_t;
 
 template <class WrappedType>
-class WordInstructionWrapper : public IntegerInstructionNode<SizeType> {
+class WordInstructionWrapper : public IntegerInstructionNode<ResultSizeType> {
  public:
-  using DoubleWordInstruction = IntegerInstructionNode<SizeType>;
+  using WordInstruction = IntegerInstructionNode<OperandSizeType>;
 
   template <class... Args>
   WordInstructionWrapper(bool expectSignedResult,
                          InstructionInformation& instructionInformation,
                          bool isImmediateInstruction, Args&&... args)
-      : IntegerInstructionNode<SizeType>(instructionInformation,
-                                         isImmediateInstruction),
+      : IntegerInstructionNode<ResultSizeType>(instructionInformation,
+                                               isImmediateInstruction),
         _signedResult(expectSignedResult) {
     _wrapped = std::make_unique<WrappedType>(std::forward<Args>(args)...);
   }
 
-  SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
-    SizeType result = _wrapped->performIntegerOperation(op1, op2);
-    if (_signedResult && isNegative(result)) {
-      //result = result & SIGNED_WORD_MASK_LOWER31;  // preserve lower 31 bit
+  ResultSizeType performIntegerOperation(ResultSizeType op1,
+                                         ResultSizeType op2) const override {
+    OperandSizeType op1_trunc = op1;
+    OperandSizeType op2_trunc = op2;
+    OperandSizeType result_trunc =
+        _wrapped->performIntegerOperation(op1_trunc, op2_trunc);
+    ResultSizeType result = result_trunc;
+    if ((std::is_base_of < ISpecialcaseWordInstruction<OperandSizeType>, WrappedType>::value &&
+         dynamic_cast<const ISpecialcaseWordInstruction<OperandSizeType>*>(&(*_wrapped))->signExtensionNeeded(
+             op1_trunc, op2_trunc)) ||
+        (_signedResult && isNegative(result_trunc))) {
+      // result = result & SIGNED_WORD_MASK_LOWER31;  // preserve lower 31 bit
       result = result | SIGN_EXTENSION_MASK;
       return result;
     } else {
@@ -59,18 +76,18 @@ class WordInstructionWrapper : public IntegerInstructionNode<SizeType> {
   }
 
  private:
-  bool isNegative(SizeType n) const {
-    SizeType signBit = n & (SizeType(1) << 63);
+  bool isNegative(OperandSizeType n) const {
+    OperandSizeType signBit = n & (OperandSizeType(1) << 31);
     return signBit != 0;
   }
 
-  std::unique_ptr<DoubleWordInstruction> _wrapped;
+  std::unique_ptr<WordInstruction> _wrapped;
 
   bool _signedResult;
 
-  static constexpr SizeType SIGNED_WORD_MASK_LOWER31 = 0x7FFFFFFF;
-  static constexpr SizeType WORD_MASK_LOWER32 = 0xFFFFFFFF;
-  static constexpr SizeType SIGN_EXTENSION_MASK = 0xFFFFFFFF8 << 28;
+  static constexpr ResultSizeType SIGNED_WORD_MASK_LOWER31 = 0x7FFFFFFF;
+  static constexpr ResultSizeType WORD_MASK_LOWER32 = 0xFFFFFFFF;
+  static constexpr ResultSizeType SIGN_EXTENSION_MASK = 0xFFFFFFFF8 << 28;
 };
 }
 #endif  // ERAGPSIM_ARCH_RISCV_WORDINSTRUCTIONWRAPPER_HPP

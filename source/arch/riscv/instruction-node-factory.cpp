@@ -121,50 +121,50 @@ void initializeIntegerInstructions(
   });
   _instructionMap.emplace("div", [](InstructionInformation& info) {
     return std::make_unique<DivisionInstruction<WordSize, WordSizeSigned>>(
-        info, true);
+        info, true, false);
   });
   _instructionMap.emplace("divu", [](InstructionInformation& info) {
     return std::make_unique<DivisionInstruction<WordSize, WordSizeSigned>>(
-        info, false);
+        info, false, false);
   });
   _instructionMap.emplace("rem", [](InstructionInformation& info) {
     return std::make_unique<RemainderInstruction<WordSize, WordSizeSigned>>(
-        info, true);
+        info, true, false);
   });
   _instructionMap.emplace("remu", [](InstructionInformation& info) {
     return std::make_unique<RemainderInstruction<WordSize, WordSizeSigned>>(
-        info, false);
+        info, false, false);
   });
 }
 
 void initialize64BitWordInstructions(
     InstructionNodeFactory::InstructionMap& _instructionMap) {
-  using Signed = InstructionNodeFactory::RV64_signed_integral_t;
-  using Unsigned = InstructionNodeFactory::RV64_integral_t;
+  using Unsigned32 = InstructionNodeFactory::RV32_integral_t;
+  using Unsigned64 = InstructionNodeFactory::RV64_integral_t;
+  using Signed64 = InstructionNodeFactory::RV64_signed_integral_t;
 
   _instructionMap.emplace("mulw", [](InstructionInformation& info) {
     return std::make_unique<
-        WordInstructionWrapper<MultiplicationInstruction<Unsigned>>>(
-        true, info, false, info, MultiplicationInstruction<Unsigned>::LOW,
-        MultiplicationInstruction<Unsigned>::SIGNED);
+        WordInstructionWrapper<MultiplicationInstruction<Unsigned32>>>(
+        true, info, false, info, MultiplicationInstruction<Unsigned32>::LOW,
+        MultiplicationInstruction<Unsigned32>::SIGNED);
   });
   _instructionMap.emplace("divw", [](InstructionInformation& info) {
-    return std::make_unique<
-        WordInstructionWrapper<DivisionInstruction<Unsigned, Signed>>>(
-        true, info, false, info, true);
+    return std::make_unique<DivisionInstruction<Unsigned64, Signed64>>(
+        info, true, true);
   });
-    _instructionMap.emplace("divuw", [](InstructionInformation& info) {
-      return std::make_unique<
-          WordInstructionWrapper<DivisionInstruction<Unsigned, Signed>>>(false, info, false, info, false);
-    });
-    _instructionMap.emplace("remw", [](InstructionInformation& info) {
-      return std::make_unique<WordInstructionWrapper<
-          RemainderInstruction<Unsigned, Signed>>>(true, info, false, info, true);
-    });
-    _instructionMap.emplace("remuw", [](InstructionInformation& info) {
-      return std::make_unique<WordInstructionWrapper<
-          RemainderInstruction<Unsigned, Signed>>>(false, info, false, info, false);
-    });
+  _instructionMap.emplace("divuw", [](InstructionInformation& info) {
+    return std::make_unique<DivisionInstruction<Unsigned64, Signed64>>(
+        info, false, true);
+  });
+  _instructionMap.emplace("remw", [](InstructionInformation& info) {
+    return std::make_unique<RemainderInstruction<Unsigned64, Signed64>>(
+        info, true, true);
+  });
+  _instructionMap.emplace("remuw", [](InstructionInformation& info) {
+    return std::make_unique<
+        RemainderInstruction<Unsigned64, Signed64>>(info, false, true);
+  });
 }
 }
 
