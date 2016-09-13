@@ -50,6 +50,11 @@ class ValidationResult {
   bool isSuccess() const;
 
   /**
+   * Overwritten bool operator, that does the same thing as isSuccess().
+   */
+  explicit operator bool() const;
+
+  /**
    * Returns the message, that describes the validation result. The string is
    * empty, if the validation succeeded.
    * \return The message of the validation.

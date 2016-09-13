@@ -239,10 +239,13 @@ class StoreInstructionNode : public InstructionNode {
       default: assert(false); break;
     }
 
-    memoryAccess.setMemoryValueAt(
-        effectiveAddress,
-        memoryAccess.getRegisterValue(src).subSet(
-            0, byteAmount * RISCV_BITS_PER_BYTE, RISCV_BITS_PER_BYTE));
+    MemoryValue registerValue = memoryAccess.getRegisterValue(src);
+    MemoryValue resultValue{byteAmount, RISCV_BITS_PER_BYTE};
+    for (size_t i = 0; i < byteAmount * RISCV_BITS_PER_BYTE; ++i) {
+      resultValue.put(resultValue.getSize() - 1 - i,
+                      registerValue.get(registerValue.getSize() - 1 - i));
+    }
+    memoryAccess.setMemoryValueAt(effectiveAddress, resultValue);
     return MemoryValue{};
   }
 

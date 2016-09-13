@@ -4,6 +4,8 @@
 
 set(TEST_ARCH_RISCV_SOURCES
 	arch-riscv-integer-instructions-test.cpp
+        load-store-instructions-test.cpp
+        dummies.cpp
 	#formats-test.cpp The tests fail atm
 )
 
