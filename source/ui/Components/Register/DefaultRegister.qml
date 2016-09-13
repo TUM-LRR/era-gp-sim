@@ -23,8 +23,11 @@ import QtQuick.Controls.Styles 1.4
 TextField {
     id: registerTextField
 
-    inputMask: registerModel.displayFormatStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
-    text: registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
+
+    Component.onCompleted: {
+        inputMask = registerModel.displayFormatStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
+        text = registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
+    }
 
     // As some values need to be set manually (i.e. not using the model's data-method and the corresponding
     // roles), they also have to be updated manually whenever the model's data changed for the current index.

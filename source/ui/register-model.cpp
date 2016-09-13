@@ -31,6 +31,7 @@ RegisterModel::RegisterModel(QObject *parent)
   RegisterInformation *ax = new RegisterInformation("AX");
   ax->type(RegisterInformation::Type::INTEGER);
   ax->size(16);
+  ax->enclosing(eax->getID());
   _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
       ax->getID(), std::unique_ptr<RegisterInformation>(ax)));
   eax->addConstituent(ax->getID());
@@ -45,6 +46,7 @@ RegisterModel::RegisterModel(QObject *parent)
   RegisterInformation *flag1 = new RegisterInformation("Sign");
   flag1->type(RegisterInformation::Type::FLAG);
   flag1->size(1);
+  flag1->enclosing(statusReg->getID());
   _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
       flag1->getID(), std::unique_ptr<RegisterInformation>(flag1)));
   statusReg->addConstituent(flag1->getID());
@@ -52,6 +54,7 @@ RegisterModel::RegisterModel(QObject *parent)
   RegisterInformation *flag2 = new RegisterInformation("Zero");
   flag2->type(RegisterInformation::Type::FLAG);
   flag2->size(1);
+  flag2->enclosing(statusReg->getID());
   _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
       flag2->getID(), std::unique_ptr<RegisterInformation>(flag2)));
   statusReg->addConstituent(flag2->getID());
@@ -69,11 +72,12 @@ void RegisterModel::updateContent(id_t registerIdentifier) {
             TitleRole,
             QString::fromStdString(registerItem->getName()),
             1,
-            Qt::MatchExactly);
+            Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
   if (!alteredItems.isEmpty()) {
+    qDebug("found");
     QModelIndex alteredItem = alteredItems.first();
     // The data method will be called, fetching the updated content.
-    dataChanged(alteredItem, alteredItem);
+    emit dataChanged(alteredItem, alteredItem);
   }
 }
 
