@@ -8,6 +8,10 @@
 
 using namespace riscv;
 
+constexpr unsigned int str2int(const char* str, int h = 0) {
+  return !str[h] ? 5381 : (str2int(str, h + 1) * 33) ^ str[h];
+}
+
 const std::string& InstructionNode::getIdentifier() const {
   assert(_instructionInformation.isValid() &&
          _instructionInformation.hasMnemonic());
@@ -30,29 +34,16 @@ bool InstructionNode::requireChildren(Type type,
 MemoryValue InstructionNode::assemble() const {
   AssemblerFunction assembler;
   InstructionKey instructionKey = _instructionInformation.getKey();
+  const char* format            = _instructionInformation.getFormat().c_str();
 
-  int format = 2;
-
-  // switch (instructionKey["format"]) {
-  // jut for now
-  // switch (format) {
-  //   case "R": assembler  = RFormat(); break;
-  //   case "I": assembler  = IFormat(); break;
-  //   case "S": assembler  = SFormat(); break;
-  //   case "U": assembler  = UFormat(); break;
-  //   case "SB": assembler = SBFormat(); break;
-  //   case "UJ": assembler = UJFormat(); break;
-  //   default: assembler   = RFormat(); break;
-  // }
-
-  switch (format) {
-    case 1: assembler  = RFormat(); break;
-    case 2: assembler  = IFormat(); break;
-    case 3: assembler  = SFormat(); break;
-    case 4: assembler  = UFormat(); break;
-    case 5: assembler  = SBFormat(); break;
-    case 6: assembler  = UJFormat(); break;
-    default: assembler = RFormat(); break;
+  switch (str2int(format)) {
+    case str2int("R"): assembler  = RFormat(); break;
+    case str2int("I"): assembler  = IFormat(); break;
+    case str2int("S"): assembler  = SFormat(); break;
+    case str2int("U"): assembler  = UFormat(); break;
+    case str2int("SB"): assembler = SBFormat(); break;
+    case str2int("UJ"): assembler = UJFormat(); break;
+    default: assembler            = RFormat(); break;
   }
 
   std::vector<MemoryValue> args;

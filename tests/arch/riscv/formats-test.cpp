@@ -95,7 +95,7 @@ struct InstructionFormatTestFixture : public ::testing::Test {
 
   InstructionSet instructionSet;
 };
-/*
+
 // testing the different formats
 TEST_F(InstructionFormatTestFixture, RFormat) {
   auto addInfo = instructionSet.getInstruction("add");
@@ -110,7 +110,7 @@ TEST_F(InstructionFormatTestFixture, RFormat) {
 
   std::cout << addInstr.assemble() << std::endl;
 }
-*/
+
 TEST_F(InstructionFormatTestFixture, IFormat) {
   auto addInfo = instructionSet.getInstruction("add");
   AddInstructionNode<uint32_t> addInstr(addInfo, true);
