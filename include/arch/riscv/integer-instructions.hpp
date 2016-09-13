@@ -114,7 +114,7 @@ class IntegerInstructionNode : public InstructionNode {
         // look for the sign bit to determine what bits to expect in the "upper"
         // region (e.g. 12...size)
         bool isSignBitSet = value.get(0);
-        for (std::size_t index = 12; index < value.getSize(); ++index) {
+        for (std::size_t index = 11; index < value.getSize(); ++index) {
           // MemoryValue::get(index): Index 0 gets the bit of 2^(size-1)
           if ((isSignBitSet && !value.get(value.getSize() - 1 - index)) ||
               (!isSignBitSet && value.get(value.getSize() - 1 - index))) {

@@ -164,7 +164,7 @@ void testIntegerInstructionValidation(DummyMemoryAccess& memAccess,
 void test12BitImmediateBounds(InstructionNodeFactory& instrF,
                               std::string instructionToken,
                               ImmediateNodeFactory& immF) {
-  constexpr uint64_t boundary = 0xFFF;
+  constexpr uint64_t boundary = 0x7FF;//biggest positive integer in 12bit
   constexpr uint64_t negative_boundary = -2048;//smallest negative integer in 12bit
   std::string registerId = "not relevant";
   auto nodeTrue = instrF.createInstructionNode(instructionToken);
@@ -190,6 +190,14 @@ void test12BitImmediateBounds(InstructionNodeFactory& instrF,
       immF.createImmediateNode(convertToMem<uint64_t>(boundary + 1));
   nodeFalse->addChild(std::move(immediateNodeOut));
   ASSERT_FALSE(nodeFalse->validate().isSuccess());
+
+  auto nodeFalseNegative = instrF.createInstructionNode(instructionToken);
+  nodeFalseNegative->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
+  nodeFalseNegative->addChild(std::move(std::make_unique<FakeRegisterNode>(registerId)));
+  auto immediateNodeOutNegative =
+      immF.createImmediateNode(convertToMem<uint64_t>(negative_boundary-1));
+  nodeFalseNegative->addChild(std::move(immediateNodeOutNegative));
+  ASSERT_FALSE(nodeFalseNegative->validate().isSuccess());
 }
 }
 /**
