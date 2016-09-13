@@ -22,8 +22,8 @@
 
 #include <QtGlobal>
 #include <cassert>
-#include <cstdint>
 #include <climits>
+#include <cstdint>
 
 #include "arch/riscv/instruction-node.hpp"
 
@@ -120,17 +120,17 @@ class LuiInstructionNode : public SpecialIntegerInstructionNode {
         // Sign-expansion is quite easy here: All the bits above the lower
         // 32 bits are set to 1.
         UnsignedType mask = ~0;
-        for (size_t i = 0; i < sizeof(InternalUnsigned); ++i) {
-          mask <<= CHAR_BIT;
+        for (size_t i = 0; i < length; ++i) {
+          mask <<= 1;
         }
         result |= mask;
       }
     }
 
     // Convert back into a memory value and store it in the register
-    MemoryValue resultValue =
+    MemoryValue resultMemoryValue =
         convert<UnsignedType>(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
-    memoryAccess.setRegisterValue(destination, resultValue);
+    memoryAccess.setRegisterValue(destination, resultMemoryValue);
     return MemoryValue{};
   }
 
@@ -164,8 +164,14 @@ class AuipcInstructionNode : public SpecialIntegerInstructionNode {
         convert<UnsignedType>(offset, RISCV_ENDIANNESS);
     UnsignedType programCounterConverted =
         convert<UnsignedType>(programCounter, RISCV_ENDIANNESS);
-    // Perform a bitwise shift, filling the lower 12 bits with zeros
-    offsetConverted <<= 12;
+
+    if (sizeof(UnsignedType) == 4) {
+      // For RV32I, the lower 12 bits have to be set to 0.
+      // Perform a bitwise shift, filling the lower 12 bits with zeros
+      offsetConverted <<= 12;
+    }
+
+    // Add the offset to the program counter
     programCounterConverted += offsetConverted;
     // Convert the result back into a MemoryValue
     MemoryValue result = convert<UnsignedType>(
