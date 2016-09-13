@@ -128,6 +128,15 @@ class LoadInstructionNode : public InstructionNode {
   }
 
  private:
+  /**
+   * Internal method to perform an unsigned load operation
+   *
+   * \param memoryAccess Memory access reference
+   * \param address The memory address to load from
+   * \param byteAmount The amount of bytes to load
+   * \param destination The destination register identifier, in which to store
+   *        the loaded value
+   */
   void performUnsignedLoad(DummyMemoryAccess& memoryAccess,
                            std::size_t address,
                            std::size_t byteAmount,
@@ -150,6 +159,15 @@ class LoadInstructionNode : public InstructionNode {
     memoryAccess.setRegisterValue(destination, result);
   }
 
+  /**
+   * Internal method to perform a signed load operation
+   *
+   * \param memoryAccess Memory access reference
+   * \param address The memory address to load from
+   * \param byteAmount The amount of bytes to load
+   * \param destination The destination register identifier, in which to store
+   *        the loaded value
+   */
   void performSignedLoad(DummyMemoryAccess& memoryAccess,
                          std::size_t address,
                          std::size_t byteAmount,
