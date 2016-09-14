@@ -28,6 +28,11 @@
 class SectionDirective : public IntermediateDirective {
  public:
   /**
+   * \brief Virtual destructor needed for inheritance.
+   */
+  virtual ~IntermediateOperation();
+
+  /**
    * \brief Creates a new section directive with the given section.
    * \param lines The interval of the command.
    * \param labels The associated labels with the command (doesn't make sense

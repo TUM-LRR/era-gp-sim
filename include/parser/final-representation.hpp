@@ -26,7 +26,6 @@
 #include "parser/line-interval.hpp"
 
 /**
- * \class FinalCommand
  * \brief Denotes the temporary output of an IntermediateRepresentator ready to
  * be used by the architecture.
  */

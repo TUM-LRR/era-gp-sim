@@ -46,6 +46,11 @@ static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
 class IntermediateOperation {
  public:
   /**
+   * \brief Virtual destructor needed for inheritance.
+   */
+  virtual ~IntermediateOperation();
+
+  /**
    * \brief Instantiates a new IntermediateOperation with the given arguments.
    * (only for subclass use!)
    * \param lines The line interval the operation occupies.
