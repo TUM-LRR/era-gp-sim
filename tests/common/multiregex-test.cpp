@@ -49,18 +49,6 @@ TEST(Multiregex, matching)
   ASSERT_EQ(match.choice, 9);
 }
 
-TEST(Multiregex, concurring)
-{
-  MSRegex mr("^", "", {"0", "01", "21", "22", "45", "46", "42", "428", "8", "9"});
-  MSMatch match;
-  ASSERT_TRUE(mr.search("0123", match));
-  ASSERT_EQ(match.source, "0");
-  ASSERT_EQ(match.choice, 0);
-  ASSERT_TRUE(mr.search("428", match));
-  ASSERT_EQ(match.source, "42");
-  ASSERT_EQ(match.choice, 6);
-}
-
 TEST(Multiregex, brackets)
 {
   MSRegex mr("((^))", "(($))", { "(\\d+)", "(a|b)(c|d)", "z" });
