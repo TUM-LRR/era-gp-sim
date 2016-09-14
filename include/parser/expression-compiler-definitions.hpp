@@ -20,168 +20,168 @@
 #ifndef ERAGPSIM_PARSER_EXPRESSION_COMPILER_DEFINITIONS_HPP
 #define ERAGPSIM_PARSER_EXPRESSION_COMPILER_DEFINITIONS_HPP
 
-#include "compile-state.hpp"
-#include <string>
 #include <functional>
+#include <string>
 #include <vector>
+#include "parser/compile-state.hpp"
 
-//Personal note: it might have been good to program this thing with usage of results/optionals.
+// Personal note: it might have been good to program this thing with usage of
+// results/optionals.
 
 /**
- * \brief Denotes the type of an expression token in which a text is broken down to.
+ * \brief Denotes the type of an expression token in which a text is broken down
+ * to.
  */
-enum class ExpressionTokenType
-{
-	/**
-	 * \brief An auxiliary type denoting a wrongly-encoded token (or a non existing one when nothing has been read so far).
-	 */
-	INVALID,
+enum class ExpressionTokenType {
+  /**
+   * \brief An auxiliary type denoting a wrongly-encoded token (or a non
+   * existing one when nothing has been read so far).
+   */
+  INVALID,
 
-	/**
-	 * \brief An operator token. We do not differ between unary and binary operator here, yet.
-	 */
-	OPERATOR,
+  /**
+   * \brief An operator token. We do not differ between unary and binary
+   * operator here, yet.
+   */
+  OPERATOR,
 
-	/**
-	 * \brief A literal token which is transformed by operators.
-	 */
-	LITERAL,
+  /**
+   * \brief A literal token which is transformed by operators.
+   */
+  LITERAL,
 
-	/**
-	 * \brief The left bracket.
-	 */
-	LEFT_BRACKET,
+  /**
+   * \brief The left bracket.
+   */
+  LEFT_BRACKET,
 
-	/**
-	 * \brief The right bracket.
-	 */
-	RIGHT_BRACKET
+  /**
+   * \brief The right bracket.
+   */
+  RIGHT_BRACKET
 };
 
 /**
  * \brief Denotes the associativity of an operator.
- * 
- * If an operator is left-associative, we evaluate our expression from left to right.
- * If it is right-associative, we do the exact opposite, but this requires of course knowledge of the right side first.
+ *
+ * If an operator is left-associative, we evaluate our expression from left to
+ * right.
+ * If it is right-associative, we do the exact opposite, but this requires of
+ * course knowledge of the right side first.
  */
-enum class ExpressionOperatorAssociativity
-{
-	/**
-	 * \brief The operator is left-associative.
-	 */
-	LEFT,
+enum class ExpressionOperatorAssociativity {
+  /**
+   * \brief The operator is left-associative.
+   */
+  LEFT,
 
-	/**
-	 * \brief The operator is right-associative.
-	 */
-	RIGHT
+  /**
+   * \brief The operator is right-associative.
+   */
+  RIGHT
 };
 
 /**
  * \brief Represents a binary operator of an arithmetic expression.
  * \tparam T The number type we operate on.
  */
-template<typename T>
-struct ExpressionBinaryOperator
-{
-	/**
-	 * \brief The associativity of the operator.
-	 */
-	ExpressionOperatorAssociativity associativity;
+template <typename T>
+struct ExpressionBinaryOperator {
+  /**
+   * \brief The associativity of the operator.
+   */
+  ExpressionOperatorAssociativity associativity;
 
-	/**
-	 * \brief The string representation of the operator.
-	 */
-	std::string identifier;
+  /**
+   * \brief The string representation of the operator.
+   */
+  std::string identifier;
 
-	/**
-	 * \brief The precedence of the operator.
-	 *
-	 * The lower, the earlier it is evaluated.
-	 */
-	unsigned short precedence;
+  /**
+   * \brief The precedence of the operator.
+   *
+   * The lower, the earlier it is evaluated.
+   */
+  unsigned short precedence;
 
-	/**
-	 * \brief Applies the operator on two numbers and records any possible errors.
-	 */
-	std::function<bool(const T&, const T&, T&, CompileState&)> handler;
+  /**
+   * \brief Applies the operator on two numbers and records any possible errors.
+   */
+  std::function<bool(const T&, const T&, T&, CompileState&)> handler;
 };
 
 /**
  * \brief Represents a unary operator of an arithmetic expression.
  * \tparam T The number type we operate on.
  *
- * For this specific algorithm, unary operators always have the same low precedence which is lower than for any binary operator.
+ * For this specific algorithm, unary operators always have the same low
+ * precedence which is lower than for any binary operator.
  */
-template<typename T>
-struct ExpressionUnaryOperator
-{
-	/**
-	 * \brief The string representation of the operator.
-	 */
-	std::string identifier;
+template <typename T>
+struct ExpressionUnaryOperator {
+  /**
+   * \brief The string representation of the operator.
+   */
+  std::string identifier;
 
-	/**
-	 * \brief Applies the operator on two numbers and records any possible errors.
-	 */
-	std::function<bool(const T&, T&, CompileState&)> handler;
+  /**
+   * \brief Applies the operator on two numbers and records any possible errors.
+   */
+  std::function<bool(const T&, T&, CompileState&)> handler;
 };
 
 /**
  * \brief Provides information about how to decode a specific literal.
  * \tparam T The number type we operate on.
  */
-template<typename T>
-struct ExpressionLiteralDecoder
-{
-	/**
-	 * \brief The regex representation of the literal.
-	 */
-	std::string regex;
+template <typename T>
+struct ExpressionLiteralDecoder {
+  /**
+   * \brief The regex representation of the literal.
+   */
+  std::string regex;
 
-	/**
-	 * \brief Decodes the literal into the number type.
-	 */
-	std::function<bool(std::string, T&, CompileState&)> decoder;
+  /**
+   * \brief Decodes the literal into the number type.
+   */
+  std::function<bool(std::string, T&, CompileState&)> decoder;
 };
 
 /**
  * \brief Provides some help regexes for tokenizing expressions.
  */
-struct ExpressionHelpRegexes
-{
-	/**
-	 * \brief The regex used for parsing opening brackets.
-	 */
-	std::string leftBracket;
+struct ExpressionHelpRegexes {
+  /**
+   * \brief The regex used for parsing opening brackets.
+   */
+  std::string leftBracket;
 
-	/**
-	 * \brief The regex used for parsing closing brackets.
-	 */
-	std::string rightBracket;
+  /**
+   * \brief The regex used for parsing closing brackets.
+   */
+  std::string rightBracket;
 };
 
 /**
  * \brief Provides information about how to parse specific symbols.
  * \tparam T The number type we operate on.
  */
-template<typename T>
-struct ExpressionParserDefinition
-{
-	/**
-	 * \brief The list of supported binary operators.
-	 */
-	std::vector<ExpressionBinaryOperator<T>> binaryOperators;
+template <typename T>
+struct ExpressionParserDefinition {
+  /**
+   * \brief The list of supported binary operators.
+   */
+  std::vector<ExpressionBinaryOperator<T>> binaryOperators;
 
-	/**
-	 * \brief The list of supported unary operators.
-	 */
-	std::vector<ExpressionUnaryOperator<T>> unaryOperators;
+  /**
+   * \brief The list of supported unary operators.
+   */
+  std::vector<ExpressionUnaryOperator<T>> unaryOperators;
 
-	/**
-	 * \brief The list of supported literals.
-	 */
-	std::vector<ExpressionLiteralDecoder<T>> literalDecoders;
+  /**
+   * \brief The list of supported literals.
+   */
+  std::vector<ExpressionLiteralDecoder<T>> literalDecoders;
 };
 
 
@@ -189,55 +189,52 @@ struct ExpressionParserDefinition
  * \brief Provides information about how to compile specific expressions.
  * \tparam T The number type we operate on.
  */
-template<typename T>
-struct ExpressionCompilerDefinition
-{
-	/**
-	 * \brief Provides information about how to parse the expressions.
-	 */
-	ExpressionParserDefinition<T> parserDefinition;
+template <typename T>
+struct ExpressionCompilerDefinition {
+  /**
+   * \brief Provides information about how to parse the expressions.
+   */
+  ExpressionParserDefinition<T> parserDefinition;
 
-	/**
-	 * \brief Additional helper regexes for tokenizing.
-	 */ 
-	ExpressionHelpRegexes helpers;
+  /**
+   * \brief Additional helper regexes for tokenizing.
+   */
+  ExpressionHelpRegexes helpers;
 };
 
 /**
  * \brief The definition of a token for the tokenizer.
  */
-struct ExpressionTokenDefinition
-{
-	/**
-	 * \brief The regex how to recognize the token.
-	 */
-	std::string regex;
+struct ExpressionTokenDefinition {
+  /**
+   * \brief The regex how to recognize the token.
+   */
+  std::string regex;
 
-	/**
-	 * \brief The type the token has.
-	 */
-	ExpressionTokenType type;
+  /**
+   * \brief The type the token has.
+   */
+  ExpressionTokenType type;
 };
 
 /**
  * \brief A token, taken from a string.
  */
-struct ExpressionToken
-{
-	/**
-	 * \brief The string representation of the token.
-	 */
-	std::string data;
+struct ExpressionToken {
+  /**
+   * \brief The string representation of the token.
+   */
+  std::string data;
 
-	/**
-	 * \brief The type of the token.
-	 */
-	ExpressionTokenType type;
+  /**
+   * \brief The type of the token.
+   */
+  ExpressionTokenType type;
 
-	/**
-	 * \brief The index where the token is placed in the string.
-	 */
-	size_t index;
+  /**
+   * \brief The index where the token is placed in the string.
+   */
+  size_t index;
 };
 
 #endif /* ERAGPSIM_PARSER_EXPRESSION_COMPILER_DEFINITIONS_HPP */

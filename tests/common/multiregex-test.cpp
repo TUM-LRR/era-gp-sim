@@ -17,12 +17,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <gtest/gtest.h>
 #include "common/multiregex.hpp"
+#include <gtest/gtest.h>
 
-TEST(Multiregex, simple)
-{
-  //Only test if matches.
+TEST(Multiregex, simple) {
+  // Only test if matches.
   MSRegex mr("^", "$", {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
   ASSERT_TRUE(mr.search("1"));
   ASSERT_TRUE(mr.search("5"));
@@ -33,9 +32,8 @@ TEST(Multiregex, simple)
   ASSERT_FALSE(mr.search("a"));
 }
 
-TEST(Multiregex, matching)
-{
-  //Also evaluate the matches.
+TEST(Multiregex, matching) {
+  // Also evaluate the matches.
   MSRegex mr("^", "$", {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
   MSMatch match;
   ASSERT_TRUE(mr.search("0", match));
@@ -49,10 +47,9 @@ TEST(Multiregex, matching)
   ASSERT_EQ(match.choice, 9);
 }
 
-TEST(Multiregex, brackets)
-{
-  //Test with brackets.
-  MSRegex mr("((^))", "(($))", { "(\\d+)", "(a|b)(c|d)", "z" });
+TEST(Multiregex, brackets) {
+  // Test with brackets.
+  MSRegex mr("((^))", "(($))", {"(\\d+)", "(a|b)(c|d)", "z"});
   MSMatch match;
   ASSERT_TRUE(mr.search("12", match));
   ASSERT_EQ(match.source, "12");

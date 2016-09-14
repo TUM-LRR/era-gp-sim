@@ -20,9 +20,9 @@
 #ifndef ERAGPSIM_PARSER_LINE_INTERVAL_HPP
 #define ERAGPSIM_PARSER_LINE_INTERVAL_HPP
 
-#include "code-position.hpp"
+#include "parser/code-position.hpp"
 
-#include <cassert>
+#include "common/assert.hpp"
 
 /**
  * \brief Represents an interval of lines, denoted by an upper and lower line

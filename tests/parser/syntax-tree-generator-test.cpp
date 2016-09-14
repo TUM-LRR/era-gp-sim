@@ -35,9 +35,8 @@ static SyntaxTreeGenerator buildGenerator() {
   return generator;
 }
 
-template<typename SubType, typename BaseType>
-bool isInstance(const std::unique_ptr<BaseType>& ptr)
-{
+template <typename SubType, typename BaseType>
+bool isInstance(const std::unique_ptr<BaseType>& ptr) {
   return static_cast<SubType*>(ptr.get()) != nullptr;
 }
 

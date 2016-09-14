@@ -18,11 +18,11 @@
 
 #include "parser/riscv-parser.hpp"
 
-#include <cassert>
 #include <iostream>
 #include <regex>
 #include <sstream>
 #include "arch/common/node-factory-collection-maker.hpp"
+#include "common/assert.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/intermediate-representator.hpp"
 #include "parser/riscv-regex.hpp"
@@ -50,8 +50,7 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
     line_regex.matchLine(line);
     if (!line_regex.isValid()) {
       // Add syntax error if line regex doesnt match
-      _compile_state.addError("Syntax Error",
-                       _compile_state.position);
+      _compile_state.addError("Syntax Error", _compile_state.position);
     } else {
       // Collect labels until next instruction
       if (line_regex.hasLabel()) {

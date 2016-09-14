@@ -26,7 +26,7 @@
 #include <unordered_map>
 #include <vector>
 #include "common/utility.hpp"
-#include "compile-state.hpp"
+#include "parser/compile-state.hpp"
 
 /**
  * \brief Provides help methods for parsing strings.
@@ -124,10 +124,9 @@ class StringParserEngine {
 
  private:
   // This method notes down an error in the given compile state.
-  static void
-  invokeError(const std::string& message,
-              size_t position,
-              CompileState& state) {
+  static void invokeError(const std::string& message,
+                          size_t position,
+                          CompileState& state) {
     state.addError(message, state.position >> position);
   }
 
