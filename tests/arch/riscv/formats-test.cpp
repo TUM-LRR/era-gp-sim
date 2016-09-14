@@ -99,7 +99,7 @@ struct InstructionFormatTestFixture : public ::testing::Test {
 // testing the different formats
 TEST_F(InstructionFormatTestFixture, RFormat) {
   auto addInfo = instructionSet.getInstruction("add");
-  AddInstructionNode<int> addInstr(addInfo, false);
+  AddInstructionNode<uint32_t> addInstr(addInfo, false);
   auto key = addInfo.getKey();
   AbstractSyntaxTreeNode::Node r1(new RegisterNode("1"));
   AbstractSyntaxTreeNode::Node r2(new RegisterNode("2"));
