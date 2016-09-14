@@ -26,12 +26,14 @@
 #include <stack>
 #include <algorithm>
 #include <cassert>
+#include "common/multiregex.hpp"
 
 template<typename T>
 class ExpressionParser
 {
 public:
 	ExpressionParser(const ExpressionParserDefinition<T>& definition)
+		: _literalDecodeRegex(setupLiteralDecoders(definition))
 	{
 		for (const auto& i : definition.binaryOperators)
 		{
@@ -40,12 +42,6 @@ public:
 		for (const auto& i : definition.unaryOperators)
 		{
 			_unaryOperators[i.identifier] = i;
-		}
-
-		_literalDecoders.reserve(definition.literalDecoders.size());
-		for (const auto& i : definition.literalDecoders)
-		{
-			_literalDecoders.push_back(ILiteralDecoder{ std::regex("^" + i.regex + "$"), i.decoder });
 		}
 	}
 
@@ -92,11 +88,7 @@ private:
 		std::string data;
 	};
 
-	struct ILiteralDecoder
-	{
-		std::regex regex;
-		std::function<T(std::string)> decoder;
-	};
+	using ILiteralDecoder = std::function<bool(std::string, T&, CompileState&)>;
 
 	struct ParseState
 	{
@@ -194,14 +186,19 @@ private:
 
 	bool parseLiteral(ParseState& state) const
 	{
-		for (const auto& i : _literalDecoders)
+		MSMatch match;
+		if (_literalDecodeRegex.search(state.curr.data, match))
 		{
-			if (std::regex_match(state.curr.data, i.regex))
+			T parsed;
+			if (!_literalDecoders.at(match.choice)(state.curr.data, parsed, state.state))
 			{
-				state.outputStack.push(i.decoder(state.curr.data));
-				return true;
+				return false;
 			}
+			state.outputStack.push(parsed);
+			return true;
 		}
+
+		recordError(state, "Invalid literal.");
 		return false;
 	}
 
@@ -228,7 +225,11 @@ private:
 		{
 			return false;
 		}
-		T outputValue = _unaryOperators.at(token.data).handler(args[0]);
+		T outputValue;
+		if (!_unaryOperators.at(token.data).handler(args[0], outputValue, state.state))
+		{
+			return false;
+		}
 		state.outputStack.push(outputValue);
 		return true;
 	}
@@ -240,7 +241,11 @@ private:
 		{
 			return false;
 		}
-		T outputValue = _binaryOperators.at(token.data).handler(args[0], args[1]);
+		T outputValue;
+		if (!_binaryOperators.at(token.data).handler(args[0], args[1], outputValue, state.state))
+		{
+			return false;
+		}
 		state.outputStack.push(outputValue);
 		return true;
 	}
@@ -335,9 +340,23 @@ private:
 		return false;
 	}
 
+	MSRegex setupLiteralDecoders(const ExpressionParserDefinition<T>& definition)
+	{
+		_literalDecoders.reserve(definition.literalDecoders.size());
+		std::vector<std::string> literalRegexDecode;
+		literalRegexDecode.reserve(definition.literalDecoders.size());
+		for (const auto& i : definition.literalDecoders)
+		{
+			_literalDecoders.push_back(i.decoder);
+			literalRegexDecode.push_back(i.regex);
+		}
+		return MSRegex("^", "$", literalRegexDecode, std::regex::optimize);
+	}
+
 	std::unordered_map<std::string, ExpressionBinaryOperator<T>> _binaryOperators;
 	std::unordered_map<std::string, ExpressionUnaryOperator<T>> _unaryOperators;
 	std::vector<ILiteralDecoder> _literalDecoders;	
+	MSRegex _literalDecodeRegex;
 };
 
 #endif /* ERAGPSIM_PARSER_EXPRESSION_PARSER_HPP */

@@ -30,9 +30,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 				"||",
 				120,
-				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f || s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+					out = f || s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+					return true;
 				}
 			},
 			ExpressionBinaryOperator<ExpressionBigIntType>
@@ -40,9 +41,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 				"&&",
 				110,
-				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f && s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+					out = f && s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+ return true;
 				}
 			},
 			ExpressionBinaryOperator<ExpressionBigIntType>
@@ -50,9 +52,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 				"|",
 				100,
-				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f | s;
+					out = f | s;
+ return true;
 				}
 			},
 			ExpressionBinaryOperator<ExpressionBigIntType>
@@ -60,9 +63,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 				"^",
 				90,
-				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f ^ s;
+					out = f ^ s;
+ return true;
 				}
 			},
 			ExpressionBinaryOperator<ExpressionBigIntType>
@@ -70,9 +74,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 				"&",
 				80,
-				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f & s;
+					out = f & s;
+ return true;
 				}
 			},
 			ExpressionBinaryOperator<ExpressionBigIntType>
@@ -80,9 +85,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 				"==",
 				70,
-				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f == s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+					out = f == s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+ return true;
 				}
 			},
 			ExpressionBinaryOperator<ExpressionBigIntType>
@@ -90,9 +96,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 				"!=",
 				70,
-				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+				[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f != s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+					out = f != s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+ return true;
 				}
 			},
 				ExpressionBinaryOperator<ExpressionBigIntType>
@@ -100,9 +107,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 					"<",
 					60,
-					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f < s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+					out = f < s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+ return true;
 				}
 			},
 			ExpressionBinaryOperator<ExpressionBigIntType>
@@ -110,9 +118,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 					"<=",
 					60,
-					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f <= s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+					out = f <= s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+ return true;
 				}
 			},
 			ExpressionBinaryOperator<ExpressionBigIntType>
@@ -120,9 +129,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 					">",
 					60,
-					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f > s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+					out = f > s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+ return true;
 				}
 			},
 			ExpressionBinaryOperator<ExpressionBigIntType>
@@ -130,9 +140,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 					">=",
 					60,
-					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f >= s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+					out = f >= s ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+ return true;
 				}
 			},
 				ExpressionBinaryOperator<ExpressionBigIntType>
@@ -140,9 +151,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 					"<<",
 					50,
-					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f << s;
+					out = f << s;
+ return true;
 				}
 			},
 			ExpressionBinaryOperator<ExpressionBigIntType>
@@ -150,9 +162,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 					">>",
 					50,
-					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f >> s;
+					out = f >> s;
+ return true;
 				}
 			},
 				ExpressionBinaryOperator<ExpressionBigIntType>
@@ -160,9 +173,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 					"+",
 					40,
-					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f + s;
+					out = f + s;
+ return true;
 				}
 			},
 			ExpressionBinaryOperator<ExpressionBigIntType>
@@ -170,9 +184,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 				ExpressionOperatorAssociativity::LEFT,
 					"-",
 					40,
-					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+					[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return f - s;
+					out = f - s;
+ return true;
 				}
 			},
 					ExpressionBinaryOperator<ExpressionBigIntType>
@@ -180,9 +195,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 					ExpressionOperatorAssociativity::LEFT,
 						"*",
 						30,
-						[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+						[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 					{
-						return f * s;
+						out = f * s;
+ return true;
 					}
 				},
 				ExpressionBinaryOperator<ExpressionBigIntType>
@@ -190,9 +206,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 					ExpressionOperatorAssociativity::LEFT,
 						"/",
 						30,
-						[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+						[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 					{
-						return f / s;
+						out = f / s;
+ return true;
 					}
 				},
 				ExpressionBinaryOperator<ExpressionBigIntType>
@@ -200,9 +217,10 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 						ExpressionOperatorAssociativity::LEFT,
 							"%",
 							30,
-							[](const ExpressionBigIntType& f, const ExpressionBigIntType& s) -> ExpressionBigIntType
+							[](const ExpressionBigIntType& f, const ExpressionBigIntType& s, ExpressionBigIntType& out, CompileState& state) -> bool
 						{
-							return f % s;
+							out = f % s;
+ return true;
 						}
 					}
 		},
@@ -211,33 +229,37 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 			ExpressionUnaryOperator<ExpressionBigIntType>
 			{
 				"+",
-				[](const ExpressionBigIntType& v) -> ExpressionBigIntType
+				[](const ExpressionBigIntType& v, ExpressionBigIntType& out, CompileState& state) -> bool
 				{
-					return +v;
+					out = +v;
+ return true;
 				}
 			},
 				ExpressionUnaryOperator<ExpressionBigIntType>
 				{
 					"-",
-						[](const ExpressionBigIntType& v) -> ExpressionBigIntType
+						[](const ExpressionBigIntType& v, ExpressionBigIntType& out, CompileState& state) -> bool
 					{
-						return -v;
+						out = -v;
+ return true;
 					}
 				},
 					ExpressionUnaryOperator<ExpressionBigIntType>
 					{
 						"!",
-							[](const ExpressionBigIntType& v) -> ExpressionBigIntType
+							[](const ExpressionBigIntType& v, ExpressionBigIntType& out, CompileState& state) -> bool
 						{
-							return !v ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+							out = !v ? ExpressionBigIntType(1) : ExpressionBigIntType(0);
+ return true;
 						}
 					},
 						ExpressionUnaryOperator<ExpressionBigIntType>
 						{
 							"~",
-								[](const ExpressionBigIntType& v) -> ExpressionBigIntType
+								[](const ExpressionBigIntType& v, ExpressionBigIntType& out, CompileState& state) -> bool
 							{
-								return ~v;
+								out = ~v;
+ return true;
 							}
 						}
 		},
@@ -246,25 +268,28 @@ const ExpressionCompiler<ExpressionBigIntType> EXPRESSION_COMPILER_CLIKE = Expre
 			ExpressionLiteralDecoder<ExpressionBigIntType>
 			{
 				"0x[0-9a-fA-F]+",
-					[](const std::string& number)->ExpressionBigIntType
+					[](const std::string& number, ExpressionBigIntType& output, CompileState& state) -> bool
 				{
-					return std::stol(number.substr(2), nullptr, 16);
+					output = std::stol(number.substr(2), nullptr, 16);
+					return true;
 				}
 			},
 				ExpressionLiteralDecoder<ExpressionBigIntType>
 				{
 					"0b[01]+",
-						[](const std::string& number)->ExpressionBigIntType
+						[](const std::string& number, ExpressionBigIntType& output, CompileState& state) -> bool
 					{
-						return std::stol(number.substr(2), nullptr, 2);
+						output = std::stol(number.substr(2), nullptr, 2);
+						return true;
 					}
 				},
 					ExpressionLiteralDecoder<ExpressionBigIntType>
 					{
 						"[0-9]+",
-							[](const std::string& number)->ExpressionBigIntType
+							[](const std::string& number, ExpressionBigIntType& output, CompileState& state) -> bool
 						{
-							return std::stol(number, nullptr, 10);
+							output = std::stol(number, nullptr, 10);
+							return true;
 						}
 					}
 		}

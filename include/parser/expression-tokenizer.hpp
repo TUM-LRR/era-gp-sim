@@ -24,34 +24,27 @@
 
 #include <regex>
 #include <unordered_map>
+#include "common/multiregex.hpp"
 
 class ExpressionTokenizer
 {
 public:
 	ExpressionTokenizer(const std::vector<ExpressionTokenDefinition>& definitions)
-		: _typeMapping(), _tokenizeRegex(buildRegexString(definitions), std::regex::optimize)
+		: _typeMapping(), _tokenizeRegex("^", "", buildRegexVector(definitions), std::regex::optimize)
 	{}
 
 	std::vector<ExpressionToken> tokenize(const std::string& data, CompileState& state) const
 	{
 		std::vector<ExpressionToken> output;
-		std::smatch match;
+		MSMatch match;
 		std::string temp = data;
-		while (std::regex_search(temp, match, _tokenizeRegex))
+		while (_tokenizeRegex.search(temp, match))
 		{
-			size_t targetLength = match.length(0);
-			for (size_t i = 2; i < match.size(); ++i)
+			if (match.choice > 0)
 			{
-				if (match.length(i) == targetLength)
-				{
-					if (i != 2)
-					{
-						output.push_back(ExpressionToken { match.str() , _typeMapping.at(i) });
-					}
-					break;
-				}
+				output.push_back(ExpressionToken { match.source, _typeMapping.at(match.choice - 1) });
 			}
-			temp = match.suffix().str();
+			temp = temp.substr(match.position + match.length);
 		}
 		if (temp.empty())
 		{
@@ -68,23 +61,21 @@ public:
 	}
 
 private:
-	std::string buildRegexString(const std::vector<ExpressionTokenDefinition>& definitions)
+	std::vector<std::string> buildRegexVector(const std::vector<ExpressionTokenDefinition>& definitions)
 	{
-		std::string regexBuildString = "(\\s+)";
-		int id = 2;
-		for (const auto& i : definitions)
+		std::vector<std::string> output;
+		output.reserve(definitions.size() + 1);
+		output.push_back("\\s+");
+		_typeMapping.reserve(definitions.size());
+		for (const ExpressionTokenDefinition& i : definitions)
 		{
-			++id;
-			_typeMapping[id] = i.type;
-			regexBuildString += "|(" + i.regex + ")";
-			std::regex groupCount("(^|[^\\\\])\\(([^\\?]|$)");
-			id += std::distance(std::sregex_iterator(i.regex.begin(), i.regex.end(), groupCount), std::sregex_iterator());
+			_typeMapping.push_back(i.type);
+			output.push_back(i.regex);
 		}
-		return "^(" + regexBuildString + ")";
+		return output;
 	}
-
-	std::unordered_map<int, ExpressionTokenType> _typeMapping; 
-	std::regex _tokenizeRegex;
+	std::vector<ExpressionTokenType> _typeMapping; 
+	MSRegex _tokenizeRegex;
 };
 
 #endif /* ERAGPSIM_PARSER_EXPRESSION_TOKENIZER_HPP */
