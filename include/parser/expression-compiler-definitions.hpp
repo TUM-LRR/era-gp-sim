@@ -38,7 +38,7 @@ enum class ExpressionTokenType
 	INVALID,
 
 	/**
-	 * \brief An operator token.
+	 * \brief An operator token. We do not differ between unary and binary operator here, yet.
 	 */
 	OPERATOR,
 
