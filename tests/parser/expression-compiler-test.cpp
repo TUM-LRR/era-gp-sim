@@ -24,7 +24,7 @@
 #define TEST_CASE_P(expr) \
   { \
     CompileState state;\
-    auto output = EXPRESSION_COMPILER_CLIKE.compile(STRINGIFY(expr), state); \
+    auto output = CLikeExpressionCompilers::CLikeCompilerI32.compile(STRINGIFY(expr), state); \
     auto expected = (expr); \
     ASSERT_EQ(output, expected); \
     ASSERT_TRUE(state.errorList.empty()); \
@@ -34,7 +34,7 @@
 #define TEST_CASE_E(expr) \
   { \
     CompileState state; \
-    auto output = EXPRESSION_COMPILER_CLIKE.compile(expr, state); \
+    auto output = CLikeExpressionCompilers::CLikeCompilerI32.compile(expr, state); \
     ASSERT_TRUE(!state.errorList.empty()); \
   }
 
