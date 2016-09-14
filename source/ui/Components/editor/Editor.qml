@@ -52,7 +52,7 @@ ScrollView {
                 origin.y: 0;
                 xScale: zoom;
                 yScale: zoom;
-                }
+            }
 
             //text field component
             TextEdit {
@@ -79,6 +79,53 @@ ScrollView {
                     if(event.key === Qt.Key_Tab) {
                         textArea.insert(cursorPosition, "\t");
                         event.accepted = true;
+                    }
+                }
+
+                onTextChanged: {
+                    updateTooltips();
+                }
+
+                property var _toolTips: [];
+                function updateTooltips() {
+                    // Delete old toolTips
+                    for (var i = 0; i < _toolTips.length; ++i) {
+                        _toolTips[i].destroy();
+                    }
+                    _toolTips = [];
+
+                    // TODO: Fetch actual help-dictionary.
+                    var toolTipDictionary = {"mov": "mov reg1, reg2\nCopies the value of reg1 to reg2.",
+                                             "eax": "32-bit general-purpose register."};
+                    // TODO: Implement more efficient way of creating tooltips.
+                    // TODO: One create tooltips for keywords currently visible.
+                    for (var searchString in toolTipDictionary) {
+                        var currentText = text;
+                        var currentPosition;
+                        var currentOffset = 0;
+                        while ((currentPosition = currentText.search(searchString)) != -1) {
+                            var startRect = positionToRectangle(currentPosition + currentOffset);
+                            var endRect = positionToRectangle(currentPosition + currentOffset + searchString.length);
+                            var component = Qt.createComponent("../Common/ToolTip.qml");
+                            var toolTip = component.createObject(textArea, {"x": startRect.x,
+                                                                     "y": startRect.y,
+                                                                     "width": (endRect.x - startRect.x),
+                                                                     "height": startRect.height,
+                                                                     "text": toolTipDictionary[searchString],
+                                                                     "cornerRadius": 3});
+                            _toolTips.push(toolTip);
+                            if (toolTip === null) {
+                                // Error Handling
+                                console.log("Error creating object");
+                            }
+
+                            // In order to not always find the first occurence, shift the search string.
+                            currentText = currentText.substring(currentPosition + searchString.length);
+                            // Remember the length of the text that was cut off in order to still be able to
+                            // calculate the correct absolute position of an occurence relative to the entire
+                            // text.
+                            currentOffset += currentPosition + searchString.length;
+                        }
                     }
                 }
 
