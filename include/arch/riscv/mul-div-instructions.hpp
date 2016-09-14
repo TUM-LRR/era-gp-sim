@@ -246,38 +246,73 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
   Type _type;
 };
 
-template<typename SizeType>
+/**
+ * Superclass for instructions, that have a word variant in rv64 but cannot use
+ * the WordInstructionWrapper. This may be due to special return values that
+ * need special treatment (e.g. division by 0).
+ * It is intended that the instructions derive from this class and handle the word variant and special value treatment.
+ * This class provided utility functions for the task of creating word sized values.
+ * \tparam \see IntegerInstructionNode template param
+ */
+template <typename SizeType>
 class WordableIntegerInstruction : public IntegerInstructionNode<SizeType> {
-public:
-    WordableIntegerInstruction(InstructionInformation& info, bool isWordInstruction) : IntegerInstructionNode<SizeType>(info, false), _isWordInstruction(isWordInstruction) {}
-    virtual ~WordableIntegerInstruction() = default;
-protected:
-    SizeType toWord(SizeType n, bool isSignedOperation, bool signExtendAnyway) const {
-      bool negative = (n & SIGN_MASK) > 0;
-      if (signExtendAnyway || (isSignedOperation && negative)) {
-        n = n | SIGN_EXTENSION;
-      } else {
-        n = n & WORD_MASK;
-      }
-      return n;
-    }
+ public:
+    /**
+   * \param info InstructionInformation for this instruction
+   * \param isWordInstruction determinates if this instance represents a word instruction
+   */
+  WordableIntegerInstruction(InstructionInformation& info,
+                             bool isWordInstruction)
+      : IntegerInstructionNode<SizeType>(info, false),
+        _isWordInstruction(isWordInstruction) {}
 
-    bool isWordInstruction() const {
-     return _isWordInstruction;
-    }
+  /** default destructor */
+  virtual ~WordableIntegerInstruction() = default;
 
-private:
-    static constexpr SizeType SIGN_MASK =
-        SizeType(1) << (sizeof(SizeType) * CHAR_BIT - 1);
-    static constexpr SizeType WORD_MASK =
-        SizeType(-1) >> ((sizeof(SizeType) * CHAR_BIT) / 2);
-    static constexpr SizeType SIGN_EXTENSION =
-        SizeType(-1) << ((sizeof(SizeType) * CHAR_BIT) / 2);
-    bool _isWordInstruction;
+ protected:
+  /**
+   * Truncates n to represent a value that could fit into a word representation (so half of the current bits).
+   * The result is sign-extended under certain conditions: isSignedOperation and n represents a negative value.
+   * The result is sign-extended (even when upper condition is false) if signExtendAnyway is true
+   * \param n The value that will be truncated to fit into a representation half of its bit size
+   * \param isSignedOperation If true, n is treated as a signed value, otherwise n is treated as an unsigned value
+   * \param signExtendAnyway If true, n will be sign-extended no matter what the signedness of n is
+   * \return worded n
+   */
+  SizeType toWord(SizeType n, bool isSignedOperation,
+                  bool signExtendAnyway) const {
+    bool negative = (n & SIGN_MASK) > 0;
+    if (signExtendAnyway || (isSignedOperation && negative)) {
+      n = n | SIGN_EXTENSION;
+    } else {
+      n = n & WORD_MASK;
+    }
+    return n;
+  }
+
+  /**
+   * \return true, if this instruction is a word instruction; false, if not
+   */
+  bool isWordInstruction() const { return _isWordInstruction; }
+
+ private:
+  /** and-bitmask for retrieving the sign bit*/
+  static constexpr SizeType SIGN_MASK = SizeType(1)
+                                        << (sizeof(SizeType) * CHAR_BIT - 1);
+  /** and-bitmask to only preserve the lower half of bits*/
+  static constexpr SizeType WORD_MASK = SizeType(-1) >>
+                                        ((sizeof(SizeType) * CHAR_BIT) / 2);
+  /** or-bitmask for adding 1s to the higher half of bits*/
+  static constexpr SizeType SIGN_EXTENSION =
+      SizeType(-1) << ((sizeof(SizeType) * CHAR_BIT) / 2);
+  /**
+   * Describes if this instruction is a word instruction
+   */
+  bool _isWordInstruction;
 };
 
 /**
- * Represents a RISC-V "div/divu" instruction. For more information see RISC-V
+ * Represents a RISC-V "div/divu/divw/divuw" instruction. For more information see RISC-V
  * specification
  * \tparam unsigned integer type that can hold exactly the range of values that
  * divu should operate on
@@ -285,9 +320,11 @@ private:
  * div should operate on
  */
 template <typename UnsignedSizeType, typename SignedSizeType>
-class DivisionInstruction : public WordableIntegerInstruction<UnsignedSizeType>{
+class DivisionInstruction
+    : public WordableIntegerInstruction<UnsignedSizeType> {
  public:
-  DivisionInstruction(InstructionInformation& info, bool isSignedDivision, bool isWordInstruction)
+  DivisionInstruction(InstructionInformation& info, bool isSignedDivision,
+                      bool isWordInstruction)
       : WordableIntegerInstruction<UnsignedSizeType>(info, isWordInstruction),
         _isSignedDivision(isSignedDivision) {}
 
@@ -295,12 +332,12 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedSizeType>{
                                            UnsignedSizeType operand2) const {
     // Semantics for division is defined in RISC-V specification in table 5.1
 
-      UnsignedSizeType op1 = operand1;
-      UnsignedSizeType op2 = operand2;
-      if (this->isWordInstruction()) {
-        op1 = this->toWord(op1, _isSignedDivision, false);
-        op2 = this->toWord(op2, _isSignedDivision, false);
-      }
+    UnsignedSizeType op1 = operand1;
+    UnsignedSizeType op2 = operand2;
+    if (this->isWordInstruction()) {
+      op1 = this->toWord(op1, _isSignedDivision, false);
+      op2 = this->toWord(op2, _isSignedDivision, false);
+    }
 
     if (op2 == 0) {
       // Division by zero
@@ -311,7 +348,7 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedSizeType>{
     if (_isSignedDivision && op1 == OVERFLOW_DIVIDENT &&
         op2 == OVERFLOW_DIVISOR) {
       // Signed Division overflow
-      return operand1;  // op1 is exactly -2^(n-1)
+      return operand1;  // operand1 is exactly -2^(n-1)
     }
 
     if (_isSignedDivision) {
@@ -327,8 +364,8 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedSizeType>{
       SignedSizeType sresult = sop1 / sop2;
       result = static_cast<UnsignedSizeType>(sresult);
       resultIsNegative = sresult < 0;
-    }else{
-        result = op1 / op2;
+    } else {
+      result = op1 / op2;
     }
     if (this->isWordInstruction()) {
       result = this->toWord(result, _isSignedDivision, resultIsNegative);
@@ -345,7 +382,7 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedSizeType>{
 };
 
 /**
- * Represents a RISC-V "rem/remu" instruction. For more information see RISC-V
+ * Represents a RISC-V "rem/remu/remw/remuw" instruction. For more information see RISC-V
  * specification
  * \tparam unsigned integer type that can hold exactly the range of values that
  * remu should operate on
@@ -353,7 +390,8 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedSizeType>{
  * rem should operate on
  */
 template <typename UnsignedSizeType, typename SignedSizeType>
-class RemainderInstruction : public WordableIntegerInstruction<UnsignedSizeType> {
+class RemainderInstruction
+    : public WordableIntegerInstruction<UnsignedSizeType> {
  public:
   RemainderInstruction(InstructionInformation& info, bool isSignedRemainder,
                        bool isWordInstruction)
@@ -407,7 +445,6 @@ class RemainderInstruction : public WordableIntegerInstruction<UnsignedSizeType>
   }
 
  private:
-
   static constexpr UnsignedSizeType OVERFLOW_DIVIDENT =
       UnsignedSizeType(1) << (sizeof(UnsignedSizeType) * CHAR_BIT - 1);
   static constexpr UnsignedSizeType OVERFLOW_DIVISOR = UnsignedSizeType(-1);
