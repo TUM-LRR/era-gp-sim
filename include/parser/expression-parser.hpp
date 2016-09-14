@@ -186,6 +186,8 @@ private:
 		case ExpressionTokenType::RIGHT_BRACKET:
 			//We remove everything until a bracket occurs.
 			return handleBorder(state, IToken{ ITokenType::BRACKET, "" });
+		case ExpressionTokenType::INVALID:
+			//For you, dear clang, so you don't complain. We fall through.
 		}
 
 		//Should never happen, only if there are implementation errors.
@@ -366,6 +368,8 @@ private:
 		case ITokenType::BINARY_OPERATOR:
 			//Handles the binary operator on the stack.
 			return handleBinaryOperator(state, token);
+		case ITokenType::EXPRESSION:
+			//For you, dear clang, so you don't complain. We fall through.
 		}
 
 		//Cannot handle that token.
