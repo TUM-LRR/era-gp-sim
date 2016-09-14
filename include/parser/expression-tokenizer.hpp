@@ -37,14 +37,17 @@ public:
 	{
 		std::vector<ExpressionToken> output;
 		MSMatch match;
+		size_t currentPosition = 0;
 		std::string temp = data;
 		while (_tokenizeRegex.search(temp, match))
 		{
 			if (match.choice > 0)
 			{
-				output.push_back(ExpressionToken { match.source, _typeMapping.at(match.choice - 1) });
+				output.push_back(ExpressionToken { match.source, _typeMapping.at(match.choice - 1), currentPosition + match.position });
 			}
-			temp = temp.substr(match.position + match.length);
+			size_t rpos = match.position + match.length;
+			temp = temp.substr(rpos);
+			currentPosition += rpos;
 		}
 		if (temp.empty())
 		{
