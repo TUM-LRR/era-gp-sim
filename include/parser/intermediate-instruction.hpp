@@ -35,11 +35,6 @@
 class IntermediateInstruction : public IntermediateOperation {
  public:
   /**
-   * \brief Virtual destructor needed for inheritance.
-   */
-  virtual ~IntermediateOperation();
-
-  /**
    * \brief Instantiates a new compile error with the given arguments.
    * \param lines The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
