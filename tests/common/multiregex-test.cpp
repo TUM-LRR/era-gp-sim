@@ -18,12 +18,11 @@
 */
 
 #include <gtest/gtest.h>
-
-
 #include "common/multiregex.hpp"
 
 TEST(Multiregex, simple)
 {
+  //Only test if matches.
   MSRegex mr("^", "$", {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
   ASSERT_TRUE(mr.search("1"));
   ASSERT_TRUE(mr.search("5"));
@@ -36,6 +35,7 @@ TEST(Multiregex, simple)
 
 TEST(Multiregex, matching)
 {
+  //Also evaluate the matches.
   MSRegex mr("^", "$", {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
   MSMatch match;
   ASSERT_TRUE(mr.search("0", match));
@@ -51,6 +51,7 @@ TEST(Multiregex, matching)
 
 TEST(Multiregex, brackets)
 {
+  //Test with brackets.
   MSRegex mr("((^))", "(($))", { "(\\d+)", "(a|b)(c|d)", "z" });
   MSMatch match;
   ASSERT_TRUE(mr.search("12", match));

@@ -20,6 +20,7 @@
 #include "common/utility.hpp"
 #include "gtest/gtest.h"
 
+//Passing test case.
 #define TEST_CASE_P(expr) \
   { \
     CompileState state;\
@@ -29,6 +30,7 @@
     ASSERT_TRUE(state.errorList.empty()); \
   }
 
+//Failing test case.
 #define TEST_CASE_E(expr) \
   { \
     CompileState state; \
@@ -36,12 +38,14 @@
     ASSERT_TRUE(!state.errorList.empty()); \
   }
 
+//We need to surpass some clang warnings, b/c we intentionally want to use unusual precedences.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wparentheses"
 #pragma clang diagnostic ignored "-Wshift-op-parentheses"
 
 TEST(ExpressionCompilerClike, simple)
 {
+  //Parsing some numbers.
   TEST_CASE_P(1)
   TEST_CASE_P(0xff)
   TEST_CASE_P(65536)
@@ -49,6 +53,7 @@ TEST(ExpressionCompilerClike, simple)
 
 TEST(ExpressionCompilerClike, simpleExpression)
 {
+  //Parsing some simple expressions.
   TEST_CASE_P(1+1)
   TEST_CASE_P(1+2*3)
   TEST_CASE_P(1<<16)
@@ -57,6 +62,7 @@ TEST(ExpressionCompilerClike, simpleExpression)
 
 TEST(ExpressionCompilerClike, bracketsExpression)
 {
+  //Parsing with brackets.
   TEST_CASE_P((2+3)*(4+5))
   TEST_CASE_P(((((((((((((((((((1)))))))))))))))))))
   TEST_CASE_P(312 * ((1 << 16) | 123))
@@ -64,6 +70,7 @@ TEST(ExpressionCompilerClike, bracketsExpression)
 
 TEST(ExpressionCompilerClike, complexExpression)
 {
+  //Parsing more complicated stuff.
   TEST_CASE_P((0b101 << 12) & 0xaaaa - 1)
   TEST_CASE_P(1 | 2 ^ 3 & 4 << 5 >> 6 + 7 - 8 * 9 / 10 % 11)
   TEST_CASE_P(1+-1+ +2+ +3+ +4+ + + + +5+ + + + + + +6+ +-+-+-+-+-+-+-+7+-+-+-+-+- -+-+-+-8)
@@ -73,10 +80,13 @@ TEST(ExpressionCompilerClike, complexExpression)
 
 TEST(ExpressionCompilerClike, errors)
 {
+  //Parsing stuff that fails.
   TEST_CASE_E("1+")
   TEST_CASE_E("(1+2)*(3+4")
   TEST_CASE_E("1+2)*(3+4)")
   TEST_CASE_E("****1")
   TEST_CASE_E("Hi!")
 }
+
+//Now we can return the warning stuff to normal.
 #pragma clang diagnostic pop
