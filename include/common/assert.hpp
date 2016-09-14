@@ -37,7 +37,7 @@
  *
  * \return The string literal, converted to a `std::string`.
  */
-std::string operator""_s(const char* string_literal, std::size_t) {
+static std::string operator""_s(const char* string_literal, std::size_t) {
   return string_literal;
 }
 #endif
@@ -129,7 +129,7 @@ void execute(Function function) {
 /**
  * A magical dummy function that does absolutely nothing.
  */
-void unicorn() {
+static void unicorn() {
 }
 #define that(condition) unicorn()
 #endif
