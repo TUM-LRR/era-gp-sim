@@ -12,7 +12,6 @@ set(PARSER_SOURCES
   section-directive.cpp
   riscv-regex.cpp
   syntax-tree-generator.cpp
-  expression-compiler-clike.cpp
 )
 
 ########################################
