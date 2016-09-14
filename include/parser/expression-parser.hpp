@@ -188,6 +188,7 @@ private:
 			return handleBorder(state, IToken{ ITokenType::BRACKET, "" });
 		case ExpressionTokenType::INVALID:
 			//For you, dear clang, so you don't complain. We fall through.
+			break;
 		}
 
 		//Should never happen, only if there are implementation errors.
@@ -370,6 +371,7 @@ private:
 			return handleBinaryOperator(state, token);
 		case ITokenType::EXPRESSION:
 			//For you, dear clang, so you don't complain. We fall through.
+			break;
 		}
 
 		//Cannot handle that token.
