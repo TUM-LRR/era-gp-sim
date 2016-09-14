@@ -86,8 +86,8 @@ TEST_F(ImmediateFormatTestFixture, JFormat) {
 struct InstructionFormatTestFixture : public ::testing::Test {
   InstructionFormatTestFixture() {
     instructionSet.addInstructions(InstructionSet(
-        {{"add", InstructionKey({{"opcode", 6}, {"function", 3}})},
-         {"sub", InstructionKey({{"opcode", 9}, {"function", 3}})}}));
+        {{"add", InstructionKey({{"opcode", 6}, {"function", 3}}), "R"},
+         {"sub", InstructionKey({{"opcode", 9}, {"function", 3}}), "I"}}));
   }
 
   ~InstructionFormatTestFixture() {
@@ -112,7 +112,7 @@ TEST_F(InstructionFormatTestFixture, RFormat) {
 }
 
 TEST_F(InstructionFormatTestFixture, IFormat) {
-  auto addInfo = instructionSet.getInstruction("add");
+  auto addInfo = instructionSet.getInstruction("sub");
   AddInstructionNode<uint32_t> addInstr(addInfo, true);
   auto key = addInfo.getKey();
   MemoryValue val(4, 8);
