@@ -78,11 +78,8 @@ public:
 		}
 		else
 		{
-			//We are done, but there is an unrecognized token.
-			//TODO: Make a bit more beautiful
-			CodePosition position = state.position;
-			position.second += currentPosition;
-			state.errorList.push_back(CompileError("Unrecognized token at: " + temp.substr(0, 20), position, CompileErrorSeverity::ERROR));
+			//We are done, but there is an unrecognized token. We return as if the string was empty.
+			state.addError("Unrecognized token at: " + temp.substr(0, 20), state.position >> currentPosition);
 			return std::vector<ExpressionToken>();
 		}
 	}

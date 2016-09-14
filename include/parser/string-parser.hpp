@@ -127,13 +127,8 @@ class StringParserEngine {
   static void
   invokeError(const std::string& message,
               size_t position,
-              CompileState& state,
-              CompileErrorSeverity severity = CompileErrorSeverity::ERROR) {
-    auto newPosition = state.position;
-
-    // Relative position.
-    newPosition.second += position;
-    state.errorList.push_back(CompileError(message, newPosition, severity));
+              CompileState& state) {
+    state.addError(message, state.position >> position);
   }
 
   // Returns true, if there is still data after the current index in the string

@@ -45,20 +45,16 @@ void SymbolTable::insertEntry(const std::string& name,
 
   if (!std::regex_search(name, std::regex("^[A-Za-z_][A-Za-z0-9_]*$"))) {
     // Basically, everything with a leading number is not accepted.
-    state.errorList.push_back(
-        CompileError("Symbol '" + name + "' does not have a qualified name.",
-                     state.position,
-                     CompileErrorSeverity::ERROR));
+    state.addError("Symbol '" + name + "' does not have a qualified name.",
+                     state.position);
     return;
   }
 
   if (_table.find(name) != _table.end()) {
     // We also fail, if we define the symbol twice in a commit (which would
     // count as double definition in a file).
-    state.errorList.push_back(
-        CompileError("Symbol '" + name + "' defined twice.",
-                     state.position,
-                     CompileErrorSeverity::ERROR));
+    state.addError("Symbol '" + name + "' defined twice.",
+                     state.position);
     return;
   }
 
@@ -102,10 +98,8 @@ std::string SymbolTable::replaceSymbols(const std::string& source,
 
   // If we come here, we have replaced too often and abort, suspecting an
   // infinite loop.
-  state.errorList.push_back(
-      CompileError("Exceeded recursion replacement depth.",
-                   state.position,
-                   CompileErrorSeverity::ERROR));
+  state.addError("Exceeded recursion replacement depth.",
+                   state.position);
 
   return result;
 }

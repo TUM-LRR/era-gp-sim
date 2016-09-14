@@ -50,10 +50,8 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
     line_regex.matchLine(line);
     if (!line_regex.isValid()) {
       // Add syntax error if line regex doesnt match
-      _compile_state.errorList.push_back(
-          CompileError{"Syntax Error",
-                       _compile_state.position,
-                       CompileErrorSeverity::ERROR});
+      _compile_state.addError("Syntax Error",
+                       _compile_state.position);
     } else {
       // Collect labels until next instruction
       if (line_regex.hasLabel()) {
