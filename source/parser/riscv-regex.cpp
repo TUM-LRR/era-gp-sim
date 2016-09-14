@@ -20,8 +20,7 @@
 
 #include "common/assert.hpp"
 
-RiscvParser::RiscvRegex::RiscvRegex()
-: _line_regex{
+static const std::regex LINE_REGEX(
       "\\s*"
       "(?:(\\w+)\\s*\\:)?"// Label group
       "\\s*"
@@ -34,11 +33,13 @@ RiscvParser::RiscvRegex::RiscvRegex()
       "(\\w+))?)?"// Parameter group
       "\\s*"
       "(?:;.*)?"// Comment group
-  } {
-}
+      , std::regex_constants::optimize);
+
+RiscvParser::RiscvRegex::RiscvRegex()
+{}
 
 void RiscvParser::RiscvRegex::matchLine(const std::string &line) {
-  std::regex_match(line, _matches, _line_regex);
+  std::regex_match(line, _matches, LINE_REGEX);
 }
 
 bool RiscvParser::RiscvRegex::isValid() {
