@@ -36,7 +36,7 @@ struct MultiregexMatch {
     /**
      * \brief The character type, for internal use.
      */
-    using CharType = Utility::TypeBarrier<std::is_integral, CharT>;
+    using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
 
     /**
      * \brief Internal string type.
@@ -114,7 +114,7 @@ public:
     /**
      * \brief The internal character type.
      */
-    using CharType = Utility::TypeBarrier<std::is_integral, CharT>;
+    using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
 
     /**
      * \brief The internal string type.

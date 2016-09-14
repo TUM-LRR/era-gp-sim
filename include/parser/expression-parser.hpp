@@ -288,7 +288,7 @@ private:
 			{
 				//There were not enough operands on the stack.
 				size_t left = count - i;
-				recordError(state, left == 1 ? "There is an operand missing." : "There are " + left + " operands missing.");
+				recordError(state, left == 1 ? "There is an operand missing." : "There are " + std::to_string(left) + " operands missing.");
 				return false;
 			}
 			output.push_back(state.outputStack.top());
