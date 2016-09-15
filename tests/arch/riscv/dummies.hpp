@@ -39,20 +39,37 @@ MemoryValue convertToMem(IntType t) {
                           InstructionNode::RISCV_ENDIANNESS);
 }
 
+template <typename IntType>
+MemoryValue convertToMemSigned(IntType t) {
+  return convert<IntType>(t,
+                          InstructionNode::RISCV_BITS_PER_BYTE,
+                          InstructionNode::RISCV_ENDIANNESS,
+                          InstructionNode::RISCV_SIGNED_REPRESENTATION);
+}
+
 class FakeRegister {
  public:
-  FakeRegister() : FakeRegister(0) {
-  }
-  FakeRegister(uint64_t value) : _value(convertToMem<uint64_t>(value)) {
-  }
-  FakeRegister(MemoryValue& v) : _value(v) {
+  FakeRegister() : FakeRegister(4) {
   }
 
-  void set(uint64_t newValue) {
-    _value = convertToMem<uint64_t>(newValue);
+  FakeRegister(size_t byteAmount)
+  : _byteAmount(byteAmount)
+  , _value(MemoryValue{byteAmount, InstructionNode::RISCV_BITS_PER_BYTE}) {
   }
   void set(MemoryValue& v) {
     _value = v;
+    /*
+    if (v.getSize() == _value.getSize()) {
+      _value = v;
+    } else {
+      std::cerr << "Expanding from " << v.getSize() << " to " << _value.getSize()  << std::endl;
+      _value = MemoryValue{_byteAmount, InstructionNode::RISCV_BITS_PER_BYTE};
+      for (size_t i = 0; i < _value.getSize(); ++i) {
+        if (i < v.getSize()) {
+          _value.put(_value.getSize() - 1 - i, v.get(v.getSize() - 1 - i));
+        }
+      }
+    }*/
   }
 
   MemoryValue get() {
@@ -60,6 +77,7 @@ class FakeRegister {
   }
 
  private:
+  size_t _byteAmount;
   MemoryValue _value;
 };
 
