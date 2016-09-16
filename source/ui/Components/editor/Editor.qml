@@ -82,49 +82,87 @@ ScrollView {
                     }
                 }
 
-                onTextChanged: {
-                    updateTooltips();
+                // Tool tips: The desired behavior is that when the cursor is inside a keyword, the
+                // keyword is underlined. Moving the mouse over this keyword makes a small help tool tip
+                // appear to its right. Clicking the help tool tip opens up the help text overlay.
+                // The tool tip is only created when the cursor is placed inside a keyword, saving us
+                // from placing a tool tip over each keyword in advance.
+
+                // MouseArea detecting presses inside the editor to place help tool tips. Similar behavior
+                // could be achieved by using the ``cursorPositionChanged``-signal handler, however this
+                // would not enable the user to close the help overlay by clicking anywhere in the editor
+                // when the cursor does not thereby change its position.
+                MouseArea {
+                    id: toolTipTriggerArea
+                    anchors.fill: parent
+                    // Pass through un-handled mouse events.
+                    onClicked: mouse.accepted = false;
+                    onReleased: mouse.accepted = false;
+                    onDoubleClicked: mouse.accepted = false;
+                    onPressAndHold: mouse.accepted = false;
+                    onEntered: mouse.accepted = false;
+
+                    onPressed: {
+                        parent.updateCurrentToolTip(parent.positionAt(mouseX, mouseY));
+                        mouse.accepted = false;
+                    }
                 }
 
-                property var _toolTips: [];
-                function updateTooltips() {
-                    // Delete old toolTips
-                    for (var i = 0; i < _toolTips.length; ++i) {
-                        _toolTips[i].destroy();
+                // Currently visible tool tip. Undefined when no tool tip is visible.
+                property QtObject _toolTip;
+                // Checks whether a tool tip is necessary (i.e. available) for the keyword at the
+                // given position and possibly creates one.
+                function updateCurrentToolTip(position) {
+                    // Delete old tool tip
+                    if (_toolTip != undefined) {
+                        _toolTip.destroy();
+                        _toolTip = undefined;
                     }
-                    _toolTips = [];
 
-                    // TODO: Fetch actual help-dictionary.
-                    var toolTipDictionary = {"mov": "mov reg1, reg2\nCopies the value of reg1 to reg2.",
+                    // TODO: Fetch actual help-dictionary
+                    var toolTipDictionary = {"mov": "mov reg1, reg2<br/>Copies the value of reg1 to reg2.",
                                              "eax": "32-bit general-purpose register."};
-                    // TODO: Implement more efficient way of creating tooltips.
-                    // TODO: One create tooltips for keywords currently visible.
+                    // Extract the current line
+                    var nextNewLine = text.substring(position).search("\n");
+                    nextNewLine = (nextNewLine < 0) ? text.length : nextNewLine+position;
+                    var previousNewLine = text.substring(0, position).lastIndexOf("\n");
+                    previousNewLine = (previousNewLine < 0) ? 0 : previousNewLine+1;
+                    var currentLine = text.substring(previousNewLine, nextNewLine);
+                    // Check if any of the available keywords applies.
                     for (var searchString in toolTipDictionary) {
-                        var currentText = text;
-                        var currentPosition;
-                        var currentOffset = 0;
+                        var currentPosition;            // Position of the last occurence of the current searchString.
+                        var currentOffset = 0;          // In order to not always find the first occurence, the text that is being search
+                                                        // is truncated at the beginning. The resulting offset is saved for later calculations.
+                        var currentText = currentLine;  // The possibly truncated text that is being searched.
+                        // Search the current line. Is truncated if multiple occurences are found.
                         while ((currentPosition = currentText.search(searchString)) != -1) {
-                            var startRect = positionToRectangle(currentPosition + currentOffset);
-                            var endRect = positionToRectangle(currentPosition + currentOffset + searchString.length);
-                            var component = Qt.createComponent("../Common/ToolTip.qml");
-                            var toolTip = component.createObject(textArea, {"x": startRect.x,
-                                                                     "y": startRect.y,
-                                                                     "width": (endRect.x - startRect.x),
-                                                                     "height": startRect.height,
-                                                                     "text": toolTipDictionary[searchString],
-                                                                     "cornerRadius": 3});
-                            _toolTips.push(toolTip);
-                            if (toolTip === null) {
-                                // Error Handling
-                                console.log("Error creating object");
+                            // Start position of the keyword relative to the entire editor text.
+                            var start = currentPosition+previousNewLine + currentOffset;
+                            // End position of the keyword relative to the entire editor text.
+                            var end = currentPosition+previousNewLine+currentOffset+searchString.length;
+                            // Check if the cursor position lies within the keyword.
+                            if (position >= start && position <= end) {
+                                // Calculate the rect surrounding the keyword.
+                                var startRect = positionToRectangle(start);
+                                var endRect = positionToRectangle(end);
+                                // Create help tool tip component.
+                                var component = Qt.createComponent("HelpToolTip.qml");
+                                _toolTip = component.createObject(textArea, {"helpText": toolTipDictionary[searchString],
+                                                                         "x": startRect.x,
+                                                                         "y": startRect.y,
+                                                                         "width": (endRect.x - startRect.x),
+                                                                         "height": startRect.height,
+                                                                         "relativeX": (endRect.x-startRect.x+1),
+                                                                         "explicitWidth": startRect.height,
+                                                                         "explicitHeight": startRect.height});
+                                if (_toolTip === null) {
+                                    // Error Handling
+                                    console.log("Error creating object");
+                                }
                             }
-
-                            // In order to not always find the first occurence, shift the search string.
+                            // Truncate the text that is being searched for next search of the same searchString.
+                            currentOffset += (currentPosition + searchString.length);
                             currentText = currentText.substring(currentPosition + searchString.length);
-                            // Remember the length of the text that was cut off in order to still be able to
-                            // calculate the correct absolute position of an occurence relative to the entire
-                            // text.
-                            currentOffset += currentPosition + searchString.length;
                         }
                     }
                 }
