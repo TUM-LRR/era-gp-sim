@@ -53,6 +53,18 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
    */
   enum Type { UNSIGNED, SIGNED, SIGNED_UNSIGNED };
 
+  /**
+   * Creates a mul, mulh, mulhs or mulhsu instruction depending on the
+   * constructor arguments
+   * \param info InstructionInformation for this instruction node
+   * \param partOfResultReturned Enum (defined in this class). Use LOW for mul;
+   * use HIGH for mulh((s)u)
+   * \param type Enum (defined in this class) indicates operand signedness. Use
+   * UNSIGNED for mulhu; use SIGNED for mul and mulh; use SIGNED_UNSIGNED for
+   * mulhsu
+   * \see MultiplicationInstruction::MultiplicationResultPart
+   * \see MultiplicationInstruction::Type
+   */
   MultiplicationInstruction(InstructionInformation& info,
                             MultiplicationResultPart partOfResultReturned,
                             Type type)
@@ -65,9 +77,9 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
 
   /**
    * Performs a multiplication with the two given factors op1, op2.
-   * @param op1 Factor
-   * @param op2 Factor
-   * @return MultiplicationResult = LOW: lower SizeType bit of the
+   * \param op1 Factor
+   * \param op2 Factor
+   * \return MultiplicationResult = LOW: lower SizeType bit of the
    * multiplication result, MultiplicationResult = HIGH: high SizeType bit of
    * the multiplication result
    */
@@ -145,8 +157,8 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
    * Returns the magnitude of the given value t. Specificly returns the same
    * value, if the sign bit of t is 0, t itself is returned. If the sign bit is
    * 1, t is negated by using two's complement
-   * @param t value to be converted to an unsigned value
-   * @return value v, so that v = |t|
+   * \param t value to be converted to an unsigned value
+   * \return value v, so that v = |t|
    */
   SizeType toUnsigned(SizeType t) const {
     if (getSign(t) == 0) {
@@ -158,8 +170,8 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
 
   /**
    * Returns the sign bit of t at index 0
-   * @param t value to get the sign bit from
-   * @return 0, if the sign bit of t is 0; 1, if the sign bit of t is 1
+   * \param t value to get the sign bit from
+   * \return 0, if the sign bit of t is 0; 1, if the sign bit of t is 1
    */
   SizeType getSign(SizeType t) const {
     SizeType sign = (t & signMask) >> signIndex;
@@ -171,10 +183,11 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
    * treated to be the upper part of the unsigned x unsigned multiplication of a
    * and b. a and b are needed to retrieve the carry bit of the lower part of
    * the multiplication result when adding 1
-   * @param upper value to be negated
-   * @param a factor of multiplication
-   * @param b factor of multiplication
-   * @return
+   * \param upper value to be negated
+   * \param a factor of multiplication
+   * \param b factor of multiplication
+   * \return negated value of upper (treated as the upper part of a
+   * multiplication)
    */
   SizeType negateUpperPart(SizeType upper, SizeType a, SizeType b) const {
     SizeType signedUpper = ~upper;
@@ -206,15 +219,19 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
     // bits in one byte)
     // e.g. for 32bit numbers -> 16, for 64bit numbers -> 32
     auto halfBitSize = (sizeof(SizeType) * CHAR_BIT) / 2;
-    // computes a bitmask for and that ignores the upper part
+    // computes a bitmask to cut out the upper part
     // e.g. for 32bit -> 0xFFFF, for 64bit -> 0xFFFF FFFF
     SizeType maskLowerBits = -SizeType(1) >> halfBitSize;
 
     // high and low parts of each number
+    // the high parts will be shifted into the halfBitSize-range
+    // the low parts will have the high parts cut out
+
     SizeType ah = a >> halfBitSize;
     SizeType al = a & maskLowerBits;
     SizeType bh = b >> halfBitSize;
     SizeType bl = b & maskLowerBits;
+    // this is done not to miss any overflows in the following calculations
 
     // compute expansions of (ah+al)*(bh+bl)
     SizeType ahxbh = ah * bh;
@@ -222,11 +239,16 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
     SizeType alxbh = al * bh;
     SizeType alxbl = al * bl;
 
-    // grab carry bit of low order bit multiplication
+    // grab carry bit of low order bit multiplication as it is the only thing
+    // where the lower part result influences the higher part result
     SizeType carryLowerPart =
         ((ahxbl & maskLowerBits) + (alxbh & maskLowerBits) +
          (alxbl >> halfBitSize)) >>
         halfBitSize;
+
+    // sum up the result of the computed expansions
+    // shift the "middle"-parts (ah*bl and al*bl) downwards in order not to add
+    // the range that belongs to the lower part result
     SizeType result = ahxbh + (ahxbl >> halfBitSize) + (alxbh >> halfBitSize) +
                       carryLowerPart;
     return result;
@@ -319,21 +341,32 @@ class WordableIntegerInstruction : public IntegerInstructionNode<SizeType> {
  * \tparam signed integer type that can hold exactly the range of values that
  * div should operate on
  */
-template <typename UnsignedSizeType, typename SignedSizeType>
-class DivisionInstruction
-    : public WordableIntegerInstruction<UnsignedSizeType> {
+template <typename UnsignedWord, typename SignedWord>
+class DivisionInstruction : public WordableIntegerInstruction<UnsignedWord> {
  public:
+/**
+ * Creates a div or divu instruction depending on the arguments
+ * \param info InstructionInformation for this instruction node
+ * \param isSignedDivision boolean to indicate signedness of the division; Use
+ * true for signed x signed (div); use false for unsigned x unsigned (divu)
+ */
   DivisionInstruction(InstructionInformation& info, bool isSignedDivision,
                       bool isWordInstruction)
-      : WordableIntegerInstruction<UnsignedSizeType>(info, isWordInstruction),
+      : WordableIntegerInstruction<UnsignedWord>(info, isWordInstruction),
         _isSignedDivision(isSignedDivision) {}
 
-  UnsignedSizeType performIntegerOperation(UnsignedSizeType operand1,
-                                           UnsignedSizeType operand2) const {
+  /**
+   * Performs a division where op1 is the divident and op2 is the divisor.
+   * \param op1 divident
+   * \param op2 divisor
+   * \return op1 divided by op2
+   */
+  UnsignedWord performIntegerOperation(UnsignedWord operand1,
+                                       UnsignedWord operand2) const {
     // Semantics for division is defined in RISC-V specification in table 5.1
 
-    UnsignedSizeType op1 = operand1;
-    UnsignedSizeType op2 = operand2;
+    UnsignedWord op1 = operand1;
+    UnsignedWord op2 = operand2;
     if (this->isWordInstruction()) {
       op1 = this->toWord(op1, _isSignedDivision, false);
       op2 = this->toWord(op2, _isSignedDivision, false);
@@ -341,9 +374,9 @@ class DivisionInstruction
 
     if (op2 == 0) {
       // Division by zero
-      return UnsignedSizeType(-1);
+      return UnsignedWord(-1);
     }
-    UnsignedSizeType result = 0;
+    UnsignedWord result = 0;
     bool resultIsNegative = false;
     if (_isSignedDivision && op1 == OVERFLOW_DIVIDENT &&
         op2 == OVERFLOW_DIVISOR) {
@@ -359,10 +392,10 @@ class DivisionInstruction
       // then convertSigned(type) else convertUnsigned(type) will not compile,
       // as e.g. convertSigned() won't compile for a unsigned type and vice
       // versa
-      SignedSizeType sop1 = static_cast<SignedSizeType>(op1);
-      SignedSizeType sop2 = static_cast<SignedSizeType>(op2);
-      SignedSizeType sresult = sop1 / sop2;
-      result = static_cast<UnsignedSizeType>(sresult);
+      SignedWord sop1 = static_cast<SignedWord>(op1);
+      SignedWord sop2 = static_cast<SignedWord>(op2);
+      SignedWord sresult = sop1 / sop2;
+      result = static_cast<UnsignedWord>(sresult);
       resultIsNegative = sresult < 0;
     } else {
       result = op1 / op2;
@@ -375,9 +408,12 @@ class DivisionInstruction
   }
 
  private:
-  static constexpr UnsignedSizeType OVERFLOW_DIVIDENT =
-      UnsignedSizeType(1) << (sizeof(UnsignedSizeType) * CHAR_BIT - 1);
-  static constexpr UnsignedSizeType OVERFLOW_DIVISOR = UnsignedSizeType(-1);
+  /** Constant for preventing overflow. See RISC-V specification table 5.1*/
+  static constexpr UnsignedWord OVERFLOW_DIVIDENT =
+      UnsignedWord(1) << (sizeof(UnsignedWord) * CHAR_BIT - 1);
+  /** Constant for preventing overflow. See RISC-V specification table 5.1*/
+  static constexpr UnsignedWord OVERFLOW_DIVISOR = UnsignedWord(-1);
+  /** true indicates a signed division, false indicates a unsigned division*/
   bool _isSignedDivision;
 };
 
@@ -389,20 +425,33 @@ class DivisionInstruction
  * \tparam signed integer type that can hold exactly the range of values that
  * rem should operate on
  */
-template <typename UnsignedSizeType, typename SignedSizeType>
+template <typename UnsignedWord, typename SignedWord>
 class RemainderInstruction
-    : public WordableIntegerInstruction<UnsignedSizeType> {
+    : public WordableIntegerInstruction<UnsignedWord> {
  public:
+/**
+ * Creates a rem or remu instruction depending on the constructor arguments
+ * \param info InstructionInformation for this instruction node
+ * \param isSignedRemainder boolean to indicate the signedness of the operation:
+ * use true for signed (rem); use false for unsigned(remu)
+ */
   RemainderInstruction(InstructionInformation& info, bool isSignedRemainder,
                        bool isWordInstruction)
-      : WordableIntegerInstruction<UnsignedSizeType>(info, isWordInstruction),
+      : WordableIntegerInstruction<UnsignedWord>(info, isWordInstruction),
         _isSignedRemainder(isSignedRemainder) {}
 
-  UnsignedSizeType performIntegerOperation(UnsignedSizeType operand1,
-                                           UnsignedSizeType operand2) const {
+  /**
+   * Performs a remainder operation where op1 is the divident and op2 is the
+   * divisor
+   * \param op1 divident
+   * \param op2 divisor
+   * \return the remainder of op1 divided by op2
+   */
+  UnsignedWord performIntegerOperation(UnsignedWord operand1,
+                                       UnsignedWord operand2) const {
     // Semantics for division is defined in RISC-V specification in table 5.1
-    UnsignedSizeType op1 = operand1;
-    UnsignedSizeType op2 = operand2;
+    UnsignedWord op1 = operand1;
+    UnsignedWord op2 = operand2;
     if (this->isWordInstruction()) {
       op1 = this->toWord(op1, _isSignedRemainder, false);
       op2 = this->toWord(op2, _isSignedRemainder, false);
@@ -418,7 +467,7 @@ class RemainderInstruction
       return 0;
     }
 
-    UnsignedSizeType result = 0;
+    UnsignedWord result = 0;
     bool resultIsNegative = false;
     if (_isSignedRemainder) {
       // this is a rather ugly solution to perform a native signed modulus
@@ -429,11 +478,11 @@ class RemainderInstruction
       // then convertSigned(type) else convertUnsigned(type) will not compile,
       // as e.g. convertSigned() won't compile for a unsigned type and vice
       // versa
-      SignedSizeType sop1 = static_cast<SignedSizeType>(op1);
-      SignedSizeType sop2 = static_cast<SignedSizeType>(op2);
-      SignedSizeType sresult = sop1 % sop2;
+      SignedWord sop1 = static_cast<SignedWord>(op1);
+      SignedWord sop2 = static_cast<SignedWord>(op2);
+      SignedWord sresult = sop1 % sop2;
       resultIsNegative = sresult < 0;
-      result = static_cast<UnsignedSizeType>(sresult);
+      result = static_cast<UnsignedWord>(sresult);
     } else {
       result = op1 % op2;
     }
@@ -445,9 +494,13 @@ class RemainderInstruction
   }
 
  private:
-  static constexpr UnsignedSizeType OVERFLOW_DIVIDENT =
-      UnsignedSizeType(1) << (sizeof(UnsignedSizeType) * CHAR_BIT - 1);
-  static constexpr UnsignedSizeType OVERFLOW_DIVISOR = UnsignedSizeType(-1);
+  /** Constant to prevent overflow. See RISC-V specification table 5.1*/
+  static constexpr UnsignedWord OVERFLOW_DIVIDENT =
+      UnsignedWord(1) << (sizeof(UnsignedWord) * CHAR_BIT - 1);
+  /** Constant to prevent overflow. See RISC-V specification table 5.1*/
+  static constexpr UnsignedWord OVERFLOW_DIVISOR = UnsignedWord(-1);
+  /** Indicates signedness of the remainder operation. true indicates a signed
+   * division, false indicates a unsigned division*/
   bool _isSignedRemainder;
 };
 }
