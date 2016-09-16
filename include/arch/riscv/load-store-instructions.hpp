@@ -173,7 +173,6 @@ class LoadInstructionNode : public InstructionNode {
                          std::size_t byteAmount,
                          std::string destination) const {
     MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
-
     // Check if sign-expansion is needed. This is the case, if the amount of
     // bits loaded from memory is not equal to the amount of bits, a register
     // can hold.

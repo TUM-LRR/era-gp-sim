@@ -29,25 +29,56 @@
 
 #include "dummies.hpp"
 
+/*
+ * BIG TODO:
+ * Currently these tests operate on a dummy implementation of the
+ * DummyMemoryAccess. In addition, the memory value & conversions don't
+ * work as expected.
+ *
+ * Some issues of this tests are:
+ * * The immediate offset of the load/store instructions is always set
+ *   to 0. This is done, to archieve better results with the dummy memory
+ *   access.
+ * * All the test numbers are selected, to have no 0-byte. This is due
+ *   to issues with the conversions/memory values: For example if you
+ *   convert a 1 using uint32_t, a memory value of size 8 will be returned,
+ *   as 1 has three 0-bytes in the 32 bit representation.
+ */
+
 using namespace riscv;
 
 namespace {
 
-template <typename T>
-void performLoadTest(T testValue,
-                     ArchitectureFormula::InitializerList modules,
-                     std::string instructionName,
-                     size_t byteAmount) {
+/**
+ * Performs a unsigned load.
+ * \tparam T The unsigned integral of the value to be loaded (e.g. uint16_t for
+ *         lwu)
+ * \tparam W The word size of the architecture (e.g. uint32_t/uint64_t)
+ * \param testValue The integer value to test
+ * \param modules The modules that should be passed to the architecture forumla
+ * \param instructionName The instruction to test (e.g. "lw")
+ * \param byteAmount The amount of bytes that are loaded by the instruction
+ */
+template <typename T, typename W>
+typename std::enable_if<
+    std::is_integral<T>::value && std::is_unsigned<T>::value &&
+        std::is_integral<W>::value && std::is_unsigned<W>::value,
+    void>::type
+performLoadTestUnsigned(T testValue,
+                        ArchitectureFormula::InitializerList modules,
+                        std::string instructionName,
+                        size_t byteAmount) {
   FakeRegister dest, base;
   std::string destId{"dest"}, baseId{"base"};
-  MemoryValue loadValue = convertToMem<T>(testValue);
+  MemoryValue loadValue;
+  loadValue = convertToMem<T>(testValue);
 
   DummyMemoryAccessImpl memoryAccess;
   // Add registers
   memoryAccess.addRegister(destId, dest);
   memoryAccess.addRegister(baseId, base);
   // Fill registers & memory
-  memoryAccess.setRegisterValue(baseId, convertToMem<T>(0));
+  memoryAccess.setRegisterValue(baseId, convertToMem<W>(0));
   memoryAccess.setMemoryValueAt(0, loadValue);
 
   auto instrFactory     = setUpFactory(modules);
@@ -60,23 +91,79 @@ void performLoadTest(T testValue,
   ASSERT_FALSE(instr->validate());
   instr->addChild(std::make_unique<FakeRegisterNode>(baseId));
   ASSERT_FALSE(instr->validate());
-  instr->addChild(immediateFactory.createImmediateNode(convertToMem<T>(0)));
+  instr->addChild(immediateFactory.createImmediateNode(convertToMem<W>(0)));
   ASSERT_TRUE(instr->validate());
 
   // Execute the instruction
   instr->getValue(memoryAccess);
 
   // Check result
-  std::cout << instructionName << memoryAccess.getRegisterValue(destId)
-            << std::endl;
   ASSERT_EQ(memoryAccess.getRegisterValue(destId), loadValue);
 }
 
-template <typename T>
-void performStoreTest(T testValue,
+/**
+ * Performs a signed load. See performLoadTestUnsigned for parameter
+ * documentation.
+ * \tparam T The signed integral of the value to be loaded.
+ */
+template <typename T, typename W>
+typename std::enable_if<
+    std::is_integral<T>::value && std::is_signed<T>::value &&
+        std::is_integral<W>::value && std::is_unsigned<W>::value,
+    void>::type
+performLoadTestSigned(T testValue,
                       ArchitectureFormula::InitializerList modules,
                       std::string instructionName,
                       size_t byteAmount) {
+  FakeRegister dest, base;
+  std::string destId{"dest"}, baseId{"base"};
+  MemoryValue loadValue = convertToMemSigned<T>(testValue);
+
+  DummyMemoryAccessImpl memoryAccess;
+  // Add registers
+  memoryAccess.addRegister(destId, dest);
+  memoryAccess.addRegister(baseId, base);
+  // Fill registers & memory
+  memoryAccess.setRegisterValue(baseId, convertToMem<W>(0));
+  memoryAccess.setMemoryValueAt(0, loadValue);
+
+  auto instrFactory     = setUpFactory(modules);
+  auto immediateFactory = ImmediateNodeFactory{};
+  auto instr            = instrFactory.createInstructionNode(instructionName);
+
+  // Fill the instructions operands
+  ASSERT_FALSE(instr->validate());
+  instr->addChild(std::make_unique<FakeRegisterNode>(destId));
+  ASSERT_FALSE(instr->validate());
+  instr->addChild(std::make_unique<FakeRegisterNode>(baseId));
+  ASSERT_FALSE(instr->validate());
+  instr->addChild(immediateFactory.createImmediateNode(convertToMem<W>(0)));
+  ASSERT_TRUE(instr->validate());
+
+  // Execute the instruction
+  instr->getValue(memoryAccess);
+
+  // Check result
+  ASSERT_EQ(memoryAccess.getRegisterValue(destId), loadValue);
+}
+
+/**
+ * Performs a store.
+ * \tparam T The unsigned integral of the value to be stored.
+ * \param testValue The integer value to be stored into memory.
+ * \param modules The modules to be passed to the architecture formula.
+ * \param instructionName The name of the store instruction to be tested.
+ * \param byteAmount The amount of bytes, that are stored into memory by
+ *        the specified instruction.
+ */
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value &&
+                            std::is_unsigned<T>::value,
+                        void>::type
+performStoreTest(T testValue,
+                 ArchitectureFormula::InitializerList modules,
+                 std::string instructionName,
+                 size_t byteAmount) {
   FakeRegister base, src;
   std::string baseId{"base"}, srcId{"src"};
   MemoryValue storeValue = convertToMem<T>(testValue);
@@ -110,21 +197,35 @@ void performStoreTest(T testValue,
 }
 }
 
-// Load Tests (unsigned)
+// Load Tests
+
+TEST(LoadStoreInstructionsTest, LoadDoubleWord) {
+  performLoadTestUnsigned<uint64_t, uint64_t>(
+      0x0123456789ABCDEF, {"rv32i", "rv64i"}, "ld", 8);
+}
 
 TEST(LoadStoreInstructionsTest, LoadWord) {
-  performLoadTest<uint32_t>(0xDEADBEEF, {"rv32i"}, "lw", 4);
-  performLoadTest<uint32_t>(0xDEADBEEF, {"rv32i", "rv64i"}, "lwu", 4);
+  performLoadTestUnsigned<uint32_t, uint32_t>(0xDEADBEEF, {"rv32i"}, "lw", 4);
+  performLoadTestUnsigned<uint32_t, uint64_t>(
+      0xDEADBEEF, {"rv32i", "rv64i"}, "lwu", 4);
+  performLoadTestSigned<int32_t, uint64_t>(
+      -123456789, {"rv32i", "rv64i"}, "lw", 4);
 }
 
-TEST(LoadStoreInstructionsTest, LoadHalfWordUnsigned) {
-  performLoadTest<uint16_t>(0xF00D, {"rv32i"}, "lhu", 2);
-  performLoadTest<uint16_t>(0xF00D, {"rv32i", "rv64i"}, "lhu", 2);
+TEST(LoadStoreInstructionsTest, LoadHalfWord) {
+  performLoadTestUnsigned<uint16_t, uint32_t>(0xF00D, {"rv32i"}, "lhu", 2);
+  performLoadTestUnsigned<uint16_t, uint64_t>(
+      0xF00D, {"rv32i", "rv64i"}, "lhu", 2);
+  performLoadTestSigned<int16_t, uint32_t>(-22353, {"rv32i"}, "lh", 2);
+  performLoadTestSigned<int16_t, uint64_t>(-22353, {"rv32i", "rv64i"}, "lh", 2);
 }
 
-TEST(LoadStoreInstructionsTest, LoadByteUnsigned) {
-  performLoadTest<uint16_t>(0x99, {"rv32i"}, "lbu", 1);
-  performLoadTest<uint16_t>(0x99, {"rv32i", "rv64i"}, "lbu", 1);
+TEST(LoadStoreInstructionsTest, LoadByte) {
+  performLoadTestUnsigned<uint8_t, uint32_t>(0x99, {"rv32i"}, "lbu", 1);
+  performLoadTestUnsigned<uint8_t, uint64_t>(
+      0x99, {"rv32i", "rv64i"}, "lbu", 1);
+  performLoadTestSigned<int8_t, uint32_t>(-42, {"rv32i"}, "lb", 1);
+  performLoadTestSigned<int8_t, uint64_t>(-42, {"rv32i", "rv64i"}, "lb", 1);
 }
 
 // Store Tests
@@ -148,11 +249,3 @@ TEST(LoadStoreInstructionsTest, StoreByte) {
   performStoreTest<uint8_t>(0x42, {"rv32i", "rv64i"}, "sb", 1);
 }
 
-TEST(LoadStoreInstructionsTest, doiashndf) {
-  MemoryValue c = convert<uint8_t>(
-      0x1, InstructionNode::RISCV_BITS_PER_BYTE, Endianness::LITTLE);
-  std::cout << c<< std::endl;
-  std::cout << c.get(0) <<  c.get(c.getSize() - 1) << std::endl;
-  uint16_t rc = convert<uint16_t>(c, Endianness::BIG);
-  std::cout << std::hex << rc << std::endl;
-}
