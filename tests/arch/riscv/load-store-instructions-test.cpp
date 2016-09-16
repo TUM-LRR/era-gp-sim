@@ -21,10 +21,7 @@
 
 #include "gtest/gtest.h"
 
-#include "arch/common/architecture-formula.hpp"
-#include "arch/common/architecture.hpp"
 #include "arch/riscv/immediate-node-factory.hpp"
-#include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
 
 #include "dummies.hpp"
@@ -127,6 +124,7 @@ performLoadTestSigned(T testValue,
   memoryAccess.setRegisterValue(baseId, convertToMem<W>(0));
   memoryAccess.setMemoryValueAt(0, loadValue);
 
+  // Create factory & instruction
   auto instrFactory     = setUpFactory(modules);
   auto immediateFactory = ImmediateNodeFactory{};
   auto instr            = instrFactory.createInstructionNode(instructionName);

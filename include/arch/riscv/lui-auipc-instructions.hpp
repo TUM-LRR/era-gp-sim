@@ -105,7 +105,7 @@ class LuiInstructionNode : public SpecialIntegerInstructionNode {
     // Perform a bitwise shift, filling the lower 12 bits with zeros
     offsetConverted <<= 12;
 
-    // Now it gets ugly! On non-RV32 architectures, the result of the last
+    // On non-RV32 architectures, the result of the last
     // operation (that has always a width of 32 bits) must be sign expanded,
     // to the architectures word size (e.g. 64 bit)
     UnsignedType result = offsetConverted;
@@ -160,26 +160,51 @@ class AuipcInstructionNode : public SpecialIntegerInstructionNode {
     MemoryValue programCounter     = memoryAccess.getRegisterValue("pc");
 
     // Convert to the unsigned type of the architecture
-    UnsignedType offsetConverted =
-        convert<UnsignedType>(offset, RISCV_ENDIANNESS);
+    InternalUnsigned offsetConverted =
+        convert<InternalUnsigned>(offset, RISCV_ENDIANNESS);
     UnsignedType programCounterConverted =
         convert<UnsignedType>(programCounter, RISCV_ENDIANNESS);
 
-    if (sizeof(UnsignedType) == 4) {
-      // For RV32I, the lower 12 bits have to be set to 0.
-      // Perform a bitwise shift, filling the lower 12 bits with zeros
-      offsetConverted <<= 12;
+    // Fill lower 12 bits with 0
+    offsetConverted <<= 12;
+
+    // On non-RV32 architectures, the result of the last
+    // operation (that has always a width of 32 bits) must be sign expanded,
+    // to the architectures word size (e.g. 64 bit)
+    UnsignedType result = offsetConverted;
+    // Check if sign-expansion is needed
+    if ((sizeof(UnsignedType) - sizeof(InternalUnsigned)) > 0) {
+      // Aquire the sign bit
+      constexpr auto length = sizeof(InternalUnsigned) * RISCV_BITS_PER_BYTE;
+      InternalUnsigned sign =
+          (offsetConverted & (InternalUnsigned{1} << (length - 1)));
+      // Do sign-expansion if needed
+      if (sign > 0) {
+        // Sign-expansion is quite easy here: All the bits above the lower
+        // 32 bits are set to 1.
+        UnsignedType mask = ~0;
+        for (size_t i = 0; i < length; ++i) {
+          mask <<= 1;
+        }
+        result |= mask;
+      }
     }
 
     // Add the offset to the program counter
-    programCounterConverted += offsetConverted;
+    programCounterConverted += result;
     // Convert the result back into a MemoryValue
-    MemoryValue result = convert<UnsignedType>(
+    MemoryValue resultMemoryValue = convert<UnsignedType>(
         programCounterConverted, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
 
-    memoryAccess.setRegisterValue(destination, result);
+    memoryAccess.setRegisterValue(destination, resultMemoryValue);
     return MemoryValue{};
   }
+
+ private:
+  /* The AUIPC instruction performs its operation ALWAYS on 32 bits
+    * (See RISC-V specification for reference). So a custom datatype is
+    * defined to use in the getValue() method. */
+  using InternalUnsigned = uint32_t;
 };
 
 
