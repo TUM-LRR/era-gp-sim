@@ -268,7 +268,7 @@ convert(T value, std::size_t bitsPerByte, Endianness byteOrder,
         chunk >>= rightShift;
       }
       byteData.push_back(static_cast<uint8_t>(chunk));
-      byteMask >>= 8;
+      byteMask = (sizeof(T) > 1) ? (byteMask >> 8) : 0;
       rightShift -= 8;
     }
     // Insert the data

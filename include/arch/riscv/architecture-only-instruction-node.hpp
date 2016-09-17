@@ -21,6 +21,7 @@
 #define ERAGPSIM_ARCH_RISCV_ARCHITECTURE_ONLY_INSTRUCTION_NODE_HPP_
 
 #include <QtGlobal>
+#include <climits>
 #include <functional>
 #include <string>
 #include <type_traits>
@@ -148,19 +149,15 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
    */
   WordSize _signExpand(OperationSize value) const {
     // Aquire the sign bit
-    constexpr auto length = sizeof(OperationSize) * RISCV_BITS_PER_BYTE;
+    constexpr auto length = sizeof(OperationSize) * CHAR_BIT;
     OperationSize sign    = (value & (OperationSize{1} << (length - 1)));
-    WordSize result       = value; // This zero-expands value
+    WordSize result       = value;// This zero-expands value
     // Do sign-expansion if needed
     if (sign > 0) {
       // Sign-expansion is quite easy here: All the bits above the lower
       // 32 bits are set to 1.
-      WordSize mask = ~0;
-      // Shift in a loop to prevent shift count overflow warnings/errors
-      for (size_t i = 0; i < length; ++i) {
-        mask <<= 1;
-      }
-      result |= mask;
+      constexpr auto requiredLength = sizeof(WordSize) * CHAR_BIT;
+      result |= (length < requiredLength) ? (~WordSize{0} << length) : 0;
     }
     return result;
   }
