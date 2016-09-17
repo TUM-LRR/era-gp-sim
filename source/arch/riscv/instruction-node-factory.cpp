@@ -19,6 +19,7 @@
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
+#include "arch/riscv/architecture-only-instructions.hpp"
 
 #include "common/utility.hpp"
 
