@@ -112,18 +112,15 @@ class LuiInstructionNode : public SpecialIntegerInstructionNode {
     // Check if sign-expansion is needed
     if ((sizeof(UnsignedType) - sizeof(InternalUnsigned)) > 0) {
       // Aquire the sign bit
-      constexpr auto length = sizeof(InternalUnsigned) * RISCV_BITS_PER_BYTE;
+      constexpr auto length = sizeof(InternalUnsigned) * CHAR_BIT;
       InternalUnsigned sign =
           (offsetConverted & (InternalUnsigned{1} << (length - 1)));
       // Do sign-expansion if needed
       if (sign > 0) {
         // Sign-expansion is quite easy here: All the bits above the lower
         // 32 bits are set to 1.
-        UnsignedType mask = ~0;
-        for (size_t i = 0; i < length; ++i) {
-          mask <<= 1;
-        }
-        result |= mask;
+        constexpr auto requiredLength = sizeof(UnsignedType) * CHAR_BIT;
+        result |= (length < requiredLength) ? (~UnsignedType{0} << length) : 0;
       }
     }
 
@@ -175,18 +172,15 @@ class AuipcInstructionNode : public SpecialIntegerInstructionNode {
     // Check if sign-expansion is needed
     if ((sizeof(UnsignedType) - sizeof(InternalUnsigned)) > 0) {
       // Aquire the sign bit
-      constexpr auto length = sizeof(InternalUnsigned) * RISCV_BITS_PER_BYTE;
+      constexpr auto length = sizeof(InternalUnsigned) * CHAR_BIT;
       InternalUnsigned sign =
           (offsetConverted & (InternalUnsigned{1} << (length - 1)));
       // Do sign-expansion if needed
       if (sign > 0) {
         // Sign-expansion is quite easy here: All the bits above the lower
         // 32 bits are set to 1.
-        UnsignedType mask = ~0;
-        for (size_t i = 0; i < length; ++i) {
-          mask <<= 1;
-        }
-        result |= mask;
+        constexpr auto requiredLength = sizeof(UnsignedType) * CHAR_BIT;
+        result |= (length < requiredLength) ? (~UnsignedType{0} << length) : 0;
       }
     }
 
