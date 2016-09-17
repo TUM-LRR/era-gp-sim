@@ -32,8 +32,8 @@ struct ArchDeserializationTestFixture : public ::testing::Test {
   ArchDeserializationTestFixture() {
     // clang-format off
     instructionSet.addInstructions(InstructionSet({
-      {"add", InstructionKey({{"opcode", 6}, {"function", 3}})},
-      {"sub", InstructionKey({{"opcode", 9}, {"function", 3}})}
+      {"add", InstructionKey({{"opcode", 6}, {"function", 3}}), "R"},
+      {"sub", InstructionKey({{"opcode", 9}, {"function", 3}}), "R"}
     }));
     // clang-format on
 
@@ -76,6 +76,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
   EXPECT_EQ(architecture.getAlignmentBehavior(),
             Architecture::AlignmentBehavior::STRICT);
   EXPECT_EQ(architecture.getWordSize(), 32);
+  EXPECT_EQ(architecture.getByteSize(), 8);
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
 
@@ -98,13 +99,14 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
   EXPECT_EQ(architecture.getAlignmentBehavior(),
             Architecture::AlignmentBehavior::RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
+  EXPECT_EQ(architecture.getByteSize(), 8);
 
   // clang-format off
   instructionSet.addInstruction({"sll", InstructionKey({
       {"opcode", 6},
       {"function", 6},
       {"width", 6}
-  })});
+  }), "R"});
   // clang-format on
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
@@ -128,16 +130,17 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
   EXPECT_EQ(architecture.getAlignmentBehavior(),
             Architecture::AlignmentBehavior::RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
+  EXPECT_EQ(architecture.getByteSize(), 8);
 
   // clang-format off
   instructionSet.addInstruction({"sll", InstructionKey({
       {"opcode", 6},
       {"function", 6},
       {"width", 6}
-  })});
+  }), "R"});
   // clang-format on
 
-  ASSERT_EQ(architecture.getInstructions(), instructionSet);
+  EXPECT_EQ(architecture.getInstructions(), instructionSet);
 
   // clang-format off
   auto f0 = RegisterInformation()
