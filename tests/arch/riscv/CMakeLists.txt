@@ -3,18 +3,12 @@
 ########################################
 
 set(TEST_ARCH_RISCV_SOURCES
-	#arch-riscv-tests.cpp These must be adapted, at the moment they do not compile
-	arch-riscv-integer-instructions-test.cpp
-	#arch-riscv-tests.cpp
-        #formats-test.cpp
+    arch-riscv-integer-instructions-test.cpp
+    load-store-instructions-test.cpp
+    lui-auipc-instructions-test.cpp
+    dummies.cpp
+    #formats-test.cpp The tests fail atm
 )
-
-########################################
-# PACKAGES
-########################################
-
-#find_package(GTest REQUIRED)
-#include_directories(${GTEST_INCLUDE_DIRS})
 
 ########################################
 # TARGET

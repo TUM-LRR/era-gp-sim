@@ -30,81 +30,11 @@
 #include "arch/riscv/instruction-node.hpp"
 #include "core/conversions.hpp"
 
+#include "dummies.hpp"
+
 using namespace riscv;
 
 namespace {
-template <typename IntType>
-MemoryValue convertToMem(IntType t) {
-  return convert<IntType>(t, InstructionNode::RISCV_BITS_PER_BYTE,
-                          InstructionNode::RISCV_ENDIANNESS);
-}
-
-class FakeRegister {
- public:
-  FakeRegister() : FakeRegister(0) {}
-  FakeRegister(uint64_t value) : _value(convertToMem<uint64_t>(value)) {}
-  FakeRegister(MemoryValue& v) : _value(v) {}
-
-  void set(uint64_t newValue) { _value = convertToMem<uint64_t>(newValue); }
-  void set(MemoryValue& v) { _value = v; }
-
-  MemoryValue get() { return _value; }
-
- private:
-  MemoryValue _value;
-};
-
-MemoryValue to32BitMemoryValue(uint32_t value) {
-  return convertToMem<uint32_t>(value);
-}
-
-MemoryValue to64BitMemoryValue(uint64_t value) {
-  return convertToMem<uint64_t>(value);
-}
-
-class FakeRegisterNode : public RegisterNode {
- public:
-  explicit FakeRegisterNode(std::string& regId)
-      : RegisterNode(regId), _id(regId) {}
-
-  MemoryValue getValue(DummyMemoryAccess& access) const override {
-    return access.getRegisterValue(_id);
-  }
-
-  MemoryValue assemble() const override { return MemoryValue{}; }
-
-  const std::string& getIdentifier() const override { return _id; }
-
- private:
-  std::string& _id;
-};
-
-class DummyMemoryAccessImpl : public DummyMemoryAccess {
- public:
-  void addRegister(std::string token, FakeRegister& reg) {
-    _register.emplace(token, reg);
-  }
-
-  MemoryValue getRegisterValue(std::string& token) override {
-    return _register.at(token).get();
-  }
-  void setRegisterValue(std::string& token, MemoryValue value) override {
-    FakeRegister& desiredRegister = _register.at(token);
-    desiredRegister.set(value);
-  }
-
- private:
-  std::unordered_map<std::string, FakeRegister&> _register;
-};
-
-InstructionNodeFactory setUpFactory(
-    ArchitectureFormula::InitializerList modules =
-        ArchitectureFormula::InitializerList()) {
-  auto formula = ArchitectureFormula("riscv", modules);
-  auto riscv = Architecture::Brew(formula);
-  return InstructionNodeFactory(riscv.getInstructions(), riscv);
-}
-
 void testIntegerInstructionValidation(DummyMemoryAccess& memAccess,
                                       InstructionNodeFactory& instrF,
                                       ImmediateNodeFactory& immF,

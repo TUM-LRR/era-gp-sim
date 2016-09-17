@@ -19,6 +19,7 @@
 #define ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
 
 #include <memory>
+#include <QtGlobal>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 

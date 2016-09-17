@@ -143,7 +143,7 @@ convert(const MemoryValue& memoryValue, Endianness byteOrder,
         SignedRepresentation representation) {
   std::size_t bitsInT = std::numeric_limits<T>::digits; // Bits in type T
   std::size_t bitsInU = std::numeric_limits<U>::digits; // Bits in type U
-  assert(bitsInT >= bitsInU - 1);
+  assert(bitsInT <= bitsInU);
   std::size_t numberOfBits = std::min(bitsInU, memoryValue.getSize());
   U unsignedRawValue = convert<U>(memoryValue, byteOrder);
 
