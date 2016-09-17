@@ -1,3 +1,3 @@
-#/bin/bash
+#!/bin/bash
 
-yaml2json -spr .
+find $PWD -name "*.yaml" | xargs ../scripts/y2j.py
