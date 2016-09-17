@@ -133,7 +133,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   virtual WordSize _compute(OperationSize first, OperationSize second) const
       noexcept {
     assert(_operation);
-    return operation(first, second);
+    return _operation(first, second);
   }
 
   OperationSize _getLower5Bits(OperationSize op) const {
@@ -146,7 +146,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
    * value is set.
    * \param value The value to be sign expanded
    */
-  WordSize _signExpand(OperationSize value) {
+  WordSize _signExpand(OperationSize value) const {
     // Aquire the sign bit
     constexpr auto length = sizeof(OperationSize) * RISCV_BITS_PER_BYTE;
     OperationSize sign    = (value & (OperationSize{1} << (length - 1)));
@@ -166,12 +166,12 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   }
 
  private:
-  OperationSize _child(size_t index, DummyMemoryAccess& memoryAccess) {
+  OperationSize _child(size_t index, DummyMemoryAccess& memoryAccess) const {
     auto memory = _children[index]->getValue(memoryAccess);
     return convert<OperationSize>(memory, RISCV_ENDIANNESS);
   }
 
-  ValidationResult _validateNumberOfChildren() {
+  ValidationResult _validateNumberOfChildren() const {
     // a integer instruction needs exactly 3 operands
     if (_children.size() != 3) {
       return ValidationResult::fail(
@@ -182,7 +182,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
-  ValidationResult _validateImmediateSize() {
+  ValidationResult _validateImmediateSize() const {
     if (_isImmediate && _children[2]->getType() == Type::IMMEDIATE) {
       // no memory access is needed for a immediate node
       DummyMemoryAccessStub stub;
@@ -208,7 +208,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
-  ValidationResult _validateOperandsForImmediateInstructions() {
+  ValidationResult _validateOperandsForImmediateInstructions() const {
     if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
         !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
@@ -220,7 +220,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
-  ValidationResult _validateOperandsForNonImmediateInstructions() {
+  ValidationResult _validateOperandsForNonImmediateInstructions() const {
     // a register integer instruction needs three register operands
     if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3)) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(

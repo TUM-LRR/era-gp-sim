@@ -167,6 +167,54 @@ void initializeLoadStoreInstructions(
   });
 }
 
+void initializeRV64OnlyInstructions(
+    InstructionNodeFactory::InstructionMap& _instructionMap) {
+  using WordSize      = uint64_t;
+  using OperationSize = uint32_t;
+  _instructionMap.emplace("addw", [](InstructionInformation& info) {
+    return std::make_unique<AddOnlyInstructionNode<WordSize, OperationSize>>(
+        info, true);
+  });
+  _instructionMap.emplace("addiw", [](InstructionInformation& info) {
+    return std::make_unique<AddOnlyInstructionNode<WordSize, OperationSize>>(
+        info, false);
+  });
+  _instructionMap.emplace("subw", [](InstructionInformation& info) {
+    return std::make_unique<SubOnlyInstructionNode<WordSize, OperationSize>>(
+        info);
+  });
+  _instructionMap.emplace("sllw", [](InstructionInformation& info) {
+    return std::make_unique<
+        ShiftLogicalLeftOnlyInstructionNode<WordSize, OperationSize>>(info,
+                                                                      false);
+  });
+  _instructionMap.emplace("slliw", [](InstructionInformation& info) {
+    return std::make_unique<
+        ShiftLogicalLeftOnlyInstructionNode<WordSize, OperationSize>>(info,
+                                                                      true);
+  });
+  _instructionMap.emplace("srlw", [](InstructionInformation& info) {
+    return std::make_unique<
+        ShiftLogicalRightOnlyInstructionNode<WordSize, OperationSize>>(info,
+                                                                       false);
+  });
+  _instructionMap.emplace("srliw", [](InstructionInformation& info) {
+    return std::make_unique<
+        ShiftLogicalRightOnlyInstructionNode<WordSize, OperationSize>>(info,
+                                                                       true);
+  });
+  _instructionMap.emplace("sraw", [](InstructionInformation& info) {
+    return std::make_unique<
+        ShiftArithmeticRightOnlyInstructionNode<WordSize, OperationSize>>(
+        info, false);
+  });
+  _instructionMap.emplace("sraiw", [](InstructionInformation& info) {
+    return std::make_unique<
+        ShiftArithmeticRightOnlyInstructionNode<WordSize, OperationSize>>(info,
+                                                                          true);
+  });
+}
+
 }// private namespace
 
 void InstructionNodeFactory::initializeInstructionMap(
@@ -188,6 +236,7 @@ void InstructionNodeFactory::initializeInstructionMap(
     initializeLoadStoreInstructions<
         InstructionNodeFactory::RV64_signed_integral_t,
         InstructionNodeFactory::RV64_integral_t>(wordSize, _instructionMap);
+    initializeRV64OnlyInstructions(_instructionMap);
   } else {
     // The given architecture does not define a valid word_size to create
     // IntegerInstructions
