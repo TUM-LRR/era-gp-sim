@@ -40,11 +40,16 @@
     ASSERT_TRUE(!state.errorList.empty());                               \
   }
 
-// We need to surpass some clang warnings, b/c we intentionally want to use
+// We need to surpass some warnings, b/c we intentionally want to use
 // unusual precedences.
+#if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wparentheses"
 #pragma clang diagnostic ignored "-Wshift-op-parentheses"
+#elif defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4554)
+#endif
 
 TEST(ExpressionCompilerClike, simple) {
   // Parsing some numbers.
@@ -91,4 +96,8 @@ TEST(ExpressionCompilerClike, errors) {
 }
 
 // Now we can return the warning stuff to normal.
+#if defined(__clang__)
 #pragma clang diagnostic pop
+#elif defined(_MSC_VER)
+#pragma warning(pop)
+#endif

@@ -388,7 +388,7 @@ class StringParserEngine {
       // clang-format off
       case 'a': match  = '\a'; break;
       case 'b': match  = '\b'; break;
-      case 'e': match  = '\e'; break;
+      case 'e': match  = '\x1b'; break;
       case 'f': match  = '\f'; break;
       case 'n': match  = '\n'; break;
       case 'r': match  = '\r'; break;
