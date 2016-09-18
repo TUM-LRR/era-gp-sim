@@ -272,17 +272,20 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
  * Superclass for instructions, that have a word variant in rv64 but cannot use
  * the WordInstructionWrapper. This may be due to special return values that
  * need special treatment (e.g. division by 0).
- * It is intended that the instructions derive from this class and handle the word variant and special value treatment.
- * This class provided utility functions for the task of creating word sized values.
+ * It is intended that the instructions derive from this class and handle the
+ * word variant and special value treatment.
+ * This class provided utility functions for the task of creating word sized
+ * values.
  * \tparam \see IntegerInstructionNode template param
  */
 template <typename SizeType>
 class WordableIntegerInstruction : public IntegerInstructionNode<SizeType> {
  public:
-    /**
-   * \param info InstructionInformation for this instruction
-   * \param isWordInstruction determinates if this instance represents a word instruction
-   */
+  /**
+ * \param info InstructionInformation for this instruction
+ * \param isWordInstruction determinates if this instance represents a word
+ * instruction
+ */
   WordableIntegerInstruction(InstructionInformation& info,
                              bool isWordInstruction)
       : IntegerInstructionNode<SizeType>(info, false),
@@ -293,21 +296,41 @@ class WordableIntegerInstruction : public IntegerInstructionNode<SizeType> {
 
  protected:
   /**
-   * Truncates n to represent a value that could fit into a word representation (so half of the current bits).
-   * The result is sign-extended under certain conditions: isSignedOperation and n represents a negative value.
-   * The result is sign-extended (even when upper condition is false) if signExtendAnyway is true
-   * \param n The value that will be truncated to fit into a representation half of its bit size
-   * \param isSignedOperation If true, n is treated as a signed value, otherwise n is treated as an unsigned value
-   * \param signExtendAnyway If true, n will be sign-extended no matter what the signedness of n is
+   * Truncates n to represent a value that could fit into a word representation
+   * (so half of the current bits).
+   * The result is sign-extended under certain conditions: isSignedOperation and
+   * n represents a negative value.
+   * The result is sign-extended (even when upper condition is false) if
+   * signExtendAnyway is true
+   * \param n The value that will be truncated to fit into a representation half
+   * of its bit size
+   * \param isSignedOperation If true, n is treated as a signed value, otherwise
+   * n is treated as an unsigned value
    * \return worded n
    */
-  SizeType toWord(SizeType n, bool isSignedOperation,
-                  bool signExtendAnyway) const {
+  SizeType toWord(SizeType n, bool isSignedOperation) const {
     bool negative = (n & SIGN_MASK) > 0;
-    if (signExtendAnyway || (isSignedOperation && negative)) {
+    if (isSignedOperation && negative) {
       n = n | SIGN_EXTENSION;
     } else {
       n = n & WORD_MASK;
+    }
+    return n;
+  }
+
+  /**
+   * Returns a possible sign-extended value of n. n is treated as a
+   * "worded"-version, so the sign-bit is expected to be at index
+   * sizeof(SizeType)/2 -1.
+   * If the signbit is set, the result is signextended to the whole range of
+   * SizeType
+   * \param n The value to be sign-extended
+   * \return A sign-extended n, if n is negative using the signbit of the worded
+   * version of n, otherwise n is returned
+   */
+  SizeType signExtend(SizeType n) const {
+    if ((n & SIGN_MASK_WORD) > 0) {
+      return n | SIGN_EXTENSION;
     }
     return n;
   }
@@ -318,9 +341,13 @@ class WordableIntegerInstruction : public IntegerInstructionNode<SizeType> {
   bool isWordInstruction() const { return _isWordInstruction; }
 
  private:
-  /** and-bitmask for retrieving the sign bit*/
+  /** and-bitmask for retrieving the sign bit of a SizeType-ranged value*/
   static constexpr SizeType SIGN_MASK = SizeType(1)
                                         << (sizeof(SizeType) * CHAR_BIT - 1);
+  /** and-bitmask for retrieving the sign bit of a half of SizeType-ranged
+   * value*/
+  static constexpr SizeType SIGN_MASK_WORD =
+      SizeType{1} << ((sizeof(SizeType) / 2) * CHAR_BIT - 1);
   /** and-bitmask to only preserve the lower half of bits*/
   static constexpr SizeType WORD_MASK = SizeType(-1) >>
                                         ((sizeof(SizeType) * CHAR_BIT) / 2);
@@ -334,7 +361,8 @@ class WordableIntegerInstruction : public IntegerInstructionNode<SizeType> {
 };
 
 /**
- * Represents a RISC-V "div/divu/divw/divuw" instruction. For more information see RISC-V
+ * Represents a RISC-V "div/divu/divw/divuw" instruction. For more information
+ * see RISC-V
  * specification
  * \tparam unsigned integer type that can hold exactly the range of values that
  * divu should operate on
@@ -344,12 +372,12 @@ class WordableIntegerInstruction : public IntegerInstructionNode<SizeType> {
 template <typename UnsignedWord, typename SignedWord>
 class DivisionInstruction : public WordableIntegerInstruction<UnsignedWord> {
  public:
-/**
- * Creates a div or divu instruction depending on the arguments
- * \param info InstructionInformation for this instruction node
- * \param isSignedDivision boolean to indicate signedness of the division; Use
- * true for signed x signed (div); use false for unsigned x unsigned (divu)
- */
+  /**
+   * Creates a div or divu instruction depending on the arguments
+   * \param info InstructionInformation for this instruction node
+   * \param isSignedDivision boolean to indicate signedness of the division; Use
+   * true for signed x signed (div); use false for unsigned x unsigned (divu)
+   */
   DivisionInstruction(InstructionInformation& info, bool isSignedDivision,
                       bool isWordInstruction)
       : WordableIntegerInstruction<UnsignedWord>(info, isWordInstruction),
@@ -368,8 +396,8 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedWord> {
     UnsignedWord op1 = operand1;
     UnsignedWord op2 = operand2;
     if (this->isWordInstruction()) {
-      op1 = this->toWord(op1, _isSignedDivision, false);
-      op2 = this->toWord(op2, _isSignedDivision, false);
+      op1 = this->toWord(op1, _isSignedDivision);
+      op2 = this->toWord(op2, _isSignedDivision);
     }
 
     if (op2 == 0) {
@@ -377,7 +405,6 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedWord> {
       return UnsignedWord(-1);
     }
     UnsignedWord result = 0;
-    bool resultIsNegative = false;
     if (_isSignedDivision && op1 == OVERFLOW_DIVIDENT &&
         op2 == OVERFLOW_DIVISOR) {
       // Signed Division overflow
@@ -396,12 +423,14 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedWord> {
       SignedWord sop2 = static_cast<SignedWord>(op2);
       SignedWord sresult = sop1 / sop2;
       result = static_cast<UnsignedWord>(sresult);
-      resultIsNegative = sresult < 0;
     } else {
       result = op1 / op2;
     }
     if (this->isWordInstruction()) {
-      result = this->toWord(result, _isSignedDivision, resultIsNegative);
+      // The RISC-V specification states that the result of an word instruction
+      // is sign-extended regardless if the instruction produces unsigned
+      // results (see specification v2.1 chapter 4.2)
+      result = this->signExtend(result);
     }
 
     return result;
@@ -418,7 +447,8 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedWord> {
 };
 
 /**
- * Represents a RISC-V "rem/remu/remw/remuw" instruction. For more information see RISC-V
+ * Represents a RISC-V "rem/remu/remw/remuw" instruction. For more information
+ * see RISC-V
  * specification
  * \tparam unsigned integer type that can hold exactly the range of values that
  * remu should operate on
@@ -426,15 +456,15 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedWord> {
  * rem should operate on
  */
 template <typename UnsignedWord, typename SignedWord>
-class RemainderInstruction
-    : public WordableIntegerInstruction<UnsignedWord> {
+class RemainderInstruction : public WordableIntegerInstruction<UnsignedWord> {
  public:
-/**
- * Creates a rem or remu instruction depending on the constructor arguments
- * \param info InstructionInformation for this instruction node
- * \param isSignedRemainder boolean to indicate the signedness of the operation:
- * use true for signed (rem); use false for unsigned(remu)
- */
+  /**
+   * Creates a rem or remu instruction depending on the constructor arguments
+   * \param info InstructionInformation for this instruction node
+   * \param isSignedRemainder boolean to indicate the signedness of the
+   * operation:
+   * use true for signed (rem); use false for unsigned(remu)
+   */
   RemainderInstruction(InstructionInformation& info, bool isSignedRemainder,
                        bool isWordInstruction)
       : WordableIntegerInstruction<UnsignedWord>(info, isWordInstruction),
@@ -453,8 +483,8 @@ class RemainderInstruction
     UnsignedWord op1 = operand1;
     UnsignedWord op2 = operand2;
     if (this->isWordInstruction()) {
-      op1 = this->toWord(op1, _isSignedRemainder, false);
-      op2 = this->toWord(op2, _isSignedRemainder, false);
+      op1 = this->toWord(op1, _isSignedRemainder);
+      op2 = this->toWord(op2, _isSignedRemainder);
     }
     if (op2 == 0) {
       // Division by zero
@@ -468,7 +498,6 @@ class RemainderInstruction
     }
 
     UnsignedWord result = 0;
-    bool resultIsNegative = false;
     if (_isSignedRemainder) {
       // this is a rather ugly solution to perform a native signed modulus
       // operation. The
@@ -481,14 +510,16 @@ class RemainderInstruction
       SignedWord sop1 = static_cast<SignedWord>(op1);
       SignedWord sop2 = static_cast<SignedWord>(op2);
       SignedWord sresult = sop1 % sop2;
-      resultIsNegative = sresult < 0;
       result = static_cast<UnsignedWord>(sresult);
     } else {
       result = op1 % op2;
     }
 
     if (this->isWordInstruction()) {
-      result = this->toWord(result, _isSignedRemainder, resultIsNegative);
+        // The RISC-V specification states that the result of an word instruction
+        // is sign-extended regardless if the instruction produces unsigned
+        // results (see specification v2.1 chapter 4.2)
+      result = this->signExtend(result);
     }
     return result;
   }
