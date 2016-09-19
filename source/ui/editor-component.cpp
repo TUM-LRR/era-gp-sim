@@ -36,58 +36,65 @@ EditorComponent::EditorComponent(QQmlContext* projectContext, QObject* parent)
 
   // TODO select colors according to a theme/possibility to change colors
 
-  //Add all instruction keywords to the syntax highlighter
+  // Add all instruction keywords to the syntax highlighter
   QTextCharFormat instructionFormat;
   instructionFormat.setForeground(Qt::darkBlue);
   instructionFormat.setFontWeight(QFont::Bold);
-  for (const std::pair<std::string, InstructionInformation>& instructionPair : instructionSet) {
+  for (const std::pair<std::string, InstructionInformation>& instructionPair :
+       instructionSet) {
     if (instructionPair.second.hasMnemonic()) {
       // is this check needed?
       std::string keywordRegex;
       // std::string keywordRegex =
       // parserInterface.getSyntaxInstruction(instructionPair.second.getMnemonic());
-      //TODO QRegularExpression regex(keywordRegex, QRegularExpression::CaseInsensitiveOption);
+      // TODO QRegularExpression regex(keywordRegex,
+      // QRegularExpression::CaseInsensitiveOption);
       QRegularExpression regex;
       KeywordRule keyword{regex, instructionFormat};
       _keywords.push_back(keyword);
     }
   }
 
-  //Add the immediate regex to the syntax highlighter
+  // Add the immediate regex to the syntax highlighter
   QTextCharFormat immediateFormat;
   immediateFormat.setForeground(Qt::red);
   immediateFormat.setFontWeight(QFont::Bold);
 
-  //std::string immediateRegex = parserInterface.getSyntaxImmediate();
-  //_keywords.push_back(KeywordRule{QRegularExpression(immediateRegex), immediateFormat});
+  // std::string immediateRegex = parserInterface.getSyntaxImmediate();
+  //_keywords.push_back(KeywordRule{QRegularExpression(immediateRegex),
+  // immediateFormat});
 
-  //Add the comment regex to the syntax highlighter
+  // Add the comment regex to the syntax highlighter
   QTextCharFormat commentFormat;
   commentFormat.setForeground(Qt::green);
 
-  //std::string commentRegex = parserInterface.getSyntaxComment();
-  //_keywords.push_back(KeywordRule{QRegularExpression(commentRegex), commentFormat});
+  // std::string commentRegex = parserInterface.getSyntaxComment();
+  //_keywords.push_back(KeywordRule{QRegularExpression(commentRegex),
+  // commentFormat});
 
-  //Add the register regex to the syntax highlighter
+  // Add the register regex to the syntax highlighter
   QTextCharFormat registerFormat;
   registerFormat.setForeground(Qt::yellow);
   registerFormat.setFontWeight(QFont::Bold);
 
-  //RegisterContainer registerContainer = architectureAccess.getRegisterSet();
+  // RegisterContainer registerContainer = architectureAccess.getRegisterSet();
   RegisterContainer registerContainer;
 
-  for(const RegisterInformation& registerInfo : registerContainer) {
-      //std::string registerRegex = parserInterface.getSyntaxRegister(registerInfo.getName());
-      //_keywords.push_back(KeywordRule{QRegularExpression(registerRegex), registerFormat});
+  for (const RegisterInformation& registerInfo : registerContainer) {
+    // std::string registerRegex =
+    // parserInterface.getSyntaxRegister(registerInfo.getName());
+    //_keywords.push_back(KeywordRule{QRegularExpression(registerRegex),
+    // registerFormat});
   }
 
-  //Add the label regex to the syntax highlighter
+  // Add the label regex to the syntax highlighter
   QTextCharFormat labelFormat;
   labelFormat.setForeground(Qt::red);
   labelFormat.setFontWeight(QFont::Bold);
 
-  //std::string labelRegex = parserInterface.getSyntaxLabel();
-  //_keywords.push_back(KeywordRule{QRegularExpression(labelRegex), labelFormat});
+  // std::string labelRegex = parserInterface.getSyntaxLabel();
+  //_keywords.push_back(KeywordRule{QRegularExpression(labelRegex),
+  // labelFormat});
 }
 
 void EditorComponent::init(QQuickTextDocument* qDocument) {

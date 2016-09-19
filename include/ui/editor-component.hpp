@@ -33,6 +33,11 @@
 #include "parser/compile-error.hpp"
 #include "ui/syntaxhighlighter.hpp"
 
+/**
+ * This class is the c++ component for the QML Editor and manages its
+ * communication to other parts of the ui and the core.
+ *
+ */
 class EditorComponent : public QObject {
   Q_OBJECT
  public:
@@ -55,16 +60,39 @@ class EditorComponent : public QObject {
    */
   Q_INVOKABLE void sendText(QString text);
 
+  /**
+   * Set a new list of errors to display in the editor.
+   *
+   * \param errorList List of CompileError objects.
+   *
+   */
   void setErrorList(std::vector<CompileError>&& errorList);
+
+  /**
+   * Set the current line of execution, in order to correctly display it in the
+   * editor.
+   *
+   *  \param line The line number.
+   *
+   */
   void setCurrentLine(int line);
+
+
   // void setMakroList(std::vector<Makro>&& makroList);
 
  private:
+  /** The syntax Highlighter of this editor. Is initialized in the init()
+   * method. TODO unique_ptr?? */
   std::unique_ptr<SyntaxHighlighter> _highlighter;
+
+  /** A list of keywords to initialize the syntax highlighter. */
   std::vector<KeywordRule> _keywords;
 
  signals:
+  /** A signal to delete all the errors in the editor. */
   void deleteErrors();
+
+  /** A signal to add an error in the editor. */
   void addError(QString message, int line, QColor color);
 };
 
