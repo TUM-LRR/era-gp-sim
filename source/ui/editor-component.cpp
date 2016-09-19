@@ -23,37 +23,71 @@
 #include <cassert>
 #include <iostream>
 
+#include "arch/common/instruction-information.hpp"
+#include "arch/common/instruction-set.hpp"
+#include "arch/common/register-container.hpp"
+#include "arch/common/register-information.hpp"
+
 EditorComponent::EditorComponent(QQmlContext* projectContext, QObject* parent)
 : QObject(parent) {
   projectContext->setContextProperty("editor", this);
+  // InstructionSet instructionSet = architectureAccess.getInstructionSet();
+  InstructionSet instructionSet;// Placeholder until the line above works
 
-  // test
-  QTextCharFormat format;
-  format.setForeground(Qt::darkBlue);
-  format.setFontWeight(QFont::Bold);
-  _keywords.push_back(
-      KeywordRule{QRegularExpression("\\badd\\b",
-                                     QRegularExpression::CaseInsensitiveOption),
-                  format});
-  _keywords.push_back(
-      KeywordRule{QRegularExpression("\\baddi\\b",
-                                     QRegularExpression::CaseInsensitiveOption),
-                  format});
-  _keywords.push_back(
-      KeywordRule{QRegularExpression("\\bmul\\b",
-                                     QRegularExpression::CaseInsensitiveOption),
-                  format});
-  _keywords.push_back(
-      KeywordRule{QRegularExpression("\\bdiv\\b",
-                                     QRegularExpression::CaseInsensitiveOption),
-                  format});
-  _keywords.push_back(
-      KeywordRule{QRegularExpression("\\band\\b",
-                                     QRegularExpression::CaseInsensitiveOption),
-                  format});
-  _keywords.push_back(KeywordRule{
-      QRegularExpression("\\bor\\b", QRegularExpression::CaseInsensitiveOption),
-      format});
+  // TODO select colors according to a theme/possibility to change colors
+
+  //Add all instruction keywords to the syntax highlighter
+  QTextCharFormat instructionFormat;
+  instructionFormat.setForeground(Qt::darkBlue);
+  instructionFormat.setFontWeight(QFont::Bold);
+  for (const std::pair<std::string, InstructionInformation>& instructionPair : instructionSet) {
+    if (instructionPair.second.hasMnemonic()) {
+      // is this check needed?
+      std::string keywordRegex;
+      // std::string keywordRegex =
+      // parserInterface.getSyntaxInstruction(instructionPair.second.getMnemonic());
+      //TODO QRegularExpression regex(keywordRegex, QRegularExpression::CaseInsensitiveOption);
+      QRegularExpression regex;
+      KeywordRule keyword{regex, instructionFormat};
+      _keywords.push_back(keyword);
+    }
+  }
+
+  //Add the immediate regex to the syntax highlighter
+  QTextCharFormat immediateFormat;
+  immediateFormat.setForeground(Qt::red);
+  immediateFormat.setFontWeight(QFont::Bold);
+
+  //std::string immediateRegex = parserInterface.getSyntaxImmediate();
+  //_keywords.push_back(KeywordRule{QRegularExpression(immediateRegex), immediateFormat});
+
+  //Add the comment regex to the syntax highlighter
+  QTextCharFormat commentFormat;
+  commentFormat.setForeground(Qt::green);
+
+  //std::string commentRegex = parserInterface.getSyntaxComment();
+  //_keywords.push_back(KeywordRule{QRegularExpression(commentRegex), commentFormat});
+
+  //Add the register regex to the syntax highlighter
+  QTextCharFormat registerFormat;
+  registerFormat.setForeground(Qt::yellow);
+  registerFormat.setFontWeight(QFont::Bold);
+
+  //RegisterContainer registerContainer = architectureAccess.getRegisterSet();
+  RegisterContainer registerContainer;
+
+  for(const RegisterInformation& registerInfo : registerContainer) {
+      //std::string registerRegex = parserInterface.getSyntaxRegister(registerInfo.getName());
+      //_keywords.push_back(KeywordRule{QRegularExpression(registerRegex), registerFormat});
+  }
+
+  //Add the label regex to the syntax highlighter
+  QTextCharFormat labelFormat;
+  labelFormat.setForeground(Qt::red);
+  labelFormat.setFontWeight(QFont::Bold);
+
+  //std::string labelRegex = parserInterface.getSyntaxLabel();
+  //_keywords.push_back(KeywordRule{QRegularExpression(labelRegex), labelFormat});
 }
 
 void EditorComponent::init(QQuickTextDocument* qDocument) {
