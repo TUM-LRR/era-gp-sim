@@ -236,7 +236,7 @@ class Multiregex {
     // One time iterate over the complete string.
     for (size_t i = 0; i < str.size(); ++i) {
       // clang-format off
-            char prev = i - 1 >= 0         ? str[i - 1] : '\0';
+            char prev = i     >= 1         ? str[i - 1] : '\0';
             char next = i + 1 < str.size() ? str[i + 1] : '\0';
       // clang-format on
 
