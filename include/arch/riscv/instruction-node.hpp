@@ -64,6 +64,8 @@ class InstructionNode : public AbstractSyntaxTreeNode {
       SignedRepresentation::TWOS_COMPLEMENT;
   /** bits per byte in RISC-V architecture*/
   static constexpr std::size_t RISCV_BITS_PER_BYTE = 8;
+  /** string identifier of the program counter in riscv */
+  static constexpr auto RISCV_PROGRAM_COUNTER_ID = "pc";
 
  private:
   InstructionInformation& _instructionInformation;

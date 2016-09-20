@@ -43,7 +43,7 @@ template <typename T>
 typename std::enable_if<std::is_integral<T>::value &&
                             std::is_unsigned<T>::value,
                         void>::type
-performLuiTest(uint32_t input,
+performLuiTest(int32_t input,
                T expectedOutput,
                ArchitectureFormula::InitializerList modules) {
   // Init memory access & registers
@@ -62,7 +62,7 @@ performLuiTest(uint32_t input,
   instr->addChild(std::make_unique<FakeRegisterNode>(destId));
   ASSERT_FALSE(instr->validate());
   instr->addChild(
-      immediateFactory.createImmediateNode(convertToMem<uint32_t>(input)));
+      immediateFactory.createImmediateNode(convertToMemSigned<int32_t>(input)));
   ASSERT_TRUE(instr->validate());
 
   // Execute
@@ -125,6 +125,32 @@ performAuipcTest(uint32_t input,
 }
 
 }// Private namespace
+
+TEST(LuiAuipcInstructionsTest, Validation) {
+  std::string destId{""};
+  auto instrFactory     = setUpFactory({"rv32i"});
+  auto immediateFactory = ImmediateNodeFactory{};
+  auto lui              = instrFactory.createInstructionNode("lui");
+  auto auipc            = instrFactory.createInstructionNode("auipc");
+
+  ASSERT_FALSE(lui->validate() || auipc->validate());
+  // Just add some dummy registers
+  lui->addChild(std::make_unique<FakeRegisterNode>(destId));
+  auipc->addChild(std::make_unique<FakeRegisterNode>(destId));
+  ASSERT_FALSE(lui->validate() || auipc->validate());
+  // Add an immediate value, that can't be represented by 20 bits
+  lui->addChild(
+      immediateFactory.createImmediateNode(convertToMem<uint32_t>(1 << 20)));
+  // Add a valid immediate
+  auipc->addChild(
+      immediateFactory.createImmediateNode(convertToMem<uint32_t>(1)));
+  ASSERT_FALSE(lui->validate());
+  ASSERT_TRUE(auipc->validate());
+  // Add another immediate (which is not allowed)
+  auipc->addChild(
+      immediateFactory.createImmediateNode(convertToMem<uint32_t>(1)));
+  ASSERT_FALSE(auipc->validate());
+}
 
 TEST(LuiAuipcInstructionsTest, Lui32) {
   performLuiTest<uint32_t>(1, 1 << 12, {"rv32i"});
