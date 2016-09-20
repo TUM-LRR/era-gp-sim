@@ -29,10 +29,10 @@
 // clang-format on
 
 namespace {
-  constexpr std::size_t scale = 1;
+  constexpr std::size_t scale = 100;
 }
 
-TEST(register_set, create) {
+TEST(register_set, create_rw) {
   constexpr std::size_t b = 1024;   // size
   constexpr std::size_t t = scale;  // testAmount
   RegisterSet instance{};
@@ -56,6 +56,45 @@ TEST(register_set, create) {
       MemoryValue instance0{ initializer,i };
       instance.put(identifierList[i], instance0);
       ASSERT_EQ(instance0, instance.get(identifierList[i]));
+    }
+  }
+}
+
+TEST(register_set, alias_rw_rand) {
+  constexpr std::size_t b = 1024;   // size
+  constexpr std::size_t t = scale;  // testAmount
+  const std::string parent = "lilith";
+  RegisterSet instance{};
+  std::uniform_int_distribution<std::uint16_t> dist{ 0,255 };
+  std::mt19937 rand(0);//I need new numbers, I'm kinda really out of ideas
+  instance.createRegister(parent, b * 2);
+  for (std::size_t i = 1; i < b; ++i) {
+    std::size_t byteSize{ (i + 7) / 8 };
+    std::uniform_int_distribution<std::size_t> dist0{ 0,(2 * b) - i -1};
+    for (std::size_t j = 0; j < t; ++j) {
+      std::vector<std::uint8_t> initializer{};
+      for (std::size_t l = 0; l < byteSize; ++l) {
+        initializer.push_back(static_cast<std::uint8_t>(dist(rand)));
+      }
+      MemoryValue instance0{ initializer,i };
+      MemoryValue parentOldValue{ instance.get(parent) };
+      std::size_t address{ dist0(rand) };
+      std::stringstream strm{};
+      strm << "register_";
+      strm << i;
+      strm << '_';
+      strm << j;
+      instance.aliasRegister(strm.str(), parent, address, address + i);
+      MemoryValue mid = instance.set(strm.str(), instance0);
+      ASSERT_EQ(instance0, instance.get(strm.str()));
+      MemoryValue parentNewValue{ instance.get(parent) };
+      if (address > 0) {
+        ASSERT_EQ(parentOldValue.subSet(0, address), parentNewValue.subSet(0, address));
+      }
+      ASSERT_EQ(parentOldValue.subSet(address, address + i), mid);
+      if (address + i < (2 * b) - 1) {
+        ASSERT_EQ(parentOldValue.subSet(address + i, 2 * b), parentNewValue.subSet(address + i, 2 * b));
+      }
     }
   }
 }
