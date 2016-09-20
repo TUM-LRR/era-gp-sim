@@ -136,3 +136,7 @@ void Project::setUpdateRegistersCallback(
 void Project::setUpdateMemoryCellCallback(std::function<void(int)> callback) {
   _updateMemoryCell = callback;
 }
+
+Architecture Project::getArchitecture() {
+  return _architecture;
+}

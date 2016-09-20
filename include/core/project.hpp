@@ -253,6 +253,12 @@ class Project : public Servant {
    */
   void setUpdateMemoryCellCallback(std::function<void(int)> callback);
 
+  /**
+   * Returns the architecture object.
+   *
+   */
+  Architecture getArchitecture();
+
 
  private:
   /** An Architecture object, stores all information about the architecture of

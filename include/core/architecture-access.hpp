@@ -91,6 +91,12 @@ class ArchitectureAccess : public Proxy<Project> {
    *
    */
   POST_FUTURE(getFloatToMemoryValue)
+
+  /**
+   * \returns Returns the Architecture object of the project.
+   *
+   */
+  POST_FUTURE(getArchitecture)
 };
 
 #endif /* ERAGPSIM_CORE_ARCHITECTURE_ACCESS_HPP */

@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
 #define ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
 
+#include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
 #include "core/servant.hpp"
 #include "parser/final-representation.hpp"
@@ -35,7 +36,8 @@ class ParsingAndExecutionUnit : public Servant {
    *
    */
   ParsingAndExecutionUnit(std::weak_ptr<Scheduler> &&scheduler,
-                          MemoryAccess memoryAccess);
+                          MemoryAccess memoryAccess,
+                          Architecture architecture);
 
   /**
    * Execute the whole assembler program

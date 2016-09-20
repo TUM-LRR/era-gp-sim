@@ -19,57 +19,54 @@
 
 #include "core/parsing-and-execution-unit.hpp"
 
-ParsingAndExecutionUnit::ParsingAndExecutionUnit(std::weak_ptr<Scheduler> &&scheduler, MemoryAccess memoryAccess) : Servant(std::move(scheduler)), _memoryAccess(memoryAccess) {
-
+ParsingAndExecutionUnit::ParsingAndExecutionUnit(
+    std::weak_ptr<Scheduler> &&scheduler,
+    MemoryAccess memoryAccess,
+    Architecture architecture)
+: Servant(std::move(scheduler)), _memoryAccess(memoryAccess) {
 }
 
 void ParsingAndExecutionUnit::execute() {
-
 }
 
 void ParsingAndExecutionUnit::executeNextLine() {
-
 }
 
 void ParsingAndExecutionUnit::executeToBreakpoint() {
-
 }
 
 void ParsingAndExecutionUnit::setExecutionPoint(int line) {
-
 }
 
 void ParsingAndExecutionUnit::parse(std::string code) {
-
 }
 
 void ParsingAndExecutionUnit::setBreakpoint(int line) {
-
 }
 
 std::string ParsingAndExecutionUnit::getSyntaxRegister(std::string name) {
-    return std::string();
+  return std::string();
 }
 
 std::string ParsingAndExecutionUnit::getSyntaxInstruction(std::string name) {
-    return std::string();
+  return std::string();
 }
 
 std::string ParsingAndExecutionUnit::getSyntaxImmediate() {
-    return std::string();
+  return std::string();
 }
 
 std::string ParsingAndExecutionUnit::getSyntaxComment() {
-    return std::string();
+  return std::string();
 }
 
 std::string ParsingAndExecutionUnit::getSyntaxLabel() {
-    return std::string();
+  return std::string();
 }
 
 void ParsingAndExecutionUnit::setSetContextInformationCallback(
     std::function<void(int, int, int, std::string)> callback) {
-    _setContextInformation = callback;
+  _setContextInformation = callback;
 }
 
 void ParsingAndExecutionUnit::setSetErrorListCallback(
@@ -82,6 +79,7 @@ void ParsingAndExecutionUnit::setSetErrorListCallback(
     _setMacroList = callback;
 }*/
 
-void ParsingAndExecutionUnit::setSetCurrentLineCallback(std::function<void(int)> callback) {
+void ParsingAndExecutionUnit::setSetCurrentLineCallback(
+    std::function<void(int)> callback) {
   _setCurrentLine = callback;
 }
