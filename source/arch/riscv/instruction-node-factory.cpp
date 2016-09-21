@@ -173,11 +173,11 @@ void initializeRV64OnlyInstructions(
   using OperationSize = uint32_t;
   _instructionMap.emplace("addw", [](InstructionInformation& info) {
     return std::make_unique<AddOnlyInstructionNode<WordSize, OperationSize>>(
-        info, true);
+        info, false);
   });
   _instructionMap.emplace("addiw", [](InstructionInformation& info) {
     return std::make_unique<AddOnlyInstructionNode<WordSize, OperationSize>>(
-        info, false);
+        info, true);
   });
   _instructionMap.emplace("subw", [](InstructionInformation& info) {
     return std::make_unique<SubOnlyInstructionNode<WordSize, OperationSize>>(
