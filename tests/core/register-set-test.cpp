@@ -29,7 +29,7 @@
 // clang-format on
 
 namespace {
-  constexpr std::size_t scale = 100;
+  constexpr std::size_t scale = 10;
 }
 
 TEST(register_set, create_rw) {
@@ -95,6 +95,37 @@ TEST(register_set, alias_rw_rand) {
       if (address + i < (2 * b) - 1) {
         ASSERT_EQ(parentOldValue.subSet(address + i, 2 * b), parentNewValue.subSet(address + i, 2 * b));
       }
+    }
+  }
+}
+
+TEST(register_set, alias_rw_transitive) {
+  constexpr std::size_t b = 1024;   // size
+  constexpr std::size_t t = scale;  // testAmount
+  const std::string parent = "lilith";
+  RegisterSet instance{};
+  std::uniform_int_distribution<std::uint16_t> dist{ 0,255 };
+  std::mt19937 rand(0);//I need new numbers, I'm kinda really out of ideas
+  instance.createRegister(parent, b + 1);
+  for (std::size_t j = 0; j < t; ++j) {
+    std::string prev{ parent };
+    for (std::size_t i = b; i > 0; --i) {
+      std::size_t byteSize{ (i + 7) / 8 };
+      std::vector<std::uint8_t> initializer{};
+      for (std::size_t l = 0; l < byteSize; ++l) {
+        initializer.push_back(static_cast<std::uint8_t>(dist(rand)));
+      }
+      MemoryValue instance0{ initializer,i };
+      std::stringstream strm{};
+      strm << "register_";
+      strm << j;
+      strm << '_';
+      strm << i;
+      std::size_t address{ static_cast<std::size_t>(dist(rand) % 2) };
+      instance.aliasRegister(strm.str(), prev, address, i + address);
+      instance.put(strm.str(), instance0);
+      ASSERT_EQ(instance0, instance.get(strm.str()));
+      prev = strm.str();
     }
   }
 }
