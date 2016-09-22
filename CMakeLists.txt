@@ -16,9 +16,9 @@ include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-std=c++14" COMPILER_SUPPORTS_CXX_14)
 
 if (COMPILER_SUPPORTS_CXX_14)
-   set(CMAKE_CXX_STANDARD 14)
+    set(CMAKE_CXX_STANDARD 14)
 else()
- message(FATAL_ERROR "21st century, anyone?")
+    message(FATAL_ERROR "21st century, anyone?")
 endif()
 
 ########################################
@@ -42,10 +42,13 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Qml REQUIRED)
 find_package(Qt5Quick REQUIRED)
 
+<<<<<<< HEAD
 message(STATUS ${QT_INCLUDES})
 message(STATUS ${QT_USE_FILE})
 include_directories(/usr/local/opt/qt5/include)
 
+=======
+>>>>>>> 46fb193d1cd0a5f918c4bd442728da3c06420261
 ########################################
 # SUBDIRECTORIES
 ########################################

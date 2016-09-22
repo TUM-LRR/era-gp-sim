@@ -13,21 +13,37 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef ERAGPSIM_PARSER_FINAL_REPRESENTATION_HPP
 #define ERAGPSIM_PARSER_FINAL_REPRESENTATION_HPP
 
 #include <memory>
 #include <vector>
-#include "../arch/common/abstract-node-factories.hpp"
+#include "arch/common/abstract-syntax-tree-node.hpp"
+#include "parser/compile-error.hpp"
+
+using LineInterval = std::pair<unsigned int, unsigned int>;
 
 /**
- * \class FinalRepresentation
+ * \class FinalCommand
  * \brief Denotes the temporary output of an IntermediateRepresentator ready to
  * be used by the architecture.
  */
-using FinalRepresentation =
-    std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>;// Temporary.
+struct FinalCommand {
+  std::unique_ptr<AbstractSyntaxTreeNode> node;
+  LineInterval position;
+};
+
+
+/**
+ * \brief Denotes the temporary output of an IntermediateRepresentator ready to
+ * be used by the architecture.
+ */
+struct FinalRepresentation {
+  std::vector<FinalCommand> commandList;
+  std::vector<CompileError> errorList;
+};
 
 #endif
