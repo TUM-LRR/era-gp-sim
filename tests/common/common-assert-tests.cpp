@@ -20,7 +20,6 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#define DEBUG
 #include "common/assert.hpp"
 
 TEST(AssertionTests, WorksForTruthyExpressions) {
@@ -40,9 +39,9 @@ TEST(AssertionTests, WorksForFalsyExpressions) {
 // had not been set before including the header initially (as if via a
 // command-line flag)
 #undef ERAGPSIM_COMMON_ASSERT_HPP
-#define BLOCK_SYMBOLS_FOR_ASSERTION_TESTS
 #undef DEBUG
 #undef that
+#undef test
 #include "common/assert.hpp"
 
 
