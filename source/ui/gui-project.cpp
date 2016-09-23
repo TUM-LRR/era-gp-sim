@@ -17,9 +17,9 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui/qproject.hpp"
+#include "ui/gui-project.hpp"
 
-QProject::QProject(QQmlContext* projectContext, QObject* parent)
+GuiProject::GuiProject(QQmlContext* projectContext, QObject* parent)
 : QObject(parent)
 , _registerDescription(
       "EAX\tAB01CD23\tHH HH HH HH\n"

@@ -17,20 +17,16 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_UI_UI_HPP_
-#define ERAGPSIM_UI_UI_HPP_
+#ifndef ERAGPSIM_UI_UI_HPP
+#define ERAGPSIM_UI_UI_HPP
 
 #include <QApplication>
 #include <QObject>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
-#include <QQmlContext>
-#include <QQmlEngine>
 #include <QQuickItem>
-#include <memory>
-#include <vector>
 
-#include "ui/qproject.hpp"
+#include "ui/gui-project.hpp"
 
 /**
  * This class creates the QmlEngine and starts the qml application.
@@ -82,4 +78,4 @@ class Ui : public QObject {
   QQmlApplicationEngine _engine;
 };
 
-#endif /* ERAGPSIM_UI_UI_HPP_ */
+#endif /* ERAGPSIM_UI_UI_HPP */

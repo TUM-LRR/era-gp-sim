@@ -7,7 +7,7 @@ set(UI_SOURCES
     registeritem.cpp
     registermodel.cpp
     registerdata.cpp
-    qproject.cpp
+    gui-project.cpp
     syntaxhighlighter.cpp
     editor-component.cpp
     ui.cpp
@@ -16,7 +16,7 @@ set(UI_SOURCES
 set(UI_HEADERS
     ../../include/ui/registeritem.hpp
     ../../include/ui/registermodel.hpp
-    ../../include/ui/qproject.hpp
+    ../../include/ui/gui-project.hpp
     ../../include/ui/syntaxhighlighter.hpp
     ../../include/ui/registerdata.hpp
     ../../include/ui/editor-component.hpp
