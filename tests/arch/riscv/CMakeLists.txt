@@ -7,6 +7,7 @@ set(TEST_ARCH_RISCV_SOURCES
     load-store-instructions-test.cpp
     lui-auipc-instructions-test.cpp
     dummies.cpp
+    arithmetic-test-utils.cpp
     #formats-test.cpp The tests fail atm
 )
 
