@@ -189,6 +189,8 @@ TEST(ArchCommonTest, TestConstituentInformation) {
   EXPECT_TRUE(constituent.isValid());
   EXPECT_EQ(constituent.getID(), 5);
   EXPECT_EQ(constituent.getEnclosingIndex(), 1);
+
+  EXPECT_EQ(constituent, ConstituentInformation(5, 1));
 }
 
 TEST(ArchCommonTest, TestArchitectureFormula) {
@@ -236,6 +238,10 @@ TEST_F(ArchCommonTestFixture, TestUnitInformation) {
   EXPECT_FALSE(unit.isValid());
   unit.addRegister(registerInformation);
   EXPECT_TRUE(unit.isValid());
+
+  EXPECT_TRUE(unit.hasRegister(registerInformation.getID()));
+  EXPECT_FALSE(unit.hasRegister(12345));
+  EXPECT_EQ(unit.getRegister(registerInformation.getID()), registerInformation);
 }
 
 TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
