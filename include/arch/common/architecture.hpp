@@ -24,11 +24,11 @@
 #include <string>
 #include <vector>
 
-#include "arch/common/node-factory-collection.hpp"
 #include "arch/common/architecture-properties.hpp"
 #include "arch/common/extension-information.hpp"
 #include "arch/common/information-interface.hpp"
 #include "arch/common/instruction-set.hpp"
+#include "arch/common/node-factory-collection.hpp"
 #include "arch/common/unit-container.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/builder-interface.hpp"
@@ -142,7 +142,7 @@ class Architecture : public BuilderInterface {
    * Returns the name of the architecture.
    *
    */
-  const std::string& getName() const noexcept;
+  const std::string& getName() const;
 
   /**
    * Returns the endianness of the architecture.
@@ -150,7 +150,7 @@ class Architecture : public BuilderInterface {
    * This property must have already been set by extending the architecture with
    * an extension and validated by calling `validate()`. This is asserted!
    */
-  Endianness getEndianness() const noexcept;
+  Endianness getEndianness() const;
 
   /**
    * Returns the alignment behavior of the architecture.
@@ -158,7 +158,7 @@ class Architecture : public BuilderInterface {
    * This property must have already been set by extending the architecture with
    * an extension and validated by calling `validate()`. This is asserted!
    */
-  AlignmentBehavior getAlignmentBehavior() const noexcept;
+  AlignmentBehavior getAlignmentBehavior() const;
 
 
   /**
@@ -167,7 +167,7 @@ class Architecture : public BuilderInterface {
    * This property must have already been set by extending the architecture with
    * an extension and validated by calling `validate()`. This is asserted!
    */
-  word_size_t getWordSize() const noexcept;
+  word_size_t getWordSize() const;
 
   /**
    * Returns the units of the architecture.

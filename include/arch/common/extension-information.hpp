@@ -160,7 +160,7 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Returns the name of the extension.
    */
-  const std::string& getName() const noexcept;
+  const std::string& getName() const;
 
   /**
    * Tests if the extension has a name assigned.
@@ -179,7 +179,7 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Returns the endianness of the extension.
    */
-  Endianness getEndianness() const noexcept;
+  Endianness getEndianness() const;
 
   /**
    * Returns whether any endianness is set.
@@ -199,7 +199,7 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Returns the alignment behavior of the extension, if any.
    */
-  AlignmentBehavior getAlignmentBehavior() const noexcept;
+  AlignmentBehavior getAlignmentBehavior() const;
 
   /**
    * Returns whether any alignment behavior of the extension is set.
@@ -218,7 +218,7 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Returns the word size of the extension (in bits), if any.
    */
-  size_t getWordSize() const noexcept;
+  size_t getWordSize() const;
 
   /**
    * Returns whether any word size is set.
