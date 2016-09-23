@@ -46,20 +46,32 @@ bool UnitInformation::operator!=(const UnitInformation& other) const noexcept {
   return !(*this == other);
 }
 
+UnitInformation& UnitInformation::operator+=(const UnitInformation& other) {
+  for (const auto& registerInformation : other) {
+    addRegister(registerInformation.second);
+  }
+
+  for (const auto& specialInformation : other.getSpecialRegisters()) {
+    addRegister(specialInformation.second);
+  }
+
+  return *this;
+}
+
 UnitInformation&
 UnitInformation::deserialize(InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
 
-UnitInformation& UnitInformation::name(const std::string& name) noexcept {
+UnitInformation& UnitInformation::name(const std::string& name) {
   assert(!name.empty());
   _name = name;
 
   return *this;
 }
 
-const std::string& UnitInformation::getName() const noexcept {
+const std::string& UnitInformation::getName() const {
   assert(hasName());
   return _name;
 }
@@ -68,8 +80,13 @@ bool UnitInformation::hasName() const noexcept {
   return !_name.empty();
 }
 
-const RegisterInformation& UnitInformation::getSpecialRegister(Type type) const
+const UnitInformation::SpecialMap& UnitInformation::getSpecialRegisters() const
     noexcept {
+  return _specialRegisters;
+}
+
+const RegisterInformation&
+UnitInformation::getSpecialRegister(Type type) const {
   assert(hasSpecialRegister(type));
   return _specialRegisters.at(type);
 }
@@ -95,12 +112,26 @@ UnitInformation::addRegister(const RegisterInformation& registerInformation) {
         registerInformation.getType(),
         registerInformation
     );
-    // clang-format on
   } else {
-    _container.emplace(registerInformation);
+    _container.emplace(
+      registerInformation.getID(),
+      registerInformation
+    );
+    // clang-format on
   }
 
   return *this;
+}
+
+const RegisterInformation& UnitInformation::getRegister(id_t registerID) const
+    noexcept {
+  auto iterator = _container.find(registerID);
+  return iterator->second;
+}
+
+
+bool UnitInformation::hasRegister(id_t registerID) const noexcept {
+  return _container.count(registerID);
 }
 
 bool UnitInformation::isValid() const noexcept {
@@ -109,7 +140,7 @@ bool UnitInformation::isValid() const noexcept {
 
   // clang-format off
   auto registersOK = Utility::allOf(_container, [](auto& registerInformation) {
-    return registerInformation.isValid();
+    return registerInformation.second.isValid();
   });
   // clang-format on
 
