@@ -11,7 +11,11 @@ units:
     - name: r0
       id: 0
       size: 32
-      constituents: [1, 2]
+      constituents:
+        - id: 1
+          enclosing-index: 1
+        - id: 2
+          enclosing-index: 2
       alias: zero
     - name: r1
       id: 1
