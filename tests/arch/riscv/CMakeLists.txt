@@ -8,6 +8,7 @@ set(TEST_ARCH_RISCV_SOURCES
     lui-auipc-instructions-test.cpp
     dummies.cpp
     arithmetic-test-utils.cpp
+    mul-div-instruction-tests.cpp
     #formats-test.cpp The tests fail atm
 )
 
