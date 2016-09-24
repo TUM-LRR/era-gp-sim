@@ -47,9 +47,10 @@ class ArchitectureFormula;
  */
 class Architecture : public BuilderInterface {
  public:
-  using Endianness        = ArchitectureProperties::Endianness;
-  using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
-  using word_size_t       = ArchitectureProperties::word_size_t;
+  using ExtensionNameCollection = ExtensionInformation::ExtensionNameCollection;
+  using Endianness              = ArchitectureProperties::Endianness;
+  using AlignmentBehavior       = ArchitectureProperties::AlignmentBehavior;
+  using word_size_t             = ArchitectureProperties::word_size_t;
 
   /**
    * Brews an architecture given a formula.
@@ -207,6 +208,17 @@ class Architecture : public BuilderInterface {
    * Returns the architecture's node factory collection.
    */
   const NodeFactoryCollection& getNodeFactories() const;
+
+  /**
+   * Tests if the architecture is based on a certain extension.
+   */
+  bool isBasedOn(const std::string& extension_name) const noexcept;
+
+  /**
+   * Returns a collection of names of the extensions the
+   * architecture is based on.
+   */
+  const ExtensionNameCollection& getBaseExtensionNames() const noexcept;
 
   /**
    * Validates the completeness of the architecture.

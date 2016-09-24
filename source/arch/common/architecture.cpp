@@ -105,6 +105,15 @@ const NodeFactoryCollection& Architecture::getNodeFactories() const {
   return _factories;
 }
 
+bool Architecture::isBasedOn(const std::string& extension_name) const noexcept {
+  return _base.isBasedOn(extension_name);
+}
+
+const Architecture::ExtensionNameCollection&
+Architecture::getBaseExtensionNames() const noexcept {
+  return _base.getBaseExtensionNames();
+}
+
 Architecture& Architecture::validate() {
   if (!_validated) {
     assert(isValid());

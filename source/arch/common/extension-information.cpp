@@ -214,7 +214,19 @@ ExtensionInformation::merge(const ExtensionInformation& other) {
   addInstructions(other.getInstructions());
   addUnits(other.getUnits());
 
+  _baseNames.emplace(other.getName());
+
   return *this;
+}
+
+bool ExtensionInformation::isBasedOn(const std::string& extension_name) const
+    noexcept {
+  return _baseNames.count(extension_name) > 0;
+}
+
+const ExtensionInformation::ExtensionNameCollection&
+ExtensionInformation::getBaseExtensionNames() const noexcept {
+  return _baseNames;
 }
 
 bool ExtensionInformation::isValid() const noexcept {
