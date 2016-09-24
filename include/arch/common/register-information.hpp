@@ -339,7 +339,7 @@ class RegisterInformation : public InformationInterface {
     // clang-format off
       assert::that(Utility::allOf(range, [this](auto& constituent) {
         if (Utility::contains(_constituents, constituent)) return false;
-        return this->_constituentIsValid(constituent, hasSize());
+        return this->_constituentIsValid(constituent, this->hasSize());
       }));
     // clang-format on
 
