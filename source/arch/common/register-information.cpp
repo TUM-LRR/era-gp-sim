@@ -195,7 +195,7 @@ bool RegisterInformation::isValid() const noexcept {
 
   bool constituentsOK =
       Utility::allOf(_constituents, [this](auto& constituent) {
-        return _constituentIsValid(constituent, true);
+        return this->_constituentIsValid(constituent, true);
       });
 
   if (!constituentsOK) return false;
