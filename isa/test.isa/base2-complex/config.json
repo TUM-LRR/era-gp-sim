@@ -1,16 +1,13 @@
 {
-  "name": "base2-complex",
-  "extends": "base3-cycle",
-  "reset-units": false,
-  "instructions": [
-    {
-      "mnemonic": "sll",
-      "format": "R",
-      "key": {
-        "opcode": 6,
-        "function": 6,
-        "width": 6
-      }
-    }
-  ]
+    "reset-units": false,
+    "extends": "base3-cycle",
+    "instructions": [
+        {
+            "opcode": 6,
+            "width": 6,
+            "mnemonic": "sll",
+            "function": 6
+        }
+    ],
+    "name": "base2-complex"
 }

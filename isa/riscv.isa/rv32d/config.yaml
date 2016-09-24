@@ -8,146 +8,96 @@ reset-units: true
 
 instructions:
   - mnemonic: fld
-    format: I
-    key:
-      opcode: 7
-      funct3: 3
+    opcode: 7
+    funct3: 3
   - mnemonic: fsd
-    format: S
-    key:
-      opcode: 39
-      funct3: 3
-  - mnemonic: fmadd
-    format: R4
-    key:
-      opcode: 67
-      funct2: 1
+    opcode: 39
+    funct3: 3
+  - mnemonic: fmaddd
+    opcode: 67
+    funct2: 1
   - mnemonic: fmsubd
-    format: R4
-    key:
-      opcode: 71
-      funct2: 1
-  - mnemonic: fnmsubd
-    format: R4
-    key:
-      opcode: 75
-      funct2: 1
+    opcode: 71
+    funct2: 1
+  - mnemonic: fnsubd
+    opcode: 75
+    funct2: 1
   - mnemonic: fnmaddd
-    format: R4
-    key:
-      opcode: 79
-      funct7: 1
-  - mnemonic: fadd
-    format: R
-    key:
-      opcode: 83
-      funct7: 1
+    opcode: 79
+    funct7: 1
+  - mnemonic: faddd
+    opcode: 83
+    funct7: 1
   - mnemonic: fsubd
-    format: R
-    key:
-      opcode: 83
-      funct7: 5
+    opcode: 83
+    funct7: 5
   - mnemonic: fmuld
-    format: R
-    key:
-      opcode: 83
-      funct7: 9
+    opcode: 83
+    funct7: 9
   - mnemonic: fdivd
-    format: R
-    key:
-      opcode: 83
-      funct7: 13
+    opcode: 83
+    funct7: 13
   - mnemonic: fsqrtd
-    format: R
-    key:
-      opcode: 83
-      funct7: 45
-      rs2: 0
+    opcode: 83
+    funct7: 45
+    rs2: 0
   - mnemonic: fsgnjd
-    format: R
-    key:
-      opcode: 83
-      funct3: 0
-      funct7: 17
+    opcode: 83
+    funct3: 0
+    funct7: 17
   - mnemonic: fsgnjnd
-    format: R
-    key:
-      opcode: 83
-      funct3: 1
-      funct7: 17
+    opcode: 83
+    funct3: 1
+    funct7: 17
   - mnemonic: fsgnjxd
-    format: R
-    key:
-      opcode: 83
-      funct3: 2
-      funct7: 17
+    opcode: 83
+    funct3: 2
+    funct7: 17
   - mnemonic: fmind
-    format: R
-    key:
-      opcode: 83
-      funct3: 0
-      funct7: 21
+    opcode: 83
+    funct3: 0
+    funct7: 21
   - mnemonic: fcvtsd
-    format: R
-    key:
-      opcode: 83
-      funct7: 32
-      rs2: 1
+    opcode: 83
+    funct7: 32
+    rs2: 1
   - mnemonic: fcvtds
-    format: R
-    key:
-      opcode: 83
-      funct7: 33
-      rs2: 0
+    opcode: 83
+    funct7: 33
+    rs2: 0
   - mnemonic: feqd
-    format: R
-    key:
-      opcode: 83
-      funct3: 2
-      funct7: 81
+    opcode: 83
+    funct3: 2
+    funct7: 81
   - mnemonic: fltd
-    format: R
-    key:
-      opcode: 83
-      funct3: 1
-      funct7: 81
+    opcode: 83
+    funct3: 1
+    funct7: 81
   - mnemonic: fled
-    format: R
-    key:
-      opcode: 83
-      funct3: 0
-      funct7: 81
+    opcode: 83
+    funct3: 0
+    funct7: 81
   - mnemonic: fclassd
-    format: R
-    key:
-      opcode: 83
-      funct3: 1
-      funct7: 113
-      rs2: 0
+    opcode: 83
+    funct3: 1
+    funct7: 113
+    rs2: 0
   - mnemonic: fcvtwd
-    format: R
-    key:
-      opcode: 83
-      funct7: 97
-      rs2: 0
+    opcode: 83
+    funct7: 97
+    rs2: 0
   - mnemonic: fcvtwud
-    format: R
-    key:
-      opcode: 83
-      funct7: 97
-      rs2: 1
+    opcode: 83
+    funct7: 97
+    rs2: 1
   - mnemonic: fcvtdw
-    format: R
-    key:
-      opcode: 83
-      funct7: 105
-      rs2: 0
+    opcode: 83
+    funct7: 105
+    rs2: 0
   - mnemonic: fcvtdwu
-    format: R
-    key:
-      opcode: 83
-      funct7: 105
-      rs2: 1
+    opcode: 83
+    funct7: 105
+    rs2: 1
 units:
   - name: cpu
     registers:
@@ -279,7 +229,11 @@ units:
         id: 32
         size: 64
         type: flag
-        constituents: [33, 34]
+        constituents:
+          - id: 33
+            enclosing-index: 5
+          - id: 34
+            enclosing-index: 0
       - name: frm
         id: 33
         size: 3
@@ -290,3 +244,39 @@ units:
         size: 5
         type: flag
         enclosing: 32
+        constituents:
+          - id: 35
+            enclosing-index: 0
+          - id: 36
+            enclosing-index: 1
+          - id: 37
+            enclosing-index: 2
+          - id: 38
+            enclosing-index: 3
+          - id: 39
+            enclosing-index: 4
+      - name: nx
+        id: 35
+        size: 1
+        type: flag
+        enclosing: 24
+      - name: of
+        id: 36
+        size: 1
+        type: flag
+        enclosing: 24
+      - name: uf
+        id: 37
+        size: 1
+        type: flag
+        enclosing: 24
+      - name: dz
+        id: 38
+        size: 1
+        type: flag
+        enclosing: 24
+      - name: nv
+        id: 39
+        size: 1
+        type: flag
+        enclosing: 24

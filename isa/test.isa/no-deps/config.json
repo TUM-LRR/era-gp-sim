@@ -1,54 +1,53 @@
 {
-  "name": "no-deps",
-  "endianness": "little",
-  "alignment-behavior": "strict",
-  "word-size": 32,
-  "byte-size": 8,
-  "units": [
-    {
-      "name": "cpu",
-      "registers": [
+    "endianness": "little",
+    "instructions": [
         {
-          "name": "r0",
-          "id": 0,
-          "size": 32,
-          "constituents": [
-            1,
-            2
-          ],
-          "alias": "zero"
+            "opcode": 6,
+            "mnemonic": "add",
+            "function": 3
         },
         {
-          "name": "r1",
-          "id": 1,
-          "size": 16,
-          "type": "float",
-          "enclosing": 0,
-          "constant": 3.14,
-          "aliases": [
-            "foo",
-            "bar"
-          ]
+            "opcode": 9,
+            "mnemonic": "sub",
+            "function": 3
         }
-      ]
-    }
-  ],
-  "instructions": [
-    {
-      "mnemonic": "add",
-      "format": "R",
-      "key": {
-        "opcode": 6,
-        "function": 3
-      }
-    },
-    {
-      "mnemonic": "sub",
-      "format": "R",
-      "key": {
-        "opcode": 9,
-        "function": 3
-      }
-    }
-  ]
+    ],
+    "units": [
+        {
+            "registers": [
+                {
+                    "size": 32,
+                    "id": 0,
+                    "constituents": [
+                        {
+                            "id": 1,
+                            "enclosing-index": 1
+                        },
+                        {
+                            "id": 2,
+                            "enclosing-index": 2
+                        }
+                    ],
+                    "alias": "zero",
+                    "name": "r0"
+                },
+                {
+                    "enclosing": 0,
+                    "aliases": [
+                        "foo",
+                        "bar"
+                    ],
+                    "size": 16,
+                    "id": 1,
+                    "type": "float",
+                    "name": "r1",
+                    "constant": 3.14
+                }
+            ],
+            "name": "cpu"
+        }
+    ],
+    "alignment-behavior": "strict",
+    "word-size": 32,
+    "name": "no-deps"
 }

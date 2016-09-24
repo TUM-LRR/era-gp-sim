@@ -61,12 +61,12 @@
  */
 class ExtensionInformation : public InformationInterface {
  public:
-  using UnitList          = std::initializer_list<UnitInformation>;
-  using ExtensionList     = std::initializer_list<ExtensionInformation>;
-  using Endianness        = ArchitectureProperties::Endianness;
-  using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
-  using word_size_t       = ArchitectureProperties::word_size_t;
-  using byte_size_t       = ArchitectureProperties::byte_size_t;
+  using size_t                  = unsigned short;
+  using UnitList                = std::initializer_list<UnitInformation>;
+  using ExtensionList           = std::initializer_list<ExtensionInformation>;
+  using Endianness              = ArchitectureProperties::Endianness;
+  using AlignmentBehavior       = ArchitectureProperties::AlignmentBehavior;
+  using ExtensionNameCollection = std::unordered_set<std::string>;
 
   /**
    * Deserializes the `ExtensionInformation` object from the given data.
@@ -161,7 +161,7 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Returns the name of the extension.
    */
-  const std::string& getName() const noexcept;
+  const std::string& getName() const;
 
   /**
    * Tests if the extension has a name assigned.
@@ -180,7 +180,7 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Returns the endianness of the extension.
    */
-  Endianness getEndianness() const noexcept;
+  Endianness getEndianness() const;
 
   /**
    * Returns whether any endianness is set.
@@ -200,7 +200,7 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Returns the alignment behavior of the extension, if any.
    */
-  AlignmentBehavior getAlignmentBehavior() const noexcept;
+  AlignmentBehavior getAlignmentBehavior() const;
 
   /**
    * Returns whether any alignment behavior of the extension is set.
@@ -214,37 +214,17 @@ class ExtensionInformation : public InformationInterface {
    *
    * \return The current `ExtensionInformation` object.
    */
-  ExtensionInformation& wordSize(word_size_t wordSize);
+  ExtensionInformation& wordSize(size_t wordSize);
 
   /**
-   * Returns the word size of the extension (in bits), if it has any.
+   * Returns the word size of the extension (in bits), if any.
    */
-  word_size_t getWordSize() const noexcept;
+  size_t getWordSize() const;
 
   /**
    * Returns whether any word size is set.
    */
   bool hasWordSize() const noexcept;
-
-
-  /**
-   * Sets the byte size of the extension, in bits.
-   *
-   * \param byteSize The new byte size, in bits.
-   *
-   * \return The current `ExtensionInformation` object.
-   */
-  ExtensionInformation& byteSize(byte_size_t byteSize);
-
-  /**
-   * Returns the byte size of the extension (in bits), if it has any.
-   */
-  byte_size_t getByteSize() const noexcept;
-
-  /**
-   * Returns whether any byte size is set.
-   */
-  bool hasByteSize() const noexcept;
 
   /**
    * Adds the instructions of the instruction set to the extension.
@@ -346,7 +326,7 @@ class ExtensionInformation : public InformationInterface {
    */
   template <typename Range>
   ExtensionInformation& merge(const Range& range) {
-    for (const auto& extension : range) {
+    for (auto& extension : range) {
       merge(extension);
     }
 
@@ -380,6 +360,17 @@ class ExtensionInformation : public InformationInterface {
    * \return The current `ExtensionInformation` object.
    */
   ExtensionInformation& merge(const ExtensionInformation& other);
+
+  /**
+   * Tests if the extension is based on a certain extension.
+   */
+  bool isBasedOn(const std::string& extension_name) const noexcept;
+
+  /**
+   * Returns a collection of names of the extensions
+   * the extension was merged with.
+   */
+  const ExtensionNameCollection& getBaseExtensionNames() const noexcept;
 
   /** \copydoc builder::isValid() */
   bool isValid() const noexcept override;
@@ -426,16 +417,16 @@ class ExtensionInformation : public InformationInterface {
   Optional<AlignmentBehavior> _alignmentBehavior;
 
   /** The word size of the extension, if any. */
-  word_size_t _wordSize;
-
-  /** The size of a byte. */
-  byte_size_t _byteSize;
+  size_t _wordSize;
 
   /** The instruction set for the extension, if any. */
   InstructionSet _instructions;
 
   /** The units supplied by the extension, if any. */
   UnitContainer _units;
+
+  /** The names of the extensions this extension was extended by. */
+  ExtensionNameCollection _baseNames;
 };
 
 #endif /* ERAGPSIM_ARCH_EXTENSION_INFORMATION_HPP */
