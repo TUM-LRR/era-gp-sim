@@ -223,7 +223,7 @@ ExtensionInformation::merge(const ExtensionInformation& other) {
 
 bool ExtensionInformation::isBasedOn(const std::string& extension_name) const
     noexcept {
-  return _baseNames.count(extension_name);
+  return _baseNames.count(extension_name) > 0;
 }
 
 const ExtensionInformation::ExtensionNameCollection&
