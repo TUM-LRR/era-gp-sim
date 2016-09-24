@@ -17,10 +17,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <cassert>
 #include <string>
 
 #include "arch/common/unit-information.hpp"
+#include "common/assert.hpp"
 
 UnitInformation::UnitInformation(InformationInterface::Format& data) {
   _deserialize(data);
@@ -65,14 +65,14 @@ UnitInformation::deserialize(InformationInterface::Format& data) {
 }
 
 UnitInformation& UnitInformation::name(const std::string& name) {
-  assert(!name.empty());
+  assert::that(!name.empty());
   _name = name;
 
   return *this;
 }
 
 const std::string& UnitInformation::getName() const {
-  assert(hasName());
+  assert::that(hasName());
   return _name;
 }
 
@@ -87,7 +87,7 @@ const UnitInformation::SpecialMap& UnitInformation::getSpecialRegisters() const
 
 const RegisterInformation&
 UnitInformation::getSpecialRegister(Type type) const {
-  assert(hasSpecialRegister(type));
+  assert::that(hasSpecialRegister(type));
   return _specialRegisters.at(type);
 }
 
@@ -100,7 +100,7 @@ bool UnitInformation::hasSpecialRegisters() const noexcept {
 }
 
 UnitInformation& UnitInformation::addRegisters(InitializerList registers) {
-  assert(registers.size() > 0);
+  assert::that(registers.size() > 0);
   return addRegisters<InitializerList>(registers);
 }
 
@@ -123,9 +123,10 @@ UnitInformation::addRegister(const RegisterInformation& registerInformation) {
   return *this;
 }
 
-const RegisterInformation& UnitInformation::getRegister(id_t registerID) const
-    noexcept {
+const RegisterInformation& UnitInformation::getRegister(id_t registerID) const {
   auto iterator = _container.find(registerID);
+  assert::that(iterator != _container.end());
+
   return iterator->second;
 }
 
@@ -154,9 +155,9 @@ bool UnitInformation::isValid() const noexcept {
 }
 
 void UnitInformation::_deserialize(InformationInterface::Format& data) {
-  assert(data.count("name"));
-  assert(data.count("registers"));
-  assert(!data["registers"].empty());
+  assert::that(data.count("name"));
+  assert::that(data.count("registers"));
+  assert::that(!data["registers"].empty());
 
   name(data["name"]);
 
@@ -164,5 +165,5 @@ void UnitInformation::_deserialize(InformationInterface::Format& data) {
     addRegister(static_cast<RegisterInformation>(registerInformation));
   }
 
-  assert(isValid());
+  assert::that(isValid());
 }

@@ -251,7 +251,7 @@ class UnitInformation : public UnderlyingRegisterContainer,
    *
    * \return The register in the unit with the given identifier.
    */
-  const RegisterInformation& getRegister(id_t registerID) const noexcept;
+  const RegisterInformation& getRegister(id_t registerID) const;
 
   /**
    * Tests if the unit has the register with the given ID  or not.

@@ -116,6 +116,23 @@ TEST(ArchCommonTest, TestRegisterInformation) {
       registerInformation.getConstituents(),
       RegisterInformation::ConstituentContainer({{2, 1}, {3, 2}, {4, 3}}));
 
+  // Expect constituents with invalid bit offsets to be disallowed
+  EXPECT_THROW(registerInformation.addConstituent({5, 666}),
+               assert::AssertionError);
+
+  // Expect duplicate constituents to be disallowed
+  EXPECT_THROW(registerInformation.addConstituent({2, 1}),
+               assert::AssertionError);
+
+  // Expect constituents with the same ID as the register to be disallowed
+  EXPECT_THROW(registerInformation.addConstituent({0, 1}),
+               assert::AssertionError);
+
+  // Expect constituents with the same ID as the enclosing
+  // register of a  register to be disallowed
+  auto middle = RegisterInformation("r1", 32).enclosing(0);
+  EXPECT_THROW(middle.addConstituent({0, 1}), assert::AssertionError);
+
   EXPECT_FALSE(registerInformation.isSpecial());
   registerInformation.type(RegisterInformation::Type::LINK);
   EXPECT_TRUE(registerInformation.isSpecial());
@@ -182,13 +199,13 @@ TEST(ArchCommonTest, TestConstituentInformation) {
 
   EXPECT_FALSE(constituent.isValid());
   EXPECT_THROW(constituent.getID(), assert::AssertionError);
-  EXPECT_THROW(constituent.getEnclosingIndex(), assert::AssertionError);
+  EXPECT_THROW(constituent.getEnclosingOffset(), assert::AssertionError);
 
-  constituent.id(5).enclosingIndex(1);
+  constituent.id(5).enclosingOffset(1);
 
   EXPECT_TRUE(constituent.isValid());
   EXPECT_EQ(constituent.getID(), 5);
-  EXPECT_EQ(constituent.getEnclosingIndex(), 1);
+  EXPECT_EQ(constituent.getEnclosingOffset(), 1);
 
   EXPECT_EQ(constituent, ConstituentInformation(5, 1));
 }
@@ -242,6 +259,7 @@ TEST_F(ArchCommonTestFixture, TestUnitInformation) {
   EXPECT_TRUE(unit.hasRegister(registerInformation.getID()));
   EXPECT_FALSE(unit.hasRegister(12345));
   EXPECT_EQ(unit.getRegister(registerInformation.getID()), registerInformation);
+  EXPECT_THROW(unit.getRegister(12345), assert::AssertionError);
 }
 
 TEST_F(ArchCommonTestFixture, TestExtensionInformation) {

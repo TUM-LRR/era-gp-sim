@@ -27,14 +27,14 @@ ConstituentInformation::ConstituentInformation(super::Format& data) {
 }
 
 ConstituentInformation::ConstituentInformation(
-    id_t id, bit_index_t enclosingIndex) noexcept
-: _id(id), _enclosingIndex(enclosingIndex) {
+    id_t id, bit_offset_t enclosingOffset) noexcept
+: _id(id), _enclosingOffset(enclosingOffset) {
 }
 
 bool ConstituentInformation::
 operator==(const ConstituentInformation& other) const noexcept {
   if (this->_id != other._id) return false;
-  if (this->_enclosingIndex != other._enclosingIndex) return false;
+  if (this->_enclosingOffset != other._enclosingOffset) return false;
 
   return true;
 }
@@ -65,29 +65,29 @@ ConstituentInformation::id_t ConstituentInformation::getID() const {
 }
 
 ConstituentInformation&
-ConstituentInformation::enclosingIndex(bit_index_t index) noexcept {
-  _enclosingIndex = index;
+ConstituentInformation::enclosingOffset(bit_offset_t index) noexcept {
+  _enclosingOffset = index;
   return *this;
 }
 
-bool ConstituentInformation::hasEnclosingIndex() const noexcept {
-  return static_cast<bool>(_enclosingIndex);
+bool ConstituentInformation::hasEnclosingOffset() const noexcept {
+  return static_cast<bool>(_enclosingOffset);
 }
 
-ConstituentInformation::bit_index_t
-ConstituentInformation::getEnclosingIndex() const {
-  assert::that(hasEnclosingIndex());
-  return *_enclosingIndex;
+ConstituentInformation::bit_offset_t
+ConstituentInformation::getEnclosingOffset() const {
+  assert::that(hasEnclosingOffset());
+  return *_enclosingOffset;
 }
 
 bool ConstituentInformation::isValid() const noexcept {
-  return hasID() && hasEnclosingIndex();
+  return hasID() && hasEnclosingOffset();
 }
 
 void ConstituentInformation::_deserialize(Format& data) {
   assert::that(data.count("id"));
   assert::that(data.count("enclosing-index"));
 
-  _id             = static_cast<id_t>(data["id"]);
-  _enclosingIndex = static_cast<bit_index_t>(data["enclosing-index"]);
+  _id              = static_cast<id_t>(data["id"]);
+  _enclosingOffset = static_cast<bit_offset_t>(data["enclosing-index"]);
 }

@@ -20,7 +20,6 @@
 #ifndef ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP
 #define ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP
 
-#include <cassert>
 #include <cstddef>
 #include <functional>
 #include <iterator>
@@ -30,6 +29,7 @@
 
 #include "arch/common/constituent-information.hpp"
 #include "arch/common/information-interface.hpp"
+#include "common/assert.hpp"
 #include "common/builder-interface.hpp"
 #include "common/optional.hpp"
 #include "common/utility.hpp"
@@ -82,9 +82,13 @@ class RegisterInformation : public InformationInterface {
   static bool isSpecialType(Type type) noexcept;
 
   /**
-   * Default-constructs the RegisterInformation object.
+   * Constructs the RegisterInformation with the register's name and size.
+   *
+   * \param name The name of the register.
+   * \param size The size of the register.
    */
-  RegisterInformation();
+  explicit RegisterInformation(const std::string& name = std::string(),
+                               size_t size             = 0);
 
   /**
    * Deserializes the RegisterInformation from the given data.
@@ -92,21 +96,6 @@ class RegisterInformation : public InformationInterface {
    * \param data The data to deserialize from.
    */
   explicit RegisterInformation(InformationInterface::Format& data);
-
-  /**
-   * Constructs the RegisterInformation with the register's name.
-   *
-   * \param name The name of the register.
-   */
-  explicit RegisterInformation(const std::string& name);
-
-  /**
-   * Constructs the RegisterInformation with the register's name and size.
-   *
-   * \param name The name of the register.
-   * \param size The size of the register.
-   */
-  RegisterInformation(const std::string& name, size_t size);
 
   /**
    * Tests for equality of two registers.
@@ -155,11 +144,11 @@ class RegisterInformation : public InformationInterface {
   /**
    * Sets the size (width) of the register, in bits.
    *
-   * \param bit_size The new width for the register, in bits.
+   * \param size The new width for the register, in bits.
    *
    * \return The current register object.
    */
-  RegisterInformation& size(size_t bit_size);
+  RegisterInformation& size(size_t size);
 
   /**
    * Returns the size of the register, if any.
@@ -247,7 +236,7 @@ class RegisterInformation : public InformationInterface {
             typename = std::enable_if_t<
                 std::is_convertible<double, ConstantType>::value>>
   ConstantType getConstant() const noexcept {
-    assert(isConstant());
+    assert::that(isConstant());
     return static_cast<ConstantType>(*_constant);
   }
 
@@ -347,12 +336,10 @@ class RegisterInformation : public InformationInterface {
    */
   template <typename Range>
   RegisterInformation& addConstituents(const Range& range) {
-    // Make sure none of the constituents are the enclosing register
-    // of this register, or the register itself.
     // clang-format off
-      assert(Utility::noneOf(range, [this](auto& constituent) {
-        if (_enclosing && constituent.getID() == *_enclosing) return true;
-        return constituent.getID() == _id;
+      assert::that(Utility::allOf(range, [this](auto& constituent) {
+        if (Utility::contains(_constituents, constituent)) return false;
+        return _constituentIsValid(constituent, hasSize());
       }));
     // clang-format on
 
@@ -430,6 +417,25 @@ class RegisterInformation : public InformationInterface {
    */
   void _parseType(InformationInterface::Format& data);
 
+
+  /**
+   * Tests if the constituent is valid and may be added to this register.
+   *
+   * A constituent is considered valid if:
+   * 1. It's ID is not that of the register itself.
+   * 2. It's ID is not that of the enclosing register of this one.
+   * 3. It's bit offset is not greater than the size of this register.
+   *
+   * \param constituent The constituent information to check.
+   * \param verifyEnclosingOffset Whether or not to check that the enclosing
+   *                              index of the register fits within the
+   *                              register's size.
+   *
+   * \return True if the constituent is valid for this register, else false.
+   */
+  bool _constituentIsValid(const ConstituentInformation& constituent,
+                           bool verifyEnclosingOffset) const noexcept;
+
   /** The numeric ID of the register. */
   id_t _id;
 
@@ -440,7 +446,7 @@ class RegisterInformation : public InformationInterface {
   std::string _name;
 
   /** The size of the register, in bits. */
-  Optional<size_t> _size;
+  size_t _size;
 
   /** The constant the register is hardwired to, if any. */
   Optional<double> _constant;

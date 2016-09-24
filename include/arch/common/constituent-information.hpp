@@ -34,12 +34,18 @@
  * information about such a constituent-enclosing relationship in form of the
  * the register ID fo the constituent and its index within the enclosing
  * register. This information is then stored in the *enclosing* register.
+ *
+ * Note: we currently use [LSB
+ * 0](https://en.wikipedia.org/wiki/Bit_numbering#LSB_0_bit_numbering)
+ * numbering. As such, even in architectures using MSB 0 numbering (where bit
+ * zero is the most-significant bit), bit zero will, to us, mean the right most
+ * bit.
  */
 class ConstituentInformation final : public InformationInterface {
  public:
-  using id_t        = std::size_t;
-  using bit_index_t = unsigned short;
-  using super       = InformationInterface;
+  using id_t         = std::size_t;
+  using bit_offset_t = unsigned short;
+  using super        = InformationInterface;
 
   /**
    * Deserializes the constituent information from a data format.
@@ -57,10 +63,10 @@ class ConstituentInformation final : public InformationInterface {
    * Constructs a constituent information object.
    *
    * \param id The ID of the constituent register.
-   * \param enclosingIndex The bit index of the constituent within the
+   * \param enclosingOffset The bit index of the constituent within the
    *                       enclosing register.
    */
-  ConstituentInformation(id_t id, bit_index_t enclosingIndex) noexcept;
+  ConstituentInformation(id_t id, bit_offset_t enclosingOffset) noexcept;
 
   /**
    * Deserializes the constituent information from the given data.
@@ -117,18 +123,18 @@ class ConstituentInformation final : public InformationInterface {
    *
    * \return The current constituent information instance.
    */
-  ConstituentInformation& enclosingIndex(bit_index_t index) noexcept;
+  ConstituentInformation& enclosingOffset(bit_offset_t index) noexcept;
 
   /**
    * Tests if the instance has an enclosing index set.
    */
-  bool hasEnclosingIndex() const noexcept;
+  bool hasEnclosingOffset() const noexcept;
 
   /**
    * Returns the bit index of the contituent
    * register within its enclosing register.
    */
-  bit_index_t getEnclosingIndex() const;
+  bit_offset_t getEnclosingOffset() const;
 
   /**
    * Tests if the constituent information object has all required members set.
@@ -143,7 +149,7 @@ class ConstituentInformation final : public InformationInterface {
   Optional<id_t> _id;
 
   /** The index of the constituent register within its enclosing register. */
-  Optional<bit_index_t> _enclosingIndex;
+  Optional<bit_offset_t> _enclosingOffset;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_CONSTITUENT_INFORMATION_HPP */
