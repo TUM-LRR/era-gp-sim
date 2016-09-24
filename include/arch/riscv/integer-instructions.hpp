@@ -22,8 +22,8 @@
 
 #include <QtGlobal>
 #include <cassert>
-#include <string>
 #include <climits>
+#include <string>
 
 #include <iostream>
 
@@ -73,7 +73,7 @@ class IntegerInstructionNode : public InstructionNode {
   MemoryValue getValue(DummyMemoryAccess& memory_access) const override {
     assert(validate().isSuccess());
     // Get the destination register
-    std::string destination = _children.at(0)->getIdentifier();
+    const std::string& destination = _children.at(0)->getIdentifier();
 
     // Evaluate the operands
     MemoryValue memoryV1 = _children.at(1)->getValue(memory_access);
@@ -113,11 +113,11 @@ class IntegerInstructionNode : public InstructionNode {
       if (value.getSize() > 12) {
         // look for the sign bit to determine what bits to expect in the "upper"
         // region (e.g. 12...size)
-        bool isSignBitSet = value.get(0);
-        for (std::size_t index = 11; index < value.getSize(); ++index) {
+        bool isSignBitSet = value.get(value.getSize() - 1);
+        for (std::size_t index = 12; index < value.getSize(); ++index) {
           // MemoryValue::get(index): Index 0 gets the bit of 2^(size-1)
-          if ((isSignBitSet && !value.get(value.getSize() - 1 - index)) ||
-              (!isSignBitSet && value.get(value.getSize() - 1 - index))) {
+          if ((isSignBitSet && value.get(value.getSize() - 1 - index)) ||
+              (!isSignBitSet && !value.get(value.getSize() - 1 - index))) {
             // bit detected which does not belong to a (possible) sign extension
             //->fail validation
             return ValidationResult::fail(QT_TRANSLATE_NOOP(
@@ -168,7 +168,6 @@ class IntegerInstructionNode : public InstructionNode {
   }
 
  private:
-
   /**
    * Indicates if this instruction is a register-immediate instruction.
    * If false this instruction is a register-register instruction.

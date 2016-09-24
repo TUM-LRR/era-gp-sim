@@ -215,12 +215,11 @@ std::uint8_t MemoryValue::getByteAt(std::size_t address) const {
 
 std::ostream &operator<<(std::ostream &stream, const MemoryValue &value) {
   stream << '\'';
-  constexpr std::size_t intMinPrecision = 1;
 
   // Printing in binary format.
-  for (std::size_t i = value.getSize(); i > 0; --i) {
-    if (i % value._byteSize == 0 && i != value.getSize()) stream << '|';
-    if (value.get(i - intMinPrecision))
+  for (std::size_t i = 0; i < value.getSize(); ++i) {
+    if (i > 0 && i % value._byteSize == 0) stream << '|';
+    if (value.get(i))
       stream << '1';
     else
       stream << '0';

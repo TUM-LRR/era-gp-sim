@@ -52,7 +52,8 @@ NodeFactoryCollection CreateFor(const Architecture& architecture);
  */
 template <typename FactoryTypes>
 NodeFactoryCollection Create(const Architecture& architecture) {
-  return NodeFactoryCollection::Create<FactoryTypes>(architecture.getInstructions(), architecture);
+  return NodeFactoryCollection::Create<FactoryTypes>(
+      architecture.getInstructions(), architecture);
 }
 }
 

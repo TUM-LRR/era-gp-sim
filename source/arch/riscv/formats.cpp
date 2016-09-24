@@ -68,8 +68,8 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   // funct7 - 6 bits long
   std::vector<bool> tmp;
   //  Utility::convertToBin(tmp, key["funct7"]);
-  Utility::convertToBin(tmp, key["function"]);
-  // push the last 6 bits
+  Utility::convertToBin(tmp, key["function"] >> 3);
+  // push the last 7 bits
   Utility::pushBackFromEnd(res, tmp, 7);
 
   auto argument = args.at(2);
