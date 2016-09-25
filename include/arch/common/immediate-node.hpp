@@ -33,13 +33,17 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    *
    * \param value The value of this node.
    */
-  ImmediateNode(MemoryValue value)
+  ImmediateNode(const MemoryValue& value)
   : AbstractSyntaxTreeNode(Type::IMMEDIATE)
   , _value(value)
   , IMMEDIATE_IDENTIFIER("Imm") {
   }
 
   ~ImmediateNode() = default;
+
+  void setValue(const MemoryValue& value) {
+    _value = value;
+  }
 
   /**
    * \return The concrete value

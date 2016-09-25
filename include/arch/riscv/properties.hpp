@@ -20,6 +20,8 @@
 #ifndef ERAGPSIM_ARCH_RISCV_PROPERTIES_HPP
 #define ERAGPSIM_ARCH_RISCV_PROPERTIES_HPP
 
+#include <cstdint>
+
 #include "arch/common/architecture-properties.hpp"
 
 namespace riscv {
@@ -30,6 +32,18 @@ const Endianness ENDIANNESS = Endianness::LITTLE;
 
 /** Bits per byte in RISC-V architecture. */
 const std::size_t BITS_PER_BYTE = 8;
+
+/** Internal integer type to represent 32bit for arithmetic operations. */
+using unsigned32_t = std::uint32_t;
+
+/** Internal integer type to represent 64bit for arithmetic operations. */
+using unsigned64_t = std::uint64_t;
+
+/** Internal integer type to represent 32bit for arithmetic operations. */
+using signed32_t = std::int32_t;
+
+/** Internal integer type to represent 64bit for arithmetic operations. */
+using signed64_t = std::int64_t;
 }
 
 #endif /* ERAGPSIM_ARCH_RISCV_PROPERTIES_HPP */

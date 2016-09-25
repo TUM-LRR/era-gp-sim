@@ -13,14 +13,18 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
+* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
+#include <memory>
+#include <string>
 
-#include "gtest/gtest.h"
+#include "arch/common/register-node.hpp"
+#include "arch/riscv/register-node-factory.hpp"
 
-#include "arch/riscv/control-flow-instructions.hpp"
+namespace riscv {
 
-struct Foo : public ::testing::Test {};
-
-TEST(ControlFlowInstructionTests, TestJumpAndLinkImmediate) {
+RegisterNodeFactory::Node
+RegisterNodeFactory::createRegisterNode(const std::string &id) const {
+  return std::make_unique<RegisterNode>(id);
+}
 }

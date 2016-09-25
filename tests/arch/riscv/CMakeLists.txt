@@ -5,7 +5,7 @@
 set(TEST_ARCH_RISCV_SOURCES
 	arch-riscv-integer-instructions-test.cpp
 	arch-riscv-tests.cpp
-  arch-riscv-control-flow-instruction-tests.cpp
+  arch-riscv-jump-instruction-tests.cpp
 )
 
 ########################################

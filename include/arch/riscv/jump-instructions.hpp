@@ -26,6 +26,7 @@
 #include "arch/common/register-node.hpp"
 #include "arch/riscv/abstract-jump-instruction-node.hpp"
 #include "arch/riscv/instruction-node.hpp"
+#include "common/utility.hpp"
 
 namespace riscv {
 
@@ -120,9 +121,10 @@ class JumpAndLinkImmediateInstructionNode
     // Load the immediate
     auto offset = super::template _child<SignedWord>(memoryAccess, 1);
 
-    // Mask off the top 12 bit and check if they are non-zero
-    // If so the immediate is not 20 bit, but larger
-    if ((offset & ~0xFFFFF) > 0) {
+    // The immediate is 20 bit, but including the sign bit. Because it is
+    // counted in multiples of two, you still get +- 20 bit, but the value
+    // itself may still only occupy 19 bit!
+    if (Utility::occupiesMoreBitsThan(offset, 19)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Immediate operand must be 20 bit or less"));
@@ -193,7 +195,7 @@ class JumpAndLinkRegisterInstructionNode
    * \return The new program counter.
    */
   UnsignedWord _jump(UnsignedWord, MemoryAccess& memoryAccess) const override {
-    auto base   = super::template _child<UnsignedWord>(memoryAccess, 1);
+    auto base = super::template _child<UnsignedWord>(memoryAccess, 1);
     auto offset = super::template _child<SignedWord>(memoryAccess, 2);
 
     auto address = base + offset;
@@ -209,7 +211,7 @@ class JumpAndLinkRegisterInstructionNode
    * \return A `ValidationResult` reflecting the result of the check.
    */
   ValidationResult _validateNumberOfChildren() const override {
-    if (_children.size() != 2) {
+    if (_children.size() != 3) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(
           "Syntax-Tree-Validation",
           "JALR takes one destination register, one base register "
@@ -262,9 +264,10 @@ class JumpAndLinkRegisterInstructionNode
     // Load the immediate
     auto offset = super::template _child<SignedWord>(memoryAccess, 2);
 
-    // Mask off the top 20 bit and check if they are non-zero
-    // If so the immediate is not 12 bit, but larger
-    if ((offset & ~0xFFF) > 0) {
+    // The immediate is 12 bit, but including the sign bit. Because it is
+    // counted in multiples of two, you still get +- 12 bit, but the value
+    // itself may still only occupy 11 bit!
+    if (Utility::occupiesMoreBitsThan(offset, 11)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Immediate operand must be 12 bit or less"));

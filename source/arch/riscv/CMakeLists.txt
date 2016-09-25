@@ -8,7 +8,7 @@ set(ARCH_RISCV_SOURCES
     mul-div-instructions.cpp
     instruction-node-factory.cpp
     immediate-node-factory.cpp
-    register-access-node-factory.cpp
+    register-node-factory.cpp
     instruction-node-factory.cpp
     formats.cpp
   factory-map.cpp

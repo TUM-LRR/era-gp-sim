@@ -17,12 +17,13 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <gtest/gtest.h>
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+#include "gtest/gtest.h"
 
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"

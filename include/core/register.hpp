@@ -26,7 +26,7 @@ class Register {
  public:
   Register() = default;
 
-  Register(MemoryValue& v) : _value(v) {
+  Register(const MemoryValue& v) : _value(v) {
   }
 
   void set(const MemoryValue& v) {

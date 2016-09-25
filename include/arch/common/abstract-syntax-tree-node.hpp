@@ -109,6 +109,14 @@ class AbstractSyntaxTreeNode {
   virtual void insertChild(size_t index, Node&& node);
 
   /**
+   * Sets a child to a new node.
+   *
+   * \param index The index of the child to re-assign.
+   * \param node The new node to assign to the child at the given index.
+   */
+  virtual void setChild(size_t index, Node&& node);
+
+  /**
    * Returns the number of children this node has.
    */
   virtual size_t numberOfChildren() const noexcept;

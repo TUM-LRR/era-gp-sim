@@ -31,12 +31,13 @@ InstructionNodeFactory::InstructionNodeFactory(
   assert(wordSize == 32 || wordSize == 64);
 
   if (wordSize == 32) {
-    _setupIntegerInstructions<RV32_integral_t>();
+    _setupIntegerInstructions<riscv::unsigned32_t>();
+    _setupControlFlowInstructions<riscv::unsigned32_t, riscv::signed32_t>();
   } else if (wordSize == 64) {
-    _setupIntegerInstructions<RV64_integral_t>();
+    _setupIntegerInstructions<riscv::unsigned64_t>();
+    _setupControlFlowInstructions<riscv::unsigned64_t, riscv::signed64_t>();
   }
 
-  _setupControlFlowInstructions<uint32_t, int32_t>();
   _setupOtherInstructions();
 }
 

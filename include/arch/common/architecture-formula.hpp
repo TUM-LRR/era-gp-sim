@@ -47,9 +47,8 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
    * \param architectureName The name of the architecture.
    * \param list A list of extension names.
    */
-  explicit ArchitectureFormula(
-      const std::string& architectureName = std::string(),
-      InitializerList list                = InitializerList());
+  ArchitectureFormula(const std::string& architectureName = std::string(),
+                      InitializerList list = InitializerList());
 
   /**
    Constructs a new ArchitectureFormula.

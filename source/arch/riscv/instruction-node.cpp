@@ -62,12 +62,12 @@ MemoryValue InstructionNode::assemble() const {
   // }
 
   switch (format) {
-    case 1: assembler  = RFormat(); break;
-    case 2: assembler  = IFormat(); break;
-    case 3: assembler  = SFormat(); break;
-    case 4: assembler  = UFormat(); break;
-    case 5: assembler  = SBFormat(); break;
-    case 6: assembler  = UJFormat(); break;
+    case 1: assembler = RFormat(); break;
+    case 2: assembler = IFormat(); break;
+    case 3: assembler = SFormat(); break;
+    case 4: assembler = UFormat(); break;
+    case 5: assembler = SBFormat(); break;
+    case 6: assembler = UJFormat(); break;
     default: assembler = RFormat(); break;
   }
 

@@ -30,16 +30,53 @@
 #include <vector>
 
 namespace Utility {
+
+template <typename T>
+bool occupiesMoreBitsThan(const T& value, std::size_t numberOfBits) {
+  if (numberOfBits == 0) return true;
+
+  // Get the value one larger than the maximum allowed absolute value
+  auto boundary = static_cast<std::int64_t>(1) << numberOfBits;
+
+  // Note especially that signed numbers can occupy one more value
+  // than positive numbers with the same bit width
+  return (value < 0) ? value < -boundary : value >= boundary;
+}
+
+template <typename T>
+bool fitsIntoBits(const T& value, std::size_t numberOfBits) {
+  return !occupiesMoreBitsThan(value, numberOfBits);
+}
+
+template <typename IteratorTag>
+struct isSinglePassIteratorTag {
+  static constexpr bool value = false;
+};
+
+template <>
+struct isSinglePassIteratorTag<std::input_iterator_tag> {
+  static constexpr bool value = true;
+};
+
+template <>
+struct isSinglePassIteratorTag<std::output_iterator_tag> {
+  static constexpr bool value = true;
+};
+
+template <typename Iterator>
+constexpr bool isSinglePassIterator = isSinglePassIteratorTag<
+    typename std::iterator_traits<Iterator>::iterator_category>::value;
+
 template <typename Range>
 class View {
  public:
-  using Iterator = decltype(((Range*)nullptr)->begin());
-  using size_t   = std::size_t;
+  using Iterator = decltype(std::declval<Range>().begin());
+  using size_t = std::size_t;
 
   View(const Range& range, size_t beginIndex, size_t lastIndex)
   : _begin(std::begin(range)), _end(std::begin(range)) {
     std::advance(_begin, beginIndex);
-    std::advance(_begin, lastIndex);
+    std::advance(_end, lastIndex);
   }
 
   auto begin() {
@@ -58,6 +95,11 @@ class View {
     return _end;
   }
 
+  std::enable_if_t<!isSinglePassIterator<Iterator>, size_t> size() const
+      noexcept {
+    return std::distance(_begin, _end);
+  }
+
  private:
   Iterator _begin;
   Iterator _end;
@@ -70,7 +112,8 @@ View<Range> viewUpTo(Range& range, std::size_t index) {
 
 template <typename Range>
 auto viewFrom(Range& range, std::size_t index) {
-  return View<Range>(range, index, std::distance(begin(range), end(range)));
+  auto size = std::distance(begin(range), end(range));
+  return View<Range>(range, index, size);
 }
 
 

@@ -53,6 +53,12 @@ void AbstractSyntaxTreeNode::insertChild(size_t index, Node&& node) {
   _children.emplace(iterator, std::move(node));
 }
 
+void AbstractSyntaxTreeNode::setChild(size_t index, Node&& node) {
+  assert(index < _children.size());
+
+  _children[index] = std::move(node);
+}
+
 ValidationResult AbstractSyntaxTreeNode::_validateChildren() const {
   for (auto& child : _children) {
     auto result = child->validate();

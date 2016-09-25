@@ -20,6 +20,8 @@
 #ifndef ERAGPSIM_ARCH_RISCV_ABSTRACT_JUMP_INSTRUCTION_NODE_HPP
 #define ERAGPSIM_ARCH_RISCV_ABSTRACT_JUMP_INSTRUCTION_NODE_HPP
 
+#include "gtest/gtest_prod.h"
+
 #include "arch/common/instruction-information.hpp"
 #include "arch/riscv/instruction-node.hpp"
 
@@ -108,7 +110,7 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    * \return An empty memory value.
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    auto destination    = _children[0]->getIdentifier();
+    auto destination = _children[0]->getIdentifier();
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
 
     // Store the return address (pc + 4) in the destination register
@@ -149,6 +151,8 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
   }
 
  protected:
+  FRIEND_TEST(TestJumpInstructions, TestJALValidation);
+  FRIEND_TEST(TestJumpInstructions, TestJALRValidation);
   /**
    * The actual, instruction-specific jump code.
    *

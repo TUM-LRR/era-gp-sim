@@ -18,6 +18,7 @@
 #ifndef ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
 #define ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
 
+#include <QtCore/qglobal.h>
 #include <memory>
 #include <string>
 

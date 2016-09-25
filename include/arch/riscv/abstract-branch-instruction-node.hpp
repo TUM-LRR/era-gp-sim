@@ -56,7 +56,7 @@ namespace riscv {
 template <typename UnsignedWord, typename SignedWord>
 class AbstractBranchInstructionNode : public InstructionNode {
  public:
-  using super     = InstructionNode;
+  using super = InstructionNode;
   using Condition = std::function<bool(const MemoryValue&, const MemoryValue&)>;
 
   /**
@@ -100,7 +100,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
    * \return An empty memory value.
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    auto first  = _children[0]->getValue(memoryAccess);
+    auto first = _children[0]->getValue(memoryAccess);
     auto second = _children[1]->getValue(memoryAccess);
 
     if (_checkCondition(first, second)) {
@@ -240,7 +240,9 @@ class AbstractBranchInstructionNode : public InstructionNode {
   ValidationResult _validateOffset() const {
     MemoryAccess memoryAccess;
     auto offset = _child<SignedWord>(memoryAccess, 2);
-    if ((offset & ~0xFFF) > 0) {
+
+    // Check if the value is greater than the largest allowed 12-bit value.
+    if (offset > 0xFFF) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Immediate operand must be 12 bit or less"));

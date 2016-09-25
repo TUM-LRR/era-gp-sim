@@ -33,7 +33,6 @@
 
 using namespace riscv;
 
-namespace {
 template <typename IntType>
 MemoryValue convertToMem(IntType t) {
   return core::convert<IntType>(t, riscv::BITS_PER_BYTE, riscv::ENDIANNESS);
@@ -48,8 +47,7 @@ MemoryValue to64BitMemoryValue(uint64_t value) {
 }
 
 InstructionNodeFactory
-setUpFactory(ArchitectureFormula::InitializerList modules =
-                 ArchitectureFormula::InitializerList()) {
+setUpFactory(ArchitectureFormula::InitializerList modules) {
   auto formula = ArchitectureFormula("riscv", modules);
   auto riscv   = Architecture::Brew(formula);
   return InstructionNodeFactory(riscv.getInstructions(), riscv);
@@ -135,7 +133,7 @@ void test12BitImmediateBounds(InstructionNodeFactory& instrF,
   // ASSERT_FALSE(node2->validate().isSuccess());
   std::cout << "Ignored 1 12bit immediate boundary test" << std::endl;
 }
-}
+
 /**
   * This macro performs a register-register test for the given instruction,
  * operands.

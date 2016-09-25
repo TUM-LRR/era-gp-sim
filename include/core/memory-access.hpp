@@ -27,7 +27,8 @@
 #include "core/register.hpp"
 
 struct MemoryAccess {
-  void addRegister(const std::string& name, const Register& newRegister) {
+  void addRegister(const std::string& name,
+                   const Register& newRegister = Register()) {
     _registers[name] = newRegister;
   }
 
