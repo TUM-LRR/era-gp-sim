@@ -26,6 +26,7 @@
 #include <type_traits>
 
 #include "arch/riscv/instruction-node.hpp"
+#include "arch/riscv/properties.hpp"
 
 namespace riscv {
 
@@ -79,7 +80,7 @@ class AbstractIntegerInstructionNode : public InstructionNode {
     auto second = _child(2, memoryAccess);
 
     auto result = _compute(first, second);
-    auto value  = convert(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+    auto value = core::convert(result, riscv::BITS_PER_BYTE, riscv::ENDIANNESS);
 
     memoryAccess.setRegisterValue(destination, value);
 
@@ -133,7 +134,7 @@ class AbstractIntegerInstructionNode : public InstructionNode {
  private:
   SizeType _child(size_t index, MemoryAccess& memoryAccess) const {
     auto memory = _children[index]->getValue(memoryAccess);
-    return _convert<SizeType>(memory);
+    return riscv::convert<SizeType>(memory);
   }
 
   SizeType _child(size_t index) const {

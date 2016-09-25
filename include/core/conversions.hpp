@@ -26,13 +26,12 @@
 #include <type_traits>
 #include <vector>
 
-#include "memory-value.hpp"
+#include "arch/common/architecture-properties.hpp"
+#include "core/memory-value.hpp"
 
-/**
- * TODO: Replace with version from memory implementation
- * Indicates the byte order of a memory value
- */
-enum class Endianness { BIG, LITTLE };
+namespace core {
+
+using Endianness = ArchitectureProperties::Endianness;
 
 /**
  * TODO: Replace with version from architecture implementation
@@ -236,6 +235,7 @@ convert(T value,
       case Endianness::LITTLE:
         bytes.insert(bytes.begin(), byteCount - bytes.size(), 0);
         break;
+      default: break;
     }
   }
   // Now, turn the bytes into the uint8_t representation used internally
@@ -403,6 +403,7 @@ convert(
     // Return the memory value
     return converted;
   }
+}
 }
 
 #endif// ERAGPSIM_CORE_CONVERSIONS_HPP

@@ -32,7 +32,7 @@ template <typename UnsignedWord, typename SignedWord>
 struct BranchEqualInstructionNode
     : public AbstractBranchInstructionNode<UnsignedWord, SignedWord> {
   using super = AbstractBranchInstructionNode<UnsignedWord, SignedWord>;
-  using super::_convert;
+
 
   /**
    * Constructs the branch instruction.
@@ -45,8 +45,8 @@ struct BranchEqualInstructionNode
     // This is because `super` is template type and the template function
     // dependent on it
     // For more information: http://bit.ly/2coIPmu
-    return super::template _convert<UnsignedWord>(first) ==
-           super::template _convert<UnsignedWord>(second);
+    return riscv::convert<UnsignedWord>(first) ==
+           riscv::convert<UnsignedWord>(second);
   }) {
   }
 };
@@ -58,7 +58,7 @@ template <typename UnsignedWord, typename SignedWord>
 struct BranchNotEqualInstructionNode
     : public AbstractBranchInstructionNode<UnsignedWord, SignedWord> {
   using super = AbstractBranchInstructionNode<UnsignedWord, SignedWord>;
-  using super::_convert;
+
 
   /**
    * Constructs the branch instruction.
@@ -68,8 +68,8 @@ struct BranchNotEqualInstructionNode
   explicit BranchNotEqualInstructionNode(
       const InstructionInformation& information)
   : super(information, [this](const auto& first, const auto& second) {
-    return super::template _convert<UnsignedWord>(first) !=
-           super::template _convert<UnsignedWord>(second);
+    return riscv::convert<UnsignedWord>(first) !=
+           riscv::convert<UnsignedWord>(second);
   }) {
   }
 };
@@ -83,7 +83,7 @@ template <typename UnsignedWord, typename SignedWord>
 struct BranchLessThanInstructionNode
     : public AbstractBranchInstructionNode<UnsignedWord, SignedWord> {
   using super = AbstractBranchInstructionNode<UnsignedWord, SignedWord>;
-  using super::_convert;
+
   using typename super::OperandTypes;
 
   /**
@@ -96,11 +96,11 @@ struct BranchLessThanInstructionNode
       const InstructionInformation& information, OperandTypes operandTypes)
   : super(information, [operandTypes](const auto& first, const auto& second) {
     if (operandTypes == OperandTypes::SIGNED) {
-      return super::template _convert<SignedWord>(first) <
-             super::template _convert<SignedWord>(second);
+      return riscv::convert<SignedWord>(first) <
+             riscv::convert<SignedWord>(second);
     } else {
-      return super::template _convert<UnsignedWord>(first) <
-             super::template _convert<UnsignedWord>(second);
+      return riscv::convert<UnsignedWord>(first) <
+             riscv::convert<UnsignedWord>(second);
     }
   }) {
   }
@@ -115,7 +115,7 @@ template <typename UnsignedWord, typename SignedWord>
 struct BranchGreaterEqualInstructionNode
     : public AbstractBranchInstructionNode<UnsignedWord, SignedWord> {
   using super = AbstractBranchInstructionNode<UnsignedWord, SignedWord>;
-  using super::_convert;
+
   using typename super::OperandTypes;
 
   /**
@@ -128,11 +128,11 @@ struct BranchGreaterEqualInstructionNode
       const InstructionInformation& information, OperandTypes operandTypes)
   : super(information, [operandTypes](const auto& first, const auto& second) {
     if (operandTypes == OperandTypes::SIGNED) {
-      return super::template _convert<SignedWord>(first) >=
-             super::template _convert<SignedWord>(second);
+      return riscv::convert<SignedWord>(first) >=
+             riscv::convert<SignedWord>(second);
     } else {
-      return super::template _convert<UnsignedWord>(first) >=
-             super::template _convert<UnsignedWord>(second);
+      return riscv::convert<UnsignedWord>(first) >=
+             riscv::convert<UnsignedWord>(second);
     }
   }) {
   }

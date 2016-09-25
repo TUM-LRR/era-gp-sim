@@ -36,9 +36,7 @@ namespace riscv {
 namespace {
 template <typename IntType>
 MemoryValue convertToMem(IntType t) {
-  return convert<IntType>(t,
-                          InstructionNode::RISCV_BITS_PER_BYTE,
-                          InstructionNode::RISCV_ENDIANNESS);
+  return core::convert<IntType>(t, riscv::BITS_PER_BYTE, riscv::ENDIANNESS);
 }
 
 class FakeRegister {

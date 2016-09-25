@@ -42,13 +42,8 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Qml REQUIRED)
 find_package(Qt5Quick REQUIRED)
 
-<<<<<<< HEAD
-message(STATUS ${QT_INCLUDES})
-message(STATUS ${QT_USE_FILE})
-include_directories(/usr/local/opt/qt5/include)
+include_directories(/usr/local/opt/qt5/include/)
 
-=======
->>>>>>> 46fb193d1cd0a5f918c4bd442728da3c06420261
 ########################################
 # SUBDIRECTORIES
 ########################################

@@ -105,7 +105,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
 
     if (_checkCondition(first, second)) {
       auto programCounter =
-          super::_loadRegister<UnsignedWord>(memoryAccess, "pc");
+          riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
       auto offset = super::_child<SignedWord>(memoryAccess, 2);
 
       // The 12-bit immediate specifies an offset in multiples
@@ -121,7 +121,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
       // one might think: http://bit.ly/2c8sfdh
       programCounter += (offset * 2);
 
-      _storeRegister<UnsignedWord>(memoryAccess, "pc", programCounter);
+      riscv::storeRegister<UnsignedWord>(memoryAccess, "pc", programCounter);
     }
 
     return {};
@@ -261,7 +261,8 @@ class AbstractBranchInstructionNode : public InstructionNode {
     static const auto addressBoundary =
         std::numeric_limits<UnsignedWord>::max();
 
-    // auto programCounter = _loadRegister<UnsignedWord>(memoryAccess, "pc");
+    // auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess,
+    // "pc");
     // auto offset         = _child<SignedWord>(2, memoryAccess);
     //
     // auto maximumAllowedOffset = addressBoundary - programCounter;

@@ -109,14 +109,15 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     auto destination    = _children[0]->getIdentifier();
-    auto programCounter = _loadRegister<UnsignedWord>(memoryAccess, "pc");
+    auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
 
     // Store the return address (pc + 4) in the destination register
-    _storeRegister<UnsignedWord>(memoryAccess, destination, programCounter + 4);
+    riscv::storeRegister<UnsignedWord>(
+        memoryAccess, destination, programCounter + 4);
 
     auto result = _jump(programCounter, memoryAccess);
 
-    _storeRegister<UnsignedWord>(memoryAccess, "pc", result);
+    riscv::storeRegister<UnsignedWord>(memoryAccess, "pc", result);
 
     return {};
   }
