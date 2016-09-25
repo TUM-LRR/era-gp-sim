@@ -3,6 +3,7 @@ name: no-deps
 endianness: little
 alignment-behavior: strict
 word-size: 32
+signed-representation: sign-bit
 units:
   - name: cpu
     registers:

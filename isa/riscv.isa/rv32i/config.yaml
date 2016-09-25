@@ -5,6 +5,7 @@ name: rv32i
 alignment-behavior: relaxed
 endianness: little
 word-size: 32
+signed-representation: twos-complement
 
 instructions:
   - mnemonic: lui
