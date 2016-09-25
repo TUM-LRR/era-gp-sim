@@ -3,10 +3,8 @@
 ########################################
 
 set(TEST_ARCH_RISCV_SOURCES
-	#arch-riscv-tests.cpp These must be adapted, at the moment they do not compile
 	arch-riscv-integer-instructions-test.cpp
-	#arch-riscv-tests.cpp
-  # formats-test.cpp
+	arch-riscv-tests.cpp
   arch-riscv-control-flow-instruction-tests.cpp
 )
 

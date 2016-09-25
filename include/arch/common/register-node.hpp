@@ -34,7 +34,7 @@ class RegisterNode : public AbstractSyntaxTreeNode {
    * \param value The identifier for the register.
    */
   explicit RegisterNode(const std::string& identifier)
-  : AbstractSyntaxTreeNode(Type::REGISTER), _identifier(identifier) {
+  : super(Type::REGISTER), _identifier(identifier) {
   }
 
   /**

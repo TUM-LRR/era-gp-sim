@@ -23,16 +23,8 @@
 #include <vector>
 
 #include "arch/common/validation-result.hpp"
-//#include "core/memory-access.hpp"
+#include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
-
-struct MemoryAccess {
-  virtual MemoryValue getRegisterValue(const std::string&) {
-    return {};
-  }
-  virtual void setRegisterValue(const std::string&, MemoryValue) {
-  }
-};
 
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {

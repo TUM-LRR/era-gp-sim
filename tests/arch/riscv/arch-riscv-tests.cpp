@@ -15,64 +15,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <gtest/gtest.h>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
-#include "arch/riscv/instruction-node.hpp"
-#include "arch/riscv/integer-instructions.hpp"
-#include "arch/riscv/load-store-instructions.hpp"
-#include "arch/riscv/riscv-node-factories.hpp"
+#include "gtest/gtest.h"
 
-using namespace riscv;
+#include "arch/riscv/utility.hpp"
+#include "core/memory-access.hpp"
 
-TEST(InstructionTest, LoadInstruction) {
-  LoadInstructionNode lw{LoadType::WORD}, lh{LoadType::HALF_WORD},
-      lhu{LoadType::HALF_WORD_UNSIGNED}, lb{LoadType::BYTE},
-      lbu{LoadType::BYTE_UNSIGNED};
-  std::vector<LoadInstructionNode *> nodes{&lw, &lh, &lhu, &lb, &lbu};
+TEST(UtilityTest, TestConversionsConvertWell) {
+  uint32_t unsignedValue = 0xDEADBEEF;
+  int16_t signedValue    = -0x1337;
 
-  // Basic testing
-  for (auto node : nodes) {
-    ASSERT_EQ(Type::INSTRUCTION, node->getType());
-    ASSERT_FALSE(node->validate());
-  }
+  MemoryValue unsignedIntermediary = riscv::convert(unsignedValue);
+  MemoryValue signedIntermediary   = riscv::convert(signedValue);
 
-  ASSERT_EQ("LW", lw.getIdentifier());
-  ASSERT_EQ("LH", lh.getIdentifier());
-  ASSERT_EQ("LHU", lhu.getIdentifier());
-  ASSERT_EQ("LB", lb.getIdentifier());
-  ASSERT_EQ("LBU", lbu.getIdentifier());
+  uint32_t unsignedResult = riscv::convert<uint32_t>(unsignedIntermediary);
+  int16_t signedResult    = riscv::convert<int16_t>(signedIntermediary);
 
-  // TODO Make tests for immediate values
+  EXPECT_EQ(unsignedResult, unsignedValue);
+  EXPECT_EQ(signedResult, signedValue);
 }
 
-TEST(InstructionTest, StoreInstruction) {
-  InstructionNodeFactory instructionFactory;
+TEST(UtilityTest, TestStoreLoadUtilitiesWorkWell) {
+  uint32_t unsignedValue = 0xDEADBEEF;
+  int16_t signedValue    = -0x1337;
 
-  auto sw = instructionFactory.createInstructionNode("SW");
-  auto sh = instructionFactory.createInstructionNode("SH");
-  auto sb = instructionFactory.createInstructionNode("SB");
+  MemoryAccess memoryAccess;
 
-  // Create a vector over the nodes to make testing easier
-  auto nodes = {sw.get(), sh.get(), sb.get()};
+  riscv::storeRegister(memoryAccess, "r0", unsignedValue);
+  riscv::storeRegister(memoryAccess, "r1", signedValue);
 
-  // Basic testing
-  for (auto const node : nodes) {
-    ASSERT_EQ(Type::INSTRUCTION, node->getType());
-    ASSERT_FALSE(node->validate());
-  }
+  uint32_t unsignedResult = riscv::loadRegister<uint32_t>(memoryAccess, "r0");
+  int16_t signedResult    = riscv::loadRegister<int16_t>(memoryAccess, "r1");
 
-  ASSERT_EQ("SW", sw->getIdentifier());
-  ASSERT_EQ("SH", sh->getIdentifier());
-  ASSERT_EQ("SB", sb->getIdentifier());
-
-  // TODO Make tests for immediate values
-}
-
-/* TODO Test more commands */
-
-int main(int argc, char **argv) {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  EXPECT_EQ(unsignedValue, unsignedResult);
+  EXPECT_EQ(signedValue, signedResult);
 }
