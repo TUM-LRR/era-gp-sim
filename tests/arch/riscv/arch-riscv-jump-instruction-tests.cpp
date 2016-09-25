@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
+#include <cassert>
 #include <memory>
 
 #include "gtest/gtest.h"
@@ -27,11 +28,14 @@
 
 namespace riscv {
 
-struct TestJumpInstructionsFixture : public ::testing::Test {
+struct TestJumpInstructions : public ::testing::Test {
   using address_t = std::uint32_t;
   using offset_t = std::int32_t;
 
-  TestJumpInstructionsFixture() : progress(0) {
+  TestJumpInstructions() : progress(0) {
+    auto architecture = Architecture::Brew({"riscv", {"rv32i"}});
+    factory = architecture.getNodeFactories();
+
     setInitialAddress(666);
   }
 
@@ -40,10 +44,7 @@ struct TestJumpInstructionsFixture : public ::testing::Test {
     riscv::storeRegister(memoryAccess, "pc", initialAddress);
   }
 
-  void JAL(const std::string& linkRegisterName, offset_t jumpOffsetValue) {
-    auto architecture = Architecture::Brew({"riscv", {"rv32i"}});
-    auto& factory = architecture.getNodeFactories();
-
+  void jal(const std::string& linkRegisterName, offset_t jumpOffsetValue) {
     auto instruction = factory.createInstructionNode("JAL");
     auto linkRegister = factory.createRegisterNode(linkRegisterName);
 
@@ -62,7 +63,7 @@ struct TestJumpInstructionsFixture : public ::testing::Test {
   }
 
   void testJAL(const std::string& linkRegisterName, offset_t offset) {
-    JAL(linkRegisterName, offset);
+    jal(linkRegisterName, offset);
 
     auto resultingLinkRegister =
         riscv::loadRegister<std::uint32_t>(memoryAccess, linkRegisterName);
@@ -77,12 +78,9 @@ struct TestJumpInstructionsFixture : public ::testing::Test {
     EXPECT_EQ(resultingPC, initialAddress + progress);
   }
 
-  void JALR(const std::string& linkRegisterName,
+  void jalr(const std::string& linkRegisterName,
             const std::string& baseRegisterName,
             offset_t jumpOffsetValue) {
-    auto architecture = Architecture::Brew({"riscv", {"rv32i"}});
-    auto& factory = architecture.getNodeFactories();
-
     auto instruction = factory.createInstructionNode("JALR");
     auto linkRegister = factory.createRegisterNode(linkRegisterName);
     auto baseRegister = factory.createRegisterNode(baseRegisterName);
@@ -105,38 +103,37 @@ struct TestJumpInstructionsFixture : public ::testing::Test {
                 offset_t offset) {
     riscv::storeRegister(memoryAccess, baseRegisterName, baseAddress);
 
-    JALR(linkRegisterName, baseRegisterName, offset);
+    jalr(linkRegisterName, baseRegisterName, offset);
 
-    auto resultingPC = riscv::loadRegister<std::uint32_t>(memoryAccess, "pc");
+    auto resultingProgramCounter =
+        riscv::loadRegister<address_t>(memoryAccess, "pc");
 
     // JALR specifies an absolute target, while JAL specifies a target
     // relative to the current program counter. Also, the offset is now in
     // multiples of one, not two. The lowest bit must be unset.
     address_t target = (baseAddress + offset) & ~1;
-    EXPECT_EQ(resultingPC, target);
+    EXPECT_EQ(resultingProgramCounter, target);
 
     auto resultingLinkRegister =
-        riscv::loadRegister<std::uint32_t>(memoryAccess, linkRegisterName);
+        riscv::loadRegister<address_t>(memoryAccess, linkRegisterName);
     EXPECT_EQ(resultingLinkRegister, initialAddress + 4);
 
     // Store for next invocation
     initialAddress = target;
   }
 
+  NodeFactoryCollection factory;
   MemoryAccess memoryAccess;
   address_t initialAddress;
   address_t progress;
 };
 
-TEST(TestJumpInstructions, TestJALValidation) {
+TEST_F(TestJumpInstructions, TestJALValidation) {
   using JumpAndLinkNode =
       AbstractJumpAndLinkInstructionNode<riscv::unsigned32_t,
                                          riscv::signed32_t>;
 
   // Typical instruction: JAL r1, -123 ; <link>, <20 bit offset>
-
-  auto architecture = Architecture::Brew({"riscv", {"rv32i"}});
-  auto& factory = architecture.getNodeFactories();
 
   auto instruction = factory.createInstructionNode("JAL");
   auto linkRegister = factory.createRegisterNode("r1");
@@ -158,7 +155,7 @@ TEST(TestJumpInstructions, TestJALValidation) {
   EXPECT_FALSE(instruction->validate().isSuccess());
 
   // Invalid second register node, just to ensure
-  // node type validation (not just number)
+  // node type validation (not just number of children)
   instruction->addChild(std::move(invalidRegister));
   EXPECT_TRUE(internal->_validateNumberOfChildren().isSuccess());
   EXPECT_FALSE(internal->_validateOperandTypes().isSuccess());
@@ -183,14 +180,14 @@ TEST(TestJumpInstructions, TestJALValidation) {
   // TODO: Validate that the resulting PC will be valid
 }
 
-TEST_F(TestJumpInstructionsFixture, TestJALCanJumpForwards) {
+TEST_F(TestJumpInstructions, TestJALCanJumpForwards) {
   testJAL("r1", 1);
   testJAL("r2", 123);
   testJAL("r3", 12345);
   testJAL("r4", 0x7FFFF - initialAddress - progress);
 }
 
-TEST_F(TestJumpInstructionsFixture, TestJALCanJumpBackwards) {
+TEST_F(TestJumpInstructions, TestJALCanJumpBackwards) {
   // Swap sides
   setInitialAddress(std::numeric_limits<address_t>::max() - initialAddress);
 
@@ -200,20 +197,16 @@ TEST_F(TestJumpInstructionsFixture, TestJALCanJumpBackwards) {
   testJAL("r4", -0x8000 + initialAddress + progress);
 }
 
-TEST_F(TestJumpInstructionsFixture, TestJALDoesNothingWhenOffsetIsZero) {
+TEST_F(TestJumpInstructions, TestJALDoesNothingWhenOffsetIsZero) {
   testJAL("r1", 0);
 }
 
-TEST(TestJumpInstructions, TestJALRValidation) {
+TEST_F(TestJumpInstructions, TestJALRValidation) {
   using JumpAndLinkNode =
       AbstractJumpAndLinkInstructionNode<riscv::unsigned32_t,
                                          riscv::signed32_t>;
 
-  // Typical instruction: JALR r1, r2, -123 ; <link> <base> <20 bit offset>
-
-  auto architecture = Architecture::Brew({"riscv", {"rv32i"}});
-  auto& factory = architecture.getNodeFactories();
-
+  // Typical instruction: JALR r1, r2, -123 ; <link> <base> <12s bit offset>
   auto instruction = factory.createInstructionNode("JALR");
   auto linkRegister = factory.createRegisterNode("r1");
   auto baseRegister = factory.createRegisterNode("r2");
@@ -236,7 +229,7 @@ TEST(TestJumpInstructions, TestJALRValidation) {
   EXPECT_FALSE(instruction->validate().isSuccess());
 
   // Invalid third register node, just to ensure
-  // node type validation (not just number)
+  // node type validation (not just number of children)
   instruction->addChild(std::move(invalidRegister));
   EXPECT_TRUE(internal->_validateNumberOfChildren().isSuccess());
   EXPECT_FALSE(internal->_validateOperandTypes().isSuccess());
@@ -259,21 +252,21 @@ TEST(TestJumpInstructions, TestJALRValidation) {
   EXPECT_TRUE(instruction->validate().isSuccess());
 }
 
-TEST_F(TestJumpInstructionsFixture, TestJALRCanJumpForwards) {
+TEST_F(TestJumpInstructions, TestJALRCanJumpForwards) {
   testJALR("r1", "r2", 1, 1);
   testJALR("r2", "r3", 6969, 123);
   testJALR("r3", "r4", 8888, 12345);
   testJALR("r4", "r1", 1, 0x7FF);
 }
 
-TEST_F(TestJumpInstructionsFixture, TestJALRCanJumpBackwards) {
+TEST_F(TestJumpInstructions, TestJALRCanJumpBackwards) {
   testJALR("r1", "r2", 1, -1);
   testJALR("r2", "r3", 6969, -123);
   testJALR("r3", "r4", 8888, -12345);
   testJALR("r4", "r1", 1, -0x7FF);
 }
 
-TEST_F(TestJumpInstructionsFixture, TestJALRDoesNothingWhenOffsetIsZero) {
+TEST_F(TestJumpInstructions, TestJALRDoesNothingWhenOffsetIsZero) {
   testJALR("r1", "r2", 0, 0);
 }
 }

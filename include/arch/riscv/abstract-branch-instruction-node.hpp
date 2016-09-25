@@ -24,7 +24,10 @@
 #include <functional>
 #include <limits>
 
+#include "gtest/gtest_prod.h"
+
 #include "arch/riscv/instruction-node.hpp"
+#include "common/utility.hpp"
 
 namespace riscv {
 
@@ -164,7 +167,9 @@ class AbstractBranchInstructionNode : public InstructionNode {
   // Idea: refactor all validation into a validator class, which just takes
   // `this` as a reference and performs all the checks on its children. For this
   // we could either make the validator a friend or give the noder a friendlier
-  // interface
+  // interface. Would also solve the testability problem.
+
+  FRIEND_TEST(TestBranchInstructions, TestValidation);
 
   /**
    * Checks a condition predicate between two operands.
@@ -241,8 +246,10 @@ class AbstractBranchInstructionNode : public InstructionNode {
     MemoryAccess memoryAccess;
     auto offset = _child<SignedWord>(memoryAccess, 2);
 
-    // Check if the value is greater than the largest allowed 12-bit value.
-    if (offset > 0xFFF) {
+    // The immediate is 12 bit, but including the sign bit. Because it is
+    // counted in multiples of two, you still get +- 12 bit, but the value
+    // itself may still only occupy 11 bit!
+    if (Utility::occupiesMoreBitsThan(offset, 11)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Immediate operand must be 12 bit or less"));

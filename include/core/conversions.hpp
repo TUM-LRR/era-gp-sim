@@ -139,12 +139,12 @@ convert(const MemoryValue& memoryValue,
   std::size_t bitsInU = std::numeric_limits<U>::digits;// Bits in type U
   // assert(bitsInT >= bitsInU - 1);
   std::size_t numberOfBits = std::min(bitsInU, memoryValue.getSize());
-  U unsignedRawValue       = convert<U>(memoryValue, byteOrder);
+  U unsignedRawValue = convert<U>(memoryValue, byteOrder);
 
   // Bitmasks to extract the right values
-  U firstBit       = static_cast<U>(1) << (numberOfBits - 1);
+  U firstBit = static_cast<U>(1) << (numberOfBits - 1);
   U exceptFirstBit = firstBit - 1;
-  U entireValue    = exceptFirstBit | firstBit;
+  U entireValue = exceptFirstBit | firstBit;
   // The result
   T result;
   // Depending on the representation, convert the unsigned value into the signed
@@ -174,6 +174,7 @@ convert(const MemoryValue& memoryValue,
       }
       break;
   }
+
   // Return the result
   return result;
 }
@@ -245,7 +246,7 @@ convert(T value,
     std::deque<uint8_t> byteData;// Data for this byte only
     // Split the byte into actual uint8_t chunks
     T byteMask;
-    std::size_t leftShift  = 8 - (bitsPerByte % 8);
+    std::size_t leftShift = 8 - (bitsPerByte % 8);
     std::size_t rightShift = bitsPerByte - 8;
     if (bitsPerByte >= 8) {
       // Shift the 8 bit mask far enough to the left
@@ -300,9 +301,9 @@ convert(
     std::size_t bitsPerByte,
     Endianness byteOrder,
     SignedRepresentation representation = SignedRepresentation::TWOS_COMPLEMENT,
-    std::size_t byteCount               = 0) {
+    std::size_t byteCount = 0) {
   // Get the number of bits T and U can contain
-  std::size_t bitsInSignedType   = std::numeric_limits<T>::digits;
+  std::size_t bitsInSignedType = std::numeric_limits<T>::digits;
   std::size_t bitsInUnsignedType = std::numeric_limits<U>::digits;
   // Positive values need no special treatment
   if (value >= 0) {
@@ -318,7 +319,7 @@ convert(
     // Get the number of bytes we need to represent this value, if no byteCount
     // is set
     if (byteCount == 0) {
-      U positiveValue             = static_cast<U>(-value);
+      U positiveValue = static_cast<U>(-value);
       bool usedMostSignificantBit = false;
       while (positiveValue > 0) {
         usedMostSignificantBit =

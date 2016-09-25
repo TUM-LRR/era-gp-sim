@@ -75,7 +75,7 @@ struct BranchNotEqualInstructionNode
 };
 
 /**
- * The `BLE[U]` "less than" branch instruction.
+ * The `BLT[U]` "less than" branch instruction.
  *
  * This instruction handles both signed and unsigned comparison.
  */
@@ -107,9 +107,9 @@ struct BranchLessThanInstructionNode
 };
 
 /**
- * The `BGE[U]` "greater than or equal" branch instruction.
+ * The `BGE[U]` "greater than or equal" branch This.
  *
- * This instruction handles both signed and unsigned comparison.
+ * instruction instruction handles both signed and unsigned comparison.
  */
 template <typename UnsignedWord, typename SignedWord>
 struct BranchGreaterEqualInstructionNode
