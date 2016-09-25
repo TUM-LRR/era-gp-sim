@@ -154,6 +154,14 @@ class Architecture : public BuilderInterface {
   Endianness getEndianness() const;
 
   /**
+   * Returns the signed representation of the architecture.
+   *
+   * This property must have already been set by extending the architecture with
+   * an extension and validated by calling `validate()`. This is asserted!
+   */
+  SignedRepresentation getSignedRepresentation() const;
+
+  /**
    * Returns the alignment behavior of the architecture.
    *
    * This property must have already been set by extending the architecture with
