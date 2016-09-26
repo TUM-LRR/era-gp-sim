@@ -17,9 +17,7 @@
 
 #include <cassert>
 #include <cstdint>
-#include <iostream>
 #include <unordered_map>
-#include <iostream>
 
 #include "gtest/gtest.h"
 
