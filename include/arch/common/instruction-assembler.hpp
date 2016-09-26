@@ -15,9 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-// There should be a HashMap of instructions to functions for the assembly
-// in the abstract factory.
-
 #ifndef ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP
 #define ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP
 

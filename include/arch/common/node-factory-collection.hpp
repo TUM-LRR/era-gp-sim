@@ -47,8 +47,8 @@ class NodeFactoryCollection {
   NodeFactoryCollection() = default;
 
   template <typename FactoryTypes>
-  static NodeFactoryCollection
-  Create(const InstructionSet &instructionSet, const Architecture& architecture) {
+  static NodeFactoryCollection Create(const InstructionSet &instructionSet,
+                                      const Architecture &architecture) {
     // clang-format off
     return NodeFactoryCollection(
         FactoryTypes::instructionFactory(instructionSet, architecture),

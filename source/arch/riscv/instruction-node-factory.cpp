@@ -15,12 +15,11 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <iostream>
-
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
+#include "arch/riscv/lui-auipc-instructions.hpp"
 #include "arch/riscv/mul-div-instructions.hpp"
 #include "arch/riscv/word-instruction-wrapper.hpp"
 
@@ -99,13 +98,84 @@ void initializeIntegerInstructions(
     return std::make_unique<ShiftArithmeticRightInstructionNode<WordSize>>(
         info, true);
   });
+  _instructionMap.emplace("lui", [](InstructionInformation& info) {
+    return std::make_unique<LuiInstructionNode<WordSize>>(info);
+  });
+  _instructionMap.emplace("auipc", [](InstructionInformation& info) {
+    return std::make_unique<AuipcInstructionNode<WordSize>>(info);
+  });
+}
+
+template <typename SignedType, typename UnsignedType>
+void initializeLoadStoreInstructions(
+    Architecture::word_size_t wordSize,
+    InstructionNodeFactory::InstructionMap& _instructionMap) {
+  if (wordSize == InstructionNodeFactory::RV64) {
+    // The following instructions exist only within RV64
+    _instructionMap.emplace("ld", [](InstructionInformation& info) {
+      return std::make_unique<LoadInstructionNode<SignedType, UnsignedType>>(
+          info,
+          LoadInstructionNode<SignedType, UnsignedType>::Type::DOUBLE_WORD);
+    });
+    _instructionMap.emplace("lwu", [](InstructionInformation& info) {
+      return std::make_unique<LoadInstructionNode<SignedType, UnsignedType>>(
+          info,
+          LoadInstructionNode<SignedType, UnsignedType>::Type::WORD_UNSIGNED);
+    });
+    _instructionMap.emplace("sd", [](InstructionInformation& info) {
+      return std::make_unique<StoreInstructionNode<SignedType, UnsignedType>>(
+          info,
+          StoreInstructionNode<SignedType, UnsignedType>::Type::DOUBLE_WORD);
+    });
+  }
+
+  // The following load instructions exist in every RISC V architecture
+  _instructionMap.emplace("lw", [](InstructionInformation& info) {
+    return std::make_unique<LoadInstructionNode<SignedType, UnsignedType>>(
+        info, LoadInstructionNode<SignedType, UnsignedType>::Type::WORD);
+  });
+  _instructionMap.emplace("lh", [](InstructionInformation& info) {
+    return std::make_unique<LoadInstructionNode<SignedType, UnsignedType>>(
+        info, LoadInstructionNode<SignedType, UnsignedType>::Type::HALF_WORD);
+  });
+  _instructionMap.emplace("lhu", [](InstructionInformation& info) {
+    return std::make_unique<LoadInstructionNode<SignedType, UnsignedType>>(
+        info, LoadInstructionNode<SignedType,
+                                  UnsignedType>::Type::HALF_WORD_UNSIGNED);
+  });
+  _instructionMap.emplace("lb", [](InstructionInformation& info) {
+    return std::make_unique<LoadInstructionNode<SignedType, UnsignedType>>(
+        info, LoadInstructionNode<SignedType, UnsignedType>::Type::BYTE);
+  });
+  _instructionMap.emplace("lbu", [](InstructionInformation& info) {
+    return std::make_unique<LoadInstructionNode<SignedType, UnsignedType>>(
+        info,
+        LoadInstructionNode<SignedType, UnsignedType>::Type::BYTE_UNSIGNED);
+  });
+
+  _instructionMap.emplace("sw", [](InstructionInformation& info) {
+    return std::make_unique<StoreInstructionNode<SignedType, UnsignedType>>(
+        info, StoreInstructionNode<SignedType, UnsignedType>::Type::WORD);
+  });
+  _instructionMap.emplace("sh", [](InstructionInformation& info) {
+    return std::make_unique<StoreInstructionNode<SignedType, UnsignedType>>(
+        info, StoreInstructionNode<SignedType, UnsignedType>::Type::HALF_WORD);
+  });
+  _instructionMap.emplace("sb", [](InstructionInformation& info) {
+    return std::make_unique<StoreInstructionNode<SignedType, UnsignedType>>(
+        info, StoreInstructionNode<SignedType, UnsignedType>::Type::BYTE);
+  });
 }
 
 /**
- * Fills the InstructionMap with all instructions related to the "M" Multiplication/Division Extension in the RISC-V architecture.
- * Note that the 64bit only "word" instructions of "M" will be filled into the InstructionMap using a different function.
- * \tparam A signed integer type that can hold exaclty as many bits as the instructions should perform multiplication/division with
- * \tparam A unsigned integer type that can hold exaclty as many bits as the instructions should perform multiplication/division with
+ * Fills the InstructionMap with all instructions related to the "M"
+ * Multiplication/Division Extension in the RISC-V architecture.
+ * Note that the 64bit only "word" instructions of "M" will be filled into the
+ * InstructionMap using a different function.
+ * \tparam A signed integer type that can hold exaclty as many bits as the
+ * instructions should perform multiplication/division with
+ * \tparam A unsigned integer type that can hold exaclty as many bits as the
+ * instructions should perform multiplication/division with
  * \param The InstructionMap to fill the "M"-Instructions into
  */
 template <typename Signed, typename Unsigned>
@@ -132,17 +202,20 @@ void initializeMultiplicationInstructions(
         MultiplicationInstruction<Unsigned>::SIGNED_UNSIGNED);
   });
   _instructionMap.emplace("div", [](InstructionInformation& info) {
-    return std::make_unique<DivisionInstruction<Unsigned, Signed>>(info, true, false);
+    return std::make_unique<DivisionInstruction<Unsigned, Signed>>(info, true,
+                                                                   false);
   });
   _instructionMap.emplace("divu", [](InstructionInformation& info) {
-    return std::make_unique<DivisionInstruction<Unsigned, Signed>>(info, false, false);
+    return std::make_unique<DivisionInstruction<Unsigned, Signed>>(info, false,
+                                                                   false);
   });
   _instructionMap.emplace("rem", [](InstructionInformation& info) {
-    return std::make_unique<RemainderInstruction<Unsigned, Signed>>(info, true, false);
+    return std::make_unique<RemainderInstruction<Unsigned, Signed>>(info, true,
+                                                                    false);
   });
   _instructionMap.emplace("remu", [](InstructionInformation& info) {
-    return std::make_unique<RemainderInstruction<Unsigned, Signed>>(
-        info, false, false);
+    return std::make_unique<RemainderInstruction<Unsigned, Signed>>(info, false,
+                                                                    false);
   });
 }
 
@@ -171,8 +244,8 @@ void initialize64BitWordInstructions(
         info, true, true);
   });
   _instructionMap.emplace("remuw", [](InstructionInformation& info) {
-    return std::make_unique<
-        RemainderInstruction<Unsigned64, Signed64>>(info, false, true);
+    return std::make_unique<RemainderInstruction<Unsigned64, Signed64>>(
+        info, false, true);
   });
 }
 }
@@ -182,52 +255,26 @@ void InstructionNodeFactory::initializeInstructionMap(
   assert(architecture.isValid());
 
   Architecture::word_size_t wordSize = architecture.getWordSize();
-  // create integer instructions depending on the word size of the architecture
+  // create instructions depending on the word size of the architecture
   // (e.g. r32i or r64i)
-  if (wordSize == RV32) {
-    initializeIntegerInstructions<RV32_integral_t>(_instructionMap);
-  } else if (wordSize == RV64) {
-    initializeIntegerInstructions<RV64_integral_t>(_instructionMap);
-  initialize64BitWordInstructions(_instructionMap);  
-} else {
+  if (wordSize == InstructionNodeFactory::RV32) {
+    initializeIntegerInstructions<InstructionNodeFactory::RV32_integral_t>(
+        _instructionMap);
+    initializeLoadStoreInstructions<
+        InstructionNodeFactory::RV32_signed_integral_t,
+        InstructionNodeFactory::RV32_integral_t>(wordSize, _instructionMap);
+  } else if (wordSize == InstructionNodeFactory::RV64) {
+    initializeIntegerInstructions<InstructionNodeFactory::RV64_integral_t>(
+        _instructionMap);
+    initializeLoadStoreInstructions<
+        InstructionNodeFactory::RV64_signed_integral_t,
+        InstructionNodeFactory::RV64_integral_t>(wordSize, _instructionMap);
+    initialize64BitWordInstructions(_instructionMap);
+  } else {
     // The given architecture does not define a valid word_size to create
     // IntegerInstructions
     assert(false);
   }
-
-  // Load/Store Instructions
-  _instructionMap.emplace("lw", [](InstructionInformation& info) {
-    return std::make_unique<LoadInstructionNode>(
-        info, LoadInstructionNode::Type::WORD);
-  });
-  _instructionMap.emplace("lh", [](InstructionInformation& info) {
-    return std::make_unique<LoadInstructionNode>(
-        info, LoadInstructionNode::Type::HALF_WORD);
-  });
-  _instructionMap.emplace("lhu", [](InstructionInformation& info) {
-    return std::make_unique<LoadInstructionNode>(
-        info, LoadInstructionNode::Type::HALF_WORD_UNSIGNED);
-  });
-  _instructionMap.emplace("lb", [](InstructionInformation& info) {
-    return std::make_unique<LoadInstructionNode>(
-        info, LoadInstructionNode::Type::BYTE);
-  });
-  _instructionMap.emplace("lbu", [](InstructionInformation& info) {
-    return std::make_unique<LoadInstructionNode>(
-        info, LoadInstructionNode::Type::BYTE_UNSIGNED);
-  });
-  _instructionMap.emplace("sw", [](InstructionInformation& info) {
-    return std::make_unique<StoreInstructionNode>(
-        info, StoreInstructionNode::Type::WORD);
-  });
-  _instructionMap.emplace("sh", [](InstructionInformation& info) {
-    return std::make_unique<StoreInstructionNode>(
-        info, StoreInstructionNode::Type::HALF_WORD);
-  });
-  _instructionMap.emplace("sb", [](InstructionInformation& info) {
-    return std::make_unique<StoreInstructionNode>(
-        info, StoreInstructionNode::Type::BYTE);
-  });
 
   // Extension 'M'
   initializeMExtensionIfPresent(architecture, wordSize);
@@ -269,7 +316,7 @@ InstructionNodeFactory::createInstructionNode(const std::string& token) const {
 
   auto it = _instructionMap.find(lower);  // lookup the token
   assert(it != end(_instructionMap));
-  InstructionInformation info = _instrSet.getInstruction(lower);
+  auto info = _instrSet.getInstruction(lower);
   return it->second(info);
   // dereference iterator to the key-value pair and call
   // the function providing the correct InstructionInformation for the

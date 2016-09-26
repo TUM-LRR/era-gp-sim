@@ -3,15 +3,12 @@
 ########################################
 
 set(ARCH_RISCV_SOURCES
-  control-flow-instructions.cpp
-  instruction-node.cpp
-  load-store-instructions.cpp
-  instruction-node-factory.cpp
-  immediate-node-factory.cpp
-  register-access-node-factory.cpp
-  instruction-node-factory.cpp
-  instruction-node.cpp
-  formats.cpp
+    control-flow-instructions.cpp
+    instruction-node.cpp
+    instruction-node-factory.cpp
+    immediate-node-factory.cpp
+    register-access-node-factory.cpp
+    formats.cpp
 )
 
 ########################################

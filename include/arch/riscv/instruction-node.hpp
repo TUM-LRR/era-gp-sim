@@ -59,8 +59,13 @@ class InstructionNode : public AbstractSyntaxTreeNode {
 
   /** byte order used in RISC-V architecture*/
   static constexpr Endianness RISCV_ENDIANNESS = Endianness::LITTLE;
+  /** signed representation used in RISC-V architecture */
+  static constexpr SignedRepresentation RISCV_SIGNED_REPRESENTATION =
+      SignedRepresentation::TWOS_COMPLEMENT;
   /** bits per byte in RISC-V architecture*/
   static constexpr std::size_t RISCV_BITS_PER_BYTE = 8;
+  /** string identifier of the program counter in riscv */
+  static constexpr auto RISCV_PROGRAM_COUNTER_ID = "pc";
 
  private:
   InstructionInformation& _instructionInformation;

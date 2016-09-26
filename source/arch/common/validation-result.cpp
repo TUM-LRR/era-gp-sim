@@ -33,6 +33,10 @@ bool ValidationResult::isSuccess() const {
   return _success;
 }
 
+ValidationResult::operator bool() const {
+  return _success;
+}
+
 const std::string& ValidationResult::getMessage() const {
   return _message;
 }

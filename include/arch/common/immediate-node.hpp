@@ -61,11 +61,10 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
   }
 
   /**
-   * \return An empty MemoryValue, because the instruction has to be
-   * assembled in the instruction node.
+   * \return Return the value of the immediate.
    */
   MemoryValue assemble() const override {
-    return MemoryValue{};
+    return _value;
   }
 
   /**
