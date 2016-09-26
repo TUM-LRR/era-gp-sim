@@ -25,10 +25,6 @@
 #include <climits>
 #include <string>
 
-#include <iostream>
-
-#include <iostream> //remove this
-
 #include "arch/common/instruction-information.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "core/conversions.hpp"
