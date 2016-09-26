@@ -219,7 +219,7 @@ void initializeMultiplicationInstructions(
   });
 }
 
-void initialize64BitWordInstructions(
+void initialize64BitMultiplicationWordInstructions(
     InstructionNodeFactory::InstructionMap& _instructionMap) {
   using Unsigned32 = InstructionNodeFactory::RV32_integral_t;
   using Unsigned64 = InstructionNodeFactory::RV64_integral_t;
@@ -269,7 +269,6 @@ void InstructionNodeFactory::initializeInstructionMap(
     initializeLoadStoreInstructions<
         InstructionNodeFactory::RV64_signed_integral_t,
         InstructionNodeFactory::RV64_integral_t>(wordSize, _instructionMap);
-    initialize64BitWordInstructions(_instructionMap);
   } else {
     // The given architecture does not define a valid word_size to create
     // IntegerInstructions
@@ -292,6 +291,7 @@ void InstructionNodeFactory::initializeMExtensionIfPresent(
       case RV64:
         initializeMultiplicationInstructions<RV64_signed_integral_t,
                                              RV64_integral_t>(_instructionMap);
+        initialize64BitMultiplicationWordInstructions(_instructionMap);
         break;
       default:
         assert(false);  // invalid wordsize
