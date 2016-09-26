@@ -125,7 +125,7 @@ struct ExpressionUnaryOperator {
   std::string identifier;
 
   /**
-   * \brief Applies the operator on two numbers and records any possible errors.
+   * \brief Applies the operator on one number and records any possible errors.
    */
   std::function<bool(const T&, T&, CompileState&)> handler;
 };

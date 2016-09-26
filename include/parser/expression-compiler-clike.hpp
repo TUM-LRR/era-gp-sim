@@ -337,42 +337,42 @@ ExpressionCompiler<IntType> CLikeCompiler = ExpressionCompiler<
 /**
  * \brief A default compiler for 8-bit wide signed integers.
  */
-ExpressionCompiler<int8_t> CLikeCompilerI8 = CLikeCompiler<int8_t>;
+extern ExpressionCompiler<int8_t> CLikeCompilerI8;
 
 /**
  * \brief A default compiler for 8-bit wide unsigned integers.
  */
-ExpressionCompiler<uint8_t> CLikeCompilerU8 = CLikeCompiler<uint8_t>;
+extern ExpressionCompiler<uint8_t> CLikeCompilerU8;
 
 /**
  * \brief A default compiler for 16-bit wide signed integers.
  */
-ExpressionCompiler<int16_t> CLikeCompilerI16 = CLikeCompiler<int16_t>;
+extern ExpressionCompiler<int16_t> CLikeCompilerI16;
 
 /**
  * \brief A default compiler for 16-bit wide unsigned integers.
  */
-ExpressionCompiler<uint16_t> CLikeCompilerU16 = CLikeCompiler<uint16_t>;
+extern ExpressionCompiler<uint16_t> CLikeCompilerU16;
 
 /**
  * \brief A default compiler for 32-bit wide signed integers.
  */
-ExpressionCompiler<int32_t> CLikeCompilerI32 = CLikeCompiler<int32_t>;
+extern ExpressionCompiler<int32_t> CLikeCompilerI32;
 
 /**
  * \brief A default compiler for 32-bit wide unsigned integers.
  */
-ExpressionCompiler<uint32_t> CLikeCompilerU32 = CLikeCompiler<uint32_t>;
+extern ExpressionCompiler<uint32_t> CLikeCompilerU32;
 
 /**
  * \brief A default compiler for 64-bit wide signed integers.
  */
-ExpressionCompiler<int64_t> CLikeCompilerI64 = CLikeCompiler<int64_t>;
+extern ExpressionCompiler<int64_t> CLikeCompilerI64;
 
 /**
  * \brief A default compiler for 64-bit wide unsigned integers.
  */
-ExpressionCompiler<uint64_t> CLikeCompilerU64 = CLikeCompiler<uint64_t>;
+extern ExpressionCompiler<uint64_t> CLikeCompilerU64;
 }
 
 #endif /* ERAGPSIM_PARSER_EXPRESSION_COMPILER_CLIKE_HPP */
