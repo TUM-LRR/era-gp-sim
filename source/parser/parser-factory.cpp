@@ -26,7 +26,7 @@ static ParserPtr createParserInternal(const Architecture &arch) {
   return ParserPtr{new T{arch}};
 }
 
-std::unordered_map<std::string, ParserPtr (*)(const Architecture &)>
+const std::unordered_map<std::string, ParserPtr (*)(const Architecture &)>
     ParserFactory::mapping{{"riscv", createParserInternal<RiscvParser>}};
 
 std::unique_ptr<Parser>

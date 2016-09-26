@@ -49,7 +49,7 @@ ParserPtr createParser(const Architecture &arch, const std::string &name);
  * See parser-factory.cpp for the definition including all available parser
  * names.
  */
-extern std::unordered_map<std::string, ParserPtr (*)(const Architecture &)>
+extern const std::unordered_map<std::string, ParserPtr (*)(const Architecture &)>
     mapping;
 }
 
