@@ -18,13 +18,15 @@
 */
 
 #include "ui/ui.hpp"
-
+#include "ui/clipboard-adapter.hpp"
 
 Ui::Ui(int& argc, char** argv) : _qmlApplication(argc, argv), _engine(){
 
 }
 
 int Ui::runUi() {
+    qmlRegisterType<ClipboardAdapter>("ClipboardAdapter", 1, 0, "ClipboardAdapter");
+
     _engine.rootContext()->setContextProperty("ui", this);
 
     _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

@@ -31,5 +31,7 @@
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
+        <file>Components/editor/MacroTriangleButton.qml</file>
+        <file>Components/editor/MacroSubeditor.qml</file>
     </qresource>
 </RCC>

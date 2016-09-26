@@ -10,6 +10,7 @@ set(UI_SOURCES
     qproject.cpp
     syntaxhighlighter.cpp
     editor-component.cpp
+    clipboard-adapter.cpp
     ui.cpp
 )
 
@@ -20,6 +21,7 @@ set(UI_HEADERS
     ../../include/ui/syntaxhighlighter.hpp
     ../../include/ui/registerdata.hpp
     ../../include/ui/editor-component.hpp
+    ../../include/ui/clipboard-adapter.hpp
     ../../include/ui/ui.hpp
 )
 
