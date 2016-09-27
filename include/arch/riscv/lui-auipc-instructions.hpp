@@ -36,10 +36,9 @@ namespace riscv {
  * (register and 20 bit immediate).
  * This class mostly exist, to reduce redundancy.
  */
-class SpecialIntegerInstructionNode : public InstructionNode {
+class LuiAuipcValidationNode : public InstructionNode {
  public:
-  SpecialIntegerInstructionNode(InstructionInformation& info)
-  : InstructionNode(info) {
+  LuiAuipcValidationNode(InstructionInformation& info) : InstructionNode(info) {
   }
 
   MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override = 0;
@@ -64,20 +63,24 @@ class SpecialIntegerInstructionNode : public InstructionNode {
                             "immediate as operands"));
     }
 
+
     // Get the value of the immediate value and check, if it is representable by
-    // 20 bits
+    // 20 bits (unsigned representation)
     DummyMemoryAccessStub stub;
     MemoryValue value = _children.at(1)->getValue(stub);
-    // Convert into a signed integer type, that holds at least 20 bits
-    uint32_t valueConverted = convert<uint32_t>(value, RISCV_ENDIANNESS);
-    // Check if the converted value is inside [0, 2^20[
-    if (valueConverted > 1048575) {
-      return ValidationResult::fail(
-          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                            "The immediate value of this instruction must be "
-                            "representable by 20 bits"));
+    if (value.getSize() > 20) {
+      // look for the sign bit to determine what bits to expect in the "upper"
+      // region (i.e. 19...size)
+      for (std::size_t index = 20; index < value.getSize(); ++index) {
+        // Index 0 = Most significant bit
+        if (value.get(value.getSize() - 1 - index)) {
+          return ValidationResult::fail(
+              QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                                "The immediate value of this instruction must "
+                                "be representable by 20 bits"));
+        }
+      }
     }
-
     return ValidationResult::success();
   }
 };
@@ -87,10 +90,10 @@ class SpecialIntegerInstructionNode : public InstructionNode {
  * This class represents the LUI instruction (Load Upper Immediate).
  */
 template <typename UnsignedType>
-class LuiInstructionNode : public SpecialIntegerInstructionNode {
+class LuiInstructionNode : public LuiAuipcValidationNode {
  public:
   LuiInstructionNode(InstructionInformation& info)
-  : SpecialIntegerInstructionNode(info) {
+  : LuiAuipcValidationNode(info) {
   }
 
   MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
@@ -143,10 +146,10 @@ class LuiInstructionNode : public SpecialIntegerInstructionNode {
  * This class represents the AUIPC instruction (Add Upper Immediate to PC).
  */
 template <typename UnsignedType>
-class AuipcInstructionNode : public SpecialIntegerInstructionNode {
+class AuipcInstructionNode : public LuiAuipcValidationNode {
  public:
   AuipcInstructionNode(InstructionInformation& info)
-  : SpecialIntegerInstructionNode(info) {
+  : LuiAuipcValidationNode(info) {
   }
 
   MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
@@ -154,7 +157,8 @@ class AuipcInstructionNode : public SpecialIntegerInstructionNode {
 
     const std::string& destination = _children.at(0)->getIdentifier();
     MemoryValue offset             = _children.at(1)->getValue(memoryAccess);
-    MemoryValue programCounter     = memoryAccess.getRegisterValue("pc");
+    MemoryValue programCounter =
+        memoryAccess.getRegisterValue(RISCV_PROGRAM_COUNTER_ID);
 
     // Convert to the unsigned type of the architecture
     InternalUnsigned offsetConverted =

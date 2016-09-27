@@ -36,7 +36,6 @@ namespace riscv {
  */
 class InstructionNodeFactory : public AbstractInstructionNodeFactory {
  public:
-  /*The map storing functions to create syntax tree nodes.*/
   using InstructionMap =
       std::unordered_map<std::string,
                          std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
@@ -65,10 +64,10 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
     initializeInstructionMap(architecture);
   }
 
-  /*! Default constructed copy constructor */
+  /** Default constructed copy constructor */
   InstructionNodeFactory(InstructionNodeFactory &copy) = default;
 
-  /*! Default constructed move constructor */
+  /** Default constructed move constructor */
   InstructionNodeFactory(InstructionNodeFactory &&move) = default;
 
   /**
@@ -79,8 +78,8 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
    * \return std::uniqe_ptr pointing to the newly created instruction node, or
    * nullptr if the token cannot be mapped to a implemented RISC-V instruction
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createInstructionNode(const std::string &token) const override;
+  virtual std::unique_ptr<AbstractSyntaxTreeNode> createInstructionNode(
+      const std::string &token) const override;
 
   ~InstructionNodeFactory() = default;
 
@@ -89,8 +88,7 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
    * \brief initializeInstructionMap
    * Fills instructionMap with values.
    * Use lambda-functions with InstructionInformation as parameter and return
-   * type
-   * std::unique_ptr<AbstractSyntaxTreeNode> as value.
+   * type std::unique_ptr<AbstractSyntaxTreeNode> as value.
    * Use lowercase instruction identifier as key.
    * \param architecture The architecture currently used. With this the factory
    * can determine, for what word size instructions are created
@@ -98,15 +96,23 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   void initializeInstructionMap(const Architecture &architecture);
 
   /**
-   * \brief _instructionMap
+   * Checks if the given architecture has the 'M' Multiplication/Division
+   * Extension loaded.
+   * If so, all instructions of the extension are filled into the InstructionMap
+   * \param architecture current loaded architecture
+   * \param wordsize The wordsize of the architecture (e.g. 32 or 64bit)
+   */
+  void initializeMExtensionIfPresent(const Architecture &architecture,
+                                     Architecture::word_size_t wordsize);
+
+  /**
    * Table, that maps the instruction identifier (e.g. the token "add" for
    * Addition) to a function that creates the special instruction node (e.g.
    * AddInstructionNode)
    */
   InstructionMap _instructionMap;
 
-  /*!
-   * \brief _instrSet
+  /**
    * Description of all instructions that can be created by this factory
    */
   InstructionSet _instrSet;
