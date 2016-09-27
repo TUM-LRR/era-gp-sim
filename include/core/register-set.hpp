@@ -19,12 +19,13 @@
 #ifndef ERAGPSIM_CORE_REGISTERSET_HPP
 #define ERAGPSIM_CORE_REGISTERSET_HPP
 
-#include <cassert>
+//#include <cassert>
 #include <cstddef>
 #include <set>
 #include <unordered_map>
 #include <vector>
 
+#include "common\assert.hpp"
 #include "core/memory-value.hpp"
 #include "core/register-id.hpp"
 
