@@ -25,26 +25,16 @@
 #include <stdexcept>
 #include <string>
 
-#ifndef BLOCK_SYMBOLS_FOR_ASSERTION_TESTS
-/**
- * A custom string literal operator to replace the missing standard one.
- *
- * With this function defined, you can append "_s" to any string literal to turn
- * it into a `std::string`.
- *
- * \param string The string literal to stringify.
- * \param <empty> A necessary dummy operator, required by the standard.
- *
- * \return The string literal, converted to a `std::string`.
- */
-std::string operator""_s(const char* string_literal, std::size_t) {
-  return string_literal;
-}
-#endif
-
 namespace assert {
 
-#ifndef BLOCK_SYMBOLS_FOR_ASSERTION_TESTS
+/**
+ * This include guard ensures that even if this file is included multiple times
+ * (to change the DEBUG flag and the definition of assert::that), these function
+ * and class symbols will not be redefined.
+ */
+#ifndef ASSERTION_SYMBOLS_INCLUDE_GUARD
+#define ASSERTION_SYMBOLS_INCLUDE_GUARD
+
 /**
  * An Exception to be thrown by our custom assertion mechanism.
  */
@@ -69,9 +59,7 @@ struct AssertionError : public std::runtime_error {
     std::cerr << what << std::endl;
   }
 };
-#endif
 
-#ifdef DEBUG
 /**
  * A dummy function necessary for our assertion mechanism.
  *
@@ -91,6 +79,16 @@ void execute(Function function) {
 }
 
 /**
+ * A magical dummy function that does absolutely nothing.
+ */
+inline void unicorn() {
+}
+
+#endif /* ASSERTION_SYMBOLS_INCLUDE_GUARD */
+
+#ifdef DEBUG
+
+/**
  * This macro passes a lambda containing code to check the given expression.
  *
  * It is a macro so we can use the "#<argument>" macro operator to turn the
@@ -101,10 +99,10 @@ void execute(Function function) {
  * \param condition A condition to assert.
  */
 #define that(condition)                                       \
-  execute([] {                                                \
+  execute([&] {                                               \
     if (!(condition)) {                                       \
       throw assert::AssertionError(                           \
-          "Assertion failed: (" #condition ") at line "_s +   \
+          "Assertion failed: (" #condition ") at line " +     \
           std::to_string(__LINE__) + " in file " + __FILE__); \
     }                                                         \
   })
@@ -117,7 +115,7 @@ void execute(Function function) {
  * \see assert::that()
  */
 #define test(condition)                                              \
-  execute([] {                                                       \
+  execute([&] {                                                      \
     if (!(condition)) {                                              \
       FAIL() << "TEST assertion failed: (" #condition ") at line "   \
              << std::to_string(__LINE__) << " in file " << __FILE__; \
@@ -125,13 +123,8 @@ void execute(Function function) {
   })
 
 #else
-
-/**
- * A magical dummy function that does absolutely nothing.
- */
-void unicorn() {
-}
 #define that(condition) unicorn()
+#define test(condition) unicorn()
 #endif
 }
 

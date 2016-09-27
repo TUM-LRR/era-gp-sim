@@ -229,7 +229,11 @@ units:
         id: 32
         size: 64
         type: flag
-        constituents: [33, 34]
+        constituents:
+          - id: 33
+            enclosing-index: 5
+          - id: 34
+            enclosing-index: 0
       - name: frm
         id: 33
         size: 3
@@ -240,3 +244,39 @@ units:
         size: 5
         type: flag
         enclosing: 32
+        constituents:
+          - id: 35
+            enclosing-index: 0
+          - id: 36
+            enclosing-index: 1
+          - id: 37
+            enclosing-index: 2
+          - id: 38
+            enclosing-index: 3
+          - id: 39
+            enclosing-index: 4
+      - name: nx
+        id: 35
+        size: 1
+        type: flag
+        enclosing: 24
+      - name: of
+        id: 36
+        size: 1
+        type: flag
+        enclosing: 24
+      - name: uf
+        id: 37
+        size: 1
+        type: flag
+        enclosing: 24
+      - name: dz
+        id: 38
+        size: 1
+        type: flag
+        enclosing: 24
+      - name: nv
+        id: 39
+        size: 1
+        type: flag
+        enclosing: 24

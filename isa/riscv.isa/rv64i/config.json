@@ -1,14 +1,98 @@
 {
-    "word-size": 64,
+    "extends": "rv32i",
+    "reset-units": true,
+    "instructions": [
+        {
+            "opcode": 3,
+            "mnemonic": "lwu",
+            "funct3": 6
+        },
+        {
+            "opcode": 3,
+            "mnemonic": "ld",
+            "funct3": 3
+        },
+        {
+            "opcode": 35,
+            "func7": 0,
+            "mnemonic": "sd",
+            "funct3": 1
+        },
+        {
+            "opcode": 19,
+            "func7": 0,
+            "mnemonic": "slli",
+            "funct3": 1
+        },
+        {
+            "opcode": 19,
+            "func7": 1,
+            "mnemonic": "srai",
+            "funct3": 5
+        },
+        {
+            "opcode": 27,
+            "mnemonic": "addiw",
+            "funct3": 0
+        },
+        {
+            "opcode": 27,
+            "func7": 0,
+            "mnemonic": "slliw",
+            "funct3": 1
+        },
+        {
+            "opcode": 27,
+            "func7": 0,
+            "mnemonic": "srliw",
+            "funct3": 5
+        },
+        {
+            "opcode": 27,
+            "func7": 32,
+            "mnemonic": "sraiw",
+            "funct3": 5
+        },
+        {
+            "opcode": 59,
+            "func7": 0,
+            "mnemonic": "addw",
+            "funct3": 0
+        },
+        {
+            "opcode": 59,
+            "func7": 32,
+            "mnemonic": "subw",
+            "funct3": 0
+        },
+        {
+            "opcode": 59,
+            "func7": 0,
+            "mnemonic": "sllw",
+            "funct3": 1
+        },
+        {
+            "opcode": 59,
+            "func7": 0,
+            "mnemonic": "srlw",
+            "funct3": 5
+        },
+        {
+            "opcode": 59,
+            "func7": 32,
+            "mnemonic": "sraw",
+            "funct3": 5
+        }
+    ],
     "units": [
         {
             "registers": [
                 {
-                    "constant": 0,
                     "size": 64,
-                    "alias": "zero",
                     "id": 0,
-                    "name": "x0"
+                    "name": "x0",
+                    "constant": 0,
+                    "alias": "zero"
                 },
                 {
                     "size": 64,
@@ -175,90 +259,6 @@
             "name": "cpu"
         }
     ],
-    "extends": "rv32i",
-    "reset-units": true,
     "name": "rv64i",
-    "instructions": [
-        {
-            "funct3": 6,
-            "mnemonic": "lwu",
-            "opcode": 3
-        },
-        {
-            "funct3": 3,
-            "mnemonic": "ld",
-            "opcode": 3
-        },
-        {
-            "funct3": 1,
-            "mnemonic": "sd",
-            "opcode": 35,
-            "func7": 0
-        },
-        {
-            "funct3": 1,
-            "mnemonic": "slli",
-            "opcode": 19,
-            "func7": 0
-        },
-        {
-            "funct3": 5,
-            "mnemonic": "srai",
-            "opcode": 19,
-            "func7": 1
-        },
-        {
-            "funct3": 0,
-            "mnemonic": "addiw",
-            "opcode": 27
-        },
-        {
-            "funct3": 1,
-            "mnemonic": "slliw",
-            "opcode": 27,
-            "func7": 0
-        },
-        {
-            "funct3": 5,
-            "mnemonic": "srliw",
-            "opcode": 27,
-            "func7": 0
-        },
-        {
-            "funct3": 5,
-            "mnemonic": "sraiw",
-            "opcode": 27,
-            "func7": 32
-        },
-        {
-            "funct3": 0,
-            "mnemonic": "addw",
-            "opcode": 59,
-            "func7": 0
-        },
-        {
-            "funct3": 0,
-            "mnemonic": "subw",
-            "opcode": 59,
-            "func7": 32
-        },
-        {
-            "funct3": 1,
-            "mnemonic": "sllw",
-            "opcode": 59,
-            "func7": 0
-        },
-        {
-            "funct3": 5,
-            "mnemonic": "srlw",
-            "opcode": 59,
-            "func7": 0
-        },
-        {
-            "funct3": 5,
-            "mnemonic": "sraw",
-            "opcode": 59,
-            "func7": 32
-        }
-    ]
+    "word-size": 64
 }
