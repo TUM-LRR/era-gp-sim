@@ -22,12 +22,16 @@
 #include <iostream>
 #include <regex>
 #include <sstream>
+#include "arch/common/architecture.hpp"
 #include "arch/common/node-factory-collection-maker.hpp"
+#include "arch/common/unit-information.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/intermediate-representator.hpp"
 #include "parser/riscv-regex.hpp"
+#include "parser/syntax-information.hpp"
 
-RiscvParser::RiscvParser(const Architecture &architecture) {
+RiscvParser::RiscvParser(const Architecture &architecture)
+: _architecture(architecture) {
   _factory_collection = NodeFactoryCollectionMaker::CreateFor(architecture);
 }
 
@@ -86,4 +90,34 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
 
   return intermediate.transform(SyntaxTreeGenerator{_factory_collection},
                                 _compile_state);
+}
+
+const SyntaxInformation RiscvParser::getSyntaxInformation() {
+  SyntaxInformation info;
+
+  // Add instruction regexes
+  for (auto instruction : _architecture.getInstructions()) {
+    info.addSyntaxRegex("^\\s*" + instruction.first + "\\b",
+                        SyntaxInformation::Token::Instruction);
+  }
+
+  // Add comment regex
+  info.addSyntaxRegex(";.*", SyntaxInformation::Token::Comment);
+
+  // Add label regex
+  info.addSyntaxRegex("^\\s*\\w+:", SyntaxInformation::Token::Label);
+
+  // Add immediate regex
+  info.addSyntaxRegex(R"(\b[\+\-0-9\(\)][0-9\+\-%\*\/\(\)\t ]*)",
+                      SyntaxInformation::Token::Immediate);
+
+  // Add register regexes
+  for (UnitInformation unit : _architecture.getUnits()) {
+    for (auto reg : unit)
+      if (reg.second.hasName())
+        info.addSyntaxRegex("\\b" + reg.second.getName() + "\\b",
+                            SyntaxInformation::Token::Register);
+  }
+
+  return info;
 }
