@@ -312,10 +312,10 @@ TEST(MulDivInstructionTest, Division_testDIV64) {
   TEST_RR(2, to64BitMemoryValue, "div", 20, -6, -3);
   TEST_RR(3, to64BitMemoryValue, "div", -20, -6, 3);
 
-  TEST_RR(4, to64BitMemoryValue, "div", -1LL << 63, 1, -1LL << 63);
-  TEST_RR(5, to64BitMemoryValue, "div", -1LL << 63, -1, -1LL << 63);
+  TEST_RR(4, to64BitMemoryValue, "div", UINT64_C(-1) << 63, 1, UINT64_C(-1) << 63);
+  TEST_RR(5, to64BitMemoryValue, "div", UINT64_C(-1) << 63, -1, UINT64_C(-1) << 63);
 
-  TEST_RR(6, to64BitMemoryValue, "div", -1LL << 63, 0, -1);
+  TEST_RR(6, to64BitMemoryValue, "div", UINT64_C(-1) << 63, 0, -1);
   TEST_RR(7, to64BitMemoryValue, "div", 1, 0, -1);
   TEST_RR(8, to64BitMemoryValue, "div", 0, 0, -1);
 }
@@ -335,10 +335,10 @@ TEST(MulDivInstructionTest, Division_testDIVU32) {
   TEST_RR(2, to32BitMemoryValue, "divu", 20, -6, 0);
   TEST_RR(3, to32BitMemoryValue, "divu", -20, -6, 0);
 
-  TEST_RR(4, to32BitMemoryValue, "divu", -1 << 31, 1, -1 << 31);
-  TEST_RR(5, to32BitMemoryValue, "divu", -1 << 31, -1, 0);
+  TEST_RR(4, to32BitMemoryValue, "divu", UINT32_C(-1) << 31, 1, UINT32_C(-1) << 31);
+  TEST_RR(5, to32BitMemoryValue, "divu", UINT32_C(-1) << 31, -1, 0);
 
-  TEST_RR(6, to32BitMemoryValue, "divu", -1 << 31, 0, -1);
+  TEST_RR(6, to32BitMemoryValue, "divu", UINT32_C(-1) << 31, 0, -1);
   TEST_RR(7, to32BitMemoryValue, "divu", 1, 0, -1);
   TEST_RR(8, to32BitMemoryValue, "divu", 0, 0, -1);
 }
@@ -358,10 +358,10 @@ TEST(MulDivInstructionTest, Division_testDIVU64) {
   TEST_RR(2, to64BitMemoryValue, "divu", 20, -6, 0);
   TEST_RR(3, to64BitMemoryValue, "divu", -20, -6, 0);
 
-  TEST_RR(4, to64BitMemoryValue, "divu", -1LL << 63, 1LL, -1LL << 63);
-  TEST_RR(5, to64BitMemoryValue, "divu", -1LL << 63, -1LL, 0);
+  TEST_RR(4, to64BitMemoryValue, "divu", UINT64_C(-1) << 63, 1LL, UINT64_C(-1) << 63);
+  TEST_RR(5, to64BitMemoryValue, "divu", UINT64_C(-1) << 63, -1LL, 0);
 
-  TEST_RR(6, to64BitMemoryValue, "divu", -1LL << 63, 0, -1LL);
+  TEST_RR(6, to64BitMemoryValue, "divu", UINT64_C(-1) << 63, 0, -1LL);
   TEST_RR(7, to64BitMemoryValue, "divu", 1, 0, -1LL);
   TEST_RR(8, to64BitMemoryValue, "divu", 0, 0, -1LL);
 }
@@ -381,10 +381,10 @@ TEST(MulDivInstructionTest, Division_testDIVW) {
   TEST_RR(2, to64BitMemoryValue, "divw", 20, -6, -3);
   TEST_RR(3, to64BitMemoryValue, "divw", -20, -6, 3);
 
-  TEST_RR(4, to64BitMemoryValue, "divw", -1LL << 31, 1, -1LL << 31);
-  TEST_RR(5, to64BitMemoryValue, "divw", -1LL << 31, -1, -1LL << 31);
+  TEST_RR(4, to64BitMemoryValue, "divw", UINT64_C(-1) << 31, 1, UINT64_C(-1) << 31);
+  TEST_RR(5, to64BitMemoryValue, "divw", UINT64_C(-1) << 31, -1, UINT64_C(-1) << 31);
 
-  TEST_RR(6, to64BitMemoryValue, "divw", -1LL << 31, 0, -1LL);
+  TEST_RR(6, to64BitMemoryValue, "divw", UINT64_C(-1) << 31, 0, -1LL);
   TEST_RR(7, to64BitMemoryValue, "divw", 1, 0, -1);
   TEST_RR(8, to64BitMemoryValue, "divw", 0, 0, -1);
 }
@@ -404,10 +404,10 @@ TEST(MulDivInstructionTest, Division_testDIVUW) {
   TEST_RR(2, to64BitMemoryValue, "divuw", 20, -6, 0);
   TEST_RR(3, to64BitMemoryValue, "divuw", -20, -6, 0);
 
-  TEST_RR(4, to64BitMemoryValue, "divuw", -1LL << 31, 1, -1LL << 31);
-  TEST_RR(5, to64BitMemoryValue, "divuw", -1LL << 31, -1, 0);
+  TEST_RR(4, to64BitMemoryValue, "divuw", UINT64_C(-1) << 31, 1, UINT64_C(-1) << 31);
+  TEST_RR(5, to64BitMemoryValue, "divuw", UINT64_C(-1) << 31, -1, 0);
 
-  TEST_RR(6, to64BitMemoryValue, "divuw", -1LL << 31, 0, -1);
+  TEST_RR(6, to64BitMemoryValue, "divuw", UINT64_C(-1) << 31, 0, -1);
   TEST_RR(7, to64BitMemoryValue, "divuw", 1, 0, -1);
   TEST_RR(8, to64BitMemoryValue, "divuw", 0, 0, -1);
 }
@@ -468,10 +468,10 @@ TEST(MulDivInstructionTest, Remainder_testREM64) {
   TEST_RR(2, to64BitMemoryValue, "rem", 20, -6, 2);
   TEST_RR(3, to64BitMemoryValue, "rem", -20, -6, -2);
 
-  TEST_RR(4, to64BitMemoryValue, "rem", -1LL << 63, 1, 0);
-  TEST_RR(5, to64BitMemoryValue, "rem", -1LL << 63, -1, 0);
+  TEST_RR(4, to64BitMemoryValue, "rem", UINT64_C(-1) << 63, 1, 0);
+  TEST_RR(5, to64BitMemoryValue, "rem", UINT64_C(-1) << 63, -1, 0);
 
-  TEST_RR(6, to64BitMemoryValue, "rem", -1LL << 63, 0, -1LL << 63);
+  TEST_RR(6, to64BitMemoryValue, "rem", UINT64_C(-1) << 63, 0, UINT64_C(-1) << 63);
   TEST_RR(7, to64BitMemoryValue, "rem", 1, 0, 1);
   TEST_RR(8, to64BitMemoryValue, "rem", 0, 0, 0);
 }
@@ -514,10 +514,10 @@ TEST(MulDivInstructionTest, Remainder_testREMU64) {
   TEST_RR(2, to64BitMemoryValue, "remu", 20, -6, 20);
   TEST_RR(3, to64BitMemoryValue, "remu", -20, -6, -20);
 
-  TEST_RR(4, to64BitMemoryValue, "remu", -1LL << 63, 1, 0);
-  TEST_RR(5, to64BitMemoryValue, "remu", -1LL << 63, -1LL, -1LL << 63);
+  TEST_RR(4, to64BitMemoryValue, "remu", UINT64_C(-1) << 63, 1, 0);
+  TEST_RR(5, to64BitMemoryValue, "remu", UINT64_C(-1) << 63, -1LL, UINT64_C(-1) << 63);
 
-  TEST_RR(6, to64BitMemoryValue, "remu", -1LL << 63, 0, -1LL << 63);
+  TEST_RR(6, to64BitMemoryValue, "remu", UINT64_C(-1) << 63, 0, UINT64_C(-1) << 63);
   TEST_RR(7, to64BitMemoryValue, "remu", 1, 0, 1);
   TEST_RR(8, to64BitMemoryValue, "remu", 0, 0, 0);
 }
@@ -537,10 +537,10 @@ TEST(MulDivInstructionTest, Remainder_testREMW) {
   TEST_RR(2, to64BitMemoryValue, "remw", 20, -6, 2);
   TEST_RR(3, to64BitMemoryValue, "remw", -20, -6, -2);
 
-  TEST_RR(4, to64BitMemoryValue, "remw", -1LL << 31, 1, 0);
-  TEST_RR(5, to64BitMemoryValue, "remw", -1LL << 31, -1, 0);
+  TEST_RR(4, to64BitMemoryValue, "remw", UINT64_C(-1) << 31, 1, 0);
+  TEST_RR(5, to64BitMemoryValue, "remw", UINT64_C(-1) << 31, -1, 0);
 
-  TEST_RR(6, to64BitMemoryValue, "remw", -1LL << 31, 0, -1LL << 31);
+  TEST_RR(6, to64BitMemoryValue, "remw", UINT64_C(-1) << 31, 0, UINT64_C(-1) << 31);
   TEST_RR(7, to64BitMemoryValue, "remw", 1, 0, 1);
   TEST_RR(8, to64BitMemoryValue, "remw", 0, 0, 0);
   TEST_RR(9, to64BitMemoryValue, "remw", 0xfffffffffffff897LL, 0,
@@ -562,10 +562,10 @@ TEST(MulDivInstructionTest, Remainder_testREMUW) {
   TEST_RR(2, to64BitMemoryValue, "remuw", 20, -6, 20);
   TEST_RR(3, to64BitMemoryValue, "remuw", -20, -6, -20);
 
-  TEST_RR(4, to64BitMemoryValue, "remuw", -1LL << 31, 1, 0);
-  TEST_RR(5, to64BitMemoryValue, "remuw", -1LL << 31, -1, -1LL << 31);
+  TEST_RR(4, to64BitMemoryValue, "remuw", UINT64_C(-1) << 31, 1, 0);
+  TEST_RR(5, to64BitMemoryValue, "remuw", UINT64_C(-1) << 31, -1, UINT64_C(-1) << 31);
 
-  TEST_RR(6, to64BitMemoryValue, "remuw", -1LL << 31, 0, -1LL << 31);
+  TEST_RR(6, to64BitMemoryValue, "remuw", UINT64_C(-1) << 31, 0, UINT64_C(-1) << 31);
   TEST_RR(7, to64BitMemoryValue, "remuw", 1, 0, 1);
   TEST_RR(8, to64BitMemoryValue, "remuw", 0, 0, 0);
 }
