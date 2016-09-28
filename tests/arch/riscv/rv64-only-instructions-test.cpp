@@ -63,7 +63,7 @@ void testRV64OnlyInstructionRI(const std::string& instructionName,
   ASSERT_TRUE(instr->validate());
 
   // Execute
-  instr->getValue(memoryAccess);
+  ASSERT_EQ(instr->getValue(memoryAccess), MemoryValue{});
 
   // Check result
   MemoryValue result = memoryAccess.getRegisterValue(destId);
@@ -104,7 +104,7 @@ void testRV64OnlyInstructionRR(const std::string& instructionName,
   ASSERT_TRUE(instr->validate());
 
   // Execute
-  instr->getValue(memoryAccess);
+  ASSERT_EQ(instr->getValue(memoryAccess), MemoryValue{});
 
   // Check result
   MemoryValue result = memoryAccess.getRegisterValue(destId);
@@ -131,6 +131,8 @@ TEST(RV64OnlyInstructionsTest, Add) {
 
   // What was 1+1 again?
   testRV64OnlyInstructions(ri, rr, 1, 1, 2);
+  testRV64OnlyInstructions(ri, rr, 42, 1, 43);
+  testRV64OnlyInstructions(ri, rr, 1, 42, 43);
   // Check if upper 32 bits are ignored
   testRV64OnlyInstructions(ri, rr, (uint64_t{1} << 32) + 1, 1, 2);
   // Check if overflow is ignored
@@ -164,7 +166,7 @@ TEST(RV64OnlyInstructionsTest, Sll) {
   testRV64OnlyInstructions(ri, rr, 1, 32, 1);
 }
 
-TEST(RV64OnlyInstructionsTest, Slr) {
+TEST(RV64OnlyInstructionsTest, Srl) {
   std::string ri = "srliw";
   std::string rr = "srlw";
 
@@ -187,5 +189,5 @@ TEST(RV64OnlyInstructionsTest, Sra) {
   // bigger than 31
   testRV64OnlyInstructions(ri, rr, 4, 32, 4);
   // Check if arithmetic shift works
-  testRV64OnlyInstructions(ri, rr, -4, 2, UINT32_MAX); // max because thats -1
+  testRV64OnlyInstructions(ri, rr, -4, 2, UINT32_MAX);// max because thats -1
 }
