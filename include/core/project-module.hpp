@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_CORE_PROJECT_MODULE_HPP
 #define ERAGPSIM_CORE_PROJECT_MODULE_HPP
 
+#include <atomic>
 #include <memory>
 
 #include "arch/common/architecture-formula.hpp"
@@ -79,6 +80,12 @@ class ProjectModule {
    */
   void reset();
 
+  /**
+   * Stops the execution after the current instruction.
+   *
+   */
+  void stopExecution();
+
 
  private:
   /** Scheduler for the project servant (active-object). */
@@ -100,7 +107,12 @@ class ProjectModule {
   /** Proxy to access the architecture. */
   ArchitectureAccess _architectureAccess;
 
-  /** Proxy object used to create the parser-and-execution servant and initialize its proxies. */
+  /** A std::atomic_flag to stop the execution. The ParsingAndExecutionUnit has
+   * a reference to this flag.*/
+  std::atomic_flag _stopFlag;
+
+  /** Proxy object used to create the parser-and-execution servant and
+   * initialize its proxies. */
   Proxy<ParsingAndExecutionUnit> _proxyParsingAndExecution;
 
   /** ParseAndExecution proxy, will be added later. */

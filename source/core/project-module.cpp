@@ -28,9 +28,11 @@ ProjectModule::ProjectModule(ArchitectureFormula &&architectureFormula,
 , _memoryAccess(_proxyProject)
 , _memoryManager(_proxyProject)
 , _architectureAccess(_proxyProject)
+, _stopFlag(ATOMIC_FLAG_INIT)
 , _proxyParsingAndExecution(std::move(_schedulerParsingAndExecution),
                             _memoryAccess,
-                            _architectureAccess.getArchitecture().get())
+                            _architectureAccess.getArchitecture().get(),
+                            std::ref(_stopFlag))
 , _commandInterface(_proxyParsingAndExecution)
 , _parserInterface(_proxyParsingAndExecution) {
 }
@@ -60,4 +62,8 @@ void ProjectModule::reset() {
   _memoryManager.resetMemory();
   _memoryManager.resetRegisters();
   // set execution point to line 0
+}
+
+void ProjectModule::stopExecution() {
+  _stopFlag.clear();
 }

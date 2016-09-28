@@ -20,6 +20,8 @@
 #ifndef ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
 #define ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
 
+#include <atomic>
+
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
 #include "core/servant.hpp"
@@ -32,12 +34,13 @@
 class ParsingAndExecutionUnit : public Servant {
  public:
   /**
-   *
+   * Creates a new ParsingAndExecutionUnit.
    *
    */
   ParsingAndExecutionUnit(std::weak_ptr<Scheduler> &&scheduler,
                           MemoryAccess memoryAccess,
-                          Architecture architecture);
+                          Architecture architecture,
+                          std::atomic_flag &stopFlag);
 
   /**
    * Execute the whole assembler program
@@ -156,8 +159,11 @@ class ParsingAndExecutionUnit : public Servant {
   /** The parser. TODO: How to decide which parser to use? */
   // Parser _parser
 
-  /** TODO Some kind of flag/reference to a flag to stop the execution. */
-  //_stopFlag
+  /**  Reference to a std::atomic_flag to stop the execution. */
+  std::atomic_flag &_stopFlag;
+
+  /** The number of the current node of the execution. */
+  int _currentNode;
 
   FinalRepresentation _finalRepresentation;
 

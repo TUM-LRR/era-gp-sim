@@ -18,27 +18,55 @@
 */
 
 #include "core/parsing-and-execution-unit.hpp"
+#include "common/assert.hpp"
 
 ParsingAndExecutionUnit::ParsingAndExecutionUnit(
-    std::weak_ptr<Scheduler> &&scheduler,
+    std::weak_ptr<Scheduler>&& scheduler,
     MemoryAccess memoryAccess,
-    Architecture architecture)
-: Servant(std::move(scheduler)), _memoryAccess(memoryAccess) {
+    Architecture architecture,
+    std::atomic_flag& stopFlag)
+: Servant(std::move(scheduler))
+, _stopFlag(stopFlag)
+, _currentNode(0)
+, _memoryAccess(memoryAccess) {
 }
 
 void ParsingAndExecutionUnit::execute() {
+  if (_finalRepresentation.errorList.size() != 0) {
+    // TODO
+    assert::that(false);
+  }
+  _stopFlag.test_and_set();
+  while (_stopFlag.test_and_set() &&
+         _currentNode < _finalRepresentation.commandList.size()) {
+
+    executeNextLine();
+  }
 }
 
 void ParsingAndExecutionUnit::executeNextLine() {
+    //reference to avoid copying a unique_ptr
+    FinalCommand& currentCommand =
+        _finalRepresentation.commandList.at(_currentNode);
+    assert::that(currentCommand.node->validate());
+
+    assert::that(_setCurrentLine);
+    _setCurrentLine(currentCommand.position.first);
+
+    // currentCommand.node->getValue(_memoryAccess);
+
+    _currentNode++;
 }
 
 void ParsingAndExecutionUnit::executeToBreakpoint() {
+
 }
 
 void ParsingAndExecutionUnit::setExecutionPoint(int line) {
 }
 
 void ParsingAndExecutionUnit::parse(std::string code) {
+  _currentNode = 0;
 }
 
 void ParsingAndExecutionUnit::setBreakpoint(int line) {
@@ -70,7 +98,7 @@ void ParsingAndExecutionUnit::setSetContextInformationCallback(
 }
 
 void ParsingAndExecutionUnit::setSetErrorListCallback(
-    std::function<void(std::vector<CompileError> &&)> callback) {
+    std::function<void(std::vector<CompileError>&&)> callback) {
   _setErrorList = callback;
 }
 
