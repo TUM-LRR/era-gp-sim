@@ -25,8 +25,9 @@
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/instruction-set.hpp"
-#include "arch/common/register-container.hpp"
 #include "arch/common/register-information.hpp"
+#include "arch/common/unit-container.hpp"
+#include "arch/common/unit-information.hpp"
 //#include "core/memory.hpp"
 #include "core/memory-value.hpp"
 #include "core/register-set.hpp"
@@ -94,15 +95,15 @@ class Project : public Servant {
    * const
    *
    */
-  MemoryValue getRegisterValue(const std::string &name,
-                               const std::size_t byteSize = 8) const;
+  //MemoryValue getRegisterValue(const std::string &name,
+    //                           const std::size_t byteSize = 8) const;
 
   /**
    * Calls RegisterSet::get(const std::string& name, MemoryValue&& out) const
    *
    */
-  MemoryValue
-  getRegisterValue(const std::string &name, MemoryValue &&out) const;
+  //MemoryValue
+  //getRegisterValue(const std::string &name, MemoryValue &&out) const;
 
   /**
    * Calls RegisterSet::put(const std::string& name, const MemoryValue& value)
@@ -132,7 +133,7 @@ class Project : public Servant {
    * Returns a container of all registers
    *
    */
-  RegisterContainer getRegisterSet() const;
+  UnitContainer getRegisterUnits() const;
 
   // memory component
 
@@ -140,7 +141,7 @@ class Project : public Servant {
    * Returns the number of bits in a byte
    *
    */
-  Architecture::byte_size_t getByteSize() const;
+  // Architecture::byte_size_t getByteSize() const;
 
   /**
    * Returns the number of memory cells(number of bytes)
@@ -261,6 +262,16 @@ class Project : public Servant {
 
 
  private:
+  /**
+   * Creates all constituents of a register and recursively all constituents of
+   * the constituents.
+   *
+   * \param enclosingRegister The register whos constituents are created
+   *
+   */
+  void createConstituents(RegisterInformation enclosingRegister,
+                          UnitInformation unitInfo);
+
   /** An Architecture object, stores all information about the architecture of
    * this project. */
   Architecture _architecture;

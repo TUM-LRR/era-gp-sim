@@ -19,6 +19,8 @@
 
 #include "core/project.hpp"
 
+#include "common/assert.hpp"
+
 
 Project::Project(std::weak_ptr<Scheduler> &&scheduler,
                  ArchitectureFormula &&architectureFormula,
@@ -27,6 +29,42 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
 , _architecture(Architecture::Brew(std::move(architectureFormula)))
 , _registerSet() {
   _architecture.validate();
+
+  for (UnitInformation unitInfo : _architecture.getUnits()) {
+    for (auto &&registerPair : unitInfo) {
+      // create all top level registers
+      RegisterInformation registerInfo = registerPair.second;
+      if (!registerInfo.hasEnclosing()) {
+        // TODO byteSize
+        _registerSet.createRegister(registerInfo.getName(),
+                                    registerInfo.getSize());
+
+        // create all constituents and their constituents
+        createConstituents(registerInfo, unitInfo);
+      }
+    }
+  }
+}
+
+void Project::createConstituents(RegisterInformation enclosingRegister,
+                                 UnitInformation unitInfo) {
+  for (auto &&constituentInformation : enclosingRegister.getConstituents()) {
+    // find RegisterInformation of the constituent
+    RegisterInformation constituentRegisterInfo =
+        unitInfo.getRegister(constituentInformation.getID());
+
+    // createRegister/alias
+    _registerSet.aliasRegister(constituentRegisterInfo.getName(),
+                               enclosingRegister.getName(),
+                               constituentInformation.getEnclosingOffset(),
+                               constituentInformation.getEnclosingOffset() +
+                                   constituentRegisterInfo.getSize());
+
+    // recursive call to create constituents of this constituent
+    if (constituentRegisterInfo.hasConstituents()) {
+      createConstituents(constituentRegisterInfo, unitInfo);
+    }
+  }
 }
 
 MemoryValue Project::getMemory(int address, int length) const {
@@ -45,15 +83,15 @@ MemoryValue Project::getRegisterValue(const std::string &name) const {
   return _registerSet.get(name);
 }
 
-MemoryValue Project::getRegisterValue(const std::string &name,
+/*MemoryValue Project::getRegisterValue(const std::string &name,
                                       const std::size_t byteSize) const {
   return _registerSet.get(name, byteSize);
-}
+}*/
 
-MemoryValue
+/*MemoryValue
 Project::getRegisterValue(const std::string &name, MemoryValue &&out) const {
   return _registerSet.get(name, std::move(out));
-}
+}*/
 
 void Project::putRegisterValue(const std::string &name,
                                const MemoryValue &value) {
@@ -70,13 +108,13 @@ Project::setRegisterValue(const std::string &name, MemoryValue &&value) {
   return _registerSet.set(name, std::move(value));
 }
 
-RegisterContainer Project::getRegisterSet() const {
-  return RegisterContainer();
+UnitContainer Project::getRegisterUnits() const {
+  return _architecture.getUnits();
 }
 
-Architecture::byte_size_t Project::getByteSize() const {
+/*Architecture::byte_size_t Project::getByteSize() const {
   return _architecture.getByteSize();
-}
+}*/
 
 int Project::getMemorySize() const {
   return 0;

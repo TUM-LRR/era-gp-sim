@@ -36,13 +36,13 @@ class ArchitectureAccess : public Proxy<Project> {
    * Returns a container of all registers
    *
    */
-  POST_FUTURE(getRegisterSet)
+  POST_FUTURE(getRegisterUnits)
 
   /**
    * Returns the number of bits in a byte
    *
    */
-  POST_FUTURE(getByteSize)
+  //POST_FUTURE(getByteSize)
 
   /**
    * Returns a set of all instructions of the architecture
