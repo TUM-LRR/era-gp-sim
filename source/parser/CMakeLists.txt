@@ -12,7 +12,7 @@ set(PARSER_SOURCES
   section-directive.cpp
   riscv-regex.cpp
   syntax-tree-generator.cpp
-  int-parser.cpp
+  integer-parser.cpp
 )
 
 ########################################
