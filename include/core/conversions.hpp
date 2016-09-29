@@ -154,7 +154,7 @@ convert(const MemoryValue& memoryValue, SignedRepresentation representation=Sign
   default:
     assert::that(false);
   }
-  if (!std::is_signed(T)) {
+  if (!std::is_signed<T>::value) {
     return convert<T>(permuted, unSignum1, nonsigned1);
   }
   switch (representation){
@@ -174,7 +174,7 @@ template <typename T>
 typename std::enable_if<std::is_integral<T>::value, MemoryValue>::type
 convert(T value, SignedRepresentation representation=SignedRepresentation::TWOS_COMPLEMENT, std::size_t byteSize=8, Endianness byteOrder=Endianness::LITTLE) {
   MemoryValue converted;
-  if (!std::is_signed(T)) {
+  if (!std::is_signed<T>::value) {
     convert = convert<T>(value, nonsigned2, byteSize);
   } else {
     switch (representation) {
