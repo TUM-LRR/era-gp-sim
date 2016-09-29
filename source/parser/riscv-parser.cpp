@@ -97,7 +97,7 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
 
   // Add instruction regexes
   for (auto instruction : _architecture.getInstructions()) {
-    info.addSyntaxRegex("^\\s*" + instruction.first + "\\b",
+    info.addSyntaxRegex("\\b" + instruction.first + "\\b(?!:)",
                         SyntaxInformation::Token::Instruction);
   }
 
@@ -115,7 +115,7 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   for (UnitInformation unit : _architecture.getUnits()) {
     for (auto reg : unit)
       if (reg.second.hasName())
-        info.addSyntaxRegex("\\b" + reg.second.getName() + "\\b",
+        info.addSyntaxRegex("\\b" + reg.second.getName() + "\\b(?!:)",
                             SyntaxInformation::Token::Register);
   }
 
