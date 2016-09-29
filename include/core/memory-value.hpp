@@ -59,50 +59,43 @@ class MemoryValue {
   ~MemoryValue() = default;
   /**
    * \brief Constructs a MemoryValue with a copy of other and a
-   *        byteSize of byteSize
+   *        size of size
    * \param other The vector to be copied and held by this
-   * \param byteSize The size of a byte in bit
+   * \param size The size of the MemoryValue in bit
    */
-  MemoryValue(const std::vector<uint8_t> &other, const std::size_t byteSize);
+  MemoryValue(const std::vector<uint8_t> &other, const std::size_t size);
   /**
-   * \brief Constructs an MemoryValue with other and a ByteSize of byteSize
+   * \brief Constructs an MemoryValue with other and a size of size
    * \param other The vector to acquire the data of
-   * \param byteSize The size of a byte in bit
+   * \param size The size of the MemoryValue in bit
    */
-  MemoryValue(std::vector<uint8_t> &&other, const std::size_t byteSize);
+  MemoryValue(std::vector<uint8_t> &&other, const std::size_t size);
   /**
-   * \brief Constructs a empty MemoryValue with byteAmount bytes of size
-   *        byteSize
-   * \param byteAmount Amount of Bytes
-   * \param byteSize The size of a byte in bit
+   * \brief Constructs a empty MemoryValue with a size of size
+   * \param size The size of the MemoryValue in bit
    */
-  MemoryValue(std::size_t byteAmount, std::size_t byteSize);
+  MemoryValue(std::size_t size);
 
   /**
    * \brief Constructs a MemoryValue with the data of other between begin and
-   *        end with a _byteSize of byteSize
+   *        end
    * \param other the MemoryValue the data to be copied of
    * \param begin the begin index to be copied
    * \param end the first index no longer to be copied
-   * \param byteSize The size of a byte in bit
    */
   MemoryValue(const MemoryValue &other,
               const std::size_t begin,
-              const std::size_t end,
-              const std::size_t byteSize);
+              const std::size_t end);
 
   /**
   * \brief returns a MemoryValue with the data of this between begin and
-  *        end with a _byteSize of byteSize
+  *        end
   * \param begin the begin index to be copied
   * \param end the first index no longer to be copied
-  * \param byteSize The size of a byte in bit
   * \return a MemoryValue with the data of this between begin and end
   *         with a _byteSize of byteSize
   */
-  MemoryValue subSet(const std::size_t begin,
-                     const std::size_t end,
-                     const std::size_t byteSize) const;
+  MemoryValue subSet(const std::size_t begin, const std::size_t end) const;
 
   /**
    * \brief returns the previous value at address
@@ -126,15 +119,12 @@ class MemoryValue {
   bool set(const std::size_t address, const bool value = true);
 
   /**
-   * \brief returns the size of a single byte in bit of the MemoryValue
-   * \return the size of a single byte in the MemoryValue
-   */
-  std::size_t getByteSize() const;
-  /**
-   * \brief returns the num of bytes held by the MemoryValue
-   * \return the amount of bytes held by the MemoryValue
-   */
-  std::size_t getByteAmount() const;
+  * \brief flips the value at address and returns the previous value
+  * \param address The address of the bit
+  * \return the previous value at address
+  */
+  bool flip(const std::size_t address);
+
   /**
    * \brief returns the capacity of the MemoryValue in bit
    * \return the capacity of the MemoryValue in bit
@@ -167,6 +157,14 @@ class MemoryValue {
   bool operator!=(const MemoryValue &other) const;
 
   /**
+  * \brief returns writes the data of other into this starting with the
+  *        begin-th bit
+  * \param other the MemoryValue to be written
+  * \param begin the index of the first bit to be written to
+  */
+  void write(const MemoryValue &other, std::size_t begin = 0);
+
+  /**
    * \brief outputs the value onto the stream
    * \param stream stream to output value to
    * \param value the value to be outputted
@@ -174,19 +172,25 @@ class MemoryValue {
    */
   friend std::ostream &
   operator<<(std::ostream &stream, const MemoryValue &value);
+  friend MemoryValue permute(const MemoryValue &memoryValue,
+                             const std::size_t byteSize,
+                             const std::vector<std::size_t> permutation);
+  // I know this is extremely inelegant
+  friend std::uint8_t getByteAt(MemoryValue memoryValue, std::size_t address) {
+    return memoryValue.getByteAt(address);
+  }
 
-// This is not beautiful at all... But I think it is better than including a
-// gtest header (i.e. external dependency).
-#ifndef FRIEND_TEST
-#define FRIEND_TEST(a, b)
-#endif
+
+#ifdef FRIEND_TEST
   FRIEND_TEST(TestMemoryValue, charAt);
   FRIEND_TEST(TestMemoryValue, death);
-#undef FRIEND_TEST
+  FRIEND_TEST(TestMemoryValue, charAt2);
+#endif
 
  private:
-  std::size_t _byteSize;
-  std::vector<std::uint8_t> _data;
+  std::size_t _size; /**< Brief Size of the MemoryValue in Bit*/
+  std::vector<std::uint8_t>
+      _data; /**< Brief The Data stored by the MemoryValue*/
 
   std::uint8_t getByteAt(std::size_t address) const;
 };

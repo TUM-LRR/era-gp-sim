@@ -64,3 +64,8 @@ TEST(UtilityTest, TestStringTransforms) {
   EXPECT_EQ(Utility::toUpper("foobar"), "FOOBAR");
   EXPECT_EQ(Utility::toLower(Utility::toUpper("foobar")), "foobar");
 }
+
+TEST(UtilityTest, TestOther) {
+  EXPECT_TRUE(Utility::contains(std::vector<int>{1, 2, 3}, 1));
+  EXPECT_FALSE(Utility::contains(std::vector<int>{1, 2, 3}, 5));
+}

@@ -26,6 +26,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <type_traits>
 
 namespace Utility {
 
@@ -170,6 +171,16 @@ void doIfThere(Container& container, const Key& key, Action action) {
   }
 }
 
+template <typename Range, typename T>
+bool contains(const Range& range, T&& element) {
+  using std::begin;
+  using std::end;
+
+  auto iterator = std::find(begin(range), end(range), std::forward<T>(element));
+
+  return iterator != end(range);
+}
+
 std::string rootPath();
 std::string joinPaths(const std::string& single);
 
@@ -209,6 +220,9 @@ auto copyPointer(const std::unique_ptr<T>& pointer) {
   assert(static_cast<bool>(pointer));
   return std::make_unique<T>(*pointer);
 }
+
+template <typename T, template <typename> class Cond>
+using TypeBarrier = typename std::enable_if<Cond<T>::value, T>::type;
 
 // C++17
 // template<typename... Paths>

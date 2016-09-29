@@ -9,6 +9,7 @@ set(PARSER_SOURCES
   parser.cpp
   riscv-parser.cpp
   symbol-table.cpp
+  section-directive.cpp
   riscv-regex.cpp
   syntax-tree-generator.cpp
   int-parser.cpp

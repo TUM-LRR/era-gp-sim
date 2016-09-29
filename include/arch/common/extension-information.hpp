@@ -61,11 +61,12 @@
  */
 class ExtensionInformation : public InformationInterface {
  public:
-  using size_t            = unsigned short;
-  using UnitList          = std::initializer_list<UnitInformation>;
-  using ExtensionList     = std::initializer_list<ExtensionInformation>;
-  using Endianness        = ArchitectureProperties::Endianness;
-  using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
+  using size_t                  = unsigned short;
+  using UnitList                = std::initializer_list<UnitInformation>;
+  using ExtensionList           = std::initializer_list<ExtensionInformation>;
+  using Endianness              = ArchitectureProperties::Endianness;
+  using AlignmentBehavior       = ArchitectureProperties::AlignmentBehavior;
+  using ExtensionNameCollection = std::unordered_set<std::string>;
 
   /**
    * Deserializes the `ExtensionInformation` object from the given data.
@@ -160,7 +161,7 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Returns the name of the extension.
    */
-  const std::string& getName() const noexcept;
+  const std::string& getName() const;
 
   /**
    * Tests if the extension has a name assigned.
@@ -179,7 +180,7 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Returns the endianness of the extension.
    */
-  Endianness getEndianness() const noexcept;
+  Endianness getEndianness() const;
 
   /**
    * Returns whether any endianness is set.
@@ -199,7 +200,7 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Returns the alignment behavior of the extension, if any.
    */
-  AlignmentBehavior getAlignmentBehavior() const noexcept;
+  AlignmentBehavior getAlignmentBehavior() const;
 
   /**
    * Returns whether any alignment behavior of the extension is set.
@@ -218,7 +219,7 @@ class ExtensionInformation : public InformationInterface {
   /**
    * Returns the word size of the extension (in bits), if any.
    */
-  size_t getWordSize() const noexcept;
+  size_t getWordSize() const;
 
   /**
    * Returns whether any word size is set.
@@ -360,6 +361,17 @@ class ExtensionInformation : public InformationInterface {
    */
   ExtensionInformation& merge(const ExtensionInformation& other);
 
+  /**
+   * Tests if the extension is based on a certain extension.
+   */
+  bool isBasedOn(const std::string& extension_name) const noexcept;
+
+  /**
+   * Returns a collection of names of the extensions
+   * the extension was merged with.
+   */
+  const ExtensionNameCollection& getBaseExtensionNames() const noexcept;
+
   /** \copydoc builder::isValid() */
   bool isValid() const noexcept override;
 
@@ -412,6 +424,9 @@ class ExtensionInformation : public InformationInterface {
 
   /** The units supplied by the extension, if any. */
   UnitContainer _units;
+
+  /** The names of the extensions this extension was extended by. */
+  ExtensionNameCollection _baseNames;
 };
 
 #endif /* ERAGPSIM_ARCH_EXTENSION_INFORMATION_HPP */
