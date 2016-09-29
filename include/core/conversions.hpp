@@ -155,7 +155,7 @@ convert(const MemoryValue& memoryValue, SignedRepresentation representation=Sign
     assert::that(false);
   }
   if (!std::is_signed<T>::value) {
-    return convert<T>(permuted, unSignum1, nonsigned1);
+    return convert<T>(permuted, unSignum0, nonsigned1);
   }
   switch (representation){
   case SignedRepresentation::SIGN_BIT:
