@@ -9,6 +9,7 @@ set(TEST_PARSER_SOURCES
   string-parser-test.cpp
   riscv-parser-test.cpp
   syntax-tree-generator-test.cpp
+  syntax-information-test.cpp
 )
 
 ########################################
