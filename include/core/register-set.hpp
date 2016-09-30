@@ -19,7 +19,6 @@
 #ifndef ERAGPSIM_CORE_REGISTERSET_HPP
 #define ERAGPSIM_CORE_REGISTERSET_HPP
 
-//#include <cassert>
 #include <cstddef>
 #include <set>
 #include <unordered_map>
@@ -32,108 +31,139 @@
 class RegisterSet {
  public:
   /**
-   * \brief
+   * \brief Default constructor. Constructs an empty RegisterSet
    */
   RegisterSet();
   /**
-   * \brief
-   * \param bucketCount
+   * \brief Constructs an empty RegisterSet with an unordered-map with a
+   *        bucketCount of bucketCount
+   * \param bucketCount bucketCount of the unordered_map
    */
   RegisterSet(const std::size_t bucketCount);
   /**
-   * \brief
-   * \param other
+   * \brief Move constructor. Constructs the RegisterSet with the contents of
+   *        other using move semantics.
+   * \param other another RegisterSet to be used as source to initialize the
+   *        elements of the RegisterSet with
    */
   RegisterSet(RegisterSet &&other) = default;
   /**
-   * \brief
-   * \param other
+  * \brief Move constructor. Constructs the RegisterSet with the contents of
+  *        other using move semantics.
+  * \param other another RegisterSet to be used as source to initialize the
+  *        elements of the RegisterSet with
    */
   RegisterSet &operator=(RegisterSet &&other) = default;
   /**
-   * \brief
-   * \param other
+   * \brief Copy constructor. Constructs the RegisterSet with the copy of the
+   *        contents of other.
+   * \param other another RegisterSet to be used as source to initialize the
+   *        elements of the RegisterSet with
    */
   RegisterSet(const RegisterSet &other) = default;
   /**
-   * \brief
-   * \param other
+   * \brief Copy constructor. Constructs the RegisterSet with the copy of the
+   *        contents of other.
+   * \param other another RegisterSet to be used as source to initialize the
+   *        elements of the RegisterSet with
    */
   RegisterSet &operator=(const RegisterSet &other) = default;
   /**
-   * \brief
+   * \brief Destructs the RegisterSet
    */
   ~RegisterSet() = default;
 
   /**
-   * \brief
-   * \param name
+   * \brief Returns a MemoryValue holding the data stored in the Register with
+   *        the name name
+   * \param name String uniquely representing the Register
+   * \returns MemoryValue holding the data stored in the Register with the name
+   *          name
    */
   MemoryValue get(const std::string &name) const;
   /**
-   * \brief
-   * \param name
-   * \param out
+   * \brief Stores the data stored in the Register with the name name in out
+   * \param name String uniquely representing the Register
+   * \param out Reference to a MemoryValue to store the data in the Register
+   *        with the name name
    */
   void get(const std::string &name, MemoryValue &out) const;
   /**
-   * \brief
-   * \param name
-   * \param value
+   * \brief Writes value into the Register with the name name
+   * \param name String uniquely representing the Register
+   * \param value Value to write
    */
   void put(const std::string &name, const MemoryValue &value);
   /**
-   * \brief
-   * \param name
-   * \param value
+   * \brief Writes value into the Register with the name name and returns its
+   *        previous value
+   * \param name String uniquely representing the Register
+   * \param value Value to write
+   * \returns previous value of the Register with the name name
    */
   MemoryValue set(const std::string &name, const MemoryValue &value);
   /**
-   * \brief
-   * \param name
-   * \param value
+  * \brief Writes value into the Register with the name name and writes its
+  *        previous value into value
+  * \param name String uniquely representing the Register
+  * \param value Reference holding the value to write and to be set to the
+  *        previous value of the Register with the name name
+  * \returns previous value of the Register with the name name
    */
   MemoryValue &exchange(const std::string &name, MemoryValue &value);
 
   /**
-   * \brief
-   * \param name
-   * \param size
+   * \brief Creates a Register with the name name and size size
+   * \param name String uniquely representing the to be created Register
+   * \param size Size of the Register in bit
    */
   void createRegister(const std::string &name, const std::size_t size);
   /**
-   * \brief
-   * \param name
-   * \param value
+  * \brief Creates a Register with the name name and stores a copy of value
+  * \param name String uniquely representing the to be created Register
+  * \param value Initial value of the register
    */
   void createRegister(const std::string &name, const MemoryValue &value);
   /**
-   * \brief
-   * \param name
-   * \param parent
-   * \param begin
-   * \param end
+   * \brief Creates an Alias with the name name for the substring [begin; end[
+   *        of the Register with the name parent
+   * \param name String uniquely representing the alias Register
+   * \param parent String uniquely representing the parent Register
+   * \param begin First index within the parent Register of the alias register
+   * \param end First index within the parent Register no longer within the
+   *        alias register
    */
   void aliasRegister(const std::string &name,
                      const std::string &parent,
                      const std::size_t begin,
                      const std::size_t end);
   /**
-   * \brief
-   * \param name
-   * \param parent
-   * \param begin
+  * \brief Creates an Alias with the name name for the substring
+  *        [begin; parent.getSize()[ of the Register with the name parent
+  * \param name String uniquely representing the alias Register
+  * \param parent String uniquely representing the parent Register
+  * \param begin First index within the parent Register of the alias register
    */
   void aliasRegister(const std::string &name,
                      const std::string &parent,
                      const std::size_t begin = 0);
 
  private:
-  std::unordered_map<std::string, RegisterID> _dict;
-  std::vector<MemoryValue> _register;
+  std::unordered_map<std::string, RegisterID>
+      _dict; /**< Brief Map mapping name -> RegisterID*/
+  std::vector<MemoryValue>
+      _register; /**< Brief Vector holding all the Registers with no parent*/
   // I'm using set because that makes implementing the option to delete
   // registers way easier, vector would've been enough at this moment
-  std::vector<std::set<std::string>> _updateSet;
+  std::vector<std::set<std::string>> _updateSet; /**< Brief Vector mapping
+                                                     RegisterID.address -> all
+                                                     childrens name of this
+                                                     Register*/
+  /**
+   * \brief This Method is called whenever something in the Memory changes and
+   *        notifies the Gui ofthe change
+   * \TODO Do the actual callback/function
+   */
   void wasUpdated(const std::size_t address) {
   }
 };
