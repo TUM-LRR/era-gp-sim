@@ -21,26 +21,26 @@
 Memory::Memory() : Memory(64, 8) {
 }
 
-Memory::Memory(std::size_t cellCount, std::size_t byteSize)
-: _cellCount{cellCount}, _byteSize{byteSize}, _data{cellCount * byteSize} {
-  assert(cellCount > 0);
-  assert(byteSize > 0);
+Memory::Memory(std::size_t byteCount, std::size_t byteSize)
+: _byteCount{byteCount}, _byteSize{byteSize}, _data{byteCount * byteSize} {
+  assert::that(byteCount > 0);
+  assert::that(byteSize > 0);
 }
 
 MemoryValue
 Memory::get(const std::size_t address, const std::size_t amount) {
-  assert(address >= 0);
-  assert(amount >= 0);
-  assert(address + amount <= _cellCount);
+  assert::that(address >= 0);
+  assert::that(amount >= 0);
+  assert::that(address + amount <= _byteCount);
   return _data.subSet(address * _byteSize, (address + amount) * _byteSize);
 }
 
 void Memory::put(const std::size_t address, const MemoryValue& value) {
-  assert(address >= 0);
-  assert(value.getSize() % _byteSize == 0);
+  assert::that(address >= 0);
+  assert::that(value.getSize() % _byteSize == 0);
   const std::size_t amount{value.getSize() / _byteSize};
-  assert(amount >= 0);
-  assert(address + amount <= _cellCount);
+  assert::that(amount >= 0);
+  assert::that(address + amount <= _byteCount);
   _data.write(value, address * _byteSize);
 }
 

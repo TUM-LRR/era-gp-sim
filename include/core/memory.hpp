@@ -19,30 +19,91 @@
 #ifndef ERAGPSIM_CORE_MEMORY_HPP_
 #define ERAGPSIM_CORE_MEMORY_HPP_
 
-#include <cassert>
 #include <cstddef>
 
+#include "common/assert.hpp"
 #include "core/memory-value.hpp"
 
 class Memory {
  public:
+  /**
+   * \brief Default constructor. Constructs an empty Memory with default size
+   *        (64 Bytes á 8 Bit)
+   */
   Memory();
-  Memory(std::size_t cellCount, std::size_t byteSize = 8);
+  /**
+   * \brief Constructs an empty Memory with cellCount Bytes á byteSize Bit
+   * \param byteCount Number of Bytes
+   * \param byteSize Size of a Byte in Bit
+   */
+  Memory(std::size_t byteCount, std::size_t byteSize = 8);
+  /**
+   * \brief Copy constructor. Constructs the Memory with the copy of the
+   *        contents of other.
+   * \param other another Memory to be used as source to initialize the elements
+   *        of the Memory with
+   */
   Memory(const Memory &other) = default;
+  /**
+   * \brief Copy constructor. Constructs the Memory with the copy of the
+   *        contents of other.
+   * \param other another Memory to be used as source to initialize the elements
+   *        of the Memory with
+   */
   Memory &operator=(const Memory &other) = default;
-  Memory(Memory &&other)                 = default;
+  /**
+   * \brief Move constructor. Constructs the Memory with the contents of other
+   *        using move semantics.
+   * \param other another Memory to be used as source to initialize the elements
+   *        of the Memory with
+   */
+  Memory(Memory &&other) = default;
+  /**
+   * \brief Move constructor. Constructs the Memory with the contents of other
+   *        using move semantics.
+   * \param other another Memory to be used as source to initialize the elements
+   *        of the Memory with
+   */
   Memory &operator=(Memory &&other) = default;
-  ~Memory()                                 = default;
+  /**
+   * \brief Destructs the Memory.
+   */
+  ~Memory() = default;
 
+  /**
+   * \brief Returns a MemoryValue holding the data stored in the Memory at
+   *        [address; address+amount[
+   * \param address Starting location of the Value in the Memory
+   * \param amount Number of Bytes comprising the value
+   * \returns MemoryValue holding the data stored in the Memory at
+   *          [address;address+amount[
+   */
   MemoryValue get(const std::size_t address, const std::size_t amount = 1);
+  /**
+   * \brief Writes value into the Memory at address
+   * \param address Starting address of the to be overwritten value
+   * \param value Value to write
+   */
   void put(const std::size_t address, const MemoryValue &value);
+  /**
+   * \brief Writes value into the Memory at address and returns the previous
+   *        value
+   * \param address Starting address of the to be overwritten value
+   * \param value Value to write
+   * \returns Value that was overwritten
+   */
   MemoryValue set(const std::size_t address, const MemoryValue &value);
 
  private:
-  std::size_t _byteSize;
-  std::size_t _cellCount;
-  MemoryValue _data;
+  std::size_t _byteSize;/**< Brief Size of a Byte in bit*/
+  std::size_t _byteCount;/**< Brief Number of Bytes*/
+  MemoryValue _data;/**< Brief MemoryValue holding *all* the data*/
 
+  /**
+   * \brief This Method is called whenever something in the Memory changes and
+   *        notifies the Gui ofthe change
+   * \TODO Do the actual callback/function
+   */
   void wasUpdated(const std::size_t address, const std::size_t amount = 1) {
   }
 };
