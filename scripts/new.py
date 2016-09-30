@@ -34,7 +34,7 @@ def create_header(argument, root, relative_path, name):
     directory = os.path.join(root, "include", relative_path)
     header_path = os.path.join(directory, '{0}.hpp'.format(name))
     guard_name = re.sub(r'[-/\\]', '_', argument).upper()
-    guard = 'ERAGPSIM_{0}_HPP_'.format(guard_name)
+    guard = 'ERAGPSIM_{0}_HPP'.format(guard_name)
     class_name = ''.join([i.capitalize() for i in name.split('-')])
     print("Creating header file for class '{0}' ...".format(class_name))
     with open(header_path, 'w') as header:
@@ -72,7 +72,7 @@ def create_source(root, relative_path, name):
     directory = os.path.join(root, "source", relative_path)
     file_name = '{0}.cpp'.format(name)
     source_path = os.path.join(directory, file_name)
-    include_path = '/'.join(relative_path, "{0}.hpp".format(name))
+    include_path = os.path.join(relative_path, "{0}.hpp".format(name))
     print('Creating source file ...')
     with open(source_path, 'w') as source:
         source.write(get_license(root))

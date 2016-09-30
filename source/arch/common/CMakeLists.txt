@@ -16,6 +16,7 @@ set(ARCH_COMMON_SOURCES
   architecture-formula.cpp
   node-factory-collection.cpp
   node-factory-collection-maker.cpp
+  constituent-information.cpp
 )
 
 ########################################
