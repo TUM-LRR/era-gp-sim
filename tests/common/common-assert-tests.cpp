@@ -41,7 +41,7 @@ TEST(AssertionTests, WorksForFalsyExpressions) {
 #undef ERAGPSIM_COMMON_ASSERT_HPP
 #undef DEBUG
 #undef that
-#undef test
+#undef gtest
 #include "common/assert.hpp"
 
 
