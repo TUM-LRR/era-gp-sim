@@ -97,24 +97,31 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
 
   // Add instruction regexes
   for (auto instruction : _architecture.getInstructions()) {
+    // Matches all instruction mnemonics which don't end with a ':'
     info.addSyntaxRegex("\\b" + instruction.first + "\\b(?!:)",
                         SyntaxInformation::Token::Instruction);
   }
 
   // Add comment regex
+  // Matches everything after a ';'
   info.addSyntaxRegex(";.*", SyntaxInformation::Token::Comment);
 
   // Add label regex
+  // Matches words at the beginning of a line (ignoring whitespaces) which end
+  // with a ':'
   info.addSyntaxRegex("^\\s*\\w+:", SyntaxInformation::Token::Label);
 
   // Add immediate regex
-  info.addSyntaxRegex(R"(\b[\+\-0-9\(\)][0-9\+\-%\*\/\(\)\t ]*)",
+  // Matches arithmetic expressions containing digits, operators, brackets and
+  // spaces. Expressions need to start with a digit, '+', -' or an open bracket.
+  info.addSyntaxRegex(R"(\b[\+\-0-9\(][0-9\+\-%\*\/\(\)\t ]*)",
                       SyntaxInformation::Token::Immediate);
 
   // Add register regexes
   for (UnitInformation unit : _architecture.getUnits()) {
     for (auto reg : unit)
       if (reg.second.hasName())
+        // Matches all register names not followed by a ':'
         info.addSyntaxRegex("\\b" + reg.second.getName() + "\\b(?!:)",
                             SyntaxInformation::Token::Register);
   }
