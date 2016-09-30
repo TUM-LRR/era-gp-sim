@@ -125,6 +125,68 @@ void testRV64OnlyInstructions(const std::string& instructionNameRI,
 
 }// Private namespace
 
+TEST(RV64OnlyInstructionsTest, Validation) {
+  auto ri = {"addiw", "slliw", "srliw", "sraiw"};
+  auto rr = {"addw", "subw", "sllw", "srlw", "sraw"};
+
+  std::string registerId       = "";// Not relevant
+  auto instrFactory     = setUpFactory({"rv32i", "rv64i"});
+  auto immediateFactory = ImmediateNodeFactory{};
+
+  for (auto& name : ri) {
+    // Check if register-immediate command does not allow register-register
+    auto instr = instrFactory.createInstructionNode(name);
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    ASSERT_FALSE(instr->validate());
+
+    // Boundaries for 12 bit signed integers
+    constexpr uint64_t boundary         = 0x7FF;
+    constexpr uint64_t overflow         = boundary + 1;
+    constexpr uint64_t negativeBoundary = -2048;
+    constexpr uint64_t negativeOverflow = negativeBoundary - 1;
+
+    instr = instrFactory.createInstructionNode(name);
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    instr->addChild(
+        immediateFactory.createImmediateNode(convertToMem<uint64_t>(boundary)));
+    ASSERT_TRUE(instr->validate());
+
+    instr = instrFactory.createInstructionNode(name);
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    instr->addChild(
+        immediateFactory.createImmediateNode(convertToMem<uint64_t>(overflow)));
+    ASSERT_FALSE(instr->validate());
+
+    instr = instrFactory.createInstructionNode(name);
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    instr->addChild(immediateFactory.createImmediateNode(
+        convertToMemSigned<int64_t>(negativeBoundary)));
+    ASSERT_TRUE(instr->validate());
+
+    instr = instrFactory.createInstructionNode(name);
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    instr->addChild(immediateFactory.createImmediateNode(
+        convertToMemSigned<int64_t>(negativeOverflow)));
+    ASSERT_FALSE(instr->validate());
+  }
+
+  for (auto& name : rr) {
+    // Check if register-register command does not allow register-immediate
+    auto instr = instrFactory.createInstructionNode(name);
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    instr->addChild(std::make_unique<FakeRegisterNode>(registerId));
+    instr->addChild(
+        immediateFactory.createImmediateNode(convertToMem<uint64_t>(0)));
+    ASSERT_FALSE(instr->validate());
+  }
+}
+
 TEST(RV64OnlyInstructionsTest, Add) {
   std::string ri = "addiw";
   std::string rr = "addw";
