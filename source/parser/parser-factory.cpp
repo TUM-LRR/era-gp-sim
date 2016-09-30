@@ -19,6 +19,7 @@
 
 #include "parser/parser-factory.hpp"
 
+#include "common/assert.hpp"
 #include "parser/riscv-parser.hpp"
 
 template <typename T>
@@ -36,12 +37,9 @@ ParserFactory::createParser(const Architecture &arch, const std::string &name) {
   // Try to find a parser matching name.
   auto element = mapping.find(name);
 
-  // If it doesnt exist, assign nullptr, else instantiate parser.
-  if (element == mapping.end()) {
-    parser = nullptr;
-  } else {
-    parser = (element->second)(arch);
-  }
+  assert::that(element != mapping.end());
+
+  parser = (element->second)(arch);
 
   return parser;
 }

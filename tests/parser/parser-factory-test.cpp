@@ -5,9 +5,12 @@
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 
-TEST(ParserFactory, CreateBadParser) {
+static void createBadParser() {
   ParserPtr parser{ParserFactory::createParser(Architecture{}, "doesnt_exist")};
-  ASSERT_EQ(parser, nullptr);
+}
+
+TEST(ParserFactory, CreateBadParser) {
+  ASSERT_THROW(createBadParser(), assert::AssertionError);
 }
 
 TEST(ParserFactory, CreateRiscVParser) {
