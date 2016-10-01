@@ -20,7 +20,9 @@
 #define ERAGPSIM_CORE_REGISTERSET_HPP
 
 #include <cstddef>
+#include <functional>
 #include <set>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -72,6 +74,8 @@ class RegisterSet {
    * \brief Destructs the RegisterSet
    */
   ~RegisterSet() = default;
+
+  void setCallback(const std::function<void(const std::string &)> &);
 
   /**
    * \brief Returns a MemoryValue holding the data stored in the Register with
@@ -156,16 +160,21 @@ class RegisterSet {
   // I'm using set because that makes implementing the option to delete
   // registers way easier, vector would've been enough at this moment
   std::vector<std::set<std::string>> _updateSet; /**< Brief Vector mapping
-                                                     RegisterID.address -> all
-                                                     childrens name of this
-                                                     Register*/
+                                                      RegisterID.address -> all
+                                                      childrens name of this
+                                                      Register*/
+  static const std::
+      function<void(const std::string &)>
+          emptyCallback; /**< Brief An empty function that does absolutely
+                            nothing, used as default for _callback*/
+  std::function<void(const std::string &)> _callback =
+      emptyCallback; /**< Brief This function gets called for every changed
+                        Register*/
   /**
    * \brief This Method is called whenever something in the Memory changes and
    *        notifies the Gui ofthe change
-   * \TODO Do the actual callback/function
    */
-  void wasUpdated(const std::size_t address) {
-  }
+  void wasUpdated(const std::size_t address);
 };
 
 #endif// ERAGPSIM_CORE_REGISTERSET_HPP

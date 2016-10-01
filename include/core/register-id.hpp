@@ -21,7 +21,7 @@
 
 // The information to uniquely identify a register
 struct RegisterID {
-  int adress; /**< Brief Index of this Register within the vector of Registers
+  int address; /**< Brief Index of this Register within the vector of Registers
                  with no parents */
   int begin;  /**< Brief First index within the transitive grand-parent Register
                  with no parents of this Register*/
@@ -42,7 +42,7 @@ struct RegisterID {
    *        parents no longer within this Register
    */
   RegisterID(int address, int begin, int end)
-  : adress{address}, begin{begin}, end{end} {
+  : address{address}, begin{begin}, end{end} {
   }
   /**
    * \brief Move constructor. Constructs the RegisterID with the contents of

@@ -18,6 +18,9 @@
 
 #include "core/register-set.hpp"
 
+const std::function<void(const std::string &)> RegisterSet::emptyCallback =
+    [](const std::string &) {};
+
 RegisterSet::RegisterSet() : _dict{}, _register{}, _updateSet{} {
 }
 
@@ -25,42 +28,45 @@ RegisterSet::RegisterSet(const std::size_t bucketCount)
 : _dict{bucketCount}, _register{}, _updateSet{} {
 }
 
+void RegisterSet::setCallback(
+    const std::function<void(const std::string &)> &callback) {
+  _callback = callback;
+}
+
 MemoryValue RegisterSet::get(const std::string &name) const {
   auto registerIterator = _dict.find(name);
   assert::that(registerIterator != _dict.end());
-  return _register[registerIterator->second.adress].subSet(
-      registerIterator->second.begin, registerIterator->second.end);
+  auto registerID = registerIterator->second;
+  return _register[registerID.address].subSet(registerID.begin, registerID.end);
 }
 
 void RegisterSet::get(const std::string &name, MemoryValue &out) const {
   // I don't see much need for this anymore, probably should be removed entirely
   auto registerIterator = _dict.find(name);
   assert::that(registerIterator != _dict.end());
-  out = _register[registerIterator->second.adress].subSet(
-      registerIterator->second.begin, registerIterator->second.end);
+  auto registerID = registerIterator->second;
+  out = _register[registerID.address].subSet(registerID.begin, registerID.end);
 }
 
 void RegisterSet::put(const std::string &name, const MemoryValue &value) {
   auto registerIterator = _dict.find(name);
   assert::that(registerIterator != _dict.end());
-  assert::that(value.getSize() ==
-               (registerIterator->second.end - registerIterator->second.begin));
-  _register[registerIterator->second.adress].write(
-      value, registerIterator->second.begin);
-  wasUpdated(registerIterator->second.adress);
+  auto registerID = registerIterator->second;
+  assert::that(value.getSize() == (registerID.end - registerID.begin));
+  _register[registerID.address].write(value, registerID.begin);
+  wasUpdated(registerID.address);
 }
 
 MemoryValue
 RegisterSet::set(const std::string &name, const MemoryValue &value) {
   auto registerIterator = _dict.find(name);
   assert::that(registerIterator != _dict.end());
-  assert::that(value.getSize() ==
-               (registerIterator->second.end - registerIterator->second.begin));
-  MemoryValue previous{_register[registerIterator->second.adress].subSet(
-      registerIterator->second.begin, registerIterator->second.end)};
-  _register[registerIterator->second.adress].write(
-      value, registerIterator->second.begin);
-  wasUpdated(registerIterator->second.adress);
+  auto registerID = registerIterator->second;
+  assert::that(value.getSize() == (registerID.end - registerID.begin));
+  MemoryValue previous{
+      _register[registerID.address].subSet(registerID.begin, registerID.end)};
+  _register[registerID.address].write(value, registerID.begin);
+  wasUpdated(registerID.address);
   return previous;
 }
 
@@ -93,14 +99,15 @@ void RegisterSet::aliasRegister(const std::string &name,
   assert::that(_dict.find(name) == _dict.end());
   auto parentIterator = _dict.find(parent);
   assert::that(parentIterator != _dict.end());
+  auto parentID = parentIterator->second;
   assert::that(begin >= 0);
-  assert::that(end <= _register[parentIterator->second.adress].getSize());
+  assert::that(end <= _register[parentID.address].getSize());
   assert::that(end - begin > 0);
   _dict.emplace(name,
-                RegisterID(parentIterator->second.adress,
-                           begin + parentIterator->second.begin,
-                           end + parentIterator->second.begin));
-  _updateSet[parentIterator->second.adress].emplace(name);
+                RegisterID(parentID.address,
+                           begin + parentID.begin,
+                           end + parentID.begin));
+  _updateSet[parentID.address].emplace(name);
 }
 
 void RegisterSet::aliasRegister(const std::string &name,
@@ -109,12 +116,18 @@ void RegisterSet::aliasRegister(const std::string &name,
   assert::that(_dict.find(name) == _dict.end());
   auto parentIterator = _dict.find(parent);
   assert::that(parentIterator != _dict.end());
+  auto parentID = parentIterator->second;
   assert::that(begin >= 0);
-  assert::that(_register[parentIterator->second.adress].getSize() - begin > 0);
-  _dict.emplace(
-      name,
-      RegisterID(parentIterator->second.adress,
-                 begin + parentIterator->second.begin,
-                 parentIterator->second.end + parentIterator->second.begin));
-  _updateSet[parentIterator->second.adress].emplace(name);
+  assert::that(_register[parentID.address].getSize() - begin > 0);
+  _dict.emplace(name,
+                RegisterID(parentID.address,
+                           begin + parentID.begin,
+                           parentID.end + parentID.begin));
+  _updateSet[parentID.address].emplace(name);
+}
+
+void RegisterSet::wasUpdated(const std::size_t address){
+  for (auto name : _updateSet[address]) {
+    _callback(name);
+  }
 }
