@@ -42,10 +42,7 @@ MemoryValue RegisterSet::get(const std::string &name) const {
 
 void RegisterSet::get(const std::string &name, MemoryValue &out) const {
   // I don't see much need for this anymore, probably should be removed entirely
-  auto registerIterator = _dict.find(name);
-  assert::that(registerIterator != _dict.end());
-  auto registerID = registerIterator->second;
-  out = _register[registerID.address].subSet(registerID.begin, registerID.end);
+  out = get(name);
 }
 
 void RegisterSet::put(const std::string &name, const MemoryValue &value) {
