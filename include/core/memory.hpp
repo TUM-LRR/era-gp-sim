@@ -20,6 +20,7 @@
 #define ERAGPSIM_CORE_MEMORY_HPP_
 
 #include <cstddef>
+#include <functional>
 
 #include "common/assert.hpp"
 #include "core/memory-value.hpp"
@@ -71,6 +72,14 @@ class Memory {
   ~Memory() = default;
 
   /**
+   * \brief Sets the callback to notify the gui about changes in the data
+   * \param callback the callback to be set as _callback
+   */
+  void
+  setCallback(const std::function<void(const std::size_t, const std::size_t)>
+                  &callback);
+
+  /**
    * \brief Returns a MemoryValue holding the data stored in the Memory at
    *        [address; address+amount[
    * \param address Starting location of the Value in the Memory
@@ -98,14 +107,18 @@ class Memory {
   std::size_t _byteSize;/**< Brief Size of a Byte in bit*/
   std::size_t _byteCount;/**< Brief Number of Bytes*/
   MemoryValue _data;/**< Brief MemoryValue holding *all* the data*/
+  static const std::function<void(const std::size_t, const std::size_t)>
+      emptyCallback; /**< Brief An empty function that does absolutely
+                     nothing, used as default for _callback*/
+  std::function<void(const std::size_t, const std::size_t)> _callback =
+      emptyCallback; /**< Brief This function gets called for
+                        every changed area in Memory*/
 
   /**
    * \brief This Method is called whenever something in the Memory changes and
    *        notifies the Gui ofthe change
-   * \TODO Do the actual callback/function
    */
-  void wasUpdated(const std::size_t address, const std::size_t amount = 1) {
-  }
+  void wasUpdated(const std::size_t address, const std::size_t amount = 1);
 };
 
 #endif// ERAGPSIM_CORE_MEMORY_HPP_

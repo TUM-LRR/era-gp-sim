@@ -18,6 +18,9 @@
 
 #include "core/memory.hpp"
 
+const std::function<void(const std::size_t, const std::size_t)>
+    Memory::emptyCallback = [](const std::size_t, const std::size_t) {};
+
 Memory::Memory() : Memory(64, 8) {
 }
 
@@ -25,6 +28,11 @@ Memory::Memory(std::size_t byteCount, std::size_t byteSize)
 : _byteCount{byteCount}, _byteSize{byteSize}, _data{byteCount * byteSize} {
   assert::that(byteCount > 0);
   assert::that(byteSize > 0);
+}
+
+void Memory::setCallback(
+    const std::function<void(const std::size_t, const std::size_t)>& callback) {
+  _callback = callback;
 }
 
 MemoryValue
@@ -51,3 +59,8 @@ Memory::set(const std::size_t address, const MemoryValue& value) {
   put(address, value);
   return prev;
 }
+
+void Memory::wasUpdated(const std::size_t address, const std::size_t amount) {
+  _callback(address, amount);
+}
+
