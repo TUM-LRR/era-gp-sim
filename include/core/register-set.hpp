@@ -75,6 +75,10 @@ class RegisterSet {
    */
   ~RegisterSet() = default;
 
+  /**
+   * \brief Sets the callback to notify the gui about changes in the data
+   * \param callback the callback to be set as _callback
+   */
   void setCallback(const std::function<void(const std::string &)> &);
 
   /**
