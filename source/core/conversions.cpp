@@ -187,15 +187,50 @@ MemoryValue twosComplementC(const std::vector<std::uint8_t>& value,
   return result;
 }
 
-const std::function<bool(const MemoryValue&)> unSignum0{ unSignumA };
-const std::function<bool(const MemoryValue&)> Signum0{ signumA };
+const signFunction unSignum0{ unSignumA };
+const signFunction Signum0{ signumA };
 
-const std::function<MemoryValue(const MemoryValue&)> nonsigned1{ nonsignedB };
-const std::function<MemoryValue(const MemoryValue&)> signBit1{ signBitB };
-const std::function<MemoryValue(const MemoryValue&)> onesComplement1{ onesComplementB };
-const std::function<MemoryValue(const MemoryValue&)> twosComplement1{ twosComplementB };
+const toIntegralFunction nonsigned1{ nonsignedB };
+const toIntegralFunction signBit1{ signBitB };
+const toIntegralFunction onesComplement1{ onesComplementB };
+const toIntegralFunction twosComplement1{ twosComplementB };
 
-const std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)> nonsigned2{ nonsignedC };
-const std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)> signBit2{ signBitC };
-const std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)> onesComplement2{ onesComplementC };
-const std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)> twosComplement2{ twosComplementC };
+const toMemoryValueFunction nonsigned2{ nonsignedC };
+const toMemoryValueFunction signBit2{ signBitC };
+const toMemoryValueFunction onesComplement2{ onesComplementC };
+const toMemoryValueFunction twosComplement2{ twosComplementC };
+
+const Conversion nonsigned     { unSignum0,      nonsigned1,     nonsigned2 };
+const Conversion signBit       {   Signum0,        signBit1,       signBit2 };
+const Conversion onesComplement{   Signum0, onesComplement1,onesComplement2 };
+const Conversion twosComplement{   Signum0, twosComplement1,twosComplement2 };
+
+Conversion switchConversion(SignedRepresentation representation) {
+  switch (representation) {
+  case SignedRepresentation::UNSIGNED:
+    return nonsigned;
+  case SignedRepresentation::SIGN_BIT:
+    return signBit;
+  case SignedRepresentation::ONES_COMPLEMENT:
+    return onesComplement;
+  case SignedRepresentation::TWOS_COMPLEMENT:
+    return twosComplement;
+  case SignedRepresentation::SMART:
+    return nonsigned;
+  default:
+    assert::that(false);
+  }
+  return nonsigned;
+}
+
+MemoryValue permute(const MemoryValue& memoryValue, Endianness byteOrder, std::size_t byteSize) {
+  switch (byteOrder) {
+  case Endianness::LITTLE:
+    return memoryValue;
+  case Endianness::BIG:
+    return permute(memoryValue, byteSize, bigEndian{ memoryValue.getSize() / byteSize });
+  default:
+    assert::that(false);
+  }
+  return MemoryValue{};
+}

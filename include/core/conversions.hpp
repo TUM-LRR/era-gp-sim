@@ -43,10 +43,47 @@ enum class Endianness {
 * Indicates how signed numbers are represented
 */
 enum class SignedRepresentation {
+  UNSIGNED,
   ONES_COMPLEMENT,
   SIGN_BIT,
-  TWOS_COMPLEMENT
+  TWOS_COMPLEMENT,
+  SMART
 };
+
+using signFunction = std::function<bool(const MemoryValue&)>;
+using toMemoryValueFunction = std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)>;
+using toIntegralFunction = std::function<MemoryValue(const MemoryValue&)>;
+
+extern const signFunction unSignum0;
+extern const signFunction Signum0;
+
+extern const toIntegralFunction nonsigned1;
+extern const toIntegralFunction signBit1;
+extern const toIntegralFunction onesComplement1;
+extern const toIntegralFunction twosComplement1;
+
+extern const toMemoryValueFunction nonsigned2;
+extern const toMemoryValueFunction signBit2;
+extern const toMemoryValueFunction onesComplement2;
+extern const toMemoryValueFunction twosComplement2;
+
+struct Conversion {
+  signFunction sgn;
+  toMemoryValueFunction toMem;
+  toIntegralFunction toInt;
+  Conversion(const signFunction &sgn, const toIntegralFunction &toInt, const toMemoryValueFunction &toMem) :sgn{ sgn }, toMem{ toMem }, toInt{ toInt } {}
+  Conversion() :Conversion(unSignum0, nonsigned1, nonsigned2) {}
+  Conversion(const Conversion&) = default;
+  Conversion(Conversion&&) = default;
+  Conversion& operator=(const Conversion&) = default;
+  Conversion& operator=(Conversion&&) = default;
+  ~Conversion() = default;
+};
+
+extern const Conversion nonsigned;
+extern const Conversion signBit;
+extern const Conversion onesComplement;
+extern const Conversion twosComplement;
 
 // Unsigned and little endian
 template <typename T>
@@ -65,10 +102,16 @@ convertLE(const MemoryValue& memoryValue) {
 // true => negative
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, T>::type
-convert(const MemoryValue& memoryValue, const std::function<bool(const MemoryValue&)> sgn, const std::function<MemoryValue(const MemoryValue&)> abs) {
+convert(const MemoryValue& memoryValue, const signFunction &sgn, const toIntegralFunction &abs) {
   T result = convertLE<T>(abs(memoryValue));
   if (sgn(memoryValue) ^ (result < 0)) return 0 - result;
   return result;
+}
+
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value, T>::type
+convert(const MemoryValue& memoryValue, const Conversion &con) {
+  return convert<T>(memoryValue,con.sgn,con.toInt);
 }
 
 MemoryValue permute(const MemoryValue& memoryValue, const std::size_t byteSize, const std::vector<std::size_t> permutation);
@@ -77,7 +120,7 @@ MemoryValue permute(const MemoryValue& memoryValue, const std::size_t byteSize, 
 
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, MemoryValue>::type
-convert(T value, const std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)> sgn, std::size_t size) {
+convert(T value, const toMemoryValueFunction sgn, std::size_t size) {
   // T abs{ std::min(value) };
   T abs{value};
   if (abs < 0) abs = 0 - abs;
@@ -88,6 +131,12 @@ convert(T value, const std::function<MemoryValue(const std::vector<std::uint8_t>
     abs >>= 8;
   }
   return sgn(raw, size, value < 0);
+}
+
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value, MemoryValue>::type
+convert(T value, const Conversion con, std::size_t size) {
+  return convert(value, con.toMem, size);
 }
 
 bool unSignumA(const MemoryValue& memoryValue);
@@ -110,22 +159,9 @@ MemoryValue onesComplementC(const std::vector<std::uint8_t>& value, std::size_t 
 
 MemoryValue twosComplementC(const std::vector<std::uint8_t>& value, std::size_t size, bool sign);
 
-extern const std::function<bool(const MemoryValue&)> unSignum0;
-extern const std::function<bool(const MemoryValue&)> Signum0;
-
-extern const std::function<MemoryValue(const MemoryValue&)> nonsigned1;
-extern const std::function<MemoryValue(const MemoryValue&)> signBit1;
-extern const std::function<MemoryValue(const MemoryValue&)> onesComplement1;
-extern const std::function<MemoryValue(const MemoryValue&)> twosComplement1;
-
-extern const std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)> nonsigned2;
-extern const std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)> signBit2;
-extern const std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)> onesComplement2;
-extern const std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)> twosComplement2;
-
 namespace {
-class bigEndian {
-public:
+struct bigEndian {
+  std::size_t _byteCount;
   bigEndian(std::size_t byteCount) :_byteCount{ byteCount } {}
   bigEndian() :bigEndian(8) {};
   bigEndian(const bigEndian&) = default;
@@ -135,71 +171,33 @@ public:
   std::size_t operator()(size_t x) {
     return _byteCount - x;
   }
-private:
-  std::size_t _byteCount;
 };
 }
 
+Conversion switchConversion(SignedRepresentation representation);
+
+MemoryValue permute(const MemoryValue& memoryValue, Endianness byteOrder, std::size_t byteSize);
+
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, T>::type
-convert(const MemoryValue& memoryValue, SignedRepresentation representation=SignedRepresentation::TWOS_COMPLEMENT, std::size_t byteSize = 8, Endianness byteOrder=Endianness::LITTLE) {
-  MemoryValue permuted;
-  switch (byteOrder){
-  case Endianness::LITTLE:
-    permuted = memoryValue;
-    break;
-  case Endianness::BIG:
-    permuted = permute(memoryValue, byteSize, bigEndian{ memoryValue.getSize()/byteSize });
-    break;
-  default:
-    assert::that(false);
+convert(const MemoryValue& memoryValue, SignedRepresentation representation=SignedRepresentation::SMART, std::size_t byteSize = 8, Endianness byteOrder=Endianness::LITTLE) {
+  MemoryValue permuted = permute(memoryValue, byteOrder, byteSize);
+  Conversion con = switchConversion(representation);
+  if (representation == SignedRepresentation::SMART && std::is_signed<T>::value) {
+    con = twosComplement;
   }
-  if (!std::is_signed<T>::value) {
-    return convert<T>(permuted, unSignum0, nonsigned1);
-  }
-  switch (representation){
-  case SignedRepresentation::SIGN_BIT:
-    return convert<T>(permuted, Signum0, signBit1);
-  case SignedRepresentation::ONES_COMPLEMENT:
-    return convert<T>(permuted, Signum0, onesComplement1);
-  case SignedRepresentation::TWOS_COMPLEMENT:
-    return convert<T>(permuted, Signum0, twosComplement1);
-  default:
-    assert::that(false);
-  }
-  return T{};
+  return convert<T>(permuted,con);
 }
 
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, MemoryValue>::type
-convert(T value, SignedRepresentation representation=SignedRepresentation::TWOS_COMPLEMENT, std::size_t byteSize=8, Endianness byteOrder=Endianness::LITTLE) {
-  MemoryValue converted;
-  if (!std::is_signed<T>::value) {
-    convert = convert<T>(value, nonsigned2, byteSize);
-  } else {
-    switch (representation) {
-    case SignedRepresentation::SIGN_BIT:
-      convert = convert<T>(value, signBit2, byteSize);
-      break;
-    case SignedRepresentation::ONES_COMPLEMENT:
-      convert = convert<T>(value, onesComplement2, byteSize);
-      break;
-    case SignedRepresentation::TWOS_COMPLEMENT:
-      convert = convert<T>(value, twosComplement2, byteSize);
-      break;
-    default:
-      assert::that(false);
-    }
+convert(T value, SignedRepresentation representation=SignedRepresentation::SMART, std::size_t byteSize=8, Endianness byteOrder=Endianness::LITTLE) {
+  Conversion con = switchConversion(representation);
+  if (representation == SignedRepresentation::SMART && std::is_signed<T>::value) {
+    con = twosComplement;
   }
-  switch (byteOrder) {
-  case Endianness::LITTLE:
-    return converted;
-  case Endianness::BIG:
-    return permute(converted, byteSize, bigEndian{ converted.getSize() / byteSize });
-  default:
-    assert::that(false);
-  }
-  return MemoryValue{};
+  MemoryValue converted = convert<T>(value, con, byteSize);
+  return permute(converted, byteOrder, byteSize);
 }
 
 #endif// ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP_

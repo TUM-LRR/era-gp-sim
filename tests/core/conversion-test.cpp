@@ -16,14 +16,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstdint>
 #include <functional>
 #include <random>
+#include <vector>
 
 // clang-format off
 #include "gtest/gtest.h"
 #include "core/memory-value.hpp"
 #include "core/conversions.hpp"
-//#include "advanced-conversion-test.hpp"
 // clang-format on
 
 namespace {
@@ -97,18 +98,18 @@ struct TGen {
 }
 
 template <typename T, std::size_t size> T
-testTypeMemoryValueType(const T &value, const std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)> &sgn1,
-  const std::function<bool(const MemoryValue&)> &sgn2,
-  const std::function<MemoryValue(const MemoryValue&)> &abs) {
+testTypeMemoryValueType(const T &value, const toMemoryValueFunction &sgn1,
+  const signFunction &sgn2,
+  const toIntegralFunction &abs) {
   MemoryValue memoryValue{ convert(value, sgn1, size) };
   return convert<T>(memoryValue, sgn2, abs);
 }
 
 template <typename T> MemoryValue
 testMemoryValueTypeMemoryValue(const MemoryValue &memoryValue,
-  const std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)> &sgn1,
-  const std::function<bool(const MemoryValue&)> &sgn2,
-  const std::function<MemoryValue(const MemoryValue&)> &abs) {
+  const toMemoryValueFunction &sgn1,
+  const signFunction &sgn2,
+  const toIntegralFunction &abs) {
   T value{ convert<T>(memoryValue, sgn2, abs) };
   return convert(value, sgn1, memoryValue.getSize());
 }
@@ -116,9 +117,9 @@ testMemoryValueTypeMemoryValue(const MemoryValue &memoryValue,
 template <typename T, std::size_t size, std::size_t testAmount> void
 testConversion( std::function<T()> &generator,
   std::function<MemoryValue(std::size_t)> &memGenerator,
-  const std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)> sgn1,
-  const std::function<bool(const MemoryValue&)> sgn2,
-  const std::function<MemoryValue(const MemoryValue&)> abs) {
+  const toMemoryValueFunction sgn1,
+  const signFunction sgn2,
+  const toIntegralFunction abs) {
   for (int i = 0; i < testAmount; ++i) {
     T instance0{ generator() };
     T instance1{ testTypeMemoryValueType<T,size>(instance0,sgn1,sgn2,abs) };
@@ -130,30 +131,40 @@ testConversion( std::function<T()> &generator,
 }
 
 template <typename T, std::size_t size, std::size_t testAmount> void
-testConversion(std::function<std::uint8_t()> &gen) {
+testConversion(std::function<std::uint8_t()> &gen, Conversion con) {
   std::function<MemoryValue(std::size_t)> memGen = MemGen(gen);
   std::function<T()> tGen = TGen<T, size>(gen);
-  if (!std::is_signed<T>::value) {
-    testConversion<T, size, testAmount>(tGen, memGen, nonsigned2, unSignum0, nonsigned1);
-  } else {
-    testConversion<T, size, testAmount>(tGen, memGen, signBit2, Signum0, signBit1);
-    testConversion<T, size, testAmount>(tGen, memGen, onesComplement2, Signum0, onesComplement1);
-    testConversion<T, size, testAmount>(tGen, memGen, twosComplement2, Signum0, twosComplement1);
-  }
+  testConversion<T, size, testAmount>(tGen, memGen, con.toMem, con.sgn, con.toInt);
 }
 
-TEST(TestConversions, unsigned_int) {
+TEST(TestConversions, nonsigned) {
   std::function<std::uint8_t()> gen = Gen();
-  testConversion<std::uint8_t, 8, 1024>(gen);
-  testConversion<std::uint16_t, 16, 1024>(gen);
-  testConversion<std::uint32_t, 32, 1024>(gen);
-  testConversion<std::uint64_t, 64, 1024>(gen);
+  testConversion<std::uint8_t ,  8, 1024>(gen, nonsigned);
+  testConversion<std::uint16_t, 16, 1024>(gen, nonsigned);
+  testConversion<std::uint32_t, 32, 1024>(gen, nonsigned);
+  testConversion<std::uint64_t, 64, 1024>(gen, nonsigned);
 }
 
-TEST(TestConversions, signed_int) {
+TEST(TestConversions, signBit) {
   std::function<std::uint8_t()> gen = Gen();
-  testConversion<std::int8_t, 8, 1024>(gen);
-  testConversion<std::int16_t, 16, 1024>(gen);
-  testConversion<std::int32_t, 32, 1024>(gen);
-  testConversion<std::int64_t, 64, 1024>(gen);
+  testConversion<std::int8_t ,  8, 1024>(gen, signBit);
+  testConversion<std::int16_t, 16, 1024>(gen, signBit);
+  testConversion<std::int32_t, 32, 1024>(gen, signBit);
+  testConversion<std::int64_t, 64, 1024>(gen, signBit);
+}
+
+TEST(TestConversions, onesComplement) {
+  std::function<std::uint8_t()> gen = Gen();
+  testConversion<std::int8_t ,  8, 1024>(gen, onesComplement);
+  testConversion<std::int16_t, 16, 1024>(gen, onesComplement);
+  testConversion<std::int32_t, 32, 1024>(gen, onesComplement);
+  testConversion<std::int64_t, 64, 1024>(gen, onesComplement);
+}
+
+TEST(TestConversions, twosComplement) {
+  std::function<std::uint8_t()> gen = Gen();
+  testConversion<std::int8_t ,  8, 1024>(gen, twosComplement);
+  testConversion<std::int16_t, 16, 1024>(gen, twosComplement);
+  testConversion<std::int32_t, 32, 1024>(gen, twosComplement);
+  testConversion<std::int64_t, 64, 1024>(gen, twosComplement);
 }
