@@ -113,9 +113,11 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
 
   // Add immediate regex
   // Matches arithmetic expressions containing digits, operators, brackets and
-  // spaces. Expressions need to start with a digit, '+', -' or an open bracket.
-  info.addSyntaxRegex(R"(\b[\+\-0-9\(][0-9\+\-%\*\/\(\)\t ]*)",
-                      SyntaxInformation::Token::Immediate);
+  // spaces. Expressions need to start with a digit, an open bracket or an unary
+  // operator.
+  info.addSyntaxRegex(
+      R"(\b[\+\-0-9\(!~][0-9a-fA-Fx\+\-%\*\/\(\)\|\^&=!<>~\t ]*)",
+      SyntaxInformation::Token::Immediate);
 
   // Add register regexes
   for (UnitInformation unit : _architecture.getUnits()) {
