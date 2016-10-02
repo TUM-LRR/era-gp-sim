@@ -25,6 +25,7 @@
 #include <stdexcept>
 #include <string>
 #include "common/assert.hpp"
+#include "parser/compile-state.hpp"
 
 /**
  * Provides methods for integer parsing.
@@ -37,37 +38,45 @@ class IntegerParser {
   /**
    * Parses from a string to an integer.
    *
-   * This function is designed to mimic the specification of std::stoi,
-   * std::stoul, etc. Parses until it hits the first non-digit character.
+   * Tries to parse the whole string. Adds an error to \p state if the parsing
+   * fails.
    *
-   * \param[in] str    String to parse
-   * \param[in] start  Start position in the string
-   * \param[in] base   Integer based used for parsing. Autodetects base 8, 16
-   *                   and 10 if set to 0;
-   * \param[out] count Address of an integer to store the number of characters
-   *                   processed.
+   * \param str   String to parse
+   * \param state The current CompileState
+   * \param start Start position in the string
+   * \param base  Integer based used for parsing. Autodetects base 8, 16 and 10
+   *              based on prefix if set to 0
    *
-   * \throws std::invalid_argument if no conversion could be performed
-   * \throws std::out_of_range if the parsed value would fall out of the range
-   *                           of T
-   *
-   * \return The parsed integer
+   * \return The parsed integer. Undefined if parsing fails.
    */
   static T parse(const std::string &str,
-                 size_t start  = 0,
-                 int base      = 10,
-                 size_t *count = nullptr) {
-    return parseInternal(str, start, base, count);
+                 CompileState &state,
+                 size_t start = 0,
+                 int base     = 10) {
+    size_t count;
+    T result{};
+    try {
+      result = parseInternal(str, start, base, count);
+      if (count < str.length() - start) throw std::invalid_argument("");
+    } catch (std::out_of_range &) {
+      state.errorList.emplace_back(
+          "Integer out of range.", state.position, CompileErrorSeverity::ERROR);
+    } catch (std::invalid_argument &) {
+      state.errorList.emplace_back(
+          "Integer syntax error.", state.position, CompileErrorSeverity::ERROR);
+    }
+    return result;
   }
 
  private:
   /**
    * Internal parser function to be used if no specialization exists. Custom
    * number types that want to use this function need to implement a
-   * std::numeric_limits specialization.
+   * std::numeric_limits specialization Designed to mimic the specification of
+   * std::stoi, std::stoul, etc.
    */
   static T
-  parseInternal(const std::string &str, size_t start, int base, size_t *count) {
+  parseInternal(const std::string &str, size_t start, int base, size_t &count) {
     assert::that((base == 0 || base >= 2) && base <= 36);
 
     auto begin    = str.begin() + start;
@@ -150,7 +159,7 @@ class IntegerParser {
       throw std::invalid_argument{"No conversion performed"};
 
     // Return amount of processed characters
-    if (count != nullptr) *count = (position - begin);
+    count = (position - begin);
 
     if (negative) value = -value;
 
@@ -163,26 +172,26 @@ template <>
 int IntegerParser<int>::parseInternal(const std::string &str,
                                       size_t start,
                                       int base,
-                                      size_t *count);
+                                      size_t &count);
 
 template <>
 long IntegerParser<long>::parseInternal(const std::string &str,
                                         size_t start,
                                         int base,
-                                        size_t *count);
+                                        size_t &count);
 
 template <>
 long long IntegerParser<long long>::parseInternal(const std::string &str,
                                                   size_t start,
                                                   int base,
-                                                  size_t *count);
+                                                  size_t &count);
 
 template <>
 unsigned long IntegerParser<unsigned long>::parseInternal(
-    const std::string &str, size_t start, int base, size_t *count);
+    const std::string &str, size_t start, int base, size_t &count);
 
 template <>
 unsigned long long IntegerParser<unsigned long long>::parseInternal(
-    const std::string &str, size_t start, int base, size_t *count);
+    const std::string &str, size_t start, int base, size_t &count);
 
 #endif /* ERAGPSIM_PARSER_INT_PARSER_HPP */

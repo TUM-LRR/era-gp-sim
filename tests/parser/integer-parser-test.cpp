@@ -20,100 +20,115 @@
 #include "parser/integer-parser.hpp"
 #include "gtest/gtest.h"
 
+template <typename T>
+static void
+testPass(T expected, const std::string &str, size_t start = 0, int base = 10) {
+  CompileState state;
+  EXPECT_EQ(IntegerParser<T>::parse(str, state, start, base), expected)
+      << '"' << str << "\" not equal to " << expected;
+  EXPECT_EQ(state.errorList.size(), 0) << "Error while parsing \"" << str
+                                       << '"';
+}
+
+template <typename T>
+static void testFail(const std::string &str, size_t start = 0, int base = 10) {
+  CompileState state;
+  IntegerParser<T>::parse(str, state, start, base);
+  EXPECT_EQ(state.errorList.size(), 1) << "No exptected errors while parsing \""
+                                       << str << '"';
+}
 
 TEST(IntegerParser, IntDecimalPass) {
-  EXPECT_EQ(IntegerParser<int32_t>::parse("  0"), 0);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("126"), 126);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("-084"), -84);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("xx9645abc", 2), 9645);
+  testPass<int32_t>(0, "0");
+  testPass<int32_t>(126, "126");
+  testPass<int32_t>(-84, "-084");
+  testPass<int32_t>(9645, "xx9645", 2);
 
-  EXPECT_EQ(IntegerParser<int32_t>::parse("-2147483648"), -2147483648);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("2147483647"), 2147483647);
+  testPass<int32_t>(-2147483648, "-2147483648");
+  testPass<int32_t>(2147483647, "2147483647");
 
-  EXPECT_EQ(IntegerParser<int16_t>::parse("-32768"), -32768);
-  EXPECT_EQ(IntegerParser<int16_t>::parse("32767"), 32767);
+  testPass<int16_t>(-32768, "-32768");
+  testPass<int16_t>(32767, "32767");
 }
 
 TEST(IntegerParser, IntDecimalFail) {
-  ASSERT_THROW(IntegerParser<int32_t>::parse("x10"), std::invalid_argument);
-  ASSERT_THROW(IntegerParser<int32_t>::parse("dfghfae", 3),
-               std::invalid_argument);
+  testFail<int32_t>("10x");
+  testFail<int32_t>("dfghfae", 3);
 
-  ASSERT_THROW(IntegerParser<int32_t>::parse("-2147483649"), std::out_of_range);
-  ASSERT_THROW(IntegerParser<int32_t>::parse("2147483648"), std::out_of_range);
+  testFail<int32_t>("-2147483649");
+  testFail<int32_t>("2147483648");
 
-  ASSERT_THROW(IntegerParser<int16_t>::parse("-32769"), std::out_of_range);
-  ASSERT_THROW(IntegerParser<int16_t>::parse("32768"), std::out_of_range);
+  testFail<int16_t>("-32769");
+  testFail<int16_t>("32768");
 }
 
 TEST(IntegerParser, UIntDecimalPass) {
-  EXPECT_EQ(IntegerParser<uint16_t>::parse("  0"), 0);
-  EXPECT_EQ(IntegerParser<uint16_t>::parse("126"), 126);
-  EXPECT_EQ(IntegerParser<uint16_t>::parse("084"), 84);
-  EXPECT_EQ(IntegerParser<uint16_t>::parse("32767"), 32767);
-  EXPECT_EQ(IntegerParser<uint16_t>::parse("9645abc"), 9645);
-  EXPECT_EQ(IntegerParser<uint16_t>::parse("65535"), 65535);
-  EXPECT_EQ(IntegerParser<uint16_t>::parse("-65535"), 1);
-  EXPECT_EQ(IntegerParser<uint32_t>::parse("4294967295"), 4294967295);
-  EXPECT_EQ(IntegerParser<uint32_t>::parse("-4294967295"), 1);
+  testPass<uint16_t>(0, "0");
+  testPass<uint16_t>(126, "126");
+  testPass<uint16_t>(84, "084");
+  testPass<uint16_t>(32767, "32767");
+  testPass<uint16_t>(9645, "9645");
+  testPass<uint16_t>(65535, "65535");
+  testPass<uint16_t>(1, "-65535");
+  testPass<uint32_t>(4294967295, "4294967295");
+  testPass<uint32_t>(1, "-4294967295");
 }
 
 TEST(IntegerParser, UIntDecimalFail) {
-  ASSERT_THROW(IntegerParser<uint16_t>::parse("x10"), std::invalid_argument);
-  ASSERT_THROW(IntegerParser<uint16_t>::parse("dfghfae"),
-               std::invalid_argument);
+  testFail<uint16_t>("x10");
+  testFail<uint16_t>("100t");
+  testFail<uint16_t>("dfghfae");
 
-  ASSERT_THROW(IntegerParser<uint16_t>::parse("-65539"), std::out_of_range);
-  ASSERT_THROW(IntegerParser<uint16_t>::parse("65536"), std::out_of_range);
+  testFail<uint16_t>("-65539");
+  testFail<uint16_t>("65536");
 
-  ASSERT_THROW(IntegerParser<uint32_t>::parse("4294967296"), std::out_of_range);
-  ASSERT_THROW(IntegerParser<uint32_t>::parse("-4294967296"),
-               std::out_of_range);
+  testFail<uint32_t>("4294967296");
+  testFail<uint32_t>("-4294967296");
 }
 
 TEST(IntegerParser, Bases) {
-  EXPECT_EQ(IntegerParser<int32_t>::parse("ab345", 0, 16), 0xab345);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("0xab345", 0, 16), 0xab345);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("0xab345", 0, 0), 0xab345);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("-0xab345", 0, 0), -0xab345);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("0ab345", 0, 16), 0xab345);
+  testPass<int32_t>(0xab345, "ab345", 0, 16);
+  testPass<int32_t>(0xab345, "0xab345", 0, 16);
+  testPass<int32_t>(0xab345, "0xab345", 0, 0);
+  testPass<int32_t>(-0xab345, "-0xab345", 0, 0);
+  testPass<int32_t>(0xab345, "0ab345", 0, 16);
 
-  EXPECT_EQ(IntegerParser<int32_t>::parse("71345", 0, 8), 071345);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("071345", 0, 8), 071345);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("071345", 0, 0), 071345);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("-071345", 0, 0), -071345);
+  testPass<int32_t>(071345, "71345", 0, 8);
+  testPass<int32_t>(071345, "071345", 0, 8);
+  testPass<int32_t>(071345, "071345", 0, 0);
+  testPass<int32_t>(-071345, "-071345", 0, 0);
 
-  EXPECT_EQ(IntegerParser<int32_t>::parse("1001", 0, 2), 9);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("-1001", 0, 2), -9);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("01001", 0, 2), 9);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("0x1001", 0, 2), 0);
+  testPass<int32_t>(9, "1001", 0, 2);
+  testPass<int32_t>(-9, "-1001", 0, 2);
+  testPass<int32_t>(9, "01001", 0, 2);
+  testFail<int32_t>("0x1001", 0, 2);
 
-  EXPECT_EQ(IntegerParser<int32_t>::parse("30HG", 0, 20), 24356);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("-30HG", 0, 20), -24356);
+  testPass<int32_t>(24356, "30HG", 0, 20);
+  testPass<int32_t>(-24356, "-30HG", 0, 20);
 
-  EXPECT_EQ(IntegerParser<int32_t>::parse("0x2N", 0, 36), 42863);
-  EXPECT_EQ(IntegerParser<int32_t>::parse("-0x2N", 0, 36), -42863);
+  testPass<int32_t>(42863, "0x2N", 0, 36);
+  testPass<int32_t>(-42863, "-0x2N", 0, 36);
 
 
-  EXPECT_EQ(IntegerParser<uint16_t>::parse("ab45", 0, 16), 0xab45);
-  EXPECT_EQ(IntegerParser<uint16_t>::parse("0xab45", 0, 16), 0xab45);
-  EXPECT_EQ(IntegerParser<uint16_t>::parse("0xab45", 0, 0), 0xab45);
-  EXPECT_EQ(IntegerParser<uint16_t>::parse("-0xab45", 0, 0), 21691);
-  EXPECT_EQ(IntegerParser<uint16_t>::parse("0ab45", 0, 16), 0xab45);
+  testPass<uint16_t>(0xab45, "ab45", 0, 16);
+  testPass<uint16_t>(0xab45, "0xab45", 0, 16);
+  testPass<uint16_t>(0xab45, "0xab45", 0, 0);
+  testPass<uint16_t>(21691, "-0xab45", 0, 0);
+  testPass<uint16_t>(0xab45, "0ab45", 0, 16);
 
-  EXPECT_EQ(IntegerParser<int16_t>::parse("7145", 0, 8), 07145);
-  EXPECT_EQ(IntegerParser<int16_t>::parse("07145", 0, 8), 07145);
-  EXPECT_EQ(IntegerParser<int16_t>::parse("07145", 0, 0), 07145);
-  EXPECT_EQ(IntegerParser<int16_t>::parse("-07145", 0, 0), -07145);
+  testPass<int16_t>(07145, "7145", 0, 8);
+  testPass<int16_t>(07145, "07145", 0, 8);
+  testPass<int16_t>(07145, "07145", 0, 0);
+  testPass<int16_t>(-07145, "-07145", 0, 0);
 
-  EXPECT_EQ(IntegerParser<int16_t>::parse("1001", 0, 2), 9);
-  EXPECT_EQ(IntegerParser<int16_t>::parse("-1001", 0, 2), -9);
-  EXPECT_EQ(IntegerParser<int16_t>::parse("01001", 0, 2), 9);
-  EXPECT_EQ(IntegerParser<int16_t>::parse("0x1001", 0, 2), 0);
+  testPass<int16_t>(9, "1001", 0, 2);
+  testPass<int16_t>(-9, "-1001", 0, 2);
+  testPass<int16_t>(9, "01001", 0, 2);
+  testFail<int16_t>("0x1001", 0, 2);
 
-  EXPECT_EQ(IntegerParser<int16_t>::parse("30HG", 0, 20), 24356);
-  EXPECT_EQ(IntegerParser<int16_t>::parse("-30HG", 0, 20), -24356);
+  testPass<int16_t>(24356, "30HG", 0, 20);
+  testPass<int16_t>(-24356, "-30HG", 0, 20);
 
-  EXPECT_EQ(IntegerParser<int16_t>::parse("0x2", 0, 36), 1190);
-  EXPECT_EQ(IntegerParser<int16_t>::parse("-0x2", 0, 36), -1190);
+  testPass<int16_t>(1190, "0x2", 0, 36);
+  testPass<int16_t>(-1190, "-0x2", 0, 36);
 }

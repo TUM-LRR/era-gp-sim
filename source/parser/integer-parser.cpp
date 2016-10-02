@@ -26,34 +26,34 @@ template <>
 int IntegerParser<int>::parseInternal(const std::string &str,
                                       size_t start,
                                       int base,
-                                      size_t *count) {
-  return std::stoi(std::string{str, start}, count, base);
+                                      size_t &count) {
+  return std::stoi(std::string{str, start}, &count, base);
 }
 
 template <>
 long IntegerParser<long>::parseInternal(const std::string &str,
                                         size_t start,
                                         int base,
-                                        size_t *count) {
-  return std::stol(std::string{str, start}, count, base);
+                                        size_t &count) {
+  return std::stol(std::string{str, start}, &count, base);
 }
 
 template <>
 long long IntegerParser<long long>::parseInternal(const std::string &str,
                                                   size_t start,
                                                   int base,
-                                                  size_t *count) {
-  return std::stoll(std::string{str, start}, count, base);
+                                                  size_t &count) {
+  return std::stoll(std::string{str, start}, &count, base);
 }
 
 template <>
 unsigned long IntegerParser<unsigned long>::parseInternal(
-    const std::string &str, size_t start, int base, size_t *count) {
-  return std::stoul(std::string{str, start}, count, base);
+    const std::string &str, size_t start, int base, size_t &count) {
+  return std::stoul(std::string{str, start}, &count, base);
 }
 
 template <>
 unsigned long long IntegerParser<unsigned long long>::parseInternal(
-    const std::string &str, size_t start, int base, size_t *count) {
-  return std::stoull(std::string{str, start}, count, base);
+    const std::string &str, size_t start, int base, size_t &count) {
+  return std::stoull(std::string{str, start}, &count, base);
 }
