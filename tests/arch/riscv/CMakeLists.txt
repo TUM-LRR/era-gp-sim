@@ -3,13 +3,13 @@
 ########################################
 
 set(TEST_ARCH_RISCV_SOURCES
-    arch-riscv-integer-instructions-test.cpp
-    load-store-instructions-test.cpp
-    lui-auipc-instructions-test.cpp
-    dummies.cpp
-    arithmetic-test-utils.cpp
-    mul-div-instruction-tests.cpp
-    #formats-test.cpp The tests fail atm
+#    arch-riscv-integer-instructions-test.cpp
+#    load-store-instructions-test.cpp
+#    lui-auipc-instructions-test.cpp
+#    dummies.cpp
+#    arithmetic-test-utils.cpp
+#    mul-div-instruction-tests.cpp
+    formats-test.cpp #The tests fail atm
 )
 
 ########################################

@@ -30,34 +30,34 @@ const std::size_t REGISTER_SIZE = 4;
 // methods to transform immediates into their specified formats
 // I should possibly reverse the memory values before the following operations
 void immToI(MemoryValue& vec) {
-  for (int i = 10; i >= 0; i--) vec.put(i, vec.get(20 + i));
-  for (int i = 31; i > 10; i--) vec.put(i, vec.get(31));
+  for (int i = 21; i < 32; i++) vec.put(i, vec.get(i - 20));
+  for (int i = 0; i < 21; i++)  vec.put(i, vec.get(0));
 }
 
 void immToS(MemoryValue& vec) {
-  vec.put(0, vec.get(7));
-  for (int i = 4; i >= 1; i--) vec.put(i, vec.get(7 + i));
-  for (int i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
-  for (int i = 31; i > 10; i--) vec.put(i, vec.get(31));
+  vec.put(31, vec.get(24));
+  for (int i = 27; i <= 30; i++) vec.put(i, vec.get(i - 7));
+  for (int i = 21; i <= 26; i++) vec.put(i, vec.get(i - 20));
+  for (int i = 0; i <= 20; i++) vec.put(i, vec.get(0));
 }
 
 void immToB(MemoryValue& vec) {
   immToS(vec);
-  vec.put(11, vec.get(0));
-  vec.put(0, false);
+  vec.put(20, vec.get(31));
+  vec.put(31, false);
 }
 
 void immToU(MemoryValue& vec) {
-  for (int i = 12; i >= 0; i--) vec.put(i, false);
+  for (int i = 19; i <= 31; i++) vec.put(i, false);
 }
 
 void immToJ(MemoryValue& vec) {
   // clang-format off
-  for (int i = 4; i >= 1; i--) vec.put(i, vec.get(20 + i));
-  vec.put(0, false);
-  for (int i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
-  vec.put(11, vec.get(20));
-  for (int i = 31; i >= 20; i--) vec.put(i, vec.get(31));
+  for (int i = 27; i <= 30; i++) vec.put(i, vec.get(i - 20));
+  vec.put(31, false);
+  for (int i = 21; i <= 26; i++) vec.put(i, vec.get(i - 20));
+  vec.put(20, vec.get(11));
+  for (int i = 0; i <= 11; i++) vec.put(i, vec.get(0));
   // clang-format on
 }
 

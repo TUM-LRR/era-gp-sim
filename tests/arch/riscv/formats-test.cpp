@@ -39,9 +39,10 @@ using namespace riscv;
 // testing the immediate transformations
 struct ImmediateFormatTestFixture : public ::testing::Test {
   ImmediateFormatTestFixture() {
-    for (int i  = 0; i < 6; i++)
-      valueP[i] = new MemoryValue(
-          std::vector<uint8_t>(std::begin(v[i]), std::end(v[i])), 8);
+    for (int i  = 0; i < 6; i++) {
+      auto vect = std::vector<uint8_t>(std::begin(v[i]), std::end(v[i]));
+      valueP[i] = new MemoryValue(vect, 8);
+    }
   }
 
   ~ImmediateFormatTestFixture() {
@@ -50,11 +51,11 @@ struct ImmediateFormatTestFixture : public ::testing::Test {
   }
 
   uint8_t v[6][4] = {{0x78, 0xEF, 0xCD, 0xAB},
-                     {0xBC, 0xFA, 0xFF, 0xFF},
-                     {0xBE, 0xFA, 0xFF, 0xFF},
-                     {0xBE, 0xF2, 0xFF, 0xFF},
-                     {0X00, 0xE0, 0xCD, 0xAB},
-                     {0xBC, 0xE2, 0xFD, 0xFF}};
+                     {0x00, 0x00, 0x07, 0x8E},
+                     {0x00, 0x00, 0x07, 0x9B},
+                     {0x00, 0x00, 0x0F, 0x9A},
+                     {0X78, 0xEF, 0xC0, 0x00},
+                     {0x00, 0x0F, 0xC7, 0x8E}};
   MemoryValue **valueP = new MemoryValue *[6];
 };
 
