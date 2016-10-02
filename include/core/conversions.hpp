@@ -51,7 +51,7 @@ enum class SignedRepresentation {
 // Unsigned and little endian
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, T>::type
-convert(const MemoryValue& memoryValue) {
+convertLE(const MemoryValue& memoryValue) {
   T result = 0;
   for (std::size_t i = memoryValue.internal().size(); i > 0; --i) {
     result <<= 8;
@@ -66,7 +66,7 @@ convert(const MemoryValue& memoryValue) {
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, T>::type
 convert(const MemoryValue& memoryValue, const std::function<bool(const MemoryValue&)> sgn, const std::function<MemoryValue(const MemoryValue&)> abs) {
-  T result = convert<T>(abs(memoryValue));
+  T result = convertLE<T>(abs(memoryValue));
   if (sgn(memoryValue) ^ (result < 0)) return 0 - result;
   return result;
 }
