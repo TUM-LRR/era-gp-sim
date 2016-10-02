@@ -57,8 +57,7 @@ MemoryValue InstructionNode::assemble() const {
   MemoryValue result(boolResult.size() / RISCV_BITS_PER_BYTE,
                      RISCV_BITS_PER_BYTE);
 
-  int k = boolResult.size();
-  for (int i = 0; i < boolResult.size(); i++) result.put(--k, boolResult.at(i));
+  for (int i = 0; i < boolResult.size(); i++) result.put(i, boolResult.at(i));
 
   return result;
 }

@@ -107,7 +107,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   immToI(imm);
 
   // immediate - 12 bits long
-  for (int i = 11; i >= 0; i--) res.push_back(imm.get(i));
+  for (int i = 20; i <= 31; i++) res.push_back(imm.get(i));
   // rs1
   auto argument = args.at(1);
   for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
@@ -138,9 +138,12 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   immToS(imm);
 
   // immediate[11:5]
-  for (int i = 11; i > 4; i--) res.push_back(imm.get(i));
-  // rs1
+  for (int i = 20; i < 27; i++) res.push_back(imm.get(i));
+  // rs2
   auto argument = args.at(1);
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  // rs1
+  argument = args.at(0);
   for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   // Utility::convertToBin(tmp, key["funct3"]);
@@ -167,11 +170,14 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   immToB(imm);
 
   // imm[12]
-  res.push_back(imm.get(12));
+  res.push_back(imm.get(19));
   // immediate[10:5]
-  for (int i = 10; i > 4; i--) res.push_back(imm.get(i));
-  // rs1
+  for (int i = 21; i < 27; i++) res.push_back(imm.get(i));
+  // rs2
   auto argument = args.at(1);
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  // rs1
+  argument = args.at(0);
   for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   // Utility::convertToBin(tmp, key["funct3"]);
@@ -200,7 +206,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   immToU(imm);
 
   // immediate[31:12]
-  for (int i = 31; i >= 12; i--) res.push_back(imm.get(i));
+  for (int i = 0; i <= 19; i++) res.push_back(imm.get(i));
 
   // rd
   auto argument = args.at(0);
@@ -222,13 +228,13 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   immToJ(imm);
 
   // immediate[20]
-  res.push_back(imm.get(20));
-  // imm[10:1]
-  for (int i = 10; i >= 1; i--) res.push_back(imm.get(i));
-  // imm[11]
   res.push_back(imm.get(11));
+  // imm[10:1]
+  for (int i = 21; i <= 30; i++) res.push_back(imm.get(i));
+  // imm[11]
+  res.push_back(imm.get(20));
   // imm[19:12]
-  for (int i = 19; i >= 12; i--) res.push_back(imm.get(i));
+  for (int i = 12; i <= 19; i++) res.push_back(imm.get(i));
 
   // rd
   auto argument = args.at(0);

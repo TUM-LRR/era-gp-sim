@@ -88,7 +88,8 @@ struct InstructionFormatTestFixture : public ::testing::Test {
   InstructionFormatTestFixture() {
     instructionSet.addInstructions(InstructionSet(
         {{"add", InstructionKey({{"opcode", 6}, {"function", 3}}), "R"},
-         {"sub", InstructionKey({{"opcode", 9}, {"function", 3}}), "I"}}));
+         {"sub", InstructionKey({{"opcode", 9}, {"function", 3}}), "I"},
+         {"beq", InstructionKey({{"opcode", 7}, {"function", 1}}), "SB"}}));
   }
 
   ~InstructionFormatTestFixture() {
@@ -133,6 +134,20 @@ TEST_F(InstructionFormatTestFixture, SFormat) {
 }
 
 TEST_F(InstructionFormatTestFixture, SBFormat) {
+  auto beqInfo = instructionSet.getInstruction("beq");
+  AddInstructionNode<uint32_t> beqInstr(beqInfo, true);
+  auto key = beqInfo.getKey();
+  MemoryValue val(4, 8);
+  val.put(22, true);
+  val.put(23, true);
+  AbstractSyntaxTreeNode::Node imm(new ImmediateNode(val));
+  AbstractSyntaxTreeNode::Node r2(new RegisterNode("2"));
+  AbstractSyntaxTreeNode::Node r1(new RegisterNode("3"));
+  beqInstr.addChild(std::move(r1));
+  beqInstr.addChild(std::move(r2));
+  beqInstr.addChild(std::move(imm));
+
+  std::cout << beqInstr.assemble() << std::endl;
 }
 
 TEST_F(InstructionFormatTestFixture, UFormat) {
