@@ -101,7 +101,7 @@ class InstructionInformation : public InformationInterface {
   /**
    * Returns the mnemonic of the instruction.
    */
-  const std::string& getMnemonic() const noexcept;
+  const std::string& getMnemonic() const;
 
   /**
    * Tests if the instruction has a mnemonic set.
@@ -120,7 +120,7 @@ class InstructionInformation : public InformationInterface {
   /**
    * Returns the key of the instruction.
    */
-  const InstructionKey& getKey() const noexcept;
+  const InstructionKey& getKey() const;
 
   /**
    * Tests if the instruction has an instruction key set.
