@@ -6,6 +6,7 @@ set(TEST_ARCH_RISCV_SOURCES
     arch-riscv-integer-instructions-test.cpp
     load-store-instructions-test.cpp
     lui-auipc-instructions-test.cpp
+    rv64-only-instructions-test.cpp
     dummies.cpp
     arithmetic-test-utils.cpp
     mul-div-instruction-tests.cpp

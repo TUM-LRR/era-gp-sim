@@ -16,6 +16,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
 #include "arch/riscv/instruction-node-factory.hpp"
+#include "arch/riscv/architecture-only-instructions.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
@@ -140,8 +141,9 @@ void initializeLoadStoreInstructions(
   });
   _instructionMap.emplace("lhu", [](InstructionInformation& info) {
     return std::make_unique<LoadInstructionNode<SignedType, UnsignedType>>(
-        info, LoadInstructionNode<SignedType,
-                                  UnsignedType>::Type::HALF_WORD_UNSIGNED);
+        info,
+        LoadInstructionNode<SignedType,
+                            UnsignedType>::Type::HALF_WORD_UNSIGNED);
   });
   _instructionMap.emplace("lb", [](InstructionInformation& info) {
     return std::make_unique<LoadInstructionNode<SignedType, UnsignedType>>(
@@ -167,6 +169,54 @@ void initializeLoadStoreInstructions(
   });
 }
 
+void initializeRV64OnlyInstructions(
+    InstructionNodeFactory::InstructionMap& _instructionMap) {
+  using WordSize      = uint64_t;
+  using OperationSize = uint32_t;
+  _instructionMap.emplace("addw", [](InstructionInformation& info) {
+    return std::make_unique<AddOnlyInstructionNode<WordSize, OperationSize>>(
+        info, false);
+  });
+  _instructionMap.emplace("addiw", [](InstructionInformation& info) {
+    return std::make_unique<AddOnlyInstructionNode<WordSize, OperationSize>>(
+        info, true);
+  });
+  _instructionMap.emplace("subw", [](InstructionInformation& info) {
+    return std::make_unique<SubOnlyInstructionNode<WordSize, OperationSize>>(
+        info);
+  });
+  _instructionMap.emplace("sllw", [](InstructionInformation& info) {
+    return std::make_unique<
+        ShiftLogicalLeftOnlyInstructionNode<WordSize, OperationSize>>(info,
+                                                                      false);
+  });
+  _instructionMap.emplace("slliw", [](InstructionInformation& info) {
+    return std::make_unique<
+        ShiftLogicalLeftOnlyInstructionNode<WordSize, OperationSize>>(info,
+                                                                      true);
+  });
+  _instructionMap.emplace("srlw", [](InstructionInformation& info) {
+    return std::make_unique<
+        ShiftLogicalRightOnlyInstructionNode<WordSize, OperationSize>>(info,
+                                                                       false);
+  });
+  _instructionMap.emplace("srliw", [](InstructionInformation& info) {
+    return std::make_unique<
+        ShiftLogicalRightOnlyInstructionNode<WordSize, OperationSize>>(info,
+                                                                       true);
+  });
+  _instructionMap.emplace("sraw", [](InstructionInformation& info) {
+    return std::make_unique<
+        ShiftArithmeticRightOnlyInstructionNode<WordSize, OperationSize>>(
+        info, false);
+  });
+  _instructionMap.emplace("sraiw", [](InstructionInformation& info) {
+    return std::make_unique<
+        ShiftArithmeticRightOnlyInstructionNode<WordSize, OperationSize>>(info,
+                                                                          true);
+  });
+}
+
 /**
  * Fills the InstructionMap with all instructions related to the "M"
  * Multiplication/Division Extension in the RISC-V architecture.
@@ -183,39 +233,43 @@ void initializeMultiplicationInstructions(
     InstructionNodeFactory::InstructionMap& _instructionMap) {
   _instructionMap.emplace("mul", [](InstructionInformation& info) {
     return std::make_unique<MultiplicationInstruction<Unsigned>>(
-        info, MultiplicationInstruction<Unsigned>::LOW,
+        info,
+        MultiplicationInstruction<Unsigned>::LOW,
         MultiplicationInstruction<Unsigned>::SIGNED);
   });
   _instructionMap.emplace("mulh", [](InstructionInformation& info) {
     return std::make_unique<MultiplicationInstruction<Unsigned>>(
-        info, MultiplicationInstruction<Unsigned>::HIGH,
+        info,
+        MultiplicationInstruction<Unsigned>::HIGH,
         MultiplicationInstruction<Unsigned>::SIGNED);
   });
   _instructionMap.emplace("mulhu", [](InstructionInformation& info) {
     return std::make_unique<MultiplicationInstruction<Unsigned>>(
-        info, MultiplicationInstruction<Unsigned>::HIGH,
+        info,
+        MultiplicationInstruction<Unsigned>::HIGH,
         MultiplicationInstruction<Unsigned>::UNSIGNED);
   });
   _instructionMap.emplace("mulhsu", [](InstructionInformation& info) {
     return std::make_unique<MultiplicationInstruction<Unsigned>>(
-        info, MultiplicationInstruction<Unsigned>::HIGH,
+        info,
+        MultiplicationInstruction<Unsigned>::HIGH,
         MultiplicationInstruction<Unsigned>::SIGNED_UNSIGNED);
   });
   _instructionMap.emplace("div", [](InstructionInformation& info) {
-    return std::make_unique<DivisionInstruction<Unsigned, Signed>>(info, true,
-                                                                   false);
+    return std::make_unique<DivisionInstruction<Unsigned, Signed>>(
+        info, true, false);
   });
   _instructionMap.emplace("divu", [](InstructionInformation& info) {
-    return std::make_unique<DivisionInstruction<Unsigned, Signed>>(info, false,
-                                                                   false);
+    return std::make_unique<DivisionInstruction<Unsigned, Signed>>(
+        info, false, false);
   });
   _instructionMap.emplace("rem", [](InstructionInformation& info) {
-    return std::make_unique<RemainderInstruction<Unsigned, Signed>>(info, true,
-                                                                    false);
+    return std::make_unique<RemainderInstruction<Unsigned, Signed>>(
+        info, true, false);
   });
   _instructionMap.emplace("remu", [](InstructionInformation& info) {
-    return std::make_unique<RemainderInstruction<Unsigned, Signed>>(info, false,
-                                                                    false);
+    return std::make_unique<RemainderInstruction<Unsigned, Signed>>(
+        info, false, false);
   });
 }
 
@@ -223,12 +277,16 @@ void initialize64BitMultiplicationWordInstructions(
     InstructionNodeFactory::InstructionMap& _instructionMap) {
   using Unsigned32 = InstructionNodeFactory::RV32_integral_t;
   using Unsigned64 = InstructionNodeFactory::RV64_integral_t;
-  using Signed64 = InstructionNodeFactory::RV64_signed_integral_t;
+  using Signed64   = InstructionNodeFactory::RV64_signed_integral_t;
 
   _instructionMap.emplace("mulw", [](InstructionInformation& info) {
     return std::make_unique<
         WordInstructionWrapper<MultiplicationInstruction<Unsigned32>>>(
-        true, info, false, info, MultiplicationInstruction<Unsigned32>::LOW,
+        true,
+        info,
+        false,
+        info,
+        MultiplicationInstruction<Unsigned32>::LOW,
         MultiplicationInstruction<Unsigned32>::SIGNED);
   });
   _instructionMap.emplace("divw", [](InstructionInformation& info) {
@@ -248,7 +306,8 @@ void initialize64BitMultiplicationWordInstructions(
         info, false, true);
   });
 }
-}
+
+}// Private namespace
 
 void InstructionNodeFactory::initializeInstructionMap(
     const Architecture& architecture) {
@@ -269,6 +328,7 @@ void InstructionNodeFactory::initializeInstructionMap(
     initializeLoadStoreInstructions<
         InstructionNodeFactory::RV64_signed_integral_t,
         InstructionNodeFactory::RV64_integral_t>(wordSize, _instructionMap);
+    initializeRV64OnlyInstructions(_instructionMap);
   } else {
     // The given architecture does not define a valid word_size to create
     // IntegerInstructions
@@ -294,7 +354,7 @@ void InstructionNodeFactory::initializeMExtensionIfPresent(
         initialize64BitMultiplicationWordInstructions(_instructionMap);
         break;
       default:
-        assert(false);  // invalid wordsize
+        assert(false);// invalid wordsize
     }
   }
 }
@@ -311,10 +371,10 @@ InstructionNodeFactory::createInstructionNode(const std::string& token) const {
     std::cout << "Instruction-Set does not have a instruction named " << token
               << std::endl;
     std::cout.flush();
-    return nullptr;  // return nullptr as the lowercase token could not be found
+    return nullptr;// return nullptr as the lowercase token could not be found
   }
 
-  auto it = _instructionMap.find(lower);  // lookup the token
+  auto it = _instructionMap.find(lower);// lookup the token
   assert(it != end(_instructionMap));
   auto info = _instrSet.getInstruction(lower);
   return it->second(info);
