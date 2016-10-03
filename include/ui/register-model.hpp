@@ -264,6 +264,14 @@ class RegisterModel : public QAbstractItemModel {
   QString computeDisplayFormatString(const QString &dataFormat,
                                      size_t size,
                                      size_t byteSize) const;
+
+  /**
+   * @brief getRowRelativeToParent Returns the row of a given register relative
+   * to its parent register.
+   * @param registerItem The register whose row is requested.
+   * @return The row of the given register relative to its parent register.
+   */
+  Optional<int> getRowRelativeToParent(RegisterInformation &registerItem) const;
 };
 
 #endif// REGISTERMODEL_H

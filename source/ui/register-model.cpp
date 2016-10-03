@@ -27,21 +27,21 @@ RegisterModel::RegisterModel(QObject *parent)
   eax->size(32);
   _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
       eax->getID(), std::unique_ptr<RegisterInformation>(eax)));
-  _rootItem->addConstituent(eax->getID());
+  _rootItem->addConstituent(ConstituentInformation(eax->getID(), 0));
   RegisterInformation *ax = new RegisterInformation("AX");
   ax->type(RegisterInformation::Type::INTEGER);
   ax->size(16);
   ax->enclosing(eax->getID());
   _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
       ax->getID(), std::unique_ptr<RegisterInformation>(ax)));
-  eax->addConstituent(ax->getID());
+  eax->addConstituent(ConstituentInformation(ax->getID(), 0));
   // Status-Register
   RegisterInformation *statusReg = new RegisterInformation("Statusregister");
   statusReg->type(RegisterInformation::Type::INTEGER);
   statusReg->size(8);
   _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
       statusReg->getID(), std::unique_ptr<RegisterInformation>(statusReg)));
-  _rootItem->addConstituent(statusReg->getID());
+  _rootItem->addConstituent(ConstituentInformation(statusReg->getID(), 0));
   // Status-Register, Flag 1
   RegisterInformation *flag1 = new RegisterInformation("Sign");
   flag1->type(RegisterInformation::Type::FLAG);
@@ -49,7 +49,7 @@ RegisterModel::RegisterModel(QObject *parent)
   flag1->enclosing(statusReg->getID());
   _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
       flag1->getID(), std::unique_ptr<RegisterInformation>(flag1)));
-  statusReg->addConstituent(flag1->getID());
+  statusReg->addConstituent(ConstituentInformation(flag1->getID(), 0));
   // Status-Register, Flag 2
   RegisterInformation *flag2 = new RegisterInformation("Zero");
   flag2->type(RegisterInformation::Type::FLAG);
@@ -57,7 +57,7 @@ RegisterModel::RegisterModel(QObject *parent)
   flag2->enclosing(statusReg->getID());
   _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
       flag2->getID(), std::unique_ptr<RegisterInformation>(flag2)));
-  statusReg->addConstituent(flag2->getID());
+  statusReg->addConstituent(ConstituentInformation(flag2->getID(), 1));
 }
 
 
@@ -129,7 +129,7 @@ RegisterModel::index(int row, int column, const QModelIndex &parent) const {
   }
   // Return the index for the parent's cell at the given row and column. If such
   // cell does not exist, return an invalid index.
-  id_t childItemIdentifier = parentItem->getConstituents().at(row);
+  id_t childItemIdentifier = parentItem->getConstituents().at(row).getID();
   auto it                  = _items.find(childItemIdentifier);
   if (it != _items.end()) {
     RegisterInformation *childItem = (it->second).get();
@@ -153,25 +153,11 @@ QModelIndex RegisterModel::parent(const QModelIndex &index) const {
     auto it                   = _items.find(parentItemIdentifier);
     if (it != _items.end()) {
       RegisterInformation *parentItem = (it->second).get();
-      // Determine the parentItem's row among the child items of its own parent.
-      RegisterInformation *parentParentItem;
-      if (parentItem->hasEnclosing()) {
-        parentParentItem =
-            (_items.find(parentItem->getEnclosing())->second).get();
-      } else {
-        parentParentItem = _rootItem.get();
-      }
-      auto it = std::find(parentParentItem->getConstituents().begin(),
-                          parentParentItem->getConstituents().end(),
-                          parentItemIdentifier);
-      if (it != parentParentItem->getConstituents().end()) {
-        int row =
-            std::distance(parentParentItem->getConstituents().begin(), it);
 
-        // Return the QModelIndex referencing the parent item. Note that any
-        // nesting
-        // is done inside the first column (column 0).
-        return createIndex(row, 0, parentItem);
+      // Determine the parentItem's row among the child items of its own parent.
+      auto row = getRowRelativeToParent(*parentItem);
+      if (row) {
+        return createIndex(*row, 0, parentItem);
       }
     }
   }
@@ -300,4 +286,34 @@ QString RegisterModel::computeDisplayFormatString(const QString &dataFormat,
     }
   }
   return formatString;
+}
+
+
+Optional<int>
+RegisterModel::getRowRelativeToParent(RegisterInformation &registerItem) const {
+  // Determine the parent register.
+  RegisterInformation *parentItem;
+  if (registerItem.hasEnclosing()) {
+    parentItem = (_items.find(registerItem.getEnclosing())->second).get();
+  } else {
+    parentItem = _rootItem.get();
+  }
+
+  // Determine the index of the registerItem inside the parent register's
+  // constituents.
+  auto it = parentItem->getConstituents().begin();
+  for (; it != parentItem->getConstituents().end(); ++it) {
+    if (it->getID() == registerItem.getID()) {
+      break;
+    }
+  }
+
+  // Return the index if it was found.
+  if (it != parentItem->getConstituents().end()) {
+    // Rows are specified by integery objects, therefore an integer value is
+    // returned.
+    return Optional<int>(
+        std::distance(parentItem->getConstituents().begin(), it));
+  }
+  return Optional<int>();
 }
