@@ -129,9 +129,9 @@ TEST(RV64OnlyInstructionsTest, Validation) {
   auto ri = {"addiw", "slliw", "srliw", "sraiw"};
   auto rr = {"addw", "subw", "sllw", "srlw", "sraw"};
 
-  std::string registerId       = "";// Not relevant
-  auto instrFactory     = setUpFactory({"rv32i", "rv64i"});
-  auto immediateFactory = ImmediateNodeFactory{};
+  std::string registerId = "";// Not relevant
+  auto instrFactory      = setUpFactory({"rv32i", "rv64i"});
+  auto immediateFactory  = ImmediateNodeFactory{};
 
   for (auto& name : ri) {
     // Check if register-immediate command does not allow register-register
@@ -221,11 +221,14 @@ TEST(RV64OnlyInstructionsTest, Sll) {
   std::string rr = "sllw";
 
   // Nothing special
-  testRV64OnlyInstructions(ri, rr, 1, 31, uint64_t{1} << 31);
+  testRV64OnlyInstructions(ri, rr, 1, 24, uint64_t{1} << 24);
   // Check if only lower 5 bits of shift amount are used
   // That means, that nothing will happen, if shift amount is
   // bigger than 31
   testRV64OnlyInstructions(ri, rr, 1, 32, 1);
+  // Check if sign extension works
+  testRV64OnlyInstructions(ri, rr, -1, 0, UINT64_MAX);
+  testRV64OnlyInstructions(ri, rr, 1, 31,0xFFFFFFFF80000000);
 }
 
 TEST(RV64OnlyInstructionsTest, Srl) {
@@ -238,6 +241,8 @@ TEST(RV64OnlyInstructionsTest, Srl) {
   // That means, that nothing will happen, if shift amount is
   // bigger than 31
   testRV64OnlyInstructions(ri, rr, 1, 32, 1);
+  // Check if sign extension works
+  testRV64OnlyInstructions(ri, rr, -1, 0, UINT64_MAX);
 }
 
 TEST(RV64OnlyInstructionsTest, Sra) {
@@ -250,6 +255,6 @@ TEST(RV64OnlyInstructionsTest, Sra) {
   // That means, that nothing will happen, if shift amount is
   // bigger than 31
   testRV64OnlyInstructions(ri, rr, 4, 32, 4);
-  // Check if arithmetic shift works
-  testRV64OnlyInstructions(ri, rr, -4, 2, UINT32_MAX);// max because thats -1
+  // Check if arithmetic shift/sign extension works
+  testRV64OnlyInstructions(ri, rr, -4, 2, UINT64_MAX);// max because thats -1
 }

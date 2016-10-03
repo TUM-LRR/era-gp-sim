@@ -67,8 +67,7 @@ class ShiftLogicalLeftOnlyInstructionNode
   : super(information,
           immediate,
           [this](OperationSize first, OperationSize second) -> WordSize {
-            return static_cast<WordSize>(first
-                                         << super::_getLower5Bits(second));
+            return super::_signExpand(first << super::_getLower5Bits(second));
           }) {
   }
 };
@@ -83,8 +82,7 @@ class ShiftLogicalRightOnlyInstructionNode
   : super(information,
           immediate,
           [this](OperationSize first, OperationSize second) -> WordSize {
-            return static_cast<WordSize>(first >>
-                                         super::_getLower5Bits(second));
+            return super::_signExpand(first >> super::_getLower5Bits(second));
           }) {
   }
 };
@@ -111,7 +109,7 @@ class ShiftArithmeticRightOnlyInstructionNode
               result |= ((one << shiftAmount) - 1) << (width - shiftAmount);
             }
 
-            return static_cast<WordSize>(result);
+            return super::_signExpand(result);
           }) {
   }
 };
