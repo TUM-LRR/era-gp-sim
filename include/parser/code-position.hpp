@@ -145,7 +145,7 @@ struct CodePosition {
    * \return The transformed code position.
    */
   CodePosition moveUp(CodeCoordinate c) const {
-    assert::that();
+    assert::that(y >= c);
     return CodePosition(y - c, x);
   }
 
@@ -155,6 +155,7 @@ struct CodePosition {
    * \return The transformed code position.
    */
   CodePosition moveLeft(CodeCoordinate c) const {
+    assert::that(x >= c);
     return CodePosition(y, x - c);
   }
 
