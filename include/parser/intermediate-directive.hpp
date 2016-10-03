@@ -39,6 +39,10 @@ class IntermediateDirective : public IntermediateOperation {
                         const std::string& name)
   : IntermediateOperation(lines, labels, name) {
   }
+
+protected:
+  virtual void determineMemoryPosition()
+  {}
 };
 
 #endif
