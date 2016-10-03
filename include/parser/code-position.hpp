@@ -20,6 +20,7 @@
 #define ERAGPSIM_PARSER_CODE_POSITION_HPP_
 
 #include "common/assert.hpp"
+#include <utility>
 
 /**
  * \brief The coordinate component type for denoting positions in code.
@@ -174,5 +175,7 @@ struct CodePosition {
     return CodePosition(y + 1, 0);
   }
 };
+
+using CodePositionInterval = std::pair<CodePosition, CodePosition>;
 
 #endif
