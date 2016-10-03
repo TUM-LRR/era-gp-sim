@@ -42,7 +42,7 @@ struct ArchDeserializationTestFixture : public ::testing::Test {
           .id(0)
           .name("r0")
           .size(32)
-          .addConstituents({1, 2})
+          .addConstituents({{1,1}, {2,2}})
           .addAlias("zero");
     r1 = RegisterInformation()
           .id(1)

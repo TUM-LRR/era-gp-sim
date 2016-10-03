@@ -77,7 +77,7 @@ ExtensionInformation& ExtensionInformation::name(const std::string& name) {
   return *this;
 }
 
-const std::string& ExtensionInformation::getName() const noexcept {
+const std::string& ExtensionInformation::getName() const {
   assert(hasName());
   return _name;
 }
@@ -91,8 +91,7 @@ ExtensionInformation& ExtensionInformation::endianness(Endianness endianness) {
   return *this;
 }
 
-ExtensionInformation::Endianness ExtensionInformation::getEndianness() const
-    noexcept {
+ExtensionInformation::Endianness ExtensionInformation::getEndianness() const {
   assert(hasEndianness());
   return *_endianness;
 }
@@ -108,7 +107,7 @@ ExtensionInformation::alignmentBehavior(AlignmentBehavior alignmentBehavior) {
 }
 
 ExtensionInformation::AlignmentBehavior
-ExtensionInformation::getAlignmentBehavior() const noexcept {
+ExtensionInformation::getAlignmentBehavior() const {
   assert(hasAlignmentBehavior());
   return *_alignmentBehavior;
 }
@@ -124,8 +123,7 @@ ExtensionInformation& ExtensionInformation::wordSize(size_t wordSize) {
 }
 
 
-ExtensionInformation::size_t ExtensionInformation::getWordSize() const
-    noexcept {
+ExtensionInformation::size_t ExtensionInformation::getWordSize() const {
   assert(hasWordSize());
   return _wordSize;
 }
@@ -216,7 +214,19 @@ ExtensionInformation::merge(const ExtensionInformation& other) {
   addInstructions(other.getInstructions());
   addUnits(other.getUnits());
 
+  _baseNames.emplace(other.getName());
+
   return *this;
+}
+
+bool ExtensionInformation::isBasedOn(const std::string& extension_name) const
+    noexcept {
+  return _baseNames.count(extension_name) > 0;
+}
+
+const ExtensionInformation::ExtensionNameCollection&
+ExtensionInformation::getBaseExtensionNames() const noexcept {
+  return _baseNames;
 }
 
 bool ExtensionInformation::isValid() const noexcept {

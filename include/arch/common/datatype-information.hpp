@@ -93,7 +93,7 @@ class DataTypeInformation : public InformationInterface {
    *
    * \return The name of the data type.
    */
-  const std::string& getName() const noexcept;
+  const std::string& getName() const;
 
   /**
    * Returns whether the data type has any name set.
@@ -114,7 +114,7 @@ class DataTypeInformation : public InformationInterface {
    *
    * \return The size of the data type.
    */
-  size_t getSize() const noexcept;
+  size_t getSize() const;
 
   /**
    * Returns whether the data type has any size set.
