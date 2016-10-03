@@ -19,6 +19,8 @@
 #ifndef ERAGPSIM_PARSER_CODE_POSITION_HPP_
 #define ERAGPSIM_PARSER_CODE_POSITION_HPP_
 
+#include "common/assert.hpp"
+
 /**
  * \brief The coordinate component type for denoting positions in code.
  */
@@ -102,6 +104,8 @@ struct CodePosition {
    * \return The difference between the first and the second code position.
    */
   friend CodePosition operator-(const CodePosition& a, const CodePosition& b) {
+    assert::that(a.x >= b.x);
+    assert::that(a.y >= b.y);
     return CodePosition(a.y - b.y, a.x - b.x);
   }
 
@@ -140,6 +144,7 @@ struct CodePosition {
    * \return The transformed code position.
    */
   CodePosition moveUp(CodeCoordinate c) const {
+    assert::that();
     return CodePosition(y - c, x);
   }
 
