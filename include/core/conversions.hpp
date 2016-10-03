@@ -142,7 +142,7 @@ convert(const T value, const toMemoryValueFunction& sgn, const std::size_t size)
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, MemoryValue>::type
 convert(T value, const Conversion con, std::size_t size) {
-  return convert(value, con.toMem, size);
+  return convert<T>(value, con.toMem, size);
 }
 
 bool unSignumA(const MemoryValue& memoryValue);

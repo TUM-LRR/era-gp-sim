@@ -123,7 +123,8 @@ MemoryValue signBitB(const MemoryValue& memoryValue, bool sign) {
 }
 
 MemoryValue onesComplementB(const MemoryValue& memoryValue, bool sign) {
-  if (sign) {// invert all bits
+  if (sign) {
+    // invert all bits
     assert::that(memoryValue.getSize() > 1);
     std::vector<std::uint8_t> raw{memoryValue.internal()};
     // cut last byte if necessary
@@ -148,7 +149,10 @@ MemoryValue twosComplementB(const MemoryValue& memoryValue, bool sign) {
     for (std::size_t i = 0; i < result.getSize(); ++i) {
       if (!result.flip(i)) return result;
     }
-    return result;
+    //overflow
+    MemoryValue inc{ result.getSize() + 1 };
+    inc.put(result.getSize(), true);
+    return inc;
   }
   else {
     return signBitB(memoryValue, sign);
@@ -175,8 +179,10 @@ MemoryValue onesComplementC(const std::vector<std::uint8_t>& value,
                             const bool sign) {
   std::vector<std::uint8_t> raw{value};
   // invert all bits
-  for (std::size_t i = 0; i < raw.size(); ++i) {
-    raw[i] ^= 0xFF;
+  if (sign) {
+    for (std::size_t i = 0; i < raw.size(); ++i) {
+      raw[i] ^= 0xFF;
+    }
   }
   MemoryValue result{std::move(raw), size};
   // set the sign bit
@@ -187,9 +193,10 @@ MemoryValue onesComplementC(const std::vector<std::uint8_t>& value,
 MemoryValue twosComplementC(const std::vector<std::uint8_t>& value, const std::size_t size, const bool sign) {
   // invert
   MemoryValue result{onesComplementC(value, size, sign)};
-  // add one
-  for (std::size_t i = 0; i < result.getSize() - 1; ++i) {
-    if (!result.flip(i)) return result;
+  if (sign) {// add one
+    for (std::size_t i = 0; i < result.getSize() - 1; ++i) {
+      if (!result.flip(i)) return result;
+    }
   }
   return result;
 }
