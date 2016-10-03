@@ -75,7 +75,8 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
                                     labels,
                                     line_regex.getInstruction(),
                                     sources,
-                                    targets});
+                                    targets},
+                                    _compile_state);
 
         labels.clear();
         targets.clear();

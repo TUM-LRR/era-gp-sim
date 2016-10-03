@@ -12,6 +12,8 @@ set(PARSER_SOURCES
   section-directive.cpp
   riscv-regex.cpp
   syntax-tree-generator.cpp
+  macro-directive.cpp
+  macro-end-directive.cpp
 )
 
 ########################################

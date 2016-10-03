@@ -43,6 +43,11 @@ using DummyMemoryAddress = unsigned int;
  */
 static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
 
+class IntermediateOperation;
+
+using IntermediateOperationPointer = std::unique_ptr<IntermediateOperation>;
+
+using OperationOutputFunction = std::function<void(IntermediateOperationPointer)>;
 
 /**
  * \brief Represents an abstract assembler operation in the parser-internal
@@ -81,6 +86,8 @@ class IntermediateOperation {
    * \param state The CompileState to log possible errors.
    */
   virtual void enhanceSymbolTable(SymbolTable& table, CompileState& state);
+
+  virtual bool targetOutput(OperationOutputFunction& target, const OperationOutputFunction& mainOutput, CompileState& state) const;
 
   /**
    * \brief Returns the memory address.

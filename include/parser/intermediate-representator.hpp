@@ -22,6 +22,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <functional>
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "parser/compile-state.hpp"
 #include "parser/final-representation.hpp"
@@ -45,8 +46,11 @@ class IntermediateRepresentator {
    * \tparam T The command type.
    */
   template <typename T>
-  void insertCommand(const T& command) {
-    _commandList.push_back(std::make_unique<T>(command));
+  void insertCommand(const T& command, CompileState& state) {
+    if (command.targetOutput(_currentOutput, _mainOutput, state))
+    {
+      _currentOutput(std::make_unique<T>(command));
+    }
   }
 
   /**
@@ -59,11 +63,22 @@ class IntermediateRepresentator {
   FinalRepresentation
   transform(const SyntaxTreeGenerator& generator, CompileState& state);
 
+  const OperationOutputFunction& mainOutput()
+  {
+    return _mainOutput;
+  }
+
  private:
   /**
    * \brief The internal command list.
    */
-  std::vector<std::unique_ptr<IntermediateOperation>> _commandList;
+  std::vector<IntermediateOperationPointer> _commandList;
+
+  const OperationOutputFunction _mainOutput = [this](IntermediateOperationPointer pointer) -> void {
+    this->_commandList.push_back(std::move(pointer));
+  };
+
+  OperationOutputFunction _currentOutput = _mainOutput;
 };
 
 #endif

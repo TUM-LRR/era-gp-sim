@@ -21,12 +21,13 @@
 #include "parser/intermediate-instruction.hpp"
 
 TEST(IntermediateRepresentator, insertSimple) {
+  CompileState state;
   IntermediateRepresentator ir;
   ir.insertCommand(IntermediateInstruction(LineInterval(0, 1),
                                            {"label1", "label2", "label3"},
                                            "mov",
                                            {"eax"},
-                                           {"eax"}));
+                                           {"eax"}), state);
 }
 
 TEST(IntermediateRepresentator, transformSimple) {
@@ -36,9 +37,9 @@ TEST(IntermediateRepresentator, transformSimple) {
                                            {"label1", "label2", "label3"},
                                            "mov",
                                            {"eax"},
-                                           {"eax"}));
+                                           {"eax"}), state);
   ir.insertCommand(IntermediateInstruction(
-      LineInterval(2, 5), {"label4"}, "add", {"eax"}, {"ebx"}));
+      LineInterval(2, 5), {"label4"}, "add", {"eax"}, {"ebx"}), state);
   // Test disabled for now.
   // FinalRepresentation fr = ir.transform(state);
   // ASSERT_EQ(fr.commandList.size(), 2);
