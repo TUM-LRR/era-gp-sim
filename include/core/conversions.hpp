@@ -52,7 +52,7 @@ enum class SignedRepresentation {
 
 using signFunction = std::function<bool(const MemoryValue&)>;
 using toMemoryValueFunction = std::function<MemoryValue(const std::vector<std::uint8_t>&, std::size_t, bool)>;
-using toIntegralFunction = std::function<MemoryValue(const MemoryValue&)>;
+using toIntegralFunction = std::function<MemoryValue(const MemoryValue&, bool)>;
 
 extern const signFunction unSignum0;
 extern const signFunction Signum0;
@@ -89,11 +89,16 @@ extern const Conversion twosComplement;
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, T>::type
 convertLE(const MemoryValue& memoryValue) {
-  T result = 0;
-  for (std::size_t i = memoryValue.internal().size(); i > 0; --i) {
+  std::vector<std::uint8_t> raw{ memoryValue.internal() };
+  //TODO::use fancy bitmask stuff and remove dependency on getByteAt
+  //const std::uint8_t mask{ 0xFF };
+  //T result = raw.back()&mask;
+  raw.pop_back();
+  T result = getByteAt(memoryValue,raw.size() * 8);
+  while (raw.size() > 0) {
     result <<= 8;
-    result |= getByteAt(memoryValue, (i - 1) * 8);
-    // result |= memoryValue.getByteAt((i-1) * 8);
+    result |= raw.back();
+    raw.pop_back();
   }
   return result;
 }
@@ -103,8 +108,9 @@ convertLE(const MemoryValue& memoryValue) {
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, T>::type
 convert(const MemoryValue& memoryValue, const signFunction &sgn, const toIntegralFunction &abs) {
-  T result = convertLE<T>(abs(memoryValue));
-  if (sgn(memoryValue) ^ (result < 0)) return 0 - result;
+  bool sign = sgn(memoryValue);
+  T result = convertLE<T>(abs(memoryValue, sign));
+  if (sign ^ (result < 0)) return 0 - result;
   return result;
 }
 
@@ -120,7 +126,7 @@ MemoryValue permute(const MemoryValue& memoryValue, const std::size_t byteSize, 
 
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, MemoryValue>::type
-convert(T value, const toMemoryValueFunction sgn, std::size_t size) {
+convert(const T value, const toMemoryValueFunction& sgn, const std::size_t size) {
   // T abs{ std::min(value) };
   T abs{value};
   if (abs < 0) abs = 0 - abs;
@@ -143,13 +149,13 @@ bool unSignumA(const MemoryValue& memoryValue);
 
 bool signumA(const MemoryValue& memoryValue);
 
-MemoryValue nonsignedB(const MemoryValue& memoryValue);
+MemoryValue nonsignedB(const MemoryValue& memoryValue, bool sign);
 
-MemoryValue signBitB(const MemoryValue& memoryValue);
+MemoryValue signBitB(const MemoryValue& memoryValue, bool sign);
 
-MemoryValue onesComplementB(const MemoryValue& memoryValue);
+MemoryValue onesComplementB(const MemoryValue& memoryValue, bool sign);
 
-MemoryValue twosComplementB(const MemoryValue& memoryValue);
+MemoryValue twosComplementB(const MemoryValue& memoryValue, bool sign);
 
 MemoryValue nonsignedC(const std::vector<std::uint8_t>& value, std::size_t size, bool sign);
 
