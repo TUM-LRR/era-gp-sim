@@ -4,7 +4,6 @@
 
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_BUILD_TYPE_INIT "Debug")
-set (CMAKE_PREFIX_PATH "/Users/yuriy/Qt/5.7/clang_64/lib/cmake")
 
 project(era-sim)
 
