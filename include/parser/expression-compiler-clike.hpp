@@ -48,13 +48,14 @@ simpleNumberParse(const std::string& inputString, size_t start, int base) {
 }
 
 /**
- * \brief A default expression compiler, oriented at the C language.
+ * \brief Creates a default expression compiler, oriented at the C language.
+ * \tparam IntType The given integer type.
+ * \return A C-like compiler for the given integer type.
  */
 template <typename IntType>
-ExpressionCompiler<IntType> CLikeCompiler = ExpressionCompiler<
-    IntType>(ExpressionCompilerDefinition<IntType>{
-    ExpressionParserDefinition<IntType>{
-        std::vector<ExpressionBinaryOperator<IntType>>{
+ExpressionCompiler<IntType> createCLikeCompiler()
+{
+    auto binaryOperators = std::vector<ExpressionBinaryOperator<IntType>>{
             ExpressionBinaryOperator<IntType>{
                 ExpressionOperatorAssociativity::LEFT,
                 "||",
@@ -252,8 +253,8 @@ ExpressionCompiler<IntType> CLikeCompiler = ExpressionCompiler<
                    CompileState& state) -> bool {
                   out = f % s;
                   return true;
-                }}},
-        std::vector<ExpressionUnaryOperator<IntType>>{
+                }}};
+    auto unaryOperators = std::vector<ExpressionUnaryOperator<IntType>>{
             ExpressionUnaryOperator<IntType>{"+",
                                              [](const IntType& v,
                                                 IntType& out,
@@ -289,8 +290,8 @@ ExpressionCompiler<IntType> CLikeCompiler = ExpressionCompiler<
                                                 CompileState& state) -> bool {
                                                out = ~v;
                                                return true;
-                                             }}},
-        std::vector<ExpressionLiteralDecoder<IntType>>{
+                                             }}};
+                auto literalDecoders = std::vector<ExpressionLiteralDecoder<IntType>>{
             ExpressionLiteralDecoder<IntType>{"0x[0-9a-fA-F]+",
                                               [](const std::string& number,
                                                  IntType& output,
@@ -318,7 +319,7 @@ ExpressionCompiler<IntType> CLikeCompiler = ExpressionCompiler<
                                                         number, 0, 10);
                                                 return true;
                                               }},
-            ExpressionLiteralDecoder<IntType>{
+                                              ExpressionLiteralDecoder<IntType>{
                 "'.*?'",
                 [](const std::string& number,
                    IntType& output,
@@ -330,9 +331,21 @@ ExpressionCompiler<IntType> CLikeCompiler = ExpressionCompiler<
                   }
                   output = (IntType)intermediate[0];
                   return true;
-                }},
-        }},
-    ExpressionHelpRegexes{"\\(", "\\)"}});
+                }}};
+                auto parserDefinition = ExpressionParserDefinition<IntType>
+                {
+                    binaryOperators,
+                    unaryOperators,
+                    literalDecoders
+                };
+                auto helpRegexes = ExpressionHelpRegexes{"\\(", "\\)"};
+                auto compilerDefinition = ExpressionCompilerDefinition<IntType>
+                {
+                    parserDefinition,
+                    helpRegexes
+                };
+                return compilerDefinition;
+}
 
 /**
  * \brief A default compiler for 8-bit wide signed integers.

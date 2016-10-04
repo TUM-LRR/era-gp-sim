@@ -20,25 +20,25 @@
 #include "parser/expression-compiler-clike.hpp"
 
 ExpressionCompiler<int8_t> CLikeExpressionCompilers::CLikeCompilerI8 =
-    CLikeCompiler<int8_t>;
+    createCLikeCompiler<int8_t>();
 
 ExpressionCompiler<uint8_t> CLikeExpressionCompilers::CLikeCompilerU8 =
-    CLikeCompiler<uint8_t>;
+    createCLikeCompiler<uint8_t>();
 
 ExpressionCompiler<int16_t> CLikeExpressionCompilers::CLikeCompilerI16 =
-    CLikeCompiler<int16_t>;
+    createCLikeCompiler<int16_t>();
 
 ExpressionCompiler<uint16_t> CLikeExpressionCompilers::CLikeCompilerU16 =
-    CLikeCompiler<uint16_t>;
+    createCLikeCompiler<uint16_t>();
 
 ExpressionCompiler<int32_t> CLikeExpressionCompilers::CLikeCompilerI32 =
-    CLikeCompiler<int32_t>;
+    createCLikeCompiler<int32_t>();
 
 ExpressionCompiler<uint32_t> CLikeExpressionCompilers::CLikeCompilerU32 =
-    CLikeCompiler<uint32_t>;
+    createCLikeCompiler<uint32_t>();
 
 ExpressionCompiler<int64_t> CLikeExpressionCompilers::CLikeCompilerI64 =
-    CLikeCompiler<int64_t>;
+    createCLikeCompiler<int64_t>();
 
 ExpressionCompiler<uint64_t> CLikeExpressionCompilers::CLikeCompilerU64 =
-    CLikeCompiler<uint64_t>;
+    createCLikeCompiler<uint64_t>();
