@@ -48,7 +48,7 @@
 #pragma clang diagnostic ignored "-Wshift-op-parentheses"
 #elif defined(_MSC_VER)
 #pragma warning(push)
-#pragma warning(disable:4554)
+#pragma warning(disable : 4554)
 #endif
 
 TEST(ExpressionCompilerClike, simple) {

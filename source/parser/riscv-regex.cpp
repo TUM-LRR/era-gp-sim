@@ -21,22 +21,23 @@
 #include "common/assert.hpp"
 
 static const std::regex LINE_REGEX(
-      "\\s*"
-      "(?:(\\w+)\\s*\\:)?"// Label group
-      "\\s*"
-      "(([[:alpha:]]+)"// Instruction group
-      "\\s*"
-      "(\\w+)"// Parameter group
-      "\\s*,\\s*"
-      "(\\w+)"// Parameter group
-      "(?:\\s*,\\s*"
-      "(\\w+))?)?"// Parameter group
-      "\\s*"
-      "(?:;.*)?"// Comment group
-      , std::regex_constants::optimize);
+    "\\s*"
+    "(?:(\\w+)\\s*\\:)?"// Label group
+    "\\s*"
+    "(([[:alpha:]]+)"// Instruction group
+    "\\s*"
+    "(\\w+)"// Parameter group
+    "\\s*,\\s*"
+    "(\\w+)"// Parameter group
+    "(?:\\s*,\\s*"
+    "(\\w+))?)?"// Parameter group
+    "\\s*"
+    "(?:;.*)?"// Comment group
+    ,
+    std::regex_constants::optimize);
 
-RiscvParser::RiscvRegex::RiscvRegex()
-{}
+RiscvParser::RiscvRegex::RiscvRegex() {
+}
 
 void RiscvParser::RiscvRegex::matchLine(const std::string &line) {
   std::regex_match(line, _matches, LINE_REGEX);

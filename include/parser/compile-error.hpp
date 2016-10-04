@@ -49,7 +49,8 @@ enum class CompileErrorSeverity {
 class CompileError {
  public:
   /**
-   * \brief Instantiates a new compile error with the given arguments. Marks only a positional error.
+   * \brief Instantiates a new compile error with the given arguments. Marks
+   * only a positional error.
    * \param message The error message.
    * \param position The position of the error in the code.
    * \param severity The severity of the error.
@@ -71,7 +72,8 @@ class CompileError {
                const CodePosition& startPosition,
                const CodePosition& endPosition,
                CompileErrorSeverity severity)
-  : CompileError(message, CodePositionInterval(startPosition, endPosition), severity) {
+  : CompileError(
+        message, CodePositionInterval(startPosition, endPosition), severity) {
   }
 
   /**

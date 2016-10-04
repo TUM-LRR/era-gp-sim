@@ -267,7 +267,7 @@ ExpressionCompiler<IntType> CLikeCompiler = ExpressionCompiler<
                                                 CompileState& state) -> bool {
 #if defined(_MSC_VER)
 #pragma warning(push)
-#pragma warning(disable:4146)
+#pragma warning(disable : 4146)
 #endif
                                                out = -v;
 #if defined(_MSC_VER)
