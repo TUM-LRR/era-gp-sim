@@ -4,10 +4,10 @@
             "registers": [
                 {
                     "size": 64,
-                    "alias": "pc",
                     "id": 13,
                     "type": "program-counter",
-                    "name": "f0"
+                    "name": "f0",
+                    "alias": "pc"
                 }
             ],
             "name": "fpu"
@@ -16,15 +16,15 @@
             "registers": [
                 {
                     "size": 64,
-                    "alias": "pc",
                     "id": 13,
                     "type": "program-counter",
-                    "name": "r5"
+                    "name": "r5",
+                    "alias": "pc"
                 }
             ],
             "name": "cpu"
         }
     ],
-    "name": "base3",
-    "extends": "with-deps-complex"
+    "extends": "with-deps-complex",
+    "name": "base3"
 }

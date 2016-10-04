@@ -12,7 +12,11 @@ set(PARSER_SOURCES
   section-directive.cpp
   riscv-regex.cpp
   syntax-tree-generator.cpp
+<<<<<<< HEAD
   expression-compiler-clike.cpp
+=======
+  parser-factory.cpp
+>>>>>>> master
 )
 
 ########################################

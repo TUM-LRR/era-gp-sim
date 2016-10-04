@@ -174,6 +174,16 @@ void doIfThere(Container& container, const Key& key, Action action) {
   }
 }
 
+template <typename Range, typename T>
+bool contains(const Range& range, T&& element) {
+  using std::begin;
+  using std::end;
+
+  auto iterator = std::find(begin(range), end(range), std::forward<T>(element));
+
+  return iterator != end(range);
+}
+
 std::string rootPath();
 std::string joinPaths(const std::string& single);
 
