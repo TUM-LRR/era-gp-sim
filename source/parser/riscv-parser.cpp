@@ -18,11 +18,11 @@
 
 #include "parser/riscv-parser.hpp"
 
-#include <cassert>
 #include <iostream>
 #include <regex>
 #include <sstream>
 #include "arch/common/node-factory-collection-maker.hpp"
+#include "common/assert.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/intermediate-representator.hpp"
 #include "parser/riscv-regex.hpp"
@@ -46,14 +46,11 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
   std::vector<std::string> labels, sources, targets;
 
   for (std::string line; std::getline(stream, line);) {
-    _compile_state.position.first++;
+    _compile_state.position = _compile_state.position.newLine();
     line_regex.matchLine(line);
     if (!line_regex.isValid()) {
       // Add syntax error if line regex doesnt match
-      _compile_state.errorList.push_back(
-          CompileError{"Syntax Error",
-                       _compile_state.position,
-                       CompileErrorSeverity::ERROR});
+      _compile_state.addError("Syntax Error", _compile_state.position);
     } else {
       // Collect labels until next instruction
       if (line_regex.hasLabel()) {
@@ -69,14 +66,13 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
             sources.push_back(line_regex.getParameter(i));
         }
 
-        intermediate.insertCommand(
-            IntermediateInstruction{LineInterval{_compile_state.position.first,
-                                                 _compile_state.position.first},
-                                    labels,
-                                    line_regex.getInstruction(),
-                                    sources,
-                                    targets},
-                                    _compile_state);
+        intermediate.insertCommand(IntermediateInstruction{
+            LineInterval(_compile_state.position.line()),
+            labels,
+            line_regex.getInstruction(),
+            sources,
+            targets},
+            _compile_state);
 
         labels.clear();
         targets.clear();

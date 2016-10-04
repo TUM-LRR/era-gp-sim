@@ -14,6 +14,8 @@ set(PARSER_SOURCES
   syntax-tree-generator.cpp
   macro-directive.cpp
   macro-end-directive.cpp
+  expression-compiler-clike.cpp
+  parser-factory.cpp
 )
 
 ########################################

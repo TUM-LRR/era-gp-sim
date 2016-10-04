@@ -26,7 +26,7 @@
 #include <unordered_map>
 #include <vector>
 #include "common/utility.hpp"
-#include "compile-state.hpp"
+#include "parser/compile-state.hpp"
 
 /**
  * \brief Provides help methods for parsing strings.
@@ -124,16 +124,10 @@ class StringParserEngine {
 
  private:
   // This method notes down an error in the given compile state.
-  static void
-  invokeError(const std::string& message,
-              size_t position,
-              CompileState& state,
-              CompileErrorSeverity severity = CompileErrorSeverity::ERROR) {
-    auto newPosition = state.position;
-
-    // Relative position.
-    newPosition.second += position;
-    state.errorList.push_back(CompileError(message, newPosition, severity));
+  static void invokeError(const std::string& message,
+                          size_t position,
+                          CompileState& state) {
+    state.addError(message, state.position >> position);
   }
 
   // Returns true, if there is still data after the current index in the string
@@ -394,7 +388,7 @@ class StringParserEngine {
       // clang-format off
       case 'a': match  = '\a'; break;
       case 'b': match  = '\b'; break;
-      case 'e': match  = '\e'; break;
+      case 'e': match  = '\x1b'; break;
       case 'f': match  = '\f'; break;
       case 'n': match  = '\n'; break;
       case 'r': match  = '\r'; break;
