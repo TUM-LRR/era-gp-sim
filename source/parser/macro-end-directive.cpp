@@ -28,7 +28,10 @@ void MacroEndDirective::execute(FinalRepresentation& finalRepresentator,
 
 bool MacroEndDirective::targetOutput(OperationOutputFunction& target, const OperationOutputFunction& mainOutput, CompileState& state) const
 {
-    //TODO throw compile error
+    if (target == mainOutput)
+    {
+        state.addError("Macro end without a beginning.");
+    }
     target = mainOutput;
     return false;
 }
