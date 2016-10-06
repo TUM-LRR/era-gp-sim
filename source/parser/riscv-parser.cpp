@@ -119,6 +119,10 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
       R"(\b[\+\-0-9\(!~][0-9a-fA-Fx\+\-%\*\/\(\)\|\^&=!<>~\t ]*)",
       SyntaxInformation::Token::Immediate);
 
+  // Matches string literals
+  info.addSyntaxRegex(R"(".*")", SyntaxInformation::Token::Immediate);
+  info.addSyntaxRegex(R"('.*')", SyntaxInformation::Token::Immediate);
+
   // Add register regexes
   for (UnitInformation unit : _architecture.getUnits()) {
     for (auto reg : unit)
