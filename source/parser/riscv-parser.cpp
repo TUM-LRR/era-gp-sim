@@ -26,6 +26,7 @@
 #include "arch/common/unit-information.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/intermediate-representator.hpp"
+#include "parser/riscv-directive-factory.hpp"
 #include "parser/riscv-regex.hpp"
 #include "parser/syntax-information.hpp"
 
@@ -61,20 +62,31 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
       }
 
       if (line_regex.hasInstruction()) {
+        bool is_directive = line_regex.isDirective();
         // Collect source and target parameters
         for (int i = 0; i < line_regex.getParameterCount(); i++) {
-          if (i == 0)
+          if (i == 0 && !is_directive)
             targets.push_back(line_regex.getParameter(i));
           else
             sources.push_back(line_regex.getParameter(i));
         }
 
-        intermediate.insertCommand(IntermediateInstruction{
-            LineInterval(_compile_state.position.line()),
-            labels,
-            line_regex.getInstruction(),
-            sources,
-            targets});
+        if (is_directive) {
+          RiscVDirectiveFactory::create(
+              LineInterval{_compile_state.position.line()},
+              labels,
+              line_regex.getInstruction(),
+              sources,
+              intermediate,
+              _compile_state);
+        } else {
+          intermediate.insertCommand(IntermediateInstruction{
+              LineInterval{_compile_state.position.line()},
+              labels,
+              line_regex.getInstruction(),
+              sources,
+              targets});
+        }
 
         labels.clear();
         targets.clear();

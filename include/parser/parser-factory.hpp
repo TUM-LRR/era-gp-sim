@@ -30,7 +30,7 @@ class Architecture;
 using ParserPtr = std::unique_ptr<Parser>;
 
 /**
- * Provides methods for the instantiation of differernt Parser classes.
+ * Provides methods for the instantiation of different Parser classes.
  */
 namespace ParserFactory {
 

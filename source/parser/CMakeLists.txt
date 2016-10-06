@@ -15,6 +15,7 @@ set(PARSER_SOURCES
   syntax-tree-generator.cpp
   expression-compiler-clike.cpp
   parser-factory.cpp
+  riscv-directive-factory.cpp
 )
 
 ########################################

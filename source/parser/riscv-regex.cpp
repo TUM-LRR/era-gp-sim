@@ -20,17 +20,18 @@
 
 #include "common/assert.hpp"
 
+
 static const std::regex LINE_REGEX(
     "\\s*"
     "(?:(\\w+)\\s*\\:)?"// Label group
     "\\s*"
-    "(([[:alpha:]]+)"// Instruction group
-    "\\s*"
-    "(\\w+)"// Parameter group
-    "\\s*,\\s*"
+    "(([\\.\\w]+)"// Instruction group
+    "\\s+"
     "(\\w+)"// Parameter group
     "(?:\\s*,\\s*"
-    "(\\w+))?)?"// Parameter group
+    "(\\w+)"// Parameter group
+    "(?:\\s*,\\s*"
+    "(\\w+))?)?)?"// Parameter group
     "\\s*"
     "(?:;.*)?"// Comment group
     ,
@@ -55,12 +56,22 @@ bool RiscvParser::RiscvRegex::hasInstruction() {
   return _matches[2].matched;
 }
 
+bool RiscvParser::RiscvRegex::isDirective() {
+  return hasInstruction() && _matches[3].str()[0] == '.';
+}
+
 std::string RiscvParser::RiscvRegex::getLabel() {
   return _matches[1].str();
 }
 
 std::string RiscvParser::RiscvRegex::getInstruction() {
-  return _matches[3].str();
+  std::string instruction = _matches[3].str();
+
+  if (instruction[0] == '.') {
+    instruction = std::string{instruction, 1};
+  }
+
+  return instruction;
 }
 
 std::string RiscvParser::RiscvRegex::getParameter(int n) {
@@ -70,5 +81,7 @@ std::string RiscvParser::RiscvRegex::getParameter(int n) {
 }
 
 int RiscvParser::RiscvRegex::getParameterCount() {
-  return _matches[6].matched ? 3 : 2;
+  if (_matches[6].matched) return 3;
+  if (_matches[5].matched) return 2;
+  return 1;
 }

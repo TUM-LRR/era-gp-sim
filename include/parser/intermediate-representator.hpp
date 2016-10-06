@@ -50,6 +50,14 @@ class IntermediateRepresentator {
   }
 
   /**
+   * \brief Inserts the given command into the command list.
+   * \param command The given command.
+   */
+  void insertCommandPtr(std::unique_ptr<IntermediateOperation>&& command) {
+    _commandList.push_back(std::move(command));
+  }
+
+  /**
    * \brief Transforms the commands to a syntax tree list.
    * \param generator A syntax tree generator to transform the instructions into
    * a readable format for the architecture module.

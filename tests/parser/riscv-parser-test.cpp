@@ -74,6 +74,20 @@ TEST_F(RiscParserTest, SingleInstruction) {
   EXPECT_EQ(res.commandList.size(), 1);
 }
 
+TEST_F(RiscParserTest, SingleDirective) {
+  FinalRepresentation res;
+  res = parser.parse(".section data", ParserMode::COMPILE);
+  EXPECT_EQ(res.errorList.size(), 0);
+  EXPECT_EQ(res.commandList.size(), 0);
+}
+
+TEST_F(RiscParserTest, SingleBadDirective) {
+  FinalRepresentation res;
+  res = parser.parse(".idontexist lala, la", ParserMode::COMPILE);
+  EXPECT_EQ(res.errorList.size(), 1);
+  EXPECT_EQ(res.commandList.size(), 0);
+}
+
 TEST_F(RiscParserTest, MultipleInstructions) {
   FinalRepresentation res;
   res = parser.parse(
@@ -90,7 +104,7 @@ TEST_F(RiscParserTest, MultipleInstructions) {
 
 TEST_F(RiscParserTest, MalformedInstructions) {
   FinalRepresentation res;
-  res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7\nble x15 ",
+  res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7\nble  ",
                      ParserMode::COMPILE);
   EXPECT_EQ(res.errorList.size(), 3);
   EXPECT_EQ(res.commandList.size(), 0);
@@ -109,7 +123,7 @@ TEST_F(RiscParserTest, MixedErrors) {
       "ADD x13, x4, 7 ;kommentar\n"
       " label  : SUB x5, x5, 1\n"
       ";kommentar\n"
-      "sub x2 ;oops missing argument\n"
+      "sub  ;oops missing argument\n"
       "dfklgdjflj\n"
       "addition123:\n"
       "\n"
