@@ -24,14 +24,12 @@
 
 class MacroDirective : public IntermediateDirective {
 public:
-    using Super = IntermediateDirective;
-
     MacroDirective(const LineInterval& lines,
                    const std::vector<std::string>& labels,
                    const std::string& name,
                    const std::string& macroName,
                    const std::vector<std::string>& macroParameters)
-        : Super(lines, labels, macroName), _macroName(macroName), _macroParameters(macroParameters)
+        : IntermediateDirective(lines, labels, macroName), _macroName(macroName), _macroParameters(macroParameters)
     {
 
     }
@@ -45,6 +43,16 @@ public:
     const std::string& macroName()
     {
         return _macroName;
+    }
+
+    const std::vector<std::string>& macroParameters()
+    {
+        return _macroParameters;
+    }
+
+    const std::vector<IntermediateOperationPointer>& operations()
+    {
+        return _operations;
     }
 
 private:

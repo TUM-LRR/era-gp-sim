@@ -23,7 +23,7 @@ void MacroEndDirective::execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
                        CompileState& state)
 {
-    //probably nothing here
+    // Probably nothing here.
 }
 
 bool MacroEndDirective::targetOutput(OperationOutputFunction& target, const OperationOutputFunction& mainOutput, CompileState& state) const
