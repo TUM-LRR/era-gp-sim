@@ -21,17 +21,18 @@
 
 void MacroDirective::execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
+                       const SyntaxTreeGenerator& generator,
                        CompileState& state)
 {
     //TODO #79
 }
 
-bool MacroDirective::targetOutput(OperationOutputFunction& target, const OperationOutputFunction& mainOutput, CompileState& state) const
+bool MacroDirective::targetOutput(OperationOutput& target, const OperationOutput& mainOutput, CompileState& state) const
 {
     if (target != mainOutput)
     {
         state.addError("Nested macro definition is not supported.");
     }
-    target = _ownOutputFunction;
-    return false;
+    target = _ownOutput;
+    return true;
 }

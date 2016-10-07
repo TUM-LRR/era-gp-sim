@@ -38,18 +38,23 @@ class IntermediateRepresentator {
   /**
    * \brief Instantiates an IntermediateRepresentator with the default values.
    */
-  IntermediateRepresentator() = default;
+  IntermediateRepresentator()
+  : _commandList(), _mainOutput(_commandList), _currentOutput(_mainOutput)
+  {
+
+  }
 
   /**
    * \brief Inserts the given command into the command list.
    * \param command The given command.
+   * \param state The compile state to save any possible errors.
    * \tparam T The command type.
    */
   template <typename T>
-  void insertCommand(const T& command, CompileState& state) {
+  void insertCommand(T&& command, CompileState& state) {
     if (command.targetOutput(_currentOutput, _mainOutput, state))
     {
-      _currentOutput(std::make_unique<T>(command));
+      _currentOutput(std::make_unique<T>(std::move(command)));
     }
   }
 
@@ -63,22 +68,21 @@ class IntermediateRepresentator {
   FinalRepresentation
   transform(const SyntaxTreeGenerator& generator, CompileState& state);
 
-  const OperationOutputFunction& mainOutput()
-  {
-    return _mainOutput;
-  }
-
  private:
   /**
    * \brief The internal command list.
    */
   std::vector<IntermediateOperationPointer> _commandList;
 
-  const OperationOutputFunction _mainOutput = [this](IntermediateOperationPointer pointer) -> void {
-    this->_commandList.push_back(std::move(pointer));
-  };
+  /**
+   * \brief The main output structure for operations.
+   */
+  const OperationOutput _mainOutput;
 
-  OperationOutputFunction _currentOutput = _mainOutput;
+  /**
+   * \brief The current output structure for possible macros.
+   */
+  OperationOutput _currentOutput;
 };
 
 #endif

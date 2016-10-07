@@ -32,7 +32,7 @@ void IntermediateOperation::enhanceSymbolTable(SymbolTable& table,
   }
 }
 
-bool IntermediateOperation::targetOutput(OperationOutputFunction& target, const OperationOutputFunction& mainOutput, CompileState& state) const
+bool IntermediateOperation::targetOutput(OperationOutput& target, const OperationOutput& mainOutput, CompileState& state) const
 {
   return true;
 }

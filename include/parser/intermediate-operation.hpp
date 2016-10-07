@@ -44,6 +44,36 @@ using IntermediateOperationPointer = std::unique_ptr<IntermediateOperation>;
 
 using OperationOutputFunction = std::function<void(IntermediateOperationPointer)>;
 
+class OperationOutput {
+public:
+  OperationOutput(std::vector<IntermediateOperationPointer>& vector)
+  {
+    _function = [&vector] (IntermediateOperationPointer pointer) -> void {
+      vector.push_back(std::move(pointer));
+    };
+    _vectorPointer = &vector;
+  }
+
+  friend operator == (const OperationOutput& first, const OperationOutput& second)
+  {
+    return first._vectorPointer == second._vectorPointer;
+  }
+
+  friend operator != (const OperationOutput& first, const OperationOutput& second)
+  {
+    return !(first == second);
+  }
+
+  operator () (IntermediateOperationPointer pointer)
+  {
+    _function(std::move(pointer));
+  }
+
+private:
+  OperationOutputFunction _function;
+  std::vector<IntermediateOperationPointer>* _vectorPointer;
+};
+
 /**
  * \brief Represents an abstract assembler operation in the parser-internal
  * intermediate form.
@@ -82,7 +112,7 @@ class IntermediateOperation {
    */
   virtual void enhanceSymbolTable(SymbolTable& table, CompileState& state);
 
-  virtual bool targetOutput(OperationOutputFunction& target, const OperationOutputFunction& mainOutput, CompileState& state) const;
+  virtual bool targetOutput(OperationOutput& target, const OperationOutput& mainOutput, CompileState& state) const;
 
   /**
    * \brief Returns the memory address.

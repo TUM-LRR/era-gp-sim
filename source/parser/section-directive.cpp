@@ -20,8 +20,9 @@
 #include "parser/section-directive.hpp"
 
 void SectionDirective::execute(FinalRepresentation& finalRepresentator,
-                               const SymbolTable& table,
-                               CompileState& state) {
+                       const SymbolTable& table,
+                       const SyntaxTreeGenerator& generator,
+                       CompileState& state) {
   // Just set the section state to the current section. That's it.
   state.section = _section;
 }

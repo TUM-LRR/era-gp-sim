@@ -29,16 +29,17 @@ public:
                    const std::string& name,
                    const std::string& macroName,
                    const std::vector<std::string>& macroParameters)
-        : IntermediateDirective(lines, labels, macroName), _macroName(macroName), _macroParameters(macroParameters)
+        : IntermediateDirective(lines, labels, name), _macroName(macroName), _macroParameters(macroParameters), _operations(), _ownOutput(_operations)
     {
 
     }
 
     virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
+                       const SyntaxTreeGenerator& generator,
                        CompileState& state);
 
-    virtual bool targetOutput(OperationOutputFunction& target, const OperationOutputFunction& mainOutput, CompileState& state) const;
+    virtual bool targetOutput(OperationOutput& target, const OperationOutput& mainOutput, CompileState& state) const;
 
     const std::string& macroName()
     {
@@ -59,9 +60,7 @@ private:
     std::string _macroName;
     std::vector<std::string> _macroParameters;
     std::vector<IntermediateOperationPointer> _operations;
-    const OperationOutputFunction _ownOutputFunction = [this](IntermediateOperationPointer pointer) -> void {
-        this->_operations.push_back(std::move(pointer));
-    };
+    const OperationOutput _ownOutput;
 };
 
 #endif /* ERAGPSIM_PARSER_MACRO_DIRECTIVE_HPP */

@@ -38,9 +38,10 @@ public:
 
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
+                       const SyntaxTreeGenerator& generator,
                        CompileState& state);
 
-  virtual bool targetOutput(OperationOutputFunction& target, const OperationOutputFunction& mainOutput, CompileState& state) const;
+  virtual bool targetOutput(OperationOutput& target, const OperationOutput& mainOutput, CompileState& state) const;
 };
 
 #endif /* ERAGPSIM_PARSER_MACRO_END_DIRECTIVE_HPP */

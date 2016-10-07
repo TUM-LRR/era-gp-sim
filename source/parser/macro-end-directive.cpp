@@ -21,12 +21,13 @@
 
 void MacroEndDirective::execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
+                       const SyntaxTreeGenerator& generator,
                        CompileState& state)
 {
     // Probably nothing here.
 }
 
-bool MacroEndDirective::targetOutput(OperationOutputFunction& target, const OperationOutputFunction& mainOutput, CompileState& state) const
+bool MacroEndDirective::targetOutput(OperationOutput& target, const OperationOutput& mainOutput, CompileState& state) const
 {
     if (target == mainOutput)
     {
