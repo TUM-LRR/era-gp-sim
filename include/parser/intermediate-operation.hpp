@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include "common/assert.hpp"
 #include "parser/final-representation.hpp"
 #include "parser/line-interval.hpp"
 #include "parser/symbol-table.hpp"
@@ -38,41 +39,16 @@ using DummyMemoryAddress = unsigned int;
  */
 static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
 
+enum class TargetSelector
+{
+  KEEP,
+  MAIN,
+  THIS
+};
+
 class IntermediateOperation;
 
 using IntermediateOperationPointer = std::unique_ptr<IntermediateOperation>;
-
-using OperationOutputFunction = std::function<void(IntermediateOperationPointer)>;
-
-class OperationOutput {
-public:
-  OperationOutput(std::vector<IntermediateOperationPointer>& vector)
-  {
-    _function = [&vector] (IntermediateOperationPointer pointer) -> void {
-      vector.push_back(std::move(pointer));
-    };
-    _vectorPointer = &vector;
-  }
-
-  friend operator == (const OperationOutput& first, const OperationOutput& second)
-  {
-    return first._vectorPointer == second._vectorPointer;
-  }
-
-  friend operator != (const OperationOutput& first, const OperationOutput& second)
-  {
-    return !(first == second);
-  }
-
-  operator () (IntermediateOperationPointer pointer)
-  {
-    _function(std::move(pointer));
-  }
-
-private:
-  OperationOutputFunction _function;
-  std::vector<IntermediateOperationPointer>* _vectorPointer;
-};
 
 /**
  * \brief Represents an abstract assembler operation in the parser-internal
@@ -112,7 +88,15 @@ class IntermediateOperation {
    */
   virtual void enhanceSymbolTable(SymbolTable& table, CompileState& state);
 
-  virtual bool targetOutput(OperationOutput& target, const OperationOutput& mainOutput, CompileState& state) const;
+  virtual bool shouldInsert() const{
+    return true;
+  }
+  virtual TargetSelector newTarget() const{
+    return TargetSelector::KEEP;
+  }
+  virtual void insert(IntermediateOperationPointer pointer){
+    assert::that(false);
+  }
 
   /**
    * \brief Returns the memory address.

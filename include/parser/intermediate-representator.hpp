@@ -39,7 +39,7 @@ class IntermediateRepresentator {
    * \brief Instantiates an IntermediateRepresentator with the default values.
    */
   IntermediateRepresentator()
-  : _commandList(), _mainOutput(_commandList), _currentOutput(_mainOutput)
+  : _commandList(), _currentOutput(nullptr)
   {
 
   }
@@ -52,9 +52,26 @@ class IntermediateRepresentator {
    */
   template <typename T>
   void insertCommand(T&& command, CompileState& state) {
-    if (command.targetOutput(_currentOutput, _mainOutput, state))
+    IntermediateOperationPointer pointer = std::make_unique<T>(std::move(command));
+    if (command.newTarget() == TargetSelector::THIS)
     {
-      _currentOutput(std::make_unique<T>(std::move(command)));
+      if (_currentOutput)
+      {
+        state.addError("Error, macro not finished before another should begin.");
+      }
+      _currentOutput = std::move(pointer);
+    }
+    else
+    {
+      if (command.newTarget() == TargetSelector::MAIN)
+      {
+        if (!_currentOutput)
+        {
+          state.addError("Macro end without beginning.");
+        }
+        internalInsertCommand(std::move(_currentOutput));
+      }
+      internalInsertCommand(std::move(pointer));
     }
   }
 
@@ -69,20 +86,27 @@ class IntermediateRepresentator {
   transform(const SyntaxTreeGenerator& generator, CompileState& state);
 
  private:
+  void internalInsertCommand(IntermediateOperationPointer pointer)
+  {
+    if (pointer && pointer->shouldInsert())
+    {
+      if (_currentOutput)
+      {
+        _currentOutput->insert(std::move(pointer));
+      }
+      else
+      {
+        _commandList.push_back(std::move(pointer));
+      }
+    }
+  }
+
   /**
    * \brief The internal command list.
    */
   std::vector<IntermediateOperationPointer> _commandList;
 
-  /**
-   * \brief The main output structure for operations.
-   */
-  const OperationOutput _mainOutput;
-
-  /**
-   * \brief The current output structure for possible macros.
-   */
-  OperationOutput _currentOutput;
+  IntermediateOperationPointer _currentOutput;
 };
 
 #endif

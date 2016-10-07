@@ -31,8 +31,3 @@ void IntermediateOperation::enhanceSymbolTable(SymbolTable& table,
     table.insertEntry(i, std::to_string(_address), state);
   }
 }
-
-bool IntermediateOperation::targetOutput(OperationOutput& target, const OperationOutput& mainOutput, CompileState& state) const
-{
-  return true;
-}

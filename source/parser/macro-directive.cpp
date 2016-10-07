@@ -26,13 +26,3 @@ void MacroDirective::execute(FinalRepresentation& finalRepresentator,
 {
     //TODO #79
 }
-
-bool MacroDirective::targetOutput(OperationOutput& target, const OperationOutput& mainOutput, CompileState& state) const
-{
-    if (target != mainOutput)
-    {
-        state.addError("Nested macro definition is not supported.");
-    }
-    target = _ownOutput;
-    return true;
-}

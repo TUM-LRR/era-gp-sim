@@ -29,7 +29,7 @@ public:
                    const std::string& name,
                    const std::string& macroName,
                    const std::vector<std::string>& macroParameters)
-        : IntermediateDirective(lines, labels, name), _macroName(macroName), _macroParameters(macroParameters), _operations(), _ownOutput(_operations)
+        : IntermediateDirective(lines, labels, name), _macroName(macroName), _macroParameters(macroParameters), _operations()
     {
 
     }
@@ -39,7 +39,15 @@ public:
                        const SyntaxTreeGenerator& generator,
                        CompileState& state);
 
-    virtual bool targetOutput(OperationOutput& target, const OperationOutput& mainOutput, CompileState& state) const;
+    virtual bool shouldInsert() const{
+        return true;
+    }
+    virtual TargetSelector newTarget() const{
+        return TargetSelector::THIS;
+    }
+    virtual void insert(IntermediateOperationPointer pointer){
+        _operations.push_back(std::move(pointer));
+    }
 
     const std::string& macroName()
     {
@@ -60,7 +68,6 @@ private:
     std::string _macroName;
     std::vector<std::string> _macroParameters;
     std::vector<IntermediateOperationPointer> _operations;
-    const OperationOutput _ownOutput;
 };
 
 #endif /* ERAGPSIM_PARSER_MACRO_DIRECTIVE_HPP */

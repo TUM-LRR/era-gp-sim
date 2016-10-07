@@ -41,7 +41,12 @@ public:
                        const SyntaxTreeGenerator& generator,
                        CompileState& state);
 
-  virtual bool targetOutput(OperationOutput& target, const OperationOutput& mainOutput, CompileState& state) const;
+  virtual bool shouldInsert() const{
+    return false;
+  }
+  virtual TargetSelector newTarget() const{
+    return TargetSelector::MAIN;
+  }
 };
 
 #endif /* ERAGPSIM_PARSER_MACRO_END_DIRECTIVE_HPP */

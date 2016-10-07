@@ -26,13 +26,3 @@ void MacroEndDirective::execute(FinalRepresentation& finalRepresentator,
 {
     // Probably nothing here.
 }
-
-bool MacroEndDirective::targetOutput(OperationOutput& target, const OperationOutput& mainOutput, CompileState& state) const
-{
-    if (target == mainOutput)
-    {
-        state.addError("Macro end without a beginning.");
-    }
-    target = mainOutput;
-    return false;
-}
