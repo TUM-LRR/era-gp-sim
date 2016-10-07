@@ -39,6 +39,11 @@ using DummyMemoryAddress = unsigned int;
  */
 static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
 
+/**
+ * \brief Specifies the target for operations to put.
+ *
+ * This feature has been implemented to support macros. It allows that the operations are placed inside of other operations on syntax level.
+ */
 enum class TargetSelector
 {
   KEEP,
@@ -48,6 +53,9 @@ enum class TargetSelector
 
 class IntermediateOperation;
 
+/**
+ * \brief Convenience class for a pointer to an operation.
+ */
 using IntermediateOperationPointer = std::unique_ptr<IntermediateOperation>;
 
 /**
@@ -88,13 +96,28 @@ class IntermediateOperation {
    */
   virtual void enhanceSymbolTable(SymbolTable& table, CompileState& state);
 
+  /**
+   * \brief Specifies if the this operation should be processed.
+   * \return True, if so, else false.
+   */
   virtual bool shouldInsert() const{
     return true;
   }
+
+  /**
+   * \brief Specifies the new target for operations after this command.
+   * \return Normally, we keep the target.
+   */
   virtual TargetSelector newTarget() const{
     return TargetSelector::KEEP;
   }
+
+  /**
+   * \brief Inserts an operation into a possible internal command list.
+   * \param pointer The operation to insert.
+   */
   virtual void insert(IntermediateOperationPointer pointer){
+    //If this happens, something has gone wrong in our programming.
     assert::that(false);
   }
 

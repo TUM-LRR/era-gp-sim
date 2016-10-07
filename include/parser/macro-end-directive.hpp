@@ -36,14 +36,30 @@ public:
   : IntermediateDirective(lines, labels, name) {
   }
 
+  /**
+   * \brief Does probably nothing.
+   * \param finalRepresentator The FinalRepresentation for possible output.
+   * \param table The SymbolTable for possible replacements.
+   * \param generator The generator to transform the instructions.
+   * \param state The CompileState to log possible errors.
+   */
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
                        const SyntaxTreeGenerator& generator,
                        CompileState& state);
 
+  /**
+   * \brief Specifies if the this operation should be processed. In this case: never!
+   * \return Always false.
+   */
   virtual bool shouldInsert() const{
     return false;
   }
+
+  /**
+   * \brief Specifies the new target for operations after this command.
+   * \return Switch back to the main target.
+   */
   virtual TargetSelector newTarget() const{
     return TargetSelector::MAIN;
   }

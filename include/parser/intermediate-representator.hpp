@@ -52,11 +52,16 @@ class IntermediateRepresentator {
    */
   template <typename T>
   void insertCommand(T&& command, CompileState& state) {
+    //First of all, we create our dear pointer.
     IntermediateOperationPointer pointer = std::make_unique<T>(std::move(command));
+
+    //We got to handle the three target selector cases right here.
     if (command.newTarget() == TargetSelector::THIS)
     {
+      //If we want the current command as new target, we set it like so.
       if (_currentOutput)
       {
+        //Nested macros are not supported.
         state.addError("Error, macro not finished before another should begin.");
       }
       _currentOutput = std::move(pointer);
@@ -65,12 +70,16 @@ class IntermediateRepresentator {
     {
       if (command.newTarget() == TargetSelector::MAIN)
       {
+        //For the main selector, we may also insert the old command (otherwise it and its sub commands might be lost).
         if (!_currentOutput)
         {
+          //Classic bracket forgot to close problem.
           state.addError("Macro end without beginning.");
         }
         internalInsertCommand(std::move(_currentOutput));
       }
+
+      //Finally, we may insert our handed-over command.
       internalInsertCommand(std::move(pointer));
     }
   }
@@ -86,10 +95,16 @@ class IntermediateRepresentator {
   transform(const SyntaxTreeGenerator& generator, CompileState& state);
 
  private:
+  /**
+   * \brief Inserts an operation into the list.
+   * \param pointer The operation to insert, as pointer.
+   */
   void internalInsertCommand(IntermediateOperationPointer pointer)
   {
+    //Of course, it should be valid and is allowed to be inserted.
     if (pointer && pointer->shouldInsert())
     {
+      //We got to decide if there is an alternative output.
       if (_currentOutput)
       {
         _currentOutput->insert(std::move(pointer));
@@ -106,6 +121,9 @@ class IntermediateRepresentator {
    */
   std::vector<IntermediateOperationPointer> _commandList;
 
+  /**
+   * \brief The current target for operations.
+   */
   IntermediateOperationPointer _currentOutput;
 };
 
