@@ -11,6 +11,7 @@ set(TEST_PARSER_SOURCES
   riscv-parser-test.cpp
   syntax-tree-generator-test.cpp
   parser-factory-test.cpp
+  syntax-information-test.cpp
 )
 
 ########################################
