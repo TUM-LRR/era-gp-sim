@@ -38,13 +38,12 @@ class IntermediateDirective : public IntermediateOperation {
                         const std::string& name)
   : IntermediateOperation(lines, labels, name) {
   }
-  protected:
+
+ protected:
   /**
    * \brief Does nothing here.
    */
-  virtual void determineMemoryPosition()
-  {
-
+  virtual void determineMemoryPosition() {
   }
 };
 

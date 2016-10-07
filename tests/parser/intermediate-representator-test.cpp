@@ -29,7 +29,8 @@ TEST(IntermediateRepresentator, insertSimple) {
                                            {"label1", "label2", "label3"},
                                            "mov",
                                            {"eax"},
-                                           {"eax"}), state);
+                                           {"eax"}),
+                   state);
 }
 
 TEST(IntermediateRepresentator, transformSimple) {
@@ -39,9 +40,11 @@ TEST(IntermediateRepresentator, transformSimple) {
                                            {"label1", "label2", "label3"},
                                            "mov",
                                            {"eax"},
-                                           {"eax"}), state);
+                                           {"eax"}),
+                   state);
   ir.insertCommand(IntermediateInstruction(
-      LineInterval(2, 5), {"label4"}, "add", {"eax"}, {"ebx"}), state);
+                       LineInterval(2, 5), {"label4"}, "add", {"eax"}, {"ebx"}),
+                   state);
   // Test disabled for now.
   // FinalRepresentation fr = ir.transform(state);
   // ASSERT_EQ(fr.commandList.size(), 2);
@@ -54,13 +57,14 @@ TEST(IntermediateRepresentator, macroDefinition) {
                                            {"label1", "label2", "label3"},
                                            "mov",
                                            {"eax"},
-                                           {"eax"}), state);
-  ir.insertCommand(MacroDirective(LineInterval(2,2), {}, ".macro", "test", {}), state);
-  ir.insertCommand(IntermediateInstruction(LineInterval(3, 3),
-                                           {"label1"},
-                                           "add",
-                                           {"eax"},
-                                           {"eax"}), state);
-  ir.insertCommand(MacroEndDirective(LineInterval(4,4), {}, ".endmacro"), state);
-  //To be extended in a later branch.
+                                           {"eax"}),
+                   state);
+  ir.insertCommand(MacroDirective(LineInterval(2, 2), {}, ".macro", "test", {}),
+                   state);
+  ir.insertCommand(IntermediateInstruction(
+                       LineInterval(3, 3), {"label1"}, "add", {"eax"}, {"eax"}),
+                   state);
+  ir.insertCommand(MacroEndDirective(LineInterval(4, 4), {}, ".endmacro"),
+                   state);
+  // To be extended in a later branch.
 }

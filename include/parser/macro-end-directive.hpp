@@ -20,19 +20,19 @@
 #ifndef ERAGPSIM_PARSER_MACRO_END_DIRECTIVE_HPP
 #define ERAGPSIM_PARSER_MACRO_END_DIRECTIVE_HPP
 
-#include "intermediate-directive.hpp"
+#include "parser/intermediate-directive.hpp"
 
 class MacroEndDirective : public IntermediateDirective {
-public:
-   /**
-   * \brief Instantiates a new MacroEndDirective with the given arguments.
-   * \param lines The line interval the operation occupies.
-   * \param labels The vector of labels assigned to the operation.
-   * \param name The name of the operation.
-   */
+ public:
+  /**
+  * \brief Instantiates a new MacroEndDirective with the given arguments.
+  * \param lines The line interval the operation occupies.
+  * \param labels The vector of labels assigned to the operation.
+  * \param name The name of the operation.
+  */
   MacroEndDirective(const LineInterval& lines,
-                        const std::vector<std::string>& labels,
-                        const std::string& name)
+                    const std::vector<std::string>& labels,
+                    const std::string& name)
   : IntermediateDirective(lines, labels, name) {
   }
 
@@ -49,10 +49,11 @@ public:
                        CompileState& state);
 
   /**
-   * \brief Specifies if the this operation should be processed. In this case: never!
+   * \brief Specifies if the this operation should be processed. In this case:
+   * never!
    * \return Always false.
    */
-  virtual bool shouldInsert() const{
+  virtual bool shouldInsert() const {
     return false;
   }
 
@@ -60,7 +61,7 @@ public:
    * \brief Specifies the new target for operations after this command.
    * \return Switch back to the main target.
    */
-  virtual TargetSelector newTarget() const{
+  virtual TargetSelector newTarget() const {
     return TargetSelector::MAIN;
   }
 };

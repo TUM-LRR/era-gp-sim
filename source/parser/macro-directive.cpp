@@ -20,9 +20,8 @@
 #include "parser/macro-directive.hpp"
 
 void MacroDirective::execute(FinalRepresentation& finalRepresentator,
-                       const SymbolTable& table,
-                       const SyntaxTreeGenerator& generator,
-                       CompileState& state)
-{
-    //TODO #79
+                             const SymbolTable& table,
+                             const SyntaxTreeGenerator& generator,
+                             CompileState& state) {
+  // TODO #79
 }

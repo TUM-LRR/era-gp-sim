@@ -19,10 +19,10 @@
 #ifndef ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP_
 #define ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP_
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
-#include <functional>
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "parser/compile-state.hpp"
 #include "parser/final-representation.hpp"
@@ -38,10 +38,7 @@ class IntermediateRepresentator {
   /**
    * \brief Instantiates an IntermediateRepresentator with the default values.
    */
-  IntermediateRepresentator()
-  : _commandList(), _currentOutput(nullptr)
-  {
-
+  IntermediateRepresentator() : _commandList(), _currentOutput(nullptr) {
   }
 
   /**
@@ -52,34 +49,31 @@ class IntermediateRepresentator {
    */
   template <typename T>
   void insertCommand(T&& command, CompileState& state) {
-    //First of all, we create our dear pointer.
-    IntermediateOperationPointer pointer = std::make_unique<T>(std::move(command));
+    // First of all, we create our dear pointer.
+    IntermediateOperationPointer pointer =
+        std::make_unique<T>(std::move(command));
 
-    //We got to handle the three target selector cases right here.
-    if (command.newTarget() == TargetSelector::THIS)
-    {
-      //If we want the current command as new target, we set it like so.
-      if (_currentOutput)
-      {
-        //Nested macros are not supported.
-        state.addError("Error, macro not finished before another should begin.");
+    // We got to handle the three target selector cases right here.
+    if (command.newTarget() == TargetSelector::THIS) {
+      // If we want the current command as new target, we set it like so.
+      if (_currentOutput) {
+        // Nested macros are not supported.
+        state.addError(
+            "Error, macro not finished before another should begin.");
       }
       _currentOutput = std::move(pointer);
-    }
-    else
-    {
-      if (command.newTarget() == TargetSelector::MAIN)
-      {
-        //For the main selector, we may also insert the old command (otherwise it and its sub commands might be lost).
-        if (!_currentOutput)
-        {
-          //Classic bracket forgot to close problem.
+    } else {
+      if (command.newTarget() == TargetSelector::MAIN) {
+        // For the main selector, we may also insert the old command (otherwise
+        // it and its sub commands might be lost).
+        if (!_currentOutput) {
+          // Classic bracket forgot to close problem.
           state.addError("Macro end without beginning.");
         }
         internalInsertCommand(std::move(_currentOutput));
       }
 
-      //Finally, we may insert our handed-over command.
+      // Finally, we may insert our handed-over command.
       internalInsertCommand(std::move(pointer));
     }
   }
@@ -99,18 +93,13 @@ class IntermediateRepresentator {
    * \brief Inserts an operation into the list.
    * \param pointer The operation to insert, as pointer.
    */
-  void internalInsertCommand(IntermediateOperationPointer pointer)
-  {
-    //Of course, it should be valid and is allowed to be inserted.
-    if (pointer && pointer->shouldInsert())
-    {
-      //We got to decide if there is an alternative output.
-      if (_currentOutput)
-      {
+  void internalInsertCommand(IntermediateOperationPointer pointer) {
+    // Of course, it should be valid and is allowed to be inserted.
+    if (pointer && pointer->shouldInsert()) {
+      // We got to decide if there is an alternative output.
+      if (_currentOutput) {
         _currentOutput->insert(std::move(pointer));
-      }
-      else
-      {
+      } else {
         _commandList.push_back(std::move(pointer));
       }
     }

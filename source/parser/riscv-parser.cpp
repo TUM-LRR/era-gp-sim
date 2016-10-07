@@ -69,12 +69,13 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
             sources.push_back(line_regex.getParameter(i));
         }
 
-        intermediate.insertCommand(IntermediateInstruction{
-            LineInterval(_compile_state.position.line()),
-            labels,
-            line_regex.getInstruction(),
-            sources,
-            targets},
+        intermediate.insertCommand(
+            IntermediateInstruction{
+                LineInterval(_compile_state.position.line()),
+                labels,
+                line_regex.getInstruction(),
+                sources,
+                targets},
             _compile_state);
 
         labels.clear();
