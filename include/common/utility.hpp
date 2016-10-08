@@ -26,8 +26,38 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <type_traits>
 
 namespace Utility {
+
+std::string toLower(const std::string& string);
+std::string toUpper(const std::string& string);
+
+template <typename Range, typename Iterator, typename Transformer>
+void transformInto(Range& range, Iterator destination, Transformer transform) {
+  using std::begin;
+  using std::end;
+  std::transform(begin(range), end(range), destination, transform);
+}
+
+template <typename Range, typename Transformer>
+void transformInPlace(Range& range, Transformer transform) {
+  using std::begin;
+  transformInto(range, begin(range), transform);
+}
+
+template <typename InputRange,
+          typename Transformer,
+          typename OutputRange = InputRange>
+OutputRange transform(const InputRange& range, Transformer transform) {
+  using std::begin;
+  using std::end;
+
+  OutputRange output;
+  transformInto(range, std::back_inserter(output), transform);
+
+  return output;
+}
 
 template <typename DestinationRange, typename SourceRange>
 void concatenate(DestinationRange& destination, const SourceRange& source) {
@@ -141,6 +171,16 @@ void doIfThere(Container& container, const Key& key, Action action) {
   }
 }
 
+template <typename Range, typename T>
+bool contains(const Range& range, T&& element) {
+  using std::begin;
+  using std::end;
+
+  auto iterator = std::find(begin(range), end(range), std::forward<T>(element));
+
+  return iterator != end(range);
+}
+
 std::string rootPath();
 std::string joinPaths(const std::string& single);
 
@@ -180,6 +220,9 @@ auto copyPointer(const std::unique_ptr<T>& pointer) {
   assert(static_cast<bool>(pointer));
   return std::make_unique<T>(*pointer);
 }
+
+template <typename T, template <typename> class Cond>
+using TypeBarrier = typename std::enable_if<Cond<T>::value, T>::type;
 
 // C++17
 // template<typename... Paths>

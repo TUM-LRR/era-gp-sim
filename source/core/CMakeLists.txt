@@ -4,6 +4,9 @@
 
 set(CORE_SOURCES
   memory-value.cpp
+  register-set.cpp
+  conversions.cpp
+  memory.cpp
 )
 
 ########################################

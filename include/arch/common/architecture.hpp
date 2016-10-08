@@ -24,11 +24,11 @@
 #include <string>
 #include <vector>
 
-#include "arch/common/abstract-node-factory-collection.hpp"
 #include "arch/common/architecture-properties.hpp"
 #include "arch/common/extension-information.hpp"
 #include "arch/common/information-interface.hpp"
 #include "arch/common/instruction-set.hpp"
+#include "arch/common/node-factory-collection.hpp"
 #include "arch/common/unit-container.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/builder-interface.hpp"
@@ -47,9 +47,10 @@ class ArchitectureFormula;
  */
 class Architecture : public BuilderInterface {
  public:
-  using Endianness        = ArchitectureProperties::Endianness;
-  using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
-  using word_size_t       = ArchitectureProperties::word_size_t;
+  using ExtensionNameCollection = ExtensionInformation::ExtensionNameCollection;
+  using Endianness              = ArchitectureProperties::Endianness;
+  using AlignmentBehavior       = ArchitectureProperties::AlignmentBehavior;
+  using word_size_t             = ArchitectureProperties::word_size_t;
 
   /**
    * Brews an architecture given a formula.
@@ -142,7 +143,7 @@ class Architecture : public BuilderInterface {
    * Returns the name of the architecture.
    *
    */
-  const std::string& getName() const noexcept;
+  const std::string& getName() const;
 
   /**
    * Returns the endianness of the architecture.
@@ -150,7 +151,7 @@ class Architecture : public BuilderInterface {
    * This property must have already been set by extending the architecture with
    * an extension and validated by calling `validate()`. This is asserted!
    */
-  Endianness getEndianness() const noexcept;
+  Endianness getEndianness() const;
 
   /**
    * Returns the alignment behavior of the architecture.
@@ -158,7 +159,7 @@ class Architecture : public BuilderInterface {
    * This property must have already been set by extending the architecture with
    * an extension and validated by calling `validate()`. This is asserted!
    */
-  AlignmentBehavior getAlignmentBehavior() const noexcept;
+  AlignmentBehavior getAlignmentBehavior() const;
 
 
   /**
@@ -167,7 +168,7 @@ class Architecture : public BuilderInterface {
    * This property must have already been set by extending the architecture with
    * an extension and validated by calling `validate()`. This is asserted!
    */
-  word_size_t getWordSize() const noexcept;
+  word_size_t getWordSize() const;
 
   /**
    * Returns the units of the architecture.
@@ -191,7 +192,7 @@ class Architecture : public BuilderInterface {
    * This is a template method to more flexibly copy *or* move another
    * collection with only a single method rather than two.
    *
-   * \tparam An AbstractNodeFactoryCollection lvalue or rvalue.
+   * \tparam An NodeFactoryCollection lvalue or rvalue.
    *
    * \param factoryCollection The factoryCollection to move or assign.
    *
@@ -206,7 +207,18 @@ class Architecture : public BuilderInterface {
   /**
    * Returns the architecture's node factory collection.
    */
-  const AbstractNodeFactoryCollection& getNodeFactories() const;
+  const NodeFactoryCollection& getNodeFactories() const;
+
+  /**
+   * Tests if the architecture is based on a certain extension.
+   */
+  bool isBasedOn(const std::string& extension_name) const noexcept;
+
+  /**
+   * Returns a collection of names of the extensions the
+   * architecture is based on.
+   */
+  const ExtensionNameCollection& getBaseExtensionNames() const noexcept;
 
   /**
    * Validates the completeness of the architecture.
@@ -241,7 +253,7 @@ class Architecture : public BuilderInterface {
   ExtensionInformation _base;
 
   /** The abstract node factories. */
-  AbstractNodeFactoryCollection _factories;
+  NodeFactoryCollection _factories;
 
   /** Boolean indicating whether the architecture has been validated. */
   bool _validated;

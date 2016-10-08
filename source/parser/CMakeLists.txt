@@ -7,7 +7,11 @@ set(PARSER_SOURCES
   intermediate-operation.cpp
   intermediate-representator.cpp
   parser.cpp
+  riscv-parser.cpp
   symbol-table.cpp
+  section-directive.cpp
+  riscv-regex.cpp
+  syntax-tree-generator.cpp
 )
 
 ########################################

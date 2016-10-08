@@ -64,7 +64,7 @@ InstructionInformation::mnemonic(const std::string& mnemonic) {
   return *this;
 }
 
-const std::string& InstructionInformation::getMnemonic() const noexcept {
+const std::string& InstructionInformation::getMnemonic() const {
   assert(hasMnemonic());
   return _mnemonic;
 }
@@ -78,7 +78,7 @@ InstructionInformation& InstructionInformation::key(const InstructionKey& key) {
   return *this;
 }
 
-const InstructionKey& InstructionInformation::getKey() const noexcept {
+const InstructionKey& InstructionInformation::getKey() const {
   assert(hasKey());
   return _key;
 }
@@ -95,7 +95,7 @@ void InstructionInformation::_deserialize(InformationInterface::Format& data) {
   assert(data.count("mnemonic"));
 
   auto iterator = data.find("mnemonic");
-  this->mnemonic(*iterator);
+  this->mnemonic(Utility::toLower(*iterator));
   data.erase(iterator);
 
   key(static_cast<InstructionKey>(data));

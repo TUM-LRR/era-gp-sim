@@ -3,7 +3,10 @@
 ########################################
 
 set(TEST_CORE_SOURCES
-  empty.cpp
+  memory-value-test.cpp
+  task-scheduler-test.cpp
+  memory-test.cpp
+  # queue-test.cpp # Sorry, they did fail sometimes. :(
 )
 
 ########################################
