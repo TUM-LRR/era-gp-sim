@@ -40,9 +40,7 @@ SyntaxTreeGenerator::transformOperand(const std::string& operand,
   // according to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
-    state.errorList.push_back(CompileError("Invalid argument: " + operand,
-                                           state.position,
-                                           CompileErrorSeverity::ERROR));
+    state.addError("Invalid argument: " + operand, state.position);
   }
 
   return std::move(outputNode);
@@ -59,9 +57,7 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
 
   if (!outputNode) {
     // The node creation failed!
-    state.errorList.push_back(CompileError("Unknown operation: " + command_name,
-                                           state.position,
-                                           CompileErrorSeverity::ERROR));
+    state.addError("Unknown operation: " + command_name, state.position);
     return std::move(outputNode);
   }
 
@@ -77,9 +73,7 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
 
   // Validate node
   if (!outputNode->validate()) {
-    state.errorList.push_back(CompileError("Invalid operation: " + command_name,
-                                           state.position,
-                                           CompileErrorSeverity::ERROR));
+    state.addError("Invalid operation: " + command_name, state.position);
   }
 
   // Return.

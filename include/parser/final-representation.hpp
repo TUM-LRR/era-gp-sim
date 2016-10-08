@@ -23,11 +23,9 @@
 #include <vector>
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "parser/compile-error.hpp"
-
-using LineInterval = std::pair<unsigned int, unsigned int>;
+#include "parser/line-interval.hpp"
 
 /**
- * \class FinalCommand
  * \brief Denotes the temporary output of an IntermediateRepresentator ready to
  * be used by the architecture.
  */

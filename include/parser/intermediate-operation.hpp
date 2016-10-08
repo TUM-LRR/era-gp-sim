@@ -22,16 +22,11 @@
 #include <string>
 #include <vector>
 #include "parser/final-representation.hpp"
+#include "parser/line-interval.hpp"
 #include "parser/symbol-table.hpp"
 #include "parser/syntax-tree-generator.hpp"
 
 struct CompileState;
-
-/**
- * \brief Representa an interval of lines, denoted by an upper and lower line
- * bound.
- */
-using LineInterval = std::pair<unsigned int, unsigned int>;
 
 /**
  * \brief A memory address substitute as long as we do not have one.
