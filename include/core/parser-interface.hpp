@@ -32,40 +32,14 @@ class ParserInterface : public Proxy<ParsingAndExecutionUnit> {
   ParserInterface(const Proxy<ParsingAndExecutionUnit>& proxy) : Proxy(proxy) {
   }
 
-  /**
-   * Creates dialect-specific Regex for syntax highlighting registers.
+  /** Access to the SyntaxInformation interface of the parser.
    *
-   * \param name Register name as std::string
-   * \return Dialect-specific Regex
-   */
-  POST_FUTURE(getSyntaxRegister)
-
-  /**
-   * Creates dialect-specific Regex for syntax highlighting instructions.
+   * \param token The token to search for.
+   * \return Iterable object which can be used in a for loop.
    *
-   * \param name Assembler instruction name as std::string
-   * \return Dialect-specific Regex
+   * \see SyntaxInformation
    */
-  POST_FUTURE(getSyntaxInstruction)
-
-  /**
-   * Creates dialect-specific Regex for syntax highlighting immediates.
-   *
-   * \return Dialect-specific Regex
-   */
-  POST_FUTURE(getSyntaxImmediate)
-
-  /**
-   * Creates a dialect-specific Regex for syntax highlighting comments.
-   *
-   */
-  POST_FUTURE(getSyntaxComment)
-
-  /**
-   * Creates a dialect-specific Regex for syntax highlighting labels.
-   *
-   */
-  POST_FUTURE(getSyntaxLabel)
+  POST_FUTURE(getSyntaxRegex);
 
   /**
    * Set the callback which is used to signal the gui that context information

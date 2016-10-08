@@ -19,8 +19,9 @@
 
 #include "core/project-module.hpp"
 
-ProjectModule::ProjectModule(ArchitectureFormula &&architectureFormula,
-                             int memorySize)
+ProjectModule::ProjectModule(ArchitectureFormula&& architectureFormula,
+                             int memorySize,
+                             const std::string& parserName)
 : _schedulerProject(std::make_shared<Scheduler>())
 , _schedulerParsingAndExecution(std::make_shared<Scheduler>())
 , _proxyProject(
@@ -32,7 +33,8 @@ ProjectModule::ProjectModule(ArchitectureFormula &&architectureFormula,
 , _proxyParsingAndExecution(std::move(_schedulerParsingAndExecution),
                             _memoryAccess,
                             _architectureAccess.getArchitecture().get(),
-                            std::ref(_stopFlag))
+                            std::ref(_stopFlag),
+                            parserName)
 , _commandInterface(_proxyParsingAndExecution)
 , _parserInterface(_proxyParsingAndExecution) {
 }

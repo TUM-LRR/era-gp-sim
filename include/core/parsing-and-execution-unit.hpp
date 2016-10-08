@@ -21,12 +21,14 @@
 #define ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
 
 #include <atomic>
+#include <memory>
 #include <set>
 
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
 #include "core/servant.hpp"
 #include "parser/final-representation.hpp"
+#include "parser/syntax-information.hpp"
 
 /**
  * This servant parses the code and executes the program.
@@ -41,7 +43,8 @@ class ParsingAndExecutionUnit : public Servant {
   ParsingAndExecutionUnit(std::weak_ptr<Scheduler> &&scheduler,
                           MemoryAccess memoryAccess,
                           Architecture architecture,
-                          std::atomic_flag &stopFlag);
+                          std::atomic_flag &stopFlag,
+                          std::string parserName);
 
   /**
    * Execute the whole assembler program
@@ -52,8 +55,9 @@ class ParsingAndExecutionUnit : public Servant {
   /**
    * Execute the next line of the assembler program
    *
+   * \return index of next instruction. Used internally.
    */
-  void executeNextLine();
+  std::size_t executeNextLine();
 
   /**
    * Execute the assembler program to the next breakpoint
@@ -94,40 +98,15 @@ class ParsingAndExecutionUnit : public Servant {
    */
   void deleteBreakpoint(int line);
 
-  /**
-   * Creates dialect-specific Regex for syntax highlighting registers.
+  /** Access to the SyntaxInformation interface of the parser.
    *
-   * \param name Register name
-   * \return Dialect-specific Regex
-   */
-  std::string getSyntaxRegister(std::string name);
-
-  /**
-   * Creates dialect-specific Regex for syntax highlighting instructions.
+   * \param token The token to search for.
+   * \return Iterable object which can be used in a for loop.
    *
-   * \param name Assembler instruction name
-   * \return Dialect-specific Regex
+   * \see SyntaxInformation
    */
-  std::string getSyntaxInstruction(std::string name);
-
-  /**
-   * Creates dialect-specific Regex for syntax highlighting immediates.
-   *
-   * \return Dialect-specific Regex
-   */
-  std::string getSyntaxImmediate();
-
-  /**
-   * Creates a dialect-specific Regex for syntax highlighting comments.
-   *
-   */
-  std::string getSyntaxComment();
-
-  /**
-   * Creates a dialect-specific Regex for syntax highlighting labels.
-   *
-   */
-  std::string getSyntaxLabel();
+  const SyntaxInformation::TokenIterable
+  getSyntaxRegex(SyntaxInformation::Token token) const;
 
   /**
    * Set the callback which is used to signal the gui that context information
@@ -164,14 +143,19 @@ class ParsingAndExecutionUnit : public Servant {
 
 
  private:
-  /** The parser. TODO: How to decide which parser to use? */
-  // Parser _parser
+  /**
+   * Calculates the index of the next node according to the program counter.
+   *
+   * \return index of the next node.
+   *
+   */
+  std::size_t findNextNode() const;
+
+  /** A unique_ptr to the parser. */
+  std::unique_ptr<Parser> _parser;
 
   /**  Reference to a std::atomic_flag to stop the execution. */
   std::atomic_flag &_stopFlag;
-
-  /** The index of the node which is executed next. */
-  std::size_t _nextNode;
 
   FinalRepresentation _finalRepresentation;
 

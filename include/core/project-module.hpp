@@ -42,7 +42,9 @@
  */
 class ProjectModule {
  public:
-  ProjectModule(ArchitectureFormula &&architectureFormula, int memorySize);
+  ProjectModule(ArchitectureFormula&& architectureFormula,
+                int memorySize,
+                const std::string& parserName);
 
   /**
    * Returns the MemoryAccess proxy.

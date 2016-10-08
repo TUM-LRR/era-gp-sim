@@ -21,15 +21,18 @@
 #include "arch/common/register-information.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
+#include "parser/parser-factory.hpp"
+#include "parser/parser-mode.hpp"
 
 ParsingAndExecutionUnit::ParsingAndExecutionUnit(
     std::weak_ptr<Scheduler>&& scheduler,
     MemoryAccess memoryAccess,
     Architecture architecture,
-    std::atomic_flag& stopFlag)
+    std::atomic_flag& stopFlag,
+    std::string parserName)
 : Servant(std::move(scheduler))
+, _parser(ParserFactory::createParser(architecture, parserName))
 , _stopFlag(stopFlag)
-, _nextNode(0)
 , _memoryAccess(memoryAccess)
 , _breakpoints() {
   for (UnitInformation unitInfo : architecture.getUnits()) {
@@ -49,15 +52,17 @@ void ParsingAndExecutionUnit::execute() {
     assert::that(false);
   }
   _stopFlag.test_and_set();
+  std::size_t nextNode = findNextNode();
   while (_stopFlag.test_and_set() &&
-         _nextNode < _finalRepresentation.commandList.size()) {
-    executeNextLine();
+         nextNode < _finalRepresentation.commandList.size()) {
+    nextNode = executeNextLine();
   }
 }
 
-void ParsingAndExecutionUnit::executeNextLine() {
+std::size_t ParsingAndExecutionUnit::executeNextLine() {
   // reference to avoid copying a unique_ptr
-  FinalCommand& currentCommand = _finalRepresentation.commandList.at(_nextNode);
+  FinalCommand& currentCommand =
+      _finalRepresentation.commandList.at(findNextNode());
   assert::that(currentCommand.node->validate());
 
   assert::that(_setCurrentLine);
@@ -65,24 +70,25 @@ void ParsingAndExecutionUnit::executeNextLine() {
 
   // currentCommand.node->getValue(_memoryAccess);
 
-  // TODO waiting for conversions
-  // std::size_t nextInstructionAddress =
-  // convert(_memoryAccess.getRegisterValue(_programCounterName));
-  //_nextNode = _addressCommandMap.find(nextInstructionAddress);
+  std::size_t nextNode = findNextNode();
+  _setCurrentLine(
+      _finalRepresentation.commandList.at(nextNode).position.lineStart);
+  return nextNode;
 }
 
 // current behaviour: only considers first breakpoint, if multiple breakpoints
 // are in the same whitespace between two commands.
 void ParsingAndExecutionUnit::executeToBreakpoint() {
   _stopFlag.test_and_set();
+  int nextNode = findNextNode();
   int lastLine =
-      _finalRepresentation.commandList.at(_nextNode).position.lineStart;
+      _finalRepresentation.commandList.at(nextNode).position.lineStart;
   while (_stopFlag.test_and_set() &&
-         _nextNode < _finalRepresentation.commandList.size()) {
-    executeNextLine();
+         nextNode < _finalRepresentation.commandList.size()) {
+    nextNode                    = executeNextLine();
     auto nextBreakpointIterator = _breakpoints.lower_bound(lastLine);
     int currentLine =
-        _finalRepresentation.commandList.at(_nextNode).position.lineStart;
+        _finalRepresentation.commandList.at(nextNode).position.lineStart;
     if (nextBreakpointIterator != _breakpoints.end() &&
         *nextBreakpointIterator <= currentLine) {
       // we reached a breakpoint
@@ -93,17 +99,19 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
 }
 
 void ParsingAndExecutionUnit::setExecutionPoint(int line) {
-  int i = 0;
+  // TODO handle macros
   for (auto&& command : _finalRepresentation.commandList) {
     if (command.position.lineStart >= line) {
-      _nextNode = i;
-      i++;
+      //_memoryAccess.putRegisterValue(_programCounterName,
+      //convertToMemoryValue(command.address));
+      break;
     }
   }
 }
 
 void ParsingAndExecutionUnit::parse(std::string code) {
-  _nextNode = 0;
+  _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
+  _addressCommandMap   = _finalRepresentation.createMapping();
 }
 
 void ParsingAndExecutionUnit::setBreakpoint(int line) {
@@ -114,24 +122,9 @@ void ParsingAndExecutionUnit::deleteBreakpoint(int line) {
   _breakpoints.erase(line);
 }
 
-std::string ParsingAndExecutionUnit::getSyntaxRegister(std::string name) {
-  return std::string();
-}
-
-std::string ParsingAndExecutionUnit::getSyntaxInstruction(std::string name) {
-  return std::string();
-}
-
-std::string ParsingAndExecutionUnit::getSyntaxImmediate() {
-  return std::string();
-}
-
-std::string ParsingAndExecutionUnit::getSyntaxComment() {
-  return std::string();
-}
-
-std::string ParsingAndExecutionUnit::getSyntaxLabel() {
-  return std::string();
+const SyntaxInformation::TokenIterable
+ParsingAndExecutionUnit::getSyntaxRegex(SyntaxInformation::Token token) const {
+  return _parser->getSyntaxInformation().getSyntaxRegex(token);
 }
 
 void ParsingAndExecutionUnit::setSetContextInformationCallback(
@@ -152,4 +145,11 @@ void ParsingAndExecutionUnit::setSetErrorListCallback(
 void ParsingAndExecutionUnit::setSetCurrentLineCallback(
     std::function<void(int)> callback) {
   _setCurrentLine = callback;
+}
+
+std::size_t ParsingAndExecutionUnit::findNextNode() const {
+  // std::size_t nextInstructionAddress =
+  // convert(_memoryAccess.getRegisterValue(_programCounterName));
+  // return _addressCommandMap.find(nextInstructionAddress);
+  return 0;
 }
