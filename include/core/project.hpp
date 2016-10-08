@@ -91,21 +91,6 @@ class Project : public Servant {
   MemoryValue getRegisterValue(const std::string &name) const;
 
   /**
-   * Calls RegisterSet::get(const std::string& name, const std::size_t byteSize)
-   * const
-   *
-   */
-  //MemoryValue getRegisterValue(const std::string &name,
-    //                           const std::size_t byteSize = 8) const;
-
-  /**
-   * Calls RegisterSet::get(const std::string& name, MemoryValue&& out) const
-   *
-   */
-  //MemoryValue
-  //getRegisterValue(const std::string &name, MemoryValue &&out) const;
-
-  /**
    * Calls RegisterSet::put(const std::string& name, const MemoryValue& value)
    *
    */
@@ -118,11 +103,6 @@ class Project : public Servant {
   MemoryValue
   setRegisterValue(const std::string &name, const MemoryValue &value);
 
-  /**
-   * Calls RegisterSet::set(const std::string& name, MemoryValue&& value)
-   *
-   */
-  MemoryValue setRegisterValue(const std::string &name, MemoryValue &&value);
 
 
   // GUI interface

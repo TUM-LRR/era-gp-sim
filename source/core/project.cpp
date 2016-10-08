@@ -78,20 +78,9 @@ MemoryValue Project::setMemoryCell(int address, const MemoryValue &value) {
   return MemoryValue();
 }
 
-
 MemoryValue Project::getRegisterValue(const std::string &name) const {
   return _registerSet.get(name);
 }
-
-/*MemoryValue Project::getRegisterValue(const std::string &name,
-                                      const std::size_t byteSize) const {
-  return _registerSet.get(name, byteSize);
-}*/
-
-/*MemoryValue
-Project::getRegisterValue(const std::string &name, MemoryValue &&out) const {
-  return _registerSet.get(name, std::move(out));
-}*/
 
 void Project::putRegisterValue(const std::string &name,
                                const MemoryValue &value) {
@@ -101,11 +90,6 @@ void Project::putRegisterValue(const std::string &name,
 MemoryValue
 Project::setRegisterValue(const std::string &name, const MemoryValue &value) {
   return _registerSet.set(name, value);
-}
-
-MemoryValue
-Project::setRegisterValue(const std::string &name, MemoryValue &&value) {
-  return _registerSet.set(name, std::move(value));
 }
 
 UnitContainer Project::getRegisterUnits() const {

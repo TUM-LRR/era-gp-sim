@@ -82,17 +82,8 @@ class MemoryAccess : public Proxy<Project> {
   /**
    * Returns the content of a register as MemoryValue.
    *
-   * WARNING: the second paramter might dissappear in future versions
-   *
-   * Two overloads exist:
-   * First version:
    * \param name The name of the register as std::string.
-   * \param byteSize The number of bits in one byte for this register, defaults
-   * to 8.
    *
-   * Second version:
-   * \param name The name of the register as std::string.
-   * \param out rvalue ref of MemoryValue to write to.
    */
   POST_FUTURE(getRegisterValue)
 
@@ -102,14 +93,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param callback std::function<void(Result<R>)> callback to call with the
    * value(s).
    * \param callerServant std::weak_ptr<Servant> servant which called this.
-   *
-   * first version:
    * \param name The name of the register as std::string.
-   * \param byteSize The number of bits in one byte for this register, defaults
-   *
-   * second version:
-   * \param name The name of the register as std::string.
-   * \param out rvalue ref of MemoryValue to write to.
    */
   POST_CALLBACK_SAFE(getRegisterValue)
 
@@ -126,7 +110,7 @@ class MemoryAccess : public Proxy<Project> {
    * Sets a register to a value and returns the old value
    *
    * \param name The name of the register as std::string.
-   * \param value lvalue or rvalue reference to a MemoryValue object which is
+   * \param value MemoryValue object which is
    * written to the register.
    */
   POST_FUTURE(setRegisterValue)
@@ -138,7 +122,7 @@ class MemoryAccess : public Proxy<Project> {
    * value(s).
    * \param callerServant std::weak_ptr<Servant> servant which called this.
    * \param name The name of the register as std::string.
-   * \param value lvalue or rvalue reference to a MemoryValue object which is
+   * \param MemoryValue object which is
    * written to the register.
    */
   POST_CALLBACK_SAFE(setRegisterValue)
