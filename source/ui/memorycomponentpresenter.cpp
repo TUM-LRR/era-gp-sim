@@ -38,7 +38,7 @@ MemoryComponentPresenter::MemoryComponentPresenter(Memory *memory, QQmlContext *
 MemoryComponentPresenter::~MemoryComponentPresenter() { }
 
 void onMemoryChanged(const std::size_t address, const std::size_t length) {
-
+    this->dataChanged(this->index(address, length), this->index(address, 2));
 }
 
 void MemoryComponentPresenter::setSize(int newSize) {
@@ -58,7 +58,7 @@ void MemoryComponentPresenter::setContextInformation(int addressStart, int lengt
 
 int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
     Q_UNUSED(parent)
-    return corememory->_byteCount;
+    return corememory->getByteCount();
 }
 int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
     Q_UNUSED(parent)
@@ -74,19 +74,24 @@ QVariant MemoryComponentPresenter::data(const QModelIndex &index, int role) cons
 
     switch(role)
     {
-        case AddressRole:
+        case AddressRole: {
             // format index as hex value and return it
             return QString("%1").arg(index.row(), 4, 16, QLatin1Char('0')).toUpper().prepend("0x");
-        case ValueRole:
+        }
+        case ValueRole: {
             // TODO fetch value from core
-            MemoryValue::getByteAt(corememory->get(index.row),0);
-            return  QString("value");
-        case InfoRole:
+            MemoryValue v = corememory->get(index.row());
+
+            return  QString;
+        }
+        case InfoRole: {
             // TODO fetch value from core
             return  QString("information");
-        default:
+        }
+        default: {
             qWarning() << "unknown column role";
             return QVariant();
+        }
     }
 }
 QHash<int, QByteArray> MemoryComponentPresenter::roleNames() const {
