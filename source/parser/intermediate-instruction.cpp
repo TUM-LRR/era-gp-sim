@@ -64,7 +64,7 @@ FinalCommand IntermediateInstruction::compileInstruction(
   result.node = std::move(
       generator.transformCommand(_name, srcCompiled, trgCompiled, state));
   result.position = _lines;
-  result.address = _address;
+  result.address  = _address;
   return result;
 }
 

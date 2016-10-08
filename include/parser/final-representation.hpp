@@ -20,8 +20,8 @@
 #define ERAGPSIM_PARSER_FINAL_REPRESENTATION_HPP_
 
 #include <memory>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "parser/compile-error.hpp"
 #include "parser/line-interval.hpp"
@@ -34,16 +34,18 @@ using MemoryAddress = std::size_t;
  */
 struct FinalCommand {
   /**
-   * \brief A pointer to the syntax tree node which carries the data of this instruction.
+   * \brief A pointer to the syntax tree node which carries the data of this
+   * instruction.
    */
   std::unique_ptr<AbstractSyntaxTreeNode> node;
 
   /**
-   * \brief Describes the interval of lines where this command occurs in the plaintext.
+   * \brief Describes the interval of lines where this command occurs in the
+   * plaintext.
    */
   LineInterval position;
 
-  /** 
+  /**
    * \brief Describes the address of the command in memory.
    */
   MemoryAddress address;
@@ -69,12 +71,10 @@ struct FinalRepresentation {
    * \brief Creates a mapping from memory address to instruction index.
    * \return The mapping.
    */
-  std::unordered_map<MemoryAddress, std::size_t> createMapping()
-  {
+  std::unordered_map<MemoryAddress, std::size_t> createMapping() {
     std::unordered_map<MemoryAddress, std::size_t> mapping;
 
-    for (std::size_t i = 0; i < commandList.size(); ++i)
-    {
+    for (std::size_t i = 0; i < commandList.size(); ++i) {
       mapping[commandList[i].address] = i;
     }
 
