@@ -50,6 +50,37 @@ struct CompileState {
    \brief Specifies the section the compiler is currently in.
    */
   std::string section = "text";
+
+  /**
+   * \brief Adds an error to the state-internal error list.
+   * \param message The message for the error.
+   * \param position The position where the error occurred.
+   */
+  void addError(const std::string& message, const CodePosition& position) {
+    errorList.push_back(
+        CompileError(message, position, CompileErrorSeverity::ERROR));
+  }
+
+  /**
+   * \brief Adds a warning to the state-internal error list.
+   * \param message The message for the warning.
+   * \param position The position where the warning occurred.
+   */
+  void addWarning(const std::string& message, const CodePosition& position) {
+    errorList.push_back(
+        CompileError(message, position, CompileErrorSeverity::WARNING));
+  }
+
+  /**
+   * \brief Adds an information to the state-internal error list.
+   * \param message The message for the information.
+   * \param position The position where the information is needed.
+   */
+  void
+  addInformation(const std::string& message, const CodePosition& position) {
+    errorList.push_back(
+        CompileError(message, position, CompileErrorSeverity::INFORMATION));
+  }
 };
 
 #endif
