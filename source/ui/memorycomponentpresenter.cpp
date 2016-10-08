@@ -20,12 +20,14 @@
 #include "ui/memorycomponentpresenter.hpp"
 #include <iostream>
 #include <QDebug>
+#include "core/memory-value.hpp"
 
-MemoryComponentPresenter::MemoryComponentPresenter(/* TODO interface *core */ QQmlContext *context, QObject *parent)
+MemoryComponentPresenter::MemoryComponentPresenter(Memory *memory, QQmlContext *context, QObject *parent)
 : QAbstractTableModel(parent){
     // TODO register callback functions
-    //core->onMemorySizeChanged(setSize);
-    //core->onMemoryValueChanged(setValue);
+    //memory->setCallback(&MemoryComponentPresenter::onMemoryChanged);
+
+    corememory = memory;
 
     // TODO create new View
     //context->setContextProperty("MemoryComponent", this);
@@ -34,6 +36,10 @@ MemoryComponentPresenter::MemoryComponentPresenter(/* TODO interface *core */ QQ
 
 
 MemoryComponentPresenter::~MemoryComponentPresenter() { }
+
+void onMemoryChanged(const std::size_t address, const std::size_t length) {
+
+}
 
 void MemoryComponentPresenter::setSize(int newSize) {
     // TODO
@@ -52,8 +58,7 @@ void MemoryComponentPresenter::setContextInformation(int addressStart, int lengt
 
 int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
     Q_UNUSED(parent)
-    // TODO fetch length from core
-    return 500;
+    return corememory->_byteCount;
 }
 int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
     Q_UNUSED(parent)
@@ -74,6 +79,7 @@ QVariant MemoryComponentPresenter::data(const QModelIndex &index, int role) cons
             return QString("%1").arg(index.row(), 4, 16, QLatin1Char('0')).toUpper().prepend("0x");
         case ValueRole:
             // TODO fetch value from core
+            MemoryValue::getByteAt(corememory->get(index.row),0);
             return  QString("value");
         case InfoRole:
             // TODO fetch value from core

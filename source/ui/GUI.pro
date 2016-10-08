@@ -9,8 +9,10 @@ SOURCES += main.cpp \
     registerdata.cpp \
     qproject.cpp \
     syntaxhighlighter.cpp \
-    memorycomponentpresenter.cpp
-    editor-component.cpp
+    memorycomponentpresenter.cpp \
+    editor-component.cpp \
+    ../core/memory.cpp \
+    ../core/memory-value.cpp
 
 RESOURCES += qml.qrc
 
@@ -28,5 +30,7 @@ HEADERS += \
     ../../include/ui/qproject.hpp \
     ../../include/ui/syntaxhighlighter.hpp \
     ../../include/ui/registerdata.hpp \
-    ../../include/ui/memorycomponentpresenter.hpp
-    ../../include/ui/editor-component.hpp
+    ../../include/ui/memorycomponentpresenter.hpp \
+    ../../include/ui/editor-component.hpp \
+    ../../include/core/memory.hpp \
+    ../../include/core/memory-value.hpp

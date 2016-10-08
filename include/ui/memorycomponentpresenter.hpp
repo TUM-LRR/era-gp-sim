@@ -26,13 +26,13 @@
 #include <QAbstractTableModel>
 #include <QModelIndex>
 #include <QHash>
-//#include "MemoryValue"
+#include "core/memory.hpp"
 
 class MemoryComponentPresenter : public QAbstractTableModel{
     Q_OBJECT
 
     public:
-       explicit MemoryComponentPresenter(/* TODO interface *core */ QQmlContext *context, QObject *parent = 0);
+       explicit MemoryComponentPresenter(Memory *memory, QQmlContext *context, QObject *parent = 0);
        ~MemoryComponentPresenter();
        void setSize(int newSize);
        void setValue(int address, /*TODO MemoryValue*/ int newValue);
@@ -44,6 +44,9 @@ class MemoryComponentPresenter : public QAbstractTableModel{
        int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
        QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
        QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
+       void onMemoryChanged(const std::size_t address, const std::size_t length);
+
+       Memory *corememory;
 
        enum ColumnRoles {
            AddressRole=Qt::UserRole,//avoid collisions with predefined roles

@@ -26,6 +26,7 @@
 #include "ui/qproject.hpp"
 #include "ui/memorycomponentpresenter.hpp"
 #include "ui/editor-component.hpp"
+#include "core/memory.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -43,17 +44,18 @@ int main(int argc, char *argv[])
     RegisterModel registerModel(registerDescription);
 
     QQmlApplicationEngine engine;
+    Memory* corememory = new Memory();
 
     EditorComponent editor;
     // TODO: set only for one component
     engine.rootContext()->setContextProperty("editor", &editor);
 
     engine.rootContext()->setContextProperty("registerModel", &registerModel);
-    MemoryComponentPresenter memory(engine.rootContext());
+    MemoryComponentPresenter memory(corememory, engine.rootContext());
     engine.rootContext()->setContextProperty("memoryModel", &memory);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-
+    delete corememory;
 
     return app.exec();
 }
