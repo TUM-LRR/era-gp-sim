@@ -18,6 +18,8 @@
 */
 
 #include "core/parsing-and-execution-unit.hpp"
+#include "arch/common/register-information.hpp"
+#include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
 
 ParsingAndExecutionUnit::ParsingAndExecutionUnit(
@@ -27,8 +29,18 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
     std::atomic_flag& stopFlag)
 : Servant(std::move(scheduler))
 , _stopFlag(stopFlag)
-, _currentNode(0)
-, _memoryAccess(memoryAccess) {
+, _nextNode(0)
+, _memoryAccess(memoryAccess)
+, _breakpoints() {
+  for (UnitInformation unitInfo : architecture.getUnits()) {
+    if (unitInfo.hasSpecialRegister(
+            RegisterInformation::Type::PROGRAM_COUNTER)) {
+      _programCounterName =
+          unitInfo
+              .getSpecialRegister(RegisterInformation::Type::PROGRAM_COUNTER)
+              .getName();
+    }
+  }
 }
 
 void ParsingAndExecutionUnit::execute() {
@@ -38,38 +50,68 @@ void ParsingAndExecutionUnit::execute() {
   }
   _stopFlag.test_and_set();
   while (_stopFlag.test_and_set() &&
-         _currentNode < _finalRepresentation.commandList.size()) {
-
+         _nextNode < _finalRepresentation.commandList.size()) {
     executeNextLine();
   }
 }
 
 void ParsingAndExecutionUnit::executeNextLine() {
-    //reference to avoid copying a unique_ptr
-    FinalCommand& currentCommand =
-        _finalRepresentation.commandList.at(_currentNode);
-    assert::that(currentCommand.node->validate());
+  // reference to avoid copying a unique_ptr
+  FinalCommand& currentCommand = _finalRepresentation.commandList.at(_nextNode);
+  assert::that(currentCommand.node->validate());
 
-    assert::that(_setCurrentLine);
-    _setCurrentLine(currentCommand.position.first);
+  assert::that(_setCurrentLine);
+  _setCurrentLine(currentCommand.position.lineStart);
 
-    // currentCommand.node->getValue(_memoryAccess);
+  // currentCommand.node->getValue(_memoryAccess);
 
-    _currentNode++;
+  // TODO waiting for conversions
+  // std::size_t nextInstructionAddress =
+  // convert(_memoryAccess.getRegisterValue(_programCounterName));
+  //_nextNode = _addressCommandMap.find(nextInstructionAddress);
 }
 
+// current behaviour: only considers first breakpoint, if multiple breakpoints
+// are in the same whitespace between two commands.
 void ParsingAndExecutionUnit::executeToBreakpoint() {
-
+  _stopFlag.test_and_set();
+  int lastLine =
+      _finalRepresentation.commandList.at(_nextNode).position.lineStart;
+  while (_stopFlag.test_and_set() &&
+         _nextNode < _finalRepresentation.commandList.size()) {
+    executeNextLine();
+    auto nextBreakpointIterator = _breakpoints.lower_bound(lastLine);
+    int currentLine =
+        _finalRepresentation.commandList.at(_nextNode).position.lineStart;
+    if (nextBreakpointIterator != _breakpoints.end() &&
+        *nextBreakpointIterator <= currentLine) {
+      // we reached a breakpoint
+      break;
+    }
+    lastLine = currentLine;
+  }
 }
 
 void ParsingAndExecutionUnit::setExecutionPoint(int line) {
+  int i = 0;
+  for (auto&& command : _finalRepresentation.commandList) {
+    if (command.position.lineStart >= line) {
+      _nextNode = i;
+      i++;
+    }
+  }
 }
 
 void ParsingAndExecutionUnit::parse(std::string code) {
-  _currentNode = 0;
+  _nextNode = 0;
 }
 
 void ParsingAndExecutionUnit::setBreakpoint(int line) {
+  _breakpoints.insert(line);
+}
+
+void ParsingAndExecutionUnit::deleteBreakpoint(int line) {
+  _breakpoints.erase(line);
 }
 
 std::string ParsingAndExecutionUnit::getSyntaxRegister(std::string name) {

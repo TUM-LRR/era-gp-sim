@@ -74,6 +74,14 @@ class CommandInterface : public Proxy<ParsingAndExecutionUnit> {
    *
    */
   POST(setBreakpoint)
+
+  /**
+   * Deletes a breakpoint.
+   *
+   * \param line the line of the breakpoint which is deleted.
+   *
+   */
+  POST(deleteBreakpoint)
 };
 
 #endif /* ERAGPSIM_CORE_COMMAND_INTERFACE_HPP */

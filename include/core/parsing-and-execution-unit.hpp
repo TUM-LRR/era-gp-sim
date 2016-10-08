@@ -21,6 +21,7 @@
 #define ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
 
 #include <atomic>
+#include <set>
 
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
@@ -85,6 +86,13 @@ class ParsingAndExecutionUnit : public Servant {
    */
   void setBreakpoint(int line);
 
+  /**
+   * Deletes a breakpoint.
+   *
+   * \param line the line of the breakpoint which is deleted.
+   *
+   */
+  void deleteBreakpoint(int line);
 
   /**
    * Creates dialect-specific Regex for syntax highlighting registers.
@@ -162,13 +170,23 @@ class ParsingAndExecutionUnit : public Servant {
   /**  Reference to a std::atomic_flag to stop the execution. */
   std::atomic_flag &_stopFlag;
 
-  /** The number of the current node of the execution. */
-  int _currentNode;
+  /** The index of the node which is executed next. */
+  std::size_t _nextNode;
 
   FinalRepresentation _finalRepresentation;
 
+  /** A mapping of address to command, has to be recreated every time the
+   * FinalRepresentation changes */
+  std::unordered_map<MemoryAddress, std::size_t> _addressCommandMap;
+
   /** MemoryAccess proxy for the syntax trees.*/
   MemoryAccess _memoryAccess;
+
+  /** set which contains the breakpoints.*/
+  std::set<int> _breakpoints;
+
+  /** The name of the program counter register. */
+  std::string _programCounterName;
 
   /** Callback to set memory context information in the ui. */
   std::function<void(int, int, int, std::string)> _setContextInformation;
