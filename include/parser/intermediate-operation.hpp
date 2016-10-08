@@ -31,13 +31,7 @@ struct CompileState;
 /**
  * \brief A memory address substitute as long as we do not have one.
  */
-using DummyMemoryAddress = unsigned int;
-
-/**
- * \brief A substitute for a not-initialized address.
- */
-static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
-
+using MemoryAddress = std::size_t;
 
 /**
  * \brief Represents an abstract assembler operation in the parser-internal
@@ -55,7 +49,7 @@ class IntermediateOperation {
   IntermediateOperation(const LineInterval& lines,
                         const std::vector<std::string>& labels,
                         const std::string& name)
-  : _lines(lines), _labels(labels), _name(name), _address(NULL_ADDRESS) {
+  : _lines(lines), _labels(labels), _name(name), _address(0) {
   }
 
   /**
@@ -81,7 +75,7 @@ class IntermediateOperation {
    * \brief Returns the memory address.
    * \return The memory address.
    */
-  DummyMemoryAddress address() {
+  MemoryAddress address() {
     return _address;
   }
 
@@ -109,7 +103,7 @@ class IntermediateOperation {
   /**
    * \brief The internal memory address.
    */
-  DummyMemoryAddress _address;
+  MemoryAddress _address;
 };
 
 #endif
