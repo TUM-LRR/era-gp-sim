@@ -77,7 +77,7 @@ InstructionInformation& InstructionInformation::key(const InstructionKey& key) {
 }
 
 const InstructionKey& InstructionInformation::getKey() const noexcept {
-//  assert(hasKey());
+  assert(hasKey());
   return _key;
 }
 

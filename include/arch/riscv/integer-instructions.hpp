@@ -183,7 +183,7 @@ class IntegerInstructionNode : public InstructionNode {
 template <typename SizeType>
 class AddInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
-  AddInstructionNode(InstructionInformation info, bool immediateInstruction)
+  AddInstructionNode(InstructionInformation& info, bool immediateInstruction)
       : IntegerInstructionNode<SizeType>(info, immediateInstruction) {}
 
   /**

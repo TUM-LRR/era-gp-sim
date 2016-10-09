@@ -103,7 +103,7 @@ struct InstructionFormatTestFixture : public ::testing::Test {
 TEST_F(InstructionFormatTestFixture, RFormat) {
   auto addInfo = instructionSet.getInstruction("add");
   AddInstructionNode<uint32_t> addInstr(addInfo, false);
-  auto key = addInfo.getKey();
+
   AbstractSyntaxTreeNode::Node r1(new RegisterNode("1"));
   AbstractSyntaxTreeNode::Node r2(new RegisterNode("2"));
   AbstractSyntaxTreeNode::Node rd(new RegisterNode("3"));
@@ -137,7 +137,7 @@ TEST_F(InstructionFormatTestFixture, SFormat) {
 TEST_F(InstructionFormatTestFixture, SBFormat) {
   auto beqInfo = instructionSet.getInstruction("beq");
   AddInstructionNode<uint32_t> beqInstr(beqInfo, true);
-  auto key = beqInfo.getKey();
+
   MemoryValue val(4, 8);
   val.put(22, true);
   val.put(23, true);
