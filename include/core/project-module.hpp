@@ -50,31 +50,31 @@ class ProjectModule {
    * Returns the MemoryAccess proxy.
    *
    */
-  MemoryAccess getMemoryAccess();
+  const MemoryAccess& getMemoryAccess() const;
 
   /**
    * Returns the MemoryManager proxy.
    *
    */
-  MemoryManager getMemoryManager();
+  const MemoryManager& getMemoryManager() const;
 
   /**
    * Returns the ArchitectureAccess proxy.
    *
    */
-  ArchitectureAccess getArchitectureAccess();
+  const ArchitectureAccess& getArchitectureAccess() const;
 
   /**
    * Returns the CommandInterface proxy.
    *
    */
-  CommandInterface getCommandInterface();
+  const CommandInterface& getCommandInterface() const;
 
   /**
    * Returns the ParserInterface proxy.
    *
    */
-  ParserInterface getParserInterface();
+  const ParserInterface& getParserInterface() const;
 
   /**
    * Resets the state of registers, memory and the execution point
