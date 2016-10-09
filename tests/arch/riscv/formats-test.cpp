@@ -117,7 +117,7 @@ TEST_F(InstructionFormatTestFixture, IFormat) {
   auto addInfo = instructionSet.getInstruction("sub");
   AddInstructionNode<uint32_t> addInstr(addInfo, Operands::IMMEDIATES);
 
-  MemoryValue val(4, 8);
+  MemoryValue val(4 * 8);
   val.put(22, true);
   val.put(23, true);
   AbstractSyntaxTreeNode::Node imm(new ImmediateNode(val));
@@ -135,7 +135,7 @@ TEST_F(InstructionFormatTestFixture, SBFormat) {
   auto beqInfo = instructionSet.getInstruction("beq");
   AddInstructionNode<uint32_t> beqInstr(beqInfo, Operands::IMMEDIATES);
 
-  MemoryValue val(4, 8);
+  MemoryValue val(4 * 8);
   val.put(22, true);
   val.put(23, true);
   AbstractSyntaxTreeNode::Node imm(new ImmediateNode(val));
@@ -153,7 +153,7 @@ TEST_F(InstructionFormatTestFixture, UFormat) {
   auto uInfo = instructionSet.getInstruction("uinst");
   AddInstructionNode<uint32_t> uInst(uInfo, Operands::IMMEDIATES);
 
-  MemoryValue val(4, 8);
+  MemoryValue val(4 * 8);
   val.put(22, true);
   val.put(23, true);
   AbstractSyntaxTreeNode::Node imm(new ImmediateNode(val));

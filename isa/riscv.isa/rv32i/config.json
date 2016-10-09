@@ -311,6 +311,7 @@
     "byte-size": 8,
     "alignment-behavior": "relaxed",
     "endianness": "little",
+    "signed-representation" : "twos-complement",
     "units": [
         {
             "name": "cpu",

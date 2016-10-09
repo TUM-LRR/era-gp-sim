@@ -297,7 +297,7 @@ class StoreInstructionNode
     }
 
     MemoryValue registerValue = memoryAccess.getRegisterValue(src);
-    MemoryValue resultValue{byteAmount, riscv::BITS_PER_BYTE};
+    MemoryValue resultValue{byteAmount * riscv::BITS_PER_BYTE};
     for (size_t i = 0; i < byteAmount * riscv::BITS_PER_BYTE; ++i) {
       resultValue.put(resultValue.getSize() - 1 - i,
                       registerValue.get(registerValue.getSize() - 1 - i));

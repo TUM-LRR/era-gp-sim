@@ -22,6 +22,7 @@
 
 #include <memory>
 
+#include "arch/common/architecture.hpp"
 #include "arch/common/instruction-set.hpp"
 
 template <typename ImmediateNodeFactoryTemplate,
@@ -52,8 +53,9 @@ struct AbstractFactoryTypes {
     return makeFactory<RegisterNodeFactoryType>();
   }
 
-  static auto instructionFactory(const InstructionSet& instructions) {
-    return makeFactory<InstructionNodeFactoryType>(instructions);
+  static auto instructionFactory(const InstructionSet& instructions,
+                                 const Architecture& architecture) {
+    return makeFactory<InstructionNodeFactoryType>(instructions, architecture);
   }
 
   template <typename FactoryType,
