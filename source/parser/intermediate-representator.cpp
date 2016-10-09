@@ -23,6 +23,11 @@
 FinalRepresentation
 IntermediateRepresentator::transform(const SyntaxTreeGenerator& generator,
                                      CompileState& state) {
+  // Before everything begins, we got to check if we are still in a macro.
+  if (_currentOutput) {
+    state.addError("Macro not closed. Missing a macro end directive?");
+  }
+
   // First of all, we insert all our labels/constants into the SymbolTable.
   SymbolTable table;
   for (const auto& i : _commandList) {
