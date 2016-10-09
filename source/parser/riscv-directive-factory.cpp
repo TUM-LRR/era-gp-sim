@@ -64,6 +64,6 @@ void RiscVDirectiveFactory::create(const LineInterval &lines,
     state.addError("Unknown directive", state.position);
   } else {
     ptr = (element->second)(lines, labels, name, arguments);
-    intermediate.insertCommandPtr(std::move(ptr));
+    intermediate.insertCommandPtr(std::move(ptr), state);
   }
 }

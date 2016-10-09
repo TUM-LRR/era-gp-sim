@@ -53,17 +53,27 @@ class IntermediateRepresentator {
     IntermediateOperationPointer pointer =
         std::make_unique<T>(std::move(command));
 
+    insertCommandPtr(std::move(pointer), state);
+  }
+
+  /**
+   * \brief Inserts the given command into the command list.
+   * \param command The given command.
+   * \param state The compile state to save any possible errors.
+   */
+  void insertCommandPtr(IntermediateOperationPointer&& command,
+                        CompileState& state) {
     // We got to handle the three target selector cases right here.
-    if (command.newTarget() == TargetSelector::THIS) {
+    if (command->newTarget() == TargetSelector::THIS) {
       // If we want the current command as new target, we set it like so.
       if (_currentOutput) {
         // Nested macros are not supported.
         state.addError(
             "Error, macro not finished before another should begin.");
       }
-      _currentOutput = std::move(pointer);
+      _currentOutput = std::move(command);
     } else {
-      if (command.newTarget() == TargetSelector::MAIN) {
+      if (command->newTarget() == TargetSelector::MAIN) {
         // For the main selector, we may also insert the old command (otherwise
         // it and its sub commands might be lost).
         if (!_currentOutput) {
@@ -74,16 +84,8 @@ class IntermediateRepresentator {
       }
 
       // Finally, we may insert our handed-over command.
-      internalInsertCommand(std::move(pointer));
+      internalInsertCommand(std::move(command));
     }
-  }
-
-  /**
-   * \brief Inserts the given command into the command list.
-   * \param command The given command.
-   */
-  void insertCommandPtr(std::unique_ptr<IntermediateOperation>&& command) {
-    _commandList.push_back(std::move(command));
   }
 
   /**
