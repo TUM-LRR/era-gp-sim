@@ -103,15 +103,23 @@ void ParsingAndExecutionUnit::setExecutionPoint(int line) {
   for (auto&& command : _finalRepresentation.commandList) {
     if (command.position.lineStart >= line) {
       //_memoryAccess.putRegisterValue(_programCounterName,
-      //convertToMemoryValue(command.address));
+      // convertToMemoryValue(command.address));
       break;
     }
   }
 }
 
 void ParsingAndExecutionUnit::parse(std::string code) {
+  // delete old assembled program in memory
+  for (auto&& command : _finalRepresentation.commandList) {
+    _memoryAccess.putMemoryCell(command.address, MemoryValue());
+  }
   _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
   _addressCommandMap   = _finalRepresentation.createMapping();
+  // assemble commands into memory
+  for (auto&& command : _finalRepresentation.commandList) {
+    _memoryAccess.putMemoryCell(command.address, command.node->assemble());
+  }
 }
 
 void ParsingAndExecutionUnit::setBreakpoint(int line) {
