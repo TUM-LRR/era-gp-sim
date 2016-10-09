@@ -90,7 +90,8 @@ struct InstructionFormatTestFixture : public ::testing::Test {
     instructionSet.addInstructions(InstructionSet(
         {{"add", InstructionKey({{"opcode", 6}, {"function", 3}}), "R"},
          {"sub", InstructionKey({{"opcode", 9}, {"function", 3}}), "I"},
-         {"beq", InstructionKey({{"opcode", 7}, {"function", 1}}), "SB"}}));
+         {"beq", InstructionKey({{"opcode", 7}, {"function", 1}}), "SB"},
+         {"uinst", InstructionKey({{"opcode", 3}, {"function", 5}}), "U"}}));
   }
 
   ~InstructionFormatTestFixture() {
@@ -131,9 +132,6 @@ TEST_F(InstructionFormatTestFixture, IFormat) {
   std::cout << addInstr.assemble() << std::endl;
 }
 
-TEST_F(InstructionFormatTestFixture, SFormat) {
-}
-
 TEST_F(InstructionFormatTestFixture, SBFormat) {
   auto beqInfo = instructionSet.getInstruction("beq");
   AddInstructionNode<uint32_t> beqInstr(beqInfo, true);
@@ -152,7 +150,16 @@ TEST_F(InstructionFormatTestFixture, SBFormat) {
 }
 
 TEST_F(InstructionFormatTestFixture, UFormat) {
-}
+    auto uInfo = instructionSet.getInstruction("uinst");
+    AddInstructionNode<uint32_t> uInst(uInfo, true);
 
-TEST_F(InstructionFormatTestFixture, UJFormat) {
+    MemoryValue val(4, 8);
+    val.put(22, true);
+    val.put(23, true);
+    AbstractSyntaxTreeNode::Node imm(new ImmediateNode(val));
+    AbstractSyntaxTreeNode::Node rd(new RegisterNode("3"));
+    uInst.addChild(std::move(rd));
+    uInst.addChild(std::move(imm));
+
+    std::cout << uInst.assemble() << std::endl;
 }

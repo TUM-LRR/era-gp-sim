@@ -64,18 +64,30 @@ class RegisterNode : public AbstractSyntaxTreeNode {
     return _identifier;
   }
 
-  // DummyMemoryAccess problem
   MemoryValue assemble() const override {
-    // real implementation
-    // just have to convert string to MemoryValue
-    // return getIdentifier();
-
-    // dummy
     MemoryValue memValue(1, 8);
-    memValue.put(0, true);
-    memValue.put(1, true);
-    memValue.put(2, true);
-    memValue.put(3, true);
+
+    std::string::size_type sz;
+
+    int index;
+
+    try {
+      index = std::stoi(_identifier, &sz);
+    } catch (const std::exception&) {
+      index = 0;
+    }
+
+    const int regSize = 8;
+
+    for (int i = 0; i < 5; i++) {
+      if (index % 2 == 0)
+        memValue.put(regSize - i - 1, false);
+      else
+        memValue.put(regSize - i - 1, true);
+
+      index /= 2;
+    }
+
     return memValue;
   }
 

@@ -25,7 +25,7 @@
 
 namespace riscv {
 
-const std::size_t REGISTER_SIZE = 4;
+const std::size_t REGISTER_SIZE = 8;
 
 // methods to transform immediates into their specified formats
 // I should possibly reverse the memory values before the following operations
@@ -75,10 +75,10 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   auto argument = args.at(2);
 
   // rs2
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
   // rs1
   argument = args.at(1);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   tmp.clear();
   // Utility::convertToBin(tmp, key["funct3"]);
@@ -87,7 +87,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
 
   // destination
   argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
 
   tmp.clear();
   Utility::convertToBin(tmp, key["opcode"]);
@@ -110,7 +110,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   for (int i = 20; i <= 31; i++) res.push_back(imm.get(i));
   // rs1
   auto argument = args.at(1);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   tmp.clear();
   // Utility::convertToBin(tmp, key["funct3"]);
@@ -119,7 +119,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
 
   // destination
   argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
 
   tmp.clear();
   Utility::convertToBin(tmp, key["opcode"]);
@@ -141,10 +141,10 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   for (int i = 20; i < 27; i++) res.push_back(imm.get(i));
   // rs2
   auto argument = args.at(1);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
   // rs1
   argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   // Utility::convertToBin(tmp, key["funct3"]);
   Utility::convertToBin(tmp, key["function"]);
@@ -175,10 +175,10 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   for (int i = 21; i < 27; i++) res.push_back(imm.get(i));
   // rs2
   auto argument = args.at(1);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
   // rs1
   argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   // Utility::convertToBin(tmp, key["funct3"]);
   Utility::convertToBin(tmp, key["function"]);
@@ -210,7 +210,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
 
   // rd
   auto argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
 
   Utility::convertToBin(tmp, key["opcode"]);
   Utility::pushBackFromEnd(res, tmp, 7);
@@ -238,7 +238,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
 
   // rd
   auto argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
 
   Utility::convertToBin(tmp, key["opcode"]);
   Utility::pushBackFromEnd(res, tmp, 7);
