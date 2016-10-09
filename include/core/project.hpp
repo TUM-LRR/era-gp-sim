@@ -59,28 +59,28 @@ class Project : public Servant {
    */
   Project(std::weak_ptr<Scheduler> &&scheduler,
           ArchitectureFormula &&architectureFormula,
-          int memorySize);
+          std::size_t memorySize);
 
 
   // memory access (WARNING: Memory is not on master, might change!)
 
   /**
-   * Calls Memory::get(int address, int length = 1) const
+   * Calls Memory::get(std::size_t address, std::size_t length = 1) const
    *
    */
-  MemoryValue getMemory(int address, int length = 1) const;
+  MemoryValue getMemory(std::size_t address, std::size_t amount = 1) const;
 
   /**
-   * Calls Memory::put(int address, const MemoryValue& value)
+   * Calls Memory::put(std::size_t address, const MemoryValue& value)
    *
    */
-  void putMemoryCell(int address, const MemoryValue &value);
+  void putMemoryCell(std::size_t address, const MemoryValue &value);
 
   /**
-   * Calls Memory::set(int address, const MemoryValue& value)
+   * Calls Memory::set(std::size_t address, const MemoryValue& value)
    *
    */
-  MemoryValue setMemoryCell(int address, const MemoryValue &value);
+  MemoryValue setMemoryCell(std::size_t address, const MemoryValue &value);
 
   // register access
 
@@ -127,13 +127,13 @@ class Project : public Servant {
    * Returns the number of memory cells(number of bytes)
    *
    */
-  int getMemorySize() const;
+  std::size_t getMemorySize() const;
 
   /**
    * Sets the number of memory cells, might not be supported later
    *
    */
-  void setMemorySize(int size);
+  void setMemorySize(std::size_t size);
 
   // editor component
 
@@ -211,7 +211,7 @@ class Project : public Servant {
    * \param callback
    *
    */
-  void setUpdateRegisterCallback(std::function<void(std::string)> callback);
+  void setUpdateRegisterCallback(std::function<void(const std::string&)> callback);
 
   /**
    * Set the callback which is used to signal the gui that multiple registers
@@ -232,7 +232,7 @@ class Project : public Servant {
    * \param callback
    *
    */
-  void setUpdateMemoryCellCallback(std::function<void(int)> callback);
+  void setUpdateMemoryCellCallback(std::function<void(std::size_t, std::size_t)> callback);
 
   /**
    * Returns the architecture object.
@@ -264,13 +264,13 @@ class Project : public Servant {
   RegisterSet _registerSet;
 
   /** Callback to update a single register in the ui. */
-  std::function<void(std::string)> _updateRegister;
+  std::function<void(const std::string&)> _updateRegister;
 
   /** Callback to update multiple registers in the ui at the same time. */
   std::function<void(std::vector<std::string> &&)> _updateRegisters;
 
   /** Callback to update a memory cell in the ui. */
-  std::function<void(int)> _updateMemoryCell;
+  std::function<void(std::size_t, std::size_t)> _updateMemoryCell;
 };
 
 #endif /* ERAGPSIM_CORE_PROJECT_HPP_ */

@@ -20,7 +20,7 @@
 #include "core/project-module.hpp"
 
 ProjectModule::ProjectModule(ArchitectureFormula&& architectureFormula,
-                             int memorySize,
+                             std::size_t memorySize,
                              const std::string& parserName)
 : _schedulerProject(std::make_shared<Scheduler>())
 , _schedulerParsingAndExecution(std::make_shared<Scheduler>())

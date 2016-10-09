@@ -43,7 +43,7 @@
 class ProjectModule {
  public:
   ProjectModule(ArchitectureFormula&& architectureFormula,
-                int memorySize,
+                std::size_t memorySize,
                 const std::string& parserName);
 
   /**

@@ -24,7 +24,7 @@
 
 Project::Project(std::weak_ptr<Scheduler> &&scheduler,
                  ArchitectureFormula &&architectureFormula,
-                 int memorySize)
+                 std::size_t memorySize)
 : Servant(std::move(scheduler))
 , _architecture(Architecture::Brew(std::move(architectureFormula)))
 , _registerSet() {
@@ -67,14 +67,14 @@ void Project::createConstituents(RegisterInformation enclosingRegister,
   }
 }
 
-MemoryValue Project::getMemory(int address, int length) const {
+MemoryValue Project::getMemory(std::size_t address, std::size_t amount) const {
   return MemoryValue();
 }
 
-void Project::putMemoryCell(int address, const MemoryValue &value) {
+void Project::putMemoryCell(std::size_t address, const MemoryValue &value) {
 }
 
-MemoryValue Project::setMemoryCell(int address, const MemoryValue &value) {
+MemoryValue Project::setMemoryCell(std::size_t address, const MemoryValue &value) {
   return MemoryValue();
 }
 
@@ -100,11 +100,11 @@ UnitContainer Project::getRegisterUnits() const {
   return _architecture.getByteSize();
 }*/
 
-int Project::getMemorySize() const {
+std::size_t Project::getMemorySize() const {
   return 0;
 }
 
-void Project::setMemorySize(int size) {
+void Project::setMemorySize(std::size_t size) {
 }
 
 InstructionSet Project::getInstructionSet() const {
@@ -146,7 +146,7 @@ std::function<MemoryValue(std::string)> Project::getFloatToMemoryValue() const {
 }
 
 void Project::setUpdateRegisterCallback(
-    std::function<void(std::string)> callback) {
+    std::function<void(const std::string&)> callback) {
   _updateRegister = callback;
 }
 
@@ -155,7 +155,7 @@ void Project::setUpdateRegistersCallback(
   _updateRegisters = callback;
 }
 
-void Project::setUpdateMemoryCellCallback(std::function<void(int)> callback) {
+void Project::setUpdateMemoryCellCallback(std::function<void(std::size_t, std::size_t)> callback) {
   _updateMemoryCell = callback;
 }
 
