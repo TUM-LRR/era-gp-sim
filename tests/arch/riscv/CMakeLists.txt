@@ -10,7 +10,7 @@ set(TEST_ARCH_RISCV_SOURCES
     dummies.cpp
     arithmetic-test-utils.cpp
     mul-div-instruction-tests.cpp
-    # formats-test.cpp // They still fail (throwing an assertion error)
+        formats-test.cpp
 )
 
 ########################################

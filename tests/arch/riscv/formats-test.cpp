@@ -21,6 +21,7 @@
 #include <iterator>
 #include <memory>
 #include <vector>
+#include <iostream>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/immediate-node.hpp"
@@ -116,7 +117,7 @@ TEST_F(InstructionFormatTestFixture, RFormat) {
 TEST_F(InstructionFormatTestFixture, IFormat) {
   auto addInfo = instructionSet.getInstruction("sub");
   AddInstructionNode<uint32_t> addInstr(addInfo, true);
-  auto key = addInfo.getKey();
+
   MemoryValue val(4, 8);
   val.put(22, true);
   val.put(23, true);
