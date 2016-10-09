@@ -12,6 +12,7 @@ set(TEST_PARSER_SOURCES
   syntax-tree-generator-test.cpp
   parser-factory-test.cpp
   syntax-information-test.cpp
+  float-parser-test.cpp
 )
 
 ########################################
