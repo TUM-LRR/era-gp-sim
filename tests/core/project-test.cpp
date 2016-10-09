@@ -33,7 +33,8 @@ class ProjectTestFixture : public ::testing::Test {
   , projectModule(std::move(formula), 1000, "riscv")
   , lineValue(0)
   , lineExpected(0) {
-    projectModule.getParserInterface().setSetCurrentLineCallback(
+    ParserInterface parserInterface = projectModule.getParserInterface();
+    parserInterface.setSetCurrentLineCallback(
         _lineNumberCallback);
   }
 
@@ -48,6 +49,50 @@ class ProjectTestFixture : public ::testing::Test {
     EXPECT_EQ(lineValue, lineExpected);
   };
 };
+
+TEST_F(ProjectTestFixture, MemoryAccessTest) {
+    MemoryAccess memoryAccess = projectModule.getMemoryAccess();
+    EXPECT_NO_THROW(memoryAccess.getMemory(0));
+    EXPECT_NO_THROW(memoryAccess.getMemory(999));
+    EXPECT_NO_THROW(memoryAccess.getMemory(0, 4));
+    EXPECT_ANY_THROW(memoryAccess.getMemory(1000));
+    EXPECT_ANY_THROW(memoryAccess.getMemory(-1));
+    EXPECT_ANY_THROW(memoryAccess.getMemory(999, 4));
+
+    MemoryValue testValue;
+
+    EXPECT_NO_THROW(memoryAccess.putMemoryCell(0, testValue));
+    EXPECT_NO_THROW(memoryAccess.putMemoryCell(999, testValue));
+    EXPECT_NO_THROW(memoryAccess.putMemoryCell(0, testValue));
+    EXPECT_ANY_THROW(memoryAccess.putMemoryCell(1000, testValue));
+    EXPECT_ANY_THROW(memoryAccess.putMemoryCell(-1, testValue));
+    EXPECT_ANY_THROW(memoryAccess.putMemoryCell(999, testValue));
+
+    EXPECT_NO_THROW(memoryAccess.setMemoryCell(0, testValue));
+    EXPECT_NO_THROW(memoryAccess.setMemoryCell(999, testValue));
+    EXPECT_NO_THROW(memoryAccess.setMemoryCell(0, testValue));
+    EXPECT_ANY_THROW(memoryAccess.setMemoryCell(1000, testValue));
+    EXPECT_ANY_THROW(memoryAccess.setMemoryCell(-1, testValue));
+    EXPECT_ANY_THROW(memoryAccess.setMemoryCell(999, testValue));
+
+    for(int i = 0; i < 32; i++) {
+        std::string registerName = std::string("x") + std::to_string(i);
+        EXPECT_NO_THROW(memoryAccess.getRegisterValue(registerName));
+    }
+    EXPECT_NO_THROW(memoryAccess.getRegisterValue(std::string("pc")));
+
+    for(int i = 0; i < 32; i++) {
+        std::string registerName = std::string("x") + std::to_string(i);
+        EXPECT_NO_THROW(memoryAccess.putRegisterValue(registerName, testValue));
+    }
+    EXPECT_NO_THROW(memoryAccess.putRegisterValue(std::string("pc"), testValue));
+
+    for(int i = 0; i < 32; i++) {
+        std::string registerName = std::string("x") + std::to_string(i);
+        EXPECT_NO_THROW(memoryAccess.setRegisterValue(registerName, testValue));
+    }
+    EXPECT_NO_THROW(memoryAccess.setRegisterValue(std::string("pc"), testValue));
+}
 
 TEST_F(ProjectTestFixture, testExecuteLine) {
   CommandInterface commandInterface = projectModule.getCommandInterface();
