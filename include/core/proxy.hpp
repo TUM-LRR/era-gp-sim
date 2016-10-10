@@ -18,12 +18,12 @@
 */
 
 #include <cassert>
-#include <experimental/tuple>
 #include <functional>
 #include <future>
 #include <memory>
 
 #include "core/scheduler.hpp"
+#include "common/tuple.hpp"
 
 #ifndef ERAGPSIM_CORE_PROXY_HPP
 #define ERAGPSIM_CORE_PROXY_HPP
@@ -92,7 +92,7 @@
       functionLambda = std::move(functionLambda),                             \
       tuple          = std::make_tuple(std::forward<Args>(args)...)           \
     ]() mutable {                                                             \
-      std::experimental::apply(std::move(functionLambda), std::move(tuple));  \
+      TupleApply::apply(std::move(functionLambda), std::move(tuple));  \
     };                                                                        \
     servant->push(std::move(task));                                           \
   }
@@ -172,7 +172,7 @@
       &promise                                                             \
     ]() mutable {                                                          \
       try {                                                                \
-        auto result = std::experimental::apply(std::move(functionLambda),  \
+        auto result = TupleApply::apply(std::move(functionLambda),  \
                                                std::move(tuple));          \
         promise.set_value(result);                                         \
       } catch (std::exception & e) {                                       \
@@ -231,7 +231,7 @@
     ]() mutable {                                                              \
       try {                                                                    \
         auto result =                                                          \
-            std::experimental::apply(std::move(function), std::move(tuple));   \
+            TupleApply::apply(std::move(function), std::move(tuple));   \
         promise->set_value(result);                                            \
       } catch (std::exception & e) {                                           \
         promise->set_exception(std::make_exception_ptr(e));                    \
@@ -293,7 +293,7 @@
       /* A result object is created and the value/exception is set */       \
       Result<R> result;                                                     \
       try {                                                                 \
-        result.setValue(std::experimental::apply(std::move(functionLambda), \
+        result.setValue(TupleApply::apply(std::move(functionLambda), \
                                                  std::move(tuple)));        \
       } catch (std::exception & e) {                                        \
         result.setException(std::make_exception_ptr(e));                    \
@@ -384,7 +384,7 @@
       /* A result object is created and the value/exception is set */         \
       Result<R> result;                                                       \
       try {                                                                   \
-        result.setValue(std::experimental::apply(std::move(functionLambda),   \
+        result.setValue(TupleApply::apply(std::move(functionLambda),   \
                                                  std::move(tuple)));          \
       } catch (std::exception & e) {                                          \
         result.setException(std::make_exception_ptr(e));                      \
@@ -445,7 +445,7 @@ class Proxy {
 
     if (auto sharedScheduler = scheduler.lock()) {
       /* wrap the creation of the servant in a lambda, this has to be done to
-       * allow for forwarding of the arguments by using std::experimental::apply
+       * allow for forwarding of the arguments by using TupleApply::apply
        * with this lambda */
       auto servantConstructionLambda = [&promise](auto&&... args) {
         promise.set_value(
@@ -459,7 +459,7 @@ class Proxy {
         tuple =
             std::make_tuple(std::move(scheduler), std::forward<Args>(args)...)
       ]() mutable {
-        std::experimental::apply(std::move(servantConstructionLambda),
+        TupleApply::apply(std::move(servantConstructionLambda),
                                  std::move(tuple));
       };
       sharedScheduler->push(std::move(task));
