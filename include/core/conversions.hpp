@@ -231,7 +231,8 @@ convert(const T value,
   std::vector<std::uint8_t> raw{};
   for (std::size_t i = 0; i < sizeInByte; ++i) {
     raw.push_back(static_cast<std::uint8_t>(abs & 0xFF));
-    abs >>= 8;
+    abs >>= 4;
+    abs >>= 4;
   }
   return sgn(raw, size, value < 0);
 }
