@@ -54,7 +54,7 @@ std::string loadFromFile(const std::string& filePath) {
   std::string input;
   std::ifstream file(filePath);
 
-  assert(static_cast<bool>(file));
+  assert::that(static_cast<bool>(file));
 
   std::copy(std::istreambuf_iterator<char>{file},
             std::istreambuf_iterator<char>{},
