@@ -90,13 +90,6 @@ class RegisterSet {
    */
   MemoryValue get(const std::string &name) const;
   /**
-   * \brief Stores the data stored in the Register with the name name in out
-   * \param name String uniquely representing the Register
-   * \param out Reference to a MemoryValue to store the data in the Register
-   *        with the name name
-   */
-  void get(const std::string &name, MemoryValue &out) const;
-  /**
    * \brief Writes value into the Register with the name name
    * \param name String uniquely representing the Register
    * \param value Value to write
@@ -110,15 +103,6 @@ class RegisterSet {
    * \returns previous value of the Register with the name name
    */
   MemoryValue set(const std::string &name, const MemoryValue &value);
-  /**
-  * \brief Writes value into the Register with the name name and writes its
-  *        previous value into value
-  * \param name String uniquely representing the Register
-  * \param value Reference holding the value to write and to be set to the
-  *        previous value of the Register with the name name
-  * \returns previous value of the Register with the name name
-   */
-  MemoryValue &exchange(const std::string &name, MemoryValue &value);
 
   /**
    * \brief Creates a Register with the name name and size size
