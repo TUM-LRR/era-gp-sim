@@ -22,10 +22,8 @@
 
 #if __cpp_lib_apply >= 201603
 #include <tuple>
-#elif defined __has_include
-#if __has_include(<experimental/tuple>)
+#elif defined(__has_include) && __has_include(<experimental/tuple>)
 #include <experimental/tuple>
-#endif
 #elif __cpp_lib_experimental_apply
 #include <experimental/tuple>
 #else
@@ -38,12 +36,10 @@ namespace TupleApply {
 
 using std::apply;
 
-#elif defined __has_include
-#if __has_include(<experimental/tuple>)
+#elif defined(__has_include) && __has_include(<experimental/tuple>)
 
 using std::experimental::apply;
 
-#endif
 #elif __cpp_lib_experimental_apply
 
 using std::experimental::apply;

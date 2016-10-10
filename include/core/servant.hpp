@@ -24,6 +24,7 @@
 #include <functional>
 #include <memory>
 
+#include "common/tuple.hpp"
 #include "core/proxy.hpp"
 #include "core/result.hpp"
 #include "core/scheduler.hpp"
