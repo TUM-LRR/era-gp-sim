@@ -111,7 +111,8 @@ namespace conversions {
       raw.pop_back();
       T result = getByteAt(memoryValue, raw.size() * 8);
       while (raw.size() > 0) {
-        result <<= 8;
+        result <<= 4;
+        result <<= 4;
         result |= raw.back();
         raw.pop_back();
       }
