@@ -20,7 +20,7 @@
 #ifndef ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP_
 #define ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP_
 
-#include "intermediate-directive.hpp"
+#include "parser/intermediate-directive.hpp"
 
 /**
  * \brief Represents a section directive in code.
