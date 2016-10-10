@@ -7,6 +7,7 @@ set(CORE_SOURCES
   register-set.cpp
   conversions.cpp
   memory.cpp
+  scheduler.cpp
 )
 
 ########################################
