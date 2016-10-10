@@ -13,7 +13,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef ERAGPSIM_PARSER_PARSER_HPP_
 #define ERAGPSIM_PARSER_PARSER_HPP_
@@ -21,52 +22,37 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "parser/final-representation.hpp"
+#include "parser/parser-mode.hpp"
 
-#include "arch/common/abstract-node-factories.hpp"
+class SyntaxInformation;
 
-
-enum class ParserMode { kCompile, kUpdate };
+class Architecture;
 
 /**
  * Base Parser class
  */
 class Parser {
  public:
-	/**
-	 * Parses text into syntax tree.
-	 *
-	 * \param text Text to parse
-	 * \param parserMode Parser Mode
-	 */
-	virtual std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
-	parse(std::string &text, ParserMode parserMode) = 0;
+  /**
+   * Parses text into syntax tree.
+   *
+   * \param text Text to parse
+   * \param parserMode Parser Mode
+   */
+  virtual FinalRepresentation
+  parse(const std::string &text, ParserMode parserMode) = 0;
 
-	/**
-	 * Creates dialect-specific Regex for syntax highlighting registers.
-	 *
-	 * \param name Register name
-	 * \return Dialect-specific Regex
-	 */
-	virtual std::string getSyntaxRegister(std::string &name);
-
-	/**
-	 * Creates dialect-specific Regex for syntax highlighting instructions.
-	 *
-	 * \param name Assembler instruction name
-	 * \return Dialect-specific Regex
-	 */
-	virtual std::string getSyntaxInstruction(std::string &name);
-
-	/**
-	 * Creates dialect-specific Regex for syntax highlighting immediates.
-	 *
-	 * \return Dialect-specific Regex
-	 */
-	virtual std::string getSyntaxImmediate();
+  /**
+   * Retrieves information for syntax highlighting.
+   *
+   * \return Object containing syntax hightlighting information
+   */
+  virtual const SyntaxInformation getSyntaxInformation() = 0;
 
 
-	Parser() = default;
-	virtual ~Parser() = default;
+  Parser()          = default;
+  virtual ~Parser() = default;
 };
 
 #endif// ERAGPSIM_PARSER_PARSER_HPP_
