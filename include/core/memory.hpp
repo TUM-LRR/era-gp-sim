@@ -29,11 +29,11 @@ class Memory {
  public:
   /**
    * \brief Default constructor. Constructs an empty Memory with default size
-   *        (64 Bytes á 8 Bit)
+   *        (64 Bytes ï¿½ 8 Bit)
    */
   Memory();
   /**
-   * \brief Constructs an empty Memory with cellCount Bytes á byteSize Bit
+   * \brief Constructs an empty Memory with cellCount Bytes ï¿½ byteSize Bit
    * \param byteCount Number of Bytes
    * \param byteSize Size of a Byte in Bit
    */
@@ -72,6 +72,18 @@ class Memory {
   ~Memory() = default;
 
   /**
+   * \brief returns _byteSize
+   * \returns returns _byteSize
+   */
+  std::size_t getByteSize() const;
+
+  /**
+  * \brief returns _byteCount
+  * \returns returns _byteCount
+  */
+  std::size_t getByteCount() const;
+
+  /**
    * \brief Sets the callback to notify the gui about changes in the data
    * \param callback the callback to be set as _callback
    */
@@ -104,15 +116,12 @@ class Memory {
   MemoryValue set(const std::size_t address, const MemoryValue &value);
 
  private:
-  std::size_t _byteSize;/**< Brief Size of a Byte in bit*/
-  std::size_t _byteCount;/**< Brief Number of Bytes*/
-  MemoryValue _data;/**< Brief MemoryValue holding *all* the data*/
-  static const std::function<void(const std::size_t, const std::size_t)>
-      emptyCallback; /**< Brief An empty function that does absolutely
-                     nothing, used as default for _callback*/
-  std::function<void(const std::size_t, const std::size_t)> _callback =
-      emptyCallback; /**< Brief This function gets called for
-                        every changed area in Memory*/
+  std::size_t _byteSize;  /**< Brief Size of a Byte in bit*/
+  std::size_t _byteCount; /**< Brief Number of Bytes*/
+  MemoryValue _data;      /**< Brief MemoryValue holding *all* the data*/
+  std::function<void(const std::size_t, const std::size_t)> _callback = [](
+      const std::size_t, const std::size_t) {
+  }; /**< Brief This function gets called for every changed area in Memory*/
 
   /**
    * \brief This Method is called whenever something in the Memory changes and

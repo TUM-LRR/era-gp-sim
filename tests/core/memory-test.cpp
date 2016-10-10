@@ -29,33 +29,33 @@
 // clang-format on
 
 namespace {
-  constexpr std::size_t scale = 10;
+constexpr std::size_t scale = 10;
 }
 
 TEST(memory, r_w) {
-  constexpr std::size_t b = 256;   // byteSize
-  constexpr std::size_t c = 256;   // byteCount
-  constexpr std::size_t t = scale;  // testAmount
-  std::uniform_int_distribution<std::uint16_t> dist{ 0,255 };
-  std::mt19937 rand(0);//I need new numbers, I'm kinda really out of ideas
-  std::size_t byteCount{ 1 };
-  std::size_t inc{ 0 };
+  constexpr std::size_t b = 256;  // byteSize
+  constexpr std::size_t c = 256;  // byteCount
+  constexpr std::size_t t = scale;// testAmount
+  std::uniform_int_distribution<std::uint16_t> dist{0, 255};
+  std::mt19937 rand(0);// I need new numbers, I'm kinda really out of ideas
+  std::size_t byteCount{1};
+  std::size_t inc{0};
   while (byteCount <= c) {
-    std::uniform_int_distribution<std::size_t> addressDist{ 0,byteCount - 1 };
+    std::uniform_int_distribution<std::size_t> addressDist{0, byteCount - 1};
     for (std::size_t i = 1; i < b; ++i) {
-      std::size_t byteSizeInByte{ (i + 7) / 8 };
+      std::size_t byteSizeInByte{(i + 7) / 8};
       for (std::size_t j = 0; j < t; ++j) {
-        const std::size_t rep{ (byteCount + 9) / 10 };
-        Memory instance{ byteCount,i };
+        const std::size_t rep{(byteCount + 9) / 10};
+        Memory instance{byteCount, i};
         for (std::size_t l = 0; l < rep; ++l) {
           std::vector<std::uint8_t> initializer{};
           for (std::size_t k = 0; k < byteSizeInByte; ++k) {
             initializer.push_back(static_cast<std::uint8_t>(dist(rand)));
           }
-          MemoryValue instance0{ initializer ,i };
-          std::size_t address{ addressDist(rand) };
-          MemoryValue previous{ instance.get(address) };
-          MemoryValue instance1{ instance.set(address,instance0) };
+          MemoryValue instance0{initializer, i};
+          std::size_t address{addressDist(rand)};
+          MemoryValue previous{instance.get(address)};
+          MemoryValue instance1{instance.set(address, instance0)};
           ASSERT_EQ(instance0, instance.get(address));
           ASSERT_EQ(previous, instance1);
         }

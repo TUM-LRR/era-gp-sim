@@ -18,9 +18,6 @@
 
 #include "core/memory.hpp"
 
-const std::function<void(const std::size_t, const std::size_t)>
-    Memory::emptyCallback = [](const std::size_t, const std::size_t) {};
-
 Memory::Memory() : Memory(64, 8) {
 }
 
@@ -30,13 +27,20 @@ Memory::Memory(std::size_t byteCount, std::size_t byteSize)
   assert::that(byteSize > 0);
 }
 
+std::size_t Memory::getByteSize() const {
+  return _byteSize;
+}
+
+std::size_t Memory::getByteCount() const {
+  return _byteCount;
+}
+
 void Memory::setCallback(
     const std::function<void(const std::size_t, const std::size_t)>& callback) {
   _callback = callback;
 }
 
-MemoryValue
-Memory::get(const std::size_t address, const std::size_t amount) {
+MemoryValue Memory::get(const std::size_t address, const std::size_t amount) {
   assert::that(address >= 0);
   assert::that(amount >= 0);
   assert::that(address + amount <= _byteCount);
@@ -52,8 +56,7 @@ void Memory::put(const std::size_t address, const MemoryValue& value) {
   _data.write(value, address * _byteSize);
 }
 
-MemoryValue
-Memory::set(const std::size_t address, const MemoryValue& value) {
+MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {
   const std::size_t amount{value.getSize() / _byteSize};
   MemoryValue prev{get(address, amount)};
   put(address, value);
@@ -63,4 +66,3 @@ Memory::set(const std::size_t address, const MemoryValue& value) {
 void Memory::wasUpdated(const std::size_t address, const std::size_t amount) {
   _callback(address, amount);
 }
-
