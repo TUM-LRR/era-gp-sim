@@ -56,27 +56,28 @@ MemoryValue::MemoryValue() : MemoryValue(8) {
 MemoryValue::MemoryValue(const std::vector<uint8_t> &other,
                          const std::size_t size)
 : _size{size}, _data{other} {
-  assert(size > 0);
-  assert(_data.size() == (size + 7) / 8);
+  assert::that(true);
+  assert::that(size > 0);
+  assert::that(_data.size() == (size + 7) / 8);
 }
 
 MemoryValue::MemoryValue(std::vector<uint8_t> &&other, const std::size_t size)
 : _size{size}, _data{std::move(other)} {
-  assert(size > 0);
-  assert(_data.size() == (size + 7) / 8);
+  assert::that(size > 0);
+  assert::that(_data.size() == (size + 7) / 8);
 }
 
 MemoryValue::MemoryValue(std::size_t size)
 : _size{size}, _data(std::size_t{(size + 7) / 8}, 0) {
-  assert(size > 0);
+  assert::that(size > 0);
 }
 
 MemoryValue::MemoryValue(const MemoryValue &other,
                          const std::size_t begin,
                          const std::size_t end)
 : _size{end - begin}, _data(std::size_t{(end - begin + 7) / 8}, 0) {
-  assert(begin < end);
-  assert(end <= other.getSize());
+  assert::that(begin < end);
+  assert::that(end <= other.getSize());
   for (std::size_t i = 0; i < _data.size(); ++i) {
     _data[i] = other.getByteAt(begin + i * 8);
   }
@@ -97,14 +98,14 @@ constexpr uint8_t testAnd[8]{
 }
 
 bool MemoryValue::get(const std::size_t address) const {
-  assert(address < getSize());
-  assert(address >= 0);
+  assert::that(address < getSize());
+  assert::that(address >= 0);
   return (_data[byteAddressOfBit(address)] & testOr[offset(address)]) != 0;
 }
 
 void MemoryValue::put(const std::size_t address, const bool value) {
-  assert(address < getSize());
-  assert(address >= 0);
+  assert::that(address < getSize());
+  assert::that(address >= 0);
   // Setting or clearing the value bitwise.
   if (value) {
     _data[byteAddressOfBit(address)] |= testOr[offset(address)];
@@ -114,8 +115,8 @@ void MemoryValue::put(const std::size_t address, const bool value) {
 }
 
 bool MemoryValue::set(const std::size_t address, const bool value) {
-  assert(address < getSize());
-  assert(address >= 0);
+  assert::that(address < getSize());
+  assert::that(address >= 0);
   if (((_data[byteAddressOfBit(address)] & testOr[offset(address)]) != 0) ==
       value) {
     return value;
@@ -125,8 +126,8 @@ bool MemoryValue::set(const std::size_t address, const bool value) {
 }
 
 bool MemoryValue::flip(const std::size_t address) {
-  assert(address < getSize());
-  assert(address >= 0);
+  assert::that(address < getSize());
+  assert::that(address >= 0);
   _data[byteAddressOfBit(address)] ^= testOr[offset(address)];
   return !get(address);
 }
@@ -175,8 +176,8 @@ constexpr uint8_t write1[8]{
 
 void MemoryValue::write(const MemoryValue &other, std::size_t begin) {
   std::size_t end{begin + other._size};
-  assert(begin < end);// _size > 0
-  assert(end <= _size);
+  assert::that(begin < end);// _size > 0
+  assert::that(end <= _size);
   // wipe clean
   if (begin / 8 == (end - 1) / 8) {// begin & end are same byte
     _data[begin / 8] &= write0[begin % 8] | write1[(end - 1) % 8];
@@ -200,8 +201,8 @@ void MemoryValue::write(const MemoryValue &other, std::size_t begin) {
 }
 
 std::uint8_t MemoryValue::getByteAt(std::size_t address) const {
-  assert(address < getSize());
-  assert(address >= 0);
+  assert::that(address < getSize());
+  assert::that(address >= 0);
 
   // first half byte
   std::uint8_t result{static_cast<std::uint8_t>(

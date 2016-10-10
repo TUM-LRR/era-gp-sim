@@ -26,6 +26,8 @@
 #include <iostream>
 #include <vector>
 
+#include "common/assert.hpp"
+
 class MemoryValue {
  public:
   /**
