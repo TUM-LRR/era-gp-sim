@@ -89,7 +89,8 @@ struct TGen {
     const std::size_t sizeInByte{ (size + 7) / 8 - 1 };
     T res = static_cast<T>(gen());
     for (std::size_t i = 0; i < sizeInByte; ++i) {
-      res <<= 8;
+      res <<= 4;
+      res <<= 4;
       res |= gen();
     }
     return res;
