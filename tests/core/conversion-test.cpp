@@ -98,29 +98,28 @@ struct TGen {
 }
 
 template <typename T, std::size_t size> T
-testTypeMemoryValueType(const T &value, const toMemoryValueFunction &sgn1,
-  const signFunction &sgn2,
-  const toIntegralFunction &abs) {
-  MemoryValue memoryValue{ convert(value, sgn1, size) };
-  //std::cout << memoryValue << std::endl;
-  return convert<T>(memoryValue, sgn2, abs);
+testTypeMemoryValueType(const T &value, const conversions::toMemoryValueFunction &sgn1,
+  const conversions::signFunction &sgn2,
+  const conversions::toIntegralFunction &abs) {
+  MemoryValue memoryValue{ conversions::convert(value, sgn1, size) };
+  return conversions::convert<T>(memoryValue, sgn2, abs);
 }
 
 template <typename T> MemoryValue
 testMemoryValueTypeMemoryValue(const MemoryValue &memoryValue,
-  const toMemoryValueFunction &sgn1,
-  const signFunction &sgn2,
-  const toIntegralFunction &abs) {
-  T value{ convert<T>(memoryValue, sgn2, abs) };
-  return convert(value, sgn1, memoryValue.getSize());
+  const conversions::toMemoryValueFunction &sgn1,
+  const conversions::signFunction &sgn2,
+  const conversions::toIntegralFunction &abs) {
+  T value{ conversions::convert<T>(memoryValue, sgn2, abs) };
+  return conversions::convert(value, sgn1, memoryValue.getSize());
 }
 
 template <typename T, std::size_t size, std::size_t testAmount> void
 testConversion( std::function<T()> &generator,
   std::function<MemoryValue(std::size_t)> &memGenerator,
-  const toMemoryValueFunction sgn1,
-  const signFunction sgn2,
-  const toIntegralFunction abs,
+  const conversions::toMemoryValueFunction sgn1,
+  const conversions::signFunction sgn2,
+  const conversions::toIntegralFunction abs,
   const MemoryValue &avoidM = MemoryValue{},
   const T &avoidT=0) {
   for (int i = 0; i < testAmount; ++i) {
@@ -139,7 +138,7 @@ testConversion( std::function<T()> &generator,
 }
 
 template <typename T, std::size_t size, std::size_t testAmount> void
-testConversion(std::function<std::uint8_t()> &gen, Conversion con, const MemoryValue &avoidM = MemoryValue{}, const T &avoidT = 0) {
+testConversion(std::function<std::uint8_t()> &gen, conversions::Conversion con, const MemoryValue &avoidM = MemoryValue{}, const T &avoidT = 0) {
   std::function<MemoryValue(std::size_t)> memGen = MemGen(gen);
   std::function<T()> tGen = TGen<T, size>(gen);
   testConversion<T, size, testAmount>(tGen, memGen, con.toMem, con.sgn, con.toInt, avoidM, avoidT);
@@ -151,67 +150,67 @@ namespace {
 
 TEST(TestConversions, nonsigned) {
   std::function<std::uint8_t()> gen = Gen();
-  testConversion<std::uint8_t ,  8, scale>(gen, nonsigned);
-  testConversion<std::uint16_t, 16, scale>(gen, nonsigned);
-  testConversion<std::uint32_t, 32, scale>(gen, nonsigned);
-  testConversion<std::uint64_t, 64, scale>(gen, nonsigned);
+  testConversion<std::uint8_t ,  8, scale>(gen, conversions::standardConversions::nonsigned);
+  testConversion<std::uint16_t, 16, scale>(gen, conversions::standardConversions::nonsigned);
+  testConversion<std::uint32_t, 32, scale>(gen, conversions::standardConversions::nonsigned);
+  testConversion<std::uint64_t, 64, scale>(gen, conversions::standardConversions::nonsigned);
 }
 
 TEST(TestConversions, signBit) {
   std::function<std::uint8_t()> gen = Gen();
   static const MemoryValue avoid8M{ std::vector<std::uint8_t>{0x80},8 };
   static const std::int8_t avoid8T{ static_cast<std::int8_t>(0x80u) };
-  testConversion<std::int8_t ,  8, scale>(gen, signBit, avoid8M, avoid8T);
+  testConversion<std::int8_t ,  8, scale>(gen, conversions::standardConversions::signBit, avoid8M, avoid8T);
 
   static const MemoryValue avoid16M{ std::vector<std::uint8_t>{0x00,0x80},16 };
   static const std::int16_t avoid16T{ static_cast<std::int16_t>(0x8000u) };
-  testConversion<std::int16_t, 16, scale>(gen, signBit, avoid16M, avoid16T);
+  testConversion<std::int16_t, 16, scale>(gen, conversions::standardConversions::signBit, avoid16M, avoid16T);
 
   static const MemoryValue avoid32M{ std::vector<std::uint8_t>{0x00,0x00,0x00,0x80},32 };
   static const std::int32_t avoid32T{ static_cast<std::int32_t>(0x80000000u) };
-  testConversion<std::int32_t, 32, scale>(gen, signBit, avoid32M, avoid32T);
+  testConversion<std::int32_t, 32, scale>(gen, conversions::standardConversions::signBit, avoid32M, avoid32T);
 
   static const MemoryValue avoid64M{ std::vector<std::uint8_t>{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80},64 };
   static const std::int64_t avoid64T{ static_cast<std::int64_t>(0x8000000000000000u) };
-  testConversion<std::int64_t, 64, scale>(gen, signBit, avoid64M, avoid64T);
+  testConversion<std::int64_t, 64, scale>(gen, conversions::standardConversions::signBit, avoid64M, avoid64T);
 }
 
 TEST(TestConversions, onesComplement) {
   std::function<std::uint8_t()> gen = Gen();
   static const MemoryValue avoid8M{ std::vector<std::uint8_t>{0xFF},8 };
   static const std::int8_t avoid8T{ static_cast<std::int8_t>(0x80u) };
-  testConversion<std::int8_t, 8, scale>(gen, onesComplement, avoid8M, avoid8T);
+  testConversion<std::int8_t, 8, scale>(gen, conversions::standardConversions::onesComplement, avoid8M, avoid8T);
 
   static const MemoryValue avoid16M{ std::vector<std::uint8_t>{0xFF,0xFF},16 };
   static const std::int16_t avoid16T{ static_cast<std::int16_t>(0x8000u) };
-  testConversion<std::int16_t, 16, scale>(gen, onesComplement, avoid16M, avoid16T);
+  testConversion<std::int16_t, 16, scale>(gen, conversions::standardConversions::onesComplement, avoid16M, avoid16T);
 
   static const MemoryValue avoid32M{ std::vector<std::uint8_t>{0xFF,0xFF,0xFF,0xFF},32 };
   static const std::int32_t avoid32T{ static_cast<std::int32_t>(0x80000000u) };
-  testConversion<std::int32_t, 32, scale>(gen, onesComplement, avoid32M, avoid32T);
+  testConversion<std::int32_t, 32, scale>(gen, conversions::standardConversions::onesComplement, avoid32M, avoid32T);
 
   static const MemoryValue avoid64M{ std::vector<std::uint8_t>{0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF},64 };
   static const std::int64_t avoid64T{ static_cast<std::int64_t>(0x8000000000000000u) };
-  testConversion<std::int64_t, 64, scale>(gen, onesComplement, avoid64M, avoid64T);
+  testConversion<std::int64_t, 64, scale>(gen, conversions::standardConversions::onesComplement, avoid64M, avoid64T);
 }
 
 TEST(TestConversions, twosComplement) {
   std::function<std::uint8_t()> gen = Gen();
-  testConversion<std::int8_t ,  8, scale>(gen, twosComplement);
-  testConversion<std::int16_t, 16, scale>(gen, twosComplement);
-  testConversion<std::int32_t, 32, scale>(gen, twosComplement);
-  testConversion<std::int64_t, 64, scale>(gen, twosComplement);
+  testConversion<std::int8_t ,  8, scale>(gen, conversions::standardConversions::twosComplement);
+  testConversion<std::int16_t, 16, scale>(gen, conversions::standardConversions::twosComplement);
+  testConversion<std::int32_t, 32, scale>(gen, conversions::standardConversions::twosComplement);
+  testConversion<std::int64_t, 64, scale>(gen, conversions::standardConversions::twosComplement);
 }
 
 
 TEST(TestConversions, negativeOne) {
-  ASSERT_EQ(-1, convert<std::int64_t>(convert<std::int64_t>(-1, signBit, 64) , signBit));
-  ASSERT_EQ(-1, convert<std::int64_t>(convert<std::int64_t>(-1, onesComplement, 64) , onesComplement));
-  ASSERT_EQ(-1, convert<std::int64_t>(convert<std::int64_t>(-1, twosComplement, 64) , twosComplement));
+  ASSERT_EQ(-1, conversions::convert<std::int64_t>(conversions::convert<std::int64_t>(-1, conversions::standardConversions::signBit, 64) , conversions::standardConversions::signBit));
+  ASSERT_EQ(-1, conversions::convert<std::int64_t>(conversions::convert<std::int64_t>(-1, conversions::standardConversions::onesComplement, 64) , conversions::standardConversions::onesComplement));
+  ASSERT_EQ(-1, conversions::convert<std::int64_t>(conversions::convert<std::int64_t>(-1, conversions::standardConversions::twosComplement, 64) , conversions::standardConversions::twosComplement));
 }
 
 TEST(TestConversions, onehundredandtwentyeight) {
-  ASSERT_EQ(0, convert<std::int8_t>(convert<std::int8_t>(-128, signBit, 8), signBit));
-  ASSERT_EQ(0, convert<std::int8_t>(convert<std::int8_t>(-128, onesComplement, 8), onesComplement));
-  ASSERT_EQ(-128, convert<std::int8_t>(convert<std::int8_t>(-128, twosComplement, 8), twosComplement));
+  ASSERT_EQ(0, conversions::convert<std::int8_t>(conversions::convert<std::int8_t>(-128, conversions::standardConversions::signBit, 8), conversions::standardConversions::signBit));
+  ASSERT_EQ(0, conversions::convert<std::int8_t>(conversions::convert<std::int8_t>(-128, conversions::standardConversions::onesComplement, 8), conversions::standardConversions::onesComplement));
+  ASSERT_EQ(-128, conversions::convert<std::int8_t>(conversions::convert<std::int8_t>(-128, conversions::standardConversions::twosComplement, 8), conversions::standardConversions::twosComplement));
 }
