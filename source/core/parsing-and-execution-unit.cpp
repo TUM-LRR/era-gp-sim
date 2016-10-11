@@ -47,10 +47,6 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 }
 
 void ParsingAndExecutionUnit::execute() {
-  if (_finalRepresentation.errorList.size() != 0) {
-    // TODO
-    assert::that(false);
-  }
   _stopFlag.test_and_set();
   std::size_t nextNode = findNextNode();
   while (_stopFlag.test_and_set() &&
@@ -63,7 +59,9 @@ std::size_t ParsingAndExecutionUnit::executeNextLine() {
   // reference to avoid copying a unique_ptr
   FinalCommand& currentCommand =
       _finalRepresentation.commandList.at(findNextNode());
-  assert::that(currentCommand.node->validate());
+  if(!currentCommand.node->validate()) {
+    return findNextNode();
+  }
 
   assert::that(_setCurrentLine);
   _setCurrentLine(currentCommand.position.lineStart);

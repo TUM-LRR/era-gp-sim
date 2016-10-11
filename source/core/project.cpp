@@ -112,9 +112,20 @@ InstructionSet Project::getInstructionSet() const {
 }
 
 void Project::resetMemory() {
+  for(std::size_t i = 0; i < getMemorySize(); i++) {
+    putMemoryCell(i, MemoryValue());
+  }
 }
 
 void Project::resetRegisters() {
+  for (UnitInformation unitInfo : _architecture.getUnits()) {
+    for (auto &&registerPair : unitInfo) {
+      RegisterInformation registerInfo = registerPair.second;
+      if(!registerInfo.isConstant() && !registerInfo.hasEnclosing()) {
+        putRegisterValue(registerPair.second.getName(), MemoryValue());
+      }
+    }
+  }
 }
 
 std::function<std::string(MemoryValue)>
