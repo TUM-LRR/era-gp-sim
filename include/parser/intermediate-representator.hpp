@@ -58,8 +58,7 @@ class IntermediateRepresentator {
       // If we want the current command as new target, we set it like so.
       if (_currentOutput) {
         // Nested macros are not supported.
-        state.addError(
-            "Error, macro not finished before another should begin.");
+        state.addError("Error, nested macros are not supported.");
       }
       _currentOutput = std::move(pointer);
     } else {
@@ -68,7 +67,7 @@ class IntermediateRepresentator {
         // it and its sub commands might be lost).
         if (!_currentOutput) {
           // Classic bracket forgot to close problem.
-          state.addError("Macro end without beginning.");
+          state.addError("The start directive of the macro is missing.");
         }
         internalInsertCommand(std::move(_currentOutput));
       }
