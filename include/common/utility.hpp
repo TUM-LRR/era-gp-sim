@@ -289,6 +289,14 @@ auto copyPointer(const std::unique_ptr<T>& pointer) {
   return std::make_unique<T>(*pointer);
 }
 
+template <std::size_t numberOfBits,
+          typename T,
+          typename = std::enable_if_t<std::is_integral<T>::value>>
+constexpr T lowerNBits(const T& value) {
+  constexpr auto mask = (static_cast<std::size_t>(1) << numberOfBits) - 1;
+  return value & mask;
+}
+
 // C++17
 // template<typename... Paths>
 // std::string joinStrings(Paths&&... paths) {

@@ -27,6 +27,7 @@
 #include "arch/common/instruction-information.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instruction-node.hpp"
+#include "common/utility.hpp"
 
 namespace riscv {
 
@@ -135,7 +136,7 @@ struct ShiftLeftLogicalInstructionNode
   explicit ShiftLeftLogicalInstructionNode(
       const InstructionInformation& information, Operands operands)
   : super(information, operands, [this](const auto& first, const auto& second) {
-    return first << super::_getLower5Bits(second);
+    return first << Utility::lowerNBits<5>(second);
   }) {
   }
 };
@@ -154,7 +155,7 @@ struct ShiftRightLogicalInstructionNode
   explicit ShiftRightLogicalInstructionNode(
       const InstructionInformation& information, Operands operands)
   : super(information, operands, [this](const auto& first, const auto& second) {
-    return first >> super::_getLower5Bits(second);
+    return first >> Utility::lowerNBits<5>(second);
   }) {
   }
 };
@@ -178,11 +179,11 @@ struct ShiftRightArithmeticInstructionNode
   /** \copydoc AbstractIntegerInstructionNode::_compute() */
   SizeType _compute(SizeType first, SizeType second) const noexcept override {
     static const auto width = sizeof(SizeType) * 8;
-    static const auto one   = static_cast<SizeType>(1);
+    static const auto one = static_cast<SizeType>(1);
 
-    bool sign        = first & (one << (width - 1));
-    auto shiftAmount = super::_getLower5Bits(second);
-    auto result      = first >> shiftAmount;
+    bool sign = first & (one << (width - 1));
+    auto shiftAmount = Utility::lowerNBits<5>(second);
+    auto result = first >> shiftAmount;
 
     // Create a mask of <shiftAmount> bits and OR them in, if necessary
     if (sign) result |= ((one << shiftAmount) - 1) << (width - shiftAmount);
