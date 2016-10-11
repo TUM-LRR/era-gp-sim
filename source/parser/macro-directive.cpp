@@ -17,12 +17,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/section-directive.hpp"
+#include "parser/macro-directive.hpp"
 
-void SectionDirective::execute(FinalRepresentation& finalRepresentator,
-                               const SymbolTable& table,
-                               const SyntaxTreeGenerator& generator,
-                               CompileState& state) {
-  // Just set the section state to the current section. That's it.
-  state.section = _section;
+void MacroDirective::execute(FinalRepresentation& finalRepresentator,
+                             const SymbolTable& table,
+                             const SyntaxTreeGenerator& generator,
+                             CompileState& state) {
+  // TODO #79
 }

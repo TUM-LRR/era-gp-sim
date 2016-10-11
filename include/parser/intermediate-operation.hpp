@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include "common/assert.hpp"
 #include "parser/final-representation.hpp"
 #include "parser/line-interval.hpp"
 #include "parser/symbol-table.hpp"
@@ -32,6 +33,26 @@ struct CompileState;
  * \brief A memory address substitute as long as we do not have one.
  */
 using MemoryAddress = std::size_t;
+
+/**
+ * \brief A substitute for a not-initialized address.
+ */
+static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
+
+/**
+ * \brief Specifies the target for operations to put.
+ *
+ * This feature has been implemented to support macros. It allows that the
+ * operations are placed inside of other operations on syntax level.
+ */
+enum class TargetSelector { KEEP, MAIN, THIS };
+
+class IntermediateOperation;
+
+/**
+ * \brief Convenience class for a pointer to an operation.
+ */
+using IntermediateOperationPointer = std::unique_ptr<IntermediateOperation>;
 
 /**
  * \brief Represents an abstract assembler operation in the parser-internal
@@ -70,6 +91,31 @@ class IntermediateOperation {
    * \param state The CompileState to log possible errors.
    */
   virtual void enhanceSymbolTable(SymbolTable& table, CompileState& state);
+
+  /**
+   * \brief Specifies if the this operation should be processed.
+   * \return True, if so, else false.
+   */
+  virtual bool shouldInsert() const {
+    return true;
+  }
+
+  /**
+   * \brief Specifies the new target for operations after this command.
+   * \return Normally, we keep the target.
+   */
+  virtual TargetSelector newTarget() const {
+    return TargetSelector::KEEP;
+  }
+
+  /**
+   * \brief Inserts an operation into a possible internal command list.
+   * \param pointer The operation to insert.
+   */
+  virtual void insert(IntermediateOperationPointer pointer) {
+    // If this happens, something has gone wrong in our programming.
+    assert::that(false);
+  }
 
   /**
    * \brief Returns the memory address.
