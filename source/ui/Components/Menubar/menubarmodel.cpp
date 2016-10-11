@@ -22,9 +22,8 @@
 #include <string>
 #include <iostream>
 
-MenubarModel::MenubarModel(QQmlContext *context): QObject(){
-    this->context=context;
-    context->setContextProperty("menubarModel",  this);
+MenubarModel::MenubarModel(QQmlContext *context): QObject(), context(context){
+    context->setContextProperty("ui",  this);
 }
 
 void MenubarModel::open(QByteArray name){
@@ -33,13 +32,13 @@ void MenubarModel::open(QByteArray name){
     //QProject open
 }
 
-void MenubarModel::save(){
-    std::cout<<"C++ save"<<std::endl;
+void MenubarModel::save(int index){
+    std::cout<<"C++ save "<<index<<std::endl;
     //QProject save
 }
 
-void MenubarModel::saveAs(QByteArray name){
-    std::cout<<"C++ saveAs"<<std::endl;
+void MenubarModel::saveAs(QByteArray name, int index){
+    std::cout<<"C++ saveAs "<<index<<std::endl;
     std::string stdName=name.toStdString();
     //QProject saveAs
 }
@@ -48,4 +47,21 @@ void MenubarModel::newTab(QByteArray arch, QByteArray name){
      std::string stdArch=arch.toStdString();
      std::string stdName=name.toStdString();
      //Core New
+}
+
+void MenubarModel::settings(){
+    //open Settings
+}
+
+void MenubarModel::help(){
+    //open Help
+}
+
+void MenubarModel::snapshot(QByteArray name, int index){
+    std::string stdName=name.toStdString();
+    //GuiProject snapshot
+}
+
+void MenubarModel::closeProject(int index){
+    //close Project, is already removed from Tabview
 }

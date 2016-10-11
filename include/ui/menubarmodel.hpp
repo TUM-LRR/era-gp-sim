@@ -28,9 +28,13 @@ class MenubarModel : public QObject{
 public:
     MenubarModel(QQmlContext* context);
     Q_INVOKABLE void open(QByteArray name);
-    Q_INVOKABLE void save();
-    Q_INVOKABLE void saveAs(QByteArray name);
+    Q_INVOKABLE void save(int index);
+    Q_INVOKABLE void saveAs(QByteArray name, int index);
     Q_INVOKABLE void newTab(QByteArray arch, QByteArray name);
+    Q_INVOKABLE void snapshot(QByteArray name, int index);
+    Q_INVOKABLE void closeProject(int index);
+    Q_INVOKABLE void settings();
+    Q_INVOKABLE void help();
 
 private:
     QQmlContext* context;

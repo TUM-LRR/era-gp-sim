@@ -23,7 +23,7 @@ import QtQuick.Controls 1.4
 
 MenuBar {
     /*Adding or deleting components in the tab-View*/
-    property var tabView
+    property TabView tabView
     property var component
     id: menubar
     Menu{
@@ -32,6 +32,7 @@ MenuBar {
             text: "Open..."
             onTriggered: {
                 console.info("Open triggerd");
+                ui.open("PopUp ergaenzen");
             }
         }
         MenuItem{
@@ -39,31 +40,37 @@ MenuBar {
             onTriggered: {
                 console.info("New triggerd");
                 tabView.addTab("test", component);
+                ui.new("risc5", "popup ergaenzen");
             }
         }
         MenuItem{
             text: "Save"
             onTriggered: {
                 console.info("Save triggerd");
+                ui.save(tabView.currentIndex);
             }
         }
         MenuItem{
             text: "Save as..."
             onTriggered: {
                 console.info("Save as triggerd");
+                ui.saveAs("popup ergaenzen", tabView.currentIndex);
             }
         }
         MenuItem{
             text: "Snapshot"
             onTriggered: {
                 console.info("Snapshot triggerd");
+                ui.snapshot("popup für name", tabView.currentIndex)
             }
         }
         MenuItem{
-            text: "Delete"
+            text: "Close"
             onTriggered: {
                 console.info("Delete Triggerd");
-                tabView.removeTab(tabView.currentIndex);
+                var index=tabView.currentIndex;
+                tabView.removeTab(index);
+                ui.closeProject(index);
             }
         }
     }
@@ -74,6 +81,7 @@ MenuBar {
             text: "Open"
             onTriggered: {
                 console.info("Open Settings triggerd")
+                ui.settings();
             }
         }
     }
@@ -84,6 +92,7 @@ MenuBar {
             text: "Open"
             onTriggered: {
                 console.info("Help open triggerd")
+                ui.help();
             }
         }
     }
