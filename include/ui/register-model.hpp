@@ -16,8 +16,8 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-#ifndef REGISTERMODEL_H
-#define REGISTERMODEL_H
+#ifndef ERAGPSIM_UI_REGISTERMODEL_HPP
+#define ERAGPSIM_UI_REGISTERMODEL_HPP
 
 #include <QAbstractItemModel>
 #include <QDebug>
@@ -274,4 +274,4 @@ class RegisterModel : public QAbstractItemModel {
   Optional<int> getRowRelativeToParent(RegisterInformation &registerItem) const;
 };
 
-#endif// REGISTERMODEL_H
+#endif// ERAGPSIM_UI_REGISTERMODEL_HPP
