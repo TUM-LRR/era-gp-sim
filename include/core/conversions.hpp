@@ -60,50 +60,50 @@ using ToIntegralFunction = std::function<MemoryValue(const MemoryValue&, bool)>;
 
 /** Some standard conversions for just standard things */
 namespace standardConversions {
-namespace helper {
+namespace helper{
 namespace nonsigned {
-/** the standard sign function for unsigned conversions */
-extern const conversions::SignFunction signum;
-/** the standard toIntegral function for unsigned conversions */
-extern const conversions::ToIntegralFunction toIntegralFunction;
-/** the standard toMemoryValue function for unsigned conversions */
-extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
+  /** the standard sign function for unsigned conversions */
+  extern const conversions::SignFunction signum;
+  /** the standard toIntegral function for unsigned conversions */
+  extern const conversions::ToIntegralFunction toIntegralFunction;
+  /** the standard toMemoryValue function for unsigned conversions */
+  extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
 }
 namespace signBit {
-/** the standard sign function for signed conversions */
-extern const conversions::SignFunction signum;
-/** the standard toIntegral function for signed conversions using the SignBit
-* SignedRepresentation
-*/
-extern const conversions::ToIntegralFunction toIntegralFunction;
-/** the standard toMemoryValue function for signed conversions using the SignBit
-* SignedRepresentation
-*/
-extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
+  /** the standard sign function for signed conversions */
+  extern const conversions::SignFunction signum;
+  /** the standard toIntegral function for signed conversions using the SignBit
+  * SignedRepresentation
+  */
+  extern const conversions::ToIntegralFunction toIntegralFunction;
+  /** the standard toMemoryValue function for signed conversions using the SignBit
+  * SignedRepresentation
+  */
+  extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
 }
 namespace onesComplement {
-/** the standard sign function for signed conversions */
-extern const conversions::SignFunction signum;
-/** the standard toIntegral function for signed conversions using the
-* onesComplement SignedRepresentation
-*/
-extern const conversions::ToIntegralFunction toIntegralFunction;
-/** the standard toMemoryValue function for signed conversions using the
-* onesComplement SignedRepresentation
-*/
-extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
+  /** the standard sign function for signed conversions */
+  extern const conversions::SignFunction signum;
+  /** the standard toIntegral function for signed conversions using the
+  * onesComplement SignedRepresentation
+  */
+  extern const conversions::ToIntegralFunction toIntegralFunction;
+  /** the standard toMemoryValue function for signed conversions using the
+  * onesComplement SignedRepresentation
+  */
+  extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
 }
 namespace twosComplement {
-/** the standard sign function for signed conversions */
-extern const conversions::SignFunction signum;
-/** the standard toIntegral function for signed conversions using the
-* twosComplement SignedRepresentation
-*/
-extern const conversions::ToIntegralFunction toIntegralFunction;
-/** the standard toMemoryValue function for signed conversions using the
-* twosComplement SignedRepresentation
-*/
-extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
+  /** the standard sign function for signed conversions */
+  extern const conversions::SignFunction signum;
+  /** the standard toIntegral function for signed conversions using the
+  * twosComplement SignedRepresentation
+  */
+  extern const conversions::ToIntegralFunction toIntegralFunction;
+  /** the standard toMemoryValue function for signed conversions using the
+  * twosComplement SignedRepresentation
+  */
+  extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
 }
 }
 }
@@ -119,11 +119,9 @@ struct Conversion {
   : sgn{sgn}, toMem{toMem}, toInt{toInt} {
   }
   Conversion()
-  : Conversion(
-        conversions::standardConversions::helper::nonsigned::signum,
-        conversions::standardConversions::helper::nonsigned::toIntegralFunction,
-        conversions::standardConversions::helper::nonsigned::
-            toMemoryValueFunction) {
+  : Conversion(conversions::standardConversions::helper::nonsigned::signum,
+               conversions::standardConversions::helper::nonsigned::toIntegralFunction,
+               conversions::standardConversions::helper::nonsigned::toMemoryValueFunction) {
   }
   Conversion(const Conversion&) = default;
   Conversion(Conversion&&)      = default;
@@ -263,30 +261,6 @@ template <typename T>
 typename std::enable_if<std::is_integral<T>::value, MemoryValue>::type
 convert(T value, const Conversion con, std::size_t size) {
   return convert<T>(value, con.toMem, size);
-}
-
-namespace detail {
-// signFunction
-bool unSignumA(const MemoryValue& memoryValue);
-bool signumA(const MemoryValue& memoryValue);
-
-// ToIntegralFunction
-MemoryValue nonsignedB(const MemoryValue& memoryValue, bool sign);
-MemoryValue signBitB(const MemoryValue& memoryValue, bool sign);
-MemoryValue onesComplementB(const MemoryValue& memoryValue, bool sign);
-MemoryValue twosComplementB(const MemoryValue& memoryValue, bool sign);
-
-// ToMemoryValueFunction
-MemoryValue
-nonsignedC(const std::vector<std::uint8_t>& value, std::size_t size, bool sign);
-MemoryValue
-signBitC(const std::vector<std::uint8_t>& value, std::size_t size, bool sign);
-MemoryValue onesComplementC(const std::vector<std::uint8_t>& value,
-                            std::size_t size,
-                            bool sign);
-MemoryValue twosComplementC(const std::vector<std::uint8_t>& value,
-                            std::size_t size,
-                            bool sign);
 }
 
 namespace {
