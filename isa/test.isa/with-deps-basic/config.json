@@ -1,0 +1,56 @@
+{
+    "extends": [
+        "base1-basic",
+        "base2-basic"
+    ],
+    "instructions": [
+        {
+            "opcode": 6,
+            "mnemonic": "add",
+            "function": 3
+        },
+        {
+            "opcode": 9,
+            "mnemonic": "sub",
+            "function": 3
+        }
+    ],
+    "endianness": "little",
+    "units": [
+        {
+            "registers": [
+                {
+                    "size": 32,
+                    "id": 0,
+                    "constituents": [
+                        {
+                            "id": 1,
+                            "enclosing-index": 1
+                        },
+                        {
+                            "id": 2,
+                            "enclosing-index": 2
+                        }
+                    ],
+                    "alias": "zero",
+                    "name": "r0"
+                },
+                {
+                    "enclosing": 0,
+                    "aliases": [
+                        "foo",
+                        "bar"
+                    ],
+                    "size": 16,
+                    "id": 1,
+                    "type": "float",
+                    "name": "r1",
+                    "constant": 3.14
+                }
+            ],
+            "name": "cpu"
+        }
+    ],
+    "name": "with-deps-basic",
+    "word-size": 32
+}

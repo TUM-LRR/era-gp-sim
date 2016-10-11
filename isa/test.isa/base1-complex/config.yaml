@@ -1,0 +1,7 @@
+name: base1-complex
+extends: base3-cycle
+reset-units: true
+
+endianness: mixed
+word-size: 69
+alignment-behavior: relaxed

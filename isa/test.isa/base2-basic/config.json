@@ -1,0 +1,12 @@
+{
+    "word-size": 69,
+    "instructions": [
+        {
+            "opcode": 6,
+            "width": 6,
+            "mnemonic": "sll",
+            "function": 6
+        }
+    ],
+    "name": "base2-basic"
+}

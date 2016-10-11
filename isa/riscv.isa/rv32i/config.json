@@ -1,0 +1,377 @@
+{
+    "endianness": "little",
+    "instructions": [
+        {
+            "opcode": 55,
+            "mnemonic": "lui"
+        },
+        {
+            "opcode": 23,
+            "mnemonic": "auipc"
+        },
+        {
+            "opcode": 111,
+            "mnemonic": "jal"
+        },
+        {
+            "opcode": 103,
+            "mnemonic": "jalr"
+        },
+        {
+            "opcode": 99,
+            "mnemonic": "beq",
+            "funct3": 0
+        },
+        {
+            "opcode": 99,
+            "mnemonic": "bne",
+            "funct3": 1
+        },
+        {
+            "opcode": 99,
+            "mnemonic": "blt",
+            "funct3": 4
+        },
+        {
+            "opcode": 99,
+            "mnemonic": "bge",
+            "funct3": 5
+        },
+        {
+            "opcode": 99,
+            "mnemonic": "bltu",
+            "funct3": 6
+        },
+        {
+            "opcode": 99,
+            "mnemonic": "bgeu",
+            "funct3": 7
+        },
+        {
+            "opcode": 3,
+            "mnemonic": "lb",
+            "funct3": 0
+        },
+        {
+            "opcode": 3,
+            "mnemonic": "lh",
+            "funct3": 1
+        },
+        {
+            "opcode": 3,
+            "mnemonic": "lw",
+            "funct3": 2
+        },
+        {
+            "opcode": 3,
+            "mnemonic": "lbu",
+            "funct3": 4
+        },
+        {
+            "opcode": 3,
+            "mnemonic": "lhu",
+            "funct3": 5
+        },
+        {
+            "opcode": 35,
+            "mnemonic": "sb",
+            "funct": 0
+        },
+        {
+            "opcode": 35,
+            "mnemonic": "sh",
+            "funct": 1
+        },
+        {
+            "opcode": 35,
+            "mnemonic": "sw",
+            "funct": 2
+        },
+        {
+            "opcode": 19,
+            "mnemonic": "addi",
+            "funct3": 0
+        },
+        {
+            "opcode": 19,
+            "mnemonic": "slti",
+            "funct3": 2
+        },
+        {
+            "opcode": 19,
+            "mnemonic": "sltiu",
+            "funct3": 3
+        },
+        {
+            "opcode": 19,
+            "mnemonic": "xori",
+            "funct3": 4
+        },
+        {
+            "opcode": 19,
+            "mnemonic": "ori",
+            "funct3": 6
+        },
+        {
+            "opcode": 19,
+            "mnemonic": "andi",
+            "funct3": 7
+        },
+        {
+            "opcode": 19,
+            "func7": 0,
+            "mnemonic": "slli",
+            "funct3": 1
+        },
+        {
+            "opcode": 19,
+            "func7": 0,
+            "mnemonic": "srli",
+            "funct3": 5
+        },
+        {
+            "opcode": 19,
+            "func7": 32,
+            "mnemonic": "srai",
+            "funct3": 5
+        },
+        {
+            "opcode": 51,
+            "func7": 0,
+            "mnemonic": "add",
+            "funct3": 0
+        },
+        {
+            "opcode": 51,
+            "func7": 32,
+            "mnemonic": "sub",
+            "funct3": 0
+        },
+        {
+            "opcode": 51,
+            "func7": 0,
+            "mnemonic": "sll",
+            "funct3": 1
+        },
+        {
+            "opcode": 51,
+            "func7": 0,
+            "mnemonic": "slt",
+            "funct3": 2
+        },
+        {
+            "opcode": 51,
+            "func7": 0,
+            "mnemonic": "sltu",
+            "funct3": 3
+        },
+        {
+            "opcode": 51,
+            "func7": 0,
+            "mnemonic": "xor",
+            "funct3": 4
+        },
+        {
+            "opcode": 51,
+            "func7": 0,
+            "mnemonic": "srl",
+            "funct3": 5
+        },
+        {
+            "opcode": 51,
+            "func7": 32,
+            "mnemonic": "sra",
+            "funct3": 5
+        },
+        {
+            "opcode": 51,
+            "func7": 0,
+            "mnemonic": "or",
+            "funct3": 6
+        },
+        {
+            "opcode": 51,
+            "func7": 7,
+            "mnemonic": "and",
+            "funct3": 0
+        }
+    ],
+    "units": [
+        {
+            "registers": [
+                {
+                    "size": 32,
+                    "id": 0,
+                    "name": "x0",
+                    "constant": 0,
+                    "alias": "zero"
+                },
+                {
+                    "size": 32,
+                    "id": 1,
+                    "name": "x1"
+                },
+                {
+                    "size": 32,
+                    "id": 2,
+                    "name": "x2"
+                },
+                {
+                    "size": 32,
+                    "id": 3,
+                    "name": "x3"
+                },
+                {
+                    "size": 32,
+                    "id": 4,
+                    "name": "x4"
+                },
+                {
+                    "size": 32,
+                    "id": 5,
+                    "name": "x5"
+                },
+                {
+                    "size": 32,
+                    "id": 6,
+                    "name": "x6"
+                },
+                {
+                    "size": 32,
+                    "id": 7,
+                    "name": "x7"
+                },
+                {
+                    "size": 32,
+                    "id": 8,
+                    "name": "x8"
+                },
+                {
+                    "size": 32,
+                    "id": 9,
+                    "name": "x9"
+                },
+                {
+                    "size": 32,
+                    "id": 10,
+                    "name": "x10"
+                },
+                {
+                    "size": 32,
+                    "id": 11,
+                    "name": "x11"
+                },
+                {
+                    "size": 32,
+                    "id": 12,
+                    "name": "x12"
+                },
+                {
+                    "size": 32,
+                    "id": 13,
+                    "name": "x13"
+                },
+                {
+                    "size": 32,
+                    "id": 14,
+                    "name": "x14"
+                },
+                {
+                    "size": 32,
+                    "id": 15,
+                    "name": "x15"
+                },
+                {
+                    "size": 32,
+                    "id": 16,
+                    "name": "x16"
+                },
+                {
+                    "size": 32,
+                    "id": 17,
+                    "name": "x17"
+                },
+                {
+                    "size": 32,
+                    "id": 18,
+                    "name": "x18"
+                },
+                {
+                    "size": 32,
+                    "id": 19,
+                    "name": "x19"
+                },
+                {
+                    "size": 32,
+                    "id": 20,
+                    "name": "x20"
+                },
+                {
+                    "size": 32,
+                    "id": 21,
+                    "name": "x21"
+                },
+                {
+                    "size": 32,
+                    "id": 22,
+                    "name": "x22"
+                },
+                {
+                    "size": 32,
+                    "id": 23,
+                    "name": "x23"
+                },
+                {
+                    "size": 32,
+                    "id": 24,
+                    "name": "x24"
+                },
+                {
+                    "size": 32,
+                    "id": 25,
+                    "name": "x25"
+                },
+                {
+                    "size": 32,
+                    "id": 26,
+                    "name": "x26"
+                },
+                {
+                    "size": 32,
+                    "id": 27,
+                    "name": "x27"
+                },
+                {
+                    "size": 32,
+                    "id": 28,
+                    "name": "x28"
+                },
+                {
+                    "size": 32,
+                    "id": 29,
+                    "name": "x29"
+                },
+                {
+                    "size": 32,
+                    "id": 30,
+                    "name": "x30"
+                },
+                {
+                    "size": 32,
+                    "id": 31,
+                    "name": "x31"
+                },
+                {
+                    "size": 32,
+                    "id": 32,
+                    "type": "program-counter",
+                    "name": "pc"
+                }
+            ],
+            "name": "cpu"
+        }
+    ],
+    "alignment-behavior": "relaxed",
+    "word-size": 32,
+    "name": "rv32i"
+}

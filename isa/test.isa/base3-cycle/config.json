@@ -1,0 +1,30 @@
+{
+    "units": [
+        {
+            "registers": [
+                {
+                    "size": 64,
+                    "id": 13,
+                    "type": "program-counter",
+                    "name": "f0",
+                    "alias": "pc"
+                }
+            ],
+            "name": "fpu"
+        },
+        {
+            "registers": [
+                {
+                    "size": 64,
+                    "id": 13,
+                    "type": "program-counter",
+                    "name": "r5",
+                    "alias": "pc"
+                }
+            ],
+            "name": "cpu"
+        }
+    ],
+    "extends": "with-deps-complex",
+    "name": "base3"
+}
