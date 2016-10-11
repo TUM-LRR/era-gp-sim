@@ -1,0 +1,13 @@
+{
+    "reset-units": false,
+    "instructions": [
+        {
+            "function": 6,
+            "width": 6,
+            "opcode": 6,
+            "mnemonic": "sll"
+        }
+    ],
+    "name": "base2-complex",
+    "extends": "base3-cycle"
+}

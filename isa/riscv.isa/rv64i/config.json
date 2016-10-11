@@ -1,0 +1,264 @@
+{
+    "reset-units": true,
+    "word-size": 64,
+    "name": "rv64i",
+    "instructions": [
+        {
+            "funct3": 6,
+            "opcode": 3,
+            "mnemonic": "lwu"
+        },
+        {
+            "funct3": 3,
+            "opcode": 3,
+            "mnemonic": "ld"
+        },
+        {
+            "funct3": 1,
+            "func7": 0,
+            "opcode": 35,
+            "mnemonic": "sd"
+        },
+        {
+            "funct3": 1,
+            "func7": 0,
+            "opcode": 19,
+            "mnemonic": "slli"
+        },
+        {
+            "funct3": 5,
+            "func7": 1,
+            "opcode": 19,
+            "mnemonic": "srai"
+        },
+        {
+            "funct3": 0,
+            "opcode": 27,
+            "mnemonic": "addiw"
+        },
+        {
+            "funct3": 1,
+            "func7": 0,
+            "opcode": 27,
+            "mnemonic": "slliw"
+        },
+        {
+            "funct3": 5,
+            "func7": 0,
+            "opcode": 27,
+            "mnemonic": "srliw"
+        },
+        {
+            "funct3": 5,
+            "func7": 32,
+            "opcode": 27,
+            "mnemonic": "sraiw"
+        },
+        {
+            "funct3": 0,
+            "func7": 0,
+            "opcode": 59,
+            "mnemonic": "addw"
+        },
+        {
+            "funct3": 0,
+            "func7": 32,
+            "opcode": 59,
+            "mnemonic": "subw"
+        },
+        {
+            "funct3": 1,
+            "func7": 0,
+            "opcode": 59,
+            "mnemonic": "sllw"
+        },
+        {
+            "funct3": 5,
+            "func7": 0,
+            "opcode": 59,
+            "mnemonic": "srlw"
+        },
+        {
+            "funct3": 5,
+            "func7": 32,
+            "opcode": 59,
+            "mnemonic": "sraw"
+        }
+    ],
+    "extends": "rv32i",
+    "units": [
+        {
+            "registers": [
+                {
+                    "alias": "zero",
+                    "id": 0,
+                    "size": 64,
+                    "constant": 0,
+                    "name": "x0"
+                },
+                {
+                    "id": 1,
+                    "size": 64,
+                    "name": "x1"
+                },
+                {
+                    "id": 2,
+                    "size": 64,
+                    "name": "x2"
+                },
+                {
+                    "id": 3,
+                    "size": 64,
+                    "name": "x3"
+                },
+                {
+                    "id": 4,
+                    "size": 64,
+                    "name": "x4"
+                },
+                {
+                    "id": 5,
+                    "size": 64,
+                    "name": "x5"
+                },
+                {
+                    "id": 6,
+                    "size": 64,
+                    "name": "x6"
+                },
+                {
+                    "id": 7,
+                    "size": 64,
+                    "name": "x7"
+                },
+                {
+                    "id": 8,
+                    "size": 64,
+                    "name": "x8"
+                },
+                {
+                    "id": 9,
+                    "size": 64,
+                    "name": "x9"
+                },
+                {
+                    "id": 10,
+                    "size": 64,
+                    "name": "x10"
+                },
+                {
+                    "id": 11,
+                    "size": 64,
+                    "name": "x11"
+                },
+                {
+                    "id": 12,
+                    "size": 64,
+                    "name": "x12"
+                },
+                {
+                    "id": 13,
+                    "size": 64,
+                    "name": "x13"
+                },
+                {
+                    "id": 14,
+                    "size": 64,
+                    "name": "x14"
+                },
+                {
+                    "id": 15,
+                    "size": 64,
+                    "name": "x15"
+                },
+                {
+                    "id": 16,
+                    "size": 64,
+                    "name": "x16"
+                },
+                {
+                    "id": 17,
+                    "size": 64,
+                    "name": "x17"
+                },
+                {
+                    "id": 18,
+                    "size": 64,
+                    "name": "x18"
+                },
+                {
+                    "id": 19,
+                    "size": 64,
+                    "name": "x19"
+                },
+                {
+                    "id": 20,
+                    "size": 64,
+                    "name": "x20"
+                },
+                {
+                    "id": 21,
+                    "size": 64,
+                    "name": "x21"
+                },
+                {
+                    "id": 22,
+                    "size": 64,
+                    "name": "x22"
+                },
+                {
+                    "id": 23,
+                    "size": 64,
+                    "name": "x23"
+                },
+                {
+                    "id": 24,
+                    "size": 64,
+                    "name": "x24"
+                },
+                {
+                    "id": 25,
+                    "size": 64,
+                    "name": "x25"
+                },
+                {
+                    "id": 26,
+                    "size": 64,
+                    "name": "x26"
+                },
+                {
+                    "id": 27,
+                    "size": 64,
+                    "name": "x27"
+                },
+                {
+                    "id": 28,
+                    "size": 64,
+                    "name": "x28"
+                },
+                {
+                    "id": 29,
+                    "size": 64,
+                    "name": "x29"
+                },
+                {
+                    "id": 30,
+                    "size": 64,
+                    "name": "x30"
+                },
+                {
+                    "id": 31,
+                    "size": 64,
+                    "name": "x31"
+                },
+                {
+                    "type": "program-counter",
+                    "size": 64,
+                    "id": 32,
+                    "name": "pc"
+                }
+            ],
+            "name": "cpu"
+        }
+    ]
+}

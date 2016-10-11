@@ -1,0 +1,53 @@
+{
+    "instructions": [
+        {
+            "funct3": 0,
+            "opcode": 51,
+            "mnemonic": "mul",
+            "funct7": 1
+        },
+        {
+            "funct3": 1,
+            "opcode": 51,
+            "mnemonic": "mulh",
+            "funct7": 1
+        },
+        {
+            "funct3": 2,
+            "opcode": 51,
+            "mnemonic": "mulhsu",
+            "funct7": 1
+        },
+        {
+            "funct3": 3,
+            "opcode": 51,
+            "mnemonic": "mulhu",
+            "funct7": 1
+        },
+        {
+            "funct3": 4,
+            "opcode": 51,
+            "mnemonic": "div",
+            "funct7": 1
+        },
+        {
+            "funct3": 5,
+            "opcode": 51,
+            "mnemonic": "divu",
+            "funct7": 1
+        },
+        {
+            "funct3": 6,
+            "opcode": 51,
+            "mnemonic": "rem",
+            "funct7": 1
+        },
+        {
+            "funct3": 7,
+            "opcode": 51,
+            "mnemonic": "remu",
+            "funct7": 1
+        }
+    ],
+    "name": "rv32m"
+}

@@ -22,32 +22,32 @@
 */
 class MyAmazingClass {
  public:
-	/**
-	 * Kurze Beschreibung.
-	 *
-	 * Hier wieder mehr Information. Doxygen hat natuerlich wie Javadoc noch viele
-	 * andere Befehle. Minimum sollten die @param sein und und wenn die Funktion
-	 * nicht `void` returned auch der @return Tag. Eine volle Liste findet ihr
-	 * [hier](https://www.stack.nl/~dimitri/doxygen/manual/commands.html).
-	 *
-	 *
-	 * @tparam TemplateParameter Beschreibung eines Template Parameters.
-	 *
-	 * @param parameter1 Beschreibung des ersten Parameters.
-	 * @param parameter2 Beschreibung des zweiten Parameters.
-	 *
-	 * @return Beschreibung des Rueckgabewerts.
-	 *
-	 * @throws ExceptionType Wenn ihr wollt, hier eine Beschreibung von potentiell
-	 *         geworfenen Exceptions.
-	 *
-	 * @see Hier koennt ihr eine Funktion listen, die man sich am besten auch noch
-	 *      ansehen sollte.
-	 * @see bar()
-	 */
-	template <typename TemplateParameter>
-	ReturnType foo(Parameter1 parameter1, Parameter2 parameter2);
+  /**
+   * Kurze Beschreibung.
+   *
+   * Hier wieder mehr Information. Doxygen hat natuerlich wie Javadoc noch viele
+   * andere Befehle. Minimum sollten die @param sein und und wenn die Funktion
+   * nicht `void` returned auch der @return Tag. Eine volle Liste findet ihr
+   * [hier](https://www.stack.nl/~dimitri/doxygen/manual/commands.html).
+   *
+   *
+   * @tparam TemplateParameter Beschreibung eines Template Parameters.
+   *
+   * @param parameter1 Beschreibung des ersten Parameters.
+   * @param parameter2 Beschreibung des zweiten Parameters.
+   *
+   * @return Beschreibung des Rueckgabewerts.
+   *
+   * @throws ExceptionType Wenn ihr wollt, hier eine Beschreibung von potentiell
+   *         geworfenen Exceptions.
+   *
+   * @see Hier koennt ihr eine Funktion listen, die man sich am besten auch noch
+   *      ansehen sollte.
+   * @see bar()
+   */
+  template <typename TemplateParameter>
+  ReturnType foo(Parameter1 parameter1, Parameter2 parameter2);
 
-	/** Inline Doxygen zur Beschreibung eines Members. */
-	std::vector<Type> _vector;
+  /** Inline Doxygen zur Beschreibung eines Members. */
+  std::vector<Type> _vector;
 };

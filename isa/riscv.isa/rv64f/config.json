@@ -1,0 +1,30 @@
+{
+    "instructions": [
+        {
+            "rs2": 2,
+            "opcode": 83,
+            "mnemonic": "fcvtls",
+            "funct7": 96
+        },
+        {
+            "rs2": 3,
+            "opcode": 83,
+            "mnemonic": "fcvtlus",
+            "funct7": 96
+        },
+        {
+            "rs2": 2,
+            "opcode": 83,
+            "mnemonic": "fcvtsl",
+            "funct7": 104
+        },
+        {
+            "rs2": 3,
+            "opcode": 83,
+            "mnemonic": "fcvtslu",
+            "funct7": 104
+        }
+    ],
+    "name": "rv64f",
+    "extends": "rv32f"
+}

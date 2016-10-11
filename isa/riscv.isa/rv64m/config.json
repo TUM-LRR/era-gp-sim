@@ -1,0 +1,35 @@
+{
+    "instructions": [
+        {
+            "funct3": 0,
+            "opcode": 59,
+            "mnemonic": "mulw",
+            "funct7": 1
+        },
+        {
+            "funct3": 4,
+            "opcode": 59,
+            "mnemonic": "divw",
+            "funct7": 1
+        },
+        {
+            "funct3": 5,
+            "opcode": 59,
+            "mnemonic": "divuw",
+            "funct7": 1
+        },
+        {
+            "funct3": 6,
+            "opcode": 59,
+            "mnemonic": "remw",
+            "funct7": 1
+        },
+        {
+            "funct3": 7,
+            "opcode": 59,
+            "mnemonic": "remuw",
+            "funct7": 1
+        }
+    ],
+    "name": "rv64m"
+}
