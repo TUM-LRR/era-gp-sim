@@ -21,12 +21,18 @@
 #include <cassert>
 
 const ValidationResult ValidationResult::success() {
-  return ValidationResult{true, ""};
+  return ValidationResult{true, "", {}};
 }
 
 const ValidationResult ValidationResult::fail(std::string message) {
+  return fail(message, {});
+}
+
+const ValidationResult
+ValidationResult::fail(std::string message,
+                       std::initializer_list<std::string> arguments) {
   assert(message != "");
-  return ValidationResult{false, message};
+  return ValidationResult{false, message, arguments};
 }
 
 bool ValidationResult::isSuccess() const {
@@ -41,6 +47,12 @@ const std::string& ValidationResult::getMessage() const {
   return _message;
 }
 
-ValidationResult::ValidationResult(bool success, std::string message)
-: _success(success), _message(message) {
+const std::vector<std::string>& ValidationResult::getArguments() const {
+  return _arguments;
+}
+
+ValidationResult::ValidationResult(bool success,
+                                   std::string message,
+                                   std::initializer_list<std::string> arguments)
+: _success(success), _message(message), _arguments(arguments) {
 }

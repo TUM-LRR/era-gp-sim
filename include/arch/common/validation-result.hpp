@@ -20,7 +20,9 @@
 #ifndef ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP_
 #define ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP_
 
+#include <initializer_list>
 #include <string>
+#include <vector>
 
 /**
  * Represents the result of a validatate operation on the syntax tree.
@@ -35,12 +37,25 @@ class ValidationResult {
 
   /**
    * Creates a new ValidationResult object that indicates, that the
-   * validation failed. A message, describing the problem, should be
-   * given.
+   * validation failed. A message, describing the problem, must be given.
+   * This method is equivalent to: ValidationResult::fail(message, {})
    *
    * \param message The message indicating the problem. Must not be empty.
    */
   static const ValidationResult fail(std::string message);
+
+  /**
+   * Creates a new ValidationResult object that indicates, that the
+   * validation failed. A message describing the problem, must be given.
+   * For translation purposes, a list of arguments for the message can
+   * be given, to support translatable messages with arguments.
+   *
+   * \param message The message indicating the problem. Must not be empty.
+   * \param arguments A list of arguments for translation purposes
+   */
+  static const ValidationResult
+  fail(std::string message, std::initializer_list<std::string> arguments);
+
 
   /**
    * Check if this validation result indicates, that the validation
@@ -60,11 +75,20 @@ class ValidationResult {
    */
   const std::string& getMessage() const;
 
+  /**
+   * Get the list of arguments, that exist for translation purposes.
+   * \param A const list of arguments
+   */
+  const std::vector<std::string>& getArguments() const;
+
  private:
-  ValidationResult(bool success, std::string message);
+  ValidationResult(bool success,
+                   std::string message,
+                   std::initializer_list<std::string> arguments);
 
   bool _success;
   std::string _message;
+  std::vector<std::string> _arguments;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP_ */

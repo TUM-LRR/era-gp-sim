@@ -47,7 +47,8 @@ class LuiAuipcValidationNode : public InstructionNode {
     if (_children.size() != 2) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                            "This instruction must have exactly 2 operands"));
+                            "This instruction must have exactly %1 operands"),
+          {std::to_string(2)});
     }
 
     const ValidationResult resultAll = validateAllChildren();
@@ -77,7 +78,8 @@ class LuiAuipcValidationNode : public InstructionNode {
           return ValidationResult::fail(
               QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                                 "The immediate value of this instruction must "
-                                "be representable by 20 bits"));
+                                "be representable by %1 bits"),
+              {std::to_string(20)});
         }
       }
     }

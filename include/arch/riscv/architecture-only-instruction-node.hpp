@@ -173,7 +173,8 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
     if (_children.size() != 3) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                            "This instruction must have exactly 3 operands"));
+                            "This instruction must have exactly %1 operands"),
+          {std::to_string(3)});
     }
 
     return ValidationResult::success();
@@ -193,10 +194,12 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
         for (std::size_t index = 11; index < value.getSize(); ++index) {
           if ((isSignBitSet && !value.get(value.getSize() - 1 - index)) ||
               (!isSignBitSet && value.get(value.getSize() - 1 - index))) {
-            return ValidationResult::fail(QT_TRANSLATE_NOOP(
-                "Syntax-Tree-Validation",
-                "The immediate value of this instruction must "
-                "be representable by 12 bits"));
+            return ValidationResult::fail(
+                QT_TRANSLATE_NOOP(
+                    "Syntax-Tree-Validation",
+                    "The immediate value of this instruction must "
+                    "be representable by %1 bits"),
+                {std::to_string(12)});
           }
         }
       }

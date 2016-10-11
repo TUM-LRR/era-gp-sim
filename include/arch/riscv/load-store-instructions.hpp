@@ -98,6 +98,13 @@ class LoadInstructionNode : public InstructionNode {
   }
 
   const ValidationResult validate() const override {
+    if (_children.size() != 3) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "This instruction must have exactly %1 operands"),
+          {std::to_string(3)});
+    }
+
     if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
         !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(
@@ -118,9 +125,11 @@ class LoadInstructionNode : public InstructionNode {
 
     for (std::size_t index = 12; index < value.getSize(); ++index) {
       if (value.get(index)) {
-        return ValidationResult::fail(QT_TRANSLATE_NOOP(
-            "Syntax-Tree-Validation",
-            "The immediate value must be representable by 12 bits"));
+        return ValidationResult::fail(
+            QT_TRANSLATE_NOOP(
+                "Syntax-Tree-Validation",
+                "The immediate value must be representable by %1 bits"),
+            {std::to_string(12)});
       }
     }
 
@@ -249,6 +258,13 @@ class StoreInstructionNode : public InstructionNode {
   }
 
   const ValidationResult validate() const override {
+    if (_children.size() != 3) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "This instruction must have exactly %1 operands"),
+          {std::to_string(3)});
+    }
+
     if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
         !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(
@@ -269,9 +285,11 @@ class StoreInstructionNode : public InstructionNode {
 
     for (std::size_t index = 12; index < value.getSize(); ++index) {
       if (value.get(index)) {
-        return ValidationResult::fail(QT_TRANSLATE_NOOP(
-            "Syntax-Tree-Validation",
-            "The immediate value must be representable by 12 bits"));
+        return ValidationResult::fail(
+            QT_TRANSLATE_NOOP(
+                "Syntax-Tree-Validation",
+                "The immediate value must be representable by %1 bits"),
+            {std::to_string(12)});
       }
     }
 

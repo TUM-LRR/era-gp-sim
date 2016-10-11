@@ -63,7 +63,8 @@ class IntegerInstructionNode : public InstructionNode {
  */
   IntegerInstructionNode(InstructionInformation& info,
                          bool immediateInstruction)
-      : InstructionNode(info), _isImmediate(immediateInstruction) {}
+  : InstructionNode(info), _isImmediate(immediateInstruction) {
+  }
 
   /** Default destructor*/
   ~IntegerInstructionNode() = default;
@@ -91,9 +92,11 @@ class IntegerInstructionNode : public InstructionNode {
   const ValidationResult validate() const override {
     // a integer instruction needs exactly 3 operands
     if (_children.size() != 3) {
-      return ValidationResult::fail(QT_TRANSLATE_NOOP(
-          "Syntax-Tree-Validation",
-          "Integer instructions must have exactly 3 operands"));
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP(
+              "Syntax-Tree-Validation",
+              "Integer instructions must have exactly %1 operands"),
+          {std::to_string(3)});
     }
     // check if all operands are valid themselves
     ValidationResult resultAll = validateAllChildren();
@@ -118,10 +121,12 @@ class IntegerInstructionNode : public InstructionNode {
               (!isSignBitSet && !value.get(value.getSize() - 1 - index))) {
             // bit detected which does not belong to a (possible) sign extension
             //->fail validation
-            return ValidationResult::fail(QT_TRANSLATE_NOOP(
-                "Syntax-Tree-Validation",
-                "The immediate value of this instruction must "
-                "be representable by 12 bits"));
+            return ValidationResult::fail(
+                QT_TRANSLATE_NOOP(
+                    "Syntax-Tree-Validation",
+                    "The immediate value of this instruction must "
+                    "be representable by %1 bits"),
+                {std::to_string(12)});
           }
         }
       }
@@ -156,8 +161,8 @@ class IntegerInstructionNode : public InstructionNode {
    * \param op2 second operand for the arithmetic operation
    * \return result of op1 <arithmeticOperation> op2
    */
-  virtual SizeType performIntegerOperation(SizeType op1,
-                                           SizeType op2) const = 0;
+  virtual SizeType
+  performIntegerOperation(SizeType op1, SizeType op2) const = 0;
 
  protected:
   SizeType getLower5Bit(SizeType op) const {
@@ -184,7 +189,8 @@ template <typename SizeType>
 class AddInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
   AddInstructionNode(InstructionInformation& info, bool immediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, immediateInstruction) {}
+  : IntegerInstructionNode<SizeType>(info, immediateInstruction) {
+  }
 
   /**
    * Adds the two operands
@@ -207,9 +213,10 @@ template <typename SizeType>
 class SubInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
   SubInstructionNode(InstructionInformation info)
-      : IntegerInstructionNode<SizeType>(
-            info, false)  // RISC-V does not specifiy a subi
-  {}
+  : IntegerInstructionNode<SizeType>(info,
+                                     false)// RISC-V does not specifiy a subi
+  {
+  }
 
   /**
    * Subtracts op2 from op1
@@ -232,7 +239,8 @@ template <typename SizeType>
 class AndInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
   AndInstructionNode(InstructionInformation info, bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  }
 
   /*!
    * Performs a bitwise logical and with op1, op2
@@ -255,7 +263,8 @@ template <typename SizeType>
 class OrInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
   OrInstructionNode(InstructionInformation info, bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  }
 
   /**
    * Performs a bitwise logical or with op1, op2
@@ -278,7 +287,8 @@ template <typename SizeType>
 class XorInstructionNode : public IntegerInstructionNode<SizeType> {
  public:
   XorInstructionNode(InstructionInformation info, bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  }
 
   /**
    * Performs a bitwise logical xor with op1, op2
@@ -303,7 +313,8 @@ class ShiftLogicalLeftInstructionNode
  public:
   ShiftLogicalLeftInstructionNode(InstructionInformation info,
                                   bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  }
 
   /**
    * Shifts bits in op1 logical left (shifts zeros into the lower part). How
@@ -330,7 +341,7 @@ class ShiftLogicalRightInstructionNode
  public:
   ShiftLogicalRightInstructionNode(InstructionInformation info,
                                    bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
     // For logical right shift, SizeType must be a unsigned integral type
     // Due to the fact that signed right shift is implementation/compiler
     // specific
@@ -363,7 +374,8 @@ class ShiftArithmeticRightInstructionNode
  public:
   ShiftArithmeticRightInstructionNode(InstructionInformation info,
                                       bool isImmediateInstruction)
-      : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {}
+  : IntegerInstructionNode<SizeType>(info, isImmediateInstruction) {
+  }
 
   /**
    * Shifts bits in op1 arithmetic right (shifts sign bit into the upper part).
@@ -376,9 +388,9 @@ class ShiftArithmeticRightInstructionNode
   SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
     // c++ standard does not define a arithemtic shift operator
     constexpr auto length = sizeof(SizeType) * CHAR_BIT;
-    SizeType sign = (op1 & (SizeType(1) << (length - 1))) >> (length - 1);
+    SizeType sign       = (op1 & (SizeType(1) << (length - 1))) >> (length - 1);
     SizeType shiftCount = this->getLower5Bit(op2);
-    SizeType tmp = op1 >> shiftCount;
+    SizeType tmp        = op1 >> shiftCount;
     // erase upper shiftCount bits
     // put in sign bit
     for (auto i = length - shiftCount; i < length; ++i) {
