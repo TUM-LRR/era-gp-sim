@@ -100,7 +100,7 @@ struct TestBranchInstructions : public ::testing::Test {
 
   template <typename... Args>
   void testUnsignedBranch(Args&&... args) {
-    testBranch<riscv::signed32_t>(std::forward<Args>(args)...);
+    testBranch<riscv::unsigned32_t>(std::forward<Args>(args)...);
   }
 
   NodeFactoryCollection factory;

@@ -36,7 +36,7 @@ bool occupiesMoreBitsThan(const T& value, std::size_t numberOfBits) {
   if (numberOfBits == 0) return true;
 
   // Get the value one larger than the maximum allowed absolute value
-  auto boundary = static_cast<std::int64_t>(1) << numberOfBits;
+  auto boundary = static_cast<std::uintmax_t>(1) << numberOfBits;
 
   // Note especially that signed numbers can occupy one more value
   // than positive numbers with the same bit width
