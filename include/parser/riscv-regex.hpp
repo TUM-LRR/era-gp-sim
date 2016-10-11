@@ -75,8 +75,6 @@ class RiscvParser::RiscvRegex {
   void matchLine(const std::string &line);
 
  private:
-  std::regex _line_regex;
-
   std::smatch _matches;
 };
 

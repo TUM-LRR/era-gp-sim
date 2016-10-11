@@ -22,27 +22,16 @@
 #include <string>
 #include <vector>
 #include "parser/final-representation.hpp"
+#include "parser/line-interval.hpp"
 #include "parser/symbol-table.hpp"
 #include "parser/syntax-tree-generator.hpp"
 
 struct CompileState;
 
 /**
- * \brief Representa an interval of lines, denoted by an upper and lower line
- * bound.
- */
-using LineInterval = std::pair<unsigned int, unsigned int>;
-
-/**
  * \brief A memory address substitute as long as we do not have one.
  */
-using DummyMemoryAddress = unsigned int;
-
-/**
- * \brief A substitute for a not-initialized address.
- */
-static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
-
+using MemoryAddress = std::size_t;
 
 /**
  * \brief Represents an abstract assembler operation in the parser-internal
@@ -60,7 +49,7 @@ class IntermediateOperation {
   IntermediateOperation(const LineInterval& lines,
                         const std::vector<std::string>& labels,
                         const std::string& name)
-  : _lines(lines), _labels(labels), _name(name), _address(NULL_ADDRESS) {
+  : _lines(lines), _labels(labels), _name(name), _address(0) {
   }
 
   /**
@@ -86,7 +75,7 @@ class IntermediateOperation {
    * \brief Returns the memory address.
    * \return The memory address.
    */
-  DummyMemoryAddress address() {
+  MemoryAddress address() {
     return _address;
   }
 
@@ -114,7 +103,7 @@ class IntermediateOperation {
   /**
    * \brief The internal memory address.
    */
-  DummyMemoryAddress _address;
+  MemoryAddress _address;
 };
 
 #endif

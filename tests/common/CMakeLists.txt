@@ -4,6 +4,7 @@
 
 set(TEST_COMMON_SOURCES
   common-utility-tests.cpp
+  multiregex-test.cpp
   common-assert-tests.cpp
 )
 

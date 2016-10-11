@@ -22,7 +22,7 @@ void IntermediateOperation::enhanceSymbolTable(SymbolTable& table,
                                                CompileState& state) {
   // We assign an address, if we do not have one yet (usually, we should not
   // have one).
-  if (_address == NULL_ADDRESS) {
+  if (_address == 0) {
     determineMemoryPosition();
   }
 
