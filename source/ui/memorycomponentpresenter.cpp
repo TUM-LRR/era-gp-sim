@@ -22,7 +22,7 @@
 #include <QDebug>
 #include "core/memory-value.hpp"
 
-MemoryComponentPresenter::MemoryComponentPresenter(Memory *memory, QQmlContext *context, QObject *parent)
+MemoryComponentPresenter::MemoryComponentPresenter(const MemoryAccess access, const MemoryManager manager, QQmlContext *context, QObject *parent)
 : QAbstractTableModel(parent){
     // TODO register callback functions
     //memory->setCallback(&MemoryComponentPresenter::onMemoryChanged);
@@ -38,7 +38,7 @@ MemoryComponentPresenter::MemoryComponentPresenter(Memory *memory, QQmlContext *
 MemoryComponentPresenter::~MemoryComponentPresenter() { }
 
 void onMemoryChanged(const std::size_t address, const std::size_t length) {
-    this->dataChanged(this->index(address, length), this->index(address, 2));
+    // emit signal, damit die data() methode im qt-thread läuft
 }
 
 void MemoryComponentPresenter::setSize(int newSize) {
