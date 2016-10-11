@@ -319,6 +319,59 @@ MemoryValue permute(const MemoryValue& memoryValue,
                     std::size_t byteSize);
 
 /**
+ * \brief Converts a MemoryValue into integral form, making sure to use the
+ * given
+ * SignedRepresentation
+ * \param memoryValue The to be converted MemoryValue
+ * \param representation the method of storing the value
+ * \param byteSize soze of a byte in bit
+ * \param byteOrder Endianess of the output
+ * \tparam T The desired type of the output
+ * \returns integral representation of memoryValue
+ */
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value, T>::type
+convertForced(const MemoryValue& memoryValue,
+              SignedRepresentation representation = SignedRepresentation::SMART,
+              std::size_t byteSize                = 8,
+              Endianness byteOrder                = Endianness::LITTLE) {
+  MemoryValue permuted = permute(memoryValue, byteOrder, byteSize);
+  Conversion con       = conversions::detail::switchConversion(representation);
+  if (representation == SignedRepresentation::SMART &&
+      std::is_signed<T>::value) {
+    con = conversions::standardConversions::twosComplement;
+  }
+  return convert<T>(permuted, con);
+}
+
+/**
+ * \brief Converts an integral value into a MemoryValue, making sure to use the
+ * given SignedRepresentation
+ * \param value The to be converted value
+ * \param size number of bits to reserve for storing the value
+ * \param representation the method of storing the value
+ * \param byteSize size of a byte in bit
+ * \param byteOrder Endianess of the output
+ * \tparam T The type of the input
+ * \returns MemoryValue representating value
+ */
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value, MemoryValue>::type
+convertForced(T value,
+              std::size_t size,
+              SignedRepresentation representation = SignedRepresentation::SMART,
+              std::size_t byteSize                = 8,
+              Endianness byteOrder                = Endianness::LITTLE) {
+  Conversion con = conversions::detail::switchConversion(representation);
+  if (representation == SignedRepresentation::SMART &&
+      std::is_signed<T>::value) {
+    con = conversions::standardConversions::twosComplement;
+  }
+  MemoryValue converted = convert<T>(value, con, size);
+  return permute(converted, byteOrder, byteSize);
+}
+
+/**
  * \brief Converts a MemoryValue into integral form, using unsigned conversions
  * if T is unsigned
  * \param memoryValue The to be converted MemoryValue
@@ -400,58 +453,6 @@ convert(T value,
                           detail::mapRepresentation(representation),
                           byteSize,
                           detail::mapEndianess(byteOrder));
-}
-
-/**
- * \brief Converts a MemoryValue into integral form, making sure to use the given
- * SignedRepresentation
- * \param memoryValue The to be converted MemoryValue
- * \param representation the method of storing the value
- * \param byteSize soze of a byte in bit
- * \param byteOrder Endianess of the output
- * \tparam T The desired type of the output
- * \returns integral representation of memoryValue
- */
-template <typename T>
-typename std::enable_if<std::is_integral<T>::value, T>::type
-convertForced(const MemoryValue& memoryValue,
-              SignedRepresentation representation = SignedRepresentation::SMART,
-              std::size_t byteSize                = 8,
-              Endianness byteOrder                = Endianness::LITTLE) {
-  MemoryValue permuted = permute(memoryValue, byteOrder, byteSize);
-  Conversion con       = conversions::detail::switchConversion(representation);
-  if (representation == SignedRepresentation::SMART &&
-      std::is_signed<T>::value) {
-    con = conversions::standardConversions::twosComplement;
-  }
-  return convert<T>(permuted, con);
-}
-
-/**
- * \brief Converts an integral value into a MemoryValue, making sure to use the
- * given SignedRepresentation
- * \param value The to be converted value
- * \param size number of bits to reserve for storing the value
- * \param representation the method of storing the value
- * \param byteSize size of a byte in bit
- * \param byteOrder Endianess of the output
- * \tparam T The type of the input
- * \returns MemoryValue representating value
- */
-template <typename T>
-typename std::enable_if<std::is_integral<T>::value, MemoryValue>::type
-convertForced(T value,
-              std::size_t size,
-              SignedRepresentation representation = SignedRepresentation::SMART,
-              std::size_t byteSize                = 8,
-              Endianness byteOrder                = Endianness::LITTLE) {
-  Conversion con = conversions::detail::switchConversion(representation);
-  if (representation == SignedRepresentation::SMART &&
-      std::is_signed<T>::value) {
-    con = conversions::standardConversions::twosComplement;
-  }
-  MemoryValue converted = convert<T>(value, con, size);
-  return permute(converted, byteOrder, byteSize);
 }
 }
 
