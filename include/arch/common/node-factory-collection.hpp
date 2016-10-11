@@ -44,21 +44,29 @@ class NodeFactoryCollection {
   /**
    * Default-constructs a NodeFactoryCollection.
    */
-  NodeFactoryCollection() = default;
+  NodeFactoryCollection();
 
-  template <typename FactoryTypes>
-  static NodeFactoryCollection Create(const InstructionSet &instructionSet,
-                                      const Architecture &architecture) {
-    // clang-format off
-    return NodeFactoryCollection(
-        FactoryTypes::instructionFactory(instructionSet, architecture),
-        FactoryTypes::immediateFactory(),
-        FactoryTypes::memoryAccessFactory(),
-        FactoryTypes::registerAccessFactory(),
-        FactoryTypes::arithmeticFactory()
-    );
-    // clang-format on
-  }
+  /**
+   * Constructs a new NodeFactoryCollection.
+   *
+   * This constructor is provided as is, but in most of all cases you will want
+   * to instantiate such a collection via the `NodeFactoryCollectionMaker`
+   * helper class.
+   *
+   * \param instructionFactory The factory for instruction nodes.
+   * \param immediateFactory The factory for immediate nodes.
+   * \param memoryAccessFactory The factory for memory access nodes.
+   * \param registerAccessFactory The factory for register access nodes.
+   * \param arithmeticFactory The factory for arithmetic nodes.
+   */
+  NodeFactoryCollection(
+      const std::shared_ptr<AbstractInstructionNodeFactory> &instructionFactory,
+      const std::shared_ptr<AbstractImmediateNodeFactory> &immediateFactory,
+      const std::shared_ptr<AbstractMemoryAccessNodeFactory>
+          &memoryAccessFactory,
+      const std::shared_ptr<AbstractRegisterAccessNodeFactory>
+          &registerAccessFactory,
+      const std::shared_ptr<AbstractArithmeticNodeFactory> &arithmeticFactory);
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
@@ -91,20 +99,12 @@ class NodeFactoryCollection {
   /**
    * It is asserted that a corresponding factory must be set prior to this
    * method call, otherwise the assertion will fail
-   * \copydoc AbstractArithmeticNodeFactory::createArithmeticerationNode
+   * \copydoc AbstractArithmeticNodeFactory::createArithmeticNode
    */
   Node createArithmeticNode(
       AbstractArithmeticNodeFactory::Operation operation) const;
 
  private:
-  NodeFactoryCollection(
-      std::shared_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
-      std::shared_ptr<AbstractImmediateNodeFactory> &&immediateFactory,
-      std::shared_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,
-      std::shared_ptr<AbstractRegisterAccessNodeFactory>
-          &&registerAccessFactory,
-      std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory);
-
   std::shared_ptr<AbstractInstructionNodeFactory> _instructionFactory;
   std::shared_ptr<AbstractImmediateNodeFactory> _immediateFactory;
   std::shared_ptr<AbstractRegisterAccessNodeFactory> _registerAccessFactory;

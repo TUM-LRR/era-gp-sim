@@ -27,17 +27,19 @@ InstructionInformation::InstructionInformation(
   deserialize(data);
 }
 
+InstructionInformation::InstructionInformation(const std::string& mnemonic)
+: _mnemonic(mnemonic) {
+}
+
 InstructionInformation::InstructionInformation(const std::string& mnemonic,
-                                               const InstructionKey& key,
-                                               const std::string& format)
-: _mnemonic(mnemonic), _key(key), _format(format) {
+                                               const InstructionKey& key)
+: _mnemonic(mnemonic), _key(key) {
 }
 
 bool InstructionInformation::
 operator==(const InstructionInformation& other) const noexcept {
   if (this->_mnemonic != other._mnemonic) return false;
   if (this->_key != other._key) return false;
-  if (this->_format != other._format) return false;
 
   return true;
 }
@@ -62,7 +64,7 @@ InstructionInformation::mnemonic(const std::string& mnemonic) {
   return *this;
 }
 
-const std::string& InstructionInformation::getMnemonic() const noexcept {
+const std::string& InstructionInformation::getMnemonic() const {
   assert(hasMnemonic());
   return _mnemonic;
 }
@@ -76,7 +78,7 @@ InstructionInformation& InstructionInformation::key(const InstructionKey& key) {
   return *this;
 }
 
-const InstructionKey& InstructionInformation::getKey() const noexcept {
+const InstructionKey& InstructionInformation::getKey() const {
   assert(hasKey());
   return _key;
 }
@@ -85,37 +87,16 @@ bool InstructionInformation::hasKey() const noexcept {
   return _key.isValid();
 }
 
-InstructionInformation&
-InstructionInformation::format(const std::string& format) {
-  assert(!format.empty());
-  _format = format;
-  return *this;
-}
-
-const std::string& InstructionInformation::getFormat() const noexcept {
-  assert(hasFormat());
-  return _format;
-}
-
-bool InstructionInformation::hasFormat() const noexcept {
-  return !_format.empty();
-}
-
 bool InstructionInformation::isValid() const noexcept {
-  if (!hasMnemonic()) return false;
-  if (!hasKey()) return false;
-  if (!hasFormat()) return false;
-
-  return true;
+  return !_mnemonic.empty() && _key.isValid();
 }
 
 void InstructionInformation::_deserialize(InformationInterface::Format& data) {
   assert(data.count("mnemonic"));
-  assert(data.count("format"));
-  assert(data.count("key"));
 
-  mnemonic(Utility::toLower(data["mnemonic"]));
-  format(data["format"]);
+  auto iterator = data.find("mnemonic");
+  this->mnemonic(Utility::toLower(*iterator));
+  data.erase(iterator);
 
-  key(static_cast<InstructionKey>(data["key"]));
+  key(static_cast<InstructionKey>(data));
 }

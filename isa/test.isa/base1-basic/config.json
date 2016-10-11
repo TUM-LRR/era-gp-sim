@@ -1,6 +1,7 @@
 {
-  "name": "base1-basic",
-  "endianness": "mixed",
-  "word-size": 123,
-  "alignment-behavior": "relaxed"
+    "signed-representation": "sign-bit",
+    "word-size": 123,
+    "name": "base1-basic",
+    "alignment-behavior": "relaxed",
+    "endianness": "mixed"
 }

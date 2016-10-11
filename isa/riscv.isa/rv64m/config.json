@@ -1,50 +1,35 @@
 {
-  "name": "rv64m",
-  "instructions": [
-    {
-      "mnemonic": "mulw",
-      "format": "R",
-      "key": {
-        "opcode": 59,
-        "funct3": 0,
-        "funct7": 1
-      }
-    },
-    {
-      "mnemonic": "divw",
-      "format": "R",
-      "key": {
-        "opcode": 59,
-        "funct3": 4,
-        "funct7": 1
-      }
-    },
-    {
-      "mnemonic": "divuw",
-      "format": "R",
-      "key": {
-        "opcode": 59,
-        "funct3": 5,
-        "funct7": 1
-      }
-    },
-    {
-      "mnemonic": "remw",
-      "format": "R",
-      "key": {
-        "opcode": 59,
-        "funct3": 6,
-        "funct7": 1
-      }
-    },
-    {
-      "mnemonic": "remuw",
-      "format": "R",
-      "key": {
-        "opcode": 59,
-        "funct3": 7,
-        "funct7": 1
-      }
-    }
-  ]
+    "instructions": [
+        {
+            "funct3": 0,
+            "opcode": 59,
+            "mnemonic": "mulw",
+            "funct7": 1
+        },
+        {
+            "funct3": 4,
+            "opcode": 59,
+            "mnemonic": "divw",
+            "funct7": 1
+        },
+        {
+            "funct3": 5,
+            "opcode": 59,
+            "mnemonic": "divuw",
+            "funct7": 1
+        },
+        {
+            "funct3": 6,
+            "opcode": 59,
+            "mnemonic": "remw",
+            "funct7": 1
+        },
+        {
+            "funct3": 7,
+            "opcode": 59,
+            "mnemonic": "remuw",
+            "funct7": 1
+        }
+    ],
+    "name": "rv64m"
 }

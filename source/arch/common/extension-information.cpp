@@ -31,7 +31,7 @@ ExtensionInformation::ExtensionInformation(InformationInterface::Format& data) {
 }
 
 ExtensionInformation::ExtensionInformation(const std::string& name)
-: _name(name), _wordSize(0), _byteSize(0) {
+: _name(name), _wordSize(0) {
 }
 
 bool ExtensionInformation::operator==(const ExtensionInformation& other) const
@@ -40,7 +40,6 @@ bool ExtensionInformation::operator==(const ExtensionInformation& other) const
   if (this->_endianness != other._endianness) return false;
   if (this->_alignmentBehavior != other._alignmentBehavior) return false;
   if (this->_wordSize != other._wordSize) return false;
-  if (this->_byteSize != other._byteSize) return false;
   if (this->_instructions != other._instructions) return false;
   if (this->_units != other._units) return false;
 
@@ -78,7 +77,7 @@ ExtensionInformation& ExtensionInformation::name(const std::string& name) {
   return *this;
 }
 
-const std::string& ExtensionInformation::getName() const noexcept {
+const std::string& ExtensionInformation::getName() const {
   assert(hasName());
   return _name;
 }
@@ -92,14 +91,30 @@ ExtensionInformation& ExtensionInformation::endianness(Endianness endianness) {
   return *this;
 }
 
-ExtensionInformation::Endianness ExtensionInformation::getEndianness() const
-    noexcept {
+ExtensionInformation::Endianness ExtensionInformation::getEndianness() const {
   assert(hasEndianness());
   return *_endianness;
 }
 
 bool ExtensionInformation::hasEndianness() const noexcept {
   return static_cast<bool>(_endianness);
+}
+
+ExtensionInformation& ExtensionInformation::signedRepresentation(
+    SignedRepresentation signedRepresentation) {
+  _signedRepresentation = signedRepresentation;
+  return *this;
+}
+
+ExtensionInformation::SignedRepresentation
+ExtensionInformation::getSignedRepresentation() const {
+  assert(hasSignedRepresentation());
+  return *_signedRepresentation;
+}
+
+
+bool ExtensionInformation::hasSignedRepresentation() const noexcept {
+  return static_cast<bool>(_signedRepresentation);
 }
 
 ExtensionInformation&
@@ -109,7 +124,7 @@ ExtensionInformation::alignmentBehavior(AlignmentBehavior alignmentBehavior) {
 }
 
 ExtensionInformation::AlignmentBehavior
-ExtensionInformation::getAlignmentBehavior() const noexcept {
+ExtensionInformation::getAlignmentBehavior() const {
   assert(hasAlignmentBehavior());
   return *_alignmentBehavior;
 }
@@ -119,36 +134,19 @@ bool ExtensionInformation::hasAlignmentBehavior() const noexcept {
 }
 
 
-ExtensionInformation& ExtensionInformation::wordSize(word_size_t wordSize) {
+ExtensionInformation& ExtensionInformation::wordSize(size_t wordSize) {
   _wordSize = wordSize;
   return *this;
 }
 
 
-ExtensionInformation::word_size_t ExtensionInformation::getWordSize() const
-    noexcept {
+ExtensionInformation::size_t ExtensionInformation::getWordSize() const {
   assert(hasWordSize());
   return _wordSize;
 }
 
 bool ExtensionInformation::hasWordSize() const noexcept {
   return _wordSize > 0;
-}
-
-ExtensionInformation& ExtensionInformation::byteSize(byte_size_t byteSize) {
-  _byteSize = byteSize;
-  return *this;
-}
-
-
-ExtensionInformation::byte_size_t ExtensionInformation::getByteSize() const
-    noexcept {
-  assert(hasByteSize());
-  return _byteSize;
-}
-
-bool ExtensionInformation::hasByteSize() const noexcept {
-  return _byteSize > 0;
 }
 
 ExtensionInformation&
@@ -186,8 +184,6 @@ ExtensionInformation& ExtensionInformation::addUnits(UnitList units) {
 
 ExtensionInformation&
 ExtensionInformation::addUnit(const UnitInformation& unit) {
-  // If the unit is already present, we merge the units
-  // (i.e. form the union of the registers), else just insert the unit
   auto iterator = _units.find(unit);
   if (iterator != _units.end()) {
     auto combination = *iterator + unit;
@@ -224,6 +220,10 @@ ExtensionInformation::merge(const ExtensionInformation& other) {
     _endianness = other._endianness;
   }
 
+  if (other.hasSignedRepresentation()) {
+    _signedRepresentation = other._signedRepresentation;
+  }
+
   if (other.hasAlignmentBehavior()) {
     _alignmentBehavior = other._alignmentBehavior;
   }
@@ -232,14 +232,22 @@ ExtensionInformation::merge(const ExtensionInformation& other) {
     _wordSize = other._wordSize;
   }
 
-  if (other.hasByteSize()) {
-    _byteSize = other._byteSize;
-  }
-
   addInstructions(other.getInstructions());
   addUnits(other.getUnits());
 
+  _baseNames.emplace(other.getName());
+
   return *this;
+}
+
+bool ExtensionInformation::isBasedOn(const std::string& extension_name) const
+    noexcept {
+  return _baseNames.count(extension_name) > 0;
+}
+
+const ExtensionInformation::ExtensionNameCollection&
+ExtensionInformation::getBaseExtensionNames() const noexcept {
+  return _baseNames;
 }
 
 bool ExtensionInformation::isValid() const noexcept {
@@ -253,11 +261,9 @@ bool ExtensionInformation::isValid() const noexcept {
 
 bool ExtensionInformation::isComplete() const noexcept {
   if (!hasEndianness()) return false;
+  if (!hasSignedRepresentation()) return false;
   if (!hasAlignmentBehavior()) return false;
   if (!hasWordSize()) return false;
-  if (!hasByteSize()) return false;
-  if (_instructions.isEmpty()) return false;
-  if (_units.empty()) return false;
 
   // Check the basic stuff
   return isValid();
@@ -268,15 +274,13 @@ void ExtensionInformation::_deserialize(InformationInterface::Format& data) {
 
   name(data["name"]);
   _parseEndianness(data);
+  _parseSignedRepresentation(data);
   _parseAlignmentBehavior(data);
 
   Utility::doIfThere(data, "word-size", [this](auto& wordSize) {
-    this->wordSize(static_cast<word_size_t>(wordSize));
+    this->wordSize(static_cast<size_t>(wordSize));
   });
 
-  Utility::doIfThere(data, "byte-size", [this](auto& byteSize) {
-    this->byteSize(static_cast<byte_size_t>(byteSize));
-  });
 
   Utility::doIfThere(data, "units", [this](auto& units) {
     for (auto& unit : units) {
@@ -293,13 +297,28 @@ void ExtensionInformation::_parseEndianness(
     InformationInterface::Format& data) {
   Utility::doIfThere(data, "endianness", [this](auto& endianness) {
     if (endianness == "little") {
-      _endianness = ArchitectureProperties::Endianness::LITTLE;
+      _endianness = Endianness::LITTLE;
     } else if (endianness == "big") {
-      _endianness = ArchitectureProperties::Endianness::BIG;
+      _endianness = Endianness::BIG;
     } else if (endianness == "mixed") {
-      _endianness = ArchitectureProperties::Endianness::MIXED;
+      _endianness = Endianness::MIXED;
     } else if (endianness == "bi") {
-      _endianness = ArchitectureProperties::Endianness::BI;
+      _endianness = Endianness::BI;
+    } else {
+      assert(false);
+    }
+  });
+}
+
+void ExtensionInformation::_parseSignedRepresentation(
+    InformationInterface::Format& data) {
+  Utility::doIfThere(data, "signed-representation", [this](auto& behavior) {
+    if (behavior == "twos-complement") {
+      _signedRepresentation = SignedRepresentation::TWOS_COMPLEMENT;
+    } else if (behavior == "ones-complement") {
+      _signedRepresentation = SignedRepresentation::ONES_COMPLEMENT;
+    } else if (behavior == "sign-bit") {
+      _signedRepresentation = SignedRepresentation::SIGN_BIT;
     } else {
       assert(false);
     }
@@ -310,9 +329,9 @@ void ExtensionInformation::_parseAlignmentBehavior(
     InformationInterface::Format& data) {
   Utility::doIfThere(data, "alignment-behavior", [this](auto& behavior) {
     if (behavior == "strict") {
-      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::STRICT;
+      _alignmentBehavior = AlignmentBehavior::STRICT;
     } else if (behavior == "relaxed") {
-      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::RELAXED;
+      _alignmentBehavior = AlignmentBehavior::RELAXED;
     } else {
       assert(false);
     }

@@ -5,91 +5,62 @@ name: rv64i
 extends: rv32i
 
 word-size: 64
-byte-size: 8
 reset-units: true
 
 instructions:
   - mnemonic: lwu
-    format: I
-    key:
-      opcode: 3
-      funct3: 6
+    opcode: 3
+    funct3: 6
   - mnemonic: ld
-    format: I
-    key:
-      opcode: 3
-      funct3: 3
+    opcode: 3
+    funct3: 3
   - mnemonic: sd
-    format: S
-    key:
-      opcode: 35
-      funct3: 1
-      funct7: 0
+    opcode: 35
+    funct3: 1
+    func7: 0
   - mnemonic: slli
-    format: R
-    key:
-      opcode: 19
-      funct3: 1
-      funct7: 0
+    opcode: 19
+    funct3: 1
+    func7: 0
   - mnemonic: srai
-    format: R
-    key:
-      opcode: 19
-      funct3: 5
-      funct7: 1
+    opcode: 19
+    funct3: 5
+    func7: 1
   - mnemonic: addiw
-    format: I
-    key:
-      opcode: 27
-      funct3: 0
+    opcode: 27
+    funct3: 0
   - mnemonic: slliw
-    format: R
-    key:
-      opcode: 27
-      funct3: 1
-      funct7: 0
+    opcode: 27
+    funct3: 1
+    func7: 0
   - mnemonic: srliw
-    format: R
-    key:
-      opcode: 27
-      funct3: 5
-      funct7: 0
+    opcode: 27
+    funct3: 5
+    func7: 0
   - mnemonic: sraiw
-    format: R
-    key:
-      opcode: 27
-      funct3: 5
-      funct7: 32
+    opcode: 27
+    funct3: 5
+    func7: 32
   - mnemonic: addw
-    format: R
-    key:
-      opcode: 59
-      funct3: 0
-      funct7: 0
+    opcode: 59
+    funct3: 0
+    func7: 0
   - mnemonic: subw
-    format: R
-    key:
-      opcode: 59
-      funct3: 0
-      funct7: 32
+    opcode: 59
+    funct3: 0
+    func7: 32
   - mnemonic: sllw
-    format: R
-    key:
-      opcode: 59
-      funct3: 1
-      funct7: 0
+    opcode: 59
+    funct3: 1
+    func7: 0
   - mnemonic: srlw
-    format: R
-    key:
-      opcode: 59
-      funct3: 5
-      funct7: 0
+    opcode: 59
+    funct3: 5
+    func7: 0
   - mnemonic: sraw
-    format: R
-    key:
-      opcode: 59
-      funct3: 5
-      funct7: 32
+    opcode: 59
+    funct3: 5
+    func7: 32
 units:
   - name: cpu
     registers:

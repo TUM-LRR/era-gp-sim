@@ -18,27 +18,29 @@
 
 #include "parser/riscv-regex.hpp"
 
-#include <cassert>
+#include "common/assert.hpp"
 
-RiscvParser::RiscvRegex::RiscvRegex()
-: _line_regex{
-      "\\s*"
-      "(?:(\\w+)\\s*\\:)?"// Label group
-      "\\s*"
-      "(([[:alpha:]]+)"// Instruction group
-      "\\s*"
-      "(\\w+)"// Parameter group
-      "\\s*,\\s*"
-      "(\\w+)"// Parameter group
-      "(?:\\s*,\\s*"
-      "(\\w+))?)?"// Parameter group
-      "\\s*"
-      "(?:;.*)?"// Comment group
-  } {
+static const std::regex LINE_REGEX(
+    "\\s*"
+    "(?:(\\w+)\\s*\\:)?"// Label group
+    "\\s*"
+    "(([[:alpha:]]+)"// Instruction group
+    "\\s*"
+    "(\\w+)"// Parameter group
+    "\\s*,\\s*"
+    "(\\w+)"// Parameter group
+    "(?:\\s*,\\s*"
+    "(\\w+))?)?"// Parameter group
+    "\\s*"
+    "(?:;.*)?"// Comment group
+    ,
+    std::regex_constants::optimize);
+
+RiscvParser::RiscvRegex::RiscvRegex() {
 }
 
 void RiscvParser::RiscvRegex::matchLine(const std::string &line) {
-  std::regex_match(line, _matches, _line_regex);
+  std::regex_match(line, _matches, LINE_REGEX);
 }
 
 bool RiscvParser::RiscvRegex::isValid() {
@@ -62,8 +64,8 @@ std::string RiscvParser::RiscvRegex::getInstruction() {
 }
 
 std::string RiscvParser::RiscvRegex::getParameter(int n) {
-  assert(n >= 0 && n < getParameterCount());
-  assert(4 + n < _matches.size());
+  assert::that(n >= 0 && n < getParameterCount());
+  assert::that(4 + n < _matches.size());
   return _matches[4 + n];
 }
 

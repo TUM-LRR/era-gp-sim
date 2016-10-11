@@ -25,6 +25,9 @@
 #include "parser/final-representation.hpp"
 #include "parser/parser-mode.hpp"
 
+class SyntaxInformation;
+
+class Architecture;
 
 /**
  * Base Parser class
@@ -41,27 +44,11 @@ class Parser {
   parse(const std::string &text, ParserMode parserMode) = 0;
 
   /**
-   * Creates dialect-specific Regex for syntax highlighting registers.
+   * Retrieves information for syntax highlighting.
    *
-   * \param name Register name
-   * \return Dialect-specific Regex
+   * \return Object containing syntax hightlighting information
    */
-  virtual std::string getSyntaxRegister(const std::string &name);
-
-  /**
-   * Creates dialect-specific Regex for syntax highlighting instructions.
-   *
-   * \param name Assembler instruction name
-   * \return Dialect-specific Regex
-   */
-  virtual std::string getSyntaxInstruction(const std::string &name);
-
-  /**
-   * Creates dialect-specific Regex for syntax highlighting immediates.
-   *
-   * \return Dialect-specific Regex
-   */
-  virtual std::string getSyntaxImmediate();
+  virtual const SyntaxInformation getSyntaxInformation() = 0;
 
 
   Parser()          = default;
