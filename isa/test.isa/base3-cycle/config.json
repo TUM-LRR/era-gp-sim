@@ -1,13 +1,15 @@
 {
+    "name": "base3",
+    "extends": "with-deps-complex",
     "units": [
         {
             "registers": [
                 {
+                    "alias": "pc",
+                    "type": "program-counter",
                     "size": 64,
                     "id": 13,
-                    "type": "program-counter",
-                    "name": "f0",
-                    "alias": "pc"
+                    "name": "f0"
                 }
             ],
             "name": "fpu"
@@ -15,16 +17,14 @@
         {
             "registers": [
                 {
+                    "alias": "pc",
+                    "type": "program-counter",
                     "size": 64,
                     "id": 13,
-                    "type": "program-counter",
-                    "name": "r5",
-                    "alias": "pc"
+                    "name": "r5"
                 }
             ],
             "name": "cpu"
         }
-    ],
-    "extends": "with-deps-complex",
-    "name": "base3"
+    ]
 }

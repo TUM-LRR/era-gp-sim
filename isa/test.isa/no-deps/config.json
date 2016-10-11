@@ -1,23 +1,29 @@
 {
+    "word-size": 32,
     "endianness": "little",
+    "name": "no-deps",
+    "alignment-behavior": "strict",
     "instructions": [
         {
+            "function": 3,
             "opcode": 6,
-            "mnemonic": "add",
-            "function": 3
+            "mnemonic": "add"
         },
         {
+            "function": 3,
             "opcode": 9,
-            "mnemonic": "sub",
-            "function": 3
+            "mnemonic": "sub"
         }
     ],
+    "signed-representation": "sign-bit",
     "units": [
         {
             "registers": [
                 {
-                    "size": 32,
+                    "alias": "zero",
                     "id": 0,
+                    "size": 32,
+                    "name": "r0",
                     "constituents": [
                         {
                             "id": 1,
@@ -27,27 +33,22 @@
                             "id": 2,
                             "enclosing-index": 2
                         }
-                    ],
-                    "alias": "zero",
-                    "name": "r0"
+                    ]
                 },
                 {
+                    "type": "float",
+                    "size": 16,
+                    "constant": 3.14,
+                    "name": "r1",
                     "enclosing": 0,
                     "aliases": [
                         "foo",
                         "bar"
                     ],
-                    "size": 16,
-                    "id": 1,
-                    "type": "float",
-                    "name": "r1",
-                    "constant": 3.14
+                    "id": 1
                 }
             ],
             "name": "cpu"
         }
-    ],
-    "alignment-behavior": "strict",
-    "word-size": 32,
-    "name": "no-deps"
+    ]
 }
