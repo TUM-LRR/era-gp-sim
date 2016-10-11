@@ -10,8 +10,15 @@
 class GuiProject: QObject{
     Q_OBJECT
 public:
-    GuiProject(QQmlContext* context);
+    GuiProject(QQmlContext* context/*, Core-Project*/);
     void changeSystem(std::string base);
+    void run();
+    void runLine();
+    void runBreakpoint();
+    void stop();
+    void save();
+    void saveAs(QByteArray name);
+    void snapshot(QByteArray name);
 
     std::function<std::string(MemoryValue)> getHexConversion();
     std::function<std::string(MemoryValue)> getBinConversion();
@@ -29,12 +36,11 @@ public:
 
 
 private:
-    //MenubarModel menubarmodel;
-    //ToolbarModel toolbarmodel;
     //RegisterModel registermodel;
     //Syntaxhighlighter synhigh;
     //SnapshotModel snapmodel;
     //MemoryModel memorymodel;
+    //Core-Project
     QQmlContext* context;
     std::function<std::string(MemoryValue)> hexConversion;
     std::function<std::string(MemoryValue)> binConversion;
