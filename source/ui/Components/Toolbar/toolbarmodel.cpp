@@ -22,24 +22,23 @@
 #include <string>
 #include <iostream>
 
-ToolbarModel::ToolbarModel(QQmlContext* context): QObject(){
-    this->context=context;
-    context->setContextProperty("toolbarModel",  this);
+ToolbarModel::ToolbarModel(QQmlContext* context): QObject(), context(context){
+    context->setContextProperty("ui",  this);
 }
 
-void ToolbarModel::run(){
+void ToolbarModel::run(int index){
     std::cout<<"C++ Run called"<<std::endl;
 }
 
-void ToolbarModel::runLine(){
+void ToolbarModel::runLine(int index){
     std::cout<<"C++ RunLine called"<<std::endl;
 }
 
-void ToolbarModel::runBreakpoint(){
+void ToolbarModel::runBreakpoint(int index){
     std::cout<<"C++ RunBreakpoint called"<<std::endl;
 }
 
-void ToolbarModel::stop(){
+void ToolbarModel::stop(int index){
     std::cout<<"C++ Stop called"<<std::endl;
 }
 
