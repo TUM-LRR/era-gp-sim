@@ -58,7 +58,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third-party)
 # TESTS
 ########################################
 
-option(ERA_GP_SIM_TESTS "Enable tests" ON)
+option(ERA_GP_SIM_TESTS "Enable tests" OFF)
 
 if(ERA_GP_SIM_TESTS)
   message(STATUS "Enabling and adding tests")
