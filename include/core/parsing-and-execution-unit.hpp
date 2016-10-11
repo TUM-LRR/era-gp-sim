@@ -30,6 +30,8 @@
 #include "parser/final-representation.hpp"
 #include "parser/syntax-information.hpp"
 
+class ContextInformation;
+
 /**
  * This servant parses the code and executes the program.
  *
@@ -116,7 +118,7 @@ class ParsingAndExecutionUnit : public Servant {
    *
    */
   void setSetContextInformationCallback(
-      std::function<void(int, int, int, std::string)> callback);
+      std::function<void(std::vector<ContextInformation> &&)> callback);
 
   // editor
 
@@ -128,6 +130,13 @@ class ParsingAndExecutionUnit : public Servant {
    */
   void setSetErrorListCallback(
       std::function<void(std::vector<CompileError> &&)> callback);
+
+  /**
+   * Set the callback which is used to notify the gui of a runtime error.
+   * TODO replace std::string with ValidationResult
+   */
+  void setThrowRuntimeErrorCallback(
+      std::function<void(const std::string &)> callback);
 
   // void setSetMacroListCallback(std::function<void(std::vector)> callback);
   // TODO not yet know how macros are passed on by the parser
@@ -173,10 +182,14 @@ class ParsingAndExecutionUnit : public Servant {
   std::string _programCounterName;
 
   /** Callback to set memory context information in the ui. */
-  std::function<void(int, int, int, std::string)> _setContextInformation;
+  std::function<void(std::vector<ContextInformation> &&)>
+      _setContextInformation;
 
   /** Callback to set the error list in the ui.*/
   std::function<void(std::vector<CompileError> &&)> _setErrorList;
+
+  /** Callback to throw a runtime error. */
+  std::function<void(const std::string &)> _throwRuntimeError;
 
   /** Callback to set the macro list in the ui.*/
   // std::function<void(std::vector)> _setMacroList;

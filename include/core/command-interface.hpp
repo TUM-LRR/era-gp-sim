@@ -43,7 +43,7 @@ class CommandInterface : public Proxy<ParsingAndExecutionUnit> {
    * Execute the next line of the assembler program
    *
    */
-  POST(executeNextLine)
+  POST_FUTURE(executeNextLine)
 
   /**
    * Execute the assembler program to the next breakpoint

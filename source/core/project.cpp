@@ -26,7 +26,7 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
                  ArchitectureFormula &&architectureFormula,
                  std::size_t memorySize)
 : Servant(std::move(scheduler))
-, _architecture(Architecture::Brew(std::move(architectureFormula)))
+, _architecture(Architecture::Brew(architectureFormula))
 , _registerSet() {
   _architecture.validate();
 

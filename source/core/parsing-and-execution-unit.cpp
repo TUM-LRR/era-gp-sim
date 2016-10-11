@@ -59,7 +59,7 @@ std::size_t ParsingAndExecutionUnit::executeNextLine() {
   // reference to avoid copying a unique_ptr
   FinalCommand& currentCommand =
       _finalRepresentation.commandList.at(findNextNode());
-  if(!currentCommand.node->validate()) {
+  if (!currentCommand.node->validate()) {
     return findNextNode();
   }
 
@@ -74,34 +74,27 @@ std::size_t ParsingAndExecutionUnit::executeNextLine() {
   return nextNode;
 }
 
-// current behaviour: only considers first breakpoint, if multiple breakpoints
-// are in the same whitespace between two commands.
 void ParsingAndExecutionUnit::executeToBreakpoint() {
   _stopFlag.test_and_set();
   int nextNode = findNextNode();
-  int lastLine =
-      _finalRepresentation.commandList.at(nextNode).position.lineStart;
   while (_stopFlag.test_and_set() &&
          nextNode < _finalRepresentation.commandList.size()) {
-    nextNode                    = executeNextLine();
-    auto nextBreakpointIterator = _breakpoints.lower_bound(lastLine);
+    nextNode = executeNextLine();
     int currentLine =
         _finalRepresentation.commandList.at(nextNode).position.lineStart;
-    if (nextBreakpointIterator != _breakpoints.end() &&
-        *nextBreakpointIterator <= currentLine) {
+    if (_breakpoints.count(currentLine) > 0) {
       // we reached a breakpoint
       break;
     }
-    lastLine = currentLine;
   }
 }
 
 void ParsingAndExecutionUnit::setExecutionPoint(int line) {
-  // TODO handle macros
   for (auto&& command : _finalRepresentation.commandList) {
     if (command.position.lineStart >= line) {
       //_memoryAccess.putRegisterValue(_programCounterName,
       // convertToMemoryValue(command.address));
+      _setCurrentLine(line);
       break;
     }
   }
@@ -134,13 +127,18 @@ ParsingAndExecutionUnit::getSyntaxRegex(SyntaxInformation::Token token) const {
 }
 
 void ParsingAndExecutionUnit::setSetContextInformationCallback(
-    std::function<void(int, int, int, std::string)> callback) {
+    std::function<void(std::vector<ContextInformation>&&)> callback) {
   _setContextInformation = callback;
 }
 
 void ParsingAndExecutionUnit::setSetErrorListCallback(
     std::function<void(std::vector<CompileError>&&)> callback) {
   _setErrorList = callback;
+}
+
+void ParsingAndExecutionUnit::setThrowRuntimeErrorCallback(
+    std::function<void(const std::string&)> callback) {
+  _throwRuntimeError = callback;
 }
 
 /*void ParsingAndExecutionUnit::setSetMacroListCallback(
@@ -156,6 +154,10 @@ void ParsingAndExecutionUnit::setSetCurrentLineCallback(
 std::size_t ParsingAndExecutionUnit::findNextNode() const {
   // std::size_t nextInstructionAddress =
   // convert(_memoryAccess.getRegisterValue(_programCounterName));
-  // return _addressCommandMap.find(nextInstructionAddress);
+  // auto iterator = _addressCommandMap.find(nextInstructionAddress);
+  // if(iterator == _addressCommandMap.end()) {
+  // return _finalRepresentation.commandList.size();
+  //}
+  // return iterator->second;
   return 0;
 }
