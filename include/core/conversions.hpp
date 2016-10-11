@@ -26,6 +26,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "arch/common/architecture-properties.hpp"
 #include "common/assert.hpp"
 #include "core/memory-value.hpp"
 
@@ -60,50 +61,50 @@ using ToIntegralFunction = std::function<MemoryValue(const MemoryValue&, bool)>;
 
 /** Some standard conversions for just standard things */
 namespace standardConversions {
-namespace helper{
+namespace helper {
 namespace nonsigned {
-  /** the standard sign function for unsigned conversions */
-  extern const conversions::SignFunction signum;
-  /** the standard toIntegral function for unsigned conversions */
-  extern const conversions::ToIntegralFunction toIntegralFunction;
-  /** the standard toMemoryValue function for unsigned conversions */
-  extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
+/** the standard sign function for unsigned conversions */
+extern const conversions::SignFunction signum;
+/** the standard toIntegral function for unsigned conversions */
+extern const conversions::ToIntegralFunction toIntegralFunction;
+/** the standard toMemoryValue function for unsigned conversions */
+extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
 }
 namespace signBit {
-  /** the standard sign function for signed conversions */
-  extern const conversions::SignFunction signum;
-  /** the standard toIntegral function for signed conversions using the SignBit
-  * SignedRepresentation
-  */
-  extern const conversions::ToIntegralFunction toIntegralFunction;
-  /** the standard toMemoryValue function for signed conversions using the SignBit
-  * SignedRepresentation
-  */
-  extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
+/** the standard sign function for signed conversions */
+extern const conversions::SignFunction signum;
+/** the standard toIntegral function for signed conversions using the SignBit
+ * SignedRepresentation
+ */
+extern const conversions::ToIntegralFunction toIntegralFunction;
+/** the standard toMemoryValue function for signed conversions using the SignBit
+ * SignedRepresentation
+ */
+extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
 }
 namespace onesComplement {
-  /** the standard sign function for signed conversions */
-  extern const conversions::SignFunction signum;
-  /** the standard toIntegral function for signed conversions using the
-  * onesComplement SignedRepresentation
-  */
-  extern const conversions::ToIntegralFunction toIntegralFunction;
-  /** the standard toMemoryValue function for signed conversions using the
-  * onesComplement SignedRepresentation
-  */
-  extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
+/** the standard sign function for signed conversions */
+extern const conversions::SignFunction signum;
+/** the standard toIntegral function for signed conversions using the
+ * onesComplement SignedRepresentation
+ */
+extern const conversions::ToIntegralFunction toIntegralFunction;
+/** the standard toMemoryValue function for signed conversions using the
+ * onesComplement SignedRepresentation
+ */
+extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
 }
 namespace twosComplement {
-  /** the standard sign function for signed conversions */
-  extern const conversions::SignFunction signum;
-  /** the standard toIntegral function for signed conversions using the
-  * twosComplement SignedRepresentation
-  */
-  extern const conversions::ToIntegralFunction toIntegralFunction;
-  /** the standard toMemoryValue function for signed conversions using the
-  * twosComplement SignedRepresentation
-  */
-  extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
+/** the standard sign function for signed conversions */
+extern const conversions::SignFunction signum;
+/** the standard toIntegral function for signed conversions using the
+ * twosComplement SignedRepresentation
+ */
+extern const conversions::ToIntegralFunction toIntegralFunction;
+/** the standard toMemoryValue function for signed conversions using the
+ * twosComplement SignedRepresentation
+ */
+extern const conversions::ToMemoryValueFunction toMemoryValueFunction;
 }
 }
 }
@@ -119,9 +120,11 @@ struct Conversion {
   : sgn{sgn}, toMem{toMem}, toInt{toInt} {
   }
   Conversion()
-  : Conversion(conversions::standardConversions::helper::nonsigned::signum,
-               conversions::standardConversions::helper::nonsigned::toIntegralFunction,
-               conversions::standardConversions::helper::nonsigned::toMemoryValueFunction) {
+  : Conversion(
+        conversions::standardConversions::helper::nonsigned::signum,
+        conversions::standardConversions::helper::nonsigned::toIntegralFunction,
+        conversions::standardConversions::helper::nonsigned::
+            toMemoryValueFunction) {
   }
   Conversion(const Conversion&) = default;
   Conversion(Conversion&&)      = default;
@@ -284,9 +287,24 @@ namespace detail {
 /**
  * \brief maps SignedRepresentation -> conversion
  * \param representation the method of conversion
- * \returns a methid of conversion
+ * \returns a method of conversion
  */
 Conversion switchConversion(SignedRepresentation representation);
+/**
+ * \brief maps ArchitectureProperties::Endianess -> conversions::Endianess
+ * \param endianess some architecture Endianess
+ * \returns some conversion Endianess
+ */
+conversions::Endianness
+mapEndianess(ArchitectureProperties::Endianness endianness);
+/**
+ * \brief maps ArchitectureProperties::SignedRepresentation ->
+ * conversions::SignedRepresentation
+ * \param representation some architecture SignedRepresentation
+ * \returns some conversion SignedRepresentation
+ */
+conversions::SignedRepresentation
+mapRepresentation(ArchitectureProperties::SignedRepresentation representation);
 }
 
 /**
@@ -301,7 +319,8 @@ MemoryValue permute(const MemoryValue& memoryValue,
                     std::size_t byteSize);
 
 /**
- * \brief Converts a MemoryValue into integral form
+ * \brief Converts a MemoryValue into integral form, using unsigned conversions
+ * if T is unsigned
  * \param memoryValue The to be converted MemoryValue
  * \param representation the method of storing the value
  * \param byteSize soze of a byte in bit
@@ -309,13 +328,96 @@ MemoryValue permute(const MemoryValue& memoryValue,
  * \tparam T The desired type of the output
  * \returns integral representation of memoryValue
  */
+template <typename T>
+typename std::
+    enable_if<std::is_integral<T>::value && std::is_unsigned<T>::value, T>::type
+    convert(const MemoryValue& memoryValue,
+            std::size_t byteSize = 8,
+            ArchitectureProperties::Endianness byteOrder =
+                ArchitectureProperties::Endianness::LITTLE,
+            ArchitectureProperties::SignedRepresentation representation =
+                ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT) {
+  return convertForced<T>(memoryValue,
+                          conversions::SignedRepresentation::UNSIGNED,
+                          byteSize,
+                          detail::mapEndianess(byteOrder));
+}
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value && std::is_signed<T>::value,
+                        T>::type
+convert(const MemoryValue& memoryValue,
+        std::size_t byteSize = 8,
+        ArchitectureProperties::Endianness byteOrder =
+            ArchitectureProperties::Endianness::LITTLE,
+        ArchitectureProperties::SignedRepresentation representation =
+            ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT) {
+  return convertForced<T>(memoryValue,
+                          detail::mapRepresentation(representation),
+                          byteSize,
+                          detail::mapEndianess(byteOrder));
+}
 
+/**
+ * \brief Converts an integral value into a MemoryValue, using unsigned
+ * conversions if T is unsigned
+ * \param value The to be converted value
+ * \param size number of bits to reserve for storing the value
+ * \param representation the method of storing the value
+ * \param byteSize size of a byte in bit
+ * \param byteOrder Endianess of the output
+ * \tparam T The type of the input
+ * \returns MemoryValue representating value
+ */
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value &&
+                            std::is_unsigned<T>::value,
+                        MemoryValue>::type
+convert(T value,
+        std::size_t size,
+        std::size_t byteSize = 8,
+        ArchitectureProperties::Endianness byteOrder =
+            ArchitectureProperties::Endianness::LITTLE,
+        ArchitectureProperties::SignedRepresentation representation =
+            ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT) {
+  return convertForced<T>(value,
+                          size,
+                          conversions::SignedRepresentation::UNSIGNED,
+                          byteSize,
+                          detail::mapEndianess(byteOrder));
+}
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value && std::is_signed<T>::value,
+                        MemoryValue>::type
+convert(T value,
+        std::size_t size,
+        std::size_t byteSize = 8,
+        ArchitectureProperties::Endianness byteOrder =
+            ArchitectureProperties::Endianness::LITTLE,
+        ArchitectureProperties::SignedRepresentation representation =
+            ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT) {
+  return convertForced<T>(value,
+                          size,
+                          detail::mapRepresentation(representation),
+                          byteSize,
+                          detail::mapEndianess(byteOrder));
+}
+
+/**
+ * \brief Converts a MemoryValue into integral form, making sure to use the given
+ * SignedRepresentation
+ * \param memoryValue The to be converted MemoryValue
+ * \param representation the method of storing the value
+ * \param byteSize soze of a byte in bit
+ * \param byteOrder Endianess of the output
+ * \tparam T The desired type of the output
+ * \returns integral representation of memoryValue
+ */
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, T>::type
-convert(const MemoryValue& memoryValue,
-        SignedRepresentation representation = SignedRepresentation::SMART,
-        std::size_t byteSize                = 8,
-        Endianness byteOrder                = Endianness::LITTLE) {
+convertForced(const MemoryValue& memoryValue,
+              SignedRepresentation representation = SignedRepresentation::SMART,
+              std::size_t byteSize                = 8,
+              Endianness byteOrder                = Endianness::LITTLE) {
   MemoryValue permuted = permute(memoryValue, byteOrder, byteSize);
   Conversion con       = conversions::detail::switchConversion(representation);
   if (representation == SignedRepresentation::SMART &&
@@ -326,7 +428,8 @@ convert(const MemoryValue& memoryValue,
 }
 
 /**
- * \brief Converts an integral value into a MemoryValue
+ * \brief Converts an integral value into a MemoryValue, making sure to use the
+ * given SignedRepresentation
  * \param value The to be converted value
  * \param size number of bits to reserve for storing the value
  * \param representation the method of storing the value
@@ -337,11 +440,11 @@ convert(const MemoryValue& memoryValue,
  */
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, MemoryValue>::type
-convert(T value,
-        std::size_t size,
-        SignedRepresentation representation = SignedRepresentation::SMART,
-        std::size_t byteSize                = 8,
-        Endianness byteOrder                = Endianness::LITTLE) {
+convertForced(T value,
+              std::size_t size,
+              SignedRepresentation representation = SignedRepresentation::SMART,
+              std::size_t byteSize                = 8,
+              Endianness byteOrder                = Endianness::LITTLE) {
   Conversion con = conversions::detail::switchConversion(representation);
   if (representation == SignedRepresentation::SMART &&
       std::is_signed<T>::value) {
