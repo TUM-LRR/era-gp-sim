@@ -136,6 +136,11 @@ struct ShiftLeftLogicalInstructionNode
   explicit ShiftLeftLogicalInstructionNode(
       const InstructionInformation& information, Operands operands)
   : super(information, operands, [this](const auto& first, const auto& second) {
+    // For logical right shift, SizeType must be a unsigned integral type. Due
+    // to the fact that signed right shift is implementation/compiler specific
+    // and can be either a logical shift or a arithmetical shift
+    static_assert(std::is_unsigned<SizeType>::value,
+                  "SizeType must unsigned for SLL");
     return first << Utility::lowerNBits<5>(second);
   }) {
   }
@@ -180,6 +185,8 @@ struct ShiftRightArithmeticInstructionNode
   SizeType _compute(SizeType first, SizeType second) const noexcept override {
     static const auto width = sizeof(SizeType) * 8;
     static const auto one = static_cast<SizeType>(1);
+
+    // C++ standard does not define a arithemtic shift operator.
 
     bool sign = first & (one << (width - 1));
     auto shiftAmount = Utility::lowerNBits<5>(second);
