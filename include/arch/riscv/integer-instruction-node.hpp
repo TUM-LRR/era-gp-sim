@@ -76,8 +76,8 @@ class AbstractIntegerInstructionNode : public InstructionNode {
     // Get the destination register
     auto destination = _children.at(0)->getIdentifier();
 
-    auto first  = _child(1, memoryAccess);
-    auto second = _child(2, memoryAccess);
+    auto first = _getChildValue(1, memoryAccess);
+    auto second = _getChildValue(2, memoryAccess);
 
     auto result = _compute(first, second);
     auto value = core::convert(result, riscv::BITS_PER_BYTE, riscv::ENDIANNESS);
@@ -127,19 +127,15 @@ class AbstractIntegerInstructionNode : public InstructionNode {
     return _operation(first, second);
   }
 
-  SizeType _getLower5Bits(SizeType op) const {
-    return op & 0b11111;
-  }
-
  private:
-  SizeType _child(size_t index, MemoryAccess& memoryAccess) const {
+  SizeType _getChildValue(size_t index, MemoryAccess& memoryAccess) const {
     auto memory = _children[index]->getValue(memoryAccess);
     return riscv::convert<SizeType>(memory);
   }
 
-  SizeType _child(size_t index) const {
+  SizeType _getChildValue(size_t index) const {
     MemoryAccess dummy;
-    return _child(index, dummy);
+    return _getChildValue(index, dummy);
   }
 
   ValidationResult _validateNumberOfChildren() const {
@@ -155,7 +151,7 @@ class AbstractIntegerInstructionNode : public InstructionNode {
 
   ValidationResult _validateImmediateSize() const {
     assert(_children[2]->getType() == Type::IMMEDIATE);
-    auto value = _child(2);
+    auto value = _getChildValue(2);
 
     if ((value & ~static_cast<SizeType>(0xFFFFF)) > 0) {
       return ValidationResult::fail(
