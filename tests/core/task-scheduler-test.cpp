@@ -40,8 +40,8 @@ class Testservant2 : public Servant {
   }
 
   void testPost(int counter,
-               std::thread::id testThreadId,
-               std::thread::id servant1ThreadId) {
+                std::thread::id testThreadId,
+                std::thread::id servant1ThreadId) {
     EXPECT_EQ(counter, counterServant2);
     EXPECT_NE(servant1ThreadId, std::this_thread::get_id());
     EXPECT_NE(testThreadId, std::this_thread::get_id());
@@ -141,9 +141,9 @@ class Testservant1 : public Servant {
     EXPECT_EQ(std::this_thread::get_id(), _scheduler.lock()->getThreadId());
     servant1ThreadId = std::this_thread::get_id();
     counterServant1++;
-    std::function<void(Result<int>)> callback =
-        std::bind(&Testservant1::testCallback, this, std::placeholders::_1);
-    servant2Proxy.testCallUnsafe(makeSafeCallback(std::move(callback)),
+    std::function<void(Result<int>)> lambdaCallback =
+        [this](Result<int> result) { testCallback(result); };
+    servant2Proxy.testCallUnsafe(makeSafeCallback(std::move(lambdaCallback)),
                                  counter,
                                  testThreadId,
                                  servant1ThreadId);
@@ -156,8 +156,9 @@ class Testservant1 : public Servant {
     EXPECT_NE(testThreadId, std::this_thread::get_id());
     EXPECT_EQ(std::this_thread::get_id(), _scheduler.lock()->getThreadId());
     counterServant1++;
-    std::function<void(Result<int>)> callback =
-        std::bind(&Testservant1::testCallback, this, std::placeholders::_1);
+    std::function<void(Result<int>)> callback = [this](Result<int> result) {
+      testCallback(result);
+    };
     std::weak_ptr<Servant> weak = shared_from_this();
     servant2Proxy.testCall(
         callback, weak, counter, testThreadId, servant1ThreadId);
@@ -180,10 +181,11 @@ class Testservant1 : public Servant {
   void testExceptionPost(Testproxy2 servant2Proxy) {
     EXPECT_ANY_THROW(servant2Proxy.testExceptionBlocking());
     EXPECT_ANY_THROW(servant2Proxy.testException().get());
-    std::function<void(Result<int>)> callback =
-        std::bind(&Testservant1::throwCallback, this, std::placeholders::_1);
-    servant2Proxy.testException<int>(callback, shared_from_this());
-    servant2Proxy.testExceptionUnsafe(makeSafeCallback(std::move(callback)));
+    std::function<void(Result<int>)> lambdaCallback =
+        [this](Result<int> result) { throwCallback(result); };
+    servant2Proxy.testException<int>(lambdaCallback, shared_from_this());
+    servant2Proxy.testExceptionUnsafe(
+        makeSafeCallback(std::move(lambdaCallback)));
   }
 
 
