@@ -68,7 +68,7 @@ class ValidationResult {
    */
   template <typename... Args>
   static const ValidationResult
-  fail(const std::string& message, Args... arguments) {
+  fail(const std::string& message, Args&&... arguments) {
     ValidationResult result{false, message, {}};
     result.addArguments(std::forward<Args>(arguments)...);
     return result;
@@ -107,7 +107,7 @@ class ValidationResult {
   void addArguments(const std::string& argument);
   /* Function to add multiple arguments to the argument list */
   template <typename... Args>
-  void addArguments(const std::string& firstArgument, Args... arguments) {
+  void addArguments(const std::string& firstArgument, Args&&... arguments) {
     _arguments.push_back(firstArgument);
     insert(std::forward<Args>(arguments)...);
   }
