@@ -23,46 +23,16 @@
 #include <vector>
 
 #include "arch/common/validation-result.hpp"
+#include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
-
-// Dummy definition of a memory-access
-class DummyMemoryAccess {
- public:
-  virtual MemoryValue getRegisterValue(const std::string& token) = 0;
-  virtual void setRegisterValue(const std::string& token, MemoryValue value) = 0;
-
-  /**
-   * Retrieve 'amount' of bytes from the memory at address 'address'.
-   */
-  virtual MemoryValue
-  getMemoryValueAt(std::size_t address, std::size_t amount) = 0;
-
-  /**
-   * Write 'value' into the memory at address 'address'.
-   */
-  virtual void setMemoryValueAt(std::size_t address, MemoryValue value) = 0;
-};
-// Dummy implementation of a memory-access
-class DummyMemoryAccessStub : public DummyMemoryAccess {
- public:
-  MemoryValue getRegisterValue(const std::string& token) override {
-    return MemoryValue{};
-  }
-  void setRegisterValue(const std::string& token, MemoryValue value) override {
-  }
-
-  MemoryValue getMemoryValueAt(std::size_t address, std::size_t amount) override {
-    return MemoryValue{};
-  }
-
-  void setMemoryValueAt(std::size_t address, MemoryValue value) override {
-  }
-};
 
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {
  public:
-  enum struct Type {
+  using Node   = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using size_t = std::size_t;
+
+  enum class Type {
     INSTRUCTION,
     IMMEDIATE,
     REGISTER,
@@ -70,16 +40,28 @@ class AbstractSyntaxTreeNode {
     ARITHMETIC
   };
 
-  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+  /**
+   * Constructs a new node. The constructor is supposed to be called in
+   * the subclasses.
+   *
+   * \param nodeType The type of this node.
+   */
+  AbstractSyntaxTreeNode(Type nodeType);
+
+  virtual ~AbstractSyntaxTreeNode() = default;
 
   /**
-   * Executes this node and it's children recursively.
+   * Executes this node recursively and returns a value.
    *
-   * \param memory_access Access to memory and registers
-   * \return An memory value, that represents the the result of the execution.
-   * The meaning differs between different node types.
+   * \param memoryAccess An access object to memory and registers.
+   *
+   * \return A type-dependent memory value, representing the the result of
+   * the execution.
    */
-  virtual MemoryValue getValue(DummyMemoryAccess& memory_access) const = 0;
+  virtual MemoryValue getValue(MemoryAccess& memoryAccess) const = 0;
+
+  /** \copydoc getValue() */
+  MemoryValue operator()(MemoryAccess& memoryAccess) const;
 
   /**
    * Validates the structure of this syntax tree. This should be called
@@ -87,7 +69,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return Whether this syntax tree is valid for execution.
    */
-  virtual const ValidationResult validate() const = 0;
+  virtual ValidationResult validate() const = 0;
 
   /**
    * Assembles this syntax tree into its binary representation. So, this
@@ -98,8 +80,7 @@ class AbstractSyntaxTreeNode {
   virtual MemoryValue assemble() const = 0;
 
   /**
-   * Returns the identifier of this node. The identifier is formatted as a
-   * string and depends on the node type.
+   * Returns the type-dependent identifier of this node.
    *
    * \return The identifier of this node.
    */
@@ -109,48 +90,56 @@ class AbstractSyntaxTreeNode {
    * Getter for the type of this node.
    * \return The type of this node.
    */
-  Type getType() {
-    return _node_type;
-  }
+  virtual Type getType() const noexcept;
 
   /**
-   * Adds a child to this node. Note, that the node will be added after
-   * the last node, that has been added.
+   * Appends a child to the node.
    *
    * \param node The node to be added.
    */
-  void addChild(Node node) {
-    _children.push_back(std::move(node));
-  }
+  virtual void addChild(Node&& node);
+
 
   /**
-   * Calls validate() on all children
-   * \return true, if all children return true, otherwise false
+   * Inserts the the child node at the given index.
+   *
+   * \param index The index to insert at.
+   * \param node The child node to insert.
    */
-  const ValidationResult validateAllChildren() const {
-    for (auto& child : _children) {
-      ValidationResult result = child->validate();
-      if (!result.isSuccess()) {
-        return result;
-      }
-    }
-    return ValidationResult::success();
-  }
+  virtual void insertChild(size_t index, Node&& node);
+
+  /**
+   * Sets a child to a new node.
+   *
+   * \param index The index of the child to re-assign.
+   * \param node The new node to assign to the child at the given index.
+   */
+  virtual void setChild(size_t index, Node&& node);
+
+  /**
+   * Returns the number of children this node has.
+   */
+  virtual size_t numberOfChildren() const noexcept;
+
+  /**
+   * Returns true if the node has children, else false.
+   */
+  virtual bool hasChildren() const noexcept;
 
  protected:
   /**
-   * Constructs a new node. The constructor is supposed to be called in
-   * the subclasses.
+   * Calls validate() on all children
    *
-   * \param node_type The type of this node.
+   * \return True if all children are valid, else false.
    */
-  AbstractSyntaxTreeNode(Type node_type) : _node_type(node_type) {
-  }
+  ValidationResult _validateChildren() const;
 
+  /** The child nodes of this node. */
   std::vector<Node> _children;
 
  private:
-  Type _node_type;
+  /** The (enum) type of the node. */
+  Type _nodeType;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_ABSTRACT_SYNTAX_TREE_NODE_HPP */

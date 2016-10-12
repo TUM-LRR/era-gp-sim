@@ -18,8 +18,9 @@
 #ifndef ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
 #define ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
 
+#include <QtCore/qglobal.h>
 #include <memory>
-#include <QtGlobal>
+#include <string>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 
@@ -40,30 +41,28 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   /**
    * \return The content of the register, represented by this node.
    */
-  MemoryValue
-  getValue(DummyMemoryAccess& memory_access) const override {
-    // TODO Return the actual content of the register using the proper
-    // memory access
-    return MemoryValue();
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override {
+    return memoryAccess.getRegisterValue(_identifier);
   }
 
   /**
    * \return true, if there are no children.
    */
-  const ValidationResult validate() const override {
+  ValidationResult validate() const override {
     // Registers can't have any children
-    return AbstractSyntaxTreeNode::_children.size() == 0
-               ? ValidationResult::success()
-               : ValidationResult::fail(QT_TRANSLATE_NOOP(
-                     "Syntax-Tree-Validation",
-                     "The register node must not have any arguments"));
-
+    if (AbstractSyntaxTreeNode::_children.size() == 0) {
+      return ValidationResult::success();
+    }
+    return ValidationResult::fail(
+        QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                          "The register node must not have any arguments"));
   }
 
   const std::string& getIdentifier() const override {
     return _identifier;
   }
 
+  // MemoryAccess problem
   MemoryValue assemble() const override {
     MemoryValue memValue(1, 8);
 
@@ -92,7 +91,7 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   }
 
  private:
-  /*!
+  /**
    * Identifies a register
    */
   std::string _identifier;

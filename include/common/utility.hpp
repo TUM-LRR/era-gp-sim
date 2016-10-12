@@ -31,19 +31,102 @@
 
 namespace Utility {
 
+template <typename T>
+bool occupiesMoreBitsThan(const T& value, std::size_t numberOfBits) {
+  if (numberOfBits == 0) return true;
+
+  // Get the value one larger than the maximum allowed absolute value
+  auto boundary = static_cast<std::int64_t>(1) << numberOfBits;
+
+  // Note especially that signed numbers can occupy one more value
+  // than positive numbers with the same bit width
+  return (value < 0) ? value < -boundary : value >= boundary;
+}
+
+template <typename T>
+bool fitsIntoBits(const T& value, std::size_t numberOfBits) {
+  return !occupiesMoreBitsThan(value, numberOfBits);
+}
+
+template <typename IteratorTag>
+struct isSinglePassIteratorTag {
+  static constexpr bool value = false;
+};
+
+template <>
+struct isSinglePassIteratorTag<std::input_iterator_tag> {
+  static constexpr bool value = true;
+};
+
+template <>
+struct isSinglePassIteratorTag<std::output_iterator_tag> {
+  static constexpr bool value = true;
+};
+
+template <typename Iterator>
+constexpr bool isSinglePassIterator = isSinglePassIteratorTag<
+    typename std::iterator_traits<Iterator>::iterator_category>::value;
+
+template <typename Range>
+class View {
+ public:
+  using Iterator = decltype(std::declval<Range>().begin());
+  using size_t = std::size_t;
+
+  View(const Range& range, size_t beginIndex, size_t lastIndex)
+  : _begin(std::begin(range)), _end(std::begin(range)) {
+    std::advance(_begin, beginIndex);
+    std::advance(_end, lastIndex);
+  }
+
+  auto begin() {
+    return _begin;
+  }
+
+  auto begin() const {
+    return _begin;
+  }
+
+  auto end() {
+    return _end;
+  }
+
+  auto end() const {
+    return _end;
+  }
+
+  std::enable_if_t<!isSinglePassIterator<Iterator>, size_t> size() const
+      noexcept {
+    return std::distance(_begin, _end);
+  }
+
+ private:
+  Iterator _begin;
+  Iterator _end;
+};
+
+template <typename Range>
+View<Range> viewUpTo(Range& range, std::size_t index) {
+  return {range, 0, index};
+}
+
+template <typename Range>
+auto viewFrom(Range& range, std::size_t index) {
+  auto size = std::distance(begin(range), end(range));
+  return View<Range>(range, index, size);
+}
+
+
 std::string toLower(const std::string& string);
 std::string toUpper(const std::string& string);
 
 template <typename Range, typename Iterator, typename Transformer>
 void transformInto(Range& range, Iterator destination, Transformer transform) {
-  using std::begin;
-  using std::end;
   std::transform(begin(range), end(range), destination, transform);
 }
 
 template <typename Range, typename Transformer>
 void transformInPlace(Range& range, Transformer transform) {
-  using std::begin;
   transformInto(range, begin(range), transform);
 }
 
@@ -51,7 +134,6 @@ template <typename InputRange,
           typename Transformer,
           typename OutputRange = InputRange>
 OutputRange transform(const InputRange& range, Transformer transform) {
-  using std::begin;
   using std::end;
 
   OutputRange output;
@@ -62,14 +144,11 @@ OutputRange transform(const InputRange& range, Transformer transform) {
 
 template <typename DestinationRange, typename SourceRange>
 void concatenate(DestinationRange& destination, const SourceRange& source) {
-  using std::begin;
-  using std::end;
   destination.insert(end(destination), begin(source), end(source));
 }
 
 template <typename Range, typename Function>
 void forEach(Range&& range, Function function) {
-  using std::begin;
   using std::end;
 
   std::for_each(begin(std::forward<Range>(range)),
@@ -77,19 +156,10 @@ void forEach(Range&& range, Function function) {
                 function);
 }
 
-template <typename FirstRange, typename SecondRange>
-bool isEqual(const FirstRange& first, const SecondRange& second) {
-  using std::begin;
-  using std::end;
-
-  return std::equal(begin(first), end(first), begin(second), end(second));
-}
-
 template <typename FirstRange, typename SecondRange, typename Predicate>
 bool isEqual(const FirstRange& first,
              const SecondRange& second,
-             Predicate predicate) {
-  using std::begin;
+             Predicate predicate = std::equal_to<>{}) {
   using std::end;
 
   // clang-format off
@@ -103,9 +173,19 @@ bool isEqual(const FirstRange& first,
   // clang-format on
 }
 
+template <typename FirstRange, typename SecondRange, typename Key>
+bool isEqualBy(const FirstRange& first, const SecondRange& second, Key key) {
+  using std::end;
+
+  // clang-format off
+  return isEqual(first, second, [key] (const auto& first, const auto& second) {
+    return key(first) == key(second);
+  });
+  // clang-format on
+}
+
 template <typename Range, typename Function>
 bool allOf(const Range& range, Function function) {
-  using std::begin;
   using std::end;
 
   return std::all_of(begin(range), end(range), function);
@@ -113,7 +193,6 @@ bool allOf(const Range& range, Function function) {
 
 template <typename Range, typename Function>
 bool noneOf(const Range& range, Function function) {
-  using std::begin;
   using std::end;
 
   return std::none_of(begin(range), end(range), function);
@@ -121,7 +200,6 @@ bool noneOf(const Range& range, Function function) {
 
 template <typename Range, typename Function>
 bool anyOf(const Range& range, Function function) {
-  using std::begin;
   using std::end;
 
   return std::any_of(begin(range), end(range), function);
@@ -129,7 +207,6 @@ bool anyOf(const Range& range, Function function) {
 
 template <typename T, typename InputRange, typename OutputRange = InputRange>
 OutputRange prepend(T&& value, const InputRange& range) {
-  using std::begin;
   using std::end;
 
   // Construct with enough space
@@ -210,6 +287,14 @@ template <typename T>
 auto copyPointer(const std::unique_ptr<T>& pointer) {
   assert(static_cast<bool>(pointer));
   return std::make_unique<T>(*pointer);
+}
+
+template <std::size_t numberOfBits,
+          typename T,
+          typename = std::enable_if_t<std::is_integral<T>::value>>
+constexpr T lowerNBits(const T& value) {
+  constexpr auto mask = (static_cast<std::size_t>(1) << numberOfBits) - 1;
+  return value & mask;
 }
 
 // C++17

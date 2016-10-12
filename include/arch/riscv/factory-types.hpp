@@ -23,13 +23,13 @@
 #include "arch/common/abstract-factory-types.hpp"
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
-#include "arch/riscv/register-access-node-factory.hpp"
+#include "arch/riscv/register-node-factory.hpp"
 
 namespace riscv {
 using FactoryTypes = AbstractFactoryTypes<ImmediateNodeFactory,
                                           NoSuchFactory,
                                           NoSuchFactory,
-                                          RegisterAccessNodeFactory,
+                                          RegisterNodeFactory,
                                           InstructionNodeFactory>;
 }
 

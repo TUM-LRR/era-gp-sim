@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP_
-#define ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP_
+#ifndef ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP
+#define ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP
 
 #include <string>
 
@@ -31,7 +31,7 @@ class ValidationResult {
    * Creates a new ValidationResult object that indicates, that the
    * validation succeded.
    */
-  static const ValidationResult success();
+  static ValidationResult success();
 
   /**
    * Creates a new ValidationResult object that indicates, that the
@@ -40,7 +40,7 @@ class ValidationResult {
    *
    * \param message The message indicating the problem. Must not be empty.
    */
-  static const ValidationResult fail(std::string message);
+  static ValidationResult fail(std::string message);
 
   /**
    * Check if this validation result indicates, that the validation
@@ -67,4 +67,4 @@ class ValidationResult {
   std::string _message;
 };
 
-#endif /* ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP_ */
+#endif /* ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP */

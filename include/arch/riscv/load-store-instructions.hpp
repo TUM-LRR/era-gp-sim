@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_
-#define ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_
+#ifndef ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP
+#define ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP
 
 #include "arch/riscv/instruction-node.hpp"
 
@@ -39,34 +39,31 @@ class LoadInstructionNode : public InstructionNode {
   /* The different types of a load instruction. See RISC V specification
      for reference.*/
   enum struct Type {
-    DOUBLE_WORD,       // LD (Only in RVI64)
-    WORD,              // LW
-    WORD_UNSIGNED,     // LWU (Only in RVI64)
-    HALF_WORD,         // LH
-    HALF_WORD_UNSIGNED,// LHU
-    BYTE,              // LB
-    BYTE_UNSIGNED      // LBU
+    DOUBLE_WORD,         // LD (Only in RVI64)
+    WORD,                // LW
+    WORD_UNSIGNED,       // LWU (Only in RVI64)
+    HALF_WORD,           // LH
+    HALF_WORD_UNSIGNED,  // LHU
+    BYTE,                // LB
+    BYTE_UNSIGNED        // LBU
   };
 
   LoadInstructionNode(InstructionInformation& instructionInformation, Type type)
-  : InstructionNode(instructionInformation), _type(type) {
-  }
+      : InstructionNode(instructionInformation), _type(type) {}
 
-
-  MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
 
     const std::string& dest = _children.at(0)->getIdentifier();
-    MemoryValue base        = _children.at(1)->getValue(memoryAccess);
-    MemoryValue offset      = _children.at(2)->getValue(memoryAccess);
+    MemoryValue base = _children.at(1)->getValue(memoryAccess);
+    MemoryValue offset = _children.at(2)->getValue(memoryAccess);
 
     // The base (that comes from a register) has to be converted using an
     // unsigned integer, to be able to address the whole address space
-    UnsignedType baseConverted = convert<UnsignedType>(base, RISCV_ENDIANNESS);
+    UnsignedType baseConverted = riscv::convert<UnsignedType>(base);
     // The offset (that comes from the immediate value) has to be converted
     // using an unsigned integer, to be able to have negative offsets
-    SignedType offsetConverted = convert<SignedType>(
-        offset, RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
+    SignedType offsetConverted = riscv::convert<SignedType>(offset);
 
     std::size_t effectiveAddress = baseConverted + offsetConverted;
 
@@ -92,20 +89,22 @@ class LoadInstructionNode : public InstructionNode {
       case Type::BYTE_UNSIGNED:
         performUnsignedLoad(memoryAccess, effectiveAddress, 1, dest);
         break;
-      default: assert(false); break;
+      default:
+        assert(false);
+        break;
     }
     return MemoryValue{};
   }
 
   const ValidationResult validate() const override {
-    if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
-        !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
+    if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
+        !_requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(
           "Syntax-Tree-Validation",
           "Load instructions must have 2 registers and 1 immediate"));
     }
 
-    ValidationResult resultAll = validateAllChildren();
+    ValidationResult resultAll = _validateChildren();
     if (!resultAll.isSuccess()) {
       return resultAll;
     }
@@ -113,7 +112,7 @@ class LoadInstructionNode : public InstructionNode {
     // Check if the immediate value is representable by 12 bits
     // We can use an empty stub here, because immediate values don't need to
     // access the memory
-    DummyMemoryAccessStub stub;
+    MemoryAccess stub;
     MemoryValue value = _children.at(2)->getValue(stub);
 
     for (std::size_t index = 12; index < value.getSize(); ++index) {
@@ -137,8 +136,7 @@ class LoadInstructionNode : public InstructionNode {
    * \param destination The destination register identifier, in which to store
    *        the loaded value
    */
-  void performUnsignedLoad(DummyMemoryAccess& memoryAccess,
-                           std::size_t address,
+  void performUnsignedLoad(MemoryAccess& memoryAccess, std::size_t address,
                            std::size_t byteAmount,
                            std::string destination) const {
     MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
@@ -146,15 +144,14 @@ class LoadInstructionNode : public InstructionNode {
     // Check if zero-expansion is needed. This is the case, if the amount of
     // bits loaded from memory is not equal to the amount of bits, a register
     // can hold.
-    if (result.getSize() != sizeof(UnsignedType) * RISCV_BITS_PER_BYTE) {
+    if (result.getSize() != sizeof(UnsignedType) * riscv::BITS_PER_BYTE) {
       // Do the zero-expansion by converting to an int and converting back
       // to a memory value.
       // TODO This can be made faster, by copying the bits into a new memory
       // value of proper size. This can't be done yet, because the interface
       // of the memory value is not quite clear in that sense.
-      UnsignedType converted = convert<UnsignedType>(result, RISCV_ENDIANNESS);
-      result                 = convert<UnsignedType>(
-          converted, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+      UnsignedType converted = riscv::convert<UnsignedType>(result);
+      result = riscv::convert<UnsignedType>(converted);
     }
     memoryAccess.setRegisterValue(destination, result);
   }
@@ -168,27 +165,21 @@ class LoadInstructionNode : public InstructionNode {
    * \param destination The destination register identifier, in which to store
    *        the loaded value
    */
-  void performSignedLoad(DummyMemoryAccess& memoryAccess,
-                         std::size_t address,
+  void performSignedLoad(MemoryAccess& memoryAccess, std::size_t address,
                          std::size_t byteAmount,
                          std::string destination) const {
     MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
     // Check if sign-expansion is needed. This is the case, if the amount of
     // bits loaded from memory is not equal to the amount of bits, a register
     // can hold.
-    if (result.getSize() != sizeof(SignedType) * RISCV_BITS_PER_BYTE) {
+    if (result.getSize() != sizeof(SignedType) * riscv::BITS_PER_BYTE) {
       // Do a sign-expansion by converting the memory value to an integer
       // and back to a memory value.
-      SignedType converted = convert<SignedType>(
-          result, RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
-      result = convert<SignedType>(converted,
-                                   RISCV_BITS_PER_BYTE,
-                                   RISCV_ENDIANNESS,
-                                   RISCV_SIGNED_REPRESENTATION);
+      SignedType converted = riscv::convert<SignedType>(result);
+      result = riscv::convert<SignedType>(converted);
     }
     memoryAccess.setRegisterValue(destination, result);
   }
-
 
   Type _type;
 };
@@ -204,43 +195,51 @@ class StoreInstructionNode : public InstructionNode {
   /* The different types of a store instruction. See RISC V specification
      for reference. */
   enum struct Type {
-    DOUBLE_WORD,// SD (Only in RVI64)
-    WORD,       // SW
-    HALF_WORD,  // SH
-    BYTE        // SB
+    DOUBLE_WORD,  // SD (Only in RVI64)
+    WORD,         // SW
+    HALF_WORD,    // SH
+    BYTE          // SB
   };
 
   StoreInstructionNode(InstructionInformation& instructionInformation,
                        Type type)
-  : InstructionNode(instructionInformation), _type(type) {
-  }
+      : InstructionNode(instructionInformation), _type(type) {}
 
-  MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
 
-    MemoryValue base       = _children.at(0)->getValue(memoryAccess);
+    MemoryValue base = _children.at(0)->getValue(memoryAccess);
     const std::string& src = _children.at(1)->getIdentifier();
-    MemoryValue offset     = _children.at(2)->getValue(memoryAccess);
+    MemoryValue offset = _children.at(2)->getValue(memoryAccess);
 
     // Unsigned to be able to address the whole address space
-    UnsignedType baseConverted = convert<UnsignedType>(base, RISCV_ENDIANNESS);
+    UnsignedType baseConverted = riscv::convert<UnsignedType>(base);
     // Signed to be able to have negative offsets
-    SignedType offsetConverted = convert<SignedType>(
-        base, RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
+    SignedType offsetConverted = riscv::convert<SignedType>(base);
 
     std::size_t effectiveAddress = baseConverted + offsetConverted;
     std::size_t byteAmount;
     switch (_type) {
-      case Type::DOUBLE_WORD: byteAmount = 8; break;
-      case Type::WORD: byteAmount        = 4; break;
-      case Type::HALF_WORD: byteAmount   = 2; break;
-      case Type::BYTE: byteAmount        = 1; break;
-      default: assert(false); break;
+      case Type::DOUBLE_WORD:
+        byteAmount = 8;
+        break;
+      case Type::WORD:
+        byteAmount = 4;
+        break;
+      case Type::HALF_WORD:
+        byteAmount = 2;
+        break;
+      case Type::BYTE:
+        byteAmount = 1;
+        break;
+      default:
+        assert(false);
+        break;
     }
 
     MemoryValue registerValue = memoryAccess.getRegisterValue(src);
-    MemoryValue resultValue{byteAmount, RISCV_BITS_PER_BYTE};
-    for (size_t i = 0; i < byteAmount * RISCV_BITS_PER_BYTE; ++i) {
+    MemoryValue resultValue{byteAmount, riscv::BITS_PER_BYTE};
+    for (size_t i = 0; i < byteAmount * riscv::BITS_PER_BYTE; ++i) {
       resultValue.put(resultValue.getSize() - 1 - i,
                       registerValue.get(registerValue.getSize() - 1 - i));
     }
@@ -249,14 +248,14 @@ class StoreInstructionNode : public InstructionNode {
   }
 
   const ValidationResult validate() const override {
-    if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
-        !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
+    if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
+        !_requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(
           "Syntax-Tree-Validation",
           "Store instructions must have 2 registers and 1 immediate"));
     }
 
-    ValidationResult resultAll = validateAllChildren();
+    ValidationResult resultAll = _validateChildren();
     if (!resultAll.isSuccess()) {
       return resultAll;
     }
@@ -264,7 +263,7 @@ class StoreInstructionNode : public InstructionNode {
     // Check if the immediate value is representable by 12 bits
     // We can use an empty stub here, because immediate values don't need to
     // access the memory
-    DummyMemoryAccessStub stub;
+    MemoryAccess stub;
     MemoryValue value = _children.at(2)->getValue(stub);
 
     for (std::size_t index = 12; index < value.getSize(); ++index) {
@@ -283,4 +282,4 @@ class StoreInstructionNode : public InstructionNode {
 };
 }
 
-#endif /* ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_ */
+#endif /* ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP */

@@ -18,7 +18,7 @@
 #ifndef ERAGPSIM_ARCH_COMMON_IMMEDIATE_NODE_HPP
 #define ERAGPSIM_ARCH_COMMON_IMMEDIATE_NODE_HPP
 
-#include <QtGlobal>
+#include <QtCore/qglobal.h>
 #include <memory>
 #include <string>
 
@@ -33,7 +33,7 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    *
    * \param value The value of this node.
    */
-  ImmediateNode(MemoryValue value)
+  ImmediateNode(const MemoryValue& value)
   : AbstractSyntaxTreeNode(Type::IMMEDIATE)
   , _value(value)
   , IMMEDIATE_IDENTIFIER("Imm") {
@@ -41,17 +41,21 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
 
   ~ImmediateNode() = default;
 
+  void setValue(const MemoryValue& value) {
+    _value = value;
+  }
+
   /**
    * \return The concrete value
    */
-  MemoryValue getValue(DummyMemoryAccess& memory_access) const override {
+  MemoryValue getValue(MemoryAccess& MemoryAccess) const override {
     return _value;
   }
 
   /**
    * \return true, if there are no children.
    */
-  const ValidationResult validate() const override {
+  ValidationResult validate() const override {
     // Immediate values can't have any children
     return AbstractSyntaxTreeNode::_children.size() == 0
                ? ValidationResult::success()

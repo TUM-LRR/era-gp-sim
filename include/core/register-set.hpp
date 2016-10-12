@@ -16,8 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_REGISTERSET_HPP_
-#define ERAGPSIM_CORE_REGISTERSET_HPP_
+#ifndef ERAGPSIM_CORE_REGISTERSET_HPP
+#define ERAGPSIM_CORE_REGISTERSET_HPP
 
 #include <cassert>
 #include <cstddef>
@@ -68,4 +68,4 @@ class RegisterSet {
   std::size_t _defaultByteSize;
 };
 
-#endif// ERAGPSIM_CORE_REGISTERSET_HPP_
+#endif// ERAGPSIM_CORE_REGISTERSET_HPP

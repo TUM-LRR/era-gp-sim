@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP_
-#define ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP_
+#ifndef ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP
+#define ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP
 
 #include <climits>
 
@@ -535,4 +535,4 @@ class RemainderInstruction : public WordableIntegerInstruction<UnsignedWord> {
   bool _isSignedRemainder;
 };
 }
-#endif /* ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP_ */
+#endif /* ERAGPSIM_ARCH_RISCV_MUL_DIV_INSTRUCTIONS_HPP */

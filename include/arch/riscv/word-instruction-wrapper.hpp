@@ -27,8 +27,8 @@
 
 namespace riscv {
 
-using ResultSizeType = InstructionNodeFactory::RV64_integral_t;
-using OperandSizeType = InstructionNodeFactory::RV32_integral_t;
+using ResultSizeType = riscv::unsigned64_t;
+using OperandSizeType = riscv::unsigned32_t;
 
 /**
  * Wrapper class for reusing the "arithmetic calculation" code for most of the
@@ -44,9 +44,12 @@ using OperandSizeType = InstructionNodeFactory::RV32_integral_t;
  * class.
  */
 template <class WrappedType>
-class WordInstructionWrapper : public IntegerInstructionNode<ResultSizeType> {
+class WordInstructionWrapper
+    : public AbstractIntegerInstructionNode<ResultSizeType> {
  public:
-  using WordInstruction = IntegerInstructionNode<OperandSizeType>;
+  using super = AbstractIntegerInstructionNode<ResultSizeType>;
+  using WordInstruction = AbstractIntegerInstructionNode<OperandSizeType>;
+  using Operands = super::Operands;
 
   /**
   * Creates a WordInstructionWrapper instance that wraps around a instance of
@@ -66,9 +69,9 @@ class WordInstructionWrapper : public IntegerInstructionNode<ResultSizeType> {
   template <class... Args>
   WordInstructionWrapper(bool expectSignedResult,
                          InstructionInformation& instructionInformation,
-                         bool isImmediateInstruction, Args&&... args)
+                         Operands operands, Args&&... args)
       : IntegerInstructionNode<ResultSizeType>(instructionInformation,
-                                               isImmediateInstruction),
+                                               operands),
         _signedResult(expectSignedResult) {
     // create an instance of WrappedType
     _wrapped = std::make_unique<WrappedType>(std::forward<Args>(args)...);
@@ -82,7 +85,7 @@ class WordInstructionWrapper : public IntegerInstructionNode<ResultSizeType> {
    * \param op2 Second operand for the arithmetic operation of WrappedType
    * \return result of the arithmetic operation
    */
-  ResultSizeType performIntegerOperation(ResultSizeType op1,
+  ResultSizeType _compute(ResultSizeType op1,
                                          ResultSizeType op2) const override {
     OperandSizeType op1_trunc = op1;
     OperandSizeType op2_trunc = op2;
@@ -102,7 +105,8 @@ class WordInstructionWrapper : public IntegerInstructionNode<ResultSizeType> {
   /**
    * Determines if the given value n has the signbit set
    * \param n
-   * \return true if the signbit is set and therefore n represents a negative number, otherwise false
+   * \return true if the signbit is set and therefore n represents a negative
+   * number, otherwise false
    */
   bool isNegative(OperandSizeType n) const {
     OperandSizeType signBit = n & (OperandSizeType(1) << 31);
@@ -121,11 +125,13 @@ class WordInstructionWrapper : public IntegerInstructionNode<ResultSizeType> {
    */
   bool _signedResult;
 
-  /** and-bitmask for preserving the lower 31bit (a 32bit value without its signbit)*/
+  /** and-bitmask for preserving the lower 31bit (a 32bit value without its
+   * signbit)*/
   static constexpr ResultSizeType SIGNED_WORD_MASK_LOWER31 = 0x7FFFFFFF;
   /** and-bitmask for preserving the lower 32bit (a 32bit unsigned value)*/
   static constexpr ResultSizeType WORD_MASK_LOWER32 = 0xFFFFFFFF;
-  /** or-bitmask to fill the bits 63...32 with 1 (sign extension for a 64bit value that could be represented in 32bit signed)*/
+  /** or-bitmask to fill the bits 63...32 with 1 (sign extension for a 64bit
+   * value that could be represented in 32bit signed)*/
   static constexpr ResultSizeType SIGN_EXTENSION_MASK = 0xFFFFFFFF8 << 28;
 };
 }

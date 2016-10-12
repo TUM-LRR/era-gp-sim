@@ -30,7 +30,7 @@ class AbstractSyntaxTreeNode;
 class AbstractImmediateNodeFactory;
 class AbstractInstructionNodeFactory;
 class AbstractMemoryAccessNodeFactory;
-class AbstractRegisterAccessNodeFactory;
+class AbstractRegisterNodeFactory;
 
 /**
  * \brief The NodeFactoryCollection class is a convienience class
@@ -54,7 +54,7 @@ class NodeFactoryCollection {
         FactoryTypes::instructionFactory(instructionSet, architecture),
         FactoryTypes::immediateFactory(),
         FactoryTypes::memoryAccessFactory(),
-        FactoryTypes::registerAccessFactory(),
+        FactoryTypes::registerFactory(),
         FactoryTypes::arithmeticFactory()
     );
     // clang-format on
@@ -77,9 +77,9 @@ class NodeFactoryCollection {
   /**
    * It is asserted that a corresponding factory must be set prior to this
    * method call, otherwise the assertion will fail
-   * \copydoc AbstractRegisterAccessNodeFactory::createRegisterAccessNode
+   * \copydoc AbstractRegisterNodeFactory::createRegisterNode
    */
-  Node createRegisterAccessNode(const std::string &registerName) const;
+  Node createRegisterNode(const std::string &registerName) const;
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
@@ -101,13 +101,12 @@ class NodeFactoryCollection {
       std::shared_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
       std::shared_ptr<AbstractImmediateNodeFactory> &&immediateFactory,
       std::shared_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,
-      std::shared_ptr<AbstractRegisterAccessNodeFactory>
-          &&registerAccessFactory,
+      std::shared_ptr<AbstractRegisterNodeFactory> &&registerFactory,
       std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory);
 
   std::shared_ptr<AbstractInstructionNodeFactory> _instructionFactory;
   std::shared_ptr<AbstractImmediateNodeFactory> _immediateFactory;
-  std::shared_ptr<AbstractRegisterAccessNodeFactory> _registerAccessFactory;
+  std::shared_ptr<AbstractRegisterNodeFactory> _registerFactory;
   std::shared_ptr<AbstractMemoryAccessNodeFactory> _memoryAccessFactory;
   std::shared_ptr<AbstractArithmeticNodeFactory> _arithmeticFactory;
 };

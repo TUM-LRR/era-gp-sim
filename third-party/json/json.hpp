@@ -2849,7 +2849,7 @@ class basic_json
 
     /*!
     @brief get a pointer value (explicit)
-    @copydoc get()
+    \copydoc get()
     */
     template<typename PointerType, typename
              std::enable_if<
@@ -2898,7 +2898,7 @@ class basic_json
 
     /*!
     @brief get a pointer value (implicit)
-    @copydoc get_ptr()
+    \copydoc get_ptr()
     */
     template<typename PointerType, typename
              std::enable_if<
@@ -2949,7 +2949,7 @@ class basic_json
 
     /*!
     @brief get a reference value (implicit)
-    @copydoc get_ref()
+    \copydoc get_ref()
     */
     template<typename ReferenceType, typename
              std::enable_if<
@@ -3609,7 +3609,7 @@ class basic_json
 
     /*!
     @brief overload for a default value of type const char*
-    @copydoc basic_json::value()
+    \copydoc basic_json::value()
     */
     string_t value(const typename object_t::key_type& key, const char* default_value) const
     {
@@ -3646,7 +3646,7 @@ class basic_json
     }
 
     /*!
-    @copydoc basic_json::front()
+    \copydoc basic_json::front()
     */
     const_reference front() const
     {
@@ -3690,7 +3690,7 @@ class basic_json
     }
 
     /*!
-    @copydoc basic_json::back()
+    \copydoc basic_json::back()
     */
     const_reference back() const
     {
@@ -4045,7 +4045,7 @@ class basic_json
 
     /*!
     @brief find an element in a JSON object
-    @copydoc find(typename object_t::key_type)
+    \copydoc find(typename object_t::key_type)
     */
     const_iterator find(typename object_t::key_type key) const
     {
@@ -4127,7 +4127,7 @@ class basic_json
     }
 
     /*!
-    @copydoc basic_json::cbegin()
+    \copydoc basic_json::cbegin()
     */
     const_iterator begin() const noexcept
     {
@@ -4198,7 +4198,7 @@ class basic_json
     }
 
     /*!
-    @copydoc basic_json::cend()
+    \copydoc basic_json::cend()
     */
     const_iterator end() const noexcept
     {
@@ -4266,7 +4266,7 @@ class basic_json
     }
 
     /*!
-    @copydoc basic_json::crbegin()
+    \copydoc basic_json::crbegin()
     */
     const_reverse_iterator rbegin() const noexcept
     {
@@ -4303,7 +4303,7 @@ class basic_json
     }
 
     /*!
-    @copydoc basic_json::crend()
+    \copydoc basic_json::crend()
     */
     const_reverse_iterator rend() const noexcept
     {
@@ -4390,7 +4390,7 @@ class basic_json
     }
 
     /*!
-    @copydoc iterator_wrapper(reference)
+    \copydoc iterator_wrapper(reference)
     */
     static iteration_proxy<const_iterator> iterator_wrapper(const_reference cont)
     {
@@ -4729,7 +4729,7 @@ class basic_json
 
     /*!
     @brief add an object to an array
-    @copydoc push_back(basic_json&&)
+    \copydoc push_back(basic_json&&)
     */
     reference operator+=(basic_json&& val)
     {
@@ -4739,7 +4739,7 @@ class basic_json
 
     /*!
     @brief add an object to an array
-    @copydoc push_back(basic_json&&)
+    \copydoc push_back(basic_json&&)
     */
     void push_back(const basic_json& val)
     {
@@ -4763,7 +4763,7 @@ class basic_json
 
     /*!
     @brief add an object to an array
-    @copydoc push_back(basic_json&&)
+    \copydoc push_back(basic_json&&)
     */
     reference operator+=(const basic_json& val)
     {
@@ -4813,7 +4813,7 @@ class basic_json
 
     /*!
     @brief add an object to an object
-    @copydoc push_back(const typename object_t::value_type&)
+    \copydoc push_back(const typename object_t::value_type&)
     */
     reference operator+=(const typename object_t::value_type& val)
     {
@@ -4861,7 +4861,7 @@ class basic_json
 
     /*!
     @brief add an object to an object
-    @copydoc push_back(std::initializer_list<basic_json>)
+    \copydoc push_back(std::initializer_list<basic_json>)
     */
     reference operator+=(std::initializer_list<basic_json> init)
     {
@@ -4916,7 +4916,7 @@ class basic_json
 
     /*!
     @brief inserts element
-    @copydoc insert(const_iterator, const basic_json&)
+    \copydoc insert(const_iterator, const basic_json&)
     */
     iterator insert(const_iterator pos, basic_json&& val)
     {
@@ -5383,7 +5383,7 @@ class basic_json
 
     /*!
     @brief comparison: equal
-    @copydoc operator==(const_reference, std::nullptr_t)
+    \copydoc operator==(const_reference, std::nullptr_t)
     */
     friend bool operator==(std::nullptr_t, const_reference v) noexcept
     {
@@ -5436,7 +5436,7 @@ class basic_json
 
     /*!
     @brief comparison: not equal
-    @copydoc operator!=(const_reference, std::nullptr_t)
+    \copydoc operator!=(const_reference, std::nullptr_t)
     */
     friend bool operator!=(std::nullptr_t, const_reference v) noexcept
     {
@@ -5670,7 +5670,7 @@ class basic_json
 
     /*!
     @brief serialize to stream
-    @copydoc operator<<(std::ostream&, const basic_json&)
+    \copydoc operator<<(std::ostream&, const basic_json&)
     */
     friend std::ostream& operator>>(const basic_json& j, std::ostream& o)
     {
@@ -5746,7 +5746,7 @@ class basic_json
     }
 
     /*!
-    @copydoc parse(std::istream&, parser_callback_t)
+    \copydoc parse(std::istream&, parser_callback_t)
     */
     static basic_json parse(std::istream&& i, parser_callback_t cb = nullptr)
     {
@@ -5784,7 +5784,7 @@ class basic_json
 
     /*!
     @brief deserialize from stream
-    @copydoc operator<<(basic_json&, std::istream&)
+    \copydoc operator<<(basic_json&, std::istream&)
     */
     friend std::istream& operator>>(std::istream& i, basic_json& j)
     {
@@ -8788,7 +8788,7 @@ basic_json_parser_63:
             return result;
         }
 
-        /// @copydoc to_string()
+        /// \copydoc to_string()
         operator std::string() const
         {
             return to_string();

@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_CORE_CONVERSIONS_HPP_
-#define ERAGPSIM_CORE_CONVERSIONS_HPP_
+#ifndef ERAGPSIM_CORE_CONVERSIONS_HPP
+#define ERAGPSIM_CORE_CONVERSIONS_HPP
 
 #include <algorithm>
 #include <cstddef>
@@ -26,26 +26,18 @@
 #include <type_traits>
 #include <vector>
 
-#include "memory-value.hpp"
+#include "arch/common/architecture-properties.hpp"
+#include "core/memory-value.hpp"
 
-/**
- * TODO: Replace with version from memory implementation
- * Indicates the byte order of a memory value
- */
-enum class Endianness {
-  BIG,
-  LITTLE
-};
+namespace core {
+
+using Endianness = ArchitectureProperties::Endianness;
 
 /**
  * TODO: Replace with version from architecture implementation
  * Indicates how signed numbers are represented
  */
-enum class SignedRepresentation {
-  ONES_COMPLEMENT,
-  SIGN_BIT,
-  TWOS_COMPLEMENT
-};
+enum class SignedRepresentation { ONES_COMPLEMENT, SIGN_BIT, TWOS_COMPLEMENT };
 
 
 /*
@@ -62,15 +54,15 @@ enum class SignedRepresentation {
  * \param byteOrder The byte order (endianness) of the data
  */
 template <typename T>
-typename std::enable_if<std::is_integral<T>::value && 
-                        std::is_unsigned<T>::value, T>::type
-convert(const MemoryValue& memoryValue, Endianness byteOrder) {
+typename std::
+    enable_if<std::is_integral<T>::value && std::is_unsigned<T>::value, T>::type
+    convert(const MemoryValue& memoryValue, Endianness byteOrder) {
   // Grab the number of bits we need to read
   std::size_t bits = memoryValue.getSize();
-  
+
   // Grab the number of bits in a memory cell from the memory value
   std::size_t bitsPerByte = memoryValue.getByteSize();
-  
+
   // Calculate the number of items in the vector inside the memory value for a
   // single memory cell. The extra +7 causes the value to be rounded up (with
   // padding) instead of down.
@@ -79,18 +71,19 @@ convert(const MemoryValue& memoryValue, Endianness byteOrder) {
   std::size_t internalItemsUnpadded = bitsPerByte / 8;
   // Calculate the bit size of the padding
   std::size_t paddingBits = (bitsPerByte % 8 == 0) ? 0 : 8 - (bitsPerByte % 8);
-  
+
   // The final result
   T result = 0;
-  
+
   // Iterate over the cells in the memoryValue
   for (std::size_t cell = 0, bitsConverted = 0;
        cell < memoryValue.internal().size();
        cell += internalItemsPadded) {
     // Transform the index for big-endian use
-    std::size_t index = (byteOrder == Endianness::BIG)
-      ? memoryValue.internal().size() - internalItemsPadded - cell
-      : cell;
+    std::size_t index =
+        (byteOrder == Endianness::BIG)
+            ? memoryValue.internal().size() - internalItemsPadded - cell
+            : cell;
     // Iterate over that cell's internal data
     std::size_t offset = 0;
     for (; offset < internalItemsUnpadded; ++offset) {
@@ -113,14 +106,13 @@ convert(const MemoryValue& memoryValue, Endianness byteOrder) {
     }
     // Check the padded item if present and needed
     if (paddingBits > 0 && bitsConverted < bits) {
-      std::size_t bitsNeeded = std::min(bits - bitsConverted,
-                                        8 - paddingBits);
+      std::size_t bitsNeeded = std::min(bits - bitsConverted, 8 - paddingBits);
       result <<= bitsNeeded;
       result |= memoryValue.internal()[index + offset] >> (8 - bitsNeeded);
       bitsConverted += bitsNeeded;
     }
   }
-  
+
   return result;
 }
 
@@ -135,15 +127,17 @@ convert(const MemoryValue& memoryValue, Endianness byteOrder) {
  * \param representation Describes the encoding of the signed integer
  */
 template <typename T, typename U = std::uintmax_t>
-typename std::enable_if<std::is_integral<T>::value && 
-                        std::is_signed<T>::value &&
-                        std::is_integral<U>::value &&
-                        std::is_unsigned<U>::value, T>::type
-convert(const MemoryValue& memoryValue, Endianness byteOrder,
-        SignedRepresentation representation) {
-  std::size_t bitsInT = std::numeric_limits<T>::digits; // Bits in type T
-  std::size_t bitsInU = std::numeric_limits<U>::digits; // Bits in type U
-  assert(bitsInT <= bitsInU);
+typename std::enable_if<
+    std::is_integral<T>::value && std::is_signed<T>::value &&
+        std::is_integral<U>::value && std::is_unsigned<U>::value,
+    T>::type
+convert(const MemoryValue& memoryValue,
+        Endianness byteOrder,
+        SignedRepresentation representation =
+            SignedRepresentation::TWOS_COMPLEMENT) {
+  std::size_t bitsInT = std::numeric_limits<T>::digits;// Bits in type T
+  std::size_t bitsInU = std::numeric_limits<U>::digits;// Bits in type U
+  // assert(bitsInT >= bitsInU - 1);
   std::size_t numberOfBits = std::min(bitsInU, memoryValue.getSize());
   U unsignedRawValue = convert<U>(memoryValue, byteOrder);
 
@@ -180,6 +174,7 @@ convert(const MemoryValue& memoryValue, Endianness byteOrder,
       }
       break;
   }
+
   // Return the result
   return result;
 }
@@ -199,13 +194,16 @@ convert(const MemoryValue& memoryValue, Endianness byteOrder,
  * \param value The value to convert
  * \param bitsPerByte The number of bits in a byte
  * \param byteOrder The byte order (endianness)
- * \param byteCount If specified, pad the MemoryValue with zeroes, or truncate 
+ * \param byteCount If specified, pad the MemoryValue with zeroes, or truncate
  *                  it to the specified size. Defaults to 0 (no effect).
  */
 template <typename T>
-typename std::enable_if<std::is_integral<T>::value && 
-                        std::is_unsigned<T>::value, MemoryValue>::type
-convert(T value, std::size_t bitsPerByte, Endianness byteOrder,
+typename std::enable_if<std::is_integral<T>::value &&
+                            std::is_unsigned<T>::value,
+                        MemoryValue>::type
+convert(T value,
+        std::size_t bitsPerByte,
+        Endianness byteOrder,
         std::size_t byteCount = 0) {
   // Grab the number of bits T can contain
   std::size_t bitsInType = std::numeric_limits<T>::digits;
@@ -238,13 +236,14 @@ convert(T value, std::size_t bitsPerByte, Endianness byteOrder,
       case Endianness::LITTLE:
         bytes.insert(bytes.begin(), byteCount - bytes.size(), 0);
         break;
+      default: break;
     }
   }
   // Now, turn the bytes into the uint8_t representation used internally
   std::vector<uint8_t> raw;
   std::size_t chunksPerByte = (bitsPerByte + 7) / 8;
   for (T byte : bytes) {
-    std::deque<uint8_t> byteData; // Data for this byte only
+    std::deque<uint8_t> byteData;// Data for this byte only
     // Split the byte into actual uint8_t chunks
     T byteMask;
     std::size_t leftShift = 8 - (bitsPerByte % 8);
@@ -268,7 +267,7 @@ convert(T value, std::size_t bitsPerByte, Endianness byteOrder,
         chunk >>= rightShift;
       }
       byteData.push_back(static_cast<uint8_t>(chunk));
-      byteMask = (sizeof(T) > 1) ? (byteMask >> 8) : 0;
+      byteMask >>= 8;
       rightShift -= 8;
     }
     // Insert the data
@@ -289,22 +288,27 @@ convert(T value, std::size_t bitsPerByte, Endianness byteOrder,
  * \param bitsPerByte The number of bits in a byte
  * \param byteOrder The byte order (endianness)
  * \param representation Describes the encoding of the signed integer
- * \param byteCount If specified, pad the MemoryValue with zeroes, or truncate 
+ * \param byteCount If specified, pad the MemoryValue with zeroes, or truncate
  *                  it to the specified size. Defaults to 0 (no effect).
  */
 template <typename T, typename U = std::uintmax_t>
-typename std::enable_if<std::is_integral<T>::value && 
-                        std::is_signed<T>::value &&
-                        std::is_integral<U>::value &&
-                        std::is_unsigned<U>::value, MemoryValue>::type
-convert(T value, std::size_t bitsPerByte, Endianness byteOrder,
-        SignedRepresentation representation, std::size_t byteCount = 0) {
+typename std::enable_if<
+    std::is_integral<T>::value && std::is_signed<T>::value &&
+        std::is_integral<U>::value && std::is_unsigned<U>::value,
+    MemoryValue>::type
+convert(
+    T value,
+    std::size_t bitsPerByte,
+    Endianness byteOrder,
+    SignedRepresentation representation = SignedRepresentation::TWOS_COMPLEMENT,
+    std::size_t byteCount = 0) {
   // Get the number of bits T and U can contain
   std::size_t bitsInSignedType = std::numeric_limits<T>::digits;
   std::size_t bitsInUnsignedType = std::numeric_limits<U>::digits;
   // Positive values need no special treatment
   if (value >= 0) {
-//std::cerr << static_cast<U>(value) << ", " << bitsPerByte << ", " << (int) byteOrder << ", " << (int) byteCount << std::endl;
+    // std::cerr << static_cast<U>(value) << ", " << bitsPerByte << ", " <<
+    // (int) byteOrder << ", " << (int) byteCount << std::endl;
     return convert(static_cast<U>(value), bitsPerByte, byteOrder, byteCount);
   } else {
     if (-value == value) {
@@ -318,7 +322,8 @@ convert(T value, std::size_t bitsPerByte, Endianness byteOrder,
       U positiveValue = static_cast<U>(-value);
       bool usedMostSignificantBit = false;
       while (positiveValue > 0) {
-        usedMostSignificantBit = positiveValue & (static_cast<U>(1) << (bitsPerByte - 1));
+        usedMostSignificantBit =
+            positiveValue & (static_cast<U>(1) << (bitsPerByte - 1));
         positiveValue >>= bitsPerByte;
         ++byteCount;
       }
@@ -336,7 +341,7 @@ convert(T value, std::size_t bitsPerByte, Endianness byteOrder,
         // Flip all bits to get to the negative value from its magnitude
         encoded = ~static_cast<U>(-value);
         // Any bits except the last bitsInUnsignedType need to be set to 1
-        //TODO
+        // TODO
         break;
       case SignedRepresentation::SIGN_BIT:
         // Add a negative sign bit in front of the magnitude in postprocessing!
@@ -354,9 +359,9 @@ convert(T value, std::size_t bitsPerByte, Endianness byteOrder,
       case SignedRepresentation::SIGN_BIT:
         // Set the most significant bit to 1
         {
-          std::size_t mostSignificantBit = (byteOrder == Endianness::BIG)
-            ? converted.getSize() - bitsPerByte
-            : 0;
+          std::size_t mostSignificantBit =
+              (byteOrder == Endianness::BIG) ? converted.getSize() - bitsPerByte
+                                             : 0;
           converted.put(mostSignificantBit, true);
         }
         break;
@@ -369,8 +374,8 @@ convert(T value, std::size_t bitsPerByte, Endianness byteOrder,
         {
           // The most significant bit
           std::size_t bit = (byteOrder == Endianness::BIG)
-            ? converted.getSize() - bitsPerByte
-            : 0;
+                                ? converted.getSize() - bitsPerByte
+                                : 0;
           // Iterate until we hit a 1
           while (!converted.get(bit)) {
             converted.put(bit, true);
@@ -400,5 +405,6 @@ convert(T value, std::size_t bitsPerByte, Endianness byteOrder,
     return converted;
   }
 }
+}
 
-#endif // ERAGPSIM_CORE_CONVERSIONS_HPP_
+#endif// ERAGPSIM_CORE_CONVERSIONS_HPP

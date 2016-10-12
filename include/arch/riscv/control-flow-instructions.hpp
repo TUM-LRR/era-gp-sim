@@ -17,11 +17,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_RISCV_CONTROL_FLOW_INSTRUCTIONS_HPP_
-#define ERAGPSIM_ARCH_RISCV_CONTROL_FLOW_INSTRUCTIONS_HPP_
+#ifndef ERAGPSIM_ARCH_RISCV_CONTROL_FLOW_INSTRUCTIONS_HPP
+#define ERAGPSIM_ARCH_RISCV_CONTROL_FLOW_INSTRUCTIONS_HPP
+//aggregate header
+#include "arch/riscv/branch-instructions.hpp"
+#include "arch/riscv/jump-instructions.hpp"
 
-/*
- * TODO Instructions: jal jalr beq bne blt bltu bge bgeu
- */
-
-#endif /* ERAGPSIM_ARCH_RISCV_CONTROL_FLOW_INSTRUCTIONS_HPP_ */
+#endif /* ERAGPSIM_ARCH_RISCV_CONTROL_FLOW_INSTRUCTIONS_HPP */

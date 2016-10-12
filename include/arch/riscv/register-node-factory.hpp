@@ -15,37 +15,22 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_RISCV_REGISTER_ACCESS_NODE_FACTORY_HPP
-#define ERAGPSIM_ARCH_RISCV_REGISTER_ACCESS_NODE_FACTORY_HPP
+#ifndef ERAGPSIM_ARCH_RISCV_REGISTER_NODE_FACTORY_HPP
+#define ERAGPSIM_ARCH_RISCV_REGISTER_NODE_FACTORY_HPP
 
 #include <unordered_map>
 
-#include "arch/common/abstract-register-access-node-factory.hpp"
+#include "arch/common/abstract-register-node-factory.hpp"
 
 namespace riscv {
 
 /**
- * \brief The RegisterAccessNodeFactory class is a concrete implementation
- * of AbstractRegisterAccessNodeFactory for the RISC-V architecture.
+ * \brief The RegisterNodeFactory class is a concrete implementation
+ * of AbstractRegisterNodeFactory for the RISC-V architecture.
  */
-class RegisterAccessNodeFactory : public AbstractRegisterAccessNodeFactory {
- public:
+struct RegisterNodeFactory : public AbstractRegisterNodeFactory {
   /**
-   * \brief RegisterAccessNodeFactory
-   * Creates a register access node factory for the RISC-V architecture
-   */
-  RegisterAccessNodeFactory() = default;
-
-  /*! Default constructed copy constructor */
-  RegisterAccessNodeFactory(RegisterAccessNodeFactory &copy) = default;
-
-  /*! Default constructed move constructor */
-  RegisterAccessNodeFactory(RegisterAccessNodeFactory &&move) = default;
-
-  ~RegisterAccessNodeFactory() = default;
-
-  /**
-   * \brief createRegisterAccessNode
+   * \brief createRegisterNode
    * Creates and returns a new AbstractSyntaxTreeNode that handles register
    * access, or nullptr if the given id is invalid
    * \param id register-id that identifies 1 register of the RISC-V architecture
@@ -53,8 +38,8 @@ class RegisterAccessNodeFactory : public AbstractRegisterAccessNodeFactory {
    * or nullptr if the given id cannot be mapped to a valid RISC-V register
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createRegisterAccessNode(const std::string &id) const override;
+  createRegisterNode(const std::string &id) const override;
 };
 }
 
-#endif /* ERAGPSIM_ARCH_RISCV_REGISTER_ACCESS_NODE_FACTORY_HPP */
+#endif /* ERAGPSIM_ARCH_RISCV_REGISTER_NODE_FACTORY_HPP */
