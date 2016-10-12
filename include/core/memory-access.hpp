@@ -127,6 +127,12 @@ class MemoryAccess : public Proxy<Project> {
    */
   POST_CALLBACK_SAFE(setRegisterValue)
 
+  /**
+   * Returns the number of memory cells(number of bytes)
+   *
+   */
+  POST_FUTURE(getMemorySize)
+
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_ACCESS_HPP */

@@ -33,20 +33,6 @@ class MemoryManager : public Proxy<Project> {
   }
 
   /**
-   * Returns the number of memory cells(number of bytes)
-   *
-   */
-  POST_FUTURE(getMemorySize)
-
-  /**
-   * Sets the number of memory cells
-   * WARNING: might not be supported later
-   *
-   * \param size Number of memory cells
-   */
-  POST(setMemorySize)
-
-  /**
    * Reset the state of the memory
    *
    */
