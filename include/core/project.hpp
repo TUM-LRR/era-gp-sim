@@ -28,8 +28,8 @@
 #include "arch/common/register-information.hpp"
 #include "arch/common/unit-container.hpp"
 #include "arch/common/unit-information.hpp"
-//#include "core/memory.hpp"
 #include "core/memory-value.hpp"
+#include "core/memory.hpp"
 #include "core/register-set.hpp"
 #include "core/servant.hpp"
 #include "parser/compile-error.hpp"
@@ -68,19 +68,19 @@ class Project : public Servant {
    * Calls Memory::get(std::size_t address, std::size_t length = 1) const
    *
    */
-  MemoryValue getMemory(std::size_t address, std::size_t amount = 1) const;
+  MemoryValue getMemoryValue(std::size_t address, std::size_t amount = 1);
 
   /**
    * Calls Memory::put(std::size_t address, const MemoryValue& value)
    *
    */
-  void putMemoryCell(std::size_t address, const MemoryValue &value);
+  void putMemoryValue(std::size_t address, const MemoryValue &value);
 
   /**
    * Calls Memory::set(std::size_t address, const MemoryValue& value)
    *
    */
-  MemoryValue setMemoryCell(std::size_t address, const MemoryValue &value);
+  MemoryValue setMemoryValue(std::size_t address, const MemoryValue &value);
 
   // register access
 
@@ -104,7 +104,6 @@ class Project : public Servant {
   setRegisterValue(const std::string &name, const MemoryValue &value);
 
 
-
   // GUI interface
 
   // register component
@@ -125,6 +124,9 @@ class Project : public Servant {
 
   /**
    * Returns the number of memory cells(number of bytes)
+   *
+   * TODO should this be supported?
+   * Currently not accessible through any proxy.
    *
    */
   std::size_t getMemorySize() const;
@@ -211,19 +213,8 @@ class Project : public Servant {
    * \param callback
    *
    */
-  void setUpdateRegisterCallback(std::function<void(const std::string&)> callback);
-
-  /**
-   * Set the callback which is used to signal the gui that multiple registers
-   * were updated
-   *
-   * \param callback
-   *
-   */
-  void setUpdateRegistersCallback(
-      std::function<void(std::vector<std::string> &&)> callback);
-
-  // memory
+  void
+  setUpdateRegisterCallback(std::function<void(const std::string &)> callback);
 
   /**
    * Set the callback which is used to signal the gui that a memory cell was
@@ -232,7 +223,8 @@ class Project : public Servant {
    * \param callback
    *
    */
-  void setUpdateMemoryCellCallback(std::function<void(std::size_t, std::size_t)> callback);
+  void setUpdateMemoryCallback(
+      std::function<void(std::size_t, std::size_t)> callback);
 
   /**
    * Returns the architecture object.
@@ -242,6 +234,14 @@ class Project : public Servant {
 
 
  private:
+  /**
+   * Creates a register.
+   *
+   * \param registerInfo The RegisterInformation Object of the register.
+   */
+  void
+  createRegister(RegisterInformation registerInfo, UnitInformation unitInfo);
+
   /**
    * Creates all constituents of a register and recursively all constituents of
    * the constituents.
@@ -256,21 +256,11 @@ class Project : public Servant {
    * this project. */
   Architecture _architecture;
 
-  /** A memory object, manages the memory of this project. Not on the master
-   * branch at the moment. */
-  // Memory _memory;
+  /** A memory object, manages the memory of this project. */
+  Memory _memory;
 
   /** A set of registers, manages the registers of this project. */
   RegisterSet _registerSet;
-
-  /** Callback to update a single register in the ui. */
-  std::function<void(const std::string&)> _updateRegister;
-
-  /** Callback to update multiple registers in the ui at the same time. */
-  std::function<void(std::vector<std::string> &&)> _updateRegisters;
-
-  /** Callback to update a memory cell in the ui. */
-  std::function<void(std::size_t, std::size_t)> _updateMemoryCell;
 };
 
 #endif /* ERAGPSIM_CORE_PROJECT_HPP_ */

@@ -38,7 +38,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param address address of the memory cells.
    * \param length number of memory cells to return, default is 1.
    */
-  POST_FUTURE(getMemory)
+  POST_FUTURE(getMemoryValue)
 
   /**
    * Returns a number of memory cells at a given address as
@@ -50,7 +50,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param address address of the memory cells.
    * \param length number of memory cells to return, default is 1.
    */
-  POST_CALLBACK_SAFE(getMemory)
+  POST_CALLBACK_SAFE(getMemoryValue)
 
   /**
    * Puts a value into a memory cell.
@@ -58,7 +58,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param address The value is written to this address.
    * \param value The MemoryValue to write.
    */
-  POST(putMemoryCell)
+  POST(putMemoryValue)
 
   /**
    * Sets a memory cell to a value and returns the old value.
@@ -66,7 +66,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param address The value is written to this address.
    * \param value The MemoryValue to write.
    */
-  POST_FUTURE(setMemoryCell)
+  POST_FUTURE(setMemoryValue)
 
   /**
    * Set a memory cell to a value and return the old value through a callback.
@@ -77,7 +77,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param address The value is written to this address.
    * \param value The MemoryValue to write.
    */
-  POST_CALLBACK_SAFE(setMemoryCell)
+  POST_CALLBACK_SAFE(setMemoryValue)
 
   /**
    * Returns the content of a register as MemoryValue.
@@ -132,7 +132,6 @@ class MemoryAccess : public Proxy<Project> {
    *
    */
   POST_FUTURE(getMemorySize)
-
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_ACCESS_HPP */

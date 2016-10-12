@@ -18,9 +18,11 @@
 */
 
 #include "core/parsing-and-execution-unit.hpp"
+
 #include "arch/common/register-information.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
+#include "core/conversions.hpp"
 #include "parser/parser-factory.hpp"
 #include "parser/parser-mode.hpp"
 
@@ -46,15 +48,16 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
   for (UnitInformation unitInfo : architecture.getUnits()) {
     if (unitInfo.hasSpecialRegister(
             RegisterInformation::Type::PROGRAM_COUNTER)) {
-      _programCounterName =
-          unitInfo
-              .getSpecialRegister(RegisterInformation::Type::PROGRAM_COUNTER)
-              .getName();
+      _programCounter = unitInfo.getSpecialRegister(
+          RegisterInformation::Type::PROGRAM_COUNTER);
     }
   }
 }
 
 void ParsingAndExecutionUnit::execute() {
+  if (_finalRepresentation.errorList.size() > 0) {
+    return;
+  }
   _stopFlag.test_and_set();
   std::size_t nextNode = findNextNode();
   while (_stopFlag.test_and_set() &&
@@ -67,11 +70,13 @@ std::size_t ParsingAndExecutionUnit::executeNextLine() {
   // reference to avoid copying a unique_ptr
   FinalCommand& currentCommand =
       _finalRepresentation.commandList.at(findNextNode());
+  if (_finalRepresentation.errorList.size() > 0) {
+    return findNextNode();
+  }
   /*if (!currentCommand.node->validate()) {
     return findNextNode();
   }*/
 
-  assert::that(_setCurrentLine);
   _setCurrentLine(currentCommand.position.lineStart);
 
   // currentCommand.node->getValue(_memoryAccess);
@@ -83,6 +88,9 @@ std::size_t ParsingAndExecutionUnit::executeNextLine() {
 }
 
 void ParsingAndExecutionUnit::executeToBreakpoint() {
+  if (_finalRepresentation.errorList.size() > 0) {
+    return;
+  }
   _stopFlag.test_and_set();
   int nextNode = findNextNode();
   while (_stopFlag.test_and_set() &&
@@ -99,9 +107,10 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
 
 void ParsingAndExecutionUnit::setExecutionPoint(int line) {
   for (auto&& command : _finalRepresentation.commandList) {
-    if (command.position.lineStart >= line) {
-      //_memoryAccess.putRegisterValue(_programCounterName,
-      // convertToMemoryValue(command.address));
+    if (command.position.lineStart == line) {
+      _memoryAccess.putRegisterValue(
+          _programCounter.getName(),
+          conversions::convert(command.address, _programCounter.getSize()));
       _setCurrentLine(line);
       break;
     }
@@ -111,14 +120,14 @@ void ParsingAndExecutionUnit::setExecutionPoint(int line) {
 void ParsingAndExecutionUnit::parse(std::string code) {
   // delete old assembled program in memory
   /*for (auto&& command : _finalRepresentation.commandList) {
-    _memoryAccess.putMemoryCell(command.address, MemoryValue());
+    _memoryAccess.putMemoryValue(command.address, MemoryValue());
   }*/
   _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
   _addressCommandMap   = _finalRepresentation.createMapping();
   _setErrorList(_finalRepresentation.errorList);
   // assemble commands into memory
   /*for (auto&& command : _finalRepresentation.commandList) {
-    _memoryAccess.putMemoryCell(command.address, command.node->assemble());
+    _memoryAccess.putMemoryValue(command.address, command.node->assemble());
   }*/
 }
 
@@ -160,13 +169,15 @@ void ParsingAndExecutionUnit::setSetCurrentLineCallback(
   _setCurrentLine = callback;
 }
 
-std::size_t ParsingAndExecutionUnit::findNextNode() const {
-  // std::size_t nextInstructionAddress =
-  // convert(_memoryAccess.getRegisterValue(_programCounterName));
-  // auto iterator = _addressCommandMap.find(nextInstructionAddress);
-  // if(iterator == _addressCommandMap.end()) {
-  // return _finalRepresentation.commandList.size();
-  //}
-  // return iterator->second;
-  return 5;
+std::size_t ParsingAndExecutionUnit::findNextNode() {
+  std::string programCounterName = _programCounter.getName();
+  MemoryValue programCounterValue =
+      _memoryAccess.getRegisterValue(programCounterName).get();
+  std::size_t nextInstructionAddress =
+      conversions::convert<std::size_t>(programCounterValue);
+  auto iterator = _addressCommandMap.find(nextInstructionAddress);
+  if (iterator == _addressCommandMap.end()) {
+    return _finalRepresentation.commandList.size();
+  }
+  return iterator->second;
 }

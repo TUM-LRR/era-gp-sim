@@ -54,22 +54,13 @@ class MemoryManager : public Proxy<Project> {
   POST(setUpdateRegisterCallback)
 
   /**
-   * Set the callback which is used to signal the gui that multiple registers
-   * were updated
-   *
-   * \param callback std::function<void(std::vector<std::string> &&)>
-   *
-   */
-  POST(setUpdateRegistersCallback)
-
-  /**
-   * Set the callback which is used to signal the gui that a memory cell was
+   * Set the callback which is used to signal the gui that the memory was
    * updated
    *
    * \param callback std::function<void(int)>
    *
    */
-  POST(setUpdateMemoryCellCallback)
+  POST(setUpdateMemoryCallback)
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_MANAGER_HPP */

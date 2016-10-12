@@ -20,6 +20,7 @@
 #include "core/project.hpp"
 
 #include "common/assert.hpp"
+#include "core/conversions.hpp"
 
 
 Project::Project(std::weak_ptr<Scheduler> &&scheduler,
@@ -27,22 +28,28 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
                  std::size_t memorySize)
 : Servant(std::move(scheduler))
 , _architecture(Architecture::Brew(architectureFormula))
+, _memory(memorySize)// TODO https://github.com/TUM-LRR/era-gp-sim/issues/83
 , _registerSet() {
   _architecture.validate();
 
   for (UnitInformation unitInfo : _architecture.getUnits()) {
     for (auto &&registerPair : unitInfo) {
       // create all top level registers
-      RegisterInformation registerInfo = registerPair.second;
-      if (!registerInfo.hasEnclosing()) {
-        // TODO byteSize
-        _registerSet.createRegister(registerInfo.getName(),
-                                    registerInfo.getSize());
-
-        // create all constituents and their constituents
-        createConstituents(registerInfo, unitInfo);
-      }
+      createRegister(registerPair.second, unitInfo);
     }
+    // create special registers
+    for (auto &&registerPair : unitInfo.getSpecialRegisters()) {
+      createRegister(registerPair.second, unitInfo);
+    }
+  }
+}
+
+void Project::createRegister(RegisterInformation registerInfo,
+                             UnitInformation unitInfo) {
+  if (!registerInfo.hasEnclosing()) {
+    _registerSet.createRegister(registerInfo.getName(), registerInfo.getSize());
+    // create all constituents and their constituents
+    createConstituents(registerInfo, unitInfo);
   }
 }
 
@@ -67,15 +74,17 @@ void Project::createConstituents(RegisterInformation enclosingRegister,
   }
 }
 
-MemoryValue Project::getMemory(std::size_t address, std::size_t amount) const {
-  return MemoryValue();
+MemoryValue Project::getMemoryValue(std::size_t address, std::size_t amount) {
+  return _memory.get(address, amount);
 }
 
-void Project::putMemoryCell(std::size_t address, const MemoryValue &value) {
+void Project::putMemoryValue(std::size_t address, const MemoryValue &value) {
+  _memory.put(address, value);
 }
 
-MemoryValue Project::setMemoryCell(std::size_t address, const MemoryValue &value) {
-  return MemoryValue();
+MemoryValue
+Project::setMemoryValue(std::size_t address, const MemoryValue &value) {
+  return _memory.set(address, value);
 }
 
 MemoryValue Project::getRegisterValue(const std::string &name) const {
@@ -96,12 +105,13 @@ UnitContainer Project::getRegisterUnits() const {
   return _architecture.getUnits();
 }
 
-/*Architecture::byte_size_t Project::getByteSize() const {
+/*https://github.com/TUM-LRR/era-gp-sim/issues/83
+Architecture::byte_size_t Project::getByteSize() const {
   return _architecture.getByteSize();
 }*/
 
 std::size_t Project::getMemorySize() const {
-  return 0;
+  return _memory.getByteCount();
 }
 
 void Project::setMemorySize(std::size_t size) {
@@ -112,8 +122,9 @@ InstructionSet Project::getInstructionSet() const {
 }
 
 void Project::resetMemory() {
-  for(std::size_t i = 0; i < getMemorySize(); i++) {
-    putMemoryCell(i, MemoryValue());
+  MemoryValue zero = conversions::convert(0, _memory.getByteSize());
+  for (std::size_t i = 0; i < getMemorySize(); i++) {
+    putMemoryValue(i, zero);
   }
 }
 
@@ -121,8 +132,9 @@ void Project::resetRegisters() {
   for (UnitInformation unitInfo : _architecture.getUnits()) {
     for (auto &&registerPair : unitInfo) {
       RegisterInformation registerInfo = registerPair.second;
-      if(!registerInfo.isConstant() && !registerInfo.hasEnclosing()) {
-        putRegisterValue(registerPair.second.getName(), MemoryValue());
+      if (!registerInfo.isConstant() && !registerInfo.hasEnclosing()) {
+        MemoryValue zero = conversions::convert(0, registerInfo.getSize());
+        putRegisterValue(registerPair.second.getName(), zero);
       }
     }
   }
@@ -157,17 +169,13 @@ std::function<MemoryValue(std::string)> Project::getFloatToMemoryValue() const {
 }
 
 void Project::setUpdateRegisterCallback(
-    std::function<void(const std::string&)> callback) {
-  _updateRegister = callback;
+    std::function<void(const std::string &)> callback) {
+  _registerSet.setCallback(callback);
 }
 
-void Project::setUpdateRegistersCallback(
-    std::function<void(std::vector<std::string> &&)> callback) {
-  _updateRegisters = callback;
-}
-
-void Project::setUpdateMemoryCellCallback(std::function<void(std::size_t, std::size_t)> callback) {
-  _updateMemoryCell = callback;
+void Project::setUpdateMemoryCallback(
+    std::function<void(std::size_t, std::size_t)> callback) {
+  _memory.setCallback(callback);
 }
 
 Architecture Project::getArchitecture() {

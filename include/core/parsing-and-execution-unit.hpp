@@ -32,6 +32,7 @@
 
 class ContextInformation;
 class MacroInformation;
+class RegisterInformation;
 
 /**
  * This servant parses the code and executes the program.
@@ -166,7 +167,7 @@ class ParsingAndExecutionUnit : public Servant {
    * \return index of the next node.
    *
    */
-  std::size_t findNextNode() const;
+  std::size_t findNextNode();
 
   /** A unique_ptr to the parser. */
   std::unique_ptr<Parser> _parser;
@@ -187,7 +188,7 @@ class ParsingAndExecutionUnit : public Servant {
   std::unordered_set<int> _breakpoints;
 
   /** The name of the program counter register. */
-  std::string _programCounterName;
+  RegisterInformation _programCounter;
 
   /** The SyntaxInformation object of the parser. */
   SyntaxInformation _syntaxInformation;
