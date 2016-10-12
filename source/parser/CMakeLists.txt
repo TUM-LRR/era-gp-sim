@@ -13,6 +13,8 @@ set(PARSER_SOURCES
   riscv-regex.cpp
   syntax-information.cpp
   syntax-tree-generator.cpp
+  macro-directive.cpp
+  macro-end-directive.cpp
   expression-compiler-clike.cpp
   parser-factory.cpp
   integer-parser.cpp
