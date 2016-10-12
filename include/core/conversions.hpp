@@ -247,23 +247,6 @@ convert(T value, const Conversion con, std::size_t size) {
   return convert<T>(value, con.toMem, size);
 }
 
-namespace {
-// brief function used as BigEndian permutation
-struct bigEndian {
-  std::size_t _byteCount;
-  bigEndian(std::size_t byteCount) : _byteCount{byteCount} {
-  }
-  bigEndian() : bigEndian(8){};
-  bigEndian(const bigEndian&) = default;
-  bigEndian& operator=(const bigEndian&) = default;
-  bigEndian(bigEndian&&)                 = default;
-  bigEndian& operator=(bigEndian&&) = default;
-  std::size_t operator()(size_t x) {
-    return _byteCount - x;
-  }
-};
-}
-
 namespace detail {
 enum class SignedRepresentation {
   UNSIGNED,
