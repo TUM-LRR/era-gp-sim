@@ -96,10 +96,17 @@ class AbstractSyntaxTreeNode {
    * This should be called before the execution (i.e. a call to getValue()) of
    * each instruction.
    *
+   * As most instructions don't need a runtime validation, this method has a
+   * default implementation that always returns ValidationResult::success().
+   * It is intended, that an instruction, that needs the runtime validation,
+   * simply overrides this function.
+   *
    * \return Whether this is semantically correct during runtime.
    */
   virtual const ValidationResult
-  validateRuntime(DummyMemoryAccess& memoryAccess) const = 0;
+  validateRuntime(DummyMemoryAccess& memoryAccess) const {
+    return ValidationResult::success();
+  }
 
   /**
    * Assembles this syntax tree into its binary representation. So, this

@@ -58,13 +58,6 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   }
 
   /**
-   * \return success, always
-   */
-  virtual const ValidationResult validateRuntime() const override {
-    return ValidationResult::success();
-  }
-
-  /**
    * \return An empty MemoryValue, because the instruction has to be
    * assembled in the instruction node.
    */

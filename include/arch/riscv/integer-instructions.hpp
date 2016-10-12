@@ -154,11 +154,6 @@ class IntegerInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
-  const ValidationResult
-  validateRuntime(DummyMemoryAccess& memoryAccess) const override {
-    return ValidationResult::success();
-  }
-
   /**
    * performs the specific arithmetic integer operation (such as +, -, and, or,
    * etc) and returns the result

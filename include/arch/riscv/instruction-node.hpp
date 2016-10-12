@@ -40,8 +40,6 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   virtual MemoryValue
   getValue(DummyMemoryAccess& memory_access) const override = 0;
   virtual const ValidationResult validate() const override  = 0;
-  virtual const ValidationResult
-  validateRuntime(DummyMemoryAccess& memoryAccess) const override = 0;
 
   /* Assemble is implemented in this class */
   MemoryValue assemble() const override;

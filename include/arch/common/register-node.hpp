@@ -58,14 +58,6 @@ class RegisterNode : public AbstractSyntaxTreeNode {
                      "The register node must not have any arguments"));
   }
 
-  /**
-   * \return success, always
-   */
-  const ValidationResult
-  validateRuntime(DummyMemoryAccess& memoryAccess) const override {
-    return ValidationResult::success();
-  }
-
   const std::string& getIdentifier() const override {
     return _identifier;
   }

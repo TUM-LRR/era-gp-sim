@@ -61,14 +61,6 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
   }
 
   /**
-   * \return success, always
-   */
-  const ValidationResult
-  validateRuntime(DummyMemoryAccess& memoryAccess) const override {
-    return ValidationResult::success();
-  }
-
-  /**
    * \return Return the value of the immediate.
    */
   MemoryValue assemble() const override {
