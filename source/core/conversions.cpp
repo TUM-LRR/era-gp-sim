@@ -296,42 +296,30 @@ Conversion switchConversion(SignedRepresentation representation) {
   }
   return conversions::standardConversions::nonsigned;
 }
-conversions::Endianness
-mapEndianess(ArchitectureProperties::Endianness endianness) {
-  switch (endianness) {
-    case ArchitectureProperties::Endianness::LITTLE:
-      return conversions::Endianness::LITTLE;
-    case ArchitectureProperties::Endianness::BIG:
-      return conversions::Endianness::BIG;
-    case ArchitectureProperties::Endianness::MIXED:// not implemented
-    case ArchitectureProperties::Endianness::BI:   // not implemented
-    default: assert::that(false);
-  }
-  return conversions::Endianness::LITTLE;
-}
-conversions::SignedRepresentation
+SignedRepresentation
 mapRepresentation(ArchitectureProperties::SignedRepresentation representation) {
   switch (representation) {
     case ArchitectureProperties::SignedRepresentation::SIGN_BIT:
-      return conversions::SignedRepresentation::SIGN_BIT;
+      return SignedRepresentation::SIGN_BIT;
     case ArchitectureProperties::SignedRepresentation::ONES_COMPLEMENT:
-      return conversions::SignedRepresentation::ONES_COMPLEMENT;
+      return SignedRepresentation::ONES_COMPLEMENT;
     case ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT:
-      return conversions::SignedRepresentation::TWOS_COMPLEMENT;
+      return SignedRepresentation::TWOS_COMPLEMENT;
     default: assert::that(false);
   }
-  return conversions::SignedRepresentation::SMART;
+  return SignedRepresentation::SMART;
 }
 }
 
 MemoryValue permute(const MemoryValue& memoryValue,
-                    Endianness byteOrder,
+                    ArchitectureProperties::Endianness byteOrder,
                     std::size_t byteSize) {
   const std::size_t byteCount{memoryValue.getSize() / byteSize};
   std::function<std::size_t(std::size_t)> lambdaFunction;
   switch (byteOrder) {
-    case Endianness::LITTLE: return memoryValue;
-    case Endianness::BIG:
+    case ArchitectureProperties::Endianness::LITTLE:
+      return memoryValue;
+    case ArchitectureProperties::Endianness::BIG:
       lambdaFunction = [byteCount](std::size_t x) { return byteCount - x; };
       return permute(memoryValue, byteSize, lambdaFunction);
     default: assert::that(false);
