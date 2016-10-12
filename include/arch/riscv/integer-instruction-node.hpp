@@ -155,7 +155,7 @@ class AbstractIntegerInstructionNode : public InstructionNode {
     assert(_children[2]->getType() == Type::IMMEDIATE);
     auto value = _getChildValue(2);
 
-    if ((value & ~static_cast<SizeType>(0xFFFFF)) > 0) {
+    if ((value & ~static_cast<SizeType>(0xFFF)) > 0) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "The immediate value of this instruction must "

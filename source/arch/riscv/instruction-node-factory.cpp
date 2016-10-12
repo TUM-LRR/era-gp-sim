@@ -235,6 +235,14 @@ void InstructionNodeFactory::_setup64BitOnlyInstructions() {
   facade.template add<ShiftLogicalRightOnlyInstructionNode>("srliw", true);
   facade.template add<ShiftArithmeticRightOnlyInstructionNode>("sraw", false);
   facade.template add<ShiftArithmeticRightOnlyInstructionNode>("sraiw", true);
+
+  //special load/store instructions
+  using LoadType = typename LoadInstructionNode<riscv::unsigned64_t, riscv::signed64_t>::Type;
+  using StoreType = typename StoreInstructionNode<riscv::unsigned64_t, riscv::signed64_t>::Type;
+  auto loadStoreFacade = _factories.typeFacade<riscv::unsigned64_t, riscv::signed64_t>();
+  loadStoreFacade.template add<LoadInstructionNode>("ld", LoadType::DOUBLE_WORD);
+  loadStoreFacade.template add<LoadInstructionNode>("lwu", LoadType::WORD_UNSIGNED);
+  loadStoreFacade.template add<StoreInstructionNode>("sd", StoreType::DOUBLE_WORD);
 }
 
 InstructionNodeFactory::Node InstructionNodeFactory::createInstructionNode(
