@@ -9,6 +9,7 @@ set(CORE_SOURCES
   project.cpp
   project-module.cpp
   parsing-and-execution-unit.cpp
+  memory.cpp
   scheduler.cpp
 )
 

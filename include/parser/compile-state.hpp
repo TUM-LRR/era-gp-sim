@@ -52,6 +52,15 @@ struct CompileState {
   std::string section = "text";
 
   /**
+   * \brief Adds an error to the state-internal error list at the current
+   * position.
+   * \param message The message for the error.
+   */
+  void addError(const std::string& message) {
+    addError(message, position);
+  }
+
+  /**
    * \brief Adds an error to the state-internal error list.
    * \param message The message for the error.
    * \param position The position where the error occurred.
@@ -62,6 +71,15 @@ struct CompileState {
   }
 
   /**
+   * \brief Adds a warning to the state-internal error list at the current
+   * position.
+   * \param message The message for the warning.
+   */
+  void addWarning(const std::string& message) {
+    addWarning(message, position);
+  }
+
+  /**
    * \brief Adds a warning to the state-internal error list.
    * \param message The message for the warning.
    * \param position The position where the warning occurred.
@@ -69,6 +87,15 @@ struct CompileState {
   void addWarning(const std::string& message, const CodePosition& position) {
     errorList.push_back(
         CompileError(message, position, CompileErrorSeverity::WARNING));
+  }
+
+  /**
+   * \brief Adds an information to the state-internal error list at the current
+   * position.
+   * \param message The message for the information.
+   */
+  void addInformation(const std::string& message) {
+    addInformation(message, position);
   }
 
   /**
