@@ -11,6 +11,8 @@ set(TEST_ARCH_RISCV_SOURCES
     arithmetic-test-utils.cpp
     mul-div-instruction-tests.cpp
         formats-test.cpp
+   arch-riscv-jump-instruction-tests.cpp
+  arch-riscv-branch-instruction-tests.cpp
 )
 
 ########################################

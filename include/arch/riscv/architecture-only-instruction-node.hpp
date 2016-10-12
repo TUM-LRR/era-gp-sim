@@ -50,8 +50,7 @@ namespace riscv {
  * \tparam OperationSize The unsigned integral, the operations operate on
  *         (e.g. uint32_t for RV64)
  */
-template <typename WordSize,
-          typename OperationSize,
+template <typename WordSize, typename OperationSize,
           typename = std::enable_if_t<std::is_integral<WordSize>::value &&
                                       std::is_unsigned<WordSize>::value &&
                                       std::is_integral<OperationSize>::value &&
@@ -67,36 +66,36 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
    * validation, if not 3 register operands are expected
    * \param operation The operation to be performed, if the node is executed.
    */
-  ArchitectureOnlyInstructionNode(InstructionInformation& information,
+  ArchitectureOnlyInstructionNode(const InstructionInformation& information,
                                   bool immediate,
                                   Operation operation = Operation())
-  : InstructionNode(information)
-  , _isImmediate(immediate)
-  , _operation(operation) {
-  }
+      : InstructionNode(information),
+        _isImmediate(immediate),
+        _operation(operation) {}
 
   /** Default destructor*/
   virtual ~ArchitectureOnlyInstructionNode() = default;
 
-  MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override {
+    assert(validate().isSuccess());
     auto destination = _children[0]->getIdentifier();
 
-    auto first  = _child(1, memoryAccess);
+    auto first = _child(1, memoryAccess);
     auto second = _child(2, memoryAccess);
 
     auto result = _compute(first, second);
-    auto value  = convert(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+    auto value = riscv::convert(result);
 
     memoryAccess.setRegisterValue(destination, value);
 
     return MemoryValue{};
   }
 
-  const ValidationResult validate() const override {
+  ValidationResult validate() const override {
     auto result = _validateNumberOfChildren();
     if (!result.isSuccess()) return result;
 
-    auto childrenResult = validateAllChildren();
+    auto childrenResult = _validateChildren();
     if (!childrenResult.isSuccess()) {
       return childrenResult;
     }
@@ -137,9 +136,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
     return _operation(first, second);
   }
 
-  OperationSize _getLower5Bits(OperationSize op) const {
-    return op & 0b11111;
-  }
+  OperationSize _getLower5Bits(OperationSize op) const { return op & 0b11111; }
 
   /**
    * Performs sign-expansion on the given value. Sign expansion means, that
@@ -150,8 +147,8 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   WordSize _signExpand(OperationSize value) const {
     // Aquire the sign bit
     constexpr auto length = sizeof(OperationSize) * CHAR_BIT;
-    OperationSize sign    = (value & (OperationSize{1} << (length - 1)));
-    WordSize result       = value;// This zero-expands value
+    OperationSize sign = (value & (OperationSize{1} << (length - 1)));
+    WordSize result = value;  // This zero-expands value
     // Do sign-expansion if needed
     if (sign > 0) {
       // Sign-expansion is quite easy here: All the bits above the lower
@@ -163,9 +160,9 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   }
 
  private:
-  OperationSize _child(size_t index, DummyMemoryAccess& memoryAccess) const {
+  OperationSize _child(size_t index, MemoryAccess& memoryAccess) const {
     auto memory = _children[index]->getValue(memoryAccess);
-    return convert<OperationSize>(memory, RISCV_ENDIANNESS);
+    return riscv::convert<OperationSize>(memory);
   }
 
   ValidationResult _validateNumberOfChildren() const {
@@ -183,7 +180,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   ValidationResult _validateImmediateSize() const {
     if (_isImmediate && _children[2]->getType() == Type::IMMEDIATE) {
       // no memory access is needed for a immediate node
-      DummyMemoryAccessStub stub;
+      MemoryAccess stub;
       MemoryValue value = _children.at(2)->getValue(stub);
 
       if (value.getSize() > 12) {
@@ -209,8 +206,8 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   }
 
   ValidationResult _validateOperandsForImmediateInstructions() const {
-    if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
-        !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
+    if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
+        !_requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                                                       "This instruction must "
                                                       "have 2 registers and 1 "
@@ -222,7 +219,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
 
   ValidationResult _validateOperandsForNonImmediateInstructions() const {
     // a register integer instruction needs three register operands
-    if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3)) {
+    if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3)) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(
           "Syntax-Tree-Validation",
           "This instruction must have 3 registers as operands"));

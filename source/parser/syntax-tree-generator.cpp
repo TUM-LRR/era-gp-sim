@@ -34,7 +34,7 @@ SyntaxTreeGenerator::transformOperand(const std::string& operand,
     outputNode = _nodeFactories.createImmediateNode(
         MemoryValue{});// std::stoi(operand) Temporary.
   } else {
-    outputNode = _nodeFactories.createRegisterAccessNode(operand);
+    outputNode = _nodeFactories.createRegisterNode(operand);
   }
 
   // according to the architecture group, we get a nullptr if the creation

@@ -18,8 +18,13 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
 #define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
 
+#include <initializer_list>
+#include <string>
+
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/instruction-information.hpp"
+#include "arch/riscv/properties.hpp"
+#include "arch/riscv/utility.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-value.hpp"
 
@@ -27,26 +32,45 @@ namespace riscv {
 /** A node that represents a RISC V specific instruction */
 class InstructionNode : public AbstractSyntaxTreeNode {
  public:
+  using super = AbstractSyntaxTreeNode;
+
   /**
    * Constructs a new node that represents a RISC V specific instruction.
+   *
+   * \param The information object associated with the instruction.
    */
-  InstructionNode(InstructionInformation& instructionInformation)
-  : AbstractSyntaxTreeNode(Type::INSTRUCTION)
-  , _instructionInformation(instructionInformation) {
-  }
+  InstructionNode(const InstructionInformation& information);
 
+  virtual ~InstructionNode() = default;
 
-  /* Ensure this class is also pure virtual */
-  virtual MemoryValue
-  getValue(DummyMemoryAccess& memory_access) const override = 0;
-  virtual const ValidationResult validate() const override  = 0;
-
-  /* Assemble is implemented in this class */
+  /** \copydoc AbstractSyntaxTreeNode::assemble() */
   MemoryValue assemble() const override;
 
-  /* Can be retreived using the InstructionInformation */
+  /** \copydoc AbstractSyntaxTreeNode::getIdentifier() */
   const std::string& getIdentifier() const override;
 
+ protected:
+  using TypeList = std::initializer_list<super::Type>;
+
+  /**
+   * Utility function to retrieve a child node for RISC-V.
+   *
+   * The riscv::ENDIANNESS is used.
+   *
+   * \tparam T The type to convert to.
+   * \param memoryAccess The memory access object.
+   * \param index The index of the child to retrieve.
+   *
+   * \return The value fo the child.
+   */
+  template <typename T>
+  T _child(MemoryAccess& memoryAccess, size_t index) const {
+    assert(index < _children.size());
+    auto memory = _children[index]->getValue(memoryAccess);
+    return riscv::convert<T>(memory);
+  }
+
+  // TODO: Leaving it like so to avoid conflicts for now
   /**
    * Checks if this node has 'amount' children of type 'type', starting at
    * index
@@ -54,22 +78,24 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    *
    * \param startIndex The index to start checking for registers.
    * \param amount The amount of registers required.
-   * \return true if this node matches the requirements.
+   *
+   * \return True if the children match the given types, else false.
    */
-  bool requireChildren(Type type, size_t startIndex, size_t amount) const;
+  bool _requireChildren(Type type, size_t startIndex, size_t amount) const;
 
-  /** byte order used in RISC-V architecture*/
-  static constexpr Endianness RISCV_ENDIANNESS = Endianness::LITTLE;
-  /** signed representation used in RISC-V architecture */
-  static constexpr SignedRepresentation RISCV_SIGNED_REPRESENTATION =
-      SignedRepresentation::TWOS_COMPLEMENT;
-  /** bits per byte in RISC-V architecture*/
-  static constexpr std::size_t RISCV_BITS_PER_BYTE = 8;
-  /** string identifier of the program counter in riscv */
-  static constexpr auto RISCV_PROGRAM_COUNTER_ID = "pc";
 
- private:
-  InstructionInformation& _instructionInformation;
+  /**
+   * Checks if the node's children are of the given types.
+   *
+   * \param list A list of types.
+   * \param startIndex An optional starting index from where to check types.
+   *
+   * \return True if the children match the given types, else false.
+   */
+  bool _compareChildTypes(TypeList list, size_t startIndex = 0) const;
+
+  /** The information object associated with the instruction. */
+  InstructionInformation _information;
 };
 }
 

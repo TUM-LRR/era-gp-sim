@@ -6,35 +6,51 @@
 #include "arch/riscv/formats.hpp"
 #include "arch/riscv/instruction-node.hpp"
 
-using namespace riscv;
+namespace riscv {
 
 constexpr unsigned int str2int(const char* str, int h = 0) {
   return !str[h] ? 5381 : (str2int(str, h + 1) * 33) ^ str[h];
 }
 
-const std::string& InstructionNode::getIdentifier() const {
-  assert(_instructionInformation.isValid() &&
-         _instructionInformation.hasMnemonic());
-  return _instructionInformation.getMnemonic();
+InstructionNode::InstructionNode(const InstructionInformation& information)
+: super(Type::INSTRUCTION), _information(information) {
 }
 
-bool InstructionNode::requireChildren(Type type,
-                                      size_t startIndex,
-                                      size_t amount) const {
-  if (_children.size() - startIndex < amount) return false;
+const std::string& InstructionNode::getIdentifier() const {
+  return _information.getMnemonic();
+}
 
-  for (size_t i = startIndex; i < startIndex + amount; i++) {
-    if (_children.at(i)->getType() != type) {
-      return false;
-    }
-  }
-  return true;
+bool InstructionNode::_requireChildren(Type type,
+                                       size_t startIndex,
+                                       size_t amount) const {
+  auto first = _children.begin();
+  std::advance(first, startIndex);
+
+  auto last = first;
+  std::advance(last, amount);
+
+  // clang-format off
+  return std::all_of(first, last, [type] (const auto& child) {
+    return child->getType() == type;
+  });
+  // clang-format on
+}
+
+bool InstructionNode::_compareChildTypes(TypeList list,
+                                         size_t startIndex) const {
+  auto view = Utility::viewFrom(_children, startIndex);
+
+  // clang-format off
+  return Utility::isEqual(list, view, [](auto type, const auto& child) {
+    return type == child->getType();
+  });
+  // clang-format on
 }
 
 MemoryValue InstructionNode::assemble() const {
   AssemblerFunction assembler;
-  InstructionKey instructionKey = _instructionInformation.getKey();
-  const char* format            = _instructionInformation.getFormat().c_str();
+  InstructionKey instructionKey = _information.getKey();
+  const char* format            = _information.getFormat().c_str();
 
   switch (str2int(format)) {
     case str2int("R"): assembler  = RFormat(); break;
@@ -54,10 +70,12 @@ MemoryValue InstructionNode::assemble() const {
 
   auto boolResult = assembler(instructionKey, args);
 
-  MemoryValue result(boolResult.size() / RISCV_BITS_PER_BYTE,
-                     RISCV_BITS_PER_BYTE);
+  MemoryValue result(boolResult.size() / riscv::BITS_PER_BYTE,
+                     riscv::BITS_PER_BYTE);
 
   for (int i = 0; i < boolResult.size(); i++) result.put(i, boolResult.at(i));
 
   return result;
 }
+
+}//namespace riscv

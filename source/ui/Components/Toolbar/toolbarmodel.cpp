@@ -1,4 +1,5 @@
-/* C++ Assembler Interpreter
+/*
+ * C++ Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -13,19 +14,34 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
-#include <memory>
+#include "toolbarmodel.hpp"
+
 #include <string>
+#include <iostream>
 
-#include "arch/riscv/register-access-node-factory.hpp"
-
-namespace riscv {
-
-RegisterAccessNodeFactory::Node
-RegisterAccessNodeFactory::createRegisterAccessNode(
-    const std::string &id) const {
-  // return std::make_unique<RegisterAccessNode>(id);
-  return {};
+ToolbarModel::ToolbarModel(): QObject(){
 }
+
+void ToolbarModel::run(){
+    std::cout<<"C++ Run called"<<std::endl;
+}
+
+void ToolbarModel::runLine(){
+    std::cout<<"C++ RunLine called"<<std::endl;
+}
+
+void ToolbarModel::runBreakpoint(){
+    std::cout<<"C++ RunBreakpoint called"<<std::endl;
+}
+
+void ToolbarModel::stop(){
+    std::cout<<"C++ Stop called"<<std::endl;
+}
+
+void ToolbarModel::changeSystem(QByteArray s){
+    std::string st=s.toStdString();
+    std::cout<<"C++ changeSystem to "<<st<<" called"<<std::endl;
 }

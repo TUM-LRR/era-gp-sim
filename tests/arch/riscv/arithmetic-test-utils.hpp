@@ -30,7 +30,7 @@
 
 using namespace riscv;
 
-void testIntegerInstructionValidation(DummyMemoryAccess& memAccess,
+void testIntegerInstructionValidation(MemoryAccess& memAccess,
                                       InstructionNodeFactory& instrF,
                                       ImmediateNodeFactory& immF,
                                       std::string instructionToken,
@@ -70,11 +70,11 @@ void test12BitImmediateBounds(InstructionNodeFactory& instrF,
       instructionFactory.createInstructionNode(instruction);                   \
   ASSERT_FALSE(cmd_##contextNbr->validate().isSuccess());                      \
   /*Assemble instruction with destination & operands*/                         \
-  cmd_##contextNbr->addChild(std::make_unique<FakeRegisterNode>(dest));        \
+  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(dest));        \
   ASSERT_FALSE(cmd_##contextNbr->validate().isSuccess());                      \
-  cmd_##contextNbr->addChild(std::make_unique<FakeRegisterNode>(op1));         \
+  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(op1));         \
   ASSERT_FALSE(cmd_##contextNbr->validate().isSuccess());                      \
-  cmd_##contextNbr->addChild(std::make_unique<FakeRegisterNode>(op2));         \
+  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(op2));         \
   ASSERT_TRUE(cmd_##contextNbr->validate().isSuccess());                       \
   /* Save values of operand registers to determine change*/                    \
   MemoryValue preOp1_##contextNbr = memoryAccess.getRegisterValue(op1);        \
@@ -119,10 +119,10 @@ void test12BitImmediateBounds(InstructionNodeFactory& instrF,
       instructionFactory.createInstructionNode(instruction);                   \
   ASSERT_FALSE(cmd_##contextNbr->validate().isSuccess())                       \
       << "empty instruction node validation failed";                           \
-  cmd_##contextNbr->addChild(std::make_unique<FakeRegisterNode>(dest));        \
+  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(dest));        \
   ASSERT_FALSE(cmd_##contextNbr->validate().isSuccess())                       \
       << "instruction node + destination register node validation failed";     \
-  cmd_##contextNbr->addChild(std::make_unique<FakeRegisterNode>(reg));         \
+  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(reg));         \
   ASSERT_FALSE(cmd_##contextNbr->validate().isSuccess())                       \
       << "instruction node + 2 register nodes validation failed";              \
   cmd_##contextNbr->addChild(                                                  \

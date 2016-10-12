@@ -47,9 +47,9 @@ performLuiTest(int32_t input,
                T expectedOutput,
                ArchitectureFormula::InitializerList modules) {
   // Init memory access & registers
-  FakeRegister dest;
+  Register dest;
   std::string destId{"dest"};
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(destId, dest);
 
   // Create factory & instruction
@@ -59,10 +59,10 @@ performLuiTest(int32_t input,
 
   // Fill arguments
   ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<FakeRegisterNode>(destId));
+  instr->addChild(std::make_unique<RegisterNode>(destId));
   ASSERT_FALSE(instr->validate());
   instr->addChild(
-      immediateFactory.createImmediateNode(convertToMemSigned<int32_t>(input)));
+      immediateFactory.createImmediateNode(riscv::convert<int32_t>(input)));
   ASSERT_TRUE(instr->validate());
 
   // Execute
@@ -70,7 +70,7 @@ performLuiTest(int32_t input,
 
   // Check result
   MemoryValue result = memoryAccess.getRegisterValue(destId);
-  ASSERT_EQ(convertToInt<T>(result), expectedOutput);
+  ASSERT_EQ(riscv::convert<T>(result), expectedOutput);
 }
 
 /**
@@ -93,15 +93,15 @@ performAuipcTest(uint32_t input,
                  ArchitectureFormula::InitializerList modules) {
   // Init memory access & registers
   // Note that the program counter is realized by a register named pc
-  FakeRegister dest, pc;
+  Register dest, pc;
   std::string destId{"dest"}, pcId{"pc"};
 
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(destId, dest);
   memoryAccess.addRegister(pcId, pc);
 
   // Set pc to a value
-  memoryAccess.setRegisterValue(pcId, convertToMem<T>(initialPc));
+  memoryAccess.setRegisterValue(pcId, riscv::convert<T>(initialPc));
 
   // Create factory & instruction
   auto instrFactory     = setUpFactory(modules);
@@ -110,10 +110,10 @@ performAuipcTest(uint32_t input,
 
   // Fill arguments
   ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<FakeRegisterNode>(destId));
+  instr->addChild(std::make_unique<RegisterNode>(destId));
   ASSERT_FALSE(instr->validate());
   instr->addChild(
-      immediateFactory.createImmediateNode(convertToMem<uint32_t>(input)));
+      immediateFactory.createImmediateNode(riscv::convert<uint32_t>(input)));
   ASSERT_TRUE(instr->validate());
 
   // Execute
@@ -121,7 +121,7 @@ performAuipcTest(uint32_t input,
 
   // Check result
   MemoryValue result = memoryAccess.getRegisterValue(destId);
-  ASSERT_EQ(convertToInt<T>(result), expectedOutput);
+  ASSERT_EQ(riscv::convert<T>(result), expectedOutput);
 }
 
 }// Private namespace
@@ -135,20 +135,20 @@ TEST(LuiAuipcInstructionsTest, Validation) {
 
   ASSERT_FALSE(lui->validate() || auipc->validate());
   // Just add some dummy registers
-  lui->addChild(std::make_unique<FakeRegisterNode>(destId));
-  auipc->addChild(std::make_unique<FakeRegisterNode>(destId));
+  lui->addChild(std::make_unique<RegisterNode>(destId));
+  auipc->addChild(std::make_unique<RegisterNode>(destId));
   ASSERT_FALSE(lui->validate() || auipc->validate());
   // Add an immediate value, that can't be represented by 20 bits
   lui->addChild(
-      immediateFactory.createImmediateNode(convertToMem<uint32_t>(1 << 20)));
+      immediateFactory.createImmediateNode(riscv::convert<uint32_t>(1 << 20)));
   // Add a valid immediate
   auipc->addChild(
-      immediateFactory.createImmediateNode(convertToMem<uint32_t>(1)));
+      immediateFactory.createImmediateNode(riscv::convert<uint32_t>(1)));
   ASSERT_FALSE(lui->validate());
   ASSERT_TRUE(auipc->validate());
   // Add another immediate (which is not allowed)
   auipc->addChild(
-      immediateFactory.createImmediateNode(convertToMem<uint32_t>(1)));
+      immediateFactory.createImmediateNode(riscv::convert<uint32_t>(1)));
   ASSERT_FALSE(auipc->validate());
 }
 
