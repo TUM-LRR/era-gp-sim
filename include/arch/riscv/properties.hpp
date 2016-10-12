@@ -26,9 +26,14 @@
 
 namespace riscv {
 using Endianness = ArchitectureProperties::Endianness;
+using SignedRepresentation = ArchitectureProperties::SignedRepresentation;
 
 /** Byte order used in RISC-V architecture. */
 const Endianness ENDIANNESS = Endianness::LITTLE;
+
+/** Signed representation used in RISCV-V architecture */
+const SignedRepresentation SIGNED_REPRESENTATION =
+    SignedRepresentation::TWOS_COMPLEMENT;
 
 /** Bits per byte in RISC-V architecture. */
 const std::size_t BITS_PER_BYTE = 8;

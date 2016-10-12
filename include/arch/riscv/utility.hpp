@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_ARCH_RISCV_UTILITY_HPP
 #define ERAGPSIM_ARCH_RISCV_UTILITY_HPP
 
+#include <climits>
 #include <type_traits>
 
 #include "arch/riscv/properties.hpp"
@@ -38,8 +39,11 @@ namespace riscv {
  * \return The converted value.
  */
 template <typename T>
-T convert(const MemoryValue& memory) {
-  return core::convert<T>(memory, riscv::ENDIANNESS);
+T convert(const MemoryValue& memoryValue) {
+  return conversions::convert<T>(memoryValue,
+                                 riscv::BITS_PER_BYTE,
+                                 riscv::ENDIANNESS,
+                                 riscv::SIGNED_REPRESENTATION);
 }
 
 /**
@@ -55,7 +59,11 @@ T convert(const MemoryValue& memory) {
 template <typename T>
 std::enable_if_t<std::is_integral<T>::value, MemoryValue>
 convert(const T& value) {
-  return core::convert(value, riscv::BITS_PER_BYTE, riscv::ENDIANNESS);
+  return conversions::convert(value,
+                              sizeof(T) * CHAR_BIT,
+                              riscv::BITS_PER_BYTE,
+                              riscv::ENDIANNESS,
+                              riscv::SIGNED_REPRESENTATION);
 }
 
 /**

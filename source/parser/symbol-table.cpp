@@ -18,7 +18,13 @@
 
 #include "parser/symbol-table.hpp"
 
-#include <cassert>
+#include "common/assert.hpp"
+
+// This speeds things up a bit.
+static const std::regex TRIMMED =
+    std::regex("(^\\s+|\\s+$)", std::regex_constants::optimize);
+static const std::regex VALID_NAME =
+    std::regex("^[A-Za-z_][A-Za-z0-9_]*$", std::regex_constants::optimize);
 
 std::regex SymbolTable::makeRegex(const std::string name) const {
   // Just searches for the word.
@@ -39,26 +45,21 @@ void SymbolTable::insertEntry(const std::string& name,
   // To explain the regex: We just look if there are spaces at the beginning OR
   // at the end of the string.
 
-  assert(!std::regex_search(name, std::regex("(^\\s+|\\s+$)")));
+  assert::that(!std::regex_search(name, TRIMMED));
 
   // First of all, we check for errors with our new symbol.
 
-  if (!std::regex_search(name, std::regex("^[A-Za-z_][A-Za-z0-9_]*$"))) {
+  if (!std::regex_search(name, VALID_NAME)) {
     // Basically, everything with a leading number is not accepted.
-    state.errorList.push_back(
-        CompileError("Symbol '" + name + "' does not have a qualified name.",
-                     state.position,
-                     CompileErrorSeverity::ERROR));
+    state.addError("Symbol '" + name + "' does not have a qualified name.",
+                   state.position);
     return;
   }
 
   if (_table.find(name) != _table.end()) {
     // We also fail, if we define the symbol twice in a commit (which would
     // count as double definition in a file).
-    state.errorList.push_back(
-        CompileError("Symbol '" + name + "' defined twice.",
-                     state.position,
-                     CompileErrorSeverity::ERROR));
+    state.addError("Symbol '" + name + "' defined twice.", state.position);
     return;
   }
 
@@ -102,10 +103,7 @@ std::string SymbolTable::replaceSymbols(const std::string& source,
 
   // If we come here, we have replaced too often and abort, suspecting an
   // infinite loop.
-  state.errorList.push_back(
-      CompileError("Exceeded recursion replacement depth.",
-                   state.position,
-                   CompileErrorSeverity::ERROR));
+  state.addError("Exceeded recursion replacement depth.", state.position);
 
   return result;
 }

@@ -82,7 +82,7 @@ class AbstractIntegerInstructionNode : public InstructionNode {
     auto second = _getChildValue(2, memoryAccess);
 
     auto result = _compute(first, second);
-    auto value = core::convert(result, riscv::BITS_PER_BYTE, riscv::ENDIANNESS);
+    auto value = riscv::convert(result);
 
     memoryAccess.setRegisterValue(destination, value);
 

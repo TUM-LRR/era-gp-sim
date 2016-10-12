@@ -21,16 +21,17 @@
 #include <memory>
 #include <string>
 
-#include "arch/common/abstract-arithmetic-node-factory.hpp"
+#include "arch/common/abstract-node-factories.hpp"
 #include "arch/common/instruction-set.hpp"
 #include "core/memory-value.hpp"
 
 class Architecture;
 class AbstractSyntaxTreeNode;
-class AbstractImmediateNodeFactory;
+/*class AbstractImmediateNodeFactory;
 class AbstractInstructionNodeFactory;
 class AbstractMemoryAccessNodeFactory;
 class AbstractRegisterNodeFactory;
+class AbstractArithmeticNodeFactory;*/
 
 /**
  * \brief The NodeFactoryCollection class is a convienience class

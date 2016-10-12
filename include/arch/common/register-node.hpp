@@ -64,7 +64,7 @@ class RegisterNode : public AbstractSyntaxTreeNode {
 
   // MemoryAccess problem
   MemoryValue assemble() const override {
-    MemoryValue memValue(1, 8);
+    MemoryValue memValue{8};
 
     std::string::size_type sz;
 

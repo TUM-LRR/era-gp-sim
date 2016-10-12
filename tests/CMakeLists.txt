@@ -2,7 +2,7 @@
 # CONFIG
 ########################################
 
-add_compile_options(-g -Werror)
+add_compile_options(-g -Werror -DDEBUG)
 
 ########################################
 # SUBDIRECTORIES

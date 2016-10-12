@@ -22,6 +22,6 @@
 #include "arch/common/abstract-immediate-node-factory.hpp"
 #include "arch/common/abstract-instruction-node-factory.hpp"
 #include "arch/common/abstract-memory-access-node-factory.hpp"
-#include "arch/common/abstract-register-access-node-factory.hpp"
+#include "arch/common/abstract-register-node-factory.hpp"
 
 #endif /* ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP */
