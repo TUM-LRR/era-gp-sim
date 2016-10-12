@@ -25,13 +25,35 @@
 #include "arch/common/node-factory-collection-maker.hpp"
 #include "arch/common/register-node.hpp"
 #include "arch/riscv/instruction-node.hpp"
+#include "parser/expression-compiler-clike.hpp"
+#include "core/conversions.hpp"
 #include "gtest/gtest.h"
 
 static SyntaxTreeGenerator buildGenerator() {
   Architecture testArch =
       Architecture::Brew(ArchitectureFormula{"riscv", {"rv32i"}});
   auto factoryCollection = NodeFactoryCollectionMaker::CreateFor(testArch);
-  SyntaxTreeGenerator generator(factoryCollection);
+  //For now: code function duplication!
+  SyntaxTreeGenerator generator(factoryCollection, [] (const std::string& operand, const NodeFactoryCollection& nodeFactories, CompileState& state) -> std::unique_ptr<AbstractSyntaxTreeNode>
+          {
+            // These checks are performed:
+  // * Empty argument? Shouldn't happen, kill the compilation with fire.
+  // * First character is a letter? We have replace all constants by now, so it must be a register - or an undefined constant!
+  // * If not? Try to compile the expression!
+  std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
+  if (operand.empty())
+  {
+    outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
+  }
+  else if (std::isalpha(operand[0])) {
+    outputNode = nodeFactories.createRegisterAccessNode(operand);
+  } else {
+    //using i32
+    int32_t result = CLikeExpressionCompilers::CLikeCompilerI32.compile(operand, state);
+    outputNode = nodeFactories.createImmediateNode(conversions::convert(result, conversions::standardConversions::helper::twosComplement::toMemoryValueFunction, 32));
+  }
+  return std::move(outputNode);
+          });
   return generator;
 }
 

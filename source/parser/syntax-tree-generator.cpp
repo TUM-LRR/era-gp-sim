@@ -17,8 +17,6 @@
  */
 
 #include "parser/syntax-tree-generator.hpp"
-#include "parser/expression-compiler-clike.hpp"
-#include "core/conversions.hpp"
 
 #include <regex>
 #include <cctype>
@@ -26,30 +24,16 @@
 std::unique_ptr<AbstractSyntaxTreeNode>
 SyntaxTreeGenerator::transformOperand(const std::string& operand,
                                       CompileState& state) const {
-  // These checks are performed:
-  // * Empty argument? Shouldn't happen, kill the compilation with fire.
-  // * First character is a letter? We have replace all constants by now, so it must be a register - or an undefined constant!
-  // * If not? Try to compile the expression!
-  std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
-  if (operand.empty())
-  {
-    state.addError("Invalid argument: It's empty!", state.position);
-  }
-  else if (std::isalpha(operand[0])) {
-    outputNode = _nodeFactories.createRegisterAccessNode(operand);
-  } else {
-    //using i32
-    int32_t result = CLikeExpressionCompilers::CLikeCompilerI32.compile(operand, state);
-    outputNode = _nodeFactories.createImmediateNode(conversions::convert(result, conversions::standardConversions::helper::twosComplement::toMemoryValueFunction, 32));
-  }
+  // We invoke our node generator to get a node!
+  std::unique_ptr<AbstractSyntaxTreeNode> outputNode = _argumentGenerator(operand, _nodeFactories, state);
 
-  // according to the architecture group, we get a nullptr if the creation
+  // According to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
     state.addError("Invalid argument: '" + operand + "'", state.position);
   }
   else {
-    // we already try to find flaws early in creation of the operation.
+    // We already try to find flaws early in creation of the operation.
     auto validationResult = outputNode->validate();
     if (!validationResult) {
       state.addError("Invalid argument: '" + operand + "'", state.position);
