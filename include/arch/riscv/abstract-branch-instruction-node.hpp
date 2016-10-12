@@ -21,6 +21,7 @@
 #define ERAGPSIM_ARCH_RISCV_ABSTRACT_BRANCH_INSTRUCTION_NODE_HPP
 
 #include <QtCore/qglobal.h>
+#include <cassert>
 #include <functional>
 #include <limits>
 
@@ -83,8 +84,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
   explicit AbstractBranchInstructionNode(
       const InstructionInformation& information,
       Condition condition = Condition())
-  : super(information), _condition(condition) {
-  }
+      : super(information), _condition(condition) {}
 
   /**
    * Make the constructor pure virtual so that the class is abstract.
@@ -103,6 +103,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
    * \return An empty memory value.
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
+    assert(validate().isSuccess());
     auto first = _children[0]->getValue(memoryAccess);
     auto second = _children[1]->getValue(memoryAccess);
 
@@ -162,7 +163,6 @@ class AbstractBranchInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
-
  protected:
   // Idea: refactor all validation into a validator class, which just takes
   // `this` as a reference and performs all the checks on its children. For this
@@ -185,8 +185,8 @@ class AbstractBranchInstructionNode : public InstructionNode {
    *
    * \return True if the condition w.r.t. the operands holds, else false.
    */
-  virtual bool
-  _checkCondition(const MemoryValue& first, const MemoryValue& second) const {
+  virtual bool _checkCondition(const MemoryValue& first,
+                               const MemoryValue& second) const {
     assert(static_cast<bool>(_condition));
     return _condition(first, second);
   }
@@ -297,6 +297,5 @@ AbstractBranchInstructionNode<
 >::~AbstractBranchInstructionNode() = default;
 // clang-format on
 }
-
 
 #endif /* ERAGPSIM_ARCH_RISCV_ABSTRACT_BRANCH_INSTRUCTION_NODE_HPP_ */

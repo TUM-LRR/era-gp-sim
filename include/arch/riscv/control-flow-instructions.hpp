@@ -19,7 +19,7 @@
 
 #ifndef ERAGPSIM_ARCH_RISCV_CONTROL_FLOW_INSTRUCTIONS_HPP
 #define ERAGPSIM_ARCH_RISCV_CONTROL_FLOW_INSTRUCTIONS_HPP
-
+//aggregate header
 #include "arch/riscv/branch-instructions.hpp"
 #include "arch/riscv/jump-instructions.hpp"
 

@@ -34,7 +34,7 @@ SyntaxTreeGenerator::transformOperand(const std::string& operand,
     outputNode = _nodeFactories.createImmediateNode(
         MemoryValue{});// std::stoi(operand) Temporary.
   } else {
-    outputNode = _nodeFactories.createRegisterAccessNode(operand);
+    outputNode = _nodeFactories.createRegisterNode(operand);
   }
 
   // according to the architecture group, we get a nullptr if the creation
@@ -76,7 +76,7 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
   }
 
   // Validate node
-  if (!outputNode->validate()) {
+  if (!outputNode->validate().isSuccess()) {
     state.errorList.push_back(CompileError("Invalid operation: " + command_name,
                                            state.position,
                                            CompileErrorSeverity::ERROR));

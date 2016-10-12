@@ -23,6 +23,84 @@
 #include "common/utility.hpp"
 
 namespace riscv {
+namespace {
+
+/**
+ * Sets up the integer instructions.
+ *
+ * \tparam SizeType The word size of the architecture.
+ */
+template <typename SizeType>
+void _setupIntegerInstructions(FactoryMap& _factories) {
+  auto facade = _factories.integerInstructionFacade<SizeType>();
+
+  facade.template add<AddInstructionNode>("add");
+  facade.template add<SubInstructionNode>("sub", false);
+  facade.template add<AndInstructionNode>("and");
+  facade.template add<OrInstructionNode>("or");
+  facade.template add<XorInstructionNode>("xor");
+  facade.template add<ShiftLeftLogicalInstructionNode>("sll");
+  facade.template add<ShiftRightLogicalInstructionNode>("srl");
+  facade.template add<ShiftRightArithmeticInstructionNode>("sra");
+}
+
+/**
+ * Sets up branch instructions.
+ *
+ * Jump instructions include `BEQ`, `BNE`, `BLT[U]` and `BG[U]`.
+ *
+ * \tparam UnsignedWord An unsigned word type.
+ * \tparam SignedWord A signed word type.
+ */
+template <typename UnsignedWord, typename SignedWord>
+void _setupBranchInstructions(FactoryMap& _factories) {
+  using OperandTypes =
+      typename AbstractBranchInstructionNode<UnsignedWord,
+                                             SignedWord>::OperandTypes;
+
+  auto facade = _factories.typeFacade<UnsignedWord, SignedWord>();
+  facade.template add<BranchEqualInstructionNode>("beq");
+  facade.template add<BranchNotEqualInstructionNode>("bne");
+
+  // clang-format off
+  facade.template add<BranchLessThanInstructionNode>(
+    "blt",
+    OperandTypes::SIGNED
+  );
+
+  facade.template add<BranchLessThanInstructionNode>(
+    "bltu",
+    OperandTypes::UNSIGNED
+  );
+
+  facade.template add<BranchGreaterEqualInstructionNode>(
+      "bge",
+      OperandTypes::SIGNED
+  );
+
+  facade.template add<BranchGreaterEqualInstructionNode>(
+      "bgeu",
+      OperandTypes::UNSIGNED
+  );
+  // clang-format on
+}
+
+/**
+ * Sets up the jump instructions in the map.
+ *
+ * Jump instructions include `JAL`, `JALR` and `J`.
+ *
+ * \tparam UnsignedWord An unsigned word type.
+ * \tparam SignedWord A signed word type.
+ */
+template <typename UnsignedWord, typename SignedWord>
+void _setupJumpInstructions(FactoryMap& _factories) {
+  auto facade = _factories.typeFacade<UnsignedWord, SignedWord>();
+  facade.template add<JumpAndLinkImmediateInstructionNode>("jal");
+  facade.template add<JumpAndLinkRegisterInstructionNode>("jalr");
+  facade.template add<JumpInstructionNode>("j");
+}
+}
 
 InstructionNodeFactory::InstructionNodeFactory(
     const InstructionSet& instructions, const Architecture& architecture)
@@ -31,11 +109,13 @@ InstructionNodeFactory::InstructionNodeFactory(
   assert(wordSize == 32 || wordSize == 64);
 
   if (wordSize == 32) {
-    _setupIntegerInstructions<riscv::unsigned32_t>();
-    _setupControlFlowInstructions<riscv::unsigned32_t, riscv::signed32_t>();
+    _setupIntegerInstructions<riscv::unsigned32_t>(_factories);
+    _setupBranchInstructions<riscv::unsigned32_t, riscv::signed32_t>(_factories);
+    _setupJumpInstructions<riscv::unsigned32_t, riscv::signed32_t>(_factories);
   } else if (wordSize == 64) {
-    _setupIntegerInstructions<riscv::unsigned64_t>();
-    _setupControlFlowInstructions<riscv::unsigned64_t, riscv::signed64_t>();
+    _setupIntegerInstructions<riscv::unsigned64_t>(_factories);
+    _setupBranchInstructions<riscv::unsigned64_t, riscv::signed64_t>(_factories);
+    _setupJumpInstructions<riscv::unsigned64_t, riscv::signed64_t>(_factories);
   }
 
   _setupOtherInstructions();

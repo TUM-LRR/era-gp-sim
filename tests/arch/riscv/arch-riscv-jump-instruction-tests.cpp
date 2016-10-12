@@ -255,14 +255,14 @@ TEST_F(TestJumpInstructions, TestJALRValidation) {
 TEST_F(TestJumpInstructions, TestJALRCanJumpForwards) {
   testJALR("r1", "r2", 1, 1);
   testJALR("r2", "r3", 6969, 123);
-  testJALR("r3", "r4", 8888, 12345);
+  testJALR("r3", "r4", 8888, 1234);
   testJALR("r4", "r1", 1, 0x7FF);
 }
 
 TEST_F(TestJumpInstructions, TestJALRCanJumpBackwards) {
   testJALR("r1", "r2", 1, -1);
   testJALR("r2", "r3", 6969, -123);
-  testJALR("r3", "r4", 8888, -12345);
+  testJALR("r3", "r4", 8888, -1234);
   testJALR("r4", "r1", 1, -0x7FF);
 }
 
