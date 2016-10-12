@@ -22,9 +22,9 @@ using namespace riscv;
 
 TEST(MulDivInstructionTest, Multiplication_testMUL32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -47,9 +47,9 @@ TEST(MulDivInstructionTest, Multiplication_testMUL32) {
 
 TEST(MulDivInstructionTest, Multiplication_testMUL64) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -79,9 +79,9 @@ TEST(MulDivInstructionTest, Multiplication_testMUL64) {
 
 TEST(MulDivInstructionTest, Multiplication_testMULH32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -106,9 +106,9 @@ TEST(MulDivInstructionTest, Multiplication_testMULH32) {
 
 TEST(MulDivInstructionTest, Multiplication_testMULH64) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -131,9 +131,9 @@ TEST(MulDivInstructionTest, Multiplication_testMULH64) {
 
 TEST(MulDivInstructionTest, Multiplication_testMULHU32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -158,9 +158,9 @@ TEST(MulDivInstructionTest, Multiplication_testMULHU32) {
 
 TEST(MulDivInstructionTest, Multiplication_testMULHU64) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -185,9 +185,9 @@ TEST(MulDivInstructionTest, Multiplication_testMULHU64) {
 
 TEST(MulDivInstructionTest, Multiplication_testMULHSU32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -212,9 +212,9 @@ TEST(MulDivInstructionTest, Multiplication_testMULHSU32) {
 
 TEST(MulDivInstructionTest, Multiplication_testMULHSU64) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -234,9 +234,9 @@ TEST(MulDivInstructionTest, Multiplication_testMULHSU64) {
 
 TEST(MulDivInstructionTest, Multiplication_testMULW) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -258,7 +258,7 @@ TEST(MulDivInstructionTest, Multiplication_testMULW) {
 TEST(MulDivInstructionTest, Multiplication_testValidation) {
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
   auto immediateFactory = ImmediateNodeFactory();
-  auto memAccess = DummyMemoryAccessImpl();
+  auto memAccess = MemoryAccess();
   testIntegerInstructionValidation(memAccess, instructionFactory,
                                    immediateFactory, "mul", false);
   testIntegerInstructionValidation(memAccess, instructionFactory,
@@ -276,9 +276,9 @@ TEST(MulDivInstructionTest, Multiplication_testValidation) {
 
 TEST(MulDivInstructionTest, Division_testDIV32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -299,9 +299,9 @@ TEST(MulDivInstructionTest, Division_testDIV32) {
 
 TEST(MulDivInstructionTest, Division_testDIV64) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -322,9 +322,9 @@ TEST(MulDivInstructionTest, Division_testDIV64) {
 
 TEST(MulDivInstructionTest, Division_testDIVU32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -345,9 +345,9 @@ TEST(MulDivInstructionTest, Division_testDIVU32) {
 
 TEST(MulDivInstructionTest, Division_testDIVU64) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -368,9 +368,9 @@ TEST(MulDivInstructionTest, Division_testDIVU64) {
 
 TEST(MulDivInstructionTest, Division_testDIVW) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -391,9 +391,9 @@ TEST(MulDivInstructionTest, Division_testDIVW) {
 
 TEST(MulDivInstructionTest, Division_testDIVUW) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -415,7 +415,7 @@ TEST(MulDivInstructionTest, Division_testDIVUW) {
 TEST(MulDivInstructionTest, Division_testValidation) {
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
   auto immediateFactory = ImmediateNodeFactory();
-  auto memAccess = DummyMemoryAccessImpl();
+  auto memAccess = MemoryAccess();
   testIntegerInstructionValidation(memAccess, instructionFactory,
                                    immediateFactory, "div", false);
   testIntegerInstructionValidation(memAccess, instructionFactory,
@@ -431,9 +431,9 @@ TEST(MulDivInstructionTest, Division_testValidation) {
 
 TEST(MulDivInstructionTest, Remainder_testREM32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -455,9 +455,9 @@ TEST(MulDivInstructionTest, Remainder_testREM32) {
 
 TEST(MulDivInstructionTest, Remainder_testREM64) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -478,9 +478,9 @@ TEST(MulDivInstructionTest, Remainder_testREM64) {
 
 TEST(MulDivInstructionTest, Remainder_testREMU32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -501,9 +501,9 @@ TEST(MulDivInstructionTest, Remainder_testREMU32) {
 
 TEST(MulDivInstructionTest, Remainder_testREMU64) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -524,9 +524,9 @@ TEST(MulDivInstructionTest, Remainder_testREMU64) {
 
 TEST(MulDivInstructionTest, Remainder_testREMW) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -549,9 +549,9 @@ TEST(MulDivInstructionTest, Remainder_testREMW) {
 
 TEST(MulDivInstructionTest, Remainder_testREMUW) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
-  FakeRegister destination, operand1, operand2;
+  Register destination, operand1, operand2;
   std::string dest("d0"), op1("r1"), op2("r2");
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   memoryAccess.addRegister(dest, destination);
   memoryAccess.addRegister(op1, operand1);
   memoryAccess.addRegister(op2, operand2);
@@ -573,7 +573,7 @@ TEST(MulDivInstructionTest, Remainder_testREMUW) {
 TEST(MulDivInstructionTest, Remainder_testValidation) {
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
   auto immediateFactory = ImmediateNodeFactory();
-  auto memAccess = DummyMemoryAccessImpl();
+  auto memAccess = MemoryAccess();
   testIntegerInstructionValidation(memAccess, instructionFactory,
                                    immediateFactory, "rem", false);
   testIntegerInstructionValidation(memAccess, instructionFactory,

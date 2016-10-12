@@ -65,17 +65,17 @@ performLoadTestUnsigned(T testValue,
                         ArchitectureFormula::InitializerList modules,
                         std::string instructionName,
                         size_t byteAmount) {
-  FakeRegister dest, base;
+  Register dest, base;
   std::string destId{"dest"}, baseId{"base"};
   MemoryValue loadValue;
-  loadValue = convertToMem<T>(testValue);
+  loadValue = riscv::convert<T>(testValue);
 
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   // Add registers
   memoryAccess.addRegister(destId, dest);
   memoryAccess.addRegister(baseId, base);
   // Fill registers & memory
-  memoryAccess.setRegisterValue(baseId, convertToMem<W>(0));
+  memoryAccess.setRegisterValue(baseId, riscv::convert<W>(0));
   memoryAccess.setMemoryValueAt(0, loadValue);
 
   auto instrFactory     = setUpFactory(modules);
@@ -84,11 +84,11 @@ performLoadTestUnsigned(T testValue,
 
   // Fill the instructions operands
   ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<FakeRegisterNode>(destId));
+  instr->addChild(std::make_unique<RegisterNode>(destId));
   ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<FakeRegisterNode>(baseId));
+  instr->addChild(std::make_unique<RegisterNode>(baseId));
   ASSERT_FALSE(instr->validate());
-  instr->addChild(immediateFactory.createImmediateNode(convertToMem<W>(0)));
+  instr->addChild(immediateFactory.createImmediateNode(riscv::convert<W>(0)));
   ASSERT_TRUE(instr->validate());
 
   // Execute the instruction
@@ -112,16 +112,16 @@ performLoadTestSigned(T testValue,
                       ArchitectureFormula::InitializerList modules,
                       std::string instructionName,
                       size_t byteAmount) {
-  FakeRegister dest, base;
+  Register dest, base;
   std::string destId{"dest"}, baseId{"base"};
-  MemoryValue loadValue = convertToMemSigned<T>(testValue);
+  MemoryValue loadValue = riscv::convert<T>(testValue);
 
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   // Add registers
   memoryAccess.addRegister(destId, dest);
   memoryAccess.addRegister(baseId, base);
   // Fill registers & memory
-  memoryAccess.setRegisterValue(baseId, convertToMem<W>(0));
+  memoryAccess.setRegisterValue(baseId, riscv::convert<W>(0));
   memoryAccess.setMemoryValueAt(0, loadValue);
 
   // Create factory & instruction
@@ -131,11 +131,11 @@ performLoadTestSigned(T testValue,
 
   // Fill the instructions operands
   ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<FakeRegisterNode>(destId));
+  instr->addChild(std::make_unique<RegisterNode>(destId));
   ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<FakeRegisterNode>(baseId));
+  instr->addChild(std::make_unique<RegisterNode>(baseId));
   ASSERT_FALSE(instr->validate());
-  instr->addChild(immediateFactory.createImmediateNode(convertToMem<W>(0)));
+  instr->addChild(immediateFactory.createImmediateNode(riscv::convert<W>(0)));
   ASSERT_TRUE(instr->validate());
 
   // Execute the instruction
@@ -162,16 +162,16 @@ performStoreTest(T testValue,
                  ArchitectureFormula::InitializerList modules,
                  std::string instructionName,
                  size_t byteAmount) {
-  FakeRegister base, src;
+  Register base, src;
   std::string baseId{"base"}, srcId{"src"};
-  MemoryValue storeValue = convertToMem<T>(testValue);
+  MemoryValue storeValue = riscv::convert<T>(testValue);
 
-  DummyMemoryAccessImpl memoryAccess;
+  MemoryAccess memoryAccess;
   // Add registers
   memoryAccess.addRegister(baseId, base);
   memoryAccess.addRegister(srcId, src);
   // Fill registers
-  memoryAccess.setRegisterValue(baseId, convertToMem<T>(0));
+  memoryAccess.setRegisterValue(baseId, riscv::convert<T>(0));
   memoryAccess.setRegisterValue(srcId, storeValue);
 
   auto instrFactory     = setUpFactory(modules);
@@ -180,11 +180,11 @@ performStoreTest(T testValue,
 
   // Fill the instructions operands
   ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<FakeRegisterNode>(baseId));
+  instr->addChild(std::make_unique<RegisterNode>(baseId));
   ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<FakeRegisterNode>(srcId));
+  instr->addChild(std::make_unique<RegisterNode>(srcId));
   ASSERT_FALSE(instr->validate());
-  instr->addChild(immediateFactory.createImmediateNode(convertToMem<T>(0)));
+  instr->addChild(immediateFactory.createImmediateNode(riscv::convert<T>(0)));
   ASSERT_TRUE(instr->validate());
 
   // Execute the instruction

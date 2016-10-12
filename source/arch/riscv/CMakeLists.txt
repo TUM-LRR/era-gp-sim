@@ -4,14 +4,12 @@
 
 set(ARCH_RISCV_SOURCES
     instruction-node.cpp
-    load-store-instructions.cpp
-    mul-div-instructions.cpp
     instruction-node-factory.cpp
     immediate-node-factory.cpp
     register-node-factory.cpp
     instruction-node-factory.cpp
     formats.cpp
-  factory-map.cpp
+    factory-map.cpp
 )
 
 ########################################

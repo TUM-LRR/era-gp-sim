@@ -62,8 +62,9 @@ class AbstractIntegerInstructionNode : public InstructionNode {
   AbstractIntegerInstructionNode(const InstructionInformation& information,
                                  Operands operands,
                                  Operation operation = Operation())
-  : InstructionNode(information), _operands(operands), _operation(operation) {
-  }
+      : InstructionNode(information),
+        _operands(operands),
+        _operation(operation) {}
 
   /**
    * Make the constructor pure virtual so that the class is abstract.
@@ -73,6 +74,7 @@ class AbstractIntegerInstructionNode : public InstructionNode {
   virtual ~AbstractIntegerInstructionNode() = 0;
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
+    assert(validate().isSuccess());
     // Get the destination register
     auto destination = _children.at(0)->getIdentifier();
 
