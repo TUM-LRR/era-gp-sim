@@ -85,6 +85,11 @@ class LuiAuipcValidationNode : public InstructionNode {
     }
     return ValidationResult::success();
   }
+
+  const ValidationResult
+  validateRuntime(DummyMemoryAccess& memoryAccess) const override {
+    return ValidationResult::success();
+  }
 };
 
 /**

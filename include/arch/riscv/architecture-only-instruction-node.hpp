@@ -115,6 +115,11 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
+  const ValidationResult
+  validateRuntime(DummyMemoryAccess& memoryAccess) const override {
+    return ValidationResult::success();
+  }
+
  protected:
   // Since all children will definitely be final classes, we can do this here.
   using super = ArchitectureOnlyInstructionNode<WordSize, OperationSize>;

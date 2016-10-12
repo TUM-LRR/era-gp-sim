@@ -49,7 +49,7 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
   }
 
   /**
-   * \return true, if there are no children.
+   * \return success, if there are no children.
    */
   const ValidationResult validate() const override {
     // Immediate values can't have any children
@@ -58,6 +58,14 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
                : ValidationResult::fail(QT_TRANSLATE_NOOP(
                      "Syntax-Tree-Validation",
                      "The immediate node must not have any arguments"));
+  }
+
+  /**
+   * \return success, always
+   */
+  const ValidationResult
+  validateRuntime(DummyMemoryAccess& memoryAccess) const override {
+    return ValidationResult::success();
   }
 
   /**

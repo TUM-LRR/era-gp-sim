@@ -29,13 +29,117 @@
 namespace riscv {
 
 /**
- * \brief The LoadInstructionNode class
- *
- * Represents a load instruction.
+ * \Brief a super class for both load & store instruction nodes
  */
 template <typename SignedType, typename UnsignedType>
-class LoadInstructionNode : public InstructionNode {
+class LoadStoreInstructionNode : public InstructionNode {
  public:
+  LoadStoreInstructionNode(InstructionInformation& instructionInformation)
+  : InstructionNode(instructionInformation) {
+  }
+
+  /* Ensure this class is pure virtual */
+  MemoryValue getValue(DummyMemoryAccess& memoryAccess) const = 0;
+
+  const ValidationResult validate() const override {
+    if (_children.size() != 3) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "This instruction must have exactly %1 operands"),
+          {std::to_string(3)});
+    }
+
+    if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
+        !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
+      return ValidationResult::fail(QT_TRANSLATE_NOOP(
+          "Syntax-Tree-Validation",
+          "This instruction must have 2 registers and 1 immediate"));
+    }
+
+    ValidationResult resultAll = validateAllChildren();
+    if (!resultAll.isSuccess()) {
+      return resultAll;
+    }
+
+    // Check if the immediate value is representable by 12 bits
+    // We can use an empty stub here, because immediate values don't need to
+    // access the memory
+    DummyMemoryAccessStub stub;
+    MemoryValue value = _children.at(2)->getValue(stub);
+
+    if (value.getSize() > 12) {
+      // Look for the sign bit to determine what bits to expect in the "upper"
+      // region (i.e. 11...size).
+      // Index 0 <-> MSB in Memory Value
+      bool isSignBitSet = value.get(0);
+      for (std::size_t index = 11; index < value.getSize(); ++index) {
+        if ((isSignBitSet && !value.get(value.getSize() - 1 - index)) ||
+            (!isSignBitSet && value.get(value.getSize() - 1 - index))) {
+          return ValidationResult::fail(
+              QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                                "The immediate value of this instruction must "
+                                "be representable by %1 bits"),
+              {std::to_string(12)});
+        }
+      }
+    }
+
+    return ValidationResult::success();
+  }
+
+  const ValidationResult
+  validateRuntime(DummyMemoryAccess& memoryAccess) const override {
+    std::size_t effectiveAddress = getEffectiveAddress(memoryAccess);
+    if (false /* TODO memory address out of range check here*/) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "The memory address %1 is out of range"),
+          {std::to_string(effectiveAddress)});
+    }
+
+    return ValidationResult::success();
+  }
+
+ protected:
+  /**
+   * Returns the value of the child that holds the base address.
+   */
+  virtual MemoryValue getBase(DummyMemoryAccess& memoryAccess) const = 0;
+  /**
+   * Returns the value of the child that holds the offset, added to the base
+   * address.
+   */
+  virtual MemoryValue getOffset(DummyMemoryAccess& memoryAccess) const = 0;
+
+  /**
+   * A helper method to calculate the effective address of the load/store
+   * instruction.
+   *
+   * \param base The base address
+   * \param offset The offset, added to the base address
+   * \return the effective address
+   */
+  std::size_t getEffectiveAddress(DummyMemoryAccess& memoryAccess) const {
+    // The base (that comes from a register) has to be converted using an
+    // unsigned integer, to be able to address the whole address space
+    UnsignedType baseConverted =
+        convert<UnsignedType>(getBase(memoryAccess), RISCV_ENDIANNESS);
+    // The offset (that comes from the immediate value) has to be converted
+    // using an unsigned integer, to be able to have negative offsets
+    SignedType offsetConverted = convert<SignedType>(
+        getOffset(memoryAccess), RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
+  }
+};
+
+/**
+ * \brief Represents a load instruction.
+ */
+template <typename SignedType, typename UnsignedType>
+class LoadInstructionNode
+    : public LoadStoreInstructionNode<SignedType, UnsignedType> {
+ public:
+  using super = LoadStoreInstructionNode<SignedType, UnsignedType>;
+
   /* The different types of a load instruction. See RISC V specification
      for reference.*/
   enum struct Type {
@@ -49,26 +153,14 @@ class LoadInstructionNode : public InstructionNode {
   };
 
   LoadInstructionNode(InstructionInformation& instructionInformation, Type type)
-  : InstructionNode(instructionInformation), _type(type) {
+  : super(instructionInformation), _type(type) {
   }
 
-
   MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
-    assert(validate().isSuccess());
+    assert(super::validate());
 
-    const std::string& dest = _children.at(0)->getIdentifier();
-    MemoryValue base        = _children.at(1)->getValue(memoryAccess);
-    MemoryValue offset      = _children.at(2)->getValue(memoryAccess);
-
-    // The base (that comes from a register) has to be converted using an
-    // unsigned integer, to be able to address the whole address space
-    UnsignedType baseConverted = convert<UnsignedType>(base, RISCV_ENDIANNESS);
-    // The offset (that comes from the immediate value) has to be converted
-    // using an unsigned integer, to be able to have negative offsets
-    SignedType offsetConverted = convert<SignedType>(
-        offset, RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
-
-    std::size_t effectiveAddress = baseConverted + offsetConverted;
+    const std::string& dest      = super::_children.at(0)->getIdentifier();
+    std::size_t effectiveAddress = super::getEffectiveAddress(memoryAccess);
 
     switch (_type) {
       case Type::DOUBLE_WORD:
@@ -97,46 +189,15 @@ class LoadInstructionNode : public InstructionNode {
     return MemoryValue{};
   }
 
-  const ValidationResult validate() const override {
-    if (_children.size() != 3) {
-      return ValidationResult::fail(
-          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                            "This instruction must have exactly %1 operands"),
-          {std::to_string(3)});
-    }
-
-    if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
-        !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
-      return ValidationResult::fail(QT_TRANSLATE_NOOP(
-          "Syntax-Tree-Validation",
-          "Load instructions must have 2 registers and 1 immediate"));
-    }
-
-    ValidationResult resultAll = validateAllChildren();
-    if (!resultAll.isSuccess()) {
-      return resultAll;
-    }
-
-    // Check if the immediate value is representable by 12 bits
-    // We can use an empty stub here, because immediate values don't need to
-    // access the memory
-    DummyMemoryAccessStub stub;
-    MemoryValue value = _children.at(2)->getValue(stub);
-
-    for (std::size_t index = 12; index < value.getSize(); ++index) {
-      if (value.get(index)) {
-        return ValidationResult::fail(
-            QT_TRANSLATE_NOOP(
-                "Syntax-Tree-Validation",
-                "The immediate value must be representable by %1 bits"),
-            {std::to_string(12)});
-      }
-    }
-
-    return ValidationResult::success();
+ private:
+  MemoryValue getBase(DummyMemoryAccess& memoryAccess) const override {
+    return super::_children.at(1)->getValue(memoryAccess);
   }
 
- private:
+  MemoryValue getOffset(DummyMemoryAccess& memoryAccess) const override {
+    return super::_children.at(2)->getValue(memoryAccess);
+  }
+
   /**
    * Internal method to perform an unsigned load operation
    *
@@ -155,15 +216,16 @@ class LoadInstructionNode : public InstructionNode {
     // Check if zero-expansion is needed. This is the case, if the amount of
     // bits loaded from memory is not equal to the amount of bits, a register
     // can hold.
-    if (result.getSize() != sizeof(UnsignedType) * RISCV_BITS_PER_BYTE) {
+    if (result.getSize() != sizeof(UnsignedType) * super::RISCV_BITS_PER_BYTE) {
       // Do the zero-expansion by converting to an int and converting back
       // to a memory value.
       // TODO This can be made faster, by copying the bits into a new memory
       // value of proper size. This can't be done yet, because the interface
       // of the memory value is not quite clear in that sense.
-      UnsignedType converted = convert<UnsignedType>(result, RISCV_ENDIANNESS);
-      result                 = convert<UnsignedType>(
-          converted, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+      UnsignedType converted =
+          convert<UnsignedType>(result, super::RISCV_ENDIANNESS);
+      result = convert<UnsignedType>(
+          converted, super::RISCV_BITS_PER_BYTE, super::RISCV_ENDIANNESS);
     }
     memoryAccess.setRegisterValue(destination, result);
   }
@@ -185,15 +247,15 @@ class LoadInstructionNode : public InstructionNode {
     // Check if sign-expansion is needed. This is the case, if the amount of
     // bits loaded from memory is not equal to the amount of bits, a register
     // can hold.
-    if (result.getSize() != sizeof(SignedType) * RISCV_BITS_PER_BYTE) {
+    if (result.getSize() != sizeof(SignedType) * super::RISCV_BITS_PER_BYTE) {
       // Do a sign-expansion by converting the memory value to an integer
       // and back to a memory value.
       SignedType converted = convert<SignedType>(
-          result, RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
+          result, super::RISCV_ENDIANNESS, super::RISCV_SIGNED_REPRESENTATION);
       result = convert<SignedType>(converted,
-                                   RISCV_BITS_PER_BYTE,
-                                   RISCV_ENDIANNESS,
-                                   RISCV_SIGNED_REPRESENTATION);
+                                   super::RISCV_BITS_PER_BYTE,
+                                   super::RISCV_ENDIANNESS,
+                                   super::RISCV_SIGNED_REPRESENTATION);
     }
     memoryAccess.setRegisterValue(destination, result);
   }
@@ -203,13 +265,14 @@ class LoadInstructionNode : public InstructionNode {
 };
 
 /**
- * \brief The StoreInstructionNode class
- *
- * Represents a store instruction.
+ * \brief Represents a store instruction.
  */
 template <typename SignedType, typename UnsignedType>
-class StoreInstructionNode : public InstructionNode {
+class StoreInstructionNode
+    : public LoadStoreInstructionNode<SignedType, UnsignedType> {
  public:
+  using super = LoadStoreInstructionNode<SignedType, UnsignedType>;
+
   /* The different types of a store instruction. See RISC V specification
      for reference. */
   enum struct Type {
@@ -221,23 +284,15 @@ class StoreInstructionNode : public InstructionNode {
 
   StoreInstructionNode(InstructionInformation& instructionInformation,
                        Type type)
-  : InstructionNode(instructionInformation), _type(type) {
+  : super(instructionInformation), _type(type) {
   }
 
   MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
-    assert(validate().isSuccess());
+    assert(super::validate());
 
-    MemoryValue base       = _children.at(0)->getValue(memoryAccess);
-    const std::string& src = _children.at(1)->getIdentifier();
-    MemoryValue offset     = _children.at(2)->getValue(memoryAccess);
+    const std::string& src       = super::_children.at(1)->getIdentifier();
+    std::size_t effectiveAddress = super::getEffectiveAddress(memoryAccess);
 
-    // Unsigned to be able to address the whole address space
-    UnsignedType baseConverted = convert<UnsignedType>(base, RISCV_ENDIANNESS);
-    // Signed to be able to have negative offsets
-    SignedType offsetConverted = convert<SignedType>(
-        base, RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
-
-    std::size_t effectiveAddress = baseConverted + offsetConverted;
     std::size_t byteAmount;
     switch (_type) {
       case Type::DOUBLE_WORD: byteAmount = 8; break;
@@ -248,8 +303,8 @@ class StoreInstructionNode : public InstructionNode {
     }
 
     MemoryValue registerValue = memoryAccess.getRegisterValue(src);
-    MemoryValue resultValue{byteAmount, RISCV_BITS_PER_BYTE};
-    for (size_t i = 0; i < byteAmount * RISCV_BITS_PER_BYTE; ++i) {
+    MemoryValue resultValue{byteAmount, super::RISCV_BITS_PER_BYTE};
+    for (size_t i = 0; i < byteAmount * super::RISCV_BITS_PER_BYTE; ++i) {
       resultValue.put(resultValue.getSize() - 1 - i,
                       registerValue.get(registerValue.getSize() - 1 - i));
     }
@@ -257,46 +312,15 @@ class StoreInstructionNode : public InstructionNode {
     return MemoryValue{};
   }
 
-  const ValidationResult validate() const override {
-    if (_children.size() != 3) {
-      return ValidationResult::fail(
-          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                            "This instruction must have exactly %1 operands"),
-          {std::to_string(3)});
-    }
-
-    if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
-        !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
-      return ValidationResult::fail(QT_TRANSLATE_NOOP(
-          "Syntax-Tree-Validation",
-          "Store instructions must have 2 registers and 1 immediate"));
-    }
-
-    ValidationResult resultAll = validateAllChildren();
-    if (!resultAll.isSuccess()) {
-      return resultAll;
-    }
-
-    // Check if the immediate value is representable by 12 bits
-    // We can use an empty stub here, because immediate values don't need to
-    // access the memory
-    DummyMemoryAccessStub stub;
-    MemoryValue value = _children.at(2)->getValue(stub);
-
-    for (std::size_t index = 12; index < value.getSize(); ++index) {
-      if (value.get(index)) {
-        return ValidationResult::fail(
-            QT_TRANSLATE_NOOP(
-                "Syntax-Tree-Validation",
-                "The immediate value must be representable by %1 bits"),
-            {std::to_string(12)});
-      }
-    }
-
-    return ValidationResult::success();
+ private:
+  MemoryValue getBase(DummyMemoryAccess& memoryAccess) const override {
+    return super::_children.at(0)->getValue(memoryAccess);
   }
 
- private:
+  MemoryValue getOffset(DummyMemoryAccess& memoryAccess) const override {
+    return super::_children.at(1)->getValue(memoryAccess);
+  }
+
   Type _type;
 };
 }

@@ -46,7 +46,7 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   }
 
   /**
-   * \return true, if there are no children.
+   * \return success, if there are no children.
    */
   virtual const ValidationResult validate() const override {
     // Registers can't have any children
@@ -55,6 +55,13 @@ class RegisterNode : public AbstractSyntaxTreeNode {
                : ValidationResult::fail(QT_TRANSLATE_NOOP(
                      "Syntax-Tree-Validation",
                      "The register node must not have any arguments"));
+  }
+
+  /**
+   * \return success, always
+   */
+  virtual const ValidationResult validateRuntime() const override {
+    return ValidationResult::success();
   }
 
   /**

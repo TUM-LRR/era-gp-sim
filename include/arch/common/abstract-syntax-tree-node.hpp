@@ -29,7 +29,8 @@
 class DummyMemoryAccess {
  public:
   virtual MemoryValue getRegisterValue(const std::string& token) = 0;
-  virtual void setRegisterValue(const std::string& token, MemoryValue value) = 0;
+  virtual void
+  setRegisterValue(const std::string& token, MemoryValue value) = 0;
 
   /**
    * Retrieve 'amount' of bytes from the memory at address 'address'.
@@ -51,7 +52,8 @@ class DummyMemoryAccessStub : public DummyMemoryAccess {
   void setRegisterValue(const std::string& token, MemoryValue value) override {
   }
 
-  MemoryValue getMemoryValueAt(std::size_t address, std::size_t amount) override {
+  MemoryValue
+  getMemoryValueAt(std::size_t address, std::size_t amount) override {
     return MemoryValue{};
   }
 
@@ -83,11 +85,21 @@ class AbstractSyntaxTreeNode {
 
   /**
    * Validates the structure of this syntax tree. This should be called
-   * before every execution.
+   * while the assembler code is parsed.
    *
    * \return Whether this syntax tree is valid for execution.
    */
   virtual const ValidationResult validate() const = 0;
+
+  /**
+   * Validates, if this instruction is semantically correct during runtime.
+   * This should be called before the execution (i.e. a call to getValue()) of
+   * each instruction.
+   *
+   * \return Whether this is semantically correct during runtime.
+   */
+  virtual const ValidationResult
+  validateRuntime(DummyMemoryAccess& memoryAccess) const = 0;
 
   /**
    * Assembles this syntax tree into its binary representation. So, this
