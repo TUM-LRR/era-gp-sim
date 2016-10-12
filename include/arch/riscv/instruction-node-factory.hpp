@@ -75,14 +75,9 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   void _setupOtherInstructions();
 
   /**
-   * \brief Sets load instructions.
+   * \brief Sets up "w"-Instructions only present in RV64
    */
-  void _setupLoadInstructions();
-
-  /**
-   * \brief Sets store instructions.
-   */
-  void _setupStoreInstructions();
+  void _setup64BitOnlyInstructions();
 
   /**
    * Table, that maps the instruction identifier (e.g. the mnemonic "add" for

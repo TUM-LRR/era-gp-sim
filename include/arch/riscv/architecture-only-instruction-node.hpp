@@ -67,7 +67,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
    * validation, if not 3 register operands are expected
    * \param operation The operation to be performed, if the node is executed.
    */
-  ArchitectureOnlyInstructionNode(InstructionInformation& information,
+  ArchitectureOnlyInstructionNode(const InstructionInformation& information,
                                   bool immediate,
                                   Operation operation = Operation())
   : InstructionNode(information)
@@ -78,25 +78,25 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   /** Default destructor*/
   virtual ~ArchitectureOnlyInstructionNode() = default;
 
-  MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     auto destination = _children[0]->getIdentifier();
 
     auto first  = _child(1, memoryAccess);
     auto second = _child(2, memoryAccess);
 
     auto result = _compute(first, second);
-    auto value  = convert(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+    auto value  = riscv::convert(result);
 
     memoryAccess.setRegisterValue(destination, value);
 
     return MemoryValue{};
   }
 
-  const ValidationResult validate() const override {
+  ValidationResult validate() const override {
     auto result = _validateNumberOfChildren();
     if (!result.isSuccess()) return result;
 
-    auto childrenResult = validateAllChildren();
+    auto childrenResult = _validateChildren();
     if (!childrenResult.isSuccess()) {
       return childrenResult;
     }
@@ -163,9 +163,9 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   }
 
  private:
-  OperationSize _child(size_t index, DummyMemoryAccess& memoryAccess) const {
+  OperationSize _child(size_t index, MemoryAccess& memoryAccess) const {
     auto memory = _children[index]->getValue(memoryAccess);
-    return convert<OperationSize>(memory, RISCV_ENDIANNESS);
+    return riscv::convert<OperationSize>(memory);
   }
 
   ValidationResult _validateNumberOfChildren() const {
@@ -182,7 +182,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   ValidationResult _validateImmediateSize() const {
     if (_isImmediate && _children[2]->getType() == Type::IMMEDIATE) {
       // no memory access is needed for a immediate node
-      DummyMemoryAccessStub stub;
+      MemoryAccess stub;
       MemoryValue value = _children.at(2)->getValue(stub);
 
       if (value.getSize() > 12) {
@@ -206,8 +206,8 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   }
 
   ValidationResult _validateOperandsForImmediateInstructions() const {
-    if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
-        !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
+    if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
+        !_requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                                                       "This instruction must "
                                                       "have 2 registers and 1 "
@@ -219,7 +219,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
 
   ValidationResult _validateOperandsForNonImmediateInstructions() const {
     // a register integer instruction needs three register operands
-    if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3)) {
+    if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 3)) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(
           "Syntax-Tree-Validation",
           "This instruction must have 3 registers as operands"));

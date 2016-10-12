@@ -67,15 +67,16 @@ class WordInstructionWrapper
   *\param args Arguments for a constructor of WrappedType
   */
   template <class... Args>
-  WordInstructionWrapper(bool expectSignedResult,
-                         InstructionInformation& instructionInformation,
-                         Operands operands, Args&&... args)
-      : IntegerInstructionNode<ResultSizeType>(instructionInformation,
-                                               operands),
+  WordInstructionWrapper(const InstructionInformation& instructionInformation,
+                         Operands operands, bool expectSignedResult, Args&&... args)
+      : AbstractIntegerInstructionNode<ResultSizeType>(instructionInformation,
+                                                       operands),
         _signedResult(expectSignedResult) {
     // create an instance of WrappedType
     _wrapped = std::make_unique<WrappedType>(std::forward<Args>(args)...);
   }
+
+protected:
 
   /**
    * Truncates op1, op2 to 32bit, performs the arithmetic calculation using the
@@ -86,11 +87,11 @@ class WordInstructionWrapper
    * \return result of the arithmetic operation
    */
   ResultSizeType _compute(ResultSizeType op1,
-                                         ResultSizeType op2) const override {
+                          ResultSizeType op2) const noexcept override {
     OperandSizeType op1_trunc = op1;
     OperandSizeType op2_trunc = op2;
     OperandSizeType result_trunc =
-        _wrapped->performIntegerOperation(op1_trunc, op2_trunc);
+        _wrapped->_compute(op1_trunc, op2_trunc);
     ResultSizeType result = result_trunc;
     if (_signedResult && isNegative(result_trunc)) {
       result = result | SIGN_EXTENSION_MASK;
@@ -108,7 +109,7 @@ class WordInstructionWrapper
    * \return true if the signbit is set and therefore n represents a negative
    * number, otherwise false
    */
-  bool isNegative(OperandSizeType n) const {
+  bool isNegative(OperandSizeType n) const noexcept {
     OperandSizeType signBit = n & (OperandSizeType(1) << 31);
     return signBit != 0;
   }

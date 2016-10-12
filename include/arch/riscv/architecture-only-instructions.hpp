@@ -34,7 +34,7 @@ class AddOnlyInstructionNode
     : public ArchitectureOnlyInstructionNode<WordSize, OperationSize> {
  public:
   using super = ArchitectureOnlyInstructionNode<WordSize, OperationSize>;
-  AddOnlyInstructionNode(InstructionInformation& information, bool immediate)
+  AddOnlyInstructionNode(const InstructionInformation& information, bool immediate)
   : super(information,
           immediate,
           [this](OperationSize first, OperationSize second) -> WordSize {
@@ -48,7 +48,7 @@ class SubOnlyInstructionNode
     : public ArchitectureOnlyInstructionNode<WordSize, OperationSize> {
  public:
   using super = ArchitectureOnlyInstructionNode<WordSize, OperationSize>;
-  SubOnlyInstructionNode(InstructionInformation& information)
+  SubOnlyInstructionNode(const InstructionInformation& information)
   : super(information,
           false,// There is no SUBIW
           [this](OperationSize first, OperationSize second) -> WordSize {
@@ -62,7 +62,7 @@ class ShiftLogicalLeftOnlyInstructionNode
     : public ArchitectureOnlyInstructionNode<WordSize, OperationSize> {
  public:
   using super = ArchitectureOnlyInstructionNode<WordSize, OperationSize>;
-  ShiftLogicalLeftOnlyInstructionNode(InstructionInformation& information,
+  ShiftLogicalLeftOnlyInstructionNode(const InstructionInformation& information,
                                       bool immediate)
   : super(information,
           immediate,
@@ -77,7 +77,7 @@ class ShiftLogicalRightOnlyInstructionNode
     : public ArchitectureOnlyInstructionNode<WordSize, OperationSize> {
  public:
   using super = ArchitectureOnlyInstructionNode<WordSize, OperationSize>;
-  ShiftLogicalRightOnlyInstructionNode(InstructionInformation& information,
+  ShiftLogicalRightOnlyInstructionNode(const InstructionInformation& information,
                                        bool immediate)
   : super(information,
           immediate,
@@ -92,7 +92,7 @@ class ShiftArithmeticRightOnlyInstructionNode
     : public ArchitectureOnlyInstructionNode<WordSize, OperationSize> {
  public:
   using super = ArchitectureOnlyInstructionNode<WordSize, OperationSize>;
-  ShiftArithmeticRightOnlyInstructionNode(InstructionInformation& information,
+  ShiftArithmeticRightOnlyInstructionNode(const InstructionInformation& information,
                                           bool immediate)
   : super(information,
           immediate,

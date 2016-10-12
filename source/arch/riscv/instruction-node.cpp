@@ -49,8 +49,8 @@ bool InstructionNode::_compareChildTypes(TypeList list,
 
 MemoryValue InstructionNode::assemble() const {
   AssemblerFunction assembler;
-  InstructionKey instructionKey = _instructionInformation.getKey();
-  const char* format            = _instructionInformation.getFormat().c_str();
+  InstructionKey instructionKey = _information.getKey();
+  const char* format            = _information.getFormat().c_str();
 
   switch (str2int(format)) {
     case str2int("R"): assembler  = RFormat(); break;
@@ -77,3 +77,5 @@ MemoryValue InstructionNode::assemble() const {
 
   return result;
 }
+
+}//namespace riscv

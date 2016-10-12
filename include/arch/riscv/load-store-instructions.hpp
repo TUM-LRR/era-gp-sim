@@ -33,7 +33,7 @@ namespace riscv {
  *
  * Represents a load instruction.
  */
-template <typename SignedType, typename UnsignedType>
+template <typename UnsignedType, typename SignedType>
 class LoadInstructionNode : public InstructionNode {
  public:
   /* The different types of a load instruction. See RISC V specification
@@ -48,7 +48,7 @@ class LoadInstructionNode : public InstructionNode {
     BYTE_UNSIGNED        // LBU
   };
 
-  LoadInstructionNode(InstructionInformation& instructionInformation, Type type)
+  LoadInstructionNode(const InstructionInformation& instructionInformation, Type type)
       : InstructionNode(instructionInformation), _type(type) {}
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
@@ -96,7 +96,7 @@ class LoadInstructionNode : public InstructionNode {
     return MemoryValue{};
   }
 
-  const ValidationResult validate() const override {
+  ValidationResult validate() const override {
     if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
         !_requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(
@@ -189,7 +189,7 @@ class LoadInstructionNode : public InstructionNode {
  *
  * Represents a store instruction.
  */
-template <typename SignedType, typename UnsignedType>
+template <typename UnsignedType, typename SignedType>
 class StoreInstructionNode : public InstructionNode {
  public:
   /* The different types of a store instruction. See RISC V specification
@@ -201,7 +201,7 @@ class StoreInstructionNode : public InstructionNode {
     BYTE          // SB
   };
 
-  StoreInstructionNode(InstructionInformation& instructionInformation,
+  StoreInstructionNode(const InstructionInformation& instructionInformation,
                        Type type)
       : InstructionNode(instructionInformation), _type(type) {}
 
@@ -247,7 +247,7 @@ class StoreInstructionNode : public InstructionNode {
     return MemoryValue{};
   }
 
-  const ValidationResult validate() const override {
+  ValidationResult validate() const override {
     if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
         !_requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
       return ValidationResult::fail(QT_TRANSLATE_NOOP(

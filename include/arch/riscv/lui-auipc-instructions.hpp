@@ -38,35 +38,34 @@ namespace riscv {
  */
 class LuiAuipcValidationNode : public InstructionNode {
  public:
-  LuiAuipcValidationNode(InstructionInformation& info) : InstructionNode(info) {
-  }
+  LuiAuipcValidationNode(const InstructionInformation& info)
+      : InstructionNode(info) {}
 
-  MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override = 0;
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override = 0;
 
-  const ValidationResult validate() const override {
+  ValidationResult validate() const override {
     if (_children.size() != 2) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "This instruction must have exactly 2 operands"));
     }
 
-    const ValidationResult resultAll = validateAllChildren();
+    const ValidationResult resultAll = _validateChildren();
     if (!resultAll.isSuccess()) {
       return resultAll;
     }
 
-    if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 1) ||
-        !requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 1, 1)) {
+    if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 1) ||
+        !_requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 1, 1)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "This instruction must have 1 register and 1 "
                             "immediate as operands"));
     }
 
-
     // Get the value of the immediate value and check, if it is representable by
     // 20 bits (unsigned representation)
-    DummyMemoryAccessStub stub;
+    MemoryAccess stub;
     MemoryValue value = _children.at(1)->getValue(stub);
     if (value.getSize() > 20) {
       // look for the sign bit to determine what bits to expect in the "upper"
@@ -92,19 +91,17 @@ class LuiAuipcValidationNode : public InstructionNode {
 template <typename UnsignedType>
 class LuiInstructionNode : public LuiAuipcValidationNode {
  public:
-  LuiInstructionNode(InstructionInformation& info)
-  : LuiAuipcValidationNode(info) {
-  }
+  LuiInstructionNode(const InstructionInformation& info)
+      : LuiAuipcValidationNode(info) {}
 
-  MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
 
     const std::string& destination = _children.at(0)->getIdentifier();
-    MemoryValue offset             = _children.at(1)->getValue(memoryAccess);
+    MemoryValue offset = _children.at(1)->getValue(memoryAccess);
 
     // Convert the offset to an internal integer representation
-    InternalUnsigned offsetConverted =
-        convert<InternalUnsigned>(offset, RISCV_ENDIANNESS);
+    InternalUnsigned offsetConverted = riscv::convert<InternalUnsigned>(offset);
     // Perform a bitwise shift, filling the lower 12 bits with zeros
     offsetConverted <<= 12;
 
@@ -128,8 +125,7 @@ class LuiInstructionNode : public LuiAuipcValidationNode {
     }
 
     // Convert back into a memory value and store it in the register
-    MemoryValue resultMemoryValue =
-        convert<UnsignedType>(result, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+    MemoryValue resultMemoryValue = riscv::convert<UnsignedType>(result);
     memoryAccess.setRegisterValue(destination, resultMemoryValue);
     return MemoryValue{};
   }
@@ -148,23 +144,21 @@ class LuiInstructionNode : public LuiAuipcValidationNode {
 template <typename UnsignedType>
 class AuipcInstructionNode : public LuiAuipcValidationNode {
  public:
-  AuipcInstructionNode(InstructionInformation& info)
-  : LuiAuipcValidationNode(info) {
-  }
+  AuipcInstructionNode(const InstructionInformation& info)
+      : LuiAuipcValidationNode(info) {}
 
-  MemoryValue getValue(DummyMemoryAccess& memoryAccess) const override {
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
 
     const std::string& destination = _children.at(0)->getIdentifier();
-    MemoryValue offset             = _children.at(1)->getValue(memoryAccess);
+    MemoryValue offset = _children.at(1)->getValue(memoryAccess);
     MemoryValue programCounter =
-        memoryAccess.getRegisterValue(RISCV_PROGRAM_COUNTER_ID);
+        memoryAccess.getRegisterValue("pc");
 
     // Convert to the unsigned type of the architecture
-    InternalUnsigned offsetConverted =
-        convert<InternalUnsigned>(offset, RISCV_ENDIANNESS);
+    InternalUnsigned offsetConverted = riscv::convert<InternalUnsigned>(offset);
     UnsignedType programCounterConverted =
-        convert<UnsignedType>(programCounter, RISCV_ENDIANNESS);
+        riscv::convert<UnsignedType>(programCounter);
 
     // Fill lower 12 bits with 0
     offsetConverted <<= 12;
@@ -191,8 +185,8 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
     // Add the offset to the program counter
     programCounterConverted += result;
     // Convert the result back into a MemoryValue
-    MemoryValue resultMemoryValue = convert<UnsignedType>(
-        programCounterConverted, RISCV_BITS_PER_BYTE, RISCV_ENDIANNESS);
+    MemoryValue resultMemoryValue =
+        riscv::convert<UnsignedType>(programCounterConverted);
 
     memoryAccess.setRegisterValue(destination, resultMemoryValue);
     return MemoryValue{};
@@ -205,7 +199,6 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
   using InternalUnsigned = uint32_t;
 };
 
-
-}// Namespace riscv
+}  // Namespace riscv
 
 #endif /* ERAGPSIM_ARCH_RISCV_SPECIAL_INTEGER_INSTRUCTIONS_HPP_ */

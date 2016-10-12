@@ -34,8 +34,10 @@ namespace riscv {
  * operation should operate on
  */
 template <typename SizeType>
-class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
+class MultiplicationInstruction
+    : public AbstractIntegerInstructionNode<SizeType> {
  public:
+  using super = AbstractIntegerInstructionNode<SizeType>;
   /**
  * Describes what part of the result will be saved in the result register.
  * A multiplication of of n bit with n bit leads to a 2n bit result
@@ -65,16 +67,18 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
    * \see MultiplicationInstruction::MultiplicationResultPart
    * \see MultiplicationInstruction::Type
    */
-  MultiplicationInstruction(InstructionInformation& info,
+  MultiplicationInstruction(const InstructionInformation& info,
                             MultiplicationResultPart partOfResultReturned,
                             Type type)
-      : IntegerInstructionNode<SizeType>(info, false),
+      : AbstractIntegerInstructionNode<SizeType>(info,
+                                                 super::Operands::REGISTERS),
         _usePart(partOfResultReturned),
         _type(type) {
     // assert that SizeType is an unsigned integer type
     assert(SizeType(0) - 1 >= 0);
   }
 
+ protected:
   /**
    * Performs a multiplication with the two given factors op1, op2.
    * \param op1 Factor
@@ -83,7 +87,7 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
    * multiplication result, MultiplicationResult = HIGH: high SizeType bit of
    * the multiplication result
    */
-  SizeType performIntegerOperation(SizeType op1, SizeType op2) const override {
+  SizeType _compute(SizeType op1, SizeType op2) const noexcept override{
     if (_usePart == LOW) {
       /*
        * The "signedness" of the operation is ignored, as the sign does not
@@ -279,16 +283,18 @@ class MultiplicationInstruction : public IntegerInstructionNode<SizeType> {
  * \tparam \see IntegerInstructionNode template param
  */
 template <typename SizeType>
-class WordableIntegerInstruction : public IntegerInstructionNode<SizeType> {
+class WordableIntegerInstruction
+    : public AbstractIntegerInstructionNode<SizeType> {
  public:
+  using super = AbstractIntegerInstructionNode<SizeType>;
   /**
  * \param info InstructionInformation for this instruction
  * \param isWordInstruction determinates if this instance represents a word
  * instruction
  */
-  WordableIntegerInstruction(InstructionInformation& info,
+  WordableIntegerInstruction(const InstructionInformation& info,
                              bool isWordInstruction)
-      : IntegerInstructionNode<SizeType>(info, false),
+      : AbstractIntegerInstructionNode<SizeType>(info, super::Operands::REGISTERS),
         _isWordInstruction(isWordInstruction) {}
 
   /** default destructor */
@@ -308,7 +314,7 @@ class WordableIntegerInstruction : public IntegerInstructionNode<SizeType> {
    * n is treated as an unsigned value
    * \return worded n
    */
-  SizeType toWord(SizeType n, bool isSignedOperation) const {
+  SizeType toWord(SizeType n, bool isSignedOperation) const noexcept{
     bool negative = (n & SIGN_MASK) > 0;
     if (isSignedOperation && negative) {
       n = n | SIGN_EXTENSION;
@@ -328,7 +334,7 @@ class WordableIntegerInstruction : public IntegerInstructionNode<SizeType> {
    * \return A sign-extended n, if n is negative using the signbit of the worded
    * version of n, otherwise n is returned
    */
-  SizeType signExtend(SizeType n) const {
+  SizeType signExtend(SizeType n) const noexcept{
     if ((n & SIGN_MASK_WORD) > 0) {
       return n | SIGN_EXTENSION;
     }
@@ -338,7 +344,7 @@ class WordableIntegerInstruction : public IntegerInstructionNode<SizeType> {
   /**
    * \return true, if this instruction is a word instruction; false, if not
    */
-  bool isWordInstruction() const { return _isWordInstruction; }
+  bool isWordInstruction() const noexcept{ return _isWordInstruction; }
 
  private:
   /** and-bitmask for retrieving the sign bit of a SizeType-ranged value*/
@@ -378,10 +384,12 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedWord> {
    * \param isSignedDivision boolean to indicate signedness of the division; Use
    * true for signed x signed (div); use false for unsigned x unsigned (divu)
    */
-  DivisionInstruction(InstructionInformation& info, bool isSignedDivision,
+  DivisionInstruction(const InstructionInformation& info, bool isSignedDivision,
                       bool isWordInstruction)
       : WordableIntegerInstruction<UnsignedWord>(info, isWordInstruction),
         _isSignedDivision(isSignedDivision) {}
+
+protected:
 
   /**
    * Performs a division where op1 is the divident and op2 is the divisor.
@@ -389,8 +397,8 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedWord> {
    * \param op2 divisor
    * \return op1 divided by op2
    */
-  UnsignedWord performIntegerOperation(UnsignedWord operand1,
-                                       UnsignedWord operand2) const {
+  UnsignedWord _compute(UnsignedWord operand1,
+                                       UnsignedWord operand2) const noexcept override{
     // Semantics for division is defined in RISC-V specification in table 5.1
 
     UnsignedWord op1 = operand1;
@@ -465,11 +473,12 @@ class RemainderInstruction : public WordableIntegerInstruction<UnsignedWord> {
    * operation:
    * use true for signed (rem); use false for unsigned(remu)
    */
-  RemainderInstruction(InstructionInformation& info, bool isSignedRemainder,
+  RemainderInstruction(const InstructionInformation& info, bool isSignedRemainder,
                        bool isWordInstruction)
       : WordableIntegerInstruction<UnsignedWord>(info, isWordInstruction),
         _isSignedRemainder(isSignedRemainder) {}
 
+protected:
   /**
    * Performs a remainder operation where op1 is the divident and op2 is the
    * divisor
@@ -477,8 +486,8 @@ class RemainderInstruction : public WordableIntegerInstruction<UnsignedWord> {
    * \param op2 divisor
    * \return the remainder of op1 divided by op2
    */
-  UnsignedWord performIntegerOperation(UnsignedWord operand1,
-                                       UnsignedWord operand2) const {
+  UnsignedWord _compute(UnsignedWord operand1,
+                                       UnsignedWord operand2) const noexcept override{
     // Semantics for division is defined in RISC-V specification in table 5.1
     UnsignedWord op1 = operand1;
     UnsignedWord op2 = operand2;
@@ -516,9 +525,9 @@ class RemainderInstruction : public WordableIntegerInstruction<UnsignedWord> {
     }
 
     if (this->isWordInstruction()) {
-        // The RISC-V specification states that the result of an word instruction
-        // is sign-extended regardless if the instruction produces unsigned
-        // results (see specification v2.1 chapter 4.2)
+      // The RISC-V specification states that the result of an word instruction
+      // is sign-extended regardless if the instruction produces unsigned
+      // results (see specification v2.1 chapter 4.2)
       result = this->signExtend(result);
     }
     return result;
