@@ -44,9 +44,7 @@ TEST(SyntaxTreeGenerator, init) {
   buildGenerator();
 }
 
-// Does not work right now... :(
-
-/*TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
+TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
   auto generator = buildGenerator();
   CompileState state;
   auto output = generator.transformOperand("1234", state);
@@ -54,7 +52,9 @@ TEST(SyntaxTreeGenerator, init) {
   ASSERT_TRUE((isInstance<ImmediateNode>(output)));
 }
 
-TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
+// Does not work right now... :(
+
+/*TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   auto generator = buildGenerator();
   CompileState state;
   auto output = generator.transformOperand("r18", state);

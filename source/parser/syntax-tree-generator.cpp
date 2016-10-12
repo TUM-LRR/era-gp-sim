@@ -17,30 +17,42 @@
  */
 
 #include "parser/syntax-tree-generator.hpp"
+#include "parser/expression-compiler-clike.hpp"
+#include "core/conversions.hpp"
 
 #include <regex>
+#include <cctype>
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 SyntaxTreeGenerator::transformOperand(const std::string& operand,
                                       CompileState& state) const {
-  // For now. A very simple generator. We just check: do we have a base-10
-  // number? Yes? If not, we must have a register... If it does not exist? Well,
-  // we failed.
-  // For the future, we got to: support several number types (simple), maybe
-  // parse full-grown arithmetic expressions (done, not so easy..., lots of
-  // work).
+  // These checks are performed:
+  // * Empty argument? Shouldn't happen, kill the compilation with fire.
+  // * First character is a letter? We have replace all constants by now, so it must be a register - or an undefined constant!
+  // * If not? Try to compile the expression!
   std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
-  if (std::regex_search(operand, std::regex("^[0-9]+$"))) {
-    outputNode = _nodeFactories.createImmediateNode(
-        MemoryValue{});// std::stoi(operand) Temporary.
-  } else {
+  if (operand.empty())
+  {
+    state.addError("Invalid argument: It's empty!", state.position);
+  }
+  else if (std::isalpha(operand[0])) {
     outputNode = _nodeFactories.createRegisterAccessNode(operand);
+  } else {
+    //using i32
+    int32_t result = CLikeExpressionCompilers::CLikeCompilerI32.compile(operand, state);
+    outputNode = _nodeFactories.createImmediateNode(conversions::convert(result, conversions::standardConversions::helper::twosComplement::toMemoryValueFunction, 32));
   }
 
   // according to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
-    state.addError("Invalid argument: " + operand, state.position);
+    state.addError("Invalid argument: '" + operand + "'", state.position);
+  }
+
+  // we already try to find flaws early in creation of the operation.
+  auto validationResult = outputNode->validate();
+  if (!validationResult) {
+    state.addError("Invalid argument: '" + operand + "'", state.position);
   }
 
   return std::move(outputNode);
@@ -71,8 +83,9 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
     outputNode->addChild(std::move(i));
   }
 
-  // Validate node
-  if (!outputNode->validate()) {
+  // Validate node.
+  auto validationResult = outputNode->validate();
+  if (!validationResult) {
     state.addError("Invalid operation: " + command_name, state.position);
   }
 
