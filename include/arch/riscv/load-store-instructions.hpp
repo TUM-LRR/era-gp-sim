@@ -47,7 +47,7 @@ class LoadStoreInstructionNode : public InstructionNode {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "This instruction must have exactly %1 operands"),
-          {std::to_string(3)});
+          std::to_string(3));
     }
 
     if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
@@ -80,7 +80,7 @@ class LoadStoreInstructionNode : public InstructionNode {
               QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                                 "The immediate value of this instruction must "
                                 "be representable by %1 bits"),
-              {std::to_string(12)});
+              std::to_string(12));
         }
       }
     }
@@ -95,7 +95,7 @@ class LoadStoreInstructionNode : public InstructionNode {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "The memory address %1 is out of range"),
-          {std::to_string(effectiveAddress)});
+          std::to_string(effectiveAddress));
     }
 
     return ValidationResult::success();
