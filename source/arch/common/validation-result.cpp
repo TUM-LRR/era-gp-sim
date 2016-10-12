@@ -24,12 +24,12 @@ const ValidationResult ValidationResult::success() {
   return ValidationResult{true, "", {}};
 }
 
-const ValidationResult ValidationResult::fail(std::string message) {
+const ValidationResult ValidationResult::fail(const std::string& message) {
   return fail(message, {});
 }
 
 const ValidationResult
-ValidationResult::fail(std::string message,
+ValidationResult::fail(const std::string& message,
                        std::initializer_list<std::string> arguments) {
   assert(message != "");
   return ValidationResult{false, message, arguments};
@@ -52,7 +52,11 @@ const std::vector<std::string>& ValidationResult::getArguments() const {
 }
 
 ValidationResult::ValidationResult(bool success,
-                                   std::string message,
+                                   const std::string& message,
                                    std::initializer_list<std::string> arguments)
 : _success(success), _message(message), _arguments(arguments) {
+}
+
+void ValidationResult::addArguments(const std::string& argument) {
+  _arguments.push_back(argument);
 }

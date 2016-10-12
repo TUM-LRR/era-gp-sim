@@ -42,7 +42,7 @@ class ValidationResult {
    *
    * \param message The message indicating the problem. Must not be empty.
    */
-  static const ValidationResult fail(std::string message);
+  static const ValidationResult fail(const std::string& message);
 
   /**
    * Creates a new ValidationResult object that indicates, that the
@@ -54,8 +54,25 @@ class ValidationResult {
    * \param arguments A list of arguments for translation purposes
    */
   static const ValidationResult
-  fail(std::string message, std::initializer_list<std::string> arguments);
+  fail(const std::string& message,
+       std::initializer_list<std::string> arguments);
 
+  /**
+   * Creates a new ValidationResult object that indicates, that the
+   * validation failed. A message describing the problem, must be given.
+   * For translation purposes, a variable amount of arguments for the message
+   * can be given, to support translatable messages with arguments.
+   *
+   * \param message The message indicating the problem. Must not be empty.
+   * \param arguments A list of arguments for translation purposes
+   */
+  template <typename... Args>
+  static const ValidationResult
+  fail(const std::string& message, Args... arguments) {
+    ValidationResult result{false, message, {}};
+    result.addArguments(std::forward<Args>(arguments)...);
+    return result;
+  }
 
   /**
    * Check if this validation result indicates, that the validation
@@ -83,8 +100,17 @@ class ValidationResult {
 
  private:
   ValidationResult(bool success,
-                   std::string message,
+                   const std::string& message,
                    std::initializer_list<std::string> arguments);
+
+  /* Function to add a single argument to the argument list */
+  void addArguments(const std::string& argument);
+  /* Function to add multiple arguments to the argument list */
+  template <typename... Args>
+  void addArguments(const std::string& firstArgument, Args... arguments) {
+    _arguments.push_back(firstArgument);
+    insert(std::forward<Args>(arguments)...);
+  }
 
   bool _success;
   std::string _message;

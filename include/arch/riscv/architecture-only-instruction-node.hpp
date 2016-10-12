@@ -174,7 +174,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "This instruction must have exactly %1 operands"),
-          {std::to_string(3)});
+          std::to_string(3));
     }
 
     return ValidationResult::success();
@@ -199,7 +199,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
                     "Syntax-Tree-Validation",
                     "The immediate value of this instruction must "
                     "be representable by %1 bits"),
-                {std::to_string(12)});
+                std::to_string(12));
           }
         }
       }

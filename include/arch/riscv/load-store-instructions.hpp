@@ -102,7 +102,7 @@ class LoadInstructionNode : public InstructionNode {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "This instruction must have exactly %1 operands"),
-          {std::to_string(3)});
+          std::to_string(3));
     }
 
     if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
@@ -129,7 +129,7 @@ class LoadInstructionNode : public InstructionNode {
             QT_TRANSLATE_NOOP(
                 "Syntax-Tree-Validation",
                 "The immediate value must be representable by %1 bits"),
-            {std::to_string(12)});
+            std::to_string(12));
       }
     }
 
@@ -262,7 +262,7 @@ class StoreInstructionNode : public InstructionNode {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "This instruction must have exactly %1 operands"),
-          {std::to_string(3)});
+          std::to_string(3));
     }
 
     if (!requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
@@ -289,7 +289,7 @@ class StoreInstructionNode : public InstructionNode {
             QT_TRANSLATE_NOOP(
                 "Syntax-Tree-Validation",
                 "The immediate value must be representable by %1 bits"),
-            {std::to_string(12)});
+            std::to_string(12));
       }
     }
 

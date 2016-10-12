@@ -96,7 +96,7 @@ class IntegerInstructionNode : public InstructionNode {
           QT_TRANSLATE_NOOP(
               "Syntax-Tree-Validation",
               "Integer instructions must have exactly %1 operands"),
-          {std::to_string(3)});
+          std::to_string(3));
     }
     // check if all operands are valid themselves
     ValidationResult resultAll = validateAllChildren();
@@ -126,7 +126,7 @@ class IntegerInstructionNode : public InstructionNode {
                     "Syntax-Tree-Validation",
                     "The immediate value of this instruction must "
                     "be representable by %1 bits"),
-                {std::to_string(12)});
+                std::to_string(12));
           }
         }
       }
