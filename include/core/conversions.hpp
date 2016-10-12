@@ -376,7 +376,7 @@ typename std::
             ArchitectureProperties::SignedRepresentation representation =
                 ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT) {
   return detail::convertForced<T>(memoryValue,
-                          conversions::SignedRepresentation::UNSIGNED,
+                          detail::SignedRepresentation::UNSIGNED,
                           byteSize,
                           byteOrder);
 }
@@ -419,7 +419,7 @@ convert(T value,
             ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT) {
   return convertForced<T>(value,
                           size,
-                          conversions::SignedRepresentation::UNSIGNED,
+                          detail::SignedRepresentation::UNSIGNED,
                           byteSize,
                           byteOrder);
 }
