@@ -39,7 +39,8 @@ class LoadStoreInstructionNode : public InstructionNode {
   }
 
   /* Ensure this class is pure virtual */
-  MemoryValue getValue(DummyMemoryAccess& memoryAccess) const = 0;
+  virtual MemoryValue
+  getValue(DummyMemoryAccess& memoryAccess) const override = 0;
 
   const ValidationResult validate() const override {
     if (_children.size() != 3) {
@@ -128,6 +129,7 @@ class LoadStoreInstructionNode : public InstructionNode {
     // using an unsigned integer, to be able to have negative offsets
     SignedType offsetConverted = convert<SignedType>(
         getOffset(memoryAccess), RISCV_ENDIANNESS, RISCV_SIGNED_REPRESENTATION);
+    return baseConverted + offsetConverted;
   }
 };
 
@@ -318,7 +320,7 @@ class StoreInstructionNode
   }
 
   MemoryValue getOffset(DummyMemoryAccess& memoryAccess) const override {
-    return super::_children.at(1)->getValue(memoryAccess);
+    return super::_children.at(2)->getValue(memoryAccess);
   }
 
   Type _type;
