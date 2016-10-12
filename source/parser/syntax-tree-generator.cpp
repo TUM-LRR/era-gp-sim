@@ -48,11 +48,12 @@ SyntaxTreeGenerator::transformOperand(const std::string& operand,
   if (!outputNode) {
     state.addError("Invalid argument: '" + operand + "'", state.position);
   }
-
-  // we already try to find flaws early in creation of the operation.
-  auto validationResult = outputNode->validate();
-  if (!validationResult) {
-    state.addError("Invalid argument: '" + operand + "'", state.position);
+  else {
+    // we already try to find flaws early in creation of the operation.
+    auto validationResult = outputNode->validate();
+    if (!validationResult) {
+      state.addError("Invalid argument: '" + operand + "'", state.position);
+    }
   }
 
   return std::move(outputNode);
