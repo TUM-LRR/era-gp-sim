@@ -45,7 +45,8 @@ class ParserInterface : public Proxy<ParsingAndExecutionUnit> {
    * Set the callback which is used to signal the gui that context information
    * for a memory cell was changed/added
    *
-   * \param callback std::function<void(int, int, int, std::string)>
+   * \param callback std::function<void(const std::vector<ContextInformation>
+   * &)>
    *
    */
   POST(setSetContextInformationCallback)
@@ -53,10 +54,18 @@ class ParserInterface : public Proxy<ParsingAndExecutionUnit> {
   /**
    * Set the callback which is used to set the error list in the gui(editor)
    *
-   * \param callback std::function<void(std::vector<CompileError> &&)>
+   * \param callback std::function<void(const std::vector<CompileError> &)>
    *
    */
   POST(setSetErrorListCallback)
+
+  /**
+   * Set the callback which is used to notify the gui of a runtime error.
+   *
+   * \param callback std::function<void(const std::string&)> callback
+   *
+   */
+  POST(setThrowRuntimeErrorCallback)
 
   /**
    * Set the callback which is used to inform the gui about the execution point

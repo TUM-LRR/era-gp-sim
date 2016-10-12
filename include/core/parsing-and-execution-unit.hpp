@@ -31,6 +31,7 @@
 #include "parser/syntax-information.hpp"
 
 class ContextInformation;
+class MacroInformation;
 
 /**
  * This servant parses the code and executes the program.
@@ -89,8 +90,9 @@ class ParsingAndExecutionUnit : public Servant {
    *
    * \param line the line at which the breakpoint is set
    *
+   * \returns true if the breakpoint could be set, false otherwise.
    */
-  void setBreakpoint(int line);
+  bool setBreakpoint(int line);
 
   /**
    * Deletes a breakpoint.
@@ -107,7 +109,7 @@ class ParsingAndExecutionUnit : public Servant {
    *
    * \see SyntaxInformation
    */
-  const SyntaxInformation::TokenIterable
+  SyntaxInformation::TokenIterable
   getSyntaxRegex(SyntaxInformation::Token token) const;
 
   /**
@@ -118,7 +120,7 @@ class ParsingAndExecutionUnit : public Servant {
    *
    */
   void setSetContextInformationCallback(
-      std::function<void(std::vector<ContextInformation> &&)> callback);
+      std::function<void(const std::vector<ContextInformation> &)> callback);
 
   // editor
 
@@ -129,17 +131,23 @@ class ParsingAndExecutionUnit : public Servant {
    *
    */
   void setSetErrorListCallback(
-      std::function<void(std::vector<CompileError> &&)> callback);
+      std::function<void(const std::vector<CompileError> &)> callback);
 
   /**
    * Set the callback which is used to notify the gui of a runtime error.
-   * TODO replace std::string with ValidationResult
+   *
+   * \param callback
    */
   void setThrowRuntimeErrorCallback(
       std::function<void(const std::string &)> callback);
 
-  // void setSetMacroListCallback(std::function<void(std::vector)> callback);
-  // TODO not yet know how macros are passed on by the parser
+  /**
+   * Set the callback to set the macro list in the ui.
+   *
+   * \param callback
+   */
+  void setSetMacroListCallback(
+      std::function<void(const std::vector<MacroInformation> &)> callback);
 
   /**
    * Set the callback which is used to inform the gui about the execution point
@@ -176,23 +184,26 @@ class ParsingAndExecutionUnit : public Servant {
   MemoryAccess _memoryAccess;
 
   /** set which contains the breakpoints.*/
-  std::set<int> _breakpoints;
+  std::unordered_set<int> _breakpoints;
 
   /** The name of the program counter register. */
   std::string _programCounterName;
 
+  /** The SyntaxInformation object of the parser. */
+  SyntaxInformation _syntaxInformation;
+
   /** Callback to set memory context information in the ui. */
-  std::function<void(std::vector<ContextInformation> &&)>
+  std::function<void(const std::vector<ContextInformation> &)>
       _setContextInformation;
 
   /** Callback to set the error list in the ui.*/
-  std::function<void(std::vector<CompileError> &&)> _setErrorList;
+  std::function<void(const std::vector<CompileError> &)> _setErrorList;
 
   /** Callback to throw a runtime error. */
   std::function<void(const std::string &)> _throwRuntimeError;
 
   /** Callback to set the macro list in the ui.*/
-  // std::function<void(std::vector)> _setMacroList;
+  std::function<void(const std::vector<MacroInformation> &)> _setMacroList;
 
   /** Callback to set the line which is executed in the ui.*/
   std::function<void(int)> _setCurrentLine;

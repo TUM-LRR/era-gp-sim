@@ -33,8 +33,16 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 : Servant(std::move(scheduler))
 , _parser(ParserFactory::createParser(architecture, parserName))
 , _stopFlag(stopFlag)
+, _finalRepresentation()
+, _addressCommandMap()
 , _memoryAccess(memoryAccess)
-, _breakpoints() {
+, _breakpoints()
+, _syntaxInformation(_parser->getSyntaxInformation())
+, _setContextInformation([](const std::vector<ContextInformation>& x) {})
+, _setErrorList([](const std::vector<CompileError>& x) {})
+, _throwRuntimeError(([](const std::string& x) {}))
+, _setMacroList(([](const std::vector<MacroInformation>& x) {}))
+, _setCurrentLine([](int x) {}) {
   for (UnitInformation unitInfo : architecture.getUnits()) {
     if (unitInfo.hasSpecialRegister(
             RegisterInformation::Type::PROGRAM_COUNTER)) {
@@ -59,9 +67,9 @@ std::size_t ParsingAndExecutionUnit::executeNextLine() {
   // reference to avoid copying a unique_ptr
   FinalCommand& currentCommand =
       _finalRepresentation.commandList.at(findNextNode());
-  if (!currentCommand.node->validate()) {
+  /*if (!currentCommand.node->validate()) {
     return findNextNode();
-  }
+  }*/
 
   assert::that(_setCurrentLine);
   _setCurrentLine(currentCommand.position.lineStart);
@@ -102,37 +110,38 @@ void ParsingAndExecutionUnit::setExecutionPoint(int line) {
 
 void ParsingAndExecutionUnit::parse(std::string code) {
   // delete old assembled program in memory
-  for (auto&& command : _finalRepresentation.commandList) {
+  /*for (auto&& command : _finalRepresentation.commandList) {
     _memoryAccess.putMemoryCell(command.address, MemoryValue());
-  }
+  }*/
   _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
   _addressCommandMap   = _finalRepresentation.createMapping();
+  _setErrorList(_finalRepresentation.errorList);
   // assemble commands into memory
-  for (auto&& command : _finalRepresentation.commandList) {
+  /*for (auto&& command : _finalRepresentation.commandList) {
     _memoryAccess.putMemoryCell(command.address, command.node->assemble());
-  }
+  }*/
 }
 
-void ParsingAndExecutionUnit::setBreakpoint(int line) {
-  _breakpoints.insert(line);
+bool ParsingAndExecutionUnit::setBreakpoint(int line) {
+  return _breakpoints.insert(line).second;
 }
 
 void ParsingAndExecutionUnit::deleteBreakpoint(int line) {
   _breakpoints.erase(line);
 }
 
-const SyntaxInformation::TokenIterable
+SyntaxInformation::TokenIterable
 ParsingAndExecutionUnit::getSyntaxRegex(SyntaxInformation::Token token) const {
-  return _parser->getSyntaxInformation().getSyntaxRegex(token);
+  return _syntaxInformation.getSyntaxRegex(token);
 }
 
 void ParsingAndExecutionUnit::setSetContextInformationCallback(
-    std::function<void(std::vector<ContextInformation>&&)> callback) {
+    std::function<void(const std::vector<ContextInformation>&)> callback) {
   _setContextInformation = callback;
 }
 
 void ParsingAndExecutionUnit::setSetErrorListCallback(
-    std::function<void(std::vector<CompileError>&&)> callback) {
+    std::function<void(const std::vector<CompileError>&)> callback) {
   _setErrorList = callback;
 }
 
@@ -141,10 +150,10 @@ void ParsingAndExecutionUnit::setThrowRuntimeErrorCallback(
   _throwRuntimeError = callback;
 }
 
-/*void ParsingAndExecutionUnit::setSetMacroListCallback(
-    std::function<void(std::vector)> callback) {
-    _setMacroList = callback;
-}*/
+void ParsingAndExecutionUnit::setSetMacroListCallback(
+    std::function<void(const std::vector<MacroInformation>&)> callback) {
+  _setMacroList = callback;
+}
 
 void ParsingAndExecutionUnit::setSetCurrentLineCallback(
     std::function<void(int)> callback) {
@@ -159,5 +168,5 @@ std::size_t ParsingAndExecutionUnit::findNextNode() const {
   // return _finalRepresentation.commandList.size();
   //}
   // return iterator->second;
-  return 0;
+  return 5;
 }

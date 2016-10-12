@@ -72,8 +72,9 @@ class CommandInterface : public Proxy<ParsingAndExecutionUnit> {
    *
    * \param line int the line at which the breakpoint is set
    *
+   * \returns true if the breakpoint could be set, false otherwise.
    */
-  POST(setBreakpoint)
+  POST_FUTURE(setBreakpoint)
 
   /**
    * Deletes a breakpoint.
