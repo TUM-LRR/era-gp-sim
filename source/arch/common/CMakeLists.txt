@@ -26,5 +26,5 @@ set(ARCH_COMMON_SOURCES
 
 add_library(era-sim-arch-common STATIC ${ARCH_COMMON_SOURCES})
 
-# qt5_use_modules(era-sim-arch-common Widgets)
-# target_link_libraries(era-sim-arch-common Qt5::Core)
+qt5_use_modules(era-sim-arch-common Widgets)
+#target_link_libraries(era-sim-arch-common Qt5::Core)
