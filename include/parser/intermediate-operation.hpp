@@ -35,11 +35,6 @@ struct CompileState;
 using MemoryAddress = std::size_t;
 
 /**
- * \brief A substitute for a not-initialized address.
- */
-static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
-
-/**
  * \brief Specifies the target for operations to put.
  *
  * This feature has been implemented to support macros. It allows that the
