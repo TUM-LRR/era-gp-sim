@@ -28,6 +28,9 @@ namespace ArchitectureProperties {
 /** Type for the processor word size, in bits. */
 using word_size_t = unsigned short;
 
+/** Type for the architectures byte size, in bits */
+using byte_size_t = unsigned short;
+
 /*
  * The different kinds of endianness an extension may support.
  *

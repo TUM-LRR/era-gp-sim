@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP
 #define ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP
 
+#include <cassert>
 #include <cstddef>
 #include <functional>
 #include <iterator>
@@ -27,9 +28,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "arch/common/constituent-information.hpp"
 #include "arch/common/information-interface.hpp"
-#include "common/assert.hpp"
 #include "common/builder-interface.hpp"
 #include "common/optional.hpp"
 #include "common/utility.hpp"
@@ -39,32 +38,28 @@
  *
  * This class contains all the necessary information about a register, as may be
  * required by other modules. For example, it provides configuration of the
- * name, size, numeric ID or aliases. Every register is always associated with a
- * certain *type*, describing the characteristics of the register. Most often
+ * name, size, numeric ID and aliases. Every register is always associated with
+ * a certain *type*, describing the characteristics of the register. Most often
  * the register will be a processor-register and thus of integral type. However,
  * the register could also be an FPU register or hold vector data. As an ISA may
  * require that certain registers are hardwired to some constant, like 0 (the x0
- * register in RISC-V) or Pi, this class can also store information about any
+ * register in RISC-V) or pi, this class can also store information about any
  * hardwired constant. To keep the class template-less, the constant is stored
  * as a floating-point value. This is most certainly a hack and quite ugly, but
  * prevents the need to propagate template parameters into enclosing classes
  * (e.g. `Unit` or `Architecture`).
  *
  * The class' interface is intended to support the BuilderInterface pattern. As
- * such, it
- * defaults certain values internally:
- *
+ * such, it defaults certain values internally:
  * - The type defauls to `Type::INTEGER`.
  * - The ID defaults to an instance-unique (static), incrementing ID.
  */
 class RegisterInformation : public InformationInterface {
  public:
-  using id_t                 = std::size_t;
-  using size_t               = unsigned short;
-  using AliasContainer       = std::vector<std::string>;
-  using AliasList            = std::initializer_list<std::string>;
-  using ConstituentContainer = std::vector<ConstituentInformation>;
-  using ConstituentList      = std::initializer_list<ConstituentInformation>;
+  using id_t      = std::size_t;
+  using size_t    = unsigned short;
+  using AliasList = std::initializer_list<std::string>;
+  using IDList    = std::initializer_list<id_t>;
 
   /** The type of data stored in this register. */
   enum class Type { INTEGER, FLOAT, VECTOR, FLAG, LINK, PROGRAM_COUNTER };
@@ -82,13 +77,9 @@ class RegisterInformation : public InformationInterface {
   static bool isSpecialType(Type type) noexcept;
 
   /**
-   * Constructs the RegisterInformation with the register's name and size.
-   *
-   * \param name The name of the register.
-   * \param size The size of the register.
+   * Default-constructs the RegisterInformation object.
    */
-  explicit RegisterInformation(const std::string& name = std::string(),
-                               size_t size             = 0);
+  RegisterInformation();
 
   /**
    * Deserializes the RegisterInformation from the given data.
@@ -96,6 +87,21 @@ class RegisterInformation : public InformationInterface {
    * \param data The data to deserialize from.
    */
   explicit RegisterInformation(InformationInterface::Format& data);
+
+  /**
+   * Constructs the RegisterInformation with the register's name.
+   *
+   * \param name The name of the register.
+   */
+  explicit RegisterInformation(const std::string& name);
+
+  /**
+   * Constructs the RegisterInformation with the register's name and size.
+   *
+   * \param name The name of the register.
+   * \param size The size of the register.
+   */
+  RegisterInformation(const std::string& name, size_t size);
 
   /**
    * Tests for equality of two registers.
@@ -134,7 +140,7 @@ class RegisterInformation : public InformationInterface {
    *
    * \return The name of the register.
    */
-  const std::string& getName() const;
+  const std::string& getName() const noexcept;
 
   /**
    * Returns whether the register has a name set.
@@ -144,18 +150,18 @@ class RegisterInformation : public InformationInterface {
   /**
    * Sets the size (width) of the register, in bits.
    *
-   * \param size The new width for the register, in bits.
+   * \param bit_size The new width for the register, in bits.
    *
    * \return The current register object.
    */
-  RegisterInformation& size(size_t size);
+  RegisterInformation& size(size_t bit_size);
 
   /**
    * Returns the size of the register, if any.
    *
    * \return The size of the register.
    */
-  size_t getSize() const;
+  size_t getSize() const noexcept;
 
   /**
    * Returns whether the register has a size set.
@@ -234,9 +240,9 @@ class RegisterInformation : public InformationInterface {
    */
   template <typename ConstantType,
             typename = std::enable_if_t<
-                std::is_convertible<double, ConstantType>::value>>
+                std::is_convertible<ConstantType, double>::value>>
   ConstantType getConstant() const noexcept {
-    assert::that(isConstant());
+    assert(isConstant());
     return static_cast<ConstantType>(*_constant);
   }
 
@@ -285,7 +291,7 @@ class RegisterInformation : public InformationInterface {
    *
    * \return The currently known aliases for the register.
    */
-  const AliasContainer& getAliases() const noexcept;
+  const std::vector<std::string>& getAliases() const noexcept;
 
   /**
    * Returns whether or not the register has aliases at all.
@@ -315,8 +321,7 @@ class RegisterInformation : public InformationInterface {
    * \return An Optional object, possibly containing an ID for the enclosing
    *         register (if this register has an enclosing register).
    */
-  id_t getEnclosing() const;
-
+  id_t getEnclosing() const noexcept;
 
   /**
    * Returns whether or not the register has an enclosing ID set.
@@ -324,7 +329,7 @@ class RegisterInformation : public InformationInterface {
   bool hasEnclosing() const noexcept;
 
   /**
-   * Adds a range of constituent registers for the register.
+   * Adds a range of constituent register IDs for the register.
    *
    * See getConstituents() for a description of a register's consituents.
    *
@@ -336,20 +341,15 @@ class RegisterInformation : public InformationInterface {
    */
   template <typename Range>
   RegisterInformation& addConstituents(const Range& range) {
-    // clang-format off
-      assert::that(Utility::allOf(range, [this](auto& constituent) {
-        if (Utility::contains(_constituents, constituent)) return false;
-        return this->_constituentIsValid(constituent, this->hasSize());
-      }));
-    // clang-format on
-
-    Utility::concatenate(_constituents, range);
+    using std::begin;
+    using std::end;
+    _constituents.insert(_constituents.end(), begin(range), end(range));
 
     return *this;
   }
 
   /**
-   * Adds a list of constituent register for the register.
+   * Adds a list of constituent register IDs for the register.
    *
    * See getConstituents() for a description of a register's consituents.
    *
@@ -357,32 +357,31 @@ class RegisterInformation : public InformationInterface {
    *
    * \return The current register object.
    */
-  RegisterInformation& addConstituents(ConstituentList constituents);
+  RegisterInformation& addConstituents(IDList constituents);
 
   /**
-   * Adds a single consituent to the register.
+   * Adds a single consituent ID for the register.
    *
    * See getConstituents() for a description of a register's consituents.
    *
-   * \param constituetn The information for the constituent register to add.
+   * \param id The ID of the constituent register to add.
    *
    * \return The current register object.
    */
-  RegisterInformation&
-  addConstituent(const ConstituentInformation& constituent);
+  RegisterInformation& addConstituent(id_t id);
 
   /**
-   * Returns the information objects of the constituents of the register.
+   * Returns the constituent IDs of the register.
    *
-   * The constituent information objects of the registers that this register
+   * The constituent IDs are the IDs of the registers that this register
    * contains *directly*. *Directly* means that if the register is viewed
    * as a node in a tree, only its direct neighbors (distance 1) are contained.
    * For example, if this register represents EAX, it would contain only AX and
    * not AH or AL, because those are then contained by AX.
    *
-   * \return The information objects of the constituents of the register.
+   * \return The constituent IDs of the register.
    */
-  const ConstituentContainer& getConstituents() const noexcept;
+  const std::vector<id_t>& getConstituents() const noexcept;
 
   /**
    * Returns whether or not the register has constituents at all.
@@ -390,11 +389,6 @@ class RegisterInformation : public InformationInterface {
    * \return True if the register has at least one constituent, else false.
    */
   bool hasConstituents() const noexcept;
-
-  /**
-   * Returns the number of constituents the register has.
-   */
-  size_t numberOfConstituents() const noexcept;
 
   /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
@@ -417,25 +411,6 @@ class RegisterInformation : public InformationInterface {
    */
   void _parseType(InformationInterface::Format& data);
 
-
-  /**
-   * Tests if the constituent is valid and may be added to this register.
-   *
-   * A constituent is considered valid if:
-   * 1. It's ID is not that of the register itself.
-   * 2. It's ID is not that of the enclosing register of this one.
-   * 3. It's bit offset is not greater than the size of this register.
-   *
-   * \param constituent The constituent information to check.
-   * \param verifyEnclosingOffset Whether or not to check that the enclosing
-   *                              index of the register fits within the
-   *                              register's size.
-   *
-   * \return True if the constituent is valid for this register, else false.
-   */
-  bool _constituentIsValid(const ConstituentInformation& constituent,
-                           bool verifyEnclosingOffset) const noexcept;
-
   /** The numeric ID of the register. */
   id_t _id;
 
@@ -446,7 +421,7 @@ class RegisterInformation : public InformationInterface {
   std::string _name;
 
   /** The size of the register, in bits. */
-  size_t _size;
+  Optional<size_t> _size;
 
   /** The constant the register is hardwired to, if any. */
   Optional<double> _constant;
@@ -454,13 +429,11 @@ class RegisterInformation : public InformationInterface {
   /** The ID of the register's enclosing register, if one exists. */
   Optional<id_t> _enclosing;
 
-  /** The information objects of the register's
-   *  directly constituent registers, if any .
-   */
-  ConstituentContainer _constituents;
+  /** The IDs of the register's directly constituent registers, if any exist. */
+  std::vector<id_t> _constituents;
 
   /** The aliases of the register, if any. */
-  AliasContainer _aliases;
+  std::vector<std::string> _aliases;
 };
 
 namespace std {
