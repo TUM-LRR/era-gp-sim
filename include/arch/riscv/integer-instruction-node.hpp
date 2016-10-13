@@ -162,7 +162,6 @@ class AbstractIntegerInstructionNode : public InstructionNode {
       // region (i.e. 11...size).
       // Index 0 <-> MSB in Memory Value
       bool isSignBitSet = value.get(value.getSize() - 1);
-      std::cout << "[debug] " << value << std::endl;
       for (std::size_t index = 11; index < value.getSize(); ++index) {
         if ((isSignBitSet && !value.get(index)) ||
             (!isSignBitSet && value.get(index))) {

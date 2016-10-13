@@ -58,7 +58,7 @@ void testIntegerInstructionValidation(MemoryAccess& memAccess,
 void test12BitImmediateBounds(InstructionNodeFactory& instrF,
                               std::string instructionToken,
                               ImmediateNodeFactory& immF) {
-  constexpr uint64_t boundary = 0xFFF;
+  constexpr uint64_t boundary = 0x7FF;
   constexpr int64_t negative_boundary =  -2048;//smallest negative integer in 12bit
   std::string registerId = "not relevant";
   auto nodeTrue = instrF.createInstructionNode(instructionToken);
@@ -81,7 +81,7 @@ void test12BitImmediateBounds(InstructionNodeFactory& instrF,
   nodeFalse->addChild(std::move(std::make_unique<RegisterNode>(registerId)));
   nodeFalse->addChild(std::move(std::make_unique<RegisterNode>(registerId)));
   auto immediateNodeOut =
-      immF.createImmediateNode(riscv::convert<int64_t>(boundary - 1));
+      immF.createImmediateNode(riscv::convert<int64_t>(boundary + 1));
   nodeFalse->addChild(std::move(immediateNodeOut));
   ASSERT_FALSE(nodeFalse->validate().isSuccess());
 }
