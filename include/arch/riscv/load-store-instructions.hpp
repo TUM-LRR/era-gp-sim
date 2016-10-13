@@ -152,7 +152,8 @@ class LoadInstructionNode
     BYTE_UNSIGNED      // LBU
   };
 
-  LoadInstructionNode(const InstructionInformation& instructionInformation, Type type)
+  LoadInstructionNode(const InstructionInformation& instructionInformation,
+                      Type type)
   : super(instructionInformation), _type(type) {
   }
 
@@ -299,8 +300,7 @@ class StoreInstructionNode
     MemoryValue registerValue = memoryAccess.getRegisterValue(src);
     MemoryValue resultValue{byteAmount * riscv::BITS_PER_BYTE};
     for (size_t i = 0; i < byteAmount * riscv::BITS_PER_BYTE; ++i) {
-      resultValue.put(resultValue.getSize() - 1 - i,
-                      registerValue.get(registerValue.getSize() - 1 - i));
+      resultValue.put(i, registerValue.get(i));
     }
     memoryAccess.setMemoryValueAt(effectiveAddress, resultValue);
     return MemoryValue{};
