@@ -38,26 +38,26 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
   for (UnitInformation unitInfo : _architecture.getUnits()) {
     for (auto &&registerPair : unitInfo) {
       // create all top level registers
-      createRegister(registerPair.second, unitInfo);
+      _createRegister(registerPair.second, unitInfo);
     }
     // create special registers
     for (auto &&registerPair : unitInfo.getSpecialRegisters()) {
-      createRegister(registerPair.second, unitInfo);
+      _createRegister(registerPair.second, unitInfo);
     }
   }
 }
 
-void Project::createRegister(RegisterInformation registerInfo,
-                             UnitInformation unitInfo) {
+void Project::_createRegister(RegisterInformation registerInfo,
+                              UnitInformation unitInfo) {
   if (!registerInfo.hasEnclosing()) {
     _registerSet.createRegister(registerInfo.getName(), registerInfo.getSize());
     // create all constituents and their constituents
-    createConstituents(registerInfo, unitInfo);
+    _createConstituents(registerInfo, unitInfo);
   }
 }
 
-void Project::createConstituents(RegisterInformation enclosingRegister,
-                                 UnitInformation unitInfo) {
+void Project::_createConstituents(RegisterInformation enclosingRegister,
+                                  UnitInformation unitInfo) {
   for (auto &&constituentInformation : enclosingRegister.getConstituents()) {
     // find RegisterInformation of the constituent
     RegisterInformation constituentRegisterInfo =
@@ -72,7 +72,7 @@ void Project::createConstituents(RegisterInformation enclosingRegister,
 
     // recursive call to create constituents of this constituent
     if (constituentRegisterInfo.hasConstituents()) {
-      createConstituents(constituentRegisterInfo, unitInfo);
+      _createConstituents(constituentRegisterInfo, unitInfo);
     }
   }
 }

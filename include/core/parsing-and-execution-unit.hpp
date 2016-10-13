@@ -169,7 +169,7 @@ class ParsingAndExecutionUnit : public Servant {
    * \return index of the next node.
    *
    */
-  std::size_t findNextNode();
+  std::size_t _findNextNode();
 
   /** A unique_ptr to the parser. */
   std::unique_ptr<Parser> _parser;

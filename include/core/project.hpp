@@ -219,7 +219,7 @@ class Project : public Servant {
    * \param registerInfo The RegisterInformation Object of the register.
    */
   void
-  createRegister(RegisterInformation registerInfo, UnitInformation unitInfo);
+  _createRegister(RegisterInformation registerInfo, UnitInformation unitInfo);
 
   /**
    * Creates all constituents of a register and recursively all constituents of
@@ -228,8 +228,8 @@ class Project : public Servant {
    * \param enclosingRegister The register whos constituents are created
    *
    */
-  void createConstituents(RegisterInformation enclosingRegister,
-                          UnitInformation unitInfo);
+  void _createConstituents(RegisterInformation enclosingRegister,
+                           UnitInformation unitInfo);
 
   /** An Architecture object, stores all information about the architecture of
    * this project. */

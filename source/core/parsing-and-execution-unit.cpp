@@ -59,7 +59,7 @@ void ParsingAndExecutionUnit::execute() {
     return;
   }
   _stopFlag.test_and_set();
-  std::size_t nextNode = findNextNode();
+  std::size_t nextNode = _findNextNode();
   while (_stopFlag.test_and_set() &&
          nextNode < _finalRepresentation.commandList.size()) {
     nextNode = executeNextLine();
@@ -69,21 +69,21 @@ void ParsingAndExecutionUnit::execute() {
 std::size_t ParsingAndExecutionUnit::executeNextLine() {
   // reference to avoid copying a unique_ptr
   FinalCommand& currentCommand =
-      _finalRepresentation.commandList.at(findNextNode());
+      _finalRepresentation.commandList.at(_findNextNode());
   if (_finalRepresentation.errorList.size() > 0) {
-    return findNextNode();
+    return _findNextNode();
   }
   /*ValidationResult validationResult = currentCommand.node->validateRuntime();
   if (!validationResult.success()) {
     _throwRuntimeError(validationResult.errorMessage())
-    return findNextNode();
+    return _findNextNode();
   }*/
 
   _setCurrentLine(currentCommand.position.lineStart);
 
   // currentCommand.node->getValue(_memoryAccess);
 
-  std::size_t nextNode = findNextNode();
+  std::size_t nextNode = _findNextNode();
   _setCurrentLine(
       _finalRepresentation.commandList.at(nextNode).position.lineStart);
   return nextNode;
@@ -94,7 +94,7 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
     return;
   }
   _stopFlag.test_and_set();
-  int nextNode = findNextNode();
+  int nextNode = _findNextNode();
   while (_stopFlag.test_and_set() &&
          nextNode < _finalRepresentation.commandList.size()) {
     nextNode = executeNextLine();
@@ -175,7 +175,7 @@ void ParsingAndExecutionUnit::setSetCurrentLineCallback(
   _setCurrentLine = callback;
 }
 
-std::size_t ParsingAndExecutionUnit::findNextNode() {
+std::size_t ParsingAndExecutionUnit::_findNextNode() {
   std::string programCounterName = _programCounter.getName();
   MemoryValue programCounterValue =
       _memoryAccess.getRegisterValue(programCounterName).get();
