@@ -19,7 +19,7 @@
 
 #include "core/parsing-and-execution-unit.hpp"
 
-#include "arch/common/register-information.hpp"
+#include "arch/common/architecture.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
@@ -73,7 +73,9 @@ std::size_t ParsingAndExecutionUnit::executeNextLine() {
   if (_finalRepresentation.errorList.size() > 0) {
     return findNextNode();
   }
-  /*if (!currentCommand.node->validate()) {
+  /*ValidationResult validationResult = currentCommand.node->validateRuntime();
+  if (!validationResult.success()) {
+    _throwRuntimeError(validationResult.errorMessage())
     return findNextNode();
   }*/
 
@@ -119,8 +121,12 @@ void ParsingAndExecutionUnit::setExecutionPoint(int line) {
 
 void ParsingAndExecutionUnit::parse(std::string code) {
   // delete old assembled program in memory
+  // Disabled because AbstractSyntaxTreeNode::assemble() causes a segfault.
+  // TODO AbstractSyntaxTreeNode::length() would be nice, otherwise every
+  // command has to be assembled twice.
   /*for (auto&& command : _finalRepresentation.commandList) {
-    _memoryAccess.putMemoryValue(command.address, MemoryValue());
+    MemoryValue zero = conversions::convert(0, command.assemble.getSize());
+    _memoryAccess.putMemoryValue(command.address, zero;
   }*/
   _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
   _addressCommandMap   = _finalRepresentation.createMapping();

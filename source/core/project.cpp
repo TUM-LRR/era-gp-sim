@@ -19,12 +19,15 @@
 
 #include "core/project.hpp"
 
+#include "arch/common/architecture-formula.hpp"
+#include "arch/common/register-information.hpp"
+#include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
 
 
 Project::Project(std::weak_ptr<Scheduler> &&scheduler,
-                 ArchitectureFormula &&architectureFormula,
+                 const ArchitectureFormula &architectureFormula,
                  std::size_t memorySize)
 : Servant(std::move(scheduler))
 , _architecture(Architecture::Brew(architectureFormula))

@@ -23,7 +23,6 @@
 #include <atomic>
 #include <memory>
 
-#include "arch/common/architecture-formula.hpp"
 #include "core/architecture-access.hpp"
 #include "core/command-interface.hpp"
 #include "core/memory-access.hpp"
@@ -33,6 +32,8 @@
 #include "core/project.hpp"
 #include "core/proxy.hpp"
 #include "core/scheduler.hpp"
+
+class ArchitectureFormula;
 
 /**
  * This class encapsulates all proxy components to the project servant, as well

@@ -24,7 +24,7 @@
 #include "core/proxy.hpp"
 
 /**
- * A Proxy to access the memory component of a project safely.
+ * A Proxy to access the memory and register components of a project safely.
  *
  */
 class MemoryAccess : public Proxy<Project> {

@@ -22,20 +22,17 @@
 
 #include <functional>
 
-#include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/instruction-set.hpp"
-#include "arch/common/register-information.hpp"
 #include "arch/common/unit-container.hpp"
-#include "arch/common/unit-information.hpp"
 #include "core/memory-value.hpp"
 #include "core/memory.hpp"
 #include "core/register-set.hpp"
 #include "core/servant.hpp"
-#include "parser/compile-error.hpp"
-#include "parser/final-representation.hpp"
-#include "parser/parser.hpp"
 
+class ArchitectureFormula;
+class RegisterInformation;
+class UnitInformation;
 
 /**
  * This class holds all information about a project
@@ -51,6 +48,8 @@ class Project : public Servant {
   /**
    * Creates a new Project
    *
+   * \scheduler A scheduler to create this active object.
+   *
    * \param architectureFormula A formula to brew the architecture of this
    * project
    *
@@ -58,11 +57,8 @@ class Project : public Servant {
    *
    */
   Project(std::weak_ptr<Scheduler> &&scheduler,
-          ArchitectureFormula &&architectureFormula,
+          const ArchitectureFormula &architectureFormula,
           std::size_t memorySize);
-
-
-  // memory access (WARNING: Memory is not on master, might change!)
 
   /**
    * Calls Memory::get(std::size_t address, std::size_t length = 1) const
@@ -81,8 +77,6 @@ class Project : public Servant {
    *
    */
   MemoryValue setMemoryValue(std::size_t address, const MemoryValue &value);
-
-  // register access
 
   /**
    * Calls RegisterSet::get(const std::string& name) const
@@ -103,22 +97,15 @@ class Project : public Servant {
   MemoryValue
   setRegisterValue(const std::string &name, const MemoryValue &value);
 
-
-  // GUI interface
-
-  // register component
-
   /**
    * Returns a container of all registers
    *
    */
   UnitContainer getRegisterUnits() const;
 
-  // memory component
-
   /**
    * Returns the number of bits in a byte
-   *
+   * TODO https://github.com/TUM-LRR/era-gp-sim/issues/83
    */
   // Architecture::byte_size_t getByteSize() const;
 
@@ -136,8 +123,6 @@ class Project : public Servant {
    *
    */
   void setMemorySize(std::size_t size);
-
-  // editor component
 
   /**
    * Returns a set of all instructions of the architecture
@@ -201,11 +186,6 @@ class Project : public Servant {
    */
   std::function<MemoryValue(std::string)> getFloatToMemoryValue() const;
 
-
-  // set gui callbacks for registers and memory
-
-  // register
-
   /**
    * Set the callback which is used to signal the gui that a register was
    * updated
@@ -231,7 +211,6 @@ class Project : public Servant {
    *
    */
   Architecture getArchitecture();
-
 
  private:
   /**

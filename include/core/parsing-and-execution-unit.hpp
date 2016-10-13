@@ -21,18 +21,20 @@
 #define ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
 
 #include <atomic>
+#include <functional>
 #include <memory>
-#include <set>
+#include <unordered_set>
 
-#include "arch/common/architecture.hpp"
+#include "arch/common/register-information.hpp"
 #include "core/memory-access.hpp"
 #include "core/servant.hpp"
 #include "parser/final-representation.hpp"
+#include "parser/parser.hpp"
 #include "parser/syntax-information.hpp"
 
+class Architecture;
 class ContextInformation;
 class MacroInformation;
-class RegisterInformation;
 
 /**
  * This servant parses the code and executes the program.
@@ -175,6 +177,7 @@ class ParsingAndExecutionUnit : public Servant {
   /**  Reference to a std::atomic_flag to stop the execution. */
   std::atomic_flag &_stopFlag;
 
+  /** A FinalRepresentation created by the parser. */
   FinalRepresentation _finalRepresentation;
 
   /** A mapping of address to command, has to be recreated every time the
