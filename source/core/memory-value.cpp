@@ -136,6 +136,13 @@ std::size_t MemoryValue::getSize() const {
   return _size;
 }
 
+bool MemoryValue::isZero() {
+  for (std::size_t i = 0; i < getSize(); ++i) {
+    if (get(i)) return false;
+  }
+  return true;
+}
+
 const std::vector<uint8_t> &MemoryValue::internal() const {
   return _data;
 }

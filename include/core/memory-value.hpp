@@ -134,6 +134,12 @@ class MemoryValue {
   std::size_t getSize() const;
 
   /**
+   * Checks if all bits are set to zero.
+   * \return true if all bits are set to zero.
+   */
+  bool isZero();
+
+  /**
    * \brief returns a reference to the data vector. For internal purposes only.
    *        Do not use or don't complain about crashes.
    * \return a reference to the data vector
@@ -174,7 +180,7 @@ class MemoryValue {
    */
   friend std::ostream &
   operator<<(std::ostream &stream, const MemoryValue &value);
-  //friend MemoryValue conversions::permute(const MemoryValue &memoryValue,
+  // friend MemoryValue conversions::permute(const MemoryValue &memoryValue,
   //  const std::size_t byteSize,
   //  const std::vector<std::size_t> permutation);
   // I know this is extremely inelegant
