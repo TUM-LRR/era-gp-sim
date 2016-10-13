@@ -78,15 +78,15 @@ std::string toSignedDecString(MemoryValue memoryValue) {
 }
 
 
-std::string toDecimalFloatString(MemoryValue memoryValue) {
-  double intermediateValue =
-      0.0;// TODO: Use conversion from memoryValue to double
-  std::ostringstream stream;
-  stream.precision(std::numeric_limits<double>::digits10);
-  stream << std::fixed << intermediateValue;
-  // TODO: Remove padding??
-  return stream.str();
-}
+//std::string toDecimalFloatString(MemoryValue memoryValue) {
+//  double intermediateValue =
+//      0.0;// TODO: Use conversion from memoryValue to double
+//  std::ostringstream stream;
+//  stream.precision(std::numeric_limits<double>::digits10);
+//  stream << std::fixed << intermediateValue;
+//  // TODO: Remove padding??
+//  return stream.str();
+//}
 
 
 MemoryValue
@@ -171,11 +171,11 @@ signedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
 }
 
 
-MemoryValue decimalFloatStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
-  double floatResult = std::stod(stringValue);
-  MemoryValue result;// TODO: Use conversion from double to memoryValue
-  return result;
-}
+//MemoryValue decimalFloatStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
+//  double floatResult = std::stod(stringValue);
+//  MemoryValue result;// TODO: Use conversion from double to memoryValue
+//  return result;
+//}
 
 
 template <typename T>

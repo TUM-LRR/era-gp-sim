@@ -57,7 +57,7 @@ std::string toSignedDecString(MemoryValue memoryValue);
  * @param memoryValue The MemoryValue to convert.
  * @return A decimal float string corresponding to the given MemoryValue.
  */
-std::string toDecimalFloatString(MemoryValue memoryValue);
+//std::string toDecimalFloatString(MemoryValue memoryValue);
 
 
 /**
@@ -94,13 +94,15 @@ MemoryValue unsignedDecStringToMemoryValue(std::string stringValue, size_t memor
  */
 MemoryValue signedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
 
+
 /**
  * @brief decimalFloatStringToMemoryValue Converts a given decimal float string with a maximum size of 64 bits to a corresponding MemoryValue.
  * @param stringValue Decimal float string to convert.
  * @param memoryValueSize Size of the memory value that is requested. Required in order to be able to unambigiuously create a MemoryValue.
  * @return A MemoryValue corresponding to the given decimal float string.
  */
-MemoryValue decimalFloatStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
+//MemoryValue decimalFloatStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
+
 
 /**
  * @brief toDecString Converts a given integral typed value to string.
