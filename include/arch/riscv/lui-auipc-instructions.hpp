@@ -75,22 +75,6 @@ class LuiAuipcValidationNode : public InstructionNode {
                             "be representable by %1 bits"),
           std::to_string(20));
     }
-    //    if (value.getSize() > 20) {
-    //      // look for the sign bit to determine what bits to expect in the
-    //      "upper"
-    //      // region (i.e. 19...size)
-    //      for (std::size_t index = 20; index < value.getSize(); ++index) {
-    //        // Index 0 = Most significant bit
-    //        if (value.get(value.getSize() - 1 - index)) {
-    //            return ValidationResult::fail(
-    //                QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-    //                                  "The immediate value of this instruction
-    //                                  must "
-    //                                  "be representable by %1 bits"),
-    //                std::to_string(20));
-    //        }
-    //      }
-    //    }
     return ValidationResult::success();
   }
 };
@@ -160,6 +144,7 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
+
     const std::string& destination = _children.at(0)->getIdentifier();
     MemoryValue offset = _children.at(1)->getValue(memoryAccess);
     MemoryValue programCounter = memoryAccess.getRegisterValue("pc");

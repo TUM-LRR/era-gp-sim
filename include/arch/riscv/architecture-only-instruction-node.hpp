@@ -190,27 +190,6 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
                               "be representable by %1 bits"),
             std::to_string(12));
       }
-
-      //      if (value.getSize() > 12) {
-      //        // Look for the sign bit to determine what bits to expect in the
-      //        "upper"
-      //        // region (i.e. 11...size).
-      //        // Index 0 <-> MSB in Memory Value
-      //        bool isSignBitSet = value.get(0);
-      //        for (std::size_t index = 11; index < value.getSize(); ++index) {
-      //          if ((isSignBitSet && !value.get(value.getSize() - 1 - index))
-      //          ||
-      //              (!isSignBitSet && value.get(value.getSize() - 1 - index)))
-      //              {
-      //            return ValidationResult::fail(
-      //                QT_TRANSLATE_NOOP(
-      //                    "Syntax-Tree-Validation",
-      //                    "The immediate value of this instruction must "
-      //                    "be representable by %1 bits"),
-      //                std::to_string(12));
-      //          }
-      //        }
-      //      }
     }
 
     return ValidationResult::success();
