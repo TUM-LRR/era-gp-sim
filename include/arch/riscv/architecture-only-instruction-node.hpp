@@ -186,11 +186,10 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
       if (value.getSize() > 12) {
         // Look for the sign bit to determine what bits to expect in the "upper"
         // region (i.e. 11...size).
-        // Index 0 <-> MSB in Memory Value
-        bool isSignBitSet = value.get(0);
+        bool isSignBitSet = value.get(value.getSize() - 1);
         for (std::size_t index = 11; index < value.getSize(); ++index) {
-          if ((isSignBitSet && !value.get(value.getSize() - 1 - index)) ||
-              (!isSignBitSet && value.get(value.getSize() - 1 - index))) {
+          if ((isSignBitSet && !value.get(index)) ||
+              (!isSignBitSet && value.get(index))) {
             return ValidationResult::fail(
                 QT_TRANSLATE_NOOP(
                     "Syntax-Tree-Validation",
