@@ -35,8 +35,7 @@ template <typename SignedType, typename UnsignedType>
 class LoadStoreInstructionNode : public InstructionNode {
  public:
   LoadStoreInstructionNode(const InstructionInformation& instructionInformation)
-  : InstructionNode(instructionInformation) {
-  }
+      : InstructionNode(instructionInformation) {}
 
   /* Ensure this class is pure virtual */
   virtual MemoryValue getValue(MemoryAccess& memoryAccess) const override = 0;
@@ -66,22 +65,12 @@ class LoadStoreInstructionNode : public InstructionNode {
     // access the memory
     MemoryAccess stub;
     MemoryValue value = _children.at(2)->getValue(stub);
-
-    if (value.getSize() > 12) {
-      // Look for the sign bit to determine what bits to expect in the "upper"
-      // region (i.e. 11...size).
-      // Index 0 <-> MSB in Memory Value
-      bool isSignBitSet = value.get(0);
-      for (std::size_t index = 11; index < value.getSize(); ++index) {
-        if ((isSignBitSet && !value.get(value.getSize() - 1 - index)) ||
-            (!isSignBitSet && value.get(value.getSize() - 1 - index))) {
-          return ValidationResult::fail(
-              QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                                "The immediate value of this instruction must "
-                                "be representable by %1 bits"),
-              std::to_string(12));
-        }
-      }
+    if (!this->_fitsIntoNBit(value, 12)) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "The immediate value of this instruction must "
+                            "be representable by %1 bits"),
+          std::to_string(12));
     }
 
     return ValidationResult::success();
@@ -152,8 +141,7 @@ class LoadInstructionNode
     BYTE_UNSIGNED      // LBU
   };
 
-  LoadInstructionNode(const InstructionInformation& instructionInformation,
-                      Type type)
+  LoadInstructionNode(const InstructionInformation& instructionInformation, Type type)
   : super(instructionInformation), _type(type) {
   }
 
@@ -300,7 +288,8 @@ class StoreInstructionNode
     MemoryValue registerValue = memoryAccess.getRegisterValue(src);
     MemoryValue resultValue{byteAmount * riscv::BITS_PER_BYTE};
     for (size_t i = 0; i < byteAmount * riscv::BITS_PER_BYTE; ++i) {
-      resultValue.put(i, registerValue.get(i));
+      resultValue.put(resultValue.getSize() - 1 - i,
+                      registerValue.get(registerValue.getSize() - 1 - i));
     }
     memoryAccess.setMemoryValueAt(effectiveAddress, resultValue);
     return MemoryValue{};

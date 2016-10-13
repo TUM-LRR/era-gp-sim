@@ -62,8 +62,9 @@ class AbstractIntegerInstructionNode : public InstructionNode {
   AbstractIntegerInstructionNode(const InstructionInformation& information,
                                  Operands operands,
                                  Operation operation = Operation())
-  : InstructionNode(information), _operands(operands), _operation(operation) {
-  }
+      : InstructionNode(information),
+        _operands(operands),
+        _operation(operation) {}
 
   /**
    * Make the constructor pure virtual so that the class is abstract.
@@ -156,22 +157,30 @@ class AbstractIntegerInstructionNode : public InstructionNode {
     // No memory access is needed for a immediate node
     MemoryAccess stub;
     MemoryValue value = _children.at(2)->getValue(stub);
+    if (!this->_fitsIntoNBit(value, 12)) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "The immediate value of this instruction must "
+                            "be representable by %1 bits"),
+          std::to_string(12));
 
-    if (value.getSize() > 12) {
-      // Look for the sign bit to determine what bits to expect in the "upper"
-      // region (i.e. 11...size).
-      // Index 0 <-> MSB in Memory Value
-      bool isSignBitSet = value.get(value.getSize() - 1);
-      for (std::size_t index = 11; index < value.getSize(); ++index) {
-        if ((isSignBitSet && !value.get(index)) ||
-            (!isSignBitSet && value.get(index))) {
-          return ValidationResult::fail(
-              QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                                "The immediate value of this instruction must "
-                                "be representable by %1 bits"),
-              std::to_string(12));
-        }
-      }
+      //    if (value.getSize() > 12) {
+      //      // Look for the sign bit to determine what bits to expect in the
+      //      "upper"
+      //      // region (i.e. 11...size).
+      //      // Index 0 <-> MSB in Memory Value
+      //      bool isSignBitSet = value.get(value.getSize() - 1);
+      //      for (std::size_t index = 11; index < value.getSize(); ++index) {
+      //        if ((isSignBitSet && !value.get(index)) ||
+      //            (!isSignBitSet && value.get(index))) {
+      //          return ValidationResult::fail(
+      //              QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+      //                                "The immediate value of this instruction
+      //                                must "
+      //                                "be representable by %1 bits"),
+      //              std::to_string(12));
+      //        }
+      //      }
     }
 
     return ValidationResult::success();

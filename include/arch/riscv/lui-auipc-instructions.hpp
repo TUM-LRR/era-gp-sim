@@ -39,8 +39,7 @@ namespace riscv {
 class LuiAuipcValidationNode : public InstructionNode {
  public:
   LuiAuipcValidationNode(const InstructionInformation& info)
-  : InstructionNode(info) {
-  }
+      : InstructionNode(info) {}
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override = 0;
 
@@ -69,18 +68,12 @@ class LuiAuipcValidationNode : public InstructionNode {
     // 20 bits (unsigned representation)
     MemoryAccess stub;
     MemoryValue value = _children.at(1)->getValue(stub);
-    if (value.getSize() > 20) {
-      // All bits above the 20th bit must be 0, because this is an unsigned
-      // check
-      for (std::size_t index = 20; index < value.getSize(); ++index) {
-        if (value.get(index)) {
-          return ValidationResult::fail(
-              QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                                "The immediate value of this instruction must "
-                                "be representable by %1 bits"),
-              std::to_string(20));
-        }
-      }
+    if (!this->_fitsIntoNBit(value, 20, false)) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "The immediate value of this instruction must "
+                            "be representable by %1 bits"),
+          std::to_string(20));
     }
     return ValidationResult::success();
   }
@@ -94,8 +87,7 @@ template <typename UnsignedType>
 class LuiInstructionNode : public LuiAuipcValidationNode {
  public:
   LuiInstructionNode(const InstructionInformation& info)
-  : LuiAuipcValidationNode(info) {
-  }
+      : LuiAuipcValidationNode(info) {}
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
@@ -148,8 +140,7 @@ template <typename UnsignedType>
 class AuipcInstructionNode : public LuiAuipcValidationNode {
  public:
   AuipcInstructionNode(const InstructionInformation& info)
-  : LuiAuipcValidationNode(info) {
-  }
+      : LuiAuipcValidationNode(info) {}
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
@@ -202,6 +193,6 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
   using InternalUnsigned = uint32_t;
 };
 
-}// Namespace riscv
+}  // Namespace riscv
 
 #endif /* ERAGPSIM_ARCH_RISCV_SPECIAL_INTEGER_INSTRUCTIONS_HPP_ */

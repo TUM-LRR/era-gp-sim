@@ -151,6 +151,8 @@ class AbstractSyntaxTreeNode {
    */
   ValidationResult _validateChildren() const;
 
+  bool _fitsIntoNBit(const MemoryValue& value, size_t n, bool isSigned = true) const;
+
   /** The child nodes of this node. */
   std::vector<Node> _children;
 
