@@ -104,6 +104,8 @@ class RegisterSet {
    */
   MemoryValue set(const std::string &name, const MemoryValue &value);
 
+  std::size_t getSize(const std::string &name) const;
+
   /**
    * \brief Creates a Register with the name name and size size
    * \param name String uniquely representing the to be created Register
@@ -116,6 +118,8 @@ class RegisterSet {
   * \param value Initial value of the register
    */
   void createRegister(const std::string &name, const MemoryValue &value);
+  void createRegister(const std::vector<std::string> &nameList, const MemoryValue &value);
+  void createRegister(const std::vector<std::string> &nameList, const std::size_t size);
   /**
    * \brief Creates an Alias with the name name for the substring [begin; end[
    *        of the Register with the name parent
@@ -129,6 +133,10 @@ class RegisterSet {
                      const std::string &parent,
                      const std::size_t begin,
                      const std::size_t end);
+  void aliasRegister(const std::vector<std::string> &nameList,
+                     const std::string &parent,
+                     const std::size_t begin,
+                     const std::size_t end);
   /**
   * \brief Creates an Alias with the name name for the substring
   *        [begin; parent.getSize()[ of the Register with the name parent
@@ -137,6 +145,9 @@ class RegisterSet {
   * \param begin First index within the parent Register of the alias register
    */
   void aliasRegister(const std::string &name,
+                     const std::string &parent,
+                     const std::size_t begin = 0);
+  void aliasRegister(const std::vector<std::string> &nameList,
                      const std::string &parent,
                      const std::size_t begin = 0);
 
