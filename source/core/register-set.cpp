@@ -84,23 +84,26 @@ void RegisterSet::createRegister(const std::string &name,
   wasUpdated(_register.size() - 1);
 }
 void RegisterSet::createRegister(const std::vector<std::string> &nameList,
-                                 const MemoryValue &value) {
+                                 const MemoryValue &value,
+                                 const bool silent) {
   assert::that(nameList.size() > 0);
-  createRegister(nameList[0],
-                 value);// this could maybe be optimized with move stuff
+  // this could maybe be optimized with move stuff
+  createRegister(nameList[0], value);
   for (std::size_t i = 1; i < nameList.size(); ++i) {
-    aliasRegister(nameList[i], nameList[0]);
+    aliasRegister(nameList[i], nameList[0], 0, silent);
   }
 }
 void RegisterSet::createRegister(const std::vector<std::string> &nameList,
-                                 const std::size_t size) {
-  createRegister(nameList, MemoryValue{size});
+                                 const std::size_t size,
+                                 const bool silent) {
+  createRegister(nameList, MemoryValue{size}, silent);
 }
 
 void RegisterSet::aliasRegister(const std::string &name,
                                 const std::string &parent,
                                 const std::size_t begin,
-                                std::size_t end) {
+                                std::size_t end,
+                                const bool silent) {
   assert::that(_dict.find(name) == _dict.end());
   auto parentIterator = _dict.find(parent);
   assert::that(parentIterator != _dict.end());
@@ -112,12 +115,15 @@ void RegisterSet::aliasRegister(const std::string &name,
                 RegisterID(parentID.address,
                            begin + parentID.begin,
                            end + parentID.begin));
-  _updateSet[parentID.address].emplace(name);
+  if (!silent) {
+    _updateSet[parentID.address].emplace(name);
+  }
 }
 
 void RegisterSet::aliasRegister(const std::string &name,
                                 const std::string &parent,
-                                const std::size_t begin) {
+                                const std::size_t begin,
+                                const bool silent) {
   assert::that(_dict.find(name) == _dict.end());
   auto parentIterator = _dict.find(parent);
   assert::that(parentIterator != _dict.end());
@@ -128,23 +134,27 @@ void RegisterSet::aliasRegister(const std::string &name,
                 RegisterID(parentID.address,
                            begin + parentID.begin,
                            parentID.end + parentID.begin));
-  _updateSet[parentID.address].emplace(name);
-}
-
-void RegisterSet::aliasRegister(const std::vector<std::string> &nameList,
-                                const std::string &parent,
-                                const std::size_t begin,
-                                const std::size_t end) {
-  for (auto name : nameList) {
-    aliasRegister(name, parent, begin, end);
+  if (!silent) {
+    _updateSet[parentID.address].emplace(name);
   }
 }
 
 void RegisterSet::aliasRegister(const std::vector<std::string> &nameList,
                                 const std::string &parent,
-                                const std::size_t begin) {
+                                const std::size_t begin,
+                                const std::size_t end,
+                                const bool silent) {
   for (auto name : nameList) {
-    aliasRegister(name, parent, begin);
+    aliasRegister(name, parent, begin, end, silent);
+  }
+}
+
+void RegisterSet::aliasRegister(const std::vector<std::string> &nameList,
+                                const std::string &parent,
+                                const std::size_t begin,
+                                const bool silent) {
+  for (auto name : nameList) {
+    aliasRegister(name, parent, begin, silent);
   }
 }
 
