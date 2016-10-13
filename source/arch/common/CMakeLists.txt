@@ -7,6 +7,7 @@ set(ARCH_COMMON_SOURCES
   architecture-brewery.cpp
   architecture.cpp
   architecture-formula.cpp
+  constituent-information.cpp
   datatype-information.cpp
   extension-information.cpp
   information-interface.cpp
