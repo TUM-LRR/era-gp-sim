@@ -25,83 +25,103 @@
 namespace StringConversions {
 
 /**
- * @brief toBinString Converts a given MemoryValue to a corresponding binary string.
+ * @brief toBinString Converts a given MemoryValue to a corresponding binary
+ * string.
  * @param memoryValue The MemoryValue to convert.
  * @return A binary string corresponding to the given MemoryValue.
  */
 std::string toBinString(MemoryValue memoryValue);
 
 /**
- * @brief toHexString Converts a given MemoryValue to a corresponding hex string.
+ * @brief toHexString Converts a given MemoryValue to a corresponding hex
+ * string.
  * @param memoryValue The MemoryValue to convert.
- * @return A hex string corresponding to the given MemoryValue.
+ * @return A hex string corresponding to the given MemoryValue including the
+ * "0x" hex indicator.
  */
 std::string toHexString(MemoryValue memoryValue);
 
 /**
- * @brief toUnsignedDecString Converts a given MemoryValue with a maximum size of 64 bits to a corresponding unsigned decimal string.
+ * @brief toUnsignedDecString Converts a given MemoryValue with a maximum size
+ * of 64 bits to a corresponding unsigned decimal string.
  * @param memoryValue The MemoryValue to convert.
  * @return An unsigned decimal string corresponding to the given MemoryValue.
  */
 std::string toUnsignedDecString(MemoryValue memoryValue);
 
 /**
- * @brief toSignedDecString Converts a given MemoryValue with a maximum size of 64 bits to a corresponding signed decimal string.
+ * @brief toSignedDecString Converts a given MemoryValue with a maximum size of
+ * 64 bits to a corresponding signed decimal string.
  * @param memoryValue The MemoryValue to convert.
  * @return A signed decimal string corresponding to the given MemoryValue.
  */
 std::string toSignedDecString(MemoryValue memoryValue);
 
 /**
- * @brief toDecimalFloatString Converts a given MemoryValue with a maximum size of 64 bits to a corresponding decimal float string.
+ * @brief toDecimalFloatString Converts a given MemoryValue with a maximum size
+ * of 64 bits to a corresponding decimal float string.
  * @param memoryValue The MemoryValue to convert.
  * @return A decimal float string corresponding to the given MemoryValue.
  */
-//std::string toDecimalFloatString(MemoryValue memoryValue);
+// std::string toDecimalFloatString(MemoryValue memoryValue);
 
 
 /**
- * @brief hexStringToMemoryValue Converts a given binary string to a corresponding MemoryValue.
+ * @brief binStringToMemoryValue Converts a given binary string to a
+ * corresponding MemoryValue.
  * @param stringValue Binary string to convert.
- * @param memoryValueSize Size of the memory value that is requested. Required in order to be able to be tolerant towards faulty input.
+ * @param memoryValueSize Size of the memory value that is requested. Required
+ * in order to be able to be tolerant towards incomplete input.
  * @return A MemoryValue corresponding to the given binary string.
  */
 MemoryValue
 binStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
 
 /**
- * @brief hexStringToMemoryValue Converts a given hex string to a corresponding MemoryValue.
+ * @brief hexStringToMemoryValue Converts a given hex string to a corresponding
+ * MemoryValue.
  * @param stringValue Hex string to convert.
- * @param memoryValueSize Size of the memory value that is requested. Required in order to be able to unambiguously create a MemoryValue and to be able to be tolerant towards faulty input.
+ * @param memoryValueSize Size of the memory value that is requested. Required
+ * in order to be able to unambiguously create a MemoryValue and to be able to
+ * be tolerant towards incomplete input.
  * @return A MemoryValue corresponding to the given hex string.
  */
 MemoryValue
 hexStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
 
 /**
- * @brief unsignedDecStringToMemoryValue Converts a given unsigned decimal string with a maximum size of 64 bits to a corresponding MemoryValue.
+ * @brief unsignedDecStringToMemoryValue Converts a given unsigned decimal
+ * string with a maximum size of 64 bits to a corresponding MemoryValue.
  * @param stringValue Unsigned decimal string to convert.
- * @param memoryValueSize Size of the memory value that is requested. Required in order to be able to unambigiuously create a MemoryValue.
+ * @param memoryValueSize Size of the memory value that is requested. Required
+ * in order to be able to unambigiuously create a MemoryValue.
  * @return A MemoryValue corresponding to the given unsigned decimal string.
  */
-MemoryValue unsignedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
+MemoryValue
+unsignedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
 
 /**
- * @brief signedDecStringToMemoryValue Converts a given signed decimal string with a maximum size of 64 bits to a corresponding MemoryValue.
+ * @brief signedDecStringToMemoryValue Converts a given signed decimal string
+ * with a maximum size of 64 bits to a corresponding MemoryValue.
  * @param stringValue Signed decimal string to convert.
- * @param memoryValueSize Size of the memory value that is requested. Required in order to be able to unambigiuously create a MemoryValue.
+ * @param memoryValueSize Size of the memory value that is requested. Required
+ * in order to be able to unambigiuously create a MemoryValue.
  * @return A MemoryValue corresponding to the given signed decimal string.
  */
-MemoryValue signedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
+MemoryValue
+signedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
 
 
 /**
- * @brief decimalFloatStringToMemoryValue Converts a given decimal float string with a maximum size of 64 bits to a corresponding MemoryValue.
+ * @brief decimalFloatStringToMemoryValue Converts a given decimal float string
+ * with a maximum size of 64 bits to a corresponding MemoryValue.
  * @param stringValue Decimal float string to convert.
- * @param memoryValueSize Size of the memory value that is requested. Required in order to be able to unambigiuously create a MemoryValue.
+ * @param memoryValueSize Size of the memory value that is requested. Required
+ * in order to be able to unambigiuously create a MemoryValue.
  * @return A MemoryValue corresponding to the given decimal float string.
  */
-//MemoryValue decimalFloatStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
+// MemoryValue decimalFloatStringToMemoryValue(std::string stringValue, size_t
+// memoryValueSize);
 
 
 /**

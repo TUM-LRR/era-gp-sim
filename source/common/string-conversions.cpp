@@ -18,9 +18,9 @@
 */
 
 #include "common/string-conversions.hpp"
-#include "core/conversions.hpp"
 #include <iomanip>
 #include <sstream>
+#include "core/conversions.hpp"
 
 namespace StringConversions {
 
@@ -52,33 +52,35 @@ std::string toHexString(MemoryValue memoryValue) {
     // The current 8bit-value.
     uint8_t currentValue = *it;
     // Convert the current 8bit-value into hex (= two digits) and push it into
-    // the stream.
+    // the stream, inserting leading zeros where required.
     stream << std::setfill('0') << std::setw(sizeof(uint8_t) * 2) << std::hex
            << (int)currentValue;
   }
   std::string result = stream.str();
   // Remove leading digits that exceed the memory value's specified bit-size.
-  result = result.substr((result.length() * 4 - memoryValue.getSize())/4);
+  result = result.substr((result.length() * 4 - memoryValue.getSize()) / 4);
   // Add the hex-indicator-prefix and return.
   return result.insert(0, "0x");
 }
 
 
 std::string toUnsignedDecString(MemoryValue memoryValue) {
-  long long intermediateValue = conversions::convert<long long>(memoryValue, conversions::standardConversions::nonsigned);
+  long long intermediateValue = conversions::convert<long long>(
+      memoryValue, conversions::standardConversions::nonsigned);
   // Convert integer to dec string.
   return toDecString(intermediateValue);
 }
 
 
 std::string toSignedDecString(MemoryValue memoryValue) {
-    long long intermediateValue = conversions::convert<long long>(memoryValue, conversions::standardConversions::twosComplement);
+  long long intermediateValue = conversions::convert<long long>(
+      memoryValue, conversions::standardConversions::twosComplement);
   // Convert integer to dec string.
   return toDecString(intermediateValue);
 }
 
 
-//std::string toDecimalFloatString(MemoryValue memoryValue) {
+// std::string toDecimalFloatString(MemoryValue memoryValue) {
 //  double intermediateValue =
 //      0.0;// TODO: Use conversion from memoryValue to double
 //  std::ostringstream stream;
@@ -94,9 +96,9 @@ binStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
   std::vector<uint8_t> resultingInternal;
   // Read the string starting with the least significant bit until no more
   // complete byte is available.
-  for (size_t index = stringValue.length(); ; index -= 8) {
-    size_t startPos = (index >= 8) ? index-8 : 0;
-    size_t length = (index >= 8) ? 8 : index;
+  for (size_t index = stringValue.length();; index -= 8) {
+    size_t startPos = (index >= 8) ? index - 8 : 0;
+    size_t length   = (index >= 8) ? 8 : index;
     // Parse the string-byte to an 8bit-integer value.
     uint8_t currentValue =
         std::stoi(stringValue.substr(startPos, length), nullptr, 2);
@@ -104,15 +106,15 @@ binStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
     // Stop iterating when the value that was just added was the last
     // value of the string
     // OR when pushing the next internal value would result in the
-    // internal being too big for the specified expected memoryValueSize.
+    // internal being larger than the specified expected memoryValueSize.
     // (i.e. unnecessary leading bits are cut off)
-    if (index <= 8 || resultingInternal.size()*8 >= memoryValueSize) {
-        break;
+    if (index <= 8 || resultingInternal.size() * 8 >= memoryValueSize) {
+      break;
     }
   }
   // Insert implicit-zero leading zeros.
-  while (resultingInternal.size()*8 < memoryValueSize) {
-      resultingInternal.push_back(0);
+  while (resultingInternal.size() * 8 < memoryValueSize) {
+    resultingInternal.push_back(0);
   }
   return MemoryValue(resultingInternal, memoryValueSize);
 }
@@ -141,15 +143,15 @@ hexStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
     uint8_t currentValue = std::stoi(currentValueString, nullptr, 16);
     resultingInternal.push_back(currentValue);
     // Stop iterating when pushing the next internal value would result in the
-    // internal being too big for the specified expected memoryValueSize.
+    // internal being larger than the specified expected memoryValueSize.
     // (i.e. unnecessary leading digits are cut off)
     if ((resultingInternal.size() * 2 + 1) * 4 > memoryValueSize) {
       break;
     }
   }
   // Insert implicit-zero leading zeros.
-  while (resultingInternal.size()*8 < memoryValueSize) {
-      resultingInternal.push_back(0);
+  while (resultingInternal.size() * 8 < memoryValueSize) {
+    resultingInternal.push_back(0);
   }
   return MemoryValue(resultingInternal, memoryValueSize);
 }
@@ -158,7 +160,10 @@ hexStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
 MemoryValue unsignedDecStringToMemoryValue(std::string stringValue,
                                            size_t memoryValueSize) {
   long long intermediateValue = std::stoll(stringValue, nullptr, 10);
-  MemoryValue result = conversions::convert<long long>(intermediateValue, conversions::standardConversions::nonsigned, memoryValueSize);
+  MemoryValue result          = conversions::convert<long long>(
+      intermediateValue,
+      conversions::standardConversions::nonsigned,
+      memoryValueSize);
   return result;
 }
 
@@ -166,12 +171,16 @@ MemoryValue unsignedDecStringToMemoryValue(std::string stringValue,
 MemoryValue
 signedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
   long long intermediateValue = std::stoll(stringValue, nullptr, 10);
-  MemoryValue result = conversions::convert<long long>(intermediateValue, conversions::standardConversions::twosComplement, memoryValueSize);
+  MemoryValue result          = conversions::convert<long long>(
+      intermediateValue,
+      conversions::standardConversions::twosComplement,
+      memoryValueSize);
   return result;
 }
 
 
-//MemoryValue decimalFloatStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
+// MemoryValue decimalFloatStringToMemoryValue(std::string stringValue, size_t
+// memoryValueSize) {
 //  double floatResult = std::stod(stringValue);
 //  MemoryValue result;// TODO: Use conversion from double to memoryValue
 //  return result;
@@ -182,7 +191,6 @@ template <typename T>
 std::string toDecString(T intValue) {
   std::stringstream stream;
   stream << std::dec << intValue;
-  std::string result(stream.str());
-  return result;
+  return stream.str();
 }
 }
