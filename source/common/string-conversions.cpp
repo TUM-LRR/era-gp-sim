@@ -18,6 +18,7 @@
 */
 
 #include "common/string-conversions.hpp"
+#include "core/conversions.hpp"
 #include <iomanip>
 #include <sstream>
 
@@ -64,16 +65,14 @@ std::string toHexString(MemoryValue memoryValue) {
 
 
 std::string toUnsignedDecString(MemoryValue memoryValue) {
-  uint64_t intermediateValue =
-      0;// TODO: Use _unsigned_ conversion from memoryValue to int64_t
+  long long intermediateValue = conversions::convert<long long>(memoryValue, conversions::standardConversions::nonsigned);
   // Convert integer to dec string.
   return toDecString(intermediateValue);
 }
 
 
 std::string toSignedDecString(MemoryValue memoryValue) {
-  int64_t intermediateValue =
-      0;// TODO: Use _signed_ conversion from memoryValue to int64_t
+    long long intermediateValue = conversions::convert<long long>(memoryValue, conversions::standardConversions::twosComplement);
   // Convert integer to dec string.
   return toDecString(intermediateValue);
 }
@@ -159,8 +158,7 @@ hexStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
 MemoryValue unsignedDecStringToMemoryValue(std::string stringValue,
                                            size_t memoryValueSize) {
   long long intermediateValue = std::stoll(stringValue, nullptr, 10);
-  MemoryValue
-      result;// TODO: Use _unsigned_ conversion from int64_t to memoryValue
+  MemoryValue result = conversions::convert<long long>(intermediateValue, conversions::standardConversions::nonsigned, memoryValueSize);
   return result;
 }
 
@@ -168,13 +166,12 @@ MemoryValue unsignedDecStringToMemoryValue(std::string stringValue,
 MemoryValue
 signedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
   long long intermediateValue = std::stoll(stringValue, nullptr, 10);
-  MemoryValue
-      result;// TODO: Use _signed_ conversion from int64_t to memoryValue
+  MemoryValue result = conversions::convert<long long>(intermediateValue, conversions::standardConversions::twosComplement, memoryValueSize);
   return result;
 }
 
 
-MemoryValue decimalFloatStringToMemoryValue(std::string stringValue) {
+MemoryValue decimalFloatStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
   double floatResult = std::stod(stringValue);
   MemoryValue result;// TODO: Use conversion from double to memoryValue
   return result;

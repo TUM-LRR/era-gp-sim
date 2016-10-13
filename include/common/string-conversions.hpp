@@ -39,21 +39,21 @@ std::string toBinString(MemoryValue memoryValue);
 std::string toHexString(MemoryValue memoryValue);
 
 /**
- * @brief toUnsignedDecString Converts a given MemoryValue to a corresponding unsigned decimal string.
+ * @brief toUnsignedDecString Converts a given MemoryValue with a maximum size of 64 bits to a corresponding unsigned decimal string.
  * @param memoryValue The MemoryValue to convert.
  * @return An unsigned decimal string corresponding to the given MemoryValue.
  */
 std::string toUnsignedDecString(MemoryValue memoryValue);
 
 /**
- * @brief toSignedDecString Converts a given MemoryValue to a corresponding signed decimal string.
+ * @brief toSignedDecString Converts a given MemoryValue with a maximum size of 64 bits to a corresponding signed decimal string.
  * @param memoryValue The MemoryValue to convert.
  * @return A signed decimal string corresponding to the given MemoryValue.
  */
 std::string toSignedDecString(MemoryValue memoryValue);
 
 /**
- * @brief toDecimalFloatString Converts a given MemoryValue to a corresponding decimal float string.
+ * @brief toDecimalFloatString Converts a given MemoryValue with a maximum size of 64 bits to a corresponding decimal float string.
  * @param memoryValue The MemoryValue to convert.
  * @return A decimal float string corresponding to the given MemoryValue.
  */
@@ -78,12 +78,36 @@ binStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
 MemoryValue
 hexStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
 
-MemoryValue unsignedDecStringToMemoryValue(std::string stringValue);
+/**
+ * @brief unsignedDecStringToMemoryValue Converts a given unsigned decimal string with a maximum size of 64 bits to a corresponding MemoryValue.
+ * @param stringValue Unsigned decimal string to convert.
+ * @param memoryValueSize Size of the memory value that is requested. Required in order to be able to unambigiuously create a MemoryValue.
+ * @return A MemoryValue corresponding to the given unsigned decimal string.
+ */
+MemoryValue unsignedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
 
-MemoryValue signedDecStringToMemoryValue(std::string stringValue);
+/**
+ * @brief signedDecStringToMemoryValue Converts a given signed decimal string with a maximum size of 64 bits to a corresponding MemoryValue.
+ * @param stringValue Signed decimal string to convert.
+ * @param memoryValueSize Size of the memory value that is requested. Required in order to be able to unambigiuously create a MemoryValue.
+ * @return A MemoryValue corresponding to the given signed decimal string.
+ */
+MemoryValue signedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
 
-MemoryValue decimalFloatStringToMemoryValue(std::string stringValue);
+/**
+ * @brief decimalFloatStringToMemoryValue Converts a given decimal float string with a maximum size of 64 bits to a corresponding MemoryValue.
+ * @param stringValue Decimal float string to convert.
+ * @param memoryValueSize Size of the memory value that is requested. Required in order to be able to unambigiuously create a MemoryValue.
+ * @return A MemoryValue corresponding to the given decimal float string.
+ */
+MemoryValue decimalFloatStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
 
+/**
+ * @brief toDecString Converts a given integral typed value to string.
+ * @tparam T Integral type of the given value.
+ * @param intValue Integral value to convert.
+ * @return String corresponding to the given integral value.
+ */
 template <typename T>
 std::string toDecString(T intValue);
 }

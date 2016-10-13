@@ -47,7 +47,40 @@ TEST(StringConversionsTests, TestToBinStringConversion) {
   EXPECT_EQ(StringConversions::toBinString(MemoryValue({42, 1}, 9)), "100101010");
 }
 
-TEST(StringConversionsTests, TestHexStringToMemoryValue) {
+TEST(StringConversionsTests, TestToSignedDecStringConversion) {
+    EXPECT_EQ(StringConversions::toSignedDecString(MemoryValue({0}, 8)), "0");
+
+    EXPECT_EQ(StringConversions::toSignedDecString(MemoryValue({0, 0}, 16)), "0");
+
+    EXPECT_EQ(StringConversions::toSignedDecString(MemoryValue({16}, 8)), "16");
+
+    EXPECT_EQ(StringConversions::toSignedDecString(MemoryValue({1, 1}, 16)), "257");
+
+    EXPECT_EQ(StringConversions::toSignedDecString(MemoryValue({1, 1}, 9)), "-255");
+
+    EXPECT_EQ(StringConversions::toSignedDecString(MemoryValue({1, 1, 1, 1, 1, 1, 1, 1}, 64)), "72340172838076673");
+
+    EXPECT_EQ(StringConversions::toSignedDecString(MemoryValue({0, 200}, 16)), "-14336");
+}
+
+TEST(StringConversionsTests, TestToUnsignedDecStringConversion) {
+    EXPECT_EQ(StringConversions::toUnsignedDecString(MemoryValue({0}, 8)), "0");
+
+    EXPECT_EQ(StringConversions::toUnsignedDecString(MemoryValue({0, 0}, 16)), "0");
+
+    EXPECT_EQ(StringConversions::toUnsignedDecString(MemoryValue({16}, 8)), "16");
+
+    EXPECT_EQ(StringConversions::toUnsignedDecString(MemoryValue({1, 1}, 16)), "257");
+
+    EXPECT_EQ(StringConversions::toUnsignedDecString(MemoryValue({1, 1}, 9)), "257");
+
+    EXPECT_EQ(StringConversions::toUnsignedDecString(MemoryValue({1, 1, 1, 1, 1, 1, 1, 1}, 64)), "72340172838076673");
+
+    EXPECT_EQ(StringConversions::toUnsignedDecString(MemoryValue({0, 200}, 16)), "51200");
+}
+
+
+TEST(StringConversionsTests, TestHexStringToMemoryValueConversion) {
   // Check if parsing simple string works.
   EXPECT_EQ(StringConversions::hexStringToMemoryValue("0000", 16),
             MemoryValue({0, 0}, 16));
@@ -79,7 +112,7 @@ TEST(StringConversionsTests, TestHexStringToMemoryValue) {
             MemoryValue({205, 0, 0, 0}, 32));
 }
 
-TEST(StringConversionsTests, TestBinStringToMemoryValue) {
+TEST(StringConversionsTests, TestBinStringToMemoryValueConversion) {
   // Check if parsing simple string works.
   EXPECT_EQ(StringConversions::binStringToMemoryValue("0000000000000000", 16),
             MemoryValue({0, 0}, 16));
@@ -99,4 +132,38 @@ TEST(StringConversionsTests, TestBinStringToMemoryValue) {
   // Check if parsing a string works, if it misses the memory value's specified length.
   EXPECT_EQ(StringConversions::binStringToMemoryValue("101010", 32),
             MemoryValue({42, 0, 0 ,0}, 32));
+}
+
+TEST(StringConversionsTests, TestSignedDecStringToMemoryValueConversion) {
+    EXPECT_EQ(StringConversions::signedDecStringToMemoryValue("0", 8), MemoryValue({0}, 8));
+
+    EXPECT_EQ(StringConversions::signedDecStringToMemoryValue("0", 16), MemoryValue({0, 0}, 16));
+
+    EXPECT_EQ(StringConversions::signedDecStringToMemoryValue("16", 8), MemoryValue({16}, 8));
+
+    EXPECT_EQ(StringConversions::signedDecStringToMemoryValue("257", 16), MemoryValue({1, 1}, 16));
+
+    EXPECT_EQ(StringConversions::signedDecStringToMemoryValue("257", 16), MemoryValue({1, 1}, 16));
+
+    EXPECT_EQ(StringConversions::signedDecStringToMemoryValue("-255", 9), MemoryValue({1, 1}, 9));
+
+    EXPECT_EQ(StringConversions::signedDecStringToMemoryValue("72340172838076673", 64), MemoryValue({1, 1, 1, 1, 1, 1, 1, 1}, 64));
+
+    EXPECT_EQ(StringConversions::signedDecStringToMemoryValue("-14336", 16), MemoryValue({0, 200}, 16));
+}
+
+TEST(StringConversionsTests, TestUnsignedDecStringToMemoryValueConversion) {
+    EXPECT_EQ(StringConversions::unsignedDecStringToMemoryValue("0", 8), MemoryValue({0}, 8));
+
+    EXPECT_EQ(StringConversions::unsignedDecStringToMemoryValue("0", 16), MemoryValue({0, 0}, 16));
+
+    EXPECT_EQ(StringConversions::unsignedDecStringToMemoryValue("16", 8), MemoryValue({16}, 8));
+
+    EXPECT_EQ(StringConversions::unsignedDecStringToMemoryValue("257", 16), MemoryValue({1, 1}, 16));
+
+    EXPECT_EQ(StringConversions::unsignedDecStringToMemoryValue("257", 9), MemoryValue({1, 1}, 9));
+
+    EXPECT_EQ(StringConversions::unsignedDecStringToMemoryValue("72340172838076673", 64), MemoryValue({1, 1, 1, 1, 1, 1, 1, 1}, 64));
+
+    EXPECT_EQ(StringConversions::unsignedDecStringToMemoryValue("51200", 16), MemoryValue({0, 200}, 16));
 }
