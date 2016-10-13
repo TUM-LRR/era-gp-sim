@@ -42,7 +42,7 @@ struct ArchDeserializationTestFixture : public ::testing::Test {
           .id(0)
           .name("r0")
           .size(32)
-          .addConstituents({1, 2})
+          .addConstituents({{1,1}, {2,2}})
           .addAlias("zero");
     r1 = RegisterInformation()
           .id(1)
@@ -76,6 +76,8 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
   EXPECT_EQ(architecture.getAlignmentBehavior(),
             Architecture::AlignmentBehavior::STRICT);
   EXPECT_EQ(architecture.getWordSize(), 32);
+  EXPECT_EQ(architecture.getSignedRepresentation(),
+            Architecture::SignedRepresentation::SIGN_BIT);
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
 
@@ -98,6 +100,8 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
   EXPECT_EQ(architecture.getAlignmentBehavior(),
             Architecture::AlignmentBehavior::RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
+  EXPECT_EQ(architecture.getSignedRepresentation(),
+            Architecture::SignedRepresentation::SIGN_BIT);
 
   // clang-format off
   instructionSet.addInstruction({"sll", InstructionKey({
@@ -128,6 +132,8 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
   EXPECT_EQ(architecture.getAlignmentBehavior(),
             Architecture::AlignmentBehavior::RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
+  EXPECT_EQ(architecture.getSignedRepresentation(),
+            Architecture::SignedRepresentation::SIGN_BIT);
 
   // clang-format off
   instructionSet.addInstruction({"sll", InstructionKey({

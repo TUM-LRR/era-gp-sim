@@ -1,47 +1,54 @@
 {
-  "name": "no-deps",
-  "endianness": "little",
-  "alignment-behavior": "strict",
-  "word-size": 32,
-  "units": [
-    {
-      "name": "cpu",
-      "registers": [
+    "word-size": 32,
+    "endianness": "little",
+    "name": "no-deps",
+    "alignment-behavior": "strict",
+    "instructions": [
         {
-          "name": "r0",
-          "id": 0,
-          "size": 32,
-          "constituents": [
-            1,
-            2
-          ],
-          "alias": "zero"
+            "function": 3,
+            "opcode": 6,
+            "mnemonic": "add"
         },
         {
-          "name": "r1",
-          "id": 1,
-          "size": 16,
-          "type": "float",
-          "enclosing": 0,
-          "constant": 3.14,
-          "aliases": [
-            "foo",
-            "bar"
-          ]
+            "function": 3,
+            "opcode": 9,
+            "mnemonic": "sub"
         }
-      ]
-    }
-  ],
-  "instructions": [
-    {
-      "mnemonic": "add",
-      "opcode": 6,
-      "function": 3
-    },
-    {
-      "mnemonic": "sub",
-      "opcode": 9,
-      "function": 3
-    }
-  ]
+    ],
+    "signed-representation": "sign-bit",
+    "units": [
+        {
+            "registers": [
+                {
+                    "alias": "zero",
+                    "id": 0,
+                    "size": 32,
+                    "name": "r0",
+                    "constituents": [
+                        {
+                            "id": 1,
+                            "enclosing-index": 1
+                        },
+                        {
+                            "id": 2,
+                            "enclosing-index": 2
+                        }
+                    ]
+                },
+                {
+                    "type": "float",
+                    "size": 16,
+                    "constant": 3.14,
+                    "name": "r1",
+                    "enclosing": 0,
+                    "aliases": [
+                        "foo",
+                        "bar"
+                    ],
+                    "id": 1
+                }
+            ],
+            "name": "cpu"
+        }
+    ]
 }
