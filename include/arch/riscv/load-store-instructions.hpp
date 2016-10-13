@@ -35,8 +35,7 @@ template <typename SignedType, typename UnsignedType>
 class LoadStoreInstructionNode : public InstructionNode {
  public:
   LoadStoreInstructionNode(const InstructionInformation& instructionInformation)
-  : InstructionNode(instructionInformation) {
-  }
+      : InstructionNode(instructionInformation) {}
 
   /* Ensure this class is pure virtual */
   virtual MemoryValue getValue(MemoryAccess& memoryAccess) const override = 0;
@@ -66,23 +65,32 @@ class LoadStoreInstructionNode : public InstructionNode {
     // access the memory
     MemoryAccess stub;
     MemoryValue value = _children.at(2)->getValue(stub);
-
-    if (value.getSize() > 12) {
-      // Look for the sign bit to determine what bits to expect in the "upper"
-      // region (i.e. 11...size).
-      // Index 0 <-> MSB in Memory Value
-      bool isSignBitSet = value.get(0);
-      for (std::size_t index = 11; index < value.getSize(); ++index) {
-        if ((isSignBitSet && !value.get(value.getSize() - 1 - index)) ||
-            (!isSignBitSet && value.get(value.getSize() - 1 - index))) {
-          return ValidationResult::fail(
-              QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                                "The immediate value of this instruction must "
-                                "be representable by %1 bits"),
-              std::to_string(12));
-        }
-      }
+    if (!this->_fitsIntoNBit(value, 12)) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "The immediate value of this instruction must "
+                            "be representable by %1 bits"),
+          std::to_string(12));
     }
+
+    //    if (value.getSize() > 12) {
+    //      // Look for the sign bit to determine what bits to expect in the
+    //      "upper"
+    //      // region (i.e. 11...size).
+    //      // Index 0 <-> MSB in Memory Value
+    //      bool isSignBitSet = value.get(0);
+    //      for (std::size_t index = 11; index < value.getSize(); ++index) {
+    //        if ((isSignBitSet && !value.get(value.getSize() - 1 - index)) ||
+    //            (!isSignBitSet && value.get(value.getSize() - 1 - index))) {
+    //          return ValidationResult::fail(
+    //              QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+    //                                "The immediate value of this instruction
+    //                                must "
+    //                                "be representable by %1 bits"),
+    //              std::to_string(12));
+    //        }
+    //      }
+    //    }
 
     return ValidationResult::success();
   }
@@ -143,18 +151,18 @@ class LoadInstructionNode
   /* The different types of a load instruction. See RISC V specification
      for reference.*/
   enum struct Type {
-    DOUBLE_WORD,       // LD (Only in RVI64)
-    WORD,              // LW
-    WORD_UNSIGNED,     // LWU (Only in RVI64)
-    HALF_WORD,         // LH
-    HALF_WORD_UNSIGNED,// LHU
-    BYTE,              // LB
-    BYTE_UNSIGNED      // LBU
+    DOUBLE_WORD,         // LD (Only in RVI64)
+    WORD,                // LW
+    WORD_UNSIGNED,       // LWU (Only in RVI64)
+    HALF_WORD,           // LH
+    HALF_WORD_UNSIGNED,  // LHU
+    BYTE,                // LB
+    BYTE_UNSIGNED        // LBU
   };
 
-  LoadInstructionNode(const InstructionInformation& instructionInformation, Type type)
-  : super(instructionInformation), _type(type) {
-  }
+  LoadInstructionNode(const InstructionInformation& instructionInformation,
+                      Type type)
+      : super(instructionInformation), _type(type) {}
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(super::validate());
@@ -184,7 +192,9 @@ class LoadInstructionNode
       case Type::BYTE_UNSIGNED:
         performUnsignedLoad(memoryAccess, effectiveAddress, 1, dest);
         break;
-      default: assert(false); break;
+      default:
+        assert(false);
+        break;
     }
     return MemoryValue{};
   }
@@ -207,8 +217,7 @@ class LoadInstructionNode
    * \param destination The destination register identifier, in which to store
    *        the loaded value
    */
-  void performUnsignedLoad(MemoryAccess& memoryAccess,
-                           std::size_t address,
+  void performUnsignedLoad(MemoryAccess& memoryAccess, std::size_t address,
                            std::size_t byteAmount,
                            const std::string& destination) const {
     MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
@@ -237,8 +246,7 @@ class LoadInstructionNode
    * \param destination The destination register identifier, in which to store
    *        the loaded value
    */
-  void performSignedLoad(MemoryAccess& memoryAccess,
-                         std::size_t address,
+  void performSignedLoad(MemoryAccess& memoryAccess, std::size_t address,
                          std::size_t byteAmount,
                          const std::string& destination) const {
     MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
@@ -253,7 +261,6 @@ class LoadInstructionNode
     }
     memoryAccess.setRegisterValue(destination, result);
   }
-
 
   Type _type;
 };
@@ -270,16 +277,15 @@ class StoreInstructionNode
   /* The different types of a store instruction. See RISC V specification
      for reference. */
   enum struct Type {
-    DOUBLE_WORD,// SD (Only in RVI64)
-    WORD,       // SW
-    HALF_WORD,  // SH
-    BYTE        // SB
+    DOUBLE_WORD,  // SD (Only in RVI64)
+    WORD,         // SW
+    HALF_WORD,    // SH
+    BYTE          // SB
   };
 
   StoreInstructionNode(const InstructionInformation& instructionInformation,
                        Type type)
-  : super(instructionInformation), _type(type) {
-  }
+      : super(instructionInformation), _type(type) {}
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(super::validate());
@@ -289,11 +295,21 @@ class StoreInstructionNode
 
     std::size_t byteAmount;
     switch (_type) {
-      case Type::DOUBLE_WORD: byteAmount = 8; break;
-      case Type::WORD: byteAmount = 4; break;
-      case Type::HALF_WORD: byteAmount = 2; break;
-      case Type::BYTE: byteAmount = 1; break;
-      default: assert(false); break;
+      case Type::DOUBLE_WORD:
+        byteAmount = 8;
+        break;
+      case Type::WORD:
+        byteAmount = 4;
+        break;
+      case Type::HALF_WORD:
+        byteAmount = 2;
+        break;
+      case Type::BYTE:
+        byteAmount = 1;
+        break;
+      default:
+        assert(false);
+        break;
     }
 
     MemoryValue registerValue = memoryAccess.getRegisterValue(src);
