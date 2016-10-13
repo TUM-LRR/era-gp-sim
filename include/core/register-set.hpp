@@ -124,17 +124,23 @@ class RegisterSet {
    */
   void createRegister(const std::string &name, const MemoryValue &value);
   /**
-   * \brief Creates a Register with the name nameList[0] and stores a copy of value, creates Alias to this register for the remaining names
-   * \param nameList Vector of Strings uniquely representing the to be created Register
+   * \brief Creates a Register with the name nameList[0] and stores a copy of
+   *        value, creates Alias to this register for the remaining names
+   * \param nameList Vector of Strings uniquely representing the to be created
+   * Register
    * \param value Initial value of the register
    */
-  void createRegister(const std::vector<std::string> &nameList, const MemoryValue &value);
+  void createRegister(const std::vector<std::string> &nameList,
+                      const MemoryValue &value);
   /**
-   * \brief Creates a Register with the name name and size size, creates Alias to this register for the remaining names
-   * \param nameList Vector of Strings uniquely representing the to be created Register
+   * \brief Creates a Register with the name name and size size, creates Alias
+   *        to this register for the remaining names
+   * \param nameList Vector of Strings uniquely representing the to be created
+   * Register
    * \param size Size of the Register in bit
    */
-  void createRegister(const std::vector<std::string> &nameList, const std::size_t size);
+  void createRegister(const std::vector<std::string> &nameList,
+                      const std::size_t size);
   /**
    * \brief Creates an Alias with the name name for the substring [begin; end[
    *        of the Register with the name parent
@@ -189,14 +195,14 @@ class RegisterSet {
       _register; /**< Brief Vector holding all the Registers with no parent*/
   // I'm using set because that makes implementing the option to delete
   // registers way easier, vector would've been enough at this moment
-  std::vector<std::set<std::string>> _updateSet; /**< Brief Vector mapping
-                                                      RegisterID.address -> all
-                                                      childrens name of this
-                                                      Register*/
-  static const std::
-      function<void(const std::string &)>
-          emptyCallback; /**< Brief An empty function that does absolutely
-                            nothing, used as default for _callback*/
+  std::vector<std::set<std::string>>
+      _updateSet; /**< Brief Vector mapping
+                         RegisterID.address -> all
+                         childrens name of this
+                         Register*/
+  static const std::function<void(const std::string &)>
+      emptyCallback; /**< Brief An empty function that does absolutely
+                        nothing, used as default for _callback*/
   std::function<void(const std::string &)> _callback =
       emptyCallback; /**< Brief This function gets called for every changed
                         Register*/

@@ -83,15 +83,18 @@ void RegisterSet::createRegister(const std::string &name,
   _updateSet.push_back(std::set<std::string>{name});
   wasUpdated(_register.size() - 1);
 }
-void RegisterSet::createRegister(const std::vector<std::string> &nameList, const MemoryValue &value) {
+void RegisterSet::createRegister(const std::vector<std::string> &nameList,
+                                 const MemoryValue &value) {
   assert::that(nameList.size() > 0);
-  createRegister(nameList[0], value);//this could maybe be optimized with move stuff
+  createRegister(nameList[0],
+                 value);// this could maybe be optimized with move stuff
   for (std::size_t i = 1; i < nameList.size(); ++i) {
     aliasRegister(nameList[i], nameList[0]);
   }
 }
-void RegisterSet::createRegister(const std::vector<std::string> &nameList, const std::size_t size) {
-  createRegister(nameList, MemoryValue{ size });
+void RegisterSet::createRegister(const std::vector<std::string> &nameList,
+                                 const std::size_t size) {
+  createRegister(nameList, MemoryValue{size});
 }
 
 void RegisterSet::aliasRegister(const std::string &name,
@@ -139,13 +142,13 @@ void RegisterSet::aliasRegister(const std::vector<std::string> &nameList,
 
 void RegisterSet::aliasRegister(const std::vector<std::string> &nameList,
                                 const std::string &parent,
-                                const std::size_t begin = 0) {
+                                const std::size_t begin) {
   for (auto name : nameList) {
     aliasRegister(name, parent, begin);
   }
 }
 
-void RegisterSet::wasUpdated(const std::size_t address){
+void RegisterSet::wasUpdated(const std::size_t address) {
   for (auto name : _updateSet[address]) {
     _callback(name);
   }
