@@ -18,21 +18,21 @@
 
 #include "parser/syntax-tree-generator.hpp"
 
-#include <regex>
 #include <cctype>
+#include <regex>
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 SyntaxTreeGenerator::transformOperand(const std::string& operand,
                                       CompileState& state) const {
   // We invoke our node generator to get a node!
-  std::unique_ptr<AbstractSyntaxTreeNode> outputNode = _argumentGenerator(operand, _nodeFactories, state);
+  std::unique_ptr<AbstractSyntaxTreeNode> outputNode =
+      _argumentGenerator(operand, _nodeFactories, state);
 
   // According to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
     state.addError("Invalid argument: '" + operand + "'", state.position);
-  }
-  else {
+  } else {
     // We already try to find flaws early in creation of the operation.
     auto validationResult = outputNode->validate();
     if (!validationResult) {

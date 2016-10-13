@@ -20,9 +20,9 @@
 #ifndef ERAGPSIM_PARSER_SYNTAX_TREE_GENERATOR_HPP_
 #define ERAGPSIM_PARSER_SYNTAX_TREE_GENERATOR_HPP_
 
+#include <functional>
 #include <memory>
 #include <vector>
-#include <functional>
 #include "arch/common/node-factory-collection.hpp"
 #include "parser/compile-state.hpp"
 
@@ -32,7 +32,9 @@
  */
 class SyntaxTreeGenerator {
  public:
-  using ArgumentNodeGenerator = std::function<std::unique_ptr<AbstractSyntaxTreeNode>(const std::string&, const NodeFactoryCollection&, CompileState&)>;
+  using ArgumentNodeGenerator =
+      std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
+          const std::string&, const NodeFactoryCollection&, CompileState&)>;
 
   /**
    * \brief Creates a new syntax tree generator with the given node factory
@@ -41,7 +43,8 @@ class SyntaxTreeGenerator {
    * from.
    * \param argumentGenerator The generator function for operands.
    */
-  SyntaxTreeGenerator(const NodeFactoryCollection& nodeFactories, const ArgumentNodeGenerator& argumentGenerator)
+  SyntaxTreeGenerator(const NodeFactoryCollection& nodeFactories,
+                      const ArgumentNodeGenerator& argumentGenerator)
   : _nodeFactories(nodeFactories), _argumentGenerator(argumentGenerator) {
   }
 

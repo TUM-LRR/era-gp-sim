@@ -45,7 +45,8 @@ class RiscvParser : public Parser {
 
   virtual const SyntaxInformation getSyntaxInformation();
 
-  static const SyntaxTreeGenerator::ArgumentNodeGenerator argumentGeneratorFunction;
+  static const SyntaxTreeGenerator::ArgumentNodeGenerator
+      argumentGeneratorFunction;
 
  protected:
   /**

@@ -31,8 +31,9 @@ static SyntaxTreeGenerator buildGenerator() {
   Architecture testArch =
       Architecture::Brew(ArchitectureFormula{"riscv", {"rv32i"}});
   auto factoryCollection = NodeFactoryCollectionMaker::CreateFor(testArch);
-  //For now: code function duplication!
-  SyntaxTreeGenerator generator(factoryCollection, RiscvParser::argumentGeneratorFunction);
+  // For now: code function duplication!
+  SyntaxTreeGenerator generator(factoryCollection,
+                                RiscvParser::argumentGeneratorFunction);
   return generator;
 }
 

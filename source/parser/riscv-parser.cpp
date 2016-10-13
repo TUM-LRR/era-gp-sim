@@ -29,37 +29,44 @@
 #include "parser/riscv-regex.hpp"
 #include "parser/syntax-information.hpp"
 
-#include "parser/expression-compiler-clike.hpp"
 #include "core/conversions.hpp"
+#include "parser/expression-compiler-clike.hpp"
 
-const SyntaxTreeGenerator::ArgumentNodeGenerator RiscvParser::argumentGeneratorFunction =  [] (const std::string& operand, const NodeFactoryCollection& nodeFactories, CompileState& state) -> std::unique_ptr<AbstractSyntaxTreeNode>
-          {
-            // These checks are performed:
+const SyntaxTreeGenerator::ArgumentNodeGenerator
+    RiscvParser::argumentGeneratorFunction =
+        [](const std::string& operand,
+           const NodeFactoryCollection& nodeFactories,
+           CompileState& state) -> std::unique_ptr<AbstractSyntaxTreeNode> {
+  // These checks are performed:
   // * Empty argument? Shouldn't happen, kill the compilation with fire.
-  // * First character is a letter? We have replace all constants by now, so it must be a register - or an undefined constant!
+  // * First character is a letter? We have replace all constants by now, so it
+  // must be a register - or an undefined constant!
   // * If not? Try to compile the expression!
   std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
-  if (operand.empty())
-  {
+  if (operand.empty()) {
     outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
-  }
-  else if (std::isalpha(operand[0])) {
+  } else if (std::isalpha(operand[0])) {
     outputNode = nodeFactories.createRegisterAccessNode(operand);
   } else {
-    //using i32
-    int32_t result = CLikeExpressionCompilers::CLikeCompilerI32.compile(operand, state);
-    outputNode = nodeFactories.createImmediateNode(conversions::convert(result, conversions::standardConversions::helper::twosComplement::toMemoryValueFunction, 32));
+    // using i32
+    int32_t result =
+        CLikeExpressionCompilers::CLikeCompilerI32.compile(operand, state);
+    outputNode = nodeFactories.createImmediateNode(
+        conversions::convert(result,
+                             conversions::standardConversions::helper::
+                                 twosComplement::toMemoryValueFunction,
+                             32));
   }
   return std::move(outputNode);
-          };
+};
 
-RiscvParser::RiscvParser(const Architecture &architecture)
+RiscvParser::RiscvParser(const Architecture& architecture)
 : _architecture(architecture) {
   _factory_collection = NodeFactoryCollectionMaker::CreateFor(architecture);
 }
 
 FinalRepresentation
-RiscvParser::parse(const std::string &text, ParserMode parserMode) {
+RiscvParser::parse(const std::string& text, ParserMode parserMode) {
   IntermediateRepresentator intermediate;
   std::istringstream stream{text};
 
@@ -109,8 +116,9 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
     }
   }
 
-  return intermediate.transform(SyntaxTreeGenerator{_factory_collection, argumentGeneratorFunction},
-                                _compile_state);
+  return intermediate.transform(
+      SyntaxTreeGenerator{_factory_collection, argumentGeneratorFunction},
+      _compile_state);
 }
 
 const SyntaxInformation RiscvParser::getSyntaxInformation() {
