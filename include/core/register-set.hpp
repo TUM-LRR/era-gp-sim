@@ -104,6 +104,11 @@ class RegisterSet {
    */
   MemoryValue set(const std::string &name, const MemoryValue &value);
 
+  /**
+   * \brief returns the size of a Register in bit
+   * \param name String uniquely representing the Register
+   * \returns Size of the Register in bit
+   */
   std::size_t getSize(const std::string &name) const;
 
   /**
@@ -113,12 +118,22 @@ class RegisterSet {
    */
   void createRegister(const std::string &name, const std::size_t size);
   /**
-  * \brief Creates a Register with the name name and stores a copy of value
-  * \param name String uniquely representing the to be created Register
-  * \param value Initial value of the register
+   * \brief Creates a Register with the name name and stores a copy of value
+   * \param name String uniquely representing the to be created Register
+   * \param value Initial value of the register
    */
   void createRegister(const std::string &name, const MemoryValue &value);
+  /**
+   * \brief Creates a Register with the name nameList[0] and stores a copy of value, creates Alias to this register for the remaining names
+   * \param nameList Vector of Strings uniquely representing the to be created Register
+   * \param value Initial value of the register
+   */
   void createRegister(const std::vector<std::string> &nameList, const MemoryValue &value);
+  /**
+   * \brief Creates a Register with the name name and size size, creates Alias to this register for the remaining names
+   * \param nameList Vector of Strings uniquely representing the to be created Register
+   * \param size Size of the Register in bit
+   */
   void createRegister(const std::vector<std::string> &nameList, const std::size_t size);
   /**
    * \brief Creates an Alias with the name name for the substring [begin; end[
@@ -133,20 +148,36 @@ class RegisterSet {
                      const std::string &parent,
                      const std::size_t begin,
                      const std::size_t end);
+  /**
+   * \brief Creates an Alias with the names in nameList for the substring
+   *        [begin; end[ of the Register with the name parent
+   * \param nameList Vector of Strings uniquely representing the alias Register
+   * \param parent String uniquely representing the parent Register
+   * \param begin First index within the parent Register of the alias register
+   * \param end First index within the parent Register no longer within the
+   *        alias register
+   */
   void aliasRegister(const std::vector<std::string> &nameList,
                      const std::string &parent,
                      const std::size_t begin,
                      const std::size_t end);
   /**
-  * \brief Creates an Alias with the name name for the substring
-  *        [begin; parent.getSize()[ of the Register with the name parent
-  * \param name String uniquely representing the alias Register
-  * \param parent String uniquely representing the parent Register
-  * \param begin First index within the parent Register of the alias register
+   * \brief Creates an Alias with the name name for the substring
+   *        [begin; parent.getSize()[ of the Register with the name parent
+   * \param name String uniquely representing the alias Register
+   * \param parent String uniquely representing the parent Register
+   * \param begin First index within the parent Register of the alias register
    */
   void aliasRegister(const std::string &name,
                      const std::string &parent,
                      const std::size_t begin = 0);
+  /**
+   * \brief Creates an Alias with the names in nameList for the substring
+   *        [begin; parent.getSize()[ of the Register with the name parent
+   * \param nameList Vector of Strings uniquely representing the alias Register
+   * \param parent String uniquely representing the parent Register
+   * \param begin First index within the parent Register of the alias register
+   */
   void aliasRegister(const std::vector<std::string> &nameList,
                      const std::string &parent,
                      const std::size_t begin = 0);
