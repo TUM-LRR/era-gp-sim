@@ -36,7 +36,9 @@ SyntaxTreeGenerator::transformOperand(const std::string& operand,
     // We already try to find flaws early in creation of the operation.
     auto validationResult = outputNode->validate();
     if (!validationResult) {
-      state.addError("Invalid argument: '" + operand + "'", state.position);
+      state.addError("Invalid argument ('" + operand + "'): " +
+                         validationResult.getMessage(),
+                     state.position);
     }
   }
 
@@ -71,7 +73,9 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
   // Validate node.
   auto validationResult = outputNode->validate();
   if (!validationResult) {
-    state.addError("Invalid operation: " + command_name, state.position);
+    state.addError("Invalid operation (" + command_name + "): " +
+                       validationResult.getMessage(),
+                   state.position);
   }
 
   // Return.
