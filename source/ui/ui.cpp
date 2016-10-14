@@ -19,8 +19,14 @@
 
 #include "ui/ui.hpp"
 
+#include "arch/common/architecture-formula.hpp"
+#include "common/assert.hpp"
+#include "common/utility.hpp"
 
-Ui::Ui(int& argc, char** argv) : _qmlApplication(argc, argv), _engine() {
+
+Ui::Ui(int& argc, char** argv)
+: _architectureMap(), _qmlApplication(argc, argv), _engine() {
+  _loadArchitectures();
 }
 
 int Ui::runUi() {
@@ -31,13 +37,28 @@ int Ui::runUi() {
   return _qmlApplication.exec();
 }
 
-void Ui::addProject(QQuickItem* tabItem, QQmlComponent* projectComponent) {
+void Ui::addProject(QQuickItem* tabItem,
+                    QQmlComponent* projectComponent,
+                    QVariant memorySizeQVariant,
+                    QString architecture,
+                    QStringList extensionsQString,
+                    QString parser) {
+  // convert QStringList to std::vector<std::string>
+  std::vector<std::string> extensions;
+  for (auto&& qstring : extensionsQString) {
+    extensions.push_back(qstring.toStdString());
+  }
+  // create ArchitectureFormula
+  ArchitectureFormula architectureFormula(architecture.toStdString(),
+                                          std::move(extensions));
+  std::size_t memorySize = memorySizeQVariant.value<std::size_t>();
+
   // parent is tabItem, so it gets destroyed at the same time
   QQmlContext* context = new QQmlContext(qmlContext(tabItem), tabItem);
 
   // the pointer is not needed anywhere, the object is deleted by qml when
   // tabItem is deleted
-  new GuiProject(context, tabItem);
+  new GuiProject(context, architectureFormula, memorySize, tabItem);
 
   // instantiate the qml project item with the prepared context
   QQuickItem* projectItem =
@@ -48,4 +69,44 @@ void Ui::addProject(QQuickItem* tabItem, QQmlComponent* projectComponent) {
 
   // set visual parent of the projectItem
   projectItem->setParentItem(tabItem);
+}
+
+QStringList Ui::getArchitectures() const {
+  return _architectureMap.keys();
+}
+
+QStringList Ui::getExtensions(QString architectureName) const {
+  return _architectureMap.find(architectureName).value().first;
+}
+
+QStringList Ui::getParsers(QString architectureName) const {
+  return _architectureMap.find(architectureName).value().second;
+}
+
+void Ui::_loadArchitectures() {
+  assert::that(_architectureMap.empty());
+  std::string path = Utility::joinToRoot("isa", "isa-list.json");
+  Ui::Json data    = Ui::Json::parse(Utility::loadFromFile(path));
+  assert::that(data.count("architectures"));
+  assert::that(!data["architectures"].empty());
+
+  for (auto& architecture : data["architectures"]) {
+    assert::that(architecture.count("name"));
+    assert::that(architecture.count("extensions"));
+    assert::that(!architecture["extensions"].empty());
+    assert::that(architecture.count("parsers"));
+    assert::that(!architecture["parsers"].empty());
+
+    QStringList extensionList;
+    QStringList parserList;
+    for (auto& extension : architecture["extensions"]) {
+      extensionList.push_back(QString::fromStdString(extension));
+    }
+    for (auto& parser : architecture["parsers"]) {
+      parserList.push_back(QString::fromStdString(parser));
+    }
+    _architectureMap.insert(
+        QString::fromStdString(architecture["name"]),
+        QPair<QStringList, QStringList>(extensionList, parserList));
+  }
 }

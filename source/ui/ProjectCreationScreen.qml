@@ -24,7 +24,8 @@ import "Components/Common"
 Item {
     id: root
 
-    signal buttonClicked(int memorySize, var type)
+    signal buttonClicked(var memorySize,
+                  string architecture, var extensions, string parser);
 
     property var tab;
 
@@ -33,25 +34,27 @@ Item {
 
     property var main;
 
+    property var extensionsChecked: [];
+
     //create the project
     Button {
         id: button
         anchors {
-            top: numericUpDown.bottom
-            bottom: parent.bottom
-            left: parent.left
-            right: parent.right
+            top: extensionGrid.bottom
+            horizontalCenter: parent.horizontalCenter
 
-            topMargin: marginHeight
+            topMargin: 0
             bottomMargin: marginHeight
             leftMargin: marginWidth
             rightMargin: marginWidth
         }
-
+        enabled: false
         text: "create Project"
         onClicked: {
             tab.title = textInputName.text
-            root.buttonClicked(numericUpDown._value, comboBox.currentText);
+            root.buttonClicked(memorySizeSelector._value,
+              architectureSelector.currentText, extensionsChecked,
+              parserSelector.currentText);
         }
     }
 
@@ -59,15 +62,25 @@ Item {
     Text {
         id: memorySizeText
         anchors {
-            left: numericUpDown.left
-            bottom: numericUpDown.top
+            left: memorySizeSelector.left
+            bottom: memorySizeSelector.top
         }
         text: "Memory size"
     }
 
+    Text {
+      id: memorySizeFormat
+      anchors {
+        left: memorySizeSelector.right
+        verticalCenter: memorySizeSelector.verticalCenter
+        leftMargin: 3
+      }
+      text: "bytes"
+    }
+
     //choose the memory size
     NumericUpDown {
-        id: numericUpDown
+        id: memorySizeSelector
         anchors {
             top: textInputName.bottom
             left: parent.horizontalCenter
@@ -78,34 +91,103 @@ Item {
             leftMargin: marginWidth
             rightMargin: marginWidth
         }
-        _value: 1000
+        _value: 1024
     }
 
     Text {
         id: archText
         anchors {
-            left: comboBox.left
-            bottom: comboBox.top
+            left: architectureSelector.left
+            bottom: architectureSelector.top
         }
         text: "Architecture"
     }
 
     //choose the architecture
     ComboBox {
-        id: comboBox
+        id: architectureSelector
         anchors {
             top: textInputName.bottom
             left: parent.left
             right: parent.horizontalCenter
 
             topMargin: marginHeight
-            bottomMargin: 0
+            bottomMargin: 50
             leftMargin: marginWidth
             rightMargin: marginWidth
         }
-        model: [ "risc-v"]
+        model: ui.getArchitectures();
+        onCurrentIndexChanged: {
+          extensionGrid.model = ui.getExtensions(model[currentIndex]);
+          parserSelector.model = ui.getParsers(model[currentIndex]);
+          extensionsChecked = [];
+        }
     }
 
+    Text {
+      id: parserText
+      anchors {
+        left: parserSelector.left
+        bottom: parserSelector.top
+      }
+      text: "Parser"
+    }
+
+    //choose the parser
+    ComboBox {
+      id: parserSelector
+      anchors {
+        top: memorySizeSelector.bottom
+        right: parent.horizontalCenter
+        left: parent.left
+
+        topMargin: marginHeight
+        bottomMargin: 0
+        leftMargin: marginWidth
+        rightMargin: marginWidth
+      }
+    }
+
+    //choose the extensions
+    GridView {
+      id: extensionGrid
+      height: contentHeight
+      anchors {
+        top: parserSelector.bottom
+        left: parent.left
+        right: parent.right
+
+        topMargin: marginHeight
+        bottomMargin: 0
+        leftMargin: marginWidth
+        rightMargin: marginWidth
+      }
+
+      Component {
+        id: checkboxDelegate
+        CheckBox {
+          text: modelData
+          onCheckedChanged: {
+            if(checked){
+              button.enabled = true;
+              extensionsChecked.push(text);
+            } else {
+              var index = extensionsChecked.indexOf(text);
+              extensionsChecked.splice(index, 1);
+              if(extensionsChecked.length == 0) {
+                button.enabled = false;
+              }
+            }
+          }
+        }
+      }
+
+      delegate: checkboxDelegate
+      cellHeight: 50
+      interactive: false
+    }
+
+    //project name
     TextField {
         id: textInputName
         anchors {

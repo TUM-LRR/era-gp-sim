@@ -26,6 +26,8 @@
 #include "ui/editor-component.hpp"
 #include "ui/registermodel.hpp"
 
+class ArchitectureFormula;
+
 /**
  * The GuiProject class. This class encapsulates all gui c++ components and the
  * core project component.
@@ -40,7 +42,10 @@
 class GuiProject : public QObject {
   Q_OBJECT
  public:
-  explicit GuiProject(QQmlContext* projectContext, QObject* parent = 0);
+  explicit GuiProject(QQmlContext* projectContext,
+                      ArchitectureFormula architectureFormula,
+                      std::size_t memorySize,
+                      QObject* parent = 0);
 
 
  private:

@@ -67,7 +67,8 @@ ApplicationWindow {
                 onButtonClicked: {
                     enabled = false;
                     visible = false;
-                    ui.addProject(placeholderItem, projectComponent);
+                    ui.addProject(placeholderItem, projectComponent,
+                      memorySize, architecture, extensions, parser);
                 }
             }
         }

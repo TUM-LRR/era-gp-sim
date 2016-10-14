@@ -19,7 +19,12 @@
 
 #include "ui/gui-project.hpp"
 
-GuiProject::GuiProject(QQmlContext* projectContext, QObject* parent)
+#include "arch/common/architecture-formula.hpp"
+
+GuiProject::GuiProject(QQmlContext* projectContext,
+                       ArchitectureFormula architectureFormula,
+                       std::size_t memorySize,
+                       QObject* parent)
 : QObject(parent)
 , _registerDescription(
       "EAX\tAB01CD23\tHH HH HH HH\n"
