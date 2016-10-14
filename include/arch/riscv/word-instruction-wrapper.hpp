@@ -73,7 +73,7 @@ class WordInstructionWrapper
                                                        operands),
         _signedResult(expectSignedResult) {
     // create an instance of WrappedType
-    _wrapped = std::make_unique<WrappedType>(std::forward<Args>(args)...);
+    _wrapped = std::make_unique<WrappedType>(instructionInformation, std::forward<Args>(args)...);
   }
 
 protected:

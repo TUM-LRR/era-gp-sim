@@ -28,14 +28,108 @@
 namespace riscv {
 
 /**
- * Represents the mul, mulh((s)u) register-register multiplication instruction.
+ * Superclass for instructions, that have a word variant in rv64.
+ * It is intended that the instructions derive from this class and handle the
+ * word variant and special value treatment.
+ *
+ * This class provided utility functions for the task of creating word sized
+ * values.
+ * \tparam \see IntegerInstructionNode template param
+ */
+template <typename SizeType>
+class WordableIntegerInstruction
+    : public AbstractIntegerInstructionNode<SizeType> {
+ public:
+  using super = AbstractIntegerInstructionNode<SizeType>;
+  /**
+ * \param info InstructionInformation for this instruction
+ * \param isWordInstruction determinates if this instance represents a word
+ * instruction
+ */
+  WordableIntegerInstruction(const InstructionInformation& info,
+                             bool isWordInstruction)
+      : AbstractIntegerInstructionNode<SizeType>(info,
+                                                 super::Operands::REGISTERS),
+        _isWordInstruction(isWordInstruction) {}
+
+  /** default destructor */
+  virtual ~WordableIntegerInstruction() = default;
+
+ protected:
+  /**
+   * Truncates n to represent a value that could fit into a word representation
+   * (so half of the current bits).
+   * The result is sign-extended under certain conditions: isSignedOperation and
+   * n represents a negative value.
+   * The result is sign-extended (even when upper condition is false) if
+   * signExtendAnyway is true
+   * \param n The value that will be truncated to fit into a representation half
+   * of its bit size
+   * \param isSignedOperation If true, n is treated as a signed value, otherwise
+   * n is treated as an unsigned value
+   * \return worded n
+   */
+  SizeType toWord(SizeType n, bool isSignedOperation) const noexcept {
+    bool negative = (n & SIGN_MASK) > 0;
+    if (isSignedOperation && negative) {
+      n = n | SIGN_EXTENSION;
+    } else {
+      n = n & WORD_MASK;
+    }
+    return n;
+  }
+
+  /**
+   * Returns a possible sign-extended value of n. n is treated as a
+   * "worded"-version, so the sign-bit is expected to be at index
+   * sizeof(SizeType)/2 -1.
+   * If the signbit is set, the result is signextended to the whole range of
+   * SizeType
+   * \param n The value to be sign-extended
+   * \return A sign-extended n, if n is negative using the signbit of the worded
+   * version of n, otherwise n is returned
+   */
+  SizeType signExtend(SizeType n) const noexcept {
+    if ((n & SIGN_MASK_WORD) > 0) {
+      return n | SIGN_EXTENSION;
+    }
+    return n;
+  }
+
+  /**
+   * \return true, if this instruction is a word instruction; false, if not
+   */
+  bool isWordInstruction() const noexcept { return _isWordInstruction; }
+
+ private:
+  /** and-bitmask for retrieving the sign bit of a SizeType-ranged value*/
+  static constexpr SizeType SIGN_MASK = SizeType(1)
+                                        << (sizeof(SizeType) * CHAR_BIT - 1);
+  /** and-bitmask for retrieving the sign bit of a half of SizeType-ranged
+   * value*/
+  static constexpr SizeType SIGN_MASK_WORD =
+      SizeType{1} << ((sizeof(SizeType) / 2) * CHAR_BIT - 1);
+  /** and-bitmask to only preserve the lower half of bits*/
+  static constexpr SizeType WORD_MASK = SizeType(-1) >>
+                                        ((sizeof(SizeType) * CHAR_BIT) / 2);
+  /** or-bitmask for adding 1s to the higher half of bits*/
+  static constexpr SizeType SIGN_EXTENSION =
+      SizeType(-1) << ((sizeof(SizeType) * CHAR_BIT) / 2);
+  /**
+   * Describes if this instruction is a word instruction
+   */
+  bool _isWordInstruction;
+};
+
+/**
+ * Represents the mul(w), mulh((s)u) register-register multiplication
+ * instruction.
  * For more information see RISC-V specification
  * \tparam integer type that can hold exactly the range of values that this
  * operation should operate on
  */
 template <typename SizeType>
-class MultiplicationInstruction
-    : public AbstractIntegerInstructionNode<SizeType> {
+class MultiplicationInstruction : public WordableIntegerInstruction<SizeType> {
  public:
   using super = AbstractIntegerInstructionNode<SizeType>;
   /**
@@ -64,14 +158,15 @@ class MultiplicationInstruction
    * \param type Enum (defined in this class) indicates operand signedness. Use
    * UNSIGNED for mulhu; use SIGNED for mul and mulh; use SIGNED_UNSIGNED for
    * mulhsu
+   * \param isWord true if this instruction is a word-instruction (e.g. mulw),
+   * otherwise false
    * \see MultiplicationInstruction::MultiplicationResultPart
    * \see MultiplicationInstruction::Type
    */
   MultiplicationInstruction(const InstructionInformation& info,
                             MultiplicationResultPart partOfResultReturned,
-                            Type type)
-      : AbstractIntegerInstructionNode<SizeType>(info,
-                                                 super::Operands::REGISTERS),
+                            Type type, bool isWord = false)
+      : WordableIntegerInstruction<SizeType>(info, isWord),
         _usePart(partOfResultReturned),
         _type(type) {
     // assert that SizeType is an unsigned integer type
@@ -87,12 +182,18 @@ class MultiplicationInstruction
    * multiplication result, MultiplicationResult = HIGH: high SizeType bit of
    * the multiplication result
    */
-  SizeType _compute(SizeType op1, SizeType op2) const noexcept override{
+  SizeType _compute(SizeType op1, SizeType op2) const noexcept override {
+    if (this->isWordInstruction()) {
+      op1 = this->toWord(op1, true);
+      op2 = this->toWord(op2, true);
+      return this->signExtend(this->toWord(op1 * op2, true));
+    }
     if (_usePart == LOW) {
       /*
        * The "signedness" of the operation is ignored, as the sign does not
        * affect multiplying the lower part
        */
+
       return op1 * op2;
     } else if (_usePart == HIGH) {
       /*
@@ -273,100 +374,6 @@ class MultiplicationInstruction
 };
 
 /**
- * Superclass for instructions, that have a word variant in rv64 but cannot use
- * the WordInstructionWrapper. This may be due to special return values that
- * need special treatment (e.g. division by 0).
- * It is intended that the instructions derive from this class and handle the
- * word variant and special value treatment.
- * This class provided utility functions for the task of creating word sized
- * values.
- * \tparam \see IntegerInstructionNode template param
- */
-template <typename SizeType>
-class WordableIntegerInstruction
-    : public AbstractIntegerInstructionNode<SizeType> {
- public:
-  using super = AbstractIntegerInstructionNode<SizeType>;
-  /**
- * \param info InstructionInformation for this instruction
- * \param isWordInstruction determinates if this instance represents a word
- * instruction
- */
-  WordableIntegerInstruction(const InstructionInformation& info,
-                             bool isWordInstruction)
-      : AbstractIntegerInstructionNode<SizeType>(info, super::Operands::REGISTERS),
-        _isWordInstruction(isWordInstruction) {}
-
-  /** default destructor */
-  virtual ~WordableIntegerInstruction() = default;
-
- protected:
-  /**
-   * Truncates n to represent a value that could fit into a word representation
-   * (so half of the current bits).
-   * The result is sign-extended under certain conditions: isSignedOperation and
-   * n represents a negative value.
-   * The result is sign-extended (even when upper condition is false) if
-   * signExtendAnyway is true
-   * \param n The value that will be truncated to fit into a representation half
-   * of its bit size
-   * \param isSignedOperation If true, n is treated as a signed value, otherwise
-   * n is treated as an unsigned value
-   * \return worded n
-   */
-  SizeType toWord(SizeType n, bool isSignedOperation) const noexcept{
-    bool negative = (n & SIGN_MASK) > 0;
-    if (isSignedOperation && negative) {
-      n = n | SIGN_EXTENSION;
-    } else {
-      n = n & WORD_MASK;
-    }
-    return n;
-  }
-
-  /**
-   * Returns a possible sign-extended value of n. n is treated as a
-   * "worded"-version, so the sign-bit is expected to be at index
-   * sizeof(SizeType)/2 -1.
-   * If the signbit is set, the result is signextended to the whole range of
-   * SizeType
-   * \param n The value to be sign-extended
-   * \return A sign-extended n, if n is negative using the signbit of the worded
-   * version of n, otherwise n is returned
-   */
-  SizeType signExtend(SizeType n) const noexcept{
-    if ((n & SIGN_MASK_WORD) > 0) {
-      return n | SIGN_EXTENSION;
-    }
-    return n;
-  }
-
-  /**
-   * \return true, if this instruction is a word instruction; false, if not
-   */
-  bool isWordInstruction() const noexcept{ return _isWordInstruction; }
-
- private:
-  /** and-bitmask for retrieving the sign bit of a SizeType-ranged value*/
-  static constexpr SizeType SIGN_MASK = SizeType(1)
-                                        << (sizeof(SizeType) * CHAR_BIT - 1);
-  /** and-bitmask for retrieving the sign bit of a half of SizeType-ranged
-   * value*/
-  static constexpr SizeType SIGN_MASK_WORD =
-      SizeType{1} << ((sizeof(SizeType) / 2) * CHAR_BIT - 1);
-  /** and-bitmask to only preserve the lower half of bits*/
-  static constexpr SizeType WORD_MASK = SizeType(-1) >>
-                                        ((sizeof(SizeType) * CHAR_BIT) / 2);
-  /** or-bitmask for adding 1s to the higher half of bits*/
-  static constexpr SizeType SIGN_EXTENSION =
-      SizeType(-1) << ((sizeof(SizeType) * CHAR_BIT) / 2);
-  /**
-   * Describes if this instruction is a word instruction
-   */
-  bool _isWordInstruction;
-};
-
-/**
  * Represents a RISC-V "div/divu/divw/divuw" instruction. For more information
  * see RISC-V
  * specification
@@ -389,16 +396,15 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedWord> {
       : WordableIntegerInstruction<UnsignedWord>(info, isWordInstruction),
         _isSignedDivision(isSignedDivision) {}
 
-protected:
-
+ protected:
   /**
    * Performs a division where op1 is the divident and op2 is the divisor.
    * \param op1 divident
    * \param op2 divisor
    * \return op1 divided by op2
    */
-  UnsignedWord _compute(UnsignedWord operand1,
-                                       UnsignedWord operand2) const noexcept override{
+  UnsignedWord _compute(UnsignedWord operand1, UnsignedWord operand2) const
+      noexcept override {
     // Semantics for division is defined in RISC-V specification in table 5.1
 
     UnsignedWord op1 = operand1;
@@ -473,12 +479,12 @@ class RemainderInstruction : public WordableIntegerInstruction<UnsignedWord> {
    * operation:
    * use true for signed (rem); use false for unsigned(remu)
    */
-  RemainderInstruction(const InstructionInformation& info, bool isSignedRemainder,
-                       bool isWordInstruction)
+  RemainderInstruction(const InstructionInformation& info,
+                       bool isSignedRemainder, bool isWordInstruction)
       : WordableIntegerInstruction<UnsignedWord>(info, isWordInstruction),
         _isSignedRemainder(isSignedRemainder) {}
 
-protected:
+ protected:
   /**
    * Performs a remainder operation where op1 is the divident and op2 is the
    * divisor
@@ -486,8 +492,8 @@ protected:
    * \param op2 divisor
    * \return the remainder of op1 divided by op2
    */
-  UnsignedWord _compute(UnsignedWord operand1,
-                                       UnsignedWord operand2) const noexcept override{
+  UnsignedWord _compute(UnsignedWord operand1, UnsignedWord operand2) const
+      noexcept override {
     // Semantics for division is defined in RISC-V specification in table 5.1
     UnsignedWord op1 = operand1;
     UnsignedWord op2 = operand2;

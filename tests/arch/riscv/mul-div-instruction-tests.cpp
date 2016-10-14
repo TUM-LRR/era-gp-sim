@@ -126,7 +126,6 @@ TEST(MulDivInstructionTest, Multiplication_testMULH64) {
           0x0000000000000000);
 }
 
-// TODO MULH64#
 // https://github.com/riscv/riscv-tests
 
 TEST(MulDivInstructionTest, Multiplication_testMULHU32) {

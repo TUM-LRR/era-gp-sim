@@ -165,15 +165,15 @@ void _setupExtensionM(FactoryMap& _factories) {
   Dfacade.template add<DivisionInstruction>("div", true, false);
   Dfacade.template add<DivisionInstruction>("divu", false, false);
   Dfacade.template add<RemainderInstruction>("rem", true, false);
-  Dfacade.template add<RemainderInstruction>("remu", true, false);
+  Dfacade.template add<RemainderInstruction>("remu", false, false);
 
-  // this us ugly
-  if (sizeof(UnsignedWord) == 64) {
-    // TODO add mulw
+  // this is ugly
+  if (sizeof(UnsignedWord)*CHAR_BIT == 64) {
+    Mfacade.template add<MultiplicationInstruction>("mulw", Part::LOW, Type::SIGNED, true);
     Dfacade.template add<DivisionInstruction>("divw", true, true);
     Dfacade.template add<DivisionInstruction>("divuw", false, true);
     Dfacade.template add<RemainderInstruction>("remw", true, true);
-    Dfacade.template add<RemainderInstruction>("remw", false, true);
+    Dfacade.template add<RemainderInstruction>("remuw", false, true);
   }
 }
 
