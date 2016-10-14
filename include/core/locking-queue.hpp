@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_CORE_LOCKING_QUEUE_HPP_
-#define ERAGPSIM_CORE_LOCKING_QUEUE_HPP_
+#ifndef ERAGPSIM_CORE_LOCKING_QUEUE_HPP
+#define ERAGPSIM_CORE_LOCKING_QUEUE_HPP
 
 #include <deque>
 #include <mutex>
@@ -79,4 +79,4 @@ class LockingQueue {
   std::mutex _mutex;
 };
 
-#endif // ERAGPSIM_CORE_LOCKED_QUEUE_HPP_
+#endif // ERAGPSIM_CORE_LOCKED_QUEUE_HPP

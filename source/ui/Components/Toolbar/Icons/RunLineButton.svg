@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="23px" height="22px" viewBox="0 0 23 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 3.8.3 (29802) - http://www.bohemiancoding.com/sketch -->
+    <title>Run Line Button</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Run-Line-Button" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Toolbar-Button-Icon" fill="#4A4A4A">
+            <g>
+                <polygon transform="translate(9.166667, 11.000000) rotate(-270.000000) translate(-9.166667, -11.000000) " points="9.16666667 1.83333333 20.1666667 20.1666667 -1.83333333 20.1666667"></polygon>
+                <rect id="Rectangle-8" x="18.3333333" y="2.2" width="4.4" height="18.3333333"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

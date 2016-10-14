@@ -1,41 +1,59 @@
 {
+    "name": "rv64d",
     "instructions": [
         {
-            "rs2": 2,
-            "opcode": 83,
+            "format": "R",
             "mnemonic": "fcvtld",
-            "funct7": 97
+            "key": {
+                "opcode": 83,
+                "rs2": 2,
+                "funct7": 97
+            }
         },
         {
-            "rs2": 3,
-            "opcode": 83,
+            "format": "R",
             "mnemonic": "fcvtlud",
-            "funct7": 97
+            "key": {
+                "opcode": 83,
+                "rs2": 3,
+                "funct7": 97
+            }
         },
         {
-            "rs2": 0,
-            "opcode": 83,
+            "format": "R",
             "mnemonic": "fmvxd",
-            "funct7": 113
+            "key": {
+                "opcode": 83,
+                "rs2": 0,
+                "funct7": 113
+            }
         },
         {
-            "rs2": 2,
-            "opcode": 83,
+            "format": "R",
             "mnemonic": "fcvtdl",
-            "funct7": 105
+            "key": {
+                "opcode": 83,
+                "rs2": 2,
+                "funct7": 105
+            }
         },
         {
-            "rs2": 3,
-            "opcode": 83,
+            "format": "R",
             "mnemonic": "fcvtslu",
-            "funct7": 105
+            "key": {
+                "opcode": 83,
+                "rs2": 3,
+                "funct7": 105
+            }
         },
         {
-            "rs2": 0,
-            "opcode": 83,
+            "format": "R",
             "mnemonic": "fmvdx",
-            "funct7": 121
+            "key": {
+                "opcode": 83,
+                "rs2": 0,
+                "funct7": 121
+            }
         }
-    ],
-    "name": "rv64d"
+    ]
 }
