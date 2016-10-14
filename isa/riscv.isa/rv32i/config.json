@@ -1,378 +1,490 @@
 {
-    "word-size": 32,
-    "endianness": "little",
     "name": "rv32i",
-    "alignment-behavior": "relaxed",
     "instructions": [
         {
-            "opcode": 55,
-            "mnemonic": "lui"
+            "format": "U",
+            "mnemonic": "lui",
+            "key": {
+                "opcode": 55
+            }
         },
         {
-            "opcode": 23,
-            "mnemonic": "auipc"
+            "format": "U",
+            "mnemonic": "auipc",
+            "key": {
+                "opcode": 23
+            }
         },
         {
-            "opcode": 111,
-            "mnemonic": "jal"
+            "format": "UJ",
+            "mnemonic": "jal",
+            "key": {
+                "opcode": 111
+            }
         },
         {
-            "opcode": 103,
-            "mnemonic": "jalr"
+            "format": "I",
+            "mnemonic": "jalr",
+            "key": {
+                "opcode": 103
+            }
         },
         {
-            "funct3": 0,
-            "opcode": 99,
-            "mnemonic": "beq"
+            "format": "SB",
+            "mnemonic": "beq",
+            "key": {
+                "opcode": 99,
+                "funct3": 0
+            }
         },
         {
-            "funct3": 1,
-            "opcode": 99,
-            "mnemonic": "bne"
+            "format": "SB",
+            "mnemonic": "bne",
+            "key": {
+                "opcode": 99,
+                "funct3": 1
+            }
         },
         {
-            "funct3": 4,
-            "opcode": 99,
-            "mnemonic": "blt"
+            "format": "SB",
+            "mnemonic": "blt",
+            "key": {
+                "opcode": 99,
+                "funct3": 4
+            }
         },
         {
-            "funct3": 5,
-            "opcode": 99,
-            "mnemonic": "bge"
+            "format": "SB",
+            "mnemonic": "bge",
+            "key": {
+                "opcode": 99,
+                "funct3": 5
+            }
         },
         {
-            "funct3": 6,
-            "opcode": 99,
-            "mnemonic": "bltu"
+            "format": "SB",
+            "mnemonic": "bltu",
+            "key": {
+                "opcode": 99,
+                "funct3": 6
+            }
         },
         {
-            "funct3": 7,
-            "opcode": 99,
-            "mnemonic": "bgeu"
+            "format": "SB",
+            "mnemonic": "bgeu",
+            "key": {
+                "opcode": 99,
+                "funct3": 7
+            }
         },
         {
-            "funct3": 0,
-            "opcode": 3,
-            "mnemonic": "lb"
+            "format": "I",
+            "mnemonic": "lb",
+            "key": {
+                "opcode": 3,
+                "funct3": 0
+            }
         },
         {
-            "funct3": 1,
-            "opcode": 3,
-            "mnemonic": "lh"
+            "format": "I",
+            "mnemonic": "lh",
+            "key": {
+                "opcode": 3,
+                "funct3": 1
+            }
         },
         {
-            "funct3": 2,
-            "opcode": 3,
-            "mnemonic": "lw"
+            "format": "I",
+            "mnemonic": "lw",
+            "key": {
+                "opcode": 3,
+                "funct3": 2
+            }
         },
         {
-            "funct3": 4,
-            "opcode": 3,
-            "mnemonic": "lbu"
+            "format": "I",
+            "mnemonic": "lbu",
+            "key": {
+                "opcode": 3,
+                "funct3": 4
+            }
         },
         {
-            "funct3": 5,
-            "opcode": 3,
-            "mnemonic": "lhu"
+            "format": "I",
+            "mnemonic": "lhu",
+            "key": {
+                "opcode": 3,
+                "funct3": 5
+            }
         },
         {
-            "opcode": 35,
+            "format": "S",
             "mnemonic": "sb",
-            "funct": 0
+            "funct": 0,
+            "key": {
+                "opcode": 35
+            }
         },
         {
-            "opcode": 35,
+            "format": "S",
             "mnemonic": "sh",
-            "funct": 1
+            "funct": 1,
+            "key": {
+                "opcode": 35
+            }
         },
         {
-            "opcode": 35,
+            "format": "S",
             "mnemonic": "sw",
-            "funct": 2
+            "funct": 2,
+            "key": {
+                "opcode": 35
+            }
         },
         {
-            "funct3": 0,
-            "opcode": 19,
-            "mnemonic": "addi"
+            "format": "I",
+            "mnemonic": "addi",
+            "key": {
+                "opcode": 19,
+                "funct3": 0
+            }
         },
         {
-            "funct3": 2,
-            "opcode": 19,
-            "mnemonic": "slti"
+            "format": "I",
+            "mnemonic": "slti",
+            "key": {
+                "opcode": 19,
+                "funct3": 2
+            }
         },
         {
-            "funct3": 3,
-            "opcode": 19,
-            "mnemonic": "sltiu"
+            "format": "I",
+            "mnemonic": "sltiu",
+            "key": {
+                "opcode": 19,
+                "funct3": 3
+            }
         },
         {
-            "funct3": 4,
-            "opcode": 19,
-            "mnemonic": "xori"
+            "format": "I",
+            "mnemonic": "xori",
+            "key": {
+                "opcode": 19,
+                "funct3": 4
+            }
         },
         {
-            "funct3": 6,
-            "opcode": 19,
-            "mnemonic": "ori"
+            "format": "I",
+            "mnemonic": "ori",
+            "key": {
+                "opcode": 19,
+                "funct3": 6
+            }
         },
         {
-            "funct3": 7,
-            "opcode": 19,
-            "mnemonic": "andi"
+            "format": "I",
+            "mnemonic": "andi",
+            "key": {
+                "opcode": 19,
+                "funct3": 7
+            }
         },
         {
-            "funct3": 1,
-            "func7": 0,
-            "opcode": 19,
-            "mnemonic": "slli"
+            "format": "R",
+            "mnemonic": "slli",
+            "key": {
+                "opcode": 19,
+                "funct3": 1,
+                "funct7": 0
+            }
         },
         {
-            "funct3": 5,
-            "func7": 0,
-            "opcode": 19,
-            "mnemonic": "srli"
+            "format": "R",
+            "mnemonic": "srli",
+            "key": {
+                "opcode": 19,
+                "funct3": 5,
+                "funct7": 0
+            }
         },
         {
-            "funct3": 5,
-            "func7": 32,
-            "opcode": 19,
-            "mnemonic": "srai"
+            "format": "R",
+            "mnemonic": "srai",
+            "key": {
+                "opcode": 19,
+                "funct3": 5,
+                "funct7": 32
+            }
         },
         {
-            "funct3": 0,
-            "func7": 0,
-            "opcode": 51,
-            "mnemonic": "add"
+            "format": "R",
+            "mnemonic": "add",
+            "key": {
+                "opcode": 51,
+                "funct3": 0,
+                "funct7": 0
+            }
         },
         {
-            "funct3": 0,
-            "func7": 32,
-            "opcode": 51,
-            "mnemonic": "sub"
+            "format": "R",
+            "mnemonic": "sub",
+            "key": {
+                "opcode": 51,
+                "funct3": 0,
+                "funct7": 32
+            }
         },
         {
-            "funct3": 1,
-            "func7": 0,
-            "opcode": 51,
-            "mnemonic": "sll"
+            "format": "R",
+            "mnemonic": "sll",
+            "key": {
+                "opcode": 51,
+                "funct3": 1,
+                "funct7": 0
+            }
         },
         {
-            "funct3": 2,
-            "func7": 0,
-            "opcode": 51,
-            "mnemonic": "slt"
+            "format": "R",
+            "mnemonic": "slt",
+            "key": {
+                "opcode": 51,
+                "funct3": 2,
+                "funct7": 0
+            }
         },
         {
-            "funct3": 3,
-            "func7": 0,
-            "opcode": 51,
-            "mnemonic": "sltu"
+            "format": "R",
+            "mnemonic": "sltu",
+            "key": {
+                "opcode": 51,
+                "funct3": 3,
+                "funct7": 0
+            }
         },
         {
-            "funct3": 4,
-            "func7": 0,
-            "opcode": 51,
-            "mnemonic": "xor"
+            "format": "R",
+            "mnemonic": "xor",
+            "key": {
+                "opcode": 51,
+                "funct3": 4,
+                "funct7": 0
+            }
         },
         {
-            "funct3": 5,
-            "func7": 0,
-            "opcode": 51,
-            "mnemonic": "srl"
+            "format": "R",
+            "mnemonic": "srl",
+            "key": {
+                "opcode": 51,
+                "funct3": 5,
+                "funct7": 0
+            }
         },
         {
-            "funct3": 5,
-            "func7": 32,
-            "opcode": 51,
-            "mnemonic": "sra"
+            "format": "R",
+            "mnemonic": "sra",
+            "key": {
+                "opcode": 51,
+                "funct3": 5,
+                "funct7": 32
+            }
         },
         {
-            "funct3": 6,
-            "func7": 0,
-            "opcode": 51,
-            "mnemonic": "or"
+            "format": "R",
+            "mnemonic": "or",
+            "key": {
+                "opcode": 51,
+                "funct3": 6,
+                "funct7": 0
+            }
         },
         {
-            "funct3": 0,
-            "func7": 7,
-            "opcode": 51,
-            "mnemonic": "and"
+            "format": "R",
+            "mnemonic": "and",
+            "key": {
+                "opcode": 51,
+                "funct3": 0,
+                "funct7": 7
+            }
         }
     ],
-    "signed-representation": "twos-complement",
+    "word-size": 32,
+    "byte-size": 8,
+    "alignment-behavior": "relaxed",
+    "endianness": "little",
+    "signed-representation" : "twos-complement",
     "units": [
         {
+            "name": "cpu",
             "registers": [
                 {
-                    "alias": "zero",
-                    "id": 0,
-                    "size": 32,
                     "constant": 0,
-                    "name": "x0"
+                    "id": 0,
+                    "name": "x0",
+                    "alias": "zero",
+                    "size": 32
                 },
                 {
                     "id": 1,
-                    "size": 32,
-                    "name": "x1"
+                    "name": "x1",
+                    "size": 32
                 },
                 {
                     "id": 2,
-                    "size": 32,
-                    "name": "x2"
+                    "name": "x2",
+                    "size": 32
                 },
                 {
                     "id": 3,
-                    "size": 32,
-                    "name": "x3"
+                    "name": "x3",
+                    "size": 32
                 },
                 {
                     "id": 4,
-                    "size": 32,
-                    "name": "x4"
+                    "name": "x4",
+                    "size": 32
                 },
                 {
                     "id": 5,
-                    "size": 32,
-                    "name": "x5"
+                    "name": "x5",
+                    "size": 32
                 },
                 {
                     "id": 6,
-                    "size": 32,
-                    "name": "x6"
+                    "name": "x6",
+                    "size": 32
                 },
                 {
                     "id": 7,
-                    "size": 32,
-                    "name": "x7"
+                    "name": "x7",
+                    "size": 32
                 },
                 {
                     "id": 8,
-                    "size": 32,
-                    "name": "x8"
+                    "name": "x8",
+                    "size": 32
                 },
                 {
                     "id": 9,
-                    "size": 32,
-                    "name": "x9"
+                    "name": "x9",
+                    "size": 32
                 },
                 {
                     "id": 10,
-                    "size": 32,
-                    "name": "x10"
+                    "name": "x10",
+                    "size": 32
                 },
                 {
                     "id": 11,
-                    "size": 32,
-                    "name": "x11"
+                    "name": "x11",
+                    "size": 32
                 },
                 {
                     "id": 12,
-                    "size": 32,
-                    "name": "x12"
+                    "name": "x12",
+                    "size": 32
                 },
                 {
                     "id": 13,
-                    "size": 32,
-                    "name": "x13"
+                    "name": "x13",
+                    "size": 32
                 },
                 {
                     "id": 14,
-                    "size": 32,
-                    "name": "x14"
+                    "name": "x14",
+                    "size": 32
                 },
                 {
                     "id": 15,
-                    "size": 32,
-                    "name": "x15"
+                    "name": "x15",
+                    "size": 32
                 },
                 {
                     "id": 16,
-                    "size": 32,
-                    "name": "x16"
+                    "name": "x16",
+                    "size": 32
                 },
                 {
                     "id": 17,
-                    "size": 32,
-                    "name": "x17"
+                    "name": "x17",
+                    "size": 32
                 },
                 {
                     "id": 18,
-                    "size": 32,
-                    "name": "x18"
+                    "name": "x18",
+                    "size": 32
                 },
                 {
                     "id": 19,
-                    "size": 32,
-                    "name": "x19"
+                    "name": "x19",
+                    "size": 32
                 },
                 {
                     "id": 20,
-                    "size": 32,
-                    "name": "x20"
+                    "name": "x20",
+                    "size": 32
                 },
                 {
                     "id": 21,
-                    "size": 32,
-                    "name": "x21"
+                    "name": "x21",
+                    "size": 32
                 },
                 {
                     "id": 22,
-                    "size": 32,
-                    "name": "x22"
+                    "name": "x22",
+                    "size": 32
                 },
                 {
                     "id": 23,
-                    "size": 32,
-                    "name": "x23"
+                    "name": "x23",
+                    "size": 32
                 },
                 {
                     "id": 24,
-                    "size": 32,
-                    "name": "x24"
+                    "name": "x24",
+                    "size": 32
                 },
                 {
                     "id": 25,
-                    "size": 32,
-                    "name": "x25"
+                    "name": "x25",
+                    "size": 32
                 },
                 {
                     "id": 26,
-                    "size": 32,
-                    "name": "x26"
+                    "name": "x26",
+                    "size": 32
                 },
                 {
                     "id": 27,
-                    "size": 32,
-                    "name": "x27"
+                    "name": "x27",
+                    "size": 32
                 },
                 {
                     "id": 28,
-                    "size": 32,
-                    "name": "x28"
+                    "name": "x28",
+                    "size": 32
                 },
                 {
                     "id": 29,
-                    "size": 32,
-                    "name": "x29"
+                    "name": "x29",
+                    "size": 32
                 },
                 {
                     "id": 30,
-                    "size": 32,
-                    "name": "x30"
+                    "name": "x30",
+                    "size": 32
                 },
                 {
                     "id": 31,
-                    "size": 32,
-                    "name": "x31"
+                    "name": "x31",
+                    "size": 32
                 },
                 {
-                    "type": "program-counter",
-                    "size": 32,
                     "id": 32,
-                    "name": "pc"
+                    "name": "pc",
+                    "size": 32,
+                    "type": "program-counter"
                 }
-            ],
-            "name": "cpu"
+            ]
         }
     ]
 }

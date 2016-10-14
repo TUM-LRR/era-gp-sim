@@ -1,9 +1,8 @@
 {
+    "extends": "base3-cycle",
+    "name": "base1-complex",
     "reset-units": true,
     "word-size": 69,
-    "name": "base1-complex",
     "alignment-behavior": "relaxed",
-    "signed-representation": "sign-bit",
-    "extends": "base3-cycle",
     "endianness": "mixed"
 }

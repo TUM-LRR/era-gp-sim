@@ -18,7 +18,9 @@
 #ifndef ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
 #define ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
 
+#include <QtCore/qglobal.h>
 #include <memory>
+#include <string>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 
@@ -33,28 +35,66 @@ class RegisterNode : public AbstractSyntaxTreeNode {
    * \param value The identifier for the register.
    */
   RegisterNode(std::string identifier)
-  : AbstractSyntaxTreeNode(Type::REGISTER) {
+  : AbstractSyntaxTreeNode(Type::REGISTER), _identifier(identifier) {
   }
 
   /**
    * \return The content of the register, represented by this node.
    */
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) override {
-    // TODO Return the actual content of the register using the proper
-    // memory access
-    return MemoryValue();
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override {
+    return memoryAccess.getRegisterValue(_identifier);
   }
 
   /**
-   * \return true, if there are no children.
+   * \return success, if there are no children.
    */
-  virtual bool validate() override {
-    // Immediate values can't have any children
-    return AbstractSyntaxTreeNode::_children.size() == 0;
+  ValidationResult validate() const override {
+    // Registers can't have any children
+    if (AbstractSyntaxTreeNode::_children.size() == 0) {
+      return ValidationResult::success();
+    }
+    return ValidationResult::fail(
+        QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                          "The register node must not have any arguments"));
+  }
+
+  const std::string& getIdentifier() const override {
+    return _identifier;
+  }
+
+  // MemoryAccess problem
+  MemoryValue assemble() const override {
+    MemoryValue memValue{8};
+
+    std::string::size_type sz;
+
+    int index;
+
+    try {
+      index = std::stoi(_identifier, &sz);
+    } catch (const std::exception&) {
+      index = 0;
+    }
+
+    const int regSize = 8;
+
+    for (int i = 0; i < 5; i++) {
+      if (index % 2 == 0)
+        memValue.put(regSize - i - 1, false);
+      else
+        memValue.put(regSize - i - 1, true);
+
+      index /= 2;
+    }
+
+    return memValue;
   }
 
  private:
-  MemoryValue _value;
+  /**
+   * Identifies a register
+   */
+  std::string _identifier;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP */

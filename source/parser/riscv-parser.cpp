@@ -46,7 +46,7 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
   if (operand.empty()) {
     outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
   } else if (std::isalpha(operand[0])) {
-    outputNode = nodeFactories.createRegisterAccessNode(operand);
+    outputNode = nodeFactories.createRegisterNode(operand);
   } else {
     // using i32
     int32_t result =

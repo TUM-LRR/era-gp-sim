@@ -1,54 +1,54 @@
 {
-    "word-size": 32,
-    "endianness": "little",
     "name": "no-deps",
-    "alignment-behavior": "strict",
     "instructions": [
         {
-            "function": 3,
-            "opcode": 6,
-            "mnemonic": "add"
+            "format": "R",
+            "mnemonic": "add",
+            "key": {
+                "opcode": 6,
+                "function": 3
+            }
         },
         {
-            "function": 3,
-            "opcode": 9,
-            "mnemonic": "sub"
+            "format": "R",
+            "mnemonic": "sub",
+            "key": {
+                "opcode": 9,
+                "function": 3
+            }
         }
     ],
-    "signed-representation": "sign-bit",
+    "word-size": 32,
+    "byte-size": 8,
+    "alignment-behavior": "strict",
+    "endianness": "little",
     "units": [
         {
+            "name": "cpu",
             "registers": [
                 {
-                    "alias": "zero",
                     "id": 0,
-                    "size": 32,
                     "name": "r0",
                     "constituents": [
-                        {
-                            "id": 1,
-                            "enclosing-index": 1
-                        },
-                        {
-                            "id": 2,
-                            "enclosing-index": 2
-                        }
-                    ]
+                        1,
+                        2
+                    ],
+                    "size": 32,
+                    "alias": "zero"
                 },
                 {
-                    "type": "float",
-                    "size": 16,
-                    "constant": 3.14,
+                    "id": 1,
                     "name": "r1",
-                    "enclosing": 0,
+                    "type": "float",
+                    "constant": 3.14,
+                    "size": 16,
                     "aliases": [
                         "foo",
                         "bar"
                     ],
-                    "id": 1
+                    "enclosing": 0
                 }
-            ],
-            "name": "cpu"
+            ]
         }
     ]
 }
