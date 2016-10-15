@@ -27,7 +27,8 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QQuickItem>
-#include <memory>
+#include <QString>
+#include <QStringList>
 #include <vector>
 
 #include "ui/qproject.hpp"
@@ -74,12 +75,82 @@ class Ui : public QObject {
   Q_INVOKABLE void
   addProject(QQuickItem* tabItem, QQmlComponent* projectComponent);
 
+  /**
+   * Removes a Project from the _projects vector. Does not delete it.
+   *
+   * \param index The index of the project to remove.
+   */
+  Q_INVOKABLE void removeProject(int index);
+
+  /**
+   * Call run on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void run(int index);
+
+  /**
+   * Call runLine on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void runLine(int index);
+
+  /**
+   * Call runBreakpoint on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void runBreakpoint(int index);
+
+  /**
+   * Call stop on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void stop(int index);
+
+  /**
+   * Call save on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void save(int index);
+
+  /**
+   * Call saveAs on the specified project.
+   *
+   * \param index The index of the project.
+   * \param name The name/path of the save.
+   */
+  Q_INVOKABLE void saveAs(int index, QString name);
+
+  /**
+   * Call saveSnapshot on the specified project.
+   *
+   * \param index The index of the project.
+   * \param name The name of the snapshot.
+   */
+  Q_INVOKABLE void saveSnapshot(int index, QString name);
+
+  /**
+   * Call loadSnapshot on the specified project.
+   *
+   * \param index The index of the project.
+   * \param name The name of the snapshot.
+   */
+  Q_INVOKABLE void loadSnapshot(int index, QString name);
+
  private:
   /** The QApplication of this program. */
   QApplication _qmlApplication;
 
   /** The QmlEngine of this program. */
   QQmlApplicationEngine _engine;
+
+  /** A list of pointers to the GuiProjects. */
+  std::vector<GuiProject*> _projects;
+
 };
 
 #endif /* ERAGPSIM_UI_UI_HPP_ */

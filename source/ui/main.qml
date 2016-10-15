@@ -52,6 +52,7 @@ ApplicationWindow {
 
     function closeProject() {
         tabView.removeTab(tabView.currentIndex);
+        ui.removeProject(tabView.currentIndex);
     }
 
     /*Component for a project, instantiated by the TabView*/

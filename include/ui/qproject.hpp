@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QQmlContext>
+#include <QString>
 
 #include "ui/editor-component.hpp"
 #include "ui/registermodel.hpp"
@@ -41,6 +42,15 @@ class QProject : public QObject {
   Q_OBJECT
  public:
   explicit QProject(QQmlContext* projectContext, QObject* parent = 0);
+
+  void run(){}
+  void runLine(){}
+  void runBreakpoint(){}
+  void stop(){}
+  void save(){}
+  void saveAs(QString name){}
+  void saveSnapshot(QString name){}
+  void loadSnapshot(QString name){}
 
 
  private:

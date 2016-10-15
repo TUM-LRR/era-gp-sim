@@ -19,8 +19,8 @@
 
 #include "ui/ui.hpp"
 
-
-Ui::Ui(int& argc, char** argv) : _qmlApplication(argc, argv), _engine() {
+Ui::Ui(int& argc, char** argv)
+: _qmlApplication(argc, argv), _engine(), _projects() {
 }
 
 int Ui::runUi() {
@@ -48,4 +48,58 @@ void Ui::addProject(QQuickItem* tabItem, QQmlComponent* projectComponent) {
 
   // set visual parent of the projectItem
   projectItem->setParentItem(tabItem);
+}
+
+void Ui::removeProject(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.erase(_projects.begin() + index);
+}
+
+void Ui::run(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->run();
+}
+
+void Ui::runLine(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->runLine();
+}
+
+void Ui::runBreakpoint(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->runBreakpoint();
+}
+
+void Ui::stop(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->stop();
+}
+
+void Ui::save(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->save();
+}
+
+void Ui::saveAs(int index, QString name) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->saveAs(name);
+}
+
+void Ui::saveSnapshot(int index, QString name) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->saveSnapshot(name);
+}
+
+void Ui::loadSnapshot(int index, QString name) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->loadSnapshot(name);
 }
