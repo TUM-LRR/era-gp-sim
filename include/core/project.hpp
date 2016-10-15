@@ -105,9 +105,9 @@ class Project : public Servant {
 
   /**
    * Returns the number of bits in a byte
-   * TODO https://github.com/TUM-LRR/era-gp-sim/issues/83
+   *
    */
-  // Architecture::byte_size_t getByteSize() const;
+  Architecture::byte_size_t getByteSize() const;
 
   /**
    * Returns the number of memory cells(number of bytes)
@@ -141,8 +141,6 @@ class Project : public Servant {
    *
    */
   void resetRegisters();
-
-  // guiProject/QProject
 
   /**
    * Returns the callback used for conversion from a MemoryValue to a signed

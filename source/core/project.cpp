@@ -25,13 +25,12 @@
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
 
-
 Project::Project(std::weak_ptr<Scheduler> &&scheduler,
                  const ArchitectureFormula &architectureFormula,
                  std::size_t memorySize)
 : Servant(std::move(scheduler))
 , _architecture(Architecture::Brew(architectureFormula))
-, _memory(memorySize)// TODO https://github.com/TUM-LRR/era-gp-sim/issues/83
+, _memory(memorySize, _architecture.getByteSize())
 , _registerSet() {
   _architecture.validate();
 
@@ -51,6 +50,8 @@ void Project::_createRegister(RegisterInformation registerInfo,
                               UnitInformation unitInfo) {
   if (!registerInfo.hasEnclosing()) {
     _registerSet.createRegister(registerInfo.getName(), registerInfo.getSize());
+    _registerSet.aliasRegister(
+        registerInfo.getAliases(), registerInfo.getName(), 0, true);
     // create all constituents and their constituents
     _createConstituents(registerInfo, unitInfo);
   }
@@ -68,7 +69,12 @@ void Project::_createConstituents(RegisterInformation enclosingRegister,
                                enclosingRegister.getName(),
                                constituentInformation.getEnclosingOffset(),
                                constituentInformation.getEnclosingOffset() +
-                                   constituentRegisterInfo.getSize());
+                                   constituentRegisterInfo.getSize(),
+                               false);
+    _registerSet.aliasRegister(constituentRegisterInfo.getAliases(),
+                               constituentRegisterInfo.getName(),
+                               0,
+                               true);
 
     // recursive call to create constituents of this constituent
     if (constituentRegisterInfo.hasConstituents()) {
@@ -108,10 +114,9 @@ UnitContainer Project::getRegisterUnits() const {
   return _architecture.getUnits();
 }
 
-/*https://github.com/TUM-LRR/era-gp-sim/issues/83
 Architecture::byte_size_t Project::getByteSize() const {
   return _architecture.getByteSize();
-}*/
+}
 
 std::size_t Project::getMemorySize() const {
   return _memory.getByteCount();

@@ -21,16 +21,17 @@
 
 #include "arch/common/architecture.hpp"
 #include "arch/common/unit-information.hpp"
+#include "arch/common/validation-result.hpp"
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
 #include "parser/parser-factory.hpp"
 #include "parser/parser-mode.hpp"
 
 ParsingAndExecutionUnit::ParsingAndExecutionUnit(
-    std::weak_ptr<Scheduler>&& scheduler,
+    std::weak_ptr<Scheduler> &&scheduler,
     MemoryAccess memoryAccess,
     Architecture architecture,
-    std::atomic_flag& stopFlag,
+    std::atomic_flag &stopFlag,
     std::string parserName)
 : Servant(std::move(scheduler))
 , _parser(ParserFactory::createParser(architecture, parserName))
@@ -40,10 +41,10 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _memoryAccess(memoryAccess)
 , _breakpoints()
 , _syntaxInformation(_parser->getSyntaxInformation())
-, _setContextInformation([](const std::vector<ContextInformation>& x) {})
-, _setErrorList([](const std::vector<CompileError>& x) {})
-, _throwRuntimeError(([](const std::string& x) {}))
-, _setMacroList(([](const std::vector<MacroInformation>& x) {}))
+, _setContextInformation([](const std::vector<ContextInformation> &x) {})
+, _setErrorList([](const std::vector<CompileError> &x) {})
+, _throwRuntimeError(([](const std::string &x) {}))
+, _setMacroList(([](const std::vector<MacroInformation> &x) {}))
 , _setCurrentLine([](int x) {}) {
   for (UnitInformation unitInfo : architecture.getUnits()) {
     if (unitInfo.hasSpecialRegister(
@@ -68,20 +69,21 @@ void ParsingAndExecutionUnit::execute() {
 
 std::size_t ParsingAndExecutionUnit::executeNextLine() {
   // reference to avoid copying a unique_ptr
-  FinalCommand& currentCommand =
+  FinalCommand &currentCommand =
       _finalRepresentation.commandList.at(_findNextNode());
   if (_finalRepresentation.errorList.size() > 0) {
     return _findNextNode();
   }
-  /*ValidationResult validationResult = currentCommand.node->validateRuntime();
-  if (!validationResult.success()) {
-    _throwRuntimeError(validationResult.errorMessage())
+  ValidationResult validationResult =
+      currentCommand.node->validateRuntime(_memoryAccess);
+  if (!validationResult.isSuccess()) {
+    _throwRuntimeError(validationResult.getMessage());
     return _findNextNode();
-  }*/
+  }
 
   _setCurrentLine(currentCommand.position.lineStart);
 
-  // currentCommand.node->getValue(_memoryAccess);
+  currentCommand.node->getValue(_memoryAccess);
 
   std::size_t nextNode = _findNextNode();
   _setCurrentLine(
@@ -108,7 +110,7 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
 }
 
 void ParsingAndExecutionUnit::setExecutionPoint(int line) {
-  for (auto&& command : _finalRepresentation.commandList) {
+  for (auto &&command : _finalRepresentation.commandList) {
     if (command.position.lineStart == line) {
       _memoryAccess.putRegisterValue(
           _programCounter.getName(),
@@ -129,7 +131,7 @@ void ParsingAndExecutionUnit::parse(std::string code) {
     _memoryAccess.putMemoryValue(command.address, zero;
   }*/
   _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
-  _addressCommandMap   = _finalRepresentation.createMapping();
+  _addressCommandMap = _finalRepresentation.createMapping();
   _setErrorList(_finalRepresentation.errorList);
   // assemble commands into memory
   /*for (auto&& command : _finalRepresentation.commandList) {
@@ -151,22 +153,22 @@ ParsingAndExecutionUnit::getSyntaxRegex(SyntaxInformation::Token token) const {
 }
 
 void ParsingAndExecutionUnit::setSetContextInformationCallback(
-    std::function<void(const std::vector<ContextInformation>&)> callback) {
+    std::function<void(const std::vector<ContextInformation> &)> callback) {
   _setContextInformation = callback;
 }
 
 void ParsingAndExecutionUnit::setSetErrorListCallback(
-    std::function<void(const std::vector<CompileError>&)> callback) {
+    std::function<void(const std::vector<CompileError> &)> callback) {
   _setErrorList = callback;
 }
 
 void ParsingAndExecutionUnit::setThrowRuntimeErrorCallback(
-    std::function<void(const std::string&)> callback) {
+    std::function<void(const std::string &)> callback) {
   _throwRuntimeError = callback;
 }
 
 void ParsingAndExecutionUnit::setSetMacroListCallback(
-    std::function<void(const std::vector<MacroInformation>&)> callback) {
+    std::function<void(const std::vector<MacroInformation> &)> callback) {
   _setMacroList = callback;
 }
 
