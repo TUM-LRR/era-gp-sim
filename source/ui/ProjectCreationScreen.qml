@@ -148,6 +148,17 @@ Item {
       }
     }
 
+    Text {
+      id: extensionText
+      anchors {
+        left: extensionGrid.left
+        bottom: extensionGrid.top
+
+        bottomMargin: marginHeight/5
+      }
+      text: "Extensions (dependencies are automatically added)"
+    }
+
     //choose the extensions
     GridView {
       id: extensionGrid

@@ -81,11 +81,24 @@ class Ui : public QObject {
                               QString architecture,
                               QStringList extensionsQString,
                               QString parser);
-
+  /**
+   * Returns a list of architecture names.
+   *
+   */
   Q_INVOKABLE QStringList getArchitectures() const;
 
+  /**
+   * Returns a list of extension names of an architecture.
+   *
+   * \param architectureName The name of the architecture.
+   */
   Q_INVOKABLE QStringList getExtensions(QString architectureName) const;
 
+  /**
+   * Returns a list of parser names of an architecture.
+   *
+   * \param architectureName The name of the architecture.
+   */
   Q_INVOKABLE QStringList getParsers(QString architectureName) const;
 
  private:
