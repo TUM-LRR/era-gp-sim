@@ -61,8 +61,7 @@ RegisterModel::RegisterModel(QObject *parent)
 }
 
 
-void RegisterModel::updateContent(id_t registerIdentifier) {
-  RegisterInformation *registerItem = _items[registerIdentifier].get();
+void RegisterModel::updateContent(const std::string& registerTitle) {
   // Notify the model about the change
   // Notifying requires the model index of the altered item.
   // The only reasonable way of accomplishing this is by filtering the registers
@@ -70,11 +69,10 @@ void RegisterModel::updateContent(id_t registerIdentifier) {
   QModelIndexList alteredItems =
       match(this->index(0, 0),
             TitleRole,
-            QString::fromStdString(registerItem->getName()),
+            QString::fromStdString(registerTitle),
             1,
             Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
   if (!alteredItems.isEmpty()) {
-    qDebug("found");
     QModelIndex alteredItem = alteredItems.first();
     // The data method will be called, fetching the updated content.
     emit dataChanged(alteredItem, alteredItem);

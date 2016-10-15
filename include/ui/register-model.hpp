@@ -146,11 +146,11 @@ class RegisterModel : public QAbstractItemModel {
   /**
    * @brief updateContent Sets the content (i.e. AB01DE23) of a specified
    * register.
-   * @param registerIdentifier The unique identifier of the register whose
+   * @param registerTitle The unique title of the register whose
    * content shall be altered.
    * @param registerContent The new register value.
    */
-  void updateContent(id_t registerIdentifier);
+  void updateContent(const std::string& registerTitle);
 
   /**
    * @brief registerContentChanged Notifies the Core when a register's content
