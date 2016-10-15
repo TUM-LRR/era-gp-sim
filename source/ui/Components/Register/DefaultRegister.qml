@@ -44,5 +44,8 @@ TextField {
         }
     }
 
-    onEditingFinished: registerModel.registerContentChanged(registerTextField.text)
+    // Notify the model that the register's content was changed by the user.
+    onEditingFinished: {
+        registerModel.registerContentChanged(model.Identifier, registerTextField.text)
+    }
 }

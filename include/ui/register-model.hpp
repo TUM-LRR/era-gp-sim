@@ -157,7 +157,7 @@ class RegisterModel : public QAbstractItemModel {
    * was changed by the use.
    * @param registerContent The register's new content value.
    */
-  Q_INVOKABLE void registerContentChanged(const QString &registerContent);
+  Q_INVOKABLE void registerContentChanged(const QVariant& registerIdentifierVariant, const QString& registerContent);
 
   /**
    * @brief dataFormatListForRegister Returns the list of available data

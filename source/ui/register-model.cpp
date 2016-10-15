@@ -187,10 +187,13 @@ int RegisterModel::columnCount(const QModelIndex &parent) const {
 }
 
 
-void RegisterModel::registerContentChanged(const QString &registerContent) {
-  qDebug() << "registerContentChanged: " << registerContent;
-  // TODO: Convert to MemoryValue.
-  // TODO: Notify Core.
+void RegisterModel::registerContentChanged(const QVariant& registerIdentifierVariant, const QString& registerContent) {
+  id_t registerIdentifier = registerIdentifierVariant.toInt();
+  // Convert content string to MemoryValue.
+  // TODO...
+  qDebug() << "registerContentChanged: " << registerContent << ", " << registerIdentifier;
+  // Notify core.
+  // TODO...
 }
 
 
