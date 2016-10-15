@@ -40,6 +40,13 @@ struct MemoryAccess {
     return _registers.at(name).get();
   }
 
+  MemoryValue getMemoryValueAt(std::size_t address, std::size_t amount) {
+      return MemoryValue{};
+    }
+
+    void setMemoryValueAt(std::size_t address, MemoryValue value) {
+  }
+
   std::unordered_map<std::string, Register> _registers;
 };
 

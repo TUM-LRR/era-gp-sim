@@ -21,13 +21,17 @@
 #define ERAGPSIM_COMMON_UTILITY_HPP
 
 #include <algorithm>
-#include <cassert>
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <memory>
 #include <string>
 #include <vector>
+#include <type_traits>
+#include "common/assert.hpp"
+
+#define STRINGIFY_INTERNAL(str) #str
+#define STRINGIFY(str) STRINGIFY_INTERNAL(str)
 
 namespace Utility {
 
@@ -249,6 +253,16 @@ void doIfThere(Container& container, const Key& key, Action action) {
   }
 }
 
+template <typename Range, typename T>
+bool contains(const Range& range, T&& element) {
+  using std::begin;
+  using std::end;
+
+  auto iterator = std::find(begin(range), end(range), std::forward<T>(element));
+
+  return iterator != end(range);
+}
+
 std::string rootPath();
 std::string joinPaths(const std::string& single);
 
@@ -278,14 +292,14 @@ std::string loadFromFile(const std::string& filePath);
 template <typename Data>
 void storeToFile(const std::string& filePath, Data&& data) {
   std::ofstream file(filePath);
-  assert(static_cast<bool>(file));
+  assert::that(static_cast<bool>(file));
   file << std::forward<Data>(data);
-  assert(static_cast<bool>(file));
+  assert::that(static_cast<bool>(file));
 }
 
 template <typename T>
 auto copyPointer(const std::unique_ptr<T>& pointer) {
-  assert(static_cast<bool>(pointer));
+  assert::that(static_cast<bool>(pointer));
   return std::make_unique<T>(*pointer);
 }
 
@@ -296,6 +310,9 @@ constexpr T lowerNBits(const T& value) {
   constexpr auto mask = (static_cast<std::size_t>(1) << numberOfBits) - 1;
   return value & mask;
 }
+
+template <typename T, template <typename> class Cond>
+using TypeBarrier = typename std::enable_if<Cond<T>::value, T>::type;
 
 // C++17
 // template<typename... Paths>

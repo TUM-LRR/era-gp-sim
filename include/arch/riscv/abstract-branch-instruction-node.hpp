@@ -21,11 +21,13 @@
 #define ERAGPSIM_ARCH_RISCV_ABSTRACT_BRANCH_INSTRUCTION_NODE_HPP
 
 #include <QtCore/qglobal.h>
+#include <cassert>
 #include <functional>
 #include <limits>
 
 #include "gtest/gtest_prod.h"
 
+#include "arch/common/validation-result.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "common/utility.hpp"
 
@@ -103,6 +105,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
    * \return An empty memory value.
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
+    assert(validate().isSuccess());
     auto first = _children[0]->getValue(memoryAccess);
     auto second = _children[1]->getValue(memoryAccess);
 
@@ -161,7 +164,6 @@ class AbstractBranchInstructionNode : public InstructionNode {
 
     return ValidationResult::success();
   }
-
 
  protected:
   // Idea: refactor all validation into a validator class, which just takes
@@ -249,11 +251,16 @@ class AbstractBranchInstructionNode : public InstructionNode {
     // The immediate is 12 bit, but including the sign bit. Because it is
     // counted in multiples of two, you still get +- 12 bit, but the value
     // itself may still only occupy 11 bit!
-    if (Utility::occupiesMoreBitsThan(offset, 11)) {
+    if (!this->_fitsIntoNBit(offset, 11)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Immediate operand must be 12 bit or less"));
     }
+    //    if (Utility::occupiesMoreBitsThan(offset, 11)) {
+    //      return ValidationResult::fail(
+    //          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+    //                            "Immediate operand must be 12 bit or less"));
+    //    }
 
     return ValidationResult::success();
   }
@@ -297,6 +304,5 @@ AbstractBranchInstructionNode<
 >::~AbstractBranchInstructionNode() = default;
 // clang-format on
 }
-
 
 #endif /* ERAGPSIM_ARCH_RISCV_ABSTRACT_BRANCH_INSTRUCTION_NODE_HPP_ */

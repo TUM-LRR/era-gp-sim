@@ -34,48 +34,21 @@ class RegisterNode : public AbstractSyntaxTreeNode {
    *
    * \param value The identifier for the register.
    */
-  explicit RegisterNode(const std::string& identifier)
-  : super(Type::REGISTER), _identifier(identifier) {
-  }
+  RegisterNode(const std::string& identifier);
 
   /**
    * \return The content of the register, represented by this node.
    */
-  MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    return memoryAccess.getRegisterValue(_identifier);
-  }
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override;
 
   /**
-   * \return true, if there are no children.
+   * \return success, if there are no children.
    */
-  ValidationResult validate() const override {
-    // Registers can't have any children
-    if (AbstractSyntaxTreeNode::_children.size() == 0) {
-      return ValidationResult::success();
-    }
-    return ValidationResult::fail(
-        QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                          "The register node must not have any arguments"));
-  }
+  ValidationResult validate() const override;
 
-  const std::string& getIdentifier() const override {
-    return _identifier;
-  }
+  const std::string& getIdentifier() const override;
 
-  // MemoryAccess problem
-  MemoryValue assemble() const override {
-    // real implementation
-    // just have to convert string to MemoryValue
-    // return getIdentifier();
-
-    // dummy
-    MemoryValue memValue(1, 8);
-    memValue.put(0, true);
-    memValue.put(1, true);
-    memValue.put(2, true);
-    memValue.put(3, true);
-    return memValue;
-  }
+  MemoryValue assemble() const override;
 
  private:
   /**

@@ -65,10 +65,6 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   Node createInstructionNode(const std::string &mnemonic) const override;
 
  private:
-  /*! Internal integer type to represent 32bit for arithmetic operations. */
-  using RV32_integral_t = uint32_t;
-  /*! Internal integer type to represent 64bit for arithmetic operations. */
-  using RV64_integral_t = uint64_t;
 
   using Factory = std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
       const InstructionInformation &)>;
@@ -79,96 +75,9 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   void _setupOtherInstructions();
 
   /**
-   * \brief Sets load instructions.
+   * \brief Sets up "w"-Instructions only present in RV64
    */
-  void _setupLoadInstructions();
-
-  /**
-   * \brief Sets store instructions.
-   */
-  void _setupStoreInstructions();
-
-  /**
-   * Sets up the integer instructions.
-   *
-   * \tparam SizeType The word size of the architecture.
-   */
-  template <typename SizeType>
-  void _setupIntegerInstructions() {
-    auto facade = _factories.integerInstructionFacade<SizeType>();
-
-    facade.template add<AddInstructionNode>("add");
-    facade.template add<SubInstructionNode>("sub", false);
-    facade.template add<AndInstructionNode>("and");
-    facade.template add<OrInstructionNode>("or");
-    facade.template add<XorInstructionNode>("xor");
-    facade.template add<ShiftLeftLogicalInstructionNode>("sll");
-    facade.template add<ShiftRightLogicalInstructionNode>("srl");
-    facade.template add<ShiftRightArithmeticInstructionNode>("sra");
-  }
-
-  template <typename UnsignedWord, typename SignedWord>
-  void _setupControlFlowInstructions() {
-    _setupBranchInstructions<UnsignedWord, SignedWord>();
-    _setupJumpInstructions<UnsignedWord, SignedWord>();
-  }
-
-  /**
-   * Sets up branch instructions.
-   *
-   * Jump instructions include `BEQ`, `BNE`, `BLT[U]` and `BG[U]`.
-   *
-   * \tparam UnsignedWord An unsigned word type.
-   * \tparam SignedWord A signed word type.
-   */
-  template <typename UnsignedWord, typename SignedWord>
-  void _setupBranchInstructions() {
-    using OperandTypes =
-        typename AbstractBranchInstructionNode<UnsignedWord,
-                                               SignedWord>::OperandTypes;
-
-    auto facade = _factories.typeFacade<UnsignedWord, SignedWord>();
-    facade.template add<BranchEqualInstructionNode>("beq");
-    facade.template add<BranchNotEqualInstructionNode>("bne");
-
-    // clang-format off
-    facade.template add<BranchLessThanInstructionNode>(
-      "blt",
-      OperandTypes::SIGNED
-    );
-
-    facade.template add<BranchLessThanInstructionNode>(
-      "bltu",
-      OperandTypes::UNSIGNED
-    );
-
-    facade.template add<BranchGreaterEqualInstructionNode>(
-        "bge",
-        OperandTypes::SIGNED
-    );
-
-    facade.template add<BranchGreaterEqualInstructionNode>(
-        "bgeu",
-        OperandTypes::UNSIGNED
-    );
-    // clang-format on
-  }
-
-  /**
-   * Sets up the jump instructions in the map.
-   *
-   * Jump instructions include `JAL`, `JALR` and `J`.
-   *
-   * \tparam UnsignedWord An unsigned word type.
-   * \tparam SignedWord A signed word type.
-   */
-  template <typename UnsignedWord, typename SignedWord>
-  void _setupJumpInstructions() {
-    auto facade = _factories.typeFacade<UnsignedWord, SignedWord>();
-    facade.template add<JumpAndLinkImmediateInstructionNode>("jal");
-    facade.template add<JumpAndLinkRegisterInstructionNode>("jalr");
-    facade.template add<JumpInstructionNode>("j");
-  }
+  void _setup64BitOnlyInstructions();
 
   /**
    * Table, that maps the instruction identifier (e.g. the mnemonic "add" for

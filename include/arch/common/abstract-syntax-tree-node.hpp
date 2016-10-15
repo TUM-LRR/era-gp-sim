@@ -22,14 +22,14 @@
 #include <string>
 #include <vector>
 
-#include "arch/common/validation-result.hpp"
-#include "core/memory-access.hpp"
-#include "core/memory-value.hpp"
+class MemoryValue;
+class MemoryAccess;
+class ValidationResult;
 
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {
  public:
-  using Node   = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
   using size_t = std::size_t;
 
   enum class Type {
@@ -65,11 +65,25 @@ class AbstractSyntaxTreeNode {
 
   /**
    * Validates the structure of this syntax tree. This should be called
-   * before every execution.
+   * while the assembler code is parsed.
    *
    * \return Whether this syntax tree is valid for execution.
    */
   virtual ValidationResult validate() const = 0;
+
+  /**
+   * Validates, if this instruction is semantically correct during runtime.
+   * This should be called before the execution (i.e. a call to getValue()) of
+   * each instruction.
+   *
+   * As most instructions don't need a runtime validation, this method has a
+   * default implementation that always returns ValidationResult::success().
+   * It is intended, that an instruction, that needs the runtime validation,
+   * simply overrides this function.
+   *
+   * \return Whether this is semantically correct during runtime.
+   */
+  virtual ValidationResult validateRuntime(MemoryAccess& memoryAccess) const;
 
   /**
    * Assembles this syntax tree into its binary representation. So, this
@@ -133,6 +147,9 @@ class AbstractSyntaxTreeNode {
    * \return True if all children are valid, else false.
    */
   ValidationResult _validateChildren() const;
+
+  bool
+  _fitsIntoNBit(const MemoryValue& value, size_t n, bool isSigned = true) const;
 
   /** The child nodes of this node. */
   std::vector<Node> _children;

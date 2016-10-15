@@ -25,39 +25,39 @@
 
 namespace riscv {
 
-const std::size_t REGISTER_SIZE = 4;
+const std::size_t REGISTER_SIZE = 8;
 
 // methods to transform immediates into their specified formats
 // I should possibly reverse the memory values before the following operations
 void immToI(MemoryValue& vec) {
-  for (int i = 10; i >= 0; i--) vec.put(i, vec.get(20 + i));
-  for (int i = 31; i > 10; i--) vec.put(i, vec.get(31));
+  for (int i = 21; i < 32; i++) vec.put(i, vec.get(i - 20));
+  for (int i = 0; i < 21; i++)  vec.put(i, vec.get(0));
 }
 
 void immToS(MemoryValue& vec) {
-  vec.put(0, vec.get(7));
-  for (int i = 4; i >= 1; i--) vec.put(i, vec.get(7 + i));
-  for (int i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
-  for (int i = 31; i > 10; i--) vec.put(i, vec.get(31));
+  vec.put(31, vec.get(24));
+  for (int i = 27; i <= 30; i++) vec.put(i, vec.get(i - 7));
+  for (int i = 21; i <= 26; i++) vec.put(i, vec.get(i - 20));
+  for (int i = 0; i <= 20; i++) vec.put(i, vec.get(0));
 }
 
 void immToB(MemoryValue& vec) {
   immToS(vec);
-  vec.put(11, vec.get(0));
-  vec.put(0, false);
+  vec.put(20, vec.get(31));
+  vec.put(31, false);
 }
 
 void immToU(MemoryValue& vec) {
-  for (int i = 12; i >= 0; i--) vec.put(i, false);
+  for (int i = 19; i <= 31; i++) vec.put(i, false);
 }
 
 void immToJ(MemoryValue& vec) {
   // clang-format off
-  for (int i = 4; i >= 1; i--) vec.put(i, vec.get(20 + i));
-  vec.put(0, false);
-  for (int i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
-  vec.put(11, vec.get(20));
-  for (int i = 31; i >= 20; i--) vec.put(i, vec.get(31));
+  for (int i = 27; i <= 30; i++) vec.put(i, vec.get(i - 20));
+  vec.put(31, false);
+  for (int i = 21; i <= 26; i++) vec.put(i, vec.get(i - 20));
+  vec.put(20, vec.get(11));
+  for (int i = 0; i <= 11; i++) vec.put(i, vec.get(0));
   // clang-format on
 }
 
@@ -68,17 +68,17 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   // funct7 - 6 bits long
   std::vector<bool> tmp;
   //  Utility::convertToBin(tmp, key["funct7"]);
-  Utility::convertToBin(tmp, key["function"]);
-  // push the last 6 bits
+  Utility::convertToBin(tmp, key["function"] >> 3);
+  // push the last 7 bits
   Utility::pushBackFromEnd(res, tmp, 7);
 
   auto argument = args.at(2);
 
   // rs2
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
   // rs1
   argument = args.at(1);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   tmp.clear();
   // Utility::convertToBin(tmp, key["funct3"]);
@@ -87,7 +87,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
 
   // destination
   argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
 
   tmp.clear();
   Utility::convertToBin(tmp, key["opcode"]);
@@ -107,10 +107,10 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   immToI(imm);
 
   // immediate - 12 bits long
-  for (int i = 11; i >= 0; i--) res.push_back(imm.get(i));
+  for (int i = 20; i <= 31; i++) res.push_back(imm.get(i));
   // rs1
   auto argument = args.at(1);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   tmp.clear();
   // Utility::convertToBin(tmp, key["funct3"]);
@@ -119,7 +119,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
 
   // destination
   argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
 
   tmp.clear();
   Utility::convertToBin(tmp, key["opcode"]);
@@ -138,10 +138,13 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   immToS(imm);
 
   // immediate[11:5]
-  for (int i = 11; i > 4; i--) res.push_back(imm.get(i));
-  // rs1
+  for (int i = 20; i < 27; i++) res.push_back(imm.get(i));
+  // rs2
   auto argument = args.at(1);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  // rs1
+  argument = args.at(0);
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   // Utility::convertToBin(tmp, key["funct3"]);
   Utility::convertToBin(tmp, key["function"]);
@@ -167,12 +170,15 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   immToB(imm);
 
   // imm[12]
-  res.push_back(imm.get(12));
+  res.push_back(imm.get(19));
   // immediate[10:5]
-  for (int i = 10; i > 4; i--) res.push_back(imm.get(i));
-  // rs1
+  for (int i = 21; i < 27; i++) res.push_back(imm.get(i));
+  // rs2
   auto argument = args.at(1);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  // rs1
+  argument = args.at(0);
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   // Utility::convertToBin(tmp, key["funct3"]);
   Utility::convertToBin(tmp, key["function"]);
@@ -200,11 +206,11 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   immToU(imm);
 
   // immediate[31:12]
-  for (int i = 31; i >= 12; i--) res.push_back(imm.get(i));
+  for (int i = 0; i <= 19; i++) res.push_back(imm.get(i));
 
   // rd
   auto argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
 
   Utility::convertToBin(tmp, key["opcode"]);
   Utility::pushBackFromEnd(res, tmp, 7);
@@ -222,17 +228,17 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
   immToJ(imm);
 
   // immediate[20]
-  res.push_back(imm.get(20));
-  // imm[10:1]
-  for (int i = 10; i >= 1; i--) res.push_back(imm.get(i));
-  // imm[11]
   res.push_back(imm.get(11));
+  // imm[10:1]
+  for (int i = 21; i <= 30; i++) res.push_back(imm.get(i));
+  // imm[11]
+  res.push_back(imm.get(20));
   // imm[19:12]
-  for (int i = 19; i >= 12; i--) res.push_back(imm.get(i));
+  for (int i = 12; i <= 19; i++) res.push_back(imm.get(i));
 
   // rd
   auto argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
 
   Utility::convertToBin(tmp, key["opcode"]);
   Utility::pushBackFromEnd(res, tmp, 7);

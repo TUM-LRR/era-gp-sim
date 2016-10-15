@@ -3,18 +3,17 @@
 ########################################
 
 set(TEST_ARCH_RISCV_SOURCES
-	arch-riscv-integer-instructions-test.cpp
-	arch-riscv-tests.cpp
-  arch-riscv-jump-instruction-tests.cpp
-  arch-riscv-branch-instruction-tests.cpp
+  arch-riscv-integer-instructions-test.cpp
+  # load-store-instructions-test.cpp TODO Reimplement them using "real" memory access
+  lui-auipc-instructions-test.cpp
+  rv64-only-instructions-test.cpp
+  dummies.cpp
+  arithmetic-test-utils.cpp
+  mul-div-instruction-tests.cpp
+  # formats-test.cpp TODO
+  # arch-riscv-jump-instruction-tests.cpp
+  # arch-riscv-branch-instruction-tests.cpp
 )
-
-########################################
-# PACKAGES
-########################################
-
-#find_package(GTest REQUIRED)
-#include_directories(${GTEST_INCLUDE_DIRS})
 
 ########################################
 # TARGET

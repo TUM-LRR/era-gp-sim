@@ -20,7 +20,7 @@
 
 #include <string>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
+class AbstractSyntaxTreeNode;
 
 /**
  * \brief The AbstractRegisterNodeFactory class

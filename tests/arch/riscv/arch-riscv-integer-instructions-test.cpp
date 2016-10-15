@@ -17,13 +17,12 @@
 
 #include <cassert>
 #include <cstdint>
-#include <iostream>
 #include <unordered_map>
+#include <iostream>
 
 #include "gtest/gtest.h"
 
 #include "arch/common/architecture-formula.hpp"
-#include "arch/common/architecture.hpp"
 #include "arch/common/immediate-node.hpp"
 #include "arch/common/register-node.hpp"
 #include "arch/riscv/immediate-node-factory.hpp"
@@ -31,209 +30,10 @@
 #include "arch/riscv/instruction-node.hpp"
 #include "core/conversions.hpp"
 
+#include "dummies.hpp"
+#include "arithmetic-test-utils.hpp"
+
 using namespace riscv;
-
-template <typename IntType>
-MemoryValue convertToMem(IntType t) {
-  return core::convert<IntType>(t, riscv::BITS_PER_BYTE, riscv::ENDIANNESS);
-}
-
-MemoryValue to32BitMemoryValue(uint32_t value) {
-  return convertToMem<uint32_t>(value);
-}
-
-MemoryValue to64BitMemoryValue(uint64_t value) {
-  return convertToMem<uint64_t>(value);
-}
-
-InstructionNodeFactory
-setUpFactory(ArchitectureFormula::InitializerList modules) {
-  auto formula = ArchitectureFormula("riscv", modules);
-  auto riscv   = Architecture::Brew(formula);
-  return InstructionNodeFactory(riscv.getInstructions(), riscv);
-}
-
-void testIntegerInstructionValidation(MemoryAccess& memAccess,
-                                      InstructionNodeFactory& instrF,
-                                      ImmediateNodeFactory& immF,
-                                      std::string instructionToken,
-                                      bool isImmediateInstr) {
-  std::string registerId = "not relevant";
-
-  return;
-
-  // add 0-3 random Nodes
-  auto instructionNode = instrF.createInstructionNode(instructionToken);
-  ASSERT_DEATH(instructionNode->getValue(memAccess), "");
-  instructionNode->addChild(std::move(immF.createImmediateNode(MemoryValue())));
-  ASSERT_DEATH(instructionNode->getValue(memAccess), "");
-  instructionNode->addChild(std::move(immF.createImmediateNode(MemoryValue())));
-  ASSERT_DEATH(instructionNode->getValue(memAccess), "");
-  instructionNode->addChild(std::move(immF.createImmediateNode(MemoryValue())));
-  ASSERT_DEATH(instructionNode->getValue(memAccess), "");
-
-  // test opposite operand configuration
-  auto instructionNode2 = instrF.createInstructionNode(instructionToken);
-  instructionNode2->addChild(
-      std::move(std::make_unique<RegisterNode>(registerId)));
-  instructionNode2->addChild(
-      std::move(std::make_unique<RegisterNode>(registerId)));
-  if (isImmediateInstr) {
-    // Immediate Instraction has now 3 Register Operands
-    instructionNode2->addChild(
-        std::move(std::make_unique<RegisterNode>(registerId)));
-  } else {
-    // Register Instraction has now 2 Register & 1 Immediate Operand
-    instructionNode2->addChild(
-        std::move(immF.createImmediateNode(convertToMem<uint64_t>(0))));
-  }
-  ASSERT_FALSE(instructionNode2->validate().isSuccess());
-  ASSERT_DEATH(instructionNode2->getValue(memAccess), "");
-
-  // test valid children, but with one more operand
-  auto instructionNode3 = instrF.createInstructionNode(instructionToken);
-  instructionNode3->addChild(
-      std::move(std::make_unique<RegisterNode>(registerId)));
-  instructionNode3->addChild(
-      std::move(std::make_unique<RegisterNode>(registerId)));
-  if (isImmediateInstr) {
-    instructionNode3->addChild(
-        std::move(immF.createImmediateNode(convertToMem<uint64_t>(0))));
-  } else {
-    instructionNode3->addChild(
-        std::move(std::make_unique<RegisterNode>(registerId)));
-  }
-  ASSERT_TRUE(instructionNode3->validate().isSuccess());
-  // add one more random node
-  instructionNode3->addChild(
-      std::move(immF.createImmediateNode(convertToMem<uint64_t>(0))));
-  ASSERT_FALSE(instructionNode3->validate().isSuccess());
-  ASSERT_DEATH(instructionNode3->getValue(memAccess), "");
-}
-
-void test12BitImmediateBounds(InstructionNodeFactory& instrF,
-                              std::string instructionToken,
-                              ImmediateNodeFactory& immF) {
-  constexpr uint64_t boundary = 0xFFFFF;
-  std::string registerId      = "not relevant";
-  auto node                   = instrF.createInstructionNode(instructionToken);
-  node->addChild(std::move(std::make_unique<RegisterNode>(registerId)));
-  node->addChild(std::move(std::make_unique<RegisterNode>(registerId)));
-  auto immediateNodeIn =
-      immF.createImmediateNode(convertToMem<uint64_t>(boundary));
-  node->addChild(std::move(immediateNodeIn));
-  ASSERT_TRUE(node->validate().isSuccess());
-  auto node2 = instrF.createInstructionNode(instructionToken);
-  node2->addChild(std::move(std::make_unique<RegisterNode>(registerId)));
-  node2->addChild(std::move(std::make_unique<RegisterNode>(registerId)));
-  auto immediateNodeOut =
-      immF.createImmediateNode(convertToMem<uint64_t>(boundary + 1));
-  node2->addChild(std::move(immediateNodeOut));
-  // TODO enable when AbstractIntegerInstructionNode::validate() is fixed
-  // ASSERT_FALSE(node2->validate().isSuccess());
-  std::cout << "Ignored 1 12bit immediate boundary test" << std::endl;
-}
-
-/**
-  * This macro performs a register-register test for the given instruction,
- * operands.
-  * Apart from the parameters, this macro needs certain exactly named
- * declarations of certain types to compile. This is done to keep the macro
- * argument list short.
- * dest: std::string token, that defines the name of the destination register
- * op1: std::string token, that defines the name of the first operand register
- * op2: std::string token, that defines the name of the second operand register
- * memoryAccess MemoryAccess, where the required registers are added
- * instructionFactory InstructionFactory where nodes with the given
- * instruction-token can be created
- *
- * \param contextNbr running number for variable naming
- * \param memoryValueConverter function that returns a MemoryValue for a given
- * operand-value
- * \param instruction instruction to test (as string literal)
- * \param operand1 first operand value (as literal)
- * \param operand2 second operand value (as literal)
- * \param result expected result of the operation (as literal)
-  */
-#define TEST_RR(                                                               \
-    contextNbr, memoryValueConverter, instruction, operand1, operand2, result) \
-  /* Put operand values into register */                                       \
-  memoryAccess.setRegisterValue(op1, memoryValueConverter(operand1));          \
-  memoryAccess.setRegisterValue(op2, memoryValueConverter(operand2));          \
-  auto cmd_##contextNbr =                                                      \
-      instructionFactory.createInstructionNode(instruction);                   \
-  ASSERT_FALSE(cmd_##contextNbr->validate().isSuccess());                      \
-  /*Assemble instruction with destination & operands*/                         \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(dest));            \
-  ASSERT_FALSE(cmd_##contextNbr->validate().isSuccess());                      \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(op1));             \
-  ASSERT_FALSE(cmd_##contextNbr->validate().isSuccess());                      \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(op2));             \
-  ASSERT_TRUE(cmd_##contextNbr->validate().isSuccess());                       \
-  /* Save values of operand registers to determine change*/                    \
-  MemoryValue preOp1_##contextNbr = memoryAccess.getRegisterValue(op1);        \
-  MemoryValue preOp2_##contextNbr = memoryAccess.getRegisterValue(op2);        \
-  /* Perform instruction*/                                                     \
-  MemoryValue returnValue_##contextNbr =                                       \
-      cmd_##contextNbr->getValue(memoryAccess);                                \
-  ASSERT_EQ(memoryValueConverter(0), returnValue_##contextNbr);                \
-  /* Check that operand registers stayed the same*/                            \
-  ASSERT_EQ(preOp1_##contextNbr, memoryAccess.getRegisterValue(op1));          \
-  ASSERT_EQ(preOp2_##contextNbr, memoryAccess.getRegisterValue(op2));          \
-  /* Read result from destination register*/                                   \
-  MemoryValue actualResult_##contextNbr = memoryAccess.getRegisterValue(dest); \
-  ASSERT_EQ(memoryValueConverter(result), actualResult_##contextNbr);
-
-/**
-  * This macro performs a register-immediate test for the given instruction,
- * operands
-  * Apart from the parameters, this macro needs certain exactly named
- * declarations of certain types to compile. This is done to keep the macro
- * argument list short
- * dest: std::string token, that defines the name of the destination register
- * reg: std::string token, that defines the name of the operand register
- * memoryAccess MemoryAccess, where the required registers are added
- * instructionFactory InstructionFactory where nodes with the given
- * instruction-token can be created
- * immediateFactory ImmediateFactory, where Immediate-Nodes can be created
- *
- * \param contextNbr running number for variable naming
- * \param memoryValueConverter function that returns a MemoryValue for a given
- * operand-value
- * \param instruction instruction to test (as string literal)
- * \param operand1 first operand value (as literal)
- * \param operand2 second operand value (as literal)
- * \param result expected result of the operation (as literal)
-  */
-#define TEST_RI(                                                               \
-    contextNbr, memoryValueConverter, instruction, operand1, operand2, result) \
-  memoryAccess.setRegisterValue(reg, memoryValueConverter(operand1));          \
-  /* Assemble instruction node with destination, operand & immediate node*/    \
-  auto cmd_##contextNbr =                                                      \
-      instructionFactory.createInstructionNode(instruction);                   \
-  ASSERT_FALSE(cmd_##contextNbr->validate().isSuccess())                       \
-      << "empty instruction node validation failed";                           \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(dest));            \
-  ASSERT_FALSE(cmd_##contextNbr->validate().isSuccess())                       \
-      << "instruction node + destination register node validation failed";     \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(reg));             \
-  ASSERT_FALSE(cmd_##contextNbr->validate().isSuccess())                       \
-      << "instruction node + 2 register nodes validation failed";              \
-  cmd_##contextNbr->addChild(                                                  \
-      immediateFactory.createImmediateNode(memoryValueConverter(operand2)));   \
-  ASSERT_TRUE(cmd_##contextNbr->validate().isSuccess())                        \
-      << "instruction node + 2 register + immediate node validation failed";   \
-  /* Save value of operand register to determine change */                     \
-  MemoryValue preRegisterOp_##contextNbr = memoryAccess.getRegisterValue(reg); \
-  /* Perform instruction*/                                                     \
-  MemoryValue returnValue_##contextNbr =                                       \
-      cmd_##contextNbr->getValue(memoryAccess);                                \
-  ASSERT_EQ(memoryValueConverter(0), returnValue_##contextNbr);                \
-  /* Check that register operand stayed the same*/                             \
-  ASSERT_EQ(preRegisterOp_##contextNbr, memoryAccess.getRegisterValue(reg));   \
-  /* Read result from destination register */                                  \
-  MemoryValue result_##contextNbr = memoryAccess.getRegisterValue(dest);       \
-  ASSERT_EQ(memoryValueConverter(result), result_##contextNbr);
 
 TEST(IntegerInstructionTest, ADDInstruction_testAdd32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
@@ -381,17 +181,17 @@ TEST(IntegerInstructionTest, ANDInstruction_testAnd64) {
   TEST_RR(0,
           to64BitMemoryValue,
           "and",
-          0b110110L << 32,
-          0b100100L << 32,
-          0b100100L << 32);
+          0b110110LL << 32,
+          0b100100LL << 32,
+          0b100100LL << 32);
   TEST_RR(1,
           to64BitMemoryValue,
           "and",
-          0b100100L << 32,
-          0b110110L << 32,
-          0b100100L << 32);
-  TEST_RR(2, to64BitMemoryValue, "and", 0b101010L << 32, 0b010101L << 32, 0);
-  TEST_RR(3, to64BitMemoryValue, "and", 0b010101L << 32, 0b101010L << 32, 0);
+          0b100100LL << 32,
+          0b110110LL << 32,
+          0b100100LL << 32);
+  TEST_RR(2, to64BitMemoryValue, "and", 0b101010LL << 32, 0b010101LL << 32, 0);
+  TEST_RR(3, to64BitMemoryValue, "and", 0b010101LL << 32, 0b101010LL << 32, 0);
 }
 
 TEST(IntegerInstructionTest, ANDInstruction_testAndi32) {
@@ -425,8 +225,8 @@ TEST(IntegerInstructionTest, ANDInstruction_testAndi64) {
   // it is difficult to test 64bit version, because immediate values cannot be
   // greater than 20bit
   // therefore no upper 32bit testing can be done, except for testing against 0
-  TEST_RI(0, to64BitMemoryValue, "andi", 0b110110L << 32, 0b100100, 0);
-  TEST_RI(1, to64BitMemoryValue, "andi", 0b100100L, 0b110110L, 0b100100L);
+  TEST_RI(0, to64BitMemoryValue, "andi", 0b110110LL << 32, 0b100100, 0);
+  TEST_RI(1, to64BitMemoryValue, "andi", 0b100100LL, 0b110110LL, 0b100100LL);
 
   // test immediate boundary
   test12BitImmediateBounds(instructionFactory, "andi", immediateFactory);
@@ -471,27 +271,27 @@ TEST(IntegerInstructionTest, ORINstruction_testOr64) {
   TEST_RR(0,
           to64BitMemoryValue,
           "or",
-          0b110110L << 32,
-          0b100100L << 32,
-          0b110110L << 32);
+          0b110110LL << 32,
+          0b100100LL << 32,
+          0b110110LL << 32);
   TEST_RR(1,
           to64BitMemoryValue,
           "or",
-          0b100100L << 32,
-          0b110110L << 32,
-          0b110110L << 32);
+          0b100100LL << 32,
+          0b110110LL << 32,
+          0b110110LL << 32);
   TEST_RR(2,
           to64BitMemoryValue,
           "or",
-          0b101010L << 32,
-          0b010101L << 32,
-          0b111111L << 32);
+          0b101010LL << 32,
+          0b010101LL << 32,
+          0b111111LL << 32);
   TEST_RR(3,
           to64BitMemoryValue,
           "or",
-          0b010101L << 32,
-          0b101010L << 32,
-          0b111111L << 32);
+          0b010101LL << 32,
+          0b101010LL << 32,
+          0b111111LL << 32);
 }
 
 TEST(IntegerInstructionTest, ORInstruction_testOri32) {
@@ -524,9 +324,9 @@ TEST(IntegerInstructionTest, ORInstruction_testOri64) {
   TEST_RI(0,
           to64BitMemoryValue,
           "ori",
-          (0b1010110L << 32),
+          (0b1010110LL << 32),
           0b10,
-          ((0b1010110L << 32) + 2));
+          ((0b1010110LL << 32) + 2));
   // test immediate boundary
   test12BitImmediateBounds(instructionFactory, "ori", immediateFactory);
 }
@@ -569,27 +369,27 @@ TEST(IntegerInstructionTest, XORInstruction_testXor64) {
   TEST_RR(0,
           to64BitMemoryValue,
           "xor",
-          0b110110L << 32,
-          0b100100L << 32,
-          0b010010L << 32);
+          0b110110LL << 32,
+          0b100100LL << 32,
+          0b010010LL << 32);
   TEST_RR(1,
           to64BitMemoryValue,
           "xor",
-          0b100100L << 32,
-          0b110110L << 32,
-          0b010010L << 32);
+          0b100100LL << 32,
+          0b110110LL << 32,
+          0b010010LL << 32);
   TEST_RR(2,
           to64BitMemoryValue,
           "xor",
-          0b101010L << 32,
-          0b010101L << 32,
-          0b111111L << 32);
+          0b101010LL << 32,
+          0b010101LL << 32,
+          0b111111LL << 32);
   TEST_RR(3,
           to64BitMemoryValue,
           "xor",
-          0b010101L << 32,
-          0b101010L << 32,
-          0b111111L << 32);
+          0b010101LL << 32,
+          0b101010LL << 32,
+          0b111111LL << 32);
 }
 
 TEST(IntegerInstructionTest, XORInstruction_testXori32) {
@@ -620,12 +420,8 @@ TEST(IntegerInstructionTest, XORInstruction_testXori64) {
   auto immediateFactory   = ImmediateNodeFactory();
   auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
 
-  TEST_RI(0,
-          to64BitMemoryValue,
-          "xori",
-          (0b100000001010110L << 18),
-          (0b10L << 18),
-          (0b100000001010100L << 18));
+  TEST_RI(0, to64BitMemoryValue, "xori", (0b100000001010110LL << 5),
+          (0b10LL << 5), (0b100000001010100LL << 5));
   // test immediate boundary
   test12BitImmediateBounds(instructionFactory, "xori", immediateFactory);
 }
@@ -665,9 +461,9 @@ TEST(IntegerInstructionTest, ShiftLeftInstruction_testSll64) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
 
-  TEST_RR(0, to64BitMemoryValue, "sll", 0b110110L << 32, 3, 0b110110000L << 32);
+  TEST_RR(0, to64BitMemoryValue, "sll", 0b110110LL << 32, 3, 0b110110000LL << 32);
   // shifts use only the lower 5bit of the second operand
-  TEST_RR(1, to64BitMemoryValue, "sll", 3, 0b110110L << 32, 3);
+  TEST_RR(1, to64BitMemoryValue, "sll", 3, 0b110110LL << 32, 3);
 }
 
 TEST(IntegerInstructionTest, ShiftLeftInstruction_testSlli32) {
@@ -699,11 +495,11 @@ TEST(IntegerInstructionTest, ShiftLeftInstruction_testSlli64) {
   TEST_RI(0,
           to64BitMemoryValue,
           "slli",
-          (0b110110L << 32),
+          (0b110110LL << 32),
           3,
-          (0b110110000L << 32));
+          (0b110110000LL << 32));
   // shifts use only the lower 5bit of the second operand
-  TEST_RI(1, to64BitMemoryValue, "slli", (0b1L << 32), 0b11100001, 0b10L << 32);
+  TEST_RI(1, to64BitMemoryValue, "slli", (0b1LL << 32), 0b11100001, 0b10LL << 32);
   // test immediate boundary
   test12BitImmediateBounds(instructionFactory, "slli", immediateFactory);
 }
@@ -743,9 +539,9 @@ TEST(IntegerInstructionTest, ShiftRightInstruction_testSrl64) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
 
-  TEST_RR(0, to64BitMemoryValue, "srl", 0b110110L << 32, 3, 0b110110L << 29);
+  TEST_RR(0, to64BitMemoryValue, "srl", 0b110110LL << 32, 3, 0b110110LL << 29);
   // shifts use only the lower 5bit of the second operand
-  TEST_RR(1, to64BitMemoryValue, "srl", 3, 0b110110L << 32, 3);
+  TEST_RR(1, to64BitMemoryValue, "srl", 3, 0b110110LL << 32, 3);
 }
 
 TEST(IntegerInstructionTest, ShiftRightInstruction_testSrli32) {
@@ -774,9 +570,9 @@ TEST(IntegerInstructionTest, ShiftRightInstruction_testSrli64) {
   auto immediateFactory   = ImmediateNodeFactory();
   auto instructionFactory = setUpFactory({"rv32i", "rv64i"});
 
-  TEST_RI(0, to64BitMemoryValue, "srli", 0b110110L << 32, 3, 0b110110L << 29);
+  TEST_RI(0, to64BitMemoryValue, "srli", 0b110110LL << 32, 3, 0b110110LL << 29);
   // shifts use only the lower 5bit of the second operand
-  TEST_RI(1, to64BitMemoryValue, "srli", 0b11L << 32, 0b11100001, 0b11L << 31);
+  TEST_RI(1, to64BitMemoryValue, "srli", 0b11LL << 32, 0b11100001, 0b11LL << 31);
   // test immediate boundary
   test12BitImmediateBounds(instructionFactory, "srli", immediateFactory);
 }
@@ -825,15 +621,15 @@ TEST(IntegerInstructionTest, ShiftRightArithmeticInstruction_testSra64) {
   TEST_RR(0,
           to64BitMemoryValue,
           "sra",
-          0b1000000000000000000000000001101100000000000000000000000000000000L,
+          0b1000000000000000000000000001101100000000000000000000000000000000LL,
           3,
-          0b1111000000000000000000000000001101100000000000000000000000000000L);
+          0b1111000000000000000000000000001101100000000000000000000000000000LL);
   // shifts use only the lower 5bit of the second operand
   TEST_RR(1,
           to64BitMemoryValue,
           "sra",
           3,
-          0b1000000000000000000000000001101100000000000000000000000000000000L,
+          0b1000000000000000000000000001101100000000000000000000000000000000LL,
           3);
 }
 
@@ -877,11 +673,11 @@ TEST(IntegerInstructionTest, ShiftRightInstruction_testSrai64) {
   TEST_RI(0,
           to64BitMemoryValue,
           "srai",
-          0b1000000000000000000000000001101100000000000000000000000000000000L,
+          0b1000000000000000000000000001101100000000000000000000000000000000LL,
           3,
-          0b1111000000000000000000000000001101100000000000000000000000000000L);
+          0b1111000000000000000000000000001101100000000000000000000000000000LL);
   // shifts use only the lower 5bit of the second operand
-  TEST_RI(1, to64BitMemoryValue, "srai", 0b11L << 32, 0b11100001, 0b11L << 31);
+  TEST_RI(1, to64BitMemoryValue, "srai", 0b11LL << 32, 0b11100001, 0b11LL << 31);
   // test immediate boundary
   test12BitImmediateBounds(instructionFactory, "srai", immediateFactory);
 }

@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP
 #define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP
 
+#include <QtGlobal>
 #include <cassert>
 #include <string>
 #include <type_traits>
@@ -53,7 +54,7 @@ struct AddInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
  * Represents a RISC-V "sub" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 struct SubInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
@@ -72,7 +73,7 @@ struct SubInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
  * Represents a RISC-V "and/andi" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 struct AndInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
@@ -90,7 +91,7 @@ struct AndInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
  * Represents a RISC-V "or/ori" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 struct OrInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
@@ -108,7 +109,7 @@ struct OrInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
  * Represents a RISC-V "xor/xori" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 struct XorInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
@@ -126,7 +127,7 @@ struct XorInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
  * Represents a RISC-V "sll/slli" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 struct ShiftLeftLogicalInstructionNode
@@ -150,7 +151,7 @@ struct ShiftLeftLogicalInstructionNode
  * Represents a RISC-V "srl/srli" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 struct ShiftRightLogicalInstructionNode
@@ -169,7 +170,7 @@ struct ShiftRightLogicalInstructionNode
  * Represents a RISC-V "sra/srai" instruction. For more information see RISC-V
  * specification
  * \tparam integer type that can hold exactly the range of values that this
- * operation should operate
+ * operation should operate on
  */
 template <typename SizeType>
 struct ShiftRightArithmeticInstructionNode

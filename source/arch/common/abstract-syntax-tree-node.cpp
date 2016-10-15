@@ -19,6 +19,10 @@
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 
+#include "arch/common/validation-result.hpp"
+#include "core/memory-access.hpp"
+#include "core/memory-value.hpp"
+
 AbstractSyntaxTreeNode::AbstractSyntaxTreeNode(Type nodeType)
 : _nodeType(nodeType) {
 }
@@ -26,6 +30,11 @@ AbstractSyntaxTreeNode::AbstractSyntaxTreeNode(Type nodeType)
 MemoryValue AbstractSyntaxTreeNode::
 operator()(MemoryAccess& memoryAccess) const {
   return getValue(memoryAccess);
+}
+
+ValidationResult
+AbstractSyntaxTreeNode::validateRuntime(MemoryAccess& memoryAccess) const {
+  return ValidationResult::success();
 }
 
 AbstractSyntaxTreeNode::Type AbstractSyntaxTreeNode::getType() const noexcept {
@@ -68,4 +77,31 @@ ValidationResult AbstractSyntaxTreeNode::_validateChildren() const {
   }
 
   return ValidationResult::success();
+}
+
+bool AbstractSyntaxTreeNode::_fitsIntoNBit(const MemoryValue& value,
+                                           size_t n,
+                                           bool isSigned) const {
+  if (value.getSize() > n) {
+    if (isSigned) {
+      // Look for the sign bit to determine what bits to expect in the "upper"
+      // region (i.e. n-1...size).
+      bool isSignBitSet = value.get(value.getSize() - 1);
+      for (std::size_t index = n - 1; index < value.getSize(); ++index) {
+        if ((isSignBitSet && !value.get(index)) ||
+            (!isSignBitSet && value.get(index))) {
+          return false;
+        }
+      }
+
+    } else {
+      // For unsigned memory values, sign bit check is not needed
+      for (std::size_t index = n; index < value.getSize(); ++index) {
+        if (value.get(index)) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
 }

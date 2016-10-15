@@ -13,18 +13,20 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
-#ifndef ERAGPSIM_CORE_MEMORYVALUE_HPP
-#define ERAGPSIM_CORE_MEMORYVALUE_HPP
+#ifndef ERAGPSIM_CORE_MEMORYVALUE_HPP_
+#define ERAGPSIM_CORE_MEMORYVALUE_HPP_
 
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include <functional>
 #include <iostream>
 #include <vector>
+
+#include "common/assert.hpp"
 
 class MemoryValue {
  public:
@@ -34,22 +36,22 @@ class MemoryValue {
   MemoryValue();
   /**
    * \brief Constructs an MemoryValue that acquires the data of other
-   * \param other
+   * \param other The MemoryValue to acquire the data of
    */
   MemoryValue(MemoryValue &&other) = default;
   /**
    * \brief Constructs an MemoryValue that acquires the data of other
-   * \param other
+   * \param other The MemoryValue to acquire the data of
    */
   MemoryValue &operator=(MemoryValue &&other) = default;
   /**
    * \brief Constructs an MemoryValue with a copy of the data of other
-   * \param other
+   * \param other The MemoryValue to copy the data of
    */
   MemoryValue(const MemoryValue &other) = default;
   /**
    * \brief Constructs an MemoryValue with a copy of the data of other
-   * \param other
+   * \param other The MemoryValue to copy the data of
    */
   MemoryValue &operator=(const MemoryValue &other) = default;
   /**
@@ -59,70 +61,83 @@ class MemoryValue {
   ~MemoryValue() = default;
   /**
    * \brief Constructs a MemoryValue with a copy of other and a
-   *        byteSize of byteSize
-   * \param other
-   * \param byteSize
+   *        size of size
+   * \param other The vector to be copied and held by this
+   * \param size The size of the MemoryValue in bit
    */
-  MemoryValue(const std::vector<uint8_t> &other, const std::size_t byteSize);
+  MemoryValue(const std::vector<uint8_t> &other, const std::size_t size);
   /**
-   * \brief Constructs an MemoryValue with other and a ByteSize of byteSize
-   * \param other
-   * \param byteSize
+   * \brief Constructs an MemoryValue with other and a size of size
+   * \param other The vector to acquire the data of
+   * \param size The size of the MemoryValue in bit
    */
-  MemoryValue(std::vector<uint8_t> &&other, const std::size_t byteSize);
+  MemoryValue(std::vector<uint8_t> &&other, const std::size_t size);
   /**
-   * \brief Constructs a empty MemoryValue with byteAmount bytes of size
-   *        byteSize
-   * \param byteAmount
-   * \param byteSize
+   * \brief Constructs a empty MemoryValue with a size of size
+   * \param size The size of the MemoryValue in bit
    */
-  MemoryValue(std::size_t byteAmount, std::size_t byteSize);
+  MemoryValue(std::size_t size);
 
+  /**
+   * \brief Constructs a MemoryValue with the data of other between begin and
+   *        end
+   * \param other the MemoryValue the data to be copied of
+   * \param begin the begin index to be copied
+   * \param end the first index no longer to be copied
+   */
   MemoryValue(const MemoryValue &other,
               const std::size_t begin,
-              const std::size_t end,
-              const std::size_t byteSize);
+              const std::size_t end);
 
-  MemoryValue subSet(const std::size_t begin,
-                     const std::size_t end,
-                     const std::size_t byteSize) const;
+  /**
+  * \brief returns a MemoryValue with the data of this between begin and
+  *        end
+  * \param begin the begin index to be copied
+  * \param end the first index no longer to be copied
+  * \return a MemoryValue with the data of this between begin and end
+  *         with a _byteSize of byteSize
+  */
+  MemoryValue subSet(const std::size_t begin, const std::size_t end) const;
 
   /**
    * \brief returns the previous value at address
-   * \param address
+   * \param address The address of the bit
    * \return the value at address
    */
   bool get(const std::size_t address) const;
   /**
    * \brief sets the value at address to value
-   * \param address
-   * \param value
+   * \param address The address of the bit
+   * \param value The Value to be written
    */
   void put(const std::size_t address, const bool value = true);
 
   /**
    * \brief sets the value at address to value and returns the previous value
-   * \param address
-   * \param value
+   * \param address The address of the bit
+   * \param value The Value to be written
    * \return the previous value at address
    */
   bool set(const std::size_t address, const bool value = true);
 
   /**
-   * \brief returns the size of a single byte in bit of the MemoryValue
-   * \return the size of a single byte in the MemoryValue
-   */
-  std::size_t getByteSize() const;
-  /**
-   * \brief returns the num of bytes held by the MemoryValue
-   * \return the amount of bytes held by the MemoryValue
-   */
-  std::size_t getByteAmount() const;
+  * \brief flips the value at address and returns the previous value
+  * \param address The address of the bit
+  * \return the previous value at address
+  */
+  bool flip(const std::size_t address);
+
   /**
    * \brief returns the capacity of the MemoryValue in bit
    * \return the capacity of the MemoryValue in bit
    */
   std::size_t getSize() const;
+
+  /**
+   * Checks if all bits are set to zero.
+   * \return true if all bits are set to zero.
+   */
+  bool isZero();
 
   /**
    * \brief returns a reference to the data vector. For internal purposes only.
@@ -131,17 +146,60 @@ class MemoryValue {
    */
   const std::vector<uint8_t> &internal() const;
 
+  /**
+   * \brief returns true iff this and other have the same _byteSize and
+   *        _data.size() and the values representing the MemoryValue are
+   *        identical, else returns false
+   * \param the MemoryValue to be compared with
+   * \return the equality of this and MemoryValue
+   */
   bool operator==(const MemoryValue &other) const;
 
+  /**
+   * \brief returns false iff this and other have the same _byteSize and
+   *        _data.size() and the values representing the MemoryValue are
+   *        identical, else returns true
+   * \param other the MemoryValue to be compared with
+   * \return the inequality of this and MemoryValue
+   */
   bool operator!=(const MemoryValue &other) const;
 
+  /**
+  * \brief returns writes the data of other into this starting with the
+  *        begin-th bit
+  * \param other the MemoryValue to be written
+  * \param begin the index of the first bit to be written to
+  */
+  void write(const MemoryValue &other, std::size_t begin = 0);
+
+  /**
+   * \brief outputs the value onto the stream
+   * \param stream stream to output value to
+   * \param value the value to be outputted
+   * \return the stream
+   */
   friend std::ostream &
   operator<<(std::ostream &stream, const MemoryValue &value);
+  // friend MemoryValue conversions::permute(const MemoryValue &memoryValue,
+  //  const std::size_t byteSize,
+  //  const std::vector<std::size_t> permutation);
+  // I know this is extremely inelegant
+  friend std::uint8_t getByteAt(MemoryValue memoryValue, std::size_t address) {
+    return memoryValue.getByteAt(address);
+  }
 
-  std::uint8_t getByteAt(std::size_t address) const;
+
+#ifdef FRIEND_TEST
+  FRIEND_TEST(TestMemoryValue, charAt);
+  FRIEND_TEST(TestMemoryValue, death);
+  FRIEND_TEST(TestMemoryValue, charAt2);
+#endif
 
  private:
-  std::size_t _byteSize;
-  std::vector<std::uint8_t> _data;
+  std::size_t _size; /**< Brief Size of the MemoryValue in Bit*/
+  std::vector<std::uint8_t>
+      _data; /**< Brief The Data stored by the MemoryValue*/
+
+  std::uint8_t getByteAt(std::size_t address) const;
 };
-#endif// ERAGPSIM_CORE_MEMORYVALUE_HPP
+#endif// ERAGPSIM_CORE_MEMORYVALUE_HPP_

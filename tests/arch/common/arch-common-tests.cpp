@@ -27,6 +27,7 @@
 
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
+#include "arch/common/constituent-information.hpp"
 #include "arch/common/datatype-information.hpp"
 #include "arch/common/extension-information.hpp"
 #include "arch/common/instruction-information.hpp"
@@ -34,6 +35,7 @@
 #include "arch/common/instruction-set.hpp"
 #include "arch/common/register-information.hpp"
 #include "arch/common/unit-information.hpp"
+#include "common/assert.hpp"
 
 struct ArchCommonTestFixture : ::testing::Test {
   ArchCommonTestFixture() {
@@ -44,36 +46,33 @@ struct ArchCommonTestFixture : ::testing::Test {
         .constant(5)
         .addAlias("zero")
         .enclosing(1)
-        .addConstituents({2, 3, 4});
+        .addConstituents({{2, 1}, {3, 2}, {4, 3}});
 
     unitInformation.name("cpu").addRegister(registerInformation);
 
     instructionKey.addEntry("opcode", 6).addEntry("function", 9);
-    instructionInformation.mnemonic("add").key(instructionKey);
+    instructionInformation.mnemonic("add").key(instructionKey).format("R");
 
     // clang-format off
     instructionSet.addInstructions(InstructionSet({
         instructionInformation,
-        {"mov", InstructionKey({{"opcode", 2}})}
+        {"mov", InstructionKey({{"opcode", 2}}), "R"}
     }));
     // clang-format on
 
-    baseExtensionInformation.name("rvi32");
-
-    baseExtensionInformation.addInstructions(instructionSet);
-    baseExtensionInformation.addUnit(unitInformation);
-
-    baseExtensionInformation.wordSize(32);
-    baseExtensionInformation.endianness(
-        ArchitectureProperties::Endianness::MIXED);
-    baseExtensionInformation.alignmentBehavior(
-        ArchitectureProperties::AlignmentBehavior::STRICT);
+    baseExtensionInformation.name("rvi32")
+        .addInstructions(instructionSet)
+        .addUnit(unitInformation)
+        .wordSize(32)
+        .byteSize(8)
+        .endianness(ArchitectureProperties::Endianness::MIXED)
+        .alignmentBehavior(ArchitectureProperties::AlignmentBehavior::STRICT);
 
     // clang-format off
-    specialExtensionInformation.name("rva32");
-    specialExtensionInformation.addInstructions(InstructionSet({
-      {"lr", InstructionKey({{"opcode", 1}, {"function", 2}})},
-      {"sc", InstructionKey({{"opcode", 3}, {"function", 4}})}
+    specialExtensionInformation.name("rva32")
+      .addInstructions(InstructionSet({
+      {"lr", InstructionKey({{"opcode", 1}, {"function", 2}}), "R"},
+      {"sc", InstructionKey({{"opcode", 3}, {"function", 4}}), "R"}
     }));
     // clang-format on
   }
@@ -95,7 +94,7 @@ TEST(ArchCommonTest, TestRegisterInformation) {
                                  .constant(5)
                                  .addAlias("zero")
                                  .enclosing(1)
-                                 .addConstituents({2, 3, 4});
+                                 .addConstituents({{2, 1}, {3, 2}, {4, 3}});
 
   EXPECT_FALSE(registerInformation.isValid());
   registerInformation.size(32);
@@ -111,8 +110,9 @@ TEST(ArchCommonTest, TestRegisterInformation) {
             std::vector<std::string>({"zero"}));
   EXPECT_TRUE(registerInformation.hasEnclosing());
   EXPECT_EQ(registerInformation.getEnclosing(), 1);
-  EXPECT_EQ(registerInformation.getConstituents(),
-            std::vector<std::size_t>({2, 3, 4}));
+  EXPECT_EQ(
+      registerInformation.getConstituents(),
+      RegisterInformation::ConstituentContainer({{2, 1}, {3, 2}, {4, 3}}));
 
   EXPECT_FALSE(registerInformation.isSpecial());
   registerInformation.type(RegisterInformation::Type::LINK);
@@ -162,11 +162,31 @@ TEST(ArchCommonTest, TestInstructionKey) {
 }
 
 TEST(ArchCommonTest, TestDataTypeInformation) {
-  auto dataType = DataTypeInformation("word", 32);
+  DataTypeInformation dataType;
+
+  EXPECT_FALSE(dataType.isValid());
+  EXPECT_THROW(dataType.getSize(), assert::AssertionError);
+  EXPECT_THROW(dataType.getName(), assert::AssertionError);
+
+  dataType.name("word").size(32);
 
   EXPECT_TRUE(dataType.isValid());
   EXPECT_EQ(dataType.getName(), "word");
   EXPECT_EQ(dataType.getSize(), 32);
+}
+
+TEST(ArchCommonTest, TestConstituentInformation) {
+  ConstituentInformation constituent;
+
+  EXPECT_FALSE(constituent.isValid());
+  EXPECT_THROW(constituent.getID(), assert::AssertionError);
+  EXPECT_THROW(constituent.getEnclosingOffset(), assert::AssertionError);
+
+  constituent.id(5).enclosingOffset(1);
+
+  EXPECT_TRUE(constituent.isValid());
+  EXPECT_EQ(constituent.getID(), 5);
+  EXPECT_EQ(constituent.getEnclosingOffset(), 1);
 }
 
 TEST(ArchCommonTest, TestArchitectureFormula) {
@@ -185,19 +205,23 @@ TEST(ArchCommonTest, TestArchitectureFormula) {
 }
 
 TEST(ArchCommonTest, TestInstructionInformation) {
-  auto instruction = InstructionInformation().mnemonic("add");
+  auto instruction = InstructionInformation().mnemonic("add").format("R");
 
   InstructionKey key({{"opcode", 6}, {"function", 9}});
 
   EXPECT_FALSE(instruction.isValid());
   EXPECT_FALSE(instruction.hasKey());
+
   instruction.key(key);
+
   EXPECT_TRUE(instruction.isValid());
   EXPECT_TRUE(instruction.hasKey());
   EXPECT_TRUE(instruction.hasMnemonic());
+  EXPECT_TRUE(instruction.hasFormat());
 
-  EXPECT_EQ(instruction.getMnemonic(), "add");
   EXPECT_EQ(instruction.getKey(), key);
+  EXPECT_EQ(instruction.getMnemonic(), "add");
+  EXPECT_EQ(instruction.getFormat(), "R");
 }
 
 TEST_F(ArchCommonTestFixture, TestInstructionSet) {
@@ -228,6 +252,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   EXPECT_FALSE(extension.isComplete());
 
   extension.wordSize(32);
+  extension.byteSize(8);
   extension.endianness(ArchitectureProperties::Endianness::MIXED);
   extension.alignmentBehavior(
       ArchitectureProperties::AlignmentBehavior::STRICT);
@@ -290,6 +315,7 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
   EXPECT_EQ(*architecture.getUnits().find(unitInformation), unitInformation);
 
   EXPECT_EQ(architecture.getWordSize(), 32);
+  EXPECT_EQ(architecture.getByteSize(), 8);
   EXPECT_EQ(architecture.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(architecture.getAlignmentBehavior(),

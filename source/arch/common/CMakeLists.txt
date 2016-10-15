@@ -4,20 +4,24 @@
 
 set(ARCH_COMMON_SOURCES
   abstract-syntax-tree-node.cpp
-  register-information.cpp
-  datatype-information.cpp
-  unit-information.cpp
-  extension-information.cpp
+  architecture-brewery.cpp
   architecture.cpp
-  instruction-set.cpp
+  architecture-formula.cpp
+  constituent-information.cpp
+  datatype-information.cpp
+  extension-information.cpp
+  immediate-node.cpp
+  information-interface.cpp
   instruction-information.cpp
   instruction-key.cpp
-  information-interface.cpp
-  architecture-brewery.cpp
-  architecture-formula.cpp
+  instruction-set.cpp
   node-factory-collection.cpp
   node-factory-collection-maker.cpp
+  register-information.cpp
+  register-node.cpp
+  unit-information.cpp
   validation-result.cpp
+  constituent-information.cpp
 )
 
 ########################################
@@ -28,3 +32,5 @@ add_library(era-sim-arch-common STATIC ${ARCH_COMMON_SOURCES})
 
 qt5_use_modules(era-sim-arch-common Widgets)
 #target_link_libraries(era-sim-arch-common Qt5::Core)
+
+target_link_libraries(era-sim-arch-common era-sim-common era-sim-arch-riscv)

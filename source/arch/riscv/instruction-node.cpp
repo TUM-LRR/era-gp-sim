@@ -8,6 +8,10 @@
 
 namespace riscv {
 
+constexpr unsigned int str2int(const char* str, int h = 0) {
+  return !str[h] ? 5381 : (str2int(str, h + 1) * 33) ^ str[h];
+}
+
 InstructionNode::InstructionNode(const InstructionInformation& information)
 : super(Type::INSTRUCTION), _information(information) {
 }
@@ -46,29 +50,16 @@ bool InstructionNode::_compareChildTypes(TypeList list,
 MemoryValue InstructionNode::assemble() const {
   AssemblerFunction assembler;
   InstructionKey instructionKey = _information.getKey();
+  const char* format            = _information.getFormat().c_str();
 
-  int format = 2;
-
-  // switch (instructionKey["format"]) {
-  // jut for now
-  // switch (format) {
-  //   case "R": assembler  = RFormat(); break;
-  //   case "I": assembler  = IFormat(); break;
-  //   case "S": assembler  = SFormat(); break;
-  //   case "U": assembler  = UFormat(); break;
-  //   case "SB": assembler = SBFormat(); break;
-  //   case "UJ": assembler = UJFormat(); break;
-  //   default: assembler   = RFormat(); break;
-  // }
-
-  switch (format) {
-    case 1: assembler = RFormat(); break;
-    case 2: assembler = IFormat(); break;
-    case 3: assembler = SFormat(); break;
-    case 4: assembler = UFormat(); break;
-    case 5: assembler = SBFormat(); break;
-    case 6: assembler = UJFormat(); break;
-    default: assembler = RFormat(); break;
+  switch (str2int(format)) {
+    case str2int("R"): assembler  = RFormat(); break;
+    case str2int("I"): assembler  = IFormat(); break;
+    case str2int("S"): assembler  = SFormat(); break;
+    case str2int("U"): assembler  = UFormat(); break;
+    case str2int("SB"): assembler = SBFormat(); break;
+    case str2int("UJ"): assembler = UJFormat(); break;
+    default: assembler            = RFormat(); break;
   }
 
   std::vector<MemoryValue> args;
@@ -79,12 +70,11 @@ MemoryValue InstructionNode::assemble() const {
 
   auto boolResult = assembler(instructionKey, args);
 
-  MemoryValue result(boolResult.size() / riscv::BITS_PER_BYTE,
-                     riscv::BITS_PER_BYTE);
+  MemoryValue result(boolResult.size());
 
-  int k = boolResult.size();
-  for (int i = 0; i < boolResult.size(); i++) result.put(--k, boolResult.at(i));
+  for (int i = 0; i < boolResult.size(); i++) result.put(i, boolResult.at(i));
 
   return result;
 }
-}
+
+}//namespace riscv
