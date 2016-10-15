@@ -17,21 +17,22 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_UI_UI_HPP_
-#define ERAGPSIM_UI_UI_HPP_
+#ifndef ERAGPSIM_UI_UI_HPP
+#define ERAGPSIM_UI_UI_HPP
 
 #include <QApplication>
+#include <QMap>
 #include <QObject>
+#include <QPair>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
-#include <QQmlContext>
-#include <QQmlEngine>
 #include <QQuickItem>
 #include <QString>
 #include <QStringList>
 #include <vector>
 
-#include "ui/qproject.hpp"
+#include "third-party/json/json.hpp"
+#include "ui/gui-project.hpp"
 
 /**
  * This class creates the QmlEngine and starts the qml application.
@@ -43,6 +44,9 @@
 class Ui : public QObject {
   Q_OBJECT
  public:
+  using Json            = nlohmann::json;
+  using ArchitectureMap = QMap<QString, QPair<QStringList, QStringList>>;
+
   /**
    * \brief Creates a new Ui object.
    *
@@ -72,8 +76,31 @@ class Ui : public QObject {
    * \param projectComponent The QQmlComponent to be used to create the qml part
    * of the project.
    */
-  Q_INVOKABLE void
-  addProject(QQuickItem* tabItem, QQmlComponent* projectComponent);
+  Q_INVOKABLE void addProject(QQuickItem* tabItem,
+                              QQmlComponent* projectComponent,
+                              QVariant memorySizeQVariant,
+                              QString architecture,
+                              QStringList extensionsQString,
+                              QString parser);
+  /**
+   * Returns a list of architecture names.
+   *
+   */
+  Q_INVOKABLE QStringList getArchitectures() const;
+
+  /**
+   * Returns a list of extension names of an architecture.
+   *
+   * \param architectureName The name of the architecture.
+   */
+  Q_INVOKABLE QStringList getExtensions(QString architectureName) const;
+
+  /**
+   * Returns a list of parser names of an architecture.
+   *
+   * \param architectureName The name of the architecture.
+   */
+  Q_INVOKABLE QStringList getParsers(QString architectureName) const;
 
   /**
    * Removes a Project from the _projects vector. Does not delete it.
@@ -142,6 +169,13 @@ class Ui : public QObject {
   Q_INVOKABLE void loadSnapshot(int index, QString name);
 
  private:
+  /** loads the architectures and extensions from a json file. */
+  void _loadArchitectures();
+
+  /** This map contains the Architectures as string and a list of their
+   * extensions as vector of strings. */
+  ArchitectureMap _architectureMap;
+
   /** The QApplication of this program. */
   QApplication _qmlApplication;
 
@@ -153,4 +187,4 @@ class Ui : public QObject {
 
 };
 
-#endif /* ERAGPSIM_UI_UI_HPP_ */
+#endif /* ERAGPSIM_UI_UI_HPP */
