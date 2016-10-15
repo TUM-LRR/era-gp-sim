@@ -37,7 +37,7 @@ void Ui::addProject(QQuickItem* tabItem, QQmlComponent* projectComponent) {
 
   // the pointer is not needed anywhere, the object is deleted by qml when
   // tabItem is deleted
-  new QProject(context, tabItem);
+  _projects.push_back(new QProject(context, tabItem));
 
   // instantiate the qml project item with the prepared context
   QQuickItem* projectItem =
