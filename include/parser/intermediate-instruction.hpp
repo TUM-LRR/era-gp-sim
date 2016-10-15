@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_INSTRUCTION_HPP_
-#define ERAGPSIM_PARSER_INTERMEDIATE_INSTRUCTION_HPP_
+#ifndef ERAGPSIM_PARSER_INTERMEDIATE_INSTRUCTION_HPP
+#define ERAGPSIM_PARSER_INTERMEDIATE_INSTRUCTION_HPP
 
 #include <map>
 #include <memory>
