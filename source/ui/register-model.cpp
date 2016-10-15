@@ -153,7 +153,7 @@ QModelIndex RegisterModel::parent(const QModelIndex &index) const {
       RegisterInformation *parentItem = (it->second).get();
 
       // Determine the parentItem's row among the child items of its own parent.
-      auto row = getRowRelativeToParent(*parentItem);
+      auto row = _getRowRelativeToParent(*parentItem);
       if (row) {
         return createIndex(*row, 0, parentItem);
       }
@@ -217,7 +217,7 @@ QVariant RegisterModel::contentStringForRegister(
     RegisterInformation *registerItem =
         static_cast<RegisterInformation *>(index.internalPointer());
     Optional<QString> dataFormat =
-        dataFormatForRegisterItem(*registerItem, currentDataFormatIndex);
+        _dataFormatForRegisterItem(*registerItem, currentDataFormatIndex);
     if (dataFormat) {
       // Return placeholder values.
       if (*dataFormat == "Binary") {
@@ -243,11 +243,11 @@ QString RegisterModel::displayFormatStringForRegister(
     RegisterInformation *registerItem =
         static_cast<RegisterInformation *>(index.internalPointer());
     Optional<QString> dataFormat =
-        dataFormatForRegisterItem(*registerItem, currentDataFormatIndex);
+        _dataFormatForRegisterItem(*registerItem, currentDataFormatIndex);
 
     if (dataFormat) {
       // TODO: Get actual byte size
-      return computeDisplayFormatString(
+      return _computeDisplayFormatString(
           *dataFormat, registerItem->getSize(), 8);
     }
   }
@@ -255,7 +255,7 @@ QString RegisterModel::displayFormatStringForRegister(
 }
 
 
-Optional<QString> RegisterModel::dataFormatForRegisterItem(
+Optional<QString> RegisterModel::_dataFormatForRegisterItem(
     const RegisterInformation &registerItem,
     unsigned int currentDataFormatIndex) const {
   QStringList dataFormats = _dataFormatLists.at(registerItem.getType());
@@ -269,7 +269,7 @@ Optional<QString> RegisterModel::dataFormatForRegisterItem(
 }
 
 
-QString RegisterModel::computeDisplayFormatString(const QString &dataFormat,
+QString RegisterModel::_computeDisplayFormatString(const QString &dataFormat,
                                                   size_t size,
                                                   size_t byteSize) const {
   // An empty format string means no format constraint is required.
@@ -291,7 +291,7 @@ QString RegisterModel::computeDisplayFormatString(const QString &dataFormat,
 
 
 Optional<int>
-RegisterModel::getRowRelativeToParent(RegisterInformation &registerItem) const {
+RegisterModel::_getRowRelativeToParent(RegisterInformation &registerItem) const {
   // Determine the parent register.
   RegisterInformation *parentItem;
   if (registerItem.hasEnclosing()) {
