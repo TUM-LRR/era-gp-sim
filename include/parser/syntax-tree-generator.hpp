@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <vector>
+#include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/node-factory-collection.hpp"
 #include "parser/compile-state.hpp"
 
