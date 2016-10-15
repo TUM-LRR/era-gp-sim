@@ -51,8 +51,9 @@ ApplicationWindow {
     }
 
     function closeProject() {
-        tabView.removeTab(tabView.currentIndex);
-        ui.removeProject(tabView.currentIndex);
+        var currentTabIndex = tabView.currentIndex;
+        tabView.removeTab(currentTabIndex);
+        ui.removeProject(currentTabIndex);
     }
 
     /*Component for a project, instantiated by the TabView*/
