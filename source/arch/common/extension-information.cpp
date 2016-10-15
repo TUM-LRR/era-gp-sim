@@ -78,7 +78,7 @@ ExtensionInformation& ExtensionInformation::name(const std::string& name) {
   return *this;
 }
 
-const std::string& ExtensionInformation::getName() const noexcept {
+const std::string& ExtensionInformation::getName() const {
   assert(hasName());
   return _name;
 }
@@ -92,8 +92,7 @@ ExtensionInformation& ExtensionInformation::endianness(Endianness endianness) {
   return *this;
 }
 
-ExtensionInformation::Endianness ExtensionInformation::getEndianness() const
-    noexcept {
+ExtensionInformation::Endianness ExtensionInformation::getEndianness() const {
   assert(hasEndianness());
   return *_endianness;
 }
@@ -109,7 +108,7 @@ ExtensionInformation::alignmentBehavior(AlignmentBehavior alignmentBehavior) {
 }
 
 ExtensionInformation::AlignmentBehavior
-ExtensionInformation::getAlignmentBehavior() const noexcept {
+ExtensionInformation::getAlignmentBehavior() const {
   assert(hasAlignmentBehavior());
   return *_alignmentBehavior;
 }
@@ -125,8 +124,7 @@ ExtensionInformation& ExtensionInformation::wordSize(word_size_t wordSize) {
 }
 
 
-ExtensionInformation::word_size_t ExtensionInformation::getWordSize() const
-    noexcept {
+ExtensionInformation::word_size_t ExtensionInformation::getWordSize() const {
   assert(hasWordSize());
   return _wordSize;
 }

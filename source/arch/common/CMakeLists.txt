@@ -21,6 +21,7 @@ set(ARCH_COMMON_SOURCES
   register-node.cpp
   unit-information.cpp
   validation-result.cpp
+  constituent-information.cpp
 )
 
 ########################################

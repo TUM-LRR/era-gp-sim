@@ -69,23 +69,22 @@ Architecture& Architecture::name(const std::string& name) {
   return *this;
 }
 
-const std::string& Architecture::getName() const noexcept {
+const std::string& Architecture::getName() const {
   assert(isValidated());
   return _name;
 }
 
-Architecture::Endianness Architecture::getEndianness() const noexcept {
+Architecture::Endianness Architecture::getEndianness() const {
   assert(isValidated());
   return _base.getEndianness();
 }
 
-Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const
-    noexcept {
+Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const {
   assert(isValidated());
   return _base.getAlignmentBehavior();
 }
 
-Architecture::word_size_t Architecture::getWordSize() const noexcept {
+Architecture::word_size_t Architecture::getWordSize() const {
   assert(isValidated());
   return _base.getWordSize();
 }
