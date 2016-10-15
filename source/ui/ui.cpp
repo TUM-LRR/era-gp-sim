@@ -58,7 +58,8 @@ void Ui::addProject(QQuickItem* tabItem,
 
   // the pointer is not needed anywhere, the object is deleted by qml when
   // tabItem is deleted
-  _projects.push_back(new GuiProject(context, architectureFormula, memorySize, tabItem));
+  _projects.push_back(
+      new GuiProject(context, architectureFormula, memorySize, tabItem));
 
   // instantiate the qml project item with the prepared context
   QQuickItem* projectItem =
@@ -86,7 +87,7 @@ QStringList Ui::getParsers(QString architectureName) const {
 void Ui::_loadArchitectures() {
   assert::that(_architectureMap.empty());
   std::string path = Utility::joinToRoot("isa", "isa-list.json");
-  Ui::Json data    = Ui::Json::parse(Utility::loadFromFile(path));
+  Ui::Json data = Ui::Json::parse(Utility::loadFromFile(path));
   assert::that(data.count("architectures"));
   assert::that(!data["architectures"].empty());
 
@@ -109,57 +110,58 @@ void Ui::_loadArchitectures() {
         QString::fromStdString(architecture["name"]),
         QPair<QStringList, QStringList>(extensionList, parserList));
   }
+}
 
-  void Ui::removeProject(int index) {
-    assert::that(index >= 0);
-    assert::that(index < _projects.size());
-    _projects.erase(_projects.begin() + index);
-  }
+void Ui::removeProject(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.erase(_projects.begin() + index);
+}
 
-  void Ui::run(int index) {
-    assert::that(index >= 0);
-    assert::that(index < _projects.size());
-    _projects.at(index)->run();
-  }
+void Ui::run(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->run();
+}
 
-  void Ui::runLine(int index) {
-    assert::that(index >= 0);
-    assert::that(index < _projects.size());
-    _projects.at(index)->runLine();
-  }
+void Ui::runLine(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->runLine();
+}
 
-  void Ui::runBreakpoint(int index) {
-    assert::that(index >= 0);
-    assert::that(index < _projects.size());
-    _projects.at(index)->runBreakpoint();
-  }
+void Ui::runBreakpoint(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->runBreakpoint();
+}
 
-  void Ui::stop(int index) {
-    assert::that(index >= 0);
-    assert::that(index < _projects.size());
-    _projects.at(index)->stop();
-  }
+void Ui::stop(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->stop();
+}
 
-  void Ui::save(int index) {
-    assert::that(index >= 0);
-    assert::that(index < _projects.size());
-    _projects.at(index)->save();
-  }
+void Ui::save(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->save();
+}
 
-  void Ui::saveAs(int index, QString name) {
-    assert::that(index >= 0);
-    assert::that(index < _projects.size());
-    _projects.at(index)->saveAs(name);
-  }
+void Ui::saveAs(int index, QString name) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->saveAs(name);
+}
 
-  void Ui::saveSnapshot(int index, QString name) {
-    assert::that(index >= 0);
-    assert::that(index < _projects.size());
-    _projects.at(index)->saveSnapshot(name);
-  }
+void Ui::saveSnapshot(int index, QString name) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->saveSnapshot(name);
+}
 
-  void Ui::loadSnapshot(int index, QString name) {
-    assert::that(index >= 0);
-    assert::that(index < _projects.size());
-    _projects.at(index)->loadSnapshot(name);
+void Ui::loadSnapshot(int index, QString name) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->loadSnapshot(name);
 }
