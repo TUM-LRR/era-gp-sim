@@ -29,9 +29,13 @@
 #include <QTextDocument>
 #include <memory>
 
+//#include "core/command-interface.hpp"
 #include "parser/code-position.hpp"
 #include "parser/compile-error.hpp"
+#include "parser/syntax-information.hpp"
 #include "ui/syntaxhighlighter.hpp"
+
+class ParserInterface;
 
 /**
  * This class is the c++ component for the QML Editor and manages its
@@ -40,8 +44,11 @@
  */
 class EditorComponent : public QObject {
   Q_OBJECT
- public:
-  explicit EditorComponent(QQmlContext* projectContext, QObject* parent = 0);
+public:
+  explicit EditorComponent(
+      QQmlContext *projectContext,
+      /* ParserInterface parserInterface, CommandInterface commandInterface,*/ QObject *
+          parent = 0);
 
   /**
    * \brief creates a new syntax-highlighter for this editor
@@ -50,7 +57,7 @@ class EditorComponent : public QObject {
    *
    * \param qDocument
    */
-  Q_INVOKABLE void init(QQuickTextDocument* qDocument);
+  Q_INVOKABLE void init(QQuickTextDocument *qDocument);
 
   /**
    * Sends the editor-text to the core to start parsing the program
@@ -66,7 +73,7 @@ class EditorComponent : public QObject {
    * \param errorList List of CompileError objects.
    *
    */
-  void setErrorList(std::vector<CompileError>&& errorList);
+  void setErrorList(std::vector<CompileError> &&errorList);
 
   /**
    * Set the current line of execution, in order to correctly display it in the
@@ -77,10 +84,23 @@ class EditorComponent : public QObject {
    */
   void setCurrentLine(int line);
 
-
   // void setMakroList(std::vector<Makro>&& makroList);
 
- private:
+private:
+  /**
+   * Adds the all keywords for a token to the keyword list.
+   *
+   * \param token Token to select which type of keywords to add.
+   * \format The format for the keywords.
+   * \param patternOption Option for the regex, for example
+   *QRegularExpression::CaseInsensitiveOption.
+   * \param parserInterface ParserInterface to access the SyntaxInformation
+   *object.
+   */
+  void _addKeywords(SyntaxInformation::Token token, QTextCharFormat format,
+                    QRegularExpression::PatternOption patternOption /*,
+                    ParserInterface parserInterface*/);
+
   /** The syntax Highlighter of this editor. Is initialized in the init()
    * method. TODO unique_ptr?? */
   std::unique_ptr<SyntaxHighlighter> _highlighter;
@@ -88,7 +108,7 @@ class EditorComponent : public QObject {
   /** A list of keywords to initialize the syntax highlighter. */
   std::vector<KeywordRule> _keywords;
 
- signals:
+signals:
   /** A signal to delete all the errors in the editor. */
   void deleteErrors();
 
