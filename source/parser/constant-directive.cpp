@@ -23,7 +23,8 @@ void ConstantDirective::execute(FinalRepresentation& finalRepresentator,
                                 const SymbolTable& table,
                                 const SyntaxTreeGenerator& generator,
                                 CompileState& state) {
-  // No execution required.
+  // Try to parse argument to catch errors early.
+  generator.transformOperand(_arguments[1], state);
 }
 
 void ConstantDirective::enhanceSymbolTable(SymbolTable& table,
