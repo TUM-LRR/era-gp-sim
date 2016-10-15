@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_COMMON_STRING_CONVERSIONS_HPP
 #define ERAGPSIM_COMMON_STRING_CONVERSIONS_HPP
 
+#include "common/optional.hpp"
 #include "core/memory-value.hpp"
 
 namespace StringConversions {
@@ -30,7 +31,7 @@ namespace StringConversions {
  * @param memoryValue The MemoryValue to convert.
  * @return A binary string corresponding to the given MemoryValue.
  */
-std::string toBinString(MemoryValue memoryValue);
+std::string toBinString(const MemoryValue& memoryValue);
 
 /**
  * @brief toHexString Converts a given MemoryValue to a corresponding hex
@@ -39,7 +40,7 @@ std::string toBinString(MemoryValue memoryValue);
  * @return A hex string corresponding to the given MemoryValue including the
  * "0x" hex indicator.
  */
-std::string toHexString(MemoryValue memoryValue);
+std::string toHexString(const MemoryValue& memoryValue);
 
 /**
  * @brief toUnsignedDecString Converts a given MemoryValue with a maximum size
@@ -47,7 +48,7 @@ std::string toHexString(MemoryValue memoryValue);
  * @param memoryValue The MemoryValue to convert.
  * @return An unsigned decimal string corresponding to the given MemoryValue.
  */
-std::string toUnsignedDecString(MemoryValue memoryValue);
+std::string toUnsignedDecString(const MemoryValue& memoryValue);
 
 /**
  * @brief toSignedDecString Converts a given MemoryValue with a maximum size of
@@ -55,15 +56,7 @@ std::string toUnsignedDecString(MemoryValue memoryValue);
  * @param memoryValue The MemoryValue to convert.
  * @return A signed decimal string corresponding to the given MemoryValue.
  */
-std::string toSignedDecString(MemoryValue memoryValue);
-
-/**
- * @brief toDecimalFloatString Converts a given MemoryValue with a maximum size
- * of 64 bits to a corresponding decimal float string.
- * @param memoryValue The MemoryValue to convert.
- * @return A decimal float string corresponding to the given MemoryValue.
- */
-// std::string toDecimalFloatString(MemoryValue memoryValue);
+std::string toSignedDecString(const MemoryValue& memoryValue);
 
 
 /**
@@ -72,10 +65,11 @@ std::string toSignedDecString(MemoryValue memoryValue);
  * @param stringValue Binary string to convert.
  * @param memoryValueSize Size of the memory value that is requested. Required
  * in order to be able to be tolerant towards incomplete input.
- * @return A MemoryValue corresponding to the given binary string.
+ * @return An optional MemoryValue corresponding to the given binary string or
+ * empty optional if no conversion was possible.
  */
-MemoryValue
-binStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
+Optional<MemoryValue>
+binStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize);
 
 /**
  * @brief hexStringToMemoryValue Converts a given hex string to a corresponding
@@ -84,10 +78,11 @@ binStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
  * @param memoryValueSize Size of the memory value that is requested. Required
  * in order to be able to unambiguously create a MemoryValue and to be able to
  * be tolerant towards incomplete input.
- * @return A MemoryValue corresponding to the given hex string.
+ * @return An optional MemoryValue corresponding to the given hex string or
+ * empty optional if no conversion was possible.
  */
-MemoryValue
-hexStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
+Optional<MemoryValue>
+hexStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize);
 
 /**
  * @brief unsignedDecStringToMemoryValue Converts a given unsigned decimal
@@ -95,10 +90,12 @@ hexStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
  * @param stringValue Unsigned decimal string to convert.
  * @param memoryValueSize Size of the memory value that is requested. Required
  * in order to be able to unambigiuously create a MemoryValue.
- * @return A MemoryValue corresponding to the given unsigned decimal string.
+ * @return An optional MemoryValue corresponding to the given unsigned decimal
+ * string or empty optional if no conversion was possible.
  */
-MemoryValue
-unsignedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
+Optional<MemoryValue>
+unsignedDecStringToMemoryValue(const std::string& stringValue,
+                               size_t memoryValueSize);
 
 /**
  * @brief signedDecStringToMemoryValue Converts a given signed decimal string
@@ -106,32 +103,12 @@ unsignedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
  * @param stringValue Signed decimal string to convert.
  * @param memoryValueSize Size of the memory value that is requested. Required
  * in order to be able to unambigiuously create a MemoryValue.
- * @return A MemoryValue corresponding to the given signed decimal string.
+ * @return An optional MemoryValue corresponding to the given signed decimal
+ * string or empty optional if no conversion was possible.
  */
-MemoryValue
-signedDecStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
-
-
-/**
- * @brief decimalFloatStringToMemoryValue Converts a given decimal float string
- * with a maximum size of 64 bits to a corresponding MemoryValue.
- * @param stringValue Decimal float string to convert.
- * @param memoryValueSize Size of the memory value that is requested. Required
- * in order to be able to unambigiuously create a MemoryValue.
- * @return A MemoryValue corresponding to the given decimal float string.
- */
-// MemoryValue decimalFloatStringToMemoryValue(std::string stringValue, size_t
-// memoryValueSize);
-
-
-/**
- * @brief toDecString Converts a given integral typed value to string.
- * @tparam T Integral type of the given value.
- * @param intValue Integral value to convert.
- * @return String corresponding to the given integral value.
- */
-template <typename T>
-std::string toDecString(T intValue);
+Optional<MemoryValue>
+signedDecStringToMemoryValue(const std::string& stringValue,
+                             size_t memoryValueSize);
 }
 
 #endif /* ERAGPSIM_COMMON_STRING_CONVERSIONS_HPP */
