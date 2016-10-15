@@ -20,16 +20,17 @@
 
 #include <memory>
 
+class AbstractSyntaxTreeNode;
+
 /**
  * \brief The AbstractMemoryAccessNodeFactory class
  * Abstract factory type for creating SyntaxTreeNodes of type memory access
  */
 class AbstractMemoryAccessNodeFactory {
  public:
-  AbstractMemoryAccessNodeFactory() {
-  }
+  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
 
-  virtual ~AbstractMemoryAccessNodeFactory();
+  virtual ~AbstractMemoryAccessNodeFactory() = default;
 
   /**
    * \brief createMemoryAccessNode
@@ -38,8 +39,7 @@ class AbstractMemoryAccessNodeFactory {
    *
    * \return std::unique_ptr pointing to the newly created SyntaxTreeNode
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createMemoryAccessNode() const = 0;
+  virtual Node createMemoryAccessNode() const = 0;
 };
 
 #endif /* ERAGPSIM_ARCH_ABSTRCT_MEMORY_ACCESS_NODE_FACTORY_HPP */

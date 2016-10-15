@@ -33,7 +33,7 @@ def get_license(root):
 def create_header(argument, root, relative_path, name):
     directory = os.path.join(root, "include", relative_path)
     header_path = os.path.join(directory, '{0}.hpp'.format(name))
-    guard_name = re.sub(r'[-/]', '_', argument).upper()
+    guard_name = re.sub(r'[-/\\]', '_', argument).upper()
     guard = 'ERAGPSIM_{0}_HPP'.format(guard_name)
     class_name = ''.join([i.capitalize() for i in name.split('-')])
     print("Creating header file for class '{0}' ...".format(class_name))

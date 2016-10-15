@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_CORE_LOCKFREE_QUEUE_HPP_
-#define ERAGPSIM_CORE_LOCKFREE_QUEUE_HPP_
+#ifndef ERAGPSIM_CORE_LOCKFREE_QUEUE_HPP
+#define ERAGPSIM_CORE_LOCKFREE_QUEUE_HPP
 
 #include <atomic>
 #include <type_traits>
@@ -137,4 +137,4 @@ class LockfreeQueue {
   std::atomic<Node*> _tail;
 };
 
-#endif // ERAGPSIM_CORE_LOCKFREE_QUEUE_HPP_
+#endif // ERAGPSIM_CORE_LOCKFREE_QUEUE_HPP

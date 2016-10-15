@@ -22,19 +22,20 @@
 
 #include <memory>
 
+#include "arch/common/architecture.hpp"
 #include "arch/common/instruction-set.hpp"
 
 template <typename ImmediateNodeFactoryTemplate,
           typename ArithmeticNodeFactoryTemplate,
           typename MemoryAccessNodeFactoryTemplate,
-          typename RegisterAccessNodeFactoryTemplate,
+          typename RegisterNodeFactoryTemplate,
           typename InstructionNodeFactoryTemplate>
 struct AbstractFactoryTypes {
-  using ImmediateNodeFactoryType      = ImmediateNodeFactoryTemplate;
-  using ArithmeticNodeFactoryType     = ArithmeticNodeFactoryTemplate;
-  using MemoryAccessNodeFactoryType   = MemoryAccessNodeFactoryTemplate;
-  using RegisterAccessNodeFactoryType = RegisterAccessNodeFactoryTemplate;
-  using InstructionNodeFactoryType    = InstructionNodeFactoryTemplate;
+  using ImmediateNodeFactoryType    = ImmediateNodeFactoryTemplate;
+  using ArithmeticNodeFactoryType   = ArithmeticNodeFactoryTemplate;
+  using MemoryAccessNodeFactoryType = MemoryAccessNodeFactoryTemplate;
+  using RegisterNodeFactoryType     = RegisterNodeFactoryTemplate;
+  using InstructionNodeFactoryType  = InstructionNodeFactoryTemplate;
 
   static auto immediateFactory() {
     return makeFactory<ImmediateNodeFactoryType>();
@@ -48,12 +49,13 @@ struct AbstractFactoryTypes {
     return makeFactory<MemoryAccessNodeFactoryType>();
   }
 
-  static auto registerAccessFactory() {
-    return makeFactory<RegisterAccessNodeFactoryType>();
+  static auto registerFactory() {
+    return makeFactory<RegisterNodeFactoryType>();
   }
 
-  static auto instructionFactory(const InstructionSet& instructions) {
-    return makeFactory<InstructionNodeFactoryType>(instructions);
+  static auto instructionFactory(const InstructionSet& instructions,
+                                 const Architecture& architecture) {
+    return makeFactory<InstructionNodeFactoryType>(instructions, architecture);
   }
 
   template <typename FactoryType,

@@ -18,6 +18,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -53,7 +54,7 @@ TEST(UtilityTest, TestTransformInto) {
 
 TEST(UtilityTest, TestTransform) {
   std::vector<int> v = {1, 2, 3, 4, 5};
-  auto w             = Utility::transform(v, [](auto& i) { return i + 1; });
+  auto w = Utility::transform(v, [](auto& i) { return i + 1; });
   for (int i = 0; i < v.size(); ++i) {
     EXPECT_EQ(w[i], i + 2);
   }
@@ -63,4 +64,25 @@ TEST(UtilityTest, TestStringTransforms) {
   EXPECT_EQ(Utility::toLower("FOOBAR"), "foobar");
   EXPECT_EQ(Utility::toUpper("foobar"), "FOOBAR");
   EXPECT_EQ(Utility::toLower(Utility::toUpper("foobar")), "foobar");
+}
+
+TEST(UtilityTest, TestBitChecks) {
+  using limits = std::numeric_limits<std::int32_t>;
+
+  EXPECT_FALSE(Utility::fitsIntoBits(0xFF, 0));
+  EXPECT_FALSE(Utility::fitsIntoBits(0xFF, 1));
+  EXPECT_FALSE(Utility::fitsIntoBits(-0xFF, 1));
+  EXPECT_FALSE(Utility::fitsIntoBits(-1, 0));
+
+  std::int64_t max = limits::max();
+  std::int64_t min = limits::min();
+  EXPECT_FALSE(Utility::fitsIntoBits(max + 1, limits::digits));
+  EXPECT_FALSE(Utility::fitsIntoBits(min - 1, limits::digits));
+
+  EXPECT_TRUE(Utility::fitsIntoBits(0xFFF, 12));
+  EXPECT_TRUE(Utility::fitsIntoBits(0xFFF, 13));
+  EXPECT_TRUE(Utility::fitsIntoBits(-0xFFF, 12));
+
+  EXPECT_TRUE(Utility::fitsIntoBits(max, limits::digits));
+  EXPECT_TRUE(Utility::fitsIntoBits(min, limits::digits));
 }

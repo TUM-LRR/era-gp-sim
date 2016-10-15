@@ -20,35 +20,32 @@
 #include "ui/ui.hpp"
 
 
-Ui::Ui(int& argc, char** argv) : _qmlApplication(argc, argv), _engine(){
-
+Ui::Ui(int& argc, char** argv) : _qmlApplication(argc, argv), _engine() {
 }
 
 int Ui::runUi() {
-    _engine.rootContext()->setContextProperty("ui", this);
+  _engine.rootContext()->setContextProperty("ui", this);
 
-    _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+  _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    return _qmlApplication.exec();
+  return _qmlApplication.exec();
 }
 
 void Ui::addProject(QQuickItem* tabItem, QQmlComponent* projectComponent) {
+  // parent is tabItem, so it gets destroyed at the same time
+  QQmlContext* context = new QQmlContext(qmlContext(tabItem), tabItem);
 
-    //TODO: create a new core-project
-    //coreProject = core->createNewProject();
+  // the pointer is not needed anywhere, the object is deleted by qml when
+  // tabItem is deleted
+  new QProject(context, tabItem);
 
-    //parent is tabItem, so it gets destroyed at the same time -> danger if context gets destroyed before creation of the projectItem
-    QQmlContext* context = new QQmlContext(qmlContext(tabItem), tabItem);
+  // instantiate the qml project item with the prepared context
+  QQuickItem* projectItem =
+      qobject_cast<QQuickItem*>(projectComponent->create(context));
 
-    //the pointer is not needed anywhere, it is deleted by qml when tabItem is deleted
-    new QProject(context, tabItem);
+  // set the parent of projectItem, so its deletion is handled by qml
+  projectItem->setParent(tabItem);
 
-    //instantiate the qml project item with the prepared context
-    QQuickItem* projectItem = qobject_cast<QQuickItem*>(projectComponent->create(context));
-
-    //set the parent of projectItem, so its deletion is handled by qml
-    projectItem->setParent(tabItem);
-
-    //set visual parent of the projectItem
-    projectItem->setParentItem(tabItem);
+  // set visual parent of the projectItem
+  projectItem->setParentItem(tabItem);
 }

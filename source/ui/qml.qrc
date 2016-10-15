@@ -31,5 +31,6 @@
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
+        <file>ProjectCreationScreen.qml</file>
     </qresource>
 </RCC>
