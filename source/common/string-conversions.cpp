@@ -65,7 +65,7 @@ std::string toHexString(const MemoryValue& memoryValue) {
   // In order to be able to conveniently push the hex-digits into the stream,
   // the internal representation is iterated in reverse, starting with the most
   // significant bit.
-  for (auto it = std::rbegin(internal); it != std::rend(internal); ++it) {
+  for (auto it = internal.rbegin(); it != internal.rend(); ++it) {
     // The current 8bit-value.
     uint8_t currentValue = *it;
     // Convert the current 8bit-value into hex (= two digits) and push it into
@@ -146,15 +146,15 @@ hexStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize) {
   std::vector<uint8_t> resultingInternal;
   // Iterate over the input string in 8bit-steps (= 2 hex digits), starting with
   // the least significant bit.
-  for (auto it = std::rbegin(stringValueNoPrefix);
-       it < std::rend(stringValueNoPrefix);
+  for (auto it = stringValueNoPrefix.rbegin();
+       it < stringValueNoPrefix.rend();
        it += 2) {
     // Initializes the string representing the current 8bit with the first 4bit
     // directly behind the iterator.
     std::string currentValueString(1, *it);
     // If another 4 bit following the first 4 bit are available, add them as
     // well.
-    if ((it + 1) != std::rend(stringValueNoPrefix)) {
+    if ((it + 1) != stringValueNoPrefix.rend()) {
       currentValueString = *(it + 1) + currentValueString;
     }
     // currentValueString has a maximum of two hex digits which results in a
