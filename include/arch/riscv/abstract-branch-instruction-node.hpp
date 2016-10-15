@@ -27,6 +27,7 @@
 
 #include "gtest/gtest_prod.h"
 
+#include "arch/common/validation-result.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "common/utility.hpp"
 
@@ -84,7 +85,8 @@ class AbstractBranchInstructionNode : public InstructionNode {
   explicit AbstractBranchInstructionNode(
       const InstructionInformation& information,
       Condition condition = Condition())
-      : super(information), _condition(condition) {}
+  : super(information), _condition(condition) {
+  }
 
   /**
    * Make the constructor pure virtual so that the class is abstract.
@@ -185,8 +187,8 @@ class AbstractBranchInstructionNode : public InstructionNode {
    *
    * \return True if the condition w.r.t. the operands holds, else false.
    */
-  virtual bool _checkCondition(const MemoryValue& first,
-                               const MemoryValue& second) const {
+  virtual bool
+  _checkCondition(const MemoryValue& first, const MemoryValue& second) const {
     assert(static_cast<bool>(_condition));
     return _condition(first, second);
   }
@@ -249,16 +251,16 @@ class AbstractBranchInstructionNode : public InstructionNode {
     // The immediate is 12 bit, but including the sign bit. Because it is
     // counted in multiples of two, you still get +- 12 bit, but the value
     // itself may still only occupy 11 bit!
-    if(!this->_fitsIntoNBit(offset, 11)) {
-        return ValidationResult::fail(
-            QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                              "Immediate operand must be 12 bit or less"));
+    if (!this->_fitsIntoNBit(offset, 11)) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "Immediate operand must be 12 bit or less"));
     }
-//    if (Utility::occupiesMoreBitsThan(offset, 11)) {
-//      return ValidationResult::fail(
-//          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-//                            "Immediate operand must be 12 bit or less"));
-//    }
+    //    if (Utility::occupiesMoreBitsThan(offset, 11)) {
+    //      return ValidationResult::fail(
+    //          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+    //                            "Immediate operand must be 12 bit or less"));
+    //    }
 
     return ValidationResult::success();
   }

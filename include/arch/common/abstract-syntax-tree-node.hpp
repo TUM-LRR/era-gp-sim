@@ -22,14 +22,14 @@
 #include <string>
 #include <vector>
 
-#include "arch/common/validation-result.hpp"
-#include "core/memory-access.hpp"
-#include "core/memory-value.hpp"
+class MemoryValue;
+class MemoryAccess;
+class ValidationResult;
 
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {
  public:
-  using Node   = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
   using size_t = std::size_t;
 
   enum class Type {
@@ -83,10 +83,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return Whether this is semantically correct during runtime.
    */
-  virtual ValidationResult
-  validateRuntime(MemoryAccess& memoryAccess) const {
-    return ValidationResult::success();
-  }
+  virtual ValidationResult validateRuntime(MemoryAccess& memoryAccess) const;
 
   /**
    * Assembles this syntax tree into its binary representation. So, this
@@ -151,7 +148,8 @@ class AbstractSyntaxTreeNode {
    */
   ValidationResult _validateChildren() const;
 
-  bool _fitsIntoNBit(const MemoryValue& value, size_t n, bool isSigned = true) const;
+  bool
+  _fitsIntoNBit(const MemoryValue& value, size_t n, bool isSigned = true) const;
 
   /** The child nodes of this node. */
   std::vector<Node> _children;

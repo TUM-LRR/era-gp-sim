@@ -10,6 +10,7 @@ set(ARCH_COMMON_SOURCES
   constituent-information.cpp
   datatype-information.cpp
   extension-information.cpp
+  immediate-node.cpp
   information-interface.cpp
   instruction-information.cpp
   instruction-key.cpp
@@ -17,6 +18,7 @@ set(ARCH_COMMON_SOURCES
   node-factory-collection.cpp
   node-factory-collection-maker.cpp
   register-information.cpp
+  register-node.cpp
   unit-information.cpp
   validation-result.cpp
 )

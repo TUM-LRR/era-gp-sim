@@ -22,8 +22,11 @@
 
 #include <memory>
 #include <vector>
+
 #include "arch/common/node-factory-collection.hpp"
-#include "parser/compile-state.hpp"
+
+class AbstractSyntaxTreeNode;
+class CompileState;
 
 /**
  * \brief A connector class for turning arguments and commands into syntax tree
