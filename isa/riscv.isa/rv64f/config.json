@@ -1,6 +1,4 @@
 {
-    "extends": "rv32f",
-    "name": "rv64f",
     "instructions": [
         {
             "format": "R",
@@ -38,5 +36,7 @@
                 "funct7": 104
             }
         }
-    ]
+    ],
+    "name": "rv64f",
+    "extends": "rv32f"
 }

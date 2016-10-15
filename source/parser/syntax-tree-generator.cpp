@@ -20,6 +20,10 @@
 
 #include <regex>
 
+#include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/validation-result.hpp"
+#include "parser/compile-state.hpp"
+
 std::unique_ptr<AbstractSyntaxTreeNode>
 SyntaxTreeGenerator::transformOperand(const std::string& operand,
                                       CompileState& state) const {

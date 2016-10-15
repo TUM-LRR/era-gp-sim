@@ -76,7 +76,7 @@ RegisterInformation& RegisterInformation::name(const std::string& name) {
   return *this;
 }
 
-const std::string& RegisterInformation::getName() const noexcept {
+const std::string& RegisterInformation::getName() const {
   assert(hasName());
   return _name;
 }
@@ -92,7 +92,7 @@ RegisterInformation& RegisterInformation::size(size_t bit_size) {
   return *this;
 }
 
-RegisterInformation::size_t RegisterInformation::getSize() const noexcept {
+RegisterInformation::size_t RegisterInformation::getSize() const {
   assert(hasSize());
   return *_size;
 }
@@ -137,8 +137,8 @@ RegisterInformation& RegisterInformation::addAliases(AliasList aliases) {
   return *this;
 }
 
-const std::vector<std::string>& RegisterInformation::getAliases() const
-    noexcept {
+const RegisterInformation::AliasContainer&
+RegisterInformation::getAliases() const noexcept {
   return _aliases;
 }
 
@@ -149,11 +149,10 @@ bool RegisterInformation::hasAliases() const noexcept {
 RegisterInformation& RegisterInformation::enclosing(id_t id) {
   assert(id != _id);
   _enclosing = id;
-
   return *this;
 }
 
-RegisterInformation::id_t RegisterInformation::getEnclosing() const noexcept {
+RegisterInformation::id_t RegisterInformation::getEnclosing() const {
   assert(hasEnclosing());
   return *_enclosing;
 }
@@ -162,23 +161,31 @@ bool RegisterInformation::hasEnclosing() const noexcept {
   return static_cast<bool>(_enclosing);
 }
 
-RegisterInformation& RegisterInformation::addConstituents(IDList constituents) {
-  if (_enclosing) {
-    assert(Utility::noneOf(constituents,
-                           [this](auto& id) { return id == *_enclosing; }));
-  }
-  _constituents.insert(_constituents.end(), constituents);
+RegisterInformation&
+RegisterInformation::addConstituents(ConstituentList constituents) {
+  return addConstituents<ConstituentList>(constituents);
+}
+
+RegisterInformation&
+RegisterInformation::addConstituent(const ConstituentInformation& constituent) {
+  // Make sure none of the constituents are the enclosing register
+  // of this register, or the register itself.
+  assert(constituent.getID() != _id);
+  if (_enclosing) assert(constituent.getID() != _enclosing);
+
+  _constituents.emplace_back(constituent);
+
   return *this;
 }
 
-RegisterInformation& RegisterInformation::addConstituent(id_t id) {
-  _constituents.emplace_back(id);
-  return *this;
-}
-
-const std::vector<RegisterInformation::id_t>&
+const RegisterInformation::ConstituentContainer&
 RegisterInformation::getConstituents() const noexcept {
   return _constituents;
+}
+
+RegisterInformation::size_t RegisterInformation::numberOfConstituents() const
+    noexcept {
+  return _constituents.size();
 }
 
 bool RegisterInformation::hasConstituents() const noexcept {
@@ -199,35 +206,39 @@ void RegisterInformation::_deserialize(InformationInterface::Format& data) {
 
   Utility::doIfThere(data, "id", [this](auto& id) { this->id(id); });
 
-  _parseType(data);
+  this->_parseType(data);
   this->name(Utility::toLower(data["name"]));
   this->size(data["size"]);
 
-  Utility::doIfThere(data, "constant", [this](auto& constant) {
+  Utility::doIfThere(data, "constant", [this](const auto& constant) {
     this->constant(static_cast<double>(constant));
   });
 
-  Utility::doIfThere(data, "enclosing", [this](auto& enclosing) {
+  Utility::doIfThere(data, "enclosing", [this](const auto& enclosing) {
     assert(enclosing.is_number());
     this->enclosing(enclosing);
   });
 
   Utility::doIfThere(data, "constituents", [this](auto& constituents) {
-    this->addConstituents(constituents);
+    for (auto& constituent : constituents) {
+      ConstituentInformation information(constituent);
+      this->addConstituent(information);
+    }
   });
 
   Utility::doIfThere(data, "constituent", [this](auto& constituent) {
-    this->addConstituent(constituent);
+    ConstituentInformation information(constituent);
+    this->addConstituent(information);
   });
 
   // clang-format off
-  Utility::doIfThere(data, "aliases", [this](auto& aliases) {
+  Utility::doIfThere(data, "aliases", [this](const auto& aliases) {
       for (const auto& alias : aliases) {
         this->addAlias(alias);
       }
   });
 
-  Utility::doIfThere(data, "alias", [this](auto& alias) {
+  Utility::doIfThere(data, "alias", [this](const auto& alias) {
       this->addAlias(alias);
   });
   // clang-format on

@@ -26,6 +26,7 @@
 #include <string>
 #include <type_traits>
 
+#include "arch/common/validation-result.hpp"
 #include "arch/riscv/instruction-node.hpp"
 
 namespace riscv {
@@ -50,7 +51,8 @@ namespace riscv {
  * \tparam OperationSize The unsigned integral, the operations operate on
  *         (e.g. uint32_t for RV64)
  */
-template <typename WordSize, typename OperationSize,
+template <typename WordSize,
+          typename OperationSize,
           typename = std::enable_if_t<std::is_integral<WordSize>::value &&
                                       std::is_unsigned<WordSize>::value &&
                                       std::is_integral<OperationSize>::value &&
@@ -69,9 +71,10 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   ArchitectureOnlyInstructionNode(const InstructionInformation& information,
                                   bool immediate,
                                   Operation operation = Operation())
-      : InstructionNode(information),
-        _isImmediate(immediate),
-        _operation(operation) {}
+  : InstructionNode(information)
+  , _isImmediate(immediate)
+  , _operation(operation) {
+  }
 
   /** Default destructor*/
   virtual ~ArchitectureOnlyInstructionNode() = default;
@@ -136,7 +139,9 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
     return _operation(first, second);
   }
 
-  OperationSize _getLower5Bits(OperationSize op) const { return op & 0b11111; }
+  OperationSize _getLower5Bits(OperationSize op) const {
+    return op & 0b11111;
+  }
 
   /**
    * Performs sign-expansion on the given value. Sign expansion means, that
@@ -148,7 +153,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
     // Aquire the sign bit
     constexpr auto length = sizeof(OperationSize) * CHAR_BIT;
     OperationSize sign = (value & (OperationSize{1} << (length - 1)));
-    WordSize result = value;  // This zero-expands value
+    WordSize result = value;// This zero-expands value
     // Do sign-expansion if needed
     if (sign > 0) {
       // Sign-expansion is quite easy here: All the bits above the lower

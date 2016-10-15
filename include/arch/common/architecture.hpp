@@ -143,7 +143,7 @@ class Architecture : public BuilderInterface {
    * Returns the name of the architecture.
    *
    */
-  const std::string& getName() const noexcept;
+  const std::string& getName() const;
 
   /**
    * Returns the endianness of the architecture.
@@ -151,7 +151,7 @@ class Architecture : public BuilderInterface {
    * This property must have already been set by extending the architecture with
    * an extension and validated by calling `validate()`. This is asserted!
    */
-  Endianness getEndianness() const noexcept;
+  Endianness getEndianness() const;
 
   /**
    * Returns the alignment behavior of the architecture.
@@ -159,7 +159,7 @@ class Architecture : public BuilderInterface {
    * This property must have already been set by extending the architecture with
    * an extension and validated by calling `validate()`. This is asserted!
    */
-  AlignmentBehavior getAlignmentBehavior() const noexcept;
+  AlignmentBehavior getAlignmentBehavior() const;
 
 
   /**
@@ -168,7 +168,7 @@ class Architecture : public BuilderInterface {
    * This property must have already been set by extending the architecture with
    * an extension and validated by calling `validate()`. This is asserted!
    */
-  word_size_t getWordSize() const noexcept;
+  word_size_t getWordSize() const;
 
   /**
    * Returns the byte size of the architecture.

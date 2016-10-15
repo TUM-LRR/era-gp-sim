@@ -20,7 +20,7 @@
 
 #include <memory>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
+class AbstractSyntaxTreeNode;
 
 /**
  * @brief An abstract base class for arithmetic node factories.

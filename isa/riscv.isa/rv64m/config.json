@@ -1,5 +1,4 @@
 {
-    "name": "rv64m",
     "instructions": [
         {
             "format": "R",
@@ -46,5 +45,6 @@
                 "funct7": 1
             }
         }
-    ]
+    ],
+    "name": "rv64m"
 }

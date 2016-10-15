@@ -34,61 +34,21 @@ class RegisterNode : public AbstractSyntaxTreeNode {
    *
    * \param value The identifier for the register.
    */
-  RegisterNode(std::string identifier)
-  : AbstractSyntaxTreeNode(Type::REGISTER), _identifier(identifier) {
-  }
+  RegisterNode(const std::string& identifier);
 
   /**
    * \return The content of the register, represented by this node.
    */
-  MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    return memoryAccess.getRegisterValue(_identifier);
-  }
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override;
 
   /**
    * \return success, if there are no children.
    */
-  ValidationResult validate() const override {
-    // Registers can't have any children
-    if (AbstractSyntaxTreeNode::_children.size() == 0) {
-      return ValidationResult::success();
-    }
-    return ValidationResult::fail(
-        QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                          "The register node must not have any arguments"));
-  }
+  ValidationResult validate() const override;
 
-  const std::string& getIdentifier() const override {
-    return _identifier;
-  }
+  const std::string& getIdentifier() const override;
 
-  // MemoryAccess problem
-  MemoryValue assemble() const override {
-    MemoryValue memValue{8};
-
-    std::string::size_type sz;
-
-    int index;
-
-    try {
-      index = std::stoi(_identifier, &sz);
-    } catch (const std::exception&) {
-      index = 0;
-    }
-
-    const int regSize = 8;
-
-    for (int i = 0; i < 5; i++) {
-      if (index % 2 == 0)
-        memValue.put(regSize - i - 1, false);
-      else
-        memValue.put(regSize - i - 1, true);
-
-      index /= 2;
-    }
-
-    return memValue;
-  }
+  MemoryValue assemble() const override;
 
  private:
   /**

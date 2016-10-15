@@ -1,6 +1,4 @@
 {
-    "name": "base2-basic",
-    "word-size": 69,
     "instructions": [
         {
             "format": "R",
@@ -11,5 +9,7 @@
                 "width": 6
             }
         }
-    ]
+    ],
+    "name": "base2-basic",
+    "word-size": 69
 }

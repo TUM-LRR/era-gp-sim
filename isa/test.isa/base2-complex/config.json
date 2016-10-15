@@ -1,7 +1,4 @@
 {
-    "extends": "base3-cycle",
-    "name": "base2-complex",
-    "reset-units": false,
     "instructions": [
         {
             "format": "R",
@@ -12,5 +9,8 @@
                 "width": 6
             }
         }
-    ]
+    ],
+    "name": "base2-complex",
+    "extends": "base3-cycle",
+    "reset-units": false
 }

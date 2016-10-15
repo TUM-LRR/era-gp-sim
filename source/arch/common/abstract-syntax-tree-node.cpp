@@ -19,12 +19,22 @@
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 
-AbstractSyntaxTreeNode::AbstractSyntaxTreeNode(Type nodeType)
-    : _nodeType(nodeType) {}
+#include "arch/common/validation-result.hpp"
+#include "core/memory-access.hpp"
+#include "core/memory-value.hpp"
 
-MemoryValue AbstractSyntaxTreeNode::operator()(
-    MemoryAccess& memoryAccess) const {
+AbstractSyntaxTreeNode::AbstractSyntaxTreeNode(Type nodeType)
+: _nodeType(nodeType) {
+}
+
+MemoryValue AbstractSyntaxTreeNode::
+operator()(MemoryAccess& memoryAccess) const {
   return getValue(memoryAccess);
+}
+
+ValidationResult
+AbstractSyntaxTreeNode::validateRuntime(MemoryAccess& memoryAccess) const {
+  return ValidationResult::success();
 }
 
 AbstractSyntaxTreeNode::Type AbstractSyntaxTreeNode::getType() const noexcept {

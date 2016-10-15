@@ -26,6 +26,7 @@
 #include <cstdint>
 
 #include "arch/riscv/instruction-node.hpp"
+#include "arch/common/validation-result.hpp"
 
 namespace riscv {
 
@@ -39,7 +40,8 @@ namespace riscv {
 class LuiAuipcValidationNode : public InstructionNode {
  public:
   LuiAuipcValidationNode(const InstructionInformation& info)
-      : InstructionNode(info) {}
+  : InstructionNode(info) {
+  }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override = 0;
 
@@ -87,7 +89,8 @@ template <typename UnsignedType>
 class LuiInstructionNode : public LuiAuipcValidationNode {
  public:
   LuiInstructionNode(const InstructionInformation& info)
-      : LuiAuipcValidationNode(info) {}
+  : LuiAuipcValidationNode(info) {
+  }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
@@ -140,7 +143,8 @@ template <typename UnsignedType>
 class AuipcInstructionNode : public LuiAuipcValidationNode {
  public:
   AuipcInstructionNode(const InstructionInformation& info)
-      : LuiAuipcValidationNode(info) {}
+  : LuiAuipcValidationNode(info) {
+  }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(validate().isSuccess());
@@ -193,6 +197,6 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
   using InternalUnsigned = uint32_t;
 };
 
-}  // Namespace riscv
+}// Namespace riscv
 
 #endif /* ERAGPSIM_ARCH_RISCV_SPECIAL_INTEGER_INSTRUCTIONS_HPP_ */

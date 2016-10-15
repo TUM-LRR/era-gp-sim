@@ -1,5 +1,6 @@
 {
     "name": "no-deps",
+    "word-size": 32,
     "instructions": [
         {
             "format": "R",
@@ -18,37 +19,42 @@
             }
         }
     ],
-    "word-size": 32,
     "byte-size": 8,
     "alignment-behavior": "strict",
     "endianness": "little",
     "units": [
         {
-            "name": "cpu",
             "registers": [
                 {
-                    "id": 0,
                     "name": "r0",
                     "constituents": [
-                        1,
-                        2
+                        {
+                            "enclosing-index": 1,
+                            "id": 1
+                        },
+                        {
+                            "enclosing-index": 2,
+                            "id": 2
+                        }
                     ],
                     "size": 32,
-                    "alias": "zero"
+                    "alias": "zero",
+                    "id": 0
                 },
                 {
-                    "id": 1,
                     "name": "r1",
-                    "type": "float",
-                    "constant": 3.14,
-                    "size": 16,
+                    "id": 1,
                     "aliases": [
                         "foo",
                         "bar"
                     ],
-                    "enclosing": 0
+                    "size": 16,
+                    "enclosing": 0,
+                    "type": "float",
+                    "constant": 3.14
                 }
-            ]
+            ],
+            "name": "cpu"
         }
     ]
 }

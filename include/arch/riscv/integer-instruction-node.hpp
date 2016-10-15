@@ -25,6 +25,7 @@
 #include <string>
 #include <type_traits>
 
+#include "arch/common/validation-result.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/properties.hpp"
 
