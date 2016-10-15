@@ -28,10 +28,10 @@
 namespace StringConversions {
 
 /**
- * @brief _toDecString Converts a given integral typed value to string.
- * @tparam T Integral type of the given value.
- * @param intValue Integral value to convert.
- * @return String corresponding to the given integral value.
+ * \brief _toDecString Converts a given integral typed value to string.
+ * \tparam T Integral type of the given value.
+ * \param intValue Integral value to convert.
+ * \return String corresponding to the given integral value.
  */
 template <typename T>
 std::string _toDecString(T intValue) {
