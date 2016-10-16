@@ -26,10 +26,10 @@ RegisterNode::RegisterNode(const std::string& identifier)
 }
 
 MemoryValue RegisterNode::getValue(MemoryAccess& memoryAccess) const {
-  return memoryAccess.getRegisterValue(_identifier);
+  return memoryAccess.getRegisterValue(_identifier).get();
 }
 
-ValidationResult RegisterNode::validate() const {
+ValidationResult RegisterNode::validate(MemoryAccess& memoryAccess) const {
   // Registers can't have any children
   if (AbstractSyntaxTreeNode::_children.size() == 0) {
     return ValidationResult::success();
@@ -69,4 +69,3 @@ MemoryValue RegisterNode::assemble() const {
 
   return memValue;
 }
-

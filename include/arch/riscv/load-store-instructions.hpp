@@ -35,12 +35,13 @@ template <typename SignedType, typename UnsignedType>
 class LoadStoreInstructionNode : public InstructionNode {
  public:
   LoadStoreInstructionNode(const InstructionInformation& instructionInformation)
-      : InstructionNode(instructionInformation) {}
+  : InstructionNode(instructionInformation) {
+  }
 
   /* Ensure this class is pure virtual */
   virtual MemoryValue getValue(MemoryAccess& memoryAccess) const override = 0;
 
-  ValidationResult validate() const override {
+  ValidationResult validate(MemoryAccess& memoryAccess) const override {
     if (_children.size() != 3) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
@@ -55,7 +56,7 @@ class LoadStoreInstructionNode : public InstructionNode {
           "This instruction must have 2 registers and 1 immediate"));
     }
 
-    ValidationResult resultAll = _validateChildren();
+    ValidationResult resultAll = _validateChildren(memoryAccess);
     if (!resultAll.isSuccess()) {
       return resultAll;
     }
@@ -63,8 +64,7 @@ class LoadStoreInstructionNode : public InstructionNode {
     // Check if the immediate value is representable by 12 bits
     // We can use an empty stub here, because immediate values don't need to
     // access the memory
-    MemoryAccess stub;
-    MemoryValue value = _children.at(2)->getValue(stub);
+    MemoryValue value = _children.at(2)->getValue(memoryAccess);
     if (Utility::occupiesMoreBitsThan(value, 12)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
@@ -141,12 +141,13 @@ class LoadInstructionNode
     BYTE_UNSIGNED      // LBU
   };
 
-  LoadInstructionNode(const InstructionInformation& instructionInformation, Type type)
+  LoadInstructionNode(const InstructionInformation& instructionInformation,
+                      Type type)
   : super(instructionInformation), _type(type) {
   }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(super::validate());
+    assert(super::validate(memoryAccess));
 
     const std::string& dest = super::_children.at(0)->getIdentifier();
     std::size_t effectiveAddress = super::getEffectiveAddress(memoryAccess);
@@ -200,7 +201,8 @@ class LoadInstructionNode
                            std::size_t address,
                            std::size_t byteAmount,
                            const std::string& destination) const {
-    MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
+    MemoryValue result =
+        memoryAccess.getMemoryValueAt(address, byteAmount).get();
 
     // Check if zero-expansion is needed. This is the case, if the amount of
     // bits loaded from memory is not equal to the amount of bits, a register
@@ -214,7 +216,7 @@ class LoadInstructionNode
       UnsignedType converted = riscv::convert<UnsignedType>(result);
       result = convert<UnsignedType>(converted);
     }
-    memoryAccess.setRegisterValue(destination, result);
+    memoryAccess.putRegisterValue(destination, result);
   }
 
   /**
@@ -230,7 +232,8 @@ class LoadInstructionNode
                          std::size_t address,
                          std::size_t byteAmount,
                          const std::string& destination) const {
-    MemoryValue result = memoryAccess.getMemoryValueAt(address, byteAmount);
+    MemoryValue result =
+        memoryAccess.getMemoryValueAt(address, byteAmount).get();
     // Check if sign-expansion is needed. This is the case, if the amount of
     // bits loaded from memory is not equal to the amount of bits, a register
     // can hold.
@@ -240,7 +243,7 @@ class LoadInstructionNode
       SignedType converted = riscv::convert<SignedType>(result);
       result = riscv::convert<SignedType>(converted);
     }
-    memoryAccess.setRegisterValue(destination, result);
+    memoryAccess.putRegisterValue(destination, result);
   }
 
 
@@ -271,7 +274,7 @@ class StoreInstructionNode
   }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(super::validate());
+    assert(super::validate(memoryAccess));
 
     const std::string& src = super::_children.at(1)->getIdentifier();
     std::size_t effectiveAddress = super::getEffectiveAddress(memoryAccess);
@@ -285,13 +288,13 @@ class StoreInstructionNode
       default: assert(false); break;
     }
 
-    MemoryValue registerValue = memoryAccess.getRegisterValue(src);
+    MemoryValue registerValue = memoryAccess.getRegisterValue(src).get();
     MemoryValue resultValue{byteAmount * riscv::BITS_PER_BYTE};
     for (size_t i = 0; i < byteAmount * riscv::BITS_PER_BYTE; ++i) {
       resultValue.put(resultValue.getSize() - 1 - i,
                       registerValue.get(registerValue.getSize() - 1 - i));
     }
-    memoryAccess.setMemoryValueAt(effectiveAddress, resultValue);
+    memoryAccess.putMemoryValueAt(effectiveAddress, resultValue);
     return MemoryValue{};
   }
 

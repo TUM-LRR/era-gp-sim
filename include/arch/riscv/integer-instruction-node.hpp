@@ -63,9 +63,8 @@ class AbstractIntegerInstructionNode : public InstructionNode {
   AbstractIntegerInstructionNode(const InstructionInformation& information,
                                  Operands operands,
                                  Operation operation = Operation())
-      : InstructionNode(information),
-        _operands(operands),
-        _operation(operation) {}
+  : InstructionNode(information), _operands(operands), _operation(operation) {
+  }
 
   /**
    * Make the constructor pure virtual so that the class is abstract.
@@ -75,7 +74,7 @@ class AbstractIntegerInstructionNode : public InstructionNode {
   virtual ~AbstractIntegerInstructionNode() = 0;
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate().isSuccess());
+    assert(validate(memoryAccess).isSuccess());
     // Get the destination register
     auto destination = _children.at(0)->getIdentifier();
 
@@ -85,24 +84,24 @@ class AbstractIntegerInstructionNode : public InstructionNode {
     auto result = _compute(first, second);
     auto value = riscv::convert(result);
 
-    memoryAccess.setRegisterValue(destination, value);
+    memoryAccess.putRegisterValue(destination, value);
 
     return {};
   }
 
-  ValidationResult validate() const override {
+  ValidationResult validate(MemoryAccess& memoryAccess) const override {
     auto result = _validateNumberOfChildren();
     if (!result.isSuccess()) return result;
 
     // check if all operands are valid themselves
-    result = _validateChildren();
+    result = _validateChildren(memoryAccess);
     if (!result.isSuccess()) return result;
 
     if (_operands == Operands::IMMEDIATES) {
       result = _validateOperandsForImmediateInstructions();
       if (!result.isSuccess()) return result;
 
-      result = _validateImmediateSize();
+      result = _validateImmediateSize(memoryAccess);
       if (!result.isSuccess()) return result;
     } else {
       result = _validateOperandsForNonImmediateInstructions();
@@ -152,12 +151,11 @@ class AbstractIntegerInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
-  ValidationResult _validateImmediateSize() const {
+  ValidationResult _validateImmediateSize(MemoryAccess& memoryAccess) const {
     assert(_children[2]->getType() == Type::IMMEDIATE);
 
     // No memory access is needed for a immediate node
-    MemoryAccess stub;
-    MemoryValue value = _children.at(2)->getValue(stub);
+    MemoryValue value = _children.at(2)->getValue(memoryAccess);
     if (Utility::occupiesMoreBitsThan(value, 12)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",

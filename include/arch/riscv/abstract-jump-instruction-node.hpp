@@ -90,7 +90,8 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    */
   explicit AbstractJumpAndLinkInstructionNode(
       const InstructionInformation& information)
-      : super(information) {}
+  : super(information) {
+  }
 
   /**
    * Make the constructor pure virtual so that the class is abstract.
@@ -109,13 +110,13 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    * \return An empty memory value.
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate().isSuccess());
+    assert(validate(memoryAccess).isSuccess());
     auto destination = _children[0]->getIdentifier();
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
 
     // Store the return address (pc + 4) in the destination register
-    riscv::storeRegister<UnsignedWord>(memoryAccess, destination,
-                                       programCounter + 4);
+    riscv::storeRegister<UnsignedWord>(
+        memoryAccess, destination, programCounter + 4);
 
     auto result = _jump(programCounter, memoryAccess);
 
@@ -131,17 +132,17 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    *
    * \return A `ValidationResult` indicating the validity of the node.
    */
-  ValidationResult validate() const override {
+  ValidationResult validate(MemoryAccess& memoryAccess) const override {
     auto result = _validateNumberOfChildren();
     if (!result.isSuccess()) return result;
 
-    result = _validateChildren();
+    result = _validateChildren(memoryAccess);
     if (!result.isSuccess()) return result;
 
     result = _validateOperandTypes();
     if (!result.isSuccess()) return result;
 
-    result = _validateOffset();
+    result = _validateOffset(memoryAccess);
     if (!result.isSuccess()) return result;
 
     result = _validateResultingProgramCounter();
@@ -163,8 +164,8 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    *
    * \return The new program counter.
    */
-  virtual UnsignedWord _jump(UnsignedWord programCounter,
-                             MemoryAccess& memoryAccess) const = 0;
+  virtual UnsignedWord
+  _jump(UnsignedWord programCounter, MemoryAccess& memoryAccess) const = 0;
 
   /**
    * Validates the number of children of then node.
@@ -191,7 +192,8 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    *
    * \return A `ValidationResult` indicating the result of the check.
    */
-  virtual ValidationResult _validateOffset() const = 0;
+  virtual ValidationResult
+  _validateOffset(MemoryAccess& memoryAccess) const = 0;
 
   /**
    * Validates the program counter that would resulting from the instruction.
@@ -204,8 +206,8 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
 };
 
 template <typename UnsignedWord, typename SignedWord>
-AbstractJumpAndLinkInstructionNode<
-    UnsignedWord, SignedWord>::~AbstractJumpAndLinkInstructionNode() = default;
+AbstractJumpAndLinkInstructionNode<UnsignedWord, SignedWord>::
+    ~AbstractJumpAndLinkInstructionNode() = default;
 }
 
 #endif /* ERAGPSIM_ARCH_RISCV_ABSTRACT_JUMP_INSTRUCTION_NODE_HPP */

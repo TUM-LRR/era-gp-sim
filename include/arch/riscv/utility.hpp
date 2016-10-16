@@ -79,7 +79,7 @@ convert(const T& value) {
  */
 template <typename T>
 T loadRegister(MemoryAccess& memoryAccess, const std::string& registerName) {
-  auto memory = memoryAccess.getRegisterValue(registerName);
+  auto memory = memoryAccess.getRegisterValue(registerName).get();
   return riscv::convert<T>(memory);
 }
 
@@ -96,7 +96,7 @@ void storeRegister(MemoryAccess& memoryAccess,
                    const std::string& registerName,
                    const T& value) {
   auto memory = convert(value);
-  memoryAccess.setRegisterValue(registerName, memory);
+  memoryAccess.putRegisterValue(registerName, memory);
 }
 }
 

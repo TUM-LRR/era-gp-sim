@@ -83,9 +83,9 @@ performLoadTestUnsigned(T testValue,
   memoryAccess.setRegisterValue(baseId, riscv::convert<W>(0));
   memoryAccess.setMemoryValueAt(0, loadValue);
 
-  auto instrFactory     = setUpFactory(modules);
+  auto instrFactory = setUpFactory(modules);
   auto immediateFactory = ImmediateNodeFactory{};
-  auto instr            = instrFactory.createInstructionNode(instructionName);
+  auto instr = instrFactory.createInstructionNode(instructionName);
 
   // Fill the instructions operands
   ASSERT_FALSE(instr->validate());
@@ -130,9 +130,9 @@ performLoadTestSigned(T testValue,
   memoryAccess.setMemoryValueAt(0, loadValue);
 
   // Create factory & instruction
-  auto instrFactory     = setUpFactory(modules);
+  auto instrFactory = setUpFactory(modules);
   auto immediateFactory = ImmediateNodeFactory{};
-  auto instr            = instrFactory.createInstructionNode(instructionName);
+  auto instr = instrFactory.createInstructionNode(instructionName);
 
   // Fill the instructions operands
   ASSERT_FALSE(instr->validate());
@@ -179,9 +179,9 @@ performStoreTest(T testValue,
   memoryAccess.setRegisterValue(baseId, riscv::convert<T>(0));
   memoryAccess.setRegisterValue(srcId, storeValue);
 
-  auto instrFactory     = setUpFactory(modules);
+  auto instrFactory = setUpFactory(modules);
   auto immediateFactory = ImmediateNodeFactory{};
-  auto instr            = instrFactory.createInstructionNode(instructionName);
+  auto instr = instrFactory.createInstructionNode(instructionName);
 
   // Fill the instructions operands
   ASSERT_FALSE(instr->validate());
@@ -196,7 +196,7 @@ performStoreTest(T testValue,
   instr->getValue(memoryAccess);
 
   // Check result
-  ASSERT_EQ(memoryAccess.getMemoryValueAt(0, byteAmount), storeValue);
+  ASSERT_EQ(memoryAccess.getMemoryValueAt(0, byteAmount).get(), storeValue);
 }
 }
 
@@ -251,4 +251,3 @@ TEST(LoadStoreInstructionsTest, StoreByte) {
   performStoreTest<uint8_t>(0x42, {"rv32i"}, "sb", 1);
   performStoreTest<uint8_t>(0x42, {"rv32i", "rv64i"}, "sb", 1);
 }
-

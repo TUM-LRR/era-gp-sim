@@ -25,8 +25,8 @@
 #include <climits>
 #include <cstdint>
 
-#include "arch/riscv/instruction-node.hpp"
 #include "arch/common/validation-result.hpp"
+#include "arch/riscv/instruction-node.hpp"
 
 namespace riscv {
 
@@ -45,7 +45,7 @@ class LuiAuipcValidationNode : public InstructionNode {
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override = 0;
 
-  ValidationResult validate() const override {
+  ValidationResult validate(MemoryAccess& memoryAccess) const override {
     if (_children.size() != 2) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
@@ -53,7 +53,7 @@ class LuiAuipcValidationNode : public InstructionNode {
           std::to_string(2));
     }
 
-    ValidationResult resultAll = _validateChildren();
+    ValidationResult resultAll = _validateChildren(memoryAccess);
     if (!resultAll.isSuccess()) {
       return resultAll;
     }
@@ -68,8 +68,7 @@ class LuiAuipcValidationNode : public InstructionNode {
 
     // Get the value of the immediate value and check, if it is representable by
     // 20 bits (unsigned representation)
-    MemoryAccess stub;
-    MemoryValue value = _children.at(1)->getValue(stub);
+    MemoryValue value = _children.at(1)->getValue(memoryAccess);
     if (Utility::occupiesMoreBitsThan(value, 20, false)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
@@ -93,7 +92,7 @@ class LuiInstructionNode : public LuiAuipcValidationNode {
   }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate().isSuccess());
+    assert(validate(memoryAccess).isSuccess());
 
     const std::string& destination = _children.at(0)->getIdentifier();
     MemoryValue offset = _children.at(1)->getValue(memoryAccess);
@@ -124,7 +123,7 @@ class LuiInstructionNode : public LuiAuipcValidationNode {
 
     // Convert back into a memory value and store it in the register
     MemoryValue resultMemoryValue = riscv::convert<UnsignedType>(result);
-    memoryAccess.setRegisterValue(destination, resultMemoryValue);
+    memoryAccess.putRegisterValue(destination, resultMemoryValue);
     return MemoryValue{};
   }
 
@@ -147,11 +146,11 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
   }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate().isSuccess());
+    assert(validate(memoryAccess).isSuccess());
 
     const std::string& destination = _children.at(0)->getIdentifier();
     MemoryValue offset = _children.at(1)->getValue(memoryAccess);
-    MemoryValue programCounter = memoryAccess.getRegisterValue("pc");
+    MemoryValue programCounter = memoryAccess.getRegisterValue("pc").get();
 
     // Convert to the unsigned type of the architecture
     InternalUnsigned offsetConverted = riscv::convert<InternalUnsigned>(offset);
@@ -186,7 +185,7 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
     MemoryValue resultMemoryValue =
         riscv::convert<UnsignedType>(programCounterConverted);
 
-    memoryAccess.setRegisterValue(destination, resultMemoryValue);
+    memoryAccess.putRegisterValue(destination, resultMemoryValue);
     return MemoryValue{};
   }
 
