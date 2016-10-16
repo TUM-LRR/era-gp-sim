@@ -27,6 +27,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "common/assert.hpp"
 #include "common/utility.hpp"
 
 class MemoryValue {
@@ -55,6 +56,9 @@ class MemoryValue {
       : public Utility::CompletelyOrdered<BaseIterator<ReferenceType, void>>,
         public std::iterator<std::random_access_iterator_tag, ReferenceType> {
    public:
+    using super = std::iterator<std::random_access_iterator_tag, ReferenceType>;
+    using typename super::difference_type;
+
     /**
      * Tests if the iterator is equal to another iterator.
      *
@@ -63,7 +67,7 @@ class MemoryValue {
      * memory value.
      */
     bool operator==(const BaseIterator &other) const noexcept override {
-      if (&(this->_memory) != &(other._memory)) return false;
+      if (!pointsToSameMemoryAs(other)) return false;
       if (this->_address != other._address) return false;
       return true;
     }
@@ -77,8 +81,8 @@ class MemoryValue {
      * \throws AssertionError if the other iterator points to another memory
      * value.
      */
-    bool operator<(const BaseIterator &other) const noexcept override {
-      assert::that(&(this->_memory) == &(other._memory));
+    bool operator<(const BaseIterator &other) const override {
+      assert::that(pointsToSameMemoryAs(other));
       return this->_address < other._address;
     }
 
@@ -102,7 +106,7 @@ class MemoryValue {
      * Increments the iterator to the next address.
      * \return A reference to the memory value bit at the resulting location.
      */
-    BaseIterator &operator++() {
+    BaseIterator &operator++() noexcept {
       ++_address;
       return *this;
     }
@@ -111,7 +115,7 @@ class MemoryValue {
      * Increments the iterator to the next address.
      * \return A reference to the memory value bit at the old location.
      */
-    BaseIterator operator++(int) {
+    BaseIterator operator++(int)noexcept {
       auto copy = *this;
       ++this;
       return copy;
@@ -121,7 +125,7 @@ class MemoryValue {
      * Decrements the iterator to the previous address.
      * \return A reference to the memory value bit at the resulting location.
      */
-    BaseIterator &operator--() {
+    BaseIterator &operator--() noexcept {
       --_address;
       return *this;
     }
@@ -130,17 +134,75 @@ class MemoryValue {
      * Decrements the iterator to the previous address.
      * \return A reference to the memory value bit at the old location.
      */
-    BaseIterator operator--(int) {
+    BaseIterator operator--(int)noexcept {
       auto copy = *this;
       --this;
       return copy;
     }
 
     /**
+     * Moves the iterator forwards by the specified distance.
+     * \return A refererence to the resulting iterator.
+     */
+    BaseIterator &operator+=(difference_type distance) noexcept {
+      _address += distance;
+      return *this;
+    }
+
+    /**
+     * \return The iterator resulting from moving the iterator forwards by the
+     * specified distance.
+     */
+    BaseIterator operator+(difference_type distance) const noexcept {
+      auto copy = *this;
+      copy += distance;
+      return copy;
+    }
+
+    /**
+     * Moves the iterator backwards by the specified distance.
+     * \return A refererence to the resulting iterator.
+     */
+    BaseIterator &operator-=(difference_type distance) noexcept {
+      _address -= distance;
+      return *this;
+    }
+
+    /**
+     * \return The iterator resulting from moving the iterato backwards by the
+     * specified distance.
+     */
+    BaseIterator operator-(difference_type distance) const noexcept {
+      auto copy = *this;
+      copy -= distance;
+      return copy;
+    }
+
+    /**
+     * \return The distance between this iterator and the other iterator.
+     */
+    difference_type operator-(const BaseIterator &other) const {
+      assert::that(pointsToSameMemoryAs(other));
+      return this->_address - other._address;
+    }
+
+    /**
      * \return The numeric address currently pointed at by the memory value.
      */
-    address_t getAdress() const noexcept {
+    address_t getAddress() const noexcept {
       return _address;
+    }
+
+    /**
+     * Tests if this iterator points to the same memory
+     * (value) as another iterator.
+     *
+     * \param  other The other iterator to test against.
+     * \return       True if the other iterator points to the same memory value
+     *               as this one, else false.
+     */
+    bool pointsToSameMemoryAs(const BaseIterator &other) const noexcept {
+      return &(this->_memory) == &(other._memory);
     }
 
    private:
