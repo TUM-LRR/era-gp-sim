@@ -246,7 +246,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
    */
   ValidationResult _validateOffset() const {
     MemoryAccess memoryAccess;
-    auto offset = _getChildValue<SignedWord>(memoryAccess, 2);
+    auto offset = _children[2]->getValue(memoryAccess);
 
     // The immediate is 12 bit, but including the sign bit. Because it is
     // counted in multiples of two, you still get +- 12 bit, but the value
