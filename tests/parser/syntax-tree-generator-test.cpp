@@ -25,10 +25,11 @@
 #include "arch/common/node-factory-collection-maker.hpp"
 #include "arch/common/register-node.hpp"
 #include "arch/riscv/instruction-node.hpp"
-#include "parser/compile-state.hpp"
-#include "parser/syntax-tree-generator.hpp"
+#include "core/project-module.hpp"
 #include "gtest/gtest.h"
+#include "parser/compile-state.hpp"
 #include "parser/riscv-parser.hpp"
+#include "parser/syntax-tree-generator.hpp"
 
 static SyntaxTreeGenerator buildGenerator() {
   Architecture testArch =
@@ -38,6 +39,11 @@ static SyntaxTreeGenerator buildGenerator() {
   SyntaxTreeGenerator generator(factoryCollection,
                                 RiscvParser::argumentGeneratorFunction);
   return generator;
+}
+
+static ProjectModule buildProjectModule() {
+  ProjectModule module(ArchitectureFormula{"riscv", {"rv32i"}}, 4096, "riscv");
+  return module;
 }
 
 template <typename SubType, typename BaseType>
@@ -57,36 +63,37 @@ TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
   ASSERT_TRUE((isInstance<ImmediateNode>(output)));
 }
 
-// Does not work right now... :(
-
-/*TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
+TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   auto generator = buildGenerator();
   CompileState state;
   auto output = generator.transformOperand("r18", state);
   ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<RegisterNode>(output)));
-}*/
+}
 
 TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   auto generator = buildGenerator();
   CompileState state;
 
-  /*auto arg1 = generator.transformOperand("r1", state);
+  auto arg1 = generator.transformOperand("r1", state);
   ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
 
   auto arg2 = generator.transformOperand("r2", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(arg2)));*/
+  ASSERT_TRUE((isInstance<RegisterNode>(arg2)));
 
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> sources;
-  // sources.push_back(std::move(arg1));
+  sources.push_back(std::move(arg1));
 
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> targets;
-  // targets.push_back(std::move(arg2));
+  targets.push_back(std::move(arg2));
 
-  auto output = generator.transformCommand("add", sources, targets, state);
+  auto projectModule = buildProjectModule();
 
-  // ASSERT_EQ(state.errorList.size(), 0);
+  auto output = generator.transformCommand(
+      "add", sources, targets, state, projectModule.getMemoryAccess());
+
+  ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<riscv::InstructionNode>(output)));
 }
