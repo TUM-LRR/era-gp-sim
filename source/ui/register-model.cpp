@@ -18,8 +18,9 @@
 
 #include "ui/register-model.hpp"
 
-RegisterModel::RegisterModel(QObject *parent)
+RegisterModel::RegisterModel(QQmlContext* projectContext, QObject *parent)
 : QAbstractItemModel(parent), _rootItem(new RegisterInformation()) {
+  projectContext->setContextProperty("registerModel", this);
   // TODO: Retrieve available registers from core.
   // Some temporary test registers.
   RegisterInformation *eax = new RegisterInformation("EAX");

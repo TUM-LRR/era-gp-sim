@@ -21,6 +21,6 @@
 
 QProject::QProject(QQmlContext* projectContext, QObject* parent)
 : QObject(parent)
-, _registerModel()
+, _registerModel(projectContext)
 , _editor(projectContext) {
 }

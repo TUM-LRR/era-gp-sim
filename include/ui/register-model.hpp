@@ -21,6 +21,7 @@
 
 #include <QAbstractItemModel>
 #include <QDebug>
+#include <QQmlContext>
 #include <map>
 #include <string>
 #include "arch/common/register-information.hpp"
@@ -51,7 +52,7 @@ class RegisterModel : public QAbstractItemModel {
   Q_OBJECT
 
  public:
-  explicit RegisterModel(QObject *parent = 0);
+  explicit RegisterModel(QQmlContext* projectContext, QObject *parent = 0);
 
   /**
    * \brief The RegisterModelRole enum Identifies different kinds of data stored
