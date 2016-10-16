@@ -76,17 +76,18 @@ void test12BitImmediateBounds(InstructionNodeFactory& instrF,
   cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(op2));             \
   ASSERT_TRUE(cmd_##contextNbr->validate().isSuccess());                       \
   /* Save values of operand registers to determine change*/                    \
-  MemoryValue preOp1_##contextNbr = memoryAccess.getRegisterValue(op1);        \
-  MemoryValue preOp2_##contextNbr = memoryAccess.getRegisterValue(op2);        \
+  MemoryValue preOp1_##contextNbr = memoryAccess.getRegisterValue(op1).get();  \
+  MemoryValue preOp2_##contextNbr = memoryAccess.getRegisterValue(op2).get();  \
   /* Perform instruction*/                                                     \
   MemoryValue returnValue_##contextNbr =                                       \
       cmd_##contextNbr->getValue(memoryAccess);                                \
   ASSERT_TRUE(returnValue_##contextNbr.isZero());                              \
   /* Check that operand registers stayed the same*/                            \
-  ASSERT_EQ(preOp1_##contextNbr, memoryAccess.getRegisterValue(op1));          \
-  ASSERT_EQ(preOp2_##contextNbr, memoryAccess.getRegisterValue(op2));          \
+  ASSERT_EQ(preOp1_##contextNbr, memoryAccess.getRegisterValue(op1).get());    \
+  ASSERT_EQ(preOp2_##contextNbr, memoryAccess.getRegisterValue(op2).get());    \
   /* Read result from destination register*/                                   \
-  MemoryValue actualResult_##contextNbr = memoryAccess.getRegisterValue(dest); \
+  MemoryValue actualResult_##contextNbr =                                      \
+      memoryAccess.getRegisterValue(dest).get();                               \
   ASSERT_EQ(memoryValueConverter(result), actualResult_##contextNbr);
 
 /**
@@ -129,15 +130,17 @@ void test12BitImmediateBounds(InstructionNodeFactory& instrF,
   ASSERT_TRUE(cmd_##contextNbr->validate().isSuccess())                        \
       << "instruction node + 2 register + immediate node validation failed";   \
   /* Save value of operand register to determine change */                     \
-  MemoryValue preRegisterOp_##contextNbr = memoryAccess.getRegisterValue(reg); \
+  MemoryValue preRegisterOp_##contextNbr =                                     \
+      memoryAccess.getRegisterValue(reg).get();                                \
   /* Perform instruction*/                                                     \
   MemoryValue returnValue_##contextNbr =                                       \
       cmd_##contextNbr->getValue(memoryAccess);                                \
   ASSERT_TRUE(returnValue_##contextNbr.isZero());                              \
   /* Check that register operand stayed the same*/                             \
-  ASSERT_EQ(preRegisterOp_##contextNbr, memoryAccess.getRegisterValue(reg));   \
+  ASSERT_EQ(preRegisterOp_##contextNbr,                                        \
+            memoryAccess.getRegisterValue(reg).get());                         \
   /* Read result from destination register */                                  \
-  MemoryValue result_##contextNbr = memoryAccess.getRegisterValue(dest);       \
+  MemoryValue result_##contextNbr = memoryAccess.getRegisterValue(dest).get(); \
   ASSERT_EQ(memoryValueConverter(result), result_##contextNbr);
 
 #endif /* ERAGPSIM_TESTS_ARCH_RISCV_ARITHMETIC_TEST_UTILS_HPP_*/

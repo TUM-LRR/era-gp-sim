@@ -75,7 +75,7 @@ void testRV64OnlyInstructionRI(const std::string& instructionName,
   ASSERT_EQ(instr->getValue(memoryAccess), MemoryValue{});
 
   // Check result
-  MemoryValue result = memoryAccess.getRegisterValue(destId);
+  MemoryValue result = memoryAccess.getRegisterValue(destId).get();
   ASSERT_EQ(riscv::convert<uint64_t>(result), expectedResult);
 }
 
@@ -116,7 +116,7 @@ void testRV64OnlyInstructionRR(const std::string& instructionName,
   ASSERT_EQ(instr->getValue(memoryAccess), MemoryValue{});
 
   // Check result
-  MemoryValue result = memoryAccess.getRegisterValue(destId);
+  MemoryValue result = memoryAccess.getRegisterValue(destId).get();
   ASSERT_EQ(riscv::convert<uint64_t>(result), expectedResult);
 }
 

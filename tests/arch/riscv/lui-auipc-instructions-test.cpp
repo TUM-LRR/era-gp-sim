@@ -77,7 +77,7 @@ performLuiTest(int32_t input,
   instr->getValue(memoryAccess);
 
   // Check result
-  MemoryValue result = memoryAccess.getRegisterValue(destId);
+  MemoryValue result = memoryAccess.getRegisterValue(destId).get();
   ASSERT_EQ(riscv::convert<T>(result), expectedOutput);
 }
 
@@ -128,7 +128,7 @@ performAuipcTest(uint32_t input,
   instr->getValue(memoryAccess);
 
   // Check result
-  MemoryValue result = memoryAccess.getRegisterValue(destId);
+  MemoryValue result = memoryAccess.getRegisterValue(destId).get();
   ASSERT_EQ(riscv::convert<T>(result), expectedOutput);
 }
 

@@ -100,7 +100,7 @@ performLoadTestUnsigned(T testValue,
   instr->getValue(memoryAccess);
 
   // Check result
-  ASSERT_EQ(memoryAccess.getRegisterValue(destId), loadValue);
+  ASSERT_EQ(memoryAccess.getRegisterValue(destId).get(), loadValue);
 }
 
 /**
@@ -147,7 +147,7 @@ performLoadTestSigned(T testValue,
   instr->getValue(memoryAccess);
 
   // Check result
-  ASSERT_EQ(memoryAccess.getRegisterValue(destId), loadValue);
+  ASSERT_EQ(memoryAccess.getRegisterValue(destId).get(), loadValue);
 }
 
 /**
