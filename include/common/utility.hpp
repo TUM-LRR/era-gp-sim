@@ -39,6 +39,28 @@ class MemoryValue;
 
 namespace Utility {
 
+template <typename T>
+struct CompletelyOrdered {
+  virtual bool operator==(const T& other) const noexcept = 0;
+  virtual bool operator<(const T& other) const noexcept = 0;
+
+  virtual bool operator!=(const T& other) const noexcept {
+    return !(*this == other);
+  }
+
+  virtual bool operator>(const T& other) const noexcept {
+    return !(operator==(other)) && !(operator<(other));
+  }
+
+  virtual bool operator<=(const T& other) const noexcept {
+    return operator<(other) || operator==(other);
+  }
+
+  virtual bool operator>=(const T& other) const noexcept {
+    return operator>(other) || operator==(other);
+  }
+};
+
 template <typename T = std::size_t, typename Output = std::vector<T>>
 Output range(T start, T end, const T& step = 1) {
   using Relation = std::function<bool(const T&, const T&)>;
