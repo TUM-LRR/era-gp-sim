@@ -112,7 +112,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
     if (_checkCondition(first, second)) {
       auto programCounter =
           riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
-      auto offset = super::_child<SignedWord>(memoryAccess, 2);
+      auto offset = super::_getChildValue<SignedWord>(memoryAccess, 2);
 
       // The 12-bit immediate specifies an offset in multiples
       // of two, relative to the program counter.
@@ -246,7 +246,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
    */
   ValidationResult _validateOffset() const {
     MemoryAccess memoryAccess;
-    auto offset = _child<SignedWord>(memoryAccess, 2);
+    auto offset = _getChildValue<SignedWord>(memoryAccess, 2);
 
     // The immediate is 12 bit, but including the sign bit. Because it is
     // counted in multiples of two, you still get +- 12 bit, but the value
@@ -279,7 +279,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
 
     // auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess,
     // "pc");
-    // auto offset         = _child<SignedWord>(2, memoryAccess);
+    // auto offset         = _getChildValue<SignedWord>(2, memoryAccess);
     //
     // auto maximumAllowedOffset = addressBoundary - programCounter;
     //

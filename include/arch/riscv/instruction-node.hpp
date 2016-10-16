@@ -64,7 +64,7 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \return The value fo the child.
    */
   template <typename T>
-  T _child(MemoryAccess& memoryAccess, size_t index) const {
+  T _getChildValue(MemoryAccess& memoryAccess, size_t index) const {
     assert(index < _children.size());
     auto memory = _children[index]->getValue(memoryAccess);
     return riscv::convert<T>(memory);

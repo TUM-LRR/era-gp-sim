@@ -236,7 +236,7 @@ TEST_F(TestJumpInstructions, TestJALRValidation) {
   EXPECT_FALSE(instruction->validate().isSuccess());
 
   // Now add the immediate node so that the type
-  // checks pass, but the offset still begin invalid
+  // checks pass, but the offset still is invalid
   instruction->setChild(2, std::move(targetImmediate));
   EXPECT_TRUE(internal->_validateNumberOfChildren().isSuccess());
   EXPECT_TRUE(internal->_validateOperandTypes().isSuccess());

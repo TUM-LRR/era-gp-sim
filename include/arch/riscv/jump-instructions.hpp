@@ -48,7 +48,7 @@ class JumpAndLinkImmediateInstructionNode
  private:
   using super::_children;
   using super::_compareChildTypes;
-  using super::_child;
+  using super::_getChildValue;
 
   /**
    * Performs the actual jump operation.
@@ -63,7 +63,7 @@ class JumpAndLinkImmediateInstructionNode
   UnsignedWord _jump(UnsignedWord programCounter,
                      MemoryAccess& memoryAccess) const override {
     // Load the immediate
-    auto offset = super::template _child<SignedWord>(memoryAccess, 1);
+    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 1);
 
     // The 20-bit immediate specifies an offset in multiples
     // of two, relative to the program counter.
@@ -119,7 +119,7 @@ class JumpAndLinkImmediateInstructionNode
     MemoryAccess memoryAccess;
 
     // Load the immediate
-    auto offset = super::template _child<SignedWord>(memoryAccess, 1);
+    auto offset = _children[1]->getValue(memoryAccess);
 
     // The immediate is 20 bit, but including the sign bit. Because it is
     // counted in multiples of two, you still get +- 20 bit, but the value
@@ -152,7 +152,7 @@ class JumpAndLinkImmediateInstructionNode
         std::numeric_limits<UnsignedWord>::max();
 
     // auto programCounter = _getRegister<UnsignedWord>(memoryAccess, "pc");
-    // auto offset         = _child<SignedWord>(1, memoryAccess);
+    // auto offset         = _getChildValue<SignedWord>(1, memoryAccess);
     //
     // auto maximumAllowedOffset = addressBoundary - programCounter;
     //
@@ -184,7 +184,7 @@ class JumpAndLinkRegisterInstructionNode
   using super::super;
 
  private:
-  using super::_child;
+  using super::_getChildValue;
   using super::_children;
   using super::_compareChildTypes;
 
@@ -201,8 +201,8 @@ class JumpAndLinkRegisterInstructionNode
    * \return The new program counter.
    */
   UnsignedWord _jump(UnsignedWord, MemoryAccess& memoryAccess) const override {
-    auto base = super::template _child<UnsignedWord>(memoryAccess, 1);
-    auto offset = super::template _child<SignedWord>(memoryAccess, 2);
+    auto base = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
+    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 2);
 
     auto address = base + offset;
 
@@ -268,7 +268,7 @@ class JumpAndLinkRegisterInstructionNode
   ValidationResult _validateOffset() const override {
     MemoryAccess memoryAccess;
     // Load the immediate
-    auto offset = super::template _child<SignedWord>(memoryAccess, 2);
+    auto offset = _children[2]->getValue(memoryAccess);
 
     // The immediate is 12 bit, but including the sign bit. Because it is
     // counted in multiples of two, you still get +- 12 bit, but the value
@@ -294,8 +294,10 @@ class JumpAndLinkRegisterInstructionNode
     static const auto addressBoundary =
         std::numeric_limits<UnsignedWord>::max();
 
-    // auto base   = super::template _child<UnsignedWord>(1, memoryAccess);
-    // auto offset = super::template _child<SignedWord>(2, memoryAccess);
+    // auto base   = super::template _getChildValue<UnsignedWord>(1,
+    // memoryAccess);
+    // auto offset = super::template _getChildValue<SignedWord>(2,
+    // memoryAccess);
     //
     // auto maximumAllowedOffset = addressBoundary - base;
     //
