@@ -405,3 +405,53 @@ TEST(TestMemoryValue, TestIteratorAccess) {
     EXPECT_EQ(*(++(--iterator)), !last);
   }
 }
+
+TEST(TestMemoryValue, TestIteratorBehavior) {
+  MemoryValue memory(4);
+
+  EXPECT_EQ(memory.end() - memory.begin(), 4);
+  EXPECT_EQ(memory.begin() - memory.begin(), 0);
+  EXPECT_EQ(memory.end() - memory.end(), 0);
+
+  memory.set(0, true);
+  memory.set(1, false);
+  memory.set(2, true);
+  memory.set(3, false);
+
+  auto iterator = memory.begin();
+
+  EXPECT_EQ(*iterator, true);
+  EXPECT_EQ(iterator - memory.begin(), 0);
+
+  ++iterator;
+
+  EXPECT_EQ(*iterator, false);
+  EXPECT_EQ(iterator - memory.begin(), 1);
+
+  iterator += 2;
+
+  EXPECT_EQ(*iterator, false);
+  EXPECT_EQ(iterator - memory.begin(), 3);
+
+  ++iterator;
+
+  ASSERT_EQ(iterator.getAddress(), 4);
+  EXPECT_EQ(iterator, memory.end());
+
+  iterator -= 4;
+
+  EXPECT_EQ(iterator, memory.begin());
+  EXPECT_EQ(iterator + 4, memory.end());
+
+  EXPECT_EQ(*(iterator + 2), true);
+
+  MemoryValue memory2(4);
+  memory2.set(0, true);
+
+  EXPECT_NE(memory.begin(), memory2.begin());
+
+  // Evaluate in lambda else we get an "expression result unused error"
+  EXPECT_THROW(([&] { return memory.begin() > memory2.end(); })(),
+               assert::AssertionError);
+  EXPECT_THROW(memory.begin() - memory2.end(), assert::AssertionError);
+}

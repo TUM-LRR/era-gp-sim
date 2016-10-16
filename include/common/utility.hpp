@@ -42,21 +42,21 @@ namespace Utility {
 template <typename T>
 struct CompletelyOrdered {
   virtual bool operator==(const T& other) const noexcept = 0;
-  virtual bool operator<(const T& other) const noexcept = 0;
+  virtual bool operator<(const T& other) const = 0;
 
   virtual bool operator!=(const T& other) const noexcept {
     return !(*this == other);
   }
 
-  virtual bool operator>(const T& other) const noexcept {
+  virtual bool operator>(const T& other) const {
     return !(operator==(other)) && !(operator<(other));
   }
 
-  virtual bool operator<=(const T& other) const noexcept {
+  virtual bool operator<=(const T& other) const {
     return operator<(other) || operator==(other);
   }
 
-  virtual bool operator>=(const T& other) const noexcept {
+  virtual bool operator>=(const T& other) const {
     return operator>(other) || operator==(other);
   }
 };

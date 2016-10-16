@@ -52,15 +52,6 @@ MemoryValue::Reference::operator bool() const noexcept {
   return _memory.get(_address);
 }
 
-MemoryValue::ConstReference::ConstReference(const MemoryValue &memory,
-                                            address_t address)
-: _memory(memory), _address(address) {
-}
-
-MemoryValue::ConstReference::operator bool() const noexcept {
-  return _memory.get(_address);
-}
-
 MemoryValue::MemoryValue() : MemoryValue(8) {
 }
 
@@ -179,7 +170,7 @@ MemoryValue::Reference MemoryValue::operator[](address_t address) {
 }
 
 MemoryValue::ConstReference MemoryValue::operator[](address_t address) const {
-  return {*this, address};
+  return get(address);
 }
 
 MemoryValue::address_t MemoryValue::getSize() const {
