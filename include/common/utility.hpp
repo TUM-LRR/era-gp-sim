@@ -63,7 +63,8 @@ struct CompletelyOrdered {
 
 template <typename T = long>
 struct LazyRange {
-  class Iterator : public CompletelyOrdered<Iterator> {
+  class Iterator : public CompletelyOrdered<Iterator>,
+                   public std::iterator<std::bidirectional_iterator_tag, T> {
    public:
     bool operator==(const Iterator& other) const noexcept {
       return this->_index == other._index;
