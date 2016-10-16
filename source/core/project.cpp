@@ -65,16 +65,24 @@ void Project::_createConstituents(RegisterInformation enclosingRegister,
         unitInfo.getRegister(constituentInformation.getID());
 
     // createRegister/alias
-    _registerSet.aliasRegister(constituentRegisterInfo.getName(),
-                               enclosingRegister.getName(),
-                               constituentInformation.getEnclosingOffset(),
-                               constituentInformation.getEnclosingOffset() +
-                                   constituentRegisterInfo.getSize(),
-                               false);
-    _registerSet.aliasRegister(constituentRegisterInfo.getAliases(),
-                               constituentRegisterInfo.getName(),
-                               0,
-                               true);
+    // clang-format off
+    auto startOffset = constituentInformation.getEnclosingOffset();
+    auto endOffset = startOffset + constituentRegisterInfo.getSize();
+    _registerSet.aliasRegister(
+      constituentRegisterInfo.getName(),
+      enclosingRegister.getName(),
+      startOffset,
+      endOffset,
+      false
+    );
+
+    _registerSet.aliasRegister(
+      constituentRegisterInfo.getAliases(),
+      constituentRegisterInfo.getName(),
+      0,
+      true
+    );
+    // clang-format on
 
     // recursive call to create constituents of this constituent
     if (constituentRegisterInfo.hasConstituents()) {
