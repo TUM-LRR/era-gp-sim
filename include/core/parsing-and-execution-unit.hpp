@@ -42,6 +42,12 @@ class MacroInformation;
  */
 class ParsingAndExecutionUnit : public Servant {
  public:
+  using size_t = std::size_t;
+  template <typename... T>
+  using Callback = std::function<void(T...)>;
+  template <typename T>
+  using ListCallback = std::function<void(const std::vector<T> &)>;
+
   /**
    * Creates a new ParsingAndExecutionUnit.
    *
@@ -63,7 +69,7 @@ class ParsingAndExecutionUnit : public Servant {
    *
    * \return index of next instruction. Used internally.
    */
-  std::size_t executeNextLine();
+  size_t executeNextLine();
 
   /**
    * Execute the assembler program to the next breakpoint
@@ -78,7 +84,7 @@ class ParsingAndExecutionUnit : public Servant {
    * \param line The line where the execution point is set
    *
    */
-  void setExecutionPoint(int line);
+  void setExecutionPoint(size_t line);
 
   /**
    * Parses the given code
@@ -95,7 +101,7 @@ class ParsingAndExecutionUnit : public Servant {
    *
    * \returns true if the breakpoint could be set, false otherwise.
    */
-  bool setBreakpoint(int line);
+  bool setBreakpoint(size_t line);
 
   /**
    * Deletes a breakpoint.
@@ -103,7 +109,7 @@ class ParsingAndExecutionUnit : public Servant {
    * \param line the line of the breakpoint which is deleted.
    *
    */
-  void deleteBreakpoint(int line);
+  void deleteBreakpoint(size_t line);
 
   /** Access to the SyntaxInformation interface of the parser.
    *
@@ -122,8 +128,8 @@ class ParsingAndExecutionUnit : public Servant {
    * \param callback
    *
    */
-  void setSetContextInformationCallback(
-      std::function<void(const std::vector<ContextInformation> &)> callback);
+  void
+  setSetContextInformationCallback(ListCallback<ContextInformation> callback);
 
   // editor
 
@@ -133,24 +139,21 @@ class ParsingAndExecutionUnit : public Servant {
    * \param callback
    *
    */
-  void setSetErrorListCallback(
-      std::function<void(const std::vector<CompileError> &)> callback);
+  void setSetErrorListCallback(ListCallback<CompileError> callback);
 
   /**
    * Set the callback which is used to notify the gui of a runtime error.
    *
    * \param callback
    */
-  void setThrowRuntimeErrorCallback(
-      std::function<void(const std::string &)> callback);
+  void setThrowRuntimeErrorCallback(Callback<const std::string &> callback);
 
   /**
    * Set the callback to set the macro list in the ui.
    *
    * \param callback
    */
-  void setSetMacroListCallback(
-      std::function<void(const std::vector<MacroInformation> &)> callback);
+  void setSetMacroListCallback(ListCallback<MacroInformation> callback);
 
   /**
    * Set the callback which is used to inform the gui about the execution point
@@ -159,7 +162,7 @@ class ParsingAndExecutionUnit : public Servant {
    * \param callback
    *
    */
-  void setSetCurrentLineCallback(std::function<void(int)> callback);
+  void setSetCurrentLineCallback(Callback<size_t> callback);
 
 
  private:
@@ -169,7 +172,7 @@ class ParsingAndExecutionUnit : public Servant {
    * \return index of the next node.
    *
    */
-  std::size_t _findNextNode();
+  size_t _findNextNode();
 
   /** A unique_ptr to the parser. */
   std::unique_ptr<Parser> _parser;
@@ -188,7 +191,7 @@ class ParsingAndExecutionUnit : public Servant {
   MemoryAccess _memoryAccess;
 
   /** set which contains the breakpoints.*/
-  std::unordered_set<int> _breakpoints;
+  std::unordered_set<size_t> _breakpoints;
 
   /** The name of the program counter register. */
   RegisterInformation _programCounter;
@@ -197,20 +200,19 @@ class ParsingAndExecutionUnit : public Servant {
   SyntaxInformation _syntaxInformation;
 
   /** Callback to set memory context information in the ui. */
-  std::function<void(const std::vector<ContextInformation> &)>
-      _setContextInformation;
+  ListCallback<ContextInformation> _setContextInformation;
 
   /** Callback to set the error list in the ui.*/
-  std::function<void(const std::vector<CompileError> &)> _setErrorList;
+  ListCallback<CompileError> _setErrorList;
 
   /** Callback to throw a runtime error. */
-  std::function<void(const std::string &)> _throwRuntimeError;
+  Callback<std::string> _throwRuntimeError;
 
   /** Callback to set the macro list in the ui.*/
-  std::function<void(const std::vector<MacroInformation> &)> _setMacroList;
+  ListCallback<MacroInformation> _setMacroList;
 
   /** Callback to set the line which is executed in the ui.*/
-  std::function<void(int)> _setCurrentLine;
+  Callback<size_t> _setCurrentLine;
 };
 
 #endif /* ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP */

@@ -134,17 +134,17 @@ TEST_F(ProjectTestFixture, MemoryAccessTest) {
   MemoryValue testByte   = conversions::convert(4, 8);
   MemoryValue testByte2  = conversions::convert(8, 8);
 
-  EXPECT_NO_THROW(memoryAccess.putMemoryValue(0, testByte));
-  EXPECT_EQ(testByte, memoryAccess.getMemoryValue(0).get());
-  EXPECT_NO_THROW(memoryAccess.putMemoryValue(memorySize - 1, testByte2));
-  EXPECT_NO_THROW(memoryAccess.putMemoryValue(0, testValue2));
+  EXPECT_NO_THROW(memoryAccess.putMemoryValueAt(0, testByte));
+  EXPECT_EQ(testByte, memoryAccess.getMemoryValueAt(0).get());
+  EXPECT_NO_THROW(memoryAccess.putMemoryValueAt(memorySize - 1, testByte2));
+  EXPECT_NO_THROW(memoryAccess.putMemoryValueAt(0, testValue2));
 
-  EXPECT_EQ(testValue2, memoryAccess.setMemoryValue(0, testValue).get());
+  EXPECT_EQ(testValue2, memoryAccess.setMemoryValueAt(0, testValue).get());
   EXPECT_EQ(testByte2,
-            memoryAccess.setMemoryValue(memorySize - 1, testByte).get());
+            memoryAccess.setMemoryValueAt(memorySize - 1, testByte).get());
 
-  EXPECT_EQ(testByte, memoryAccess.getMemoryValue(memorySize - 1).get());
-  EXPECT_EQ(testValue, memoryAccess.getMemoryValue(0, 4).get());
+  EXPECT_EQ(testByte, memoryAccess.getMemoryValueAt(memorySize - 1).get());
+  EXPECT_EQ(testValue, memoryAccess.getMemoryValueAt(0, 4).get());
 
   for (int i = 0; i < 32; i++) {
     std::string registerName = std::string("x") + std::to_string(i);
@@ -174,7 +174,7 @@ TEST_F(ProjectTestFixture, MemoryManagerTest) {
   memoryManager.resetMemory();
   for (int i = 0; i < memorySize; i++) {
     EXPECT_EQ(0,
-              conversions::convert<int>(memoryAccess.getMemoryValue(i).get()));
+              conversions::convert<int>(memoryAccess.getMemoryValueAt(i).get()));
   }
   memoryManager.resetRegisters();
   for (int i = 0; i < 32; i++) {
@@ -221,7 +221,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
     MemoryValue assembledValidator;
     MemoryValue assembledInMemory =
         memoryAccess
-            .getMemoryValue(command.address, assembledValidator.getSize() / 8)
+            .getMemoryValueAt(command.address, assembledValidator.getSize() / 8)
             .get();
     EXPECT_EQ(assembledValidator, assembledInMemory);
   }

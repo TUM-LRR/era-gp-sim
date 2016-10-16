@@ -45,6 +45,13 @@ class UnitInformation;
  */
 class Project : public Servant {
  public:
+  template <typename... T>
+  using Callback = std::function<void(T...)>;
+
+  using size_t = std::size_t;
+  using MemoryValueToString = std::function<std::string(MemoryValue)>;
+  using StringToMemoryValue = std::function<MemoryValue(std::string)>;
+
   /**
    * Creates a new Project
    *
@@ -58,25 +65,25 @@ class Project : public Servant {
    */
   Project(std::weak_ptr<Scheduler> &&scheduler,
           const ArchitectureFormula &architectureFormula,
-          std::size_t memorySize);
+          size_t memorySize);
 
   /**
-   * Calls Memory::get(std::size_t address, std::size_t length = 1) const
+   * Calls Memory::get(size_t address, size_t length = 1) const
    *
    */
-  MemoryValue getMemoryValue(std::size_t address, std::size_t amount = 1);
+  MemoryValue getMemoryValueAt(size_t address, size_t amount = 1);
 
   /**
-   * Calls Memory::put(std::size_t address, const MemoryValue& value)
+   * Calls Memory::put(size_t address, const MemoryValue& value)
    *
    */
-  void putMemoryValue(std::size_t address, const MemoryValue &value);
+  void putMemoryValueAt(size_t address, const MemoryValue &value);
 
   /**
-   * Calls Memory::set(std::size_t address, const MemoryValue& value)
+   * Calls Memory::set(size_t address, const MemoryValue& value)
    *
    */
-  MemoryValue setMemoryValue(std::size_t address, const MemoryValue &value);
+  MemoryValue setMemoryValueAt(size_t address, const MemoryValue &value);
 
   /**
    * Calls RegisterSet::get(const std::string& name) const
@@ -116,13 +123,13 @@ class Project : public Servant {
    * Currently not accessible through any proxy.
    *
    */
-  std::size_t getMemorySize() const;
+  size_t getMemorySize() const;
 
   /**
    * Sets the number of memory cells, might not be supported later
    *
    */
-  void setMemorySize(std::size_t size);
+  void setMemorySize(size_t size);
 
   /**
    * Returns a set of all instructions of the architecture
@@ -147,42 +154,42 @@ class Project : public Servant {
    * decimal integer as a std::string
    *
    */
-  std::function<std::string(MemoryValue)> getSignedDecimalConversion() const;
+  MemoryValueToString getSignedDecimalConversion() const;
 
   /**
    * Returns the callback used for conversion from a MemoryValue to a unsigned
    * decimal integer as a std::string
    *
    */
-  std::function<std::string(MemoryValue)> getUnsignedDecimalConversion() const;
+  MemoryValueToString getUnsignedDecimalConversion() const;
 
   /**
    * Returns the callback used for conversion from a MemoryValue to a signed
    * decimal float as a std::string
    *
    */
-  std::function<std::string(MemoryValue)> getFloatConversion() const;
+  MemoryValueToString getFloatConversion() const;
 
   /**
    * Returns the callback used for conversion from a signed decimal integer as a
    * std::string to a MemoryValue
    *
    */
-  std::function<MemoryValue(std::string)> getSignedToMemoryValue() const;
+  StringToMemoryValue getSignedToMemoryValue() const;
 
   /**
    * Returns the callback used for conversion from a unsigned decimal integer as
    * a std::string to a MemoryValue
    *
    */
-  std::function<MemoryValue(std::string)> getUnsignedToMemoryValue() const;
+  StringToMemoryValue getUnsignedToMemoryValue() const;
 
   /**
    * Returns the callback used for conversion from a signed decimal float as a
    * std::string to a MemoryValue
    *
    */
-  std::function<MemoryValue(std::string)> getFloatToMemoryValue() const;
+  StringToMemoryValue getFloatToMemoryValue() const;
 
   /**
    * Set the callback which is used to signal the gui that a register was
@@ -191,8 +198,7 @@ class Project : public Servant {
    * \param callback
    *
    */
-  void
-  setUpdateRegisterCallback(std::function<void(const std::string &)> callback);
+  void setUpdateRegisterCallback(Callback<const std::string &> callback);
 
   /**
    * Set the callback which is used to signal the gui that a memory cell was
@@ -201,8 +207,7 @@ class Project : public Servant {
    * \param callback
    *
    */
-  void setUpdateMemoryCallback(
-      std::function<void(std::size_t, std::size_t)> callback);
+  void setUpdateMemoryCallback(Callback<size_t, size_t> callback);
 
   /**
    * Returns the architecture object.
@@ -228,6 +233,14 @@ class Project : public Servant {
    */
   void _createConstituents(RegisterInformation enclosingRegister,
                            UnitInformation unitInfo);
+
+  /**
+   * Sets the specified register to 0, if it is a top level register (no
+   * constituent) and not constant.
+   *
+   * \param registerInfo the register information object
+   */
+  void _setRegisterToZero(RegisterInformation registerInfo);
 
   /** An Architecture object, stores all information about the architecture of
    * this project. */

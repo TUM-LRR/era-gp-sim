@@ -45,7 +45,8 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _setErrorList([](const std::vector<CompileError> &x) {})
 , _throwRuntimeError(([](const std::string &x) {}))
 , _setMacroList(([](const std::vector<MacroInformation> &x) {}))
-, _setCurrentLine([](int x) {}) {
+, _setCurrentLine([](size_t x) {}) {
+  // find the RegisterInformation object of the program counter
   for (UnitInformation unitInfo : architecture.getUnits()) {
     if (unitInfo.hasSpecialRegister(
             RegisterInformation::Type::PROGRAM_COUNTER)) {
@@ -60,58 +61,70 @@ void ParsingAndExecutionUnit::execute() {
     return;
   }
   _stopFlag.test_and_set();
-  std::size_t nextNode = _findNextNode();
+  size_t nextNode = _findNextNode();
   while (_stopFlag.test_and_set() &&
          nextNode < _finalRepresentation.commandList.size()) {
     nextNode = executeNextLine();
   }
 }
 
-std::size_t ParsingAndExecutionUnit::executeNextLine() {
-  // reference to avoid copying a unique_ptr
-  FinalCommand &currentCommand =
-      _finalRepresentation.commandList.at(_findNextNode());
+size_t ParsingAndExecutionUnit::executeNextLine() {
+  // check for parser errors
   if (_finalRepresentation.errorList.size() > 0) {
     return _findNextNode();
   }
+  // reference to avoid copying a unique_ptr
+  FinalCommand &currentCommand =
+      _finalRepresentation.commandList.at(_findNextNode());
+  // check for runtime errors
   ValidationResult validationResult =
       currentCommand.node->validateRuntime(_memoryAccess);
   if (!validationResult.isSuccess()) {
+    // notify the ui of a runtime error
     _throwRuntimeError(validationResult.getMessage());
     return _findNextNode();
   }
-
+  // update the current line in the ui (pre-execution)
   _setCurrentLine(currentCommand.position.lineStart);
 
   currentCommand.node->getValue(_memoryAccess);
 
-  std::size_t nextNode = _findNextNode();
+  // find the next instruction and update the current line in the
+  // ui (post-execution)
+  size_t nextNode = _findNextNode();
   _setCurrentLine(
       _finalRepresentation.commandList.at(nextNode).position.lineStart);
   return nextNode;
 }
 
 void ParsingAndExecutionUnit::executeToBreakpoint() {
+  // check if there are parser errors
   if (_finalRepresentation.errorList.size() > 0) {
     return;
   }
+  // reset stop flag
   _stopFlag.test_and_set();
-  int nextNode = _findNextNode();
+  // find the index of the next node and loop through the instructions
+  size_t nextNode = _findNextNode();
   while (_stopFlag.test_and_set() &&
          nextNode < _finalRepresentation.commandList.size()) {
     nextNode = executeNextLine();
-    int currentLine =
+    // check if there is a brekpoint on the next line
+    size_t nextLine =
         _finalRepresentation.commandList.at(nextNode).position.lineStart;
-    if (_breakpoints.count(currentLine) > 0) {
+    if (_breakpoints.count(nextLine) > 0) {
       // we reached a breakpoint
       break;
     }
   }
 }
 
-void ParsingAndExecutionUnit::setExecutionPoint(int line) {
+void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
+  // loop through all commands and see if any matches the given line
   for (auto &&command : _finalRepresentation.commandList) {
     if (command.position.lineStart == line) {
+      // this command is on the given line, set the program counter to execute
+      // this command next
       _memoryAccess.putRegisterValue(
           _programCounter.getName(),
           conversions::convert(command.address, _programCounter.getSize()));
@@ -123,27 +136,27 @@ void ParsingAndExecutionUnit::setExecutionPoint(int line) {
 
 void ParsingAndExecutionUnit::parse(std::string code) {
   // delete old assembled program in memory
-  // Disabled because AbstractSyntaxTreeNode::assemble() causes a segfault.
-  // TODO AbstractSyntaxTreeNode::length() would be nice, otherwise every
-  // command has to be assembled twice.
-  /*for (auto&& command : _finalRepresentation.commandList) {
-    MemoryValue zero = conversions::convert(0, command.assemble.getSize());
-    _memoryAccess.putMemoryValue(command.address, zero;
-  }*/
+  for (auto &&command : _finalRepresentation.commandList) {
+    // create a empty MemoryValue as long as the command
+    MemoryValue zero(command.node->assemble().getSize());
+    _memoryAccess.putMemoryValueAt(command.address, zero);
+  }
+  // parse the new code and save the final representation
   _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
   _addressCommandMap = _finalRepresentation.createMapping();
+  // update the error list of the ui
   _setErrorList(_finalRepresentation.errorList);
   // assemble commands into memory
-  /*for (auto&& command : _finalRepresentation.commandList) {
-    _memoryAccess.putMemoryValue(command.address, command.node->assemble());
-  }*/
+  for (auto &&command : _finalRepresentation.commandList) {
+    _memoryAccess.putMemoryValueAt(command.address, command.node->assemble());
+  }
 }
 
-bool ParsingAndExecutionUnit::setBreakpoint(int line) {
+bool ParsingAndExecutionUnit::setBreakpoint(size_t line) {
   return _breakpoints.insert(line).second;
 }
 
-void ParsingAndExecutionUnit::deleteBreakpoint(int line) {
+void ParsingAndExecutionUnit::deleteBreakpoint(size_t line) {
   _breakpoints.erase(line);
 }
 
@@ -153,38 +166,42 @@ ParsingAndExecutionUnit::getSyntaxRegex(SyntaxInformation::Token token) const {
 }
 
 void ParsingAndExecutionUnit::setSetContextInformationCallback(
-    std::function<void(const std::vector<ContextInformation> &)> callback) {
+    ListCallback<ContextInformation> callback) {
   _setContextInformation = callback;
 }
 
 void ParsingAndExecutionUnit::setSetErrorListCallback(
-    std::function<void(const std::vector<CompileError> &)> callback) {
+    ListCallback<CompileError> callback) {
   _setErrorList = callback;
 }
 
 void ParsingAndExecutionUnit::setThrowRuntimeErrorCallback(
-    std::function<void(const std::string &)> callback) {
+    Callback<const std::string &> callback) {
   _throwRuntimeError = callback;
 }
 
 void ParsingAndExecutionUnit::setSetMacroListCallback(
-    std::function<void(const std::vector<MacroInformation> &)> callback) {
+    ListCallback<MacroInformation> callback) {
   _setMacroList = callback;
 }
 
 void ParsingAndExecutionUnit::setSetCurrentLineCallback(
-    std::function<void(int)> callback) {
+    Callback<size_t> callback) {
   _setCurrentLine = callback;
 }
 
-std::size_t ParsingAndExecutionUnit::_findNextNode() {
+size_t ParsingAndExecutionUnit::_findNextNode() {
+  // get the value of the program counter and convert it to a std::size_t
   std::string programCounterName = _programCounter.getName();
   MemoryValue programCounterValue =
       _memoryAccess.getRegisterValue(programCounterName).get();
-  std::size_t nextInstructionAddress =
-      conversions::convert<std::size_t>(programCounterValue);
+  size_t nextInstructionAddress =
+      conversions::convert<size_t>(programCounterValue);
+  // find the instruction address from the program counter value
   auto iterator = _addressCommandMap.find(nextInstructionAddress);
   if (iterator == _addressCommandMap.end()) {
+    // if there is no instruction (end of program reached), return a value that
+    // stops the execution loop
     return _finalRepresentation.commandList.size();
   }
   return iterator->second;

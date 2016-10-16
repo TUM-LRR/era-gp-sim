@@ -38,7 +38,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param address address of the memory cells.
    * \param length number of memory cells to return, default is 1.
    */
-  POST_FUTURE(getMemoryValue)
+  POST_FUTURE(getMemoryValueAt)
 
   /**
    * Returns a number of memory cells at a given address as
@@ -50,7 +50,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param address address of the memory cells.
    * \param length number of memory cells to return, default is 1.
    */
-  POST_CALLBACK_SAFE(getMemoryValue)
+  POST_CALLBACK_SAFE(getMemoryValueAt)
 
   /**
    * Puts a value into a memory cell.
@@ -58,7 +58,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param address The value is written to this address.
    * \param value The MemoryValue to write.
    */
-  POST(putMemoryValue)
+  POST(putMemoryValueAt)
 
   /**
    * Sets a memory cell to a value and returns the old value.
@@ -66,7 +66,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param address The value is written to this address.
    * \param value The MemoryValue to write.
    */
-  POST_FUTURE(setMemoryValue)
+  POST_FUTURE(setMemoryValueAt)
 
   /**
    * Set a memory cell to a value and return the old value through a callback.
@@ -77,7 +77,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param address The value is written to this address.
    * \param value The MemoryValue to write.
    */
-  POST_CALLBACK_SAFE(setMemoryValue)
+  POST_CALLBACK_SAFE(setMemoryValueAt)
 
   /**
    * Returns the content of a register as MemoryValue.

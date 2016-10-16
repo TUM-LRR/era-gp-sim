@@ -23,11 +23,10 @@
 #include "arch/common/register-information.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
-#include "core/conversions.hpp"
 
 Project::Project(std::weak_ptr<Scheduler> &&scheduler,
                  const ArchitectureFormula &architectureFormula,
-                 std::size_t memorySize)
+                 size_t memorySize)
 : Servant(std::move(scheduler))
 , _architecture(Architecture::Brew(architectureFormula))
 , _memory(memorySize, _architecture.getByteSize())
@@ -83,16 +82,16 @@ void Project::_createConstituents(RegisterInformation enclosingRegister,
   }
 }
 
-MemoryValue Project::getMemoryValue(std::size_t address, std::size_t amount) {
+MemoryValue Project::getMemoryValueAt(size_t address, size_t amount) {
   return _memory.get(address, amount);
 }
 
-void Project::putMemoryValue(std::size_t address, const MemoryValue &value) {
+void Project::putMemoryValueAt(size_t address, const MemoryValue &value) {
   _memory.put(address, value);
 }
 
 MemoryValue
-Project::setMemoryValue(std::size_t address, const MemoryValue &value) {
+Project::setMemoryValueAt(size_t address, const MemoryValue &value) {
   return _memory.set(address, value);
 }
 
@@ -118,11 +117,11 @@ Architecture::byte_size_t Project::getByteSize() const {
   return _architecture.getByteSize();
 }
 
-std::size_t Project::getMemorySize() const {
+size_t Project::getMemorySize() const {
   return _memory.getByteCount();
 }
 
-void Project::setMemorySize(std::size_t size) {
+void Project::setMemorySize(size_t size) {
 }
 
 InstructionSet Project::getInstructionSet() const {
@@ -130,59 +129,63 @@ InstructionSet Project::getInstructionSet() const {
 }
 
 void Project::resetMemory() {
-  MemoryValue zero = conversions::convert(0, _memory.getByteSize());
-  for (std::size_t i = 0; i < getMemorySize(); i++) {
-    putMemoryValue(i, zero);
+  MemoryValue zero(_memory.getByteSize());
+  for (size_t i = 0; i < getMemorySize(); i++) {
+    putMemoryValueAt(i, zero);
   }
 }
 
 void Project::resetRegisters() {
   for (UnitInformation unitInfo : _architecture.getUnits()) {
+    // set the normal registers to zero
     for (auto &&registerPair : unitInfo) {
-      RegisterInformation registerInfo = registerPair.second;
-      if (!registerInfo.isConstant() && !registerInfo.hasEnclosing()) {
-        MemoryValue zero = conversions::convert(0, registerInfo.getSize());
-        putRegisterValue(registerPair.second.getName(), zero);
-      }
+      _setRegisterToZero(registerPair.second);
+    }
+    // set the special registers to zero
+    for (auto &&registerPair : unitInfo.getSpecialRegisters()) {
+      _setRegisterToZero(registerPair.second);
     }
   }
 }
 
-std::function<std::string(MemoryValue)>
-Project::getSignedDecimalConversion() const {
-  return std::function<std::string(MemoryValue)>();
+void Project::_setRegisterToZero(RegisterInformation registerInfo) {
+  if (!registerInfo.isConstant() && !registerInfo.hasEnclosing()) {
+    // create a empty MemoryValue as long as the register
+    MemoryValue zero(registerInfo.getSize());
+    putRegisterValue(registerInfo.getName(), zero);
+  }
 }
 
-std::function<std::string(MemoryValue)>
-Project::getUnsignedDecimalConversion() const {
-  return std::function<std::string(MemoryValue)>();
+Project::MemoryValueToString Project::getSignedDecimalConversion() const {
+  return MemoryValueToString();
 }
 
-std::function<std::string(MemoryValue)> Project::getFloatConversion() const {
-  return std::function<std::string(MemoryValue)>();
+Project::MemoryValueToString Project::getUnsignedDecimalConversion() const {
+  return MemoryValueToString();
 }
 
-std::function<MemoryValue(std::string)>
-Project::getSignedToMemoryValue() const {
-  return std::function<MemoryValue(std::string)>();
+Project::MemoryValueToString Project::getFloatConversion() const {
+  return MemoryValueToString();
 }
 
-std::function<MemoryValue(std::string)>
-Project::getUnsignedToMemoryValue() const {
-  return std::function<MemoryValue(std::string)>();
+Project::StringToMemoryValue Project::getSignedToMemoryValue() const {
+  return StringToMemoryValue();
 }
 
-std::function<MemoryValue(std::string)> Project::getFloatToMemoryValue() const {
-  return std::function<MemoryValue(std::string)>();
+Project::StringToMemoryValue Project::getUnsignedToMemoryValue() const {
+  return StringToMemoryValue();
+}
+
+Project::StringToMemoryValue Project::getFloatToMemoryValue() const {
+  return StringToMemoryValue();
 }
 
 void Project::setUpdateRegisterCallback(
-    std::function<void(const std::string &)> callback) {
+    Callback<const std::string &> callback) {
   _registerSet.setCallback(callback);
 }
 
-void Project::setUpdateMemoryCallback(
-    std::function<void(std::size_t, std::size_t)> callback) {
+void Project::setUpdateMemoryCallback(Callback<size_t, size_t> callback) {
   _memory.setCallback(callback);
 }
 
