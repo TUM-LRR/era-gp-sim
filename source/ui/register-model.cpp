@@ -18,7 +18,7 @@
 
 #include "ui/register-model.hpp"
 
-RegisterModel::RegisterModel(QQmlContext* projectContext, QObject *parent)
+RegisterModel::RegisterModel(QQmlContext *projectContext, QObject *parent)
 : QAbstractItemModel(parent), _rootItem(new RegisterInformation()) {
   projectContext->setContextProperty("registerModel", this);
   // TODO: Retrieve available registers from core.
@@ -62,7 +62,7 @@ RegisterModel::RegisterModel(QQmlContext* projectContext, QObject *parent)
 }
 
 
-void RegisterModel::updateContent(const std::string& registerTitle) {
+void RegisterModel::updateContent(const std::string &registerTitle) {
   // Notify the model about the change
   // Notifying requires the model index of the altered item.
   // The only reasonable way of accomplishing this is by filtering the registers
@@ -83,8 +83,8 @@ void RegisterModel::updateContent(const std::string& registerTitle) {
 
 QHash<int, QByteArray> RegisterModel::roleNames() const {
   QHash<int, QByteArray> roles;
-  roles[IdentifierRole]      = "Identifier";
-  roles[TitleRole]           = "Title";
+  roles[IdentifierRole] = "Identifier";
+  roles[TitleRole] = "Title";
   roles[DataFormatsListRole] = "DataFormatsList";
   return roles;
 }
@@ -129,7 +129,7 @@ RegisterModel::index(int row, int column, const QModelIndex &parent) const {
   // Return the index for the parent's cell at the given row and column. If such
   // cell does not exist, return an invalid index.
   id_t childItemIdentifier = parentItem->getConstituents().at(row).getID();
-  auto it                  = _items.find(childItemIdentifier);
+  auto it = _items.find(childItemIdentifier);
   if (it != _items.end()) {
     RegisterInformation *childItem = (it->second).get();
     return createIndex(row, column, childItem);
@@ -149,7 +149,7 @@ QModelIndex RegisterModel::parent(const QModelIndex &index) const {
   if (childItem->hasEnclosing()) {
     // Load the requested parent item.
     id_t parentItemIdentifier = childItem->getEnclosing();
-    auto it                   = _items.find(parentItemIdentifier);
+    auto it = _items.find(parentItemIdentifier);
     if (it != _items.end()) {
       RegisterInformation *parentItem = (it->second).get();
 
@@ -188,11 +188,13 @@ int RegisterModel::columnCount(const QModelIndex &parent) const {
 }
 
 
-void RegisterModel::registerContentChanged(const QVariant& registerIdentifierVariant, const QString& registerContent) {
+void RegisterModel::registerContentChanged(
+    const QVariant &registerIdentifierVariant, const QString &registerContent) {
   id_t registerIdentifier = registerIdentifierVariant.toInt();
   // Convert content string to MemoryValue.
   // TODO...
-  qDebug() << "registerContentChanged: " << registerContent << ", " << registerIdentifier;
+  qDebug() << "registerContentChanged: " << registerContent << ", "
+           << registerIdentifier;
   // Notify core.
   // TODO...
 }
@@ -211,26 +213,31 @@ RegisterModel::dataFormatListForRegister(const QModelIndex &index) const {
 
 QVariant RegisterModel::contentStringForRegister(
     const QModelIndex &index, unsigned int currentDataFormatIndex) const {
-  // TODO: Fetch memory value from core.
-  // TODO: Convert memory value to string with format as specified by
-  // currentDataFormatIndex.
   if (index.internalPointer() != nullptr) {
+    // Load the register corresponding to the given QModelIndex.
     RegisterInformation *registerItem =
         static_cast<RegisterInformation *>(index.internalPointer());
+    // Look up the register's current data format.
     Optional<QString> dataFormat =
         _dataFormatForRegisterItem(*registerItem, currentDataFormatIndex);
+    // Fetch memory value from core.
+    MemoryValue registerContentMemoryValue = {{2, 4}, 16};
     if (dataFormat) {
       // Return placeholder values.
       if (*dataFormat == "Binary") {
-        return "10101011000000011100110100100011";
+        return QString::fromStdString(
+            StringConversions::toBinString(registerContentMemoryValue));
       } else if (*dataFormat == "Hexadecimal") {
-        return "AB 01 CD 23";
+        return QString::fromStdString(
+            StringConversions::toHexString(registerContentMemoryValue));
       } else if (*dataFormat == "Decimal (Unsigned)") {
-        return "2869021987";
+        return QString::fromStdString(
+            StringConversions::toUnsignedDecString(registerContentMemoryValue));
       } else if (*dataFormat == "Decimal (Signed)") {
-        return "-1425945309";
+        return QString::fromStdString(
+            StringConversions::toSignedDecString(registerContentMemoryValue));
       } else if (*dataFormat == "Flag") {
-        return QVariant(false);
+        return registerContentMemoryValue.get(0);
       }
     }
   }
@@ -271,8 +278,8 @@ Optional<QString> RegisterModel::_dataFormatForRegisterItem(
 
 
 QString RegisterModel::_computeDisplayFormatString(const QString &dataFormat,
-                                                  size_t size,
-                                                  size_t byteSize) const {
+                                                   size_t size,
+                                                   size_t byteSize) const {
   // An empty format string means no format constraint is required.
   QString formatString = "";
   // Compute format string depending on the amount of digits for the current
@@ -291,8 +298,8 @@ QString RegisterModel::_computeDisplayFormatString(const QString &dataFormat,
 }
 
 
-Optional<int>
-RegisterModel::_getRowRelativeToParent(RegisterInformation &registerItem) const {
+Optional<int> RegisterModel::_getRowRelativeToParent(
+    RegisterInformation &registerItem) const {
   // Determine the parent register.
   RegisterInformation *parentItem;
   if (registerItem.hasEnclosing()) {
