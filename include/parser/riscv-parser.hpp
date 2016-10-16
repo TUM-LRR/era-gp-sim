@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "arch/common/architecture.hpp"
 #include "arch/common/node-factory-collection.hpp"
 
 #include "parser/compile-state.hpp"
@@ -57,7 +58,7 @@ class RiscvParser : public Parser {
   /**
    * Reference to the Architecture this parser compiles for
    */
-  const Architecture &_architecture;
+  const Architecture _architecture;
 };
 
 #endif// ERAGPSIM_PARSER_RISCV_PARSER_HPP_

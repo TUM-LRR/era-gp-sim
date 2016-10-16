@@ -5,6 +5,9 @@
 set(TEST_CORE_SOURCES
   memory-value-test.cpp
   task-scheduler-test.cpp
+  conversion-test.cpp
+  register-set-test.cpp
+  memory-test.cpp
   # queue-test.cpp # Sorry, they did fail sometimes. :(
 )
 

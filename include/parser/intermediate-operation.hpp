@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP_
-#define ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP_
+#ifndef ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP
+#define ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP
 
 #include <string>
 #include <vector>
@@ -32,12 +32,7 @@ struct CompileState;
 /**
  * \brief A memory address substitute as long as we do not have one.
  */
-using DummyMemoryAddress = unsigned int;
-
-/**
- * \brief A substitute for a not-initialized address.
- */
-static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
+using MemoryAddress = std::size_t;
 
 /**
  * \brief Specifies the target for operations to put.
@@ -70,7 +65,7 @@ class IntermediateOperation {
   IntermediateOperation(const LineInterval& lines,
                         const std::vector<std::string>& labels,
                         const std::string& name)
-  : _lines(lines), _labels(labels), _name(name), _address(NULL_ADDRESS) {
+  : _lines(lines), _labels(labels), _name(name), _address(0) {
   }
 
   /**
@@ -121,7 +116,7 @@ class IntermediateOperation {
    * \brief Returns the memory address.
    * \return The memory address.
    */
-  DummyMemoryAddress address() {
+  MemoryAddress address() {
     return _address;
   }
 
@@ -149,7 +144,7 @@ class IntermediateOperation {
   /**
    * \brief The internal memory address.
    */
-  DummyMemoryAddress _address;
+  MemoryAddress _address;
 };
 
 #endif

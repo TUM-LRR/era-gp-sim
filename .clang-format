@@ -10,7 +10,7 @@ AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
 
 AlignOperands: true
-AlignConsecutiveAssignments: true
+AlignConsecutiveAssignments: false
 
 BinPackArguments: false
 BinPackParameters: false

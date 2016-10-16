@@ -56,171 +56,171 @@
  * Every instruction key must have at least one entry named "opcode".
  */
 class InstructionKey
-    : public ContainerAdapter<std::unordered_map<std::string, std::size_t>>,
-      public InformationInterface {
- public:
-  using super = ContainerAdapter<std::unordered_map<std::string, std::size_t>>;
-  using CONTAINER_ADAPTER_MEMBERS;
-  using Key             = std::string;
-  using Value           = std::size_t;
-  using Entry           = std::pair<Key, Value>;
-  using KeyCollection   = std::vector<Key>;
-  using ValueCollection = std::vector<Value>;
-  using InitializerList = std::initializer_list<Entry>;
+        : public ContainerAdapter<std::unordered_map<std::string, std::size_t>>,
+          public InformationInterface {
+public:
+    using super = ContainerAdapter<std::unordered_map<std::string, std::size_t>>;
+    using CONTAINER_ADAPTER_MEMBERS;
+    using Key             = std::string;
+    using Value           = std::size_t;
+    using Entry           = std::pair<Key, Value>;
+    using KeyCollection   = std::vector<Key>;
+    using ValueCollection = std::vector<Value>;
+    using InitializerList = std::initializer_list<Entry>;
 
-  /**
-   * Constructs an instruction key from the given serialized data.
-   *
-   * \param data The data to deserialize from.
-   *
- */
-  explicit InstructionKey(InformationInterface::Format& data);
-
-
-  /**
-   * Constructs the instruction key from the given range of entries.
-   *
-   * The range should contain `std::pair<std::string, std::size_t>` entries.
-   *
-   * \param range The range of entries to initialize the key with.
+    /**
+     * Constructs an instruction key from the given serialized data.
+     *
+     * \param data The data to deserialize from.
+     *
    */
-  template <typename Range>
-  explicit InstructionKey(const Range& range) : super(range) {
-  }
+    explicit InstructionKey(InformationInterface::Format& data);
 
-  /**
-   * Constructs the instruction key from the given initializer list.
-   *
-   * The initializer list must contain `std::pair<std::string, std::size_t`
-   * entries.
-   *
-   * \param list The initializer list to construct the instruction key with.
-   */
-  InstructionKey(InitializerList list = InitializerList());
 
-  /**
-   * Compares two instruction keys for equality.
-   *
-   * Equality is performed entry-wise.
-   *
-   * \param other The other instruction key.
-   *
-   * \return True if the two keys are equal entry-for-entry, else false.
-   */
-  bool operator==(const InstructionKey& other) const noexcept;
-
-  /**
-   * \see operator==()
-   */
-  bool operator!=(const InstructionKey& other) const noexcept;
-
-  /**
-   * Deserializes an instruction key from the given serialized data.
-   *
-   * \param data The deserialized data.
-   *
-   * \return The instruction key instance.
-   */
-  InstructionKey& deserialize(InformationInterface::Format& data);
-
-  /**
-   * Adds an entry to the key.
-   *
-   * An entry is a name-value pair, with the name of the value in the
-   * instruction key (e.g. "opcode") and the actual numeric value.
-   *
-   * \param key The key of the entry.
-   * \param value The value of the entry.
-   *
-   * \return The instruction key instance.
-   */
-  InstructionKey& addEntry(const Key& key, const Value& value);
-
-  /**
-   * Adds a range of entries to the key.
-   *
-   * An entry is a name-value pair, with the name of the value in the
-   * instruction key (e.g. "opcode") and the actual numeric value.
-   *
-   * \tparam A range-like type.
-   *
-   * \param range The range of entries to add.
-   *
-   * \return The instruction key instance.
-   */
-  template <typename Range>
-  InstructionKey& addEntries(const Range& range) {
-    for (const auto& pair : range) {
-      addEntry(pair.first, pair.second);
+    /**
+     * Constructs the instruction key from the given range of entries.
+     *
+     * The range should contain `std::pair<std::string, std::size_t>` entries.
+     *
+     * \param range The range of entries to initialize the key with.
+     */
+    template <typename Range>
+    explicit InstructionKey(const Range& range) : super(range) {
     }
 
-    return *this;
-  }
+    /**
+     * Constructs the instruction key from the given initializer list.
+     *
+     * The initializer list must contain `std::pair<std::string, std::size_t`
+     * entries.
+     *
+     * \param list The initializer list to construct the instruction key with.
+     */
+    InstructionKey(InitializerList list = InitializerList());
 
-  /**
-   * Adds a list of entries to the key.
-   *
-   * An entry is a name-value pair, with the name of the value in the
-   * instruction key (e.g. "opcode") and the actual numeric value.
-   *
-   * \param list The (initializer) list of entries to add.
-   *
-   * \return The instruction key instance.
-   */
-  InstructionKey& addEntries(InitializerList list);
+    /**
+     * Compares two instruction keys for equality.
+     *
+     * Equality is performed entry-wise.
+     *
+     * \param other The other instruction key.
+     *
+     * \return True if the two keys are equal entry-for-entry, else false.
+     */
+    bool operator==(const InstructionKey& other) const noexcept;
 
-  /**
-   * Returns the "opcode" member of the instruction key.
-   */
-  const Value& opcode() const;
+    /**
+     * \see operator==()
+     */
+    bool operator!=(const InstructionKey& other) const noexcept;
 
-  /**
-   * Returns the value associated with the given key.
-   *
-   * The value is const and can only be accessed as such.
-   *
-   * \param key The key to retrieve the value for.
-   *
-   * \return The numeric value associated with the given key.
-   */
-  const Value& get(const Key& key) const noexcept;
+    /**
+     * Deserializes an instruction key from the given serialized data.
+     *
+     * \param data The deserialized data.
+     *
+     * \return The instruction key instance.
+     */
+    InstructionKey& deserialize(InformationInterface::Format& data);
 
-  /**
-   * Returns the value associated with the given key.
-   *
-   * The value is const and can only be accessed as such.
-   *
-   * \param key The key to retrieve the value for.
-   *
-   * \return The numeric value associated with the given key.
-   */
-  const Value& operator[](const Key& key) const;
+    /**
+     * Adds an entry to the key.
+     *
+     * An entry is a name-value pair, with the name of the value in the
+     * instruction key (e.g. "opcode") and the actual numeric value.
+     *
+     * \param key The key of the entry.
+     * \param value The value of the entry.
+     *
+     * \return The instruction key instance.
+     */
+    InstructionKey& addEntry(const Key& key, const Value& value);
 
-  /**
-   * Tests if the instruction key contains the given key.
-   *
-   * \param key The key to test for.
-   *
-   * \return True if the instruction set contains the key, else false.
-   */
-  bool hasKey(const Key& key) const noexcept;
+    /**
+     * Adds a range of entries to the key.
+     *
+     * An entry is a name-value pair, with the name of the value in the
+     * instruction key (e.g. "opcode") and the actual numeric value.
+     *
+     * \tparam A range-like type.
+     *
+     * \param range The range of entries to add.
+     *
+     * \return The instruction key instance.
+     */
+    template <typename Range>
+    InstructionKey& addEntries(const Range& range) {
+      for (const auto& pair : range) {
+        addEntry(pair.first, pair.second);
+      }
 
-  /**
-   * Returns the keys of the instruction key (i.e. the string labels).
-   */
-  KeyCollection getKeys() const noexcept;
+      return *this;
+    }
 
-  /**
-   * Returns the values of the instruction key (i.e. the numeric values).
-   */
-  ValueCollection getValues() const noexcept;
+    /**
+     * Adds a list of entries to the key.
+     *
+     * An entry is a name-value pair, with the name of the value in the
+     * instruction key (e.g. "opcode") and the actual numeric value.
+     *
+     * \param list The (initializer) list of entries to add.
+     *
+     * \return The instruction key instance.
+     */
+    InstructionKey& addEntries(InitializerList list);
 
-  /** \copydoc BuilderInterface::isValid() */
-  bool isValid() const noexcept override;
+    /**
+     * Returns the "opcode" member of the instruction key.
+     */
+    const Value& opcode() const;
 
- private:
-  /** \copydoc InformationInterface::_deserialize() */
-  void _deserialize(InformationInterface::Format& data) override;
+    /**
+     * Returns the value associated with the given key.
+     *
+     * The value is const and can only be accessed as such.
+     *
+     * \param key The key to retrieve the value for.
+     *
+     * \return The numeric value associated with the given key.
+     */
+    const Value& get(const Key& key) const noexcept;
+
+    /**
+     * Returns the value associated with the given key.
+     *
+     * The value is const and can only be accessed as such.
+     *
+     * \param key The key to retrieve the value for.
+     *
+     * \return The numeric value associated with the given key.
+     */
+    const Value& operator[](const Key& key) const;
+
+    /**
+     * Tests if the instruction key contains the given key.
+     *
+     * \param key The key to test for.
+     *
+     * \return True if the instruction set contains the key, else false.
+     */
+    bool hasKey(const Key& key) const noexcept;
+
+    /**
+     * Returns the keys of the instruction key (i.e. the string labels).
+     */
+    KeyCollection getKeys() const noexcept;
+
+    /**
+     * Returns the values of the instruction key (i.e. the numeric values).
+     */
+    ValueCollection getValues() const noexcept;
+
+    /** \copydoc BuilderInterface::isValid() */
+    bool isValid() const noexcept override;
+
+private:
+    /** \copydoc InformationInterface::_deserialize() */
+    void _deserialize(InformationInterface::Format& data) override;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_INSTRUCTION_KEY_HPP */

@@ -20,6 +20,10 @@
 
 #include <regex>
 
+#include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/validation-result.hpp"
+#include "parser/compile-state.hpp"
+
 std::unique_ptr<AbstractSyntaxTreeNode>
 SyntaxTreeGenerator::transformOperand(const std::string& operand,
                                       CompileState& state) const {
@@ -34,7 +38,7 @@ SyntaxTreeGenerator::transformOperand(const std::string& operand,
     outputNode = _nodeFactories.createImmediateNode(
         MemoryValue{});// std::stoi(operand) Temporary.
   } else {
-    outputNode = _nodeFactories.createRegisterAccessNode(operand);
+    outputNode = _nodeFactories.createRegisterNode(operand);
   }
 
   // according to the architecture group, we get a nullptr if the creation
@@ -72,8 +76,10 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
   }
 
   // Validate node
-  if (!outputNode->validate()) {
-    state.addError("Invalid operation: " + command_name, state.position);
+  const ValidationResult result = outputNode->validate();
+  if (!result) {
+    state.errorList.push_back(CompileError(
+        result.getMessage(), state.position, CompileErrorSeverity::ERROR));
   }
 
   // Return.

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="22px" height="27px" viewBox="0 0 22 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 3.8.3 (29802) - http://www.bohemiancoding.com/sketch -->
+    <title>Run Button</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Run-Button" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Toolbar-Button-Icon" fill="#4A4A4A">
+            <polygon transform="translate(11.000000, 13.200000) rotate(-270.000000) translate(-11.000000, -13.200000) " points="11 2.2 24.2 24.2 -2.2 24.2"></polygon>
+        </g>
+    </g>
+</svg>
