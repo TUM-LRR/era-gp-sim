@@ -302,18 +302,25 @@ QString RegisterModel::_computeDisplayFormatString(const QString &dataFormat,
                                                    size_t size,
                                                    size_t byteSize) const {
   // An empty format string means no format constraint is required.
-  QString formatString = "";
+  QString formatString;
+  QString formatPrefix;
+  size_t byteCharacterWidth = 0;
   // Compute format string depending on the amount of digits for the current
   // format.
   if (dataFormat == "Binary") {
-    for (int byteIndex = 0; byteIndex < (size / byteSize); byteIndex++) {
-      formatString.append("BBBBBBBB ");
-    }
+    formatPrefix = "\\0\\b ";
+    formatString = formatPrefix + QString(size, 'B');
+    byteCharacterWidth = 8;
   } else if (dataFormat == "Hexadecimal") {
-    formatString = "\\0\\x> ";
-    for (int byteIndex = 0; byteIndex < (size / byteSize); byteIndex++) {
-      formatString.append("HH ");
-    }
+    formatPrefix = "\\0\\b ";
+    formatString = formatPrefix + QString(size / 4, 'H');
+    byteCharacterWidth = 2;
+  }
+  // Insert spaces after each byte.
+  for (size_t bitIndex = formatPrefix.length() + byteCharacterWidth;
+       bitIndex < formatString.length();
+       bitIndex += (byteCharacterWidth + 1)) {
+    formatString.insert(bitIndex, ' ');
   }
   return formatString;
 }
