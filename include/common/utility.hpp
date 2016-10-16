@@ -21,19 +21,161 @@
 #define ERAGPSIM_COMMON_UTILITY_HPP
 
 #include <algorithm>
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <memory>
 #include <string>
-#include <vector>
 #include <type_traits>
+#include <vector>
+
 #include "common/assert.hpp"
+
+class MemoryValue;
 
 #define STRINGIFY_INTERNAL(str) #str
 #define STRINGIFY(str) STRINGIFY_INTERNAL(str)
 
 namespace Utility {
+
+template <typename T>
+struct CompletelyOrdered {
+  virtual bool operator==(const T& other) const noexcept = 0;
+  virtual bool operator<(const T& other) const noexcept = 0;
+
+  virtual bool operator!=(const T& other) const noexcept {
+    return !(*this == other);
+  }
+
+  virtual bool operator>(const T& other) const noexcept {
+    return !(operator==(other)) && !(operator<(other));
+  }
+
+  virtual bool operator<=(const T& other) const noexcept {
+    return operator<(other) || operator==(other);
+  }
+
+  virtual bool operator>=(const T& other) const noexcept {
+    return operator>(other) || operator==(other);
+  }
+};
+
+template <typename T = long>
+struct LazyRange {
+  class Iterator : public CompletelyOrdered<Iterator> {
+   public:
+    bool operator==(const Iterator& other) const noexcept {
+      return this->_index == other._index;
+    }
+
+    bool operator<(const Iterator& other) const noexcept {
+      return this->_index < other._index;
+    }
+
+    T operator*() const noexcept {
+      return _index;
+    }
+
+    Iterator& operator++() noexcept {
+      _index += _step;
+      return *this;
+    }
+
+    Iterator operator++(int)noexcept {
+      auto copy = _index;
+      ++*this;
+      return copy;
+    }
+
+    Iterator& operator--() noexcept {
+      _index -= _step;
+      return *this;
+    }
+
+    Iterator operator--(int)noexcept {
+      auto copy = _index;
+      --*this;
+      return copy;
+    }
+
+
+   private:
+    friend class LazyRange;
+
+    Iterator(T index, T step) : _index(index), _step(step) {
+    }
+
+    T _index;
+    T _step;
+  };
+
+  LazyRange(const T& start, const T& end, const T& step)
+  : _start(start), _end(end), _step(step) {
+    // Check that we wouldn't iterate forever
+    assert::that(((end - start) / step) > 0);
+
+    // Round up to the next multiple of the step
+    _end = (end + step - 1) - ((end + step - 1) % step);
+  }
+
+  Iterator begin() const noexcept {
+    return {_start, _step};
+  }
+
+  Iterator end() const noexcept {
+    return {_end, _step};
+  }
+
+ private:
+  T _start;
+  T _end;
+  T _step;
+};
+
+template <typename T = long>
+auto range(const T& start, const T& end, const T& step = 1) {
+  return LazyRange<T>(start, end, step);
+}
+
+template <typename T = std::size_t, typename Output = std::vector<T>>
+Output rangeContainer(T start, T end, const T& step = 1) {
+  using Relation = std::function<bool(const T&, const T&)>;
+
+  Relation relation;
+
+  if (step < 0) {
+    // If the step is negative, we go backwards, so loop while start > end
+    relation = std::greater<>{};
+  } else {
+    // If the step is positive, we go forward, so loop while start < end
+    relation = std::less<>{};
+  }
+
+  auto amount = (end - start) / step;
+
+  if (amount == 0) return {};
+
+  assert::that(amount > 0);
+  Output output(std::ceil(amount));
+
+  for (std::size_t index = 0; relation(start, end); start += step, ++index) {
+    output[index] = start;
+  }
+
+  return output;
+}
+
+template <typename T = std::size_t, typename Output = std::vector<T>>
+auto rangeContainer(const T& end) {
+  return range<T, Output>(0, end);
+}
+
+/**
+ * Expand these false (UNSIGNED) and true (SIGNED) alternatives
+ * into the Utility namespace for more expressive function calls.
+ */
+enum { UNSIGNED, SIGNED };
 
 template <typename T>
 bool occupiesMoreBitsThan(const T& value, std::size_t numberOfBits) {
@@ -46,6 +188,10 @@ bool occupiesMoreBitsThan(const T& value, std::size_t numberOfBits) {
   // than positive numbers with the same bit width
   return (value < 0) ? value < -boundary : value >= boundary;
 }
+
+bool occupiesMoreBitsThan(const MemoryValue& value,
+                          size_t numberOfBits,
+                          bool isSigned = true);
 
 template <typename T>
 bool fitsIntoBits(const T& value, std::size_t numberOfBits) {
@@ -190,6 +336,7 @@ bool isEqualBy(const FirstRange& first, const SecondRange& second, Key key) {
 
 template <typename Range, typename Function>
 bool allOf(const Range& range, Function function) {
+  using std::begin;
   using std::end;
 
   return std::all_of(begin(range), end(range), function);
@@ -197,6 +344,7 @@ bool allOf(const Range& range, Function function) {
 
 template <typename Range, typename Function>
 bool noneOf(const Range& range, Function function) {
+  using std::begin;
   using std::end;
 
   return std::none_of(begin(range), end(range), function);
@@ -204,6 +352,7 @@ bool noneOf(const Range& range, Function function) {
 
 template <typename Range, typename Function>
 bool anyOf(const Range& range, Function function) {
+  using std::begin;
   using std::end;
 
   return std::any_of(begin(range), end(range), function);
@@ -211,6 +360,7 @@ bool anyOf(const Range& range, Function function) {
 
 template <typename T, typename InputRange, typename OutputRange = InputRange>
 OutputRange prepend(T&& value, const InputRange& range) {
+  using std::begin;
   using std::end;
 
   // Construct with enough space

@@ -65,7 +65,7 @@ class LoadStoreInstructionNode : public InstructionNode {
     // access the memory
     MemoryAccess stub;
     MemoryValue value = _children.at(2)->getValue(stub);
-    if (!this->_fitsIntoNBit(value, 12)) {
+    if (Utility::occupiesMoreBitsThan(value, 12)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "The immediate value of this instruction must "

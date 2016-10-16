@@ -70,7 +70,7 @@ class LuiAuipcValidationNode : public InstructionNode {
     // 20 bits (unsigned representation)
     MemoryAccess stub;
     MemoryValue value = _children.at(1)->getValue(stub);
-    if (!this->_fitsIntoNBit(value, 20, false)) {
+    if (Utility::occupiesMoreBitsThan(value, 20, false)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "The immediate value of this instruction must "

@@ -15,7 +15,7 @@ set(TEST_COMMON_SOURCES
 
 add_executable(era-sim-common-tests ${TEST_COMMON_SOURCES})
 
-target_link_libraries(era-sim-common-tests era-sim-common era-sim-common)
+target_link_libraries(era-sim-common-tests era-sim-common)
 target_link_libraries(era-sim-common-tests gtest gtest_main)
 
 # test-name executable-name
