@@ -41,7 +41,7 @@ bool performSignedBitWidthCheck(const MemoryValue& memory,
 
   // clang-format off
   return Utility::anyOf(range, [&memory, sign] (auto index) {
-    return memory.get(index) != sign;
+    return memory[index] != sign;
   });
   // clang-format on
 }
@@ -51,7 +51,7 @@ bool performUnsignedBitWidthCheck(const MemoryValue& memory,
   // clang-format off
   auto range = Utility::range<>(numberOfBits, memory.getSize());
   return Utility::anyOf(range, [&memory](auto index) {
-    return memory.get(index) == 1;
+    return memory[index] == 1;
   });
   // clang-format on
 }
