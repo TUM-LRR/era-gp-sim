@@ -26,8 +26,9 @@
 #include <string>
 #include "arch/common/register-information.hpp"
 #include "common/optional.hpp"
-#include "core/memory-value.hpp"
+#include "common/optional.hpp"
 #include "common/string-conversions.hpp"
+#include "core/memory-value.hpp"
 
 /**
  * Aggregates the data of multiple registers. Subclasses QAbstractItemModel to
@@ -54,7 +55,7 @@ class RegisterModel : public QAbstractItemModel {
   Q_OBJECT
 
  public:
-  explicit RegisterModel(QQmlContext* projectContext, QObject *parent = 0);
+  explicit RegisterModel(QQmlContext *projectContext, QObject *parent = 0);
 
   /**
    * \brief The RegisterModelRole enum Identifies different kinds of data stored
@@ -62,7 +63,7 @@ class RegisterModel : public QAbstractItemModel {
    * There is no role for the register's content; refer to data method's
    * description for an explanation.
    */
-  enum RegisterModelRole { IdentifierRole, TitleRole, DataFormatsListRole };
+  enum RegisterModelRole { TitleRole, DataFormatsListRole };
 
   /**
    * \brief index Returns a QModelIndex for the specified item inside the
@@ -153,14 +154,16 @@ class RegisterModel : public QAbstractItemModel {
    * content shall be altered.
    * \param registerContent The new register value.
    */
-  void updateContent(const std::string& registerTitle);
+  void updateContent(const std::string &registerTitle);
 
   /**
    * \brief registerContentChanged Notifies the Core when a register's content
    * was changed by the use.
    * \param registerContent The register's new content value.
    */
-  Q_INVOKABLE void registerContentChanged(const QVariant& registerIdentifierVariant, const QString& registerContent);
+  Q_INVOKABLE void registerContentChanged(const QModelIndex &index,
+                                          const QString &registerContent,
+                                          unsigned int currentDataFormatIndex);
 
   /**
    * \brief dataFormatListForRegister Returns the list of available data
@@ -253,7 +256,7 @@ class RegisterModel : public QAbstractItemModel {
    */
   Optional<QString>
   _dataFormatForRegisterItem(const RegisterInformation &registerItem,
-                            unsigned int currentDataFormatIndex) const;
+                             unsigned int currentDataFormatIndex) const;
 
   /**
    * \brief _computeDisplayFormatString Computes a string used for formatting a
@@ -265,8 +268,8 @@ class RegisterModel : public QAbstractItemModel {
    * QTextField's inputMask-property.
    */
   QString _computeDisplayFormatString(const QString &dataFormat,
-                                     size_t size,
-                                     size_t byteSize) const;
+                                      size_t size,
+                                      size_t byteSize) const;
 
   /**
    * \brief _getRowRelativeToParent Returns the row of a given register relative
@@ -274,7 +277,8 @@ class RegisterModel : public QAbstractItemModel {
    * \param registerItem The register whose row is requested.
    * \return The row of the given register relative to its parent register.
    */
-  Optional<int> _getRowRelativeToParent(RegisterInformation &registerItem) const;
+  Optional<int>
+  _getRowRelativeToParent(RegisterInformation &registerItem) const;
 };
 
 #endif// ERAGPSIM_UI_REGISTERMODEL_HPP

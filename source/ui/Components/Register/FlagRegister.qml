@@ -44,6 +44,6 @@ CheckBox {
     // Notify the model that the register's content was changed by the user.
     onCheckedChanged: {
         var registerContentString = (checked == true) ? "1" : "0";
-        registerModel.registerContentChanged(model.Identifier, registerContentString);
+        registerModel.registerContentChanged(styleData.index, registerContentString, dataTypeFormatComboBox.currentIndex);
     }
 }

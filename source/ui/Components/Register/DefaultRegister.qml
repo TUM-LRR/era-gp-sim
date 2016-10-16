@@ -46,6 +46,6 @@ TextField {
 
     // Notify the model that the register's content was changed by the user.
     onEditingFinished: {
-        registerModel.registerContentChanged(model.Identifier, registerTextField.text)
+        registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentIndex);
     }
 }
