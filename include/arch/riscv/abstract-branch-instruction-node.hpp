@@ -251,12 +251,12 @@ class AbstractBranchInstructionNode : public InstructionNode {
     // The immediate is 12 bit, but including the sign bit. Because it is
     // counted in multiples of two, you still get +- 12 bit, but the value
     // itself may still only occupy 11 bit!
-    if (!this->_fitsIntoNBit(offset, 11)) {
+    if (Utility::occupiesMoreBitsThan(offset, 12)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Immediate operand must be 12 bit or less"));
     }
-    //    if (Utility::occupiesMoreBitsThan(offset, 11)) {
+    //    if (Utility::occupiesMoreBitsThan(offset, 12)) {
     //      return ValidationResult::fail(
     //          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
     //                            "Immediate operand must be 12 bit or less"));
