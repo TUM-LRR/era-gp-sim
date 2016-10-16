@@ -7,7 +7,7 @@ set(TEST_ARCH_RISCV_SOURCES
   # load-store-instructions-test.cpp TODO Reimplement them using "real" memory access
   lui-auipc-instructions-test.cpp
   rv64-only-instructions-test.cpp
-  dummies.cpp
+  common.cpp
   arithmetic-test-utils.cpp
   mul-div-instruction-tests.cpp
   # formats-test.cpp TODO

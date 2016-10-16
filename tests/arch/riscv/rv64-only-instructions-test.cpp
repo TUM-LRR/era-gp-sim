@@ -25,7 +25,7 @@
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/common/register-node.hpp"
 
-#include "dummies.hpp"
+#include "tests/arch/riscv/common.hpp"
 
 using namespace riscv;
 

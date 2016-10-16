@@ -1,4 +1,4 @@
-#include "dummies.hpp"
+#include "tests/arch/riscv/common.hpp"
 
 MemoryValue to32BitMemoryValue(uint32_t value) {
   return riscv::convert<uint32_t>(value);
@@ -12,6 +12,6 @@ InstructionNodeFactory
 setUpFactory(ArchitectureFormula::InitializerList modules =
                  ArchitectureFormula::InitializerList()) {
   auto formula = ArchitectureFormula("riscv", modules);
-  auto riscv   = Architecture::Brew(formula);
+  auto riscv = Architecture::Brew(formula);
   return InstructionNodeFactory(riscv.getInstructions(), riscv);
 }
