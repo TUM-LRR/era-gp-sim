@@ -15,10 +15,22 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "tests/arch/riscv/common.hpp"
 #include "arithmetic-test-utils.hpp"
 
+#include "arch/common/architecture-formula.hpp"
+#include "arch/common/architecture.hpp"
+
 using namespace riscv;
+
+namespace {
+InstructionNodeFactory
+setUpFactory(ArchitectureFormula::InitializerList modules =
+                 ArchitectureFormula::InitializerList()) {
+  auto formula = ArchitectureFormula("riscv", modules);
+  auto riscv = Architecture::Brew(formula);
+  return InstructionNodeFactory(riscv.getInstructions(), riscv);
+}
+}// Private Namespace
 
 TEST(MulDivInstructionTest, Multiplication_testMUL32) {
   // No real risc-v register names are used as Memory/RegisterAccess is faked
@@ -30,19 +42,19 @@ TEST(MulDivInstructionTest, Multiplication_testMUL32) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
 
-  TEST_RR(0, to32BitMemoryValue, "mul", 42, 0, 0);
-  TEST_RR(1, to32BitMemoryValue, "mul", 0, 42, 0);
+  TEST_RR(0, convert<uint32_t>, "mul", 42, 0, 0);
+  TEST_RR(1, convert<uint32_t>, "mul", 0, 42, 0);
 
-  TEST_RR(2, to32BitMemoryValue, "mul", 13, 17, 221);
-  TEST_RR(3, to32BitMemoryValue, "mul", -13, 17, -221);
-  TEST_RR(4, to32BitMemoryValue, "mul", 13, -17, -221);
-  TEST_RR(5, to32BitMemoryValue, "mul", -13, -17, 221);
+  TEST_RR(2, convert<uint32_t>, "mul", 13, 17, 221);
+  TEST_RR(3, convert<uint32_t>, "mul", -13, 17, -221);
+  TEST_RR(4, convert<uint32_t>, "mul", 13, -17, -221);
+  TEST_RR(5, convert<uint32_t>, "mul", -13, -17, 221);
 
   // test 32bit bounds
   // 2^30 x 2 => 2^31
   // 2^31 x 2 => 0
-  TEST_RR(6, to32BitMemoryValue, "mul", 1 << 30, 2, 1 << 31);
-  TEST_RR(7, to32BitMemoryValue, "mul", 1 << 31, 2, 0);
+  TEST_RR(6, convert<uint32_t>, "mul", 1 << 30, 2, 1 << 31);
+  TEST_RR(7, convert<uint32_t>, "mul", 1 << 31, 2, 0);
 }
 
 TEST(MulDivInstructionTest, Multiplication_testMUL64) {
@@ -55,25 +67,25 @@ TEST(MulDivInstructionTest, Multiplication_testMUL64) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "mul", 0x0000000000007e00, 0x6db6db6db6db6db7,
+  TEST_RR(0, convert<uint64_t>, "mul", 0x0000000000007e00, 0x6db6db6db6db6db7,
           0x0000000000001200);
-  TEST_RR(1, to64BitMemoryValue, "mul", 0x0000000000007fc0, 0x6db6db6db6db6db7,
+  TEST_RR(1, convert<uint64_t>, "mul", 0x0000000000007fc0, 0x6db6db6db6db6db7,
           0x0000000000001240);
 
-  TEST_RR(2, to64BitMemoryValue, "mul", 0x00000000, 0x00000000, 0x00000000);
-  TEST_RR(3, to64BitMemoryValue, "mul", 0x00000001, 0x00000001, 0x00000001);
-  TEST_RR(4, to64BitMemoryValue, "mul", 0x00000003, 0x00000007, 0x00000015);
+  TEST_RR(2, convert<uint64_t>, "mul", 0x00000000, 0x00000000, 0x00000000);
+  TEST_RR(3, convert<uint64_t>, "mul", 0x00000001, 0x00000001, 0x00000001);
+  TEST_RR(4, convert<uint64_t>, "mul", 0x00000003, 0x00000007, 0x00000015);
 
-  TEST_RR(5, to64BitMemoryValue, "mul", 0x0000000000000000, 0xffffffffffff8000,
+  TEST_RR(5, convert<uint64_t>, "mul", 0x0000000000000000, 0xffffffffffff8000,
           0x0000000000000000);
-  TEST_RR(6, to64BitMemoryValue, "mul", 0xffffffff80000000, 0x00000000,
+  TEST_RR(6, convert<uint64_t>, "mul", 0xffffffff80000000, 0x00000000,
           0x0000000000000000);
-  TEST_RR(7, to64BitMemoryValue, "mul", 0xffffffff80000000ULL,
+  TEST_RR(7, convert<uint64_t>, "mul", 0xffffffff80000000ULL,
           0xffffffffffff8000ULL, 0x400000000000ULL);
 
-  TEST_RR(30, to64BitMemoryValue, "mul", 0xaaaaaaaaaaaaaaab, 0x000000000002fe7d,
+  TEST_RR(30, convert<uint64_t>, "mul", 0xaaaaaaaaaaaaaaab, 0x000000000002fe7d,
           0x000000000000ff7f);
-  TEST_RR(31, to64BitMemoryValue, "mul", 0x000000000002fe7d, 0xaaaaaaaaaaaaaaab,
+  TEST_RR(31, convert<uint64_t>, "mul", 0x000000000002fe7d, 0xaaaaaaaaaaaaaaab,
           0x000000000000ff7f);
 }
 
@@ -87,21 +99,21 @@ TEST(MulDivInstructionTest, Multiplication_testMULH32) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
 
-  TEST_RR(0, to32BitMemoryValue, "mulh", 0x00000000, 0x00000000, 0x00000000);
-  TEST_RR(1, to32BitMemoryValue, "mulh", 0x00000001, 0x00000001, 0x00000000);
-  TEST_RR(2, to32BitMemoryValue, "mulh", 0x00000003, 0x00000007, 0x00000000);
+  TEST_RR(0, convert<uint32_t>, "mulh", 0x00000000, 0x00000000, 0x00000000);
+  TEST_RR(1, convert<uint32_t>, "mulh", 0x00000001, 0x00000001, 0x00000000);
+  TEST_RR(2, convert<uint32_t>, "mulh", 0x00000003, 0x00000007, 0x00000000);
 
-  TEST_RR(3, to32BitMemoryValue, "mulh", 0x00000000, 0xffff8000, 0x00000000);
-  TEST_RR(4, to32BitMemoryValue, "mulh", 0x00000000, 0x80000000, 0x00000000);
+  TEST_RR(3, convert<uint32_t>, "mulh", 0x00000000, 0xffff8000, 0x00000000);
+  TEST_RR(4, convert<uint32_t>, "mulh", 0x00000000, 0x80000000, 0x00000000);
 
-  TEST_RR(5, to32BitMemoryValue, "mulh", 0xaaaaaaab, 0x0002fe7d, 0xffff0081);
-  TEST_RR(6, to32BitMemoryValue, "mulh", 0x0002fe7d, 0xaaaaaaab, 0xffff0081);
+  TEST_RR(5, convert<uint32_t>, "mulh", 0xaaaaaaab, 0x0002fe7d, 0xffff0081);
+  TEST_RR(6, convert<uint32_t>, "mulh", 0x0002fe7d, 0xaaaaaaab, 0xffff0081);
 
-  TEST_RR(7, to32BitMemoryValue, "mulh", 0xff000000, 0xff000000, 0x00010000);
+  TEST_RR(7, convert<uint32_t>, "mulh", 0xff000000, 0xff000000, 0x00010000);
 
-  TEST_RR(8, to32BitMemoryValue, "mulh", 0xffffffff, 0xffffffff, 0x00000000);
-  TEST_RR(9, to32BitMemoryValue, "mulh", 0xffffffff, 0x00000001, 0xffffffff);
-  TEST_RR(10, to32BitMemoryValue, "mulh", 0x00000001, 0xffffffff, 0xffffffff);
+  TEST_RR(8, convert<uint32_t>, "mulh", 0xffffffff, 0xffffffff, 0x00000000);
+  TEST_RR(9, convert<uint32_t>, "mulh", 0xffffffff, 0x00000001, 0xffffffff);
+  TEST_RR(10, convert<uint32_t>, "mulh", 0x00000001, 0xffffffff, 0xffffffff);
 }
 
 TEST(MulDivInstructionTest, Multiplication_testMULH64) {
@@ -114,15 +126,15 @@ TEST(MulDivInstructionTest, Multiplication_testMULH64) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "mulh", 0x00000000, 0x00000000, 0x00000000);
-  TEST_RR(1, to64BitMemoryValue, "mulh", 0x00000001, 0x00000001, 0x00000000);
-  TEST_RR(2, to64BitMemoryValue, "mulh", 0x00000003, 0x00000007, 0x00000000);
+  TEST_RR(0, convert<uint64_t>, "mulh", 0x00000000, 0x00000000, 0x00000000);
+  TEST_RR(1, convert<uint64_t>, "mulh", 0x00000001, 0x00000001, 0x00000000);
+  TEST_RR(2, convert<uint64_t>, "mulh", 0x00000003, 0x00000007, 0x00000000);
 
-  TEST_RR(3, to64BitMemoryValue, "mulh", 0x0000000000000000, 0xffffffffffff8000,
+  TEST_RR(3, convert<uint64_t>, "mulh", 0x0000000000000000, 0xffffffffffff8000,
           0x0000000000000000);
-  TEST_RR(4, to64BitMemoryValue, "mulh", 0xffffffff80000000, 0x00000000,
+  TEST_RR(4, convert<uint64_t>, "mulh", 0xffffffff80000000, 0x00000000,
           0x0000000000000000);
-  TEST_RR(5, to64BitMemoryValue, "mulh", 0xffffffff80000000, 0xffffffffffff8000,
+  TEST_RR(5, convert<uint64_t>, "mulh", 0xffffffff80000000, 0xffffffffffff8000,
           0x0000000000000000);
 }
 
@@ -138,21 +150,21 @@ TEST(MulDivInstructionTest, Multiplication_testMULHU32) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
 
-  TEST_RR(0, to32BitMemoryValue, "mulhu", 0x00000000, 0x00000000, 0x00000000);
-  TEST_RR(1, to32BitMemoryValue, "mulhu", 0x00000001, 0x00000001, 0x00000000);
-  TEST_RR(2, to32BitMemoryValue, "mulhu", 0x00000003, 0x00000007, 0x00000000);
+  TEST_RR(0, convert<uint32_t>, "mulhu", 0x00000000, 0x00000000, 0x00000000);
+  TEST_RR(1, convert<uint32_t>, "mulhu", 0x00000001, 0x00000001, 0x00000000);
+  TEST_RR(2, convert<uint32_t>, "mulhu", 0x00000003, 0x00000007, 0x00000000);
 
-  TEST_RR(3, to32BitMemoryValue, "mulhu", 0x00000000, 0xffff8000, 0x00000000);
-  TEST_RR(4, to32BitMemoryValue, "mulhu", 0x80000000, 0xffff8000, 0x7fffc000);
+  TEST_RR(3, convert<uint32_t>, "mulhu", 0x00000000, 0xffff8000, 0x00000000);
+  TEST_RR(4, convert<uint32_t>, "mulhu", 0x80000000, 0xffff8000, 0x7fffc000);
 
-  TEST_RR(5, to32BitMemoryValue, "mulhu", 0xaaaaaaab, 0x0002fe7d, 0x0001fefe);
-  TEST_RR(6, to32BitMemoryValue, "mulhu", 0x0002fe7d, 0xaaaaaaab, 0x0001fefe);
+  TEST_RR(5, convert<uint32_t>, "mulhu", 0xaaaaaaab, 0x0002fe7d, 0x0001fefe);
+  TEST_RR(6, convert<uint32_t>, "mulhu", 0x0002fe7d, 0xaaaaaaab, 0x0001fefe);
 
-  TEST_RR(7, to32BitMemoryValue, "mulhu", 0xff000000, 0xff000000, 0xfe010000);
+  TEST_RR(7, convert<uint32_t>, "mulhu", 0xff000000, 0xff000000, 0xfe010000);
 
-  TEST_RR(8, to32BitMemoryValue, "mulhu", 0xffffffff, 0xffffffff, 0xfffffffe);
-  TEST_RR(9, to32BitMemoryValue, "mulhu", 0xffffffff, 0x00000001, 0x00000000);
-  TEST_RR(10, to32BitMemoryValue, "mulhu", 0x00000001, 0xffffffff, 0x00000000);
+  TEST_RR(8, convert<uint32_t>, "mulhu", 0xffffffff, 0xffffffff, 0xfffffffe);
+  TEST_RR(9, convert<uint32_t>, "mulhu", 0xffffffff, 0x00000001, 0x00000000);
+  TEST_RR(10, convert<uint32_t>, "mulhu", 0x00000001, 0xffffffff, 0x00000000);
 }
 
 TEST(MulDivInstructionTest, Multiplication_testMULHU64) {
@@ -165,20 +177,20 @@ TEST(MulDivInstructionTest, Multiplication_testMULHU64) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "mulhu", 0x00000000, 0x00000000, 0x00000000);
-  TEST_RR(1, to64BitMemoryValue, "mulhu", 0x00000001, 0x00000001, 0x00000000);
-  TEST_RR(2, to64BitMemoryValue, "mulhu", 0x00000003, 0x00000007, 0x00000000);
+  TEST_RR(0, convert<uint64_t>, "mulhu", 0x00000000, 0x00000000, 0x00000000);
+  TEST_RR(1, convert<uint64_t>, "mulhu", 0x00000001, 0x00000001, 0x00000000);
+  TEST_RR(2, convert<uint64_t>, "mulhu", 0x00000003, 0x00000007, 0x00000000);
 
-  TEST_RR(3, to64BitMemoryValue, "mulhu", 0x0000000000000000,
+  TEST_RR(3, convert<uint64_t>, "mulhu", 0x0000000000000000,
           0xffffffffffff8000, 0x0000000000000000);
-  TEST_RR(4, to64BitMemoryValue, "mulhu", 0xffffffff80000000, 0x00000000,
+  TEST_RR(4, convert<uint64_t>, "mulhu", 0xffffffff80000000, 0x00000000,
           0x0000000000000000);
-  TEST_RR(5, to64BitMemoryValue, "mulhu", 0xffffffff80000000,
+  TEST_RR(5, convert<uint64_t>, "mulhu", 0xffffffff80000000,
           0xffffffffffff8000, 0xffffffff7fff8000);
 
-  TEST_RR(6, to64BitMemoryValue, "mulhu", 0xaaaaaaaaaaaaaaab,
+  TEST_RR(6, convert<uint64_t>, "mulhu", 0xaaaaaaaaaaaaaaab,
           0x000000000002fe7d, 0x000000000001fefe);
-  TEST_RR(7, to64BitMemoryValue, "mulhu", 0x000000000002fe7d,
+  TEST_RR(7, convert<uint64_t>, "mulhu", 0x000000000002fe7d,
           0xaaaaaaaaaaaaaaab, 0x000000000001fefe);
 }
 
@@ -192,21 +204,21 @@ TEST(MulDivInstructionTest, Multiplication_testMULHSU32) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
 
-  TEST_RR(0, to32BitMemoryValue, "mulhsu", 0x00000000, 0x00000000, 0x00000000);
-  TEST_RR(1, to32BitMemoryValue, "mulhsu", 0x00000001, 0x00000001, 0x00000000);
-  TEST_RR(2, to32BitMemoryValue, "mulhsu", 0x00000003, 0x00000007, 0x00000000);
+  TEST_RR(0, convert<uint32_t>, "mulhsu", 0x00000000, 0x00000000, 0x00000000);
+  TEST_RR(1, convert<uint32_t>, "mulhsu", 0x00000001, 0x00000001, 0x00000000);
+  TEST_RR(2, convert<uint32_t>, "mulhsu", 0x00000003, 0x00000007, 0x00000000);
 
-  TEST_RR(3, to32BitMemoryValue, "mulhsu", 0x00000000, 0xffff8000, 0x00000000);
-  TEST_RR(4, to32BitMemoryValue, "mulhsu", 0x80000000, 0xffff8000, 0x80004000);
+  TEST_RR(3, convert<uint32_t>, "mulhsu", 0x00000000, 0xffff8000, 0x00000000);
+  TEST_RR(4, convert<uint32_t>, "mulhsu", 0x80000000, 0xffff8000, 0x80004000);
 
-  TEST_RR(5, to32BitMemoryValue, "mulhsu", 0xaaaaaaab, 0x0002fe7d, 0xffff0081);
-  TEST_RR(6, to32BitMemoryValue, "mulhsu", 0x0002fe7d, 0xaaaaaaab, 0x0001fefe);
+  TEST_RR(5, convert<uint32_t>, "mulhsu", 0xaaaaaaab, 0x0002fe7d, 0xffff0081);
+  TEST_RR(6, convert<uint32_t>, "mulhsu", 0x0002fe7d, 0xaaaaaaab, 0x0001fefe);
 
-  TEST_RR(7, to32BitMemoryValue, "mulhsu", 0xff000000, 0xff000000, 0xff010000);
+  TEST_RR(7, convert<uint32_t>, "mulhsu", 0xff000000, 0xff000000, 0xff010000);
 
-  TEST_RR(8, to32BitMemoryValue, "mulhsu", 0xffffffff, 0xffffffff, 0xffffffff);
-  TEST_RR(9, to32BitMemoryValue, "mulhsu", 0xffffffff, 0x00000001, 0xffffffff);
-  TEST_RR(10, to32BitMemoryValue, "mulhsu", 0x00000001, 0xffffffff, 0x00000000);
+  TEST_RR(8, convert<uint32_t>, "mulhsu", 0xffffffff, 0xffffffff, 0xffffffff);
+  TEST_RR(9, convert<uint32_t>, "mulhsu", 0xffffffff, 0x00000001, 0xffffffff);
+  TEST_RR(10, convert<uint32_t>, "mulhsu", 0x00000001, 0xffffffff, 0x00000000);
 }
 
 TEST(MulDivInstructionTest, Multiplication_testMULHSU64) {
@@ -219,15 +231,15 @@ TEST(MulDivInstructionTest, Multiplication_testMULHSU64) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "mulhsu", 0x00000000, 0x00000000, 0x00000000);
-  TEST_RR(1, to64BitMemoryValue, "mulhsu", 0x00000001, 0x00000001, 0x00000000);
-  TEST_RR(2, to64BitMemoryValue, "mulhsu", 0x00000003, 0x00000007, 0x00000000);
+  TEST_RR(0, convert<uint64_t>, "mulhsu", 0x00000000, 0x00000000, 0x00000000);
+  TEST_RR(1, convert<uint64_t>, "mulhsu", 0x00000001, 0x00000001, 0x00000000);
+  TEST_RR(2, convert<uint64_t>, "mulhsu", 0x00000003, 0x00000007, 0x00000000);
 
-  TEST_RR(3, to64BitMemoryValue, "mulhsu", 0x0000000000000000,
+  TEST_RR(3, convert<uint64_t>, "mulhsu", 0x0000000000000000,
           0xffffffffffff8000, 0x0000000000000000);
-  TEST_RR(4, to64BitMemoryValue, "mulhsu", 0xffffffff80000000, 0x00000000,
+  TEST_RR(4, convert<uint64_t>, "mulhsu", 0xffffffff80000000, 0x00000000,
           0x0000000000000000);
-  TEST_RR(5, to64BitMemoryValue, "mulhsu", 0xffffffff80000000,
+  TEST_RR(5, convert<uint64_t>, "mulhsu", 0xffffffff80000000,
           0xffffffffffff8000, 0xffffffff80000000);
 }
 
@@ -241,16 +253,16 @@ TEST(MulDivInstructionTest, Multiplication_testMULW) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "mulw", 0x00000000, 0x00000000, 0x00000000);
-  TEST_RR(1, to64BitMemoryValue, "mulw", 0x00000001, 0x00000001, 0x00000001);
-  TEST_RR(2, to64BitMemoryValue, "mulw", 0x00000003, 0x00000007, 0x00000015);
-  TEST_RR(6, to64BitMemoryValue, "mulw", 2, -1LL, -2LL);
+  TEST_RR(0, convert<uint64_t>, "mulw", 0x00000000, 0x00000000, 0x00000000);
+  TEST_RR(1, convert<uint64_t>, "mulw", 0x00000001, 0x00000001, 0x00000001);
+  TEST_RR(2, convert<uint64_t>, "mulw", 0x00000003, 0x00000007, 0x00000015);
+  TEST_RR(6, convert<uint64_t>, "mulw", 2, -1LL, -2LL);
 
-  TEST_RR(3, to64BitMemoryValue, "mulw", 0x0000000000000000, 0xffffffffffff8000,
+  TEST_RR(3, convert<uint64_t>, "mulw", 0x0000000000000000, 0xffffffffffff8000,
           0x0000000000000000);
-  TEST_RR(4, to64BitMemoryValue, "mulw", 0xffffffff80000000, 0x00000000,
+  TEST_RR(4, convert<uint64_t>, "mulw", 0xffffffff80000000, 0x00000000,
           0x0000000000000000);
-  TEST_RR(5, to64BitMemoryValue, "mulw", 0xffffffff80000000, 0xffffffffffff8000,
+  TEST_RR(5, convert<uint64_t>, "mulw", 0xffffffff80000000, 0xffffffffffff8000,
           0x0000000000000000);
 }
 
@@ -283,17 +295,17 @@ TEST(MulDivInstructionTest, Division_testDIV32) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
 
-  TEST_RR(0, to32BitMemoryValue, "div", 20, 6, 3);
-  TEST_RR(1, to32BitMemoryValue, "div", -20, 6, -3);
-  TEST_RR(2, to32BitMemoryValue, "div", 20, -6, -3);
-  TEST_RR(3, to32BitMemoryValue, "div", -20, -6, 3);
+  TEST_RR(0, convert<uint32_t>, "div", 20, 6, 3);
+  TEST_RR(1, convert<uint32_t>, "div", -20, 6, -3);
+  TEST_RR(2, convert<uint32_t>, "div", 20, -6, -3);
+  TEST_RR(3, convert<uint32_t>, "div", -20, -6, 3);
   // These test cases do not seem to make sense (for a 32bit instruction)?
-  //  TEST_RR(4, to32BitMemoryValue, "div", -1ULL << 63, 1, -1ULL << 63);
-  //  TEST_RR(5, to32BitMemoryValue, "div", -1UL << 63, -1, -1UL << 63);
+  //  TEST_RR(4, convert<uint32_t>, "div", -1ULL << 63, 1, -1ULL << 63);
+  //  TEST_RR(5, convert<uint32_t>, "div", -1UL << 63, -1, -1UL << 63);
 
-  //  TEST_RR(6, to32BitMemoryValue, "div", -1UL << 63, 0, -1UL);
-  TEST_RR(7, to32BitMemoryValue, "div", 1, 0, -1);
-  TEST_RR(8, to32BitMemoryValue, "div", 0, 0, -1);
+  //  TEST_RR(6, convert<uint32_t>, "div", -1UL << 63, 0, -1UL);
+  TEST_RR(7, convert<uint32_t>, "div", 1, 0, -1);
+  TEST_RR(8, convert<uint32_t>, "div", 0, 0, -1);
 }
 
 TEST(MulDivInstructionTest, Division_testDIV64) {
@@ -306,17 +318,17 @@ TEST(MulDivInstructionTest, Division_testDIV64) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "div", 20, 6, 3);
-  TEST_RR(1, to64BitMemoryValue, "div", -20, 6, -3);
-  TEST_RR(2, to64BitMemoryValue, "div", 20, -6, -3);
-  TEST_RR(3, to64BitMemoryValue, "div", -20, -6, 3);
+  TEST_RR(0, convert<uint64_t>, "div", 20, 6, 3);
+  TEST_RR(1, convert<uint64_t>, "div", -20, 6, -3);
+  TEST_RR(2, convert<uint64_t>, "div", 20, -6, -3);
+  TEST_RR(3, convert<uint64_t>, "div", -20, -6, 3);
 
-  TEST_RR(4, to64BitMemoryValue, "div", UINT64_C(-1) << 63, 1, UINT64_C(-1) << 63);
-  TEST_RR(5, to64BitMemoryValue, "div", UINT64_C(-1) << 63, -1, UINT64_C(-1) << 63);
+  TEST_RR(4, convert<uint64_t>, "div", UINT64_C(-1) << 63, 1, UINT64_C(-1) << 63);
+  TEST_RR(5, convert<uint64_t>, "div", UINT64_C(-1) << 63, -1, UINT64_C(-1) << 63);
 
-  TEST_RR(6, to64BitMemoryValue, "div", UINT64_C(-1) << 63, 0, -1);
-  TEST_RR(7, to64BitMemoryValue, "div", 1, 0, -1);
-  TEST_RR(8, to64BitMemoryValue, "div", 0, 0, -1);
+  TEST_RR(6, convert<uint64_t>, "div", UINT64_C(-1) << 63, 0, -1);
+  TEST_RR(7, convert<uint64_t>, "div", 1, 0, -1);
+  TEST_RR(8, convert<uint64_t>, "div", 0, 0, -1);
 }
 
 TEST(MulDivInstructionTest, Division_testDIVU32) {
@@ -329,17 +341,17 @@ TEST(MulDivInstructionTest, Division_testDIVU32) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
 
-  TEST_RR(0, to32BitMemoryValue, "divu", 20, 6, 3);
-  TEST_RR(1, to32BitMemoryValue, "divu", -20, 6, 715827879);
-  TEST_RR(2, to32BitMemoryValue, "divu", 20, -6, 0);
-  TEST_RR(3, to32BitMemoryValue, "divu", -20, -6, 0);
+  TEST_RR(0, convert<uint32_t>, "divu", 20, 6, 3);
+  TEST_RR(1, convert<uint32_t>, "divu", -20, 6, 715827879);
+  TEST_RR(2, convert<uint32_t>, "divu", 20, -6, 0);
+  TEST_RR(3, convert<uint32_t>, "divu", -20, -6, 0);
 
-  TEST_RR(4, to32BitMemoryValue, "divu", UINT32_C(-1) << 31, 1, UINT32_C(-1) << 31);
-  TEST_RR(5, to32BitMemoryValue, "divu", UINT32_C(-1) << 31, -1, 0);
+  TEST_RR(4, convert<uint32_t>, "divu", UINT32_C(-1) << 31, 1, UINT32_C(-1) << 31);
+  TEST_RR(5, convert<uint32_t>, "divu", UINT32_C(-1) << 31, -1, 0);
 
-  TEST_RR(6, to32BitMemoryValue, "divu", UINT32_C(-1) << 31, 0, -1);
-  TEST_RR(7, to32BitMemoryValue, "divu", 1, 0, -1);
-  TEST_RR(8, to32BitMemoryValue, "divu", 0, 0, -1);
+  TEST_RR(6, convert<uint32_t>, "divu", UINT32_C(-1) << 31, 0, -1);
+  TEST_RR(7, convert<uint32_t>, "divu", 1, 0, -1);
+  TEST_RR(8, convert<uint32_t>, "divu", 0, 0, -1);
 }
 
 TEST(MulDivInstructionTest, Division_testDIVU64) {
@@ -352,17 +364,17 @@ TEST(MulDivInstructionTest, Division_testDIVU64) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "divu", 20, 6, 3);
-  TEST_RR(1, to64BitMemoryValue, "divu", -20, 6, 3074457345618258599);
-  TEST_RR(2, to64BitMemoryValue, "divu", 20, -6, 0);
-  TEST_RR(3, to64BitMemoryValue, "divu", -20, -6, 0);
+  TEST_RR(0, convert<uint64_t>, "divu", 20, 6, 3);
+  TEST_RR(1, convert<uint64_t>, "divu", -20, 6, 3074457345618258599);
+  TEST_RR(2, convert<uint64_t>, "divu", 20, -6, 0);
+  TEST_RR(3, convert<uint64_t>, "divu", -20, -6, 0);
 
-  TEST_RR(4, to64BitMemoryValue, "divu", UINT64_C(-1) << 63, 1LL, UINT64_C(-1) << 63);
-  TEST_RR(5, to64BitMemoryValue, "divu", UINT64_C(-1) << 63, -1LL, 0);
+  TEST_RR(4, convert<uint64_t>, "divu", UINT64_C(-1) << 63, 1LL, UINT64_C(-1) << 63);
+  TEST_RR(5, convert<uint64_t>, "divu", UINT64_C(-1) << 63, -1LL, 0);
 
-  TEST_RR(6, to64BitMemoryValue, "divu", UINT64_C(-1) << 63, 0, -1LL);
-  TEST_RR(7, to64BitMemoryValue, "divu", 1, 0, -1LL);
-  TEST_RR(8, to64BitMemoryValue, "divu", 0, 0, -1LL);
+  TEST_RR(6, convert<uint64_t>, "divu", UINT64_C(-1) << 63, 0, -1LL);
+  TEST_RR(7, convert<uint64_t>, "divu", 1, 0, -1LL);
+  TEST_RR(8, convert<uint64_t>, "divu", 0, 0, -1LL);
 }
 
 TEST(MulDivInstructionTest, Division_testDIVW) {
@@ -375,17 +387,17 @@ TEST(MulDivInstructionTest, Division_testDIVW) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "divw", 20, 6, 3);
-  TEST_RR(1, to64BitMemoryValue, "divw", -20, 6, -3);
-  TEST_RR(2, to64BitMemoryValue, "divw", 20, -6, -3);
-  TEST_RR(3, to64BitMemoryValue, "divw", -20, -6, 3);
+  TEST_RR(0, convert<uint64_t>, "divw", 20, 6, 3);
+  TEST_RR(1, convert<uint64_t>, "divw", -20, 6, -3);
+  TEST_RR(2, convert<uint64_t>, "divw", 20, -6, -3);
+  TEST_RR(3, convert<uint64_t>, "divw", -20, -6, 3);
 
-  TEST_RR(4, to64BitMemoryValue, "divw", UINT64_C(-1) << 31, 1, UINT64_C(-1) << 31);
-  TEST_RR(5, to64BitMemoryValue, "divw", UINT64_C(-1) << 31, -1, UINT64_C(-1) << 31);
+  TEST_RR(4, convert<uint64_t>, "divw", UINT64_C(-1) << 31, 1, UINT64_C(-1) << 31);
+  TEST_RR(5, convert<uint64_t>, "divw", UINT64_C(-1) << 31, -1, UINT64_C(-1) << 31);
 
-  TEST_RR(6, to64BitMemoryValue, "divw", UINT64_C(-1) << 31, 0, -1LL);
-  TEST_RR(7, to64BitMemoryValue, "divw", 1, 0, -1);
-  TEST_RR(8, to64BitMemoryValue, "divw", 0, 0, -1);
+  TEST_RR(6, convert<uint64_t>, "divw", UINT64_C(-1) << 31, 0, -1LL);
+  TEST_RR(7, convert<uint64_t>, "divw", 1, 0, -1);
+  TEST_RR(8, convert<uint64_t>, "divw", 0, 0, -1);
 }
 
 TEST(MulDivInstructionTest, Division_testDIVUW) {
@@ -398,17 +410,17 @@ TEST(MulDivInstructionTest, Division_testDIVUW) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "divuw", 20, 6, 3);
-  TEST_RR(1, to64BitMemoryValue, "divuw", 0xFFFFFFEC, 6, 715827879);
-  TEST_RR(2, to64BitMemoryValue, "divuw", 20, -6, 0);
-  TEST_RR(3, to64BitMemoryValue, "divuw", -20, -6, 0);
+  TEST_RR(0, convert<uint64_t>, "divuw", 20, 6, 3);
+  TEST_RR(1, convert<uint64_t>, "divuw", 0xFFFFFFEC, 6, 715827879);
+  TEST_RR(2, convert<uint64_t>, "divuw", 20, -6, 0);
+  TEST_RR(3, convert<uint64_t>, "divuw", -20, -6, 0);
 
-  TEST_RR(4, to64BitMemoryValue, "divuw", UINT64_C(-1) << 31, 1, UINT64_C(-1) << 31);
-  TEST_RR(5, to64BitMemoryValue, "divuw", UINT64_C(-1) << 31, -1, 0);
+  TEST_RR(4, convert<uint64_t>, "divuw", UINT64_C(-1) << 31, 1, UINT64_C(-1) << 31);
+  TEST_RR(5, convert<uint64_t>, "divuw", UINT64_C(-1) << 31, -1, 0);
 
-  TEST_RR(6, to64BitMemoryValue, "divuw", UINT64_C(-1) << 31, 0, -1);
-  TEST_RR(7, to64BitMemoryValue, "divuw", 1, 0, -1);
-  TEST_RR(8, to64BitMemoryValue, "divuw", 0, 0, -1);
+  TEST_RR(6, convert<uint64_t>, "divuw", UINT64_C(-1) << 31, 0, -1);
+  TEST_RR(7, convert<uint64_t>, "divuw", 1, 0, -1);
+  TEST_RR(8, convert<uint64_t>, "divuw", 0, 0, -1);
 }
 
 TEST(MulDivInstructionTest, Division_testValidation) {
@@ -438,18 +450,18 @@ TEST(MulDivInstructionTest, Remainder_testREM32) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
 
-  TEST_RR(0, to32BitMemoryValue, "rem", 20, 6, 2);
-  TEST_RR(1, to32BitMemoryValue, "rem", -20, 6, -2);
-  TEST_RR(2, to32BitMemoryValue, "rem", 20, -6, 2);
-  TEST_RR(3, to32BitMemoryValue, "rem", -20, -6, -2);
+  TEST_RR(0, convert<uint32_t>, "rem", 20, 6, 2);
+  TEST_RR(1, convert<uint32_t>, "rem", -20, 6, -2);
+  TEST_RR(2, convert<uint32_t>, "rem", 20, -6, 2);
+  TEST_RR(3, convert<uint32_t>, "rem", -20, -6, -2);
 
   // These test do not seem to make sense for a 32bit instruction?
-  //  TEST_RR(4, to32BitMemoryValue, "rem", -1 << 63, 1, 0);
-  //  TEST_RR(5, to32BitMemoryValue, "rem", -1 << 63, -1, 0);
+  //  TEST_RR(4, convert<uint32_t>, "rem", -1 << 63, 1, 0);
+  //  TEST_RR(5, convert<uint32_t>, "rem", -1 << 63, -1, 0);
 
-  //  TEST_RR(6, to32BitMemoryValue, "rem", -1 << 63, 0, -1 << 63);
-  TEST_RR(7, to32BitMemoryValue, "rem", 1, 0, 1);
-  TEST_RR(8, to32BitMemoryValue, "rem", 0, 0, 0);
+  //  TEST_RR(6, convert<uint32_t>, "rem", -1 << 63, 0, -1 << 63);
+  TEST_RR(7, convert<uint32_t>, "rem", 1, 0, 1);
+  TEST_RR(8, convert<uint32_t>, "rem", 0, 0, 0);
 }
 
 TEST(MulDivInstructionTest, Remainder_testREM64) {
@@ -462,17 +474,17 @@ TEST(MulDivInstructionTest, Remainder_testREM64) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "rem", 20, 6, 2);
-  TEST_RR(1, to64BitMemoryValue, "rem", -20, 6, -2);
-  TEST_RR(2, to64BitMemoryValue, "rem", 20, -6, 2);
-  TEST_RR(3, to64BitMemoryValue, "rem", -20, -6, -2);
+  TEST_RR(0, convert<uint64_t>, "rem", 20, 6, 2);
+  TEST_RR(1, convert<uint64_t>, "rem", -20, 6, -2);
+  TEST_RR(2, convert<uint64_t>, "rem", 20, -6, 2);
+  TEST_RR(3, convert<uint64_t>, "rem", -20, -6, -2);
 
-  TEST_RR(4, to64BitMemoryValue, "rem", UINT64_C(-1) << 63, 1, 0);
-  TEST_RR(5, to64BitMemoryValue, "rem", UINT64_C(-1) << 63, -1, 0);
+  TEST_RR(4, convert<uint64_t>, "rem", UINT64_C(-1) << 63, 1, 0);
+  TEST_RR(5, convert<uint64_t>, "rem", UINT64_C(-1) << 63, -1, 0);
 
-  TEST_RR(6, to64BitMemoryValue, "rem", UINT64_C(-1) << 63, 0, UINT64_C(-1) << 63);
-  TEST_RR(7, to64BitMemoryValue, "rem", 1, 0, 1);
-  TEST_RR(8, to64BitMemoryValue, "rem", 0, 0, 0);
+  TEST_RR(6, convert<uint64_t>, "rem", UINT64_C(-1) << 63, 0, UINT64_C(-1) << 63);
+  TEST_RR(7, convert<uint64_t>, "rem", 1, 0, 1);
+  TEST_RR(8, convert<uint64_t>, "rem", 0, 0, 0);
 }
 
 TEST(MulDivInstructionTest, Remainder_testREMU32) {
@@ -485,17 +497,17 @@ TEST(MulDivInstructionTest, Remainder_testREMU32) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m"});
 
-  TEST_RR(0, to32BitMemoryValue, "remu", 20, 6, 2);
-  TEST_RR(1, to32BitMemoryValue, "remu", -20, 6, 2);
-  TEST_RR(2, to32BitMemoryValue, "remu", 20, -6, 20);
-  TEST_RR(3, to32BitMemoryValue, "remu", -20, -6, -20);
+  TEST_RR(0, convert<uint32_t>, "remu", 20, 6, 2);
+  TEST_RR(1, convert<uint32_t>, "remu", -20, 6, 2);
+  TEST_RR(2, convert<uint32_t>, "remu", 20, -6, 20);
+  TEST_RR(3, convert<uint32_t>, "remu", -20, -6, -20);
   // These tests do not seem to make sense for a 32bit instruction?
-  //  TEST_RR(4, to32BitMemoryValue, "remu", -1 << 63, 1, 0);
-  //  TEST_RR(5, to32BitMemoryValue, "remu", -1 << 63, -1, -1 << 63);
+  //  TEST_RR(4, convert<uint32_t>, "remu", -1 << 63, 1, 0);
+  //  TEST_RR(5, convert<uint32_t>, "remu", -1 << 63, -1, -1 << 63);
 
-  //  TEST_RR(6, to32BitMemoryValue, "remu", -1 << 63, 0, -1 << 63);
-  TEST_RR(7, to32BitMemoryValue, "remu", 1, 0, 1);
-  TEST_RR(8, to32BitMemoryValue, "remu", 0, 0, 0);
+  //  TEST_RR(6, convert<uint32_t>, "remu", -1 << 63, 0, -1 << 63);
+  TEST_RR(7, convert<uint32_t>, "remu", 1, 0, 1);
+  TEST_RR(8, convert<uint32_t>, "remu", 0, 0, 0);
 }
 
 TEST(MulDivInstructionTest, Remainder_testREMU64) {
@@ -508,17 +520,17 @@ TEST(MulDivInstructionTest, Remainder_testREMU64) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "remu", 20, 6, 2);
-  TEST_RR(1, to64BitMemoryValue, "remu", -20, 6, 2);
-  TEST_RR(2, to64BitMemoryValue, "remu", 20, -6, 20);
-  TEST_RR(3, to64BitMemoryValue, "remu", -20, -6, -20);
+  TEST_RR(0, convert<uint64_t>, "remu", 20, 6, 2);
+  TEST_RR(1, convert<uint64_t>, "remu", -20, 6, 2);
+  TEST_RR(2, convert<uint64_t>, "remu", 20, -6, 20);
+  TEST_RR(3, convert<uint64_t>, "remu", -20, -6, -20);
 
-  TEST_RR(4, to64BitMemoryValue, "remu", UINT64_C(-1) << 63, 1, 0);
-  TEST_RR(5, to64BitMemoryValue, "remu", UINT64_C(-1) << 63, -1LL, UINT64_C(-1) << 63);
+  TEST_RR(4, convert<uint64_t>, "remu", UINT64_C(-1) << 63, 1, 0);
+  TEST_RR(5, convert<uint64_t>, "remu", UINT64_C(-1) << 63, -1LL, UINT64_C(-1) << 63);
 
-  TEST_RR(6, to64BitMemoryValue, "remu", UINT64_C(-1) << 63, 0, UINT64_C(-1) << 63);
-  TEST_RR(7, to64BitMemoryValue, "remu", 1, 0, 1);
-  TEST_RR(8, to64BitMemoryValue, "remu", 0, 0, 0);
+  TEST_RR(6, convert<uint64_t>, "remu", UINT64_C(-1) << 63, 0, UINT64_C(-1) << 63);
+  TEST_RR(7, convert<uint64_t>, "remu", 1, 0, 1);
+  TEST_RR(8, convert<uint64_t>, "remu", 0, 0, 0);
 }
 
 TEST(MulDivInstructionTest, Remainder_testREMW) {
@@ -531,18 +543,18 @@ TEST(MulDivInstructionTest, Remainder_testREMW) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "remw", 20, 6, 2);
-  TEST_RR(1, to64BitMemoryValue, "remw", -20, 6, -2);
-  TEST_RR(2, to64BitMemoryValue, "remw", 20, -6, 2);
-  TEST_RR(3, to64BitMemoryValue, "remw", -20, -6, -2);
+  TEST_RR(0, convert<uint64_t>, "remw", 20, 6, 2);
+  TEST_RR(1, convert<uint64_t>, "remw", -20, 6, -2);
+  TEST_RR(2, convert<uint64_t>, "remw", 20, -6, 2);
+  TEST_RR(3, convert<uint64_t>, "remw", -20, -6, -2);
 
-  TEST_RR(4, to64BitMemoryValue, "remw", UINT64_C(-1) << 31, 1, 0);
-  TEST_RR(5, to64BitMemoryValue, "remw", UINT64_C(-1) << 31, -1, 0);
+  TEST_RR(4, convert<uint64_t>, "remw", UINT64_C(-1) << 31, 1, 0);
+  TEST_RR(5, convert<uint64_t>, "remw", UINT64_C(-1) << 31, -1, 0);
 
-  TEST_RR(6, to64BitMemoryValue, "remw", UINT64_C(-1) << 31, 0, UINT64_C(-1) << 31);
-  TEST_RR(7, to64BitMemoryValue, "remw", 1, 0, 1);
-  TEST_RR(8, to64BitMemoryValue, "remw", 0, 0, 0);
-  TEST_RR(9, to64BitMemoryValue, "remw", 0xfffffffffffff897LL, 0,
+  TEST_RR(6, convert<uint64_t>, "remw", UINT64_C(-1) << 31, 0, UINT64_C(-1) << 31);
+  TEST_RR(7, convert<uint64_t>, "remw", 1, 0, 1);
+  TEST_RR(8, convert<uint64_t>, "remw", 0, 0, 0);
+  TEST_RR(9, convert<uint64_t>, "remw", 0xfffffffffffff897LL, 0,
           0xfffffffffffff897LL);
 }
 
@@ -556,17 +568,17 @@ TEST(MulDivInstructionTest, Remainder_testREMUW) {
   memoryAccess.addRegister(op2, operand2);
   auto instructionFactory = setUpFactory({"rv32i", "rv32m", "rv64i", "rv64m"});
 
-  TEST_RR(0, to64BitMemoryValue, "remuw", 20, 6, 2);
-  TEST_RR(1, to64BitMemoryValue, "remuw", -20, 6, 2);
-  TEST_RR(2, to64BitMemoryValue, "remuw", 20, -6, 20);
-  TEST_RR(3, to64BitMemoryValue, "remuw", -20, -6, -20);
+  TEST_RR(0, convert<uint64_t>, "remuw", 20, 6, 2);
+  TEST_RR(1, convert<uint64_t>, "remuw", -20, 6, 2);
+  TEST_RR(2, convert<uint64_t>, "remuw", 20, -6, 20);
+  TEST_RR(3, convert<uint64_t>, "remuw", -20, -6, -20);
 
-  TEST_RR(4, to64BitMemoryValue, "remuw", UINT64_C(-1) << 31, 1, 0);
-  TEST_RR(5, to64BitMemoryValue, "remuw", UINT64_C(-1) << 31, -1, UINT64_C(-1) << 31);
+  TEST_RR(4, convert<uint64_t>, "remuw", UINT64_C(-1) << 31, 1, 0);
+  TEST_RR(5, convert<uint64_t>, "remuw", UINT64_C(-1) << 31, -1, UINT64_C(-1) << 31);
 
-  TEST_RR(6, to64BitMemoryValue, "remuw", UINT64_C(-1) << 31, 0, UINT64_C(-1) << 31);
-  TEST_RR(7, to64BitMemoryValue, "remuw", 1, 0, 1);
-  TEST_RR(8, to64BitMemoryValue, "remuw", 0, 0, 0);
+  TEST_RR(6, convert<uint64_t>, "remuw", UINT64_C(-1) << 31, 0, UINT64_C(-1) << 31);
+  TEST_RR(7, convert<uint64_t>, "remuw", 1, 0, 1);
+  TEST_RR(8, convert<uint64_t>, "remuw", 0, 0, 0);
 }
 
 TEST(MulDivInstructionTest, Remainder_testValidation) {

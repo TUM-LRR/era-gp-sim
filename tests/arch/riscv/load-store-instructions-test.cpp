@@ -24,8 +24,6 @@
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
 
-#include "tests/arch/riscv/common.hpp"
-
 /*
  * BIG TODO:
  * Currently these tests operate on a dummy implementation of the
@@ -45,6 +43,13 @@
 using namespace riscv;
 
 namespace {
+InstructionNodeFactory
+setUpFactory(ArchitectureFormula::InitializerList modules =
+                 ArchitectureFormula::InitializerList()) {
+  auto formula = ArchitectureFormula("riscv", modules);
+  auto riscv = Architecture::Brew(formula);
+  return InstructionNodeFactory(riscv.getInstructions(), riscv);
+}
 
 /**
  * Performs a unsigned load.

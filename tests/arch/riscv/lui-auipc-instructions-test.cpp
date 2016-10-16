@@ -21,14 +21,22 @@
 
 #include "gtest/gtest.h"
 
+#include "arch/common/architecture-formula.hpp"
+#include "arch/common/architecture.hpp"
 #include "arch/riscv/immediate-node-factory.hpp"
+#include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/lui-auipc-instructions.hpp"
-
-#include "tests/arch/riscv/common.hpp"
 
 using namespace riscv;
 
 namespace {
+InstructionNodeFactory
+setUpFactory(ArchitectureFormula::InitializerList modules =
+                 ArchitectureFormula::InitializerList()) {
+  auto formula = ArchitectureFormula("riscv", modules);
+  auto riscv = Architecture::Brew(formula);
+  return InstructionNodeFactory(riscv.getInstructions(), riscv);
+}
 
 /**
  * Tests the lui instruction.
@@ -53,9 +61,9 @@ performLuiTest(int32_t input,
   memoryAccess.addRegister(destId, dest);
 
   // Create factory & instruction
-  auto instrFactory     = setUpFactory(modules);
+  auto instrFactory = setUpFactory(modules);
   auto immediateFactory = ImmediateNodeFactory{};
-  auto instr            = instrFactory.createInstructionNode("lui");
+  auto instr = instrFactory.createInstructionNode("lui");
 
   // Fill arguments
   ASSERT_FALSE(instr->validate());
@@ -104,9 +112,9 @@ performAuipcTest(uint32_t input,
   memoryAccess.setRegisterValue(pcId, riscv::convert<T>(initialPc));
 
   // Create factory & instruction
-  auto instrFactory     = setUpFactory(modules);
+  auto instrFactory = setUpFactory(modules);
   auto immediateFactory = ImmediateNodeFactory{};
-  auto instr            = instrFactory.createInstructionNode("auipc");
+  auto instr = instrFactory.createInstructionNode("auipc");
 
   // Fill arguments
   ASSERT_FALSE(instr->validate());
@@ -128,10 +136,10 @@ performAuipcTest(uint32_t input,
 
 TEST(LuiAuipcInstructionsTest, Validation) {
   std::string destId{""};
-  auto instrFactory     = setUpFactory({"rv32i"});
+  auto instrFactory = setUpFactory({"rv32i"});
   auto immediateFactory = ImmediateNodeFactory{};
-  auto lui              = instrFactory.createInstructionNode("lui");
-  auto auipc            = instrFactory.createInstructionNode("auipc");
+  auto lui = instrFactory.createInstructionNode("lui");
+  auto auipc = instrFactory.createInstructionNode("auipc");
 
   ASSERT_FALSE(lui->validate() || auipc->validate());
   // Just add some dummy registers

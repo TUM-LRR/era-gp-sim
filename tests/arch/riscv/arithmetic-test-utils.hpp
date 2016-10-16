@@ -26,7 +26,6 @@
 
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
-#include "tests/arch/riscv/common.hpp"
 
 using namespace riscv;
 
