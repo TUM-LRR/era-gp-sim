@@ -37,7 +37,7 @@ bool performSignedBitWidthCheck(const MemoryValue& memory,
   // As such, we will start checking the bits at the sign bit of the immediate
   // (i.e. where we want the sign bit to be) and move up to one bit before the
   // sign bit of the memory value.
-  auto range = Utility::range<>(numberOfBits - 1, memory.getSize() - 1);
+  auto range = Utility::range(numberOfBits - 1, memory.getSize() - 1);
 
   // clang-format off
   return Utility::anyOf(range, [&memory, sign] (auto index) {
@@ -49,7 +49,7 @@ bool performSignedBitWidthCheck(const MemoryValue& memory,
 bool performUnsignedBitWidthCheck(const MemoryValue& memory,
                                   std::size_t numberOfBits) {
   // clang-format off
-  auto range = Utility::range<>(numberOfBits, memory.getSize());
+  auto range = Utility::range(numberOfBits, memory.getSize());
   return Utility::anyOf(range, [&memory](auto index) {
     return memory[index] == 1;
   });
