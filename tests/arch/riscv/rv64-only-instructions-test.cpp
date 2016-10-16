@@ -22,14 +22,22 @@
 
 #include "gtest/gtest.h"
 
-#include "arch/riscv/immediate-node-factory.hpp"
+#include "arch/common/architecture-formula.hpp"
+#include "arch/common/architecture.hpp"
 #include "arch/common/register-node.hpp"
-
-#include "dummies.hpp"
+#include "arch/riscv/immediate-node-factory.hpp"
+#include "arch/riscv/instruction-node-factory.hpp"
 
 using namespace riscv;
 
 namespace {
+InstructionNodeFactory
+setUpFactory(ArchitectureFormula::InitializerList modules =
+                 ArchitectureFormula::InitializerList()) {
+  auto formula = ArchitectureFormula("riscv", modules);
+  auto riscv = Architecture::Brew(formula);
+  return InstructionNodeFactory(riscv.getInstructions(), riscv);
+}
 
 /**
  * Tests Register-Immediate instructions.
@@ -48,9 +56,9 @@ void testRV64OnlyInstructionRI(const std::string& instructionName,
   memoryAccess.setRegisterValue(srcId, riscv::convert<uint64_t>(op1));
 
   // Set up instruction
-  auto instrFactory     = setUpFactory({"rv32i", "rv64i"});
+  auto instrFactory = setUpFactory({"rv32i", "rv64i"});
   auto immediateFactory = ImmediateNodeFactory{};
-  auto instr            = instrFactory.createInstructionNode(instructionName);
+  auto instr = instrFactory.createInstructionNode(instructionName);
 
   // Fill instruction with arguments
   ASSERT_TRUE(instr);
@@ -90,9 +98,9 @@ void testRV64OnlyInstructionRR(const std::string& instructionName,
   memoryAccess.setRegisterValue(src2Id, riscv::convert<uint64_t>(op2));
 
   // Set up instruction
-  auto instrFactory     = setUpFactory({"rv32i", "rv64i"});
+  auto instrFactory = setUpFactory({"rv32i", "rv64i"});
   auto immediateFactory = ImmediateNodeFactory{};
-  auto instr            = instrFactory.createInstructionNode(instructionName);
+  auto instr = instrFactory.createInstructionNode(instructionName);
 
   // Fill instruction with arguments
   ASSERT_TRUE(instr);
@@ -131,8 +139,8 @@ TEST(RV64OnlyInstructionsTest, Validation) {
   auto rr = {"addw", "subw", "sllw", "srlw", "sraw"};
 
   std::string registerId = "";// Not relevant
-  auto instrFactory      = setUpFactory({"rv32i", "rv64i"});
-  auto immediateFactory  = ImmediateNodeFactory{};
+  auto instrFactory = setUpFactory({"rv32i", "rv64i"});
+  auto immediateFactory = ImmediateNodeFactory{};
 
   for (auto& name : ri) {
     // Check if register-immediate command does not allow register-register
@@ -143,23 +151,23 @@ TEST(RV64OnlyInstructionsTest, Validation) {
     ASSERT_FALSE(instr->validate());
 
     // Boundaries for 12 bit signed integers
-    constexpr uint64_t boundary         = 0x7FF;
-    constexpr uint64_t overflow         = boundary + 1;
+    constexpr uint64_t boundary = 0x7FF;
+    constexpr uint64_t overflow = boundary + 1;
     constexpr uint64_t negativeBoundary = -2048;
     constexpr uint64_t negativeOverflow = negativeBoundary - 1;
 
     instr = instrFactory.createInstructionNode(name);
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(std::make_unique<RegisterNode>(registerId));
-    instr->addChild(
-        immediateFactory.createImmediateNode(riscv::convert<uint64_t>(boundary)));
+    instr->addChild(immediateFactory.createImmediateNode(
+        riscv::convert<uint64_t>(boundary)));
     ASSERT_TRUE(instr->validate());
 
     instr = instrFactory.createInstructionNode(name);
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(std::make_unique<RegisterNode>(registerId));
-    instr->addChild(
-        immediateFactory.createImmediateNode(riscv::convert<uint64_t>(overflow)));
+    instr->addChild(immediateFactory.createImmediateNode(
+        riscv::convert<uint64_t>(overflow)));
     ASSERT_FALSE(instr->validate());
 
     instr = instrFactory.createInstructionNode(name);
@@ -229,7 +237,7 @@ TEST(RV64OnlyInstructionsTest, Sll) {
   testRV64OnlyInstructions(ri, rr, 1, 32, 1);
   // Check if sign extension works
   testRV64OnlyInstructions(ri, rr, -1, 0, UINT64_MAX);
-  testRV64OnlyInstructions(ri, rr, 1, 31,0xFFFFFFFF80000000);
+  testRV64OnlyInstructions(ri, rr, 1, 31, 0xFFFFFFFF80000000);
 }
 
 TEST(RV64OnlyInstructionsTest, Srl) {
