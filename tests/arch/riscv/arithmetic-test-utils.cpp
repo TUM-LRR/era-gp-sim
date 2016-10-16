@@ -2,7 +2,7 @@
 #include "common/assert.hpp"
 
 void testIntegerInstructionValidation(MemoryAccess& memAccess,
-                                      InstructionNodeFactory& instrF,
+                                      const NodeFactoryCollection& instrF,
                                       ImmediateNodeFactory& immF,
                                       std::string instructionToken,
                                       bool isImmediateInstr) {
@@ -57,7 +57,7 @@ void testIntegerInstructionValidation(MemoryAccess& memAccess,
   //ASSERT_THROW(instructionNode3->getValue(memAccess), AssertionError);
 }
 
-void test12BitImmediateBounds(InstructionNodeFactory& instrF,
+void test12BitImmediateBounds(const NodeFactoryCollection &instrF,
                               std::string instructionToken,
                               ImmediateNodeFactory& immF) {
   constexpr uint64_t boundary = 0x7FF;
