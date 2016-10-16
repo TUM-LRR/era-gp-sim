@@ -27,6 +27,8 @@
 #include "parser/compile-state.hpp"
 #include "parser/parser.hpp"
 
+#include "parser/syntax-tree-generator.hpp"
+
 /**
  * Risc-V Parser Class
  *
@@ -43,6 +45,9 @@ class RiscvParser : public Parser {
   parse(const std::string &text, ParserMode parserMode);
 
   virtual const SyntaxInformation getSyntaxInformation();
+
+  static const SyntaxTreeGenerator::ArgumentNodeGenerator
+      argumentGeneratorFunction;
 
  protected:
   /**
