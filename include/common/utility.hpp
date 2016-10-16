@@ -61,8 +61,85 @@ struct CompletelyOrdered {
   }
 };
 
+template <typename T = long>
+struct LazyRange {
+  class Iterator : public CompletelyOrdered<Iterator> {
+   public:
+    bool operator==(const Iterator& other) const noexcept {
+      return this->_index == other._index;
+    }
+
+    bool operator<(const Iterator& other) const noexcept {
+      return this->_index < other._index;
+    }
+
+    T operator*() const noexcept {
+      return _index;
+    }
+
+    Iterator& operator++() noexcept {
+      _index += _step;
+      return *this;
+    }
+
+    Iterator operator++(int)noexcept {
+      auto copy = _index;
+      ++*this;
+      return copy;
+    }
+
+    Iterator& operator--() noexcept {
+      _index -= _step;
+      return *this;
+    }
+
+    Iterator operator--(int)noexcept {
+      auto copy = _index;
+      --*this;
+      return copy;
+    }
+
+
+   private:
+    friend class LazyRange;
+
+    Iterator(T index, T step) : _index(index), _step(step) {
+    }
+
+    T _index;
+    T _step;
+  };
+
+  LazyRange(const T& start, const T& end, const T& step)
+  : _start(start), _end(end), _step(step) {
+    // Check that we wouldn't iterate forever
+    assert::that(((end - start) / step) > 0);
+
+    // Round up to the next multiple of the step
+    _end = (end + step - 1) - ((end + step - 1) % step);
+  }
+
+  Iterator begin() const noexcept {
+    return {_start, _step};
+  }
+
+  Iterator end() const noexcept {
+    return {_end, _step};
+  }
+
+ private:
+  T _start;
+  T _end;
+  T _step;
+};
+
+template <typename T = long>
+auto range(const T& start, const T& end, const T& step = 1) {
+  return LazyRange<T>(start, end, step);
+}
+
 template <typename T = std::size_t, typename Output = std::vector<T>>
-Output range(T start, T end, const T& step = 1) {
+Output rangeContainer(T start, T end, const T& step = 1) {
   using Relation = std::function<bool(const T&, const T&)>;
 
   Relation relation;
@@ -90,7 +167,7 @@ Output range(T start, T end, const T& step = 1) {
 }
 
 template <typename T = std::size_t, typename Output = std::vector<T>>
-auto range(const T& end) {
+auto rangeContainer(const T& end) {
   return range<T, Output>(0, end);
 }
 
