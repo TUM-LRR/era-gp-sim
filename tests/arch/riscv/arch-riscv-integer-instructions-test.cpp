@@ -32,7 +32,6 @@
 #include "core/conversions.hpp"
 
 #include "arithmetic-test-utils.hpp"
-#include "tests/arch/riscv/common.hpp"
 
 using namespace riscv;
 
