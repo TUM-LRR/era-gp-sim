@@ -36,8 +36,43 @@ class MemoryValue {
   using address_t = std::size_t;
   using size_t = std::size_t;
 
-  class Reference;
-  class ConstReference;
+  /**
+   * A proxy for a reference to a single bit.
+   */
+  class Reference {
+   public:
+    /**
+     * Sets the bit proxied by the reference.
+     *
+     * \param value The boolean value to assign.
+     * \return The reference itself.
+     */
+    Reference &operator=(bool value);
+
+    /**
+     * @return The boolean proxied by the reference object.
+     */
+    operator bool() const noexcept;
+
+   private:
+    friend class MemoryValue;
+
+    /**
+     * Constructs the reference.
+     *
+     * \param memory The memory value this instance references.
+     * \parm address The index of the bit this instance references.
+     */
+    Reference(MemoryValue &memory, address_t address);
+
+    /** The memory value referenced by the instance. */
+    MemoryValue &_memory;
+
+    /** The index of the bit referenced by the instance. */
+    address_t _address;
+  };
+
+  using ConstReference = bool;
 
  private:
   /**
@@ -234,70 +269,6 @@ class MemoryValue {
   };
 
  public:
-  /**
-   * A proxy for a reference to a single bit.
-   */
-  class Reference {
-   public:
-    /**
-     * Sets the bit proxied by the reference.
-     *
-     * \param value The boolean value to assign.
-     * \return The reference itself.
-     */
-    Reference &operator=(bool value);
-
-    /**
-     * @return The boolean proxied by the reference object.
-     */
-    operator bool() const noexcept;
-
-   private:
-    friend class MemoryValue;
-
-    /**
-     * Constructs the reference.
-     *
-     * \param memory The memory value this instance references.
-     * \parm address The index of the bit this instance references.
-     */
-    Reference(MemoryValue &memory, address_t address);
-
-    /** The memory value referenced by the instance. */
-    MemoryValue &_memory;
-
-    /** The index of the bit referenced by the instance. */
-    address_t _address;
-  };
-
-  /**
-   * A proxy for a const reference to a single bit.
-   */
-  class ConstReference {
-   public:
-    /**
-     * @return The boolean proxied by the reference object.
-     */
-    operator bool() const noexcept;
-
-   private:
-    friend class MemoryValue;
-
-    /**
-     * Constructs the reference.
-     *
-     * \param memory The memory value this instance references.
-     * \parm address The index of the bit this instance references.
-     */
-    ConstReference(const MemoryValue &memory, address_t address);
-
-    /** The memory value referenced by the instance. */
-    const MemoryValue &_memory;
-
-    /** The index of the bit referenced by the instance. */
-    address_t _address;
-  };
-
   using Iterator = BaseIterator<Reference>;
   using ConstIterator = BaseIterator<ConstReference>;
 
