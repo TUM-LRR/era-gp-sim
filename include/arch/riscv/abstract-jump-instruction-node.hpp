@@ -111,7 +111,7 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    * \return An empty memory value.
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate().isSuccess());
+    assert(validate());
     auto destination = _children[0]->getIdentifier();
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
 
@@ -135,19 +135,23 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    */
   ValidationResult validate() const override {
     auto result = _validateNumberOfChildren();
-    if (!result.isSuccess()) return result;
+    if (!result) return result;
 
     result = _validateChildren();
-    if (!result.isSuccess()) return result;
+    if (!result) return result;
 
     result = _validateOperandTypes();
-    if (!result.isSuccess()) return result;
+    if (!result) return result;
 
     result = _validateOffset();
-    if (!result.isSuccess()) return result;
+    if (!result) return result;
 
-    result = _validateResultingProgramCounter();
-    if (!result.isSuccess()) return result;
+    return ValidationResult::success();
+  }
+
+  ValidationResult validateRuntime(MemoryAccess& memoryAccess) const override {
+    auto result = _validateResultingProgramCounter(memoryAccess);
+    if (!result) return result;
 
     return ValidationResult::success();
   }
@@ -203,7 +207,8 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    *
    * \return A `ValidationResult` indicating the result of the check.
    */
-  virtual ValidationResult _validateResultingProgramCounter() const = 0;
+  virtual ValidationResult
+  _validateResultingProgramCounter(MemoryAccess& memoryAccess) const = 0;
 };
 
 template <typename UnsignedWord, typename SignedWord>

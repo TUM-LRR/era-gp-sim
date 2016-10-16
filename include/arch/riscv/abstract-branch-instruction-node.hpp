@@ -105,7 +105,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
    * \return An empty memory value.
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate().isSuccess());
+    assert(validate());
     auto first = _children[0]->getValue(memoryAccess);
     auto second = _children[1]->getValue(memoryAccess);
 
@@ -148,19 +148,23 @@ class AbstractBranchInstructionNode : public InstructionNode {
    */
   ValidationResult validate() const override {
     auto result = _validateNumberOfChildren();
-    if (!result.isSuccess()) return result;
+    if (!result) return result;
 
     result = _validateChildren();
-    if (!result.isSuccess()) return result;
+    if (!result) return result;
 
     result = _validateOperandTypes();
-    if (!result.isSuccess()) return result;
+    if (!result) return result;
 
     result = _validateOffset();
-    if (!result.isSuccess()) return result;
+    if (!result) return result;
 
-    result = _validateResultingProgramCounter();
-    if (!result.isSuccess()) return result;
+    return ValidationResult::success();
+  }
+
+  ValidationResult validateRuntime(MemoryAccess& memoryAccess) const override {
+    auto result = _validateResultingProgramCounter(memoryAccess);
+    if (!result) return result;
 
     return ValidationResult::success();
   }
@@ -256,11 +260,6 @@ class AbstractBranchInstructionNode : public InstructionNode {
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Immediate operand must be 12 bit or less"));
     }
-    //    if (Utility::occupiesMoreBitsThan(offset, 12)) {
-    //      return ValidationResult::fail(
-    //          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-    //                            "Immediate operand must be 12 bit or less"));
-    //    }
 
     return ValidationResult::success();
   }
@@ -273,23 +272,21 @@ class AbstractBranchInstructionNode : public InstructionNode {
    *
    * \return A ValidationResult reflecting the result of the check.
    */
-  ValidationResult _validateResultingProgramCounter() const {
+  ValidationResult _validateResultingProgramCounter(MemoryAccess& memoryAccess) const {
     static const auto addressBoundary =
         std::numeric_limits<UnsignedWord>::max();
 
-    // auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess,
-    // "pc");
-    // auto offset         = _getChildValue<SignedWord>(2, memoryAccess);
-    //
-    // auto maximumAllowedOffset = addressBoundary - programCounter;
-    //
-    // // Check if the program counter would underflow or overflow
-    // if (-offset > programCounter || offset > maximumAllowedOffset) {
-    //   return ValidationResult::fail(
-    //       QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-    //                         "Branch offset would invalidate program
-    //                         counter"));
-    // }
+    auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
+    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 1);
+
+    auto maximumAllowedOffset = addressBoundary - programCounter;
+
+    // Check if the program counter would underflow or overflow
+    if (-offset > programCounter || offset > maximumAllowedOffset) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "Branch offset would invalidate program counter"));
+    }
 
     return ValidationResult::success();
   }

@@ -130,12 +130,6 @@ class JumpAndLinkImmediateInstructionNode
                             "Immediate operand must be 20 bit or less"));
     }
 
-    //    if (Utility::occupiesMoreBitsThan(offset, 20)) {
-    //      return ValidationResult::fail(
-    //          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-    //                            "Immediate operand must be 20 bit or less"));
-    //    }
-
     return ValidationResult::success();
   }
 
@@ -147,22 +141,22 @@ class JumpAndLinkImmediateInstructionNode
    *
    * \return A `ValidationResult` reflecting the result of the check.
    */
-  ValidationResult _validateResultingProgramCounter() const override {
+  ValidationResult
+  _validateResultingProgramCounter(MemoryAccess& memoryAccess) const override {
     static const auto addressBoundary =
         std::numeric_limits<UnsignedWord>::max();
 
-    // auto programCounter = _getRegister<UnsignedWord>(memoryAccess, "pc");
-    // auto offset         = _getChildValue<SignedWord>(1, memoryAccess);
-    //
-    // auto maximumAllowedOffset = addressBoundary - programCounter;
-    //
-    // // Check if the program counter would underflow or overflow
-    // if (-offset > programCounter || offset > maximumAllowedOffset) {
-    //   return ValidationResult::fail(
-    //       QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-    //                         "Branch offset would invalidate program
-    //                         counter"));
-    // }
+    auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
+    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 1);
+
+    auto maximumAllowedOffset = addressBoundary - programCounter;
+
+    // Check if the program counter would underflow or overflow
+    if (-offset > programCounter || offset > maximumAllowedOffset) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "Branch offset would invalidate program counter"));
+    }
 
     return ValidationResult::success();
   }
@@ -290,23 +284,22 @@ class JumpAndLinkRegisterInstructionNode
    *
    * \return A `ValidationResult` reflecting the result of the check.
    */
-  ValidationResult _validateResultingProgramCounter() const override {
+  ValidationResult
+  _validateResultingProgramCounter(MemoryAccess& memoryAccess) const override {
     static const auto addressBoundary =
         std::numeric_limits<UnsignedWord>::max();
 
-    // auto base   = super::template _getChildValue<UnsignedWord>(1,
-    // memoryAccess);
-    // auto offset = super::template _getChildValue<SignedWord>(2,
-    // memoryAccess);
-    //
-    // auto maximumAllowedOffset = addressBoundary - base;
-    //
-    // // Check if the program counter would underflow or overflow
-    // if (-offset > base || offset > maximumAllowedOffset) {
-    //   return ValidationResult::fail(
-    //       QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-    //                         "Jump offset would invalidate program counter"));
-    // }
+    auto base = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
+    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 2);
+
+    auto maximumAllowedOffset = addressBoundary - base;
+
+    // Check if the program counter would underflow or overflow
+    if (-offset > base || offset > maximumAllowedOffset) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "Jump offset would invalidate program counter"));
+    }
 
     return ValidationResult::success();
   }
