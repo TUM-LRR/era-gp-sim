@@ -187,6 +187,9 @@ class ParsingAndExecutionUnit : public Servant {
    * FinalRepresentation changes */
   std::unordered_map<MemoryAddress, std::size_t> _addressCommandMap;
 
+  /** A map to cache a line -> address mapping. */
+  std::unordered_map<size_t, MemoryValue> _lineCommandCache;
+
   /** MemoryAccess proxy for the syntax trees.*/
   MemoryAccess _memoryAccess;
 

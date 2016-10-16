@@ -34,12 +34,12 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
   _architecture.validate();
 
   for (UnitInformation unitInfo : _architecture.getUnits()) {
-    for (auto &&registerPair : unitInfo) {
+    for (const auto &registerPair : unitInfo) {
       // create all top level registers
       _createRegister(registerPair.second, unitInfo);
     }
     // create special registers
-    for (auto &&registerPair : unitInfo.getSpecialRegisters()) {
+    for (const auto &registerPair : unitInfo.getSpecialRegisters()) {
       _createRegister(registerPair.second, unitInfo);
     }
   }
@@ -58,7 +58,8 @@ void Project::_createRegister(RegisterInformation registerInfo,
 
 void Project::_createConstituents(RegisterInformation enclosingRegister,
                                   UnitInformation unitInfo) {
-  for (auto &&constituentInformation : enclosingRegister.getConstituents()) {
+  for (const auto &constituentInformation :
+       enclosingRegister.getConstituents()) {
     // find RegisterInformation of the constituent
     RegisterInformation constituentRegisterInfo =
         unitInfo.getRegister(constituentInformation.getID());
@@ -138,11 +139,11 @@ void Project::resetMemory() {
 void Project::resetRegisters() {
   for (UnitInformation unitInfo : _architecture.getUnits()) {
     // set the normal registers to zero
-    for (auto &&registerPair : unitInfo) {
+    for (const auto &registerPair : unitInfo) {
       _setRegisterToZero(registerPair.second);
     }
     // set the special registers to zero
-    for (auto &&registerPair : unitInfo.getSpecialRegisters()) {
+    for (const auto &registerPair : unitInfo.getSpecialRegisters()) {
       _setRegisterToZero(registerPair.second);
     }
   }

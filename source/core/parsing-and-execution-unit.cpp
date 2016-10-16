@@ -38,6 +38,7 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _stopFlag(stopFlag)
 , _finalRepresentation()
 , _addressCommandMap()
+, _lineCommandCache()
 , _memoryAccess(memoryAccess)
 , _breakpoints()
 , _syntaxInformation(_parser->getSyntaxInformation())
@@ -57,7 +58,7 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 }
 
 void ParsingAndExecutionUnit::execute() {
-  if (_finalRepresentation.errorList.size() > 0) {
+  if (_finalRepresentation.hasErrors()) {
     return;
   }
   _stopFlag.test_and_set();
@@ -69,20 +70,21 @@ void ParsingAndExecutionUnit::execute() {
 }
 
 size_t ParsingAndExecutionUnit::executeNextLine() {
+  size_t nextNode = _findNextNode();
   // check for parser errors
-  if (_finalRepresentation.errorList.size() > 0) {
-    return _findNextNode();
+  if (_finalRepresentation.hasErrors() ||
+      nextNode >= _finalRepresentation.commandList.size()) {
+    return nextNode;
   }
   // reference to avoid copying a unique_ptr
-  FinalCommand &currentCommand =
-      _finalRepresentation.commandList.at(_findNextNode());
+  FinalCommand &currentCommand = _finalRepresentation.commandList[nextNode];
   // check for runtime errors
   ValidationResult validationResult =
       currentCommand.node->validateRuntime(_memoryAccess);
   if (!validationResult.isSuccess()) {
     // notify the ui of a runtime error
     _throwRuntimeError(validationResult.getMessage());
-    return _findNextNode();
+    return nextNode;
   }
   // update the current line in the ui (pre-execution)
   _setCurrentLine(currentCommand.position.lineStart);
@@ -91,15 +93,17 @@ size_t ParsingAndExecutionUnit::executeNextLine() {
 
   // find the next instruction and update the current line in the
   // ui (post-execution)
-  size_t nextNode = _findNextNode();
-  _setCurrentLine(
-      _finalRepresentation.commandList.at(nextNode).position.lineStart);
+  nextNode = _findNextNode();
+  if (nextNode < _finalRepresentation.commandList.size()) {
+    FinalCommand &nextCommand = _finalRepresentation.commandList[nextNode];
+    _setCurrentLine(nextCommand.position.lineStart);
+  }
   return nextNode;
 }
 
 void ParsingAndExecutionUnit::executeToBreakpoint() {
   // check if there are parser errors
-  if (_finalRepresentation.errorList.size() > 0) {
+  if (_finalRepresentation.hasErrors()) {
     return;
   }
   // reset stop flag
@@ -110,33 +114,50 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
          nextNode < _finalRepresentation.commandList.size()) {
     nextNode = executeNextLine();
     // check if there is a brekpoint on the next line
-    size_t nextLine =
-        _finalRepresentation.commandList.at(nextNode).position.lineStart;
-    if (_breakpoints.count(nextLine) > 0) {
-      // we reached a breakpoint
-      break;
+    if (nextNode < _finalRepresentation.commandList.size()) {
+      FinalCommand &nextCommand = _finalRepresentation.commandList[nextNode];
+      size_t nextLine = nextCommand.position.lineStart;
+      if (_breakpoints.count(nextLine) > 0) {
+        // we reached a breakpoint
+        break;
+      }
     }
   }
 }
 
 void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
-  // loop through all commands and see if any matches the given line
-  for (auto &&command : _finalRepresentation.commandList) {
-    if (command.position.lineStart == line) {
-      // this command is on the given line, set the program counter to execute
-      // this command next
-      _memoryAccess.putRegisterValue(
-          _programCounter.getName(),
-          conversions::convert(command.address, _programCounter.getSize()));
-      _setCurrentLine(line);
-      break;
+  MemoryValue address;
+  bool foundMatchingLine = false;
+  // try to find the line in the cache
+  auto iterator = _lineCommandCache.find(line);
+  if (iterator != _lineCommandCache.end()) {
+    address = iterator->second;
+    foundMatchingLine = true;
+  } else {
+    for (const auto &command : _finalRepresentation.commandList) {
+      if (command.position.lineStart == line) {
+        // this command is on the given line, save the address in the cache.
+        auto size = _programCounter.getSize();
+        address = conversions::convert(command.address, size);
+        _lineCommandCache.emplace(line, address);
+        foundMatchingLine = true;
+        break;
+      }
     }
   }
+  if (!foundMatchingLine) {
+    // no command found on this line
+    return;
+  }
+  // a command on this line was found, set the program counter and the line in
+  // the ui.
+  _memoryAccess.putRegisterValue(_programCounter.getName(), address);
+  _setCurrentLine(line);
 }
 
 void ParsingAndExecutionUnit::parse(std::string code) {
   // delete old assembled program in memory
-  for (auto &&command : _finalRepresentation.commandList) {
+  for (const auto &command : _finalRepresentation.commandList) {
     // create a empty MemoryValue as long as the command
     MemoryValue zero(command.node->assemble().getSize());
     _memoryAccess.putMemoryValueAt(command.address, zero);
@@ -144,10 +165,11 @@ void ParsingAndExecutionUnit::parse(std::string code) {
   // parse the new code and save the final representation
   _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
   _addressCommandMap = _finalRepresentation.createMapping();
+  _lineCommandCache.clear();
   // update the error list of the ui
   _setErrorList(_finalRepresentation.errorList);
   // assemble commands into memory
-  for (auto &&command : _finalRepresentation.commandList) {
+  for (const auto &command : _finalRepresentation.commandList) {
     _memoryAccess.putMemoryValueAt(command.address, command.node->assemble());
   }
 }
