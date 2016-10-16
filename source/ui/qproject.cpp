@@ -17,3 +17,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "ui/qproject.hpp"
+
+QProject::QProject(QQmlContext* projectContext, QObject* parent)
+: QObject(parent)
+, _registerModel()
+, _editor(projectContext) {
+}

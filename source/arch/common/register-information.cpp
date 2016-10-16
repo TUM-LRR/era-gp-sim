@@ -21,7 +21,6 @@
 #include <vector>
 
 #include "arch/common/register-information.hpp"
-#include "common/assert.hpp"
 #include "common/utility.hpp"
 
 typename RegisterInformation::id_t RegisterInformation::_rollingID = 0;
@@ -30,19 +29,21 @@ bool RegisterInformation::isSpecialType(Type type) noexcept {
   return type != Type::INTEGER && type != Type::FLOAT && type != Type::VECTOR;
 }
 
-// clang-format off
-RegisterInformation::RegisterInformation(const std::string& name, size_t size)
-: _id(_rollingID++)
-, _type(Type::INTEGER)
-, _name(name)
-, _size(size) {
+RegisterInformation::RegisterInformation()
+: _id(_rollingID++), _type(Type::INTEGER) {
 }
-// clang-format on
 
 RegisterInformation::RegisterInformation(InformationInterface::Format& data)
 : RegisterInformation() {
   _deserialize(data);
 }
+
+// clang-format off
+RegisterInformation::RegisterInformation(const std::string& name)
+: RegisterInformation() {
+  this->name(name);
+}
+// clang-format on
 
 bool RegisterInformation::operator==(const RegisterInformation& other) const
     noexcept {
@@ -70,13 +71,13 @@ RegisterInformation::deserialize(InformationInterface::Format& data) {
 }
 
 RegisterInformation& RegisterInformation::name(const std::string& name) {
-  assert::that(!name.empty());
   _name = name;
+
   return *this;
 }
 
 const std::string& RegisterInformation::getName() const {
-  assert::that(hasName());
+  assert(hasName());
   return _name;
 }
 
@@ -84,20 +85,20 @@ bool RegisterInformation::hasName() const noexcept {
   return !_name.empty();
 }
 
-RegisterInformation& RegisterInformation::size(size_t size) {
-  assert::that(size > 0);
-  _size = size;
+RegisterInformation& RegisterInformation::size(size_t bit_size) {
+  assert(bit_size > 0);
+  _size = bit_size;
 
   return *this;
 }
 
 RegisterInformation::size_t RegisterInformation::getSize() const {
-  assert::that(hasSize());
-  return _size;
+  assert(hasSize());
+  return *_size;
 }
 
 bool RegisterInformation::hasSize() const noexcept {
-  return _size > 0;
+  return static_cast<bool>(_size);
 }
 
 RegisterInformation& RegisterInformation::id(id_t id) {
@@ -146,13 +147,13 @@ bool RegisterInformation::hasAliases() const noexcept {
 }
 
 RegisterInformation& RegisterInformation::enclosing(id_t id) {
-  assert::that(id != _id);
+  assert(id != _id);
   _enclosing = id;
   return *this;
 }
 
 RegisterInformation::id_t RegisterInformation::getEnclosing() const {
-  assert::that(hasEnclosing());
+  assert(hasEnclosing());
   return *_enclosing;
 }
 
@@ -167,9 +168,13 @@ RegisterInformation::addConstituents(ConstituentList constituents) {
 
 RegisterInformation&
 RegisterInformation::addConstituent(const ConstituentInformation& constituent) {
-  assert::that(!Utility::contains(_constituents, constituent));
-  assert::that(_constituentIsValid(constituent, hasSize()));
+  // Make sure none of the constituents are the enclosing register
+  // of this register, or the register itself.
+  assert(constituent.getID() != _id);
+  if (_enclosing) assert(constituent.getID() != _enclosing);
+
   _constituents.emplace_back(constituent);
+
   return *this;
 }
 
@@ -192,22 +197,12 @@ bool RegisterInformation::isValid() const noexcept {
   // valid. One thing to check would be for duplicate IDs of course, but for
   // that we would need to keep some symbol table.
   // The type has a default value, so no need to validate.
-
-  bool constituentsOK =
-      Utility::allOf(_constituents, [this](auto& constituent) {
-        return this->_constituentIsValid(constituent, true);
-      });
-
-  if (!constituentsOK) return false;
-  if (_name.empty()) return false;
-  if (_size == 0) return false;
-
-  return true;
+  return !_name.empty() && _size;
 }
 
 void RegisterInformation::_deserialize(InformationInterface::Format& data) {
-  assert::that(data.count("name"));
-  assert::that(data.count("size"));
+  assert(data.count("name"));
+  assert(data.count("size"));
 
   Utility::doIfThere(data, "id", [this](auto& id) { this->id(id); });
 
@@ -220,7 +215,7 @@ void RegisterInformation::_deserialize(InformationInterface::Format& data) {
   });
 
   Utility::doIfThere(data, "enclosing", [this](const auto& enclosing) {
-    assert::that(enclosing.is_number());
+    assert(enclosing.is_number());
     this->enclosing(enclosing);
   });
 
@@ -265,18 +260,6 @@ void RegisterInformation::_parseType(InformationInterface::Format& data) {
   } else if (*type == "program-counter") {
     _type = Type::PROGRAM_COUNTER;
   } else {
-    assert::that(false);
+    assert(false);
   }
-}
-
-bool RegisterInformation::_constituentIsValid(
-    const ConstituentInformation& constituent, bool verifyEnclosingOffset) const
-    noexcept {
-  if (constituent.getID() == this->_id) return false;
-  if (_enclosing && constituent.getID() == *_enclosing) return false;
-  if (verifyEnclosingOffset && constituent.getEnclosingOffset() >= _size) {
-    return false;
-  }
-
-  return true;
 }

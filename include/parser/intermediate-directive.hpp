@@ -16,12 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_DIRECTIVE_HPP_
-#define ERAGPSIM_PARSER_INTERMEDIATE_DIRECTIVE_HPP_
+#ifndef ERAGPSIM_PARSER_INTERMEDIATE_DIRECTIVE_HPP
+#define ERAGPSIM_PARSER_INTERMEDIATE_DIRECTIVE_HPP
 
 #include "parser/intermediate-operation.hpp"
 
-// This is a dummy class for a future implementation.
 /**
  * \brief Represents a directive in the parser-internal intermediate form.
  */
@@ -38,6 +37,13 @@ class IntermediateDirective : public IntermediateOperation {
                         const std::vector<std::string>& labels,
                         const std::string& name)
   : IntermediateOperation(lines, labels, name) {
+  }
+
+ protected:
+  /**
+   * \brief Does nothing here.
+   */
+  virtual void determineMemoryPosition() {
   }
 };
 

@@ -17,12 +17,13 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <gtest/gtest.h>
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+#include "gtest/gtest.h"
 
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
@@ -50,31 +51,28 @@ struct ArchCommonTestFixture : ::testing::Test {
     unitInformation.name("cpu").addRegister(registerInformation);
 
     instructionKey.addEntry("opcode", 6).addEntry("function", 9);
-    instructionInformation.mnemonic("add").key(instructionKey);
+    instructionInformation.mnemonic("add").key(instructionKey).format("R");
 
     // clang-format off
     instructionSet.addInstructions(InstructionSet({
         instructionInformation,
-        {"mov", InstructionKey({{"opcode", 2}})}
+        {"mov", InstructionKey({{"opcode", 2}}), "R"}
     }));
     // clang-format on
 
-    baseExtensionInformation.name("rvi32");
-
-    baseExtensionInformation.addInstructions(instructionSet);
-    baseExtensionInformation.addUnit(unitInformation);
-
-    baseExtensionInformation.wordSize(32);
-    baseExtensionInformation.endianness(
-        ArchitectureProperties::Endianness::MIXED);
-    baseExtensionInformation.alignmentBehavior(
-        ArchitectureProperties::AlignmentBehavior::STRICT);
+    baseExtensionInformation.name("rvi32")
+        .addInstructions(instructionSet)
+        .addUnit(unitInformation)
+        .wordSize(32)
+        .byteSize(8)
+        .endianness(ArchitectureProperties::Endianness::MIXED)
+        .alignmentBehavior(ArchitectureProperties::AlignmentBehavior::STRICT);
 
     // clang-format off
-    specialExtensionInformation.name("rva32");
-    specialExtensionInformation.addInstructions(InstructionSet({
-      {"lr", InstructionKey({{"opcode", 1}, {"function", 2}})},
-      {"sc", InstructionKey({{"opcode", 3}, {"function", 4}})}
+    specialExtensionInformation.name("rva32")
+      .addInstructions(InstructionSet({
+      {"lr", InstructionKey({{"opcode", 1}, {"function", 2}}), "R"},
+      {"sc", InstructionKey({{"opcode", 3}, {"function", 4}}), "R"}
     }));
     // clang-format on
   }
@@ -115,23 +113,6 @@ TEST(ArchCommonTest, TestRegisterInformation) {
   EXPECT_EQ(
       registerInformation.getConstituents(),
       RegisterInformation::ConstituentContainer({{2, 1}, {3, 2}, {4, 3}}));
-
-  // Expect constituents with invalid bit offsets to be disallowed
-  EXPECT_THROW(registerInformation.addConstituent({5, 666}),
-               assert::AssertionError);
-
-  // Expect duplicate constituents to be disallowed
-  EXPECT_THROW(registerInformation.addConstituent({2, 1}),
-               assert::AssertionError);
-
-  // Expect constituents with the same ID as the register to be disallowed
-  EXPECT_THROW(registerInformation.addConstituent({0, 1}),
-               assert::AssertionError);
-
-  // Expect constituents with the same ID as the enclosing
-  // register of a  register to be disallowed
-  auto middle = RegisterInformation("r1", 32).enclosing(0);
-  EXPECT_THROW(middle.addConstituent({0, 1}), assert::AssertionError);
 
   EXPECT_FALSE(registerInformation.isSpecial());
   registerInformation.type(RegisterInformation::Type::LINK);
@@ -206,8 +187,6 @@ TEST(ArchCommonTest, TestConstituentInformation) {
   EXPECT_TRUE(constituent.isValid());
   EXPECT_EQ(constituent.getID(), 5);
   EXPECT_EQ(constituent.getEnclosingOffset(), 1);
-
-  EXPECT_EQ(constituent, ConstituentInformation(5, 1));
 }
 
 TEST(ArchCommonTest, TestArchitectureFormula) {
@@ -226,19 +205,23 @@ TEST(ArchCommonTest, TestArchitectureFormula) {
 }
 
 TEST(ArchCommonTest, TestInstructionInformation) {
-  auto instruction = InstructionInformation().mnemonic("add");
+  auto instruction = InstructionInformation().mnemonic("add").format("R");
 
   InstructionKey key({{"opcode", 6}, {"function", 9}});
 
   EXPECT_FALSE(instruction.isValid());
   EXPECT_FALSE(instruction.hasKey());
+
   instruction.key(key);
+
   EXPECT_TRUE(instruction.isValid());
   EXPECT_TRUE(instruction.hasKey());
   EXPECT_TRUE(instruction.hasMnemonic());
+  EXPECT_TRUE(instruction.hasFormat());
 
-  EXPECT_EQ(instruction.getMnemonic(), "add");
   EXPECT_EQ(instruction.getKey(), key);
+  EXPECT_EQ(instruction.getMnemonic(), "add");
+  EXPECT_EQ(instruction.getFormat(), "R");
 }
 
 TEST_F(ArchCommonTestFixture, TestInstructionSet) {
@@ -255,11 +238,6 @@ TEST_F(ArchCommonTestFixture, TestUnitInformation) {
   EXPECT_FALSE(unit.isValid());
   unit.addRegister(registerInformation);
   EXPECT_TRUE(unit.isValid());
-
-  EXPECT_TRUE(unit.hasRegister(registerInformation.getID()));
-  EXPECT_FALSE(unit.hasRegister(12345));
-  EXPECT_EQ(unit.getRegister(registerInformation.getID()), registerInformation);
-  EXPECT_THROW(unit.getRegister(12345), assert::AssertionError);
 }
 
 TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
@@ -274,6 +252,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   EXPECT_FALSE(extension.isComplete());
 
   extension.wordSize(32);
+  extension.byteSize(8);
   extension.endianness(ArchitectureProperties::Endianness::MIXED);
   extension.alignmentBehavior(
       ArchitectureProperties::AlignmentBehavior::STRICT);
@@ -326,17 +305,6 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
   architecture.extendBy(baseExtensionInformation);
   architecture.extendBy(specialExtensionInformation);
 
-  EXPECT_TRUE(architecture.isBasedOn(baseExtensionInformation.getName()));
-  EXPECT_TRUE(architecture.isBasedOn(specialExtensionInformation.getName()));
-  EXPECT_FALSE(architecture.isBasedOn("foo"));
-
-  Architecture::ExtensionNameCollection expected = {
-    baseExtensionInformation.getName(),
-    specialExtensionInformation.getName()
-  };
-
-  EXPECT_EQ(architecture.getBaseExtensionNames(), expected);
-
   EXPECT_TRUE(architecture.isValid());
 
   architecture.validate();
@@ -347,6 +315,7 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
   EXPECT_EQ(*architecture.getUnits().find(unitInformation), unitInformation);
 
   EXPECT_EQ(architecture.getWordSize(), 32);
+  EXPECT_EQ(architecture.getByteSize(), 8);
   EXPECT_EQ(architecture.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(architecture.getAlignmentBehavior(),

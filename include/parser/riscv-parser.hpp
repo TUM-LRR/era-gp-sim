@@ -41,12 +41,23 @@ class RiscvParser : public Parser {
   virtual FinalRepresentation
   parse(const std::string &text, ParserMode parserMode);
 
+  virtual const SyntaxInformation getSyntaxInformation();
+
  protected:
   /**
    * Saves an internal compile state.
    */
   CompileState _compile_state;
+
+  /**
+   * The NodeFactoryCollection used to create the syntax tree nodes
+   */
   NodeFactoryCollection _factory_collection;
+
+  /**
+   * Reference to the Architecture this parser compiles for
+   */
+  const Architecture &_architecture;
 };
 
 #endif// ERAGPSIM_PARSER_RISCV_PARSER_HPP_

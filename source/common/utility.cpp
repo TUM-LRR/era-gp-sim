@@ -54,12 +54,20 @@ std::string loadFromFile(const std::string& filePath) {
   std::string input;
   std::ifstream file(filePath);
 
-  assert(static_cast<bool>(file));
+  assert::that(static_cast<bool>(file));
 
   std::copy(std::istreambuf_iterator<char>{file},
             std::istreambuf_iterator<char>{},
             std::back_inserter(input));
 
   return input;
+}
+
+void pushBackFromEnd(std::vector<bool>& dest,
+                     const std::vector<bool>& src,
+                     size_t n) {
+  int i = src.size() - n - 1;
+  while (++i < 0) dest.push_back(false);
+  for (; i < src.size(); i++) dest.push_back(src.at(i));
 }
 }

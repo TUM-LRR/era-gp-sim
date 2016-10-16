@@ -20,41 +20,52 @@
 #ifndef ERAGPSIM_UI_EDITOR_COMPONENT_HPP_
 #define ERAGPSIM_UI_EDITOR_COMPONENT_HPP_
 
+#include <QColor>
 #include <QObject>
+#include <QQmlContext>
 #include <QQuickTextDocument>
 #include <QRegExp>
 #include <QTextCharFormat>
 #include <QTextDocument>
-#include <QColor>
 #include <memory>
-#include "ui/syntaxhighlighter.hpp"
-#include "parser/compile-error.hpp"
+
 #include "parser/code-position.hpp"
+#include "parser/compile-error.hpp"
+#include "ui/syntaxhighlighter.hpp"
 
 class EditorComponent : public QObject {
-    Q_OBJECT
-public:
+  Q_OBJECT
+ public:
+  explicit EditorComponent(QQmlContext* projectContext, QObject* parent = 0);
 
-    explicit EditorComponent(QObject *parent = 0);
+  /**
+   * \brief creates a new syntax-highlighter for this editor
+   *
+   * should only be called once at initialization of the editor
+   *
+   * \param qDocument
+   */
+  Q_INVOKABLE void init(QQuickTextDocument* qDocument);
 
-    /**
-     * \brief creates a new syntax-highlighter for this editor, should only be called once at initialization of the editor
-     * \param qDocument
-     */
-    Q_INVOKABLE void init(QQuickTextDocument *qDocument);
-    Q_INVOKABLE void sendText(QString text);
+  /**
+   * Sends the editor-text to the core to start parsing the program
+   *
+   * \param text the content of the editor
+   *
+   */
+  Q_INVOKABLE void sendText(QString text);
 
-    void setErrorList(std::vector<CompileError>&& errorList);
-    void setCurrentLine(int line);
-    //void setMakroList(std::vector<Makro>&& makroList);
+  void setErrorList(std::vector<CompileError>&& errorList);
+  void setCurrentLine(int line);
+  // void setMakroList(std::vector<Makro>&& makroList);
 
-private:
-    std::unique_ptr<SyntaxHighlighter> _highlighter;
-    std::vector<KeywordRule> _keywords;
+ private:
+  std::unique_ptr<SyntaxHighlighter> _highlighter;
+  std::vector<KeywordRule> _keywords;
 
-signals:
-    void deleteErrors();
-    void addError(QString message, int line, QColor color);
+ signals:
+  void deleteErrors();
+  void addError(QString message, int line, QColor color);
 };
 
 #endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP_ */

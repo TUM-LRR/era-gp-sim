@@ -1,56 +1,63 @@
 {
+    "name": "with-deps-complex",
     "extends": [
         "base1-complex",
         "base2-complex"
     ],
     "instructions": [
         {
-            "opcode": 6,
+            "format": "R",
             "mnemonic": "add",
-            "function": 3
+            "key": {
+                "opcode": 6,
+                "function": 3
+            }
         },
         {
-            "opcode": 9,
+            "format": "R",
             "mnemonic": "sub",
-            "function": 3
+            "key": {
+                "opcode": 9,
+                "function": 3
+            }
         }
     ],
+    "byte-size": 8,
     "endianness": "little",
     "units": [
         {
             "registers": [
                 {
-                    "size": 32,
-                    "id": 0,
+                    "name": "r0",
                     "constituents": [
                         {
-                            "id": 1,
-                            "enclosing-index": 1
+                            "enclosing-index": 1,
+                            "id": 1
                         },
                         {
-                            "id": 2,
-                            "enclosing-index": 2
+                            "enclosing-index": 2,
+                            "id": 2
                         }
                     ],
+                    "size": 32,
                     "alias": "zero",
-                    "name": "r0"
+                    "id": 0
                 },
                 {
-                    "enclosing": 0,
+                    "name": "r1",
+                    "id": 1,
                     "aliases": [
                         "foo",
                         "bar"
                     ],
                     "size": 16,
-                    "id": 1,
+                    "enclosing": 0,
                     "type": "float",
-                    "name": "r1",
                     "constant": 3.14
                 }
             ],
             "name": "cpu"
         }
     ],
-    "name": "with-deps-complex",
     "word-size": 32
 }

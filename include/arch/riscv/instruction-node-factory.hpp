@@ -18,10 +18,19 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_FACTORY_HPP
 #define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_FACTORY_HPP
 
+#include <cstdint>
+#include <string>
 #include <unordered_map>
 
 #include "arch/common/abstract-instruction-node-factory.hpp"
+#include "arch/common/instruction-information.hpp"
 #include "arch/common/instruction-set.hpp"
+#include "arch/riscv/control-flow-instructions.hpp"
+#include "arch/riscv/factory-map.hpp"
+#include "arch/riscv/integer-instructions.hpp"
+#include "arch/riscv/load-store-instructions.hpp"
+
+class Architecture;
 
 namespace riscv {
 
@@ -33,54 +42,56 @@ namespace riscv {
  */
 class InstructionNodeFactory : public AbstractInstructionNodeFactory {
  public:
-  using InstructionMap = std::unordered_map<
-      std::string,
-      std::function<std::unique_ptr<AbstractSyntaxTreeNode>()>>;
+  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
 
   /**
    * \brief InstructionNodeFactory
    * Creates a Instruction Node Factory for RISC-V architecture
    */
-  InstructionNodeFactory(const InstructionSet &instructions) {
-    initializeInstructionMap();
-  }
-
-  /*! Default constructed copy constructor */
-  InstructionNodeFactory(InstructionNodeFactory &copy) = default;
-
-  /*! Default constructed move constructor */
-  InstructionNodeFactory(InstructionNodeFactory &&move) = default;
+  InstructionNodeFactory(const InstructionSet &instructions,
+                         const Architecture &architecture);
 
   /**
    * \brief createInstructionNode
-   * Creates and returns a RISC-V Instruction Node for a valid input token, or
-   * nullptr if the token cannot be mapped to a implemented RISC-V instruction
-   * \param token
+   * Creates and returns a RISC-V Instruction Node for a valid input mnemonic,
+   * or
+   * nullptr if the mnemonic cannot be mapped to a implemented RISC-V
+   * instruction
+   * \param mnemonic
    * \return std::uniqe_ptr pointing to the newly created instruction node, or
-   * nullptr if the token cannot be mapped to a implemented RISC-V instruction
+   * nullptr if the mnemonic cannot be mapped to a implemented RISC-V
+   * instruction
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createInstructionNode(const std::string &token) const override;
-
-  ~InstructionNodeFactory() = default;
+  Node createInstructionNode(const std::string &mnemonic) const override;
 
  private:
-  /**
-   * \brief _instructionMap
-   * Table, that maps the instruction identifier (e.g. the token "ADD" for
-   * Addition) to a function that creates the special instruction node (e.g.
-   * AddInstructionNode)
-   */
-  InstructionMap _instructionMap;
+
+  using Factory = std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
+      const InstructionInformation &)>;
 
   /**
-   * \brief initializeInstructionMap
-   * Fills instructionMap with values.
-   * Use lambda-functions with no parameters and return type
-   * std::unique_ptr<AbstractSyntaxTreeNode> as value.
-   * Use UPPERCASE instruction identifier as key.
+   * \brief Sets up non-integer instructions.
    */
-  void initializeInstructionMap();
+  void _setupOtherInstructions();
+
+  /**
+   * \brief Sets up "w"-Instructions only present in RV64
+   */
+  void _setup64BitOnlyInstructions();
+
+  /**
+   * Table, that maps the instruction identifier (e.g. the mnemonic "add" for
+   * Addition) to a factory function that creates the special instruction node
+   * (e.g.
+   * AddInstructionNode)
+   */
+  FactoryMap _factories;
+
+  /*!
+   * \brief _instructionSet
+   * Description of all instructions that can be created by this factory
+   */
+  InstructionSet _instructionSet;
 };
 }
 
