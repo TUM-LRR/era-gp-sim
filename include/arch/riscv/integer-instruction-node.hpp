@@ -158,7 +158,7 @@ class AbstractIntegerInstructionNode : public InstructionNode {
     // No memory access is needed for a immediate node
     MemoryAccess stub;
     MemoryValue value = _children.at(2)->getValue(stub);
-    if (!this->_fitsIntoNBit(value, 12)) {
+    if (Utility::occupiesMoreBitsThan(value, 12)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "The immediate value of this instruction must "
