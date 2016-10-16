@@ -63,7 +63,8 @@ class IntermediateInstruction : public IntermediateOperation {
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
                        const SyntaxTreeGenerator& generator,
-                       CompileState& state);
+                       CompileState& state,
+                       MemoryAccess& memoryAccess);
 
   /**
    * \brief Converts this instruction into a syntax tree.
@@ -74,7 +75,8 @@ class IntermediateInstruction : public IntermediateOperation {
    */
   FinalCommand compileInstruction(const SymbolTable& table,
                                   const SyntaxTreeGenerator& generator,
-                                  CompileState& state);
+                                  CompileState& state,
+                                  MemoryAccess& memoryAccess);
 
  protected:
   /**

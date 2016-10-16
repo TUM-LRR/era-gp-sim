@@ -23,15 +23,20 @@
 #include "parser/riscv-parser.hpp"
 
 template <typename T>
-static ParserPtr createParserInternal(const Architecture &arch) {
-  return ParserPtr{new T{arch}};
+static ParserPtr createParserInternal(const Architecture &arch,
+                                      const MemoryAccess &memoryAccess) {
+  return ParserPtr{new T{arch, memoryAccess}};
 }
 
-const std::unordered_map<std::string, ParserPtr (*)(const Architecture &)>
+const std::unordered_map<std::string,
+                         ParserPtr (*)(const Architecture &,
+                                       const MemoryAccess &)>
     ParserFactory::mapping{{"riscv", createParserInternal<RiscvParser>}};
 
 std::unique_ptr<Parser>
-ParserFactory::createParser(const Architecture &arch, const std::string &name) {
+ParserFactory::createParser(const Architecture &arch,
+                            const MemoryAccess &memoryAccess,
+                            const std::string &name) {
   ParserPtr parser;
 
   // Try to find a parser matching name.
@@ -39,7 +44,7 @@ ParserFactory::createParser(const Architecture &arch, const std::string &name) {
 
   assert::that(element != mapping.end());
 
-  parser = (element->second)(arch);
+  parser = (element->second)(arch, memoryAccess);
 
   return parser;
 }

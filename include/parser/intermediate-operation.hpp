@@ -78,7 +78,8 @@ class IntermediateOperation {
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
                        const SyntaxTreeGenerator& generator,
-                       CompileState& state) = 0;
+                       CompileState& state,
+                       MemoryAccess& memoryAccess) = 0;
 
   /**
    * \brief Enhances the symbol table by the labels of the operation.

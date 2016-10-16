@@ -21,11 +21,12 @@
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       const SymbolTable& table,
                                       const SyntaxTreeGenerator& generator,
-                                      CompileState& state) {
+                                      CompileState& state,
+                                      MemoryAccess& memoryAccess) {
   // For a machine instruction, it is easy to "execute" it: just insert it into
   // the final form.
   finalRepresentator.commandList.push_back(
-      compileInstruction(table, generator, state));
+      compileInstruction(table, generator, state, memoryAccess));
 }
 
 std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
@@ -56,15 +57,16 @@ IntermediateInstruction::compileArgumentVector(
 FinalCommand IntermediateInstruction::compileInstruction(
     const SymbolTable& table,
     const SyntaxTreeGenerator& generator,
-    CompileState& state) {
+    CompileState& state,
+    MemoryAccess& memoryAccess) {
   // We replace all occurenced in target in source (using a copy of them).
   auto srcCompiled = compileArgumentVector(_sources, table, generator, state);
   auto trgCompiled = compileArgumentVector(_targets, table, generator, state);
   FinalCommand result;
-  result.node = std::move(
-      generator.transformCommand(_name, srcCompiled, trgCompiled, state));
+  result.node = std::move(generator.transformCommand(
+      _name, srcCompiled, trgCompiled, state, memoryAccess));
   result.position = _lines;
-  result.address  = _address;
+  result.address = _address;
   return result;
 }
 

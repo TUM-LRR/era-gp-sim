@@ -27,6 +27,7 @@
 
 class AbstractSyntaxTreeNode;
 class CompileState;
+class MemoryAccess;
 
 /**
  * \brief A connector class for turning arguments and commands into syntax tree
@@ -67,7 +68,8 @@ class SyntaxTreeGenerator {
       const std::string& command_name,
       std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
       std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
-      CompileState& state) const;
+      CompileState& state,
+      MemoryAccess& memoryAccess) const;
 
  private:
   /**

@@ -34,7 +34,7 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
     std::atomic_flag &stopFlag,
     std::string parserName)
 : Servant(std::move(scheduler))
-, _parser(ParserFactory::createParser(architecture, parserName))
+, _parser(ParserFactory::createParser(architecture, memoryAccess, parserName))
 , _stopFlag(stopFlag)
 , _finalRepresentation()
 , _addressCommandMap()

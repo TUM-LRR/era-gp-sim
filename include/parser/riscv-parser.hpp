@@ -23,7 +23,7 @@
 #include <vector>
 
 #include "arch/common/node-factory-collection.hpp"
-
+#include "core/memory-access.hpp"
 #include "parser/compile-state.hpp"
 #include "parser/parser.hpp"
 
@@ -36,7 +36,8 @@ class RiscvParser : public Parser {
  public:
   class RiscvRegex;
 
-  RiscvParser(const Architecture &architecture);
+  RiscvParser(const Architecture &architecture,
+              const MemoryAccess &memoryAccess);
 
   virtual FinalRepresentation
   parse(const std::string &text, ParserMode parserMode);
@@ -58,6 +59,11 @@ class RiscvParser : public Parser {
    * Reference to the Architecture this parser compiles for
    */
   const Architecture &_architecture;
+
+  /**
+   * A MemoryAccess for the `validate(_memoryAccess)` call.
+   */
+  MemoryAccess _memoryAccess;
 };
 
 #endif// ERAGPSIM_PARSER_RISCV_PARSER_HPP_

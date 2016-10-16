@@ -29,8 +29,9 @@
 #include "parser/riscv-regex.hpp"
 #include "parser/syntax-information.hpp"
 
-RiscvParser::RiscvParser(const Architecture &architecture)
-: _architecture(architecture) {
+RiscvParser::RiscvParser(const Architecture &architecture,
+                         const MemoryAccess &memoryAccess)
+: _architecture(architecture), _memoryAccess(memoryAccess) {
   _factory_collection = NodeFactoryCollectionMaker::CreateFor(architecture);
 }
 
@@ -42,7 +43,7 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
   // Initialize compile state
   _compile_state.errorList.clear();
   _compile_state.position = CodePosition(0, 0);
-  _compile_state.mode     = parserMode;
+  _compile_state.mode = parserMode;
 
 
   RiscvRegex line_regex;
@@ -85,8 +86,8 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
     }
   }
 
-  return intermediate.transform(SyntaxTreeGenerator{_factory_collection},
-                                _compile_state);
+  return intermediate.transform(
+      SyntaxTreeGenerator{_factory_collection}, _compile_state, _memoryAccess);
 }
 
 const SyntaxInformation RiscvParser::getSyntaxInformation() {

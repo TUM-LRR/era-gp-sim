@@ -84,8 +84,9 @@ class IntermediateRepresentator {
    * \param state The compile state to report errors.
    * \return The list of syntax trees to be interpreted by the architecture.
    */
-  FinalRepresentation
-  transform(const SyntaxTreeGenerator& generator, CompileState& state);
+  FinalRepresentation transform(const SyntaxTreeGenerator& generator,
+                                CompileState& state,
+                                MemoryAccess& memoryAccess);
 
  private:
   /**

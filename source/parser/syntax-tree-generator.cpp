@@ -22,6 +22,7 @@
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/validation-result.hpp"
+#include "core/memory-access.hpp"
 #include "parser/compile-state.hpp"
 
 std::unique_ptr<AbstractSyntaxTreeNode>
@@ -54,7 +55,8 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
     const std::string& command_name,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
-    CompileState& state) const {
+    CompileState& state,
+    MemoryAccess& memoryAccess) const {
   // Just create an instruction node and add all output and input nodes
   // (operands).
   auto outputNode = _nodeFactories.createInstructionNode(command_name);
@@ -76,7 +78,7 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
   }
 
   // Validate node
-  const ValidationResult result = outputNode->validate();
+  const ValidationResult result = outputNode->validate(memoryAccess);
   if (!result) {
     state.errorList.push_back(CompileError(
         result.getMessage(), state.position, CompileErrorSeverity::ERROR));

@@ -22,7 +22,8 @@
 
 FinalRepresentation
 IntermediateRepresentator::transform(const SyntaxTreeGenerator& generator,
-                                     CompileState& state) {
+                                     CompileState& state,
+                                     MemoryAccess& memoryAccess) {
   // Before everything begins, we got to check if we are still in a macro.
   if (_currentOutput) {
     state.addError("Macro not closed. Missing a macro end directive?");
@@ -37,7 +38,7 @@ IntermediateRepresentator::transform(const SyntaxTreeGenerator& generator,
   // Then, we execute their values.
   FinalRepresentation representation;
   for (const auto& i : _commandList) {
-    i->execute(representation, table, generator, state);
+    i->execute(representation, table, generator, state, memoryAccess);
   }
 
   representation.errorList = state.errorList;
