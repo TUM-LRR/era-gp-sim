@@ -23,6 +23,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
+#include <iterator>
 #include <type_traits>
 #include <vector>
 
@@ -51,7 +52,8 @@ class MemoryValue {
   >
   // clang-format on
   class BaseIterator
-      : public Utility::CompletelyOrdered<BaseIterator<ReferenceType, void>> {
+      : public Utility::CompletelyOrdered<BaseIterator<ReferenceType, void>>,
+        public std::iterator<std::random_access_iterator_tag, ReferenceType> {
    public:
     /**
      * Tests if the iterator is equal to another iterator.
