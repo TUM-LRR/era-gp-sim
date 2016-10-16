@@ -49,6 +49,7 @@ class ConstantDirective : public IntermediateDirective {
 
  private:
   std::vector<std::string> _arguments;
+  std::string expression;
 };
 
 #endif /* ERAGPSIM_PARSER_CONSTANT_DIRECTIVE_HPP_ */
