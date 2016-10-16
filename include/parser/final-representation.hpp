@@ -57,6 +57,13 @@ struct FinalCommand {
  * be used by the architecture.
  */
 struct FinalRepresentation {
+  using AddressMapping = std::unordered_map<MemoryAddress, std::size_t>;
+
+  /**
+   * @return True if the error list is non-empty, else false.
+   */
+  bool hasErrors() const noexcept;
+
   /**
    * \brief The list of commands which have been assembled.
    */
@@ -71,15 +78,7 @@ struct FinalRepresentation {
    * \brief Creates a mapping from memory address to instruction index.
    * \return The mapping.
    */
-  std::unordered_map<MemoryAddress, std::size_t> createMapping() {
-    std::unordered_map<MemoryAddress, std::size_t> mapping;
-
-    for (std::size_t i = 0; i < commandList.size(); ++i) {
-      mapping[commandList[i].address] = i;
-    }
-
-    return mapping;
-  }
+  AddressMapping createMapping() const;
 };
 
 #endif

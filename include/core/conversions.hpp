@@ -108,10 +108,10 @@ struct Conversion {
             toMemoryValueFunction) {
   }
   Conversion(const Conversion&) = default;
-  Conversion(Conversion&&)      = default;
+  Conversion(Conversion&&) = default;
   Conversion& operator=(const Conversion&) = default;
   Conversion& operator=(Conversion&&) = default;
-  ~Conversion()                       = default;
+  ~Conversion() = default;
 };
 
 namespace standardConversions {
@@ -165,7 +165,7 @@ convert(const MemoryValue& memoryValue,
         const SignFunction& sgn,
         const ToIntegralFunction& abs) {
   bool sign = sgn(memoryValue);// true => negative
-  T result  = conversions::detail::convertUnsigned<T>(abs(memoryValue, sign));
+  T result = conversions::detail::convertUnsigned<T>(abs(memoryValue, sign));
   if (sign ^ (result < 0)) return 0 - result;
   return result;
 }
@@ -298,14 +298,15 @@ namespace detail {
  */
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, T>::type
-  convertForced(const MemoryValue& memoryValue,
-    SignedRepresentation representation = SignedRepresentation::SMART,
-    std::size_t byteSize = 8,
-    ArchitectureProperties::Endianness byteOrder = ArchitectureProperties::Endianness::LITTLE) {
+convertForced(const MemoryValue& memoryValue,
+              SignedRepresentation representation = SignedRepresentation::SMART,
+              std::size_t byteSize = 8,
+              ArchitectureProperties::Endianness byteOrder =
+                  ArchitectureProperties::Endianness::LITTLE) {
   MemoryValue permuted = permute(memoryValue, byteOrder, byteSize);
   Conversion con = conversions::detail::switchConversion(representation);
   if (representation == SignedRepresentation::SMART &&
-    std::is_signed<T>::value) {
+      std::is_signed<T>::value) {
     con = conversions::standardConversions::twosComplement;
   }
   return convert<T>(permuted, con);
@@ -324,14 +325,15 @@ typename std::enable_if<std::is_integral<T>::value, T>::type
   */
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, MemoryValue>::type
-  convertForced(T value,
-    std::size_t size,
-    SignedRepresentation representation = SignedRepresentation::SMART,
-    std::size_t byteSize = 8,
-    ArchitectureProperties::Endianness byteOrder = ArchitectureProperties::Endianness::LITTLE) {
+convertForced(T value,
+              std::size_t size,
+              SignedRepresentation representation = SignedRepresentation::SMART,
+              std::size_t byteSize = 8,
+              ArchitectureProperties::Endianness byteOrder =
+                  ArchitectureProperties::Endianness::LITTLE) {
   Conversion con = conversions::detail::switchConversion(representation);
   if (representation == SignedRepresentation::SMART &&
-    std::is_signed<T>::value) {
+      std::is_signed<T>::value) {
     con = conversions::standardConversions::twosComplement;
   }
   MemoryValue converted = convert<T>(value, con, size);
@@ -358,10 +360,8 @@ typename std::
                 ArchitectureProperties::Endianness::LITTLE,
             ArchitectureProperties::SignedRepresentation representation =
                 ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT) {
-  return detail::convertForced<T>(memoryValue,
-                          detail::SignedRepresentation::UNSIGNED,
-                          byteSize,
-                          byteOrder);
+  return detail::convertForced<T>(
+      memoryValue, detail::SignedRepresentation::UNSIGNED, byteSize, byteOrder);
 }
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value && std::is_signed<T>::value,
@@ -373,9 +373,9 @@ convert(const MemoryValue& memoryValue,
         ArchitectureProperties::SignedRepresentation representation =
             ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT) {
   return detail::convertForced<T>(memoryValue,
-                          detail::mapRepresentation(representation),
-                          byteSize,
-                          byteOrder);
+                                  detail::mapRepresentation(representation),
+                                  byteSize,
+                                  byteOrder);
 }
 
 /**
@@ -400,11 +400,8 @@ convert(T value,
             ArchitectureProperties::Endianness::LITTLE,
         ArchitectureProperties::SignedRepresentation representation =
             ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT) {
-  return detail::convertForced<T>(value,
-                          size,
-                          detail::SignedRepresentation::UNSIGNED,
-                          byteSize,
-                          byteOrder);
+  return detail::convertForced<T>(
+      value, size, detail::SignedRepresentation::UNSIGNED, byteSize, byteOrder);
 }
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value && std::is_signed<T>::value,
@@ -417,10 +414,10 @@ convert(T value,
         ArchitectureProperties::SignedRepresentation representation =
             ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT) {
   return detail::convertForced<T>(value,
-                          size,
-                          detail::mapRepresentation(representation),
-                          byteSize,
-                          byteOrder);
+                                  size,
+                                  detail::mapRepresentation(representation),
+                                  byteSize,
+                                  byteOrder);
 }
 }
 
