@@ -91,7 +91,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
 
     memoryAccess.putRegisterValue(destination, value);
 
-    return MemoryValue{};
+    return _incrementProgramCounter<WordSize>(memoryAccess);
   }
 
   ValidationResult validate(MemoryAccess& memoryAccess) const override {

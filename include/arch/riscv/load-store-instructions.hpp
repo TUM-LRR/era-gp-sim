@@ -167,7 +167,7 @@ class LoadInstructionNode
       performUnsignedLoad(
           memoryAccess, effectiveAddress, super::_byteAmount, dest);
     }
-    return MemoryValue{};
+    return super::template _incrementProgramCounter<UnsignedType>(memoryAccess);
   }
 
  private:
@@ -316,7 +316,7 @@ class StoreInstructionNode
       resultValue.put(i, registerValue.get(i));
     }
     memoryAccess.putMemoryValueAt(effectiveAddress, resultValue);
-    return MemoryValue{};
+    return super::template _incrementProgramCounter<UnsignedType>(memoryAccess);
   }
 
  private:

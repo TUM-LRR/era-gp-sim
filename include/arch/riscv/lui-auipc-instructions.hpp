@@ -124,7 +124,7 @@ class LuiInstructionNode : public LuiAuipcValidationNode {
     // Convert back into a memory value and store it in the register
     MemoryValue resultMemoryValue = riscv::convert<UnsignedType>(result);
     memoryAccess.putRegisterValue(destination, resultMemoryValue);
-    return MemoryValue{};
+    return this->_incrementProgramCounter<UnsignedType>(memoryAccess);
   }
 
  private:
@@ -186,7 +186,7 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
         riscv::convert<UnsignedType>(programCounterConverted);
 
     memoryAccess.putRegisterValue(destination, resultMemoryValue);
-    return MemoryValue{};
+    return this->_incrementProgramCounter<UnsignedType>(memoryAccess);
   }
 
  private:
