@@ -8,9 +8,25 @@
 
 namespace riscv {
 
-constexpr unsigned int str2int(const char* str, int h = 0) {
-  return !str[h] ? 5381 : (str2int(str, h + 1) * 33) ^ str[h];
-}
+    AssemblerFunction getAssemblerFromFormat(const std::string& format) {
+        AssemblerFunction assemblerFunction;
+        if (format == "R") {
+            assemblerFunction = RFormat();
+        } else if (format == "I") {
+            assemblerFunction = IFormat();
+        } else if (format == "S") {
+            assemblerFunction = SFormat();
+        } else if (format == "U") {
+            assemblerFunction = UFormat();
+        } else if (format == "SB") {
+            assemblerFunction = SBFormat();
+        } else if (format == "UJ") {
+            assemblerFunction = UJFormat();
+        } else {
+            assemblerFunction = RFormat();
+        }
+        return assemblerFunction;
+    }
 
 InstructionNode::InstructionNode(const InstructionInformation& information)
 : super(Type::INSTRUCTION), _information(information) {
@@ -52,15 +68,7 @@ MemoryValue InstructionNode::assemble() const {
   InstructionKey instructionKey = _information.getKey();
   const char* format            = _information.getFormat().c_str();
 
-  switch (str2int(format)) {
-    case str2int("R"): assembler  = RFormat(); break;
-    case str2int("I"): assembler  = IFormat(); break;
-    case str2int("S"): assembler  = SFormat(); break;
-    case str2int("U"): assembler  = UFormat(); break;
-    case str2int("SB"): assembler = SBFormat(); break;
-    case str2int("UJ"): assembler = UJFormat(); break;
-    default: assembler            = RFormat(); break;
-  }
+    assembler = getAssemblerFromFormat(format);
 
   std::vector<MemoryValue> args;
 
@@ -68,13 +76,13 @@ MemoryValue InstructionNode::assemble() const {
     args.push_back(_children.at(i)->assemble());
   }
 
-  auto boolResult = assembler(instructionKey, args);
+  std::vector<bool> result = assembler(instructionKey, args);
 
-  MemoryValue result(boolResult.size());
+  MemoryValue assembledMemory(result.size());
 
-  for (int i = 0; i < boolResult.size(); i++) result.put(i, boolResult.at(i));
+  for (int i = 0; i < result.size(); i++) assembledMemory.put(result.size() - i - 1, result[i]);
 
-  return result;
+  return assembledMemory;
 }
 
-}//namespace riscv
+}

@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
+#include <sstream>
 #include "arch/common/register-node.hpp"
 
 #include "arch/common/validation-result.hpp"
@@ -44,25 +45,17 @@ const std::string& RegisterNode::getIdentifier() const {
 }
 
 MemoryValue RegisterNode::assemble() const {
-  MemoryValue memValue{8};
+  MemoryValue memValue{5};
 
-  std::string::size_type sz;
+  std::size_t index;
 
-  int index;
-
-  try {
-    index = std::stoi(_identifier, &sz);
-  } catch (const std::exception&) {
-    index = 0;
-  }
-
-  const int regSize = 8;
+  std::istringstream(_identifier) >> index;
 
   for (int i = 0; i < 5; i++) {
     if (index % 2 == 0)
-      memValue.put(regSize - i - 1, false);
+      memValue.put(i, false);
     else
-      memValue.put(regSize - i - 1, true);
+      memValue.put(i, true);
 
     index /= 2;
   }
