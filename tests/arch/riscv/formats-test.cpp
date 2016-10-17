@@ -51,9 +51,12 @@ struct ImmediateFormatTestFixture : public ::testing::Test {
     delete[] valueP;
   }
 
-  uint8_t v[6][4] = {{0x78, 0xEF, 0xCD, 0x0B}, {0xBC, 0x00, 0x00, 0x00},
-                     {0xBE, 0x00, 0x00, 0x00}, {0xBE, 0x00, 0x00, 0x00},
-                     {0X00, 0xE0, 0xCD, 0x0B}, {0xBC, 0xE0, 0x0D, 0x00}};
+  uint8_t v[6][4] = {{0x78, 0xEF, 0xCD, 0x0B},
+                     {0xBC, 0x00, 0x00, 0x00},
+                     {0xBE, 0x00, 0x00, 0x00},
+                     {0xBE, 0x00, 0x00, 0x00},
+                     {0X00, 0xE0, 0xCD, 0x0B},
+                     {0xBC, 0xE0, 0x0D, 0x00}};
   MemoryValue **valueP = new MemoryValue *[6];
 };
 
@@ -91,7 +94,8 @@ struct InstructionFormatTestFixture : public ::testing::Test {
          {"uinst", InstructionKey({{"opcode", 3}, {"function", 5}}), "U"}}));
   }
 
-  ~InstructionFormatTestFixture() {}
+  ~InstructionFormatTestFixture() {
+  }
 
   InstructionSet instructionSet;
 };

@@ -8,25 +8,25 @@
 
 namespace riscv {
 
-    AssemblerFunction getAssemblerFromFormat(const std::string& format) {
-        AssemblerFunction assemblerFunction;
-        if (format == "R") {
-            assemblerFunction = RFormat();
-        } else if (format == "I") {
-            assemblerFunction = IFormat();
-        } else if (format == "S") {
-            assemblerFunction = SFormat();
-        } else if (format == "U") {
-            assemblerFunction = UFormat();
-        } else if (format == "SB") {
-            assemblerFunction = SBFormat();
-        } else if (format == "UJ") {
-            assemblerFunction = UJFormat();
-        } else {
-            assemblerFunction = RFormat();
-        }
-        return assemblerFunction;
-    }
+AssemblerFunction getAssemblerFromFormat(const std::string& format) {
+  AssemblerFunction assemblerFunction;
+  if (format == "R") {
+    assemblerFunction = RFormat();
+  } else if (format == "I") {
+    assemblerFunction = IFormat();
+  } else if (format == "S") {
+    assemblerFunction = SFormat();
+  } else if (format == "U") {
+    assemblerFunction = UFormat();
+  } else if (format == "SB") {
+    assemblerFunction = SBFormat();
+  } else if (format == "UJ") {
+    assemblerFunction = UJFormat();
+  } else {
+    assemblerFunction = RFormat();
+  }
+  return assemblerFunction;
+}
 
 InstructionNode::InstructionNode(const InstructionInformation& information)
 : super(Type::INSTRUCTION), _information(information) {
@@ -66,9 +66,9 @@ bool InstructionNode::_compareChildTypes(TypeList list,
 MemoryValue InstructionNode::assemble() const {
   AssemblerFunction assembler;
   InstructionKey instructionKey = _information.getKey();
-  const char* format            = _information.getFormat().c_str();
+  const char* format = _information.getFormat().c_str();
 
-    assembler = getAssemblerFromFormat(format);
+  assembler = getAssemblerFromFormat(format);
 
   std::vector<MemoryValue> args;
 
@@ -80,9 +80,9 @@ MemoryValue InstructionNode::assemble() const {
 
   MemoryValue assembledMemory(result.size());
 
-  for (int i = 0; i < result.size(); i++) assembledMemory.put(result.size() - i - 1, result[i]);
+  for (int i = 0; i < result.size(); i++)
+    assembledMemory.put(result.size() - i - 1, result[i]);
 
   return assembledMemory;
 }
-
 }

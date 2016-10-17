@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <sstream>
 #include "arch/common/register-node.hpp"
+#include <sstream>
 
 #include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
@@ -49,8 +49,10 @@ MemoryValue RegisterNode::assemble() const {
 
   std::size_t index;
 
+  // identifier is parsed into an integer
   std::istringstream(_identifier) >> index;
-
+  // index is converted into a 5 bit memory value
+  // registers in riscv take up 5 bits in their assembled form
   for (int i = 0; i < 5; i++) {
     if (index % 2 == 0)
       memValue.put(i, false);
@@ -62,4 +64,3 @@ MemoryValue RegisterNode::assemble() const {
 
   return memValue;
 }
-

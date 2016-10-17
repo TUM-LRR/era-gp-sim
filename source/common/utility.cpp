@@ -108,5 +108,4 @@ std::string loadFromFile(const std::string& filePath) {
 
   return input;
 }
-
 }

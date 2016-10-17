@@ -27,45 +27,47 @@ namespace riscv {
 
 const std::size_t REGISTER_SIZE = 4;
 
-    void pushBackFromEnd(std::vector<bool>& dest,
-                         const std::vector<bool>& src,
-                         size_t n) {
-        int i = src.size() - n - 1;
-        while (++i < 0) dest.push_back(false);
-        for (; i < src.size(); i++) dest.push_back(src.at(i));
-    }
+// push the last n bits from the src vector to the dest vector
+void pushBackFromEnd(std::vector<bool>& dest,
+                     const std::vector<bool>& src,
+                     size_t n) {
+  int i = src.size() - n - 1;
+  while (++i < 0) dest.push_back(false);
+  for (; i < src.size(); i++) dest.push_back(src.at(i));
+}
 
-    void immediateToIFormat(MemoryValue& vec) {
-      for (int i = 10; i >= 0; i--) vec.put(i, vec.get(20 + i));
-      for (std::size_t i = 31; i > 10; i--) vec.put(i, vec.get(31));
-    }
+// each format has it's own immediate format
+void immediateToIFormat(MemoryValue& vec) {
+  for (int i = 10; i >= 0; i--) vec.put(i, vec.get(20 + i));
+  for (std::size_t i = 31; i > 10; i--) vec.put(i, vec.get(31));
+}
 
-    void immediateToSFormat(MemoryValue& vec) {
-      vec.put(0, vec.get(7));
-      for (std::size_t i = 4; i >= 1; i--) vec.put(i, vec.get(7 + i));
-      for (std::size_t i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
-      for (std::size_t i = 31; i > 10; i--) vec.put(i, vec.get(31));
-    }
+void immediateToSFormat(MemoryValue& vec) {
+  vec.put(0, vec.get(7));
+  for (std::size_t i = 4; i >= 1; i--) vec.put(i, vec.get(7 + i));
+  for (std::size_t i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
+  for (std::size_t i = 31; i > 10; i--) vec.put(i, vec.get(31));
+}
 
-    void immediateToBFormat(MemoryValue& vec) {
-      immediateToSFormat(vec);
-      vec.put(11, vec.get(0));
-      vec.put(0, false);
-    }
+void immediateToBFormat(MemoryValue& vec) {
+  immediateToSFormat(vec);
+  vec.put(11, vec.get(0));
+  vec.put(0, false);
+}
 
-    void immediateToUFormat(MemoryValue& vec) {
-      for (int i = 12; i >= 0; i--) vec.put(i, false);
-    }
+void immediateToUFormat(MemoryValue& vec) {
+  for (int i = 12; i >= 0; i--) vec.put(i, false);
+}
 
-    void immediateToJFormat(MemoryValue& vec) {
-      // clang-format off
+void immediateToJFormat(MemoryValue& vec) {
+  // clang-format off
       for (std::size_t i = 4; i >= 1; i--) vec.put(i, vec.get(20 + i));
       vec.put(0, false);
       for (std::size_t i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
       vec.put(11, vec.get(20));
       for (std::size_t i = 31; i >= 20; i--) vec.put(i, vec.get(31));
-      // clang-format on
-    }
+  // clang-format on
+}
 
 std::vector<bool> RFormat::
 operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
@@ -73,7 +75,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
 
   // funct7 - 6 bits long
   std::vector<bool> tmp;
-  //  Utility::convertToBinnary(tmp, key["funct7"]);
+
   tmp = Utility::convertToBinary(key["function"] >> 3);
   // push the last 7 bits
   pushBackFromEnd(res, tmp, 7);
@@ -84,16 +86,16 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // rs1
   argument = args.at(1);
-    for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   tmp.clear();
-  // Utility::convertToBinary(tmp, key["funct3"]);
+
   tmp = Utility::convertToBinary(key["function"]);
   pushBackFromEnd(res, tmp, 3);
 
   // destination
   argument = args.at(0);
-    for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
 
   tmp.clear();
   tmp = Utility::convertToBinary(key["opcode"]);
@@ -113,19 +115,19 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   immediateToIFormat(imm);
 
   // immediate - 12 bits long
-    for (int i = 11; i >= 0; i--) res.push_back(imm.get(i));
+  for (int i = 11; i >= 0; i--) res.push_back(imm.get(i));
   // rs1
   auto argument = args.at(1);
-    for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   tmp.clear();
-  // Utility::convertToBinary(tmp, key["funct3"]);
+
   tmp = Utility::convertToBinary(key["function"]);
   pushBackFromEnd(res, tmp, 3);
 
   // destination
   argument = args.at(0);
-    for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
 
   tmp.clear();
   tmp = Utility::convertToBinary(key["opcode"]);
@@ -144,15 +146,15 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   immediateToSFormat(imm);
 
   // immediate[11:5]
-    for (std::size_t i = 11; i > 4; i--) res.push_back(imm.get(i));
+  for (std::size_t i = 11; i > 4; i--) res.push_back(imm.get(i));
   // rs2
   auto argument = args.at(1);
-    for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // rs1
   argument = args.at(0);
-    for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
-  // Utility::convertToBinary(tmp, key["funct3"]);
+
   tmp = Utility::convertToBinary(key["function"]);
   pushBackFromEnd(res, tmp, 3);
 
@@ -178,15 +180,15 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   // imm[12]
   res.push_back(imm.get(12));
   // immediate[10:5]
-    for (std::size_t i = 10; i > 4; i--) res.push_back(imm.get(i));
+  for (std::size_t i = 10; i > 4; i--) res.push_back(imm.get(i));
   // rs2
   auto argument = args.at(1);
-    for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // rs1
   argument = args.at(0);
-    for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
-  // Utility::convertToBinary(tmp, key["funct3"]);
+
   tmp = Utility::convertToBinary(key["function"]);
   pushBackFromEnd(res, tmp, 3);
 
@@ -212,11 +214,11 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   immediateToUFormat(imm);
 
   // immediate[31:12]
-    for (std::size_t i = 31; i >= 12; i--) res.push_back(imm.get(i));
+  for (std::size_t i = 31; i >= 12; i--) res.push_back(imm.get(i));
 
   // rd
   auto argument = args.at(0);
-    for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
 
   tmp = Utility::convertToBinary(key["opcode"]);
   pushBackFromEnd(res, tmp, 7);
@@ -236,15 +238,15 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   // immediate[20]
   res.push_back(imm.get(21));
   // imm[10:1]
-    for (std::size_t i = 10; i >= 1; i--) res.push_back(imm.get(i));
+  for (std::size_t i = 10; i >= 1; i--) res.push_back(imm.get(i));
   // imm[11]
   res.push_back(imm.get(11));
   // imm[19:12]
-    for (std::size_t i = 19; i >= 12; i--) res.push_back(imm.get(i));
+  for (std::size_t i = 19; i >= 12; i--) res.push_back(imm.get(i));
 
   // rd
   auto argument = args.at(0);
-    for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
 
   tmp = Utility::convertToBinary(key["opcode"]);
   pushBackFromEnd(res, tmp, 7);
