@@ -48,6 +48,7 @@ class GuiProject : public QObject {
                       std::size_t memorySize,
                       QObject* parent = 0);
 
+  void parse() {}
   void run(){}
   void runLine(){}
   void runBreakpoint(){}

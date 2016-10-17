@@ -110,6 +110,13 @@ class Ui : public QObject {
   Q_INVOKABLE void removeProject(int index);
 
   /**
+   * Calls parse on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void parse(int index);
+
+  /**
    * Call run on the specified project.
    *
    * \param index The index of the project.
