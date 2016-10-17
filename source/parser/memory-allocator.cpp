@@ -19,6 +19,8 @@
 
 #include "parser/memory-allocator.hpp"
 
+// Relative memory position constructors.
+
 RelativeMemoryPosition::RelativeMemoryPosition(const std::string& section,
                                                std::size_t offset)
 : section(section), offset(offset) {
@@ -28,12 +30,16 @@ RelativeMemoryPosition::RelativeMemoryPosition()
 : RelativeMemoryPosition("", 0) {
 }
 
+//
 MemorySectionDefinition::MemorySectionDefinition(const std::string& name,
                                                  std::size_t sectionAlignment,
                                                  std::size_t dataAlignment)
 : name(name), sectionAlignment(sectionAlignment), dataAlignment(dataAlignment) {
   assert::that(sectionAlignment > 0);
   assert::that(dataAlignment > 0);
+
+  // Important: the section alignment (if this even makes sense) must be a
+  // multiple of the data alignment.
   assert::that(sectionAlignment % dataAlignment == 0);
 }
 
@@ -47,23 +53,36 @@ MemorySectionDefinition::MemorySectionDefinition(const std::string& name)
 }
 
 void MemoryAllocator::MemorySection::clear() {
+  // Really, just setting it to zero.
   _currentSize = 0;
 }
 
-std::size_t MemoryAllocator::MemorySection::allocateRelative(std::size_t size) {
+RelativeMemoryPosition
+MemoryAllocator::MemorySection::allocateRelative(std::size_t size) {
+  // We got to round up and so on...
   auto aligned =
       Utility::discreteCeiling(_currentSize, _definition.dataAlignment) *
       _definition.dataAlignment;
+
+  // Now that we got the beginning of our memory section, we can add the size to
+  // it.
   _currentSize = aligned + size;
-  return aligned;
+  return RelativeMemoryPosition(_definition.name, aligned);
 }
 
+// Getters...
 std::size_t MemoryAllocator::MemorySection::currentSize() const {
   return _currentSize;
 }
 
 std::size_t MemoryAllocator::MemorySection::currentPosition() const {
   return _currentPosition;
+}
+
+// Transforming functions...
+std::size_t MemoryAllocator::MemorySection::absoluteAddress(
+    const RelativeMemoryPosition& relative) const {
+  return absoluteAddress(relative.offset);
 }
 
 std::size_t
@@ -81,6 +100,7 @@ MemoryAllocator::MemoryAllocator(
   _sections.reserve(sectionDefinitions.size());
   for (const auto& i : sectionDefinitions) {
     auto section = MemorySection(i);
+
     _nameToSection[i.name] = _sections.size();
     _sections.push_back(section);
   }
@@ -94,6 +114,9 @@ void MemoryAllocator::clear() {
 
 std::size_t MemoryAllocator::calculatePositions() {
   std::size_t position = 0;
+
+  // As we have befriended the MemorySection, we may do this. Again, we use
+  // rounding up to align.
   for (auto& i : _sections) {
     auto sectionAlign = i._definition.sectionAlignment;
     auto aligned =
@@ -104,6 +127,7 @@ std::size_t MemoryAllocator::calculatePositions() {
   return position;
 }
 
+// Accessor functions...
 MemoryAllocator::MemorySection& MemoryAllocator::operator[](std::string name) {
   assert::that(_nameToSection.find(name) != _nameToSection.end());
   return _sections[_nameToSection[name]];
@@ -113,6 +137,19 @@ MemoryAllocator::MemorySection& MemoryAllocator::operator[](std::size_t index) {
   assert::that(index >= 0);
   assert::that(index < _sections.size());
   return _sections[index];
+}
+
+const MemoryAllocator::MemorySection&
+MemoryAllocator::at(std::string name) const {
+  assert::that(_nameToSection.find(name) != _nameToSection.end());
+  return _sections.at(_nameToSection.at(name));
+}
+
+const MemoryAllocator::MemorySection&
+MemoryAllocator::at(std::size_t index) const {
+  assert::that(index >= 0);
+  assert::that(index < _sections.size());
+  return _sections.at(index);
 }
 
 std::size_t MemoryAllocator::absolutePosition(

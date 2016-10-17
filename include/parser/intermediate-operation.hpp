@@ -77,6 +77,8 @@ class IntermediateOperation {
    * \param table The SymbolTable for possible replacements.
    * \param generator The generator to transform the instructions.
    * \param state The CompileState to log possible errors.
+   * \param memoryAccess The MemoryAccess for verifying instructions or
+   * reserving data.
    */
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
@@ -84,6 +86,13 @@ class IntermediateOperation {
                        CompileState& state,
                        MemoryAccess& memoryAccess) = 0;
 
+  /**
+   * \brief Reserves (not writes!) memory for the operation (if needed).
+   * \param architecture The architecture for information about the memory
+   * format.
+   * \param allocator The allocator to reserve memory.
+   * \param state The CompileState to log possible errors.
+   */
   virtual void allocateMemory(const Architecture& architecture,
                               MemoryAllocator& allocator,
                               CompileState& state) {
@@ -92,6 +101,7 @@ class IntermediateOperation {
   /**
    * \brief Enhances the symbol table by the labels of the operation.
    * \param table The SymbolTable to insert into.
+   * \param allocator The MemoryAllocator to get the memory positions from.
    * \param state The CompileState to log possible errors.
    */
   virtual void enhanceSymbolTable(SymbolTable& table,

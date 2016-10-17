@@ -92,8 +92,5 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
 
   // For now.
   std::size_t instructionLength = architecture.getWordSize();
-
-
-  std::size_t offset = allocator["text"].allocateRelative(instructionLength);
-  _relativeAddress = RelativeMemoryPosition("text", offset);
+  _relativeAddress = allocator["text"].allocateRelative(instructionLength);
 }

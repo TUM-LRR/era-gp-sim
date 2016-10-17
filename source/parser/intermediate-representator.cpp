@@ -34,13 +34,14 @@ IntermediateRepresentator::transform(const Architecture& architecture,
 
   allocator.clear();
 
+  // First of all, we reserve our memory.
   for (const auto& i : _commandList) {
     i->allocateMemory(architecture, allocator, state);
   }
 
   allocator.calculatePositions();
 
-  // First of all, we insert all our labels/constants into the SymbolTable.
+  // Secondly, we insert all our labels/constants into the SymbolTable.
   SymbolTable table;
   for (const auto& i : _commandList) {
     i->enhanceSymbolTable(table, allocator, state);
