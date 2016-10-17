@@ -8,116 +8,137 @@ reset-units: true
 
 instructions:
   - mnemonic: fld
+    length: 32
     format: I
     key:
       opcode: 7
       funct3: 3
   - mnemonic: fsd
+    length: 32
     format: S
     key:
       opcode: 39
       funct3: 3
   - mnemonic: fmadd
+    length: 32
     format: R4
     key:
       opcode: 67
       funct2: 1
   - mnemonic: fmsubd
+    length: 32
     format: R4
     key:
       opcode: 71
       funct2: 1
   - mnemonic: fnmsubd
+    length: 32
     format: R4
     key:
       opcode: 75
       funct2: 1
   - mnemonic: fnmaddd
+    length: 32
     format: R4
     key:
       opcode: 79
       funct7: 1
   - mnemonic: fadd
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 1
   - mnemonic: fsubd
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 5
   - mnemonic: fmuld
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 9
   - mnemonic: fdivd
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 13
   - mnemonic: fsqrtd
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 45
       rs2: 0
   - mnemonic: fsgnjd
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 0
       funct7: 17
   - mnemonic: fsgnjnd
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 1
       funct7: 17
   - mnemonic: fsgnjxd
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 2
       funct7: 17
   - mnemonic: fmind
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 0
       funct7: 21
   - mnemonic: fcvtsd
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 32
       rs2: 1
   - mnemonic: fcvtds
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 33
       rs2: 0
   - mnemonic: feqd
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 2
       funct7: 81
   - mnemonic: fltd
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 1
       funct7: 81
   - mnemonic: fled
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 0
       funct7: 81
   - mnemonic: fclassd
+    length: 32
     format: R
     key:
       opcode: 83
@@ -125,24 +146,28 @@ instructions:
       funct7: 113
       rs2: 0
   - mnemonic: fcvtwd
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 97
       rs2: 0
   - mnemonic: fcvtwud
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 97
       rs2: 1
   - mnemonic: fcvtdw
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 105
       rs2: 0
   - mnemonic: fcvtdwu
+    length: 32
     format: R
     key:
       opcode: 83
