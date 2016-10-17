@@ -18,14 +18,26 @@
 
 #include "parser/intermediate-instruction.hpp"
 
+#include "parser/macro-directive.hpp"
+
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       const SymbolTable& table,
                                       const SyntaxTreeGenerator& generator,
                                       CompileState& state) {
-  // For a machine instruction, it is easy to "execute" it: just insert it into
-  // the final form.
-  finalRepresentator.commandList.push_back(
-      compileInstruction(table, generator, state));
+  // First we need to check if the instruction is a macro.
+  auto macro = state.macros.find(_name);
+  // If its a macro, execute every sub-instruction.
+  if (macro != state.macros.end()) {
+    auto& subOperations = macro->second.operations();
+    for (auto i = subOperations.begin(); i != subOperations.end(); ++i) {
+      (*i)->execute(finalRepresentator, table, generator, state);
+    }
+  } else {
+    // For a machine instruction, it is easy to "execute" it: just insert it
+    // into the final form.
+    finalRepresentator.commandList.push_back(
+        compileInstruction(table, generator, state));
+  }
 }
 
 std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
@@ -64,7 +76,7 @@ FinalCommand IntermediateInstruction::compileInstruction(
   result.node = std::move(
       generator.transformCommand(_name, srcCompiled, trgCompiled, state));
   result.position = _lines;
-  result.address  = _address;
+  result.address = _address;
   return result;
 }
 

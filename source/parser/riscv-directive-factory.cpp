@@ -20,6 +20,10 @@
 #include "parser/riscv-directive-factory.hpp"
 
 #include "parser/intermediate-representator.hpp"
+
+#include "parser/constant-directive.hpp"
+#include "parser/macro-directive.hpp"
+#include "parser/macro-end-directive.hpp"
 #include "parser/section-directive.hpp"
 
 using DirectivePtr = std::unique_ptr<IntermediateDirective>;
@@ -47,7 +51,10 @@ const std::unordered_map<std::string,
                                           const std::vector<std::string> &,
                                           const std::string &,
                                           const std::vector<std::string> &)>
-    RiscVDirectiveFactory::mapping{{"section", createSectionInternal}};
+    RiscVDirectiveFactory::mapping{{"section", createSectionInternal},
+                                   {"macro", createInternal<MacroDirective>},
+                                   {"endm", createInternal<MacroEndDirective>},
+                                   {"equ", createInternal<ConstantDirective>}};
 
 void RiscVDirectiveFactory::create(const LineInterval &lines,
                                    const std::vector<std::string> &labels,

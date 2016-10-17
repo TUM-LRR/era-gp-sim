@@ -19,11 +19,14 @@
 #ifndef ERAGPSIM_PARSER_COMPILE_STATE_HPP
 #define ERAGPSIM_PARSER_COMPILE_STATE_HPP
 
+#include <unordered_map>
 #include <vector>
 
 #include "parser/code-position.hpp"
 #include "parser/compile-error.hpp"
 #include "parser/parser-mode.hpp"
+
+class MacroDirective;
 
 // Note: this class should be reworked and rebuilt to a full-grown class...
 
@@ -50,6 +53,11 @@ struct CompileState {
    \brief Specifies the section the compiler is currently in.
    */
   std::string section = "text";
+
+  /**
+   * Saves registered macros.
+   */
+  std::unordered_map<std::string, MacroDirective&> macros;
 
   /**
    * \brief Adds an error to the state-internal error list at the current
@@ -108,6 +116,8 @@ struct CompileState {
     errorList.push_back(
         CompileError(message, position, CompileErrorSeverity::INFORMATION));
   }
+
+  void registerMacro(MacroDirective& macro);
 };
 
 #endif

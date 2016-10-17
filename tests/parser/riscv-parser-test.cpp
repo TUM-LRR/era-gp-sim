@@ -69,8 +69,8 @@ TEST_F(RiscParserTest, EmptyMultilineString) {
 
 TEST_F(RiscParserTest, SingleInstruction) {
   FinalRepresentation res;
-  res = parser.parse("ADD x13, x4,7", ParserMode::COMPILE);
-  // EXPECT_EQ(res.errorList.size(), 0);
+  res = parser.parse("ADD x13, x4,x0", ParserMode::COMPILE);
+  EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 1);
 }
 
@@ -88,23 +88,47 @@ TEST_F(RiscParserTest, SingleBadDirective) {
   EXPECT_EQ(res.commandList.size(), 0);
 }
 
+TEST_F(RiscParserTest, MultipleDirectives) {
+  FinalRepresentation res;
+  res = parser.parse(
+      ".equ ZAHL, 10\n"
+      ".macro add3;, x=0\n"
+      "addi x0, x0, 0\n"
+      "addi x0, x0, 0\n"
+      "addi x0, x0, 0\n"
+      ".endm\n"
+      ".macro add5;, x=0\n"
+      "addi x0, x0, 0\n"
+      "addi x0, x0, 0\n"
+      "addi x0, x0, 0\n"
+      "addi x0, x0, 0\n"
+      "addi x0, x0, 0\n"
+      ".endm\n"
+      "add3\n"
+      "add5 5\n"
+      "add5 ZAHL\n",
+      ParserMode::COMPILE);
+  EXPECT_EQ(res.errorList.size(), 0);
+  EXPECT_EQ(res.commandList.size(), 13);
+}
+
 TEST_F(RiscParserTest, MultipleInstructions) {
   FinalRepresentation res;
   res = parser.parse(
-      "ADD x13, x4, 7 ;kommentar\n"
-      " label  : SUB x5, x5, 1\n"
+      "ADD x13, x4, x0 ;kommentar\n"
+      " label  : SUB x5, x5, x0\n"
       "LUI x5, 123;kommentar\n"
       "addition123:\n"
       "\n"
-      "ADD x0, x0, 0; kommentar",
+      "ADD x0, x0, x0; kommentar",
       ParserMode::COMPILE);
-  // EXPECT_EQ(res.errorList.size(), 0);
+  EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 4);
 }
 
 TEST_F(RiscParserTest, MalformedInstructions) {
   FinalRepresentation res;
-  res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7\nble  ",
+  res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7\nb-le  ",
                      ParserMode::COMPILE);
   EXPECT_EQ(res.errorList.size(), 3);
   EXPECT_EQ(res.commandList.size(), 0);
@@ -120,17 +144,17 @@ TEST_F(RiscParserTest, BadCharacters) {
 TEST_F(RiscParserTest, MixedErrors) {
   FinalRepresentation res;
   res = parser.parse(
-      "ADD x13, x4, 7 ;kommentar\n"
-      " label  : SUB x5, x5, 1\n"
+      "ADD x13, x4, x0 ;kommentar\n"
+      " label  : SUB x5, x5, x0\n"
       ";kommentar\n"
       "sub  ;oops missing argument\n"
-      "dfklgdjflj\n"
+      ";dfklgdjflj\n"
       "addition123:\n"
       "\n"
-      "_addition456: ADD x0, x0, 0; kommentar",
+      "_addition456: ADD x0, x0, x0; kommentar",
       ParserMode::COMPILE);
-  // EXPECT_EQ(res.errorList.size(), 2);
-  EXPECT_EQ(res.commandList.size(), 3);
+  EXPECT_EQ(res.errorList.size(), 1);
+  EXPECT_EQ(res.commandList.size(), 4);
 }
 
 TEST_F(RiscParserTest, SyntaxInformation) {

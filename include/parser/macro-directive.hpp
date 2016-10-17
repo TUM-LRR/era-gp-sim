@@ -25,6 +25,24 @@
 class MacroDirective : public IntermediateDirective {
  public:
   /**
+   * \brief Instantiates a new MacroDirective with the given arguments.
+   * \param lines     The line interval the operation occupies.
+   * \param labels    The vector of labels assigned to the operation.
+   * \param name      The name of the operation. (e.g. '.macro')
+   * \param arguments Arguments of the directive. First one should be the name
+   *                  of the macro.
+   */
+  MacroDirective(const LineInterval& lines,
+                 const std::vector<std::string>& labels,
+                 const std::string& name,
+                 const std::vector<std::string>& arguments)
+  : IntermediateDirective(lines, labels, name)
+  , _macroName(arguments[0])
+  , _macroParameters(arguments.begin() + 1, arguments.end())
+  , _operations() {
+  }
+
+  /**
  * \brief Instantiates a new MacroDirective with the given arguments.
  * \param lines The line interval the operation occupies.
  * \param labels The vector of labels assigned to the operation.

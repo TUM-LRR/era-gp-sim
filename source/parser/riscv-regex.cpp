@@ -26,12 +26,12 @@ static const std::regex LINE_REGEX(
     "(?:(\\w+)\\s*\\:)?"// Label group
     "\\s*"
     "(([\\.\\w]+)"// Instruction group
-    "\\s+"
+    "(?:\\s+"
     "(\\w+)"// Parameter group
     "(?:\\s*,\\s*"
     "(\\w+)"// Parameter group
     "(?:\\s*,\\s*"
-    "(\\w+))?)?)?"// Parameter group
+    "(\\w+))?)?)?)?"// Parameter group
     "\\s*"
     "(?:;.*)?"// Comment group
     ,
@@ -83,5 +83,6 @@ std::string RiscvParser::RiscvRegex::getParameter(int n) {
 int RiscvParser::RiscvRegex::getParameterCount() {
   if (_matches[6].matched) return 3;
   if (_matches[5].matched) return 2;
-  return 1;
+  if (_matches[4].matched) return 1;
+  return 0;
 }
