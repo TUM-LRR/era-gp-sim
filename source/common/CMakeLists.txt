@@ -5,6 +5,7 @@
 set(COMMON_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/utility.cpp
   string-conversions.cpp
+  bigint.cpp
 )
 
 ########################################
