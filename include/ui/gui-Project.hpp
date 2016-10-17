@@ -6,6 +6,8 @@
 #include <functional>
 #include <QQmlContext>
 
+#include "snapshotmodel.hpp"
+
 
 class GuiProject: QObject{
     Q_OBJECT
@@ -36,12 +38,12 @@ public:
 
 
 private:
-    //RegisterModel registermodel;
-    //Syntaxhighlighter synhigh;
-    //SnapshotModel snapmodel;
-    //MemoryModel memorymodel;
-    //Core-Project
     QQmlContext* context;
+    RegisterModel registermodel;
+    EditorComponent editormodel;
+    SnapshotModel snapmodel;
+    MemoryComponentPresenter memorymodel;
+    //Core-Project;
     std::function<std::string(MemoryValue)> hexConversion;
     std::function<std::string(MemoryValue)> binConversion;
     std::function<std::string(MemoryValue)> octConversion;
