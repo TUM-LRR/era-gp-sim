@@ -77,7 +77,8 @@ class ProjectTestFixture : public ::testing::Test {
   : formula("riscv", {"rv32i"})
   , projectModule(formula, memorySize, "riscv")
   , architectureValidator(Architecture::Brew(formula))
-  , parserValidator(ParserFactory::createParser(architectureValidator, "riscv"))
+  , parserValidator(ParserFactory::createParser(
+        architectureValidator, projectModule.getMemoryAccess(), "riscv"))
   , scheduler(std::make_shared<Scheduler>())
   , proxy(std::move(scheduler)) {
     ParserInterface parserInterface = projectModule.getParserInterface();
@@ -128,11 +129,11 @@ TEST_F(ProjectTestFixture, MemoryAccessTest) {
 
   EXPECT_EQ(memorySize, memoryAccess.getMemorySize().get());
 
-  MemoryValue testValue  = conversions::convert(11, 32);
+  MemoryValue testValue = conversions::convert(11, 32);
   MemoryValue testValue2 = conversions::convert(1, 32);
-  MemoryValue zero       = conversions::convert(0, 32);
-  MemoryValue testByte   = conversions::convert(4, 8);
-  MemoryValue testByte2  = conversions::convert(8, 8);
+  MemoryValue zero = conversions::convert(0, 32);
+  MemoryValue testByte = conversions::convert(4, 8);
+  MemoryValue testByte2 = conversions::convert(8, 8);
 
   EXPECT_NO_THROW(memoryAccess.putMemoryValueAt(0, testByte));
   EXPECT_EQ(testByte, memoryAccess.getMemoryValueAt(0).get());
@@ -169,12 +170,12 @@ TEST_F(ProjectTestFixture, MemoryAccessTest) {
 
 TEST_F(ProjectTestFixture, MemoryManagerTest) {
   MemoryManager memoryManager = projectModule.getMemoryManager();
-  MemoryAccess memoryAccess   = projectModule.getMemoryAccess();
+  MemoryAccess memoryAccess = projectModule.getMemoryAccess();
 
   memoryManager.resetMemory();
   for (int i = 0; i < memorySize; i++) {
-    EXPECT_EQ(0,
-              conversions::convert<int>(memoryAccess.getMemoryValueAt(i).get()));
+    EXPECT_EQ(
+        0, conversions::convert<int>(memoryAccess.getMemoryValueAt(i).get()));
   }
   memoryManager.resetRegisters();
   for (int i = 0; i < 32; i++) {
@@ -200,7 +201,7 @@ TEST_F(ProjectTestFixture, ArchitectureAccessTest) {
 
 TEST_F(ProjectTestFixture, CommandInterfaceTest) {
   CommandInterface commandInterface = projectModule.getCommandInterface();
-  MemoryAccess memoryAccess         = projectModule.getMemoryAccess();
+  MemoryAccess memoryAccess = projectModule.getMemoryAccess();
 
   FinalRepresentation finalRepresentationValidator =
       parserValidator->parse(testProgram, ParserMode::COMPILE);
@@ -274,7 +275,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
 }
 
 TEST_F(ProjectTestFixture, ParserInterfaceTest) {
-  ParserInterface parserInterface     = projectModule.getParserInterface();
+  ParserInterface parserInterface = projectModule.getParserInterface();
   SyntaxInformation syntaxInformation = parserValidator->getSyntaxInformation();
   EXPECT_NO_THROW(
       parserInterface.getSyntaxRegex(SyntaxInformation::Token::Register));

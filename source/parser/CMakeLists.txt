@@ -18,6 +18,7 @@ set(PARSER_SOURCES
   expression-compiler-clike.cpp
   parser-factory.cpp
   integer-parser.cpp
+  final-representation.cpp
 )
 
 ########################################
