@@ -86,7 +86,7 @@ class AbstractIntegerInstructionNode : public InstructionNode {
 
     memoryAccess.putRegisterValue(destination, value);
 
-    return {};
+    return _incrementProgramCounter<SizeType>(memoryAccess);
   }
 
   ValidationResult validate(MemoryAccess& memoryAccess) const override {

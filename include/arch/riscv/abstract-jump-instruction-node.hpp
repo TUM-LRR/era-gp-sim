@@ -120,9 +120,7 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
 
     auto result = _jump(programCounter, memoryAccess);
 
-    riscv::storeRegister<UnsignedWord>(memoryAccess, "pc", result);
-
-    return {};
+    return convert<UnsignedWord>(result);
   }
 
   /**

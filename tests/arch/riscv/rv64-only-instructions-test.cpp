@@ -63,7 +63,7 @@ struct RV64OnlyInstructionsTest : public RiscvBaseTest {
       ASSERT_TRUE(instr->validate(memoryAccess));
 
       // Execute
-      ASSERT_EQ(instr->getValue(memoryAccess), MemoryValue{});
+      instr->getValue(memoryAccess);
 
       // Check result
       MemoryValue result = memoryAccess.getRegisterValue(destId).get();
@@ -99,7 +99,7 @@ struct RV64OnlyInstructionsTest : public RiscvBaseTest {
       ASSERT_TRUE(instr->validate(memoryAccess));
 
       // Execute
-      ASSERT_EQ(instr->getValue(memoryAccess), MemoryValue{});
+      instr->getValue(memoryAccess);
 
       // Check result
       MemoryValue result = memoryAccess.getRegisterValue(destId).get();

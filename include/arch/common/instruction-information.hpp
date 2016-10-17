@@ -150,6 +150,11 @@ class InstructionInformation : public InformationInterface {
   /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
+  /**
+   * TODO
+   */
+  std::size_t getLength() const noexcept { return 0; }
+
  private:
   /**
   * Deserializes and constructs the `InstructionInformation` from the given

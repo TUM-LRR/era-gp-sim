@@ -80,7 +80,6 @@ void test12BitImmediateBounds(const NodeFactoryCollection& instrF,
   /* Perform instruction*/                                                    \
   MemoryValue returnValue_##contextNbr =                                      \
       cmd_##contextNbr->getValue(memoryAccess);                               \
-  ASSERT_TRUE(returnValue_##contextNbr.isZero());                             \
   /* Check that operand registers stayed the same*/                           \
   ASSERT_EQ(preOp1_##contextNbr, memoryAccess.getRegisterValue(op1).get());   \
   ASSERT_EQ(preOp2_##contextNbr, memoryAccess.getRegisterValue(op2).get());   \
@@ -133,7 +132,6 @@ void test12BitImmediateBounds(const NodeFactoryCollection& instrF,
   /* Perform instruction*/                                                     \
   MemoryValue returnValue_##contextNbr =                                       \
       cmd_##contextNbr->getValue(memoryAccess);                                \
-  ASSERT_TRUE(returnValue_##contextNbr.isZero());                              \
   /* Check that register operand stayed the same*/                             \
   ASSERT_EQ(preRegisterOp_##contextNbr,                                        \
             memoryAccess.getRegisterValue(reg).get());                         \

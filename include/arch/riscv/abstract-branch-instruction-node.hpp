@@ -127,10 +127,10 @@ class AbstractBranchInstructionNode : public InstructionNode {
       // one might think: http://bit.ly/2c8sfdh
       programCounter += (offset * 2);
 
-      riscv::storeRegister<UnsignedWord>(memoryAccess, "pc", programCounter);
+      return convert<UnsignedWord>(programCounter);
     }
 
-    return {};
+    return _incrementProgramCounter<UnsignedWord>(memoryAccess);
   }
 
   /**
