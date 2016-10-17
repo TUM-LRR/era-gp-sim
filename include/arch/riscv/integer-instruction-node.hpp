@@ -135,11 +135,6 @@ class AbstractIntegerInstructionNode : public InstructionNode {
     return riscv::convert<SizeType>(memory);
   }
 
-  SizeType _getChildValue(size_t index) const {
-    MemoryAccess dummy;
-    return _getChildValue(index, dummy);
-  }
-
   ValidationResult _validateNumberOfChildren() const {
     // a integer instruction needs exactly 3 operands
     if (_children.size() != 3) {

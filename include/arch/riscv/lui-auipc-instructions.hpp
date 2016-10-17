@@ -167,7 +167,7 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
     // Check if sign-expansion is needed
     if ((sizeof(UnsignedType) - sizeof(InternalUnsigned)) > 0) {
       // Aquire the sign bit
-      constexpr auto length = sizeof(InternalUnsigned) * CHAR_BIT;
+      constexpr UnsignedType length = sizeof(InternalUnsigned) * CHAR_BIT;
       InternalUnsigned sign =
           (offsetConverted & (InternalUnsigned{1} << (length - 1)));
       // Do sign-expansion if needed
