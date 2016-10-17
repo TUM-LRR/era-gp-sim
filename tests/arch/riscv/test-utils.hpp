@@ -27,7 +27,7 @@ using namespace riscv;
 struct RiscvBaseTest : public ::testing::Test {
  public:
   void load(ArchitectureFormula::InitializerList modules =
-                ArchitectureFormula::InitializerList(), std::size_t memorySize = 0) {
+                ArchitectureFormula::InitializerList(), std::size_t memorySize = 1) {
     auto formula = ArchitectureFormula("riscv", modules);
     _project = std::make_unique<ProjectModule>(formula, memorySize, "riscv");
   }
