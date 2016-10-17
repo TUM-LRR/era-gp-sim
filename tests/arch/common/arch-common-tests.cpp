@@ -86,7 +86,7 @@ struct ArchCommonTestFixture : ::testing::Test {
 
     specialExtensionInformation
       .name("rva32")
-      .addInstructions({lr, sc});
+      .addInstructions(InstructionSet({lr, sc}));
     // clang-format on
   }
 
