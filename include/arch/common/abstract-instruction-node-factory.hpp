@@ -21,8 +21,7 @@
 #include <memory>
 #include <string>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
-#include "core/memory-value.hpp"
+class AbstractSyntaxTreeNode;
 
 /**
  * \brief The AbstractInstructionNodeFactory class

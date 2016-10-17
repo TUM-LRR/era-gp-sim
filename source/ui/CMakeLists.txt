@@ -11,6 +11,7 @@ set(UI_SOURCES
     syntaxhighlighter.cpp
     editor-component.cpp
     memorycomponentpresenter.cpp
+    ui.cpp
 )
 
 set(UI_HEADERS
@@ -21,6 +22,7 @@ set(UI_HEADERS
     ../../include/ui/registerdata.hpp
     ../../include/ui/editor-component.hpp
     ../../include/ui/memorycomponentpresenter.hpp
+    ../../include/ui/ui.hpp
 )
 
 ########################################

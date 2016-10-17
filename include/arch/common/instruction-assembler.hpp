@@ -13,19 +13,19 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <memory>
-#include <string>
+#ifndef ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP
+#define ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP
 
-#include "arch/riscv/register-access-node-factory.hpp"
+#include <functional>
+#include <vector>
 
-namespace riscv {
+#include "arch/common/instruction-key.hpp"
+#include "arch/riscv/instruction-node.hpp"
+#include "core/memory-value.hpp"
 
-RegisterAccessNodeFactory::Node
-RegisterAccessNodeFactory::createRegisterAccessNode(
-    const std::string &id) const {
-  // return std::make_unique<RegisterAccessNode>(id);
-  return {};
-}
-}
+using AssemblerFunction =
+    std::function<std::vector<bool>(InstructionKey, std::vector<MemoryValue>)>;
+
+#endif /* ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP */

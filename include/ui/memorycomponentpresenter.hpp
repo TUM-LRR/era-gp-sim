@@ -32,7 +32,7 @@ class MemoryComponentPresenter : public QAbstractTableModel{
     Q_OBJECT
 
     public:
-       explicit MemoryComponentPresenter(const MemoryAccess access, const MemoryManager manager, QQmlContext *context, QObject *parent = 0);
+       explicit MemoryComponentPresenter(const MemoryAccess access, /*const MemoryManager manager,*/ QQmlContext *context, QObject *parent = 0);
        ~MemoryComponentPresenter();
        void setSize(int newSize);
        void setValue(int address, /*TODO MemoryValue*/ int newValue);
@@ -47,7 +47,7 @@ class MemoryComponentPresenter : public QAbstractTableModel{
        void onMemoryChanged(const std::size_t address, const std::size_t length);
 
        MemoryAccess memory_access;
-       MemoryManager memory_manager;
+       //MemoryManager memory_manager;
 
        enum ColumnRoles {
            AddressRole=Qt::UserRole,//avoid collisions with predefined roles

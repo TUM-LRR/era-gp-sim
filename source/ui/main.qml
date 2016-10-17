@@ -30,7 +30,7 @@ ApplicationWindow {
 
     menuBar: Menubar{
         component: tabs
-        tabView: tabView
+        main: window
     }
     toolBar: ToolbarMainWindow{
         id: toolbar
@@ -39,16 +39,43 @@ ApplicationWindow {
     TabView{
         anchors.fill: parent
         id: tabView
-        property int counter: 1
-        function increase(){
-            counter=counter+1;
-        }
 
+        Component.onCompleted: {
+            createProject()
+        }
     }
 
-    /*Componetn which shuld be hold int the tabView*/
+    function createProject() {
+        tabView.addTab("Create new project...", tabs);
+        tabView.currentIndex = tabView.count - 1;
+    }
+
+    function closeProject() {
+        tabView.removeTab(tabView.currentIndex);
+    }
+
+    /*Component for a project, instantiated by the TabView*/
     Component{
         id: tabs
+
+        Item {
+            id: placeholderItem
+            anchors.fill: parent
+            ProjectCreationScreen {
+                anchors.fill: parent
+                tab: parent.parent
+                onButtonClicked: {
+                    enabled = false;
+                    visible = false;
+                    ui.addProject(placeholderItem, projectComponent);
+                }
+            }
+        }
+    }
+
+    //this component is instantiated by the addProject method
+    Component{
+        id: projectComponent
         Splitview{
             anchors.fill: parent
         }

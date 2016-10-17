@@ -17,85 +17,188 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
-#define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_
+#ifndef ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP
+#define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP
 
+#include <QtGlobal>
+#include <cassert>
 #include <string>
+#include <type_traits>
 
+#include "arch/common/instruction-information.hpp"
 #include "arch/riscv/instruction-node.hpp"
-
-/*
- * TODO Instructions: slt sltu and or xor sll srl sra
- *                    + their respective immediate equivalents
- */
+#include "arch/riscv/integer-instruction-node.hpp"
+#include "common/utility.hpp"
 
 namespace riscv {
 
 /**
- * Validates an integer instruction node. Every RISC V integer instruction is
- * either register-register or a register-immediate. This is a util method, that
- * checks, if the given node fulfills these requirements. See RISC V
- * specification for more information.
- *
- * \param node The node to check.
- * \param immediate Whether the node is the register-immediate representation.
- * \return true if the node matches the requirements.
+ * Represents a RISC-V "add/addi" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate
  */
-bool validateIntegerInstruction(InstructionNode &node, bool immediate);
-
-/**
- * This node represents the add/addi instruction.
- *
- * See RISC V specification for details about the instruction.
- */
-class AddInstructionNode : public InstructionNode {
- public:
-  AddInstructionNode(bool immediate)
-  : InstructionNode(), _immediate(immediate) {
+template <typename SizeType>
+struct AddInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit AddInstructionNode(const InstructionInformation& information,
+                              Operands operands)
+  : super(information, operands, [](const auto& first, const auto& second) {
+    return first + second;
+  }) {
   }
-
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
-
-  virtual bool validate();
-
-  virtual MemoryValue assemble() {
-    return MemoryValue{};// TODO
-  }
-
-  virtual std::string getIdentifier() {
-    return _immediate ? "ADDI" : "ADD";
-  }
-
- private:
-  bool _immediate;
 };
 
 /**
- * This node represents the sub/subi instruction.
- *
- * See RISC V specification for details about the instruction.
+ * Represents a RISC-V "sub" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate on
  */
-class SubInstructionNode : public InstructionNode {
- public:
-  SubInstructionNode(bool immediate)
-  : InstructionNode(), _immediate(immediate) {
+template <typename SizeType>
+struct SubInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit SubInstructionNode(const InstructionInformation& information,
+                              Operands)
+  : super(
+        information,
+        super::Operands::REGISTERS,
+        [](const auto& first, const auto& second) { return first - second; }) {
+  }
+};
+
+/**
+ * Represents a RISC-V "and/andi" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate on
+ */
+template <typename SizeType>
+struct AndInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit AndInstructionNode(const InstructionInformation& information,
+                              Operands operands)
+  : super(information, operands, [](const auto& first, const auto& second) {
+    return first & second;
+  }) {
+  }
+};
+
+/**
+ * Represents a RISC-V "or/ori" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate on
+ */
+template <typename SizeType>
+struct OrInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit OrInstructionNode(const InstructionInformation& information,
+                             Operands operands)
+  : super(information, operands, [](const auto& first, const auto& second) {
+    return first | second;
+  }) {
+  }
+};
+
+/**
+ * Represents a RISC-V "xor/xori" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate on
+ */
+template <typename SizeType>
+struct XorInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit XorInstructionNode(const InstructionInformation& information,
+                              Operands operands)
+  : super(information, operands, [](const auto& first, const auto& second) {
+    return first ^ second;
+  }) {
+  }
+};
+
+/**
+ * Represents a RISC-V "sll/slli" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate on
+ */
+template <typename SizeType>
+struct ShiftLeftLogicalInstructionNode
+    : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit ShiftLeftLogicalInstructionNode(
+      const InstructionInformation& information, Operands operands)
+  : super(information, operands, [this](const auto& first, const auto& second) {
+    // For logical right shift, SizeType must be a unsigned integral type. Due
+    // to the fact that signed right shift is implementation/compiler specific
+    // and can be either a logical shift or a arithmetical shift
+    static_assert(std::is_unsigned<SizeType>::value,
+                  "SizeType must unsigned for SLL");
+    return first << Utility::lowerNBits<5>(second);
+  }) {
+  }
+};
+
+/**
+ * Represents a RISC-V "srl/srli" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate on
+ */
+template <typename SizeType>
+struct ShiftRightLogicalInstructionNode
+    : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit ShiftRightLogicalInstructionNode(
+      const InstructionInformation& information, Operands operands)
+  : super(information, operands, [this](const auto& first, const auto& second) {
+    return first >> Utility::lowerNBits<5>(second);
+  }) {
+  }
+};
+
+/**
+ * Represents a RISC-V "sra/srai" instruction. For more information see RISC-V
+ * specification
+ * \tparam integer type that can hold exactly the range of values that this
+ * operation should operate on
+ */
+template <typename SizeType>
+struct ShiftRightArithmeticInstructionNode
+    : public AbstractIntegerInstructionNode<SizeType> {
+  using super = AbstractIntegerInstructionNode<SizeType>;
+  using typename super::Operands;
+  explicit ShiftRightArithmeticInstructionNode(
+      const InstructionInformation& information, Operands operands)
+  : super(information, operands) {
   }
 
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access);
+  /** \copydoc AbstractIntegerInstructionNode::_compute() */
+  SizeType _compute(SizeType first, SizeType second) const noexcept override {
+    static const auto width = sizeof(SizeType) * 8;
+    static const auto one = static_cast<SizeType>(1);
 
-  virtual bool validate();
+    // C++ standard does not define a arithemtic shift operator.
 
-  virtual MemoryValue assemble() {
-    return MemoryValue{};// TODO
+    bool sign = first & (one << (width - 1));
+    auto shiftAmount = Utility::lowerNBits<5>(second);
+    auto result = first >> shiftAmount;
+
+    // Create a mask of <shiftAmount> bits and OR them in, if necessary
+    if (sign) result |= ((one << shiftAmount) - 1) << (width - shiftAmount);
+
+    return result;
   }
-
-  virtual std::string getIdentifier() {
-    return _immediate ? "SUBI" : "SUB";
-  }
-
- private:
-  bool _immediate;
 };
 }
 
-#endif /* ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP_ */
+#endif /* ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP */

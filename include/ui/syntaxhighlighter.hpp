@@ -20,17 +20,11 @@
 #ifndef INCLUDE_UI_EDITOR_SYNTAXHIGHLIGHTER_H
 #define INCLUDE_UI_EDITOR_SYNTAXHIGHLIGHTER_H
 
-#include <QRegularExpression>
 #include <QSyntaxHighlighter>
 #include <vector>
 
-// struct for a keyword, consisting of:
-//  - the QRegularExpression, can be created from a string
-//  - the format for the keyword (color, bold,...) in a QTextCharFormat object
-struct KeywordRule {
-	QRegularExpression rulePattern;
-	QTextCharFormat ruleTextFormat;
-};
+#include "ui/keyword-rule.hpp"
+
 
 class SyntaxHighlighter : QSyntaxHighlighter {
 	Q_OBJECT

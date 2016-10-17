@@ -63,7 +63,7 @@ const InstructionKey::Value& InstructionKey::opcode() const {
 }
 
 const InstructionKey::Value& InstructionKey::get(const Key& key) const
-    noexcept {
+noexcept {
   assert(hasKey(key));
   return _container.at(key);
 }

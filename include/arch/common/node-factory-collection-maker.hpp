@@ -52,15 +52,8 @@ NodeFactoryCollection CreateFor(const Architecture& architecture);
  */
 template <typename FactoryTypes>
 NodeFactoryCollection Create(const Architecture& architecture) {
-  // clang-format off
-  return NodeFactoryCollection(
-      FactoryTypes::instructionFactory(architecture.getInstructions()),
-      FactoryTypes::immediateFactory(),
-      FactoryTypes::memoryAccessFactory(),
-      FactoryTypes::registerAccessFactory(),
-      FactoryTypes::arithmeticFactory()
-  );
-  // clang-format on
+  return NodeFactoryCollection::Create<FactoryTypes>(
+      architecture.getInstructions(), architecture);
 }
 }
 

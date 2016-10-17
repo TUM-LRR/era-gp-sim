@@ -16,11 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP_
-#define ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP_
+#ifndef ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP
+#define ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP
 
 #include <string>
 #include <vector>
+#include "common/assert.hpp"
 #include "parser/final-representation.hpp"
 #include "parser/line-interval.hpp"
 #include "parser/symbol-table.hpp"
@@ -31,13 +32,22 @@ struct CompileState;
 /**
  * \brief A memory address substitute as long as we do not have one.
  */
-using DummyMemoryAddress = unsigned int;
+using MemoryAddress = std::size_t;
 
 /**
- * \brief A substitute for a not-initialized address.
+ * \brief Specifies the target for operations to put.
+ *
+ * This feature has been implemented to support macros. It allows that the
+ * operations are placed inside of other operations on syntax level.
  */
-static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
+enum class TargetSelector { KEEP, MAIN, THIS };
 
+class IntermediateOperation;
+
+/**
+ * \brief Convenience class for a pointer to an operation.
+ */
+using IntermediateOperationPointer = std::unique_ptr<IntermediateOperation>;
 
 /**
  * \brief Represents an abstract assembler operation in the parser-internal
@@ -55,7 +65,7 @@ class IntermediateOperation {
   IntermediateOperation(const LineInterval& lines,
                         const std::vector<std::string>& labels,
                         const std::string& name)
-  : _lines(lines), _labels(labels), _name(name), _address(NULL_ADDRESS) {
+  : _lines(lines), _labels(labels), _name(name), _address(0) {
   }
 
   /**
@@ -78,10 +88,35 @@ class IntermediateOperation {
   virtual void enhanceSymbolTable(SymbolTable& table, CompileState& state);
 
   /**
+   * \brief Specifies if the this operation should be processed.
+   * \return True, if so, else false.
+   */
+  virtual bool shouldInsert() const {
+    return true;
+  }
+
+  /**
+   * \brief Specifies the new target for operations after this command.
+   * \return Normally, we keep the target.
+   */
+  virtual TargetSelector newTarget() const {
+    return TargetSelector::KEEP;
+  }
+
+  /**
+   * \brief Inserts an operation into a possible internal command list.
+   * \param pointer The operation to insert.
+   */
+  virtual void insert(IntermediateOperationPointer pointer) {
+    // If this happens, something has gone wrong in our programming.
+    assert::that(false);
+  }
+
+  /**
    * \brief Returns the memory address.
    * \return The memory address.
    */
-  DummyMemoryAddress address() {
+  MemoryAddress address() {
     return _address;
   }
 
@@ -109,7 +144,7 @@ class IntermediateOperation {
   /**
    * \brief The internal memory address.
    */
-  DummyMemoryAddress _address;
+  MemoryAddress _address;
 };
 
 #endif

@@ -22,13 +22,13 @@
 #include <QDebug>
 #include "core/memory-value.hpp"
 
-MemoryComponentPresenter::MemoryComponentPresenter(const MemoryAccess access, const MemoryManager manager, QQmlContext *context, QObject *parent)
+MemoryComponentPresenter::MemoryComponentPresenter(const MemoryAccess access, /*const MemoryManager manager,*/ QQmlContext *context, QObject *parent)
 : QAbstractTableModel(parent){
     // TODO register callback functions
     //memory->setCallback(&MemoryComponentPresenter::onMemoryChanged);
 
    memory_access = access;
-   memory_manager = manager;
+   //memory_manager = manager;
 
     // TODO create new View
     //context->setContextProperty("MemoryComponent", this);

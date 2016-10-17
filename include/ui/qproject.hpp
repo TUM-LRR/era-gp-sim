@@ -21,13 +21,34 @@
 #define INCLUDE_UI_EDITOR_QPROJECT_H
 
 #include <QObject>
+#include <QQmlContext>
 
+#include "ui/editor-component.hpp"
+#include "ui/registermodel.hpp"
+#include "ui/memorycomponentpresenter.hpp"
+
+/**
+ * The GuiProject class. This class encapsulates all gui c++ components and the
+ * core project component.
+ * This version will be replaced by GuiProject, which is currently in
+ * developement. This is just an incomplete placeholder to demonstrate the
+ * project creation.
+ *
+ * That is also the reason why this is not fully documented at the
+ * moment, sorry!
+ *
+ */
 class QProject : public QObject {
-	Q_OBJECT
+  Q_OBJECT
  public:
+  explicit QProject(QQmlContext* projectContext, QObject* parent = 0);
 
 
  private:
+  QString _registerDescription;
+  RegisterModel _registerModel;
+  EditorComponent _editor;
+  //MemoryComponentPresenter _memory;
 
  signals:
 

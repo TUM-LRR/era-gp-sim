@@ -15,25 +15,25 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_ABSTRACT_REGISTER_ACCESS_NODE_FACTORY_HPP
-#define ERAGPSIM_ARCH_ABSTRACT_REGISTER_ACCESS_NODE_FACTORY_HPP
+#ifndef ERAGPSIM_ARCH_ABSTRACT_REGISTER_NODE_FACTORY_HPP
+#define ERAGPSIM_ARCH_ABSTRACT_REGISTER_NODE_FACTORY_HPP
 
 #include <string>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
+class AbstractSyntaxTreeNode;
 
 /**
- * \brief The AbstractRegisterAccessNodeFactory class
+ * \brief The AbstractRegisterNodeFactory class
  * Abstract factory type for creating SyntaxTreeNodes of type register access
  */
-class AbstractRegisterAccessNodeFactory {
+class AbstractRegisterNodeFactory {
  public:
   using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
 
-  virtual ~AbstractRegisterAccessNodeFactory() = default;
+  virtual ~AbstractRegisterNodeFactory() = default;
 
   /**
-   * \brief createRegisterAccessNode
+   * \brief createRegisterNode
    * Creates and returns an architecture-specific implementation of a
    * SyntaxTreeNode of type register access, linked to the given
    * registerAddress. If the given registerAddress is invalid a nullptr is
@@ -43,8 +43,7 @@ class AbstractRegisterAccessNodeFactory {
    * \return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given registerAddress is invalid
    */
-  virtual Node
-  createRegisterAccessNode(const std::string &registerAddress) const = 0;
+  virtual Node createRegisterNode(const std::string &registerAddress) const = 0;
 };
 
-#endif /* ERAGPSIM_ARCH_ABSTRACT_REGISTER_ACCESS_NODE_FACTORY_HPP */
+#endif /* ERAGPSIM_ARCH_ABSTRACT_REGISTER_NODE_FACTORY_HPP */

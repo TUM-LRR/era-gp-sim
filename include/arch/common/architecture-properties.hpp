@@ -28,6 +28,9 @@ namespace ArchitectureProperties {
 /** Type for the processor word size, in bits. */
 using word_size_t = unsigned short;
 
+/** Type for the architectures byte size, in bits */
+using byte_size_t = unsigned short;
+
 /*
  * The different kinds of endianness an extension may support.
  *
@@ -51,6 +54,25 @@ enum class Endianness { LITTLE, BIG, MIXED, BI };
  * Relaxed means it does.
  */
 enum class AlignmentBehavior { STRICT, RELAXED };
+
+/**
+ * Describes how the architecture represents signed values.
+ *
+ * - TWOS_COMPLEMENT: The most common representation of signed values as an
+ *                    unsigned number's complement, plus one.
+ * - ONES_COMPLEMENT: Represents signed values entirely through their
+ *                    complement. As such, all-zeros and all-ones are both
+ *                    representations of zero (+0 and -0, respectively). Also,
+ *                    there is an issue with "end-around-carries".
+ * - SIGN_BIT: An explicit sign bit to indicate if the given unsigned
+ *             representation of a number is to be interpreted as negative or
+ *             positive. This does not allow for the natural arithmetic
+ *             semantics we are used to from two's (and, to some extent, one's)
+ *             complement.
+ *
+ * https://en.wikipedia.org/wiki/Signed_number_representations
+ */
+enum class SignedRepresentation { TWOS_COMPLEMENT, ONES_COMPLEMENT, SIGN_BIT };
 }
 
 #endif /* ERAGPSIM_ARCH_ARCHITECTURE_PROPERTIES_HPP */
