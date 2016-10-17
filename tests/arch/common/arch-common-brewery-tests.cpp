@@ -31,10 +31,17 @@
 struct ArchDeserializationTestFixture : public ::testing::Test {
   ArchDeserializationTestFixture() {
     // clang-format off
-    instructionSet.addInstructions(InstructionSet({
-      {"add", InstructionKey({{"opcode", 6}, {"function", 3}}), "R"},
-      {"sub", InstructionKey({{"opcode", 9}, {"function", 3}}), "R"}
-    }));
+    auto add = InstructionInformation("add")
+                .key({{"opcode", 6}, {"function", 3}})
+                .format("R")
+                .length(32);
+
+    auto sub = InstructionInformation("sub")
+                .key({{"opcode", 9}, {"function", 3}})
+                .format("R")
+                .length(32);
+
+    instructionSet.addInstructions({add, sub});
     // clang-format on
 
     // clang-format off
@@ -81,7 +88,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
 
   auto expected = architecture.getUnits();
-  for (auto& unit : units) {
+  for (const auto& unit : units) {
     auto iterator = expected.find(unit);
     ASSERT_NE(iterator, expected.end());
     EXPECT_EQ(*iterator, unit);
@@ -102,11 +109,11 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
   EXPECT_EQ(architecture.getByteSize(), 8);
 
   // clang-format off
-  instructionSet.addInstruction({"sll", InstructionKey({
-      {"opcode", 6},
-      {"function", 6},
-      {"width", 6}
-  }), "R"});
+  auto sll = InstructionInformation("sll")
+    .key({{"opcode", 6}, {"function", 6}, {"width", 6}})
+    .format("R")
+    .length(32);
+  instructionSet.addInstruction(sll);
   // clang-format on
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
@@ -133,11 +140,11 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
   EXPECT_EQ(architecture.getByteSize(), 8);
 
   // clang-format off
-  instructionSet.addInstruction({"sll", InstructionKey({
-      {"opcode", 6},
-      {"function", 6},
-      {"width", 6}
-  }), "R"});
+  auto sll = InstructionInformation("sll")
+    .key({{"opcode", 6}, {"function", 6}, {"width", 6}})
+    .format("R")
+    .length(32);
+  instructionSet.addInstruction(sll);
   // clang-format on
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);

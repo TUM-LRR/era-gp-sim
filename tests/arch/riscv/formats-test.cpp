@@ -87,11 +87,23 @@ TEST_F(ImmediateFormatTestFixture, JFormat) {
 
 struct InstructionFormatTestFixture : public ::testing::Test {
   InstructionFormatTestFixture() {
-    instructionSet.addInstructions(InstructionSet(
-        {{"add", InstructionKey({{"opcode", 6}, {"function", 3}}), "R"},
-         {"sub", InstructionKey({{"opcode", 9}, {"function", 3}}), "I"},
-         {"beq", InstructionKey({{"opcode", 7}, {"function", 1}}), "SB"},
-         {"uinst", InstructionKey({{"opcode", 3}, {"function", 5}}), "U"}}));
+    auto add = InstructionInformation("add")
+                   .key({{"opcode", 6}, {"function", 3}})
+                   .format("R")
+                   .length(32);
+    auto sub = InstructionInformation("sub")
+                   .key({{"opcode", 9}, {"function", 3}})
+                   .format("I")
+                   .length(32);
+    auto beq = InstructionInformation("beq")
+                   .key({{"opcode", 7}, {"function", 1}})
+                   .format("SB")
+                   .length(32);
+    auto uinst = InstructionInformation("uinst")
+                     .key({{"opcode", 3}, {"function", 5}})
+                     .format("U")
+                     .length(32);
+    instructionSet.addInstructions({add, sub, beq, uinst});
   }
 
   ~InstructionFormatTestFixture() {
