@@ -32,12 +32,12 @@ struct ArchDeserializationTestFixture : public ::testing::Test {
   ArchDeserializationTestFixture() {
     // clang-format off
     auto add = InstructionInformation("add")
-                .key({{"opcode", 6}, {"function", 3}})
+                .key(InstructionKey{{"opcode", 6}, {"function", 3}})
                 .format("R")
                 .length(32);
 
     auto sub = InstructionInformation("sub")
-                .key({{"opcode", 9}, {"function", 3}})
+                .key(InstructionKey{{"opcode", 9}, {"function", 3}})
                 .format("R")
                 .length(32);
 
@@ -110,7 +110,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
 
   // clang-format off
   auto sll = InstructionInformation("sll")
-    .key({{"opcode", 6}, {"function", 6}, {"width", 6}})
+    .key(InstructionKey{{"opcode", 6}, {"function", 6}, {"width", 6}})
     .format("R")
     .length(32);
   instructionSet.addInstruction(sll);
@@ -141,7 +141,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
 
   // clang-format off
   auto sll = InstructionInformation("sll")
-    .key({{"opcode", 6}, {"function", 6}, {"width", 6}})
+    .key(InstructionKey{{"opcode", 6}, {"function", 6}, {"width", 6}})
     .format("R")
     .length(32);
   instructionSet.addInstruction(sll);
