@@ -4,7 +4,7 @@ reset-units: false
 
 instructions:
   - mnemonic: sll
-    length: 32
+    length: 69
     format: R
     key:
       opcode: 6
