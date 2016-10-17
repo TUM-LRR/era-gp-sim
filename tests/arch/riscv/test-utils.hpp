@@ -24,21 +24,22 @@
 
 using namespace riscv;
 
-struct RiscvBaseTest : public ::testing::Test {
+class RiscvBaseTest : public ::testing::Test {
  public:
   void load(ArchitectureFormula::InitializerList modules =
-                ArchitectureFormula::InitializerList(), std::size_t memorySize = 1) {
+                ArchitectureFormula::InitializerList(),
+            std::size_t memorySize = 64) {
     auto formula = ArchitectureFormula("riscv", modules);
     _project = std::make_unique<ProjectModule>(formula, memorySize, "riscv");
   }
 
   MemoryAccess getMemoryAccess() {
-      return _project->getMemoryAccess();
+    return _project->getMemoryAccess();
   }
 
   const NodeFactoryCollection getFactories() {
-      ArchitectureAccess access = _project->getArchitectureAccess();
-      return access.getArchitecture().get().getNodeFactories();
+    ArchitectureAccess access = _project->getArchitectureAccess();
+    return access.getArchitecture().get().getNodeFactories();
   }
 
   std::unique_ptr<ProjectModule> _project;

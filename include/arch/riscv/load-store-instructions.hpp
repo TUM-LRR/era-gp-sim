@@ -20,11 +20,12 @@
 #ifndef ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_
 #define ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_
 
-#include "arch/riscv/instruction-node.hpp"
-
 #include <QtGlobal>
 #include <cassert>
 #include <string>
+
+#include "arch/common/validation-result.hpp"
+#include "arch/riscv/instruction-node.hpp"
 
 namespace riscv {
 
@@ -34,8 +35,9 @@ namespace riscv {
 template <typename SignedType, typename UnsignedType>
 class LoadStoreInstructionNode : public InstructionNode {
  public:
-  LoadStoreInstructionNode(const InstructionInformation& instructionInformation)
-  : InstructionNode(instructionInformation) {
+  LoadStoreInstructionNode(const InstructionInformation& instructionInformation,
+                           std::size_t byteAmount)
+  : InstructionNode(instructionInformation), _byteAmount(byteAmount) {
   }
 
   /* Ensure this class is pure virtual */
@@ -78,7 +80,8 @@ class LoadStoreInstructionNode : public InstructionNode {
 
   ValidationResult validateRuntime(MemoryAccess& memoryAccess) const override {
     std::size_t effectiveAddress = getEffectiveAddress(memoryAccess);
-    if (false /* TODO memory address out of range check here*/) {
+    if (effectiveAddress + _byteAmount - 1 >
+        memoryAccess.getMemorySize().get()) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "The memory address %1 is out of range"),
@@ -118,6 +121,11 @@ class LoadStoreInstructionNode : public InstructionNode {
         riscv::convert<SignedType>(getOffset(memoryAccess));
     return baseConverted + offsetConverted;
   }
+
+  /**
+   * The amount of bytes, this load/store operation operates on.
+   */
+  std::size_t _byteAmount;
 };
 
 /**
@@ -143,7 +151,7 @@ class LoadInstructionNode
 
   LoadInstructionNode(const InstructionInformation& instructionInformation,
                       Type type)
-  : super(instructionInformation), _type(type) {
+  : super(instructionInformation, getByteAmount(type)), _type(type) {
   }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
@@ -152,34 +160,47 @@ class LoadInstructionNode
     const std::string& dest = super::_children.at(0)->getIdentifier();
     std::size_t effectiveAddress = super::getEffectiveAddress(memoryAccess);
 
-    switch (_type) {
-      case Type::DOUBLE_WORD:
-        performSignedLoad(memoryAccess, effectiveAddress, 8, dest);
-        break;
-      case Type::WORD:
-        performSignedLoad(memoryAccess, effectiveAddress, 4, dest);
-        break;
-      case Type::WORD_UNSIGNED:
-        performUnsignedLoad(memoryAccess, effectiveAddress, 4, dest);
-        break;
-      case Type::HALF_WORD:
-        performSignedLoad(memoryAccess, effectiveAddress, 2, dest);
-        break;
-      case Type::HALF_WORD_UNSIGNED:
-        performUnsignedLoad(memoryAccess, effectiveAddress, 2, dest);
-        break;
-      case Type::BYTE:
-        performSignedLoad(memoryAccess, effectiveAddress, 1, dest);
-        break;
-      case Type::BYTE_UNSIGNED:
-        performUnsignedLoad(memoryAccess, effectiveAddress, 1, dest);
-        break;
-      default: assert(false); break;
+    if (isSigned(_type)) {
+      performSignedLoad(
+          memoryAccess, effectiveAddress, super::_byteAmount, dest);
+    } else {
+      performUnsignedLoad(
+          memoryAccess, effectiveAddress, super::_byteAmount, dest);
     }
     return MemoryValue{};
   }
 
  private:
+  /**
+   * This function returns the amount of bytes, a load instruction
+   * loads from memory, depending on its type.
+   */
+  static std::size_t getByteAmount(Type type) {
+    switch (type) {
+      case Type::DOUBLE_WORD: return 8;
+      case Type::WORD:
+      case Type::WORD_UNSIGNED: return 4;
+      case Type::HALF_WORD:
+      case Type::HALF_WORD_UNSIGNED: return 2;
+      case Type::BYTE:
+      case Type::BYTE_UNSIGNED: return 1;
+      default: assert::that(false); return 0;
+    }
+  }
+
+  /**
+   * Returns true, if the load type is a signed load.
+   */
+  static bool isSigned(Type type) {
+    switch (type) {
+      case Type::DOUBLE_WORD:
+      case Type::WORD:
+      case Type::HALF_WORD:
+      case Type::BYTE: return true;
+      default: return false;
+    }
+  }
+
   MemoryValue getBase(MemoryAccess& memoryAccess) const override {
     return super::_children.at(1)->getValue(memoryAccess);
   }
@@ -208,13 +229,14 @@ class LoadInstructionNode
     // bits loaded from memory is not equal to the amount of bits, a register
     // can hold.
     if (result.getSize() != sizeof(UnsignedType) * riscv::BITS_PER_BYTE) {
-      // Do the zero-expansion by converting to an int and converting back
-      // to a memory value.
-      // TODO This can be made faster, by copying the bits into a new memory
-      // value of proper size. This can't be done yet, because the interface
-      // of the memory value is not quite clear in that sense.
-      UnsignedType converted = riscv::convert<UnsignedType>(result);
-      result = convert<UnsignedType>(converted);
+      // Do sign expansion by creating a new memory value of proper size
+      // and setting the lower bits to the bits of the old memory value.
+      MemoryValue tmp =
+          MemoryValue{sizeof(UnsignedType) * riscv::BITS_PER_BYTE};
+      for (std::size_t i = 0; i < result.getSize(); ++i) {
+        tmp.put(i, result.get(i));
+      }
+      result = tmp;
     }
     memoryAccess.putRegisterValue(destination, result);
   }
@@ -238,10 +260,19 @@ class LoadInstructionNode
     // bits loaded from memory is not equal to the amount of bits, a register
     // can hold.
     if (result.getSize() != sizeof(SignedType) * riscv::BITS_PER_BYTE) {
-      // Do a sign-expansion by converting the memory value to an integer
-      // and back to a memory value.
-      SignedType converted = riscv::convert<SignedType>(result);
-      result = riscv::convert<SignedType>(converted);
+      // Do sign expansion by creating a new memory value, copying the old
+      // memory value in the lower region, and setting the upper region to the
+      // sign bit of the old memory value.
+      bool isSignBitSet = result.get(result.getSize() - 1);
+      MemoryValue tmp = MemoryValue{sizeof(SignedType) * riscv::BITS_PER_BYTE};
+      for (std::size_t i = 0; i < tmp.getSize(); ++i) {
+        if (i < result.getSize()) {
+          tmp.put(i, result.get(i));
+        } else {
+          tmp.put(i, isSignBitSet);
+        }
+      }
+      result = tmp;
     }
     memoryAccess.putRegisterValue(destination, result);
   }
@@ -270,7 +301,7 @@ class StoreInstructionNode
 
   StoreInstructionNode(const InstructionInformation& instructionInformation,
                        Type type)
-  : super(instructionInformation), _type(type) {
+  : super(instructionInformation, getByteAmount(type)), _type(type) {
   }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
@@ -279,26 +310,30 @@ class StoreInstructionNode
     const std::string& src = super::_children.at(1)->getIdentifier();
     std::size_t effectiveAddress = super::getEffectiveAddress(memoryAccess);
 
-    std::size_t byteAmount;
-    switch (_type) {
-      case Type::DOUBLE_WORD: byteAmount = 8; break;
-      case Type::WORD: byteAmount = 4; break;
-      case Type::HALF_WORD: byteAmount = 2; break;
-      case Type::BYTE: byteAmount = 1; break;
-      default: assert(false); break;
-    }
-
     MemoryValue registerValue = memoryAccess.getRegisterValue(src).get();
-    MemoryValue resultValue{byteAmount * riscv::BITS_PER_BYTE};
-    for (size_t i = 0; i < byteAmount * riscv::BITS_PER_BYTE; ++i) {
-      resultValue.put(resultValue.getSize() - 1 - i,
-                      registerValue.get(registerValue.getSize() - 1 - i));
+    MemoryValue resultValue{super::_byteAmount * riscv::BITS_PER_BYTE};
+    for (size_t i = 0; i < super::_byteAmount * riscv::BITS_PER_BYTE; ++i) {
+      resultValue.put(i, registerValue.get(i));
     }
     memoryAccess.putMemoryValueAt(effectiveAddress, resultValue);
     return MemoryValue{};
   }
 
  private:
+  /**
+    * This function returns the amount of bytes, a store instruction
+    * stores into memory, depending on its type.
+    */
+  static std::size_t getByteAmount(Type type) {
+    switch (type) {
+      case Type::DOUBLE_WORD: return 8;
+      case Type::WORD: return 4;
+      case Type::HALF_WORD: return 2;
+      case Type::BYTE: return 1;
+      default: assert::that(false); return 0;
+    }
+  }
+
   MemoryValue getBase(MemoryAccess& memoryAccess) const override {
     return super::_children.at(0)->getValue(memoryAccess);
   }

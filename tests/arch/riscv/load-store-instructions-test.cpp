@@ -21,8 +21,14 @@
 
 #include "gtest/gtest.h"
 
+#include "arch/common/architecture-formula.hpp"
+#include "arch/common/architecture.hpp"
+#include "arch/common/immediate-node.hpp"
+#include "arch/common/register-node.hpp"
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
+
+#include "test-utils.hpp"
 
 /*
  * BIG TODO:
@@ -42,212 +48,131 @@
 
 using namespace riscv;
 
-namespace {
-InstructionNodeFactory
-setUpFactory(ArchitectureFormula::InitializerList modules =
-                 ArchitectureFormula::InitializerList()) {
-  auto formula = ArchitectureFormula("riscv", modules);
-  auto riscv = Architecture::Brew(formula);
-  return InstructionNodeFactory(riscv.getInstructions(), riscv);
-}
+class LoadStoreInstructionsTest : public RiscvBaseTest {
+ public:
+  LoadStoreInstructionsTest() : dest("x1"), base("x2"), src("x3") {
+  }
+  std::string dest, base, src;
+};
 
 /**
- * Performs a unsigned load.
- * \tparam T The unsigned integral of the value to be loaded (e.g. uint16_t for
- *         lwu)
- * \tparam W The word size of the architecture (e.g. uint32_t/uint64_t)
- * \param testValue The integer value to test
- * \param modules The modules that should be passed to the architecture forumla
- * \param instructionName The instruction to test (e.g. "lw")
- * \param byteAmount The amount of bytes that are loaded by the instruction
+ * A makro testing the Load instruction.
+ * \param contextNbr A number to identify each test
+ * \param convertFunction A function that converts numbers into memory values.
+ *        It is supposed to convert into the architectures word size.
+ * \param instructionName The name of the instruction to test
+ * \param testValue The value to be loaded from memory
+ * \param expectedResult The expected value of the register, after load has
+ *        been performed
+ * \param byteAmount Amount of bytes, loaded from memory.
  */
-template <typename T, typename W>
-typename std::enable_if<
-    std::is_integral<T>::value && std::is_unsigned<T>::value &&
-        std::is_integral<W>::value && std::is_unsigned<W>::value,
-    void>::type
-performLoadTestUnsigned(T testValue,
-                        ArchitectureFormula::InitializerList modules,
-                        std::string instructionName,
-                        size_t byteAmount) {
-  Register dest, base;
-  std::string destId{"dest"}, baseId{"base"};
-  MemoryValue loadValue;
-  loadValue = riscv::convert<T>(testValue);
-
-  MemoryAccess memoryAccess;
-  // Add registers
-  memoryAccess.addRegister(destId, dest);
-  memoryAccess.addRegister(baseId, base);
-  // Fill registers & memory
-  memoryAccess.setRegisterValue(baseId, riscv::convert<W>(0));
-  memoryAccess.setMemoryValueAt(0, loadValue);
-
-  auto instrFactory = setUpFactory(modules);
-  auto immediateFactory = ImmediateNodeFactory{};
-  auto instr = instrFactory.createInstructionNode(instructionName);
-
-  // Fill the instructions operands
-  ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<RegisterNode>(destId));
-  ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<RegisterNode>(baseId));
-  ASSERT_FALSE(instr->validate());
-  instr->addChild(immediateFactory.createImmediateNode(riscv::convert<W>(0)));
-  ASSERT_TRUE(instr->validate());
-
-  // Execute the instruction
-  instr->getValue(memoryAccess);
-
-  // Check result
-  ASSERT_EQ(memoryAccess.getRegisterValue(destId).get(), loadValue);
-}
+#define TEST_LOAD(contextNbr,                                            \
+                  convertFunction,                                       \
+                  instructionName,                                       \
+                  testValue,                                             \
+                  expectedResult,                                        \
+                  byteAmount)                                            \
+  MemoryValue loadValue_##contextNbr = convertFunction(testValue);       \
+  memoryAccess.putRegisterValue(base, convertFunction(0));               \
+  memoryAccess.setMemoryValueAt(                                         \
+      0, loadValue_##contextNbr.subSet(0, byteAmount* BITS_PER_BYTE));   \
+  auto instr_##contextNbr =                                              \
+      getFactories().createInstructionNode(instructionName);             \
+  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
+  instr_##contextNbr->addChild(getFactories().createRegisterNode(dest)); \
+  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
+  instr_##contextNbr->addChild(getFactories().createRegisterNode(base)); \
+  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
+  instr_##contextNbr->addChild(                                          \
+      getFactories().createImmediateNode(convertFunction(0)));           \
+  ASSERT_TRUE(instr_##contextNbr->validate(memoryAccess));               \
+  instr_##contextNbr->getValue(memoryAccess);                            \
+  ASSERT_EQ(memoryAccess.getRegisterValue(dest).get(),                   \
+            convertFunction(expectedResult));
 
 /**
- * Performs a signed load. See performLoadTestUnsigned for parameter
- * documentation.
- * \tparam T The signed integral of the value to be loaded.
+ * A makro testing the Store instruction.
+ * \param contextNbr A number to identify each test
+ * \param convertFunction A function that converts numbers into memory values.
+ *        It is supposed to convert into the architectures word size.
+ * \param instructionName The name of the instruction to test
+ * \param testValue The value to be stored into memory
+ * \param byteAmount The amount of bytes, stored into memory
  */
-template <typename T, typename W>
-typename std::enable_if<
-    std::is_integral<T>::value && std::is_signed<T>::value &&
-        std::is_integral<W>::value && std::is_unsigned<W>::value,
-    void>::type
-performLoadTestSigned(T testValue,
-                      ArchitectureFormula::InitializerList modules,
-                      std::string instructionName,
-                      size_t byteAmount) {
-  Register dest, base;
-  std::string destId{"dest"}, baseId{"base"};
-  MemoryValue loadValue = riscv::convert<T>(testValue);
-
-  MemoryAccess memoryAccess;
-  // Add registers
-  memoryAccess.addRegister(destId, dest);
-  memoryAccess.addRegister(baseId, base);
-  // Fill registers & memory
-  memoryAccess.setRegisterValue(baseId, riscv::convert<W>(0));
-  memoryAccess.setMemoryValueAt(0, loadValue);
-
-  // Create factory & instruction
-  auto instrFactory = setUpFactory(modules);
-  auto immediateFactory = ImmediateNodeFactory{};
-  auto instr = instrFactory.createInstructionNode(instructionName);
-
-  // Fill the instructions operands
-  ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<RegisterNode>(destId));
-  ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<RegisterNode>(baseId));
-  ASSERT_FALSE(instr->validate());
-  instr->addChild(immediateFactory.createImmediateNode(riscv::convert<W>(0)));
-  ASSERT_TRUE(instr->validate());
-
-  // Execute the instruction
-  instr->getValue(memoryAccess);
-
-  // Check result
-  ASSERT_EQ(memoryAccess.getRegisterValue(destId).get(), loadValue);
-}
-
-/**
- * Performs a store.
- * \tparam T The unsigned integral of the value to be stored.
- * \param testValue The integer value to be stored into memory.
- * \param modules The modules to be passed to the architecture formula.
- * \param instructionName The name of the store instruction to be tested.
- * \param byteAmount The amount of bytes, that are stored into memory by
- *        the specified instruction.
- */
-template <typename T>
-typename std::enable_if<std::is_integral<T>::value &&
-                            std::is_unsigned<T>::value,
-                        void>::type
-performStoreTest(T testValue,
-                 ArchitectureFormula::InitializerList modules,
-                 std::string instructionName,
-                 size_t byteAmount) {
-  Register base, src;
-  std::string baseId{"base"}, srcId{"src"};
-  MemoryValue storeValue = riscv::convert<T>(testValue);
-
-  MemoryAccess memoryAccess;
-  // Add registers
-  memoryAccess.addRegister(baseId, base);
-  memoryAccess.addRegister(srcId, src);
-  // Fill registers
-  memoryAccess.setRegisterValue(baseId, riscv::convert<T>(0));
-  memoryAccess.setRegisterValue(srcId, storeValue);
-
-  auto instrFactory = setUpFactory(modules);
-  auto immediateFactory = ImmediateNodeFactory{};
-  auto instr = instrFactory.createInstructionNode(instructionName);
-
-  // Fill the instructions operands
-  ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<RegisterNode>(baseId));
-  ASSERT_FALSE(instr->validate());
-  instr->addChild(std::make_unique<RegisterNode>(srcId));
-  ASSERT_FALSE(instr->validate());
-  instr->addChild(immediateFactory.createImmediateNode(riscv::convert<T>(0)));
-  ASSERT_TRUE(instr->validate());
-
-  // Execute the instruction
-  instr->getValue(memoryAccess);
-
-  // Check result
-  ASSERT_EQ(memoryAccess.getMemoryValueAt(0, byteAmount).get(), storeValue);
-}
-}
+#define TEST_STORE(                                                      \
+    contextNbr, convertFunction, instructionName, testValue, byteAmount) \
+  MemoryValue storeValue_##contextNbr = convertFunction(testValue);      \
+  memoryAccess.putRegisterValue(base, convertFunction(0));               \
+  memoryAccess.setRegisterValue(src, storeValue_##contextNbr);           \
+  auto instr_##contextNbr =                                              \
+      getFactories().createInstructionNode(instructionName);             \
+  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
+  instr_##contextNbr->addChild(getFactories().createRegisterNode(base)); \
+  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
+  instr_##contextNbr->addChild(getFactories().createRegisterNode(src));  \
+  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
+  instr_##contextNbr->addChild(                                          \
+      getFactories().createImmediateNode(convertFunction(0)));           \
+  ASSERT_TRUE(instr_##contextNbr->validate(memoryAccess));               \
+  instr_##contextNbr->getValue(memoryAccess);                            \
+  ASSERT_EQ(memoryAccess.getMemoryValueAt(0, byteAmount).get(),          \
+            storeValue_##contextNbr.subSet(0, byteAmount* BITS_PER_BYTE));
 
 // Load Tests
 
-TEST(LoadStoreInstructionsTest, LoadDoubleWord) {
-  performLoadTestUnsigned<uint64_t, uint64_t>(
-      0x0123456789ABCDEF, {"rv32i", "rv64i"}, "ld", 8);
+TEST_F(LoadStoreInstructionsTest, Load_RV32I) {
+  load({"rv32i"});
+  auto memoryAccess = getMemoryAccess();
+
+  TEST_LOAD(0, riscv::convert<uint32_t>, "lw", 0xDEADBEEF, 0xDEADBEEF, 4);
+
+  TEST_LOAD(1, riscv::convert<uint32_t>, "lh", 0xF00D, 0xFFFFF00D, 2);
+  TEST_LOAD(2, riscv::convert<uint32_t>, "lh", 0x1, 0x1, 2);
+  TEST_LOAD(3, riscv::convert<uint32_t>, "lhu", 0xF00D, 0xF00D, 2);
+
+  TEST_LOAD(4, riscv::convert<uint32_t>, "lb", 0x80, 0xFFFFFF80, 1);
+  TEST_LOAD(5, riscv::convert<uint32_t>, "lb", 0x01, 0x01, 1);
+  TEST_LOAD(6, riscv::convert<uint32_t>, "lbu", 0x80, 0x80, 1);
 }
 
-TEST(LoadStoreInstructionsTest, LoadWord) {
-  performLoadTestUnsigned<uint32_t, uint32_t>(0xDEADBEEF, {"rv32i"}, "lw", 4);
-  performLoadTestUnsigned<uint32_t, uint64_t>(
-      0xDEADBEEF, {"rv32i", "rv64i"}, "lwu", 4);
-  performLoadTestSigned<int32_t, uint64_t>(
-      -123456789, {"rv32i", "rv64i"}, "lw", 4);
-}
+TEST_F(LoadStoreInstructionsTest, Load_RV64_I) {
+  load({"rv32i", "rv64i"});
+  auto memoryAccess = getMemoryAccess();
 
-TEST(LoadStoreInstructionsTest, LoadHalfWord) {
-  performLoadTestUnsigned<uint16_t, uint32_t>(0xF00D, {"rv32i"}, "lhu", 2);
-  performLoadTestUnsigned<uint16_t, uint64_t>(
-      0xF00D, {"rv32i", "rv64i"}, "lhu", 2);
-  performLoadTestSigned<int16_t, uint32_t>(-22353, {"rv32i"}, "lh", 2);
-  performLoadTestSigned<int16_t, uint64_t>(-22353, {"rv32i", "rv64i"}, "lh", 2);
-}
+  // clang-format off
+  TEST_LOAD(0, riscv::convert<uint64_t>, "ld", 0x0123456789ABCDEF, 0x0123456789ABCDEF, 8);
 
-TEST(LoadStoreInstructionsTest, LoadByte) {
-  performLoadTestUnsigned<uint8_t, uint32_t>(0x99, {"rv32i"}, "lbu", 1);
-  performLoadTestUnsigned<uint8_t, uint64_t>(
-      0x99, {"rv32i", "rv64i"}, "lbu", 1);
-  performLoadTestSigned<int8_t, uint32_t>(-42, {"rv32i"}, "lb", 1);
-  performLoadTestSigned<int8_t, uint64_t>(-42, {"rv32i", "rv64i"}, "lb", 1);
+  TEST_LOAD(1, riscv::convert<uint64_t>, "lw", 0x80000000, 0xFFFFFFFF80000000, 4);
+  TEST_LOAD(2, riscv::convert<uint64_t>, "lw", 0x70000000, 0x70000000, 4);
+  TEST_LOAD(3, riscv::convert<uint64_t>, "lwu", 0x80000000, 0x80000000, 4);
+  // clang-format on
+
+  TEST_LOAD(4, riscv::convert<uint64_t>, "lh", 0xF00D, 0xFFFFFFFFFFFFF00D, 2);
+  TEST_LOAD(5, riscv::convert<uint64_t>, "lh", 0x1, 0x1, 2);
+  TEST_LOAD(6, riscv::convert<uint64_t>, "lhu", 0xF00D, 0xF00D, 2);
+
+  TEST_LOAD(7, riscv::convert<uint64_t>, "lb", 0x80, 0xFFFFFFFFFFFFFF80, 1);
+  TEST_LOAD(8, riscv::convert<uint64_t>, "lb", 0x01, 0x01, 1);
+  TEST_LOAD(9, riscv::convert<uint64_t>, "lbu", 0x80, 0x80, 1);
 }
 
 // Store Tests
 
-TEST(LoadStoreInstructionsTest, StoreDoubleWord) {
-  performStoreTest<uint64_t>(0xC0CAC01AADD511FE, {"rv32i", "rv64i"}, "sd", 8);
+TEST_F(LoadStoreInstructionsTest, Store_RV32I) {
+  load({"rv32i"});
+  auto memoryAccess = getMemoryAccess();
+
+  TEST_STORE(0, riscv::convert<uint32_t>, "sw", 0xBADC0DED, 4);
+  TEST_STORE(1, riscv::convert<uint32_t>, "sh", 0xBABE, 2);
+  TEST_STORE(2, riscv::convert<uint32_t>, "sb", 0x42, 1);
 }
 
-TEST(LoadStoreInstructionsTest, StoreWord) {
-  performStoreTest<uint32_t>(0xBADC0DED, {"rv32i"}, "sw", 4);
-  performStoreTest<uint32_t>(0xBADC0DED, {"rv32i", "rv64i"}, "sw", 4);
-}
+TEST_F(LoadStoreInstructionsTest, Store_RV64I) {
+  load({"rv32i", "rv64i"});
+  auto memoryAccess = getMemoryAccess();
 
-TEST(LoadStoreInstructionsTest, StoreHalfWord) {
-  performStoreTest<uint16_t>(0xBABE, {"rv32i"}, "sh", 2);
-  performStoreTest<uint16_t>(0xBABE, {"rv32i", "rv64i"}, "sh", 2);
-}
-
-TEST(LoadStoreInstructionsTest, StoreByte) {
-  performStoreTest<uint8_t>(0x42, {"rv32i"}, "sb", 1);
-  performStoreTest<uint8_t>(0x42, {"rv32i", "rv64i"}, "sb", 1);
+  TEST_STORE(0, riscv::convert<uint64_t>, "sd", 0xC0CAC01AADD511FE, 8);
+  TEST_STORE(1, riscv::convert<uint64_t>, "sw", 0xBADC0DED, 4);
+  TEST_STORE(2, riscv::convert<uint64_t>, "sh", 0xBABE, 2);
+  TEST_STORE(3, riscv::convert<uint64_t>, "sb", 0x42, 1);
 }
