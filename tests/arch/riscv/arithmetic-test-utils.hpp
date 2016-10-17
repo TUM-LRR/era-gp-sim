@@ -37,7 +37,7 @@ void testIntegerInstructionValidation(MemoryAccess& memAccess,
 
 void test12BitImmediateBounds(const NodeFactoryCollection& instrF,
                               std::string instructionToken,
-                              ImmediateNodeFactory& immF);
+                              ImmediateNodeFactory& immF, MemoryAccess& access);
 
 /**
   * This macro performs a register-register test for the given instruction,
