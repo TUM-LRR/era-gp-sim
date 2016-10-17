@@ -43,7 +43,7 @@ TEST(IntermediateInstruction, enhance) {
 }
 
 // For now, disable.
-/*TEST(IntermediateInstruction, transformFinal) {
+TEST(IntermediateInstruction, transformFinal) {
   IntermediateInstruction ii(SAMPLE_COMMAND);
   MemoryAllocator allocator({ MemorySectionDefinition("text") });
   SymbolTable st;
