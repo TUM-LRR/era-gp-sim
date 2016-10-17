@@ -27,7 +27,8 @@ MemoryComponentPresenter::MemoryComponentPresenter(const MemoryAccess access, co
     // TODO register callback functions
     //memory->setCallback(&MemoryComponentPresenter::onMemoryChanged);
 
-    corememory = memory;
+   memory_access = access;
+   memory_manager = manager;
 
     // TODO create new View
     //context->setContextProperty("MemoryComponent", this);
