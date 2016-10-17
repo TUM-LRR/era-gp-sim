@@ -26,9 +26,7 @@
 #include <string>
 #include "arch/common/register-information.hpp"
 #include "common/optional.hpp"
-#include "common/optional.hpp"
-#include "common/string-conversions.hpp"
-#include "core/memory-value.hpp"
+
 
 /**
  * Aggregates the data of multiple registers. Subclasses QAbstractItemModel to

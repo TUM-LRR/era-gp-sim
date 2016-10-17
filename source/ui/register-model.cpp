@@ -18,6 +18,9 @@
 
 #include "ui/register-model.hpp"
 
+#include "common/string-conversions.hpp"
+#include "core/memory-value.hpp"
+
 RegisterModel::RegisterModel(QQmlContext *projectContext, QObject *parent)
 : QAbstractItemModel(parent), _rootItem(new RegisterInformation()) {
   projectContext->setContextProperty("registerModel", this);
