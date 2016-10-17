@@ -29,7 +29,6 @@ InstructionInformation::InstructionInformation(
 
 InstructionInformation::InstructionInformation(const std::string& mnemonic)
 : _mnemonic(mnemonic) {
-  assert::that(!mnemonic.empty());
 }
 
 bool InstructionInformation::

@@ -193,7 +193,7 @@ class InstructionInformation : public InformationInterface {
   InstructionKey _key;
 
   /** The length of the instruction, in bits. */
-  Optional<length_t> length;
+  Optional<length_t> _length;
 };
 
 #endif /* ERAGPSIM_ARCH_INSTRUCTION_INFORMATION_HPP */
