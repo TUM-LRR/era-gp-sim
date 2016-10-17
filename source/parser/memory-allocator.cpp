@@ -58,7 +58,7 @@ MemorySectionDefinition::MemorySectionDefinition(const std::string& name, std::s
 
         std::size_t MemoryAllocator::MemorySection::allocateRelative(std::size_t size)
         {
-            auto aligned = Utility::discreteCeiling(_currentPosition, _definition.dataAlignment) * _definition.dataAlignment;
+            auto aligned = Utility::discreteCeiling(_currentSize, _definition.dataAlignment) * _definition.dataAlignment;
             _currentSize = aligned + size;
             return aligned;
         }
@@ -116,13 +116,13 @@ MemorySectionDefinition::MemorySectionDefinition(const std::string& name, std::s
         return position;
     }
 
-    MemorySection& MemoryAllocator::operator[](std::string name) 
+    MemoryAllocator::MemorySection& MemoryAllocator::operator[](std::string name) 
     {
         assert::that(_nameToSection.find(name) != _nameToSection.end());
         return _sections[_nameToSection[name]]; 
     }
 
-    MemorySection& MemoryAllocator::operator[](std::size_t index)
+    MemoryAllocator::MemorySection& MemoryAllocator::operator[](std::size_t index)
     {
         assert::that(index >= 0);
         assert::that(index < _sections.size());

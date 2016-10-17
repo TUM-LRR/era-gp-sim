@@ -46,7 +46,7 @@ TEST(MemoryAllocator, allocateUnaligned)
     allocator.calculatePositions();
     ASSERT_EQ(allocator["text"].currentPosition(), 0);
     ASSERT_EQ(allocator["text"].currentSize(), 161);
-    ASSERT_EQ(allocator["data"].currentPosition(), 172);
+    ASSERT_EQ(allocator["data"].currentPosition(), 192);
     ASSERT_EQ(allocator["data"].currentSize(), 23);
 }
 
