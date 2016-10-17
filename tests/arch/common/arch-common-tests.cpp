@@ -51,7 +51,10 @@ struct ArchCommonTestFixture : ::testing::Test {
     unitInformation.name("cpu").addRegister(registerInformation);
 
     instructionKey.addEntry("opcode", 6).addEntry("function", 9);
-    instructionInformation.mnemonic("add").key(instructionKey).format("R");
+    instructionInformation.mnemonic("add")
+        .key(instructionKey)
+        .format("R")
+        .length(32);
 
     // clang-format off
     auto mov = InstructionInformation("mov")
@@ -233,7 +236,7 @@ TEST(ArchCommonTest, TestInstructionInformation) {
   EXPECT_EQ(instruction.getKey(), key);
   EXPECT_EQ(instruction.getMnemonic(), "add");
   EXPECT_EQ(instruction.getFormat(), "R");
-  EXPECT_EQ(instruction.getLenght(), 69);
+  EXPECT_EQ(instruction.getLength(), 69);
 }
 
 TEST_F(ArchCommonTestFixture, TestInstructionSet) {
