@@ -32,7 +32,7 @@ class MemoryComponentPresenter : public QAbstractTableModel{
     Q_OBJECT
 
     public:
-       explicit MemoryComponentPresenter(const MemoryAccess access, /*const MemoryManager manager,*/ QQmlContext *projectContext, QObject *parent = 0);
+       explicit MemoryComponentPresenter(MemoryAccess& access, /*const MemoryManager manager,*/ QQmlContext *projectContext, QObject *parent = 0);
        ~MemoryComponentPresenter();
        void setSize(int newSize);
        void setValue(int address, /*TODO MemoryValue*/ int newValue);

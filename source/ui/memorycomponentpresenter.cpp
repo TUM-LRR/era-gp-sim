@@ -21,8 +21,10 @@
 #include <iostream>
 #include <QDebug>
 #include "core/memory-value.hpp"
+#include "common/string-conversions.hpp"
+#include "core/memory-value.hpp"
 
-MemoryComponentPresenter::MemoryComponentPresenter(const MemoryAccess access, /*const MemoryManager manager,*/ QQmlContext *projectContext, QObject *parent)
+MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess& access, /*const MemoryManager manager,*/ QQmlContext *projectContext, QObject *parent)
 : QAbstractTableModel(parent){
     projectContext->setContextProperty("memoryModel", this);
 
@@ -37,8 +39,8 @@ MemoryComponentPresenter::MemoryComponentPresenter(const MemoryAccess access, /*
 
 MemoryComponentPresenter::~MemoryComponentPresenter() { }
 
-void onMemoryChanged(const std::size_t address, const std::size_t length) {
-    // emit signal, damit die data() methode im qt-thread läuft
+void MemoryComponentPresenter::onMemoryChanged(const std::size_t address, const std::size_t length) {
+    emit QAbstractTableModel::dataChanged(this->index(address, 0), this->index(address + length, 2)); //TODO fix hardcoded
 }
 
 void MemoryComponentPresenter::setSize(int newSize) {
@@ -46,11 +48,11 @@ void MemoryComponentPresenter::setSize(int newSize) {
 }
 
 void MemoryComponentPresenter::setValue(int address, /*TODO MemoryValue*/ int newValue) {
-    this->dataChanged(this->index(address, 0), this->index(address, 2));
+    //this->dataChanged(this->index(address, 0), this->index(address, 2));
 }
 
 void MemoryComponentPresenter::setContextInformation(int addressStart, int length, int identifier) {
-    this->dataChanged(this->index(addressStart, 0), this->index(addressStart + length, 2));
+    //this->dataChanged(this->index(addressStart, 0), this->index(addressStart + length, 2));
     // TODO
 }
 
@@ -80,9 +82,9 @@ QVariant MemoryComponentPresenter::data(const QModelIndex &index, int role) cons
         }
         case ValueRole: {
             // TODO fetch value from core
-
-
-            return  QString();
+            MemoryValue memory_cell = memory_access.getMemoryValueAt(index.row(), 8);
+            std::string stringvalue = StringConversions::toHexString(memory_cell);
+            return  QString().fromStdString(stringvalue);
         }
         case InfoRole: {
             // TODO fetch value from core

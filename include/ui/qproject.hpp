@@ -46,6 +46,7 @@ class QProject : public QObject {
 
  private:
   QString _registerDescription;
+  MemoryAccess _memoryAccess;
   RegisterModel _registerModel;
   EditorComponent _editor;
   MemoryComponentPresenter _memory;
