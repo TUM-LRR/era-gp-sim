@@ -58,7 +58,7 @@ struct ArchCommonTestFixture : ::testing::Test {
 
     // clang-format off
     auto mov = InstructionInformation("mov")
-      .key(InstructionKey{{"opcode", 2}})
+      .key(InstructionKey({{"opcode", 2}}))
       .format("R")
       .length(32);
 
@@ -75,12 +75,12 @@ struct ArchCommonTestFixture : ::testing::Test {
 
     // clang-format off
     auto lr = InstructionInformation("lr")
-                .key(InstructionKey{{"opcode", 1}, {"function", 2}})
+                .key(InstructionKey({{"opcode", 1}, {"function", 2}}))
                 .format("R")
                 .length(32);
 
     auto sc = InstructionInformation("sc")
-                .key(InstructionKey{{"opcode", 3}, {"function", 4}})
+                .key(InstructionKey({{"opcode", 3}, {"function", 4}}))
                 .format("R")
                 .length(32);
 
@@ -220,7 +220,7 @@ TEST(ArchCommonTest, TestArchitectureFormula) {
 TEST(ArchCommonTest, TestInstructionInformation) {
   auto instruction = InstructionInformation("add").format("R").length(69);
 
-  InstructionKey key(InstructionKey{{"opcode", 6}, {"function", 9}});
+  InstructionKey key(InstructionKey({{"opcode", 6}, {"function", 9}}));
 
   EXPECT_FALSE(instruction.isValid());
   EXPECT_FALSE(instruction.hasKey());
