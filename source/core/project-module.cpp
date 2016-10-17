@@ -41,23 +41,23 @@ ProjectModule::ProjectModule(const ArchitectureFormula& architectureFormula,
 }
 
 
-const MemoryAccess& ProjectModule::getMemoryAccess() const {
+MemoryAccess& ProjectModule::getMemoryAccess() {
   return _memoryAccess;
 }
 
-const MemoryManager& ProjectModule::getMemoryManager() const {
+MemoryManager& ProjectModule::getMemoryManager() {
   return _memoryManager;
 }
 
-const ArchitectureAccess& ProjectModule::getArchitectureAccess() const {
+ArchitectureAccess& ProjectModule::getArchitectureAccess() {
   return _architectureAccess;
 }
 
-const CommandInterface& ProjectModule::getCommandInterface() const {
+CommandInterface& ProjectModule::getCommandInterface() {
   return _commandInterface;
 }
 
-const ParserInterface& ProjectModule::getParserInterface() const {
+ParserInterface& ProjectModule::getParserInterface() {
   return _parserInterface;
 }
 
