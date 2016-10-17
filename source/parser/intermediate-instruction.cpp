@@ -72,9 +72,8 @@ FinalCommand IntermediateInstruction::compileInstruction(
   return result;
 }
 
-void IntermediateInstruction::enhanceSymbolTable(SymbolTable& table,
-                                               const MemoryAllocator& allocator,
-                                               CompileState& state) {
+void IntermediateInstruction::enhanceSymbolTable(
+    SymbolTable& table, const MemoryAllocator& allocator, CompileState& state) {
   _address = allocator.absolutePosition(_relativeAddress);
 
   // We insert all our labels.
@@ -83,9 +82,10 @@ void IntermediateInstruction::enhanceSymbolTable(SymbolTable& table,
   }
 }
 
-void IntermediateInstruction::allocateMemory(const Architecture& architecture, MemoryAllocator& allocator, CompileState& state) {
-  if (state.section != "text")
-  {
+void IntermediateInstruction::allocateMemory(const Architecture& architecture,
+                                             MemoryAllocator& allocator,
+                                             CompileState& state) {
+  if (state.section != "text") {
     state.addError("Tried to define an instruction in the text section.");
     return;
   }
@@ -93,7 +93,7 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture, M
   // For now.
   std::size_t instructionLength = architecture.getWordSize();
 
-  
+
   std::size_t offset = allocator["text"].allocateRelative(instructionLength);
   _relativeAddress = RelativeMemoryPosition("text", offset);
 }

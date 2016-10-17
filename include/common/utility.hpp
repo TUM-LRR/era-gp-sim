@@ -424,17 +424,14 @@ void pushBackFromEnd(std::vector<bool>& dest,
                      size_t n);
 
 
-
-template<typename T>
-constexpr T discreteCeiling(T value, T divider)
-{
+template <typename T>
+constexpr T discreteCeiling(T value, T divider) {
   return (value + divider - 1) / divider;
 }
 
 // Only for completeness.
-template<typename T>
-constexpr T discreteFloor(T value, T divider)
-{
+template <typename T>
+constexpr T discreteFloor(T value, T divider) {
   return value / divider;
 }
 }

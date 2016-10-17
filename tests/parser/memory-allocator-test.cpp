@@ -19,48 +19,46 @@
 #include "parser/memory-allocator.hpp"
 #include "gtest/gtest.h"
 
-TEST(MemoryAllocator, init)
-{
-    MemoryAllocator allocator({ MemorySectionDefinition("text", 4, 2), MemorySectionDefinition("data", 16) });
+TEST(MemoryAllocator, init) {
+  MemoryAllocator allocator({MemorySectionDefinition("text", 4, 2),
+                             MemorySectionDefinition("data", 16)});
 }
 
-TEST(MemoryAllocator, allocateAligned)
-{
-    MemoryAllocator allocator({ MemorySectionDefinition("text", 8), MemorySectionDefinition("data", 16) });
-    ASSERT_EQ(allocator["text"].allocateRelative(32), 0);
-    ASSERT_EQ(allocator["text"].allocateRelative(32), 32);
-    ASSERT_EQ(allocator["data"].allocateRelative(64), 0);
-    allocator.calculatePositions();
-    ASSERT_EQ(allocator["text"].currentPosition(), 0);
-    ASSERT_EQ(allocator["text"].currentSize(), 64);
-    ASSERT_EQ(allocator["data"].currentPosition(), 64);
-    ASSERT_EQ(allocator["data"].currentSize(), 64);
+TEST(MemoryAllocator, allocateAligned) {
+  MemoryAllocator allocator({MemorySectionDefinition("text", 8),
+                             MemorySectionDefinition("data", 16)});
+  ASSERT_EQ(allocator["text"].allocateRelative(32), 0);
+  ASSERT_EQ(allocator["text"].allocateRelative(32), 32);
+  ASSERT_EQ(allocator["data"].allocateRelative(64), 0);
+  allocator.calculatePositions();
+  ASSERT_EQ(allocator["text"].currentPosition(), 0);
+  ASSERT_EQ(allocator["text"].currentSize(), 64);
+  ASSERT_EQ(allocator["data"].currentPosition(), 64);
+  ASSERT_EQ(allocator["data"].currentSize(), 64);
 }
 
-TEST(MemoryAllocator, allocateUnaligned)
-{
-    MemoryAllocator allocator({ MemorySectionDefinition("text", 32), MemorySectionDefinition("data", 32) });
-    ASSERT_EQ(allocator["text"].allocateRelative(13), 0);
-    ASSERT_EQ(allocator["text"].allocateRelative(129), 32);
-    ASSERT_EQ(allocator["data"].allocateRelative(23), 0);
-    allocator.calculatePositions();
-    ASSERT_EQ(allocator["text"].currentPosition(), 0);
-    ASSERT_EQ(allocator["text"].currentSize(), 161);
-    ASSERT_EQ(allocator["data"].currentPosition(), 192);
-    ASSERT_EQ(allocator["data"].currentSize(), 23);
+TEST(MemoryAllocator, allocateUnaligned) {
+  MemoryAllocator allocator({MemorySectionDefinition("text", 32),
+                             MemorySectionDefinition("data", 32)});
+  ASSERT_EQ(allocator["text"].allocateRelative(13), 0);
+  ASSERT_EQ(allocator["text"].allocateRelative(129), 32);
+  ASSERT_EQ(allocator["data"].allocateRelative(23), 0);
+  allocator.calculatePositions();
+  ASSERT_EQ(allocator["text"].currentPosition(), 0);
+  ASSERT_EQ(allocator["text"].currentSize(), 161);
+  ASSERT_EQ(allocator["data"].currentPosition(), 192);
+  ASSERT_EQ(allocator["data"].currentSize(), 23);
 }
 
-TEST(MemoryAllocator, allocateUnalignedSection)
-{
-    MemoryAllocator allocator({ MemorySectionDefinition("text", 256, 32), MemorySectionDefinition("data", 256, 32) });
-    ASSERT_EQ(allocator["text"].allocateRelative(13), 0);
-    ASSERT_EQ(allocator["text"].allocateRelative(129), 32);
-    ASSERT_EQ(allocator["data"].allocateRelative(23), 0);
-    allocator.calculatePositions();
-    ASSERT_EQ(allocator["text"].currentPosition(), 0);
-    ASSERT_EQ(allocator["text"].currentSize(), 161);
-    ASSERT_EQ(allocator["data"].currentPosition(), 256);
-    ASSERT_EQ(allocator["data"].currentSize(), 23);
+TEST(MemoryAllocator, allocateUnalignedSection) {
+  MemoryAllocator allocator({MemorySectionDefinition("text", 256, 32),
+                             MemorySectionDefinition("data", 256, 32)});
+  ASSERT_EQ(allocator["text"].allocateRelative(13), 0);
+  ASSERT_EQ(allocator["text"].allocateRelative(129), 32);
+  ASSERT_EQ(allocator["data"].allocateRelative(23), 0);
+  allocator.calculatePositions();
+  ASSERT_EQ(allocator["text"].currentPosition(), 0);
+  ASSERT_EQ(allocator["text"].currentSize(), 161);
+  ASSERT_EQ(allocator["data"].currentPosition(), 256);
+  ASSERT_EQ(allocator["data"].currentSize(), 23);
 }
-
-

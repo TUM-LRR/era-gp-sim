@@ -24,9 +24,9 @@
 #include "common/assert.hpp"
 #include "parser/final-representation.hpp"
 #include "parser/line-interval.hpp"
+#include "parser/memory-allocator.hpp"
 #include "parser/symbol-table.hpp"
 #include "parser/syntax-tree-generator.hpp"
-#include "parser/memory-allocator.hpp"
 
 struct CompileState;
 
@@ -84,14 +84,20 @@ class IntermediateOperation {
                        CompileState& state,
                        MemoryAccess& memoryAccess) = 0;
 
-  virtual void allocateMemory(const Architecture& architecture, MemoryAllocator& allocator, CompileState& state){}
+  virtual void allocateMemory(const Architecture& architecture,
+                              MemoryAllocator& allocator,
+                              CompileState& state) {
+  }
 
   /**
    * \brief Enhances the symbol table by the labels of the operation.
    * \param table The SymbolTable to insert into.
    * \param state The CompileState to log possible errors.
    */
-  virtual void enhanceSymbolTable(SymbolTable& table, const MemoryAllocator& allocator, CompileState& state){}
+  virtual void enhanceSymbolTable(SymbolTable& table,
+                                  const MemoryAllocator& allocator,
+                                  CompileState& state) {
+  }
 
   /**
    * \brief Specifies if the this operation should be processed.
@@ -117,6 +123,7 @@ class IntermediateOperation {
     // If this happens, something has gone wrong in our programming.
     assert::that(false);
   }
+
  protected:
   /**
    * \brief The internal line interval.

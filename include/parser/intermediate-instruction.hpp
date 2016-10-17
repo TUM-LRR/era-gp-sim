@@ -69,8 +69,12 @@ class IntermediateInstruction : public IntermediateOperation {
                        CompileState& state,
                        MemoryAccess& memoryAccess);
 
-                       virtual void enhanceSymbolTable(SymbolTable& table, const MemoryAllocator& allocator, CompileState& state);
-                       virtual void allocateMemory(const Architecture& architecture, MemoryAllocator& allocator, CompileState& state);
+  virtual void enhanceSymbolTable(SymbolTable& table,
+                                  const MemoryAllocator& allocator,
+                                  CompileState& state);
+  virtual void allocateMemory(const Architecture& architecture,
+                              MemoryAllocator& allocator,
+                              CompileState& state);
 
 
   /**

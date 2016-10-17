@@ -60,8 +60,8 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
   return std::move(outputNode);
 };
 
-RiscvParser::RiscvParser(const Architecture &architecture,
-                         const MemoryAccess &memoryAccess)
+RiscvParser::RiscvParser(const Architecture& architecture,
+                         const MemoryAccess& memoryAccess)
 : _architecture(architecture), _memoryAccess(memoryAccess) {
   _factory_collection = NodeFactoryCollectionMaker::CreateFor(architecture);
 }
@@ -117,10 +117,15 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
     }
   }
 
-  MemoryAllocator allocator({ MemorySectionDefinition("text", 1), MemorySectionDefinition("data", _architecture.getWordSize()) });
-  return intermediate.transform(_architecture,
+  MemoryAllocator allocator(
+      {MemorySectionDefinition("text", 1),
+       MemorySectionDefinition("data", _architecture.getWordSize())});
+  return intermediate.transform(
+      _architecture,
       SyntaxTreeGenerator{_factory_collection, argumentGeneratorFunction},
-      allocator, _compile_state, _memoryAccess);
+      allocator,
+      _compile_state,
+      _memoryAccess);
 }
 
 const SyntaxInformation RiscvParser::getSyntaxInformation() {

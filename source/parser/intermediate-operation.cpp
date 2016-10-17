@@ -17,5 +17,3 @@
  */
 
 #include "parser/intermediate-operation.hpp"
-
-

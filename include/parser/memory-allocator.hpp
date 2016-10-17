@@ -23,68 +23,72 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include "common/utility.hpp"
 #include "common/assert.hpp"
+#include "common/utility.hpp"
 
 struct RelativeMemoryPosition {
-    std::string section;
-    std::size_t offset;
+  std::string section;
+  std::size_t offset;
 
-    RelativeMemoryPosition(const std::string& section, std::size_t offset);
+  RelativeMemoryPosition(const std::string& section, std::size_t offset);
 
-    RelativeMemoryPosition();
+  RelativeMemoryPosition();
 };
 
 struct MemorySectionDefinition {
-    std::string name;
-    std::size_t sectionAlignment;
-    std::size_t dataAlignment;
+  std::string name;
+  std::size_t sectionAlignment;
+  std::size_t dataAlignment;
 
-    MemorySectionDefinition(const std::string& name, std::size_t sectionAlignment, std::size_t dataAlignment);
+  MemorySectionDefinition(const std::string& name,
+                          std::size_t sectionAlignment,
+                          std::size_t dataAlignment);
 
-    MemorySectionDefinition(const std::string& name, std::size_t alignment);
+  MemorySectionDefinition(const std::string& name, std::size_t alignment);
 
-    MemorySectionDefinition(const std::string& name);
+  MemorySectionDefinition(const std::string& name);
 };
 
 class MemoryAllocator {
-public:
-    class MemorySection {
-    public:
-        friend MemoryAllocator;
+ public:
+  class MemorySection {
+   public:
+    friend MemoryAllocator;
 
-        MemorySection(const MemorySectionDefinition& definition);
-
-        void clear();
-
-        std::size_t allocateRelative(std::size_t size);
-
-        std::size_t currentSize() const;
-
-        std::size_t currentPosition() const;
-
-        std::size_t absoluteAddress(std::size_t relative) const;
-
-    private:
-        MemorySectionDefinition _definition;
-        std::size_t _currentSize;
-        std::size_t _currentPosition;
-    };
-
-    MemoryAllocator(const std::vector<MemorySectionDefinition>& sectionDefinitions);
+    MemorySection(const MemorySectionDefinition& definition);
 
     void clear();
 
-    std::size_t calculatePositions();
+    std::size_t allocateRelative(std::size_t size);
 
-    MemorySection& operator[](std::string name);
+    std::size_t currentSize() const;
 
-    MemorySection& operator[](std::size_t index);
+    std::size_t currentPosition() const;
 
-    std::size_t absolutePosition(const RelativeMemoryPosition& relative) const;
-private:
-    std::vector<MemorySection> _sections;
-    std::unordered_map<std::string, std::size_t> _nameToSection;
+    std::size_t absoluteAddress(std::size_t relative) const;
+
+   private:
+    MemorySectionDefinition _definition;
+    std::size_t _currentSize;
+    std::size_t _currentPosition;
+  };
+
+  MemoryAllocator(
+      const std::vector<MemorySectionDefinition>& sectionDefinitions);
+
+  void clear();
+
+  std::size_t calculatePositions();
+
+  MemorySection& operator[](std::string name);
+
+  MemorySection& operator[](std::size_t index);
+
+  std::size_t absolutePosition(const RelativeMemoryPosition& relative) const;
+
+ private:
+  std::vector<MemorySection> _sections;
+  std::unordered_map<std::string, std::size_t> _nameToSection;
 };
 
 #endif /* ERAGPSIM_PARSER_MEMORY_ALLOCATOR_HPP */

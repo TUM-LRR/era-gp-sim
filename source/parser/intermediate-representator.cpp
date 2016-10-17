@@ -18,8 +18,8 @@
 
 #include "parser/intermediate-representator.hpp"
 
-#include "parser/symbol-table.hpp"
 #include "arch/common/architecture.hpp"
+#include "parser/symbol-table.hpp"
 
 FinalRepresentation
 IntermediateRepresentator::transform(const Architecture& architecture,
