@@ -18,6 +18,7 @@
 
 #include "parser/syntax-tree-generator.hpp"
 
+#include <cctype>
 #include <regex>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
@@ -28,24 +29,14 @@
 std::unique_ptr<AbstractSyntaxTreeNode>
 SyntaxTreeGenerator::transformOperand(const std::string& operand,
                                       CompileState& state) const {
-  // For now. A very simple generator. We just check: do we have a base-10
-  // number? Yes? If not, we must have a register... If it does not exist? Well,
-  // we failed.
-  // For the future, we got to: support several number types (simple), maybe
-  // parse full-grown arithmetic expressions (done, not so easy..., lots of
-  // work).
-  std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
-  if (std::regex_search(operand, std::regex("^[0-9]+$"))) {
-    outputNode = _nodeFactories.createImmediateNode(
-        MemoryValue{});// std::stoi(operand) Temporary.
-  } else {
-    outputNode = _nodeFactories.createRegisterNode(operand);
-  }
+  // We invoke our node generator to get a node!
+  std::unique_ptr<AbstractSyntaxTreeNode> outputNode =
+      _argumentGenerator(operand, _nodeFactories, state);
 
-  // according to the architecture group, we get a nullptr if the creation
+  // According to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
-    state.addError("Invalid argument: " + operand, state.position);
+    state.addError("Invalid argument: '" + operand + "'", state.position);
   }
 
   return std::move(outputNode);
@@ -77,11 +68,12 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
     outputNode->addChild(std::move(i));
   }
 
-  // Validate node
-  const ValidationResult result = outputNode->validate(memoryAccess);
-  if (!result) {
-    state.errorList.push_back(CompileError(
-        result.getMessage(), state.position, CompileErrorSeverity::ERROR));
+  // Validate node.
+  auto validationResult = outputNode->validate(memoryAccess);
+  if (!validationResult) {
+    state.addError("Invalid operation (" + command_name + "): " +
+                       validationResult.getMessage(),
+                   state.position);
   }
 
   // Return.
