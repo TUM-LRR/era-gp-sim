@@ -41,11 +41,6 @@ static SyntaxTreeGenerator buildGenerator() {
   return generator;
 }
 
-static ProjectModule buildProjectModule() {
-  ProjectModule module(ArchitectureFormula{"riscv", {"rv32i"}}, 4096, "riscv");
-  return module;
-}
-
 template <typename SubType, typename BaseType>
 bool isInstance(const std::unique_ptr<BaseType>& ptr) {
   return static_cast<SubType*>(ptr.get()) != nullptr;
@@ -89,10 +84,12 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> targets;
   targets.push_back(std::move(arg2));
 
-  auto projectModule = buildProjectModule();
+  ProjectModule projectModule(
+      ArchitectureFormula{"riscv", {"rv32i"}}, 4096, "riscv");
+  auto memoryAccess = projectModule.getMemoryAccess();
 
-  auto output = generator.transformCommand(
-      "add", sources, targets, state, projectModule.getMemoryAccess());
+  auto output =
+      generator.transformCommand("add", sources, targets, state, memoryAccess);
 
   ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<riscv::InstructionNode>(output)));
