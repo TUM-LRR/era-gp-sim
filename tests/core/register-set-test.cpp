@@ -129,3 +129,47 @@ TEST(register_set, alias_rw_transitive) {
     }
   }
 }
+
+TEST(register_set, update_test) {
+  const std::string parentA="I_AM_YOUR_FATHER";
+  const std::string childA="I_AM_THE_CHOSEN_ONE";
+  const std::string childB="I_AM_TRUTH_AND_ETERNITY";
+  const std::string childC="I_AM_JUSTICE_FOR_THEM_ALL";
+  const std::string lambdaTest="I_AM_THE_IRRELEVANT";
+  RegisterSet instance{};
+  std::set<std::string> updateSet{};
+  auto lambda=[&](const std::string& regName) mutable {updateSet.insert(regName);};
+  lambda(lambdaTest);
+  ASSERT_NE(updateSet.find(lambdaTest),updateSet.end());
+  instance.setCallback(lambda);
+  instance.createRegister(parentA,64);
+  ASSERT_NE(updateSet.find(parentA),updateSet.end());
+  instance.aliasRegister(childA, parentA);
+  instance.aliasRegister(childB, parentA);
+  instance.aliasRegister(childC, parentA, 0, true);//silent
+  //alias does not callback
+  ASSERT_EQ(updateSet.find(childA),updateSet.end());
+  updateSet.clear();
+  ASSERT_EQ(updateSet.find(parentA),updateSet.end());
+  instance.put(parentA,MemoryValue(64));
+  ASSERT_NE(updateSet.find(parentA),updateSet.end());
+  ASSERT_NE(updateSet.find(childA),updateSet.end());
+  ASSERT_NE(updateSet.find(childB),updateSet.end());
+  ASSERT_EQ(updateSet.find(childC),updateSet.end());
+  updateSet.clear();
+  instance.put(childA,MemoryValue(64));
+  ASSERT_NE(updateSet.find(parentA),updateSet.end());
+  ASSERT_NE(updateSet.find(childA),updateSet.end());
+  ASSERT_NE(updateSet.find(childB),updateSet.end());
+  ASSERT_EQ(updateSet.find(childC),updateSet.end());
+  instance.put(childB,MemoryValue(64));
+  ASSERT_NE(updateSet.find(parentA),updateSet.end());
+  ASSERT_NE(updateSet.find(childA),updateSet.end());
+  ASSERT_NE(updateSet.find(childB),updateSet.end());
+  ASSERT_EQ(updateSet.find(childC),updateSet.end());
+  instance.put(childC,MemoryValue(64));
+  ASSERT_NE(updateSet.find(parentA),updateSet.end());
+  ASSERT_NE(updateSet.find(childA),updateSet.end());
+  ASSERT_NE(updateSet.find(childB),updateSet.end());
+  ASSERT_EQ(updateSet.find(childC),updateSet.end());
+}
