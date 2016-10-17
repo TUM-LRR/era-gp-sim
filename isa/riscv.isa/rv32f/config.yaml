@@ -4,98 +4,116 @@ name: rv32f
 
 instructions:
   - mnemonic: flw
+    length: 32
     format: I
     key:
       opcode: 7
       funct3: 2
   - mnemonic: fsw
+    length: 32
     format: S
     key:
       opcode: 39
       funct3: 2
   - mnemonic: fmadds
+    length: 32
     format: S
     key:
       opcode: 67
       funct2: 0
   - mnemonic: fmsubs
+    length: 32
     format: S
     key:
       opcode: 71
       funct2: 0
   - mnemonic: fnmsubs
+    length: 32
     format: S
     key:
       opcode: 75
       funct2: 0
   - mnemonic: fnmadds
+    length: 32
     format: S
     key:
       opcode: 79
       funct7: 0
   - mnemonic: fadds
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 0
   - mnemonic: fsubs
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 4
   - mnemonic: fmuls
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 8
   - mnemonic: fdivs
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 12
   - mnemonic: fsqrts
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 44
       rs2: 0
   - mnemonic: fsgnjs
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 0
       funct7: 16
   - mnemonic: fsgnjns
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 1
       funct7: 16
   - mnemonic: fsgnjxs
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 2
       funct7: 16
   - mnemonic: fmins
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 0
       funct7: 20
   - mnemonic: fcvtws
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 96
       rs2: 0
   - mnemonic: fcvtwus
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 96
       rs2: 1
   - mnemonic: fmvxs
+    length: 32
     format: R
     key:
       opcode: 83
@@ -103,24 +121,28 @@ instructions:
       funct7: 112
       rs2: 0
   - mnemonic: feqs
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 2
       funct7: 80
   - mnemonic: flts
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 1
       funct7: 80
   - mnemonic: fles
+    length: 32
     format: R
     key:
       opcode: 83
       funct3: 0
       funct7: 80
   - mnemonic: fclasss
+    length: 32
     format: R
     key:
       opcode: 83
@@ -128,18 +150,21 @@ instructions:
       funct7: 112
       rs2: 0
   - mnemonic: fcvtsw
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 104
       rs2: 0
   - mnemonic: fcvtswu
+    length: 32
     format: R
     key:
       opcode: 83
       funct7: 104
       rs2: 1
   - mnemonic: fmvsx
+    length: 32
     format: R
     key:
       opcode: 83
@@ -147,6 +172,7 @@ instructions:
       funct7: 120
       rs2: 0
   - mnemonic: frcsr
+    length: 32
     format: I
     key:
       opcode: 115
@@ -154,6 +180,7 @@ instructions:
       funct7: 3
       rs1: 0
   - mnemonic: frrm
+    length: 32
     format: I
     key:
       opcode: 115
@@ -161,6 +188,7 @@ instructions:
       funct7: 2
       rs1: 0
   - mnemonic: frflags
+    length: 32
     format: I
     key:
       opcode: 115
@@ -168,24 +196,28 @@ instructions:
       funct7: 1
       rs1: 0
   - mnemonic: fscsr
+    length: 32
     format: I
     key:
       opcode: 115
       funct3: 1
       funct7: 3
   - mnemonic: fsrm
+    length: 32
     format: I
     key:
       opcode: 115
       funct3: 1
       funct7: 2
   - mnemonic: fsflags
+    length: 32
     format: I
     key:
       opcode: 115
       funct3: 1
       funct7: 1
   - mnemonic: fsrmi
+    length: 32
     format: I
     key:
       opcode: 115
@@ -193,6 +225,7 @@ instructions:
       funct7: 2
       rs1: 0
   - mnemonic: fsflagsi
+    length: 32
     format: I
     key:
       opcode: 115
