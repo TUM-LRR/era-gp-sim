@@ -74,15 +74,20 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
 
-  auto arg2 = generator.transformOperand("r2", state);
+  auto arg2 = generator.transformOperand("r1", state);
+  ASSERT_EQ(state.errorList.size(), 0);
+  ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
+
+  auto arg3 = generator.transformOperand("r2", state);
   ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<RegisterNode>(arg2)));
 
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> sources;
   sources.push_back(std::move(arg1));
+  sources.push_back(std::move(arg2));
 
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> targets;
-  targets.push_back(std::move(arg2));
+  targets.push_back(std::move(arg3));
 
   ProjectModule projectModule(
       ArchitectureFormula{"riscv", {"rv32i"}}, 4096, "riscv");
