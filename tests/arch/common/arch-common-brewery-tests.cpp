@@ -41,7 +41,7 @@ struct ArchDeserializationTestFixture : public ::testing::Test {
                 .format("R")
                 .length(32);
 
-    instructionSet.addInstructions({add, sub});
+    instructionSet.addInstructions(InstructionSet({add, sub}));
     // clang-format on
 
     // clang-format off

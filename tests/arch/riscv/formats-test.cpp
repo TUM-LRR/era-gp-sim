@@ -103,7 +103,7 @@ struct InstructionFormatTestFixture : public ::testing::Test {
                      .key(InstructionKey({{"opcode", 3}, {"function", 5}}))
                      .format("U")
                      .length(32);
-    instructionSet.addInstructions({add, sub, beq, uinst});
+    instructionSet.addInstructions(InstructionSet({add, sub, beq, uinst}));
   }
 
   ~InstructionFormatTestFixture() {
