@@ -25,22 +25,22 @@
 namespace riscv {
 
 // Immediate transformation functions
-void immToI(MemoryValue& vec);
+void immediateToIFormat(MemoryValue& vec);
 
-void immToS(MemoryValue& vec);
+void immediateToSFormat(MemoryValue& vec);
 
-void immToB(MemoryValue& vec);
+void immediateToBFormat(MemoryValue& vec);
 
-void immToU(MemoryValue& vec);
+void immediateToUFormat(MemoryValue& vec);
 
-void immToJ(MemoryValue& vec);
+void immediateToJFormat(MemoryValue& vec);
 
 /*
  * funct7 | rs2 | rs1 | funct3 | rd | opcode
  */
 struct RFormat : public Format {
   virtual std::vector<bool>
-  operator()(const InstructionKey& key, const std::vector<MemoryValue> args);
+  operator()(const InstructionKey& key, const std::vector<MemoryValue>& args);
 };
 
 /*
@@ -48,7 +48,7 @@ struct RFormat : public Format {
  */
 struct IFormat : public Format {
   virtual std::vector<bool>
-  operator()(const InstructionKey& key, const std::vector<MemoryValue> args);
+  operator()(const InstructionKey& key, const std::vector<MemoryValue>& args);
 };
 
 /*
@@ -56,7 +56,7 @@ struct IFormat : public Format {
  */
 struct SFormat : public Format {
   virtual std::vector<bool>
-  operator()(const InstructionKey& key, const std::vector<MemoryValue> args);
+  operator()(const InstructionKey& key, const std::vector<MemoryValue>& args);
 };
 
 /*
@@ -64,7 +64,7 @@ struct SFormat : public Format {
  */
 struct UFormat : public Format {
   virtual std::vector<bool>
-  operator()(const InstructionKey& key, const std::vector<MemoryValue> args);
+  operator()(const InstructionKey& key, const std::vector<MemoryValue>& args);
 };
 
 /*
@@ -72,7 +72,7 @@ struct UFormat : public Format {
  */
 struct SBFormat : public Format {
   virtual std::vector<bool>
-  operator()(const InstructionKey& key, const std::vector<MemoryValue> args);
+  operator()(const InstructionKey& key, const std::vector<MemoryValue>& args);
 };
 
 /*
@@ -80,7 +80,7 @@ struct SBFormat : public Format {
  */
 struct UJFormat : public Format {
   virtual std::vector<bool>
-  operator()(const InstructionKey& key, const std::vector<MemoryValue> args);
+  operator()(const InstructionKey& key, const std::vector<MemoryValue>& args);
 };
 }
 

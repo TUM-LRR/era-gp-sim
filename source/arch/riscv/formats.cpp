@@ -25,223 +25,231 @@
 
 namespace riscv {
 
-const std::size_t REGISTER_SIZE = 8;
+const std::size_t REGISTER_SIZE = 4;
 
-// methods to transform immediates into their specified formats
-// I should possibly reverse the memory values before the following operations
-void immToI(MemoryValue& vec) {
-  for (int i = 21; i < 32; i++) vec.put(i, vec.get(i - 20));
-  for (int i = 0; i < 21; i++)  vec.put(i, vec.get(0));
+// push the last n bits from the src vector to the dest vector
+void pushBackFromEnd(std::vector<bool>& dest,
+                     const std::vector<bool>& src,
+                     size_t n) {
+  int i = src.size() - n - 1;
+  while (++i < 0) dest.push_back(false);
+  for (; i < src.size(); i++) dest.push_back(src.at(i));
 }
 
-void immToS(MemoryValue& vec) {
-  vec.put(31, vec.get(24));
-  for (int i = 27; i <= 30; i++) vec.put(i, vec.get(i - 7));
-  for (int i = 21; i <= 26; i++) vec.put(i, vec.get(i - 20));
-  for (int i = 0; i <= 20; i++) vec.put(i, vec.get(0));
+// each format has it's own immediate format
+void immediateToIFormat(MemoryValue& vec) {
+  for (int i = 10; i >= 0; i--) vec.put(i, vec.get(20 + i));
+  for (std::size_t i = 31; i > 10; i--) vec.put(i, vec.get(31));
 }
 
-void immToB(MemoryValue& vec) {
-  immToS(vec);
-  vec.put(20, vec.get(31));
-  vec.put(31, false);
+void immediateToSFormat(MemoryValue& vec) {
+  vec.put(0, vec.get(7));
+  for (std::size_t i = 4; i >= 1; i--) vec.put(i, vec.get(7 + i));
+  for (std::size_t i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
+  for (std::size_t i = 31; i > 10; i--) vec.put(i, vec.get(31));
 }
 
-void immToU(MemoryValue& vec) {
-  for (int i = 19; i <= 31; i++) vec.put(i, false);
+void immediateToBFormat(MemoryValue& vec) {
+  immediateToSFormat(vec);
+  vec.put(11, vec.get(0));
+  vec.put(0, false);
 }
 
-void immToJ(MemoryValue& vec) {
+void immediateToUFormat(MemoryValue& vec) {
+  for (int i = 12; i >= 0; i--) vec.put(i, false);
+}
+
+void immediateToJFormat(MemoryValue& vec) {
   // clang-format off
-  for (int i = 27; i <= 30; i++) vec.put(i, vec.get(i - 20));
-  vec.put(31, false);
-  for (int i = 21; i <= 26; i++) vec.put(i, vec.get(i - 20));
-  vec.put(20, vec.get(11));
-  for (int i = 0; i <= 11; i++) vec.put(i, vec.get(0));
+      for (std::size_t i = 4; i >= 1; i--) vec.put(i, vec.get(20 + i));
+      vec.put(0, false);
+      for (std::size_t i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
+      vec.put(11, vec.get(20));
+      for (std::size_t i = 31; i >= 20; i--) vec.put(i, vec.get(31));
   // clang-format on
 }
 
 std::vector<bool> RFormat::
-operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
+operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   std::vector<bool> res;
 
   // funct7 - 6 bits long
   std::vector<bool> tmp;
-  //  Utility::convertToBin(tmp, key["funct7"]);
-  Utility::convertToBin(tmp, key["function"] >> 3);
+
+  tmp = Utility::convertToBinary(key["function"] >> 3);
   // push the last 7 bits
-  Utility::pushBackFromEnd(res, tmp, 7);
+  pushBackFromEnd(res, tmp, 7);
 
   auto argument = args.at(2);
 
   // rs2
-  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // rs1
   argument = args.at(1);
-  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   tmp.clear();
-  // Utility::convertToBin(tmp, key["funct3"]);
-  Utility::convertToBin(tmp, key["function"]);
-  Utility::pushBackFromEnd(res, tmp, 3);
+
+  tmp = Utility::convertToBinary(key["function"]);
+  pushBackFromEnd(res, tmp, 3);
 
   // destination
   argument = args.at(0);
-  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
 
   tmp.clear();
-  Utility::convertToBin(tmp, key["opcode"]);
-  Utility::pushBackFromEnd(res, tmp, 7);
+  tmp = Utility::convertToBinary(key["opcode"]);
+  pushBackFromEnd(res, tmp, 7);
 
   return res;
 }
 
 
 std::vector<bool> IFormat::
-operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
+operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   std::vector<bool> res;
   std::vector<bool> tmp;
 
   auto imm = args.at(2);
 
-  immToI(imm);
+  immediateToIFormat(imm);
 
   // immediate - 12 bits long
-  for (int i = 20; i <= 31; i++) res.push_back(imm.get(i));
+  for (int i = 11; i >= 0; i--) res.push_back(imm.get(i));
   // rs1
   auto argument = args.at(1);
-  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
   tmp.clear();
-  // Utility::convertToBin(tmp, key["funct3"]);
-  Utility::convertToBin(tmp, key["function"]);
-  Utility::pushBackFromEnd(res, tmp, 3);
+
+  tmp = Utility::convertToBinary(key["function"]);
+  pushBackFromEnd(res, tmp, 3);
 
   // destination
   argument = args.at(0);
-  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
 
   tmp.clear();
-  Utility::convertToBin(tmp, key["opcode"]);
-  Utility::pushBackFromEnd(res, tmp, 7);
+  tmp = Utility::convertToBinary(key["opcode"]);
+  pushBackFromEnd(res, tmp, 7);
 
   return res;
 }
 
 std::vector<bool> SFormat::
-operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
+operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   std::vector<bool> res;
   std::vector<bool> tmp;
 
   auto imm = args.at(2);
 
-  immToS(imm);
+  immediateToSFormat(imm);
 
   // immediate[11:5]
-  for (int i = 20; i < 27; i++) res.push_back(imm.get(i));
+  for (std::size_t i = 11; i > 4; i--) res.push_back(imm.get(i));
   // rs2
   auto argument = args.at(1);
-  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // rs1
   argument = args.at(0);
-  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
-  // Utility::convertToBin(tmp, key["funct3"]);
-  Utility::convertToBin(tmp, key["function"]);
-  Utility::pushBackFromEnd(res, tmp, 3);
+
+  tmp = Utility::convertToBinary(key["function"]);
+  pushBackFromEnd(res, tmp, 3);
 
   // imm[4:0]
   for (int i = 4; i >= 0; i--) res.push_back(imm.get(i));
 
   tmp.clear();
-  Utility::convertToBin(tmp, key["opcode"]);
-  Utility::pushBackFromEnd(res, tmp, 7);
+  tmp = Utility::convertToBinary(key["opcode"]);
+  pushBackFromEnd(res, tmp, 7);
 
   return res;
 }
 
 std::vector<bool> SBFormat::
-operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
+operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   std::vector<bool> res;
   std::vector<bool> tmp;
 
   auto imm = args.at(2);
 
-  immToB(imm);
+  immediateToBFormat(imm);
 
   // imm[12]
-  res.push_back(imm.get(19));
+  res.push_back(imm.get(12));
   // immediate[10:5]
-  for (int i = 21; i < 27; i++) res.push_back(imm.get(i));
+  for (std::size_t i = 10; i > 4; i--) res.push_back(imm.get(i));
   // rs2
   auto argument = args.at(1);
-  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // rs1
   argument = args.at(0);
-  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
-  // Utility::convertToBin(tmp, key["funct3"]);
-  Utility::convertToBin(tmp, key["function"]);
-  Utility::pushBackFromEnd(res, tmp, 3);
+
+  tmp = Utility::convertToBinary(key["function"]);
+  pushBackFromEnd(res, tmp, 3);
 
   // imm[4:1]
-  for (int i = 4; i >= 1; i--) res.push_back(imm.get(i));
+  for (std::size_t i = 4; i >= 1; i--) res.push_back(imm.get(i));
   // imm[11]
   res.push_back(imm.get(11));
 
   tmp.clear();
-  Utility::convertToBin(tmp, key["opcode"]);
-  Utility::pushBackFromEnd(res, tmp, 7);
+  tmp = Utility::convertToBinary(key["opcode"]);
+  pushBackFromEnd(res, tmp, 7);
 
   return res;
 }
 
 std::vector<bool> UFormat::
-operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
+operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   std::vector<bool> res;
   std::vector<bool> tmp;
 
   auto imm = args.at(1);
 
-  immToU(imm);
+  immediateToUFormat(imm);
 
   // immediate[31:12]
-  for (int i = 0; i <= 19; i++) res.push_back(imm.get(i));
+  for (std::size_t i = 31; i >= 12; i--) res.push_back(imm.get(i));
 
   // rd
   auto argument = args.at(0);
-  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
 
-  Utility::convertToBin(tmp, key["opcode"]);
-  Utility::pushBackFromEnd(res, tmp, 7);
+  tmp = Utility::convertToBinary(key["opcode"]);
+  pushBackFromEnd(res, tmp, 7);
 
   return res;
 }
 
 std::vector<bool> UJFormat::
-operator()(const InstructionKey& key, const std::vector<MemoryValue> args) {
+operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   std::vector<bool> res;
   std::vector<bool> tmp;
 
   auto imm = args.at(1);
 
-  immToJ(imm);
+  immediateToJFormat(imm);
 
   // immediate[20]
-  res.push_back(imm.get(11));
+  res.push_back(imm.get(21));
   // imm[10:1]
-  for (int i = 21; i <= 30; i++) res.push_back(imm.get(i));
+  for (std::size_t i = 10; i >= 1; i--) res.push_back(imm.get(i));
   // imm[11]
-  res.push_back(imm.get(20));
+  res.push_back(imm.get(11));
   // imm[19:12]
-  for (int i = 12; i <= 19; i++) res.push_back(imm.get(i));
+  for (std::size_t i = 19; i >= 12; i--) res.push_back(imm.get(i));
 
   // rd
   auto argument = args.at(0);
-  for (int i = 3; i < REGISTER_SIZE; i++) res.push_back(argument.get(i));
+  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
 
-  Utility::convertToBin(tmp, key["opcode"]);
-  Utility::pushBackFromEnd(res, tmp, 7);
+  tmp = Utility::convertToBinary(key["opcode"]);
+  pushBackFromEnd(res, tmp, 7);
 
   return res;
 }

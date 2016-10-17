@@ -42,7 +42,7 @@ struct ImmediateFormatTestFixture : public ::testing::Test {
   ImmediateFormatTestFixture() {
     for (int i = 0; i < 6; i++) {
       auto vect = std::vector<uint8_t>(std::begin(v[i]), std::end(v[i]));
-      valueP[i] = new MemoryValue(vect, 8);
+      valueP[i] = new MemoryValue(vect, 32);
     }
   }
 
@@ -51,34 +51,37 @@ struct ImmediateFormatTestFixture : public ::testing::Test {
     delete[] valueP;
   }
 
-  uint8_t v[6][4] = {{0x78, 0xEF, 0xCD, 0xAB}, {0x00, 0x00, 0x07, 0x8E},
-                     {0x00, 0x00, 0x07, 0x9B}, {0x00, 0x00, 0x0F, 0x9A},
-                     {0X78, 0xEF, 0xC0, 0x00}, {0x00, 0x0F, 0xC7, 0x8E}};
+  uint8_t v[6][4] = {{0x78, 0xEF, 0xCD, 0x0B},
+                     {0xBC, 0x00, 0x00, 0x00},
+                     {0xBE, 0x00, 0x00, 0x00},
+                     {0xBE, 0x00, 0x00, 0x00},
+                     {0X00, 0xE0, 0xCD, 0x0B},
+                     {0xBC, 0xE0, 0x0D, 0x00}};
   MemoryValue **valueP = new MemoryValue *[6];
 };
 
 TEST_F(ImmediateFormatTestFixture, IFormat) {
-  immToI(*valueP[0]);
+  immediateToIFormat(*valueP[0]);
   ASSERT_EQ(*valueP[1], *valueP[0]);
 }
 
 TEST_F(ImmediateFormatTestFixture, SFormat) {
-  immToS(*valueP[0]);
+  immediateToSFormat(*valueP[0]);
   ASSERT_EQ(*valueP[2], *valueP[0]);
 }
 
 TEST_F(ImmediateFormatTestFixture, BFormat) {
-  immToB(*valueP[0]);
+  immediateToBFormat(*valueP[0]);
   ASSERT_EQ(*valueP[3], *valueP[0]);
 }
 
 TEST_F(ImmediateFormatTestFixture, UFormat) {
-  immToU(*valueP[0]);
+  immediateToUFormat(*valueP[0]);
   ASSERT_EQ(*valueP[4], *valueP[0]);
 }
 
 TEST_F(ImmediateFormatTestFixture, JFormat) {
-  immToJ(*valueP[0]);
+  immediateToJFormat(*valueP[0]);
   ASSERT_EQ(*valueP[5], *valueP[0]);
 }
 
@@ -91,7 +94,8 @@ struct InstructionFormatTestFixture : public ::testing::Test {
          {"uinst", InstructionKey({{"opcode", 3}, {"function", 5}}), "U"}}));
   }
 
-  ~InstructionFormatTestFixture() {}
+  ~InstructionFormatTestFixture() {
+  }
 
   InstructionSet instructionSet;
 };

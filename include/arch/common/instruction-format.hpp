@@ -34,7 +34,9 @@ struct Format {
    * \return Bit representation of the instruction.
    */
   virtual std::vector<bool> operator()(const InstructionKey& key,
-                                       const std::vector<MemoryValue> args) = 0;
+                                       const std::vector<MemoryValue>& args) = 0;
+
+    virtual ~Format() {}
 };
 
 

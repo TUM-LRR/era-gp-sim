@@ -19,6 +19,7 @@ set(PARSER_SOURCES
   parser-factory.cpp
   riscv-directive-factory.cpp
   integer-parser.cpp
+  constant-directive.cpp
 )
 
 ########################################
