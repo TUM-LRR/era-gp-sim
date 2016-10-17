@@ -27,10 +27,9 @@ InstructionInformation::InstructionInformation(
   deserialize(data);
 }
 
-InstructionInformation::InstructionInformation(const std::string& mnemonic,
-                                               const InstructionKey& key,
-                                               const std::string& format)
-: _mnemonic(mnemonic), _key(key), _format(format) {
+InstructionInformation::InstructionInformation(const std::string& mnemonic)
+: _mnemonic(mnemonic) {
+  assert::that(!mnemonic.empty());
 }
 
 bool InstructionInformation::

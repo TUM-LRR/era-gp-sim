@@ -58,9 +58,7 @@ class InstructionInformation : public InformationInterface {
    * \param key The key of the instruction.
    * \param format The format of the instruction.
    */
-  InstructionInformation(const std::string& mnemonic = std::string(),
-                         const InstructionKey& key = InstructionKey(),
-                         const std::string& format = std::string());
+  InstructionInformation(const std::string& mnemonic = std::string());
 
   /**
    * Tests for equality of two instructions.
