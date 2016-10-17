@@ -90,16 +90,13 @@ class ProjectTestFixture : public ::testing::Test {
   std::size_t findNextNode(MemoryAccess memoryAccess,
                            std::unordered_map<MemoryAddress, std::size_t>
                                addressCommandMapValidator) {
-    /*std::size_t nextInstructionAddress =
-    conversions::convert<std::size_t>(memoryAccess.getRegisterValue("pc").get());
+    std::size_t nextInstructionAddress = conversions::convert<std::size_t>(
+        memoryAccess.getRegisterValue("pc").get());
     auto iterator = addressCommandMapValidator.find(nextInstructionAddress);
-    if(iterator == addressCommandMapValidator.end()) {
+    if (iterator == addressCommandMapValidator.end()) {
       return addressCommandMapValidator.size();
     }
-   return iterator->second;
-   Command execution doesn't work right now, so using the real pc leads to an
-   infinite loop...*/
-    return 10;
+    return iterator->second;
   }
 
   std::size_t memorySize = 1000;
@@ -113,7 +110,7 @@ class ProjectTestFixture : public ::testing::Test {
       R"(lui x2, 0xDEADB
 
 lw x1, x2, 0xEEF
-ADDI x0, x0, 0)";
+addi x0, x0, 0)";
   std::function<void(int)> lineNumberCallback = [this](int line) {
     proxy.setLine(line);
   };

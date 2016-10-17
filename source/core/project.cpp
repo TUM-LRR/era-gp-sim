@@ -138,10 +138,8 @@ InstructionSet Project::getInstructionSet() const {
 }
 
 void Project::resetMemory() {
-  MemoryValue zero(_memory.getByteSize());
-  for (size_t i = 0; i < getMemorySize(); i++) {
-    putMemoryValueAt(i, zero);
-  }
+  MemoryValue zero(_memory.getByteSize() * _memory.getByteCount());
+  putMemoryValueAt(0, zero);
 }
 
 void Project::resetRegisters() {
