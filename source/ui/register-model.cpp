@@ -18,6 +18,7 @@
 
 #include "ui/register-model.hpp"
 
+#include "arch/common/unit-container.hpp"
 #include "common/string-conversions.hpp"
 #include "core/memory-value.hpp"
 
@@ -29,39 +30,64 @@ RegisterModel::RegisterModel(QQmlContext *projectContext, QObject *parent)
   RegisterInformation *eax = new RegisterInformation("EAX");
   eax->type(RegisterInformation::Type::INTEGER);
   eax->size(32);
-  _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
-      eax->getID(), std::unique_ptr<RegisterInformation>(eax)));
-  _rootItem->addConstituent(ConstituentInformation(eax->getID(), 0));
+
   RegisterInformation *ax = new RegisterInformation("AX");
   ax->type(RegisterInformation::Type::INTEGER);
   ax->size(16);
   ax->enclosing(eax->getID());
-  _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
-      ax->getID(), std::unique_ptr<RegisterInformation>(ax)));
   eax->addConstituent(ConstituentInformation(ax->getID(), 0));
+
   // Status-Register
   RegisterInformation *statusReg = new RegisterInformation("Statusregister");
   statusReg->type(RegisterInformation::Type::INTEGER);
   statusReg->size(8);
-  _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
-      statusReg->getID(), std::unique_ptr<RegisterInformation>(statusReg)));
-  _rootItem->addConstituent(ConstituentInformation(statusReg->getID(), 0));
+
   // Status-Register, Flag 1
   RegisterInformation *flag1 = new RegisterInformation("Sign");
   flag1->type(RegisterInformation::Type::FLAG);
   flag1->size(1);
   flag1->enclosing(statusReg->getID());
-  _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
-      flag1->getID(), std::unique_ptr<RegisterInformation>(flag1)));
   statusReg->addConstituent(ConstituentInformation(flag1->getID(), 0));
-  // Status-Register, Flag 2
-  RegisterInformation *flag2 = new RegisterInformation("Zero");
-  flag2->type(RegisterInformation::Type::FLAG);
-  flag2->size(1);
-  flag2->enclosing(statusReg->getID());
-  _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
-      flag2->getID(), std::unique_ptr<RegisterInformation>(flag2)));
-  statusReg->addConstituent(ConstituentInformation(flag2->getID(), 1));
+
+  // Fetch register units from core.
+  // TODO...
+  UnitInformation defaultUnit("CPU", {*eax, *ax, *statusReg, *flag1});
+  UnitContainer registerUnits = UnitContainer({defaultUnit});
+  // Iterate over each container and add the corresponding registers.
+  for (auto unit : registerUnits) {
+    // Add all normal registers to the model.
+    for (auto it = unit.cbegin(); it != unit.cend(); ++it) {
+      // Only add first-level registers to the dummy root item. Other registers
+      // are referenced by their respective enclosing register.
+      if (!it->second.hasEnclosing()) {
+        _rootItem->addConstituent(
+            ConstituentInformation(it->second.getID(), 0));
+      }
+      // Add every register to map of all registers, organised by their
+      // identifier.
+      _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
+          it->first,
+          std::unique_ptr<RegisterInformation>(
+              new RegisterInformation(it->second))));
+    }
+    // Add all special registers to the model.
+    for (auto it = unit.getSpecialRegisters().cbegin();
+         it != unit.getSpecialRegisters().cend();
+         ++it) {
+      // Only add first-level registers to the dummy root item. Other registers
+      // are referenced by their respective enclosing register.
+      if (!it->second.hasEnclosing()) {
+        _rootItem->addConstituent(
+            ConstituentInformation(it->second.getID(), 0));
+      }
+      // Add every register to map of all registers, organised by their
+      // identifier.
+      _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
+          it->second.getID(),
+          std::unique_ptr<RegisterInformation>(
+              new RegisterInformation(it->second))));
+    }
+  }
 }
 
 
