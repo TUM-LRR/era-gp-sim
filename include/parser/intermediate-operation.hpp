@@ -26,6 +26,7 @@
 #include "parser/line-interval.hpp"
 #include "parser/symbol-table.hpp"
 #include "parser/syntax-tree-generator.hpp"
+#include "parser/memory-allocator.hpp"
 
 struct CompileState;
 
@@ -43,6 +44,8 @@ using MemoryAddress = std::size_t;
 enum class TargetSelector { KEEP, MAIN, THIS };
 
 class IntermediateOperation;
+class Architecture;
+class MemoryAllocator;
 
 /**
  * \brief Convenience class for a pointer to an operation.
@@ -65,7 +68,7 @@ class IntermediateOperation {
   IntermediateOperation(const LineInterval& lines,
                         const std::vector<std::string>& labels,
                         const std::string& name)
-  : _lines(lines), _labels(labels), _name(name), _address(0) {
+  : _lines(lines), _labels(labels), _name(name) {
   }
 
   /**
@@ -81,12 +84,14 @@ class IntermediateOperation {
                        CompileState& state,
                        MemoryAccess& memoryAccess) = 0;
 
+  virtual void allocateMemory(const Architecture& architecture, MemoryAllocator& allocator, CompileState& state){}
+
   /**
    * \brief Enhances the symbol table by the labels of the operation.
    * \param table The SymbolTable to insert into.
    * \param state The CompileState to log possible errors.
    */
-  virtual void enhanceSymbolTable(SymbolTable& table, CompileState& state);
+  virtual void enhanceSymbolTable(SymbolTable& table, const MemoryAllocator& allocator, CompileState& state){}
 
   /**
    * \brief Specifies if the this operation should be processed.
@@ -112,21 +117,7 @@ class IntermediateOperation {
     // If this happens, something has gone wrong in our programming.
     assert::that(false);
   }
-
-  /**
-   * \brief Returns the memory address.
-   * \return The memory address.
-   */
-  MemoryAddress address() {
-    return _address;
-  }
-
  protected:
-  /**
-   * \brief Reserves space in memory for the operation and sets the address.
-   */
-  virtual void determineMemoryPosition() = 0;
-
   /**
    * \brief The internal line interval.
    */
@@ -141,11 +132,6 @@ class IntermediateOperation {
    * \brief The internal operation name.
    */
   std::string _name;
-
-  /**
-   * \brief The internal memory address.
-   */
-  MemoryAddress _address;
 };
 
 #endif

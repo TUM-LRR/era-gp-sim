@@ -117,9 +117,10 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
     }
   }
 
-  return intermediate.transform(
+  MemoryAllocator allocator({ MemorySectionDefinition("text", 1), MemorySectionDefinition("data", _architecture.getWordSize()) });
+  return intermediate.transform(_architecture,
       SyntaxTreeGenerator{_factory_collection, argumentGeneratorFunction},
-      _compile_state, _memoryAccess);
+      allocator, _compile_state, _memoryAccess);
 }
 
 const SyntaxInformation RiscvParser::getSyntaxInformation() {

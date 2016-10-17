@@ -27,6 +27,9 @@
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "parser/intermediate-operation.hpp"
 
+class MemoryAllocator;
+class Architecture;
+
 
 /**
  * \brief Represents a machine instruction in the parser-internal intermediate
@@ -66,6 +69,10 @@ class IntermediateInstruction : public IntermediateOperation {
                        CompileState& state,
                        MemoryAccess& memoryAccess);
 
+                       virtual void enhanceSymbolTable(SymbolTable& table, const MemoryAllocator& allocator, CompileState& state);
+                       virtual void allocateMemory(const Architecture& architecture, MemoryAllocator& allocator, CompileState& state);
+
+
   /**
    * \brief Converts this instruction into a syntax tree.
    * \param table The SymbolTable required for replacing the arguments.
@@ -79,11 +86,6 @@ class IntermediateInstruction : public IntermediateOperation {
                                   MemoryAccess& memoryAccess);
 
  protected:
-  /**
-   * \brief Gets the position in program memory space.
-   */
-  virtual void determineMemoryPosition();
-
   /**
    * \brief Compiles a vector of arguments (i.e. inserts symbols and converts to
    * syntax tree nodes).
@@ -109,6 +111,16 @@ class IntermediateInstruction : public IntermediateOperation {
    * \brief The internal target arguments.
    */
   std::vector<std::string> _targets;
+
+  /**
+   * \brief The internal memory address.
+   */
+  MemoryAddress _address;
+
+  /**
+   * \brief The memory address inside the code section.
+   */
+  RelativeMemoryPosition _relativeAddress;
 };
 
 #endif

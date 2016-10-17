@@ -17,6 +17,8 @@
  */
 
 #include "parser/intermediate-instruction.hpp"
+#include "arch/common/architecture.hpp"
+#include "common/assert.hpp"
 
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       const SymbolTable& table,
@@ -70,6 +72,28 @@ FinalCommand IntermediateInstruction::compileInstruction(
   return result;
 }
 
-void IntermediateInstruction::determineMemoryPosition() {
-  // To be expanded soon^TM. As soon as core is ready.
+void IntermediateInstruction::enhanceSymbolTable(SymbolTable& table,
+                                               const MemoryAllocator& allocator,
+                                               CompileState& state) {
+  _address = allocator.absolutePosition(_relativeAddress);
+
+  // We insert all our labels.
+  for (const auto& i : _labels) {
+    table.insertEntry(i, std::to_string(_address), state);
+  }
+}
+
+void IntermediateInstruction::allocateMemory(const Architecture& architecture, MemoryAllocator& allocator, CompileState& state) {
+  if (state.section != "text")
+  {
+    state.addError("Tried to define an instruction in the text section.");
+    return;
+  }
+
+  // For now.
+  std::size_t instructionLength = architecture.getWordSize();
+
+  
+  std::size_t offset = allocator["text"].allocateRelative(instructionLength);
+  _relativeAddress = RelativeMemoryPosition("text", offset);
 }
