@@ -48,7 +48,7 @@ class QProject : public QObject {
   QString _registerDescription;
   RegisterModel _registerModel;
   EditorComponent _editor;
-  //MemoryComponentPresenter _memory;
+  MemoryComponentPresenter _memory;
 
  signals:
 

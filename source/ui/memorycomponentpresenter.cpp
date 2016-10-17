@@ -22,13 +22,12 @@
 #include <QDebug>
 #include "core/memory-value.hpp"
 
-MemoryComponentPresenter::MemoryComponentPresenter(const MemoryAccess access, /*const MemoryManager manager,*/ QQmlContext *context, QObject *parent)
+MemoryComponentPresenter::MemoryComponentPresenter(const MemoryAccess access, /*const MemoryManager manager,*/ QQmlContext *projectContext, QObject *parent)
 : QAbstractTableModel(parent){
-    // TODO register callback functions
-    //memory->setCallback(&MemoryComponentPresenter::onMemoryChanged);
+    projectContext->setContextProperty("memoryModel", this);
 
-   memory_access = access;
-   //memory_manager = manager;
+    memory_access = access;
+    //memory_manager = manager;
 
     // TODO create new View
     //context->setContextProperty("MemoryComponent", this);
@@ -59,7 +58,7 @@ void MemoryComponentPresenter::setContextInformation(int addressStart, int lengt
 
 int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
     Q_UNUSED(parent)
-    return corememory->getByteCount();
+    return 5;
 }
 int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
     Q_UNUSED(parent)
@@ -81,9 +80,9 @@ QVariant MemoryComponentPresenter::data(const QModelIndex &index, int role) cons
         }
         case ValueRole: {
             // TODO fetch value from core
-            MemoryValue v = corememory->get(index.row());
 
-            return  QString;
+
+            return  QString();
         }
         case InfoRole: {
             // TODO fetch value from core

@@ -31,5 +31,6 @@ QProject::QProject(QQmlContext* projectContext, QObject* parent)
       "  BH\t56\tHH\n"
       "  BL\tAB\tHH")
 , _registerModel(_registerDescription)
-, _editor(projectContext) {
+, _editor(projectContext)
+, _memory(MemoryAccess(), projectContext){
 }
