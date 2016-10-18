@@ -3,8 +3,8 @@
 #include "ui/gui-project.hpp"
 
 GuiProject::GuiProject(QQmlContext* context,
-                       const ArchitectureFormula& formula,
-                       const std::size_t& memorySize,
+                       ArchitectureFormula formula,
+                       std::size_t memorySize,
                        std::string parserName,
                        QObject* parent)
 : QObject(parent)

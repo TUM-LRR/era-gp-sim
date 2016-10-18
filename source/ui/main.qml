@@ -34,6 +34,7 @@ ApplicationWindow {
     }
     toolBar: ToolbarMainWindow{
         id: toolbar
+        tabView: tabView
     }
 
     TabView{

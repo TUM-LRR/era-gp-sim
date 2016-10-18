@@ -49,8 +49,9 @@ void Ui::addProject(QQuickItem* tabItem,
     extensions.push_back(qstring.toStdString());
   }
   // create ArchitectureFormula
-  ArchitectureFormula architectureFormula(architecture.toStdString(),
-                                          std::move(extensions));
+  // ArchitectureFormula architectureFormula(architecture.toStdString(),
+  //                                      std::move(extensions));
+  ArchitectureFormula architectureFormula("riscv", {"rv32i"});
   std::size_t memorySize = memorySizeQVariant.value<std::size_t>();
 
   // parent is tabItem, so it gets destroyed at the same time

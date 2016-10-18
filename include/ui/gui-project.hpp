@@ -17,8 +17,8 @@ class GuiProject : QObject {
   Q_OBJECT
  public:
   GuiProject(QQmlContext* context,
-             const ArchitectureFormula& formula,
-             const std::size_t& memorySize,
+             ArchitectureFormula formula,
+             std::size_t memorySize,
              std::string parserName,
              QObject* parent = 0);
   void changeSystem(std::string base);
