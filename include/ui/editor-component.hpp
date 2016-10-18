@@ -124,6 +124,9 @@ class EditorComponent : public QObject {
 
   /** A signal to send the text to the parser. */
   void parseText();
+
+  /** Change the highlighted line which indicates the execution point. */
+  void executionLineChanged(int line);
 };
 
 #endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP_ */

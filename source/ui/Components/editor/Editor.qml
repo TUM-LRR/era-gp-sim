@@ -60,6 +60,7 @@ ScrollView {
                 textMargin: 2
                 property real unscaledWidth: Math.max(scrollView.viewport.width - sidebar.width, contentWidth)
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
+                property int line: 0
 
                 x: sidebar.width
                 selectByMouse: true
@@ -88,6 +89,9 @@ ScrollView {
                   onParseText: {
                     editor.sendText(text);
                   }
+                  onExecutionLineChanged: {
+                    textArea.line = line;
+                  }
                 }
 
                 //cursor line highlighting
@@ -99,6 +103,14 @@ ScrollView {
                     visible: textArea.activeFocus
                     border.width: 1
                     border.color: Qt.rgba(0.7, 0.7, 0.7, 0.2)
+                }
+
+                // execution line highlighting
+                Rectangle{
+                  color: Qt.rgba(0.2, 0.8, 0.4, 0.2)
+                  y: textArea.cursorRectangle.height * textArea.line;
+                  height: textArea.cursorRectangle.height;
+                  width: Math.max(scrollView.width, textArea.contentWidth)
                 }
 
                 //scroll with the cursor

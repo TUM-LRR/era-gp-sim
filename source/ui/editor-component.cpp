@@ -108,6 +108,7 @@ void EditorComponent::setErrorList(std::vector<CompileError> &&errorList) {
 }
 
 void EditorComponent::setCurrentLine(int line) {
+  emit executionLineChanged(line);
 }
 
 void _addKeywords(SyntaxInformation::Token token,
