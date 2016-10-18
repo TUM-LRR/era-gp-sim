@@ -105,8 +105,8 @@ class EditorComponent : public QObject {
    */
   void _addKeywords(SyntaxInformation::Token token,
                     QTextCharFormat format,
-                    QRegularExpression::PatternOption patternOption /*,
-                    ParserInterface parserInterface*/);
+                    QRegularExpression::PatternOption patternOption,
+                    ParserInterface parserInterface);
 
   /** The syntax Highlighter of this editor. Is initialized in the init()
    * method. */

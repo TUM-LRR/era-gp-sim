@@ -233,7 +233,7 @@ ScrollView {
                                 id: toolTip
                                 width: lineHighlight.width
                                 height: lineHighlight.height
-                                fontPixelSize: textArea.font.pixelSize*1.5
+                                fontPixelSize: textArea.font.pixelSize
                             }
 
                             Connections {

@@ -158,7 +158,6 @@ ToolBar {
           text: "parse"
           onClicked: {
             ui.parse(tabView.currentIndex);
-            console.log("reset " + tabView.currentIndex);
           }
         }
 
