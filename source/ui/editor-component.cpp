@@ -97,8 +97,9 @@ void EditorComponent::setErrorList(std::vector<CompileError>&& errorList) {
     if (error.severity() == CompileErrorSeverity::INFORMATION) {
       color = QColor(Qt::blue);
     }
-    emit addError(
-        QString::fromStdString(error.message()), error.position().first, color);
+    // emit addError(
+    //    QString::fromStdString(error.message()), error.position().first,
+    //    color);
   }
 }
 
