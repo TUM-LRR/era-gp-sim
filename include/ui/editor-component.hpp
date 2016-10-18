@@ -29,7 +29,7 @@
 #include <QTextDocument>
 #include <memory>
 
-//#include "core/command-interface.hpp"
+#include "core/command-interface.hpp"
 #include "parser/code-position.hpp"
 #include "parser/compile-error.hpp"
 #include "parser/syntax-information.hpp"
@@ -45,10 +45,10 @@ class ParserInterface;
 class EditorComponent : public QObject {
   Q_OBJECT
  public:
-  explicit EditorComponent(
-      QQmlContext *projectContext,
-      /* ParserInterface parserInterface, CommandInterface commandInterface,*/ QObject
-          *parent = 0);
+  explicit EditorComponent(QQmlContext *projectContext,
+                           ParserInterface parserInterface,
+                           CommandInterface commandInterface,
+                           QObject *parent = 0);
 
   /**
    * \brief creates a new syntax-highlighter for this editor
@@ -109,11 +109,14 @@ class EditorComponent : public QObject {
                     ParserInterface parserInterface*/);
 
   /** The syntax Highlighter of this editor. Is initialized in the init()
-   * method. TODO unique_ptr?? */
+   * method. */
   std::unique_ptr<SyntaxHighlighter> _highlighter;
 
   /** A list of keywords to initialize the syntax highlighter. */
   std::vector<KeywordRule> _keywords;
+
+  /** The command interface of the core */
+  CommandInterface _commandInterface;
 
  signals:
   /** A signal to delete all the errors in the editor. */

@@ -5,9 +5,13 @@
 GuiProject::GuiProject(QQmlContext* context,
                        const ArchitectureFormula& formula,
                        const std::size_t& memorySize,
+                       std::string parserName,
                        QObject* parent)
 : QObject(parent)
-, context(context)
+, _projectModule(formula, memorySize, parserName)
+, _editorComponent(context,
+                   _projectModule.getParserInterface(),
+                   _projectModule.getCommandInterface())
 /*, registermodel(context)
 , editormodel(context)
 , snapmodel(context)

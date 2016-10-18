@@ -22,12 +22,13 @@
 #include <QFontMetrics>
 
 #include "common/assert.hpp"
+#include "core/parser-interface.hpp"
 
-EditorComponent::EditorComponent(
-    QQmlContext *projectContext,
-    /* ParserInterface parserInterface, CommandInterface commandInterface,*/ QObject
-        *parent)
-: QObject(parent) {
+EditorComponent::EditorComponent(QQmlContext *projectContext,
+                                 ParserInterface parserInterface,
+                                 CommandInterface commandInterface,
+                                 QObject *parent)
+: _commandInterface(commandInterface), QObject(parent) {
   projectContext->setContextProperty("editor", this);
 
   // TODO select colors according to a theme/possibility to change colors
@@ -82,6 +83,7 @@ void EditorComponent::init(QQuickTextDocument *qDocument) {
 }
 
 void EditorComponent::sendText(QString text) {
+  _commandInterface.parse(text.toStdString());
 }
 
 void EditorComponent::parse() {

@@ -8,6 +8,8 @@
 
 #include "arch/common/architecture-formula.hpp"
 #include "core/memory-value.hpp"
+#include "core/project-module.hpp"
+#include "ui/editor-component.hpp"
 //#include "ui/snapshotmodel.hpp"
 
 
@@ -17,6 +19,7 @@ class GuiProject : QObject {
   GuiProject(QQmlContext* context,
              const ArchitectureFormula& formula,
              const std::size_t& memorySize,
+             std::string parserName,
              QObject* parent = 0);
   void changeSystem(std::string base);
   void parse();
@@ -46,9 +49,9 @@ class GuiProject : QObject {
 
 
  private:
-  QQmlContext* context;
+  ProjectModule _projectModule;
   // RegisterModel registermodel;
-  // EditorComponent editormodel;
+  EditorComponent _editorComponent;
   // SnapshotModel snapmodel;
   // MemoryComponentPresenter memorymodel;
   // Core-Project;
