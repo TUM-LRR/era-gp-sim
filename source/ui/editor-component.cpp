@@ -25,9 +25,9 @@
 
 EditorComponent::EditorComponent(
     QQmlContext *projectContext,
-    /* ParserInterface parserInterface, CommandInterface commandInterface,*/ QObject *
-        parent)
-    : QObject(parent) {
+    /* ParserInterface parserInterface, CommandInterface commandInterface,*/ QObject
+        *parent)
+: QObject(parent) {
   projectContext->setContextProperty("editor", this);
 
   // TODO select colors according to a theme/possibility to change colors
@@ -71,16 +71,6 @@ void EditorComponent::init(QQuickTextDocument *qDocument) {
   if (this->_highlighter) {
     assert::that(false);
   }
-  // test/demonstration of errors
-  std::vector<CompileError> list;
-  list.push_back(CompileError("<b>error</b>", CodePosition(10, 10),
-                              CompileErrorSeverity::ERROR));
-  list.push_back(CompileError("warning", CodePosition(20, 20),
-                              CompileErrorSeverity::WARNING));
-  list.push_back(CompileError("information", CodePosition(30, 30),
-                              CompileErrorSeverity::INFORMATION));
-  setErrorList(std::move(list));
-
   // set tab width to 4 spaces
   QTextOption textOptions = qDocument->textDocument()->defaultTextOption();
   QFontMetrics fontMetrics(qDocument->textDocument()->defaultFont());
@@ -91,7 +81,12 @@ void EditorComponent::init(QQuickTextDocument *qDocument) {
       std::move(_keywords), qDocument->textDocument()));
 }
 
-void EditorComponent::sendText(QString text) {}
+void EditorComponent::sendText(QString text) {
+}
+
+void EditorComponent::parse() {
+  emit parseText();
+}
 
 void EditorComponent::setErrorList(std::vector<CompileError> &&errorList) {
   emit deleteErrors();
@@ -107,13 +102,16 @@ void EditorComponent::setErrorList(std::vector<CompileError> &&errorList) {
       color = QColor(Qt::blue);
     }
     emit addError(QString::fromStdString(error.message()),
-                  error.position().first.line(), color);
+                  error.position().first.line(),
+                  color);
   }
 }
 
-void EditorComponent::setCurrentLine(int line) {}
+void EditorComponent::setCurrentLine(int line) {
+}
 
-void _addKeywords(SyntaxInformation::Token token, QTextCharFormat format,
+void _addKeywords(SyntaxInformation::Token token,
+                  QTextCharFormat format,
                   QRegularExpression::PatternOption patternOption /*,
                   ParserInterface parserInterface*/) {
   /*for (auto &&regexString : parserInterface.getSyntaxRegex(token)) {

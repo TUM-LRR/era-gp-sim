@@ -44,11 +44,11 @@ class ParserInterface;
  */
 class EditorComponent : public QObject {
   Q_OBJECT
-public:
+ public:
   explicit EditorComponent(
       QQmlContext *projectContext,
-      /* ParserInterface parserInterface, CommandInterface commandInterface,*/ QObject *
-          parent = 0);
+      /* ParserInterface parserInterface, CommandInterface commandInterface,*/ QObject
+          *parent = 0);
 
   /**
    * \brief creates a new syntax-highlighter for this editor
@@ -66,6 +66,12 @@ public:
    *
    */
   Q_INVOKABLE void sendText(QString text);
+
+  /**
+   * emits a qml signal to parse the text.
+   *
+   */
+  void parse();
 
   /**
    * Set a new list of errors to display in the editor.
@@ -86,7 +92,7 @@ public:
 
   // void setMakroList(std::vector<Makro>&& makroList);
 
-private:
+ private:
   /**
    * Adds the all keywords for a token to the keyword list.
    *
@@ -97,7 +103,8 @@ private:
    * \param parserInterface ParserInterface to access the SyntaxInformation
    *object.
    */
-  void _addKeywords(SyntaxInformation::Token token, QTextCharFormat format,
+  void _addKeywords(SyntaxInformation::Token token,
+                    QTextCharFormat format,
                     QRegularExpression::PatternOption patternOption /*,
                     ParserInterface parserInterface*/);
 
@@ -108,12 +115,15 @@ private:
   /** A list of keywords to initialize the syntax highlighter. */
   std::vector<KeywordRule> _keywords;
 
-signals:
+ signals:
   /** A signal to delete all the errors in the editor. */
   void deleteErrors();
 
   /** A signal to add an error in the editor. */
   void addError(QString message, int line, QColor color);
+
+  /** A signal to send the text to the parser. */
+  void parseText();
 };
 
 #endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP_ */

@@ -82,6 +82,14 @@ ScrollView {
                     }
                 }
 
+                //Connection to react to the parse signal
+                Connections {
+                  target: editor
+                  onParseText: {
+                    editor.sendText(text);
+                  }
+                }
+
                 //cursor line highlighting
                 Rectangle{
                     color: Qt.rgba(0.9, 0.9, 0.9, 0.2)
