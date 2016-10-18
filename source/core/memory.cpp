@@ -16,6 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "sstream"
+
 #include "core/memory.hpp"
 
 Memory::Memory() : Memory(64, 8) {
@@ -69,6 +71,22 @@ Memory::serializeRaw(std::size_t lineLength) {
   ret.push_back(std::make_pair("byteCount", std::to_string(_byteCount)));
   ret.push_back(std::make_pair("byteSize", std::to_string(_byteSize)));
   ret.push_back(std::make_pair("lineLength", std::to_string(lineLength)));
+  const std::size_t lineCount = _byteCount / lineLength;
+  const MemoryValue empty{_byteSize * lineLength};
+  constexpr char separator = ';';
+  for (std::size_t i = 0; i < lineCount; ++i) {
+    if (get(i * lineLength, lineLength) != empty) {
+      std::stringstream name("line");
+      std::stringstream value{};
+      name << (i * lineLength);
+      for (std::size_t j = 0; j < lineLength; ++j) {
+        MemoryValue v{get(i * lineLength + j)};
+        // TODO::write MemoryValue to stream
+        value.put(separator);
+      }
+      ret.push_back(std::make_pair(name.str(), value.str()));
+    }
+  }
   return ret;
 }
 
