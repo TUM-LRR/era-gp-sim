@@ -15,34 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.*/
 
-#ifndef REGISTERITEM_H
-#define REGISTERITEM_H
+import QtQuick 2.6
+import QtQuick.Controls 1.5
+import QtQuick.Controls.Styles 1.4
 
-#include <QList>
-#include <QVariant>
-#include "ui/registerdata.hpp"
 
-/**
- * Represents an item in the RegisterModel corresponding to a single register.
- */
-class RegisterItem {
- public:
-  explicit RegisterItem(const RegisterData &data, RegisterItem *parentItem = 0);
-  ~RegisterItem();
+CheckBox {
+    id: registerCheckBox
 
-  void appendChild(RegisterItem *child);
-
-  RegisterItem *getChild(int row);
-  int childCount() const;
-  int columnCount() const;
-  RegisterData getData() const;
-  int getRow() const;
-  RegisterItem *getParentItem();
-
- private:
-  QList<RegisterItem *> _childItems;
-  RegisterData _itemData;
-  RegisterItem *_parentItem;
-};
-
-#endif// REGISTERITEM_H
+    checked: registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
+}
