@@ -128,8 +128,8 @@ operator>=(const BigInt<size, intType, intTypeSize> &other) const {
 template <std::size_t size, typename intType, std::size_t intTypeSize>
 BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
 operator~() const {
-  BigInt<size, intType, intTypeSize> ret=*this;
-  for(auto& i : ret._data){
+  BigInt<size, intType, intTypeSize> ret = *this;
+  for (auto &i : ret._data) {
     i = ~i;
   }
   return ret;
@@ -168,4 +168,69 @@ BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
 operator>>(const BigInt<size, intType, intTypeSize> &other) const {
   BigInt<size, intType, intTypeSize> ret = *this;
   return ret >>= other;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> &BigInt<size, intType, intTypeSize>::
+operator+=(const BigInt<size, intType, intTypeSize> &other) {
+  bool carry = false;
+  for (std::size_t i = 0; i < intTypeCount; ++i) {
+    _data[i] += other._data[i];
+    if (carry) {
+      ++_data[i];
+    }
+    carry = (_data[i] < other._data[i]);
+  }
+  return *this;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> &BigInt<size, intType, intTypeSize>::
+operator-=(const BigInt<size, intType, intTypeSize> &other) {
+  return *this += -other;// not perfectly optimized
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> &BigInt<size, intType, intTypeSize>::
+operator*=(const BigInt<size, intType, intTypeSize> &other) {
+  return mul(other).first;// not perfectly optimized
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> &BigInt<size, intType, intTypeSize>::
+operator/=(const BigInt<size, intType, intTypeSize> &other) {
+  return div(other).first;// not perfectly optimized
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> &BigInt<size, intType, intTypeSize>::
+operator%=(const BigInt<size, intType, intTypeSize> &other) {
+  return div(other).second;// not perfectly optimized
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> &BigInt<size, intType, intTypeSize>::
+operator&=(const BigInt<size, intType, intTypeSize> &other) {
+  for (std::size_t i = 0; i < intTypeCount; ++i) {
+    _data[i] &= other._data[i];
+  }
+  return *this;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> &BigInt<size, intType, intTypeSize>::
+operator|=(const BigInt<size, intType, intTypeSize> &other) {
+  for (std::size_t i = 0; i < intTypeCount; ++i) {
+    _data[i] |= other._data[i];
+  }
+  return *this;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> &BigInt<size, intType, intTypeSize>::
+operator^=(const BigInt<size, intType, intTypeSize> &other) {
+  for (std::size_t i = 0; i < intTypeCount; ++i) {
+    _data[i] ^= other._data[i];
+  }
+  return *this;
 }

@@ -3,13 +3,15 @@
 #include <utility>
 #include <vector>
 
+// gentlemans aggreement: only use unsigned stuff as intType, or expect
+// unexpected behaviour
 template <std::size_t size,
           typename intType = std::uint64_t,
           std::size_t intTypeSize = 64>
-//std::enable_if<std::is_unsigned<intType>::value>
+// std::enable_if<std::is_unsigned<intType>::value, >
 class BigInt {
  public:
-  //static_assert(std::is_unsigned<intType>::value);
+  // static_assert(std::is_unsigned<intType>::value);
   using BigIntType = BigInt<size, intType, intTypeSize>;
   BigInt() = default;
   BigInt(const BigIntType &other) = default;
@@ -43,7 +45,7 @@ class BigInt {
   BigIntType operator^(const BigIntType &other) const;
   BigIntType operator<<(const BigIntType &other) const;
   BigIntType operator>>(const BigIntType &other) const;
-  // compund operators
+  // compound operators
   BigIntType &operator+=(const BigIntType &other);
   BigIntType &operator-=(const BigIntType &other);
   BigIntType &operator*=(const BigIntType &other);
@@ -92,7 +94,9 @@ class BigInt {
 
   intType getByte(std::size_t index);
 
+  //first->lower; second->higher
   std::pair<BigIntType, BigIntType> mul(const BigIntType &other) const;
+  //first->div; second->mod
   std::pair<BigIntType, BigIntType> div(const BigIntType &other) const;
   std::vector<BigIntType> pow(const BigIntType &other) const;
 };
