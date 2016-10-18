@@ -87,14 +87,18 @@ class ProjectTestFixture : public ::testing::Test {
     architectureValidator.validate();
   }
 
-  std::size_t findNextNode(MemoryAccess memoryAccess,
-                           std::unordered_map<MemoryAddress, std::size_t>
-                               addressCommandMapValidator) {
+  std::size_t findNextNode(
+      MemoryAccess memoryAccess,
+      std::unordered_map<MemoryAddress, std::size_t> addressCommandMapValidator,
+      FinalRepresentation& finalRepresentation) {
     std::size_t nextInstructionAddress = conversions::convert<std::size_t>(
         memoryAccess.getRegisterValue("pc").get());
+    if (nextInstructionAddress == 0) {
+      return 0;
+    }
     auto iterator = addressCommandMapValidator.find(nextInstructionAddress);
     if (iterator == addressCommandMapValidator.end()) {
-      return addressCommandMapValidator.size();
+      return finalRepresentation.commandList.size();
     }
     return iterator->second;
   }
@@ -109,7 +113,7 @@ class ProjectTestFixture : public ::testing::Test {
   std::string testProgram =
       R"(lui x2, 0xDEADB
 
-lw x1, x2, 0xEEF
+addi x0, x0, 0
 addi x0, x0, 0)";
   std::function<void(int)> lineNumberCallback = [this](int line) {
     proxy.setLine(line);
@@ -212,6 +216,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
 
   EXPECT_EQ(finalRepresentationValidator.errorList.size(),
             proxy.getErrorList().get().size());
+  EXPECT_EQ(0, finalRepresentationValidator.errorList.size());
 
   // test if correct values for the assembled program are written into memory
   for (auto&& command : finalRepresentationValidator.commandList) {
@@ -225,50 +230,52 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
   }
 
   // test executing the next line
-  std::size_t firstNode =
-      findNextNode(memoryAccess, addressCommandMapValidator);
+  std::size_t firstNode = findNextNode(
+      memoryAccess, addressCommandMapValidator, finalRepresentationValidator);
   std::size_t nextNode = firstNode;
+  std::size_t lastNode = firstNode;
   while (nextNode < finalRepresentationValidator.commandList.size()) {
-    nextNode = findNextNode(memoryAccess, addressCommandMapValidator);
     FinalCommand& currentCommand =
         finalRepresentationValidator.commandList.at(nextNode);
-    // currentCommand.node->getValue(memoryAccess);
-    nextNode = findNextNode(memoryAccess, addressCommandMapValidator);
-    FinalCommand& nextCommand =
-        finalRepresentationValidator.commandList.at(nextNode);
+    memoryAccess.putRegisterValue("pc",
+                                  currentCommand.node->getValue(memoryAccess));
+    nextNode = findNextNode(
+        memoryAccess, addressCommandMapValidator, finalRepresentationValidator);
     commandInterface.executeNextLine().get();
-    EXPECT_EQ(nextCommand.position.lineStart, proxy.getLine().get());
+    if (nextNode < finalRepresentationValidator.commandList.size()) {
+      lastNode = nextNode;
+      FinalCommand& nextCommand =
+          finalRepresentationValidator.commandList.at(nextNode);
+      // EXPECT_EQ(nextCommand.position.lineStart, proxy.getLine().get());
+    }
   }
-  std::size_t lastNode = nextNode;
-
-  commandInterface.setExecutionPoint(0);
+  commandInterface.setExecutionPoint(1);
   // another command to make sure setExecutionPoint was already executed
   commandInterface.setBreakpoint(0).get();
 
   projectModule.reset();
 
-  EXPECT_EQ(0, proxy.getLine().get());
+  EXPECT_EQ(1, proxy.getLine().get());
   // test executing the whole program
   commandInterface.execute();
   // placeholder
   commandInterface.setBreakpoint(0).get();
   commandInterface.deleteBreakpoint(0);
 
-  EXPECT_EQ(
-      finalRepresentationValidator.commandList.at(lastNode).position.lineStart,
-      proxy.getLine().get());
-  commandInterface.setBreakpoint(2);
+  EXPECT_EQ(4, proxy.getLine().get());
+
+  commandInterface.setExecutionPoint(1);
+
+  commandInterface.setBreakpoint(3);
   commandInterface.executeToBreakpoint();
-  commandInterface.setBreakpoint(2).get();
+  commandInterface.setBreakpoint(3).get();
 
-  EXPECT_EQ(2, proxy.getLine().get());
+  EXPECT_EQ(3, proxy.getLine().get());
 
   commandInterface.executeToBreakpoint();
-  commandInterface.setBreakpoint(2).get();
+  commandInterface.setBreakpoint(3).get();
 
-  EXPECT_EQ(
-      finalRepresentationValidator.commandList.at(lastNode).position.lineStart,
-      proxy.getLine().get());
+  EXPECT_EQ(4, proxy.getLine().get());
 }
 
 TEST_F(ProjectTestFixture, ParserInterfaceTest) {

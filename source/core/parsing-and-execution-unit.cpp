@@ -89,7 +89,10 @@ size_t ParsingAndExecutionUnit::executeNextLine() {
   // update the current line in the ui (pre-execution)
   _setCurrentLine(currentCommand.position.lineStart);
 
-  currentCommand.node->getValue(_memoryAccess);
+  MemoryValue programCounterValue =
+      currentCommand.node->getValue(_memoryAccess);
+  _memoryAccess.putRegisterValue(_programCounter.getName(),
+                                 programCounterValue);
 
   // find the next instruction and update the current line in the
   // ui (post-execution)
@@ -157,11 +160,11 @@ void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
 
 void ParsingAndExecutionUnit::parse(std::string code) {
   // delete old assembled program in memory
-  for (const auto &command : _finalRepresentation.commandList) {
+  /*for (const auto &command : _finalRepresentation.commandList) {
     // create a empty MemoryValue as long as the command
     MemoryValue zero(command.node->assemble().getSize());
     _memoryAccess.putMemoryValueAt(command.address, zero);
-  }
+}*/
   // parse the new code and save the final representation
   _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
   _addressCommandMap = _finalRepresentation.createMapping();
@@ -169,9 +172,9 @@ void ParsingAndExecutionUnit::parse(std::string code) {
   // update the error list of the ui
   _setErrorList(_finalRepresentation.errorList);
   // assemble commands into memory
-  for (const auto &command : _finalRepresentation.commandList) {
+  /*for (const auto &command : _finalRepresentation.commandList) {
     _memoryAccess.putMemoryValueAt(command.address, command.node->assemble());
-  }
+}*/
 }
 
 bool ParsingAndExecutionUnit::setBreakpoint(size_t line) {
@@ -219,6 +222,10 @@ size_t ParsingAndExecutionUnit::_findNextNode() {
       _memoryAccess.getRegisterValue(programCounterName).get();
   size_t nextInstructionAddress =
       conversions::convert<size_t>(programCounterValue);
+  if (nextInstructionAddress == 0) {
+    // if the program counter is 0, execute the first instruction
+    return 0;
+  }
   // find the instruction address from the program counter value
   auto iterator = _addressCommandMap.find(nextInstructionAddress);
   if (iterator == _addressCommandMap.end()) {

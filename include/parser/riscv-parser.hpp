@@ -63,7 +63,7 @@ class RiscvParser : public Parser {
   /**
    * Reference to the Architecture this parser compiles for
    */
-  const Architecture &_architecture;
+  Architecture _architecture;
 
   /**
    * A MemoryAccess for the `validate(_memoryAccess)` call.
