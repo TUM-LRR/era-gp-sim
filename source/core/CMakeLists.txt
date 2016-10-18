@@ -6,6 +6,9 @@ set(CORE_SOURCES
   memory-value.cpp
   register-set.cpp
   conversions.cpp
+  project.cpp
+  project-module.cpp
+  parsing-and-execution-unit.cpp
   memory.cpp
   scheduler.cpp
 )

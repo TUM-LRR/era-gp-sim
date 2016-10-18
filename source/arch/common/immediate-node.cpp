@@ -35,7 +35,7 @@ MemoryValue ImmediateNode::getValue(MemoryAccess& memoryAccess) const {
   return _value;
 }
 
-ValidationResult ImmediateNode::validate() const {
+ValidationResult ImmediateNode::validate(MemoryAccess& memoryAccess) const {
   // Immediate values can't have any children
   return AbstractSyntaxTreeNode::_children.size() == 0
              ? ValidationResult::success()
@@ -51,4 +51,3 @@ MemoryValue ImmediateNode::assemble() const {
 const std::string& ImmediateNode::getIdentifier() const {
   return IMMEDIATE_IDENTIFIER;
 }
-

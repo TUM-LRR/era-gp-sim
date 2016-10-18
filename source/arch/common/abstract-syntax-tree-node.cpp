@@ -69,9 +69,10 @@ void AbstractSyntaxTreeNode::setChild(size_t index, Node&& node) {
   _children[index] = std::move(node);
 }
 
-ValidationResult AbstractSyntaxTreeNode::_validateChildren() const {
+ValidationResult
+AbstractSyntaxTreeNode::_validateChildren(MemoryAccess& memoryAccess) const {
   for (auto& child : _children) {
-    auto result = child->validate();
+    auto result = child->validate(memoryAccess);
     if (!result.isSuccess()) {
       return result;
     }

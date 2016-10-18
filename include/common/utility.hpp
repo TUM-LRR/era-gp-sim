@@ -498,6 +498,23 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
 
   return binary;
 }
+
+// push_back n elements from the end of the src vector
+void pushBackFromEnd(std::vector<bool>& dest,
+                     const std::vector<bool>& src,
+                     size_t n);
+
+
+template <typename T>
+constexpr T discreteCeiling(T value, T divider) {
+  return (value + divider - 1) / divider;
+}
+
+// Only for completeness.
+template <typename T>
+constexpr T discreteFloor(T value, T divider) {
+  return value / divider;
+}
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */

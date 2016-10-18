@@ -22,6 +22,7 @@
 void MacroDirective::execute(FinalRepresentation& finalRepresentator,
                              const SymbolTable& table,
                              const SyntaxTreeGenerator& generator,
-                             CompileState& state) {
+                             CompileState& state,
+                             MemoryAccess& memoryAccess) {
   // TODO #79
 }
