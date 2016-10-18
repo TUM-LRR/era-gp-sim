@@ -23,8 +23,29 @@ import QtQuick.Controls.Styles 1.4
 TextField {
     id: registerTextField
 
-    inputMask: registerModel.displayFormatStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
-    text: registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
 
-    onEditingFinished: registerModel.registerContentChanged(registerTextField.text)
+    Component.onCompleted: {
+        inputMask = registerModel.displayFormatStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
+        text = registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
+    }
+
+    // As some values need to be set manually (i.e. not using the model's data-method and the corresponding
+    // roles), they also have to be updated manually whenever the model's data changed for the current index.
+    Connections {
+        target: registerModel
+        // Data changed is emitted when some of the model's data has changed (e.g. refer to `updateContent`-
+        // method).
+        onDataChanged: {
+            // Check if the current item's index is affected by the data change.
+            if (topLeft <= styleData.index && styleData.index <= bottomRight) {
+                inputMask = registerModel.displayFormatStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
+                text = registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
+            }
+        }
+    }
+
+    // Notify the model that the register's content was changed by the user.
+    onEditingFinished: {
+        registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentIndex);
+    }
 }

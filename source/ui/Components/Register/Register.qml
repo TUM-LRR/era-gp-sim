@@ -75,8 +75,11 @@ Item {
                 onCurrentIndexChanged: {
                     // Certain registers require a different content item than a text field.
                     // They are loaded when such a data format is selected.
+                    // For the content to be reloaded correctly, the source component has to be
+                    // cleared.
+                    registerContentItem.sourceComponent = undefined;
                     if (currentText == "Flag") {
-                        registerContentItem.source = "FlagRegister.qml"
+                        registerContentItem.source = "FlagRegister.qml";
                     } else {
                         registerContentItem.source = "DefaultRegister.qml"
                     }
