@@ -30,6 +30,8 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
                                  QObject *parent)
 : _commandInterface(commandInterface), QObject(parent) {
   projectContext->setContextProperty("editor", this);
+  parserInterface.setSetCurrentLineCallback(
+      [this](std::size_t line) { setCurrentLine(line); });
 
   // TODO select colors according to a theme/possibility to change colors
 

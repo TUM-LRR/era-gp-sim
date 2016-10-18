@@ -28,18 +28,19 @@ void GuiProject::changeSystem(std::string base) {
 }
 
 void GuiProject::parse() {
+  _editorComponent.parse();
 }
 
 void GuiProject::run() {
-  // tell Editor
+  _projectModule.getCommandInterface().execute();
 }
 
 void GuiProject::runLine() {
-  // tell Editor
+  _projectModule.getCommandInterface().executeNextLine();
 }
 
 void GuiProject::runBreakpoint() {
-  // tell Editor
+  _projectModule.getCommandInterface().executeToBreakpoint();
 }
 
 void GuiProject::stop() {
@@ -47,6 +48,8 @@ void GuiProject::stop() {
 }
 
 void GuiProject::reset() {
+  _projectModule.reset();
+  _projectModule.getCommandInterface().setExecutionPoint(1);
 }
 
 void GuiProject::save() {
