@@ -2,7 +2,9 @@
 
 #include "gui-Project.hpp"
 
-GuiProject::GuiProject(QQmlContext* context): QObject(), context(context){
+GuiProject::GuiProject(QQmlContext* context): QObject(), context(context), registermodel(context), editormodel(context), snapmodel(context), memorymodel(context){
+    std::string name[]={"Apfel", "Banane"};
+    snapmodel.addList(name);
     //An alle Komponenten weitergeben
     //alle Komponenten initialisieren
     //Alle Functions initialisieren
@@ -10,6 +12,36 @@ GuiProject::GuiProject(QQmlContext* context): QObject(), context(context){
 
 void GuiProject::changeSystem(std::string base){
     //Alle Komponenten informieren
+}
+
+void GuiProject::run(){
+    //tell Editor
+}
+
+void GuiProject::runLine(){
+    //tell Editor
+}
+
+void GuiProject::runBreakpoint(){
+    //tell Editor
+}
+
+void GuiProject::stop(){
+    //tell editor
+}
+
+void GuiProject::save(){
+    //tell core
+}
+
+void GuiProject::saveAs(QByteArray name){
+    std::string stdname=name.toStdString();
+    //tell core
+}
+
+void GuiProject::snapshot(QByteArray name){
+    std::string stdname=name.toStdString();
+    //dont know, what to do
 }
 
 
