@@ -272,7 +272,8 @@ class AbstractBranchInstructionNode : public InstructionNode {
    *
    * \return A ValidationResult reflecting the result of the check.
    */
-  ValidationResult _validateResultingProgramCounter(MemoryAccess& memoryAccess) const {
+  ValidationResult
+  _validateResultingProgramCounter(MemoryAccess& memoryAccess) const {
     static const auto addressBoundary =
         std::numeric_limits<UnsignedWord>::max();
 
