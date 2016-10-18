@@ -106,6 +106,17 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
     return;
   }
 
+  // Check if the instruction is a macro.
+  auto macro = state.macros.find(_name);
+  // If its a macro, execute every sub-instruction.
+  if (macro != state.macros.end()) {
+    auto& subOperations = macro->second.operations();
+    for (auto i = subOperations.begin(); i != subOperations.end(); ++i) {
+      (*i)->allocateMemory(architecture, allocator, state);
+    }
+    return;
+  }
+
   const auto& instructionSet = architecture.getInstructions();
 
   // toLower as long as not fixed in instruction set.
