@@ -114,7 +114,7 @@ inline void unicorn() {
  *
  * \see assert::that()
  */
-#define gtest(condition)                                              \
+#define gtest(condition)                                             \
   execute([&] {                                                      \
     if (!(condition)) {                                              \
       FAIL() << "TEST assertion failed: (" #condition ") at line "   \

@@ -1,199 +1,200 @@
 {
-    "reset-units": true,
+    "name": "rv32d",
+    "extends": "rv32f",
     "units": [
         {
+            "name": "cpu",
             "registers": [
                 {
-                    "size": 64,
+                    "name": "f1",
                     "id": 1,
-                    "type": "float",
-                    "name": "f1"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f2",
                     "id": 2,
-                    "type": "float",
-                    "name": "f2"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f3",
                     "id": 3,
-                    "type": "float",
-                    "name": "f3"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f4",
                     "id": 4,
-                    "type": "float",
-                    "name": "f4"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f5",
                     "id": 5,
-                    "type": "float",
-                    "name": "f5"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f6",
                     "id": 6,
-                    "type": "float",
-                    "name": "f6"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f7",
                     "id": 7,
-                    "type": "float",
-                    "name": "f7"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f8",
                     "id": 8,
-                    "type": "float",
-                    "name": "f8"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f9",
                     "id": 9,
-                    "type": "float",
-                    "name": "f9"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f10",
                     "id": 10,
-                    "type": "float",
-                    "name": "f10"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f11",
                     "id": 11,
-                    "type": "float",
-                    "name": "f11"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f12",
                     "id": 12,
-                    "type": "float",
-                    "name": "f12"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f13",
                     "id": 13,
-                    "type": "float",
-                    "name": "f13"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f14",
                     "id": 14,
-                    "type": "float",
-                    "name": "f14"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f15",
                     "id": 15,
-                    "type": "float",
-                    "name": "f15"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f16",
                     "id": 16,
-                    "type": "float",
-                    "name": "f16"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f17",
                     "id": 17,
-                    "type": "float",
-                    "name": "f17"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f18",
                     "id": 18,
-                    "type": "float",
-                    "name": "f18"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f19",
                     "id": 19,
-                    "type": "float",
-                    "name": "f19"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f20",
                     "id": 20,
-                    "type": "float",
-                    "name": "f20"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f21",
                     "id": 21,
-                    "type": "float",
-                    "name": "f21"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f22",
                     "id": 22,
-                    "type": "float",
-                    "name": "f22"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f23",
                     "id": 23,
-                    "type": "float",
-                    "name": "f23"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f24",
                     "id": 24,
-                    "type": "float",
-                    "name": "f24"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f25",
                     "id": 25,
-                    "type": "float",
-                    "name": "f25"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f26",
                     "id": 26,
-                    "type": "float",
-                    "name": "f26"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f27",
                     "id": 27,
-                    "type": "float",
-                    "name": "f27"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f28",
                     "id": 28,
-                    "type": "float",
-                    "name": "f28"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f29",
                     "id": 29,
-                    "type": "float",
-                    "name": "f29"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f30",
                     "id": 30,
-                    "type": "float",
-                    "name": "f30"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
+                    "name": "f31",
                     "id": 31,
-                    "type": "float",
-                    "name": "f31"
+                    "size": 64,
+                    "type": "float"
                 },
                 {
-                    "size": 64,
-                    "id": 32,
-                    "type": "flag",
                     "name": "fcsr",
+                    "id": 32,
+                    "size": 64,
                     "constituents": [
                         {
                             "id": 33,
@@ -203,17 +204,20 @@
                             "id": 34,
                             "enclosing-index": 0
                         }
-                    ]
+                    ],
+                    "type": "flag"
                 },
                 {
-                    "size": 3,
-                    "id": 33,
-                    "type": "flag",
                     "name": "frm",
-                    "enclosing": 32
+                    "id": 33,
+                    "size": 3,
+                    "enclosing": 32,
+                    "type": "flag"
                 },
                 {
-                    "enclosing": 32,
+                    "id": 34,
+                    "size": 5,
+                    "name": "fflags",
                     "constituents": [
                         {
                             "id": 35,
@@ -236,193 +240,289 @@
                             "enclosing-index": 4
                         }
                     ],
-                    "size": 5,
-                    "id": 34,
-                    "type": "flag",
-                    "name": "fflags"
+                    "enclosing": 32,
+                    "type": "flag"
                 },
                 {
-                    "size": 1,
-                    "id": 35,
-                    "type": "flag",
                     "name": "nx",
-                    "enclosing": 24
+                    "id": 35,
+                    "size": 1,
+                    "enclosing": 24,
+                    "type": "flag"
                 },
                 {
-                    "size": 1,
-                    "id": 36,
-                    "type": "flag",
                     "name": "of",
-                    "enclosing": 24
+                    "id": 36,
+                    "size": 1,
+                    "enclosing": 24,
+                    "type": "flag"
                 },
                 {
-                    "size": 1,
-                    "id": 37,
-                    "type": "flag",
                     "name": "uf",
-                    "enclosing": 24
+                    "id": 37,
+                    "size": 1,
+                    "enclosing": 24,
+                    "type": "flag"
                 },
                 {
-                    "size": 1,
-                    "id": 38,
-                    "type": "flag",
                     "name": "dz",
-                    "enclosing": 24
+                    "id": 38,
+                    "size": 1,
+                    "enclosing": 24,
+                    "type": "flag"
                 },
                 {
-                    "size": 1,
-                    "id": 39,
-                    "type": "flag",
                     "name": "nv",
-                    "enclosing": 24
+                    "id": 39,
+                    "size": 1,
+                    "enclosing": 24,
+                    "type": "flag"
                 }
-            ],
-            "name": "cpu"
+            ]
         }
     ],
-    "extends": "rv32f",
+    "reset-units": true,
     "instructions": [
         {
-            "opcode": 7,
-            "mnemonic": "fld",
-            "funct3": 3
+            "length": 32,
+            "format": "I",
+            "key": {
+                "opcode": 7,
+                "funct3": 3
+            },
+            "mnemonic": "fld"
         },
         {
-            "opcode": 39,
-            "mnemonic": "fsd",
-            "funct3": 3
+            "length": 32,
+            "format": "S",
+            "key": {
+                "opcode": 39,
+                "funct3": 3
+            },
+            "mnemonic": "fsd"
         },
         {
-            "opcode": 67,
-            "funct2": 1,
-            "mnemonic": "fmaddd"
+            "length": 32,
+            "format": "R4",
+            "key": {
+                "funct2": 1,
+                "opcode": 67
+            },
+            "mnemonic": "fmadd"
         },
         {
-            "opcode": 71,
-            "funct2": 1,
+            "length": 32,
+            "format": "R4",
+            "key": {
+                "funct2": 1,
+                "opcode": 71
+            },
             "mnemonic": "fmsubd"
         },
         {
-            "opcode": 75,
-            "funct2": 1,
-            "mnemonic": "fnsubd"
+            "length": 32,
+            "format": "R4",
+            "key": {
+                "funct2": 1,
+                "opcode": 75
+            },
+            "mnemonic": "fnmsubd"
         },
         {
-            "opcode": 79,
-            "mnemonic": "fnmaddd",
-            "funct7": 1
+            "length": 32,
+            "format": "R4",
+            "key": {
+                "funct7": 1,
+                "opcode": 79
+            },
+            "mnemonic": "fnmaddd"
         },
         {
-            "opcode": 83,
-            "mnemonic": "faddd",
-            "funct7": 1
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 1,
+                "opcode": 83
+            },
+            "mnemonic": "fadd"
         },
         {
-            "opcode": 83,
-            "mnemonic": "fsubd",
-            "funct7": 5
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 5,
+                "opcode": 83
+            },
+            "mnemonic": "fsubd"
         },
         {
-            "opcode": 83,
-            "mnemonic": "fmuld",
-            "funct7": 9
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 9,
+                "opcode": 83
+            },
+            "mnemonic": "fmuld"
         },
         {
-            "opcode": 83,
-            "mnemonic": "fdivd",
-            "funct7": 13
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 13,
+                "opcode": 83
+            },
+            "mnemonic": "fdivd"
         },
         {
-            "opcode": 83,
-            "rs2": 0,
-            "mnemonic": "fsqrtd",
-            "funct7": 45
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 45,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "mnemonic": "fsqrtd"
         },
         {
-            "opcode": 83,
-            "funct3": 0,
-            "mnemonic": "fsgnjd",
-            "funct7": 17
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 17,
+                "opcode": 83,
+                "funct3": 0
+            },
+            "mnemonic": "fsgnjd"
         },
         {
-            "opcode": 83,
-            "funct3": 1,
-            "mnemonic": "fsgnjnd",
-            "funct7": 17
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 17,
+                "opcode": 83,
+                "funct3": 1
+            },
+            "mnemonic": "fsgnjnd"
         },
         {
-            "opcode": 83,
-            "funct3": 2,
-            "mnemonic": "fsgnjxd",
-            "funct7": 17
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 17,
+                "opcode": 83,
+                "funct3": 2
+            },
+            "mnemonic": "fsgnjxd"
         },
         {
-            "opcode": 83,
-            "funct3": 0,
-            "mnemonic": "fmind",
-            "funct7": 21
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 21,
+                "opcode": 83,
+                "funct3": 0
+            },
+            "mnemonic": "fmind"
         },
         {
-            "opcode": 83,
-            "rs2": 1,
-            "mnemonic": "fcvtsd",
-            "funct7": 32
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 32,
+                "rs2": 1,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtsd"
         },
         {
-            "opcode": 83,
-            "rs2": 0,
-            "mnemonic": "fcvtds",
-            "funct7": 33
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 33,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtds"
         },
         {
-            "opcode": 83,
-            "funct3": 2,
-            "mnemonic": "feqd",
-            "funct7": 81
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 81,
+                "opcode": 83,
+                "funct3": 2
+            },
+            "mnemonic": "feqd"
         },
         {
-            "opcode": 83,
-            "funct3": 1,
-            "mnemonic": "fltd",
-            "funct7": 81
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 81,
+                "opcode": 83,
+                "funct3": 1
+            },
+            "mnemonic": "fltd"
         },
         {
-            "opcode": 83,
-            "funct3": 0,
-            "mnemonic": "fled",
-            "funct7": 81
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 81,
+                "opcode": 83,
+                "funct3": 0
+            },
+            "mnemonic": "fled"
         },
         {
-            "opcode": 83,
-            "funct3": 1,
-            "rs2": 0,
-            "mnemonic": "fclassd",
-            "funct7": 113
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 113,
+                "rs2": 0,
+                "opcode": 83,
+                "funct3": 1
+            },
+            "mnemonic": "fclassd"
         },
         {
-            "opcode": 83,
-            "rs2": 0,
-            "mnemonic": "fcvtwd",
-            "funct7": 97
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 97,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtwd"
         },
         {
-            "opcode": 83,
-            "rs2": 1,
-            "mnemonic": "fcvtwud",
-            "funct7": 97
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 97,
+                "rs2": 1,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtwud"
         },
         {
-            "opcode": 83,
-            "rs2": 0,
-            "mnemonic": "fcvtdw",
-            "funct7": 105
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 105,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtdw"
         },
         {
-            "opcode": 83,
-            "rs2": 1,
-            "mnemonic": "fcvtdwu",
-            "funct7": 105
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 105,
+                "rs2": 1,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtdwu"
         }
-    ],
-    "name": "rv32d"
+    ]
 }

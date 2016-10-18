@@ -18,42 +18,74 @@
 
 #include "parser/riscv-parser.hpp"
 
-#include <cassert>
 #include <iostream>
 #include <regex>
 #include <sstream>
+#include "arch/common/architecture.hpp"
 #include "arch/common/node-factory-collection-maker.hpp"
+#include "arch/common/unit-information.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/intermediate-representator.hpp"
 #include "parser/riscv-regex.hpp"
+#include "parser/syntax-information.hpp"
 
-RiscvParser::RiscvParser(const Architecture &architecture) {
+#include "core/conversions.hpp"
+#include "parser/expression-compiler-clike.hpp"
+
+const SyntaxTreeGenerator::ArgumentNodeGenerator
+    RiscvParser::argumentGeneratorFunction =
+        [](const std::string& operand,
+           const NodeFactoryCollection& nodeFactories,
+           CompileState& state) -> std::unique_ptr<AbstractSyntaxTreeNode> {
+  // These checks are performed:
+  // * Empty argument? Shouldn't happen, kill the compilation with fire.
+  // * First character is a letter? We have replace all constants by now, so it
+  // must be a register - or an undefined constant!
+  // * If not? Try to compile the expression!
+  std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
+  if (operand.empty()) {
+    outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
+  } else if (std::isalpha(operand[0])) {
+    outputNode = nodeFactories.createRegisterNode(operand);
+  } else {
+    // using i32
+    int32_t result =
+        CLikeExpressionCompilers::CLikeCompilerI32.compile(operand, state);
+    outputNode = nodeFactories.createImmediateNode(
+        conversions::convert(result,
+                             conversions::standardConversions::helper::
+                                 twosComplement::toMemoryValueFunction,
+                             32));
+  }
+  return std::move(outputNode);
+};
+
+RiscvParser::RiscvParser(const Architecture& architecture,
+                         const MemoryAccess& memoryAccess)
+: _architecture(architecture), _memoryAccess(memoryAccess) {
   _factory_collection = NodeFactoryCollectionMaker::CreateFor(architecture);
 }
 
 FinalRepresentation
-RiscvParser::parse(const std::string &text, ParserMode parserMode) {
+RiscvParser::parse(const std::string& text, ParserMode parserMode) {
   IntermediateRepresentator intermediate;
   std::istringstream stream{text};
 
   // Initialize compile state
   _compile_state.errorList.clear();
   _compile_state.position = CodePosition(0, 0);
-  _compile_state.mode     = parserMode;
+  _compile_state.mode = parserMode;
 
 
   RiscvRegex line_regex;
   std::vector<std::string> labels, sources, targets;
 
   for (std::string line; std::getline(stream, line);) {
-    _compile_state.position.first++;
+    _compile_state.position = _compile_state.position.newLine();
     line_regex.matchLine(line);
     if (!line_regex.isValid()) {
       // Add syntax error if line regex doesnt match
-      _compile_state.errorList.push_back(
-          CompileError{"Syntax Error",
-                       _compile_state.position,
-                       CompileErrorSeverity::ERROR});
+      _compile_state.addError("Syntax Error", _compile_state.position);
     } else {
       // Collect labels until next instruction
       if (line_regex.hasLabel()) {
@@ -70,12 +102,13 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
         }
 
         intermediate.insertCommand(
-            IntermediateInstruction{LineInterval{_compile_state.position.first,
-                                                 _compile_state.position.first},
-                                    labels,
-                                    line_regex.getInstruction(),
-                                    sources,
-                                    targets});
+            IntermediateInstruction{
+                LineInterval(_compile_state.position.line()),
+                labels,
+                line_regex.getInstruction(),
+                sources,
+                targets},
+            _compile_state);
 
         labels.clear();
         targets.clear();
@@ -84,6 +117,56 @@ RiscvParser::parse(const std::string &text, ParserMode parserMode) {
     }
   }
 
-  return intermediate.transform(SyntaxTreeGenerator{_factory_collection},
-                                _compile_state);
+  MemoryAllocator allocator(
+      {MemorySectionDefinition("text", 1),
+       MemorySectionDefinition("data", _architecture.getWordSize())});
+  return intermediate.transform(
+      _architecture,
+      SyntaxTreeGenerator{_factory_collection, argumentGeneratorFunction},
+      allocator,
+      _compile_state,
+      _memoryAccess);
+}
+
+const SyntaxInformation RiscvParser::getSyntaxInformation() {
+  SyntaxInformation info;
+
+  // Add instruction regexes
+  for (auto instruction : _architecture.getInstructions()) {
+    // Matches all instruction mnemonics which don't end with a ':'
+    info.addSyntaxRegex("\\b" + instruction.first + "\\b(?!:)",
+                        SyntaxInformation::Token::Instruction);
+  }
+
+  // Add comment regex
+  // Matches everything after a ';'
+  info.addSyntaxRegex(";.*", SyntaxInformation::Token::Comment);
+
+  // Add label regex
+  // Matches words at the beginning of a line (ignoring whitespaces) which end
+  // with a ':'
+  info.addSyntaxRegex("^\\s*\\w+:", SyntaxInformation::Token::Label);
+
+  // Add immediate regex
+  // Matches arithmetic expressions containing digits, operators, brackets and
+  // spaces. Expressions need to start with a digit, an open bracket or an unary
+  // operator.
+  info.addSyntaxRegex(
+      R"(\b[\+\-0-9\(!~][0-9a-fA-Fx\+\-%\*\/\(\)\|\^&=!<>~\t ]*)",
+      SyntaxInformation::Token::Immediate);
+
+  // Matches string literals
+  info.addSyntaxRegex(R"(".*")", SyntaxInformation::Token::Immediate);
+  info.addSyntaxRegex(R"('.*')", SyntaxInformation::Token::Immediate);
+
+  // Add register regexes
+  for (UnitInformation unit : _architecture.getUnits()) {
+    for (auto reg : unit)
+      if (reg.second.hasName())
+        // Matches all register names not followed by a ':'
+        info.addSyntaxRegex("\\b" + reg.second.getName() + "\\b(?!:)",
+                            SyntaxInformation::Token::Register);
+  }
+
+  return info;
 }

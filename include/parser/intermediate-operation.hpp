@@ -16,33 +16,41 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP_
-#define ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP_
+#ifndef ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP
+#define ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP
 
 #include <string>
 #include <vector>
+#include "common/assert.hpp"
 #include "parser/final-representation.hpp"
+#include "parser/line-interval.hpp"
+#include "parser/memory-allocator.hpp"
 #include "parser/symbol-table.hpp"
 #include "parser/syntax-tree-generator.hpp"
 
 struct CompileState;
 
 /**
- * \brief Representa an interval of lines, denoted by an upper and lower line
- * bound.
- */
-using LineInterval = std::pair<unsigned int, unsigned int>;
-
-/**
  * \brief A memory address substitute as long as we do not have one.
  */
-using DummyMemoryAddress = unsigned int;
+using MemoryAddress = std::size_t;
 
 /**
- * \brief A substitute for a not-initialized address.
+ * \brief Specifies the target for operations to put.
+ *
+ * This feature has been implemented to support macros. It allows that the
+ * operations are placed inside of other operations on syntax level.
  */
-static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
+enum class TargetSelector { KEEP, MAIN, THIS };
 
+class IntermediateOperation;
+class Architecture;
+class MemoryAllocator;
+
+/**
+ * \brief Convenience class for a pointer to an operation.
+ */
+using IntermediateOperationPointer = std::unique_ptr<IntermediateOperation>;
 
 /**
  * \brief Represents an abstract assembler operation in the parser-internal
@@ -60,7 +68,7 @@ class IntermediateOperation {
   IntermediateOperation(const LineInterval& lines,
                         const std::vector<std::string>& labels,
                         const std::string& name)
-  : _lines(lines), _labels(labels), _name(name), _address(NULL_ADDRESS) {
+  : _lines(lines), _labels(labels), _name(name) {
   }
 
   /**
@@ -69,33 +77,64 @@ class IntermediateOperation {
    * \param table The SymbolTable for possible replacements.
    * \param generator The generator to transform the instructions.
    * \param state The CompileState to log possible errors.
+   * \param memoryAccess The MemoryAccess for verifying instructions or
+   * reserving data.
    */
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
                        const SyntaxTreeGenerator& generator,
-                       CompileState& state) = 0;
+                       CompileState& state,
+                       MemoryAccess& memoryAccess) = 0;
+
+  /**
+   * \brief Reserves (not writes!) memory for the operation (if needed).
+   * \param architecture The architecture for information about the memory
+   * format.
+   * \param allocator The allocator to reserve memory.
+   * \param state The CompileState to log possible errors.
+   */
+  virtual void allocateMemory(const Architecture& architecture,
+                              MemoryAllocator& allocator,
+                              CompileState& state) {
+  }
 
   /**
    * \brief Enhances the symbol table by the labels of the operation.
    * \param table The SymbolTable to insert into.
+   * \param allocator The MemoryAllocator to get the memory positions from.
    * \param state The CompileState to log possible errors.
    */
-  virtual void enhanceSymbolTable(SymbolTable& table, CompileState& state);
+  virtual void enhanceSymbolTable(SymbolTable& table,
+                                  const MemoryAllocator& allocator,
+                                  CompileState& state) {
+  }
 
   /**
-   * \brief Returns the memory address.
-   * \return The memory address.
+   * \brief Specifies if the this operation should be processed.
+   * \return True, if so, else false.
    */
-  DummyMemoryAddress address() {
-    return _address;
+  virtual bool shouldInsert() const {
+    return true;
+  }
+
+  /**
+   * \brief Specifies the new target for operations after this command.
+   * \return Normally, we keep the target.
+   */
+  virtual TargetSelector newTarget() const {
+    return TargetSelector::KEEP;
+  }
+
+  /**
+   * \brief Inserts an operation into a possible internal command list.
+   * \param pointer The operation to insert.
+   */
+  virtual void insert(IntermediateOperationPointer pointer) {
+    // If this happens, something has gone wrong in our programming.
+    assert::that(false);
   }
 
  protected:
-  /**
-   * \brief Reserves space in memory for the operation and sets the address.
-   */
-  virtual void determineMemoryPosition() = 0;
-
   /**
    * \brief The internal line interval.
    */
@@ -110,11 +149,6 @@ class IntermediateOperation {
    * \brief The internal operation name.
    */
   std::string _name;
-
-  /**
-   * \brief The internal memory address.
-   */
-  DummyMemoryAddress _address;
 };
 
 #endif

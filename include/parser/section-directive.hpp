@@ -20,7 +20,7 @@
 #ifndef ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP_
 #define ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP_
 
-#include "intermediate-directive.hpp"
+#include "parser/intermediate-directive.hpp"
 
 /**
  * \brief Represents a section directive in code.
@@ -49,12 +49,15 @@ class SectionDirective : public IntermediateDirective {
    * \param finalRepresentator The representation to output commands to
    * (unused).
    * \param table The symbol table for symbol storage (unused).
+   * \param generator The syntax tree generator, unused here.
    * \param state The compile state which denotes the current section of the
    * compiler.
    */
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
-                       CompileState& state);
+                       const SyntaxTreeGenerator& generator,
+                       CompileState& state,
+                       MemoryAccess& memoryAccess);
 
  private:
   /**

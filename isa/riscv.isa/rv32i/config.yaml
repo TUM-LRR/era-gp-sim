@@ -5,128 +5,241 @@ name: rv32i
 alignment-behavior: relaxed
 endianness: little
 word-size: 32
+byte-size: 8
+signed-representation: twos-complement
 
 instructions:
   - mnemonic: lui
-    opcode: 55
+    length: 32
+    format: U
+    key:
+      opcode: 55
   - mnemonic: auipc
-    opcode: 23
+    length: 32
+    format: U
+    key:
+      opcode: 23
   - mnemonic: jal
-    opcode: 111
+    length: 32
+    format: UJ
+    key:
+      opcode: 111
   - mnemonic: jalr
-    opcode: 103
+    length: 32
+    format: I
+    key:
+      opcode: 103
   - mnemonic: beq
-    opcode: 99
-    funct3: 0
+    length: 32
+    format: SB
+    key:
+      opcode: 99
+      funct3: 0
   - mnemonic: bne
-    opcode: 99
-    funct3: 1
+    length: 32
+    format: SB
+    key:
+      opcode: 99
+      funct3: 1
   - mnemonic: blt
-    opcode: 99
-    funct3: 4
+    length: 32
+    format: SB
+    key:
+      opcode: 99
+      funct3: 4
   - mnemonic: bge
-    opcode: 99
-    funct3: 5
+    length: 32
+    format: SB
+    key:
+      opcode: 99
+      funct3: 5
   - mnemonic: bltu
-    opcode: 99
-    funct3: 6
+    length: 32
+    format: SB
+    key:
+      opcode: 99
+      funct3: 6
   - mnemonic: bgeu
-    opcode: 99
-    funct3: 7
+    length: 32
+    format: SB
+    key:
+      opcode: 99
+      funct3: 7
   - mnemonic: lb
-    opcode: 3
-    funct3: 0
+    length: 32
+    format: I
+    key:
+      opcode: 3
+      funct3: 0
   - mnemonic: lh
-    opcode: 3
-    funct3: 1
+    length: 32
+    format: I
+    key:
+      opcode: 3
+      funct3: 1
   - mnemonic: lw
-    opcode: 3
-    funct3: 2
+    length: 32
+    format: I
+    key:
+      opcode: 3
+      funct3: 2
   - mnemonic: lbu
-    opcode: 3
-    funct3: 4
+    length: 32
+    format: I
+    key:
+      opcode: 3
+      funct3: 4
   - mnemonic: lhu
-    opcode: 3
-    funct3: 5
+    length: 32
+    format: I
+    key:
+      opcode: 3
+      funct3: 5
   - mnemonic: sb
-    opcode: 35
+    length: 32
+    format: S
+    key:
+      opcode: 35
     funct: 0
   - mnemonic: sh
-    opcode: 35
+    length: 32
+    format: S
+    key:
+      opcode: 35
     funct: 1
   - mnemonic: sw
-    opcode: 35
+    length: 32
+    format: S
+    key:
+      opcode: 35
     funct: 2
   - mnemonic: addi
-    opcode: 19
-    funct3: 0
+    length: 32
+    format: I
+    key:
+      opcode: 19
+      funct3: 0
   - mnemonic: slti
-    opcode: 19
-    funct3: 2
+    length: 32
+    format: I
+    key:
+      opcode: 19
+      funct3: 2
   - mnemonic: sltiu
-    opcode: 19
-    funct3: 3
+    length: 32
+    format: I
+    key:
+      opcode: 19
+      funct3: 3
   - mnemonic: xori
-    opcode: 19
-    funct3: 4
+    length: 32
+    format: I
+    key:
+      opcode: 19
+      funct3: 4
   - mnemonic: ori
-    opcode: 19
-    funct3: 6
+    length: 32
+    format: I
+    key:
+      opcode: 19
+      funct3: 6
   - mnemonic: andi
-    opcode: 19
-    funct3: 7
+    length: 32
+    format: I
+    key:
+      opcode: 19
+      funct3: 7
   - mnemonic: slli
-    opcode: 19
-    funct3: 1
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 19
+      funct3: 1
+      funct7: 0
   - mnemonic: srli
-    opcode: 19
-    funct3: 5
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 19
+      funct3: 5
+      funct7: 0
   - mnemonic: srai
-    opcode: 19
-    funct3: 5
-    func7: 32
+    length: 32
+    format: R
+    key:
+      opcode: 19
+      funct3: 5
+      funct7: 32
   - mnemonic: add
-    opcode: 51
-    funct3: 0
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 51
+      funct3: 0
+      funct7: 0
   - mnemonic: sub
-    opcode: 51
-    funct3: 0
-    func7: 32
+    length: 32
+    format: R
+    key:
+      opcode: 51
+      funct3: 0
+      funct7: 32
   - mnemonic: sll
-    opcode: 51
-    funct3: 1
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 51
+      funct3: 1
+      funct7: 0
   - mnemonic: slt
-    opcode: 51
-    funct3: 2
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 51
+      funct3: 2
+      funct7: 0
   - mnemonic: sltu
-    opcode: 51
-    funct3: 3
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 51
+      funct3: 3
+      funct7: 0
   - mnemonic: xor
-    opcode: 51
-    funct3: 4
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 51
+      funct3: 4
+      funct7: 0
   - mnemonic: srl
-    opcode: 51
-    funct3: 5
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 51
+      funct3: 5
+      funct7: 0
   - mnemonic: sra
-    opcode: 51
-    funct3: 5
-    func7: 32
+    length: 32
+    format: R
+    key:
+      opcode: 51
+      funct3: 5
+      funct7: 32
   - mnemonic: or
-    opcode: 51
-    funct3: 6
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 51
+      funct3: 6
+      funct7: 0
   - mnemonic: and
-    opcode: 51
-    funct3: 0
-    func7: 7
+    length: 32
+    format: R
+    key:
+      opcode: 51
+      funct3: 0
+      funct7: 7
 units:
   - name: cpu
     registers:

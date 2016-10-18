@@ -26,7 +26,7 @@
 #include <unordered_map>
 #include <vector>
 #include "common/utility.hpp"
-#include "compile-state.hpp"
+#include "parser/compile-state.hpp"
 
 /**
  * \brief Provides help methods for parsing strings.
@@ -45,9 +45,9 @@ template <typename CharT, typename OutT>
 class StringParserEngine {
  public:
   using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
-  using OutType  = Utility::TypeBarrier<OutT, std::is_integral>;
-  using String   = std::basic_string<CharType>;
-  using Output   = std::vector<OutType>;
+  using OutType = Utility::TypeBarrier<OutT, std::is_integral>;
+  using String = std::basic_string<CharType>;
+  using Output = std::vector<OutType>;
 
   /**
    * \brief Decodes and re-encodes a code point at the given position in the
@@ -124,16 +124,10 @@ class StringParserEngine {
 
  private:
   // This method notes down an error in the given compile state.
-  static void
-  invokeError(const std::string& message,
-              size_t position,
-              CompileState& state,
-              CompileErrorSeverity severity = CompileErrorSeverity::ERROR) {
-    auto newPosition = state.position;
-
-    // Relative position.
-    newPosition.second += position;
-    state.errorList.push_back(CompileError(message, newPosition, severity));
+  static void invokeError(const std::string& message,
+                          size_t position,
+                          CompileState& state) {
+    state.addError(message, state.position >> position);
   }
 
   // Returns true, if there is still data after the current index in the string
@@ -156,9 +150,9 @@ class StringParserEngine {
       return true;
     } else {
       // If not, we got a compound of two to four (theoretically six) bytes.
-      int size       = 0;
+      int size = 0;
       uint32_t value = 0;
-      auto wchr      = chr;
+      auto wchr = chr;
 
       // Format of the first byte is: 1..10<DATA>, the number of trailing ones
       // equals the number of bytes the code point is encoded in. For this case,
@@ -261,7 +255,7 @@ class StringParserEngine {
       // Now take the 10 bits from each surrogate, align them and add 65536.
       uint32_t hvalue = chr & 0x3ff;
       uint32_t lvalue = lchr & 0x3ff;
-      codePoint       = ((hvalue << 10) | lvalue) + 0x10000;
+      codePoint = ((hvalue << 10) | lvalue) + 0x10000;
       return true;
     }
   }
@@ -394,7 +388,7 @@ class StringParserEngine {
       // clang-format off
       case 'a': match  = '\a'; break;
       case 'b': match  = '\b'; break;
-      case 'e': match  = '\e'; break;
+      case 'e': match  = '\x1b'; break;
       case 'f': match  = '\f'; break;
       case 'n': match  = '\n'; break;
       case 'r': match  = '\r'; break;
@@ -423,8 +417,8 @@ class StringParserEngine {
     }
 
     size_t startIndex = index;
-    auto chr          = inputString[index];
-    char cchr         = (char)chr;
+    auto chr = inputString[index];
+    char cchr = (char)chr;
 
     int match = parseOneByteEscapeSequence(cchr);
     if (match != -1) {
@@ -448,7 +442,7 @@ class StringParserEngine {
       // Decoding an octal character sequence. (e.g. special case is: \0, but
       // can also be \000)
       auto len = crawlIndex(inputString, index, isOctal, 2) + 1;
-      int ret  = simpleNumberParse<int>(inputString, startIndex, len, 8);
+      int ret = simpleNumberParse<int>(inputString, startIndex, len, 8);
       if (ret > 0xff && sizeof(OutType) == 1) {
         invokeError(
             "The specified octal sequence wants to encode a character out "
@@ -501,7 +495,7 @@ class StringParserEngine {
       output.push_back(codePoint);
     } else {
       // If not, we encode the bytes are required.
-      int bytes    = 1;
+      int bytes = 1;
       int restSize = 6;
       while (codePoint >= (1 << restSize)) {
         // As long as we got not enough space in the final byte, we got to add
@@ -597,7 +591,7 @@ static bool parseString(const std::basic_string<CharT>& inputString,
                         std::vector<OutT>& output,
                         CompileState& state) {
   using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
-  using OutType  = Utility::TypeBarrier<OutT, std::is_integral>;
+  using OutType = Utility::TypeBarrier<OutT, std::is_integral>;
 
   if (!StringParserEngine<CharType, OutType>::checkIfWrapped(
           inputString, '\"', state)) {
@@ -629,7 +623,7 @@ static bool parseCharacter(const std::basic_string<CharT>& inputString,
                            std::vector<OutT>& output,
                            CompileState& state) {
   using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
-  using OutType  = Utility::TypeBarrier<OutT, std::is_integral>;
+  using OutType = Utility::TypeBarrier<OutT, std::is_integral>;
 
   if (!StringParserEngine<CharType, OutType>::checkIfWrapped(
           inputString, '\'', state)) {

@@ -17,36 +17,44 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CORE_SCHEDULER_H_
-#define CORE_SCHEDULER_H_
+#ifndef ERAGPSIM_CORE_SCHEDULER_HPP
+#define ERAGPSIM_CORE_SCHEDULER_HPP
 
 #include <atomic>
 #include <chrono>
 #include <functional>
 #include <thread>
 
-#include "lockfree-queue.hpp"
+#include "core/lockfree-queue.hpp"
 
-
+/**
+ * This class is a task-scheduler, to be used by a servant
+ *
+ * The scheduler owns a thread, which is running in a loop and executes tasks in
+ * a queue one at a time.
+ * If all calls to the servant are pushed into the queue, which can be easily
+ * done by using a proxy, this ensures thread safety for the servant, as only
+ * one task can be executed at any given moment.
+ */
 class Scheduler {
  public:
-  using Queue = LockfreeQueue<std::function<void()>>;
+  using Task  = std::function<void()>;
+  using Queue = LockfreeQueue<Task>;
 
   /**
- * \brief creates new Scheduler
- * \param sleepMillis optional parameter, how long the scheduler tries to sleep
- * if there are no tasks in the queue, default is 5ms
- */
-  Scheduler(int sleepMillis = 5)
-  : _interrupt(false)
-  , _sleepMilliseconds(sleepMillis)
-  , _schedulerThread(&Scheduler::_run, this) {
-  }
+   * \brief creates new Scheduler
+   * \param sleepMillis optional parameter, how long the scheduler tries to
+   * sleep
+   * if there are no tasks in the queue, default is 5ms
+   */
+  Scheduler(int sleepMillis = 5);
 
-  ~Scheduler() {
-    this->_shutdown();
-    _schedulerThread.join();
-  }
+  /**
+   * Destroys the scheduler safely by posting an interrupting tasks into its own
+   * queue
+   *
+   */
+  ~Scheduler();
 
   // The scheduler can not be moved or copied, as it has a own thread and its
   // queue can not be copied or moved as well
@@ -60,49 +68,40 @@ class Scheduler {
    * \brief pushes a function-object into the taskQueue
    * \param task function-object to be pushed
    */
-  void push(std::function<void()>&& task) {
-    _taskQueue.push(std::move(task));
-  }
+  void push(Task&& task);
 
   /**
    * returns the id of the scheduler thread
    *
    */
-  std::thread::id getThreadId() {
-    return _schedulerThread.get_id();
-  }
+  std::thread::id getThreadId();
 
  private:
   /**
    * \brief scheduler loop, executes every task in the queue
    */
-  void _run() {
-    _interrupt = false;
-    while (!_interrupt) {
-      std::function<void()> task;
-      if (_taskQueue.pop(task)) {
-        // there was something in the queue, ececute the task
-        task();
-
-      } else {
-        // the queue is empty, sleep for a bit
-        std::this_thread::sleep_for(_sleepMilliseconds);
-      }
-    }
-  }
+  void _run();
 
   /**
    * \brief stops the scheduler loop after every task that is currently in the
    * queue was finished
    */
-  void _shutdown() {
-    this->push([this]() { _interrupt = true; });
-  }
+  void _shutdown();
 
+  /** A queue to store Task objects. */
   Queue _taskQueue;
+
+  /** A boolean flag indicating whether the scheduler should interrupt its loop.
+   */
   bool _interrupt;
+
+  /** The time in milliseconds which the scheduler aims to sleep for after each
+   * loop if no tasks are in the queue. */
   std::chrono::milliseconds _sleepMilliseconds;
+
+  /** The thread handle of the scheduler execution thread, this thread is
+   * running the scheduler loop. */
   std::thread _schedulerThread;
 };
 
-#endif// CORE_SCHEDULER_H_
+#endif /* ERAGPSIM_CORE_SCHEDULER_HPP */

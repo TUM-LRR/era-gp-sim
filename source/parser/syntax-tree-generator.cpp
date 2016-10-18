@@ -18,31 +18,25 @@
 
 #include "parser/syntax-tree-generator.hpp"
 
+#include <cctype>
 #include <regex>
+
+#include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/validation-result.hpp"
+#include "core/memory-access.hpp"
+#include "parser/compile-state.hpp"
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 SyntaxTreeGenerator::transformOperand(const std::string& operand,
                                       CompileState& state) const {
-  // For now. A very simple generator. We just check: do we have a base-10
-  // number? Yes? If not, we must have a register... If it does not exist? Well,
-  // we failed.
-  // For the future, we got to: support several number types (simple), maybe
-  // parse full-grown arithmetic expressions (done, not so easy..., lots of
-  // work).
-  std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
-  if (std::regex_search(operand, std::regex("^[0-9]+$"))) {
-    outputNode = _nodeFactories.createImmediateNode(
-        MemoryValue{});// std::stoi(operand) Temporary.
-  } else {
-    outputNode = _nodeFactories.createRegisterAccessNode(operand);
-  }
+  // We invoke our node generator to get a node!
+  std::unique_ptr<AbstractSyntaxTreeNode> outputNode =
+      _argumentGenerator(operand, _nodeFactories, state);
 
-  // according to the architecture group, we get a nullptr if the creation
+  // According to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
-    state.errorList.push_back(CompileError("Invalid argument: " + operand,
-                                           state.position,
-                                           CompileErrorSeverity::ERROR));
+    state.addError("Invalid argument: '" + operand + "'", state.position);
   }
 
   return std::move(outputNode);
@@ -52,16 +46,15 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
     const std::string& command_name,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
-    CompileState& state) const {
+    CompileState& state,
+    MemoryAccess& memoryAccess) const {
   // Just create an instruction node and add all output and input nodes
   // (operands).
   auto outputNode = _nodeFactories.createInstructionNode(command_name);
 
   if (!outputNode) {
     // The node creation failed!
-    state.errorList.push_back(CompileError("Unknown operation: " + command_name,
-                                           state.position,
-                                           CompileErrorSeverity::ERROR));
+    state.addError("Unknown operation: " + command_name, state.position);
     return std::move(outputNode);
   }
 
@@ -75,11 +68,12 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
     outputNode->addChild(std::move(i));
   }
 
-  // Validate node
-  if (!outputNode->validate()) {
-    state.errorList.push_back(CompileError("Invalid operation: " + command_name,
-                                           state.position,
-                                           CompileErrorSeverity::ERROR));
+  // Validate node.
+  auto validationResult = outputNode->validate(memoryAccess);
+  if (!validationResult) {
+    state.addError("Invalid operation (" + command_name + "): " +
+                       validationResult.getMessage(),
+                   state.position);
   }
 
   // Return.

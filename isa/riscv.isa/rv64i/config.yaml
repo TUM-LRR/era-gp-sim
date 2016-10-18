@@ -5,62 +5,105 @@ name: rv64i
 extends: rv32i
 
 word-size: 64
+byte-size: 8
 reset-units: true
 
 instructions:
   - mnemonic: lwu
-    opcode: 3
-    funct3: 6
+    length: 32
+    format: I
+    key:
+      opcode: 3
+      funct3: 6
   - mnemonic: ld
-    opcode: 3
-    funct3: 3
+    length: 32
+    format: I
+    key:
+      opcode: 3
+      funct3: 3
   - mnemonic: sd
-    opcode: 35
-    funct3: 1
-    func7: 0
+    length: 32
+    format: S
+    key:
+      opcode: 35
+      funct3: 1
+      funct7: 0
   - mnemonic: slli
-    opcode: 19
-    funct3: 1
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 19
+      funct3: 1
+      funct7: 0
   - mnemonic: srai
-    opcode: 19
-    funct3: 5
-    func7: 1
+    length: 32
+    format: R
+    key:
+      opcode: 19
+      funct3: 5
+      funct7: 1
   - mnemonic: addiw
-    opcode: 27
-    funct3: 0
+    length: 32
+    format: I
+    key:
+      opcode: 27
+      funct3: 0
   - mnemonic: slliw
-    opcode: 27
-    funct3: 1
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 27
+      funct3: 1
+      funct7: 0
   - mnemonic: srliw
-    opcode: 27
-    funct3: 5
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 27
+      funct3: 5
+      funct7: 0
   - mnemonic: sraiw
-    opcode: 27
-    funct3: 5
-    func7: 32
+    length: 32
+    format: R
+    key:
+      opcode: 27
+      funct3: 5
+      funct7: 32
   - mnemonic: addw
-    opcode: 59
-    funct3: 0
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 59
+      funct3: 0
+      funct7: 0
   - mnemonic: subw
-    opcode: 59
-    funct3: 0
-    func7: 32
+    length: 32
+    format: R
+    key:
+      opcode: 59
+      funct3: 0
+      funct7: 32
   - mnemonic: sllw
-    opcode: 59
-    funct3: 1
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 59
+      funct3: 1
+      funct7: 0
   - mnemonic: srlw
-    opcode: 59
-    funct3: 5
-    func7: 0
+    length: 32
+    format: R
+    key:
+      opcode: 59
+      funct3: 5
+      funct7: 0
   - mnemonic: sraw
-    opcode: 59
-    funct3: 5
-    func7: 32
+    length: 32
+    format: R
+    key:
+      opcode: 59
+      funct3: 5
+      funct7: 32
 units:
   - name: cpu
     registers:

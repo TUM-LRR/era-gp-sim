@@ -31,7 +31,8 @@ Architecture Architecture::Brew(const ArchitectureFormula& formula) {
   return ArchitectureBrewery(formula).brew();
 }
 
-Architecture::Architecture(const std::string& name) : _name(name) {
+Architecture::Architecture(const std::string& name)
+: _name(name), _factories() {
 }
 
 Architecture::Architecture(const std::string& name,
@@ -83,12 +84,14 @@ Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const {
   return _base.getAlignmentBehavior();
 }
 
-/**
- * Returns the word size of the extension (in bits), if any.
- */
 Architecture::word_size_t Architecture::getWordSize() const {
   assert(isValidated());
   return _base.getWordSize();
+}
+
+Architecture::byte_size_t Architecture::getByteSize() const noexcept {
+  assert(isValidated());
+  return _base.getByteSize();
 }
 
 const UnitContainer& Architecture::getUnits() const {
@@ -103,15 +106,6 @@ const InstructionSet& Architecture::getInstructions() const {
 
 const NodeFactoryCollection& Architecture::getNodeFactories() const {
   return _factories;
-}
-
-bool Architecture::isBasedOn(const std::string& extension_name) const noexcept {
-  return _base.isBasedOn(extension_name);
-}
-
-const Architecture::ExtensionNameCollection&
-Architecture::getBaseExtensionNames() const noexcept {
-  return _base.getBaseExtensionNames();
 }
 
 Architecture& Architecture::validate() {

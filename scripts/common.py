@@ -29,5 +29,3 @@ def fileBatchMain(handler):
         file = sys.argv[i]
         text = fread(file)
         text = handler(text, file)
-
-    print('Done!')
