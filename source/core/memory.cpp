@@ -63,6 +63,15 @@ MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {
   return prev;
 }
 
+std::vector<std::pair<std::string, std::string>>
+Memory::serializeRaw(std::size_t lineLength) {
+  std::vector<std::pair<std::string, std::string>> ret{};
+  ret.push_back(std::make_pair("byteCount", std::to_string(_byteCount)));
+  ret.push_back(std::make_pair("byteSize", std::to_string(_byteSize)));
+  ret.push_back(std::make_pair("lineLength", std::to_string(lineLength)));
+  return ret;
+}
+
 void Memory::wasUpdated(const std::size_t address, const std::size_t amount) {
   _callback(address, amount);
 }

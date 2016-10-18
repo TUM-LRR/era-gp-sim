@@ -21,6 +21,8 @@
 
 #include <cstddef>
 #include <functional>
+#include <string>
+#include <utility>
 
 #include "common/assert.hpp"
 #include "core/memory-value.hpp"
@@ -87,9 +89,8 @@ class Memory {
    * \brief Sets the callback to notify the gui about changes in the data
    * \param callback the callback to be set as _callback
    */
-  void
-  setCallback(const std::function<void(const std::size_t, const std::size_t)>
-                  &callback);
+  void setCallback(const std::function<void(const std::size_t,
+                                            const std::size_t)> &callback);
 
   /**
    * \brief Returns a MemoryValue holding the data stored in the Memory at
@@ -114,6 +115,9 @@ class Memory {
    * \returns Value that was overwritten
    */
   MemoryValue set(const std::size_t address, const MemoryValue &value);
+
+  std::vector<std::pair<std::string, std::string>>
+  serializeRaw(std::size_t lineLength = 64);
 
  private:
   std::size_t _byteSize;  /**< Brief Size of a Byte in bit*/
