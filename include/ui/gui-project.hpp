@@ -17,14 +17,17 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef INCLUDE_UI_EDITOR_QPROJECT_H
-#define INCLUDE_UI_EDITOR_QPROJECT_H
+#ifndef ERAGPSIM_UI_EDITOR_GUI_PROJECT_HPP
+#define ERAGPSIM_UI_EDITOR_GUI_PROJECT_HPP
 
 #include <QObject>
 #include <QQmlContext>
+#include <QString>
 
 #include "ui/editor-component.hpp"
 #include "ui/registermodel.hpp"
+
+class ArchitectureFormula;
 
 /**
  * The GuiProject class. This class encapsulates all gui c++ components and the
@@ -37,10 +40,34 @@
  * moment, sorry!
  *
  */
-class QProject : public QObject {
+class GuiProject : public QObject {
   Q_OBJECT
  public:
-  explicit QProject(QQmlContext* projectContext, QObject* parent = 0);
+  explicit GuiProject(QQmlContext* projectContext,
+                      ArchitectureFormula architectureFormula,
+                      std::size_t memorySize,
+                      QObject* parent = 0);
+
+  void parse() {
+  }
+  void run() {
+  }
+  void runLine() {
+  }
+  void runBreakpoint() {
+  }
+  void stop() {
+  }
+  void reset() {
+  }
+  void save() {
+  }
+  void saveAs(QString name) {
+  }
+  void saveSnapshot(QString name) {
+  }
+  void loadSnapshot(QString name) {
+  }
 
 
  private:
@@ -53,4 +80,4 @@ class QProject : public QObject {
  public slots:
 };
 
-#endif// INCLUDE_UI_EDITOR_QPROJECT_H
+#endif// ERAGPSIM_UI_EDITOR_GUI_PROJECT_HPP
