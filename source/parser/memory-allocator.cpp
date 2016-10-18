@@ -30,6 +30,10 @@ RelativeMemoryPosition::RelativeMemoryPosition()
 : RelativeMemoryPosition("", 0) {
 }
 
+bool RelativeMemoryPosition::valid() {
+  return section != "";
+}
+
 //
 MemorySectionDefinition::MemorySectionDefinition(const std::string& name,
                                                  std::size_t sectionAlignment,
@@ -154,6 +158,7 @@ MemoryAllocator::at(std::size_t index) const {
 
 std::size_t MemoryAllocator::absolutePosition(
     const RelativeMemoryPosition& relative) const {
+  assert::that(_nameToSection.find(relative.section) != _nameToSection.end());
   return _sections.at(_nameToSection.at(relative.section))
       .absoluteAddress(relative.offset);
 }

@@ -74,7 +74,11 @@ FinalCommand IntermediateInstruction::compileInstruction(
 
 void IntermediateInstruction::enhanceSymbolTable(
     SymbolTable& table, const MemoryAllocator& allocator, CompileState& state) {
-  _address = allocator.absolutePosition(_relativeAddress);
+  if (_relativeAddress.valid()) {
+    _address = allocator.absolutePosition(_relativeAddress);
+  } else {
+    _address = 0;
+  }
 
   // We insert all our labels.
   for (const auto& i : _labels) {
@@ -86,11 +90,21 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
                                              MemoryAllocator& allocator,
                                              CompileState& state) {
   if (state.section != "text") {
-    state.addError("Tried to define an instruction in the text section.");
+    state.addError("Tried to define an instruction in not the text section.");
     return;
   }
 
-  // For now.
-  std::size_t instructionLength = architecture.getWordSize() / 8;
+  const auto& instructionSet = architecture.getInstructions();
+
+  // toLower as long as not fixed in instruction set.
+  if (!instructionSet.hasInstruction(_name))//(Utility::toLower(_name)))
+  {
+    state.addError("Unknown opcode: " + _name);
+    return;
+  }
+
+  // For now. Later to be reworked with a bit-level memory allocation?
+  std::size_t instructionLength =
+      instructionSet[_name].getLength() / architecture.getByteSize();
   _relativeAddress = allocator["text"].allocateRelative(instructionLength);
 }

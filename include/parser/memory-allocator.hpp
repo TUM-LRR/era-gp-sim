@@ -51,6 +51,12 @@ struct RelativeMemoryPosition {
    * \brief Creates a new empty relative memory position.
    */
   RelativeMemoryPosition();
+
+  /**
+   * \brief Checks if the relative memory position is not in an empty section.
+   * \return True, if section != "".
+   */
+  bool valid();
 };
 
 /**
