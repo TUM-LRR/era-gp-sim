@@ -97,7 +97,7 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
   const auto& instructionSet = architecture.getInstructions();
 
   // toLower as long as not fixed in instruction set.
-  if (!instructionSet.hasInstruction(_name))//(Utility::toLower(_name)))
+  if (!instructionSet.hasInstruction(Utility::toLower(_name)))
   {
     state.addError("Unknown opcode: " + _name);
     return;
