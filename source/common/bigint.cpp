@@ -1,66 +1,171 @@
 #include "common/bigint.hpp"
-/*
-BigInt BigInt::operator+(const BigInt &other) const {
-  BigInt ret = other;
-  return ret += *this;
-}
-BigInt BigInt::operator-(const BigInt &other) const {
-  BigInt ret = other;
-  return ret -= *this;
-}
-BigInt BigInt::operator*(const BigInt &other) const {
-  BigInt ret = other;
-  return ret *= *this;
-}
-BigInt BigInt::operator/(const BigInt &other) const {
-  BigInt ret = other;
-  return ret /= *this;
-}
-BigInt BigInt::operator%(const BigInt &other) const {
-  BigInt ret = other;
-  return ret %= *this;
+
+// template <std::size_t size, typename intType, std::size_t intTypeSize>
+// using BigIntType = BigInt<size, intType, intTypeSize>;
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator+(const BigInt<size, intType, intTypeSize> &other) const {
+  BigInt<size, intType, intTypeSize> ret = *this;
+  return ret += other;
 }
 
-BigInt BigInt::operator+() const { return std::copy(*this); }
-BigInt BigInt::operator-() const { return ++(~*this); } // something like this?
-BigInt &BigInt::operator++() { return *this += 1; }
-BigInt BigInt::operator++(int) {
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator-(const BigInt<size, intType, intTypeSize> &other) const {
+  BigInt<size, intType, intTypeSize> ret = *this;
+  return ret -= other;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator*(const BigInt<size, intType, intTypeSize> &other) const {
+  BigInt<size, intType, intTypeSize> ret = *this;
+  return ret *= other;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator/(const BigInt<size, intType, intTypeSize> &other) const {
+  BigInt<size, intType, intTypeSize> ret = *this;
+  return ret /= other;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator%(const BigInt<size, intType, intTypeSize> &other) const {
+  BigInt<size, intType, intTypeSize> ret = *this;
+  return ret %= other;
+}
+
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator+() const {
+  return std::copy(*this);
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator-() const {
+  return ++(~*this);// something like this?
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> &BigInt<size, intType, intTypeSize>::
+operator++() {
+  return *this += 1;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator++(int) {
   BigInt ret = *this;
   ++*this;
   return ret;
 }
-BigInt &BigInt::operator--() { return *this -= 1; }
-BigInt BigInt::operator--(int) {
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> &BigInt<size, intType, intTypeSize>::
+operator--() {
+  return *this -= 1;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator--(int) {
   BigInt ret = *this;
-  ++*this;
+  --*this;
   return ret;
 }
 
-bool BigInt::operator==(const BigInt &other) const {
-  for (szd::size_t i = 0; i < intTypeCount; ++i) {
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+bool BigInt<size, intType, intTypeSize>::
+operator==(const BigInt<size, intType, intTypeSize> &other) const {
+  for (std::size_t i = 0; i < intTypeCount; ++i) {
     if (getByte(i) != other.getByte(i)) {
       return false;
     }
   }
   return true;
 }
-bool BigInt::operator==(const BigInt &other) const {
-  return !((*this) == other);
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+bool BigInt<size, intType, intTypeSize>::
+operator!=(const BigInt<size, intType, intTypeSize> &other) const {
+  return !(*this == other);
 }
-bool BigInt::operator<(const BigInt &other) const {
-  for (szd::size_t i = intTypeCount; i > 0; --i) {
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+bool BigInt<size, intType, intTypeSize>::
+operator<(const BigInt<size, intType, intTypeSize> &other) const {
+  for (std::size_t i = intTypeCount; i > 0; --i) {
     if (getByte(i - 1) != other.getByte(i - 1)) {
-      return getByte(i - 1) < other.getByte(i - 1));
+      return getByte(i - 1) < other.getByte(i - 1);
     }
   }
   return false;
 }
-bool BigInt::operator>=(const BigInt &other) const {
-  return ((*this) == other) || ((*this) > other);
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+bool BigInt<size, intType, intTypeSize>::
+operator>(const BigInt<size, intType, intTypeSize> &other) const {
+  return !((*this == other) || (*this < other));
 }
-bool BigInt::operator<=(const BigInt &other) const {
-  return ((*this) == other) || ((*this) < other);
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+bool BigInt<size, intType, intTypeSize>::
+operator<=(const BigInt<size, intType, intTypeSize> &other) const {
+  return (*this == other) || (*this < other);
 }
-bool BigInt::operator>(const BigInt &other) const {
-  return !((*this) < other);
-}*/
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+bool BigInt<size, intType, intTypeSize>::
+operator>=(const BigInt<size, intType, intTypeSize> &other) const {
+  return (*this == other) || (*this > other);
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator~() const {
+  BigInt<size, intType, intTypeSize> ret=*this;
+  for(auto& i : ret._data){
+    i = ~i;
+  }
+  return ret;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator|(const BigInt<size, intType, intTypeSize> &other) const {
+  BigInt<size, intType, intTypeSize> ret = *this;
+  return ret |= other;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator&(const BigInt<size, intType, intTypeSize> &other) const {
+  BigInt<size, intType, intTypeSize> ret = *this;
+  return ret &= other;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator^(const BigInt<size, intType, intTypeSize> &other) const {
+  BigInt<size, intType, intTypeSize> ret = *this;
+  return ret ^= other;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator<<(const BigInt<size, intType, intTypeSize> &other) const {
+  BigInt<size, intType, intTypeSize> ret = *this;
+  return ret <<= other;
+}
+
+template <std::size_t size, typename intType, std::size_t intTypeSize>
+BigInt<size, intType, intTypeSize> BigInt<size, intType, intTypeSize>::
+operator>>(const BigInt<size, intType, intTypeSize> &other) const {
+  BigInt<size, intType, intTypeSize> ret = *this;
+  return ret >>= other;
+}
