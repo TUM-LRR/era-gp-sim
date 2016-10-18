@@ -43,15 +43,14 @@ void Ui::addProject(QQuickItem* tabItem,
                     QString architecture,
                     QStringList extensionsQString,
                     QString parser) {
-  // convert QStringList to std::vector<std::string>
-  std::vector<std::string> extensions;
-  for (auto&& qstring : extensionsQString) {
-    extensions.push_back(qstring.toStdString());
-  }
   // create ArchitectureFormula
-  // ArchitectureFormula architectureFormula(architecture.toStdString(),
-  //                                      std::move(extensions));
-  ArchitectureFormula architectureFormula("riscv", {"rv32i"});
+  ArchitectureFormula architectureFormula(architecture.toStdString());
+
+  // add all extensions
+  for (const auto& qstring : extensionsQString) {
+    architectureFormula.addExtension(qstring.toStdString());
+  }
+  // get the memory size from the qvariant object.
   std::size_t memorySize = memorySizeQVariant.value<std::size_t>();
 
   // parent is tabItem, so it gets destroyed at the same time
@@ -119,10 +118,10 @@ void Ui::removeProject(int index) {
   _projects.erase(_projects.begin() + index);
 }
 
-void Ui::changeSystem(int index, std::string base) {
+void Ui::changeSystem(int index, QString base) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects[index]->changeSystem(base);
+  _projects[index]->changeSystem(base.toStdString());
 }
 
 void Ui::parse(int index) {

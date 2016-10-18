@@ -262,7 +262,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
   commandInterface.setBreakpoint(0).get();
   commandInterface.deleteBreakpoint(0);
 
-  EXPECT_EQ(4, proxy.getLine().get());
+  EXPECT_EQ(5, proxy.getLine().get());
 
   commandInterface.setExecutionPoint(1);
 
@@ -275,7 +275,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
   commandInterface.executeToBreakpoint();
   commandInterface.setBreakpoint(3).get();
 
-  EXPECT_EQ(4, proxy.getLine().get());
+  EXPECT_EQ(5, proxy.getLine().get());
 }
 
 TEST_F(ProjectTestFixture, ParserInterfaceTest) {

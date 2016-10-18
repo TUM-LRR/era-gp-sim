@@ -114,7 +114,7 @@ class Ui : public QObject {
    *
    * \param base The name of the numerical system.
    */
-  Q_INVOKABLE void changeSystem(int index, std::string base);
+  Q_INVOKABLE void changeSystem(int index, QString base);
 
   /**
    * Calls parse on the specified project.

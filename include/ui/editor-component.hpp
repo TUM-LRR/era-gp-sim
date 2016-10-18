@@ -79,7 +79,7 @@ class EditorComponent : public QObject {
    * \param errorList List of CompileError objects.
    *
    */
-  void setErrorList(std::vector<CompileError> &&errorList);
+  void setErrorList(const std::vector<CompileError> &errorList);
 
   /**
    * Set the current line of execution, in order to correctly display it in the

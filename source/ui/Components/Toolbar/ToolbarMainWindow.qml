@@ -188,7 +188,7 @@ ToolBar {
 
             onClicked: {
                 console.info("Bin clicked");
-                ui.changeSystem(textBin.text);
+                ui.changeSystem(tabView.currentIndex, textBin.text);
                 style=styleClicked;
                 oct.notClicked();
                 dec.notClicked();
@@ -216,7 +216,7 @@ ToolBar {
             }
             onClicked: {
                 console.info("Oct clicked");
-                ui.changeSystem(textOct.text);
+                ui.changeSystem(tabView.currentIndex, textOct.text);
                 style=styleClicked;
                 bin.notClicked();
                 dec.notClicked();
@@ -243,7 +243,7 @@ ToolBar {
             style: styleNotClicked
             onClicked: {
                 console.info("Dec clicked");
-                ui.changeSystem(textDec.text);
+                ui.changeSystem(tabView.currentIndex, textDec.text);
                 style=styleClicked;
                 bin.notClicked();
                 oct.notClicked();
@@ -268,7 +268,7 @@ ToolBar {
             style: styleNotClicked
             onClicked: {
                 console.info("Hex clicked");
-                ui.changeSystem(textHex.text);
+                ui.changeSystem(tabView.currentIndex, textHex.text);
                 style=styleClicked;
                 bin.notClicked();
                 oct.notClicked();
