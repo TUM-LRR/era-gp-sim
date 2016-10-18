@@ -19,6 +19,7 @@ set(PARSER_SOURCES
   parser-factory.cpp
   integer-parser.cpp
   final-representation.cpp
+  memory-allocator.cpp
 )
 
 ########################################

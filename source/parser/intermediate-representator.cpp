@@ -18,10 +18,13 @@
 
 #include "parser/intermediate-representator.hpp"
 
+#include "arch/common/architecture.hpp"
 #include "parser/symbol-table.hpp"
 
 FinalRepresentation
-IntermediateRepresentator::transform(const SyntaxTreeGenerator& generator,
+IntermediateRepresentator::transform(const Architecture& architecture,
+                                     const SyntaxTreeGenerator& generator,
+                                     MemoryAllocator& allocator,
                                      CompileState& state,
                                      MemoryAccess& memoryAccess) {
   // Before everything begins, we got to check if we are still in a macro.
@@ -29,10 +32,19 @@ IntermediateRepresentator::transform(const SyntaxTreeGenerator& generator,
     state.addError("Macro not closed. Missing a macro end directive?");
   }
 
-  // First of all, we insert all our labels/constants into the SymbolTable.
+  allocator.clear();
+
+  // First of all, we reserve our memory.
+  for (const auto& i : _commandList) {
+    i->allocateMemory(architecture, allocator, state);
+  }
+
+  allocator.calculatePositions();
+
+  // Secondly, we insert all our labels/constants into the SymbolTable.
   SymbolTable table;
   for (const auto& i : _commandList) {
-    i->enhanceSymbolTable(table, state);
+    i->enhanceSymbolTable(table, allocator, state);
   }
 
   // Then, we execute their values.
