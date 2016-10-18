@@ -61,7 +61,8 @@ struct TestJumpInstructions : public RiscvBaseTest {
     // assert::test
     assert(instruction->validate(memoryAccess).isSuccess());
 
-    instruction->getValue(memoryAccess);
+    MemoryValue newPc = instruction->getValue(memoryAccess);
+    memoryAccess.putRegisterValue("pc", newPc);
   }
 
   void testJAL(const std::string& linkRegisterName, offset_t offset) {
@@ -95,7 +96,8 @@ struct TestJumpInstructions : public RiscvBaseTest {
     instruction->addChild(std::move(baseRegister));
     instruction->addChild(std::move(jumpOffset));
 
-    instruction->getValue(memoryAccess);
+    MemoryValue newPc = instruction->getValue(memoryAccess);
+    memoryAccess.putRegisterValue("pc", newPc);
   }
 
   void testJALR(const std::string& linkRegisterName,
