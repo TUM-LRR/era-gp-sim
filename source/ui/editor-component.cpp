@@ -20,56 +20,57 @@
 #include "ui/editor-component.hpp"
 
 #include <QFontMetrics>
-#include <cassert>
-#include <iostream>
 
-EditorComponent::EditorComponent(QQmlContext* projectContext, QObject* parent)
+#include "common/assert.hpp"
+
+EditorComponent::EditorComponent(
+    QQmlContext *projectContext,
+    /* ParserInterface parserInterface, CommandInterface commandInterface,*/ QObject
+        *parent)
 : QObject(parent) {
   projectContext->setContextProperty("editor", this);
 
-  // test
-  QTextCharFormat format;
-  format.setForeground(Qt::darkBlue);
-  format.setFontWeight(QFont::Bold);
-  _keywords.push_back(
-      KeywordRule{QRegularExpression("\\badd\\b",
-                                     QRegularExpression::CaseInsensitiveOption),
-                  format});
-  _keywords.push_back(
-      KeywordRule{QRegularExpression("\\baddi\\b",
-                                     QRegularExpression::CaseInsensitiveOption),
-                  format});
-  _keywords.push_back(
-      KeywordRule{QRegularExpression("\\bmul\\b",
-                                     QRegularExpression::CaseInsensitiveOption),
-                  format});
-  _keywords.push_back(
-      KeywordRule{QRegularExpression("\\bdiv\\b",
-                                     QRegularExpression::CaseInsensitiveOption),
-                  format});
-  _keywords.push_back(
-      KeywordRule{QRegularExpression("\\band\\b",
-                                     QRegularExpression::CaseInsensitiveOption),
-                  format});
-  _keywords.push_back(KeywordRule{
-      QRegularExpression("\\bor\\b", QRegularExpression::CaseInsensitiveOption),
-      format});
+  // TODO select colors according to a theme/possibility to change colors
+
+  // Add all instruction keywords to the syntax highlighter
+  QTextCharFormat instructionFormat;
+  instructionFormat.setForeground(Qt::darkBlue);
+  instructionFormat.setFontWeight(QFont::Bold);
+  //_addKeywords(SyntaxInformation::Token::Instruction, instructionFormat,
+  //             QRegularExpression::CaseInsensitiveOption, parserInterface);
+
+  // Add the immediate regex to the syntax highlighter
+  QTextCharFormat immediateFormat;
+  immediateFormat.setForeground(Qt::red);
+  immediateFormat.setFontWeight(QFont::Bold);
+  //_addKeywords(SyntaxInformation::Token::Immediate, immediateFormat,
+  //             QRegularExpression::CaseInsensitiveOption, parserInterface);
+
+  // Add the comment regex to the syntax highlighter
+  QTextCharFormat commentFormat;
+  commentFormat.setForeground(Qt::green);
+  //_addKeywords(SyntaxInformation::Token::Comment, commentFormat,
+  //             QRegularExpression::NoPatternOption, parserInterface);
+
+  // Add the register regex to the syntax highlighter
+  QTextCharFormat registerFormat;
+  registerFormat.setForeground(Qt::yellow);
+  registerFormat.setFontWeight(QFont::Bold);
+  //_addKeywords(SyntaxInformation::Token::Register, registerFormat,
+  //             QRegularExpression::NoPatternOption, parserInterface);
+
+  // Add the label regex to the syntax highlighter
+  QTextCharFormat labelFormat;
+  labelFormat.setForeground(Qt::red);
+  labelFormat.setFontWeight(QFont::Bold);
+  //_addKeywords(SyntaxInformation::Token::Label, labelFormat,
+  //             QRegularExpression::CaseInsensitiveOption, parserInterface);
 }
 
-void EditorComponent::init(QQuickTextDocument* qDocument) {
+void EditorComponent::init(QQuickTextDocument *qDocument) {
   if (this->_highlighter) {
-    assert(false);
+    assert::that(false);
   }
-  // test/demonstration of errors
-  std::vector<CompileError> list;
-  list.push_back(CompileError(
-      "<b>error</b>", CodePosition(10, 10), CompileErrorSeverity::ERROR));
-  list.push_back(CompileError(
-      "warning", CodePosition(20, 20), CompileErrorSeverity::WARNING));
-  list.push_back(CompileError(
-      "information", CodePosition(30, 30), CompileErrorSeverity::INFORMATION));
-  setErrorList(std::move(list));
-
   // set tab width to 4 spaces
   QTextOption textOptions = qDocument->textDocument()->defaultTextOption();
   QFontMetrics fontMetrics(qDocument->textDocument()->defaultFont());
@@ -78,15 +79,18 @@ void EditorComponent::init(QQuickTextDocument* qDocument) {
 
   _highlighter = (std::make_unique<SyntaxHighlighter>(
       std::move(_keywords), qDocument->textDocument()));
-  std::cout << "Created new SyntaxHighlighter." << std::endl;
 }
 
 void EditorComponent::sendText(QString text) {
 }
 
-void EditorComponent::setErrorList(std::vector<CompileError>&& errorList) {
+void EditorComponent::parse() {
+  emit parseText();
+}
+
+void EditorComponent::setErrorList(std::vector<CompileError> &&errorList) {
   emit deleteErrors();
-  for (const CompileError& error : errorList) {
+  for (const CompileError &error : errorList) {
     QColor color;
     if (error.severity() == CompileErrorSeverity::ERROR) {
       color = QColor(Qt::red);
@@ -97,10 +101,24 @@ void EditorComponent::setErrorList(std::vector<CompileError>&& errorList) {
     if (error.severity() == CompileErrorSeverity::INFORMATION) {
       color = QColor(Qt::blue);
     }
-    emit addError(
-        QString::fromStdString(error.message()), error.position().first.line(), color);
+    emit addError(QString::fromStdString(error.message()),
+                  error.position().first.line(),
+                  color);
   }
 }
 
 void EditorComponent::setCurrentLine(int line) {
+  emit executionLineChanged(line);
+}
+
+void _addKeywords(SyntaxInformation::Token token,
+                  QTextCharFormat format,
+                  QRegularExpression::PatternOption patternOption /*,
+                  ParserInterface parserInterface*/) {
+  /*for (auto &&regexString : parserInterface.getSyntaxRegex(token)) {
+    QRegularExpression regex(QString::fromStdString(regexString),
+                             patternOption);
+    KeywordRule keyword{regex, format};
+    _keywords.push_back(keyword);
+  }*/
 }

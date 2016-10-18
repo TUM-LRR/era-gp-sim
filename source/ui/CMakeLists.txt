@@ -32,6 +32,8 @@ qt5_wrap_cpp(UI_HEADERS_WRAPPED ${UI_HEADERS})
 
 add_executable(gui ${UI_SOURCES} ${UI_RESOURCES} ${UI_HEADERS_WRAPPED})
 
+target_link_libraries(gui era-sim-arch-common era-sim-arch-riscv era-sim-core era-sim-common)
+
 qt5_use_modules(gui Widgets Qml Quick)
 
 target_link_libraries(gui era-sim-common era-sim-arch-common)
