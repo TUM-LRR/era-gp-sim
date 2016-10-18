@@ -52,7 +52,7 @@ before_script:
 
 script:
   - make VERBOSE=1
-  - ctest -V
+  - ctest --verbose --parallel 2
 
 notifications:
   email: false

@@ -44,9 +44,11 @@ void RegisterSet::put(const std::string &name, const MemoryValue &value) {
   auto registerIterator = _dict.find(name);
   assert::that(registerIterator != _dict.end());
   auto registerID = registerIterator->second;
-  assert::that(value.getSize() == (registerID.end - registerID.begin));
-  _register[registerID.address].write(value, registerID.begin);
-  wasUpdated(registerID.address);
+  if(!_constant[registerID.address]){
+    assert::that(value.getSize() == (registerID.end - registerID.begin));
+    _register[registerID.address].write(value, registerID.begin);
+    wasUpdated(registerID.address);
+  }
 }
 
 MemoryValue
@@ -54,11 +56,13 @@ RegisterSet::set(const std::string &name, const MemoryValue &value) {
   auto registerIterator = _dict.find(name);
   assert::that(registerIterator != _dict.end());
   auto registerID = registerIterator->second;
-  assert::that(value.getSize() == (registerID.end - registerID.begin));
   MemoryValue previous{
       _register[registerID.address].subSet(registerID.begin, registerID.end)};
-  _register[registerID.address].write(value, registerID.begin);
-  wasUpdated(registerID.address);
+  if(!_constant[registerID.address]){
+    assert::that(value.getSize() == (registerID.end - registerID.begin));
+    _register[registerID.address].write(value, registerID.begin);
+    wasUpdated(registerID.address);
+  }
   return previous;
 }
 
@@ -70,33 +74,38 @@ std::size_t RegisterSet::getSize(const std::string &name) const {
 }
 
 void RegisterSet::createRegister(const std::string &name,
-                                 const std::size_t size) {
+                                 std::size_t size,
+                                 bool constant) {
   // could optimize this using moves, maybe
   createRegister(name, MemoryValue{size});
 }
 
 void RegisterSet::createRegister(const std::string &name,
-                                 const MemoryValue &value) {
+                                 const MemoryValue &value,
+                                 bool constant) {
   assert::that(_dict.find(name) == _dict.end());
   _dict.emplace(name, RegisterID(_register.size(), 0, value.getSize()));
   _register.emplace_back(MemoryValue(value));
   _updateSet.push_back(std::set<std::string>{name});
+  _constant.push_back(constant);
   wasUpdated(_register.size() - 1);
 }
 void RegisterSet::createRegister(const std::vector<std::string> &nameList,
                                  const MemoryValue &value,
-                                 const bool silent) {
+                                 bool constant,
+                                 bool silent) {
   assert::that(nameList.size() > 0);
   // this could maybe be optimized with move stuff
-  createRegister(nameList[0], value);
+  createRegister(nameList[0], value, constant);
   for (std::size_t i = 1; i < nameList.size(); ++i) {
     aliasRegister(nameList[i], nameList[0], 0, silent);
   }
 }
 void RegisterSet::createRegister(const std::vector<std::string> &nameList,
-                                 const std::size_t size,
-                                 const bool silent) {
-  createRegister(nameList, MemoryValue{size}, silent);
+                                 std::size_t size,
+                                 bool constant,
+                                 bool silent) {
+  createRegister(nameList, MemoryValue{size}, constant, silent);
 }
 
 void RegisterSet::aliasRegister(const std::string &name,

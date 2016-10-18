@@ -20,11 +20,13 @@
 #ifndef ERAGPSIM_ARCH_INSTRUCTION_INFORMATION_HPP
 #define ERAGPSIM_ARCH_INSTRUCTION_INFORMATION_HPP
 
+#include <cstddef>
 #include <string>
 
 #include "arch/common/information-interface.hpp"
 #include "arch/common/instruction-key.hpp"
 #include "common/builder-interface.hpp"
+#include "common/optional.hpp"
 
 /**
  * Holds information about an instruction.
@@ -39,6 +41,8 @@
  */
 class InstructionInformation : public InformationInterface {
  public:
+  using length_t = std::size_t;
+
   /**
   * Deserializes and constructs the `InstructionInformation` from the given
   * data.
@@ -54,9 +58,7 @@ class InstructionInformation : public InformationInterface {
    * \param key The key of the instruction.
    * \param format The format of the instruction.
    */
-  InstructionInformation(const std::string& mnemonic = std::string(),
-                         const InstructionKey& key   = InstructionKey(),
-                         const std::string& format   = std::string());
+  InstructionInformation(const std::string& mnemonic = std::string());
 
   /**
    * Tests for equality of two instructions.
@@ -140,12 +142,34 @@ class InstructionInformation : public InformationInterface {
   /**
    * Returns the format string of the instruction.
    */
-  const std::string& getFormat() const noexcept;
+  const std::string& getFormat() const;
 
   /**
-   * Tests if the instruction has a format set.
+   * \return True if the instruction has a format set, else false.
    */
   bool hasFormat() const noexcept;
+
+  /**
+   * Sets the length of the instruction in bits.
+   *
+   * This format is an architecture-dependent string, such as "F" for F-type
+   * instructions in RISC-V.
+   *
+   * \param format The format string specifier.
+   *
+   * \return The current instruction object.
+   */
+  InstructionInformation& length(length_t length);
+
+  /**
+   * \return The length of the instruction in bits.
+   */
+  length_t getLength() const;
+
+  /**
+   * @return True if the instruction has a length set, else false.
+   */
+  bool hasLength() const noexcept;
 
   /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
@@ -167,6 +191,9 @@ class InstructionInformation : public InformationInterface {
 
   /** The key of the instruction. */
   InstructionKey _key;
+
+  /** The length of the instruction, in bits. */
+  Optional<length_t> _length;
 };
 
 #endif /* ERAGPSIM_ARCH_INSTRUCTION_INFORMATION_HPP */

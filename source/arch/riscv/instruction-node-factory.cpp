@@ -249,7 +249,9 @@ InstructionNodeFactory::Node InstructionNodeFactory::createInstructionNode(
     const std::string& mnemonic) const {
   auto lower = Utility::toLower(mnemonic);
 
-  assert(_instructionSet.hasInstruction(lower));
+  if(!_instructionSet.hasInstruction(lower)) {
+      return nullptr;
+  }
   auto information = _instructionSet.getInstruction(lower);
 
   return _factories.create(lower, information);

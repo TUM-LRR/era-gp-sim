@@ -10,81 +10,95 @@ reset-units: true
 
 instructions:
   - mnemonic: lwu
+    length: 32
     format: I
     key:
       opcode: 3
       funct3: 6
   - mnemonic: ld
+    length: 32
     format: I
     key:
       opcode: 3
       funct3: 3
   - mnemonic: sd
+    length: 32
     format: S
     key:
       opcode: 35
       funct3: 1
       funct7: 0
   - mnemonic: slli
+    length: 32
     format: R
     key:
       opcode: 19
       funct3: 1
       funct7: 0
   - mnemonic: srai
+    length: 32
     format: R
     key:
       opcode: 19
       funct3: 5
       funct7: 1
   - mnemonic: addiw
+    length: 32
     format: I
     key:
       opcode: 27
       funct3: 0
   - mnemonic: slliw
+    length: 32
     format: R
     key:
       opcode: 27
       funct3: 1
       funct7: 0
   - mnemonic: srliw
+    length: 32
     format: R
     key:
       opcode: 27
       funct3: 5
       funct7: 0
   - mnemonic: sraiw
+    length: 32
     format: R
     key:
       opcode: 27
       funct3: 5
       funct7: 32
   - mnemonic: addw
+    length: 32
     format: R
     key:
       opcode: 59
       funct3: 0
       funct7: 0
   - mnemonic: subw
+    length: 32
     format: R
     key:
       opcode: 59
       funct3: 0
       funct7: 32
   - mnemonic: sllw
+    length: 32
     format: R
     key:
       opcode: 59
       funct3: 1
       funct7: 0
   - mnemonic: srlw
+    length: 32
     format: R
     key:
       opcode: 59
       funct3: 5
       funct7: 0
   - mnemonic: sraw
+    length: 32
     format: R
     key:
       opcode: 59

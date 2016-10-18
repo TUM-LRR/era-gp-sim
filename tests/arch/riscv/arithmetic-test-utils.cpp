@@ -2,7 +2,7 @@
 #include "common/assert.hpp"
 
 void testIntegerInstructionValidation(MemoryAccess& memAccess,
-                                      InstructionNodeFactory& instrF,
+                                      const NodeFactoryCollection& instrF,
                                       ImmediateNodeFactory& immF,
                                       std::string instructionToken,
                                       bool isImmediateInstr) {
@@ -33,7 +33,7 @@ void testIntegerInstructionValidation(MemoryAccess& memAccess,
     instructionNode2->addChild(
         std::move(immF.createImmediateNode(riscv::convert<uint64_t>(0))));
   }
-  ASSERT_FALSE(instructionNode2->validate().isSuccess());
+  ASSERT_FALSE(instructionNode2->validate(memAccess).isSuccess());
   //ASSERT_THROW(instructionNode2->getValue(memAccess), AssertionError);
 
   // test valid children, but with one more operand
@@ -49,17 +49,17 @@ void testIntegerInstructionValidation(MemoryAccess& memAccess,
     instructionNode3->addChild(
         std::move(std::make_unique<RegisterNode>(registerId)));
   }
-  ASSERT_TRUE(instructionNode3->validate().isSuccess());
+  ASSERT_TRUE(instructionNode3->validate(memAccess).isSuccess());
   // add one more random node
   instructionNode3->addChild(
       std::move(immF.createImmediateNode(riscv::convert<uint64_t>(0))));
-  ASSERT_FALSE(instructionNode3->validate().isSuccess());
+  ASSERT_FALSE(instructionNode3->validate(memAccess).isSuccess());
   //ASSERT_THROW(instructionNode3->getValue(memAccess), AssertionError);
 }
 
-void test12BitImmediateBounds(InstructionNodeFactory& instrF,
+void test12BitImmediateBounds(const NodeFactoryCollection &instrF,
                               std::string instructionToken,
-                              ImmediateNodeFactory& immF) {
+                              ImmediateNodeFactory& immF, MemoryAccess &access) {
   constexpr uint64_t boundary = 0x7FF;
   constexpr int64_t negative_boundary =  -2048;//smallest negative integer in 12bit
   std::string registerId = "not relevant";
@@ -69,7 +69,7 @@ void test12BitImmediateBounds(InstructionNodeFactory& instrF,
   auto immediateNodeIn =
       immF.createImmediateNode(riscv::convert<uint64_t>(boundary));
   nodeTrue->addChild(std::move(immediateNodeIn));
-  ASSERT_TRUE(nodeTrue->validate().isSuccess());
+  ASSERT_TRUE(nodeTrue->validate(access).isSuccess());
 
   auto nodeTrueNegative = instrF.createInstructionNode(instructionToken);
   nodeTrueNegative->addChild(std::move(std::make_unique<RegisterNode>(registerId)));
@@ -77,7 +77,7 @@ void test12BitImmediateBounds(InstructionNodeFactory& instrF,
   auto immediateNodeNegative =
       immF.createImmediateNode(riscv::convert<int64_t>(negative_boundary));
   nodeTrueNegative->addChild(std::move(immediateNodeNegative));
-  ASSERT_TRUE(nodeTrueNegative->validate().isSuccess());
+  ASSERT_TRUE(nodeTrueNegative->validate(access).isSuccess());
 
   auto nodeFalse = instrF.createInstructionNode(instructionToken);
   nodeFalse->addChild(std::move(std::make_unique<RegisterNode>(registerId)));
@@ -85,5 +85,5 @@ void test12BitImmediateBounds(InstructionNodeFactory& instrF,
   auto immediateNodeOut =
       immF.createImmediateNode(riscv::convert<int64_t>(boundary + 1));
   nodeFalse->addChild(std::move(immediateNodeOut));
-  ASSERT_FALSE(nodeFalse->validate().isSuccess());
+  ASSERT_FALSE(nodeFalse->validate(access).isSuccess());
 }
