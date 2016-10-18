@@ -128,10 +128,10 @@ TEST_F(RiscParserTest, MultipleInstructions) {
 
 TEST_F(RiscParserTest, MalformedInstructions) {
   FinalRepresentation res;
-  res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7\nb-le  ",
+  res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7\nble  ",
                      ParserMode::COMPILE);
   EXPECT_EQ(res.errorList.size(), 3);
-  EXPECT_EQ(res.commandList.size(), 0);
+  EXPECT_EQ(res.commandList.size(), 1);
 }
 
 TEST_F(RiscParserTest, BadCharacters) {
@@ -148,13 +148,13 @@ TEST_F(RiscParserTest, MixedErrors) {
       " label  : SUB x5, x5, x0\n"
       ";kommentar\n"
       "sub  ;oops missing argument\n"
-      ";dfklgdjflj\n"
+      "dfklgdjflj\n"
       "addition123:\n"
       "\n"
       "_addition456: ADD x0, x0, x0; kommentar",
       ParserMode::COMPILE);
-  EXPECT_EQ(res.errorList.size(), 1);
-  EXPECT_EQ(res.commandList.size(), 4);
+  EXPECT_EQ(res.errorList.size(), 2);
+  EXPECT_EQ(res.commandList.size(), 5);
 }
 
 TEST_F(RiscParserTest, SyntaxInformation) {
