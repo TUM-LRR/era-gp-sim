@@ -21,6 +21,8 @@ set(PARSER_SOURCES
   integer-parser.cpp
   constant-directive.cpp
   compile-state.cpp
+  final-representation.cpp
+  memory-allocator.cpp
 )
 
 ########################################

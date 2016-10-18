@@ -70,6 +70,19 @@ class InstructionNode : public AbstractSyntaxTreeNode {
     return riscv::convert<T>(memory);
   }
 
+  /**
+   * Increments the program counter by
+   * `_information.getLength() /  BITS_PER_BYTE` and returns the new value.
+   *
+   * \tparam WordSize The unsigned word size integral of the architecture
+   */
+  template <typename WordSize>
+  MemoryValue _incrementProgramCounter(MemoryAccess& memoryAccess) const {
+    auto current = riscv::loadRegister<WordSize>(memoryAccess, "pc");
+    current += (_information.getLength() / riscv::BITS_PER_BYTE);
+    return riscv::convert<WordSize>(current);
+  }
+
   // TODO: Leaving it like so to avoid conflicts for now
   /**
    * Checks if this node has 'amount' children of type 'type', starting at
@@ -82,7 +95,6 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \return True if the children match the given types, else false.
    */
   bool _requireChildren(Type type, size_t startIndex, size_t amount) const;
-
 
   /**
    * Checks if the node's children are of the given types.

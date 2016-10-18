@@ -16,8 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gtest/gtest.h"
-
 #include <memory>
 #include <vector>
 
@@ -27,14 +25,19 @@
 #include "arch/common/node-factory-collection-maker.hpp"
 #include "arch/common/register-node.hpp"
 #include "arch/riscv/instruction-node.hpp"
+#include "core/project-module.hpp"
+#include "gtest/gtest.h"
 #include "parser/compile-state.hpp"
+#include "parser/riscv-parser.hpp"
 #include "parser/syntax-tree-generator.hpp"
 
 static SyntaxTreeGenerator buildGenerator() {
   Architecture testArch =
       Architecture::Brew(ArchitectureFormula{"riscv", {"rv32i"}});
   auto factoryCollection = NodeFactoryCollectionMaker::CreateFor(testArch);
-  SyntaxTreeGenerator generator(factoryCollection);
+  // For now: code function duplication!
+  SyntaxTreeGenerator generator(factoryCollection,
+                                RiscvParser::argumentGeneratorFunction);
   return generator;
 }
 
@@ -47,9 +50,7 @@ TEST(SyntaxTreeGenerator, init) {
   buildGenerator();
 }
 
-// Does not work right now... :(
-
-/*TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
+TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
   auto generator = buildGenerator();
   CompileState state;
   auto output = generator.transformOperand("1234", state);
@@ -63,28 +64,38 @@ TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   auto output = generator.transformOperand("r18", state);
   ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<RegisterNode>(output)));
-}*/
+}
 
 TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   auto generator = buildGenerator();
   CompileState state;
 
-  /*auto arg1 = generator.transformOperand("r1", state);
+  auto arg1 = generator.transformOperand("r1", state);
   ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
 
-  auto arg2 = generator.transformOperand("r2", state);
+  auto arg2 = generator.transformOperand("r1", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(arg2)));*/
+  ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
+
+  auto arg3 = generator.transformOperand("r2", state);
+  ASSERT_EQ(state.errorList.size(), 0);
+  ASSERT_TRUE((isInstance<RegisterNode>(arg2)));
 
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> sources;
-  // sources.push_back(std::move(arg1));
+  sources.push_back(std::move(arg1));
+  sources.push_back(std::move(arg2));
 
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> targets;
-  // targets.push_back(std::move(arg2));
+  targets.push_back(std::move(arg3));
 
-  auto output = generator.transformCommand("add", sources, targets, state);
+  ProjectModule projectModule(
+      ArchitectureFormula{"riscv", {"rv32i"}}, 4096, "riscv");
+  auto memoryAccess = projectModule.getMemoryAccess();
 
-  // ASSERT_EQ(state.errorList.size(), 0);
+  auto output =
+      generator.transformCommand("add", sources, targets, state, memoryAccess);
+
+  ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<riscv::InstructionNode>(output)));
 }

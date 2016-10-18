@@ -41,7 +41,9 @@ namespace ParserFactory {
  * \param name The name of the parser (see #mapping)
  * \return A unique pointer to the new parser.
  */
-ParserPtr createParser(const Architecture &arch, const std::string &name);
+ParserPtr createParser(const Architecture &arch,
+                       const MemoryAccess &memoryAccess,
+                       const std::string &name);
 
 /**
  * Maps names to Parser classes.
@@ -50,7 +52,8 @@ ParserPtr createParser(const Architecture &arch, const std::string &name);
  * names.
  */
 extern const std::unordered_map<std::string,
-                                ParserPtr (*)(const Architecture &)>
+                                ParserPtr (*)(const Architecture &,
+                                              const MemoryAccess &)>
     mapping;
 }
 

@@ -22,13 +22,13 @@
 void ConstantDirective::execute(FinalRepresentation& finalRepresentator,
                                 const SymbolTable& table,
                                 const SyntaxTreeGenerator& generator,
-                                CompileState& state) {
+                                CompileState& state, MemoryAccess &memoryAccess) {
   // Try to parse argument to catch errors early.
   std::string fullExpression = table.replaceSymbols(expression, state);
   generator.transformOperand(fullExpression, state);
 }
 
-void ConstantDirective::enhanceSymbolTable(SymbolTable& table,
+void ConstantDirective::enhanceSymbolTable(SymbolTable& table, const MemoryAllocator &allocator,
                                            CompileState& state) {
   if (_arguments.size() != 2) {
     state.addError("Malformed constant directive", state.position);

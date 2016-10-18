@@ -16,6 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "arch/common/architecture.hpp"
+#include "common/assert.hpp"
 #include "parser/intermediate-instruction.hpp"
 
 #include "parser/macro-directive.hpp"
@@ -23,7 +25,8 @@
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       const SymbolTable& table,
                                       const SyntaxTreeGenerator& generator,
-                                      CompileState& state) {
+                                      CompileState& state,
+                                      MemoryAccess& memoryAccess) {
   // First we need to check if the instruction is a macro.
   auto macro = state.macros.find(_name);
   // If its a macro, execute every sub-instruction.
@@ -36,7 +39,7 @@ void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
     // For a machine instruction, it is easy to "execute" it: just insert it
     // into the final form.
     finalRepresentator.commandList.push_back(
-        compileInstruction(table, generator, state));
+        compileInstruction(table, generator, state, memoryAccess));
   }
 }
 
@@ -68,18 +71,52 @@ IntermediateInstruction::compileArgumentVector(
 FinalCommand IntermediateInstruction::compileInstruction(
     const SymbolTable& table,
     const SyntaxTreeGenerator& generator,
-    CompileState& state) {
+    CompileState& state,
+    MemoryAccess& memoryAccess) {
   // We replace all occurenced in target in source (using a copy of them).
   auto srcCompiled = compileArgumentVector(_sources, table, generator, state);
   auto trgCompiled = compileArgumentVector(_targets, table, generator, state);
   FinalCommand result;
-  result.node = std::move(
-      generator.transformCommand(_name, srcCompiled, trgCompiled, state));
+  result.node = std::move(generator.transformCommand(
+      _name, srcCompiled, trgCompiled, state, memoryAccess));
   result.position = _lines;
   result.address = _address;
   return result;
 }
 
-void IntermediateInstruction::determineMemoryPosition() {
-  // To be expanded soon^TM. As soon as core is ready.
+void IntermediateInstruction::enhanceSymbolTable(
+    SymbolTable& table, const MemoryAllocator& allocator, CompileState& state) {
+  if (_relativeAddress.valid()) {
+    _address = allocator.absolutePosition(_relativeAddress);
+  } else {
+    _address = 0;
+  }
+
+  // We insert all our labels.
+  for (const auto& i : _labels) {
+    table.insertEntry(i, std::to_string(_address), state);
+  }
+}
+
+void IntermediateInstruction::allocateMemory(const Architecture& architecture,
+                                             MemoryAllocator& allocator,
+                                             CompileState& state) {
+  if (state.section != "text") {
+    state.addError("Tried to define an instruction in not the text section.");
+    return;
+  }
+
+  const auto& instructionSet = architecture.getInstructions();
+
+  // toLower as long as not fixed in instruction set.
+  auto opcode = Utility::toLower(_name);
+  if (!instructionSet.hasInstruction(opcode)) {
+    state.addError("Unknown opcode: " + _name);
+    return;
+  }
+
+  // For now. Later to be reworked with a bit-level memory allocation?
+  std::size_t instructionLength =
+      instructionSet[opcode].getLength() / architecture.getByteSize();
+  _relativeAddress = allocator["text"].allocateRelative(instructionLength);
 }

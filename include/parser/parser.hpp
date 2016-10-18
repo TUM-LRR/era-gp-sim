@@ -51,7 +51,7 @@ class Parser {
   virtual const SyntaxInformation getSyntaxInformation() = 0;
 
 
-  Parser()          = default;
+  Parser() = default;
   virtual ~Parser() = default;
 };
 
