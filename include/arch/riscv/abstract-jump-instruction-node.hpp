@@ -23,6 +23,7 @@
 #include "gtest/gtest_prod.h"
 
 #include "arch/common/instruction-information.hpp"
+#include "arch/common/validation-result.hpp"
 #include "arch/riscv/instruction-node.hpp"
 
 namespace riscv {
@@ -120,7 +121,9 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
 
     auto result = _jump(programCounter, memoryAccess);
 
-    return convert<UnsignedWord>(result);
+    riscv::storeRegister<UnsignedWord>(memoryAccess, "pc", result);
+
+    return {};
   }
 
   /**
@@ -143,8 +146,12 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
     result = _validateOffset(memoryAccess);
     if (!result.isSuccess()) return result;
 
-    result = _validateResultingProgramCounter();
-    if (!result.isSuccess()) return result;
+    return ValidationResult::success();
+  }
+
+  ValidationResult validateRuntime(MemoryAccess& memoryAccess) const override {
+    auto result = _validateResultingProgramCounter(memoryAccess);
+    if (!result) return result;
 
     return ValidationResult::success();
   }
@@ -152,6 +159,7 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
  protected:
   FRIEND_TEST(TestJumpInstructions, TestJALValidation);
   FRIEND_TEST(TestJumpInstructions, TestJALRValidation);
+
   /**
    * The actual, instruction-specific jump code.
    *
@@ -190,8 +198,7 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    *
    * \return A `ValidationResult` indicating the result of the check.
    */
-  virtual ValidationResult
-  _validateOffset(MemoryAccess& memoryAccess) const = 0;
+  virtual ValidationResult _validateOffset(MemoryAccess& memoryAccess) const = 0;
 
   /**
    * Validates the program counter that would resulting from the instruction.
@@ -200,7 +207,8 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    *
    * \return A `ValidationResult` indicating the result of the check.
    */
-  virtual ValidationResult _validateResultingProgramCounter() const = 0;
+  virtual ValidationResult
+  _validateResultingProgramCounter(MemoryAccess& memoryAccess) const = 0;
 };
 
 template <typename UnsignedWord, typename SignedWord>

@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "arch/common/architecture.hpp"
 #include "arch/common/node-factory-collection.hpp"
 #include "core/memory-access.hpp"
 #include "parser/compile-state.hpp"

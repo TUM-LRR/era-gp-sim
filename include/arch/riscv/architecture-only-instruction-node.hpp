@@ -83,8 +83,8 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
     assert(validate(memoryAccess).isSuccess());
     auto destination = _children[0]->getIdentifier();
 
-    auto first = _child(1, memoryAccess);
-    auto second = _child(2, memoryAccess);
+    auto first = _getChildValue(1, memoryAccess);
+    auto second = _getChildValue(2, memoryAccess);
 
     auto result = _compute(first, second);
     auto value = riscv::convert(result);
@@ -165,7 +165,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   }
 
  private:
-  OperationSize _child(size_t index, MemoryAccess& memoryAccess) const {
+  OperationSize _getChildValue(size_t index, MemoryAccess& memoryAccess) const {
     auto memory = _children[index]->getValue(memoryAccess);
     return riscv::convert<OperationSize>(memory);
   }

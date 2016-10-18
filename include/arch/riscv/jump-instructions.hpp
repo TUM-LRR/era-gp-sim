@@ -48,7 +48,7 @@ class JumpAndLinkImmediateInstructionNode
  private:
   using super::_children;
   using super::_compareChildTypes;
-  using super::_child;
+  using super::_getChildValue;
 
   /**
    * Performs the actual jump operation.
@@ -63,7 +63,7 @@ class JumpAndLinkImmediateInstructionNode
   UnsignedWord _jump(UnsignedWord programCounter,
                      MemoryAccess& memoryAccess) const override {
     // Load the immediate
-    auto offset = super::template _child<SignedWord>(memoryAccess, 1);
+    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 1);
 
     // The 20-bit immediate specifies an offset in multiples
     // of two, relative to the program counter.
@@ -117,7 +117,7 @@ class JumpAndLinkImmediateInstructionNode
    */
   ValidationResult _validateOffset(MemoryAccess& memoryAccess) const override {
     // Load the immediate
-    auto offset = super::template _child<SignedWord>(memoryAccess, 1);
+    auto offset = _children[1]->getValue(memoryAccess);
 
     // The immediate is 20 bit, but including the sign bit. Because it is
     // counted in multiples of two, you still get +- 20 bit, but the value
@@ -127,12 +127,6 @@ class JumpAndLinkImmediateInstructionNode
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Immediate operand must be 20 bit or less"));
     }
-
-    //    if (Utility::occupiesMoreBitsThan(offset, 20)) {
-    //      return ValidationResult::fail(
-    //          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-    //                            "Immediate operand must be 20 bit or less"));
-    //    }
 
     return ValidationResult::success();
   }
@@ -145,22 +139,22 @@ class JumpAndLinkImmediateInstructionNode
    *
    * \return A `ValidationResult` reflecting the result of the check.
    */
-  ValidationResult _validateResultingProgramCounter() const override {
+  ValidationResult
+  _validateResultingProgramCounter(MemoryAccess& memoryAccess) const override {
     static const auto addressBoundary =
         std::numeric_limits<UnsignedWord>::max();
 
-    // auto programCounter = _getRegister<UnsignedWord>(memoryAccess, "pc");
-    // auto offset         = _child<SignedWord>(1, memoryAccess);
-    //
-    // auto maximumAllowedOffset = addressBoundary - programCounter;
-    //
-    // // Check if the program counter would underflow or overflow
-    // if (-offset > programCounter || offset > maximumAllowedOffset) {
-    //   return ValidationResult::fail(
-    //       QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-    //                         "Branch offset would invalidate program
-    //                         counter"));
-    // }
+    auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
+    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 1);
+
+    auto maximumAllowedOffset = addressBoundary - programCounter;
+
+    // Check if the program counter would underflow or overflow
+    if (-offset > programCounter || offset > maximumAllowedOffset) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "Branch offset would invalidate program counter"));
+    }
 
     return ValidationResult::success();
   }
@@ -182,7 +176,7 @@ class JumpAndLinkRegisterInstructionNode
   using super::super;
 
  private:
-  using super::_child;
+  using super::_getChildValue;
   using super::_children;
   using super::_compareChildTypes;
 
@@ -199,8 +193,8 @@ class JumpAndLinkRegisterInstructionNode
    * \return The new program counter.
    */
   UnsignedWord _jump(UnsignedWord, MemoryAccess& memoryAccess) const override {
-    auto base = super::template _child<UnsignedWord>(memoryAccess, 1);
-    auto offset = super::template _child<SignedWord>(memoryAccess, 2);
+    auto base = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
+    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 2);
 
     auto address = base + offset;
 
@@ -265,7 +259,7 @@ class JumpAndLinkRegisterInstructionNode
    */
   ValidationResult _validateOffset(MemoryAccess& memoryAccess) const override {
     // Load the immediate
-    auto offset = super::template _child<SignedWord>(memoryAccess, 2);
+    auto offset = _children[2]->getValue(memoryAccess);
 
     // The immediate is 12 bit, but including the sign bit. Because it is
     // counted in multiples of two, you still get +- 12 bit, but the value
@@ -287,21 +281,22 @@ class JumpAndLinkRegisterInstructionNode
    *
    * \return A `ValidationResult` reflecting the result of the check.
    */
-  ValidationResult _validateResultingProgramCounter() const override {
+  ValidationResult
+  _validateResultingProgramCounter(MemoryAccess& memoryAccess) const override {
     static const auto addressBoundary =
         std::numeric_limits<UnsignedWord>::max();
 
-    // auto base   = super::template _child<UnsignedWord>(1, memoryAccess);
-    // auto offset = super::template _child<SignedWord>(2, memoryAccess);
-    //
-    // auto maximumAllowedOffset = addressBoundary - base;
-    //
-    // // Check if the program counter would underflow or overflow
-    // if (-offset > base || offset > maximumAllowedOffset) {
-    //   return ValidationResult::fail(
-    //       QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-    //                         "Jump offset would invalidate program counter"));
-    // }
+    auto base = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
+    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 2);
+
+    auto maximumAllowedOffset = addressBoundary - base;
+
+    // Check if the program counter would underflow or overflow
+    if (-offset > base || offset > maximumAllowedOffset) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "Jump offset would invalidate program counter"));
+    }
 
     return ValidationResult::success();
   }

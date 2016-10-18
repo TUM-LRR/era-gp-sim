@@ -37,11 +37,11 @@ bool performSignedBitWidthCheck(const MemoryValue& memory,
   // As such, we will start checking the bits at the sign bit of the immediate
   // (i.e. where we want the sign bit to be) and move up to one bit before the
   // sign bit of the memory value.
-  auto range = Utility::range<>(numberOfBits - 1, memory.getSize() - 1);
+  auto range = Utility::range(numberOfBits - 1, memory.getSize() - 1);
 
   // clang-format off
   return Utility::anyOf(range, [&memory, sign] (auto index) {
-    return memory.get(index) != sign;
+    return memory[index] != sign;
   });
   // clang-format on
 }
@@ -49,9 +49,9 @@ bool performSignedBitWidthCheck(const MemoryValue& memory,
 bool performUnsignedBitWidthCheck(const MemoryValue& memory,
                                   std::size_t numberOfBits) {
   // clang-format off
-  auto range = Utility::range<>(numberOfBits, memory.getSize());
+  auto range = Utility::range(numberOfBits, memory.getSize());
   return Utility::anyOf(range, [&memory](auto index) {
-    return memory.get(index) == 1;
+    return memory[index] == 1;
   });
   // clang-format on
 }
@@ -107,13 +107,5 @@ std::string loadFromFile(const std::string& filePath) {
             std::back_inserter(input));
 
   return input;
-}
-
-void pushBackFromEnd(std::vector<bool>& dest,
-                     const std::vector<bool>& src,
-                     size_t n) {
-  int i = src.size() - n - 1;
-  while (++i < 0) dest.push_back(false);
-  for (; i < src.size(); i++) dest.push_back(src.at(i));
 }
 }

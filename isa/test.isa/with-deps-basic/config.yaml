@@ -28,11 +28,13 @@ units:
       aliases: [foo, bar]
 instructions:
   - mnemonic: add
+    length: 69
     format: R
     key:
       opcode: 6
       function: 3
   - mnemonic: sub
+    length: 69
     format: R
     key:
       opcode: 9

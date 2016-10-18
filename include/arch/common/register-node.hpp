@@ -48,6 +48,9 @@ class RegisterNode : public AbstractSyntaxTreeNode {
 
   const std::string& getIdentifier() const override;
 
+  /**
+   * \return Assembled register identifier
+   */
   MemoryValue assemble() const override;
 
  private:
