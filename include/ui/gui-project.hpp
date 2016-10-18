@@ -1,83 +1,63 @@
-/*
-* C++ Assembler Interpreter
-* Copyright (C) 2016 Chair of Computer Architecture
-* at Technical University of Munich
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-#ifndef ERAGPSIM_UI_EDITOR_GUI_PROJECT_HPP
-#define ERAGPSIM_UI_EDITOR_GUI_PROJECT_HPP
+#ifndef ERAGPSIM_UI_GUIPROJECT_HPP
+#define ERAGPSIM_UI_GUIPROJECT_HPP
 
 #include <QObject>
 #include <QQmlContext>
-#include <QString>
+#include <functional>
+#include <string>
 
-#include "ui/editor-component.hpp"
-#include "ui/registermodel.hpp"
+#include "core/memory-value.hpp"
+//#include "ui/snapshotmodel.hpp"
 
-class ArchitectureFormula;
 
-/**
- * The GuiProject class. This class encapsulates all gui c++ components and the
- * core project component.
- * This version will be replaced by GuiProject, which is currently in
- * developement. This is just an incomplete placeholder to demonstrate the
- * project creation.
- *
- * That is also the reason why this is not fully documented at the
- * moment, sorry!
- *
- */
-class GuiProject : public QObject {
+class GuiProject : QObject {
   Q_OBJECT
  public:
-  explicit GuiProject(QQmlContext* projectContext,
-                      ArchitectureFormula architectureFormula,
-                      std::size_t memorySize,
-                      QObject* parent = 0);
+  GuiProject(QQmlContext* context /*, Core-Project*/);
+  void changeSystem(std::string base);
+  void run();
+  void runLine();
+  void runBreakpoint();
+  void stop();
+  void save();
+  void saveAs(QByteArray name);
+  void snapshot(QByteArray name);
 
-  void parse() {
-  }
-  void run() {
-  }
-  void runLine() {
-  }
-  void runBreakpoint() {
-  }
-  void stop() {
-  }
-  void reset() {
-  }
-  void save() {
-  }
-  void saveAs(QString name) {
-  }
-  void saveSnapshot(QString name) {
-  }
-  void loadSnapshot(QString name) {
-  }
+  std::function<std::string(MemoryValue)> getHexConversion();
+  std::function<std::string(MemoryValue)> getBinConversion();
+  std::function<std::string(MemoryValue)> getOctConversion();
+  std::function<std::string(MemoryValue)> getSignedDecimalConversion();
+  std::function<std::string(MemoryValue)> getUnsignedDecimalConversion();
+  std::function<std::string(MemoryValue)> getDecimalFloatConversion();
+
+  std::function<MemoryValue(std::string)> getSignedToMemoryValue();
+  std::function<MemoryValue(std::string)> getHexToMemoryValue();
+  std::function<MemoryValue(std::string)> getBinToMemoryValue();
+  std::function<MemoryValue(std::string)> getOctToMemoryValue();
+  std::function<MemoryValue(std::string)> getUnsignedToMemoryValue();
+  std::function<MemoryValue(std::string)> getFloatToMemoryValue();
 
 
  private:
-  QString _registerDescription;
-  RegisterModel _registerModel;
-  EditorComponent _editor;
+  QQmlContext* context;
+  // RegisterModel registermodel;
+  // EditorComponent editormodel;
+  // SnapshotModel snapmodel;
+  // MemoryComponentPresenter memorymodel;
+  // Core-Project;
+  std::function<std::string(MemoryValue)> hexConversion;
+  std::function<std::string(MemoryValue)> binConversion;
+  std::function<std::string(MemoryValue)> octConversion;
+  std::function<std::string(MemoryValue)> signedDecimalConversion;
+  std::function<std::string(MemoryValue)> unsignedDecimalConversion;
+  std::function<std::string(MemoryValue)> decimalFloatConversion;
 
- signals:
-
- public slots:
+  std::function<MemoryValue(std::string)> signedToMemoryValue;
+  std::function<MemoryValue(std::string)> hexToMemoryValue;
+  std::function<MemoryValue(std::string)> binToMemoryValue;
+  std::function<MemoryValue(std::string)> octToMemoryValue;
+  std::function<MemoryValue(std::string)> unsignedToMemoryValue;
+  std::function<MemoryValue(std::string)> floatToMemoryValue;
 };
 
-#endif// ERAGPSIM_UI_EDITOR_GUI_PROJECT_HPP
+#endif// ERAGPSIM_UI_GUIPROJECT_HPP
