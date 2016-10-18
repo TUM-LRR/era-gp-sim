@@ -18,7 +18,9 @@
 #ifndef ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
 #define ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
 
+#include <QtCore/qglobal.h>
 #include <memory>
+#include <string>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 
@@ -32,33 +34,27 @@ class RegisterNode : public AbstractSyntaxTreeNode {
    *
    * \param value The identifier for the register.
    */
-  RegisterNode(std::string identifier)
-  : AbstractSyntaxTreeNode(Type::REGISTER), _identifier(identifier) {
-  }
+  RegisterNode(const std::string& identifier);
 
   /**
    * \return The content of the register, represented by this node.
    */
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) const override {
-    // TODO Return the actual content of the register using the proper
-    // memory access
-    return MemoryValue();
-  }
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override;
 
   /**
-   * \return true, if there are no children.
+   * \return success, if there are no children.
    */
-  virtual bool validate() const override {
-    // Immediate values can't have any children
-    return AbstractSyntaxTreeNode::_children.size() == 0;
-  }
+  ValidationResult validate() const override;
 
-  const std::string& getIdentifier() const override {
-      return _identifier;
-  }
+  const std::string& getIdentifier() const override;
+
+  /**
+   * \return Assembled register identifier
+   */
+  MemoryValue assemble() const override;
 
  private:
-  /*!
+  /**
    * Identifies a register
    */
   std::string _identifier;

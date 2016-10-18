@@ -17,10 +17,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <cassert>
 #include <string>
 
 #include "arch/common/datatype-information.hpp"
+#include "common/assert.hpp"
 
 DataTypeInformation::DataTypeInformation() noexcept : _size(0) {
 }
@@ -55,14 +55,14 @@ DataTypeInformation::deserialize(InformationInterface::Format& data) {
 }
 
 DataTypeInformation& DataTypeInformation::name(const std::string& name) {
-  assert(!name.empty());
+  assert::that(!name.empty());
   _name = name;
 
   return *this;
 }
 
-const std::string& DataTypeInformation::getName() const noexcept {
-  assert(hasName());
+const std::string& DataTypeInformation::getName() const {
+  assert::that(hasName());
   return _name;
 }
 
@@ -71,14 +71,14 @@ bool DataTypeInformation::hasName() const noexcept {
 }
 
 DataTypeInformation& DataTypeInformation::size(size_t size) {
-  assert(size > 0);
+  assert::that(size > 0);
   _size = size;
 
   return *this;
 }
 
-DataTypeInformation::size_t DataTypeInformation::getSize() const noexcept {
-  assert(hasSize());
+DataTypeInformation::size_t DataTypeInformation::getSize() const {
+  assert::that(hasSize());
   return _size;
 }
 
@@ -92,8 +92,8 @@ bool DataTypeInformation::isValid() const noexcept {
 }
 
 void DataTypeInformation::_deserialize(InformationInterface::Format& data) {
-  assert(data.count("name"));
-  assert(data.count("size"));
+  assert::that(data.count("name"));
+  assert::that(data.count("size"));
 
   name(data["name"]);
   size(data["size"]);

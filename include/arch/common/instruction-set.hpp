@@ -28,18 +28,19 @@
 #include "common/container-adapter.hpp"
 #include "common/utility.hpp"
 
-using UnderlyingInstructionSetContainer =
+using UnderlyingInstructionContainer =
     ContainerAdapter<std::unordered_map<std::string, InstructionInformation>>;
 
 /**
  * This class holds a set of commands.
  *
- * It has a hash-table like interface for maximum flexibility.
+ * It is really just a light-weight wrapper around a vector (it doesn't even
+ * have a name).
  */
-class InstructionSet : public UnderlyingInstructionSetContainer,
+class InstructionSet : public UnderlyingInstructionContainer,
                        public InformationInterface {
  public:
-  using super = UnderlyingInstructionSetContainer;
+  using super = UnderlyingInstructionContainer;
   using CONTAINER_ADAPTER_MEMBERS;
   using InitializerList = std::initializer_list<InstructionInformation>;
 

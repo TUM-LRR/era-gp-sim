@@ -16,16 +16,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/syntax-tree-generator.hpp"
+#include "gtest/gtest.h"
+
 #include <memory>
 #include <vector>
+
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/immediate-node.hpp"
 #include "arch/common/node-factory-collection-maker.hpp"
 #include "arch/common/register-node.hpp"
 #include "arch/riscv/instruction-node.hpp"
-#include "gtest/gtest.h"
+#include "parser/compile-state.hpp"
+#include "parser/syntax-tree-generator.hpp"
 
 static SyntaxTreeGenerator buildGenerator() {
   Architecture testArch =
@@ -35,12 +38,9 @@ static SyntaxTreeGenerator buildGenerator() {
   return generator;
 }
 
-// based off
-// http://stackoverflow.com/questions/500493/c-equivalent-of-instanceof , sorry
-// I think I am still a c++ rookie...
-template <typename Base, typename Type>
-static bool instanceOf(const Type* ptr) {
-  return dynamic_cast<const Base*>(ptr) != nullptr;
+template <typename SubType, typename BaseType>
+bool isInstance(const std::unique_ptr<BaseType>& ptr) {
+  return static_cast<SubType*>(ptr.get()) != nullptr;
 }
 
 TEST(SyntaxTreeGenerator, init) {
@@ -54,8 +54,7 @@ TEST(SyntaxTreeGenerator, init) {
   CompileState state;
   auto output = generator.transformOperand("1234", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((instanceOf<ImmediateNode,
-AbstractSyntaxTreeNode>(output.get())));
+  ASSERT_TRUE((isInstance<ImmediateNode>(output)));
 }
 
 TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
@@ -63,7 +62,7 @@ TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   CompileState state;
   auto output = generator.transformOperand("r18", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((instanceOf<RegisterNode, AbstractSyntaxTreeNode>(output.get())));
+  ASSERT_TRUE((isInstance<RegisterNode>(output)));
 }*/
 
 TEST(SyntaxTreeGenerator, instantiateCommandNode) {
@@ -72,11 +71,11 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
 
   /*auto arg1 = generator.transformOperand("r1", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((instanceOf<RegisterNode, AbstractSyntaxTreeNode>(arg1.get())));
+  ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
 
   auto arg2 = generator.transformOperand("r2", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((instanceOf<RegisterNode, AbstractSyntaxTreeNode>(arg2.get())));*/
+  ASSERT_TRUE((isInstance<RegisterNode>(arg2)));*/
 
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> sources;
   // sources.push_back(std::move(arg1));
@@ -87,6 +86,5 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   auto output = generator.transformCommand("add", sources, targets, state);
 
   // ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((instanceOf<riscv::InstructionNode, AbstractSyntaxTreeNode>(
-      output.get())));
+  ASSERT_TRUE((isInstance<riscv::InstructionNode>(output)));
 }

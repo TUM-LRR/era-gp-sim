@@ -6,197 +6,235 @@ alignment-behavior: relaxed
 endianness: little
 word-size: 32
 byte-size: 8
+signed-representation: twos-complement
 
 instructions:
   - mnemonic: lui
+    length: 32
     format: U
     key:
       opcode: 55
   - mnemonic: auipc
+    length: 32
     format: U
     key:
       opcode: 23
   - mnemonic: jal
+    length: 32
     format: UJ
     key:
       opcode: 111
   - mnemonic: jalr
+    length: 32
     format: I
     key:
       opcode: 103
   - mnemonic: beq
+    length: 32
     format: SB
     key:
       opcode: 99
       funct3: 0
   - mnemonic: bne
+    length: 32
     format: SB
     key:
       opcode: 99
       funct3: 1
   - mnemonic: blt
+    length: 32
     format: SB
     key:
       opcode: 99
       funct3: 4
   - mnemonic: bge
+    length: 32
     format: SB
     key:
       opcode: 99
       funct3: 5
   - mnemonic: bltu
+    length: 32
     format: SB
     key:
       opcode: 99
       funct3: 6
   - mnemonic: bgeu
+    length: 32
     format: SB
     key:
       opcode: 99
       funct3: 7
   - mnemonic: lb
+    length: 32
     format: I
     key:
       opcode: 3
       funct3: 0
   - mnemonic: lh
+    length: 32
     format: I
     key:
       opcode: 3
       funct3: 1
   - mnemonic: lw
+    length: 32
     format: I
     key:
       opcode: 3
       funct3: 2
   - mnemonic: lbu
+    length: 32
     format: I
     key:
       opcode: 3
       funct3: 4
   - mnemonic: lhu
+    length: 32
     format: I
     key:
       opcode: 3
       funct3: 5
   - mnemonic: sb
+    length: 32
     format: S
     key:
       opcode: 35
     funct: 0
   - mnemonic: sh
+    length: 32
     format: S
     key:
       opcode: 35
     funct: 1
   - mnemonic: sw
+    length: 32
     format: S
     key:
       opcode: 35
     funct: 2
   - mnemonic: addi
+    length: 32
     format: I
     key:
       opcode: 19
       funct3: 0
   - mnemonic: slti
+    length: 32
     format: I
     key:
       opcode: 19
       funct3: 2
   - mnemonic: sltiu
+    length: 32
     format: I
     key:
       opcode: 19
       funct3: 3
   - mnemonic: xori
+    length: 32
     format: I
     key:
       opcode: 19
       funct3: 4
   - mnemonic: ori
+    length: 32
     format: I
     key:
       opcode: 19
       funct3: 6
   - mnemonic: andi
+    length: 32
     format: I
     key:
       opcode: 19
       funct3: 7
   - mnemonic: slli
+    length: 32
     format: R
     key:
       opcode: 19
       funct3: 1
       funct7: 0
   - mnemonic: srli
+    length: 32
     format: R
     key:
       opcode: 19
       funct3: 5
       funct7: 0
   - mnemonic: srai
+    length: 32
     format: R
     key:
       opcode: 19
       funct3: 5
       funct7: 32
   - mnemonic: add
+    length: 32
     format: R
     key:
       opcode: 51
       funct3: 0
       funct7: 0
   - mnemonic: sub
+    length: 32
     format: R
     key:
       opcode: 51
       funct3: 0
       funct7: 32
   - mnemonic: sll
+    length: 32
     format: R
     key:
       opcode: 51
       funct3: 1
       funct7: 0
   - mnemonic: slt
+    length: 32
     format: R
     key:
       opcode: 51
       funct3: 2
       funct7: 0
   - mnemonic: sltu
+    length: 32
     format: R
     key:
       opcode: 51
       funct3: 3
       funct7: 0
   - mnemonic: xor
+    length: 32
     format: R
     key:
       opcode: 51
       funct3: 4
       funct7: 0
   - mnemonic: srl
+    length: 32
     format: R
     key:
       opcode: 51
       funct3: 5
       funct7: 0
   - mnemonic: sra
+    length: 32
     format: R
     key:
       opcode: 51
       funct3: 5
       funct7: 32
   - mnemonic: or
+    length: 32
     format: R
     key:
       opcode: 51
       funct3: 6
       funct7: 0
   - mnemonic: and
+    length: 32
     format: R
     key:
       opcode: 51
