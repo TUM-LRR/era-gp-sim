@@ -153,7 +153,7 @@ class InstructionInformation : public InformationInterface {
   /**
    * TODO
    */
-  std::size_t getLength() const noexcept { return 0; }
+  std::size_t getLength() const noexcept { return 32; }
 
  private:
   /**

@@ -32,7 +32,7 @@ namespace riscv {
 /**
  * \Brief a super class for both load & store instruction nodes
  */
-template <typename SignedType, typename UnsignedType>
+template <typename SignedWord, typename UnsignedWord>
 class LoadStoreInstructionNode : public InstructionNode {
  public:
   LoadStoreInstructionNode(const InstructionInformation& instructionInformation,
@@ -113,12 +113,12 @@ class LoadStoreInstructionNode : public InstructionNode {
   std::size_t getEffectiveAddress(MemoryAccess& memoryAccess) const {
     // The base (that comes from a register) has to be converted using an
     // unsigned integer, to be able to address the whole address space
-    UnsignedType baseConverted =
-        riscv::convert<UnsignedType>(getBase(memoryAccess));
+    UnsignedWord baseConverted =
+        riscv::convert<UnsignedWord>(getBase(memoryAccess));
     // The offset (that comes from the immediate value) has to be converted
     // using an unsigned integer, to be able to have negative offsets
-    SignedType offsetConverted =
-        riscv::convert<SignedType>(getOffset(memoryAccess));
+    SignedWord offsetConverted =
+        riscv::convert<SignedWord>(getOffset(memoryAccess));
     return baseConverted + offsetConverted;
   }
 
@@ -131,11 +131,11 @@ class LoadStoreInstructionNode : public InstructionNode {
 /**
  * \brief Represents a load instruction.
  */
-template <typename SignedType, typename UnsignedType>
+template <typename SignedWord, typename UnsignedWord>
 class LoadInstructionNode
-    : public LoadStoreInstructionNode<SignedType, UnsignedType> {
+    : public LoadStoreInstructionNode<SignedWord, UnsignedWord> {
  public:
-  using super = LoadStoreInstructionNode<SignedType, UnsignedType>;
+  using super = LoadStoreInstructionNode<SignedWord, UnsignedWord>;
 
   /* The different types of a load instruction. See RISC V specification
      for reference.*/
@@ -167,7 +167,7 @@ class LoadInstructionNode
       performUnsignedLoad(
           memoryAccess, effectiveAddress, super::_byteAmount, dest);
     }
-    return super::template _incrementProgramCounter<UnsignedType>(memoryAccess);
+    return super::template _incrementProgramCounter<UnsignedWord>(memoryAccess);
   }
 
  private:
@@ -228,11 +228,11 @@ class LoadInstructionNode
     // Check if zero-expansion is needed. This is the case, if the amount of
     // bits loaded from memory is not equal to the amount of bits, a register
     // can hold.
-    if (result.getSize() != sizeof(UnsignedType) * riscv::BITS_PER_BYTE) {
+    if (result.getSize() != sizeof(UnsignedWord) * riscv::BITS_PER_BYTE) {
       // Do sign expansion by creating a new memory value of proper size
       // and setting the lower bits to the bits of the old memory value.
       MemoryValue tmp =
-          MemoryValue{sizeof(UnsignedType) * riscv::BITS_PER_BYTE};
+          MemoryValue{sizeof(UnsignedWord) * riscv::BITS_PER_BYTE};
       for (std::size_t i = 0; i < result.getSize(); ++i) {
         tmp.put(i, result.get(i));
       }
@@ -259,12 +259,12 @@ class LoadInstructionNode
     // Check if sign-expansion is needed. This is the case, if the amount of
     // bits loaded from memory is not equal to the amount of bits, a register
     // can hold.
-    if (result.getSize() != sizeof(SignedType) * riscv::BITS_PER_BYTE) {
+    if (result.getSize() != sizeof(SignedWord) * riscv::BITS_PER_BYTE) {
       // Do sign expansion by creating a new memory value, copying the old
       // memory value in the lower region, and setting the upper region to the
       // sign bit of the old memory value.
       bool isSignBitSet = result.get(result.getSize() - 1);
-      MemoryValue tmp = MemoryValue{sizeof(SignedType) * riscv::BITS_PER_BYTE};
+      MemoryValue tmp = MemoryValue{sizeof(SignedWord) * riscv::BITS_PER_BYTE};
       for (std::size_t i = 0; i < tmp.getSize(); ++i) {
         if (i < result.getSize()) {
           tmp.put(i, result.get(i));
@@ -284,11 +284,11 @@ class LoadInstructionNode
 /**
  * \brief Represents a store instruction.
  */
-template <typename SignedType, typename UnsignedType>
+template <typename SignedWord, typename UnsignedWord>
 class StoreInstructionNode
-    : public LoadStoreInstructionNode<SignedType, UnsignedType> {
+    : public LoadStoreInstructionNode<SignedWord, UnsignedWord> {
  public:
-  using super = LoadStoreInstructionNode<SignedType, UnsignedType>;
+  using super = LoadStoreInstructionNode<SignedWord, UnsignedWord>;
 
   /* The different types of a store instruction. See RISC V specification
      for reference. */
@@ -316,7 +316,7 @@ class StoreInstructionNode
       resultValue.put(i, registerValue.get(i));
     }
     memoryAccess.putMemoryValueAt(effectiveAddress, resultValue);
-    return super::template _incrementProgramCounter<UnsignedType>(memoryAccess);
+    return super::template _incrementProgramCounter<UnsignedWord>(memoryAccess);
   }
 
  private:

@@ -84,7 +84,7 @@ class LuiAuipcValidationNode : public InstructionNode {
  * \brief The LUI instruction node
  * This class represents the LUI instruction (Load Upper Immediate).
  */
-template <typename UnsignedType>
+template <typename UnsignedWord>
 class LuiInstructionNode : public LuiAuipcValidationNode {
  public:
   LuiInstructionNode(const InstructionInformation& info)
@@ -105,9 +105,9 @@ class LuiInstructionNode : public LuiAuipcValidationNode {
     // On non-RV32 architectures, the result of the last
     // operation (that has always a width of 32 bits) must be sign expanded,
     // to the architectures word size (e.g. 64 bit)
-    UnsignedType result = offsetConverted;
+    UnsignedWord result = offsetConverted;
     // Check if sign-expansion is needed
-    if ((sizeof(UnsignedType) - sizeof(InternalUnsigned)) > 0) {
+    if ((sizeof(UnsignedWord) - sizeof(InternalUnsigned)) > 0) {
       // Aquire the sign bit
       constexpr auto length = sizeof(InternalUnsigned) * CHAR_BIT;
       InternalUnsigned sign =
@@ -116,15 +116,15 @@ class LuiInstructionNode : public LuiAuipcValidationNode {
       if (sign > 0) {
         // Sign-expansion is quite easy here: All the bits above the lower
         // 32 bits are set to 1.
-        constexpr auto requiredLength = sizeof(UnsignedType) * CHAR_BIT;
-        result |= (length < requiredLength) ? (~UnsignedType{0} << length) : 0;
+        constexpr auto requiredLength = sizeof(UnsignedWord) * CHAR_BIT;
+        result |= (length < requiredLength) ? (~UnsignedWord{0} << length) : 0;
       }
     }
 
     // Convert back into a memory value and store it in the register
-    MemoryValue resultMemoryValue = riscv::convert<UnsignedType>(result);
+    MemoryValue resultMemoryValue = riscv::convert<UnsignedWord>(result);
     memoryAccess.putRegisterValue(destination, resultMemoryValue);
-    return this->_incrementProgramCounter<UnsignedType>(memoryAccess);
+    return _incrementProgramCounter<UnsignedWord>(memoryAccess);
   }
 
  private:
@@ -138,7 +138,7 @@ class LuiInstructionNode : public LuiAuipcValidationNode {
  * \brief The AUIPC instruction node
  * This class represents the AUIPC instruction (Add Upper Immediate to PC).
  */
-template <typename UnsignedType>
+template <typename UnsignedWord>
 class AuipcInstructionNode : public LuiAuipcValidationNode {
  public:
   AuipcInstructionNode(const InstructionInformation& info)
@@ -154,8 +154,8 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
 
     // Convert to the unsigned type of the architecture
     InternalUnsigned offsetConverted = riscv::convert<InternalUnsigned>(offset);
-    UnsignedType programCounterConverted =
-        riscv::convert<UnsignedType>(programCounter);
+    UnsignedWord programCounterConverted =
+        riscv::convert<UnsignedWord>(programCounter);
 
     // Fill lower 12 bits with 0
     offsetConverted <<= 12;
@@ -163,19 +163,19 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
     // On non-RV32 architectures, the result of the last
     // operation (that has always a width of 32 bits) must be sign expanded,
     // to the architectures word size (e.g. 64 bit)
-    UnsignedType result = offsetConverted;
+    UnsignedWord result = offsetConverted;
     // Check if sign-expansion is needed
-    if ((sizeof(UnsignedType) - sizeof(InternalUnsigned)) > 0) {
+    if ((sizeof(UnsignedWord) - sizeof(InternalUnsigned)) > 0) {
       // Aquire the sign bit
-      constexpr UnsignedType length = sizeof(InternalUnsigned) * CHAR_BIT;
+      constexpr UnsignedWord length = sizeof(InternalUnsigned) * CHAR_BIT;
       InternalUnsigned sign =
           (offsetConverted & (InternalUnsigned{1} << (length - 1)));
       // Do sign-expansion if needed
       if (sign > 0) {
         // Sign-expansion is quite easy here: All the bits above the lower
         // 32 bits are set to 1.
-        constexpr auto requiredLength = sizeof(UnsignedType) * CHAR_BIT;
-        result |= (length < requiredLength) ? (~UnsignedType{0} << length) : 0;
+        constexpr auto requiredLength = sizeof(UnsignedWord) * CHAR_BIT;
+        result |= (length < requiredLength) ? (~UnsignedWord{0} << length) : 0;
       }
     }
 
@@ -183,10 +183,10 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
     programCounterConverted += result;
     // Convert the result back into a MemoryValue
     MemoryValue resultMemoryValue =
-        riscv::convert<UnsignedType>(programCounterConverted);
+        riscv::convert<UnsignedWord>(programCounterConverted);
 
     memoryAccess.putRegisterValue(destination, resultMemoryValue);
-    return this->_incrementProgramCounter<UnsignedType>(memoryAccess);
+    return _incrementProgramCounter<UnsignedWord>(memoryAccess);
   }
 
  private:
