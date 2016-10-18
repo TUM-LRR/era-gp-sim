@@ -53,6 +53,8 @@ class RegisterModel : public QAbstractItemModel {
   Q_OBJECT
 
  public:
+  using id_t = RegisterInformation::id_t;
+
   explicit RegisterModel(QQmlContext *projectContext, QObject *parent = 0);
 
   /**
