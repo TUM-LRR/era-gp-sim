@@ -19,6 +19,8 @@ set(PARSER_SOURCES
   parser-factory.cpp
   integer-parser.cpp
   constant-directive.cpp
+  final-representation.cpp
+  memory-allocator.cpp
 )
 
 ########################################

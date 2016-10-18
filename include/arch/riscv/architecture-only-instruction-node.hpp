@@ -80,7 +80,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   virtual ~ArchitectureOnlyInstructionNode() = default;
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate().isSuccess());
+    assert(validate(memoryAccess).isSuccess());
     auto destination = _children[0]->getIdentifier();
 
     auto first = _getChildValue(1, memoryAccess);
@@ -89,16 +89,16 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
     auto result = _compute(first, second);
     auto value = riscv::convert(result);
 
-    memoryAccess.setRegisterValue(destination, value);
+    memoryAccess.putRegisterValue(destination, value);
 
-    return MemoryValue{};
+    return _incrementProgramCounter<WordSize>(memoryAccess);
   }
 
-  ValidationResult validate() const override {
+  ValidationResult validate(MemoryAccess& memoryAccess) const override {
     auto result = _validateNumberOfChildren();
     if (!result.isSuccess()) return result;
 
-    auto childrenResult = _validateChildren();
+    auto childrenResult = _validateChildren(memoryAccess);
     if (!childrenResult.isSuccess()) {
       return childrenResult;
     }
@@ -107,7 +107,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
       result = _validateOperandsForImmediateInstructions();
       if (!result.isSuccess()) return result;
 
-      result = _validateImmediateSize();
+      result = _validateImmediateSize(memoryAccess);
       if (!result.isSuccess()) return result;
     } else {
       result = _validateOperandsForNonImmediateInstructions();
@@ -182,11 +182,10 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
     return ValidationResult::success();
   }
 
-  ValidationResult _validateImmediateSize() const {
+  ValidationResult _validateImmediateSize(MemoryAccess& memoryAccess) const {
     if (_isImmediate && _children[2]->getType() == Type::IMMEDIATE) {
       // no memory access is needed for a immediate node
-      MemoryAccess stub;
-      MemoryValue value = _children.at(2)->getValue(stub);
+      MemoryValue value = _children.at(2)->getValue(memoryAccess);
 
       if (Utility::occupiesMoreBitsThan(value, 12)) {
         return ValidationResult::fail(

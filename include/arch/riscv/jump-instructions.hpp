@@ -115,9 +115,7 @@ class JumpAndLinkImmediateInstructionNode
    *
    * \return A `ValidationResult` reflecting the result of the check.
    */
-  ValidationResult _validateOffset() const override {
-    MemoryAccess memoryAccess;
-
+  ValidationResult _validateOffset(MemoryAccess& memoryAccess) const override {
     // Load the immediate
     auto offset = _children[1]->getValue(memoryAccess);
 
@@ -259,8 +257,7 @@ class JumpAndLinkRegisterInstructionNode
    *
    * \return A `ValidationResult` reflecting the result of the check.
    */
-  ValidationResult _validateOffset() const override {
-    MemoryAccess memoryAccess;
+  ValidationResult _validateOffset(MemoryAccess& memoryAccess) const override {
     // Load the immediate
     auto offset = _children[2]->getValue(memoryAccess);
 
