@@ -118,6 +118,12 @@ void Ui::removeProject(int index) {
   _projects.erase(_projects.begin() + index);
 }
 
+void Ui::parse(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->parse();
+}
+
 void Ui::run(int index) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
@@ -140,6 +146,12 @@ void Ui::stop(int index) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
   _projects.at(index)->stop();
+}
+
+void Ui::reset(int index) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects.at(index)->reset();
 }
 
 void Ui::save(int index) {

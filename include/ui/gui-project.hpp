@@ -48,14 +48,26 @@ class GuiProject : public QObject {
                       std::size_t memorySize,
                       QObject* parent = 0);
 
-  void run(){}
-  void runLine(){}
-  void runBreakpoint(){}
-  void stop(){}
-  void save(){}
-  void saveAs(QString name){}
-  void saveSnapshot(QString name){}
-  void loadSnapshot(QString name){}
+  void parse() {
+  }
+  void run() {
+  }
+  void runLine() {
+  }
+  void runBreakpoint() {
+  }
+  void stop() {
+  }
+  void reset() {
+  }
+  void save() {
+  }
+  void saveAs(QString name) {
+  }
+  void saveSnapshot(QString name) {
+  }
+  void loadSnapshot(QString name) {
+  }
 
 
  private:

@@ -44,7 +44,7 @@
 class Ui : public QObject {
   Q_OBJECT
  public:
-  using Json            = nlohmann::json;
+  using Json = nlohmann::json;
   using ArchitectureMap = QMap<QString, QPair<QStringList, QStringList>>;
 
   /**
@@ -110,6 +110,13 @@ class Ui : public QObject {
   Q_INVOKABLE void removeProject(int index);
 
   /**
+   * Calls parse on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void parse(int index);
+
+  /**
    * Call run on the specified project.
    *
    * \param index The index of the project.
@@ -136,6 +143,13 @@ class Ui : public QObject {
    * \param index The index of the project.
    */
   Q_INVOKABLE void stop(int index);
+
+  /**
+   * Call stop on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void reset(int index);
 
   /**
    * Call save on the specified project.
@@ -184,7 +198,6 @@ class Ui : public QObject {
 
   /** A list of pointers to the GuiProjects. */
   std::vector<GuiProject*> _projects;
-
 };
 
 #endif /* ERAGPSIM_UI_UI_HPP */
