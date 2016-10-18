@@ -23,40 +23,66 @@
 #include "intermediate-directive.hpp"
 
 class MemoryReservationDirective : public IntermediateDirective {
-public:
-    /**
-   * \brief Instantiates a new IntermediateDirective with the given arguments.
-   * (only for subclass use!)
-   * \param lines The line interval the operation occupies.
-   * \param labels The vector of labels assigned to the operation.
-   * \param name The name of the operation.
-   */
+ public:
+  /**
+ * \brief Instantiates a new IntermediateDirective with the given arguments.
+ * (only for subclass use!)
+ * \param lines The line interval the operation occupies.
+ * \param labels The vector of labels assigned to the operation.
+ * \param name The name of the operation.
+ */
   MemoryReservationDirective(const LineInterval& lines,
-                        const std::vector<std::string>& labels,
-                        const std::string& name,
-                        int cellSize,
-                        const std::vector<std::string>& values)
-  : IntermediateDirective(lines, labels, name), _cellSize(cellSize), _values(values) {
+                             const std::vector<std::string>& labels,
+                             const std::string& name,
+                             std::size_t cellSize,
+                             const std::vector<std::string>& values)
+  : IntermediateDirective(lines, labels, name)
+  , _cellSize(cellSize)
+  , _values(values) {
   }
 
+  /**
+   * \brief Executes the given operation (somehow).
+   * \param finalRepresentator The FinalRepresentation for possible output.
+   * \param table The SymbolTable for possible replacements.
+   * \param generator The generator to transform the instructions.
+   * \param state The CompileState to log possible errors.
+   * \param memoryAccess The MemoryAccess for verifying instructions or
+   * reserving data.
+   */
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
                        const SyntaxTreeGenerator& generator,
-                       CompileState& state)
-{
-    
-}
+                       CompileState& state,
+                       MemoryAccess& memoryAccess);
 
-protected:
-  virtual void determineMemoryPosition()
-  {
+  /**
+   * \brief Reserves (not writes!) memory for the operation (if needed).
+   * \param architecture The architecture for information about the memory
+   * format.
+   * \param allocator The allocator to reserve memory.
+   * \param state The CompileState to log possible errors.
+   */
+  virtual void allocateMemory(const Architecture& architecture,
+                              MemoryAllocator& allocator,
+                              CompileState& state);
 
-      //needs to be implemented when memory and so on is finished.
-  }  
+  /**
+   * \brief Enhances the symbol table by the labels of the operation.
+   * \param table The SymbolTable to insert into.
+   * \param allocator The MemoryAllocator to get the memory positions from.
+   * \param state The CompileState to log possible errors.
+   */
+  virtual void enhanceSymbolTable(SymbolTable& table,
+                                  const MemoryAllocator& allocator,
+                                  CompileState& state);
 
-private:
-    int _cellSize;
-    std::vector<std::string> _values;
+ private:
+  std::size_t _absolutePosition;
+  RelativeMemoryPosition _relativePosition;
+  std::size_t _size;
+  std::size_t _cellSize;
+  std::vector<std::string> _values;
 };
 
 #endif /* ERAGPSIM_PARSER_MEMORY_RESERVATION_DIRECTIVE_HPP */
