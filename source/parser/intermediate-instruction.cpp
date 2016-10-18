@@ -33,7 +33,7 @@ void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
   if (macro != state.macros.end()) {
     auto& subOperations = macro->second.operations();
     for (auto i = subOperations.begin(); i != subOperations.end(); ++i) {
-      (*i)->execute(finalRepresentator, table, generator, state);
+      (*i)->execute(finalRepresentator, table, generator, state, memoryAccess);
     }
   } else {
     // For a machine instruction, it is easy to "execute" it: just insert it
@@ -111,7 +111,7 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
   // toLower as long as not fixed in instruction set.
   auto opcode = Utility::toLower(_name);
   if (!instructionSet.hasInstruction(opcode)) {
-    state.addError("Unknown opcode: " + _name);
+    // state.addError("Unknown opcode: " + _name);
     return;
   }
 
