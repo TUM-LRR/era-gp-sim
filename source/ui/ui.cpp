@@ -118,62 +118,68 @@ void Ui::removeProject(int index) {
   _projects.erase(_projects.begin() + index);
 }
 
+void Ui::changeSystem(int index, std::string base) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects[index]->changeSystem(base);
+}
+
 void Ui::parse(int index) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects.at(index)->parse();
+  _projects[index]->parse();
 }
 
 void Ui::run(int index) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects.at(index)->run();
+  _projects[index]->run();
 }
 
 void Ui::runLine(int index) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects.at(index)->runLine();
+  _projects[index]->runLine();
 }
 
 void Ui::runBreakpoint(int index) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects.at(index)->runBreakpoint();
+  _projects[index]->runBreakpoint();
 }
 
 void Ui::stop(int index) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects.at(index)->stop();
+  _projects[index]->stop();
 }
 
 void Ui::reset(int index) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects.at(index)->reset();
+  _projects[index]->reset();
 }
 
 void Ui::save(int index) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects.at(index)->save();
+  _projects[index]->save();
 }
 
 void Ui::saveAs(int index, QString name) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects.at(index)->saveAs(name);
+  _projects[index]->saveAs(name);
 }
 
 void Ui::saveSnapshot(int index, QString name) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects.at(index)->saveSnapshot(name);
+  _projects[index]->saveSnapshot(name);
 }
 
 void Ui::loadSnapshot(int index, QString name) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects.at(index)->loadSnapshot(name);
+  _projects[index]->loadSnapshot(name);
 }

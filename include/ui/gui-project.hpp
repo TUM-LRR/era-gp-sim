@@ -6,6 +6,7 @@
 #include <functional>
 #include <string>
 
+#include "arch/common/architecture-formula.hpp"
 #include "core/memory-value.hpp"
 //#include "ui/snapshotmodel.hpp"
 
@@ -13,15 +14,21 @@
 class GuiProject : QObject {
   Q_OBJECT
  public:
-  GuiProject(QQmlContext* context /*, Core-Project*/);
+  GuiProject(QQmlContext* context,
+             const ArchitectureFormula& formula,
+             const std::size_t& memorySize,
+             QObject* parent = 0);
   void changeSystem(std::string base);
+  void parse();
   void run();
   void runLine();
   void runBreakpoint();
   void stop();
+  void reset();
   void save();
-  void saveAs(QByteArray name);
-  void snapshot(QByteArray name);
+  void saveAs(QString name);
+  void saveSnapshot(QString name);
+  void loadSnapshot(QString name);
 
   std::function<std::string(MemoryValue)> getHexConversion();
   std::function<std::string(MemoryValue)> getBinConversion();

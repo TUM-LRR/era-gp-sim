@@ -2,8 +2,11 @@
 
 #include "ui/gui-project.hpp"
 
-GuiProject::GuiProject(QQmlContext* context)
-: QObject()
+GuiProject::GuiProject(QQmlContext* context,
+                       const ArchitectureFormula& formula,
+                       const std::size_t& memorySize,
+                       QObject* parent)
+: QObject(parent)
 , context(context)
 /*, registermodel(context)
 , editormodel(context)
@@ -18,6 +21,9 @@ GuiProject::GuiProject(QQmlContext* context)
 
 void GuiProject::changeSystem(std::string base) {
   // Alle Komponenten informieren
+}
+
+void GuiProject::parse() {
 }
 
 void GuiProject::run() {
@@ -36,18 +42,24 @@ void GuiProject::stop() {
   // tell editor
 }
 
+void GuiProject::reset() {
+}
+
 void GuiProject::save() {
   // tell core
 }
 
-void GuiProject::saveAs(QByteArray name) {
+void GuiProject::saveAs(QString name) {
   std::string stdname = name.toStdString();
   // tell core
 }
 
-void GuiProject::snapshot(QByteArray name) {
+void GuiProject::saveSnapshot(QString name) {
   std::string stdname = name.toStdString();
   // dont know, what to do
+}
+
+void GuiProject::loadSnapshot(QString name) {
 }
 
 

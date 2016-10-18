@@ -110,6 +110,13 @@ class Ui : public QObject {
   Q_INVOKABLE void removeProject(int index);
 
   /**
+   * Calls changeSystem on the specified project.
+   *
+   * \param base The name of the numerical system.
+   */
+  Q_INVOKABLE void changeSystem(int index, std::string base);
+
+  /**
    * Calls parse on the specified project.
    *
    * \param index The index of the project.
