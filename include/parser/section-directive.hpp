@@ -34,13 +34,15 @@ class SectionDirective : public IntermediateDirective {
    * with this one!?).
    * \param name The name of the command, might not be equal to the section. It
    * has no meaning for the directive.
-   * \param seciton The name of the section.
+   * \param arguments Arguments of the directive. First should be section name.
    */
   SectionDirective(const LineInterval& lines,
                    const std::vector<std::string>& labels,
                    const std::string& name,
-                   const std::string& section)
-  : IntermediateDirective(lines, labels, name), _section(section) {
+                   const std::vector<std::string>& arguments)
+  : IntermediateDirective(lines, labels, name) {
+    _hasName = arguments.size() > 0;
+    if (_hasName) _section = arguments[0];
   }
 
   /**
@@ -59,11 +61,9 @@ class SectionDirective : public IntermediateDirective {
                        CompileState& state,
                        MemoryAccess& memoryAccess);
 
- protected:
-  virtual void determineMemoryPosition() {
-  }
-
  private:
+  bool _hasName;
+
   /**
    * \brief The section to change to.
    */

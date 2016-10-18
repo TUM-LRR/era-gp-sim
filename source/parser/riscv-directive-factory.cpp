@@ -36,25 +36,16 @@ static DirectivePtr createInternal(const LineInterval &lines,
   return DirectivePtr{new T(lines, labels, name, arguments)};
 }
 
-// SectionDirective has a different constructor. Will probably change this
-// during refactoring
-static DirectivePtr
-createSectionInternal(const LineInterval &lines,
-                      const std::vector<std::string> &labels,
-                      const std::string &name,
-                      const std::vector<std::string> &arguments) {
-  return DirectivePtr{new SectionDirective(lines, labels, name, arguments[0])};
-}
-
 const std::unordered_map<std::string,
                          DirectivePtr (*)(const LineInterval &,
                                           const std::vector<std::string> &,
                                           const std::string &,
                                           const std::vector<std::string> &)>
-    RiscVDirectiveFactory::mapping{{"section", createSectionInternal},
-                                   {"macro", createInternal<MacroDirective>},
-                                   {"endm", createInternal<MacroEndDirective>},
-                                   {"equ", createInternal<ConstantDirective>}};
+    RiscVDirectiveFactory::mapping{
+        {"section", createInternal<SectionDirective>},
+        {"macro", createInternal<MacroDirective>},
+        {"endm", createInternal<MacroEndDirective>},
+        {"equ", createInternal<ConstantDirective>}};
 
 void RiscVDirectiveFactory::create(const LineInterval &lines,
                                    const std::vector<std::string> &labels,

@@ -123,7 +123,8 @@ TEST_F(RiscParserTest, MultipleDirectives) {
 TEST_F(RiscParserTest, MultipleInstructions) {
   FinalRepresentation res;
   res = parser.parse(
-      "ADD x13, x4, x0 ;kommentar\n"
+      ".equ ZAHL, 13\n"
+      "ADDI x13, x4, ZAHL ;kommentar\n"
       " label  : SUB x5, x5, x0\n"
       "LUI x5, 123;kommentar\n"
       "addition123:\n"
