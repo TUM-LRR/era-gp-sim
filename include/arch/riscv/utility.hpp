@@ -60,7 +60,7 @@ T convert(const MemoryValue& memoryValue) {
 template <typename T>
 std::enable_if_t<std::is_integral<T>::value, MemoryValue>
 convert(const T& value) {
-  static const auto digits = std::numeric_limits<T>::digits;
+  static const auto digits = sizeof(T) * CHAR_BIT;
   return conversions::convert(value,
                               digits,
                               riscv::BITS_PER_BYTE,

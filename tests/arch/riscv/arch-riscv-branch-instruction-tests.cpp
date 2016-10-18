@@ -72,7 +72,8 @@ struct TestBranchInstructions : public RiscvBaseTest {
 
     ASSERT_TRUE(instruction->validate(memoryAccess).isSuccess());
 
-    instruction->getValue(memoryAccess);
+    MemoryValue newPc = instruction->getValue(memoryAccess);
+    memoryAccess.putRegisterValue("pc", newPc);
   }
 
   template <typename T = riscv::signed32_t>
@@ -93,6 +94,8 @@ struct TestBranchInstructions : public RiscvBaseTest {
       // progress is necessary if/because we call
       // testJAL multiple times in a fixture
       progress += offset * 2;
+    } else {
+      progress += 4; // TODO Make nicer
     }
 
     EXPECT_EQ(resultingProgramCounter, initialAddress + progress);
