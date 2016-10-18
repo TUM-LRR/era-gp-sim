@@ -97,7 +97,8 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
   const auto& instructionSet = architecture.getInstructions();
 
   // toLower as long as not fixed in instruction set.
-  if (!instructionSet.hasInstruction(Utility::toLower(_name)))
+  auto opcode = Utility::toLower(_name);
+  if (!instructionSet.hasInstruction(opcode))
   {
     state.addError("Unknown opcode: " + _name);
     return;
@@ -105,6 +106,6 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
 
   // For now. Later to be reworked with a bit-level memory allocation?
   std::size_t instructionLength =
-      instructionSet[_name].getLength() / architecture.getByteSize();
+      instructionSet[opcode].getLength() / architecture.getByteSize();
   _relativeAddress = allocator["text"].allocateRelative(instructionLength);
 }
