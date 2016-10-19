@@ -78,12 +78,34 @@ MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {
   return prev;
 }
 
+namespace {
+void appendMemoryValue(std::stringstream& strm, const MemoryValue& value) {
+  static const char hex[] = "0123456789ABCDEF";
+  bool zero = true;
+  for (std::size_t l = (value.getSize() + 7) / 8; l-- > 0;) {
+    std::uint8_t byte = value.getByteAt(l * 8);
+    std::uint8_t upperChar = byte / 16;
+    std::uint8_t lowerChar = byte % 16;
+    if (!zero || upperChar != 0) {
+      strm.put(hex[upperChar]);
+      zero = false;
+    }
+    if (!zero || lowerChar != 0) {
+      strm.put(hex[lowerChar]);
+      zero = false;
+    }
+  }
+  if (zero) {
+    strm.put('0');
+  }
+}
+}
+
 // maybe use map, map would be soooo much nicer
 // std::vector<std::pair<std::string, std::string>>
 std::pair<std::unordered_map<std::string, std::size_t>,
           std::unordered_map<std::string, std::string>>
 Memory::serializeRaw(char separator, std::size_t lineLength) {
-  static const char hex[] = "0123456789ABCDEF";
   // std::vector<std::pair<std::string, std::string>> ret{
   std::unordered_map<std::string, std::string> data{};
   std::unordered_map<std::string, std::size_t> meta{
@@ -102,27 +124,25 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
       name << (i * lineLength);
       for (std::size_t j = 0; j < lineLength; ++j) {
         MemoryValue v{get(i * lineLength + j)};
-        bool zero = true;
-        for (std::size_t l = (_byteSize + 7) / 8; l-- > 0;) {
-          std::uint8_t byte = v.getByteAt(l * 8);
-          std::uint8_t upperChar = byte / 16;
-          std::uint8_t lowerChar = byte % 16;
-          if (!zero || upperChar != 0) {
-            value.put(hex[upperChar]);
-            zero = false;
-          }
-          if (!zero || lowerChar != 0) {
-            value.put(hex[lowerChar]);
-            zero = false;
-          }
-        }
+        appendMemoryValue(value, v);
         value.put(separator);
       }
       // ret.push_back(std::make_pair(name.str(), value.str()));
       data[name.str()] = value.str();
     }
   }
-  // TODO::serialize last line
+  if (get(_byteCount / lineLength * lineLength, _byteCount % lineLength) !=
+      MemoryValue{_byteSize * (_byteCount % lineLength)}) {
+    std::stringstream name("line");
+    std::stringstream value{};
+    name << (_byteCount / lineLength * lineLength);
+    for (std::size_t i = 0; i < _byteCount % lineLength; ++i) {
+      MemoryValue v{get((_byteCount / lineLength * lineLength) + i)};
+      appendMemoryValue(value, v);
+      value.put(separator);
+    }
+    data[name.str()] = value.str();
+  }
   return make_pair(meta, data);
 }
 
@@ -157,14 +177,14 @@ void Memory::deserializeJSON(const nlohmann::json& jsonObj) {
       jsonObj[_lineLengthStringIdentifier].get<std::size_t>();
   const std::size_t lineCount = _byteCount / lineLength;
   const MemoryValue empty{_byteSize * lineLength};
-  const auto separatorRef = jsonObj[_separatorStringIdentifier];
-  // TODO::make this a useful separator
+  const char separator = jsonObj[_separatorStringIdentifier].get<char>();
   for (std::size_t i = 0; i < lineCount; ++i) {
     std::stringstream name("line");
     name << (i * lineLength);
     auto line = jsonObj.find(name.str());
     // TODO::make line to MemoryValue
   }
+  // TODO::do this damn last line again because I made this damn asserts
 }
 
 void Memory::wasUpdated(const std::size_t address, const std::size_t amount) {
