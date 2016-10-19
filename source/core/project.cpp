@@ -91,7 +91,7 @@ void Project::_createConstituents(RegisterInformation enclosingRegister,
   }
 }
 
-MemoryValue Project::getMemoryValueAt(size_t address, size_t amount) {
+MemoryValue Project::getMemoryValueAt(size_t address, size_t amount) const {
   return _memory.get(address, amount);
 }
 
@@ -196,6 +196,6 @@ void Project::setUpdateMemoryCallback(Callback<size_t, size_t> callback) {
   _memory.setCallback(callback);
 }
 
-Architecture Project::getArchitecture() {
+Architecture Project::getArchitecture() const {
   return _architecture;
 }

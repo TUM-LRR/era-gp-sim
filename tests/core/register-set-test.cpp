@@ -32,7 +32,7 @@ namespace {
   constexpr std::size_t scale = 10;
 }
 
-TEST(register_set, create_rw) {
+TEST(registerSet, createRw) {
   constexpr std::size_t b = 1024;   // size
   constexpr std::size_t t = scale;  // testAmount
   RegisterSet instance{};
@@ -60,7 +60,7 @@ TEST(register_set, create_rw) {
   }
 }
 
-TEST(register_set, alias_rw_rand) {
+TEST(registerSet, aliasRwRand) {
   constexpr std::size_t b = 1024;   // size
   constexpr std::size_t t = scale;  // testAmount
   const std::string parent = "lilith";
@@ -99,7 +99,7 @@ TEST(register_set, alias_rw_rand) {
   }
 }
 
-TEST(register_set, alias_rw_transitive) {
+TEST(registerSet, aliasRwTransitive) {
   constexpr std::size_t b = 1024;   // size
   constexpr std::size_t t = scale;  // testAmount
   const std::string parent = "lilith";

@@ -115,36 +115,46 @@ class RegisterSet {
    * \brief Creates a Register with the name name and size size
    * \param name String uniquely representing the to be created Register
    * \param size Size of the Register in bit
+   * \param constant Makes it so this Register cannot be changed anymore
    */
-  void createRegister(const std::string &name, const std::size_t size);
+  void createRegister(const std::string &name,
+                      std::size_t size,
+                      bool constant = false);
   /**
    * \brief Creates a Register with the name name and stores a copy of value
    * \param name String uniquely representing the to be created Register
    * \param value Initial value of the register
+   * \param constant Makes it so this Register cannot be changed anymore
    */
-  void createRegister(const std::string &name, const MemoryValue &value);
+  void createRegister(const std::string &name,
+                      const MemoryValue &value,
+                      bool constant = false);
   /**
    * \brief Creates a Register with the name nameList[0] and stores a copy of
    *        value, creates Alias to this register for the remaining names
    * \param nameList Vector of Strings uniquely representing the to be created
    *        Register
    * \param value Initial value of the register
+   * \param constant Makes it so this Register cannot be changed anymore
    * \param silent option to make all aliases created by this be silent
    */
   void createRegister(const std::vector<std::string> &nameList,
                       const MemoryValue &value,
-                      const bool silent = false);
+                      bool constant = false,
+                      bool silent = false);
   /**
    * \brief Creates a Register with the name name and size size, creates Alias
    *        to this register for the remaining names
    * \param nameList Vector of Strings uniquely representing the to be created
    *        Register
    * \param size Size of the Register in bit
+   * \param constant Makes it so this Register cannot be changed anymore
    * \param silent option to make all aliases created by this be silent
    */
   void createRegister(const std::vector<std::string> &nameList,
-                      const std::size_t size,
-                      const bool silent = false);
+                      std::size_t size,
+                      bool constant = false,
+                      bool silent = false);
   /**
    * \brief Creates an Alias with the name name for the substring [begin; end[
    *        of the Register with the name parent
@@ -205,19 +215,19 @@ class RegisterSet {
       _dict; /**< Brief Map mapping name -> RegisterID*/
   std::vector<MemoryValue>
       _register; /**< Brief Vector holding all the Registers with no parent*/
+  std::vector<bool>
+      _constant; /**< Brief is true if this ancestor Register is  constant*/
   // I'm using set because that makes implementing the option to delete
   // registers way easier, vector would've been enough at this moment
   std::vector<std::set<std::string>>
-      _updateSet; /**< Brief Vector mapping
-                         RegisterID.address -> all
-                         childrens name of this
-                         Register*/
+      _updateSet; /**< Brief Vector mapping RegisterID.address -> all
+                             childrens name of this Register*/
   static const std::function<void(const std::string &)>
       emptyCallback; /**< Brief An empty function that does absolutely
-                        nothing, used as default for _callback*/
+                                nothing, used as default for _callback*/
   std::function<void(const std::string &)> _callback =
       emptyCallback; /**< Brief This function gets called for every changed
-                        Register*/
+                                Register*/
   /**
    * \brief This Method is called whenever something in the Memory changes and
    *        notifies the Gui ofthe change
