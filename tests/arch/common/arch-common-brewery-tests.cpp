@@ -57,7 +57,7 @@ struct ArchDeserializationTestFixture : public ::testing::Test {
           .size(16)
           .type(RegisterInformation::Type::FLOAT)
           .enclosing(0)
-          .constant(3.14)
+          .constant("0x4048f5c3")//3.14 in IEEE 754 floating point
           .addAliases({"foo", "bar"});
     // clang-format on
 

@@ -28,6 +28,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "core/memory-value.hpp"
 #include "arch/common/constituent-information.hpp"
 #include "arch/common/information-interface.hpp"
 #include "common/builder-interface.hpp"
@@ -217,20 +218,23 @@ class RegisterInformation : public InformationInterface {
   /**
    * Sets the register to be hardwired to the given constant.
    *
-   * The constant value must be convertible to `double` (that is the internal
-   * storage type, also for integral types).
+   * The constant value will be converted to MemoryValue (that is the internal
+   * storage type, also for integral types). The constant value must represent
+   * a number that fits into this register
    *
    * \param constant The new hardwired constant.
    *
    * \return The current register object.
    */
-  template <typename ConstantType,
-            typename = std::enable_if_t<
-                std::is_convertible<ConstantType, double>::value>>
-  RegisterInformation& constant(const ConstantType& constant) {
-    _constant = constant;
-    return *this;
-  }
+  RegisterInformation& constant(const std::string& constant);
+
+  /**
+   * Sets the register to be hardwired to the given constant.
+   * The constant must have exactly the same length as this register
+   * \param constant The new hardwired constant
+   * \return The current register object
+   */
+  RegisterInformation& setConstantValue(const MemoryValue constant);
 
   /**
    * Returns the constant the register is hardwired to, if any, and converts it
@@ -241,13 +245,7 @@ class RegisterInformation : public InformationInterface {
    * \return If a conversion is possible, the current hardwired constant
    *         cast to the given type.
    */
-  template <typename ConstantType,
-            typename = std::enable_if_t<
-                std::is_convertible<double, ConstantType>::value>>
-  ConstantType getConstant() const noexcept {
-    assert(isConstant());
-    return static_cast<ConstantType>(*_constant);
-  }
+  MemoryValue getConstant() const;
 
   /**
    * Returns whether or not the register is currently hardwired to any constant.
@@ -378,8 +376,8 @@ class RegisterInformation : public InformationInterface {
    *
    * \return The current register object.
    */
-  RegisterInformation&
-  addConstituent(const ConstituentInformation& constituent);
+  RegisterInformation& addConstituent(
+      const ConstituentInformation& constituent);
 
   /**
    * Returns the information objects of the constituents of the register.
@@ -440,7 +438,7 @@ class RegisterInformation : public InformationInterface {
   Optional<size_t> _size;
 
   /** The constant the register is hardwired to, if any. */
-  Optional<double> _constant;
+  Optional<MemoryValue> _constant;
 
   /** The ID of the register's enclosing register, if one exists. */
   Optional<id_t> _enclosing;

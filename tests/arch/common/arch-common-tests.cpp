@@ -37,13 +37,20 @@
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
 
+#include "core/conversions.hpp"
+
+
+MemoryValue convert(uint32_t value) {
+    return conversions::convert(value, 32);
+}
+
 struct ArchCommonTestFixture : ::testing::Test {
   ArchCommonTestFixture() {
     registerInformation.name("r0")
         .id(0)
         .size(32)
         .type(RegisterInformation::Type::INTEGER)
-        .constant(5)
+        .constant("0x5")
         .addAlias("zero")
         .enclosing(1)
         .addConstituents({{2, 1}, {3, 2}, {4, 3}});
@@ -104,13 +111,12 @@ TEST(ArchCommonTest, TestRegisterInformation) {
                                  .name("r0")
                                  .id(0)
                                  .type(RegisterInformation::Type::INTEGER)
-                                 .constant(5)
                                  .addAlias("zero")
                                  .enclosing(1)
                                  .addConstituents({{2, 1}, {3, 2}, {4, 3}});
 
   EXPECT_FALSE(registerInformation.isValid());
-  registerInformation.size(32);
+  registerInformation.size(32).constant("0x5");
   EXPECT_TRUE(registerInformation.isValid());
 
   EXPECT_EQ(registerInformation.getID(), 0);
@@ -118,7 +124,7 @@ TEST(ArchCommonTest, TestRegisterInformation) {
   EXPECT_EQ(registerInformation.getSize(), 32);
   EXPECT_EQ(registerInformation.getType(), RegisterInformation::Type::INTEGER);
   EXPECT_TRUE(registerInformation.isConstant());
-  EXPECT_EQ(registerInformation.getConstant<std::size_t>(), 5);
+  EXPECT_EQ(registerInformation.getConstant(), convert(5));
   EXPECT_EQ(registerInformation.getAliases(),
             std::vector<std::string>({"zero"}));
   EXPECT_TRUE(registerInformation.hasEnclosing());
