@@ -17,7 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser\riscv-directives.hpp"
+#include "parser/riscv-directives.hpp"
 
 MemoryReservationDirective::ArgumentCompileFunction
     RiscvDirectives::_argumentCompile =
