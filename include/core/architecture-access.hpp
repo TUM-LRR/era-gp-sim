@@ -36,67 +36,67 @@ class ArchitectureAccess : public Proxy<Project> {
    * Returns a container of all registers
    *
    */
-  POST_FUTURE(getRegisterUnits)
+  POST_FUTURE_CONST(getRegisterUnits)
 
   /**
    * Returns the number of bits in a byte
    *
    */
-  //POST_FUTURE(getByteSize)
+  POST_FUTURE_CONST(getByteSize)
 
   /**
    * Returns a set of all instructions of the architecture
    *
    */
-  POST_FUTURE(getInstructionSet)
+  POST_FUTURE_CONST(getInstructionSet)
 
   /**
    * Returns the callback used for conversion from a MemoryValue to a signed
    * decimal integer as a std::string
    *
    */
-  POST_FUTURE(getSignedDecimalConversion)
+  POST_FUTURE_CONST(getSignedDecimalConversion)
 
   /**
    * Returns the callback used for conversion from a MemoryValue to a unsigned
    * decimal integer as a std::string
    *
    */
-  POST_FUTURE(getUnsignedDecimalConversion)
+  POST_FUTURE_CONST(getUnsignedDecimalConversion)
 
   /**
    * Returns the callback used for conversion from a MemoryValue to a signed
    * decimal float as a std::string
    *
    */
-  POST_FUTURE(getFloatConversion)
+  POST_FUTURE_CONST(getFloatConversion)
 
   /**
    * Returns the callback used for conversion from a signed decimal integer as a
    * std::string to a MemoryValue
    *
    */
-  POST_FUTURE(getSignedToMemoryValue)
+  POST_FUTURE_CONST(getSignedToMemoryValue)
 
   /**
    * Returns the callback used for conversion from a unsigned decimal integer as
    * a std::string to a MemoryValue
    *
    */
-  POST_FUTURE(getUnsignedToMemoryValue)
+  POST_FUTURE_CONST(getUnsignedToMemoryValue)
 
   /**
    * Returns the callback used for conversion from a signed decimal float as a
    * std::string to a MemoryValue
    *
    */
-  POST_FUTURE(getFloatToMemoryValue)
+  POST_FUTURE_CONST(getFloatToMemoryValue)
 
   /**
    * \returns Returns the Architecture object of the project.
    *
    */
-  POST_FUTURE(getArchitecture)
+  POST_FUTURE_CONST(getArchitecture)
 };
 
 #endif /* ERAGPSIM_CORE_ARCHITECTURE_ACCESS_HPP */
