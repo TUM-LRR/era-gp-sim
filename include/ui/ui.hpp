@@ -17,20 +17,22 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_UI_UI_HPP_
-#define ERAGPSIM_UI_UI_HPP_
+#ifndef ERAGPSIM_UI_UI_HPP
+#define ERAGPSIM_UI_UI_HPP
 
 #include <QApplication>
+#include <QMap>
 #include <QObject>
+#include <QPair>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
-#include <QQmlContext>
-#include <QQmlEngine>
 #include <QQuickItem>
-#include <memory>
+#include <QString>
+#include <QStringList>
 #include <vector>
 
-#include "ui/qproject.hpp"
+#include "third-party/json/json.hpp"
+#include "ui/gui-project.hpp"
 
 /**
  * This class creates the QmlEngine and starts the qml application.
@@ -42,6 +44,9 @@
 class Ui : public QObject {
   Q_OBJECT
  public:
+  using Json = nlohmann::json;
+  using ArchitectureMap = QMap<QString, QPair<QStringList, QStringList>>;
+
   /**
    * \brief Creates a new Ui object.
    *
@@ -71,15 +76,135 @@ class Ui : public QObject {
    * \param projectComponent The QQmlComponent to be used to create the qml part
    * of the project.
    */
-  Q_INVOKABLE void
-  addProject(QQuickItem* tabItem, QQmlComponent* projectComponent);
+  Q_INVOKABLE void addProject(QQuickItem* tabItem,
+                              QQmlComponent* projectComponent,
+                              QVariant memorySizeQVariant,
+                              QString architecture,
+                              QStringList extensionsQString,
+                              QString parser);
+  /**
+   * Returns a list of architecture names.
+   *
+   */
+  Q_INVOKABLE QStringList getArchitectures() const;
+
+  /**
+   * Returns a list of extension names of an architecture.
+   *
+   * \param architectureName The name of the architecture.
+   */
+  Q_INVOKABLE QStringList getExtensions(QString architectureName) const;
+
+  /**
+   * Returns a list of parser names of an architecture.
+   *
+   * \param architectureName The name of the architecture.
+   */
+  Q_INVOKABLE QStringList getParsers(QString architectureName) const;
+
+  /**
+   * Removes a Project from the _projects vector. Does not delete it.
+   *
+   * \param index The index of the project to remove.
+   */
+  Q_INVOKABLE void removeProject(int index);
+
+  /**
+   * Calls changeSystem on the specified project.
+   *
+   * \param base The name of the numerical system.
+   */
+  Q_INVOKABLE void changeSystem(int index, std::string base);
+
+  /**
+   * Calls parse on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void parse(int index);
+
+  /**
+   * Call run on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void run(int index);
+
+  /**
+   * Call runLine on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void runLine(int index);
+
+  /**
+   * Call runBreakpoint on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void runBreakpoint(int index);
+
+  /**
+   * Call stop on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void stop(int index);
+
+  /**
+   * Call stop on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void reset(int index);
+
+  /**
+   * Call save on the specified project.
+   *
+   * \param index The index of the project.
+   */
+  Q_INVOKABLE void save(int index);
+
+  /**
+   * Call saveAs on the specified project.
+   *
+   * \param index The index of the project.
+   * \param name The name/path of the save.
+   */
+  Q_INVOKABLE void saveAs(int index, QString name);
+
+  /**
+   * Call saveSnapshot on the specified project.
+   *
+   * \param index The index of the project.
+   * \param name The name of the snapshot.
+   */
+  Q_INVOKABLE void saveSnapshot(int index, QString name);
+
+  /**
+   * Call loadSnapshot on the specified project.
+   *
+   * \param index The index of the project.
+   * \param name The name of the snapshot.
+   */
+  Q_INVOKABLE void loadSnapshot(int index, QString name);
 
  private:
+  /** loads the architectures and extensions from a json file. */
+  void _loadArchitectures();
+
+  /** This map contains the Architectures as string and a list of their
+   * extensions as vector of strings. */
+  ArchitectureMap _architectureMap;
+
   /** The QApplication of this program. */
   QApplication _qmlApplication;
 
   /** The QmlEngine of this program. */
   QQmlApplicationEngine _engine;
+
+  /** A list of pointers to the GuiProjects. */
+  std::vector<GuiProject*> _projects;
 };
 
-#endif /* ERAGPSIM_UI_UI_HPP_ */
+#endif /* ERAGPSIM_UI_UI_HPP */

@@ -19,4 +19,4 @@ set(CORE_SOURCES
 
 add_library(era-sim-core STATIC ${CORE_SOURCES})
 
-target_link_libraries(era-sim-core era-sim-common era-sim-parser era-sim-arch-common era-sim-arch-riscv)
+target_link_libraries(era-sim-core era-sim-common era-sim-parser era-sim-arch-common era-sim-arch-riscv pthread)

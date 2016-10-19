@@ -24,7 +24,7 @@
 #include "common/string-conversions.hpp"
 #include "core/memory-value.hpp"
 
-MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess& access, /*const MemoryManager manager,*/ QQmlContext *projectContext, QObject *parent)
+MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access, /*const MemoryManager manager,*/ QQmlContext *projectContext, QObject *parent)
 : QAbstractTableModel(parent){
     projectContext->setContextProperty("memoryModel", this);
 
@@ -82,7 +82,7 @@ QVariant MemoryComponentPresenter::data(const QModelIndex &index, int role) cons
         }
         case ValueRole: {
             // TODO fetch value from core
-            MemoryValue memory_cell = memory_access.getMemoryValueAt(index.row(), 8);
+            MemoryValue memory_cell = memory_access.getMemoryValueAt(index.row(),8).get();
             std::string stringvalue = StringConversions::toHexString(memory_cell);
             return  QString().fromStdString(stringvalue);
         }
