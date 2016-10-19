@@ -120,6 +120,9 @@ Item {
             Keys.onDeletePressed: {
 
             }
+            onEditingFinished: {
+                    memoryModel.setValue(styleData.index, editableContent.text);
+            }
 
             placeholderText: "0x0000"
             text: "0x0000"

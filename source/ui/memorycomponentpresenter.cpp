@@ -24,21 +24,18 @@
 #include "common/string-conversions.hpp"
 #include "core/memory-value.hpp"
 
-MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access, /*const MemoryManager manager,*/ QQmlContext *projectContext, QObject *parent)
-: QAbstractTableModel(parent), _memoryAccess(access){
+MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access, MemoryManager manager, QQmlContext *projectContext, QObject *parent)
+: QAbstractTableModel(parent), _memoryAccess(access), _memoryManager(manager){
     projectContext->setContextProperty("memoryModel", this);
 
-    //memory_manager = manager;
-
-    // TODO create new View
-    //context->setContextProperty("MemoryComponent", this);
-    this->setValue(5,10);
+    // set memory update callback function
+    _memoryManager.setUpdateMemoryCallback([this](std::size_t address, std::size_t length) {onMemoryChanged(address, length);});
 }
 
 
 MemoryComponentPresenter::~MemoryComponentPresenter() { }
 
-void MemoryComponentPresenter::onMemoryChanged(const std::size_t address, const std::size_t length) {
+void MemoryComponentPresenter::onMemoryChanged(std::size_t address, std::size_t length) {
     emit QAbstractTableModel::dataChanged(this->index(address, 0), this->index(address + length, 2)); //TODO fix hardcoded
 }
 
@@ -46,7 +43,8 @@ void MemoryComponentPresenter::setSize(int newSize) {
     // TODO
 }
 
-void MemoryComponentPresenter::setValue(int address, /*TODO MemoryValue*/ int newValue) {
+void MemoryComponentPresenter::setValue(int address, QString number) {
+    _memoryAccess.putMemoryValueAt(address, *StringConversions::hexStringToMemoryValue(number.toStdString(), 16));
     //this->dataChanged(this->index(address, 0), this->index(address, 2));
 }
 

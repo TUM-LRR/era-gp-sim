@@ -12,7 +12,7 @@ GuiProject::GuiProject(QQmlContext* context,
 , _editorComponent(context,
                    _projectModule.getParserInterface(),
                    _projectModule.getCommandInterface())
-, _memoryModel(_projectModule.getMemoryAccess(), context)
+, _memoryModel(_projectModule.getMemoryAccess(), _projectModule.getMemoryManager(), context)
 /*, registermodel(context)
 , editormodel(context)
 , snapmodel(context)
