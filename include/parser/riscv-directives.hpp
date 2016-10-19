@@ -190,7 +190,7 @@ class RiscvDirectives {
 
 template <typename T>
 const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
-    RiscvDirectives::_processValues<T> =
+    RiscvDirectives::_processValues =
         [](const std::vector<std::string>& values,
            std::size_t cellSize,
            CompileState& state,
