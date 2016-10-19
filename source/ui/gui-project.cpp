@@ -12,6 +12,7 @@ GuiProject::GuiProject(QQmlContext* context,
 , _editorComponent(context,
                    _projectModule.getParserInterface(),
                    _projectModule.getCommandInterface())
+, _registerModel(_projectModule.getArchitectureAccess(), _projectModule.getMemoryManager(), _projectModule.getMemoryAccess(), context)
 /*, registermodel(context)
 , editormodel(context)
 , snapmodel(context)

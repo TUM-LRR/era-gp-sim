@@ -10,6 +10,7 @@
 #include "core/memory-value.hpp"
 #include "core/project-module.hpp"
 #include "ui/editor-component.hpp"
+#include "ui/register-model.hpp"
 //#include "ui/snapshotmodel.hpp"
 
 
@@ -50,7 +51,7 @@ class GuiProject : QObject {
 
  private:
   ProjectModule _projectModule;
-  // RegisterModel registermodel;
+  RegisterModel _registerModel;
   EditorComponent _editorComponent;
   // SnapshotModel snapmodel;
   // MemoryComponentPresenter memorymodel;

@@ -46,8 +46,8 @@ ToolBar {
         id: styleNotClicked
         ButtonStyle{
             background: Rectangle{
-            color: systemColors.button
-            anchors.fill: parent
+                color: systemColors.button
+                anchors.fill: parent
             }
         }
     }
@@ -56,10 +56,10 @@ ToolBar {
         id: styleClicked
         ButtonStyle{
             background: Rectangle{
-            color: systemColors.button
-            border.color: systemColors.highlight
-            border.width: 3
-            anchors.fill: parent
+                color: systemColors.button
+                border.color: systemColors.highlight
+                border.width: 3
+                anchors.fill: parent
             }
         }
     }
@@ -123,16 +123,16 @@ ToolBar {
             }
 
 
-//            /*Functions to enable/disable the Button*/
-//            function changeActive(){
-//                console.info("change Active")
-//                console.info("enabled: "+enabled);
-//                if(!enabled){
-//                    setActive();
-//                }else{
-//                    setInactive();
-//                }
-//            }
+            //            /*Functions to enable/disable the Button*/
+            //            function changeActive(){
+            //                console.info("change Active")
+            //                console.info("enabled: "+enabled);
+            //                if(!enabled){
+            //                    setActive();
+            //                }else{
+            //                    setInactive();
+            //                }
+            //            }
 
             function setActive(){
                 enabled=true;
@@ -154,20 +154,23 @@ ToolBar {
         }
 
         ToolButton {
-          id: parseButton
-          text: "parse"
-          onClicked: {
-            ui.parse(tabView.currentIndex);
-          }
+            id: parseButton
+            text: "parse"
+            onClicked: {
+                ui.parse(tabView.currentIndex);
+                console.log("reset " + tabView.currentIndex);
+            }
         }
 
         ToolButton {
-          id: resetButton
-          text: "reset"
-          onClicked: {
-            ui.reset(tabView.currentIndex);
-          }
+            id: resetButton
+            text: "reset"
+            onClicked: {
+                ui.reset(tabView.currentIndex);
+            }
         }
+
+
 
         /* The next Buttons should be on the right side*/
         Item{ Layout.fillWidth: true}

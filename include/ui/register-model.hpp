@@ -26,7 +26,10 @@
 #include <string>
 #include "arch/common/register-information.hpp"
 #include "common/optional.hpp"
+#include "core/memory-access.hpp"
 
+class ArchitectureAccess;
+class MemoryManager;
 
 /**
  * Aggregates the data of multiple registers. Subclasses QAbstractItemModel to
@@ -55,7 +58,11 @@ class RegisterModel : public QAbstractItemModel {
  public:
   using id_t = RegisterInformation::id_t;
 
-  explicit RegisterModel(QQmlContext *projectContext, QObject *parent = 0);
+  explicit RegisterModel(ArchitectureAccess &architectureAccess,
+                         MemoryManager &memoryManager,
+                         MemoryAccess &memoryAccess,
+                         QQmlContext *projectContext,
+                         QObject *parent = 0);
 
   /**
    * \brief The RegisterModelRole enum Identifies different kinds of data stored
@@ -191,7 +198,7 @@ class RegisterModel : public QAbstractItemModel {
    * active data format.
    */
   Q_INVOKABLE QVariant contentStringForRegister(
-      const QModelIndex &index, unsigned int currentDataFormatIndex) const;
+      const QModelIndex &index, unsigned int currentDataFormatIndex);
 
   /**
    * \brief displayFormatStringForRegister Computes a string used for formatting
@@ -218,6 +225,9 @@ class RegisterModel : public QAbstractItemModel {
 
   /// Map of all registers each identified by a unique register identifier.
   std::map<id_t, std::unique_ptr<RegisterInformation>> _items;
+
+  /// Interface for communicating register data changes to core.
+  MemoryAccess _memoryAccess;
 
   /// Associates each register type with a list of avilable data formats.
   const std::map<RegisterInformation::Type, QStringList> _dataFormatLists = {
