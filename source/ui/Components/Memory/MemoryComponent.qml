@@ -76,7 +76,6 @@ Item {
             movable: false
             resizable: false
             width: 80
-            delegate: editableContent
         }
         TableViewColumn {
             role: "info"
@@ -86,6 +85,7 @@ Item {
             width: parent.width - 200
         }
         model: memoryModel
+        rowDelegate: editableContent
     }
 
     Component {
@@ -121,11 +121,12 @@ Item {
 
             }
             onEditingFinished: {
-                    memoryModel.setValue(styleData.index, editableContent.text);
+                    memoryModel.setValue(styleData.index, textFieldMemoryValue.text);
             }
 
             placeholderText: "0x0000"
-            text: "0x0000"
+            text: value
+
         }
     }
 

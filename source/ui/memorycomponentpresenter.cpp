@@ -18,92 +18,112 @@
 */
 
 #include "ui/memorycomponentpresenter.hpp"
-#include <iostream>
 #include <QDebug>
-#include "core/memory-value.hpp"
-#include "core/conversions.hpp"
+#include <iostream>
 #include "common/string-conversions.hpp"
+#include "core/conversions.hpp"
+#include "core/memory-value.hpp"
 #include "core/memory-value.hpp"
 
-MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access, MemoryManager manager, QQmlContext *projectContext, QObject *parent)
-: QAbstractTableModel(parent), _memoryAccess(access), _memoryManager(manager){
-    projectContext->setContextProperty("memoryModel", this);
+MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access,
+                                                   MemoryManager manager,
+                                                   QQmlContext *projectContext,
+                                                   QObject *parent)
+: QAbstractTableModel(parent), _memoryAccess(access), _memoryManager(manager) {
+  projectContext->setContextProperty("memoryModel", this);
 
-    // set memory update callback function
-    _memoryManager.setUpdateMemoryCallback([this](std::size_t address, std::size_t length) {onMemoryChanged(address, length);});
+  // set memory update callback function
+  _memoryManager.setUpdateMemoryCallback(
+      [this](std::size_t address, std::size_t length) {
+        onMemoryChanged(address, length);
+      });
 }
 
 
-MemoryComponentPresenter::~MemoryComponentPresenter() { }
+MemoryComponentPresenter::~MemoryComponentPresenter() {
+}
 
-void MemoryComponentPresenter::onMemoryChanged(std::size_t address, std::size_t length) {
-    emit QAbstractTableModel::dataChanged(QAbstractTableModel::createIndex(0,0), QAbstractTableModel::createIndex(5,2));
-    //emit QAbstractTableModel::dataChanged(this->index(address, 0), this->index(address + length, 2)); //TODO fix hardcoded
+void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
+                                               std::size_t length) {
+  // emit QAbstractTableModel::dataChanged(QAbstractTableModel::createIndex(0,
+  // 0),
+  //                                    QAbstractTableModel::createIndex(5, 2));
+  emit QAbstractTableModel::dataChanged(this->index(address, 0),
+                                        this->index(address + length,
+                                                    2));// TODO fix hardcoded
 }
 
 void MemoryComponentPresenter::setSize(int newSize) {
-    // TODO
+  // TODO
 }
 
 void MemoryComponentPresenter::setValue(int address, QString number) {
-    _memoryAccess.putMemoryValueAt(address, *StringConversions::hexStringToMemoryValue(number.toStdString(), 16));
-    //this->dataChanged(this->index(address, 0), this->index(address, 2));
+  _memoryAccess.putMemoryValueAt(
+      address,
+      *StringConversions::hexStringToMemoryValue(number.toStdString(), 16));
+  // this->dataChanged(this->index(address, 0), this->index(address, 2));
 }
 
-void MemoryComponentPresenter::setContextInformation(int addressStart, int length, int identifier) {
-    //this->dataChanged(this->index(addressStart, 0), this->index(addressStart + length, 2));
-    // TODO
+void MemoryComponentPresenter::setContextInformation(int addressStart,
+                                                     int length,
+                                                     int identifier) {
+  // this->dataChanged(this->index(addressStart, 0), this->index(addressStart +
+  // length, 2));
+  // TODO
 }
-
 
 
 int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
-    Q_UNUSED(parent)
-    return 5;
+  Q_UNUSED(parent)
+  return 5;
 }
 int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
-    Q_UNUSED(parent)
-    // 3: address + value + additional information
-    return 3;
+  Q_UNUSED(parent)
+  // 3: address + value + additional information
+  return 3;
 }
-QVariant MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
-    qDebug() << "data";
-    // check boundaries
-    if (!index.isValid()) {
-        qWarning() << "Warning: " << index.row() << ", " << index.column();
-        return QVariant();
-    }
+QVariant
+MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
+  // check boundaries
+  if (!index.isValid()) {
+    qWarning() << "Warning: " << index.row() << ", " << index.column();
+    return QVariant();
+  }
 
-    switch(role)
-    {
-        case AddressRole: {
-            // format index as hex value and return it
-            return QString("%1").arg(index.row(), 4, 16, QLatin1Char('0')).toUpper().prepend("0x");
-        }
-        case ValueRole: {
-            // TODO fetch value from core
-            //MemoryValue memory_cell = _memoryAccess.getMemoryValueAt(index.row()*8).get();
-
-        MemoryValue memory_cell = _memoryAccess.getMemoryValueAt(0).get();
-            std::string stringvalue = StringConversions::toHexString(memory_cell);
-            qDebug() << QString::fromStdString(stringvalue);
-            return  QString().fromStdString(stringvalue);
-        }
-        case InfoRole: {
-            // TODO fetch value from core
-            return  QString("information");
-        }
-        default: {
-            qWarning() << "unknown column role";
-            return QVariant();
-        }
+  switch (role) {
+    case AddressRole: {
+      // format index as hex value and return it
+      return QString("%1")
+          .arg(index.row(), 4, 16, QLatin1Char('0'))
+          .toUpper()
+          .prepend("0x");
     }
+    case ValueRole: {
+      // TODO fetch value from core
+      // MemoryValue memory_cell =
+      // _memoryAccess.getMemoryValueAt(index.row()*8).get();
+
+      MemoryValue memory_cell =
+          _memoryAccess.getMemoryValueAt(index.row()).get();
+      std::string stringvalue = StringConversions::toHexString(memory_cell);
+      qDebug() << QString::fromStdString(stringvalue);
+      return QString::fromStdString(stringvalue);
+    }
+    case InfoRole: {
+      // TODO fetch value from core
+      return QString("information");
+    }
+    default: {
+      qWarning() << "unknown column role";
+      return QVariant();
+    }
+  }
 }
 QHash<int, QByteArray> MemoryComponentPresenter::roleNames() const {
-    // connect TableColumns in View with columns in this model
-    QHash<int, QByteArray> roles;
-    roles[AddressRole] = "address";
-    roles[ValueRole] = "value";
-    roles[InfoRole] = "info";
-    return roles;
+  // connect TableColumns in View with columns in this model
+  QHash<int, QByteArray> roles;
+  roles[AddressRole] = "address";
+  roles[ValueRole] = "value";
+  roles[InfoRole] = "info";
+  return roles;
 }
