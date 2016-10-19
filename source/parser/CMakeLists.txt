@@ -22,6 +22,7 @@ set(PARSER_SOURCES
   constant-directive.cpp
   final-representation.cpp
   memory-allocator.cpp
+  memory-definition-directive.cpp
 )
 
 ########################################
