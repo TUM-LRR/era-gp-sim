@@ -205,6 +205,9 @@ void RegisterModel::registerContentChanged(
     unsigned int currentDataFormatIndex) {
   RegisterInformation *registerItem =
       static_cast<RegisterInformation *>(index.internalPointer());
+  // Remove whitespaces.
+  QString registerContentCleared = registerContent;
+  registerContentCleared.remove(QChar(' '));
   // Convert content string to MemoryValue.
   Optional<MemoryValue> registerContentMemoryValue;
   // Look up the register's current data format.
@@ -213,25 +216,23 @@ void RegisterModel::registerContentChanged(
   if (dataFormat) {
     if (*dataFormat == "Binary") {
       registerContentMemoryValue = StringConversions::binStringToMemoryValue(
-          registerContent.toStdString(), registerItem->getSize());
+          registerContentCleared.toStdString(), registerItem->getSize());
     } else if (*dataFormat == "Hexadecimal") {
       registerContentMemoryValue = StringConversions::hexStringToMemoryValue(
-          registerContent.toStdString(), registerItem->getSize());
+          registerContentCleared.toStdString(), registerItem->getSize());
     } else if (*dataFormat == "Decimal (Unsigned)") {
       registerContentMemoryValue =
           StringConversions::unsignedDecStringToMemoryValue(
-              registerContent.toStdString(), registerItem->getSize());
+              registerContentCleared.toStdString(), registerItem->getSize());
     } else if (*dataFormat == "Decimal (Signed)") {
       registerContentMemoryValue =
           StringConversions::signedDecStringToMemoryValue(
-              registerContent.toStdString(), registerItem->getSize());
+              registerContentCleared.toStdString(), registerItem->getSize());
     } else if (*dataFormat == "Flag") {
       registerContentMemoryValue = StringConversions::binStringToMemoryValue(
-          registerContent.toStdString(), registerItem->getSize());
+          registerContentCleared.toStdString(), registerItem->getSize());
     }
   }
-  qDebug() << "registerContentChanged: " << registerContent << ", "
-           << registerItem->getID();
   if (registerContentMemoryValue) {
     _memoryAccess.setRegisterValue(registerItem->getName(),
                                    *registerContentMemoryValue);
@@ -337,7 +338,7 @@ QString RegisterModel::_computeDisplayFormatString(const QString &dataFormat,
     formatString = formatPrefix + QString(size, 'B');
     byteCharacterWidth = 8;
   } else if (dataFormat == "Hexadecimal") {
-    formatPrefix = "\\0\\b ";
+    formatPrefix = "\\0\\x ";
     formatString = formatPrefix + QString(size / 4, 'H');
     byteCharacterWidth = 2;
   }
