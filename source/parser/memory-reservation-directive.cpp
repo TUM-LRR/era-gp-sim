@@ -30,7 +30,7 @@ void MemoryReservationDirective::allocateMemory(
   // So, we simply calculate and sum up our arguments.
   std::size_t sizeInCells = 0;
   for (const auto& i : _values) {
-    auto result = CLikeExpressionCompilers::CLikeCompilerU64.compile(i, state);
+    auto result = _argumentCompile(i, state);
     sizeInCells += result;
   }
 

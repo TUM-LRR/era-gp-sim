@@ -20,46 +20,66 @@
 #ifndef ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP
 #define ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP
 
-#include "intermediate-directive.hpp"
-#include "parser/string-parser.hpp"
+#include <functional>
 #include "arch/common/architecture.hpp"
-#include "parser/expression-compiler-clike.hpp"
 #include "core/conversions.hpp"
-#include "core/memory-value.hpp"
 #include "core/memory-access.hpp"
+#include "core/memory-value.hpp"
+#include "intermediate-directive.hpp"
+#include "parser/expression-compiler-clike.hpp"
+#include "parser/string-parser.hpp"
 
+/**
+ * \brief A directive to reserve memory and writes specified data to it.
+ * \tparam T The number type used for parsing.
+ */
 template <typename T>
 class MemoryDefinitionDirective : public IntermediateDirective {
  public:
+  using MemoryStorageFunction = std::function<void(T, std::size_t)>;
+  using ProcessValuesFunction =
+      std::function<std::size_t(const std::vector<std::string>&,
+                                std::size_t,
+                                CompileState&,
+                                const MemoryStorageFunction&)>;
+
   /**
- * \brief Instantiates a new IntermediateDirective with the given arguments.
- * (only for subclass use!)
+ * \brief Instantiates a new MemoryDefinitionDirective with the given arguments.
  * \param lines The line interval the operation occupies.
  * \param labels The vector of labels assigned to the operation.
  * \param name The name of the operation.
+ * \param cellSize The size of the unit how much each argument should occupy at
+ * space.
+ * \param values The argument vector.
+ * \param processValues A function to parse the arguments.
  */
   MemoryDefinitionDirective(const LineInterval& lines,
                             const std::vector<std::string>& labels,
                             const std::string& name,
                             std::size_t cellSize,
-                            const std::vector<std::string>& values)
+                            const std::vector<std::string>& values,
+                            const ProcessValuesFunction& processValues)
   : IntermediateDirective(lines, labels, name)
   , _cellSize(cellSize)
-  , _values(values) {
+  , _values(values)
+  , _processValues(processValues) {
   }
 
   /**
- * \brief Instantiates a new IntermediateDirective with the given arguments.
- * (only for subclass use!)
+ * \brief Instantiates a new MemoryDefinitionDirective with the given arguments.
  * \param lines The line interval the operation occupies.
  * \param labels The vector of labels assigned to the operation.
  * \param name The name of the operation.
+ * \param values The argument vector.
+ * \param processValues A function to parse the arguments.
  */
   MemoryDefinitionDirective(const LineInterval& lines,
                             const std::vector<std::string>& labels,
                             const std::string& name,
-                            const std::vector<std::string>& values)
-  : MemoryDefinitionDirective(lines, labels, name, sizeof(T), values) {
+                            const std::vector<std::string>& values,
+                            const ProcessValuesFunction& processValues)
+  : MemoryDefinitionDirective(
+        lines, labels, name, sizeof(T), values, processValues) {
   }
 
   /**
@@ -73,20 +93,11 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                               MemoryAllocator& allocator,
                               CompileState& state) {
     // So, we simply calculate and sum up our arguments.
-    std::size_t sizeInBytes = 0;
-    for (const auto& i : _values) {
-      if (i.empty()) {
-        state.addError("Argument is empty.");
-      } else if (i.at(0) == '\"') {
-        CompileState temporaryState;
-        std::vector<T> temporaryData;
-        if (StringParser::parseString(i, temporaryData, temporaryState)) {
-          sizeInBytes += _cellSize * temporaryData.size();
-        }
-      } else {
-        sizeInBytes += _cellSize;
-      }
-    }
+    // Let's hope, the compiler optimizes this...
+    CompileState temporaryState;
+    std::size_t sizeInBytes = _processValues(
+        _values, _cellSize, temporaryState, [](T value, std::size_t position) {
+        });
 
     // Next, we got to allocate our memory.
     _relativePosition = allocator[state.section].allocateRelative(sizeInBytes);
@@ -126,42 +137,30 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                        const SyntaxTreeGenerator& generator,
                        CompileState& state,
                        MemoryAccess& memoryAccess) {
+    // We first of all create our memory value locally.
     MemoryValue data(_size);
-    std::size_t currentPosition = 0;
-    ExpressionCompiler<T> compiler =
-        CLikeExpressionCompilers::createCLikeCompiler<T>();
-    for (const auto& i : _values) {
-      if (!i.empty()) {
-        if (i.at(0) == '\"') {
-          std::vector<T> returnData;
-          if (StringParser::parseString(i, returnData, state)) {  
-            for (const auto& j : returnData)
-            {
-              auto memoryValue = conversions::convert(j,
-                             conversions::standardConversions::helper::
-                                 twosComplement::toMemoryValueFunction,
-                             _byteSize * _cellSize);
-              memoryValue.write(data, currentPosition);
-              currentPosition += _cellSize;
-            }
-          }
-        } else {
-          T returnData = compiler.compile(i, state);
-          // Temporary.
-          auto memoryValue = conversions::convert(returnData,
-                             conversions::standardConversions::helper::
-                                 twosComplement::toMemoryValueFunction,
-                             _byteSize * _cellSize);
-          memoryValue.write(data, currentPosition);
-          currentPosition += _cellSize;
-        }
-      }
-    }
 
+    // Then we write to it.
+    _processValues(
+        _values, _cellSize, state, [&](T value, std::size_t position) {
+          // For now. Later to be replaced by the real enum of the arch,
+          // maybe...
+          auto memoryValue =
+              conversions::convert(value,
+                                   conversions::standardConversions::helper::
+                                       twosComplement::toMemoryValueFunction,
+                                   _byteSize * _cellSize);
+
+          // Once converted, we take down the value.
+          memoryValue.write(data, position);
+        });
+
+    // Then, let's do a (probably also here) expensive memory call.
     memoryAccess.putMemoryValueAt(_absolutePosition, data);
   }
 
  private:
+  ProcessValuesFunction _processValues;
   std::size_t _byteSize;
   std::size_t _absolutePosition;
   RelativeMemoryPosition _relativePosition;

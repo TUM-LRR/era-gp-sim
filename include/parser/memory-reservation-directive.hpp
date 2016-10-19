@@ -20,10 +20,14 @@
 #ifndef ERAGPSIM_PARSER_MEMORY_RESERVATION_DIRECTIVE_HPP
 #define ERAGPSIM_PARSER_MEMORY_RESERVATION_DIRECTIVE_HPP
 
+
+#include <functional>
 #include "intermediate-directive.hpp"
 
 class MemoryReservationDirective : public IntermediateDirective {
  public:
+  using ArgumentCompileFunction =
+      std::function<std::size_t(const std::string&, CompileState&)>;
   /**
  * \brief Instantiates a new IntermediateDirective with the given arguments.
  * (only for subclass use!)
@@ -35,10 +39,12 @@ class MemoryReservationDirective : public IntermediateDirective {
                              const std::vector<std::string>& labels,
                              const std::string& name,
                              std::size_t cellSize,
-                             const std::vector<std::string>& values)
+                             const std::vector<std::string>& values,
+                             const ArgumentCompileFunction& argumentCompile)
   : IntermediateDirective(lines, labels, name)
   , _cellSize(cellSize)
-  , _values(values) {
+  , _values(values)
+  , _argumentCompile(argumentCompile) {
   }
 
   /**
@@ -78,6 +84,7 @@ class MemoryReservationDirective : public IntermediateDirective {
                                   CompileState& state);
 
  private:
+  ArgumentCompileFunction _argumentCompile;
   std::size_t _absolutePosition;
   RelativeMemoryPosition _relativePosition;
   std::size_t _size;
