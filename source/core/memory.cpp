@@ -21,6 +21,11 @@
 #include "common/assert.hpp"
 #include "core/memory.hpp"
 
+const std::string Memory::_byteCountStringIdentifier = "memory_byteCount";
+const std::string Memory::_byteSizeStringIdentifier = "memory_byteSize";
+const std::string Memory::_lineLengthStringIdentifier = "memory_lineLength";
+const std::string Memory::_separatorStringIdentifier = "memory_separator";
+
 Memory::Memory() : Memory(64, 8) {
 }
 
@@ -31,9 +36,10 @@ Memory::Memory(std::size_t byteCount, std::size_t byteSize)
 }
 
 // evtl use STOI
-Memory::Memory(const nlohmann::json& jsonObj, char separator)
-: Memory(jsonObj["byteCount"], jsonObj["byteSize"]) {
-  deserializeJSON(jsonObj, separator);
+Memory::Memory(const nlohmann::json& jsonObj)
+: Memory(jsonObj[_byteCountStringIdentifier],
+         jsonObj[_byteSizeStringIdentifier]) {
+  deserializeJSON(jsonObj);
 }
 
 std::size_t Memory::getByteSize() const {
@@ -73,13 +79,20 @@ MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {
 }
 
 // maybe use map, map would be soooo much nicer
-std::vector<std::pair<std::string, std::string>>
+// std::vector<std::pair<std::string, std::string>>
+std::pair<std::unordered_map<std::string, std::size_t>,
+          std::unordered_map<std::string, std::string>>
 Memory::serializeRaw(char separator, std::size_t lineLength) {
   static const char hex[] = "0123456789ABCDEF";
-  std::vector<std::pair<std::string, std::string>> ret{};
-  ret.push_back(std::make_pair("byteCount", std::to_string(_byteCount)));
-  ret.push_back(std::make_pair("byteSize", std::to_string(_byteSize)));
-  ret.push_back(std::make_pair("lineLength", std::to_string(lineLength)));
+  // std::vector<std::pair<std::string, std::string>> ret{
+  std::unordered_map<std::string, std::string> data{};
+  std::unordered_map<std::string, std::size_t> meta{
+      {_byteCountStringIdentifier, _byteCount},
+      {_byteSizeStringIdentifier, _byteSize},
+      {_lineLengthStringIdentifier, lineLength}};
+  // ret.push_back(std::make_pair("byteCount", std::to_string(_byteCount)));
+  // ret.push_back(std::make_pair("byteSize", std::to_string(_byteSize)));
+  // ret.push_back(std::make_pair("lineLength", std::to_string(lineLength)));
   const std::size_t lineCount = _byteCount / lineLength;
   const MemoryValue empty{_byteSize * lineLength};
   for (std::size_t i = 0; i < lineCount; ++i) {
@@ -105,20 +118,27 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
         }
         value.put(separator);
       }
-      ret.push_back(std::make_pair(name.str(), value.str()));
+      // ret.push_back(std::make_pair(name.str(), value.str()));
+      data[name.str()] = value.str();
     }
   }
   // TODO::serialize last line
-  return ret;
+  return make_pair(meta, data);
 }
 
 nlohmann::json& Memory::serializeJSON(nlohmann::json& jsonObj,
                                       char separator,
                                       std::size_t lineLength) {
   auto data = serializeRaw(separator, lineLength);
-  for (auto& p : data) {
-    jsonObj[p.first] = p.second;
-  }
+  jsonObj.push_back(data.first);
+  jsonObj.push_back(data.second);
+  jsonObj[_separatorStringIdentifier] = separator;
+  // for (auto& p : data.first) {
+  //  jsonObj[p.first] = p.second;
+  //}
+  // for (auto& p : data.second) {
+  //  jsonObj[p.first] = p.second;
+  //}
   return jsonObj;
 }
 
@@ -128,20 +148,22 @@ nlohmann::json Memory::serializeJSON(nlohmann::json&& jsonObj,
   return serializeJSON(jsonObj, separator, lineLength);
 }
 
-void Memory::wasUpdated(const std::size_t address, const std::size_t amount) {
-  _callback(address, amount);
-}
-
-void Memory::deserializeJSON(const nlohmann::json& jsonObj, char separator) {
-  assert::that(_byteCount == jsonObj["byteCount"]);
-  assert::that(_byteSize == jsonObj["byteSize"]);
-  std::size_t lineLength = jsonObj["lineLength"];
+void Memory::deserializeJSON(const nlohmann::json& jsonObj) {
+  assert::that(_byteCount == jsonObj[_byteCountStringIdentifier]);
+  assert::that(_byteSize == jsonObj[_byteSizeStringIdentifier]);
+  std::size_t lineLength = jsonObj[_lineLengthStringIdentifier];
   const std::size_t lineCount = _byteCount / lineLength;
   const MemoryValue empty{_byteSize * lineLength};
+  const auto separatorRef = jsonObj[_separatorStringIdentifier];
+  // TODO::make this a useful separator
   for (std::size_t i = 0; i < lineCount; ++i) {
     std::stringstream name("line");
     name << (i * lineLength);
     auto line = jsonObj.find(name.str());
     // TODO::make line to MemoryValue
   }
+}
+
+void Memory::wasUpdated(const std::size_t address, const std::size_t amount) {
+  _callback(address, amount);
 }

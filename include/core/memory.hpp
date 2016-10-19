@@ -22,6 +22,7 @@
 #include <cstddef>
 #include <functional>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
 #include "core/memory-value.hpp"
@@ -41,7 +42,7 @@ class Memory {
    */
   Memory(std::size_t byteCount, std::size_t byteSize = 8);
 
-  Memory(const nlohmann::json &jsonObj, char separator = standardSeparator);
+  Memory(const nlohmann::json &jsonObj);
   /**
    * \brief Copy constructor. Constructs the Memory with the copy of the
    *        contents of other.
@@ -118,7 +119,9 @@ class Memory {
    */
   MemoryValue set(const std::size_t address, const MemoryValue &value);
 
-  std::vector<std::pair<std::string, std::string>>
+  // std::vector<std::pair<std::string, std::string>>
+  std::pair<std::unordered_map<std::string, std::size_t>,
+            std::unordered_map<std::string, std::string>>
   serializeRaw(char separator = standardSeparator, std::size_t lineLength = 64);
 
   nlohmann::json &serializeJSON(nlohmann::json &jsonObj,
@@ -129,12 +132,15 @@ class Memory {
                                char separator = standardSeparator,
                                std::size_t lineLength = 64);
 
-  void deserializeJSON(const nlohmann::json &jsonObj,
-                       char separator = standardSeparator);
+  void deserializeJSON(const nlohmann::json &jsonObj);
   // also save the separator?
 
  private:
   static constexpr char standardSeparator = ';';
+  static const std::string _byteCountStringIdentifier;
+  static const std::string _byteSizeStringIdentifier;
+  static const std::string _lineLengthStringIdentifier;
+  static const std::string _separatorStringIdentifier;
   std::size_t _byteSize;  /**< Brief Size of a Byte in bit*/
   std::size_t _byteCount; /**< Brief Number of Bytes*/
   MemoryValue _data;      /**< Brief MemoryValue holding *all* the data*/
