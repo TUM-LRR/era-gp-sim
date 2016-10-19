@@ -26,6 +26,7 @@
 
 #include "common/assert.hpp"
 #include "core/memory-value.hpp"
+#include "third-party/json/json.hpp"
 
 class Memory {
  public:
@@ -116,8 +117,17 @@ class Memory {
    */
   MemoryValue set(const std::size_t address, const MemoryValue &value);
 
+  static constexpr char standardSeparator = ';';
   std::vector<std::pair<std::string, std::string>>
-  serializeRaw(std::size_t lineLength = 64);
+  serializeRaw(char separator = standardSeparator, std::size_t lineLength = 64);
+
+  nlohmann::json &serializeJSON(nlohmann::json &jsonObj,
+                                char separator = standardSeparator,
+                                std::size_t lineLength = 64);
+
+  nlohmann::json serializeJSON(nlohmann::json &&jsonObj = nlohmann::json(),
+                               char separator = standardSeparator,
+                               std::size_t lineLength = 64);
 
  private:
   std::size_t _byteSize;  /**< Brief Size of a Byte in bit*/

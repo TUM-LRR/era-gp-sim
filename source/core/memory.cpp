@@ -66,7 +66,7 @@ MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {
 }
 
 std::vector<std::pair<std::string, std::string>>
-Memory::serializeRaw(std::size_t lineLength) {
+Memory::serializeRaw(char separator, std::size_t lineLength) {
   static const char hex[] = "0123456789ABCDEF";
   std::vector<std::pair<std::string, std::string>> ret{};
   ret.push_back(std::make_pair("byteCount", std::to_string(_byteCount)));
@@ -74,7 +74,6 @@ Memory::serializeRaw(std::size_t lineLength) {
   ret.push_back(std::make_pair("lineLength", std::to_string(lineLength)));
   const std::size_t lineCount = _byteCount / lineLength;
   const MemoryValue empty{_byteSize * lineLength};
-  constexpr char separator = ';';
   for (std::size_t i = 0; i < lineCount; ++i) {
     if (get(i * lineLength, lineLength) != empty) {
       std::stringstream name("line");
@@ -82,7 +81,6 @@ Memory::serializeRaw(std::size_t lineLength) {
       name << (i * lineLength);
       for (std::size_t j = 0; j < lineLength; ++j) {
         MemoryValue v{get(i * lineLength + j)};
-        // TODO::write MemoryValue to stream
         bool zero = true;
         for (std::size_t l = (_byteSize + 7) / 8; l-- > 0;) {
           std::uint8_t byte = v.getByteAt(l * 8);
@@ -103,6 +101,22 @@ Memory::serializeRaw(std::size_t lineLength) {
     }
   }
   return ret;
+}
+
+nlohmann::json& Memory::serializeJSON(nlohmann::json& jsonObj,
+                                      char separator,
+                                      std::size_t lineLength) {
+  auto data = serializeRaw(separator, lineLength);
+  for (auto& p : data) {
+    jsonObj[p.first] = p.second;
+  }
+  return jsonObj;
+}
+
+nlohmann::json Memory::serializeJSON(nlohmann::json&& jsonObj,
+                                     char separator,
+                                     std::size_t lineLength) {
+  return serializeJSON(jsonObj, separator, lineLength);
 }
 
 void Memory::wasUpdated(const std::size_t address, const std::size_t amount) {
