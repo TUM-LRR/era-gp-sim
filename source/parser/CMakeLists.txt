@@ -23,6 +23,7 @@ set(PARSER_SOURCES
   final-representation.cpp
   memory-allocator.cpp
   memory-definition-directive.cpp
+  riscv-directives.cpp
 )
 
 ########################################
