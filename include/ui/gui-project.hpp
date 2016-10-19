@@ -10,11 +10,8 @@
 #include "core/memory-value.hpp"
 #include "core/project-module.hpp"
 #include "ui/editor-component.hpp"
-<<<<<<< HEAD
 #include "ui/memorycomponentpresenter.hpp"
-=======
 #include "ui/register-model.hpp"
->>>>>>> gui-explosive-picnic
 //#include "ui/snapshotmodel.hpp"
 
 
