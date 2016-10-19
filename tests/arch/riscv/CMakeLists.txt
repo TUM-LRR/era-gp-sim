@@ -12,6 +12,7 @@ set(TEST_ARCH_RISCV_SOURCES
   formats-test.cpp
   arch-riscv-jump-instruction-tests.cpp
   arch-riscv-branch-instruction-tests.cpp
+  register-test.cpp
 )
 
 ########################################
