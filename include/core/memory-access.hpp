@@ -38,7 +38,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param address address of the memory cells.
    * \param length number of memory cells to return, default is 1.
    */
-  POST_FUTURE(getMemoryValueAt)
+  POST_FUTURE_CONST(getMemoryValueAt)
 
   /**
    * Returns a number of memory cells at a given address as
@@ -85,7 +85,7 @@ class MemoryAccess : public Proxy<Project> {
    * \param name The name of the register as std::string.
    *
    */
-  POST_FUTURE(getRegisterValue)
+  POST_FUTURE_CONST(getRegisterValue)
 
   /**
    * Returns the content of a register as a MemoryValue through a callback.
@@ -131,7 +131,7 @@ class MemoryAccess : public Proxy<Project> {
    * Returns the number of memory cells(number of bytes)
    *
    */
-  POST_FUTURE(getMemorySize)
+  POST_FUTURE_CONST(getMemorySize)
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_ACCESS_HPP */

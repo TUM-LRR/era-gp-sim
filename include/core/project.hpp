@@ -71,7 +71,7 @@ class Project : public Servant {
    * Calls Memory::get(size_t address, size_t length = 1) const
    *
    */
-  MemoryValue getMemoryValueAt(size_t address, size_t amount = 1);
+  MemoryValue getMemoryValueAt(size_t address, size_t amount = 1) const;
 
   /**
    * Calls Memory::put(size_t address, const MemoryValue& value)
@@ -213,7 +213,7 @@ class Project : public Servant {
    * Returns the architecture object.
    *
    */
-  Architecture getArchitecture();
+  Architecture getArchitecture() const;
 
  private:
   /**
