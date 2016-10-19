@@ -67,6 +67,7 @@ MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {
 
 std::vector<std::pair<std::string, std::string>>
 Memory::serializeRaw(std::size_t lineLength) {
+  static const char hex[] = "0123456789ABCDEF";
   std::vector<std::pair<std::string, std::string>> ret{};
   ret.push_back(std::make_pair("byteCount", std::to_string(_byteCount)));
   ret.push_back(std::make_pair("byteSize", std::to_string(_byteSize)));
@@ -82,6 +83,20 @@ Memory::serializeRaw(std::size_t lineLength) {
       for (std::size_t j = 0; j < lineLength; ++j) {
         MemoryValue v{get(i * lineLength + j)};
         // TODO::write MemoryValue to stream
+        bool zero = true;
+        for (std::size_t l = (_byteSize + 7) / 8; l-- > 0;) {
+          std::uint8_t byte = v.getByteAt(l * 8);
+          std::uint8_t upperChar = byte / 16;
+          std::uint8_t lowerChar = byte % 16;
+          if (!zero || upperChar != 0) {
+            value.put(hex[upperChar]);
+            zero = false;
+          }
+          if (!zero || lowerChar != 0) {
+            value.put(hex[lowerChar]);
+            zero = false;
+          }
+        }
         value.put(separator);
       }
       ret.push_back(std::make_pair(name.str(), value.str()));

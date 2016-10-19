@@ -488,6 +488,14 @@ class MemoryValue {
   void write(const MemoryValue &other, address_t begin = 0);
 
   /**
+   * \brief returns the 8 bit after address [address, address+8[
+   * \param address first bit to be returned
+   * \returns 8 bit after address [address, address+8[
+   */
+  std::uint8_t getByteAt(address_t address) const;
+  //I made this public because I use it *everywhere*
+
+  /**
    * \brief outputs the value onto the stream
    * \param stream stream to output value to
    * \param value the value to be outputted
@@ -511,8 +519,6 @@ class MemoryValue {
 #endif
 
  private:
-  std::uint8_t getByteAt(address_t address) const;
-
   address_t _size;  /**< Brief Size of the MemoryValue in Bit*/
   Underlying _data; /**< Brief The Data stored by the MemoryValue*/
 };
