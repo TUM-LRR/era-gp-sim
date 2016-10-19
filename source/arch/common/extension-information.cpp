@@ -308,7 +308,8 @@ void ExtensionInformation::_parseAlignmentBehavior(
     InformationInterface::Format& data) {
   Utility::doIfThere(data, "alignment-behavior", [this](auto& behavior) {
     if (behavior == "strict") {
-      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::STRICT;
+      _alignmentBehavior =
+          ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT;
     } else if (behavior == "relaxed") {
       _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::RELAXED;
     } else {
