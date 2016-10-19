@@ -104,7 +104,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::RELAXED);
+            Architecture::AlignmentBehavior::ALIGN_RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
 
@@ -135,7 +135,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::RELAXED);
+            Architecture::AlignmentBehavior::ALIGN_RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
 
