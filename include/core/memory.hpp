@@ -24,7 +24,6 @@
 #include <string>
 #include <utility>
 
-#include "common/assert.hpp"
 #include "core/memory-value.hpp"
 #include "third-party/json/json.hpp"
 
@@ -41,6 +40,8 @@ class Memory {
    * \param byteSize Size of a Byte in Bit
    */
   Memory(std::size_t byteCount, std::size_t byteSize = 8);
+
+  Memory(const nlohmann::json &jsonObj, char separator = standardSeparator);
   /**
    * \brief Copy constructor. Constructs the Memory with the copy of the
    *        contents of other.
@@ -117,7 +118,6 @@ class Memory {
    */
   MemoryValue set(const std::size_t address, const MemoryValue &value);
 
-  static constexpr char standardSeparator = ';';
   std::vector<std::pair<std::string, std::string>>
   serializeRaw(char separator = standardSeparator, std::size_t lineLength = 64);
 
@@ -129,7 +129,12 @@ class Memory {
                                char separator = standardSeparator,
                                std::size_t lineLength = 64);
 
+  void deserializeJSON(const nlohmann::json &jsonObj,
+                       char separator = standardSeparator);
+  // also save the separator?
+
  private:
+  static constexpr char standardSeparator = ';';
   std::size_t _byteSize;  /**< Brief Size of a Byte in bit*/
   std::size_t _byteCount; /**< Brief Number of Bytes*/
   MemoryValue _data;      /**< Brief MemoryValue holding *all* the data*/

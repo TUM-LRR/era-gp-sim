@@ -18,6 +18,7 @@
 
 #include "sstream"
 
+#include "common/assert.hpp"
 #include "core/memory.hpp"
 
 Memory::Memory() : Memory(64, 8) {
@@ -27,6 +28,12 @@ Memory::Memory(std::size_t byteCount, std::size_t byteSize)
 : _byteCount{byteCount}, _byteSize{byteSize}, _data{byteCount * byteSize} {
   assert::that(byteCount > 0);
   assert::that(byteSize > 0);
+}
+
+// evtl use STOI
+Memory::Memory(const nlohmann::json& jsonObj, char separator)
+: Memory(jsonObj["byteCount"], jsonObj["byteSize"]) {
+  deserializeJSON(jsonObj, separator);
 }
 
 std::size_t Memory::getByteSize() const {
@@ -65,6 +72,7 @@ MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {
   return prev;
 }
 
+// maybe use map, map would be soooo much nicer
 std::vector<std::pair<std::string, std::string>>
 Memory::serializeRaw(char separator, std::size_t lineLength) {
   static const char hex[] = "0123456789ABCDEF";
@@ -100,6 +108,7 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
       ret.push_back(std::make_pair(name.str(), value.str()));
     }
   }
+  // TODO::serialize last line
   return ret;
 }
 
@@ -121,4 +130,18 @@ nlohmann::json Memory::serializeJSON(nlohmann::json&& jsonObj,
 
 void Memory::wasUpdated(const std::size_t address, const std::size_t amount) {
   _callback(address, amount);
+}
+
+void Memory::deserializeJSON(const nlohmann::json& jsonObj, char separator) {
+  assert::that(_byteCount == jsonObj["byteCount"]);
+  assert::that(_byteSize == jsonObj["byteSize"]);
+  std::size_t lineLength = jsonObj["lineLength"];
+  const std::size_t lineCount = _byteCount / lineLength;
+  const MemoryValue empty{_byteSize * lineLength};
+  for (std::size_t i = 0; i < lineCount; ++i) {
+    std::stringstream name("line");
+    name << (i * lineLength);
+    auto line = jsonObj.find(name.str());
+    // TODO::make line to MemoryValue
+  }
 }
