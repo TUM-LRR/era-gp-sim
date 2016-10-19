@@ -168,6 +168,19 @@ nlohmann::json Memory::serializeJSON(nlohmann::json&& jsonObj,
   return serializeJSON(jsonObj, separator, lineLength);
 }
 
+namespace {
+MemoryValue deserializeLine(const std::string& line,
+                            std::size_t byteSize,
+                            std::size_t lineLength,
+                            char separator) {
+  MemoryValue ret{byteSize * lineLength};
+  // iterate reversely over line
+  // if hex -> write into ret, inc count
+  // if separator -> inc to next cell
+  return ret;
+}
+}
+
 void Memory::deserializeJSON(const nlohmann::json& jsonObj) {
   assert::that(_byteCount ==
                jsonObj[_byteCountStringIdentifier].get<std::size_t>());
@@ -181,7 +194,8 @@ void Memory::deserializeJSON(const nlohmann::json& jsonObj) {
   for (std::size_t i = 0; i < lineCount; ++i) {
     std::stringstream name("line");
     name << (i * lineLength);
-    auto line = jsonObj.find(name.str());
+    auto lineIterator = jsonObj.find(name.str());
+    // TODO::make iterator into string
     // TODO::make line to MemoryValue
   }
   // TODO::do this damn last line again because I made this damn asserts
