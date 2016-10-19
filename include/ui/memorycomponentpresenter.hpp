@@ -46,7 +46,7 @@ class MemoryComponentPresenter : public QAbstractTableModel{
        QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
        void onMemoryChanged(const std::size_t address, const std::size_t length);
 
-       MemoryAccess memory_access;
+       MemoryAccess _memoryAccess;
        //MemoryManager memory_manager;
 
        enum ColumnRoles {

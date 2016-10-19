@@ -25,10 +25,9 @@
 #include "core/memory-value.hpp"
 
 MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access, /*const MemoryManager manager,*/ QQmlContext *projectContext, QObject *parent)
-: QAbstractTableModel(parent){
+: QAbstractTableModel(parent), _memoryAccess(access){
     projectContext->setContextProperty("memoryModel", this);
 
-    memory_access = access;
     //memory_manager = manager;
 
     // TODO create new View
@@ -82,7 +81,7 @@ QVariant MemoryComponentPresenter::data(const QModelIndex &index, int role) cons
         }
         case ValueRole: {
             // TODO fetch value from core
-            MemoryValue memory_cell = memory_access.getMemoryValueAt(index.row(),8).get();
+            MemoryValue memory_cell = _memoryAccess.getMemoryValueAt(index.row(),8).get();
             std::string stringvalue = StringConversions::toHexString(memory_cell);
             return  QString().fromStdString(stringvalue);
         }

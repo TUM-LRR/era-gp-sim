@@ -54,7 +54,7 @@ class GuiProject : QObject {
   // RegisterModel registermodel;
   EditorComponent _editorComponent;
   // SnapshotModel snapmodel;
-  MemoryComponentPresenter memorymodel;
+  MemoryComponentPresenter _memoryModel;
   // Core-Project;
   std::function<std::string(MemoryValue)> hexConversion;
   std::function<std::string(MemoryValue)> binConversion;
