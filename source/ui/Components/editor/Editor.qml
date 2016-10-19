@@ -60,7 +60,7 @@ ScrollView {
                 textMargin: 2
                 property real unscaledWidth: Math.max(scrollView.viewport.width - sidebar.width, contentWidth)
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
-                property int line: 0
+                property int line: 1
 
                 x: sidebar.width
                 selectByMouse: true
@@ -87,7 +87,7 @@ ScrollView {
                 Connections {
                   target: editor
                   onParseText: {
-                    editor.sendText(text);
+                    editor.sendText(textArea.text);
                   }
                   onExecutionLineChanged: {
                     textArea.line = line;
@@ -108,7 +108,7 @@ ScrollView {
                 // execution line highlighting
                 Rectangle{
                   color: Qt.rgba(0.2, 0.8, 0.4, 0.2)
-                  y: textArea.cursorRectangle.height * textArea.line;
+                  y: textArea.cursorRectangle.height * (textArea.line - 1);
                   height: textArea.cursorRectangle.height;
                   width: Math.max(scrollView.width, textArea.contentWidth)
                 }
@@ -233,7 +233,7 @@ ScrollView {
                                 id: toolTip
                                 width: lineHighlight.width
                                 height: lineHighlight.height
-                                fontPixelSize: textArea.font.pixelSize*1.5
+                                fontPixelSize: textArea.font.pixelSize
                             }
 
                             Connections {

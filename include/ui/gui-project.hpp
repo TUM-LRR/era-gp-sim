@@ -10,7 +10,11 @@
 #include "core/memory-value.hpp"
 #include "core/project-module.hpp"
 #include "ui/editor-component.hpp"
+<<<<<<< HEAD
 #include "ui/memorycomponentpresenter.hpp"
+=======
+#include "ui/register-model.hpp"
+>>>>>>> gui-explosive-picnic
 //#include "ui/snapshotmodel.hpp"
 
 
@@ -18,9 +22,9 @@ class GuiProject : QObject {
   Q_OBJECT
  public:
   GuiProject(QQmlContext* context,
-             ArchitectureFormula formula,
+             const ArchitectureFormula& formula,
              std::size_t memorySize,
-             std::string parserName,
+             const std::string& parserName,
              QObject* parent = 0);
   void changeSystem(std::string base);
   void parse();
@@ -51,7 +55,7 @@ class GuiProject : QObject {
 
  private:
   ProjectModule _projectModule;
-  // RegisterModel registermodel;
+  RegisterModel _registerModel;
   EditorComponent _editorComponent;
   // SnapshotModel snapmodel;
   MemoryComponentPresenter _memoryModel;

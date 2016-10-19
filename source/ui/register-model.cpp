@@ -20,39 +20,26 @@
 
 #include "arch/common/unit-container.hpp"
 #include "common/string-conversions.hpp"
+#include "core/architecture-access.hpp"
+#include "core/memory-manager.hpp"
 #include "core/memory-value.hpp"
 
-RegisterModel::RegisterModel(QQmlContext *projectContext, QObject *parent)
-: QAbstractItemModel(parent), _rootItem(new RegisterInformation()) {
+RegisterModel::RegisterModel(ArchitectureAccess &architectureAccess,
+                             MemoryManager &memoryManager,
+                             MemoryAccess &memoryAccess,
+                             QQmlContext *projectContext,
+                             QObject *parent)
+: QAbstractItemModel(parent)
+, _rootItem(new RegisterInformation())
+, _memoryAccess(memoryAccess) {
   projectContext->setContextProperty("registerModel", this);
-  // TODO: Retrieve available registers from core.
-  // Some temporary test registers.
-  RegisterInformation *eax = new RegisterInformation("EAX");
-  eax->type(RegisterInformation::Type::INTEGER);
-  eax->size(32);
 
-  RegisterInformation *ax = new RegisterInformation("AX");
-  ax->type(RegisterInformation::Type::INTEGER);
-  ax->size(16);
-  ax->enclosing(eax->getID());
-  eax->addConstituent(ConstituentInformation(ax->getID(), 0));
-
-  // Status-Register
-  RegisterInformation *statusReg = new RegisterInformation("Statusregister");
-  statusReg->type(RegisterInformation::Type::INTEGER);
-  statusReg->size(8);
-
-  // Status-Register, Flag 1
-  RegisterInformation *flag1 = new RegisterInformation("Sign");
-  flag1->type(RegisterInformation::Type::FLAG);
-  flag1->size(1);
-  flag1->enclosing(statusReg->getID());
-  statusReg->addConstituent(ConstituentInformation(flag1->getID(), 0));
+  std::function<void(const std::string &)> callback = [this](
+      const std::string &registerTitle) { this->updateContent(registerTitle); };
+  memoryManager.setUpdateRegisterCallback(callback);
 
   // Fetch register units from core.
-  // TODO...
-  UnitInformation defaultUnit("CPU", {*eax, *ax, *statusReg, *flag1});
-  UnitContainer registerUnits = UnitContainer({defaultUnit});
+  UnitContainer registerUnits = architectureAccess.getRegisterUnits().get();
   // Iterate over each container and add the corresponding registers.
   for (auto unit : registerUnits) {
     // Add all normal registers to the model.
@@ -218,6 +205,9 @@ void RegisterModel::registerContentChanged(
     unsigned int currentDataFormatIndex) {
   RegisterInformation *registerItem =
       static_cast<RegisterInformation *>(index.internalPointer());
+  // Remove whitespaces.
+  QString registerContentCleared = registerContent;
+  registerContentCleared.remove(QChar(' '));
   // Convert content string to MemoryValue.
   Optional<MemoryValue> registerContentMemoryValue;
   // Look up the register's current data format.
@@ -226,25 +216,30 @@ void RegisterModel::registerContentChanged(
   if (dataFormat) {
     if (*dataFormat == "Binary") {
       registerContentMemoryValue = StringConversions::binStringToMemoryValue(
-          registerContent.toStdString(), registerItem->getSize());
+          registerContentCleared.toStdString(), registerItem->getSize());
     } else if (*dataFormat == "Hexadecimal") {
       registerContentMemoryValue = StringConversions::hexStringToMemoryValue(
-          registerContent.toStdString(), registerItem->getSize());
+          registerContentCleared.toStdString(), registerItem->getSize());
     } else if (*dataFormat == "Decimal (Unsigned)") {
       registerContentMemoryValue =
           StringConversions::unsignedDecStringToMemoryValue(
-              registerContent.toStdString(), registerItem->getSize());
+              registerContentCleared.toStdString(), registerItem->getSize());
     } else if (*dataFormat == "Decimal (Signed)") {
       registerContentMemoryValue =
           StringConversions::signedDecStringToMemoryValue(
-              registerContent.toStdString(), registerItem->getSize());
+              registerContentCleared.toStdString(), registerItem->getSize());
     } else if (*dataFormat == "Flag") {
       registerContentMemoryValue = StringConversions::binStringToMemoryValue(
-          registerContent.toStdString(), registerItem->getSize());
+          registerContentCleared.toStdString(), registerItem->getSize());
     }
   }
-  qDebug() << "registerContentChanged: " << registerContent << ", "
-           << registerItem->getID();
+  if (registerContentMemoryValue) {
+    _memoryAccess.setRegisterValue(registerItem->getName(),
+                                   *registerContentMemoryValue);
+  } else {
+    _memoryAccess.setRegisterValue(registerItem->getName(),
+                                   MemoryValue(registerItem->getSize()));
+  }
   // Notify core.
   // TODO...
 }
@@ -261,8 +256,9 @@ RegisterModel::dataFormatListForRegister(const QModelIndex &index) const {
 }
 
 
-QVariant RegisterModel::contentStringForRegister(
-    const QModelIndex &index, unsigned int currentDataFormatIndex) const {
+QVariant
+RegisterModel::contentStringForRegister(const QModelIndex &index,
+                                        unsigned int currentDataFormatIndex) {
   if (index.internalPointer() != nullptr) {
     // Load the register corresponding to the given QModelIndex.
     RegisterInformation *registerItem =
@@ -271,7 +267,8 @@ QVariant RegisterModel::contentStringForRegister(
     Optional<QString> dataFormat =
         _dataFormatForRegisterItem(*registerItem, currentDataFormatIndex);
     // Fetch memory value from core.
-    MemoryValue registerContentMemoryValue = {{2, 4}, 16};
+    MemoryValue registerContentMemoryValue =
+        _memoryAccess.getRegisterValue(registerItem->getName()).get();
     if (dataFormat) {
       // Return placeholder values.
       if (*dataFormat == "Binary") {
@@ -341,7 +338,7 @@ QString RegisterModel::_computeDisplayFormatString(const QString &dataFormat,
     formatString = formatPrefix + QString(size, 'B');
     byteCharacterWidth = 8;
   } else if (dataFormat == "Hexadecimal") {
-    formatPrefix = "\\0\\b ";
+    formatPrefix = "\\0\\x ";
     formatString = formatPrefix + QString(size / 4, 'H');
     byteCharacterWidth = 2;
   }

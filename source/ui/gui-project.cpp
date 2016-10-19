@@ -3,9 +3,9 @@
 #include "ui/gui-project.hpp"
 
 GuiProject::GuiProject(QQmlContext* context,
-                       ArchitectureFormula formula,
+                       const ArchitectureFormula& formula,
                        std::size_t memorySize,
-                       std::string parserName,
+                       const std::string& parserName,
                        QObject* parent)
 : QObject(parent)
 , _projectModule(formula, memorySize, parserName)
@@ -13,6 +13,7 @@ GuiProject::GuiProject(QQmlContext* context,
                    _projectModule.getParserInterface(),
                    _projectModule.getCommandInterface())
 , _memoryModel(_projectModule.getMemoryAccess(), _projectModule.getMemoryManager(), context)
+, _registerModel(_projectModule.getArchitectureAccess(), _projectModule.getMemoryManager(), _projectModule.getMemoryAccess(), context)
 /*, registermodel(context)
 , editormodel(context)
 , snapmodel(context)
@@ -45,7 +46,7 @@ void GuiProject::runBreakpoint() {
 }
 
 void GuiProject::stop() {
-  // tell editor
+  _projectModule.stopExecution();
 }
 
 void GuiProject::reset() {
