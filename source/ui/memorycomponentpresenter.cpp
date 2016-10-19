@@ -21,6 +21,7 @@
 #include <iostream>
 #include <QDebug>
 #include "core/memory-value.hpp"
+#include "core/conversions.hpp"
 #include "common/string-conversions.hpp"
 #include "core/memory-value.hpp"
 
@@ -36,7 +37,8 @@ MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access, MemoryMa
 MemoryComponentPresenter::~MemoryComponentPresenter() { }
 
 void MemoryComponentPresenter::onMemoryChanged(std::size_t address, std::size_t length) {
-    emit QAbstractTableModel::dataChanged(this->index(address, 0), this->index(address + length, 2)); //TODO fix hardcoded
+    emit QAbstractTableModel::dataChanged(QAbstractTableModel::createIndex(0,0), QAbstractTableModel::createIndex(5,2));
+    //emit QAbstractTableModel::dataChanged(this->index(address, 0), this->index(address + length, 2)); //TODO fix hardcoded
 }
 
 void MemoryComponentPresenter::setSize(int newSize) {
@@ -65,6 +67,7 @@ int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
     return 3;
 }
 QVariant MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
+    qDebug() << "data";
     // check boundaries
     if (!index.isValid()) {
         qWarning() << "Warning: " << index.row() << ", " << index.column();
@@ -79,8 +82,11 @@ QVariant MemoryComponentPresenter::data(const QModelIndex &index, int role) cons
         }
         case ValueRole: {
             // TODO fetch value from core
-            MemoryValue memory_cell = _memoryAccess.getMemoryValueAt(index.row(),8).get();
+            //MemoryValue memory_cell = _memoryAccess.getMemoryValueAt(index.row()*8).get();
+
+        MemoryValue memory_cell = _memoryAccess.getMemoryValueAt(0).get();
             std::string stringvalue = StringConversions::toHexString(memory_cell);
+            qDebug() << QString::fromStdString(stringvalue);
             return  QString().fromStdString(stringvalue);
         }
         case InfoRole: {
