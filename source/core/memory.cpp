@@ -149,9 +149,12 @@ nlohmann::json Memory::serializeJSON(nlohmann::json&& jsonObj,
 }
 
 void Memory::deserializeJSON(const nlohmann::json& jsonObj) {
-  assert::that(_byteCount == jsonObj[_byteCountStringIdentifier]);
-  assert::that(_byteSize == jsonObj[_byteSizeStringIdentifier]);
-  std::size_t lineLength = jsonObj[_lineLengthStringIdentifier];
+  assert::that(_byteCount ==
+               jsonObj[_byteCountStringIdentifier].get<std::size_t>());
+  assert::that(_byteSize ==
+               jsonObj[_byteSizeStringIdentifier].get<std::size_t>());
+  std::size_t lineLength =
+      jsonObj[_lineLengthStringIdentifier].get<std::size_t>();
   const std::size_t lineCount = _byteCount / lineLength;
   const MemoryValue empty{_byteSize * lineLength};
   const auto separatorRef = jsonObj[_separatorStringIdentifier];
