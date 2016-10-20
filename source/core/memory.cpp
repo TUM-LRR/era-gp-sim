@@ -131,6 +131,7 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
       data[name.str()] = value.str();
     }
   }
+  // TODO::conditional last line
   if (get(_byteCount / lineLength * lineLength, _byteCount % lineLength) !=
       MemoryValue{_byteSize * (_byteCount % lineLength)}) {
     std::stringstream name("line");
@@ -173,10 +174,34 @@ MemoryValue deserializeLine(const std::string& line,
                             std::size_t byteSize,
                             std::size_t lineLength,
                             char separator) {
+  static const std::unordered_map<char, std::uint8_t> reverseHexMap{
+      {'0', 0},  {'1', 1},  {'2', 2},  {'3', 3},  {'4', 4},  {'5', 5},
+      {'6', 6},  {'7', 7},  {'8', 8},  {'9', 9},  {'a', 10}, {'b', 11},
+      {'c', 12}, {'d', 13}, {'e', 14}, {'f', 15}, {'A', 10}, {'B', 11},
+      {'C', 12}, {'D', 13}, {'E', 14}, {'F', 15},
+  };
   MemoryValue ret{byteSize * lineLength};
+  std::size_t byte = lineLength + 1;
+  std::size_t bit = 0;
   // iterate reversely over line
-  // if hex -> write into ret, inc count
-  // if separator -> inc to next cell
+  for (auto i = line.rend(); i < line.rbegin(); ++i) {
+    if (*i == separator) {
+      // if separator -> inc to next cell
+      --byte;
+      bit = 0;
+    } else {
+      // if hex -> write into ret, inc count
+      std::uint8_t hex = reverseHexMap.at(*i);
+      while (hex > 0) {
+        if (hex % 2 == 1) {
+          ret.put(byte * byteSize + bit);
+        }
+        ++bit;
+        hex >>= 1;// could make this faster using long switch case
+      }
+    }
+    assert::that(byte > 0);
+  }
   return ret;
 }
 }
