@@ -221,10 +221,18 @@ void Memory::deserializeJSON(const nlohmann::json& jsonObj) {
     std::stringstream name("line");
     name << (i * lineLength);
     auto lineIterator = jsonObj.find(name.str());
-    // TODO::make iterator into string
-    // TODO::make line to MemoryValue
+    if (lineIterator != jsonObj.end()) {
+      MemoryValue value =
+          deserializeLine(*lineIterator, _byteSize, lineLength, separator);
+      put(i * lineLength, value);
+    }
   }
   // TODO::do this damn last line again because I made this damn asserts
+}
+
+bool Memory::operator==(const Memory& other) const {
+  return _byteSize == other._byteSize && _byteCount == other._byteCount &&
+         _data == other._data;
 }
 
 void Memory::wasUpdated(const std::size_t address, const std::size_t amount) {

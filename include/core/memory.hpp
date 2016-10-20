@@ -134,7 +134,8 @@ class Memory {
                                std::size_t lineLength = 64);
 
   void deserializeJSON(const nlohmann::json &jsonObj);
-  // also save the separator?
+
+  bool operator==(const Memory& other) const;
 
  private:
   static constexpr char standardSeparator = ';';
