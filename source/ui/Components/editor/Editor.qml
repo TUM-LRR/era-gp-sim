@@ -83,7 +83,6 @@ ScrollView {
                     }
                 }
 
-                //<<<<<<< HEAD
                 // Tool tips: The desired behavior is that when the cursor is inside a keyword, the
                 // keyword is underlined. Moving the mouse over this keyword makes a small help tool tip
                 // appear to its right. Clicking the help tool tip opens up the help text overlay.
@@ -110,16 +109,19 @@ ScrollView {
                     }
                 }
 
+                // Remove the tooltip when the editor text is altered to prevent the situation where a help
+                // tooltip is stil visible even though the corresponding keyword has already been altered.
+                onTextChanged: {
+                    _destroyCurrentToolTip();
+                }
+
                 // Currently visible tool tip. Undefined when no tool tip is visible.
                 property QtObject _toolTip;
                 // Checks whether a tool tip is necessary (i.e. available) for the keyword at the
                 // given position and possibly creates one.
                 function updateCurrentToolTip(position) {
                     // Delete old tool tip
-                    if (_toolTip != undefined) {
-                        _toolTip.destroy();
-                        _toolTip = undefined;
-                    }
+                    _destroyCurrentToolTip();
 
                     // TODO: Fetch actual help-dictionary
                     var toolTipDictionary = {"mov": "mov reg1, reg2<br/>Copies the value of reg1 to reg2.",
@@ -168,7 +170,14 @@ ScrollView {
                         }
                     }
                 }
-                //=======
+
+                function _destroyCurrentToolTip() {
+                    if (_toolTip != undefined) {
+                        _toolTip.destroy();
+                        _toolTip = undefined;
+                    }
+                }
+
                 //Connection to react to the parse signal
                 Connections {
                     target: editor
@@ -178,7 +187,6 @@ ScrollView {
                     onExecutionLineChanged: {
                         textArea.line = line;
                     }
-                    //>>>>>>> gui-explosive-picnic
                 }
 
                 //cursor line highlighting
