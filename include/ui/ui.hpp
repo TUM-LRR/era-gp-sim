@@ -23,13 +23,13 @@
 #include <QApplication>
 #include <QMap>
 #include <QObject>
-#include <QPair>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
 #include <QQuickItem>
 #include <QString>
 #include <QStringList>
 #include <vector>
+#include <tuple>
 
 #include "third-party/json/json.hpp"
 #include "ui/gui-project.hpp"
@@ -45,7 +45,8 @@ class Ui : public QObject {
   Q_OBJECT
  public:
   using Json = nlohmann::json;
-  using ArchitectureMap = QMap<QString, QPair<QStringList, QStringList>>;
+  using ArchitectureMap =
+      QMap<QString, std::tuple<QStringList, QStringList, QStringList>>;
 
   /**
    * \brief Creates a new Ui object.
@@ -78,15 +79,23 @@ class Ui : public QObject {
    */
   Q_INVOKABLE void addProject(QQuickItem* tabItem,
                               QQmlComponent* projectComponent,
-                              QVariant memorySizeQVariant,
-                              QString architecture,
-                              QStringList extensionsQString,
-                              QString parser);
+                              const QVariant& memorySizeQVariant,
+                              const QString& architecture,
+                              const QStringList& baseExtensionsQString,
+                              const QStringList& extensionsQString,
+                              const QString& parser);
   /**
    * Returns a list of architecture names.
    *
    */
   Q_INVOKABLE QStringList getArchitectures() const;
+
+  /**
+   * Returns a list of the base extensions of an architecture.
+   *
+   * \param architectureName The name of the architecture.
+   */
+  Q_INVOKABLE QStringList getBaseExtensions(QString architectureName) const;
 
   /**
    * Returns a list of extension names of an architecture.

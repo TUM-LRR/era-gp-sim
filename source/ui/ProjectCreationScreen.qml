@@ -25,7 +25,7 @@ Item {
     id: root
 
     signal buttonClicked(var memorySize,
-                  string architecture, var extensions, string parser);
+                  string architecture, var baseExtensions, var extensions, string parser);
 
     property var tab;
 
@@ -34,6 +34,7 @@ Item {
 
     property var main;
 
+    property var baseExtensionsChecked: [];
     property var extensionsChecked: [];
 
     //create the project
@@ -51,13 +52,29 @@ Item {
         enabled: false
         text: "create Project"
         onClicked: {
-            tab.title = textInputName.text
+            tab.title = textInputName.text;
             root.buttonClicked(memorySizeSelector._value,
-              architectureSelector.currentText, extensionsChecked,
+              architectureSelector.currentText, baseExtensionsChecked, extensionsChecked,
               parserSelector.currentText);
         }
     }
 
+    //project name
+    TextField {
+        id: textInputName
+        anchors {
+            top: parent.top
+            right: parent.horizontalCenter
+            left: parent.left
+
+            topMargin: marginHeight
+            bottomMargin: marginHeight
+            leftMargin: marginWidth
+            rightMargin: marginWidth
+        }
+
+        placeholderText: "project name"
+    }
 
     Text {
         id: memorySizeText
@@ -82,7 +99,7 @@ Item {
     NumericUpDown {
         id: memorySizeSelector
         anchors {
-            top: textInputName.bottom
+            top: parent.top
             left: parent.horizontalCenter
             right: parent.right
 
@@ -92,6 +109,8 @@ Item {
             rightMargin: marginWidth
         }
         _value: 1024
+        _maxValue: 16384
+        _step: 4
     }
 
     Text {
@@ -112,15 +131,19 @@ Item {
             right: parent.horizontalCenter
 
             topMargin: marginHeight
-            bottomMargin: 50
+            bottomMargin: marginHeight
             leftMargin: marginWidth
             rightMargin: marginWidth
         }
         model: ui.getArchitectures();
         onCurrentIndexChanged: {
-          extensionGrid.model = ui.getExtensions(model[currentIndex]);
-          parserSelector.model = ui.getParsers(model[currentIndex]);
+          var currentArchitecture = model[currentIndex];
+          baseExtensionGrid.model = ui.getBaseExtensions(currentArchitecture);
+          extensionGrid.model = ui.getExtensions(currentArchitecture);
+          parserSelector.model = ui.getParsers(currentArchitecture);
           extensionsChecked = [];
+          baseExtensionsChecked = [];
+          button.enabled = false;
         }
     }
 
@@ -137,9 +160,9 @@ Item {
     ComboBox {
       id: parserSelector
       anchors {
-        top: memorySizeSelector.bottom
-        right: parent.horizontalCenter
-        left: parent.left
+        top: textInputName.bottom
+        left: parent.horizontalCenter
+        right: parent.right
 
         topMargin: marginHeight
         bottomMargin: 0
@@ -149,6 +172,56 @@ Item {
     }
 
     Text {
+      id: baseExtensionText
+      anchors {
+        left: baseExtensionGrid.left
+        bottom: baseExtensionGrid.top
+
+        bottomMargin: marginHeight/5
+      }
+      text: "Base extensions (check at least one)"
+    }
+
+    //choose base extensions
+    GridView {
+      id: baseExtensionGrid
+      height: contentHeight
+      anchors {
+        top: parserSelector.bottom
+        left: parent.left
+        right: parent.right
+
+        topMargin: marginHeight
+        bottomMargin: 0
+        leftMargin: marginWidth
+        rightMargin: marginWidth
+      }
+
+      Component {
+        id: checkboxDelegateBase
+        CheckBox {
+          text: modelData
+          onCheckedChanged: {
+            if(checked) {
+              button.enabled = true;
+              baseExtensionsChecked.push(text);
+            } else {
+              var index = baseExtensionsChecked.indexOf(text);
+              baseExtensionsChecked.splice(index, 1);
+              if(baseExtensionsChecked.length == 0) {
+                button.enabled = false;
+              }
+            }
+          }
+        }
+      }
+      delegate: checkboxDelegateBase
+      cellHeight: 50
+      interactive: false
+    }
+
+
+    Text {
       id: extensionText
       anchors {
         left: extensionGrid.left
@@ -156,15 +229,15 @@ Item {
 
         bottomMargin: marginHeight/5
       }
-      text: "Extensions (dependencies are automatically added)"
+      text: "Extensions"
     }
 
-    //choose the extensions
+    //choose further extensions
     GridView {
       id: extensionGrid
       height: contentHeight
       anchors {
-        top: parserSelector.bottom
+        top: baseExtensionGrid.bottom
         left: parent.left
         right: parent.right
 
@@ -180,14 +253,10 @@ Item {
           text: modelData
           onCheckedChanged: {
             if(checked){
-              button.enabled = true;
               extensionsChecked.push(text);
             } else {
               var index = extensionsChecked.indexOf(text);
               extensionsChecked.splice(index, 1);
-              if(extensionsChecked.length == 0) {
-                button.enabled = false;
-              }
             }
           }
         }
@@ -196,22 +265,5 @@ Item {
       delegate: checkboxDelegate
       cellHeight: 50
       interactive: false
-    }
-
-    //project name
-    TextField {
-        id: textInputName
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-
-            topMargin: marginHeight
-            bottomMargin: marginHeight
-            leftMargin: marginWidth
-            rightMargin: marginWidth
-        }
-
-        placeholderText: "project name"
     }
 }

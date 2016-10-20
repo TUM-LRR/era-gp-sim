@@ -39,14 +39,20 @@ int Ui::runUi() {
 
 void Ui::addProject(QQuickItem* tabItem,
                     QQmlComponent* projectComponent,
-                    QVariant memorySizeQVariant,
-                    QString architecture,
-                    QStringList extensionsQString,
-                    QString parser) {
+                    const QVariant& memorySizeQVariant,
+                    const QString& architecture,
+                    const QStringList& baseExtensionsQString,
+                    const QStringList& extensionsQString,
+                    const QString& parser) {
   // create ArchitectureFormula
   ArchitectureFormula architectureFormula(architecture.toStdString());
 
-  // add all extensions
+  // add base extensions first
+  for (const auto& qstring : baseExtensionsQString) {
+    architectureFormula.addExtension(qstring.toStdString());
+  }
+
+  // add all further extensions
   for (const auto& qstring : extensionsQString) {
     architectureFormula.addExtension(qstring.toStdString());
   }
@@ -76,12 +82,16 @@ QStringList Ui::getArchitectures() const {
   return _architectureMap.keys();
 }
 
+QStringList Ui::getBaseExtensions(QString architectureName) const {
+  return std::get<0>(_architectureMap.find(architectureName).value());
+}
+
 QStringList Ui::getExtensions(QString architectureName) const {
-  return _architectureMap.find(architectureName).value().first;
+  return std::get<1>(_architectureMap.find(architectureName).value());
 }
 
 QStringList Ui::getParsers(QString architectureName) const {
-  return _architectureMap.find(architectureName).value().second;
+  return std::get<2>(_architectureMap.find(architectureName).value());
 }
 
 void Ui::_loadArchitectures() {
@@ -93,22 +103,28 @@ void Ui::_loadArchitectures() {
 
   for (auto& architecture : data["architectures"]) {
     assert::that(architecture.count("name"));
+    assert::that(architecture.count("base-extensions"));
+    assert::that(!architecture["base-extensions"].empty());
     assert::that(architecture.count("extensions"));
     assert::that(!architecture["extensions"].empty());
     assert::that(architecture.count("parsers"));
     assert::that(!architecture["parsers"].empty());
 
+    QStringList baseExtensionList;
     QStringList extensionList;
     QStringList parserList;
-    for (auto& extension : architecture["extensions"]) {
+    for (const auto& baseExtension : architecture["base-extensions"]) {
+      baseExtensionList.push_back(QString::fromStdString(baseExtension));
+    }
+    for (const auto& extension : architecture["extensions"]) {
       extensionList.push_back(QString::fromStdString(extension));
     }
-    for (auto& parser : architecture["parsers"]) {
+    for (const auto& parser : architecture["parsers"]) {
       parserList.push_back(QString::fromStdString(parser));
     }
     _architectureMap.insert(
         QString::fromStdString(architecture["name"]),
-        QPair<QStringList, QStringList>(extensionList, parserList));
+        std::make_tuple(baseExtensionList, extensionList, parserList));
   }
 }
 
