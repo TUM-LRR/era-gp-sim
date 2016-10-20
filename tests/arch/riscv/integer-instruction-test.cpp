@@ -42,7 +42,7 @@ struct IntegerInstructionTest : public RiscvBaseTest {
   std::string dest, op1, op2, reg;
 };
 
-TEST_F(IntegerInstructionTest, ADDInstruction_testAdd32) {
+TEST_F(IntegerInstructionTest, ADD_32) {
   load({"rv32i"});
 
   MemoryAccess memoryAccess = getMemoryAccess();
@@ -53,7 +53,7 @@ TEST_F(IntegerInstructionTest, ADDInstruction_testAdd32) {
   TEST_RR(3, convert<uint32_t>, "add", 1, 0xFFFFFFFFU, 0);
 }
 
-TEST_F(IntegerInstructionTest, ADDInstruction_testAdd64) {
+TEST_F(IntegerInstructionTest, ADD_64) {
   load({"rv32i", "rv64i"});
 
   MemoryAccess memoryAccess = getMemoryAccess();
@@ -65,7 +65,7 @@ TEST_F(IntegerInstructionTest, ADDInstruction_testAdd64) {
   TEST_RR(3, convert<uint64_t>, "add", 1, 0xFFFFFFFFFFFFFFFFULL, 0);
 }
 
-TEST_F(IntegerInstructionTest, ADDInstruction_testAddi32) {
+TEST_F(IntegerInstructionTest, ADDI_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -78,7 +78,7 @@ TEST_F(IntegerInstructionTest, ADDInstruction_testAddi32) {
   // test immediate boundary
   test12BitImmediateBounds(getFactories(), "addi", immediateFactory, memoryAccess);
 }
-TEST_F(IntegerInstructionTest, ADDInstruction_testAddi64) {
+TEST_F(IntegerInstructionTest, ADDI_64) {
   load({"rv32i", "rv64i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -103,7 +103,7 @@ TEST_F(IntegerInstructionTest, ADDInstruction_testValidation) {
                                    "addi", true);
 }
 
-TEST_F(IntegerInstructionTest, SUBInstruction_testSub32) {
+TEST_F(IntegerInstructionTest, SUB_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -112,7 +112,7 @@ TEST_F(IntegerInstructionTest, SUBInstruction_testSub32) {
   TEST_RR(1, convert<uint32_t>, "sub", 0, 1, 0xFFFFFFFFU);
 }
 
-TEST_F(IntegerInstructionTest, SUBInstruction_testSub64) {
+TEST_F(IntegerInstructionTest, SUB_64) {
   load({"rv32i", "rv64i"});
 
   MemoryAccess memoryAccess = getMemoryAccess();
@@ -130,7 +130,7 @@ TEST_F(IntegerInstructionTest, SUBInstruction_testValidation) {
                                    "sub", false);
 }
 
-TEST_F(IntegerInstructionTest, ANDInstruction_testAnd32) {
+TEST_F(IntegerInstructionTest, AND_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -140,7 +140,7 @@ TEST_F(IntegerInstructionTest, ANDInstruction_testAnd32) {
   TEST_RR(3, convert<uint32_t>, "and", 0b010101, 0b101010, 0b000000);
 }
 
-TEST_F(IntegerInstructionTest, ANDInstruction_testAnd64) {
+TEST_F(IntegerInstructionTest, AND_64) {
   load({"rv32i", "rv64i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -152,7 +152,7 @@ TEST_F(IntegerInstructionTest, ANDInstruction_testAnd64) {
   TEST_RR(3, convert<uint64_t>, "and", 0b010101LL << 32, 0b101010LL << 32, 0);
 }
 
-TEST_F(IntegerInstructionTest, ANDInstruction_testAndi32) {
+TEST_F(IntegerInstructionTest, ANDI_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -167,7 +167,7 @@ TEST_F(IntegerInstructionTest, ANDInstruction_testAndi32) {
   test12BitImmediateBounds(getFactories(), "andi", immediateFactory, memoryAccess);
 }
 
-TEST_F(IntegerInstructionTest, ANDInstruction_testAndi64) {
+TEST_F(IntegerInstructionTest, ANDI_64) {
   load({"rv32i", "rv64i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -194,7 +194,7 @@ TEST_F(IntegerInstructionTest, ANDInstruction_testValidation) {
                                    "andi", true);
 }
 
-TEST_F(IntegerInstructionTest, ORInstruction_testOr32) {
+TEST_F(IntegerInstructionTest, OR_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -204,7 +204,7 @@ TEST_F(IntegerInstructionTest, ORInstruction_testOr32) {
   TEST_RR(3, convert<uint32_t>, "or", 0b010101, 0b101010, 0b111111);
 }
 
-TEST_F(IntegerInstructionTest, ORINstruction_testOr64) {
+TEST_F(IntegerInstructionTest, OR_64) {
   load({"rv32i", "rv64i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -218,7 +218,7 @@ TEST_F(IntegerInstructionTest, ORINstruction_testOr64) {
           0b111111LL << 32);
 }
 
-TEST_F(IntegerInstructionTest, ORInstruction_testOri32) {
+TEST_F(IntegerInstructionTest, ORI_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -231,7 +231,7 @@ TEST_F(IntegerInstructionTest, ORInstruction_testOri32) {
   // test immediate boundary
   test12BitImmediateBounds(getFactories(), "ori", immediateFactory, memoryAccess);
 }
-TEST_F(IntegerInstructionTest, ORInstruction_testOri64) {
+TEST_F(IntegerInstructionTest, ORI_64) {
   load({"rv32i", "rv64i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -253,7 +253,7 @@ TEST_F(IntegerInstructionTest, ORInstruction_testValidation) {
                                    "ori", true);
 }
 
-TEST_F(IntegerInstructionTest, XORInstruction_testXor32) {
+TEST_F(IntegerInstructionTest, XOR_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -262,7 +262,7 @@ TEST_F(IntegerInstructionTest, XORInstruction_testXor32) {
   TEST_RR(2, convert<uint32_t>, "xor", 0b101010, 0b010101, 0b111111);
   TEST_RR(3, convert<uint32_t>, "xor", 0b010101, 0b101010, 0b111111);
 }
-TEST_F(IntegerInstructionTest, XORInstruction_testXor64) {
+TEST_F(IntegerInstructionTest, XOR_64) {
   load({"rv32i", "rv64i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -276,7 +276,7 @@ TEST_F(IntegerInstructionTest, XORInstruction_testXor64) {
           0b111111LL << 32);
 }
 
-TEST_F(IntegerInstructionTest, XORInstruction_testXori32) {
+TEST_F(IntegerInstructionTest, XORI_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -290,7 +290,7 @@ TEST_F(IntegerInstructionTest, XORInstruction_testXori32) {
   test12BitImmediateBounds(getFactories(), "xori", immediateFactory, memoryAccess);
 }
 
-TEST_F(IntegerInstructionTest, XORInstruction_testXori64) {
+TEST_F(IntegerInstructionTest, XORI_64) {
   load({"rv32i", "rv64i"});
 
   MemoryAccess memoryAccess = getMemoryAccess();
@@ -313,7 +313,7 @@ TEST_F(IntegerInstructionTest, XORInstruction_testValidation) {
                                    "xori", true);
 }
 
-TEST_F(IntegerInstructionTest, ShiftLeftInstruction_testSll32) {
+TEST_F(IntegerInstructionTest, SLL_32) {
   load({"rv32i"});
 
   MemoryAccess memoryAccess = getMemoryAccess();
@@ -323,7 +323,7 @@ TEST_F(IntegerInstructionTest, ShiftLeftInstruction_testSll32) {
   TEST_RR(1, convert<uint32_t>, "sll", 3, 0b110110, 3 << 22);
 }
 
-TEST_F(IntegerInstructionTest, ShiftLeftInstruction_testSll64) {
+TEST_F(IntegerInstructionTest, SLL_64) {
   load({"rv32i", "rv64i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -333,7 +333,7 @@ TEST_F(IntegerInstructionTest, ShiftLeftInstruction_testSll64) {
   TEST_RR(1, convert<uint64_t>, "sll", 3, 0b110110LL << 32, 3);
 }
 
-TEST_F(IntegerInstructionTest, ShiftLeftInstruction_testSlli32) {
+TEST_F(IntegerInstructionTest, SLLI_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -345,7 +345,7 @@ TEST_F(IntegerInstructionTest, ShiftLeftInstruction_testSlli32) {
   // test immediate boundary
   test12BitImmediateBounds(getFactories(), "slli", immediateFactory, memoryAccess);
 }
-TEST_F(IntegerInstructionTest, ShiftLeftInstruction_testSlli64) {
+TEST_F(IntegerInstructionTest, SLLI_64) {
   load({"rv32i", "rv64i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -370,7 +370,7 @@ TEST_F(IntegerInstructionTest, ShiftLeftInstruction_testValidation) {
                                    "slli", true);
 }
 
-TEST_F(IntegerInstructionTest, ShiftRightInstruction_testSrl32) {
+TEST_F(IntegerInstructionTest, SRL_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -379,7 +379,7 @@ TEST_F(IntegerInstructionTest, ShiftRightInstruction_testSrl32) {
   TEST_RR(1, convert<uint32_t>, "srl", 3, 0b110110, 0);
 }
 
-TEST_F(IntegerInstructionTest, ShiftRightInstruction_testSrl64) {
+TEST_F(IntegerInstructionTest, SRL_64) {
   load({"rv32i", "rv64i"});
 
   MemoryAccess memoryAccess = getMemoryAccess();
@@ -389,7 +389,7 @@ TEST_F(IntegerInstructionTest, ShiftRightInstruction_testSrl64) {
   TEST_RR(1, convert<uint64_t>, "srl", 3, 0b110110LL << 32, 3);
 }
 
-TEST_F(IntegerInstructionTest, ShiftRightInstruction_testSrli32) {
+TEST_F(IntegerInstructionTest, SRLI_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -401,7 +401,7 @@ TEST_F(IntegerInstructionTest, ShiftRightInstruction_testSrli32) {
   // test immediate boundary
   test12BitImmediateBounds(getFactories(), "srli", immediateFactory, memoryAccess);
 }
-TEST_F(IntegerInstructionTest, ShiftRightInstruction_testSrli64) {
+TEST_F(IntegerInstructionTest, SRLI_64) {
   load({"rv32i", "rv64i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -424,7 +424,7 @@ TEST_F(IntegerInstructionTest, ShiftRightInstruction_testValidation) {
                                    "srli", true);
 }
 
-TEST_F(IntegerInstructionTest, ShiftRightArithmeticInstruction_testSra32) {
+TEST_F(IntegerInstructionTest, SRA_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -435,7 +435,7 @@ TEST_F(IntegerInstructionTest, ShiftRightArithmeticInstruction_testSra32) {
           0);
 }
 
-TEST_F(IntegerInstructionTest, ShiftRightArithmeticInstruction_testSra64) {
+TEST_F(IntegerInstructionTest, SRA_64) {
   load({"rv32i", "rv64i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -449,7 +449,7 @@ TEST_F(IntegerInstructionTest, ShiftRightArithmeticInstruction_testSra64) {
           3);
 }
 
-TEST_F(IntegerInstructionTest, ShiftRightInstruction_testSrai32) {
+TEST_F(IntegerInstructionTest, SRAI_32) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
@@ -464,7 +464,7 @@ TEST_F(IntegerInstructionTest, ShiftRightInstruction_testSrai32) {
   test12BitImmediateBounds(getFactories(), "srai", immediateFactory, memoryAccess);
 }
 
-TEST_F(IntegerInstructionTest, ShiftRightInstruction_testSrai64) {
+TEST_F(IntegerInstructionTest, SRAI_64) {
   load({"rv32i", "rv64i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 

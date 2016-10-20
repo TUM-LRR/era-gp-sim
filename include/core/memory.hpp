@@ -103,7 +103,8 @@ class Memory {
    * \returns MemoryValue holding the data stored in the Memory at
    *          [address;address+amount[
    */
-  MemoryValue get(const std::size_t address, const std::size_t amount = 1);
+  MemoryValue
+  get(const std::size_t address, const std::size_t amount = 1) const;
   /**
    * \brief Writes value into the Memory at address
    * \param address Starting address of the to be overwritten value
