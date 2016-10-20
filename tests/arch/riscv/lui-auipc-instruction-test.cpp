@@ -30,9 +30,9 @@
 
 using namespace riscv;
 
-struct LuiAuipcInstructionsTest : public RiscvBaseTest {
+struct LuiAuipcInstructionTest : public RiscvBaseTest {
 
-    LuiAuipcInstructionsTest() : destId("x1"), pcId("pc") {}
+    LuiAuipcInstructionTest() : destId("x1"), pcId("pc") {}
 
     std::string destId, pcId;
 
@@ -128,7 +128,7 @@ struct LuiAuipcInstructionsTest : public RiscvBaseTest {
 
 };
 
-TEST_F(LuiAuipcInstructionsTest, Validation) {
+TEST_F(LuiAuipcInstructionTest, Validation) {
   load({"rv32i"});
   MemoryAccess memoryAccess = getMemoryAccess();
   auto immediateFactory = ImmediateNodeFactory{};
@@ -155,24 +155,24 @@ TEST_F(LuiAuipcInstructionsTest, Validation) {
   ASSERT_FALSE(auipc->validate(memoryAccess));
 }
 
-TEST_F(LuiAuipcInstructionsTest, Lui32) {
+TEST_F(LuiAuipcInstructionTest, LUI_32) {
   performLuiTest<uint32_t>(1, 1 << 12, {"rv32i"});
   performLuiTest<uint32_t>(0xFFFFF, 0xFFFFF << 12, {"rv32i"});
 }
 
-TEST_F(LuiAuipcInstructionsTest, Lui64) {
+TEST_F(LuiAuipcInstructionTest, LUI_64) {
   // Test without sign expansion
   performLuiTest<uint64_t>(1, 1 << 12, {"rv32i", "rv64i"});
   // Test with sign expansion
   performLuiTest<uint64_t>(0x81234, 0xFFFFFFFF81234 << 12, {"rv32i", "rv64i"});
 }
 
-TEST_F(LuiAuipcInstructionsTest, Auipc32) {
+TEST_F(LuiAuipcInstructionTest, AUIPC_32) {
   performAuipcTest<uint32_t>(1, 1, (1 << 12) + 1, {"rv32i"});
   performAuipcTest<uint32_t>(0xFFFFF, 0x00000FFF, 0xFFFFFFFF, {"rv32i"});
 }
 
-TEST_F(LuiAuipcInstructionsTest, Auipc64) {
+TEST_F(LuiAuipcInstructionTest, AUIPC_64) {
   // Test without sign expansion
   performAuipcTest<uint64_t>(1, 1, (1 << 12) + 1, {"rv32i", "rv64i"});
   // Test with sign expansion

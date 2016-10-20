@@ -28,8 +28,8 @@
 #include "arch/common/instruction-set.hpp"
 #include "arch/common/register-information.hpp"
 
-struct ArchDeserializationTestFixture : public ::testing::Test {
-  ArchDeserializationTestFixture() {
+struct DeserializationTest : public ::testing::Test {
+  DeserializationTest() {
     // clang-format off
     auto add = InstructionInformation("add")
                 .key(InstructionKey({{"opcode", 6}, {"function", 3}}))
@@ -72,7 +72,7 @@ struct ArchDeserializationTestFixture : public ::testing::Test {
   std::vector<UnitInformation> units;
 };
 
-TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
+TEST_F(DeserializationTest, BaseWithoutDependencies) {
   ArchitectureFormula formula("test", {"no-deps"});
 
   auto architecture = ArchitectureBrewery(formula).brew();
@@ -95,7 +95,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
   }
 }
 
-TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
+TEST_F(DeserializationTest, BaseWithBasicDependencies) {
   ArchitectureFormula formula("test", {"with-deps-basic"});
 
   auto architecture = ArchitectureBrewery(formula).brew();
@@ -126,7 +126,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
   }
 }
 
-TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
+TEST_F(DeserializationTest, BaseWithComplexDependenciesNoReset) {
   ArchitectureFormula formula("test", {"with-deps-complex"});
 
   auto architecture = ArchitectureBrewery(formula).brew();
