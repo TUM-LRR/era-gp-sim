@@ -13,10 +13,12 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    ToolbarModel toolbarmodel;
+    ToolbarModel toolbarmodel(engine.rootContext());
 
-    engine.rootContext()->setContextProperty("toolbarModel",  &toolbarmodel);
+    //engine.rootContext()->setContextProperty("toolbarModel",  &toolbarmodel);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+
+    toolbarmodel.disableStop();
 
     return app.exec();
 }

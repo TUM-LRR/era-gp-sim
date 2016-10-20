@@ -1,41 +1,65 @@
 {
-  "name": "rv64d",
-  "instructions": [
-    {
-      "mnemonic": "fcvtld",
-      "opcode": 83,
-      "rs2": 2,
-      "funct7": 97
-    },
-    {
-      "mnemonic": "fcvtlud",
-      "opcode": 83,
-      "rs2": 3,
-      "funct7": 97
-    },
-    {
-      "mnemonic": "fmvxd",
-      "opcode": 83,
-      "rs2": 0,
-      "funct7": 113
-    },
-    {
-      "mnemonic": "fcvtdl",
-      "opcode": 83,
-      "rs2": 2,
-      "funct7": 105
-    },
-    {
-      "mnemonic": "fcvtslu",
-      "opcode": 83,
-      "rs2": 3,
-      "funct7": 105
-    },
-    {
-      "mnemonic": "fmvdx",
-      "opcode": 83,
-      "rs2": 0,
-      "funct7": 121
-    }
-  ]
+    "name": "rv64d",
+    "instructions": [
+        {
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 97,
+                "rs2": 2,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtld"
+        },
+        {
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 97,
+                "rs2": 3,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtlud"
+        },
+        {
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 113,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "mnemonic": "fmvxd"
+        },
+        {
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 105,
+                "rs2": 2,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtdl"
+        },
+        {
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 105,
+                "rs2": 3,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtslu"
+        },
+        {
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 121,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "mnemonic": "fmvdx"
+        }
+    ]
 }

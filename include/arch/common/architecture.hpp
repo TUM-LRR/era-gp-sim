@@ -24,11 +24,11 @@
 #include <string>
 #include <vector>
 
-#include "arch/common/node-factory-collection.hpp"
 #include "arch/common/architecture-properties.hpp"
 #include "arch/common/extension-information.hpp"
 #include "arch/common/information-interface.hpp"
 #include "arch/common/instruction-set.hpp"
+#include "arch/common/node-factory-collection.hpp"
 #include "arch/common/unit-container.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/builder-interface.hpp"
@@ -50,6 +50,7 @@ class Architecture : public BuilderInterface {
   using Endianness        = ArchitectureProperties::Endianness;
   using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
   using word_size_t       = ArchitectureProperties::word_size_t;
+  using byte_size_t       = ArchitectureProperties::byte_size_t;
 
   /**
    * Brews an architecture given a formula.
@@ -142,7 +143,7 @@ class Architecture : public BuilderInterface {
    * Returns the name of the architecture.
    *
    */
-  const std::string& getName() const noexcept;
+  const std::string& getName() const;
 
   /**
    * Returns the endianness of the architecture.
@@ -150,7 +151,7 @@ class Architecture : public BuilderInterface {
    * This property must have already been set by extending the architecture with
    * an extension and validated by calling `validate()`. This is asserted!
    */
-  Endianness getEndianness() const noexcept;
+  Endianness getEndianness() const;
 
   /**
    * Returns the alignment behavior of the architecture.
@@ -158,7 +159,7 @@ class Architecture : public BuilderInterface {
    * This property must have already been set by extending the architecture with
    * an extension and validated by calling `validate()`. This is asserted!
    */
-  AlignmentBehavior getAlignmentBehavior() const noexcept;
+  AlignmentBehavior getAlignmentBehavior() const;
 
 
   /**
@@ -167,7 +168,15 @@ class Architecture : public BuilderInterface {
    * This property must have already been set by extending the architecture with
    * an extension and validated by calling `validate()`. This is asserted!
    */
-  word_size_t getWordSize() const noexcept;
+  word_size_t getWordSize() const;
+
+  /**
+   * Returns the byte size of the architecture.
+   *
+   * This property must have already been set by extending the architecture with
+   * an extension and validated by calling `validate()`. This is asserted!
+   */
+  byte_size_t getByteSize() const noexcept;
 
   /**
    * Returns the units of the architecture.
@@ -213,7 +222,7 @@ class Architecture : public BuilderInterface {
    *
    * An architecture is valid if its base extension, extended by all further
    * extensions, is still a valid base extension. That is,
-   * `ExtensionInformation::isComplete()` return true. See the documentation
+   * `ExtensionInformation::isComplete()` returns true. See the documentation
    * for that method to see what constraints are placed on a valid base
    * extension.
    *

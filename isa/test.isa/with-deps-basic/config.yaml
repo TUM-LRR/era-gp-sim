@@ -5,13 +5,19 @@ extends:
 
 endianness: little
 word-size: 32
+byte-size: 8
+
 units:
   - name: cpu
     registers:
     - name: r0
       id: 0
       size: 32
-      constituents: [1, 2]
+      constituents:
+        - id: 1
+          enclosing-index: 1
+        - id: 2
+          enclosing-index: 2
       alias: zero
     - name: r1
       id: 1
@@ -22,8 +28,14 @@ units:
       aliases: [foo, bar]
 instructions:
   - mnemonic: add
-    opcode: 6
-    function: 3
+    length: 69
+    format: R
+    key:
+      opcode: 6
+      function: 3
   - mnemonic: sub
-    opcode: 9
-    function: 3
+    length: 69
+    format: R
+    key:
+      opcode: 9
+      function: 3

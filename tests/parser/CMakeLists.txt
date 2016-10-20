@@ -3,11 +3,17 @@
 ########################################
 
 set(TEST_PARSER_SOURCES
+  expression-compiler-test.cpp
   intermediate-instruction-test.cpp
   intermediate-representator-test.cpp
   symbol-table-test.cpp
+  string-parser-test.cpp
   riscv-parser-test.cpp
   syntax-tree-generator-test.cpp
+  parser-factory-test.cpp
+  syntax-information-test.cpp
+  integer-parser-test.cpp
+  memory-allocator-test.cpp
 )
 
 ########################################

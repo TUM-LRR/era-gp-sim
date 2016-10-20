@@ -17,10 +17,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <cassert>
 #include <string>
 
 #include "arch/common/instruction-information.hpp"
+#include "common/assert.hpp"
 
 InstructionInformation::InstructionInformation(
     InformationInterface::Format& data) {
@@ -31,15 +31,11 @@ InstructionInformation::InstructionInformation(const std::string& mnemonic)
 : _mnemonic(mnemonic) {
 }
 
-InstructionInformation::InstructionInformation(const std::string& mnemonic,
-                                               const InstructionKey& key)
-: _mnemonic(mnemonic), _key(key) {
-}
-
 bool InstructionInformation::
 operator==(const InstructionInformation& other) const noexcept {
   if (this->_mnemonic != other._mnemonic) return false;
   if (this->_key != other._key) return false;
+  if (this->_format != other._format) return false;
 
   return true;
 }
@@ -58,14 +54,14 @@ InstructionInformation::deserialize(InformationInterface::Format& data) {
 
 InstructionInformation&
 InstructionInformation::mnemonic(const std::string& mnemonic) {
-  assert(!mnemonic.empty());
+  assert::that(!mnemonic.empty());
   _mnemonic = mnemonic;
 
   return *this;
 }
 
-const std::string& InstructionInformation::getMnemonic() const noexcept {
-  assert(hasMnemonic());
+const std::string& InstructionInformation::getMnemonic() const {
+  assert::that(hasMnemonic());
   return _mnemonic;
 }
 
@@ -78,8 +74,8 @@ InstructionInformation& InstructionInformation::key(const InstructionKey& key) {
   return *this;
 }
 
-const InstructionKey& InstructionInformation::getKey() const noexcept {
-  assert(hasKey());
+const InstructionKey& InstructionInformation::getKey() const {
+  assert::that(hasKey());
   return _key;
 }
 
@@ -87,16 +83,55 @@ bool InstructionInformation::hasKey() const noexcept {
   return _key.isValid();
 }
 
+InstructionInformation&
+InstructionInformation::format(const std::string& format) {
+  assert::that(!format.empty());
+  _format = format;
+  return *this;
+}
+
+const std::string& InstructionInformation::getFormat() const {
+  assert::that(hasFormat());
+  return _format;
+}
+
+bool InstructionInformation::hasFormat() const noexcept {
+  return !_format.empty();
+}
+
+InstructionInformation& InstructionInformation::length(length_t length) {
+  assert::that(length > 0);
+  _length = length;
+  return *this;
+}
+
+InstructionInformation::length_t InstructionInformation::getLength() const {
+  assert::that(hasLength());
+  return *_length;
+}
+
+bool InstructionInformation::hasLength() const noexcept {
+  return static_cast<bool>(_length);
+}
+
 bool InstructionInformation::isValid() const noexcept {
-  return !_mnemonic.empty() && _key.isValid();
+  if (!hasMnemonic()) return false;
+  if (!hasKey()) return false;
+  if (!hasFormat()) return false;
+  if (!hasLength()) return false;
+
+  return true;
 }
 
 void InstructionInformation::_deserialize(InformationInterface::Format& data) {
-  assert(data.count("mnemonic"));
+  assert::that(data.count("mnemonic"));
+  assert::that(data.count("format"));
+  assert::that(data.count("key"));
+  assert::that(data.count("length"));
 
-  auto iterator = data.find("mnemonic");
-  this->mnemonic(Utility::toLower(*iterator));
-  data.erase(iterator);
+  mnemonic(Utility::toLower(data["mnemonic"]));
+  format(data["format"]);
+  length(data["length"]);
 
-  key(static_cast<InstructionKey>(data));
+  key(static_cast<InstructionKey>(data["key"]));
 }

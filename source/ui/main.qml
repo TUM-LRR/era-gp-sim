@@ -34,20 +34,27 @@ ApplicationWindow {
     }
     toolBar: ToolbarMainWindow{
         id: toolbar
+        tabView: tabView
     }
 
     TabView{
         anchors.fill: parent
         id: tabView
+
+        Component.onCompleted: {
+            createProject()
+        }
     }
 
-    function createProject(name) {
-        tabView.addTab(name, tabs);
+    function createProject() {
+        tabView.addTab("Create new project...", tabs);
         tabView.currentIndex = tabView.count - 1;
     }
 
     function closeProject() {
-        tabView.removeTab(tabView.currentIndex);
+        var currentTabIndex = tabView.currentIndex;
+        tabView.removeTab(currentTabIndex);
+        ui.removeProject(currentTabIndex);
     }
 
     /*Component for a project, instantiated by the TabView*/
@@ -55,10 +62,18 @@ ApplicationWindow {
         id: tabs
 
         Item {
-            Component.onCompleted: {
-                ui.addProject(this, projectComponent);
+            id: placeholderItem
+            anchors.fill: parent
+            ProjectCreationScreen {
+                anchors.fill: parent
+                tab: parent.parent
+                onButtonClicked: {
+                    enabled = false;
+                    visible = false;
+                    ui.addProject(placeholderItem, projectComponent,
+                      memorySize, architecture, extensions, parser);
+                }
             }
-
         }
     }
 

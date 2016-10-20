@@ -20,12 +20,10 @@
 
 #include <memory>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
+class AbstractSyntaxTreeNode;
 
 /**
- * @brief The AbstractArithmeticNodeFactory class
- * Abstract factory type for creating SyntaxTreeNodes of type arithmetic
- * operation
+ * @brief An abstract base class for arithmetic node factories.
  */
 class AbstractArithmeticNodeFactory {
  public:

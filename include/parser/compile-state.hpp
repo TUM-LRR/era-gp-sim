@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_COMPILE_STATE_HPP_
-#define ERAGPSIM_PARSER_COMPILE_STATE_HPP_
+#ifndef ERAGPSIM_PARSER_COMPILE_STATE_HPP
+#define ERAGPSIM_PARSER_COMPILE_STATE_HPP
 
 #include <vector>
 
@@ -45,6 +45,69 @@ struct CompileState {
    \brief Contains a list of compiler errors of this pass.
    */
   std::vector<CompileError> errorList;
+
+  /**
+   \brief Specifies the section the compiler is currently in.
+   */
+  std::string section = "text";
+
+  /**
+   * \brief Adds an error to the state-internal error list at the current
+   * position.
+   * \param message The message for the error.
+   */
+  void addError(const std::string& message) {
+    addError(message, position);
+  }
+
+  /**
+   * \brief Adds an error to the state-internal error list.
+   * \param message The message for the error.
+   * \param position The position where the error occurred.
+   */
+  void addError(const std::string& message, const CodePosition& position) {
+    errorList.push_back(
+        CompileError(message, position, CompileErrorSeverity::ERROR));
+  }
+
+  /**
+   * \brief Adds a warning to the state-internal error list at the current
+   * position.
+   * \param message The message for the warning.
+   */
+  void addWarning(const std::string& message) {
+    addWarning(message, position);
+  }
+
+  /**
+   * \brief Adds a warning to the state-internal error list.
+   * \param message The message for the warning.
+   * \param position The position where the warning occurred.
+   */
+  void addWarning(const std::string& message, const CodePosition& position) {
+    errorList.push_back(
+        CompileError(message, position, CompileErrorSeverity::WARNING));
+  }
+
+  /**
+   * \brief Adds an information to the state-internal error list at the current
+   * position.
+   * \param message The message for the information.
+   */
+  void addInformation(const std::string& message) {
+    addInformation(message, position);
+  }
+
+  /**
+   * \brief Adds an information to the state-internal error list.
+   * \param message The message for the information.
+   * \param position The position where the information is needed.
+   */
+  void
+  addInformation(const std::string& message, const CodePosition& position) {
+    errorList.push_back(
+        CompileError(message, position, CompileErrorSeverity::INFORMATION));
+  }
 };
 
 #endif

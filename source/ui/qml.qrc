@@ -32,5 +32,8 @@
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
         <file>Components/editor/HelpToolTip.qml</file>
+        <file>Components/Register/DefaultRegister.qml</file>
+        <file>Components/Register/FlagRegister.qml</file>
+        <file>ProjectCreationScreen.qml</file>
     </qresource>
 </RCC>

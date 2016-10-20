@@ -28,192 +28,202 @@ namespace {
 constexpr std::size_t scale = 1;
 }
 
+/**
+ * \Brief tests the getSize() method
+ */
 TEST(TestMemoryValue, getSize) {
-  constexpr std::size_t b = 8;    // byteAmount
-  constexpr std::size_t s = 64;   // byteSize
+  constexpr std::size_t b = 1024; // size
   constexpr std::size_t t = scale;// testAmount
   for (std::size_t i = 1; i < b; ++i) {
-    for (std::size_t j = 1; j < s; ++j) {
-      for (std::size_t l = 0; l < t; ++l) {
-        MemoryValue instance{i, j};
-        ASSERT_EQ(j, instance.getByteSize());
-        ASSERT_EQ(i, instance.getByteAmount());
-        ASSERT_EQ(i * j, instance.getSize());
-      }
+    for (std::size_t j = 0; j < t; ++j) {
+      // TODO::fill with noise
+      MemoryValue instance{i};
+      ASSERT_EQ(i, instance.getSize());
     }
   }
 }
 
 
+/**
+ * \Brief tests the put() method by inverting single bits
+ */
 TEST(TestMemoryValue, flip) {
-  constexpr std::size_t b = 8;    // byteAmount
-  constexpr std::size_t s = 64;   // byteSize
+  constexpr std::size_t b = 512;  // Size
   constexpr std::size_t t = scale;// testAmount
-  constexpr std::size_t c = s;    // flipAmount
+  constexpr std::size_t c = 16;   // flipAmount
   std::mt19937 rand{19930626u};   // Very important number, don't change
   for (std::size_t i = 1; i < b; ++i) {
-    for (std::size_t j = 1; j < s; ++j) {
-      std::uniform_int_distribution<std::size_t> dist{0, i * j - 1};
-      for (std::size_t l = 0; l < t; ++l) {
-        MemoryValue instance0{i, j};
-        MemoryValue instance1{i, j};
+    std::uniform_int_distribution<std::size_t> dist{0, i - 1};// address
+    for (std::size_t j = 0; j < t; ++j) {
+      MemoryValue instance0{i};
+      MemoryValue instance1{i};
+      ASSERT_EQ(instance0, instance1);
+      for (std::size_t l = 0; l < c; ++l) {
+        std::size_t address{dist(rand)};
+        instance0.put(address, !instance0.get(address));
+        ASSERT_NE(instance0, instance1);
+        instance1.put(address, !instance1.get(address));
         ASSERT_EQ(instance0, instance1);
-        for (std::size_t f = 0; f < c; ++f) {
-          std::size_t address{dist(rand)};
-          instance0.put(address, !instance0.get(address));
-          ASSERT_NE(instance0, instance1);
-          instance1.put(address, !instance1.get(address));
-          ASSERT_EQ(instance0, instance1);
-        }
       }
     }
   }
 }
 
+/**
+ * \Brief tests the put() method by writing single bits
+ *        and then reading them
+ */
 TEST(TestMemoryValue, put) {
-  constexpr std::size_t b = 8;    // byteAmount
-  constexpr std::size_t s = 64;   // byteSize
+  constexpr std::size_t b = 512;  // Size
   constexpr std::size_t t = scale;// testAmount
-  constexpr std::size_t c = s;    // putAmount
+  constexpr std::size_t c = 16;   // putAmount
   std::mt19937 rand{19921123u};   // Very important number, don't change
   for (std::size_t i = 1; i < b; ++i) {
-    for (std::size_t j = 1; j < s; ++j) {
-      std::uniform_int_distribution<std::size_t> dist{0, (i * j - 1) * 2};
-      for (std::size_t l = 0; l < t; ++l) {
-        MemoryValue instance{i, j};
-        for (std::size_t f = 0; f < c; ++f) {
-          std::size_t address{dist(rand)};
-          instance.put(address / 2, (address % 2) == 0);
-          ASSERT_EQ((address % 2) == 0, instance.get(address / 2));
-        }
+    std::uniform_int_distribution<std::size_t> dist{0, (i - 1) * 2};
+    for (std::size_t j = 0; j < t; ++j) {
+      MemoryValue instance{i};
+      for (std::size_t l = 0; l < c; ++l) {
+        std::size_t address{dist(rand)};
+        instance.put(address / 2, (address % 2) == 0);
+        ASSERT_EQ((address % 2) == 0, instance.get(address / 2));
       }
     }
   }
 }
 
+/**
+ * \Brief tests the set() method by reading single bit,
+ *        setting this bit and then reading again
+ */
 TEST(TestMemoryValue, set) {
-  constexpr std::size_t b = 8;    // byteAmount
-  constexpr std::size_t s = 64;   // byteSize
+  constexpr std::size_t b = 512;  // Size
   constexpr std::size_t t = scale;// testAmount
-  constexpr std::size_t c = s;    // setAmount
+  constexpr std::size_t c = 16;   // setAmount
   std::mt19937 rand{19930219u};   // Very important number, don't change
   for (std::size_t i = 1; i < b; ++i) {
-    for (std::size_t j = 1; j < s; ++j) {
-      std::uniform_int_distribution<std::size_t> dist{0, (i * j - 1) * 2};
-      for (std::size_t l = 0; l < t; ++l) {
-        MemoryValue instance{i, j};
-        for (std::size_t f = 0; f < c; ++f) {
-          std::size_t address{dist(rand)};
-          bool getVal = instance.get(address / 2);
-          bool setVal = instance.set(address / 2, (address % 2) == 0);
-          ASSERT_EQ(getVal, setVal);
-          ASSERT_EQ((address % 2) == 0, instance.get(address / 2));
-        }
+    std::uniform_int_distribution<std::size_t> dist{0, (i - 1) * 2};
+    for (std::size_t j = 0; j < t; ++j) {
+      MemoryValue instance{i};
+      for (std::size_t l = 0; l < c; ++l) {
+        std::size_t address{dist(rand)};
+        bool getVal = instance.get(address / 2);
+        bool setVal = instance.set(address / 2, (address % 2) == 0);
+        ASSERT_EQ(getVal, setVal);
+        ASSERT_EQ((address % 2) == 0, instance.get(address / 2));
       }
     }
   }
 }
 
+/**
+ * \Brief tests the operator== by creating 4 memory values
+ *        A,B,C,D with A == c and B == C then filling
+ *        A and B with the same bits. Write single bit into C and D
+ *        that is the inverse of Aat the same index=> D != A == B != C
+ */
 TEST(TestMemoryValue, equals) {
-  constexpr std::size_t b = 8;        // byteAmount
-  constexpr std::size_t s = 64;       // byteSize
+  constexpr std::size_t b = 512;      // Size
   constexpr std::size_t t = scale * 4;// testAmount
   std::mt19937 rand{19930726u};       // Very important number, don't change
   std::uniform_int_distribution<std::size_t> dist{};
   for (std::size_t i = 1; i < b; ++i) {
-    for (std::size_t j = 1; j < s; ++j) {
-      for (std::size_t l = 0; l < t; ++l) {
-        const std::size_t bytes{i * ((j / 8 + ((j % 8) > 0 ? 1 : 0)))};
-        std::vector<std::uint8_t> initializer0{};
-        std::vector<std::uint8_t> initializer1{};
-        for (std::size_t k = 0; k < bytes; ++k) {
-          initializer0.push_back(static_cast<std::uint8_t>(dist(rand)));
-          initializer1.push_back(static_cast<std::uint8_t>(dist(rand)));
-        }
-        MemoryValue instance0{initializer0, j};
-        MemoryValue instance1{initializer1, j};
-        MemoryValue instance2{initializer0, j};
-        MemoryValue instance3{initializer1, j};
-        for (std::size_t k = 0; k < i * j; ++k) {
-          bool value{(dist(rand) % 2) == 0};
-          instance0.put(k, value);
-          instance1.put(k, value);
-        }
-        const std::size_t address{dist(rand) % (i * j)};
-        const bool value{instance0.get(address)};
-        instance2.put(address, !value);
-        instance3.put(address, !value);
-        ASSERT_EQ(instance0, instance1);
-        ASSERT_NE(instance0, instance2);
-        ASSERT_NE(instance0, instance3);
+    for (std::size_t j = 0; j < t; ++j) {
+      const std::size_t bytes{(i + 7) / 8};
+      std::vector<std::uint8_t> initializer0{};
+      std::vector<std::uint8_t> initializer1{};
+      for (std::size_t l = 0; l < bytes; ++l) {
+        initializer0.push_back(static_cast<std::uint8_t>(dist(rand)));
+        initializer1.push_back(static_cast<std::uint8_t>(dist(rand)));
       }
+      MemoryValue instance0{initializer0, i};
+      MemoryValue instance1{initializer1, i};
+      MemoryValue instance2{initializer0, i};
+      MemoryValue instance3{initializer1, i};
+      for (std::size_t l = 0; l < i; ++l) {
+        bool value{(dist(rand) % 2) == 0};
+        instance0.put(l, value);
+        instance1.put(l, value);
+      }
+      const std::size_t address{dist(rand) % (i)};
+      const bool value{instance0.get(address)};
+      instance2.put(address, !value);
+      instance3.put(address, !value);
+      ASSERT_EQ(instance0, instance1);
+      ASSERT_NE(instance0, instance2);
+      ASSERT_NE(instance0, instance3);
     }
   }
 }
 
+/**
+ * \Brief tests the getByteAt() method by creating
+ *        a random MemoryValue and an identical memoryValue
+ *        with reversed indices => reading from both should
+ *        result in mirrored bytes
+ */
 TEST(TestMemoryValue, charAt) {
-  constexpr std::size_t b = 8;        // byteAmount
-  constexpr std::size_t s = 64;       // byteSize
+  constexpr std::size_t b = 512;      // Size
   constexpr std::size_t t = scale * 4;// testAmount
   std::mt19937 rand{20160304u};       // Very important number, don't change
   std::uniform_int_distribution<std::size_t> dist{};
   for (std::size_t i = 1; i < b; ++i) {
-    for (std::size_t j = 1; j < s; ++j) {
-      if (i * j < 8) continue;
-      for (std::size_t l = 0; l < t; ++l) {
-        MemoryValue instance0{i, j};
-        MemoryValue instance1{i, j};
-        for (std::size_t k = 0; k < i * j; ++k) {
-          bool b{dist(rand) % 2 == 0};
-          instance0.put(k, b);
-          instance1.put(i * j - k - 1, b);
-        }
-        for (std::size_t k = 0; k < i * j - 7; ++k) {
-          std::uint8_t extract0{instance0.getByteAt(k)};
-          std::uint8_t extract1{instance1.getByteAt((i * j) - k - 8)};
-          std::uint8_t extractR{static_cast<std::uint8_t>(
-              (extract1 * 0x0202020202ULL & 0x010884422010ULL) %
-              1023)};// reversed byte
-          ASSERT_EQ(extract0, extractR);
-        }
+    if (i < 8) continue;
+    for (std::size_t j = 0; j < t; ++j) {
+      MemoryValue instance0{i};
+      MemoryValue instance1{i};
+      for (std::size_t l = 0; l < i; ++l) {
+        bool b{dist(rand) % 2 == 0};
+        instance0.put(l, b);
+        instance1.put(i - l - 1, b);
+      }
+      for (std::size_t k = 0; k < i - 7; ++k) {
+        std::uint8_t extract0{instance0.getByteAt(k)};
+        std::uint8_t extract1{instance1.getByteAt(i - k - 8)};
+        std::uint8_t extractR{static_cast<std::uint8_t>(
+            (extract1 * 0x0202020202ULL & 0x010884422010ULL) %
+            1023)};// reversed byte
+        ASSERT_EQ(extract0, extractR);
       }
     }
   }
 }
 
+
+/**
+ * \Brief tests the subSet() method by creating
+ *        a random MemoryValue and an identical memoryValue
+ *        with reversed indices => reading from both should
+ *        result in mirrored MemoryValues
+ */
 TEST(TestMemoryValue, subSet) {
-  constexpr std::size_t b = 8;    // byteAmount
-  constexpr std::size_t s = 64;   // byteSize
+  constexpr std::size_t b = 512;  // byteAmount
   constexpr std::size_t t = scale;// testAmount
   constexpr std::size_t c = 16;   // subSetAmount
   std::mt19937 rand{20131127u};   // Very important number, don't change
   std::uniform_int_distribution<std::size_t> dist0{};
   for (std::size_t i = 1; i < b; ++i) {
-    for (std::size_t j = 1; j < s; ++j) {
-      std::uniform_int_distribution<std::size_t> dist1{0, i * j - 1};
-      for (std::size_t l = 0; l < t; ++l) {
-        MemoryValue instance0{i, j};
-        MemoryValue instance1{i, j};
-        for (std::size_t k = 0; k < i * j; ++k) {
-          bool b{dist0(rand) % 2 == 0};
-          instance0.put(k, b);
-          instance1.put(i * j - k - 1, b);
-        }
-        for (std::size_t k = 0; k < c; ++k) {
-          std::size_t address0{dist1(rand)};
-          std::size_t address1{dist1(rand)};
-          std::size_t tempAddress{std::max(address0, address1)};
-          address0 = std::min(address0, address1);
-          address1 = tempAddress;
-          std::size_t phi{1};// todo
-          MemoryValue subSet0{instance0.subSet(address0, address1, phi)};
-          MemoryValue subSet1{
-              instance1.subSet(i * j - address1, i * j - address0, phi)};
-          MemoryValue subSetR{(address1 - address0) / phi, phi};
-          for (std::size_t h = 0; h < address1 - address0; ++h)
-            subSetR.put((address1 - address0) - h - 1, subSet1.get(h));
-          ASSERT_EQ(subSet0, subSetR);
-        }
+    std::uniform_int_distribution<std::size_t> dist1{0, i - 1};
+    for (std::size_t j = 0; j < t; ++j) {
+      MemoryValue instance0{i};
+      MemoryValue instance1{i};
+      for (std::size_t l = 0; l < i; ++l) {
+        bool b{dist0(rand) % 2 == 0};
+        instance0.put(l, b);
+        instance1.put(i - l - 1, b);
+      }
+      for (std::size_t l = 0; l < c; ++l) {
+        std::size_t address0{dist1(rand)};
+        std::size_t address1{dist1(rand)};
+        if (address0 == address1) continue;
+        std::size_t tempAddress{std::max(address0, address1)};
+        address0 = std::min(address0, address1);
+        address1 = tempAddress;
+        MemoryValue subSet0{instance0.subSet(address0, address1)};
+        MemoryValue subSet1{instance1.subSet(i - address1, i - address0)};
+        MemoryValue subSetR{(address1 - address0)};
+        for (std::size_t k = 0; k < address1 - address0; ++k)
+          subSetR.put((address1 - address0) - k - 1, subSet1.get(k));
+        ASSERT_EQ(subSet0, subSetR);
       }
     }
   }
@@ -246,3 +256,202 @@ TEST(TestMemoryValue, subSet) {
     }
   }
 }*/
+
+/**
+ * \Brief tests the getByteAt() method by creating
+ *        a random MemoryValue and saving the noise it
+ *        was created from and comparing it to the results
+ *        of reading.
+ */
+TEST(TestMemoryValue, charAt2) {
+  constexpr std::size_t b = 512;      // Size
+  constexpr std::size_t t = scale * 4;// testAmount
+  std::mt19937 rand{20141121u};       // Very important number, don't change
+  std::uniform_int_distribution<std::uint16_t> dist{255};
+  for (std::size_t i = 1; i < b; ++i) {
+    if (i < 8) continue;
+    for (std::size_t j = 0; j < t; ++j) {
+      MemoryValue instance{i};
+      std::vector<uint8_t> raw{};
+      for (std::size_t l = 0; l < (i + 7) / 8; ++l) {
+        raw.push_back(static_cast<std::uint8_t>(dist(rand)));
+      }
+      raw[((i + 7) / 8) - 1] &= (1 << (i % 8)) - 1;
+      raw.push_back(0);
+      for (std::size_t l = 0; l < i; ++l) {
+        if (raw[l / 8] & 1 << (l % 8)) {
+          instance.put(l);
+        }
+      }
+      for (std::size_t l = 0; l < i; ++l) {
+        std::uint16_t compare16{
+            static_cast<std::uint16_t>(((raw[l / 8 + 1]) << 8) | raw[l / 8])};
+        ASSERT_EQ(instance.getByteAt(l),
+                  static_cast<uint8_t>(compare16 >> (l % 8)));
+      }
+    }
+  }
+}
+
+/**
+* \Brief tests the write() method by writing and reading.
+*/
+TEST(TestMemoryValue, write) {
+  constexpr std::size_t b = 128;  // Size
+  constexpr std::size_t t = scale;// testAmount
+  std::mt19937 rand{20141121u};   // I need a new Number
+  std::uniform_int_distribution<std::uint16_t> dist0{0, 255};
+  for (std::size_t i = 2; i < b; ++i) {// Length Of MemoryValue
+    std::vector<uint8_t> initializer0{};
+    for (std::size_t j = 0; j < ((i + 7) / 8); ++j) {
+      initializer0.push_back(static_cast<std::uint8_t>(dist0(rand)));
+    }
+    MemoryValue parent{initializer0, i};
+    for (std::size_t j = 1; j <= i; ++j) {// Length of SubSet
+      std::uniform_int_distribution<std::size_t> dist1{0, i - j};
+      for (std::size_t l = 0; l < t; ++l) {
+        std::vector<uint8_t> initializer1{};
+        for (std::size_t k = 0; k < ((j + 7) / 8); ++k) {
+          initializer1.push_back(static_cast<std::uint8_t>(dist0(rand)));
+        }
+        MemoryValue parentCopy{parent};
+        MemoryValue instance0{initializer1, j};
+        std::size_t address{dist1(rand)};
+        parent.write(instance0, address);
+        MemoryValue instance1{parent.subSet(address, address + j)};
+        ASSERT_EQ(instance0, instance1);
+        if (address > 0) {
+          ASSERT_EQ(parentCopy.subSet(0, address), parent.subSet(0, address));
+        }
+        if (i - j - address > 0) {
+          ASSERT_EQ(parentCopy.subSet(address + j, i),
+                    parent.subSet(address + j, i));
+        }
+      }
+    }
+  }
+}
+
+TEST(TestMemoryValue, TestFrontAndBackWorkWell) {
+  MemoryValue memory(10);
+
+  memory.set(0, true);
+  EXPECT_TRUE(memory.front());
+
+  memory.set(0, false);
+  EXPECT_FALSE(memory.front());
+
+  memory.set(9, true);
+  EXPECT_TRUE(memory.back());
+
+  memory.set(9, false);
+  EXPECT_FALSE(memory.back());
+}
+
+TEST(TestMemoryValue, SubscriptOperatorAllowsRead) {
+  static std::random_device seed;
+  static std::uniform_int_distribution<std::size_t> distribution(0, 1);
+  static std::mt19937 generator(seed());
+
+  MemoryValue memory(100);
+
+  for (std::size_t i = 0; i < 100; ++i) {
+    auto value = distribution(generator);
+    memory.set(i, value);
+
+    ASSERT_EQ(memory.get(i), value);
+    ASSERT_EQ(memory[i], value);
+
+    // Make sure that the subscript operator does not change the value
+    ASSERT_EQ(memory.get(i), value);
+  }
+}
+
+TEST(TestMemoryValue, SubscriptOperatorAllowsWrite) {
+  static std::random_device seed;
+  static std::uniform_int_distribution<std::size_t> distribution(0, 1);
+  static std::mt19937 generator(seed());
+
+  MemoryValue memory(100);
+
+  for (std::size_t i = 0; i < 100; ++i) {
+    auto value = distribution(generator);
+
+    memory[i] = value;
+
+    ASSERT_EQ(memory.get(i), value);
+    ASSERT_EQ(memory[i], value);
+  }
+}
+
+TEST(TestMemoryValue, TestIteratorAccess) {
+  MemoryValue memory(10);
+
+  bool last = false;
+
+  std::generate(memory.begin(), memory.end(), [&last] {
+    last = !last;
+    return last;
+  });
+
+  EXPECT_EQ(*(memory.begin()), memory.front());
+
+  last = false;
+  auto iterator = memory.getIterator(1);
+  for (std::size_t i = 1; i < memory.getSize(); ++i, last = !last) {
+    EXPECT_EQ(*iterator, last);
+    EXPECT_EQ(*(++(--iterator)), last);
+    *iterator = !last;
+    EXPECT_EQ(*(++(--iterator)), !last);
+  }
+}
+
+TEST(TestMemoryValue, TestIteratorBehavior) {
+  MemoryValue memory(4);
+
+  EXPECT_EQ(memory.end() - memory.begin(), 4);
+  EXPECT_EQ(memory.begin() - memory.begin(), 0);
+  EXPECT_EQ(memory.end() - memory.end(), 0);
+
+  memory.set(0, true);
+  memory.set(1, false);
+  memory.set(2, true);
+  memory.set(3, false);
+
+  auto iterator = memory.begin();
+
+  EXPECT_EQ(*iterator, true);
+  EXPECT_EQ(iterator - memory.begin(), 0);
+
+  ++iterator;
+
+  EXPECT_EQ(*iterator, false);
+  EXPECT_EQ(iterator - memory.begin(), 1);
+
+  iterator += 2;
+
+  EXPECT_EQ(*iterator, false);
+  EXPECT_EQ(iterator - memory.begin(), 3);
+
+  ++iterator;
+
+  ASSERT_EQ(iterator.getAddress(), 4);
+  EXPECT_EQ(iterator, memory.end());
+
+  iterator -= 4;
+
+  EXPECT_EQ(iterator, memory.begin());
+  EXPECT_EQ(iterator + 4, memory.end());
+
+  EXPECT_EQ(*(iterator + 2), true);
+
+  MemoryValue memory2(4);
+  memory2.set(0, true);
+
+  EXPECT_NE(memory.begin(), memory2.begin());
+
+  // Evaluate in lambda else we get an "expression result unused error"
+  EXPECT_THROW(([&] { return memory.begin() > memory2.end(); })(),
+               assert::AssertionError);
+  EXPECT_THROW(memory.begin() - memory2.end(), assert::AssertionError);
+}

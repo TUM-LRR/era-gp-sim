@@ -60,6 +60,7 @@ ScrollView {
                 textMargin: 2
                 property real unscaledWidth: Math.max(scrollView.viewport.width - sidebar.width, contentWidth)
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
+                property int line: 1
 
                 x: sidebar.width
                 selectByMouse: true
@@ -82,6 +83,7 @@ ScrollView {
                     }
                 }
 
+                //<<<<<<< HEAD
                 // Tool tips: The desired behavior is that when the cursor is inside a keyword, the
                 // keyword is underlined. Moving the mouse over this keyword makes a small help tool tip
                 // appear to its right. Clicking the help tool tip opens up the help text overlay.
@@ -121,7 +123,7 @@ ScrollView {
 
                     // TODO: Fetch actual help-dictionary
                     var toolTipDictionary = {"mov": "mov reg1, reg2<br/>Copies the value of reg1 to reg2.",
-                                             "eax": "32-bit general-purpose register."};
+                        "eax": "32-bit general-purpose register."};
                     // Extract the current line
                     var nextNewLine = text.substring(position).search("\n");
                     nextNewLine = (nextNewLine < 0) ? text.length : nextNewLine+position;
@@ -132,7 +134,7 @@ ScrollView {
                     for (var searchString in toolTipDictionary) {
                         var currentPosition;            // Position of the last occurence of the current searchString.
                         var currentOffset = 0;          // In order to not always find the first occurence, the text that is being search
-                                                        // is truncated at the beginning. The resulting offset is saved for later calculations.
+                        // is truncated at the beginning. The resulting offset is saved for later calculations.
                         var currentText = currentLine;  // The possibly truncated text that is being searched.
                         // Search the current line. Is truncated if multiple occurences are found.
                         while ((currentPosition = currentText.search(searchString)) != -1) {
@@ -148,13 +150,13 @@ ScrollView {
                                 // Create help tool tip component.
                                 var component = Qt.createComponent("HelpToolTip.qml");
                                 _toolTip = component.createObject(textArea, {"helpText": toolTipDictionary[searchString],
-                                                                         "x": startRect.x,
-                                                                         "y": startRect.y,
-                                                                         "width": (endRect.x - startRect.x),
-                                                                         "height": startRect.height,
-                                                                         "relativeX": (endRect.x-startRect.x+1),
-                                                                         "explicitWidth": startRect.height,
-                                                                         "explicitHeight": startRect.height});
+                                                                      "x": startRect.x,
+                                                                      "y": startRect.y,
+                                                                      "width": (endRect.x - startRect.x),
+                                                                      "height": startRect.height,
+                                                                      "relativeX": (endRect.x-startRect.x+1),
+                                                                      "explicitWidth": startRect.height,
+                                                                      "explicitHeight": startRect.height});
                                 if (_toolTip === null) {
                                     // Error Handling
                                     console.log("Error creating object");
@@ -166,6 +168,18 @@ ScrollView {
                         }
                     }
                 }
+                //=======
+                //Connection to react to the parse signal
+                Connections {
+                    target: editor
+                    onParseText: {
+                        editor.sendText(textArea.text);
+                    }
+                    onExecutionLineChanged: {
+                        textArea.line = line;
+                    }
+                    //>>>>>>> gui-explosive-picnic
+                }
 
                 //cursor line highlighting
                 Rectangle{
@@ -176,6 +190,14 @@ ScrollView {
                     visible: textArea.activeFocus
                     border.width: 1
                     border.color: Qt.rgba(0.7, 0.7, 0.7, 0.2)
+                }
+
+                // execution line highlighting
+                Rectangle{
+                    color: Qt.rgba(0.2, 0.8, 0.4, 0.2)
+                    y: textArea.cursorRectangle.height * (textArea.line - 1);
+                    height: textArea.cursorRectangle.height;
+                    width: Math.max(scrollView.width, textArea.contentWidth)
                 }
 
                 //scroll with the cursor
@@ -223,6 +245,7 @@ ScrollView {
                 }
             }
 
+
             //area left of the TextEdit, contains lineNumbers, errorMessages, Breakpoints,...
             Rectangle {
                 id: sidebar
@@ -247,7 +270,7 @@ ScrollView {
                             color: "gray"
                             font: textArea.font
                             text: index + 1
-                            height: fontMetrics.height
+                            height: textArea.cursorRectangle.height
                         }
                     }
                 }
@@ -298,7 +321,7 @@ ScrollView {
                                 id: toolTip
                                 width: lineHighlight.width
                                 height: lineHighlight.height
-                                fontPixelSize: textArea.font.pixelSize*1.5
+                                fontPixelSize: textArea.font.pixelSize
                             }
 
                             Connections {

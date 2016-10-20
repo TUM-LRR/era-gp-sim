@@ -31,7 +31,8 @@ Architecture Architecture::Brew(const ArchitectureFormula& formula) {
   return ArchitectureBrewery(formula).brew();
 }
 
-Architecture::Architecture(const std::string& name) : _name(name) {
+Architecture::Architecture(const std::string& name)
+: _name(name), _factories() {
 }
 
 Architecture::Architecture(const std::string& name,
@@ -68,28 +69,29 @@ Architecture& Architecture::name(const std::string& name) {
   return *this;
 }
 
-const std::string& Architecture::getName() const noexcept {
+const std::string& Architecture::getName() const {
   assert(isValidated());
   return _name;
 }
 
-Architecture::Endianness Architecture::getEndianness() const noexcept {
+Architecture::Endianness Architecture::getEndianness() const {
   assert(isValidated());
   return _base.getEndianness();
 }
 
-Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const
-    noexcept {
+Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const {
   assert(isValidated());
   return _base.getAlignmentBehavior();
 }
 
-/**
- * Returns the word size of the extension (in bits), if any.
- */
-Architecture::word_size_t Architecture::getWordSize() const noexcept {
+Architecture::word_size_t Architecture::getWordSize() const {
   assert(isValidated());
   return _base.getWordSize();
+}
+
+Architecture::byte_size_t Architecture::getByteSize() const noexcept {
+  assert(isValidated());
+  return _base.getByteSize();
 }
 
 const UnitContainer& Architecture::getUnits() const {
