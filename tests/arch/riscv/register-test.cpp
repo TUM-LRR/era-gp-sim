@@ -17,9 +17,9 @@
 
 #include <climits>
 
-#include "gtest/gtest.h"
 
 #include "common/assert.hpp"
+#include "gtest/gtest.h"
 
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
@@ -72,9 +72,6 @@ TEST_F(RISCVRegisterTestFixture, testRV32I) {
     // is capable of holding 32bit
     set("x", i, convert<uint32_t>(UINT32_MAX));
     ASSERT_EQ(convert<uint32_t>(UINT32_MAX), get("x", i));
-    // is not capable of holding more than 32bit TODO
-    //    MemoryValue m64bit = convert<uint64_t>(uint64_t{UINT32_MAX} + 1);
-    //    EXPECT_THROW(set("x", i, m64bit), assert::AssertionError);
   }
 }
 
@@ -101,9 +98,5 @@ TEST_F(RISCVRegisterTestFixture, testRV64I) {
     // is capable of holding 64bit
     set("x", i, convert<uint64_t>(UINT64_MAX));
     ASSERT_EQ(convert<uint64_t>(UINT64_MAX), get("x", i));
-
-    // is not capable of holding more than 64bit
-    //    MemoryValue m65bit = MemoryValue{65};
-    //    EXPECT_THROW(set("x", i, m65bit), assert::AssertionError);
   }
 }

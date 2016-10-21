@@ -220,7 +220,8 @@ class RegisterInformation : public InformationInterface {
    *
    * The constant value will be converted to MemoryValue (that is the internal
    * storage type, also for integral types). The constant value must represent
-   * a number that fits into this register
+   * a number that fits into this register (so the number represented by this string
+   * may not be greater than getSize() bits)
    *
    * \param constant The new hardwired constant.
    *
@@ -237,13 +238,11 @@ class RegisterInformation : public InformationInterface {
   RegisterInformation& setConstantValue(const MemoryValue constant);
 
   /**
-   * Returns the constant the register is hardwired to, if any, and converts it
-   *  to the given type.
+   * Returns the constant the register is hardwired to, if any.
    *
    * \tparam ConstantType The output type for the constant.
    *
-   * \return If a conversion is possible, the current hardwired constant
-   *         cast to the given type.
+   * \return The current hardwired constant
    */
   MemoryValue getConstant() const;
 
