@@ -67,10 +67,10 @@ TEST(memory, readWrite) {
 }
 
 TEST(memory, serialization) {
-  Memory instance0{64, 8};
-  // instance0.put(4,
-  //               conversions::convert(
-  //                   0xFF, conversions::standardConversions::nonsigned, 8));
+  Memory instance0{8, 8};
+  instance0.put(4,
+                conversions::convert(
+                    0xFF, conversions::standardConversions::nonsigned, 8));
   nlohmann::json json{};
   instance0.serializeJSON(json);
   Memory instance1{json};

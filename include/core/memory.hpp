@@ -21,6 +21,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <iostream>
 #include <map>
 #include <string>
 #include <utility>
@@ -136,6 +137,8 @@ class Memory {
   void deserializeJSON(const nlohmann::json &json);
 
   bool operator==(const Memory &other) const;
+
+  friend std::ostream &operator<<(std::ostream &stream, const Memory &value);
 
  private:
   static constexpr char standardSeparator = ',';

@@ -128,9 +128,10 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
   const MemoryValue empty{_byteSize * lineLength};
   for (std::size_t i = 0; i < lineCount; ++i) {
     if (get(i * lineLength, lineLength) != empty) {
-      std::stringstream name("line");
-      std::stringstream value{};
+      std::stringstream name{};
+      name << "line";
       name << (i * lineLength);
+      std::stringstream value{};
       for (std::size_t j = 0; j < lineLength; ++j) {
         MemoryValue v{get(i * lineLength + j)};
         appendMemoryValue(value, v);
@@ -174,10 +175,10 @@ MemoryValue deserializeLine(const std::string& line,
       {'C', 12}, {'D', 13}, {'E', 14}, {'F', 15},
   };
   MemoryValue ret{byteSize * lineLength};
-  std::size_t byte = lineLength + 1;
+  std::size_t byte = lineLength;
   std::size_t bit = 0;
   // iterate reversely over line
-  for (auto i = line.rend(); i < line.rbegin(); ++i) {
+  for (auto i = line.crbegin(); i < line.crend(); ++i) {
     if (*i == separator) {
       // if separator -> inc to next cell
       --byte;
@@ -193,7 +194,7 @@ MemoryValue deserializeLine(const std::string& line,
         hex >>= 1;// could make this faster using long switch case
       }
     }
-    assert::that(byte > 0);
+    assert::that(byte >= 0);
   }
   return ret;
 }
@@ -208,7 +209,8 @@ void Memory::deserializeJSON(const nlohmann::json& json) {
   const MemoryValue empty{_byteSize * lineLength};
   const char separator = json[_separatorStringIdentifier].get<char>();
   for (std::size_t i = 0; i < lineCount; ++i) {
-    std::stringstream name("line");
+    std::stringstream name{};
+    name << "line";
     name << (i * lineLength);
     auto lineIterator = json.find(name.str());
     if (lineIterator != json.end()) {
@@ -222,6 +224,11 @@ void Memory::deserializeJSON(const nlohmann::json& json) {
 bool Memory::operator==(const Memory& other) const {
   return _byteSize == other._byteSize && _byteCount == other._byteCount &&
          _data == other._data;
+}
+
+std::ostream& operator<<(std::ostream& stream, const Memory& value) {
+  return stream << value._byteCount << " * " << value._byteSize << "; "
+                << value._data;
 }
 
 void Memory::wasUpdated(const std::size_t address, const std::size_t amount) {
