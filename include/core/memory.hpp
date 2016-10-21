@@ -121,23 +121,54 @@ class Memory {
    */
   MemoryValue set(const std::size_t address, const MemoryValue &value);
 
-  // std::vector<std::pair<std::string, std::string>>
+  /**
+   * \brief converts the memory into serializeable strings
+   * \param separator character used to separate the cells of each line
+   * \param lineLength the length of a line in byte
+   * \returns a serialize representation of the Memory
+   */
   std::pair<std::map<std::string, std::size_t>,
             std::map<std::string, std::string>>
   serializeRaw(char separator = standardSeparator, std::size_t lineLength = 64);
 
+  /**
+   * \brief converts the memory into serializeable strings
+   * \param json the json object to hold the data
+   * \param separator character used to separate the cells of each line
+   * \param lineLength the length of a line in byte
+   * \returns json
+   */
   nlohmann::json &serializeJSON(nlohmann::json &json,
                                 char separator = standardSeparator,
                                 std::size_t lineLength = 64);
 
+  /**
+   * \brief converts the memory into serializeable strings
+   * \param json the json object to hold the data
+   * \param separator character used to separate the cells of each line
+   * \param lineLength the length of a line in byte
+   * \returns json
+   */
   nlohmann::json serializeJSON(nlohmann::json &&json = nlohmann::json(),
                                char separator = standardSeparator,
                                std::size_t lineLength = 64);
 
+  /**
+   * \brief sets the memory to the data stored in json
+   * \param json the json object to holding the data
+   */
   void deserializeJSON(const nlohmann::json &json);
 
+  /**
+   * \brief returns true iff this == other
+   * \returns the equality of this and other
+   */
   bool operator==(const Memory &other) const;
 
+  /**
+   * \brief prints a representation of this into the stream
+   * \returns the stream
+   */
   friend std::ostream &operator<<(std::ostream &stream, const Memory &value);
 
  private:
