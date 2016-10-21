@@ -34,10 +34,6 @@ RegisterModel::RegisterModel(ArchitectureAccess &architectureAccess,
 , _memoryAccess(memoryAccess) {
   projectContext->setContextProperty("registerModel", this);
 
-  std::function<void(const std::string &)> callback = [this](
-      const std::string &registerTitle) { this->updateContent(registerTitle); };
-  memoryManager.setUpdateRegisterCallback(callback);
-
   // Fetch register units from core.
   UnitContainer registerUnits = architectureAccess.getRegisterUnits().get();
   // Iterate over each container and add the corresponding registers.
@@ -78,7 +74,7 @@ RegisterModel::RegisterModel(ArchitectureAccess &architectureAccess,
 }
 
 
-void RegisterModel::updateContent(const std::string &registerTitle) {
+void RegisterModel::updateContent(const QString &registerTitle) {
   // Notify the model about the change
   // Notifying requires the model index of the altered item.
   // The only reasonable way of accomplishing this is by filtering the registers
@@ -86,7 +82,7 @@ void RegisterModel::updateContent(const std::string &registerTitle) {
   QModelIndexList alteredItems =
       match(this->index(0, 0),
             TitleRole,
-            QString::fromStdString(registerTitle),
+            registerTitle,
             1,
             Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
   if (!alteredItems.isEmpty()) {

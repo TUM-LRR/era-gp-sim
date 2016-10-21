@@ -155,15 +155,6 @@ class RegisterModel : public QAbstractItemModel {
       Q_DECL_OVERRIDE;
 
   /**
-   * \brief updateContent Sets the content (i.e. AB01DE23) of a specified
-   * register.
-   * \param registerTitle The unique title of the register whose
-   * content shall be altered.
-   * \param registerContent The new register value.
-   */
-  void updateContent(const std::string &registerTitle);
-
-  /**
    * \brief registerContentChanged Notifies the Core when a register's content
    * was changed by the use.
    * \param registerContent The register's new content value.
@@ -289,6 +280,17 @@ class RegisterModel : public QAbstractItemModel {
    */
   Optional<int>
   _getRowRelativeToParent(RegisterInformation &registerItem) const;
+
+
+ public slots:
+  /**
+   * \brief updateContent Sets the content (i.e. AB01DE23) of a specified
+   * register.
+   * \param registerTitle The unique title of the register whose
+   * content shall be altered.
+   * \param registerContent The new register value.
+   */
+  void updateContent(const QString &registerTitle);
 };
 
 #endif// ERAGPSIM_UI_REGISTERMODEL_HPP

@@ -69,6 +69,22 @@ class GuiProject : QObject {
   std::function<MemoryValue(std::string)> octToMemoryValue;
   std::function<MemoryValue(std::string)> unsignedToMemoryValue;
   std::function<MemoryValue(std::string)> floatToMemoryValue;
+
+ signals:
+  /**
+   * A signal to notify components that a register changed.
+   *
+   * \param name The name of the register that changed
+   */
+  void registerChanged(const QString& name);
+
+  /**
+   * A signal to notify components that a part of the memory changed
+   *
+   * \param address The address of the memory
+   * \param length The number of bytes that changed
+   */
+  void memoryChanged(QVariant address, QVariant length);
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP
