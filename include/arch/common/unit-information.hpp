@@ -61,8 +61,8 @@ class UnitInformation : public UnderlyingRegisterContainer,
   */
   struct AlphabeticOrder {
    public:
-    bool operator()(RegisterInformation* first,
-                    RegisterInformation* second) const {
+    bool operator()(const RegisterInformation* first,
+                    const RegisterInformation* second) const {
       return first->getName() < second->getName();
     }
   };
@@ -73,8 +73,8 @@ class UnitInformation : public UnderlyingRegisterContainer,
    */
   struct IdOrder {
    public:
-    bool operator()(RegisterInformation* first,
-                    RegisterInformation* second) const {
+    bool operator()(const RegisterInformation* first,
+                    const RegisterInformation* second) const {
       return first->getID() < second->getID();
     }
   };
@@ -99,7 +99,8 @@ class UnitInformation : public UnderlyingRegisterContainer,
               Compare compareWhenEqual = AlphabeticOrder())
         : _typeOrder(types), _equalCompare(compareWhenEqual) {}
 
-    bool operator()(RegisterInformation* first, RegisterInformation* second) const{
+    bool operator()(const RegisterInformation* first,
+                    const RegisterInformation* second) const {
       auto indexFirst =
           std::find(_typeOrder.begin(), _typeOrder.end(), first->getType());
       auto indexSecond =
