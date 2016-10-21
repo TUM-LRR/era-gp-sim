@@ -24,5 +24,64 @@ void MacroDirective::execute(FinalRepresentation& finalRepresentator,
                              const SyntaxTreeGenerator& generator,
                              CompileState& state,
                              MemoryAccess& memoryAccess) {
+  _macroParameters.validate(state);
   state.registerMacro(*this);
+}
+
+MacroDirective::MacroParameters::MacroParameters(
+    std::vector<std::string>::const_iterator begin,
+    std::vector<std::string>::const_iterator end)
+: _minParams(0) {
+  for (auto i = begin; i != end; ++i) {
+    Optional<std::string> defaultVal;
+    std::string name;
+
+    // Search for default argument by finding the '=' character.
+    auto equalPos = i->find('=');
+
+    if (equalPos != std::string::npos) {
+      defaultVal = i->substr(equalPos + 1);
+      name = i->substr(0, equalPos);
+    } else {
+      name = *i;
+      _minParams++;
+    }
+
+    _params.emplace_back(std::move(name), std::move(defaultVal));
+  }
+}
+
+void MacroDirective::MacroParameters::validate(CompileState& state) {
+  bool containedDefault;
+  for (auto param : _params) {
+    // Check for empty names or default values
+    if (param.first.size() == 0 ||
+        (param.second && param.second->size() == 0)) {
+      state.addError("Malformed macro argument list!");
+      return;
+    }
+
+    // Check for missing default values after a default value.
+    if (param.second) containedDefault = true;
+    if (containedDefault && !param.second) {
+      state.addError("Default macro argument values have to be placed last!");
+      return;
+    }
+  }
+}
+
+void MacroDirective::MacroParameters::insertParameters(
+    IntermediateOperationPointer& operation,
+    const std::vector<std::string>& values) {
+  // Since macros are identified by name and argument count, this function
+  // should always be called with a valid size of `values`.
+  assert::that(values.size() >= _minParams && values.size() <= _params.size());
+
+  for (int i = 0; i < _params.size(); i++) {
+    const std::string& name{_params[i].first};
+    const std::string& value{i >= values.size() ? *_params[i].second
+                                                : values[i]};
+    operation->insertIntoArguments(name, value);
+  }
+  // return std::move(operation);
 }

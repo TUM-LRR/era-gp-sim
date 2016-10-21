@@ -134,6 +134,15 @@ class IntermediateOperation {
     assert::that(false);
   }
 
+  virtual void
+  insertIntoArguments(const std::string& name, const std::string& value) {
+    // Nothing to do here.
+  }
+
+  virtual IntermediateOperationPointer clone() {
+    return nullptr;
+  }
+
  protected:
   /**
    * \brief The internal line interval.

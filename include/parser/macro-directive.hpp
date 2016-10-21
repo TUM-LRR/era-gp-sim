@@ -43,13 +43,13 @@ class MacroDirective : public IntermediateDirective {
   }
 
   /**
- * \brief Instantiates a new MacroDirective with the given arguments.
- * \param lines The line interval the operation occupies.
- * \param labels The vector of labels assigned to the operation.
- * \param name The name of the operation. (e.g. '.macro')
- * \param macroName The name of the macro.
- * \param macroParameters The parameter names of the macro, if any.
- */
+   * \brief Instantiates a new MacroDirective with the given arguments.
+   * \param lines The line interval the operation occupies.
+   * \param labels The vector of labels assigned to the operation.
+   * \param name The name of the operation. (e.g. '.macro')
+   * \param macroName The name of the macro.
+   * \param macroParameters The parameter names of the macro, if any.
+   */
   MacroDirective(const LineInterval& lines,
                  const std::vector<std::string>& labels,
                  const std::string& name,
@@ -62,12 +62,12 @@ class MacroDirective : public IntermediateDirective {
   }
 
   /**
- * \brief Executes the given macro (somehow).
- * \param finalRepresentator The FinalRepresentation for possible output.
- * \param table The SymbolTable for possible replacements.
- * \param generator The generator to transform the instructions.
- * \param state The CompileState to log possible errors.
- */
+   * \brief Executes the given macro (somehow).
+   * \param finalRepresentator The FinalRepresentation for possible output.
+   * \param table The SymbolTable for possible replacements.
+   * \param generator The generator to transform the instructions.
+   * \param state The CompileState to log possible errors.
+   */
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
                        const SyntaxTreeGenerator& generator,
@@ -76,17 +76,17 @@ class MacroDirective : public IntermediateDirective {
 
 
   /**
-  * \brief Specifies the new target for operations after this command.
-  * \return Set ourselves as target.
-  */
+   * \brief Specifies the new target for operations after this command.
+   * \return Set ourselves as target.
+   */
   virtual TargetSelector newTarget() const {
     return TargetSelector::THIS;
   }
 
   /**
- * \brief Inserts an operation into the internal command list.
- * \param pointer The operation to insert.
- */
+   * \brief Inserts an operation into the internal command list.
+   * \param pointer The operation to insert.
+   */
   virtual void insert(IntermediateOperationPointer pointer) {
     _operations.push_back(std::move(pointer));
   }
@@ -98,21 +98,54 @@ class MacroDirective : public IntermediateDirective {
   const std::string& macroName() {
     return _macroName;
   }
-  /**
-   * \brief Returns the list of macro parameters.
-   * \return The list of macro parameters.
-   */
-  const std::vector<std::string>& macroParameters() {
-    return _macroParameters;
+
+  size_t getOperationCount() {
+    return _operations.size();
   }
 
-  /**
-   * \brief Returns the list of operations.
-   * \return The list of operations.
-   */
-  const std::vector<IntermediateOperationPointer>& operations() {
-    return _operations;
+  IntermediateOperationPointer& getOperation(size_t index) {
+    return _operations[index];
   }
+
+  template <typename T, typename... U>
+  void callOperationFunction(size_t index,
+                             const std::vector<std::string>& arguments,
+                             T func,
+                             U&... args) {
+    // Try to clone the operation and insert macro parameters.
+    // If that doesnt work, call func directly on operation.
+    IntermediateOperationPointer ptr;
+
+    ptr = _operations[index]->clone();
+    if (ptr != nullptr) {
+      _macroParameters.insertParameters(ptr, arguments);
+    }
+
+
+    IntermediateOperation& op{ptr == nullptr ? *_operations[index] : *ptr};
+    (op.*func)(args...);
+  }
+
+ protected:
+  class MacroParameters {
+   public:
+    MacroParameters(std::vector<std::string>::const_iterator begin,
+                    std::vector<std::string>::const_iterator end);
+
+    MacroParameters(const std::vector<std::string>& arguments)
+    : MacroParameters(arguments.begin(), arguments.end()) {
+    }
+
+    void validate(CompileState& state);
+
+    void insertParameters(IntermediateOperationPointer& operation,
+                          const std::vector<std::string>& values);
+
+   private:
+    std::vector<std::pair<std::string, Optional<std::string>>> _params;
+    size_t _minParams;
+  };
+
 
  private:
   /**
@@ -123,7 +156,7 @@ class MacroDirective : public IntermediateDirective {
   /**
    * \brief The parameters of the macro.
    */
-  std::vector<std::string> _macroParameters;
+  MacroParameters _macroParameters;
 
   /**
    * \brief The operation list of the macro.

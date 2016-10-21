@@ -100,20 +100,20 @@ TEST_F(RiscParserTest, MultipleDirectives) {
   FinalRepresentation res;
   res = parser.parse(
       ".equ ZAHL, 10\n"
-      ".macro add3;, x=0\n"
-      "addi x0, x0, 0\n"
-      "addi x0, x0, 0\n"
-      "addi x0, x0, 0\n"
+      ".macro add3, x=0\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
       ".endm\n"
-      ".macro add5;, x=0\n"
-      "addi x0, x0, 0\n"
-      "addi x0, x0, 0\n"
-      "addi x0, x0, 0\n"
-      "addi x0, x0, 0\n"
-      "addi x0, x0, 0\n"
+      ".macro add5, x=0\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
       ".endm\n"
       "add3\n"
-      "add5 5\n"
+      "add5 5 + 7 << 2\n"
       "add5 ZAHL\n",
       ParserMode::COMPILE);
   EXPECT_EQ(res.errorList.size(), 0);
@@ -137,10 +137,10 @@ TEST_F(RiscParserTest, MultipleInstructions) {
 
 TEST_F(RiscParserTest, MalformedInstructions) {
   FinalRepresentation res;
-  res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7\nble  ",
+  res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7, 9\nble  ",
                      ParserMode::COMPILE);
   EXPECT_EQ(res.errorList.size(), 3);
-  EXPECT_EQ(res.commandList.size(), 1);
+  EXPECT_EQ(res.commandList.size(), 3);
 }
 
 TEST_F(RiscParserTest, BadCharacters) {

@@ -20,6 +20,7 @@
 #include "common/assert.hpp"
 #include "parser/intermediate-instruction.hpp"
 
+#include "core/memory-access.hpp"
 #include "parser/macro-directive.hpp"
 
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
@@ -31,9 +32,15 @@ void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
   auto macro = state.macros.find(_name);
   // If its a macro, execute every sub-instruction.
   if (macro != state.macros.end()) {
-    auto& subOperations = macro->second.operations();
-    for (auto i = subOperations.begin(); i != subOperations.end(); ++i) {
-      (*i)->execute(finalRepresentator, table, generator, state, memoryAccess);
+    for (int i = 0; i < macro->second.getOperationCount(); i++) {
+      macro->second.callOperationFunction(i,
+                                          getArgsVector(),
+                                          &IntermediateOperation::execute,
+                                          finalRepresentator,
+                                          table,
+                                          generator,
+                                          state,
+                                          memoryAccess);
     }
   } else {
     // For a machine instruction, it is easy to "execute" it: just insert it
@@ -108,11 +115,16 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
 
   // Check if the instruction is a macro.
   auto macro = state.macros.find(_name);
-  // If its a macro, execute every sub-instruction.
+  // If its a macro, allocate every sub-instruction.
   if (macro != state.macros.end()) {
-    auto& subOperations = macro->second.operations();
-    for (auto i = subOperations.begin(); i != subOperations.end(); ++i) {
-      (*i)->allocateMemory(architecture, allocator, state);
+    for (int i = 0; i < macro->second.getOperationCount(); i++) {
+      macro->second.callOperationFunction(
+          i,
+          getArgsVector(),
+          &IntermediateOperation::allocateMemory,
+          architecture,
+          allocator,
+          state);
     }
     return;
   }
@@ -130,4 +142,37 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
   std::size_t instructionLength =
       instructionSet[opcode].getLength() / architecture.getByteSize();
   _relativeAddress = allocator["text"].allocateRelative(instructionLength);
+}
+
+static bool isWordCharacter(char c) {
+  return (c == '_' || std::isalpha(c) || std::isdigit(c));
+}
+
+static void replaceInVector(std::vector<std::string>& vector,
+                            const std::string& name,
+                            const std::string& value) {
+  std::string search = '\\' + name;
+  for (int i = 0; i < vector.size(); i++) {
+    std::string& str{vector[i]};
+    // Replace all occurences of '\\name' that are followed by a non-word char.
+    std::string::size_type pos = 0;
+    while ((pos = str.find(search, pos)) != std::string::npos) {
+      // If search result is followed by a word character, skip it and continue.
+      if (pos + search.length() < str.length() &&
+          isWordCharacter(str.at(pos + search.length()))) {
+        pos += search.length();
+        continue;
+      }
+
+      // Insert value at position and skip it
+      str.replace(pos, search.length(), value);
+      pos += value.length();
+    }
+  }
+}
+
+void IntermediateInstruction::insertIntoArguments(const std::string& name,
+                                                  const std::string& value) {
+  replaceInVector(_sources, name, value);
+  replaceInVector(_targets, name, value);
 }

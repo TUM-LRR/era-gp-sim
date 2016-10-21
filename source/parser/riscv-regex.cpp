@@ -27,11 +27,11 @@ static const std::regex LINE_REGEX(
     "\\s*"
     "(([\\.\\w]+)"// Instruction group
     "(?:\\s+"
-    "(\\w+)"// Parameter group
+    "([^,;:\\s][^,;:]*(?!\\s))"// Parameter group
     "(?:\\s*,\\s*"
-    "(\\w+)"// Parameter group
+    "([^,;:\\s][^,;:]*(?!\\s))"// Parameter group
     "(?:\\s*,\\s*"
-    "(\\w+))?)?)?)?"// Parameter group
+    "([^,;:\\s][^,;:]*(?!\\s)))?)?)?)?"// Parameter group
     "\\s*"
     "(?:;.*)?"// Comment group
     ,
