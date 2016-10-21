@@ -59,8 +59,15 @@ MemoryValue
 Memory::get(const std::size_t address, const std::size_t amount) const {
   assert::that(address >= 0);
   assert::that(amount >= 0);
-  assert::that(address + amount <= _byteCount);
-  return _data.subSet(address * _byteSize, (address + amount) * _byteSize);
+  if (address + amount <= _byteCount) {
+    return _data.subSet(address * _byteSize, (address + amount) * _byteSize);
+  } else {
+    MemoryValue value =
+        _data.subSet(address * _byteSize, (address + amount) * _byteSize);
+    MemoryValue ret = MemoryValue(amount * _byteSize);
+    ret.write(value, 0);
+    return ret;
+  }
 }
 
 void Memory::put(const std::size_t address, const MemoryValue& value) {
@@ -68,8 +75,12 @@ void Memory::put(const std::size_t address, const MemoryValue& value) {
   assert::that(value.getSize() % _byteSize == 0);
   const std::size_t amount{value.getSize() / _byteSize};
   assert::that(amount >= 0);
-  assert::that(address + amount <= _byteCount);
-  _data.write(value, address * _byteSize);
+  if (address + amount <= _byteCount) {
+    _data.write(value, address * _byteSize);
+  } else {
+    _data.write(value.subset(0, _byteSize * (_byteCount - address)),
+                address * _byteSize);
+  }
 }
 
 MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {
@@ -116,7 +127,7 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
   // ret.push_back(std::make_pair("byteCount", std::to_string(_byteCount)));
   // ret.push_back(std::make_pair("byteSize", std::to_string(_byteSize)));
   // ret.push_back(std::make_pair("lineLength", std::to_string(lineLength)));
-  const std::size_t lineCount = _byteCount / lineLength;
+  const std::size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
   const MemoryValue empty{_byteSize * lineLength};
   for (std::size_t i = 0; i < lineCount; ++i) {
     if (get(i * lineLength, lineLength) != empty) {
@@ -133,18 +144,18 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
     }
   }
   // TODO::conditional last line
-  if (get(_byteCount / lineLength * lineLength, _byteCount % lineLength) !=
-      MemoryValue{_byteSize * (_byteCount % lineLength)}) {
-    std::stringstream name("line");
-    std::stringstream value{};
-    name << (_byteCount / lineLength * lineLength);
-    for (std::size_t i = 0; i < _byteCount % lineLength; ++i) {
-      MemoryValue v{get((_byteCount / lineLength * lineLength) + i)};
-      appendMemoryValue(value, v);
-      value.put(separator);
-    }
-    data[name.str()] = value.str();
-  }
+  // if (get(_byteCount / lineLength * lineLength, _byteCount % lineLength) !=
+  //    MemoryValue{_byteSize * (_byteCount % lineLength)}) {
+  //  std::stringstream name("line");
+  //  std::stringstream value{};
+  //  name << (_byteCount / lineLength * lineLength);
+  //  for (std::size_t i = 0; i < _byteCount % lineLength; ++i) {
+  //    MemoryValue v{get((_byteCount / lineLength * lineLength) + i)};
+  //    appendMemoryValue(value, v);
+  //    value.put(separator);
+  //  }
+  //  data[name.str()] = value.str();
+  //}
   return make_pair(meta, data);
 }
 
@@ -214,7 +225,7 @@ void Memory::deserializeJSON(const nlohmann::json& jsonObj) {
                jsonObj[_byteSizeStringIdentifier].get<std::size_t>());
   std::size_t lineLength =
       jsonObj[_lineLengthStringIdentifier].get<std::size_t>();
-  const std::size_t lineCount = _byteCount / lineLength;
+  const std::size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
   const MemoryValue empty{_byteSize * lineLength};
   const char separator = jsonObj[_separatorStringIdentifier].get<char>();
   for (std::size_t i = 0; i < lineCount; ++i) {
@@ -227,7 +238,6 @@ void Memory::deserializeJSON(const nlohmann::json& jsonObj) {
       put(i * lineLength, value);
     }
   }
-  // TODO::do this damn last line again because I made this damn asserts
 }
 
 bool Memory::operator==(const Memory& other) const {
