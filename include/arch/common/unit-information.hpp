@@ -61,7 +61,8 @@ class UnitInformation : public UnderlyingRegisterContainer,
   */
   struct AlphabeticOrder {
    public:
-    bool operator()(auto* first, auto* second) const {
+    bool operator()(RegisterInformation* first,
+                    RegisterInformation* second) const {
       return first->getName() < second->getName();
     }
   };
@@ -72,7 +73,8 @@ class UnitInformation : public UnderlyingRegisterContainer,
    */
   struct IdOrder {
    public:
-    bool operator()(auto* first, auto* second) const {
+    bool operator()(RegisterInformation* first,
+                    RegisterInformation* second) const {
       return first->getID() < second->getID();
     }
   };
@@ -89,14 +91,15 @@ class UnitInformation : public UnderlyingRegisterContainer,
      * \param types List of types that define the sorting order. {A, B, C} means
      * the following order:
      * A < B < C
-     * @param compareWhenEqual Another Comparator that is used for defining an order inside a type group.
+     * @param compareWhenEqual Another Comparator that is used for defining an
+     * order inside a type group.
      * {A, B, C} & AlphabeticOrder results into: <a10, a20, a30, b1, b2, b3, c1>
      */
     TypeOrder(TypeList types = TypeList(),
               Compare compareWhenEqual = AlphabeticOrder())
         : _typeOrder(types), _equalCompare(compareWhenEqual) {}
 
-    bool operator()(auto* first, auto* second) {
+    bool operator()(RegisterInformation* first, RegisterInformation* second) const{
       auto indexFirst =
           std::find(_typeOrder.begin(), _typeOrder.end(), first->getType());
       auto indexSecond =
@@ -345,13 +348,14 @@ class UnitInformation : public UnderlyingRegisterContainer,
   bool isValid() const noexcept override;
 
  private:
-
   /**
-   * Returns a sorted vector containing all elements of range using the given comparator
+   * Returns a sorted vector containing all elements of range using the given
+   * comparator
    * \tparam Range Container type
    * \param range
    * \param comparator
-   * \return SortedResult containing all elements of range, sorted using comparator
+   * \return SortedResult containing all elements of range, sorted using
+   * comparator
    */
   template <class Range>
   SortedResult _getSorted(Range& range, const Compare& comparator) const {
