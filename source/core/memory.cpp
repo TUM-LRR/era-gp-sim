@@ -16,7 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "sstream"
+#include <sstream>
+#include <unordered_map>
 
 #include "common/assert.hpp"
 #include "core/memory.hpp"
@@ -35,11 +36,10 @@ Memory::Memory(std::size_t byteCount, std::size_t byteSize)
   assert::that(byteSize > 0);
 }
 
-// evtl use STOI
-Memory::Memory(const nlohmann::json& jsonObj)
-: Memory(jsonObj[_byteCountStringIdentifier],
-         jsonObj[_byteSizeStringIdentifier]) {
-  deserializeJSON(jsonObj);
+Memory::Memory(const nlohmann::json& json)
+: Memory(*json.find(_byteCountStringIdentifier),
+         *json.find(_byteSizeStringIdentifier)) {
+  deserializeJSON(json);
 }
 
 std::size_t Memory::getByteSize() const {
@@ -78,7 +78,7 @@ void Memory::put(const std::size_t address, const MemoryValue& value) {
   if (address + amount <= _byteCount) {
     _data.write(value, address * _byteSize);
   } else {
-    _data.write(value.subset(0, _byteSize * (_byteCount - address)),
+    _data.write(value.subSet(0, _byteSize * (_byteCount - address)),
                 address * _byteSize);
   }
 }
@@ -113,20 +113,17 @@ void appendMemoryValue(std::stringstream& strm, const MemoryValue& value) {
 }
 }
 
-// maybe use map, map would be soooo much nicer
-// std::vector<std::pair<std::string, std::string>>
-std::pair<std::unordered_map<std::string, std::size_t>,
-          std::unordered_map<std::string, std::string>>
+std::pair<std::map<std::string, std::size_t>,
+          std::map<std::string, std::string>>
 Memory::serializeRaw(char separator, std::size_t lineLength) {
-  // std::vector<std::pair<std::string, std::string>> ret{
-  std::unordered_map<std::string, std::string> data{};
-  std::unordered_map<std::string, std::size_t> meta{
+  if (lineLength > _byteCount) {
+    lineLength = _byteCount;
+  }
+  std::map<std::string, std::string> data{};
+  std::map<std::string, std::size_t> meta{
       {_byteCountStringIdentifier, _byteCount},
       {_byteSizeStringIdentifier, _byteSize},
       {_lineLengthStringIdentifier, lineLength}};
-  // ret.push_back(std::make_pair("byteCount", std::to_string(_byteCount)));
-  // ret.push_back(std::make_pair("byteSize", std::to_string(_byteSize)));
-  // ret.push_back(std::make_pair("lineLength", std::to_string(lineLength)));
   const std::size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
   const MemoryValue empty{_byteSize * lineLength};
   for (std::size_t i = 0; i < lineCount; ++i) {
@@ -139,46 +136,30 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
         appendMemoryValue(value, v);
         value.put(separator);
       }
-      // ret.push_back(std::make_pair(name.str(), value.str()));
       data[name.str()] = value.str();
     }
   }
-  // TODO::conditional last line
-  // if (get(_byteCount / lineLength * lineLength, _byteCount % lineLength) !=
-  //    MemoryValue{_byteSize * (_byteCount % lineLength)}) {
-  //  std::stringstream name("line");
-  //  std::stringstream value{};
-  //  name << (_byteCount / lineLength * lineLength);
-  //  for (std::size_t i = 0; i < _byteCount % lineLength; ++i) {
-  //    MemoryValue v{get((_byteCount / lineLength * lineLength) + i)};
-  //    appendMemoryValue(value, v);
-  //    value.put(separator);
-  //  }
-  //  data[name.str()] = value.str();
-  //}
   return make_pair(meta, data);
 }
 
-nlohmann::json& Memory::serializeJSON(nlohmann::json& jsonObj,
+nlohmann::json& Memory::serializeJSON(nlohmann::json& json,
                                       char separator,
                                       std::size_t lineLength) {
   auto data = serializeRaw(separator, lineLength);
-  jsonObj.push_back(data.first);
-  jsonObj.push_back(data.second);
-  jsonObj[_separatorStringIdentifier] = separator;
-  // for (auto& p : data.first) {
-  //  jsonObj[p.first] = p.second;
-  //}
-  // for (auto& p : data.second) {
-  //  jsonObj[p.first] = p.second;
-  //}
-  return jsonObj;
+  for (auto i : data.first) {
+    json[i.first] = i.second;
+  }
+  for (auto i : data.second) {
+    json[i.first] = i.second;
+  }
+  json[_separatorStringIdentifier] = separator;
+  return json;
 }
 
-nlohmann::json Memory::serializeJSON(nlohmann::json&& jsonObj,
+nlohmann::json Memory::serializeJSON(nlohmann::json&& json,
                                      char separator,
                                      std::size_t lineLength) {
-  return serializeJSON(jsonObj, separator, lineLength);
+  return serializeJSON(json, separator, lineLength);
 }
 
 namespace {
@@ -218,21 +199,19 @@ MemoryValue deserializeLine(const std::string& line,
 }
 }
 
-void Memory::deserializeJSON(const nlohmann::json& jsonObj) {
+void Memory::deserializeJSON(const nlohmann::json& json) {
   assert::that(_byteCount ==
-               jsonObj[_byteCountStringIdentifier].get<std::size_t>());
-  assert::that(_byteSize ==
-               jsonObj[_byteSizeStringIdentifier].get<std::size_t>());
-  std::size_t lineLength =
-      jsonObj[_lineLengthStringIdentifier].get<std::size_t>();
+               json[_byteCountStringIdentifier].get<std::size_t>());
+  assert::that(_byteSize == json[_byteSizeStringIdentifier].get<std::size_t>());
+  std::size_t lineLength = json[_lineLengthStringIdentifier].get<std::size_t>();
   const std::size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
   const MemoryValue empty{_byteSize * lineLength};
-  const char separator = jsonObj[_separatorStringIdentifier].get<char>();
+  const char separator = json[_separatorStringIdentifier].get<char>();
   for (std::size_t i = 0; i < lineCount; ++i) {
     std::stringstream name("line");
     name << (i * lineLength);
-    auto lineIterator = jsonObj.find(name.str());
-    if (lineIterator != jsonObj.end()) {
+    auto lineIterator = json.find(name.str());
+    if (lineIterator != json.end()) {
       MemoryValue value =
           deserializeLine(*lineIterator, _byteSize, lineLength, separator);
       put(i * lineLength, value);

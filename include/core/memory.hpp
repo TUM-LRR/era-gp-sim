@@ -21,8 +21,8 @@
 
 #include <cstddef>
 #include <functional>
+#include <map>
 #include <string>
-#include <unordered_map>
 #include <utility>
 
 #include "core/memory-value.hpp"
@@ -121,24 +121,24 @@ class Memory {
   MemoryValue set(const std::size_t address, const MemoryValue &value);
 
   // std::vector<std::pair<std::string, std::string>>
-  std::pair<std::unordered_map<std::string, std::size_t>,
-            std::unordered_map<std::string, std::string>>
+  std::pair<std::map<std::string, std::size_t>,
+            std::map<std::string, std::string>>
   serializeRaw(char separator = standardSeparator, std::size_t lineLength = 64);
 
-  nlohmann::json &serializeJSON(nlohmann::json &jsonObj,
+  nlohmann::json &serializeJSON(nlohmann::json &json,
                                 char separator = standardSeparator,
                                 std::size_t lineLength = 64);
 
-  nlohmann::json serializeJSON(nlohmann::json &&jsonObj = nlohmann::json(),
+  nlohmann::json serializeJSON(nlohmann::json &&json = nlohmann::json(),
                                char separator = standardSeparator,
                                std::size_t lineLength = 64);
 
-  void deserializeJSON(const nlohmann::json &jsonObj);
+  void deserializeJSON(const nlohmann::json &json);
 
-  bool operator==(const Memory& other) const;
+  bool operator==(const Memory &other) const;
 
  private:
-  static constexpr char standardSeparator = ';';
+  static constexpr char standardSeparator = ',';
   static const std::string _byteCountStringIdentifier;
   static const std::string _byteSizeStringIdentifier;
   static const std::string _lineLengthStringIdentifier;

@@ -130,7 +130,7 @@ TEST(registerSet, aliasRwTransitive) {
   }
 }
 
-TEST(register_set, update_test) {
+TEST(registerSet, updateTest) {
   const std::string parentA="I_AM_YOUR_FATHER";
   const std::string parentB="I_AM_SAD";
   const std::string childA="I_AM_THE_CHOSEN_ONE";

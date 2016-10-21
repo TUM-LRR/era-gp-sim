@@ -26,13 +26,14 @@
 #include "gtest/gtest.h"
 #include "core/memory-value.hpp"
 #include "core/memory.hpp"
+#include "core/conversions.hpp"
 // clang-format on
 
 namespace {
 constexpr std::size_t scale = 10;
 }
 
-TEST(memory, r_w) {
+TEST(memory, readWrite) {
   constexpr std::size_t b = 256;  // byteSize
   constexpr std::size_t c = 256;  // byteCount
   constexpr std::size_t t = scale;// testAmount
@@ -63,4 +64,15 @@ TEST(memory, r_w) {
     }
     byteCount += ++inc;
   }
+}
+
+TEST(memory, serialization) {
+  Memory instance0{64, 8};
+  // instance0.put(4,
+  //               conversions::convert(
+  //                   0xFF, conversions::standardConversions::nonsigned, 8));
+  nlohmann::json json{};
+  instance0.serializeJSON(json);
+  Memory instance1{json};
+  ASSERT_EQ(instance0, instance1);
 }
