@@ -5,6 +5,7 @@
 set(TEST_ARCH_COMMON_SOURCES
   arch-common-tests.cpp
   arch-common-brewery-tests.cpp
+  unit-information-test.cpp
 )
 
 ########################################
