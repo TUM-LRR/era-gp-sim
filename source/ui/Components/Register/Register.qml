@@ -31,15 +31,34 @@ Item {
                 border.width: 0
                 color: "#00000000"
             }
+            transientScrollBars: true
         }
         alternatingRowColors: false
         headerVisible: false
         selectionMode: SelectionMode.NoSelection
 
+        // Map for associating the currently selected data type format (e.g. bin, hex etc.)
+        // with the QModelIndex of the corresponding register. This is required in order to be
+        // able to restore the last currently selected format after a delegate item has been
+        // delete because it was scrolled out of the visible area. This property cannot be
+        // part of the model, as the model can be assigned to multiple TreeViews.
+        property variant dataTypeFormatCache: ({})
+
         // Uses the RegisterModel to populate the registers.
         model: registerModel
 
         itemDelegate: Item {
+            id: treeViewItemDelegate
+
+            // Delegates of some well-supported QML-views (such as ListView) have a property
+            // for accessing the view the delegate is attached to from a delegate's sub-component
+            // via ListView.view.
+            // However treeView does not have such a property. In order to still be able
+            // to access some of the TreeView's properties, we have to create a property
+            // inside the delegate itself, which can then be used from within the delegate's
+            // components.
+            property TreeView attachedTreeView: registerTreeView
+
             // Register Title
             Label {
                 id: registerTitleLabel
@@ -58,6 +77,7 @@ Item {
                 anchors.right: parent.right
                 width: 18
                 height: registerContentItem.height
+                property bool completed: false
                 model: ListModel {
                     id: dataTypeFormatModel
                     Component.onCompleted: {
@@ -72,6 +92,14 @@ Item {
                         });
                     }
                 }
+                Component.onCompleted: {
+                    // Try to restore a cached selected data type format.
+                    if (attachedTreeView.dataTypeFormatCache[styleData.index] !== undefined) {
+                        dataTypeFormatComboBox.currentIndex = attachedTreeView.dataTypeFormatCache[styleData.index];
+                    }
+                    dataTypeFormatComboBox.completed = true;
+                }
+
                 onCurrentIndexChanged: {
                     // Certain registers require a different content item than a text field.
                     // They are loaded when such a data format is selected.
@@ -82,6 +110,12 @@ Item {
                         registerContentItem.source = "FlagRegister.qml";
                     } else {
                         registerContentItem.source = "DefaultRegister.qml"
+                    }
+                    // Cache the new currently selected data type format, but only if the
+                    // index changed was not triggered upon the creation of the combo box
+                    // (defaults to 0 at creation time).
+                    if (completed) {
+                        attachedTreeView.dataTypeFormatCache[styleData.index] = currentIndex;
                     }
                 }
                 style: ComboBoxStyle {

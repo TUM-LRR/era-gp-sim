@@ -51,13 +51,18 @@ struct ArchCommonTestFixture : ::testing::Test {
     unitInformation.name("cpu").addRegister(registerInformation);
 
     instructionKey.addEntry("opcode", 6).addEntry("function", 9);
-    instructionInformation.mnemonic("add").key(instructionKey).format("R");
+    instructionInformation.mnemonic("add")
+        .key(instructionKey)
+        .format("R")
+        .length(32);
 
     // clang-format off
-    instructionSet.addInstructions(InstructionSet({
-        instructionInformation,
-        {"mov", InstructionKey({{"opcode", 2}}), "R"}
-    }));
+    auto mov = InstructionInformation("mov")
+      .key(InstructionKey({{"opcode", 2}}))
+      .format("R")
+      .length(32);
+
+    instructionSet.addInstruction(mov);
     // clang-format on
 
     baseExtensionInformation.name("rvi32")
@@ -66,14 +71,23 @@ struct ArchCommonTestFixture : ::testing::Test {
         .wordSize(32)
         .byteSize(8)
         .endianness(ArchitectureProperties::Endianness::MIXED)
-        .alignmentBehavior(ArchitectureProperties::AlignmentBehavior::STRICT);
+        .alignmentBehavior(
+            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 
     // clang-format off
-    specialExtensionInformation.name("rva32")
-      .addInstructions(InstructionSet({
-      {"lr", InstructionKey({{"opcode", 1}, {"function", 2}}), "R"},
-      {"sc", InstructionKey({{"opcode", 3}, {"function", 4}}), "R"}
-    }));
+    auto lr = InstructionInformation("lr")
+                .key(InstructionKey({{"opcode", 1}, {"function", 2}}))
+                .format("R")
+                .length(32);
+
+    auto sc = InstructionInformation("sc")
+                .key(InstructionKey({{"opcode", 3}, {"function", 4}}))
+                .format("R")
+                .length(32);
+
+    specialExtensionInformation
+      .name("rva32")
+      .addInstructions(InstructionSet({lr, sc}));
     // clang-format on
   }
 
@@ -205,9 +219,9 @@ TEST(ArchCommonTest, TestArchitectureFormula) {
 }
 
 TEST(ArchCommonTest, TestInstructionInformation) {
-  auto instruction = InstructionInformation().mnemonic("add").format("R");
+  auto instruction = InstructionInformation("add").format("R").length(69);
 
-  InstructionKey key({{"opcode", 6}, {"function", 9}});
+  InstructionKey key(InstructionKey({{"opcode", 6}, {"function", 9}}));
 
   EXPECT_FALSE(instruction.isValid());
   EXPECT_FALSE(instruction.hasKey());
@@ -218,10 +232,12 @@ TEST(ArchCommonTest, TestInstructionInformation) {
   EXPECT_TRUE(instruction.hasKey());
   EXPECT_TRUE(instruction.hasMnemonic());
   EXPECT_TRUE(instruction.hasFormat());
+  EXPECT_TRUE(instruction.hasLength());
 
   EXPECT_EQ(instruction.getKey(), key);
   EXPECT_EQ(instruction.getMnemonic(), "add");
   EXPECT_EQ(instruction.getFormat(), "R");
+  EXPECT_EQ(instruction.getLength(), 69);
 }
 
 TEST_F(ArchCommonTestFixture, TestInstructionSet) {
@@ -255,7 +271,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   extension.byteSize(8);
   extension.endianness(ArchitectureProperties::Endianness::MIXED);
   extension.alignmentBehavior(
-      ArchitectureProperties::AlignmentBehavior::STRICT);
+      ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 
   EXPECT_TRUE(extension.isValid());
   EXPECT_TRUE(extension.isComplete());
@@ -271,7 +287,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   EXPECT_EQ(extension.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(extension.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::STRICT);
+            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 }
 
 TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
@@ -290,7 +306,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
   EXPECT_EQ(extension.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(extension.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::STRICT);
+            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 
   // This should now include the new instructions
   instructionSet += specialExtensionInformation.getInstructions();
@@ -319,7 +335,7 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
   EXPECT_EQ(architecture.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::STRICT);
+            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 
   instructionSet += specialExtensionInformation.getInstructions();
   EXPECT_EQ(architecture.getInstructions(), instructionSet);

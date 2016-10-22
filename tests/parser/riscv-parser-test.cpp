@@ -20,6 +20,8 @@
 
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
+#include "core/memory-access.hpp"
+#include "core/project-module.hpp"
 #include "gtest/gtest.h"
 #include "parser/syntax-information.hpp"
 
@@ -43,12 +45,18 @@ static void printIfDefined(std::string str) {
 
 class RiscParserTest : public ::testing::Test {
  public:
+  ArchitectureFormula formula;
   Architecture arch;
+  ProjectModule projectModule;
+  MemoryAccess memoryAccess;
   RiscvParser parser;
 
   RiscParserTest()
-  : arch{Architecture::Brew(ArchitectureFormula{"riscv", {"rv32i"}})}
-  , parser{arch} {
+  : formula{ArchitectureFormula{"riscv", {"rv32i"}}}
+  , arch{Architecture::Brew(formula)}
+  , projectModule{formula, 4096, "riscv"}
+  , memoryAccess(projectModule.getMemoryAccess())
+  , parser{arch, memoryAccess} {
   }
 };
 

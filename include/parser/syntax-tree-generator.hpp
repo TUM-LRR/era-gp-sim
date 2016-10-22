@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_PARSER_SYNTAX_TREE_GENERATOR_HPP_
 #define ERAGPSIM_PARSER_SYNTAX_TREE_GENERATOR_HPP_
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -27,6 +28,7 @@
 
 class AbstractSyntaxTreeNode;
 class CompileState;
+class MemoryAccess;
 
 /**
  * \brief A connector class for turning arguments and commands into syntax tree
@@ -34,14 +36,20 @@ class CompileState;
  */
 class SyntaxTreeGenerator {
  public:
+  using ArgumentNodeGenerator =
+      std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
+          const std::string&, const NodeFactoryCollection&, CompileState&)>;
+
   /**
    * \brief Creates a new syntax tree generator with the given node factory
    * collection.
    * \param nodeFactories The node factory collection to instantiate the nodes
    * from.
+   * \param argumentGenerator The generator function for operands.
    */
-  SyntaxTreeGenerator(const NodeFactoryCollection& nodeFactories)
-  : _nodeFactories(nodeFactories) {
+  SyntaxTreeGenerator(const NodeFactoryCollection& nodeFactories,
+                      const ArgumentNodeGenerator& argumentGenerator)
+  : _nodeFactories(nodeFactories), _argumentGenerator(argumentGenerator) {
   }
 
   /**
@@ -67,13 +75,16 @@ class SyntaxTreeGenerator {
       const std::string& command_name,
       std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
       std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
-      CompileState& state) const;
+      CompileState& state,
+      MemoryAccess& memoryAccess) const;
 
  private:
   /**
    * \brief The internal storage of the node factory collection.
    */
   NodeFactoryCollection _nodeFactories;
+
+  ArgumentNodeGenerator _argumentGenerator;
 };
 
 #endif /* ERAGPSIM_PARSER_SYNTAX_TREE_GENERATOR_HPP_ */

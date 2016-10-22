@@ -46,7 +46,8 @@ class MacroEndDirective : public IntermediateDirective {
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
                        const SyntaxTreeGenerator& generator,
-                       CompileState& state);
+                       CompileState& state,
+                       MemoryAccess& memoryAccess);
 
   /**
    * \brief Specifies if the this operation should be processed. In this case:

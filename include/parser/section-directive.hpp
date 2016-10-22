@@ -56,7 +56,8 @@ class SectionDirective : public IntermediateDirective {
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
                        const SyntaxTreeGenerator& generator,
-                       CompileState& state);
+                       CompileState& state,
+                       MemoryAccess& memoryAccess);
 
  private:
   /**

@@ -64,10 +64,23 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \return The value fo the child.
    */
   template <typename T>
-  T _child(MemoryAccess& memoryAccess, size_t index) const {
+  T _getChildValue(MemoryAccess& memoryAccess, size_t index) const {
     assert(index < _children.size());
     auto memory = _children[index]->getValue(memoryAccess);
     return riscv::convert<T>(memory);
+  }
+
+  /**
+   * Increments the program counter by
+   * `_information.getLength() /  BITS_PER_BYTE` and returns the new value.
+   *
+   * \tparam WordSize The unsigned word size integral of the architecture
+   */
+  template <typename WordSize>
+  MemoryValue _incrementProgramCounter(MemoryAccess& memoryAccess) const {
+    auto current = riscv::loadRegister<WordSize>(memoryAccess, "pc");
+    current += (_information.getLength() / riscv::BITS_PER_BYTE);
+    return riscv::convert<WordSize>(current);
   }
 
   // TODO: Leaving it like so to avoid conflicts for now
@@ -82,7 +95,6 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    * \return True if the children match the given types, else false.
    */
   bool _requireChildren(Type type, size_t startIndex, size_t amount) const;
-
 
   /**
    * Checks if the node's children are of the given types.

@@ -48,4 +48,7 @@ TextField {
     onEditingFinished: {
         registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentIndex);
     }
+    onAccepted: {
+        registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentIndex);
+    }
 }

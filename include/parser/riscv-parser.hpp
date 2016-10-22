@@ -22,10 +22,13 @@
 #include <string>
 #include <vector>
 
+#include "arch/common/architecture.hpp"
 #include "arch/common/node-factory-collection.hpp"
-
+#include "core/memory-access.hpp"
 #include "parser/compile-state.hpp"
 #include "parser/parser.hpp"
+
+#include "parser/syntax-tree-generator.hpp"
 
 /**
  * Risc-V Parser Class
@@ -36,12 +39,16 @@ class RiscvParser : public Parser {
  public:
   class RiscvRegex;
 
-  RiscvParser(const Architecture &architecture);
+  RiscvParser(const Architecture &architecture,
+              const MemoryAccess &memoryAccess);
 
   virtual FinalRepresentation
   parse(const std::string &text, ParserMode parserMode);
 
   virtual const SyntaxInformation getSyntaxInformation();
+
+  static const SyntaxTreeGenerator::ArgumentNodeGenerator
+      argumentGeneratorFunction;
 
  protected:
   /**
@@ -57,7 +64,12 @@ class RiscvParser : public Parser {
   /**
    * Reference to the Architecture this parser compiles for
    */
-  const Architecture &_architecture;
+  Architecture _architecture;
+
+  /**
+   * A MemoryAccess for the `validate(_memoryAccess)` call.
+   */
+  MemoryAccess _memoryAccess;
 };
 
 #endif// ERAGPSIM_PARSER_RISCV_PARSER_HPP_

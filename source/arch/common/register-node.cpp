@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 #include "arch/common/register-node.hpp"
+#include <sstream>
 
 #include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
@@ -26,10 +27,10 @@ RegisterNode::RegisterNode(const std::string& identifier)
 }
 
 MemoryValue RegisterNode::getValue(MemoryAccess& memoryAccess) const {
-  return memoryAccess.getRegisterValue(_identifier);
+  return memoryAccess.getRegisterValue(_identifier).get();
 }
 
-ValidationResult RegisterNode::validate() const {
+ValidationResult RegisterNode::validate(MemoryAccess& memoryAccess) const {
   // Registers can't have any children
   if (AbstractSyntaxTreeNode::_children.size() == 0) {
     return ValidationResult::success();
@@ -44,29 +45,22 @@ const std::string& RegisterNode::getIdentifier() const {
 }
 
 MemoryValue RegisterNode::assemble() const {
-  MemoryValue memValue{8};
+  MemoryValue memValue{5};
 
-  std::string::size_type sz;
+  std::size_t index;
 
-  int index;
-
-  try {
-    index = std::stoi(_identifier, &sz);
-  } catch (const std::exception&) {
-    index = 0;
-  }
-
-  const int regSize = 8;
-
+  // identifier is parsed into an integer
+  std::istringstream(_identifier) >> index;
+  // index is converted into a 5 bit memory value
+  // registers in riscv take up 5 bits in their assembled form
   for (int i = 0; i < 5; i++) {
     if (index % 2 == 0)
-      memValue.put(regSize - i - 1, false);
+      memValue.put(i, false);
     else
-      memValue.put(regSize - i - 1, true);
+      memValue.put(i, true);
 
     index /= 2;
   }
 
   return memValue;
 }
-

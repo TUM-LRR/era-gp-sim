@@ -31,10 +31,17 @@
 struct ArchDeserializationTestFixture : public ::testing::Test {
   ArchDeserializationTestFixture() {
     // clang-format off
-    instructionSet.addInstructions(InstructionSet({
-      {"add", InstructionKey({{"opcode", 6}, {"function", 3}}), "R"},
-      {"sub", InstructionKey({{"opcode", 9}, {"function", 3}}), "R"}
-    }));
+    auto add = InstructionInformation("add")
+                .key(InstructionKey({{"opcode", 6}, {"function", 3}}))
+                .format("R")
+                .length(32);
+
+    auto sub = InstructionInformation("sub")
+                .key(InstructionKey({{"opcode", 9}, {"function", 3}}))
+                .format("R")
+                .length(32);
+
+    instructionSet.addInstructions(InstructionSet({add, sub}));
     // clang-format on
 
     // clang-format off
@@ -74,14 +81,14 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::STRICT);
+            Architecture::AlignmentBehavior::ALIGN_STRICT);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
 
   auto expected = architecture.getUnits();
-  for (auto& unit : units) {
+  for (const auto& unit : units) {
     auto iterator = expected.find(unit);
     ASSERT_NE(iterator, expected.end());
     EXPECT_EQ(*iterator, unit);
@@ -97,16 +104,16 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::RELAXED);
+            Architecture::AlignmentBehavior::ALIGN_RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
 
   // clang-format off
-  instructionSet.addInstruction({"sll", InstructionKey({
-      {"opcode", 6},
-      {"function", 6},
-      {"width", 6}
-  }), "R"});
+  auto sll = InstructionInformation("sll")
+    .key(InstructionKey({{"opcode", 6}, {"function", 6}, {"width", 6}}))
+    .format("R")
+    .length(32);
+  instructionSet.addInstruction(sll);
   // clang-format on
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
@@ -128,16 +135,16 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::RELAXED);
+            Architecture::AlignmentBehavior::ALIGN_RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
 
   // clang-format off
-  instructionSet.addInstruction({"sll", InstructionKey({
-      {"opcode", 6},
-      {"function", 6},
-      {"width", 6}
-  }), "R"});
+  auto sll = InstructionInformation("sll")
+    .key(InstructionKey({{"opcode", 6}, {"function", 6}, {"width", 6}}))
+    .format("R")
+    .length(32);
+  instructionSet.addInstruction(sll);
   // clang-format on
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);

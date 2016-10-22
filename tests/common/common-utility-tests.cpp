@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "common/utility.hpp"
+#include "core/conversions.hpp"
 
 TEST(UtilityTests, TestFileIO) {
   static const std::string testString = R"(
@@ -67,22 +68,36 @@ TEST(UtilityTest, TestStringTransforms) {
 }
 
 TEST(UtilityTest, TestBitChecks) {
-  using limits = std::numeric_limits<std::int32_t>;
+  // clang-format off
+  auto convert = [](int value) {
+    return conversions::convert(
+        value,
+        std::numeric_limits<int>::digits + 1,
+        8,
+        ArchitectureProperties::Endianness::LITTLE,
+        ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT
+    );
+  };
+  // clang-format on
 
-  EXPECT_FALSE(Utility::fitsIntoBits(0xFF, 0));
-  EXPECT_FALSE(Utility::fitsIntoBits(0xFF, 1));
-  EXPECT_FALSE(Utility::fitsIntoBits(-0xFF, 1));
-  EXPECT_FALSE(Utility::fitsIntoBits(-1, 0));
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(0xFF), 0));
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(0xFF), 1));
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(-0xFF), 1));
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(-1), 0));
 
-  std::int64_t max = limits::max();
-  std::int64_t min = limits::min();
-  EXPECT_FALSE(Utility::fitsIntoBits(max + 1, limits::digits));
-  EXPECT_FALSE(Utility::fitsIntoBits(min - 1, limits::digits));
+  const std::size_t bits = 12;
+  const int max = 2047;
+  const int min = -2048;
 
-  EXPECT_TRUE(Utility::fitsIntoBits(0xFFF, 12));
-  EXPECT_TRUE(Utility::fitsIntoBits(0xFFF, 13));
-  EXPECT_TRUE(Utility::fitsIntoBits(-0xFFF, 12));
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(max + 1), bits));
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(min - 1), bits));
 
-  EXPECT_TRUE(Utility::fitsIntoBits(max, limits::digits));
-  EXPECT_TRUE(Utility::fitsIntoBits(min, limits::digits));
+  EXPECT_TRUE(Utility::fitsIntoBits(convert(max), bits));
+  EXPECT_TRUE(Utility::fitsIntoBits(convert(min), bits));
+
+  EXPECT_TRUE(Utility::fitsIntoBits(convert(0xFFF), bits + 1));
+  EXPECT_TRUE(Utility::fitsIntoBits(convert(0xFFF), bits + 2));
+
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(-0xFFF), bits));
+  EXPECT_TRUE(Utility::fitsIntoBits(convert(-0xFFF), bits + 1));
 }

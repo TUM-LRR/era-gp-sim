@@ -44,10 +44,13 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   /**
    * \return success, if there are no children.
    */
-  ValidationResult validate() const override;
+  ValidationResult validate(MemoryAccess& memoryAccess) const override;
 
   const std::string& getIdentifier() const override;
 
+  /**
+   * \return Assembled register identifier
+   */
   MemoryValue assemble() const override;
 
  private:

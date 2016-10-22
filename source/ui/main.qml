@@ -34,6 +34,7 @@ ApplicationWindow {
     }
     toolBar: ToolbarMainWindow{
         id: toolbar
+        tabView: tabView
     }
 
     TabView{
@@ -51,7 +52,9 @@ ApplicationWindow {
     }
 
     function closeProject() {
-        tabView.removeTab(tabView.currentIndex);
+        var currentTabIndex = tabView.currentIndex;
+        tabView.removeTab(currentTabIndex);
+        ui.removeProject(currentTabIndex);
     }
 
     /*Component for a project, instantiated by the TabView*/
@@ -67,7 +70,8 @@ ApplicationWindow {
                 onButtonClicked: {
                     enabled = false;
                     visible = false;
-                    ui.addProject(placeholderItem, projectComponent);
+                    ui.addProject(placeholderItem, projectComponent,
+                      memorySize, architecture, baseExtensions, extensions, parser);
                 }
             }
         }
