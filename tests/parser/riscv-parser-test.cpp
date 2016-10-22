@@ -100,24 +100,69 @@ TEST_F(RiscParserTest, MultipleDirectives) {
   FinalRepresentation res;
   res = parser.parse(
       ".equ ZAHL, 10\n"
-      ".macro add3, x=0\n"
+      ".macro add1, x=0\n"
       "addi x0, x0, \\x\n"
       "addi x0, x0, \\x\n"
       "addi x0, x0, \\x\n"
       ".endm\n"
-      ".macro add5, x=0\n"
-      "addi x0, x0, \\x\n"
+      ".macro add2, x=0\n"
       "addi x0, x0, \\x\n"
       "addi x0, x0, \\x\n"
       "addi x0, x0, \\x\n"
       "addi x0, x0, \\x\n"
       ".endm\n"
-      "add3\n"
-      "add5 5 + 7 << 2\n"
-      "add5 ZAHL\n",
+      ".macro add2, x, y\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\y\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\y\n"
+      "addi x0, x0, \\x\n"
+      ".endm\n"
+      "add1\n"
+      "add2 5 + 7 << 2\n"
+      "add2 ZAHL, 3*9\n",
       ParserMode::COMPILE);
   EXPECT_EQ(res.errorList.size(), 0);
-  EXPECT_EQ(res.commandList.size(), 13);
+  EXPECT_EQ(res.commandList.size(), 3 + 4 + 5);
+}
+
+TEST_F(RiscParserTest, WrongMacros) {
+  FinalRepresentation res;
+  res = parser.parse(
+      ".equ ZAHL, 10\n"
+      ".macro add1, x=0\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
+      ".endm\n"
+      ".macro add1, x\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
+      ".endm\n"
+      ".macro add2, x=0\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\x\n"
+      ".endm\n"
+      ".macro add2, x, y=0\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\y\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\y\n"
+      "addi x0, x0, \\x\n"
+      ".endm\n"
+      ".macro add3, x=0, y\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\y\n"
+      "addi x0, x0, \\x\n"
+      "addi x0, x0, \\y\n"
+      "addi x0, x0, \\x\n"
+      ".endm\n",
+      ParserMode::COMPILE);
+  EXPECT_EQ(res.errorList.size(), 3);
+  EXPECT_EQ(res.commandList.size(), 0);
 }
 
 TEST_F(RiscParserTest, MultipleInstructions) {

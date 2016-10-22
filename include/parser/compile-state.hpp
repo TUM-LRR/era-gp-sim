@@ -24,6 +24,7 @@
 
 #include "parser/code-position.hpp"
 #include "parser/compile-error.hpp"
+#include "parser/macro-directive-table.hpp"
 #include "parser/parser-mode.hpp"
 
 class MacroDirective;
@@ -57,7 +58,7 @@ struct CompileState {
   /**
    * Saves registered macros.
    */
-  std::unordered_map<std::string, MacroDirective&> macros;
+  MacroDirectiveTable macros;
 
   /**
    * \brief Adds an error to the state-internal error list at the current

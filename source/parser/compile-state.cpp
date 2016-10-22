@@ -21,7 +21,7 @@
 #include "parser/macro-directive.hpp"
 
 void CompileState::registerMacro(MacroDirective& macro) {
-  bool success = macros.insert({macro.macroName(), macro}).second;
+  bool success = macros.insert(macro);
   if (!success) {
     addError("Macro \"" + macro.macroName() + "\" already exists!");
   }

@@ -52,7 +52,7 @@ MacroDirective::MacroParameters::MacroParameters(
 }
 
 void MacroDirective::MacroParameters::validate(CompileState& state) {
-  bool containedDefault;
+  bool containedDefault{false};
   for (auto param : _params) {
     // Check for empty names or default values
     if (param.first.size() == 0 ||

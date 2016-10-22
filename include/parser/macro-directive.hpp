@@ -95,16 +95,16 @@ class MacroDirective : public IntermediateDirective {
    * \brief Returns the macro name.
    * \return The macro name.
    */
-  const std::string& macroName() {
+  const std::string& macroName() const {
     return _macroName;
   }
 
-  size_t getOperationCount() {
+  size_t getOperationCount() const {
     return _operations.size();
   }
 
-  IntermediateOperationPointer& getOperation(size_t index) {
-    return _operations[index];
+  std::pair<size_t, size_t> getParameterCount() const {
+    return _macroParameters.getParameterCount();
   }
 
   template <typename T, typename... U>
@@ -140,6 +140,10 @@ class MacroDirective : public IntermediateDirective {
 
     void insertParameters(IntermediateOperationPointer& operation,
                           const std::vector<std::string>& values);
+
+    std::pair<size_t, size_t> getParameterCount() const {
+      return {_minParams, _params.size()};
+    }
 
    private:
     std::vector<std::pair<std::string, Optional<std::string>>> _params;

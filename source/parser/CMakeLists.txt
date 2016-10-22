@@ -23,6 +23,7 @@ set(PARSER_SOURCES
   compile-state.cpp
   final-representation.cpp
   memory-allocator.cpp
+  macro-directive-table.cpp
 )
 
 ########################################

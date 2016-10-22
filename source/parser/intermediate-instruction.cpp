@@ -29,7 +29,7 @@ void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       CompileState& state,
                                       MemoryAccess& memoryAccess) {
   // First we need to check if the instruction is a macro.
-  auto macro = state.macros.find(_name);
+  auto macro = state.macros.find(_name, _sources.size() + _targets.size());
   // If its a macro, execute every sub-instruction.
   if (macro != state.macros.end()) {
     for (int i = 0; i < macro->second.getOperationCount(); i++) {
@@ -114,7 +114,7 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
   }
 
   // Check if the instruction is a macro.
-  auto macro = state.macros.find(_name);
+  auto macro = state.macros.find(_name, _sources.size() + _targets.size());
   // If its a macro, allocate every sub-instruction.
   if (macro != state.macros.end()) {
     for (int i = 0; i < macro->second.getOperationCount(); i++) {
