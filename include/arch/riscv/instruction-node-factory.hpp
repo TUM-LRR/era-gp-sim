@@ -42,7 +42,7 @@ namespace riscv {
  */
 class InstructionNodeFactory : public AbstractInstructionNodeFactory {
  public:
-  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using Node = AbstractInstructionNodeFactory::Node;
 
   /**
    * \brief InstructionNodeFactory
@@ -65,9 +65,14 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   Node createInstructionNode(const std::string &mnemonic) const override;
 
  private:
-
   using Factory = std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
       const InstructionInformation &)>;
+
+  /**
+   * \brief Sets up simulator instructions (instructions that do not belong to
+   * the loaded architecture but still exist e.g for debug or educational purposes)
+   */
+  void _setupSimulatorInstructions(const Architecture& architecture);
 
   /**
    * \brief Sets up non-integer instructions.

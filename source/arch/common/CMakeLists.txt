@@ -22,6 +22,9 @@ set(ARCH_COMMON_SOURCES
   unit-information.cpp
   validation-result.cpp
   constituent-information.cpp
+  abstract-instruction-node.cpp
+  sleep-instruction-node.cpp
+  crash-instruction-node.cpp
 )
 
 ########################################

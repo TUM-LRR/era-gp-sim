@@ -18,6 +18,8 @@
 #include <string>
 
 #include "arch/common/architecture.hpp"
+#include "arch/common/crash-instruction-node.hpp"
+#include "arch/common/sleep-instruction-node.hpp"
 #include "arch/riscv/architecture-only-instructions.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/instruction-node.hpp"
@@ -168,8 +170,9 @@ void _setupExtensionM(FactoryMap& _factories) {
   Dfacade.template add<RemainderInstruction>("remu", false, false);
 
   // this is ugly
-  if (sizeof(UnsignedWord)*CHAR_BIT == 64) {
-    Mfacade.template add<MultiplicationInstruction>("mulw", Part::LOW, Type::SIGNED, true);
+  if (sizeof(UnsignedWord) * CHAR_BIT == 64) {
+    Mfacade.template add<MultiplicationInstruction>("mulw", Part::LOW,
+                                                    Type::SIGNED, true);
     Dfacade.template add<DivisionInstruction>("divw", true, true);
     Dfacade.template add<DivisionInstruction>("divuw", false, true);
     Dfacade.template add<RemainderInstruction>("remw", true, true);
@@ -184,6 +187,35 @@ void _addExtensionMIfPresent(const InstructionSet& instructionSet,
     _setupExtensionM<UnsignedWord, SignedWord>(_factories);
   }
 }
+
+/**
+ * Struct that returns the incremented program counter
+ */
+template <typename WordSize>
+struct ProgramCounterIncrement {
+  MemoryValue operator()(MemoryAccess& memoryAccess) const {
+    constexpr auto INSTRUCTION_SIZE = 32;
+    auto current = riscv::loadRegister<WordSize>(memoryAccess, "pc");
+    current += (INSTRUCTION_SIZE / riscv::BITS_PER_BYTE);
+    return riscv::convert<WordSize>(current);
+  }
+};
+
+/**
+ * Struct for a dynamic assembly of the SimulatorSleepInstructionNode depending
+ * on the operand
+ */
+struct SleepInstructionAssembler {
+  MemoryValue operator()(const MemoryValue& sleepTime) const {
+    constexpr uint32_t OPCODE = 0x51ee7 << 12;
+    MemoryValue assembled = conversions::convert(OPCODE, 32);
+    auto index = 0;
+    for (auto it = sleepTime.begin(); it != sleepTime.end(); ++it) {
+      assembled.put(index, *it);
+    }
+    return assembled;
+  }
+};
 }
 
 InstructionNodeFactory::InstructionNodeFactory(
@@ -217,6 +249,25 @@ InstructionNodeFactory::InstructionNodeFactory(
   }
 
   _setupOtherInstructions();
+  _setupSimulatorInstructions(architecture);
+}
+
+void InstructionNodeFactory::_setupSimulatorInstructions(
+    const Architecture& architecture) {
+  using PCIncrementer = SimulatorSleepInstructionNode::PCIncrementer;
+
+  if (architecture.getWordSize() == 32) {
+    _factories.add<SimulatorSleepInstructionNode>(
+        "simusleep", ProgramCounterIncrement<riscv::unsigned32_t>{},
+        SleepInstructionAssembler{});
+  } else if (architecture.getWordSize() == 64) {
+    _factories.add<SimulatorSleepInstructionNode>(
+        "simusleep", ProgramCounterIncrement<riscv::unsigned64_t>{},
+        SleepInstructionAssembler{});
+  }
+
+  //TODO think of a nice assembled format for simucrash
+  _factories.add<SimulatorCrashInstructionNode>("simucrash", MemoryValue(32));
 }
 
 void InstructionNodeFactory::_setupOtherInstructions() {}
@@ -236,21 +287,27 @@ void InstructionNodeFactory::_setup64BitOnlyInstructions() {
   facade.template add<ShiftArithmeticRightOnlyInstructionNode>("sraw", false);
   facade.template add<ShiftArithmeticRightOnlyInstructionNode>("sraiw", true);
 
-  //special load/store instructions
-  using LoadType = typename LoadInstructionNode<riscv::unsigned64_t, riscv::signed64_t>::Type;
-  using StoreType = typename StoreInstructionNode<riscv::unsigned64_t, riscv::signed64_t>::Type;
-  auto loadStoreFacade = _factories.typeFacade<riscv::unsigned64_t, riscv::signed64_t>();
-  loadStoreFacade.template add<LoadInstructionNode>("ld", LoadType::DOUBLE_WORD);
-  loadStoreFacade.template add<LoadInstructionNode>("lwu", LoadType::WORD_UNSIGNED);
-  loadStoreFacade.template add<StoreInstructionNode>("sd", StoreType::DOUBLE_WORD);
+  // special load/store instructions
+  using LoadType = typename LoadInstructionNode<riscv::unsigned64_t,
+                                                riscv::signed64_t>::Type;
+  using StoreType = typename StoreInstructionNode<riscv::unsigned64_t,
+                                                  riscv::signed64_t>::Type;
+  auto loadStoreFacade =
+      _factories.typeFacade<riscv::unsigned64_t, riscv::signed64_t>();
+  loadStoreFacade.template add<LoadInstructionNode>("ld",
+                                                    LoadType::DOUBLE_WORD);
+  loadStoreFacade.template add<LoadInstructionNode>("lwu",
+                                                    LoadType::WORD_UNSIGNED);
+  loadStoreFacade.template add<StoreInstructionNode>("sd",
+                                                     StoreType::DOUBLE_WORD);
 }
 
 InstructionNodeFactory::Node InstructionNodeFactory::createInstructionNode(
     const std::string& mnemonic) const {
   auto lower = Utility::toLower(mnemonic);
 
-  if(!_instructionSet.hasInstruction(lower)) {
-      return nullptr;
+  if (!_instructionSet.hasInstruction(lower)) {
+    return nullptr;
   }
   auto information = _instructionSet.getInstruction(lower);
 
