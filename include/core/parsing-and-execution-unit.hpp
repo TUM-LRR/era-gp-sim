@@ -26,6 +26,7 @@
 #include <unordered_set>
 
 #include "arch/common/register-information.hpp"
+#include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
 #include "core/servant.hpp"
 #include "parser/final-representation.hpp"
@@ -66,10 +67,8 @@ class ParsingAndExecutionUnit : public Servant {
 
   /**
    * Execute the next line of the assembler program
-   *
-   * \return index of next instruction. Used internally.
    */
-  size_t executeNextLine();
+  void executeNextLine();
 
   /**
    * Execute the assembler program to the next breakpoint
@@ -146,7 +145,8 @@ class ParsingAndExecutionUnit : public Servant {
    *
    * \param callback
    */
-  void setThrowRuntimeErrorCallback(Callback<const std::string &> callback);
+  void
+  setThrowRuntimeErrorCallback(Callback<const ValidationResult &> callback);
 
   /**
    * Set the callback to set the macro list in the ui.
@@ -170,9 +170,23 @@ class ParsingAndExecutionUnit : public Servant {
    * Calculates the index of the next node according to the program counter.
    *
    * \return index of the next node.
-   *
    */
   size_t _findNextNode();
+
+  /**
+   * Executes a syntax tree node.
+   *
+   * \param nodeIndex the index of the syntax tree node
+   */
+  bool _executeNode(size_t nodeIndex);
+
+  /**
+   * Finds the next instruction and updates the line number in the ui.
+   *
+   * \param currentNode The index of the last executed node.
+   * \return the index of the next node
+   */
+  size_t _updateLineNumber(size_t currentNode);
 
   /** A unique_ptr to the parser. */
   std::unique_ptr<Parser> _parser;
@@ -209,7 +223,7 @@ class ParsingAndExecutionUnit : public Servant {
   ListCallback<CompileError> _setErrorList;
 
   /** Callback to throw a runtime error. */
-  Callback<std::string> _throwRuntimeError;
+  Callback<const ValidationResult &> _throwRuntimeError;
 
   /** Callback to set the macro list in the ui.*/
   ListCallback<MacroInformation> _setMacroList;

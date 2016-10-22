@@ -241,7 +241,10 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
                                   currentCommand.node->getValue(memoryAccess));
     nextNode = findNextNode(
         memoryAccess, addressCommandMapValidator, finalRepresentationValidator);
-    commandInterface.executeNextLine().get();
+    commandInterface.executeNextLine();
+    // sync with other thread
+    commandInterface.setBreakpoint(0).get();
+
     if (nextNode < finalRepresentationValidator.commandList.size()) {
       lastNode = nextNode;
       FinalCommand& nextCommand =
@@ -262,7 +265,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
   commandInterface.setBreakpoint(0).get();
   commandInterface.deleteBreakpoint(0);
 
-  EXPECT_EQ(4, proxy.getLine().get());
+  EXPECT_EQ(5, proxy.getLine().get());
 
   commandInterface.setExecutionPoint(1);
 
@@ -275,7 +278,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
   commandInterface.executeToBreakpoint();
   commandInterface.setBreakpoint(3).get();
 
-  EXPECT_EQ(4, proxy.getLine().get());
+  EXPECT_EQ(5, proxy.getLine().get());
 }
 
 TEST_F(ProjectTestFixture, ParserInterfaceTest) {
