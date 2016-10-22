@@ -51,8 +51,9 @@ operator[](const std::string& mnemonic) const {
 
 const InstructionInformation&
 InstructionSet::getInstruction(const std::string& mnemonic) const {
-  assert(_container.count(mnemonic));
-  return _container.find(mnemonic)->second;
+  auto lower = Utility::toLower(mnemonic);
+  assert(_container.count(lower));
+  return _container.find(lower)->second;
 }
 
 const InstructionKey&
@@ -62,7 +63,8 @@ InstructionSet::getInstructionKey(const std::string& mnemonic) const {
 
 
 bool InstructionSet::hasInstruction(const std::string& mnemonic) const {
-  return _container.count(mnemonic);
+    auto lower = Utility::toLower(mnemonic);
+  return _container.count(lower);
 }
 
 InstructionSet&
@@ -81,7 +83,7 @@ InstructionSet& InstructionSet::addInstructions(const InstructionSet& other) {
 
 InstructionSet&
 InstructionSet::addInstruction(const InstructionInformation& instruction) {
-  _container.emplace(instruction.getMnemonic(), instruction);
+  _container.emplace(Utility::toLower(instruction.getMnemonic()), instruction);
 
   return *this;
 }
