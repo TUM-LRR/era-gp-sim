@@ -67,9 +67,12 @@ class ParsingAndExecutionUnit : public Servant {
   /**
    * Execute the next line of the assembler program
    *
+   * \param setStopFlag Resets stop flag when this is true, true is default. The
+   * stop flag should be reset to enable execution and proper sleeping if a stop
+   * command was send before.
    * \return index of next instruction. Used internally.
    */
-  size_t executeNextLine();
+  size_t executeNextLine(bool resetStopFlag = true);
 
   /**
    * Execute the assembler program to the next breakpoint

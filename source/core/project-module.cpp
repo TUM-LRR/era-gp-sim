@@ -24,13 +24,13 @@
 ProjectModule::ProjectModule(const ArchitectureFormula& architectureFormula,
                              std::size_t memorySize,
                              const std::string& parserName)
-: _schedulerProject(std::make_shared<Scheduler>())
+: _stopFlag(false)
+, _schedulerProject(std::make_shared<Scheduler>())
 , _schedulerParsingAndExecution(std::make_shared<Scheduler>())
 , _proxyProject(std::move(_schedulerProject), architectureFormula, memorySize)
-, _memoryAccess(_proxyProject)
+, _memoryAccess(_proxyProject, &_stopFlag)
 , _memoryManager(_proxyProject)
 , _architectureAccess(_proxyProject)
-, _stopFlag(false)
 , _proxyParsingAndExecution(std::move(_schedulerParsingAndExecution),
                             _memoryAccess,
                             _architectureAccess.getArchitecture().get(),

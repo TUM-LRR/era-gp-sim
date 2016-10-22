@@ -11,6 +11,7 @@ set(CORE_SOURCES
   parsing-and-execution-unit.cpp
   memory.cpp
   scheduler.cpp
+  memory-access.cpp
 )
 
 ########################################

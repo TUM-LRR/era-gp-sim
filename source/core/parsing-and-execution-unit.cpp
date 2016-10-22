@@ -65,11 +65,14 @@ void ParsingAndExecutionUnit::execute() {
   size_t nextNode = _findNextNode();
   while (_stopFlag.test_and_set() &&
          nextNode < _finalRepresentation.commandList.size()) {
-    nextNode = executeNextLine();
+    nextNode = executeNextLine(false);
   }
 }
 
-size_t ParsingAndExecutionUnit::executeNextLine() {
+size_t ParsingAndExecutionUnit::executeNextLine(bool resetStopFlag) {
+  if (resetStopFlag) {
+    _stopFlag.test_and_set();
+  }
   size_t nextNode = _findNextNode();
   // check for parser errors
   if (_finalRepresentation.hasErrors() ||
@@ -115,7 +118,7 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
   size_t nextNode = _findNextNode();
   while (_stopFlag.test_and_set() &&
          nextNode < _finalRepresentation.commandList.size()) {
-    nextNode = executeNextLine();
+    nextNode = executeNextLine(false);
     // check if there is a brekpoint on the next line
     if (nextNode < _finalRepresentation.commandList.size()) {
       FinalCommand &nextCommand = _finalRepresentation.commandList[nextNode];

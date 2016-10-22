@@ -20,6 +20,8 @@
 #ifndef ERAGPSIM_CORE_MEMORY_ACCESS_HPP
 #define ERAGPSIM_CORE_MEMORY_ACCESS_HPP
 
+#include <atomic>
+
 #include "core/project.hpp"
 #include "core/proxy.hpp"
 
@@ -29,8 +31,17 @@
  */
 class MemoryAccess : public Proxy<Project> {
  public:
-  MemoryAccess(const Proxy<Project>& proxy) : Proxy(proxy) {
+  MemoryAccess(const Proxy<Project>& proxy, std::atomic_flag* stopFlag)
+  : Proxy(proxy), _stopFlag(stopFlag) {
   }
+
+  /**
+   * Lets the thread that calls this sleep for a specified amount of time.
+   * The sleep is interruptible through a stop flag.
+   *
+   * \param sleepDurationMillis How long to sleep in milliseconds
+   */
+  void sleep(std::chrono::milliseconds sleepDuration) const;
 
   /**
    * Returns a number of memory cells at a given address as a MemoryValue.
@@ -132,6 +143,10 @@ class MemoryAccess : public Proxy<Project> {
    *
    */
   POST_FUTURE_CONST(getMemorySize)
+
+ private:
+  /**  Pointer to a std::atomic_flag to stop the execution. */
+  std::atomic_flag* _stopFlag;
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_ACCESS_HPP */

@@ -17,6 +17,7 @@
  */
 
 
+#include <chrono>
 #include <functional>
 
 // clang-format off
@@ -291,4 +292,29 @@ TEST_F(ProjectTestFixture, ParserInterfaceTest) {
       parserInterface.getSyntaxRegex(SyntaxInformation::Token::Label));
   EXPECT_NO_THROW(
       parserInterface.getSyntaxRegex(SyntaxInformation::Token::Immediate));
+}
+
+TEST_F(ProjectTestFixture, SleepTest) {
+  std::chrono::milliseconds targetedSleep(1000);
+  MemoryAccess memoryAccess = projectModule.getMemoryAccess();
+
+  auto beforeSleep = std::chrono::high_resolution_clock::now();
+  memoryAccess.sleep(targetedSleep);
+  auto afterSleep = std::chrono::high_resolution_clock::now();
+  // should not sleep now, because stopFlag.test_and_set() was never called
+  EXPECT_LE(std::chrono::duration_cast<std::chrono::milliseconds>(afterSleep -
+                                                                  beforeSleep),
+            targetedSleep);
+  // execute a program to set the flag.
+  CommandInterface commandInterface = projectModule.getCommandInterface();
+  commandInterface.parse(testProgram);
+  commandInterface.execute();
+
+  beforeSleep = std::chrono::high_resolution_clock::now();
+  memoryAccess.sleep(targetedSleep);
+  afterSleep = std::chrono::high_resolution_clock::now();
+  // should sleep now
+  EXPECT_LE(targetedSleep,
+            std::chrono::duration_cast<std::chrono::milliseconds>(afterSleep -
+                                                                  beforeSleep));
 }
