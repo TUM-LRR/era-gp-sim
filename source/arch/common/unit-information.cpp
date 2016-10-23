@@ -128,7 +128,7 @@ bool UnitInformation::hasRegister(id_t registerID) const noexcept {
 
 UnitInformation::SortedResult UnitInformation::getRegisterSorted(
     const Compare& comparator) const {
-    //container stores all non special registers
+  // container stores all non special registers
   return _getSorted(_container, comparator);
 }
 
@@ -139,16 +139,14 @@ UnitInformation::SortedResult UnitInformation::getSpecialRegisterSorted(
 
 UnitInformation::SortedResult UnitInformation::getAllRegisterSorted(
     const Compare& comparator) const {
-  SortedResult result =
-      SortedResult{_specialRegisters.size() + _container.size()};
-  auto index = 0;
+  SortedResult result = SortedResult{};
   for (auto& reg : _container) {
-    result[index] = &(reg.second);
-    ++index;
+    result.push_back(
+        std::reference_wrapper<const RegisterInformation>(reg.second));
   }
   for (auto& reg : _specialRegisters) {
-    result[index] = &(reg.second);
-    ++index;
+    result.push_back(
+        std::reference_wrapper<const RegisterInformation>(reg.second));
   }
   std::sort(result.begin(), result.end(), comparator);
   return result;

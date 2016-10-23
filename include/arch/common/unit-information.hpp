@@ -51,9 +51,9 @@ class UnitInformation : public UnderlyingRegisterContainer,
   using id_t = RegisterInformation::id_t;
   using InitializerList = std::initializer_list<RegisterInformation>;
   using SpecialMap = std::unordered_map<Type, RegisterInformation>;
-  using Compare = std::function<bool(const RegisterInformation*,
-                                     const RegisterInformation*)>;
-  using SortedResult = std::vector<const RegisterInformation*>;
+  using Compare = std::function<bool(const RegisterInformation&,
+                                     const RegisterInformation&)>;
+  using SortedResult = std::vector<std::reference_wrapper<const RegisterInformation>>;
 
   /**
   * Convenience comparator for sorting RegisterInformation in ascending
@@ -61,9 +61,9 @@ class UnitInformation : public UnderlyingRegisterContainer,
   */
   struct AlphabeticOrder {
    public:
-    bool operator()(const RegisterInformation* first,
-                    const RegisterInformation* second) const {
-      return first->getName() < second->getName();
+    bool operator()(const RegisterInformation& first,
+                    const RegisterInformation& second) const {
+      return first.getName() < second.getName();
     }
   };
 
@@ -73,9 +73,9 @@ class UnitInformation : public UnderlyingRegisterContainer,
    */
   struct IdOrder {
    public:
-    bool operator()(const RegisterInformation* first,
-                    const RegisterInformation* second) const {
-      return first->getID() < second->getID();
+    bool operator()(const RegisterInformation& first,
+                    const RegisterInformation& second) const {
+      return first.getID() < second.getID();
     }
   };
 
@@ -99,12 +99,12 @@ class UnitInformation : public UnderlyingRegisterContainer,
               Compare compareWhenEqual = AlphabeticOrder())
         : _typeOrder(types), _equalCompare(compareWhenEqual) {}
 
-    bool operator()(const RegisterInformation* first,
-                    const RegisterInformation* second) const {
+    bool operator()(const RegisterInformation& first,
+                    const RegisterInformation& second) const {
       auto indexFirst =
-          std::find(_typeOrder.begin(), _typeOrder.end(), first->getType());
+          std::find(_typeOrder.begin(), _typeOrder.end(), first.getType());
       auto indexSecond =
-          std::find(_typeOrder.begin(), _typeOrder.end(), second->getType());
+          std::find(_typeOrder.begin(), _typeOrder.end(), second.getType());
       if (indexFirst == indexSecond) {
         // same type
         return _equalCompare(first, second);
@@ -360,11 +360,9 @@ class UnitInformation : public UnderlyingRegisterContainer,
    */
   template <class Range>
   SortedResult _getSorted(Range& range, const Compare& comparator) const {
-    SortedResult result{range.size()};
-    auto index = 0;
+    SortedResult result{};
     for (auto& element : range) {
-      result[index] = &(element.second);
-      ++index;
+      result.push_back(std::reference_wrapper<const RegisterInformation>(element.second));
     }
     std::sort(result.begin(), result.end(), comparator);
     return result;

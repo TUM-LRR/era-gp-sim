@@ -48,9 +48,14 @@ struct UnitInformationTestFixture : public ::testing::Test {
   template <typename ExpectedRange>
   void compareResult(ExpectedRange expected, SortedResult result) const {
     ASSERT_EQ(expected.size(), result.size());
-    for (auto i = 0; i < result.size(); ++i) {
-      ASSERT_EQ(expected[i], result[i]->getName());
+    auto it = expected.begin();
+    for(const RegisterInformation& info : result) {
+        ASSERT_EQ(*it, info.getName());
+        ++it;
     }
+//    for (auto i = 0; i < result.size(); ++i) {
+//      ASSERT_EQ(expected[i], result[i].getName());
+//    }
   }
 
   UnitInformation _unitInformation;
