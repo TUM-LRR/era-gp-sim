@@ -39,7 +39,7 @@ class integerInformation {
     return !_isSigned;
   }
   static T min() {
-    if (isUnsigned) {
+    if (_isUnsigned) {
       return T{0};
     }
     T current{0};
