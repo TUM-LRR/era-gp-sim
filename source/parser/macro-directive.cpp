@@ -40,9 +40,12 @@ MacroDirective::MacroParameters::MacroParameters(
     auto equalPos = i->find('=');
 
     if (equalPos != std::string::npos) {
+      // If default value is supplied, split argument into name and value.
       defaultVal = i->substr(equalPos + 1);
       name = i->substr(0, equalPos);
     } else {
+      // Otherwise use whole string as value and increase the minimum amount of
+      // parameters.
       name = *i;
       _minParams++;
     }
@@ -83,5 +86,4 @@ void MacroDirective::MacroParameters::insertParameters(
                                                 : values[i]};
     operation->insertIntoArguments(name, value);
   }
-  // return std::move(operation);
 }

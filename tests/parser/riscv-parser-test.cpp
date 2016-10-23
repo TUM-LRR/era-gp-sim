@@ -159,10 +159,14 @@ TEST_F(RiscParserTest, WrongMacros) {
       "addi x0, x0, \\x\n"
       "addi x0, x0, \\y\n"
       "addi x0, x0, \\x\n"
-      ".endm\n",
+      ".endm\n"
+      ".macro add4, x=0\n"
+      "addi x0, x0, \\x0\n"
+      ".endm\n"
+      "add4\n",
       ParserMode::COMPILE);
-  EXPECT_EQ(res.errorList.size(), 3);
-  EXPECT_EQ(res.commandList.size(), 0);
+  EXPECT_GT(res.errorList.size(), 4);
+  EXPECT_EQ(res.commandList.size(), 1);
 }
 
 TEST_F(RiscParserTest, MultipleInstructions) {

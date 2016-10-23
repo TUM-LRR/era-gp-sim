@@ -134,11 +134,20 @@ class IntermediateOperation {
     assert::that(false);
   }
 
+  /**
+   * Inserts a value for the variable parameter called name.
+   * \param name  Name of the parameter.
+   * \param value Value of the parameter.
+   */
   virtual void
   insertIntoArguments(const std::string& name, const std::string& value) {
     // Nothing to do here.
   }
 
+  /**
+   * Clones the operation if supported.
+   * \return Pointer to cloned operation if supported. Otherwise `nullptr`.
+   */
   virtual IntermediateOperationPointer clone() {
     return nullptr;
   }

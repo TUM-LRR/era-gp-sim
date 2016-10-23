@@ -28,6 +28,10 @@ class MacroDirective;
 class MacroDirectiveTable {
  private:
   // Need to declare these types before the rest of the class
+
+  /**
+   * Helper class to hash the pair.
+   */
   struct hash_pair {
     // Partially from
     // http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
@@ -46,12 +50,30 @@ class MacroDirectiveTable {
                                        hash_pair>;
 
  public:
+  /**
+   * Inserts a macro into the table.
+   * \param macro Macro to insert.
+   * \return True if successful.
+   */
   bool insert(MacroDirective &macro);
 
+  /**
+   * Tries to find a macro with the given name that accepts `argCount`
+   * arguments.
+   * \param name Macro name
+   * \param argCount Number of arguments
+   * \return Iterator to the macro if found. Otherwise `end()`.
+   */
   macro_map::const_iterator find(const std::string &name, size_t argCount);
 
+  /**
+   * Returns begin of the underlying map.
+   */
   macro_map::const_iterator begin();
 
+  /**
+   * Returns end of the underlying map.
+   */
   macro_map::const_iterator end();
 
  private:

@@ -23,8 +23,8 @@
 
 bool MacroDirectiveTable::insert(MacroDirective &macro) {
   auto paramCount = macro.getParameterCount();
+  // Insert macro for every possible amount of characters.
   for (int i = paramCount.first; i <= paramCount.second; i++) {
-    // std::pair<std:.string, size_t>
     bool success = _macros.insert({{macro.macroName(), i}, macro}).second;
     if (!success) return false;
   }

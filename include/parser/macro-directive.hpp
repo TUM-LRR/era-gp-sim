@@ -99,14 +99,29 @@ class MacroDirective : public IntermediateDirective {
     return _macroName;
   }
 
+  /**
+   * Returns number of operations.
+   */
   size_t getOperationCount() const {
     return _operations.size();
   }
 
+  /**
+   * Returns a pair with the minimum and maximum amount of parameters for this
+   * macro.
+   */
   std::pair<size_t, size_t> getParameterCount() const {
     return _macroParameters.getParameterCount();
   }
 
+  /**
+   * Calls a function on an operation in this macro after given arguments have
+   * been inserted.
+   * \param index Index of the operation.
+   * \param arguments Arguments to be inserted into this macro.
+   * \param func Function to call. Has to be a member of IntermediateOperation.
+   * \param args Arguments for `func`.
+   */
   template <typename T, typename... U>
   void callOperationFunction(size_t index,
                              const std::vector<std::string>& arguments,
@@ -127,6 +142,9 @@ class MacroDirective : public IntermediateDirective {
   }
 
  protected:
+  /**
+   * Helper class which manages macro parameters.
+   */
   class MacroParameters {
    public:
     MacroParameters(std::vector<std::string>::const_iterator begin,
@@ -136,17 +154,37 @@ class MacroDirective : public IntermediateDirective {
     : MacroParameters(arguments.begin(), arguments.end()) {
     }
 
+    /**
+     * Validates the macro parameters.
+     * \param state Compile state to record errors.
+     */
     void validate(CompileState& state);
 
+    /**
+     * Inserts all parameters into the operation.
+     * \param operation Operation to insert into.
+     * \param values Values to insert for the parameters.
+     */
     void insertParameters(IntermediateOperationPointer& operation,
                           const std::vector<std::string>& values);
 
+    /**
+     * Returns a pair with the minimum and maximum amount of parameters for this
+     * macro.
+     */
     std::pair<size_t, size_t> getParameterCount() const {
       return {_minParams, _params.size()};
     }
 
    private:
+    /**
+     * Vector of all the parameters as `{name, optional default value}` pairs.
+     */
     std::vector<std::pair<std::string, Optional<std::string>>> _params;
+
+    /**
+     * Minumum amount of parameters this operation needs.
+     */
     size_t _minParams;
   };
 

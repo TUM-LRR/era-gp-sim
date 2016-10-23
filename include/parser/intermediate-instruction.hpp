@@ -148,6 +148,10 @@ class IntermediateInstruction : public IntermediateOperation {
    */
   RelativeMemoryPosition _relativeAddress;
 
+  /**
+   * Constructs an argument vector from the sources and targets vectors.
+   * \return New vector containing all instruction arguments.
+   */
   std::vector<std::string> getArgsVector() {
     std::vector<std::string> args;
     args.reserve(_sources.size() + _targets.size());

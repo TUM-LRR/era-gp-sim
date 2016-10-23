@@ -19,7 +19,6 @@
 #ifndef ERAGPSIM_PARSER_COMPILE_STATE_HPP
 #define ERAGPSIM_PARSER_COMPILE_STATE_HPP
 
-#include <unordered_map>
 #include <vector>
 
 #include "parser/code-position.hpp"
@@ -118,6 +117,10 @@ struct CompileState {
         CompileError(message, position, CompileErrorSeverity::INFORMATION));
   }
 
+  /**
+   * Registers a macro for compilation.
+   * \param macro Macro to register.
+   */
   void registerMacro(MacroDirective& macro);
 };
 
