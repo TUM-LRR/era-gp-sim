@@ -46,13 +46,16 @@ class integerInformation {
     T previous{current};
     T operand{1};
     std::size_t i = 0;
-    while (operand > T{0}) {
+    while (operand != T{0}) {
       current -= operand;
       if (current >= previous) {
         operand >>= T{1};
         current = previous;
       } else {
-        operand <<= T{1};
+        T tmp = operand << T{1};
+        if (tmp > T{0}) {
+          operand = tmp;
+        }
         previous = current;
       }
       if (i++ > maxIterations) {
@@ -66,13 +69,16 @@ class integerInformation {
     T previous{current};
     T operand{1};
     std::size_t i = 0;
-    while (operand > T{0}) {
+    while (operand != T{0}) {
       current += operand;
       if (current <= previous) {
         operand >>= T{1};
         current = previous;
       } else {
-        operand <<= T{1};
+        T tmp = operand << T{1};
+        if (tmp > T{0}) {
+          operand = tmp;
+        }
         previous = current;
       }
       if (i++ > maxIterations) {

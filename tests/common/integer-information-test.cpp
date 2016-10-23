@@ -38,8 +38,8 @@ TEST(integerInformation, standardTypes) {
   testType<std::uint32_t>(false, 0x00, 0xFFFFFFFF, 0xFFFFFFFF, 32);
   testType<std::uint64_t>(
       false, 0x00, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 64);
-  testType<std::int8_t>(true, 0x00, 0x7F, -1, 8);
-  testType<std::int16_t>(true, 0x00, 0x7FFF, -1, 16);
-  testType<std::int32_t>(true, 0x00, 0x7FFFFFFF, -1, 32);
-  testType<std::int64_t>(true, 0x00, 0x7FFFFFFFFFFFFFFF, -1, 64);
+  testType<std::int8_t>(true, -0x80, 0x7F, -1, 8);
+  testType<std::int16_t>(true, -0x8000, 0x7FFF, -1, 16);
+  testType<std::int32_t>(true, -0x80000000, 0x7FFFFFFF, -1, 32);
+  testType<std::int64_t>(true, -0x8000000000000000, 0x7FFFFFFFFFFFFFFF, -1, 64);
 }
