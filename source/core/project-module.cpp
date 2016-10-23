@@ -68,5 +68,5 @@ void ProjectModule::reset() {
 }
 
 void ProjectModule::stopExecution() {
-  _stopFlag.clear();
+  _stopFlag = true;
 }

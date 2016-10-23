@@ -55,7 +55,7 @@ class ParsingAndExecutionUnit : public Servant {
   ParsingAndExecutionUnit(std::weak_ptr<Scheduler> &&scheduler,
                           MemoryAccess memoryAccess,
                           Architecture architecture,
-                          std::atomic_flag &stopFlag,
+                          std::atomic_bool &stopFlag,
                           std::string parserName);
 
   /**
@@ -180,8 +180,8 @@ class ParsingAndExecutionUnit : public Servant {
   /** A unique_ptr to the parser. */
   std::unique_ptr<Parser> _parser;
 
-  /**  Reference to a std::atomic_flag to stop the execution. */
-  std::atomic_flag &_stopFlag;
+  /**  Reference to a std::atomic_bool to stop the execution. */
+  std::atomic_bool &_stopFlag;
 
   /** A FinalRepresentation created by the parser. */
   FinalRepresentation _finalRepresentation;

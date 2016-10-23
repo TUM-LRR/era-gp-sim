@@ -28,7 +28,7 @@ void MemoryAccess::sleep(std::chrono::milliseconds sleepDuration) const {
   auto sleepStart = std::chrono::high_resolution_clock::now();
   auto sleepEnd = sleepStart;
   while (sleepRemaining > std::chrono::milliseconds::zero() &&
-         _stopFlag->test_and_set()) {
+         !_stopFlag->load()) {
     if (sleepRemaining > sleepInterval) {
       // there is more sleep remaining than the standard duration
       std::this_thread::sleep_for(sleepInterval);

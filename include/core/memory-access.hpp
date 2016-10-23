@@ -31,7 +31,7 @@
  */
 class MemoryAccess : public Proxy<Project> {
  public:
-  MemoryAccess(const Proxy<Project>& proxy, std::atomic_flag* stopFlag)
+  MemoryAccess(const Proxy<Project>& proxy, std::atomic_bool* stopFlag)
   : Proxy(proxy), _stopFlag(stopFlag) {
   }
 
@@ -145,8 +145,8 @@ class MemoryAccess : public Proxy<Project> {
   POST_FUTURE_CONST(getMemorySize)
 
  private:
-  /**  Pointer to a std::atomic_flag to stop the execution. */
-  std::atomic_flag* _stopFlag;
+  /**  Pointer to a std::atomic_bool to stop the execution. */
+  std::atomic_bool* _stopFlag;
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_ACCESS_HPP */

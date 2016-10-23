@@ -91,9 +91,9 @@ class ProjectModule {
 
 
  private:
-  /** A std::atomic_flag to stop the execution. The ParsingAndExecutionUnit has
+  /** A std::atomic_bool to stop the execution. The ParsingAndExecutionUnit has
    * a reference to this flag.*/
-  std::atomic_flag _stopFlag;
+  std::atomic_bool _stopFlag;
 
   /** Scheduler for the project servant (active-object). */
   std::shared_ptr<Scheduler> _schedulerProject;
