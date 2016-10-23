@@ -76,6 +76,7 @@ Item {
             movable: false
             resizable: false
             width: 80
+            delegate: editableContent
         }
         TableViewColumn {
             role: "info"
@@ -85,7 +86,6 @@ Item {
             width: parent.width - 200
         }
         model: memoryModel
-        rowDelegate: editableContent
     }
 
     Component {
@@ -99,7 +99,7 @@ Item {
                 }
             }
             font.bold: true
-            inputMask: "\\0\\xHHHH"
+            inputMask: "\\0\\xHH"
             onActiveFocusChanged: {
                 cursorPosition = 2
             }
@@ -114,18 +114,19 @@ Item {
                 if(cursorPosition <= 1 && selectedText == "")
                     nextItemInFocusChain(false).forceActiveFocus()
             }
-            onTextChanged: {
+            /*onTextChanged: {
                 textFieldMemoryValue.text = textFieldMemoryValue.text.replace(' ','0')
-            }
+                This destroys something!
+            }*/
             Keys.onDeletePressed: {
 
             }
             onEditingFinished: {
-                    memoryModel.setValue(styleData.index, textFieldMemoryValue.text);
+                    memoryModel.setValue(styleData.row, textFieldMemoryValue.text);
             }
 
-            placeholderText: "0x0000"
-            text: value
+            placeholderText: "0x00"
+            text: model.value
 
         }
     }

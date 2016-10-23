@@ -29,7 +29,10 @@ MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access,
                                                    MemoryManager manager,
                                                    QQmlContext *projectContext,
                                                    QObject *parent)
-: QAbstractTableModel(parent), _memoryAccess(access), _memoryManager(manager) {
+: QAbstractListModel(parent)
+, _memoryAccess(access)
+, _memoryManager(manager)
+, _memorySize(access.getMemorySize().get()) {
   projectContext->setContextProperty("memoryModel", this);
 
   // set memory update callback function
@@ -45,12 +48,8 @@ MemoryComponentPresenter::~MemoryComponentPresenter() {
 
 void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
                                                std::size_t length) {
-  // emit QAbstractTableModel::dataChanged(QAbstractTableModel::createIndex(0,
-  // 0),
-  //                                    QAbstractTableModel::createIndex(5, 2));
-  emit QAbstractTableModel::dataChanged(this->index(address, 0),
-                                        this->index(address + length,
-                                                    2));// TODO fix hardcoded
+  std::cout << "address: " << address << " length: " << length << std::endl;
+  emit dataChanged(this->index(address), this->index(address + length - 1));
 }
 
 void MemoryComponentPresenter::setSize(int newSize) {
@@ -60,8 +59,7 @@ void MemoryComponentPresenter::setSize(int newSize) {
 void MemoryComponentPresenter::setValue(int address, QString number) {
   _memoryAccess.putMemoryValueAt(
       address,
-      *StringConversions::hexStringToMemoryValue(number.toStdString(), 16));
-  // this->dataChanged(this->index(address, 0), this->index(address, 2));
+      *StringConversions::hexStringToMemoryValue(number.toStdString(), 8));
 }
 
 void MemoryComponentPresenter::setContextInformation(int addressStart,
@@ -75,13 +73,9 @@ void MemoryComponentPresenter::setContextInformation(int addressStart,
 
 int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
   Q_UNUSED(parent)
-  return 5;
+  return _memorySize;
 }
-int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
-  Q_UNUSED(parent)
-  // 3: address + value + additional information
-  return 3;
-}
+
 QVariant
 MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   // check boundaries
@@ -99,14 +93,9 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
           .prepend("0x");
     }
     case ValueRole: {
-      // TODO fetch value from core
-      // MemoryValue memory_cell =
-      // _memoryAccess.getMemoryValueAt(index.row()*8).get();
-
       MemoryValue memory_cell =
           _memoryAccess.getMemoryValueAt(index.row()).get();
       std::string stringvalue = StringConversions::toHexString(memory_cell);
-      qDebug() << QString::fromStdString(stringvalue);
       return QString::fromStdString(stringvalue);
     }
     case InfoRole: {

@@ -20,41 +20,48 @@
 #ifndef MEMORYCOMPONENTPRESENTER_HPP_
 #define MEMORYCOMPONENTPRESENTER_HPP_
 
+#include <QAbstractListModel>
+#include <QHash>
+#include <QModelIndex>
+#include <QObject>
 #include <QQmlContext>
 #include <QVariant>
-#include <QObject>
-#include <QAbstractTableModel>
-#include <QModelIndex>
-#include <QHash>
 #include "core/memory-access.hpp"
 #include "core/memory-manager.hpp"
 
-class MemoryComponentPresenter : public QAbstractTableModel{
-    Q_OBJECT
+class MemoryComponentPresenter : public QAbstractListModel {
+  Q_OBJECT
 
-    public:
-       explicit MemoryComponentPresenter(MemoryAccess access, MemoryManager manager, QQmlContext *projectContext, QObject *parent = 0);
-       ~MemoryComponentPresenter();
-       void setSize(int newSize);
-       Q_INVOKABLE void setValue(int address, QString number);
-       void setContextInformation(int addressStart, int length, int identifier);
+ public:
+  explicit MemoryComponentPresenter(MemoryAccess access,
+                                    MemoryManager manager,
+                                    QQmlContext *projectContext,
+                                    QObject *parent = 0);
+  ~MemoryComponentPresenter();
+  void setSize(int newSize);
+  Q_INVOKABLE void setValue(int address, QString number);
+  void setContextInformation(int addressStart, int length, int identifier);
 
-    private:
-       // TODO: memory object from core
-       int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
-       int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
-       QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
-       QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
-       void onMemoryChanged(const std::size_t address, const std::size_t length);
+ private:
+  // TODO: memory object from core
+  int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+  QVariant data(const QModelIndex &index,
+                int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+  QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
+  void onMemoryChanged(const std::size_t address, const std::size_t length);
 
-       MemoryAccess _memoryAccess;
-       MemoryManager _memoryManager;
+  MemoryAccess _memoryAccess;
+  MemoryManager _memoryManager;
 
-       enum ColumnRoles {
-           AddressRole=Qt::UserRole,//avoid collisions with predefined roles
-           ValueRole,
-           InfoRole
-       };
+  /** saves the size of the memory, as calling MemoryAccess::getMemorySize() in
+   * rowCount causes a deadlock. */
+  std::size_t _memorySize;
+
+  enum ColumnRoles {
+    AddressRole = Qt::UserRole,// avoid collisions with predefined roles
+    ValueRole,
+    InfoRole
+  };
 };
 
 #endif /* MEMORYCOMPONENTPRESENTER_HPP_ */
