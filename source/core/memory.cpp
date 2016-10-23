@@ -26,6 +26,7 @@ const std::string Memory::_byteCountStringIdentifier = "memory_byteCount";
 const std::string Memory::_byteSizeStringIdentifier = "memory_byteSize";
 const std::string Memory::_lineLengthStringIdentifier = "memory_lineLength";
 const std::string Memory::_separatorStringIdentifier = "memory_separator";
+const std::string Memory::_lineStringIdentifier = "memory_line";
 
 Memory::Memory() : Memory(64, 8) {
 }
@@ -129,7 +130,7 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
   for (std::size_t i = 0; i < lineCount; ++i) {
     if (get(i * lineLength, lineLength) != empty) {
       std::stringstream name{};
-      name << "line";
+      name << _lineStringIdentifier;
       name << (i * lineLength);
       std::stringstream value{};
       for (std::size_t j = 0; j < lineLength; ++j) {
@@ -186,7 +187,7 @@ MemoryValue deserializeLine(const std::string& line,
     } else {
       // if hex -> write into ret, inc count
       std::uint8_t hex = reverseHexMap.at(*i);
-      while (hex > 0) {
+      for (std::size_t j = 0; j < 4; ++j) {
         if (hex % 2 == 1) {
           ret.put(byte * byteSize + bit);
         }
@@ -194,6 +195,7 @@ MemoryValue deserializeLine(const std::string& line,
         hex >>= 1;// could make this faster using long switch case
       }
     }
+    // TODO::make actual useful assert
     assert::that(byte >= 0);
   }
   return ret;
@@ -210,7 +212,7 @@ void Memory::deserializeJSON(const nlohmann::json& json) {
   const char separator = json[_separatorStringIdentifier].get<char>();
   for (std::size_t i = 0; i < lineCount; ++i) {
     std::stringstream name{};
-    name << "line";
+    name << _lineStringIdentifier;
     name << (i * lineLength);
     auto lineIterator = json.find(name.str());
     if (lineIterator != json.end()) {
@@ -229,6 +231,10 @@ bool Memory::operator==(const Memory& other) const {
 std::ostream& operator<<(std::ostream& stream, const Memory& value) {
   return stream << value._byteCount << " * " << value._byteSize << "; "
                 << value._data;
+}
+
+void Memory::clear() {
+  _data.clear();
 }
 
 void Memory::wasUpdated(const std::size_t address, const std::size_t amount) {

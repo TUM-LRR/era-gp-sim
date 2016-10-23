@@ -67,12 +67,22 @@ TEST(memory, readWrite) {
 }
 
 TEST(memory, serialization) {
-  Memory instance0{8, 8};
-  instance0.put(4,
-                conversions::convert(
-                    0xFF, conversions::standardConversions::nonsigned, 8));
-  nlohmann::json json{};
-  instance0.serializeJSON(json);
-  Memory instance1{json};
+  constexpr std::size_t memorySize = 1024*64;
+  Memory instance0{memorySize, 8};
+  std::uniform_int_distribution<std::uint16_t> dist{0, 255};
+  std::mt19937 rand(0);// I need new numbers, I'm kinda really out of ideas
+  for (std::size_t i = 0; i < memorySize; ++i) {
+    instance0.put(
+        i,
+        conversions::convert(
+            dist(rand), conversions::standardConversions::nonsigned, 8));
+  }
+  nlohmann::json json0{};
+  instance0.serializeJSON(json0, ',', 64);
+  Memory instance1{json0};
   ASSERT_EQ(instance0, instance1);
+  nlohmann::json json1{};
+  instance0.serializeJSON(json1, ';', 1);
+  Memory instance2{json1};
+  ASSERT_EQ(instance0, instance2);
 }

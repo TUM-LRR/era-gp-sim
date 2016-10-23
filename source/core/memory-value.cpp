@@ -256,6 +256,12 @@ void MemoryValue::write(const MemoryValue &other, address_t begin) {
   }
 }
 
+void MemoryValue::clear() {
+  for (auto &i : _data) {
+    i = 0x00;
+  }
+}
+
 std::uint8_t MemoryValue::getByteAt(address_t address) const {
   assert::that(address < getSize());
   assert::that(address >= 0);

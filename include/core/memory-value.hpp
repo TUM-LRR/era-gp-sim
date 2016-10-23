@@ -511,6 +511,11 @@ class MemoryValue {
     return memoryValue.getByteAt(address);
   }
 
+  /**
+   * \brief sets everything to 0x00
+   */
+  void clear();
+
 
 #ifdef FRIEND_TEST
   FRIEND_TEST(TestMemoryValue, charAt);

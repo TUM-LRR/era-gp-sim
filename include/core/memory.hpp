@@ -36,6 +36,7 @@ class Memory {
    *        (64 Bytes � 8 Bit)
    */
   Memory();
+
   /**
    * \brief Constructs an empty Memory with cellCount Bytes � byteSize Bit
    * \param byteCount Number of Bytes
@@ -43,7 +44,12 @@ class Memory {
    */
   Memory(std::size_t byteCount, std::size_t byteSize = 8);
 
-  Memory(const nlohmann::json &jsonObj);
+  /**
+   * \brief Constructs an Memory with the data stored in json
+   * \param json a json ontaining a representaion of a memory
+   */
+  Memory(const nlohmann::json &json);
+
   /**
    * \brief Copy constructor. Constructs the Memory with the copy of the
    *        contents of other.
@@ -171,12 +177,18 @@ class Memory {
    */
   friend std::ostream &operator<<(std::ostream &stream, const Memory &value);
 
+  /**
+   * \brief sets everything to 0x00
+   */
+  void clear();
+
  private:
   static constexpr char standardSeparator = ',';
   static const std::string _byteCountStringIdentifier;
   static const std::string _byteSizeStringIdentifier;
   static const std::string _lineLengthStringIdentifier;
   static const std::string _separatorStringIdentifier;
+static const std::string _lineStringIdentifier;
   std::size_t _byteSize;  /**< Brief Size of a Byte in bit*/
   std::size_t _byteCount; /**< Brief Number of Bytes*/
   MemoryValue _data;      /**< Brief MemoryValue holding *all* the data*/
