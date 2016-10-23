@@ -31,7 +31,7 @@
 
 using namespace riscv;
 
-struct RISCVRegisterTestFixture : RiscvBaseTest {
+struct RISCVRegisterTest : RiscvBaseTest {
   void set(const std::string id, MemoryValue value) {
     getMemoryAccess().putRegisterValue(id, value);
   }
@@ -49,7 +49,7 @@ struct RISCVRegisterTestFixture : RiscvBaseTest {
   }
 };
 
-TEST_F(RISCVRegisterTestFixture, testRV32I) {
+TEST_F(RISCVRegisterTest, RV32I) {
   load({"rv32i"});
 
   MemoryAccess memoryAccess = getMemoryAccess();
@@ -75,7 +75,7 @@ TEST_F(RISCVRegisterTestFixture, testRV32I) {
   }
 }
 
-TEST_F(RISCVRegisterTestFixture, testRV64I) {
+TEST_F(RISCVRegisterTest, RV64I) {
   load({"rv32i", "rv64i"});
   MemoryAccess memoryAccess = getMemoryAccess();
 
