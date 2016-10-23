@@ -14,15 +14,30 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+#ifndef ERAGPSIM_ARCH_COMMON_BINARYDATA_NODE_HPP
+#define ERAGPSIM_ARCH_COMMON_BINARYDATA_NODE_HPP
 
-#ifndef ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP
-#define ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP
+#include "core/memory-value.hpp"
+#include "arch/common/validation-result.hpp"
+#include "arch/common/abstract-syntax-tree-node.hpp"
 
-#include "arch/common/abstract-arithmetic-node-factory.hpp"
-#include "arch/common/abstract-immediate-node-factory.hpp"
-#include "arch/common/abstract-instruction-node-factory.hpp"
-#include "arch/common/abstract-memory-access-node-factory.hpp"
-#include "arch/common/abstract-register-node-factory.hpp"
-#include "arch/common/abstract-data-node-factory.hpp"
+class BinaryDataNode : public AbstractSyntaxTreeNode
+{
+public:
+    BinaryDataNode();
 
-#endif /* ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP */
+    BinaryDataNode(const std::string& data);
+
+    ValidationResult validate(MemoryAccess &memoryAccess) const override;
+
+    MemoryValue assemble() const override;
+
+    MemoryValue getValue(MemoryAccess &memoryAccess) const override;
+
+    const std::string& getIdentifier() const override;
+
+private:
+    std::vector<unsigned char> _rawData;
+};
+
+#endif // ERAGPSIM_ARCH_COMMON_BINARYDATA_NODE_HPP

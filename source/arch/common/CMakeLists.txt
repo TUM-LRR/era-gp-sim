@@ -25,6 +25,7 @@ set(ARCH_COMMON_SOURCES
   abstract-instruction-node.cpp
   sleep-instruction-node.cpp
   crash-instruction-node.cpp
+  binarydata-node.cpp
 )
 
 ########################################

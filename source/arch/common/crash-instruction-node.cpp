@@ -17,20 +17,32 @@
 #include "include/arch/common/crash-instruction-node.hpp"
 #include <QtCore/qglobal.h>
 
-SimulatorCrashInstructionNode::SimulatorCrashInstructionNode(const InstructionInformation &info, MemoryValue assembled)
+SimulatorCrashInstructionNode::SimulatorCrashInstructionNode(
+    const InstructionInformation &info, MemoryValue assembled)
     : AbstractInstructionNode(info), _assembled(assembled) {}
 
 ValidationResult SimulatorCrashInstructionNode::validate(
     MemoryAccess &memoryAccess) const {
+  if (_children.size() != 1) {
+    return ValidationResult::fail(
+        QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                          "%1 may only have 1 operand"),
+        getInstructionInformation().getMnemonic());
+  }
+  if (_children.at(0)->getType() != Type::OTHER) {
+    return ValidationResult::fail(
+        QT_TRANSLATE_NOOP("Syntax-Tree-Validation", "%1 invalid operand type"),
+        getInstructionInformation().getMnemonic());
+  }
   return ValidationResult::success();
 }
 
 ValidationResult SimulatorCrashInstructionNode::validateRuntime(
     MemoryAccess &memoryAccess) const {
-  std::string customMsg = "";
-  for (auto &child : _children) {
-    customMsg += child->getIdentifier();
-  }
+  MemoryValue operandText = _children.at(0)->getValue(memoryAccess);
+  auto &raw = operandText.internal();
+  std::string customMsg = std::string(raw.begin(), raw.end());
+
   return ValidationResult::fail(
       QT_TRANSLATE_NOOP("Simulator-Debug-Crash-Message",
                         "Program terminated.\nCause:\n%1"),
@@ -38,10 +50,11 @@ ValidationResult SimulatorCrashInstructionNode::validateRuntime(
 }
 
 MemoryValue SimulatorCrashInstructionNode::assemble() const {
-    return _assembled;
+  return _assembled;
 }
 
-MemoryValue SimulatorCrashInstructionNode::getValue(MemoryAccess &memoryAccess) const{
-    assert::that(false);//this should never be called
-    return MemoryValue();
+MemoryValue SimulatorCrashInstructionNode::getValue(
+    MemoryAccess &memoryAccess) const {
+  assert::that(false);  // this should never be called
+  return MemoryValue();
 }

@@ -13,6 +13,7 @@ set(TEST_ARCH_RISCV_SOURCES
   lui-auipc-instruction-test.cpp
   mul-div-instruction-test.cpp
   rv64-only-instruction-test.cpp
+  simulator-instructions-test.cpp
 )
 
 ########################################

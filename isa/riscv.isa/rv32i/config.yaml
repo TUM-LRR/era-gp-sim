@@ -9,6 +9,10 @@ byte-size: 8
 signed-representation: twos-complement
 
 instructions:
+  - mnemonic: simusleep
+    length: 32
+  - mnemonic: simucrash
+    length: 32
   - mnemonic: lui
     length: 32
     format: U

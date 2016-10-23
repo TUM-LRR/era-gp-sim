@@ -14,15 +14,19 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+#ifndef ERAGPSIM_ARCH_RISCV_DATA_NODE_FACTORY_HPP
+#define ERAGPSIM_ARCH_RISCV_DATA_NODE_FACTORY_HPP
 
-#ifndef ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP
-#define ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP
-
-#include "arch/common/abstract-arithmetic-node-factory.hpp"
-#include "arch/common/abstract-immediate-node-factory.hpp"
-#include "arch/common/abstract-instruction-node-factory.hpp"
-#include "arch/common/abstract-memory-access-node-factory.hpp"
-#include "arch/common/abstract-register-node-factory.hpp"
 #include "arch/common/abstract-data-node-factory.hpp"
 
-#endif /* ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP */
+namespace riscv {
+class DataNodeFactory : public AbstractDataNodeFactory
+{
+public:
+    using Node = AbstractDataNodeFactory::Node;
+
+    Node createDataNode(const std::string &data) const override;
+};
+}
+
+#endif // ERAGPSIM_ARCH_RISCV_DATA_NODE_FACTORY_HPP

@@ -14,15 +14,11 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+#include "arch/riscv/data-node-factory.hpp"
+#include "arch/common/binarydata-node.hpp"
 
-#ifndef ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP
-#define ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP
+using namespace riscv;
 
-#include "arch/common/abstract-arithmetic-node-factory.hpp"
-#include "arch/common/abstract-immediate-node-factory.hpp"
-#include "arch/common/abstract-instruction-node-factory.hpp"
-#include "arch/common/abstract-memory-access-node-factory.hpp"
-#include "arch/common/abstract-register-node-factory.hpp"
-#include "arch/common/abstract-data-node-factory.hpp"
-
-#endif /* ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP */
+DataNodeFactory::Node DataNodeFactory::createDataNode(const std::string &data) const {
+    return std::make_unique<BinaryDataNode>(data);
+}
