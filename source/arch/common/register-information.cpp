@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "arch/common/register-information.hpp"
+#include "common/string-conversions.hpp"
 #include "common/utility.hpp"
 
 typename RegisterInformation::id_t RegisterInformation::_rollingID = 0;
@@ -30,11 +31,10 @@ bool RegisterInformation::isSpecialType(Type type) noexcept {
 }
 
 RegisterInformation::RegisterInformation()
-: _id(_rollingID++), _type(Type::INTEGER) {
-}
+    : _id(_rollingID++), _type(Type::INTEGER) {}
 
 RegisterInformation::RegisterInformation(InformationInterface::Format& data)
-: RegisterInformation() {
+    : RegisterInformation() {
   _deserialize(data);
 }
 
@@ -64,8 +64,8 @@ bool RegisterInformation::operator!=(const RegisterInformation& other) const
   return !(*this == other);
 }
 
-RegisterInformation&
-RegisterInformation::deserialize(InformationInterface::Format& data) {
+RegisterInformation& RegisterInformation::deserialize(
+    InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -81,9 +81,7 @@ const std::string& RegisterInformation::getName() const {
   return _name;
 }
 
-bool RegisterInformation::hasName() const noexcept {
-  return !_name.empty();
-}
+bool RegisterInformation::hasName() const noexcept { return !_name.empty(); }
 
 RegisterInformation& RegisterInformation::size(size_t bit_size) {
   assert(bit_size > 0);
@@ -127,6 +125,28 @@ bool RegisterInformation::isConstant() const noexcept {
   return static_cast<bool>(_constant);
 }
 
+RegisterInformation& RegisterInformation::setConstantValue(
+    const MemoryValue constant) {
+  assert::that(constant.getSize() == getSize());
+  _constant.emplace(constant);
+  return *this;
+}
+
+RegisterInformation& RegisterInformation::constant(
+    const std::string& constant) {
+  Optional<MemoryValue> extractedValue =
+      StringConversions::hexStringToMemoryValue(constant, getSize());
+  assert::that(extractedValue);
+  return setConstantValue(*extractedValue);
+}
+
+
+
+MemoryValue RegisterInformation::getConstant() const {
+  assert::that(isConstant());
+  return *_constant;
+}
+
 RegisterInformation& RegisterInformation::addAlias(const std::string& alias) {
   _aliases.emplace_back(alias);
   return *this;
@@ -137,8 +157,8 @@ RegisterInformation& RegisterInformation::addAliases(AliasList aliases) {
   return *this;
 }
 
-const RegisterInformation::AliasContainer&
-RegisterInformation::getAliases() const noexcept {
+const RegisterInformation::AliasContainer& RegisterInformation::getAliases()
+    const noexcept {
   return _aliases;
 }
 
@@ -161,13 +181,13 @@ bool RegisterInformation::hasEnclosing() const noexcept {
   return static_cast<bool>(_enclosing);
 }
 
-RegisterInformation&
-RegisterInformation::addConstituents(ConstituentList constituents) {
+RegisterInformation& RegisterInformation::addConstituents(
+    ConstituentList constituents) {
   return addConstituents<ConstituentList>(constituents);
 }
 
-RegisterInformation&
-RegisterInformation::addConstituent(const ConstituentInformation& constituent) {
+RegisterInformation& RegisterInformation::addConstituent(
+    const ConstituentInformation& constituent) {
   // Make sure none of the constituents are the enclosing register
   // of this register, or the register itself.
   assert(constituent.getID() != _id);
@@ -210,9 +230,9 @@ void RegisterInformation::_deserialize(InformationInterface::Format& data) {
   this->name(Utility::toLower(data["name"]));
   this->size(data["size"]);
 
-  Utility::doIfThere(data, "constant", [this](const auto& constant) {
-    this->constant(static_cast<double>(constant));
-  });
+  if(data.count("constant")>0) {
+      constant(data["constant"]);
+  }
 
   Utility::doIfThere(data, "enclosing", [this](const auto& enclosing) {
     assert(enclosing.is_number());

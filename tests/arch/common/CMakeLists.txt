@@ -5,6 +5,7 @@
 set(TEST_ARCH_COMMON_SOURCES
   brewery-test.cpp
   general-test.cpp
+  unit-information-test.cpp
 )
 
 ########################################
