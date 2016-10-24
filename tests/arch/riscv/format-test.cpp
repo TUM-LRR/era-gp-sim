@@ -38,15 +38,15 @@
 using namespace riscv;
 
 // testing the immediate transformations
-struct ImmediateFormatTestFixture : public ::testing::Test {
-  ImmediateFormatTestFixture() {
+struct ImmediateFormatTest : public ::testing::Test {
+  ImmediateFormatTest() {
     for (int i = 0; i < 6; i++) {
       auto vect = std::vector<uint8_t>(std::begin(v[i]), std::end(v[i]));
       valueP[i] = new MemoryValue(vect, 32);
     }
   }
 
-  ~ImmediateFormatTestFixture() {
+  ~ImmediateFormatTest() {
     for (int i = 0; i < 6; i++) delete valueP[i];
     delete[] valueP;
   }
@@ -60,33 +60,33 @@ struct ImmediateFormatTestFixture : public ::testing::Test {
   MemoryValue **valueP = new MemoryValue *[6];
 };
 
-TEST_F(ImmediateFormatTestFixture, IFormat) {
+TEST_F(ImmediateFormatTest, IFormat) {
   immediateToIFormat(*valueP[0]);
   ASSERT_EQ(*valueP[1], *valueP[0]);
 }
 
-TEST_F(ImmediateFormatTestFixture, SFormat) {
+TEST_F(ImmediateFormatTest, SFormat) {
   immediateToSFormat(*valueP[0]);
   ASSERT_EQ(*valueP[2], *valueP[0]);
 }
 
-TEST_F(ImmediateFormatTestFixture, BFormat) {
+TEST_F(ImmediateFormatTest, BFormat) {
   immediateToBFormat(*valueP[0]);
   ASSERT_EQ(*valueP[3], *valueP[0]);
 }
 
-TEST_F(ImmediateFormatTestFixture, UFormat) {
+TEST_F(ImmediateFormatTest, UFormat) {
   immediateToUFormat(*valueP[0]);
   ASSERT_EQ(*valueP[4], *valueP[0]);
 }
 
-TEST_F(ImmediateFormatTestFixture, JFormat) {
+TEST_F(ImmediateFormatTest, JFormat) {
   immediateToJFormat(*valueP[0]);
   ASSERT_EQ(*valueP[5], *valueP[0]);
 }
 
-struct InstructionFormatTestFixture : public ::testing::Test {
-  InstructionFormatTestFixture() {
+struct InstructionFormatTest : public ::testing::Test {
+  InstructionFormatTest() {
     auto add = InstructionInformation("add")
                    .key(InstructionKey({{"opcode", 6}, {"function", 3}}))
                    .format("R")
@@ -106,14 +106,14 @@ struct InstructionFormatTestFixture : public ::testing::Test {
     instructionSet.addInstructions(InstructionSet({add, sub, beq, uinst}));
   }
 
-  ~InstructionFormatTestFixture() {
+  ~InstructionFormatTest() {
   }
 
   InstructionSet instructionSet;
 };
 
 // testing the different formats
-TEST_F(InstructionFormatTestFixture, RFormat) {
+TEST_F(InstructionFormatTest, RFormat) {
   using Operands = AddInstructionNode<uint32_t>::Operands;
   auto addInfo = instructionSet.getInstruction("add");
   AddInstructionNode<uint32_t> addInstr(addInfo, Operands::REGISTERS);
@@ -128,7 +128,7 @@ TEST_F(InstructionFormatTestFixture, RFormat) {
   std::cout << addInstr.assemble() << std::endl;
 }
 
-TEST_F(InstructionFormatTestFixture, IFormat) {
+TEST_F(InstructionFormatTest, IFormat) {
   using Operands = AddInstructionNode<uint32_t>::Operands;
   auto addInfo = instructionSet.getInstruction("sub");
   AddInstructionNode<uint32_t> addInstr(addInfo, Operands::IMMEDIATES);
@@ -146,7 +146,7 @@ TEST_F(InstructionFormatTestFixture, IFormat) {
   std::cout << addInstr.assemble() << std::endl;
 }
 
-TEST_F(InstructionFormatTestFixture, SBFormat) {
+TEST_F(InstructionFormatTest, SBFormat) {
   using Operands = AddInstructionNode<uint32_t>::Operands;
   auto beqInfo = instructionSet.getInstruction("beq");
   AddInstructionNode<uint32_t> beqInstr(beqInfo, Operands::IMMEDIATES);
@@ -164,7 +164,7 @@ TEST_F(InstructionFormatTestFixture, SBFormat) {
   std::cout << beqInstr.assemble() << std::endl;
 }
 
-TEST_F(InstructionFormatTestFixture, UFormat) {
+TEST_F(InstructionFormatTest, UFormat) {
   using Operands = AddInstructionNode<uint32_t>::Operands;
   auto uInfo = instructionSet.getInstruction("uinst");
   AddInstructionNode<uint32_t> uInst(uInfo, Operands::IMMEDIATES);

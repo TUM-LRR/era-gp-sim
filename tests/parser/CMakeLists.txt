@@ -22,7 +22,7 @@ set(TEST_PARSER_SOURCES
 
 add_executable(era-sim-parser-tests ${TEST_PARSER_SOURCES})
 
-target_link_libraries(era-sim-parser-tests era-sim-parser era-sim-arch-common era-sim-arch-riscv era-sim-core era-sim-common)
+target_link_libraries(era-sim-parser-tests era-sim-parser)
 target_link_libraries(era-sim-parser-tests gtest gtest_main)
 
 add_test(era-sim-parser-tests era-sim-parser-tests)

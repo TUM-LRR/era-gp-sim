@@ -10,6 +10,7 @@ void testIntegerInstructionValidation(MemoryAccess& memAccess,
   std::string registerId = "not relevant";
   // add 0-3 random Nodes
   auto instructionNode = instrF.createInstructionNode(instructionToken);
+  ASSERT_TRUE(instructionNode);
   //ASSERT_THROW(instructionNode->getValue(memAccess), AssertionError);
   instructionNode->addChild(std::move(immF.createImmediateNode(MemoryValue())));
   //ASSERT_THROW(instructionNode->getValue(memAccess), AssertionError);

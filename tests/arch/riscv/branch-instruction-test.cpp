@@ -32,7 +32,7 @@
 
 namespace riscv {
 
-struct TestBranchInstructions : public RiscvBaseTest {
+struct BranchInstructionTest : public RiscvBaseTest {
   using address_t = std::uint32_t;
   using offset_t = std::int32_t;
 
@@ -41,7 +41,7 @@ struct TestBranchInstructions : public RiscvBaseTest {
 
   static RelationMap relationMap;
 
-  TestBranchInstructions() : RiscvBaseTest(), progress(0) {
+  BranchInstructionTest() : RiscvBaseTest(), progress(0) {
     load({"rv32i"}, 1024);
     factory = getFactories();
 
@@ -112,7 +112,7 @@ struct TestBranchInstructions : public RiscvBaseTest {
 };
 
 // clang-format off
-TestBranchInstructions::RelationMap TestBranchInstructions::relationMap = {
+BranchInstructionTest::RelationMap BranchInstructionTest::relationMap = {
     {"beq", [](auto first, auto second) { return first == second; }},
     {"bne", [](auto first, auto second) { return first != second; }},
     {"blt", [](auto first, auto second) { return first < second; }},
@@ -122,7 +122,7 @@ TestBranchInstructions::RelationMap TestBranchInstructions::relationMap = {
 };
 // clang-format off
 
-TEST_F(TestBranchInstructions, TestValidation) {
+TEST_F(BranchInstructionTest, Validation) {
   using BranchNode =
       AbstractBranchInstructionNode<riscv::unsigned32_t, riscv::signed32_t>;
 
@@ -176,76 +176,76 @@ TEST_F(TestBranchInstructions, TestValidation) {
   EXPECT_TRUE(instruction->validate(memoryAccess).isSuccess());
 }
 
-TEST_F(TestBranchInstructions, TestBEQIsTakenWhenShould) {
+TEST_F(BranchInstructionTest, BEQIsTakenWhenShould) {
   testBranch<>("beq", 1, 1, 123);
   testBranch<>("beq", 0xDEAD, 0xDEAD, 0x7FF);
   testBranch<>("beq", 0xFF, 0xFF, -0x800);
 }
 
-TEST_F(TestBranchInstructions, TestBEQIsNotTakenWhenShouldnt) {
+TEST_F(BranchInstructionTest, BEQIsNotTakenWhenShouldnt) {
   testBranch<>("beq", 1, 2, 123);
   testBranch<>("beq", 0xDEAD, 0xAEAD, 0x7FF);
   testBranch<>("beq", 0xFF, 0xFFFFF, -0x800);
 }
 
-TEST_F(TestBranchInstructions, TestBNEIsTakenWhenShould) {
+TEST_F(BranchInstructionTest, BNEIsTakenWhenShould) {
   testBranch<>("bne", 1, 2, 123);
   testBranch<>("bne", 0xDEAD, 0xAEAD, 0x7FF);
   testBranch<>("bne", 0xFF, 0xFFFFF, -0x800);
 }
 
-TEST_F(TestBranchInstructions, TestBNEIsNotTakenWhenShouldnt) {
+TEST_F(BranchInstructionTest, BNEIsNotTakenWhenShouldnt) {
   testBranch<>("bne", 1, 1, 123);
   testBranch<>("bne", 0xDEAD, 0xDEAD, 0x7FF);
   testBranch<>("bne", 0xFF, 0xFF, -0x800);
 }
 
-TEST_F(TestBranchInstructions, TestBLTIsTakenWhenShould) {
+TEST_F(BranchInstructionTest, BLTIsTakenWhenShould) {
   testBranch<>("blt", -1, 2, 123);
   testBranch<>("blt", -0xDEAD, 0xDEAD, 0x7FF);
   testBranch<>("blt", -0xFFF, -0xFF, -0x800);
 }
 
-TEST_F(TestBranchInstructions, TestBLTIsNotTakenWhenShouldnt) {
+TEST_F(BranchInstructionTest, BLTIsNotTakenWhenShouldnt) {
   testBranch<>("blt", -1, -1, 123);
   testBranch<>("blt", -0xBEEF, -0xDEAD, 0x7FF);
   testBranch<>("blt", 0xFF, -0xFFFF, -0x800);
 }
 
-TEST_F(TestBranchInstructions, TestBGEIsTakenWhenShould) {
+TEST_F(BranchInstructionTest, BGEIsTakenWhenShould) {
   testBranch<>("bge", -1, -1, 123);
   testBranch<>("bge", 0xFFF, 0xFFF, -0x800);
   testBranch<>("bge", 0xDEAD, -0xDEAD, 0x7FF);
   testBranch<>("bge", -0xFF, -0xFF, -0x800);
 }
 
-TEST_F(TestBranchInstructions, TestBGEIsNotTakenWhenShouldnt) {
+TEST_F(BranchInstructionTest, BGEIsNotTakenWhenShouldnt) {
   testBranch<>("bge", -1, 2, 123);
   testBranch<>("bge", -0xBEEF, 0xDEAD, 0x7FF);
   // testBranch<>("bge", 0xFF, 0xFFFE, -0x800);
 }
 
-TEST_F(TestBranchInstructions, TestBLTUIsTakenWhenShould) {
+TEST_F(BranchInstructionTest, BLTUIsTakenWhenShould) {
   testUnsignedBranch("bltu", 1, 2, 123);
   testUnsignedBranch("bltu", 0xBEEF, 0xDEAD, 0x7FF);
   testUnsignedBranch("bltu", 0xFF, 0xFFFFF, -0x800);
 }
 
-TEST_F(TestBranchInstructions, TestBLTUIsNotTakenWhenShouldnt) {
+TEST_F(BranchInstructionTest, BLTUIsNotTakenWhenShouldnt) {
   testUnsignedBranch("bltu", 1, 1, 123);
   testUnsignedBranch("bltu", 0xDEAD, 0xBEEF, 0x7FF);
   testUnsignedBranch("bltu", 0xFFFF, 0xFF, -0x800);
 }
 
 
-TEST_F(TestBranchInstructions, TestBGEUIsTakenWhenShould) {
+TEST_F(BranchInstructionTest, BGEUIsTakenWhenShould) {
   testUnsignedBranch("bltu", 1, 1, 123);
   testUnsignedBranch("bltu", 0xFFF, 0xFFF, -0x800);
   testUnsignedBranch("bltu", 0xDEAD, 0xBEEF, 0x7FF);
   testUnsignedBranch("bltu", 0xFFF, 0xFF, -0x800);
 }
 
-TEST_F(TestBranchInstructions, TestBGEUIsNotTakenWhenShouldnt) {
+TEST_F(BranchInstructionTest, BGEUIsNotTakenWhenShouldnt) {
   testUnsignedBranch("bgeu", 1, 2, 123);
   testUnsignedBranch("bgeu", 0xBEEF, 0xDEAD, 0x7FF);
   testUnsignedBranch("bgeu", 0xFF, 0xFFFF, -0x800);

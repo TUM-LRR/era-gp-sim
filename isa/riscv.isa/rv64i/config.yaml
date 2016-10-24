@@ -111,7 +111,7 @@ units:
         id: 0
         alias: zero
         size: 64
-        constant: 0
+        constant: 0x0
       - name: x1
         id: 1
         size: 64

@@ -18,7 +18,7 @@ set(TEST_CORE_SOURCES
 
 add_executable(era-sim-core-tests ${TEST_CORE_SOURCES})
 
-target_link_libraries(era-sim-core-tests era-sim-core era-sim-common era-sim-arch-riscv era-sim-arch-common)
+target_link_libraries(era-sim-core-tests era-sim-core)
 target_link_libraries(era-sim-core-tests gtest gtest_main)
 
 # test-name executable-name

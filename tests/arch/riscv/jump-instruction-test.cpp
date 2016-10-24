@@ -30,11 +30,11 @@
 
 namespace riscv {
 
-struct TestJumpInstructions : public RiscvBaseTest {
+struct JumpInstructionTest : public RiscvBaseTest {
   using address_t = std::uint32_t;
   using offset_t = std::int32_t;
 
-  TestJumpInstructions() : RiscvBaseTest(), progress(0) {
+  JumpInstructionTest() : RiscvBaseTest(), progress(0) {
     load({"rv32i"}, 1024);
     factory = getFactories();
 
@@ -130,7 +130,7 @@ struct TestJumpInstructions : public RiscvBaseTest {
   address_t progress;
 };
 
-TEST_F(TestJumpInstructions, TestJALValidation) {
+TEST_F(JumpInstructionTest, JALValidation) {
   using JumpAndLinkNode =
       AbstractJumpAndLinkInstructionNode<riscv::unsigned32_t,
                                          riscv::signed32_t>;
@@ -183,14 +183,14 @@ TEST_F(TestJumpInstructions, TestJALValidation) {
   // TODO: Validate that the resulting PC will be valid
 }
 
-TEST_F(TestJumpInstructions, TestJALCanJumpForwards) {
+TEST_F(JumpInstructionTest, JALCanJumpForwards) {
   testJAL("x1", 1);
   testJAL("x2", 123);
   testJAL("x3", 12345);
   testJAL("x4", 0x7FFFF - initialAddress - progress);
 }
 
-TEST_F(TestJumpInstructions, TestJALCanJumpBackwards) {
+TEST_F(JumpInstructionTest, JALCanJumpBackwards) {
   // Swap sides
   setInitialAddress(std::numeric_limits<address_t>::max() - initialAddress);
 
@@ -200,11 +200,11 @@ TEST_F(TestJumpInstructions, TestJALCanJumpBackwards) {
   testJAL("x4", -0x8000 + initialAddress + progress);
 }
 
-TEST_F(TestJumpInstructions, TestJALDoesNothingWhenOffsetIsZero) {
+TEST_F(JumpInstructionTest, JALDoesNothingWhenOffsetIsZero) {
   testJAL("x1", 0);
 }
 
-TEST_F(TestJumpInstructions, TestJALRValidation) {
+TEST_F(JumpInstructionTest, JALRValidation) {
   using JumpAndLinkNode =
       AbstractJumpAndLinkInstructionNode<riscv::unsigned32_t,
                                          riscv::signed32_t>;
@@ -255,21 +255,21 @@ MemoryAccess memoryAccess = getMemoryAccess();
   EXPECT_TRUE(instruction->validate(memoryAccess).isSuccess());
 }
 
-TEST_F(TestJumpInstructions, TestJALRCanJumpForwards) {
+TEST_F(JumpInstructionTest, JALRCanJumpForwards) {
   testJALR("x1", "x2", 1, 1);
   testJALR("x2", "x3", 6969, 123);
   testJALR("x3", "x4", 8888, 1234);
   testJALR("x4", "x1", 1, 0x7FF);
 }
 
-TEST_F(TestJumpInstructions, TestJALRCanJumpBackwards) {
+TEST_F(JumpInstructionTest, JALRCanJumpBackwards) {
   testJALR("x1", "x2", 1, -1);
   testJALR("x2", "x3", 6969, -123);
   testJALR("x3", "x4", 8888, -1234);
   testJALR("x4", "x1", 1, -0x7FF);
 }
 
-TEST_F(TestJumpInstructions, TestJALRDoesNothingWhenOffsetIsZero) {
+TEST_F(JumpInstructionTest, JALRDoesNothingWhenOffsetIsZero) {
   testJALR("x1", "x2", 0, 0);
 }
 }
