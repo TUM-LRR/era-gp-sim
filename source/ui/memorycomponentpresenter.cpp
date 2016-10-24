@@ -20,9 +20,9 @@
 #include "ui/memorycomponentpresenter.hpp"
 #include <QDebug>
 #include <iostream>
+
 #include "common/string-conversions.hpp"
 #include "core/conversions.hpp"
-#include "core/memory-value.hpp"
 #include "core/memory-value.hpp"
 
 MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access,
@@ -50,10 +50,6 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
                                                std::size_t length) {
   std::cout << "address: " << address << " length: " << length << std::endl;
   emit dataChanged(this->index(address), this->index(address + length - 1));
-}
-
-void MemoryComponentPresenter::setSize(int newSize) {
-  // TODO
 }
 
 void MemoryComponentPresenter::setValue(int address, QString number) {
@@ -100,7 +96,7 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
     }
     case InfoRole: {
       // TODO fetch value from core
-      return QString("information");
+      return QString("");
     }
     default: {
       qWarning() << "unknown column role";
