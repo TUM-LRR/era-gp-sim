@@ -38,37 +38,22 @@ RegisterModel::RegisterModel(ArchitectureAccess &architectureAccess,
   UnitContainer registerUnits = architectureAccess.getRegisterUnits().get();
   // Iterate over each container and add the corresponding registers.
   for (auto unit : registerUnits) {
-    // Add all normal registers to the model.
-    for (auto it = unit.cbegin(); it != unit.cend(); ++it) {
+    const UnitInformation::SortedResult unitRegisters =
+        unit.getAllRegisterSorted(UnitInformation::IdOrder());
+    for (auto it = unitRegisters.cbegin(); it != unitRegisters.cend(); ++it) {
+      RegisterInformation registerItem = *it;
       // Only add first-level registers to the dummy root item. Other registers
       // are referenced by their respective enclosing register.
-      if (!it->second.hasEnclosing()) {
+      if (!registerItem.hasEnclosing()) {
         _rootItem->addConstituent(
-            ConstituentInformation(it->second.getID(), 0));
+            ConstituentInformation(registerItem.getID(), 0));
       }
       // Add every register to map of all registers, organised by their
       // identifier.
       _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
-          it->first,
+          registerItem.getID(),
           std::unique_ptr<RegisterInformation>(
-              new RegisterInformation(it->second))));
-    }
-    // Add all special registers to the model.
-    for (auto it = unit.getSpecialRegisters().cbegin();
-         it != unit.getSpecialRegisters().cend();
-         ++it) {
-      // Only add first-level registers to the dummy root item. Other registers
-      // are referenced by their respective enclosing register.
-      if (!it->second.hasEnclosing()) {
-        _rootItem->addConstituent(
-            ConstituentInformation(it->second.getID(), 0));
-      }
-      // Add every register to map of all registers, organised by their
-      // identifier.
-      _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
-          it->second.getID(),
-          std::unique_ptr<RegisterInformation>(
-              new RegisterInformation(it->second))));
+              new RegisterInformation(registerItem))));
     }
   }
 }
