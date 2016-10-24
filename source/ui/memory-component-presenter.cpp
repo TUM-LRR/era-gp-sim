@@ -17,7 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui/memorycomponentpresenter.hpp"
+#include "ui/memory-component-presenter.hpp"
 #include <QDebug>
 #include <iostream>
 

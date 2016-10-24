@@ -10,7 +10,7 @@
 #include "core/memory-value.hpp"
 #include "core/project-module.hpp"
 #include "ui/editor-component.hpp"
-#include "ui/memorycomponentpresenter.hpp"
+#include "ui/memory-component-presenter.hpp"
 #include "ui/register-model.hpp"
 //#include "ui/snapshotmodel.hpp"
 
