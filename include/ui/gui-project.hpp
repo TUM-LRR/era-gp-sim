@@ -85,7 +85,7 @@ class GuiProject : QObject {
    * \param address The address of the memory
    * \param length The number of bytes that changed
    */
-  void memoryChanged(QVariant address, QVariant length);
+  void memoryChanged(std::size_t address, std::size_t length);
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP

@@ -98,20 +98,11 @@ class MemoryComponentPresenter : public QAbstractListModel {
    */
   QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
 
-  /**
-   * callback function for the core memory. Is beeing called when something in the
-   * memory changes
-   *
-   * /param address the address of the first cell with a new value
-   * /param length the number of cells that were changed
-   *
-   */
-  void onMemoryChanged(const std::size_t address, const std::size_t length);
-
   /** holds a MemoryAccess for accessing the memory */
   MemoryAccess _memoryAccess;
 
-  /** holds a MemoryManager that handles the registration for callback functions */
+  /** holds a MemoryManager that handles the registration for callback functions
+   */
   MemoryManager _memoryManager;
 
 
@@ -125,6 +116,18 @@ class MemoryComponentPresenter : public QAbstractListModel {
     ValueRole,
     InfoRole
   };
+
+ public slots:
+  /**
+   * callback function for the core memory. Is beeing called when something in
+   * the
+   * memory changes
+   *
+   * /param address the address of the first cell with a new value
+   * /param length the number of cells that were changed
+   *
+   */
+  void onMemoryChanged(const std::size_t address, const std::size_t length);
 };
 
 #endif /* ERAGPSIM_UI_MEMORY_COMPONENT_PRESENTER_HPP */

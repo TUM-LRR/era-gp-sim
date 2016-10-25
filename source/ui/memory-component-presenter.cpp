@@ -34,12 +34,6 @@ MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access,
 , _memoryManager(manager)
 , _memorySize(access.getMemorySize().get()) {
   projectContext->setContextProperty("memoryModel", this);
-
-  // set memory update callback function
-  _memoryManager.setUpdateMemoryCallback(
-      [this](std::size_t address, std::size_t length) {
-        onMemoryChanged(address, length);
-      });
 }
 
 

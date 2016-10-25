@@ -31,11 +31,7 @@ GuiProject::GuiProject(QQmlContext* context,
 
   _projectModule.getMemoryManager().setUpdateMemoryCallback(
       [this](std::size_t address, std::size_t length) {
-        QVariant qAddress;
-        QVariant qLength;
-        qAddress.setValue(address);
-        qLength.setValue(length);
-        emit memoryChanged(qAddress, qLength);
+        emit memoryChanged(address, length);
       });
 
   // connect all receiving components to the callback signals
@@ -43,6 +39,11 @@ GuiProject::GuiProject(QQmlContext* context,
                    SIGNAL(registerChanged(const QString&)),
                    &_registerModel,
                    SLOT(updateContent(const QString&)),
+                   Qt::QueuedConnection);
+  QObject::connect(this,
+                   SIGNAL(memoryChanged(std::size_t, std::size_t)),
+                   &_memoryModel,
+                   SLOT(onMemoryChanged(std::size_t, std::size_t)),
                    Qt::QueuedConnection);
 
   std::string name[] = {"Apfel", "Banane"};
