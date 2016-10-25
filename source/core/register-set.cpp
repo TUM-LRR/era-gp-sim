@@ -18,9 +18,6 @@
 
 #include "core/register-set.hpp"
 
-const std::function<void(const std::string &)> RegisterSet::emptyCallback =
-    [](const std::string &) {};
-
 RegisterSet::RegisterSet() : _dict{}, _register{}, _updateSet{} {
 }
 
@@ -44,7 +41,7 @@ void RegisterSet::put(const std::string &name, const MemoryValue &value) {
   auto registerIterator = _dict.find(name);
   assert::that(registerIterator != _dict.end());
   auto registerID = registerIterator->second;
-  if(!_constant[registerID.address]){
+  if (!_constant[registerID.address]) {
     assert::that(value.getSize() == (registerID.end - registerID.begin));
     _register[registerID.address].write(value, registerID.begin);
     wasUpdated(registerID.address);
@@ -58,7 +55,7 @@ RegisterSet::set(const std::string &name, const MemoryValue &value) {
   auto registerID = registerIterator->second;
   MemoryValue previous{
       _register[registerID.address].subSet(registerID.begin, registerID.end)};
-  if(!_constant[registerID.address]){
+  if (!_constant[registerID.address]) {
     assert::that(value.getSize() == (registerID.end - registerID.begin));
     _register[registerID.address].write(value, registerID.begin);
     wasUpdated(registerID.address);
@@ -67,8 +64,8 @@ RegisterSet::set(const std::string &name, const MemoryValue &value) {
 }
 
 std::size_t RegisterSet::getSize(const std::string &name) const {
+  assert::that(existsRegister(name));
   auto registerIterator = _dict.find(name);
-  assert::that(registerIterator != _dict.end());
   auto registerID = registerIterator->second;
   return registerID.end - registerID.begin;
 }
@@ -87,6 +84,7 @@ void RegisterSet::createRegister(const std::string &name,
   _dict.emplace(name, RegisterID(_register.size(), 0, value.getSize()));
   _register.emplace_back(MemoryValue(value));
   _updateSet.push_back(std::set<std::string>{name});
+  _parentVector.push_back(name);
   _constant.push_back(constant);
   wasUpdated(_register.size() - 1);
 }
@@ -165,6 +163,32 @@ void RegisterSet::aliasRegister(const std::vector<std::string> &nameList,
   for (auto name : nameList) {
     aliasRegister(name, parent, begin, silent);
   }
+}
+
+// there is currently still a slight edge case where this is not fully reflexive
+bool RegisterSet::operator==(const RegisterSet &other) const {
+  if (_parentVector.size() != other._parentVector.size()) {
+    return false;
+  }
+  for (const auto &name : _parentVector) {
+    if (!other.existsRegister(name)) {
+      return false;
+    } else {
+      if (getSize(name) != other.getSize(name)) {
+        return false;
+      } else {
+        if (get(name) != other.get(name)) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+bool RegisterSet::existsRegister(const std::string &name) const {
+  auto iterator = _dict.find(name);
+  return iterator != _dict.end();
 }
 
 void RegisterSet::wasUpdated(const std::size_t address) {

@@ -210,6 +210,10 @@ class RegisterSet {
                      const std::size_t begin = 0,
                      const bool silent = false);
 
+  bool operator==(const RegisterSet &other) const;
+
+  bool existsRegister(const std::string &name) const;
+
  private:
   std::unordered_map<std::string, RegisterID>
       _dict; /**< Brief Map mapping name -> RegisterID*/
@@ -222,12 +226,12 @@ class RegisterSet {
   std::vector<std::set<std::string>>
       _updateSet; /**< Brief Vector mapping RegisterID.address -> all
                              childrens name of this Register*/
-  static const std::function<void(const std::string &)>
-      emptyCallback; /**< Brief An empty function that does absolutely
-                                nothing, used as default for _callback*/
-  std::function<void(const std::string &)> _callback =
-      emptyCallback; /**< Brief This function gets called for every changed
-                                Register*/
+  std::vector<std::string> _parentVector; /**< Brief Vector mapping
+                                             RegisterID.address -> parent name
+                                             of this Register*/
+  std::function<void(const std::string &)> _callback = [](const std::string &) {
+  }; /**< Brief This function gets called for every changed
+Register*/
   /**
    * \brief This Method is called whenever something in the Memory changes and
    *        notifies the Gui ofthe change
