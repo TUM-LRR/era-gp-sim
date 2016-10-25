@@ -40,6 +40,9 @@ ScrollView {
         focus: false
         anchors.fill: parent
 
+        contentWidth: (textArea.contentWidth + sidebar.width)*scale.zoom;
+        contentHeight: textArea.contentHeight*scale.zoom;
+
         //wrapper item, Flickable can only have one child
         Item {
             id: item
@@ -63,6 +66,9 @@ ScrollView {
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
                 property int line: 1
 
+                width: (textArea.unscaledWidth)*scale.zoom;
+                height: (textArea.unscaledHeight)*scale.zoom;
+
                 x: sidebar.width
                 selectByMouse: true
                 smooth: true
@@ -71,7 +77,7 @@ ScrollView {
                 textFormat: TextEdit.PlainText
                 wrapMode: TextEdit.NoWrap
                 Component.onCompleted: {
-                    updateSize();
+                    cursorScroll(textArea.cursorRectangle);
                 }
                 visible: true
                 onCursorRectangleChanged: cursorScroll(cursorRectangle)
@@ -139,21 +145,11 @@ ScrollView {
                     }
                 }
 
-                //updates the size of the TextEdit and the Flickable contentSize, has to be called when the viewport,
-                //the zoom or the contentSize changes
-                function updateSize() {
-                    textArea.width = (textArea.unscaledWidth - sidebar.width)*scale.zoom;
-                    textArea.height = (textArea.unscaledHeight)*scale.zoom;
-                    container.contentWidth = (textArea.contentWidth + sidebar.width)*scale.zoom;
-                    container.contentHeight = textArea.contentHeight*scale.zoom;
-                    textArea.cursorScroll(textArea.cursorRectangle);
-                }
-
-                onContentSizeChanged: updateSize();
+                onContentSizeChanged: textArea.cursorScroll(textArea.cursorRectangle);
                 Connections {
                     target: scrollView.viewport
-                    onWidthChanged: textArea.updateSize();
-                    onHeightChanged: textArea.updateSize();
+                    onWidthChanged: textArea.cursorScroll(textArea.cursorRectangle);
+                    onHeightChanged: textArea.cursorScroll(textArea.cursorRectangle);
                 }
 
                 //information about the font
@@ -289,7 +285,7 @@ ScrollView {
                                 scale.zoom = 1.0;
                             }
                         }
-                        textArea.updateSize();
+                        textArea.cursorScroll(textArea.cursorRectangle);
                         wheel.accepted = true;
                     }
                     else {
