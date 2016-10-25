@@ -90,6 +90,11 @@ ScrollView {
                     }
                 }
 
+                //(re)start the parse timer, if an edit is made
+                onTextChanged: {
+                  parseTimer.restart();
+                }
+
                 //Connection to react to the parse signal
                 Connections {
                   target: editor
@@ -102,6 +107,16 @@ ScrollView {
                   onRuntimeError: {
                     runtimeErrorDialog.text = errorMessage;
                     runtimeErrorDialog.open();
+                  }
+                }
+
+                //timer for parsing
+                Timer {
+                  id: parseTimer
+                  interval: 1000
+                  repeat: false
+                  onTriggered: {
+                    editor.sendText(textArea.text);
                   }
                 }
 
