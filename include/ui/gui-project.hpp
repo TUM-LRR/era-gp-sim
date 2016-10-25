@@ -1,3 +1,24 @@
+/*
+ * C++ Assembler Interpreter
+ * Copyright (C) 2016 Chair of Computer Architecture
+ * at Technical University of Munich
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+
 #ifndef ERAGPSIM_UI_GUIPROJECT_HPP
 #define ERAGPSIM_UI_GUIPROJECT_HPP
 
@@ -6,23 +27,105 @@
 #include <functional>
 #include <string>
 
+#include "arch/common/architecture-formula.hpp"
 #include "core/memory-value.hpp"
+#include "core/project-module.hpp"
+#include "ui/editor-component.hpp"
+#include "ui/register-model.hpp"
 //#include "ui/snapshotmodel.hpp"
 
 
+/**
+ * This Class holds the components, which will be needed for the project in cpp.
+ * Its only for the gui and will allow conversions. Its a child of QObject, caus this allows to set a context.
+ */
+
 class GuiProject : QObject {
   Q_OBJECT
- public:
-  GuiProject(QQmlContext* context /*, Core-Project*/);
-  void changeSystem(std::string base);
-  void run();
-  void runLine();
-  void runBreakpoint();
-  void stop();
-  void save();
-  void saveAs(QByteArray name);
-  void snapshot(QByteArray name);
 
+ public:
+  /**
+   * The Constructor
+   *
+   * \param context for the components to register themselfs
+   * \param formula the architectures and extensions
+   * \param memorySize the size of the memory for the memorycomponent
+   * \param parserName the name of the parser
+   * \param parent the parent, its needed for the QObject
+   */
+  GuiProject(QQmlContext* context,
+             const ArchitectureFormula& formula,
+             std::size_t memorySize,
+             const std::string& parserName,
+             QObject* parent = 0);
+
+  /**
+   * \brief Can set The global system in which numbers are presented
+   *
+   * \param base the name of the system, for exampel hex, oct, bin or dec
+   *
+   */
+  void changeSystem(std::string base);
+
+  /**
+   * \brief parses the text
+   */
+  void parse();
+
+  /**
+   * \brief runs all of the code
+   */
+  void run();
+
+  /**
+   * \brief runs the actuall line
+   */
+  void runLine();
+
+  /**
+   * \brief runs until a breakpoint is found
+   */
+  void runBreakpoint();
+
+  /**
+   * \brief stops execution
+   */
+  void stop();
+
+  /**
+   * @brief  Resets the state of registers, memory and the execution point
+   */
+  void reset();
+
+  /**
+   * \brief saves the project
+   */
+  void save();
+
+  /**
+   * \brief saves with another name
+   *
+   * \param name the new name
+   */
+  void saveAs(QString name);
+
+  /**
+   * \brief takes a snapshot
+   *
+   * \param name name of the snapshot
+   */
+  void saveSnapshot(QString name);
+
+  /**
+   * \brief loads a snapshot
+   * \param name The name of the snapshot, which schould be loaded
+   */
+  void loadSnapshot(QString name);
+
+  /**
+   * @brief Functions for converting MemoryValues to strings. Names should explain the single Functions
+   * @return the string
+   */
   std::function<std::string(MemoryValue)> getHexConversion();
   std::function<std::string(MemoryValue)> getBinConversion();
   std::function<std::string(MemoryValue)> getOctConversion();
@@ -30,6 +133,10 @@ class GuiProject : QObject {
   std::function<std::string(MemoryValue)> getUnsignedDecimalConversion();
   std::function<std::string(MemoryValue)> getDecimalFloatConversion();
 
+  /**
+   * @brief Functions for converting strings to MemoryValues. Names should explain the single Functions
+   * @return the memoryValue
+   */
   std::function<MemoryValue(std::string)> getSignedToMemoryValue();
   std::function<MemoryValue(std::string)> getHexToMemoryValue();
   std::function<MemoryValue(std::string)> getBinToMemoryValue();
@@ -39,12 +146,29 @@ class GuiProject : QObject {
 
 
  private:
-  QQmlContext* context;
-  // RegisterModel registermodel;
-  // EditorComponent editormodel;
+  /**
+   * @brief the module in the core
+   */
+  ProjectModule _projectModule;
+
+  /**
+   * @brief The model for the register
+   */
+  RegisterModel _registerModel;
+
+  /**
+   * @brief the model of the editor
+   */
+  EditorComponent _editorComponent;
+
+  //Missing Components:
   // SnapshotModel snapmodel;
   // MemoryComponentPresenter memorymodel;
   // Core-Project;
+
+  /**
+   * @brief The Functions for the conversion
+   */
   std::function<std::string(MemoryValue)> hexConversion;
   std::function<std::string(MemoryValue)> binConversion;
   std::function<std::string(MemoryValue)> octConversion;
@@ -58,6 +182,22 @@ class GuiProject : QObject {
   std::function<MemoryValue(std::string)> octToMemoryValue;
   std::function<MemoryValue(std::string)> unsignedToMemoryValue;
   std::function<MemoryValue(std::string)> floatToMemoryValue;
+
+ signals:
+  /**
+   * A signal to notify components that a register changed.
+   *
+   * \param name The name of the register that changed
+   */
+  void registerChanged(const QString& name);
+
+  /**
+   * A signal to notify components that a part of the memory changed
+   *
+   * \param address The address of the memory
+   * \param length The number of bytes that changed
+   */
+  void memoryChanged(QVariant address, QVariant length);
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP

@@ -2,13 +2,46 @@
 
 #include "ui/gui-project.hpp"
 
-GuiProject::GuiProject(QQmlContext* context)
-: QObject()
-, context(context)
+GuiProject::GuiProject(QQmlContext* context,
+                       const ArchitectureFormula& formula,
+                       std::size_t memorySize,
+                       const std::string& parserName,
+                       QObject* parent)
+: QObject(parent)
+, _projectModule(formula, memorySize, parserName)
+, _editorComponent(context,
+                   _projectModule.getParserInterface(),
+                   _projectModule.getCommandInterface())
+, _registerModel(_projectModule.getArchitectureAccess(),
+                 _projectModule.getMemoryManager(),
+                 _projectModule.getMemoryAccess(),
+                 context)
 /*, registermodel(context)
 , editormodel(context)
 , snapmodel(context)
 , memorymodel(context)*/ {
+  // set the callback for memory and register
+  _projectModule.getMemoryManager().setUpdateRegisterCallback(
+      [this](const std::string& name) {
+        emit registerChanged(QString::fromStdString(name));
+      });
+
+  _projectModule.getMemoryManager().setUpdateMemoryCallback(
+      [this](std::size_t address, std::size_t length) {
+        QVariant qAddress;
+        QVariant qLength;
+        qAddress.setValue(address);
+        qLength.setValue(length);
+        emit memoryChanged(qAddress, qLength);
+      });
+
+  // connect all receiving components to the callback signals
+  QObject::connect(this,
+                   SIGNAL(registerChanged(const QString&)),
+                   &_registerModel,
+                   SLOT(updateContent(const QString&)),
+                   Qt::QueuedConnection);
+
   std::string name[] = {"Apfel", "Banane"};
   // snapmodel.addList(name);
   // An alle Komponenten weitergeben
@@ -20,34 +53,46 @@ void GuiProject::changeSystem(std::string base) {
   // Alle Komponenten informieren
 }
 
+void GuiProject::parse() {
+  _editorComponent.parse();
+}
+
 void GuiProject::run() {
-  // tell Editor
+  _projectModule.getCommandInterface().execute();
 }
 
 void GuiProject::runLine() {
-  // tell Editor
+  _projectModule.getCommandInterface().executeNextLine();
 }
 
 void GuiProject::runBreakpoint() {
-  // tell Editor
+  _projectModule.getCommandInterface().executeToBreakpoint();
 }
 
 void GuiProject::stop() {
-  // tell editor
+  _projectModule.stopExecution();
+}
+
+void GuiProject::reset() {
+  _projectModule.reset();
+  _projectModule.getCommandInterface().setExecutionPoint(1);
 }
 
 void GuiProject::save() {
   // tell core
 }
 
-void GuiProject::saveAs(QByteArray name) {
+void GuiProject::saveAs(QString name) {
   std::string stdname = name.toStdString();
   // tell core
 }
 
-void GuiProject::snapshot(QByteArray name) {
+void GuiProject::saveSnapshot(QString name) {
   std::string stdname = name.toStdString();
   // dont know, what to do
+}
+
+void GuiProject::loadSnapshot(QString name) {
 }
 
 
