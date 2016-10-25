@@ -40,18 +40,17 @@ RegisterModel::RegisterModel(ArchitectureAccess &architectureAccess,
   for (auto unit : registerUnits) {
     const UnitInformation::SortedResult unitRegisters =
         unit.getAllRegisterSorted(UnitInformation::IdOrder());
-    for (auto it = unitRegisters.cbegin(); it != unitRegisters.cend(); ++it) {
-      RegisterInformation registerItem = *it;
+    for (const auto &registerItem : unitRegisters) {
       // Only add first-level registers to the dummy root item. Other registers
       // are referenced by their respective enclosing register.
-      if (!registerItem.hasEnclosing()) {
+      if (!registerItem.get().hasEnclosing()) {
         _rootItem->addConstituent(
-            ConstituentInformation(registerItem.getID(), 0));
+            ConstituentInformation(registerItem.get().getID(), 0));
       }
       // Add every register to map of all registers, organised by their
       // identifier.
       _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
-          registerItem.getID(),
+          registerItem.get().getID(),
           std::unique_ptr<RegisterInformation>(
               new RegisterInformation(registerItem))));
     }
