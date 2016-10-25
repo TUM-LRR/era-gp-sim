@@ -10,6 +10,7 @@
 #include "core/memory-value.hpp"
 #include "core/project-module.hpp"
 #include "ui/editor-component.hpp"
+#include "ui/memory-component-presenter.hpp"
 #include "ui/register-model.hpp"
 //#include "ui/snapshotmodel.hpp"
 
@@ -54,7 +55,7 @@ class GuiProject : QObject {
   RegisterModel _registerModel;
   EditorComponent _editorComponent;
   // SnapshotModel snapmodel;
-  // MemoryComponentPresenter memorymodel;
+  MemoryComponentPresenter _memoryModel;
   // Core-Project;
   std::function<std::string(MemoryValue)> hexConversion;
   std::function<std::string(MemoryValue)> binConversion;

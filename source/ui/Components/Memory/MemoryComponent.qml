@@ -28,16 +28,16 @@ Item {
             memory_size = 0
         }
 
-        while (libraryModel.count < memory_size) {
-            libraryModel.append({
+        while (memoryModel.count < memory_size) {
+            memoryModel.append({
                                     address: "0x" + pad(
-                                                 libraryModel.count.toString(
+                                                 memoryModel.count.toString(
                                                      16).toUpperCase(), 5),
                                     info: "info"
                                 })
         }
-        while (libraryModel.count > memory_size) {
-            libraryModel.remove(libraryModel.count - 1, 1)
+        while (memoryModel.count > memory_size) {
+            memoryModel.remove(memoryModel.count - 1, 1)
         }
     }
 
@@ -48,9 +48,9 @@ Item {
                                        z) + n
     }
 
-    ListModel {
-        id: libraryModel
-    }
+    /*ListModel {
+        id: memoryModel
+    }*/
 
     TableView {
         id: tableView
@@ -71,7 +71,7 @@ Item {
             width: 70
         }
         TableViewColumn {
-            role: "content"
+            role: "value"
             title: "Inhalt"
             movable: false
             resizable: false
@@ -85,7 +85,7 @@ Item {
             resizable: false
             width: parent.width - 200
         }
-        model: libraryModel
+        model: memoryModel
     }
 
     Component {
@@ -99,7 +99,7 @@ Item {
                 }
             }
             font.bold: true
-            inputMask: "\\0\\xHHHH"
+            inputMask: "\\0\\xHH"
             onActiveFocusChanged: {
                 cursorPosition = 2
             }
@@ -114,15 +114,20 @@ Item {
                 if(cursorPosition <= 1 && selectedText == "")
                     nextItemInFocusChain(false).forceActiveFocus()
             }
-            onTextChanged: {
+            /*onTextChanged: {
                 textFieldMemoryValue.text = textFieldMemoryValue.text.replace(' ','0')
-            }
+                This destroys something!
+            }*/
             Keys.onDeletePressed: {
 
             }
+            onEditingFinished: {
+                    memoryModel.setValue(styleData.row, textFieldMemoryValue.text);
+            }
 
-            placeholderText: "0x0000"
-            text: "0x0000"
+            placeholderText: "0x00"
+            text: model.value
+
         }
     }
 
