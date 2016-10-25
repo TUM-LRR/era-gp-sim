@@ -91,27 +91,30 @@ MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {
   return prev;
 }
 
-namespace {
-void appendMemoryValue(std::stringstream& strm, const MemoryValue& value) {
+void Memory::appendMemoryValue(std::stringstream& strm,
+                               const MemoryValue& value) {
   static const char hex[] = "0123456789ABCDEF";
   bool zero = true;
+  // reversely iterate over all the bytes in value (high->low)
   for (std::size_t l = (value.getSize() + 7) / 8; l-- > 0;) {
     std::uint8_t byte = value.getByteAt(l * 8);
     std::uint8_t upperChar = byte / 16;
     std::uint8_t lowerChar = byte % 16;
+    // do not print if this is the first character && it's 0
     if (!zero || upperChar != 0) {
       strm.put(hex[upperChar]);
       zero = false;
     }
+    // do not print if this is the first character && it's 0
     if (!zero || lowerChar != 0) {
       strm.put(hex[lowerChar]);
       zero = false;
     }
   }
+  // if no characters have been printed print 0
   if (zero) {
     strm.put('0');
   }
-}
 }
 
 std::pair<std::map<std::string, std::size_t>,
@@ -121,17 +124,23 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
     lineLength = _byteCount;
   }
   std::map<std::string, std::string> data{};
+  // fill map with info about the memory
   std::map<std::string, std::size_t> meta{
       {_byteCountStringIdentifier, _byteCount},
       {_byteSizeStringIdentifier, _byteSize},
       {_lineLengthStringIdentifier, lineLength}};
   const std::size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
+  // empty MemoryValue to compare others to
   const MemoryValue empty{_byteSize * lineLength};
+  // iterate over all lines in memory
   for (std::size_t i = 0; i < lineCount; ++i) {
+    // if this line == 0x00 do not do anything at all
     if (get(i * lineLength, lineLength) != empty) {
+      // the key is _lineStringIdentifier and the cell address
       std::stringstream name{};
       name << _lineStringIdentifier;
       name << (i * lineLength);
+      // iterate over all the cells in a line to get the value
       std::stringstream value{};
       for (std::size_t j = 0; j < lineLength; ++j) {
         MemoryValue v{get(i * lineLength + j)};
@@ -141,7 +150,7 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
       data[name.str()] = value.str();
     }
   }
-  return make_pair(meta, data);
+  return make_pair(std::move(meta), std::move(data));
 }
 
 nlohmann::json& Memory::serializeJSON(nlohmann::json& json,
@@ -164,11 +173,10 @@ nlohmann::json Memory::serializeJSON(nlohmann::json&& json,
   return serializeJSON(json, separator, lineLength);
 }
 
-namespace {
-MemoryValue deserializeLine(const std::string& line,
-                            std::size_t byteSize,
-                            std::size_t lineLength,
-                            char separator) {
+MemoryValue Memory::deserializeLine(const std::string& line,
+                                    std::size_t byteSize,
+                                    std::size_t lineLength,
+                                    char separator) {
   static const std::unordered_map<char, std::uint8_t> reverseHexMap{
       {'0', 0},  {'1', 1},  {'2', 2},  {'3', 3},  {'4', 4},  {'5', 5},
       {'6', 6},  {'7', 7},  {'8', 8},  {'9', 9},  {'a', 10}, {'b', 11},
@@ -185,13 +193,15 @@ MemoryValue deserializeLine(const std::string& line,
       --byte;
       bit = 0;
     } else {
-      // if hex -> write into ret, inc count
+      // if hex hex into number
       std::uint8_t hex = reverseHexMap.at(*i);
+      // TODO::catch non hex char and die
+      // write all 4 bit of number into memoryvalue
       for (std::size_t j = 0; j < 4; ++j) {
         if (hex % 2 == 1) {
           ret.put(byte * byteSize + bit);
         }
-        ++bit;
+        ++bit;    // increment bit counter
         hex >>= 1;// could make this faster using long switch case
       }
     }
@@ -200,24 +210,29 @@ MemoryValue deserializeLine(const std::string& line,
   }
   return ret;
 }
-}
 
 void Memory::deserializeJSON(const nlohmann::json& json) {
+  // check that sizes match
   assert::that(_byteCount ==
                json[_byteCountStringIdentifier].get<std::size_t>());
   assert::that(_byteSize == json[_byteSizeStringIdentifier].get<std::size_t>());
   std::size_t lineLength = json[_lineLengthStringIdentifier].get<std::size_t>();
   const std::size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
-  const MemoryValue empty{_byteSize * lineLength};
   const char separator = json[_separatorStringIdentifier].get<char>();
+  // iterate over all lines
   for (std::size_t i = 0; i < lineCount; ++i) {
+    // the key is _lineStringIdentifier and the cell address
     std::stringstream name{};
     name << _lineStringIdentifier;
     name << (i * lineLength);
+    // find key
     auto lineIterator = json.find(name.str());
+    // if key exists
     if (lineIterator != json.end()) {
+      // deserialize Line
       MemoryValue value =
           deserializeLine(*lineIterator, _byteSize, lineLength, separator);
+      // write line
       put(i * lineLength, value);
     }
   }

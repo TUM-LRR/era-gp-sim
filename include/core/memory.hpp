@@ -135,7 +135,8 @@ class Memory {
    */
   std::pair<std::map<std::string, std::size_t>,
             std::map<std::string, std::string>>
-  serializeRaw(char separator = standardSeparator, std::size_t lineLength = 64);
+  serializeRaw(char separator = _standardSeparator,
+               std::size_t lineLength = 64);
 
   /**
    * \brief converts the memory into serializeable strings
@@ -145,7 +146,7 @@ class Memory {
    * \returns json
    */
   nlohmann::json &serializeJSON(nlohmann::json &json,
-                                char separator = standardSeparator,
+                                char separator = _standardSeparator,
                                 std::size_t lineLength = 64);
 
   /**
@@ -156,7 +157,7 @@ class Memory {
    * \returns json
    */
   nlohmann::json serializeJSON(nlohmann::json &&json = nlohmann::json(),
-                               char separator = standardSeparator,
+                               char separator = _standardSeparator,
                                std::size_t lineLength = 64);
 
   /**
@@ -183,12 +184,12 @@ class Memory {
   void clear();
 
  private:
-  static constexpr char standardSeparator = ',';
+  static constexpr char _standardSeparator = ',';
   static const std::string _byteCountStringIdentifier;
   static const std::string _byteSizeStringIdentifier;
   static const std::string _lineLengthStringIdentifier;
   static const std::string _separatorStringIdentifier;
-static const std::string _lineStringIdentifier;
+  static const std::string _lineStringIdentifier;
   std::size_t _byteSize;  /**< Brief Size of a Byte in bit*/
   std::size_t _byteCount; /**< Brief Number of Bytes*/
   MemoryValue _data;      /**< Brief MemoryValue holding *all* the data*/
@@ -199,8 +200,31 @@ static const std::string _lineStringIdentifier;
   /**
    * \brief This Method is called whenever something in the Memory changes and
    *        notifies the Gui ofthe change
+   * \param address address of the updated value
+   * \param amount length of the updated value
    */
   void wasUpdated(const std::size_t address, const std::size_t amount = 1);
+
+  /**
+   * \brief appends a string represenation of value to stream
+   * \param strm stringstream so append value to
+   * \param value value to append to strm
+   */
+  static void
+  appendMemoryValue(std::stringstream &strm, const MemoryValue &value);
+
+  /**
+   * \brief converts a line of hex values to a MemoryValue
+   * \param line line containing all the data
+   * \param byteSize Size of a memory cell in bit
+   * \param lineLength maximum number of cells separated by separator
+   * \param separator char separating different cells
+   * \returns a long MemoryValue represenation of line
+   */
+  static MemoryValue deserializeLine(const std::string &line,
+                                     std::size_t byteSize,
+                                     std::size_t lineLength,
+                                     char separator);
 };
 
 #endif// ERAGPSIM_CORE_MEMORY_HPP_
