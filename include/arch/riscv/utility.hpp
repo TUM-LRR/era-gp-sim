@@ -60,7 +60,7 @@ T convert(const MemoryValue& memoryValue) {
 template <typename T>
 std::enable_if_t<std::is_integral<T>::value, MemoryValue>
 convert(const T& value) {
-  static const auto digits = std::numeric_limits<T>::digits;
+  static const auto digits = sizeof(T) * CHAR_BIT;
   return conversions::convert(value,
                               digits,
                               riscv::BITS_PER_BYTE,
@@ -79,7 +79,7 @@ convert(const T& value) {
  */
 template <typename T>
 T loadRegister(MemoryAccess& memoryAccess, const std::string& registerName) {
-  auto memory = memoryAccess.getRegisterValue(registerName);
+  auto memory = memoryAccess.getRegisterValue(registerName).get();
   return riscv::convert<T>(memory);
 }
 
@@ -96,7 +96,7 @@ void storeRegister(MemoryAccess& memoryAccess,
                    const std::string& registerName,
                    const T& value) {
   auto memory = convert(value);
-  memoryAccess.setRegisterValue(registerName, memory);
+  memoryAccess.putRegisterValue(registerName, memory);
 }
 }
 

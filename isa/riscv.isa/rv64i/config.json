@@ -151,7 +151,7 @@
                     "id": 0,
                     "size": 64,
                     "alias": "zero",
-                    "constant": 0
+                    "constant": "0x0"
                 },
                 {
                     "name": "x1",

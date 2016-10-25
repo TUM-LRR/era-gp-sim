@@ -111,7 +111,7 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    * \return An empty memory value.
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate());
+    assert(validate(memoryAccess).isSuccess());
     auto destination = _children[0]->getIdentifier();
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
 
@@ -121,9 +121,7 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
 
     auto result = _jump(programCounter, memoryAccess);
 
-    riscv::storeRegister<UnsignedWord>(memoryAccess, "pc", result);
-
-    return {};
+    return riscv::convert<UnsignedWord>(result);
   }
 
   /**
@@ -133,18 +131,18 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    *
    * \return A `ValidationResult` indicating the validity of the node.
    */
-  ValidationResult validate() const override {
+  ValidationResult validate(MemoryAccess& memoryAccess) const override {
     auto result = _validateNumberOfChildren();
-    if (!result) return result;
+    if (!result.isSuccess()) return result;
 
-    result = _validateChildren();
-    if (!result) return result;
+    result = _validateChildren(memoryAccess);
+    if (!result.isSuccess()) return result;
 
     result = _validateOperandTypes();
-    if (!result) return result;
+    if (!result.isSuccess()) return result;
 
-    result = _validateOffset();
-    if (!result) return result;
+    result = _validateOffset(memoryAccess);
+    if (!result.isSuccess()) return result;
 
     return ValidationResult::success();
   }
@@ -157,8 +155,8 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
   }
 
  protected:
-  FRIEND_TEST(TestJumpInstructions, TestJALValidation);
-  FRIEND_TEST(TestJumpInstructions, TestJALRValidation);
+  FRIEND_TEST(JumpInstructionTest, JALValidation);
+  FRIEND_TEST(JumpInstructionTest, JALRValidation);
 
   /**
    * The actual, instruction-specific jump code.
@@ -198,7 +196,7 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    *
    * \return A `ValidationResult` indicating the result of the check.
    */
-  virtual ValidationResult _validateOffset() const = 0;
+  virtual ValidationResult _validateOffset(MemoryAccess& memoryAccess) const = 0;
 
   /**
    * Validates the program counter that would resulting from the instruction.

@@ -28,11 +28,10 @@ InstructionInformation::InstructionInformation(
 }
 
 InstructionInformation::InstructionInformation(const std::string& mnemonic)
-: _mnemonic(mnemonic) {
-}
+    : _mnemonic(Utility::toLower(mnemonic)) {}
 
-bool InstructionInformation::
-operator==(const InstructionInformation& other) const noexcept {
+bool InstructionInformation::operator==(
+    const InstructionInformation& other) const noexcept {
   if (this->_mnemonic != other._mnemonic) return false;
   if (this->_key != other._key) return false;
   if (this->_format != other._format) return false;
@@ -40,22 +39,21 @@ operator==(const InstructionInformation& other) const noexcept {
   return true;
 }
 
-
-bool InstructionInformation::
-operator!=(const InstructionInformation& other) const noexcept {
+bool InstructionInformation::operator!=(
+    const InstructionInformation& other) const noexcept {
   return !(*this == other);
 }
 
-InstructionInformation&
-InstructionInformation::deserialize(InformationInterface::Format& data) {
+InstructionInformation& InstructionInformation::deserialize(
+    InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
 
-InstructionInformation&
-InstructionInformation::mnemonic(const std::string& mnemonic) {
+InstructionInformation& InstructionInformation::mnemonic(
+    const std::string& mnemonic) {
   assert::that(!mnemonic.empty());
-  _mnemonic = mnemonic;
+  _mnemonic = Utility::toLower(mnemonic);
 
   return *this;
 }
@@ -79,12 +77,10 @@ const InstructionKey& InstructionInformation::getKey() const {
   return _key;
 }
 
-bool InstructionInformation::hasKey() const noexcept {
-  return _key.isValid();
-}
+bool InstructionInformation::hasKey() const noexcept { return _key.isValid(); }
 
-InstructionInformation&
-InstructionInformation::format(const std::string& format) {
+InstructionInformation& InstructionInformation::format(
+    const std::string& format) {
   assert::that(!format.empty());
   _format = format;
   return *this;

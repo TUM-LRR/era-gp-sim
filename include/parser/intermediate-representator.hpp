@@ -29,6 +29,7 @@
 #include "parser/intermediate-operation.hpp"
 
 class SyntaxTreeGenerator;
+class Architecture;
 
 /**
  * \brief Provides methods for collecting and compiling a command list.
@@ -79,13 +80,20 @@ class IntermediateRepresentator {
 
   /**
    * \brief Transforms the commands to a syntax tree list.
+   * \param architecture The architecture for any specific memory/instruction
+   * information.
    * \param generator A syntax tree generator to transform the instructions into
    * a readable format for the architecture module.
+   * \param allocator A memory allocator for possible memory reservations.
    * \param state The compile state to report errors.
+   * \param memoryAccess The access to write into the memory.
    * \return The list of syntax trees to be interpreted by the architecture.
    */
-  FinalRepresentation
-  transform(const SyntaxTreeGenerator& generator, CompileState& state);
+  FinalRepresentation transform(const Architecture& architecture,
+                                const SyntaxTreeGenerator& generator,
+                                MemoryAllocator& allocator,
+                                CompileState& state,
+                                MemoryAccess& memoryAccess);
 
  private:
   /**

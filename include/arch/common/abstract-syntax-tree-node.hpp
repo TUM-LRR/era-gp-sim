@@ -69,7 +69,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return Whether this syntax tree is valid for execution.
    */
-  virtual ValidationResult validate() const = 0;
+  virtual ValidationResult validate(MemoryAccess& memoryAccess) const = 0;
 
   /**
    * Validates, if this instruction is semantically correct during runtime.
@@ -146,7 +146,7 @@ class AbstractSyntaxTreeNode {
    *
    * \return True if all children are valid, else false.
    */
-  ValidationResult _validateChildren() const;
+  ValidationResult _validateChildren(MemoryAccess& memoryAccess) const;
 
   /** The child nodes of this node. */
   std::vector<Node> _children;
