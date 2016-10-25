@@ -33,7 +33,7 @@
 namespace {
 
 constexpr std::size_t kProducerThreads = 4;
-constexpr std::size_t kTestSize = 10000000;
+constexpr std::size_t kTestSize = 100000;
 
 // An object than can only be copied, but not moved
 class CopyOnlyObject {
@@ -93,12 +93,14 @@ public:
   void operator()() {
     Object object;
     // Pop all the objects from the queue
-    for (std::size_t count = 0; count < kTestSize; ++count) {
+    std::size_t count = 0; 
+    while (count < kTestSize) {
       if (_queue->pop(object)) {
         std::size_t index = static_cast<std::size_t>(object);
         // Check that each value occurs only once
         ASSERT_FALSE(_verify[index]);
         _verify[index] = true;
+        ++count;
       }
     }
     // The queue should be empty now
