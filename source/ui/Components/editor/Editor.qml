@@ -98,9 +98,6 @@ ScrollView {
                 //Connection to react to the parse signal
                 Connections {
                   target: editor
-                  onParseText: {
-                    editor.sendText(textArea.text);
-                  }
                   onExecutionLineChanged: {
                     textArea.line = line;
                   }
@@ -116,7 +113,7 @@ ScrollView {
                   interval: 1000
                   repeat: false
                   onTriggered: {
-                    editor.sendText(textArea.text);
+                    editor.parse();
                   }
                 }
 

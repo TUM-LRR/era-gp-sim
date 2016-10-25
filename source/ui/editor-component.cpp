@@ -98,22 +98,19 @@ void EditorComponent::init(QQuickTextDocument *qDocument) {
   if (this->_highlighter) {
     assert::that(false);
   }
+  _textDocument = qDocument->textDocument();
   // set tab width to 4 spaces
-  QTextOption textOptions = qDocument->textDocument()->defaultTextOption();
-  QFontMetrics fontMetrics(qDocument->textDocument()->defaultFont());
+  QTextOption textOptions = _textDocument->defaultTextOption();
+  QFontMetrics fontMetrics(_textDocument->defaultFont());
   textOptions.setTabStop(4 * fontMetrics.width(' '));
-  qDocument->textDocument()->setDefaultTextOption(textOptions);
+  _textDocument->setDefaultTextOption(textOptions);
 
-  _highlighter = (std::make_unique<SyntaxHighlighter>(
-      std::move(_keywords), qDocument->textDocument()));
-}
-
-void EditorComponent::sendText(QString text) {
-  _commandInterface.parse(text.toStdString());
+  _highlighter = (std::make_unique<SyntaxHighlighter>(std::move(_keywords),
+                                                      _textDocument));
 }
 
 void EditorComponent::parse() {
-  emit parseText();
+  _commandInterface.parse(_textDocument->toPlainText().toStdString());
 }
 
 void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
