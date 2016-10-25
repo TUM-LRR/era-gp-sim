@@ -92,6 +92,7 @@ ScrollView {
 
                 //(re)start the parse timer, if an edit is made
                 onTextChanged: {
+                  editor.setTextChanged(true);
                   parseTimer.restart();
                 }
 

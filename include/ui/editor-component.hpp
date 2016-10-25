@@ -65,6 +65,13 @@ class EditorComponent : public QObject {
   Q_INVOKABLE void parse();
 
   /**
+   * Set the _textChanged flag to a value.
+   *
+   * \param value
+   */
+  Q_INVOKABLE void setTextChanged(bool value);
+
+  /**
    * Set a new list of errors to display in the editor.
    *
    * \param errorList List of CompileError objects.
@@ -118,6 +125,11 @@ class EditorComponent : public QObject {
 
   /** A pointer to the QTextDocument used by the editor. */
   QTextDocument *_textDocument;
+
+  /** A boolean to check wether the text was changed since it was last parsed.
+   * The text has changed if this flag is true.
+   */
+  bool _textChanged;
 
  signals:
   /** A signal to delete all the errors in the editor. */

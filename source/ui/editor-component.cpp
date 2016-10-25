@@ -110,7 +110,14 @@ void EditorComponent::init(QQuickTextDocument *qDocument) {
 }
 
 void EditorComponent::parse() {
-  _commandInterface.parse(_textDocument->toPlainText().toStdString());
+  if (_textChanged) {
+    _commandInterface.parse(_textDocument->toPlainText().toStdString());
+    _textChanged = false;
+  }
+}
+
+void EditorComponent::setTextChanged(bool value) {
+  _textChanged = value;
 }
 
 void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
