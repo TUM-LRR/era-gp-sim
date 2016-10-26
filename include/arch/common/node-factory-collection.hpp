@@ -98,6 +98,10 @@ class NodeFactoryCollection {
   Node createArithmeticNode(
       AbstractArithmeticNodeFactory::Operation operation) const;
 
+  /**
+   * It is asserted that a corresponding factory must be set prior to this method call.
+   * \copydoc AbstractDataNodeFactory::createDataNode
+   */
   Node createDataNode(const std::string& data) const;
 
  private:

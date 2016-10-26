@@ -85,7 +85,7 @@ NodeFactoryCollection::Node NodeFactoryCollection::createArithmeticNode(
   return _arithmeticFactory->createArithmeticNode(operation);
 }
 
-NodeFactoryCollection::Node NodeFactoryCollection::createDataNode(const std::__cxx11::string &data) const {
+NodeFactoryCollection::Node NodeFactoryCollection::createDataNode(const std::string &data) const {
     assert(static_cast<bool>(_dataNodeFactory));
     return _dataNodeFactory->createDataNode(data);
 }

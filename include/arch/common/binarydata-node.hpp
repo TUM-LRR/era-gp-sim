@@ -17,30 +17,65 @@
 #ifndef ERAGPSIM_ARCH_COMMON_BINARYDATA_NODE_HPP
 #define ERAGPSIM_ARCH_COMMON_BINARYDATA_NODE_HPP
 
-#include "core/memory-value.hpp"
-#include "arch/common/validation-result.hpp"
 #include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/validation-result.hpp"
+#include "core/memory-value.hpp"
 
-class BinaryDataNode : public AbstractSyntaxTreeNode
-{
-public:
-    static constexpr unsigned char PADDING = 0;
-    using Data = std::string;
+/**
+ * A binary data node stores data that is best stored in binary form, like a
+ * text message, string literal etc.
+ */
+class BinaryDataNode : public AbstractSyntaxTreeNode {
+ public:
+  static constexpr unsigned char PADDING = 0;
+  using Data = std::string;
 
-    BinaryDataNode();
+  /**
+   * Constructs an empty data node, containing no data.
+   */
+  BinaryDataNode();
 
-    BinaryDataNode(const std::string& data);
+  /**
+   * Constructs a data node with the given data in string form.
+   * \param data a string (or vector<char>) from where the data is copied
+   */
+  BinaryDataNode(const std::string& data);
 
-    ValidationResult validate(MemoryAccess &memoryAccess) const override;
+  /**
+   * \copydoc AbstractSyntaxTreeNode::validate()
+   * \param memoryAccess
+   * \return success, when this node does not have any child nodes, fail
+   * otherwise
+   */
+  ValidationResult validate(MemoryAccess& memoryAccess) const override;
 
-    MemoryValue assemble() const override;
+  /**
+   * Transforms the stores data into a MemoryValue and returns the MemoryValue.
+   * The size of this MemoryValue depends on the size of stored data and
+   * therefore is not suited to be used in an actual assembly format.
+   * Note: Due to a limitation concerning MemoryValue, the data may be padded to
+   * reach a size that is a multiple of 8.
+   * This padding will only affect the data inside the MemoryValue and will not
+   * be cached in the data this node stores.
+   * \return A (padded) MemoryValue containing the data
+   */
+  MemoryValue assemble() const override;
 
-    MemoryValue getValue(MemoryAccess &memoryAccess) const override;
+  /**
+   * Returns the same MemoryValue as assemble()
+   * \param memoryAccess
+   * \return
+   */
+  MemoryValue getValue(MemoryAccess& memoryAccess) const override;
 
-    const std::string& getIdentifier() const override;
+  /**
+   * Returns the stored data as string.
+   * \return The stored data as string
+   */
+  const std::string& getIdentifier() const override;
 
-private:
-    Data _rawData;
+ private:
+  Data _rawData;
 };
 
-#endif // ERAGPSIM_ARCH_COMMON_BINARYDATA_NODE_HPP
+#endif  // ERAGPSIM_ARCH_COMMON_BINARYDATA_NODE_HPP

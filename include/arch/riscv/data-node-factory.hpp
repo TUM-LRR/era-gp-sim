@@ -20,11 +20,22 @@
 #include "arch/common/abstract-data-node-factory.hpp"
 
 namespace riscv {
+
+/**
+ * A AbstractDataNodeFactory implementation for the RISC-V architecture.
+ * This factory will use BinaryDataNodes for storing data.
+ */
 class DataNodeFactory : public AbstractDataNodeFactory
 {
 public:
     using Node = AbstractDataNodeFactory::Node;
 
+    /**
+     * \copydoc AbstractDataNodeFactory::createDataNode()
+     * This implementation uses BinaryDataNode.
+     * \ data
+     * \return
+     */
     Node createDataNode(const std::string &data) const override;
 };
 }
