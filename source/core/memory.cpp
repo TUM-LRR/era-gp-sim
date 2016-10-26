@@ -255,3 +255,16 @@ void Memory::clear() {
 void Memory::_wasUpdated(const std::size_t address, const std::size_t amount) {
   _callback(address, amount);
 }
+
+bool Memory::isProtected(std::size_t address, std::size_t amount) {
+  // search for first pair greater than address
+  for (const auto& pair : _protection) {
+    if (pair.first <= address + amount && pair.second >= address) {
+      return true;
+    }
+    if (pair.first > address + amount) {
+      return false;
+    }
+  }
+  return false;
+}

@@ -172,6 +172,14 @@ class Memory {
    */
   void clear();
 
+  /**
+   * \brief returns true iff any cells within the area is protected
+   * \param address first address of the to check area
+   * \param amount of cells to ckeck beginning with address
+   * \returns true iff any cells within the area is protected
+   */
+  bool isProtected(std::size_t address, std::size_t amount = 1);
+
  private:
   // character to defaultly separate cells in serialized memory
   static constexpr char _standardSeparator = ',';
@@ -185,8 +193,11 @@ class Memory {
   std::size_t _byteCount; /**< Brief Number of Bytes*/
   MemoryValue _data;      /**< Brief MemoryValue holding *all* the data*/
   std::function<void(const std::size_t, const std::size_t)> _callback = [](
-      const std::size_t, const std::size_t) {
-  }; /**< Brief This function gets called for every changed area in Memory*/
+      const std::size_t, const std::size_t) {};
+  /**< Brief This function gets called for every changed area in Memory*/
+
+  std::vector<std::pair<std::size_t, std::size_t>> _protection{};
+  /**< Brief vector storing data about protected memory areas */
 
   /**
    * \brief This Method is called whenever something in the Memory changes and
