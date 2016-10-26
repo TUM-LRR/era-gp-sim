@@ -117,16 +117,22 @@ class Memory {
    * \brief Writes value into the Memory at address
    * \param address Starting address of the to be overwritten value
    * \param value Value to write
+   * \param noProtection if this is true do ignore all protection
    */
-  void put(const std::size_t address, const MemoryValue &value);
+  void put(const std::size_t address,
+           const MemoryValue &value,
+           bool noProtection = false);
   /**
    * \brief Writes value into the Memory at address and returns the previous
    *        value
    * \param address Starting address of the to be overwritten value
    * \param value Value to write
+   * \param noProtection if this is true do ignore all protection
    * \returns Value that was overwritten
    */
-  MemoryValue set(const std::size_t address, const MemoryValue &value);
+  MemoryValue set(const std::size_t address,
+                  const MemoryValue &value,
+                  bool noProtection = false);
 
   /**
    * \brief converts the memory into serializeable strings
@@ -187,6 +193,18 @@ class Memory {
    * \param amount of cells to protect beginning with address
    */
   void makeProtected(std::size_t address, std::size_t amount = 1);
+
+  /**
+   * \brief makes the area not protected
+   * \param address first address of the to unprotect area
+   * \param amount of cells to unprotect beginning with address
+   */
+  void makeUnprotected(std::size_t address, std::size_t amount = 1);
+
+  /**
+   * \brief makes nothing protected
+   */
+  void removeProtection();
 
  private:
   // character to defaultly separate cells in serialized memory

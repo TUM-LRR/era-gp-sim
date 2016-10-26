@@ -71,11 +71,17 @@ Memory::get(const std::size_t address, const std::size_t amount) const {
   }
 }
 
-void Memory::put(const std::size_t address, const MemoryValue& value) {
+void Memory::put(const std::size_t address,
+                 const MemoryValue& value,
+                 bool noProtection) {
   assert::that(address >= 0);
   assert::that(value.getSize() % _byteSize == 0);
   const std::size_t amount{value.getSize() / _byteSize};
   assert::that(amount >= 0);
+  if (!noProtection && isProtected(address, value.getSize())) {
+    // do not write anything
+    return;
+  }
   if (address + amount <= _byteCount) {
     _data.write(value, address * _byteSize);
   } else {
@@ -84,10 +90,12 @@ void Memory::put(const std::size_t address, const MemoryValue& value) {
   }
 }
 
-MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {
+MemoryValue Memory::set(const std::size_t address,
+                        const MemoryValue& value,
+                        bool noProtection) {
   const std::size_t amount{value.getSize() / _byteSize};
   MemoryValue prev{get(address, amount)};
-  put(address, value);
+  put(address, value, noProtection);
   return prev;
 }
 
@@ -292,4 +300,36 @@ void Memory::makeProtected(std::size_t address, std::size_t amount) {
     }
     _protection.insert(std::make_pair(min, max));
   }
+}
+
+void Memory::makeUnprotected(std::size_t address, std::size_t amount) {
+  // maybe I should use a Linked List instead
+  if (!isProtected(address, amount)) {
+  } else {
+    // find all conflicting pairs
+    std::vector<std::pair<std::size_t, std::size_t>> conflictList{};
+    for (const auto& pair : _protection) {
+      if (pair.first <= address + amount && pair.second >= address) {
+        conflictList.push_back(pair);
+      }
+    }
+    // delete all others and gather extremes
+    std::size_t min = address;
+    std::size_t max = address + amount;
+    for (const auto& pair : conflictList) {
+      min = (pair.first < min) ? pair.first : min;
+      max = (pair.second < max) ? pair.second : max;
+      _protection.erase(pair);
+    }
+    if (min < address) {
+      _protection.insert(std::make_pair(min, address));
+    }
+    if (max > address + amount) {
+      _protection.insert(std::make_pair(address + amount, max));
+    }
+  }
+}
+
+void Memory::removeProtection() {
+  _protection.clear();
 }
