@@ -91,7 +91,7 @@ MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {
   return prev;
 }
 
-void Memory::appendMemoryValue(std::stringstream& strm,
+void Memory::_appendMemoryValue(std::stringstream& strm,
                                const MemoryValue& value) {
   static const char hex[] = "0123456789ABCDEF";
   bool zero = true;
@@ -144,7 +144,7 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
       std::stringstream value{};
       for (std::size_t j = 0; j < lineLength; ++j) {
         MemoryValue v{get(i * lineLength + j)};
-        appendMemoryValue(value, v);
+        _appendMemoryValue(value, v);
         value.put(separator);
       }
       data[name.str()] = value.str();
@@ -173,7 +173,7 @@ nlohmann::json Memory::serializeJSON(nlohmann::json&& json,
   return serializeJSON(json, separator, lineLength);
 }
 
-MemoryValue Memory::deserializeLine(const std::string& line,
+MemoryValue Memory::_deserializeLine(const std::string& line,
                                     std::size_t byteSize,
                                     std::size_t lineLength,
                                     char separator) {
@@ -231,7 +231,7 @@ void Memory::deserializeJSON(const nlohmann::json& json) {
     if (lineIterator != json.end()) {
       // deserialize Line
       MemoryValue value =
-          deserializeLine(*lineIterator, _byteSize, lineLength, separator);
+          _deserializeLine(*lineIterator, _byteSize, lineLength, separator);
       // write line
       put(i * lineLength, value);
     }
@@ -252,6 +252,6 @@ void Memory::clear() {
   _data.clear();
 }
 
-void Memory::wasUpdated(const std::size_t address, const std::size_t amount) {
+void Memory::_wasUpdated(const std::size_t address, const std::size_t amount) {
   _callback(address, amount);
 }
