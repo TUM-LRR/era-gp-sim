@@ -11,8 +11,14 @@ signed-representation: twos-complement
 instructions:
   - mnemonic: simusleep
     length: 32
+    format: custom
+    key:
+      opcode: -1
   - mnemonic: simucrash
     length: 32
+    format: custom
+    key:
+      opcode: -1
   - mnemonic: lui
     length: 32
     format: U
