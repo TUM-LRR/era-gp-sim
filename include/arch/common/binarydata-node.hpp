@@ -24,6 +24,9 @@
 class BinaryDataNode : public AbstractSyntaxTreeNode
 {
 public:
+    static constexpr unsigned char PADDING = 0;
+    using Data = std::string;
+
     BinaryDataNode();
 
     BinaryDataNode(const std::string& data);
@@ -37,7 +40,7 @@ public:
     const std::string& getIdentifier() const override;
 
 private:
-    std::vector<unsigned char> _rawData;
+    Data _rawData;
 };
 
 #endif // ERAGPSIM_ARCH_COMMON_BINARYDATA_NODE_HPP

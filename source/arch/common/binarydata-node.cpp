@@ -16,8 +16,6 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 #include "include/arch/common/binarydata-node.hpp"
 
-static std::string identifier = "binary-data";
-
 BinaryDataNode::BinaryDataNode() : AbstractSyntaxTreeNode(Type::OTHER) {}
 
 BinaryDataNode::BinaryDataNode(const std::string &data)
@@ -32,7 +30,12 @@ ValidationResult BinaryDataNode::validate(MemoryAccess &memoryAccess) const {
 }
 
 MemoryValue BinaryDataNode::assemble() const {
-  MemoryValue assembled = MemoryValue(_rawData, _rawData.size());
+  auto maxAppend = _rawData.size()%8;
+  MemoryValue::Underlying copy = MemoryValue::Underlying{_rawData.begin(), _rawData.end()};
+  for(auto i=0; i<maxAppend; ++i) {
+      copy.push_back(PADDING);
+  }
+  MemoryValue assembled = MemoryValue(copy, copy.size());
   return assembled;
 }
 
@@ -41,5 +44,5 @@ MemoryValue BinaryDataNode::getValue(MemoryAccess &memoryAccess) const {
 }
 
 const std::string &BinaryDataNode::getIdentifier() const {
-  return identifier;
+  return _rawData;
 }

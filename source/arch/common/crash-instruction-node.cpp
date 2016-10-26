@@ -39,9 +39,8 @@ ValidationResult SimulatorCrashInstructionNode::validate(
 
 ValidationResult SimulatorCrashInstructionNode::validateRuntime(
     MemoryAccess &memoryAccess) const {
-  MemoryValue operandText = _children.at(0)->getValue(memoryAccess);
-  auto &raw = operandText.internal();
-  std::string customMsg = std::string(raw.begin(), raw.end());
+  auto operandText = _children.at(0)->getIdentifier();
+  std::string customMsg = std::string(operandText.begin(), operandText.end());
 
   return ValidationResult::fail(
       QT_TRANSLATE_NOOP("Simulator-Debug-Crash-Message",
