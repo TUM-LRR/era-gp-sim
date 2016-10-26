@@ -18,6 +18,8 @@
 
 #include "core/register-set.hpp"
 
+const std::string RegisterSet::_registerStringIdentifier = "register_";
+
 RegisterSet::RegisterSet() : _dict{}, _register{}, _updateSet{} {
 }
 
@@ -44,7 +46,7 @@ void RegisterSet::put(const std::string &name, const MemoryValue &value) {
   if (!_constant[registerID.address]) {
     assert::that(value.getSize() == (registerID.end - registerID.begin));
     _register[registerID.address].write(value, registerID.begin);
-    wasUpdated(registerID.address);
+    _wasUpdated(registerID.address);
   }
 }
 
@@ -58,7 +60,7 @@ RegisterSet::set(const std::string &name, const MemoryValue &value) {
   if (!_constant[registerID.address]) {
     assert::that(value.getSize() == (registerID.end - registerID.begin));
     _register[registerID.address].write(value, registerID.begin);
-    wasUpdated(registerID.address);
+    _wasUpdated(registerID.address);
   }
   return previous;
 }
@@ -86,7 +88,7 @@ void RegisterSet::createRegister(const std::string &name,
   _updateSet.push_back(std::set<std::string>{name});
   _parentVector.push_back(name);
   _constant.push_back(constant);
-  wasUpdated(_register.size() - 1);
+  _wasUpdated(_register.size() - 1);
 }
 void RegisterSet::createRegister(const std::vector<std::string> &nameList,
                                  const MemoryValue &value,
@@ -191,7 +193,7 @@ bool RegisterSet::existsRegister(const std::string &name) const {
   return iterator != _dict.end();
 }
 
-void RegisterSet::wasUpdated(const std::size_t address) {
+void RegisterSet::_wasUpdated(const std::size_t address) {
   for (auto name : _updateSet[address]) {
     _callback(name);
   }

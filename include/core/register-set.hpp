@@ -214,7 +214,14 @@ class RegisterSet {
 
   bool existsRegister(const std::string &name) const;
 
+  /**
+   * \brief prints a representation of this into the stream
+   * \returns the stream
+   */
+  friend std::ostream &operator<<(std::ostream &stream, const Memory &value);
+
  private:
+  static const std::string _registerStringIdentifier;
   std::unordered_map<std::string, RegisterID>
       _dict; /**< Brief Map mapping name -> RegisterID*/
   std::vector<MemoryValue>
@@ -232,11 +239,14 @@ class RegisterSet {
   std::function<void(const std::string &)> _callback = [](const std::string &) {
   }; /**< Brief This function gets called for every changed
 Register*/
+
+  std::map<std::string, std::size_t> _serializeRaw();
+
   /**
    * \brief This Method is called whenever something in the Memory changes and
    *        notifies the Gui ofthe change
    */
-  void wasUpdated(const std::size_t address);
+  void _wasUpdated(const std::size_t address);
 };
 
 #endif// ERAGPSIM_CORE_REGISTERSET_HPP

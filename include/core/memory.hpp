@@ -199,7 +199,7 @@ class Memory {
 
   /**
    * \brief This Method is called whenever something in the Memory changes and
-   *        notifies the Gui ofthe change
+   *        notifies the Gui of the change
    * \param address address of the updated value
    * \param amount length of the updated value
    */
