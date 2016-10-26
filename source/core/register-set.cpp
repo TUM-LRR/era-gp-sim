@@ -16,9 +16,12 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "common/string-conversions.hpp"
 #include "core/register-set.hpp"
 
 const std::string RegisterSet::_registerStringIdentifier = "register_";
+const std::string RegisterSet::_registerNameListStringIdentifier =
+    "register_parent_vector";
 
 RegisterSet::RegisterSet() : _dict{}, _register{}, _updateSet{} {
 }
@@ -198,13 +201,22 @@ nlohmann::json &RegisterSet::serializeJSON(nlohmann::json &json) const {
   for (const auto &i : data) {
     json[i.first] = i.second.toHexString(false, false);
   }
+  json[_registerNameListStringIdentifier] = _parentVector;
   return json;
 }
 nlohmann::json RegisterSet::serializeJSON(nlohmann::json &&json) const {
   return serializeJSON(json);
 }
 std::ostream &operator<<(std::ostream &stream, const RegisterSet &value) {
-  // TODO::Do all the things
+  stream << '{';
+  for (std::size_t i = 0; i < value._register.size(); ++i) {
+    stream << '[';
+    stream << value._parentVector[i];
+    stream << " = ";
+    stream << value._register[i].toHexString(true, true);
+    stream << "];";
+  }
+  stream << '}';
   return stream;
 }
 std::map<std::string, MemoryValue> RegisterSet::_serializeRaw() const {
@@ -219,5 +231,21 @@ std::map<std::string, MemoryValue> RegisterSet::_serializeRaw() const {
 void RegisterSet::_wasUpdated(const std::size_t address) {
   for (auto name : _updateSet[address]) {
     _callback(name);
+  }
+}
+
+void RegisterSet::deserializeJSON(const nlohmann::json &json) {
+  std::vector<std::string> parentVector =
+      json[_registerNameListStringIdentifier];
+  for (const auto &name : parentVector) {
+    if (existsRegister(name)) {
+      const auto &value = json[_registerStringIdentifier + name];
+      // TODO::maybe use sommething else?
+      const auto &converted =
+          StringConversions::hexStringToMemoryValue(value, getSize(name));
+      put(name, converted.value());
+    } else {
+      // die and burn in hell
+    }
   }
 }

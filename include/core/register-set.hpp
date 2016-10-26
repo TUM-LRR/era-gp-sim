@@ -234,6 +234,12 @@ class RegisterSet {
   bool existsRegister(const std::string &name) const;
 
   /**
+   * \brief sets the memory to the data stored in json
+   * \param json the json object to holding the data
+   */
+  void deserializeJSON(const nlohmann::json &json);
+
+  /**
    * \brief prints a representation of this into the stream
    * \returns the stream
    */
@@ -242,6 +248,7 @@ class RegisterSet {
 
  private:
   static const std::string _registerStringIdentifier;
+  static const std::string _registerNameListStringIdentifier;
   std::unordered_map<std::string, RegisterID>
       _dict; /**< Brief Map mapping name -> RegisterID*/
   std::vector<MemoryValue>
