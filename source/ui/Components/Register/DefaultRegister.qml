@@ -23,6 +23,8 @@ import QtQuick.Controls.Styles 1.4
 TextField {
     id: registerTextField
 
+    height: 22
+    font.pointSize: 13
 
     Component.onCompleted: {
         inputMask = registerModel.displayFormatStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)

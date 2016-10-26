@@ -63,12 +63,19 @@ Item {
             Label {
                 id: registerTitleLabel
                 anchors.left: registerContentItem.left
-                anchors.leftMargin: 1
                 anchors.top: parent.top
+                height: 18
                 text: model.Title
                 font.pointSize: 15
                 font.weight: Font.Bold
                 color: "#585858"
+            }
+            Loader {
+                id: registerContentItem
+                anchors.top: registerTitleLabel.bottom
+                anchors.topMargin: 3
+                anchors.left: parent.left
+                anchors.right: dataTypeFormatComboBox.left
             }
             // The list of available data formats.
             ComboBox {
@@ -146,14 +153,6 @@ Item {
                         visible: false
                     }
                 }
-            }
-            Loader {
-                id: registerContentItem
-
-                anchors.top: registerTitleLabel.bottom
-                anchors.topMargin: 3
-                anchors.left: parent.left
-                anchors.right: dataTypeFormatComboBox.left
             }
         }
 
