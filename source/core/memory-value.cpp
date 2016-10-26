@@ -332,4 +332,5 @@ std::string MemoryValue::toHexString(bool Ox, bool leadingZeros) const {
   if (zero) {
     stream.put('0');
   }
+  return stream.str();
 }
