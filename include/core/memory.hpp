@@ -203,7 +203,7 @@ class Memory {
    * \param address address of the updated value
    * \param amount length of the updated value
    */
-  void wasUpdated(const std::size_t address, const std::size_t amount = 1);
+  void _wasUpdated(const std::size_t address, const std::size_t amount = 1);
 
   /**
    * \brief appends a string represenation of value to stream
@@ -211,7 +211,7 @@ class Memory {
    * \param value value to append to strm
    */
   static void
-  appendMemoryValue(std::stringstream &strm, const MemoryValue &value);
+  _appendMemoryValue(std::stringstream &strm, const MemoryValue &value);
 
   /**
    * \brief converts a line of hex values to a MemoryValue
@@ -221,7 +221,7 @@ class Memory {
    * \param separator char separating different cells
    * \returns a long MemoryValue represenation of line
    */
-  static MemoryValue deserializeLine(const std::string &line,
+  static MemoryValue _deserializeLine(const std::string &line,
                                      std::size_t byteSize,
                                      std::size_t lineLength,
                                      char separator);
