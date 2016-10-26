@@ -256,15 +256,40 @@ void Memory::_wasUpdated(const std::size_t address, const std::size_t amount) {
   _callback(address, amount);
 }
 
-bool Memory::isProtected(std::size_t address, std::size_t amount) {
+bool Memory::isProtected(std::size_t address, std::size_t amount) const {
   // search for first pair greater than address
   for (const auto& pair : _protection) {
     if (pair.first <= address + amount && pair.second >= address) {
       return true;
     }
-    if (pair.first > address + amount) {
-      return false;
-    }
+    // if (pair.first > address + amount) {
+    //  return false;
+    //}
   }
   return false;
+}
+
+void Memory::makeProtected(std::size_t address, std::size_t amount) {
+  // maybe I should use a Linked List instead
+  if (!isProtected(address, amount)) {
+    // naively insert into map
+    _protection.insert(std::make_pair(address, address + amount));
+  } else {
+    // find all conflicting pairs
+    std::vector<std::pair<std::size_t, std::size_t>> conflictList{};
+    for (const auto& pair : _protection) {
+      if (pair.first <= address + amount && pair.second >= address) {
+        conflictList.push_back(pair);
+      }
+    }
+    // delete all others and gather extremes
+    std::size_t min = address;
+    std::size_t max = address + amount;
+    for (const auto& pair : conflictList) {
+      min = (pair.first < min) ? pair.first : min;
+      max = (pair.second < max) ? pair.second : max;
+      _protection.erase(pair);
+    }
+    _protection.insert(std::make_pair(min, max));
+  }
 }

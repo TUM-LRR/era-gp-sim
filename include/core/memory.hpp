@@ -23,6 +23,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -178,7 +179,14 @@ class Memory {
    * \param amount of cells to ckeck beginning with address
    * \returns true iff any cells within the area is protected
    */
-  bool isProtected(std::size_t address, std::size_t amount = 1);
+  bool isProtected(std::size_t address, std::size_t amount = 1) const;
+
+  /**
+   * \brief makes the area protected
+   * \param address first address of the to protect area
+   * \param amount of cells to protect beginning with address
+   */
+  void makeProtected(std::size_t address, std::size_t amount = 1);
 
  private:
   // character to defaultly separate cells in serialized memory
@@ -196,7 +204,7 @@ class Memory {
       const std::size_t, const std::size_t) {};
   /**< Brief This function gets called for every changed area in Memory*/
 
-  std::vector<std::pair<std::size_t, std::size_t>> _protection{};
+  std::set<std::pair<std::size_t, std::size_t>> _protection{};
   /**< Brief vector storing data about protected memory areas */
 
   /**
