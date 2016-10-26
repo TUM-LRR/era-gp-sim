@@ -129,17 +129,6 @@ class Memory {
 
   /**
    * \brief converts the memory into serializeable strings
-   * \param separator character used to separate the cells of each line
-   * \param lineLength the length of a line in byte
-   * \returns a serialize representation of the Memory
-   */
-  std::pair<std::map<std::string, std::size_t>,
-            std::map<std::string, std::string>>
-  serializeRaw(char separator = _standardSeparator,
-               std::size_t lineLength = 64);
-
-  /**
-   * \brief converts the memory into serializeable strings
    * \param json the json object to hold the data
    * \param separator character used to separate the cells of each line
    * \param lineLength the length of a line in byte
@@ -147,7 +136,7 @@ class Memory {
    */
   nlohmann::json &serializeJSON(nlohmann::json &json,
                                 char separator = _standardSeparator,
-                                std::size_t lineLength = 64);
+                                std::size_t lineLength = 64) const;
 
   /**
    * \brief converts the memory into serializeable strings
@@ -158,7 +147,7 @@ class Memory {
    */
   nlohmann::json serializeJSON(nlohmann::json &&json = nlohmann::json(),
                                char separator = _standardSeparator,
-                               std::size_t lineLength = 64);
+                               std::size_t lineLength = 64) const;
 
   /**
    * \brief sets the memory to the data stored in json
@@ -222,9 +211,20 @@ class Memory {
    * \returns a long MemoryValue represenation of line
    */
   static MemoryValue _deserializeLine(const std::string &line,
-                                     std::size_t byteSize,
-                                     std::size_t lineLength,
-                                     char separator);
+                                      std::size_t byteSize,
+                                      std::size_t lineLength,
+                                      char separator);
+
+  /**
+   * \brief converts the memory into serializeable strings
+   * \param separator character used to separate the cells of each line
+   * \param lineLength the length of a line in byte
+   * \returns a serialize representation of the Memory
+   */
+  std::pair<std::map<std::string, std::size_t>,
+            std::map<std::string, std::string>>
+  _serializeRaw(char separator = _standardSeparator,
+                std::size_t lineLength = 64) const;
 };
 
 #endif// ERAGPSIM_CORE_MEMORY_HPP_

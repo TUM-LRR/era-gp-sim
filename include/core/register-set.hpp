@@ -29,6 +29,8 @@
 #include "common/assert.hpp"
 #include "core/memory-value.hpp"
 #include "core/register-id.hpp"
+#include "third-party/json/json.hpp"
+
 
 class RegisterSet {
  public:
@@ -210,6 +212,23 @@ class RegisterSet {
                      const std::size_t begin = 0,
                      const bool silent = false);
 
+  /**
+   * \brief converts the memory into serializeable strings
+   * \param json the json object to hold the data
+   * \param separator character used to separate the cells of each line
+   * \param lineLength the length of a line in byte
+   * \returns json
+   */
+  nlohmann::json &serializeJSON(nlohmann::json &json) const;
+  /**
+   * \brief converts the memory into serializeable strings
+   * \param json the json object to hold the data
+   * \param separator character used to separate the cells of each line
+   * \param lineLength the length of a line in byte
+   * \returns json
+   */
+  nlohmann::json serializeJSON(nlohmann::json &&json = nlohmann::json()) const;
+
   bool operator==(const RegisterSet &other) const;
 
   bool existsRegister(const std::string &name) const;
@@ -218,7 +237,8 @@ class RegisterSet {
    * \brief prints a representation of this into the stream
    * \returns the stream
    */
-  friend std::ostream &operator<<(std::ostream &stream, const Memory &value);
+  friend std::ostream &
+  operator<<(std::ostream &stream, const RegisterSet &value);
 
  private:
   static const std::string _registerStringIdentifier;
@@ -240,7 +260,7 @@ class RegisterSet {
   }; /**< Brief This function gets called for every changed
 Register*/
 
-  std::map<std::string, std::size_t> _serializeRaw();
+  std::map<std::string, MemoryValue> _serializeRaw() const;
 
   /**
    * \brief This Method is called whenever something in the Memory changes and

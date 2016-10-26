@@ -92,7 +92,7 @@ MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {
 }
 
 void Memory::_appendMemoryValue(std::stringstream& strm,
-                               const MemoryValue& value) {
+                                const MemoryValue& value) {
   static const char hex[] = "0123456789ABCDEF";
   bool zero = true;
   // reversely iterate over all the bytes in value (high->low)
@@ -119,7 +119,7 @@ void Memory::_appendMemoryValue(std::stringstream& strm,
 
 std::pair<std::map<std::string, std::size_t>,
           std::map<std::string, std::string>>
-Memory::serializeRaw(char separator, std::size_t lineLength) {
+Memory::_serializeRaw(char separator, std::size_t lineLength) const {
   if (lineLength > _byteCount) {
     lineLength = _byteCount;
   }
@@ -155,8 +155,8 @@ Memory::serializeRaw(char separator, std::size_t lineLength) {
 
 nlohmann::json& Memory::serializeJSON(nlohmann::json& json,
                                       char separator,
-                                      std::size_t lineLength) {
-  auto data = serializeRaw(separator, lineLength);
+                                      std::size_t lineLength) const {
+  auto data = _serializeRaw(separator, lineLength);
   for (auto i : data.first) {
     json[i.first] = i.second;
   }
@@ -169,14 +169,14 @@ nlohmann::json& Memory::serializeJSON(nlohmann::json& json,
 
 nlohmann::json Memory::serializeJSON(nlohmann::json&& json,
                                      char separator,
-                                     std::size_t lineLength) {
+                                     std::size_t lineLength) const {
   return serializeJSON(json, separator, lineLength);
 }
 
 MemoryValue Memory::_deserializeLine(const std::string& line,
-                                    std::size_t byteSize,
-                                    std::size_t lineLength,
-                                    char separator) {
+                                     std::size_t byteSize,
+                                     std::size_t lineLength,
+                                     char separator) {
   static const std::unordered_map<char, std::uint8_t> reverseHexMap{
       {'0', 0},  {'1', 1},  {'2', 2},  {'3', 3},  {'4', 4},  {'5', 5},
       {'6', 6},  {'7', 7},  {'8', 8},  {'9', 9},  {'a', 10}, {'b', 11},

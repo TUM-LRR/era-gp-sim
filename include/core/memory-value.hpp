@@ -495,6 +495,7 @@ class MemoryValue {
   std::uint8_t getByteAt(address_t address) const;
   //I made this public because I use it *everywhere*
 
+  std::string toHexString(bool Ox, bool noLeadingZeros) const;
   /**
    * \brief outputs the value onto the stream
    * \param stream stream to output value to

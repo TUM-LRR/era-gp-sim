@@ -17,6 +17,7 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 #include "common/assert.hpp"
@@ -302,4 +303,33 @@ std::ostream &operator<<(std::ostream &stream, const MemoryValue &value) {
   }
 
   return stream << "]";
+}
+
+std::string MemoryValue::toHexString(bool Ox, bool leadingZeros) const {
+  static const char hex[] = "0123456789ABCDEF";
+  std::stringstream stream{};
+  if (Ox) {
+    stream << "0x";
+  }
+  bool zero = true;
+  // reversely iterate over all the bytes in value (high->low)
+  for (std::size_t l = (getSize() + 7) / 8; l-- > 0;) {
+    std::uint8_t byte = getByteAt(l * 8);
+    std::uint8_t upperChar = byte / 16;
+    std::uint8_t lowerChar = byte % 16;
+    // do not print if this is the first character && it's 0
+    if (leadingZeros || !zero || upperChar != 0) {
+      stream.put(hex[upperChar]);
+      zero = false;
+    }
+    // do not print if this is the first character && it's 0
+    if (leadingZeros || !zero || lowerChar != 0) {
+      stream.put(hex[lowerChar]);
+      zero = false;
+    }
+  }
+  // if no characters have been printed print 0
+  if (zero) {
+    stream.put('0');
+  }
 }

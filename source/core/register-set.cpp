@@ -193,6 +193,29 @@ bool RegisterSet::existsRegister(const std::string &name) const {
   return iterator != _dict.end();
 }
 
+nlohmann::json &RegisterSet::serializeJSON(nlohmann::json &json) const {
+  auto data = _serializeRaw();
+  for (const auto &i : data) {
+    json[i.first] = i.second.toHexString(false, false);
+  }
+  return json;
+}
+nlohmann::json RegisterSet::serializeJSON(nlohmann::json &&json) const {
+  return serializeJSON(json);
+}
+std::ostream &operator<<(std::ostream &stream, const RegisterSet &value) {
+  // TODO::Do all the things
+  return stream;
+}
+std::map<std::string, MemoryValue> RegisterSet::_serializeRaw() const {
+  std::map<std::string, MemoryValue> map{};
+  for (std::size_t i = 0; i < _register.size(); ++i) {
+    map.emplace(_registerStringIdentifier + _parentVector[i], _register[i]);
+  }
+  return map;
+}
+
+
 void RegisterSet::_wasUpdated(const std::size_t address) {
   for (auto name : _updateSet[address]) {
     _callback(name);
