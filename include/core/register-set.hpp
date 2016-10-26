@@ -229,8 +229,17 @@ class RegisterSet {
    */
   nlohmann::json serializeJSON(nlohmann::json &&json = nlohmann::json()) const;
 
+  /**
+   * \brief returns true iff the number of parent registers is equal all parent
+   *        registers of this exist in other and have the same length and data
+   * \param other RegisterSet to compare this with
+   * \returns equality of this and other
+   */
   bool operator==(const RegisterSet &other) const;
 
+  /**
+   * \brief returns true iff there exists a Register with name name
+   */
   bool existsRegister(const std::string &name) const;
 
   /**
@@ -247,6 +256,7 @@ class RegisterSet {
   operator<<(std::ostream &stream, const RegisterSet &value);
 
  private:
+  // constant identifiers within a serialized RegisterSet
   static const std::string _registerStringIdentifier;
   static const std::string _registerNameListStringIdentifier;
   std::unordered_map<std::string, RegisterID>
@@ -267,6 +277,9 @@ class RegisterSet {
   }; /**< Brief This function gets called for every changed
 Register*/
 
+  /**
+   * \brief returns a raw serialized version of this
+   */
   std::map<std::string, MemoryValue> _serializeRaw() const;
 
   /**
