@@ -26,6 +26,7 @@
 #include "gtest/gtest.h"
 #include "core/memory-value.hpp"
 #include "core/register-set.hpp"
+#include "core/conversions.hpp"
 // clang-format on
 
 namespace {
@@ -190,7 +191,107 @@ TEST(registerSet, updateTest) {
 }
 
 TEST(registerSet, serialization) {
-  RegisterSet instance{};
-  auto json = instance.serializeJSON();
-  instance.deserializeJSON(json);
+  const std::string r00 = "I_NEED_LOTSA_UNIQUE_NAMES";
+  const std::string r01 = "I_AM_KINDA_NOT_VERY_CREATIVE_TODAY";
+  const std::string r02 = "SO_MANY_POSSIBILITIES";
+  const std::string r03 = "YAY_FOR_REGISTER_NAMES";
+  const std::string r04 = "I_HAVE_GREAT_IDEAS_FOR_OTHER_THINGS_THO";
+  const std::string r05 = "WOULD_IT_BE_LEGAL_TO_USE_A_SONGTEXT_AS_CONSTANT?";
+  const std::string r06 = "PROBABLY_NOT";
+  const std::string r07 = "THAT'S_TOO_BAD";
+  const std::string r08 = "I'D_LOVE_TO";
+  const std::string r09 = "LET_IT_GO";
+  const std::string r10 = "I_AM_HUNGRY";
+  const std::string r11 = "AND_TIRED";
+  const std::string r12 = "I_WANNA_GO_HOME_NOW";
+  const std::string r13 = "#RegisterBadLuck";
+  const std::string r14 = "THE_VERY_LAST_REGISTER";
+  const std::string r15 = "NOT_A_REGISTER";
+  std::uniform_int_distribution<std::uint32_t> dist{};
+  std::mt19937 rand(0);// I need new numbers, I'm kinda really out of ideas
+  RegisterSet instance0{};
+  instance0.createRegister(r00, 32);
+  instance0.createRegister(r01, 32);
+  instance0.createRegister(r02, 32);
+  instance0.createRegister(r03, 32);
+  instance0.createRegister(r04, 32);
+  instance0.createRegister(r05, 32);
+  instance0.createRegister(r06, 32);
+  instance0.createRegister(r07, 32);
+  instance0.createRegister(r08, 32);
+  instance0.createRegister(r09, 32);
+  instance0.createRegister(r10, 32);
+  instance0.createRegister(r11, 32);
+  instance0.createRegister(r12, 32);
+  instance0.createRegister(r13, 32);
+  instance0.createRegister(r14, 32);
+  instance0.createRegister(r15, 32);
+  RegisterSet instance1{instance0};
+  instance0.put(
+      r00,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r01,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r02,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r03,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r04,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r05,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r06,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r07,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r08,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r09,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r10,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r11,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r12,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r13,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r14,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  instance0.put(
+      r15,
+      conversions::convert(
+          dist(rand), conversions::standardConversions::nonsigned, 32));
+  auto json = instance0.serializeJSON();
+  instance1.deserializeJSON(json);
+  ASSERT_EQ(instance0, instance1);
 }
