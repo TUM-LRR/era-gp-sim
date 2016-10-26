@@ -173,7 +173,9 @@ class Memory {
   void clear();
 
  private:
+  // character to defaultly separate cells in serialized memory
   static constexpr char _standardSeparator = ',';
+  // constant identifiers within a serialized memory
   static const std::string _byteCountStringIdentifier;
   static const std::string _byteSizeStringIdentifier;
   static const std::string _lineLengthStringIdentifier;
