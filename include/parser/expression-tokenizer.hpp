@@ -56,7 +56,7 @@ class ExpressionTokenizer {
     std::vector<ExpressionToken> output;
     MSMatch match;
     size_t currentPosition = 0;
-    std::string temp       = data;
+    std::string temp = data;
 
     // We loop until we cannot match anything any more.
     while (_tokenizeRegex.search(temp, match)) {
@@ -70,7 +70,7 @@ class ExpressionTokenizer {
 
       // Now we update our position and the rest string and continue.
       size_t rpos = match.position + match.length;
-      temp        = temp.substr(rpos);
+      temp = temp.substr(rpos);
       currentPosition += rpos;
     }
 

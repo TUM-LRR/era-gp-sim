@@ -105,7 +105,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
    * \return An empty memory value.
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate());
+    assert(validate(memoryAccess).isSuccess());
     auto first = _children[0]->getValue(memoryAccess);
     auto second = _children[1]->getValue(memoryAccess);
 
@@ -127,10 +127,10 @@ class AbstractBranchInstructionNode : public InstructionNode {
       // one might think: http://bit.ly/2c8sfdh
       programCounter += (offset * 2);
 
-      riscv::storeRegister<UnsignedWord>(memoryAccess, "pc", programCounter);
+      return riscv::convert<UnsignedWord>(programCounter);
     }
 
-    return {};
+    return _incrementProgramCounter<UnsignedWord>(memoryAccess);
   }
 
   /**
@@ -146,18 +146,18 @@ class AbstractBranchInstructionNode : public InstructionNode {
    * \return A ValidationResult reflecting the validity according to the above
    *         criteria.
    */
-  ValidationResult validate() const override {
+  ValidationResult validate(MemoryAccess& memoryAccess) const override {
     auto result = _validateNumberOfChildren();
-    if (!result) return result;
+    if (!result.isSuccess()) return result;
 
-    result = _validateChildren();
-    if (!result) return result;
+    result = _validateChildren(memoryAccess);
+    if (!result.isSuccess()) return result;
 
     result = _validateOperandTypes();
-    if (!result) return result;
+    if (!result.isSuccess()) return result;
 
-    result = _validateOffset();
-    if (!result) return result;
+    result = _validateOffset(memoryAccess);
+    if (!result.isSuccess()) return result;
 
     return ValidationResult::success();
   }
@@ -175,7 +175,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
   // we could either make the validator a friend or give the noder a friendlier
   // interface. Would also solve the testability problem.
 
-  FRIEND_TEST(TestBranchInstructions, TestValidation);
+  FRIEND_TEST(BranchInstructionTest, Validation);
 
   /**
    * Checks a condition predicate between two operands.
@@ -248,8 +248,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
    *
    * \return A ValidationResult reflecting the result of the check.
    */
-  ValidationResult _validateOffset() const {
-    MemoryAccess memoryAccess;
+  ValidationResult _validateOffset(MemoryAccess& memoryAccess) const {
     auto offset = _children[2]->getValue(memoryAccess);
 
     // The immediate is 12 bit, but including the sign bit. Because it is
@@ -272,7 +271,8 @@ class AbstractBranchInstructionNode : public InstructionNode {
    *
    * \return A ValidationResult reflecting the result of the check.
    */
-  ValidationResult _validateResultingProgramCounter(MemoryAccess& memoryAccess) const {
+  ValidationResult
+  _validateResultingProgramCounter(MemoryAccess& memoryAccess) const {
     static const auto addressBoundary =
         std::numeric_limits<UnsignedWord>::max();
 

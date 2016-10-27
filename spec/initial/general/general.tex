@@ -185,16 +185,19 @@ chronologisch geordnet, wie folgt:
     \end{itemize}
   \item \textbf{Oktober}:
     \begin{itemize}
-      \item \textbf{Arch}: Floating-Point Befehlssatz.
-      \item \textbf{Parser}: Puffer-Monat, falls es noch Aufgaben geben
-        sollte. Ansonsten Auflösung in andere Teams.
-      \item \textbf{Core}: Serialisierung des Speichermodells.
-      \item \textbf{GUI}: Serialisierung des Projekts (mit Core), Ausgabe-Anzeigen (7-Segment-Anzeige, Display, Lichtband, Konsole)
+      \item \textbf{Arch}: Implementierung der Pseudo-Instruktionen\footnote{sieh RISC-V Specification Table 21.1} sowie didaktisch wertvolle Instruktionen ähnlich zu ``jasminsleep`` und ``jasmincrash``. Hilfe bei der Integration der GUI
+      \item \textbf{Parser}: Direktiven fertig machen, Makros sollen auch mit Argumenten funktionieren. Wenn fertig Auflösung in andere Teams.
+      \item \textbf{Core}: Serialisierung des Speichermodells (Speicher und Register) in eine menschlich lesbare Form (z.B. JSON, XML, etc). Hilfe bei der Integration der GUI
+      \item \textbf{GUI}: Integration des bisherigen Fortschritts von Arch, Parser und Core in die GUI bis \textbf{25.10.16}.\\
+      Serialisierung des Projekts (mit Core), Ausgabe-Anzeigen (Lichtband, 7-Segment-Anzeige, Display, Konsole; Priorität in dieser Reihenfolge)
     \end{itemize}
-  \item \textbf{November}: Um die Flexibilität unseres Simulators zu beweisen,
-    wollen wir in diesem letzten Monat eine eigene Architektur entwickeln. Diese
-    Architektur, mit $< 5$ Befehlen, sei unter dem Codenamen MARCEL-V bekannt
-    (Mighty Architecture Extended Language).
+  \item \textbf{November}:
+  \begin{itemize}
+  	\item \textbf{GUI}: Fertigstellung der Ausgabe-Anzeigen. Implementierung eines Eingabe-Moduls, das bei gedrückten Tasten bestimmte Werte an eine festgelegte Speicheradresse schreibt (z.B ASCII-Code des Zeichens)
+  	\item \textbf{Arch, Parser, Core}: Fehlersuche, kleine Verbesserungsvorschläge (v.a. GUI betreffend) suchen.
+  	Vereinheitlichung des Fehlermeldungsstil (v.a. Parser, Core)
+  \end{itemize}
+  \item \textbf{Optional}: Floating-Point
   \item \textbf{Dezember + Januar}: Dokumentation, Bericht, Cleanup.
 \end{itemize}
 

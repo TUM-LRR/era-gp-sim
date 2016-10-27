@@ -40,18 +40,32 @@ namespace {
  *
  * \tparam SizeType The word size of the architecture.
  */
-template <typename SizeType>
+template <typename UnsignedWord, typename SignedWord>
 void _setupIntegerInstructions(FactoryMap& _factories) {
-  auto facade = _factories.integerInstructionFacade<SizeType>();
+  using SLTType =
+      typename SetLessThanInstructionNode<UnsignedWord, SignedWord>::Type;
+  using SLTOperands =
+      typename SetLessThanInstructionNode<UnsignedWord, SignedWord>::Operands;
 
-  facade.template add<AddInstructionNode>("add");
-  facade.template add<SubInstructionNode>("sub", false);
-  facade.template add<AndInstructionNode>("and");
-  facade.template add<OrInstructionNode>("or");
-  facade.template add<XorInstructionNode>("xor");
-  facade.template add<ShiftLeftLogicalInstructionNode>("sll");
-  facade.template add<ShiftRightLogicalInstructionNode>("srl");
-  facade.template add<ShiftRightArithmeticInstructionNode>("sra");
+  auto unsignedFacade = _factories.integerInstructionFacade<UnsignedWord>();
+  auto signedUnsignedFacade = _factories.typeFacade<UnsignedWord, SignedWord>();
+  unsignedFacade.template add<AddInstructionNode>("add");
+  unsignedFacade.template add<SubInstructionNode>("sub", false);
+  unsignedFacade.template add<AndInstructionNode>("and");
+  unsignedFacade.template add<OrInstructionNode>("or");
+  unsignedFacade.template add<XorInstructionNode>("xor");
+  unsignedFacade.template add<ShiftLeftLogicalInstructionNode>("sll");
+  unsignedFacade.template add<ShiftRightLogicalInstructionNode>("srl");
+  unsignedFacade.template add<ShiftRightArithmeticInstructionNode>("sra");
+
+  signedUnsignedFacade.template add<SetLessThanInstructionNode>(
+      "slt", SLTOperands::REGISTERS, SLTType::SIGNED);
+  signedUnsignedFacade.template add<SetLessThanInstructionNode>(
+      "sltu", SLTOperands::REGISTERS, SLTType::UNSIGNED);
+  signedUnsignedFacade.template add<SetLessThanInstructionNode>(
+      "slti", SLTOperands::IMMEDIATES, SLTType::SIGNED);
+  signedUnsignedFacade.template add<SetLessThanInstructionNode>(
+      "sltiu", SLTOperands::IMMEDIATES, SLTType::UNSIGNED);
 }
 
 /**
@@ -168,8 +182,9 @@ void _setupExtensionM(FactoryMap& _factories) {
   Dfacade.template add<RemainderInstruction>("remu", false, false);
 
   // this is ugly
-  if (sizeof(UnsignedWord)*CHAR_BIT == 64) {
-    Mfacade.template add<MultiplicationInstruction>("mulw", Part::LOW, Type::SIGNED, true);
+  if (sizeof(UnsignedWord) * CHAR_BIT == 64) {
+    Mfacade.template add<MultiplicationInstruction>("mulw", Part::LOW,
+                                                    Type::SIGNED, true);
     Dfacade.template add<DivisionInstruction>("divw", true, true);
     Dfacade.template add<DivisionInstruction>("divuw", false, true);
     Dfacade.template add<RemainderInstruction>("remw", true, true);
@@ -193,7 +208,8 @@ InstructionNodeFactory::InstructionNodeFactory(
   assert(wordSize == 32 || wordSize == 64);
 
   if (wordSize == 32) {
-    _setupIntegerInstructions<riscv::unsigned32_t>(_factories);
+    _setupIntegerInstructions<riscv::unsigned32_t, riscv::signed32_t>(
+        _factories);
     _setupBranchInstructions<riscv::unsigned32_t, riscv::signed32_t>(
         _factories);
     _setupJumpInstructions<riscv::unsigned32_t, riscv::signed32_t>(_factories);
@@ -204,7 +220,8 @@ InstructionNodeFactory::InstructionNodeFactory(
         instructions, _factories);
 
   } else if (wordSize == 64) {
-    _setupIntegerInstructions<riscv::unsigned64_t>(_factories);
+    _setupIntegerInstructions<riscv::unsigned64_t, riscv::signed64_t>(
+        _factories);
     _setupBranchInstructions<riscv::unsigned64_t, riscv::signed64_t>(
         _factories);
     _setupJumpInstructions<riscv::unsigned64_t, riscv::signed64_t>(_factories);
@@ -236,20 +253,28 @@ void InstructionNodeFactory::_setup64BitOnlyInstructions() {
   facade.template add<ShiftArithmeticRightOnlyInstructionNode>("sraw", false);
   facade.template add<ShiftArithmeticRightOnlyInstructionNode>("sraiw", true);
 
-  //special load/store instructions
-  using LoadType = typename LoadInstructionNode<riscv::unsigned64_t, riscv::signed64_t>::Type;
-  using StoreType = typename StoreInstructionNode<riscv::unsigned64_t, riscv::signed64_t>::Type;
-  auto loadStoreFacade = _factories.typeFacade<riscv::unsigned64_t, riscv::signed64_t>();
-  loadStoreFacade.template add<LoadInstructionNode>("ld", LoadType::DOUBLE_WORD);
-  loadStoreFacade.template add<LoadInstructionNode>("lwu", LoadType::WORD_UNSIGNED);
-  loadStoreFacade.template add<StoreInstructionNode>("sd", StoreType::DOUBLE_WORD);
+  // special load/store instructions
+  using LoadType = typename LoadInstructionNode<riscv::unsigned64_t,
+                                                riscv::signed64_t>::Type;
+  using StoreType = typename StoreInstructionNode<riscv::unsigned64_t,
+                                                  riscv::signed64_t>::Type;
+  auto loadStoreFacade =
+      _factories.typeFacade<riscv::unsigned64_t, riscv::signed64_t>();
+  loadStoreFacade.template add<LoadInstructionNode>("ld",
+                                                    LoadType::DOUBLE_WORD);
+  loadStoreFacade.template add<LoadInstructionNode>("lwu",
+                                                    LoadType::WORD_UNSIGNED);
+  loadStoreFacade.template add<StoreInstructionNode>("sd",
+                                                     StoreType::DOUBLE_WORD);
 }
 
 InstructionNodeFactory::Node InstructionNodeFactory::createInstructionNode(
     const std::string& mnemonic) const {
   auto lower = Utility::toLower(mnemonic);
 
-  assert(_instructionSet.hasInstruction(lower));
+  if (!_instructionSet.hasInstruction(lower)) {
+    return nullptr;
+  }
   auto information = _instructionSet.getInstruction(lower);
 
   return _factories.create(lower, information);

@@ -20,34 +20,118 @@
 #ifndef ERAGPSIM_CORE_MEMORY_ACCESS_HPP
 #define ERAGPSIM_CORE_MEMORY_ACCESS_HPP
 
-#include <string>
-#include <unordered_map>
+#include "core/project.hpp"
+#include "core/proxy.hpp"
 
-#include "core/memory-value.hpp"
-#include "core/register.hpp"
-
-struct MemoryAccess {
-  void addRegister(const std::string& name,
-                   const Register& newRegister = Register()) {
-    _registers[name] = newRegister;
+/**
+ * A Proxy to access the memory and register components of a project safely.
+ *
+ */
+class MemoryAccess : public Proxy<Project> {
+ public:
+  MemoryAccess(const Proxy<Project>& proxy) : Proxy(proxy) {
   }
 
-  void setRegisterValue(const std::string& name, const MemoryValue& value) {
-    _registers[name].set(value);
-  }
+  /**
+   * Returns a number of memory cells at a given address as a MemoryValue.
+   *
+   * \param address address of the memory cells.
+   * \param length number of memory cells to return, default is 1.
+   */
+  POST_FUTURE_CONST(getMemoryValueAt)
 
-  MemoryValue getRegisterValue(const std::string& name) const {
-    return _registers.at(name).get();
-  }
+  /**
+   * Returns a number of memory cells at a given address as
+   * MemoryValue through a callback.
+   *
+   * \param callback std::function<void(Result<R>)> callback to call with the
+   * value(s).
+   * \param callerServant std::weak_ptr<Servant> servant which called this.
+   * \param address address of the memory cells.
+   * \param length number of memory cells to return, default is 1.
+   */
+  POST_CALLBACK_SAFE(getMemoryValueAt)
 
-  MemoryValue getMemoryValueAt(std::size_t address, std::size_t amount) {
-      return MemoryValue{};
-    }
+  /**
+   * Puts a value into a memory cell.
+   *
+   * \param address The value is written to this address.
+   * \param value The MemoryValue to write.
+   */
+  POST(putMemoryValueAt)
 
-    void setMemoryValueAt(std::size_t address, MemoryValue value) {
-  }
+  /**
+   * Sets a memory cell to a value and returns the old value.
+   *
+   * \param address The value is written to this address.
+   * \param value The MemoryValue to write.
+   */
+  POST_FUTURE(setMemoryValueAt)
 
-  std::unordered_map<std::string, Register> _registers;
+  /**
+   * Set a memory cell to a value and return the old value through a callback.
+   *
+   * \param callback std::function<void(Result<R>)> callback to call with the
+   * value(s).
+   * \param callerServant std::weak_ptr<Servant> servant which called this.
+   * \param address The value is written to this address.
+   * \param value The MemoryValue to write.
+   */
+  POST_CALLBACK_SAFE(setMemoryValueAt)
+
+  /**
+   * Returns the content of a register as MemoryValue.
+   *
+   * \param name The name of the register as std::string.
+   *
+   */
+  POST_FUTURE_CONST(getRegisterValue)
+
+  /**
+   * Returns the content of a register as a MemoryValue through a callback.
+   *
+   * \param callback std::function<void(Result<R>)> callback to call with the
+   * value(s).
+   * \param callerServant std::weak_ptr<Servant> servant which called this.
+   * \param name The name of the register as std::string.
+   */
+  POST_CALLBACK_SAFE(getRegisterValue)
+
+  /**
+   * Puts a value in a register.
+   *
+   * \param name The name of the register as std::string.
+   * \param value The MemoryValue which is written in the register.
+   *
+   */
+  POST(putRegisterValue)
+
+  /**
+   * Sets a register to a value and returns the old value
+   *
+   * \param name The name of the register as std::string.
+   * \param value MemoryValue object which is
+   * written to the register.
+   */
+  POST_FUTURE(setRegisterValue)
+
+  /**
+   * Sets a register to a value and returns the old value through a callback.
+   *
+   * \param callback std::function<void(Result<R>)> callback to call with the
+   * value(s).
+   * \param callerServant std::weak_ptr<Servant> servant which called this.
+   * \param name The name of the register as std::string.
+   * \param MemoryValue object which is
+   * written to the register.
+   */
+  POST_CALLBACK_SAFE(setRegisterValue)
+
+  /**
+   * Returns the number of memory cells(number of bytes)
+   *
+   */
+  POST_FUTURE_CONST(getMemorySize)
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_ACCESS_HPP */

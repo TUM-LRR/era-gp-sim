@@ -117,6 +117,12 @@ class Testservant1 : public Servant {
     return counter;
   }
 
+  int testFutureConst(int counter, std::thread::id testThreadId) const {
+    EXPECT_NE(testThreadId, std::this_thread::get_id());
+    EXPECT_EQ(std::this_thread::get_id(), _scheduler.lock()->getThreadId());
+    return counter;
+  }
+
   int testFutureNonBlocking(int counter, std::thread::id testThreadId) {
     EXPECT_EQ(counter, counterServant1);
     EXPECT_NE(testThreadId, std::this_thread::get_id());
@@ -204,6 +210,7 @@ class Testproxy1 : public Proxy<Testservant1> {
   POST(testPost)
   POST_FUTURE_BLOCKING(testFuture)
   POST_FUTURE(testFutureNonBlocking)
+  POST_FUTURE_CONST(testFutureConst)
   POST(postCallbackUnsafeTest)
   POST(postCallbackTest)
   POST(postDoubleTest)
@@ -291,7 +298,10 @@ TEST_F(ThreadingTestFixture, postFuture) {
   for (int i = 0; i < testRepeat; i++) {
     std::future<int> test =
         proxy1.testFutureNonBlocking(i, std::this_thread::get_id());
+    std::future<int> test1 =
+        proxy1.testFutureConst(i, std::this_thread::get_id());
     ASSERT_EQ(test.get(), i);
+    ASSERT_EQ(test1.get(), i);
   }
 }
 

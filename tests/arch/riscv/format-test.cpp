@@ -38,15 +38,15 @@
 using namespace riscv;
 
 // testing the immediate transformations
-struct ImmediateFormatTestFixture : public ::testing::Test {
-  ImmediateFormatTestFixture() {
+struct ImmediateFormatTest : public ::testing::Test {
+  ImmediateFormatTest() {
     for (int i = 0; i < 6; i++) {
       auto vect = std::vector<uint8_t>(std::begin(v[i]), std::end(v[i]));
       valueP[i] = new MemoryValue(vect, 32);
     }
   }
 
-  ~ImmediateFormatTestFixture() {
+  ~ImmediateFormatTest() {
     for (int i = 0; i < 6; i++) delete valueP[i];
     delete[] valueP;
   }
@@ -60,48 +60,60 @@ struct ImmediateFormatTestFixture : public ::testing::Test {
   MemoryValue **valueP = new MemoryValue *[6];
 };
 
-TEST_F(ImmediateFormatTestFixture, IFormat) {
+TEST_F(ImmediateFormatTest, IFormat) {
   immediateToIFormat(*valueP[0]);
   ASSERT_EQ(*valueP[1], *valueP[0]);
 }
 
-TEST_F(ImmediateFormatTestFixture, SFormat) {
+TEST_F(ImmediateFormatTest, SFormat) {
   immediateToSFormat(*valueP[0]);
   ASSERT_EQ(*valueP[2], *valueP[0]);
 }
 
-TEST_F(ImmediateFormatTestFixture, BFormat) {
+TEST_F(ImmediateFormatTest, BFormat) {
   immediateToBFormat(*valueP[0]);
   ASSERT_EQ(*valueP[3], *valueP[0]);
 }
 
-TEST_F(ImmediateFormatTestFixture, UFormat) {
+TEST_F(ImmediateFormatTest, UFormat) {
   immediateToUFormat(*valueP[0]);
   ASSERT_EQ(*valueP[4], *valueP[0]);
 }
 
-TEST_F(ImmediateFormatTestFixture, JFormat) {
+TEST_F(ImmediateFormatTest, JFormat) {
   immediateToJFormat(*valueP[0]);
   ASSERT_EQ(*valueP[5], *valueP[0]);
 }
 
-struct InstructionFormatTestFixture : public ::testing::Test {
-  InstructionFormatTestFixture() {
-    instructionSet.addInstructions(InstructionSet(
-        {{"add", InstructionKey({{"opcode", 6}, {"function", 3}}), "R"},
-         {"sub", InstructionKey({{"opcode", 9}, {"function", 3}}), "I"},
-         {"beq", InstructionKey({{"opcode", 7}, {"function", 1}}), "SB"},
-         {"uinst", InstructionKey({{"opcode", 3}, {"function", 5}}), "U"}}));
+struct InstructionFormatTest : public ::testing::Test {
+  InstructionFormatTest() {
+    auto add = InstructionInformation("add")
+                   .key(InstructionKey({{"opcode", 6}, {"function", 3}}))
+                   .format("R")
+                   .length(32);
+    auto sub = InstructionInformation("sub")
+                   .key(InstructionKey({{"opcode", 9}, {"function", 3}}))
+                   .format("I")
+                   .length(32);
+    auto beq = InstructionInformation("beq")
+                   .key(InstructionKey({{"opcode", 7}, {"function", 1}}))
+                   .format("SB")
+                   .length(32);
+    auto uinst = InstructionInformation("uinst")
+                     .key(InstructionKey({{"opcode", 3}, {"function", 5}}))
+                     .format("U")
+                     .length(32);
+    instructionSet.addInstructions(InstructionSet({add, sub, beq, uinst}));
   }
 
-  ~InstructionFormatTestFixture() {
+  ~InstructionFormatTest() {
   }
 
   InstructionSet instructionSet;
 };
 
 // testing the different formats
-TEST_F(InstructionFormatTestFixture, RFormat) {
+TEST_F(InstructionFormatTest, RFormat) {
   using Operands = AddInstructionNode<uint32_t>::Operands;
   auto addInfo = instructionSet.getInstruction("add");
   AddInstructionNode<uint32_t> addInstr(addInfo, Operands::REGISTERS);
@@ -116,7 +128,7 @@ TEST_F(InstructionFormatTestFixture, RFormat) {
   std::cout << addInstr.assemble() << std::endl;
 }
 
-TEST_F(InstructionFormatTestFixture, IFormat) {
+TEST_F(InstructionFormatTest, IFormat) {
   using Operands = AddInstructionNode<uint32_t>::Operands;
   auto addInfo = instructionSet.getInstruction("sub");
   AddInstructionNode<uint32_t> addInstr(addInfo, Operands::IMMEDIATES);
@@ -134,7 +146,7 @@ TEST_F(InstructionFormatTestFixture, IFormat) {
   std::cout << addInstr.assemble() << std::endl;
 }
 
-TEST_F(InstructionFormatTestFixture, SBFormat) {
+TEST_F(InstructionFormatTest, SBFormat) {
   using Operands = AddInstructionNode<uint32_t>::Operands;
   auto beqInfo = instructionSet.getInstruction("beq");
   AddInstructionNode<uint32_t> beqInstr(beqInfo, Operands::IMMEDIATES);
@@ -152,7 +164,7 @@ TEST_F(InstructionFormatTestFixture, SBFormat) {
   std::cout << beqInstr.assemble() << std::endl;
 }
 
-TEST_F(InstructionFormatTestFixture, UFormat) {
+TEST_F(InstructionFormatTest, UFormat) {
   using Operands = AddInstructionNode<uint32_t>::Operands;
   auto uInfo = instructionSet.getInstruction("uinst");
   AddInstructionNode<uint32_t> uInst(uInfo, Operands::IMMEDIATES);

@@ -30,7 +30,6 @@ set(ARCH_COMMON_SOURCES
 
 add_library(era-sim-arch-common STATIC ${ARCH_COMMON_SOURCES})
 
-qt5_use_modules(era-sim-arch-common Widgets)
-#target_link_libraries(era-sim-arch-common Qt5::Core)
-
-target_link_libraries(era-sim-arch-common era-sim-common era-sim-arch-riscv)
+# Qt is currently only needed for internationalization support
+target_link_libraries(era-sim-arch-common Qt5::Widgets)
+target_link_libraries(era-sim-arch-common era-sim-common era-sim-arch-riscv era-sim-core)

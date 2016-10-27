@@ -7,6 +7,7 @@ set(TEST_COMMON_SOURCES
   multiregex-test.cpp
   common-assert-tests.cpp
   common-string-conversions-tests.cpp
+  integer-information-test.cpp
 )
 
 ########################################

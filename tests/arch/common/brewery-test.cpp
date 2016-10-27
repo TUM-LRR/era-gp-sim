@@ -28,13 +28,20 @@
 #include "arch/common/instruction-set.hpp"
 #include "arch/common/register-information.hpp"
 
-struct ArchDeserializationTestFixture : public ::testing::Test {
-  ArchDeserializationTestFixture() {
+struct DeserializationTest : public ::testing::Test {
+  DeserializationTest() {
     // clang-format off
-    instructionSet.addInstructions(InstructionSet({
-      {"add", InstructionKey({{"opcode", 6}, {"function", 3}}), "R"},
-      {"sub", InstructionKey({{"opcode", 9}, {"function", 3}}), "R"}
-    }));
+    auto add = InstructionInformation("add")
+                .key(InstructionKey({{"opcode", 6}, {"function", 3}}))
+                .format("R")
+                .length(32);
+
+    auto sub = InstructionInformation("sub")
+                .key(InstructionKey({{"opcode", 9}, {"function", 3}}))
+                .format("R")
+                .length(32);
+
+    instructionSet.addInstructions(InstructionSet({add, sub}));
     // clang-format on
 
     // clang-format off
@@ -50,7 +57,7 @@ struct ArchDeserializationTestFixture : public ::testing::Test {
           .size(16)
           .type(RegisterInformation::Type::FLOAT)
           .enclosing(0)
-          .constant(3.14)
+          .constant("0x4048f5c3")//3.14 in IEEE 754 floating point
           .addAliases({"foo", "bar"});
     // clang-format on
 
@@ -65,7 +72,7 @@ struct ArchDeserializationTestFixture : public ::testing::Test {
   std::vector<UnitInformation> units;
 };
 
-TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
+TEST_F(DeserializationTest, BaseWithoutDependencies) {
   ArchitectureFormula formula("test", {"no-deps"});
 
   auto architecture = ArchitectureBrewery(formula).brew();
@@ -81,14 +88,14 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
 
   auto expected = architecture.getUnits();
-  for (auto& unit : units) {
+  for (const auto& unit : units) {
     auto iterator = expected.find(unit);
     ASSERT_NE(iterator, expected.end());
     EXPECT_EQ(*iterator, unit);
   }
 }
 
-TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
+TEST_F(DeserializationTest, BaseWithBasicDependencies) {
   ArchitectureFormula formula("test", {"with-deps-basic"});
 
   auto architecture = ArchitectureBrewery(formula).brew();
@@ -102,11 +109,11 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
   EXPECT_EQ(architecture.getByteSize(), 8);
 
   // clang-format off
-  instructionSet.addInstruction({"sll", InstructionKey({
-      {"opcode", 6},
-      {"function", 6},
-      {"width", 6}
-  }), "R"});
+  auto sll = InstructionInformation("sll")
+    .key(InstructionKey({{"opcode", 6}, {"function", 6}, {"width", 6}}))
+    .format("R")
+    .length(32);
+  instructionSet.addInstruction(sll);
   // clang-format on
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
@@ -119,7 +126,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
   }
 }
 
-TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
+TEST_F(DeserializationTest, BaseWithComplexDependenciesNoReset) {
   ArchitectureFormula formula("test", {"with-deps-complex"});
 
   auto architecture = ArchitectureBrewery(formula).brew();
@@ -133,11 +140,11 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
   EXPECT_EQ(architecture.getByteSize(), 8);
 
   // clang-format off
-  instructionSet.addInstruction({"sll", InstructionKey({
-      {"opcode", 6},
-      {"function", 6},
-      {"width", 6}
-  }), "R"});
+  auto sll = InstructionInformation("sll")
+    .key(InstructionKey({{"opcode", 6}, {"function", 6}, {"width", 6}}))
+    .format("R")
+    .length(32);
+  instructionSet.addInstruction(sll);
   // clang-format on
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
