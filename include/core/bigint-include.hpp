@@ -1,5 +1,5 @@
-#include "common/bigint.hpp"
-
+#ifdef YesIWannaReallyIncludeTheBigInt
+#undef YesIWannaReallyIncludeTheBigInt
 // template <std::size_t size, typename intType, std::size_t intTypeSize>
 // using BigIntType = BigInt<size, intType, intTypeSize>;
 
@@ -234,3 +234,5 @@ operator^=(const BigInt<size, intType, intTypeSize> &other) {
   }
   return *this;
 }
+
+#endif

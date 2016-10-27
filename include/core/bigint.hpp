@@ -1,3 +1,6 @@
+#ifndef ERAGPSIM_CORE_BIGINT_HPP_
+#define ERAGPSIM_CORE_BIGINT_HPP_
+
 #include <cstdint>
 #include <type_traits>
 #include <utility>
@@ -94,9 +97,13 @@ class BigInt {
 
   intType getByte(std::size_t index);
 
-  //first->lower; second->higher
+  // first->lower; second->higher
   std::pair<BigIntType, BigIntType> mul(const BigIntType &other) const;
-  //first->div; second->mod
+  // first->div; second->mod
   std::pair<BigIntType, BigIntType> div(const BigIntType &other) const;
   std::vector<BigIntType> pow(const BigIntType &other) const;
 };
+
+#define YesIWannaReallyIncludeTheBigInt
+#include "core/bigint-include.hpp"
+#endif
