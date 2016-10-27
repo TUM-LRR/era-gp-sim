@@ -100,19 +100,19 @@ instructions:
     format: S
     key:
       opcode: 35
-    funct: 0
+      funct3: 0
   - mnemonic: sh
     length: 32
     format: S
     key:
       opcode: 35
-    funct: 1
+      funct3: 1
   - mnemonic: sw
     length: 32
     format: S
     key:
       opcode: 35
-    funct: 2
+      funct3: 2
   - mnemonic: addi
     length: 32
     format: I
