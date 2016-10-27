@@ -22,22 +22,34 @@
 template <typename T>
 class integerInformation {
  public:
+  // is true iff T is any signed Type (0-1<0)
   const static bool _isSigned;
+  // is true iff T is any unsigned Type (0-1>=0)
   const static bool _isUnsigned;
+  // the smallest number representable by T
   const static T _min;
+  // the biggest number representable by T
   const static T _max;
+  // if T is a integer type that is represented by bits, every bit is set to 1
   const static T _negOne;
+  // if T is a integer type that is represented by bits, the number of those
   const static std::size_t _numberOfBits;
+  // if T is a integer type that is represented by bits, the number of those
+  // that dont change the sign
   const static std::size_t _numberOfUnsignedBits;
 
  private:
-  static constexpr std::size_t maxIterations = 65536;
+  // number of maximum iterations to not endlessly loop for dynamic int types
+  static constexpr std::size_t _maxIterations = 65536;
+  // is true iff T is any signed Type (0-1<0)
   static bool isSigned() {
     return static_cast<T>(T{0} - T{1}) < T{0};
   }
+  // is true iff T is any unsigned Type (0-1>=0)
   static bool isUnsigned() {
     return !_isSigned;
   }
+  // the smallest number representable by T
   static T min() {
     if (_isUnsigned) {
       return T{0};
@@ -58,12 +70,13 @@ class integerInformation {
         }
         previous = current;
       }
-      if (i++ > maxIterations) {
+      if (i++ > _maxIterations) {
         // Die a horrible death and burn in hell
       }
     }
     return current;
   }
+  // the biggest number representable by T
   static T max() {
     T current{0};
     T previous{current};
@@ -81,12 +94,13 @@ class integerInformation {
         }
         previous = current;
       }
-      if (i++ > maxIterations) {
+      if (i++ > _maxIterations) {
         // Die a horrible death and burn in hell
       }
     }
     return current;
   }
+  // if T is a integer type that is represented by bits, every bit is set to 1
   static T negOne() {
     T current{1};
     T previous{0};
@@ -95,12 +109,13 @@ class integerInformation {
       previous = current;
       current <<= T{1};
       current |= T{1};
-      if (i++ > maxIterations) {
+      if (i++ > _maxIterations) {
         // Die a horrible death and burn in hell
       }
     }
     return current;
   }
+  // if T is a integer type that is represented by bits, the number of those
   static std::size_t numberOfBits() {
     std::size_t count = 0;
     T current{1};
@@ -110,12 +125,14 @@ class integerInformation {
       current <<= T{1};
       current |= T{1};
       ++count;
-      if (count > maxIterations) {
+      if (count > _maxIterations) {
         // Die a horrible death and burn in hell
       }
     }
     return count;
   }
+  // if T is a integer type that is represented by bits, the number of those
+  // that dont change the sign
   static std::size_t numberOfUnsignedBits() {
     if (_isUnsigned) {
       return _numberOfBits;
@@ -125,7 +142,7 @@ class integerInformation {
     while (current > 0) {
       current <<= T{1};
       ++count;
-      if (count > maxIterations) {
+      if (count > _maxIterations) {
         // Die a horrible death and burn in hell
       }
     }
