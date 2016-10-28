@@ -95,11 +95,11 @@ class BigInt {
   // I possibly need stuff to handle BigInt<X> x BigInt<Y> what a pain
 
  private:
-  static constexpr std::size_t intTypeSize =
-      integerInformation<intType>::_numberOfBits;
-  static constexpr std::size_t intTypeCount =
-      (size + (intTypeSize - 1)) / intTypeSize;
-  // std::vector<intType> _data(intTypeCount, static_cast<intType>(0));
+  static constexpr std::size_t _intTypeSize =
+      integerInformation<intType>::numberOfBits;
+  static constexpr std::size_t _intTypeCount =
+      (size + (_intTypeSize - 1)) / _intTypeSize;
+  // std::vector<intType> _data(_intTypeCount, static_cast<intType>(0));
   std::vector<intType> _data{};
 
   intType getByte(std::size_t index);
@@ -109,6 +109,9 @@ class BigInt {
   // first->div; second->mod
   std::pair<BigIntType, BigIntType> div(const BigIntType &other) const;
   std::vector<BigIntType> pow(const BigIntType &other) const;
+  std::size_t _log2() const;
+  bool _lessThanZero() const;
+  bool _signBit() const;
 };
 
 #define YesIWannaReallyIncludeTheBigInt

@@ -22,13 +22,15 @@
 
 template <typename T>
 void testType(bool isSigned, T min, T max, T negOne, std::size_t numberOfBits) {
-  ASSERT_EQ(integerInformation<T>::_isSigned, isSigned);
-  ASSERT_EQ(integerInformation<T>::_isUnsigned, !isSigned);
-  ASSERT_EQ(integerInformation<T>::_min, min);
-  ASSERT_EQ(integerInformation<T>::_max, max);
-  ASSERT_EQ(integerInformation<T>::_negOne, negOne);
-  ASSERT_EQ(integerInformation<T>::_numberOfBits, numberOfBits);
-  ASSERT_EQ(integerInformation<T>::_numberOfUnsignedBits,
+  ASSERT_EQ(integerInformation<T>::isSigned, isSigned);
+  ASSERT_EQ(integerInformation<T>::isUnsigned, !isSigned);
+  ASSERT_EQ(integerInformation<T>::min, min);
+  ASSERT_EQ(integerInformation<T>::max, max);
+  ASSERT_EQ(integerInformation<T>::negOne, negOne);
+  ASSERT_EQ(integerInformation<T>::setUpper,
+            static_cast<T>(T{1} << (numberOfBits - 1)));
+  ASSERT_EQ(integerInformation<T>::numberOfBits, numberOfBits);
+  ASSERT_EQ(integerInformation<T>::numberOfUnsignedBits,
             numberOfBits - (isSigned ? 1 : 0));
 }
 

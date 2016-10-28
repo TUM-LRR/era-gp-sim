@@ -23,35 +23,38 @@ template <typename T>
 class integerInformation {
  public:
   // is true iff T is any signed Type (0-1<0)
-  const static bool _isSigned;
+  const static bool isSigned;
   // is true iff T is any unsigned Type (0-1>=0)
-  const static bool _isUnsigned;
+  const static bool isUnsigned;
   // the smallest number representable by T
-  const static T _min;
+  const static T min;
   // the biggest number representable by T
-  const static T _max;
+  const static T max;
   // if T is a integer type that is represented by bits, every bit is set to 1
-  const static T _negOne;
+  const static T negOne;
+  // if T is a integer type that is represented by bits, only the uppermost bit
+  // is set to 1
+  const static T setUpper;
   // if T is a integer type that is represented by bits, the number of those
-  const static std::size_t _numberOfBits;
+  const static std::size_t numberOfBits;
   // if T is a integer type that is represented by bits, the number of those
   // that dont change the sign
-  const static std::size_t _numberOfUnsignedBits;
+  const static std::size_t numberOfUnsignedBits;
 
  private:
   // number of maximum iterations to not endlessly loop for dynamic int types
   static constexpr std::size_t _maxIterations = 65536;
   // is true iff T is any signed Type (0-1<0)
-  static bool isSigned() {
+  static bool _isSigned() {
     return static_cast<T>(T{0} - T{1}) < T{0};
   }
   // is true iff T is any unsigned Type (0-1>=0)
-  static bool isUnsigned() {
-    return !_isSigned;
+  static bool _isUnsigned() {
+    return !isSigned;
   }
   // the smallest number representable by T
-  static T min() {
-    if (_isUnsigned) {
+  static T _min() {
+    if (isUnsigned) {
       return T{0};
     }
     T current{0};
@@ -77,7 +80,7 @@ class integerInformation {
     return current;
   }
   // the biggest number representable by T
-  static T max() {
+  static T _max() {
     T current{0};
     T previous{current};
     T operand{1};
@@ -101,7 +104,7 @@ class integerInformation {
     return current;
   }
   // if T is a integer type that is represented by bits, every bit is set to 1
-  static T negOne() {
+  static T _negOne() {
     T current{1};
     T previous{0};
     std::size_t i = 0;
@@ -115,8 +118,23 @@ class integerInformation {
     }
     return current;
   }
+  // if T is a integer type that is represented by bits, only the uppermost bit
+  // is set to 1
+  static T _setUpper() {
+    T current{1};
+    T previous{0};
+    std::size_t i = 0;
+    while (current != T{0}) {
+      previous = current;
+      current <<= T{1};
+      if (i++ > _maxIterations) {
+        // Die a horrible death and burn in hell
+      }
+    }
+    return previous;
+  }
   // if T is a integer type that is represented by bits, the number of those
-  static std::size_t numberOfBits() {
+  static std::size_t _numberOfBits() {
     std::size_t count = 0;
     T current{1};
     T previous{0};
@@ -133,9 +151,9 @@ class integerInformation {
   }
   // if T is a integer type that is represented by bits, the number of those
   // that dont change the sign
-  static std::size_t numberOfUnsignedBits() {
-    if (_isUnsigned) {
-      return _numberOfBits;
+  static std::size_t _numberOfUnsignedBits() {
+    if (isUnsigned) {
+      return numberOfBits;
     }
     std::size_t count = 0;
     T current{1};
@@ -151,19 +169,21 @@ class integerInformation {
 };
 
 template <typename T>
-const bool integerInformation<T>::_isSigned = integerInformation<T>::isSigned();
+const bool integerInformation<T>::isSigned = integerInformation<T>::_isSigned();
 template <typename T>
 const bool
-    integerInformation<T>::_isUnsigned = integerInformation<T>::isUnsigned();
+    integerInformation<T>::isUnsigned = integerInformation<T>::_isUnsigned();
 template <typename T>
-const T integerInformation<T>::_min = integerInformation<T>::min();
+const T integerInformation<T>::min = integerInformation<T>::_min();
 template <typename T>
-const T integerInformation<T>::_max = integerInformation<T>::max();
+const T integerInformation<T>::max = integerInformation<T>::_max();
 template <typename T>
-const T integerInformation<T>::_negOne = integerInformation<T>::negOne();
+const T integerInformation<T>::negOne = integerInformation<T>::_negOne();
 template <typename T>
-const std::size_t integerInformation<T>::_numberOfBits =
-    integerInformation<T>::numberOfBits();
+const T integerInformation<T>::setUpper = integerInformation<T>::_setUpper();
 template <typename T>
-const std::size_t integerInformation<T>::_numberOfUnsignedBits =
-    integerInformation<T>::numberOfUnsignedBits();
+const std::size_t integerInformation<T>::numberOfBits =
+    integerInformation<T>::_numberOfBits();
+template <typename T>
+const std::size_t integerInformation<T>::numberOfUnsignedBits =
+    integerInformation<T>::_numberOfUnsignedBits();
