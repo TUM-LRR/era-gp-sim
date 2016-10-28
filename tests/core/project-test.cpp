@@ -305,14 +305,4 @@ TEST_F(ProjectTestFixture, SleepTest) {
   EXPECT_LE(targetedSleep,
             std::chrono::duration_cast<std::chrono::milliseconds>(afterSleep -
                                                                   beforeSleep));
-
-  projectModule.stopExecution();
-
-  beforeSleep = std::chrono::high_resolution_clock::now();
-  memoryAccess.sleep(targetedSleep);
-  afterSleep = std::chrono::high_resolution_clock::now();
-  // should not sleep now, because the stop flag is set
-  EXPECT_LE(std::chrono::duration_cast<std::chrono::milliseconds>(afterSleep -
-                                                                  beforeSleep),
-            targetedSleep);
 }

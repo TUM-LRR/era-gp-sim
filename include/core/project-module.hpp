@@ -21,6 +21,7 @@
 #define ERAGPSIM_CORE_PROJECT_MODULE_HPP
 
 #include <atomic>
+#include <condition_variable>
 #include <memory>
 
 #include "core/architecture-access.hpp"
@@ -94,6 +95,9 @@ class ProjectModule {
   /** A std::atomic_bool to stop the execution. The ParsingAndExecutionUnit has
    * a reference to this flag.*/
   std::atomic_bool _stopFlag;
+
+  /** A condition variable to notify a sleeping execution thread. */
+  std::shared_ptr<std::condition_variable> _conditionVariable;
 
   /** Scheduler for the project servant (active-object). */
   std::shared_ptr<Scheduler> _schedulerProject;

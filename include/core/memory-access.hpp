@@ -20,7 +20,9 @@
 #ifndef ERAGPSIM_CORE_MEMORY_ACCESS_HPP
 #define ERAGPSIM_CORE_MEMORY_ACCESS_HPP
 
-#include <atomic>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
 
 #include "core/project.hpp"
 #include "core/proxy.hpp"
@@ -31,8 +33,53 @@
  */
 class MemoryAccess : public Proxy<Project> {
  public:
-  MemoryAccess(const Proxy<Project>& proxy, std::atomic_bool* stopFlag)
-  : Proxy(proxy), _stopFlag(stopFlag) {
+  using weakCondition = std::weak_ptr<std::condition_variable>;
+
+  /**
+   * Constructs a new MemoryAccess.
+   *
+   */
+  MemoryAccess(const Proxy<Project>& proxy, weakCondition conditionVariable)
+  : Proxy(proxy), _conditionVariable(conditionVariable) {
+  }
+
+  /**
+   * Destructor
+   */
+  ~MemoryAccess() = default;
+
+  /**
+   * Copy constructor
+   */
+  MemoryAccess(const MemoryAccess& other)
+  : Proxy(other), _conditionVariable(other._conditionVariable), _mutex() {
+  }
+
+  /**
+   * Copy assignement operator
+   */
+  MemoryAccess& operator=(const MemoryAccess& other) {
+    Proxy<Project>::operator=(other);
+    _conditionVariable = std::move(other._conditionVariable);
+    return *this;
+  }
+
+  /**
+   * Move constructor
+   */
+  MemoryAccess(MemoryAccess&& other)
+  : Proxy(other)
+  , _conditionVariable(std::move(other._conditionVariable))
+  , _mutex() {
+  }
+
+  /**
+   * Move assignement operator
+   */
+  MemoryAccess& operator=(MemoryAccess&& other) {
+    Proxy<Project>::operator=(std::move(other));
+    _conditionVariable = std::move(other._conditionVariable);
+    return *this;
   }
 
   /**
@@ -41,7 +88,7 @@ class MemoryAccess : public Proxy<Project> {
    *
    * \param sleepDurationMillis How long to sleep in milliseconds
    */
-  void sleep(std::chrono::milliseconds sleepDuration) const;
+  void sleep(std::chrono::milliseconds sleepDuration);
 
   /**
    * Returns a number of memory cells at a given address as a MemoryValue.
@@ -145,8 +192,11 @@ class MemoryAccess : public Proxy<Project> {
   POST_FUTURE_CONST(getMemorySize)
 
  private:
-  /**  Pointer to a std::atomic_bool to stop the execution. */
-  std::atomic_bool* _stopFlag;
+  /** Condition variable to sleep and wake up on a notification. */
+  weakCondition _conditionVariable;
+
+  /** Mutex for the condition variable. */
+  std::mutex _mutex;
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_ACCESS_HPP */

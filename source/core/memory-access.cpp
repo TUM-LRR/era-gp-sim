@@ -22,26 +22,9 @@
 #include <chrono>
 #include <iostream>
 
-void MemoryAccess::sleep(std::chrono::milliseconds sleepDuration) const {
-  std::chrono::milliseconds sleepRemaining(sleepDuration);
-  std::chrono::milliseconds sleepInterval(100);
-  auto sleepStart = std::chrono::high_resolution_clock::now();
-  auto sleepEnd = sleepStart;
-  while (sleepRemaining > std::chrono::milliseconds::zero() &&
-         !_stopFlag->load()) {
-    if (sleepRemaining > sleepInterval) {
-      // there is more sleep remaining than the standard duration
-      std::this_thread::sleep_for(sleepInterval);
-    } else {
-      // sleep for the remaining duration
-      std::this_thread::sleep_for(sleepRemaining);
-    }
-    sleepEnd = std::chrono::high_resolution_clock::now();
-    // update the sleep duration
-    std::chrono::milliseconds deltaSleep =
-        std::chrono::duration_cast<std::chrono::milliseconds>(sleepEnd -
-                                                              sleepStart);
-    sleepRemaining -= deltaSleep;
-    sleepStart = sleepEnd;
+void MemoryAccess::sleep(std::chrono::milliseconds sleepDuration) {
+  if (auto conditionVariableShared = _conditionVariable.lock()) {
+    std::unique_lock<std::mutex> lock(_mutex);
+    conditionVariableShared->wait_for(lock, sleepDuration);
   }
 }
