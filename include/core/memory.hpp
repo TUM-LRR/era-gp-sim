@@ -26,6 +26,7 @@
 #include <string>
 #include <utility>
 
+#include "core/deserialization-error.hpp"
 #include "core/memory-value.hpp"
 #include "third-party/json/json.hpp"
 

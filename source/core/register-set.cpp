@@ -240,12 +240,16 @@ void RegisterSet::deserializeJSON(const nlohmann::json &json) {
   for (const auto &name : parentVector) {
     if (existsRegister(name)) {
       const auto &value = json[_registerStringIdentifier + name];
-      // TODO::maybe use sommething else?
+      // TODO::maybe use sommething else? Maybe something that throws some
+      // Exceptions <3
       const auto &converted =
           StringConversions::hexStringToMemoryValue(value, getSize(name));
       put(name, converted.value());
     } else {
       // die and burn in hell
+      throw DeserializationError(
+          "Could not deserialize Registers: There is no such Register: \"" +
+          name + "\"");
     }
   }
 }

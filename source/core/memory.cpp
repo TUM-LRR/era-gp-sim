@@ -189,16 +189,32 @@ MemoryValue Memory::_deserializeLine(const std::string& line,
   // iterate reversely over line
   for (auto i = line.crbegin(); i < line.crend(); ++i) {
     if (*i == separator) {
+      if (byte == 0) {
+        throw DeserializationError(
+            "Could not deserialize Memory: There is a line longer than line "
+            "length: \"" +
+            line + "\"");
+      }
       // if separator -> inc to next cell
       --byte;
       bit = 0;
     } else {
       // if hex hex into number
-      std::uint8_t hex = reverseHexMap.at(*i);
-      // TODO::catch non hex char and die
+      auto h = reverseHexMap.find(*i);
+      if (h == reverseHexMap.end()) {
+        std::string badCharacter{*i};
+        throw DeserializationError(
+            "Could not deserialize Memory: Unexpected Character '" +
+            badCharacter + "' in \"" + line + "\"");
+      }
+      std::uint8_t hex = h->second;
       // write all 4 bit of number into memoryvalue
       for (std::size_t j = 0; j < 4; ++j) {
         if (hex % 2 == 1) {
+          if (bit >= byteSize) {
+            throw DeserializationError(
+                "Could not deserialize Memory: There is a byte > max(byte)");
+          }
           ret.put(byte * byteSize + bit);
         }
         ++bit;    // increment bit counter
@@ -212,11 +228,49 @@ MemoryValue Memory::_deserializeLine(const std::string& line,
 }
 
 void Memory::deserializeJSON(const nlohmann::json& json) {
+  auto byteCountIt = json.find(_byteCountStringIdentifier);
+  auto byteSizeIt = json.find(_byteSizeStringIdentifier);
+  auto lineLengthIt = json.find(_lineLengthStringIdentifier);
+  auto separatorIt = json.find(_separatorStringIdentifier);
+  // check that everything exists
+  if (byteCountIt == json.end()) {
+    throw DeserializationError("Could not deserialize Memory: Could not find " +
+                               _byteCountStringIdentifier);
+  }
+  if (byteSizeIt == json.end()) {
+    throw DeserializationError("Could not deserialize Memory: Could not find " +
+                               _byteSizeStringIdentifier);
+  }
+  if (lineLengthIt == json.end()) {
+    throw DeserializationError("Could not deserialize Memory: Could not find " +
+                               _lineLengthStringIdentifier);
+  }
+  if (separatorIt == json.end()) {
+    throw DeserializationError("Could not deserialize Memory: Could not find " +
+                               _separatorStringIdentifier);
+  }
+  // TODO::check types!
   // check that sizes match
-  assert::that(_byteCount ==
-               json[_byteCountStringIdentifier].get<std::size_t>());
-  assert::that(_byteSize == json[_byteSizeStringIdentifier].get<std::size_t>());
+  if (_byteCount != *byteCountIt) {
+    std::string expected = std::to_string(_byteCount);
+    std::size_t byteCount = *byteCountIt;
+    std::string recieved = std::to_string(byteCount);
+    throw DeserializationError(
+        "Could not deserialize Memory: ByteCount did not match: expected \"" +
+        expected + "\" to be equal to \"" + recieved + "\"");
+  }
+  if (_byteSize != *byteSizeIt) {
+    std::string expected = std::to_string(_byteSize);
+    std::size_t byteSize = *byteSizeIt;
+    std::string recieved = std::to_string(byteSize);
+    throw DeserializationError(
+        "Could not deserialize Memory: ByteSize did not match: expected \"" +
+        expected + "\" to be equal to \"" + recieved + "\"");
+  }
   std::size_t lineLength = json[_lineLengthStringIdentifier].get<std::size_t>();
+  if (lineLength <= 0) {
+    throw DeserializationError("Could not deserialize Memory: lineLength == 0");
+  }
   const std::size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
   const char separator = json[_separatorStringIdentifier].get<char>();
   // iterate over all lines

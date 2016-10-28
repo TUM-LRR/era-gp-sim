@@ -27,6 +27,7 @@
 #include <vector>
 
 #include "common/assert.hpp"
+#include "core/deserialization-error.hpp"
 #include "core/memory-value.hpp"
 #include "core/register-id.hpp"
 #include "third-party/json/json.hpp"
