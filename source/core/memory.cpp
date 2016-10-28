@@ -251,7 +251,8 @@ void Memory::deserializeJSON(const nlohmann::json& json) {
   }
   // TODO::check types!
   // check that sizes match
-  if (_byteCount != *byteCountIt) {
+  std::size_t byteCount = *byteCountIt;
+  if (_byteCount != byteCount) {
     std::string expected = std::to_string(_byteCount);
     std::size_t byteCount = *byteCountIt;
     std::string recieved = std::to_string(byteCount);
@@ -259,9 +260,9 @@ void Memory::deserializeJSON(const nlohmann::json& json) {
         "Could not deserialize Memory: ByteCount did not match: expected \"" +
         expected + "\" to be equal to \"" + recieved + "\"");
   }
-  if (_byteSize != *byteSizeIt) {
+  std::size_t byteSize = *byteSizeIt;
+  if (_byteSize != byteSize) {
     std::string expected = std::to_string(_byteSize);
-    std::size_t byteSize = *byteSizeIt;
     std::string recieved = std::to_string(byteSize);
     throw DeserializationError(
         "Could not deserialize Memory: ByteSize did not match: expected \"" +
