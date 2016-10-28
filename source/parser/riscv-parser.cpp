@@ -112,13 +112,14 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
               intermediate,
               _compile_state);
         } else {
-          intermediate.insertCommand(IntermediateInstruction{
-              LineInterval{_compile_state.position.line()},
-              labels,
-              line_regex.getInstruction(),
-              sources,
-              targets},
-           _compile_state);
+          intermediate.insertCommand(
+              IntermediateInstruction{
+                  LineInterval{_compile_state.position.line()},
+                  labels,
+                  line_regex.getInstruction(),
+                  sources,
+                  targets},
+              _compile_state);
         }
 
         labels.clear();
@@ -146,6 +147,14 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   for (auto instruction : _architecture.getInstructions()) {
     // Matches all instruction mnemonics which don't end with a ':'
     info.addSyntaxRegex("\\b" + instruction.first + "\\b(?!:)",
+                        SyntaxInformation::Token::Instruction);
+  }
+
+  // Add directive regexes
+  for (auto directive : RiscVDirectiveFactory::mapping) {
+    // Matches all directive mnemonics starting with a '.' which don't end with
+    // a ':'
+    info.addSyntaxRegex("\\b\\." + directive.first + "\\b(?!:)",
                         SyntaxInformation::Token::Instruction);
   }
 
