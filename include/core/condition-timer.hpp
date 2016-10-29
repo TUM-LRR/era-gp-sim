@@ -62,7 +62,7 @@ class ConditionTimer {
   template <typename Rep, typename Period>
   void waitFor(std::chrono::duration<Rep, Period> duration) {
     std::unique_lock<std::mutex> lock(_mutex);
-    while (true) {
+    while (!_flag) {
       auto start = std::chrono::steady_clock::now();
       auto didTimeOut = _conditionVariable.wait_for(lock, duration);
       // check if the sleep was interupted by the notify method or timed out.
