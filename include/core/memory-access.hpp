@@ -20,10 +20,10 @@
 #ifndef ERAGPSIM_CORE_MEMORY_ACCESS_HPP
 #define ERAGPSIM_CORE_MEMORY_ACCESS_HPP
 
-#include <condition_variable>
+#include <chrono>
 #include <memory>
-#include <mutex>
 
+#include "core/condition-timer.hpp"
 #include "core/project.hpp"
 #include "core/proxy.hpp"
 
@@ -33,62 +33,26 @@
  */
 class MemoryAccess : public Proxy<Project> {
  public:
-  using weakCondition = std::weak_ptr<std::condition_variable>;
+  using SharedCondition = std::shared_ptr<ConditionTimer>;
 
   /**
    * Constructs a new MemoryAccess.
    *
    */
-  MemoryAccess(const Proxy<Project>& proxy, weakCondition conditionVariable)
-  : Proxy(proxy), _conditionVariable(conditionVariable) {
-  }
-
-  /**
-   * Destructor
-   */
-  ~MemoryAccess() = default;
-
-  /**
-   * Copy constructor
-   */
-  MemoryAccess(const MemoryAccess& other)
-  : Proxy(other), _conditionVariable(other._conditionVariable), _mutex() {
-  }
-
-  /**
-   * Copy assignement operator
-   */
-  MemoryAccess& operator=(const MemoryAccess& other) {
-    Proxy<Project>::operator=(other);
-    _conditionVariable = std::move(other._conditionVariable);
-    return *this;
-  }
-
-  /**
-   * Move constructor
-   */
-  MemoryAccess(MemoryAccess&& other)
-  : Proxy(other)
-  , _conditionVariable(std::move(other._conditionVariable))
-  , _mutex() {
-  }
-
-  /**
-   * Move assignement operator
-   */
-  MemoryAccess& operator=(MemoryAccess&& other) {
-    Proxy<Project>::operator=(std::move(other));
-    _conditionVariable = std::move(other._conditionVariable);
-    return *this;
+  MemoryAccess(const Proxy<Project>& proxy, SharedCondition conditionTimer)
+  : Proxy(proxy), _conditionTimer(conditionTimer) {
   }
 
   /**
    * Lets the thread that calls this sleep for a specified amount of time.
    * The sleep is interruptible through a stop flag.
    *
-   * \param sleepDurationMillis How long to sleep in milliseconds
+   * \param sleepDuration (minimum)duration of the sleep.
    */
-  void sleep(std::chrono::milliseconds sleepDuration);
+  template <typename Rep, typename Period>
+  void sleep(const std::chrono::duration<Rep, Period> sleepDuration) {
+    _conditionTimer->waitFor(sleepDuration);
+  }
 
   /**
    * Returns a number of memory cells at a given address as a MemoryValue.
@@ -192,11 +156,9 @@ class MemoryAccess : public Proxy<Project> {
   POST_FUTURE_CONST(getMemorySize)
 
  private:
-  /** Condition variable to sleep and wake up on a notification. */
-  weakCondition _conditionVariable;
-
-  /** Mutex for the condition variable. */
-  std::mutex _mutex;
+  /** Condition timer which can block this thread for a specified time, but
+   * wakes up on notification. */
+  SharedCondition _conditionTimer;
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_ACCESS_HPP */

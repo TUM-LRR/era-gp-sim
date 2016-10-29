@@ -20,7 +20,6 @@
 #ifndef ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
 #define ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
 
-#include <atomic>
 #include <functional>
 #include <memory>
 #include <unordered_set>
@@ -43,6 +42,7 @@ class MacroInformation;
 class ParsingAndExecutionUnit : public Servant {
  public:
   using size_t = std::size_t;
+  using SharedCondition = MemoryAccess::SharedCondition;
   template <typename... T>
   using Callback = std::function<void(T...)>;
   template <typename T>
@@ -55,7 +55,7 @@ class ParsingAndExecutionUnit : public Servant {
   ParsingAndExecutionUnit(std::weak_ptr<Scheduler> &&scheduler,
                           MemoryAccess memoryAccess,
                           Architecture architecture,
-                          std::atomic_bool &stopFlag,
+                          SharedCondition stopCondition,
                           std::string parserName);
 
   /**
@@ -180,8 +180,8 @@ class ParsingAndExecutionUnit : public Servant {
   /** A unique_ptr to the parser. */
   std::unique_ptr<Parser> _parser;
 
-  /**  Reference to a std::atomic_bool to stop the execution. */
-  std::atomic_bool &_stopFlag;
+  /** Shared pointer to a ConditionTimer to stop the execution. */
+  SharedCondition _stopCondition;
 
   /** A FinalRepresentation created by the parser. */
   FinalRepresentation _finalRepresentation;

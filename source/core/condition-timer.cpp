@@ -17,14 +17,36 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "core/memory-access.hpp"
+#include "core/condition-timer.hpp"
 
-#include <chrono>
-#include <iostream>
+ConditionTimer::ConditionTimer()
+: _mutex(), _flag(false), _conditionVariable() {
+}
 
-void MemoryAccess::sleep(std::chrono::milliseconds sleepDuration) {
-  if (auto conditionVariableShared = _conditionVariable.lock()) {
-    std::unique_lock<std::mutex> lock(_mutex);
-    conditionVariableShared->wait_for(lock, sleepDuration);
+void ConditionTimer::notifyAll() {
+  std::lock_guard<std::mutex> lock(_mutex);
+  _flag = true;
+  _conditionVariable.notify_all();
+}
+
+void ConditionTimer::notifyOne() {
+  std::lock_guard<std::mutex> lock(_mutex);
+  _flag = true;
+  _conditionVariable.notify_one();
+}
+
+void ConditionTimer::reset() {
+  std::lock_guard<std::mutex> lock(_mutex);
+  _flag = false;
+}
+
+bool ConditionTimer::getFlag() {
+  return _flag.load();
+}
+
+void ConditionTimer::wait() {
+  std::unique_lock<std::mutex> lock(_mutex);
+  while (!_flag) {
+    _conditionVariable.wait(lock);
   }
 }
