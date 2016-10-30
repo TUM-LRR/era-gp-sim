@@ -48,10 +48,6 @@ Item {
                                        z) + n
     }
 
-    /*ListModel {
-        id: memoryModel
-    }*/
-
     TableView {
         id: tableView
         // alternatingRowColors: false
@@ -114,10 +110,7 @@ Item {
                 if(cursorPosition <= 1 && selectedText == "")
                     nextItemInFocusChain(false).forceActiveFocus()
             }
-            /*onTextChanged: {
-                textFieldMemoryValue.text = textFieldMemoryValue.text.replace(' ','0')
-                This destroys something!
-            }*/
+
             Keys.onDeletePressed: {
 
             }
