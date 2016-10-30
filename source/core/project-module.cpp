@@ -24,17 +24,17 @@
 ProjectModule::ProjectModule(const ArchitectureFormula& architectureFormula,
                              std::size_t memorySize,
                              const std::string& parserName)
-: _schedulerProject(std::make_shared<Scheduler>())
+: _stopCondition(std::make_shared<ConditionTimer>())
+, _schedulerProject(std::make_shared<Scheduler>())
 , _schedulerParsingAndExecution(std::make_shared<Scheduler>())
 , _proxyProject(std::move(_schedulerProject), architectureFormula, memorySize)
-, _memoryAccess(_proxyProject)
+, _memoryAccess(_proxyProject, _stopCondition)
 , _memoryManager(_proxyProject)
 , _architectureAccess(_proxyProject)
-, _stopFlag(false)
 , _proxyParsingAndExecution(std::move(_schedulerParsingAndExecution),
                             _memoryAccess,
                             _architectureAccess.getArchitecture().get(),
-                            std::ref(_stopFlag),
+                            _stopCondition,
                             parserName)
 , _commandInterface(_proxyParsingAndExecution)
 , _parserInterface(_proxyParsingAndExecution) {
@@ -68,5 +68,5 @@ void ProjectModule::reset() {
 }
 
 void ProjectModule::stopExecution() {
-  _stopFlag.clear();
+  _stopCondition->notifyAll();
 }

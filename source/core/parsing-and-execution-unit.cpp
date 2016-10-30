@@ -31,11 +31,11 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
     std::weak_ptr<Scheduler> &&scheduler,
     MemoryAccess memoryAccess,
     Architecture architecture,
-    std::atomic_flag &stopFlag,
+    SharedCondition stopCondition,
     std::string parserName)
 : Servant(std::move(scheduler))
 , _parser(ParserFactory::createParser(architecture, memoryAccess, parserName))
-, _stopFlag(stopFlag)
+, _stopCondition(stopCondition)
 , _finalRepresentation()
 , _addressCommandMap()
 , _lineCommandCache()
@@ -61,15 +61,18 @@ void ParsingAndExecutionUnit::execute() {
   if (_finalRepresentation.hasErrors()) {
     return;
   }
-  _stopFlag.test_and_set();
+  _stopCondition->reset();
   size_t nextNode = _findNextNode();
-  while (_stopFlag.test_and_set() &&
+  while (!_stopCondition->getFlag() &&
          nextNode < _finalRepresentation.commandList.size()) {
-    nextNode = executeNextLine();
+    nextNode = executeNextLine(false);
   }
 }
 
-size_t ParsingAndExecutionUnit::executeNextLine() {
+size_t ParsingAndExecutionUnit::executeNextLine(bool resetStopFlag) {
+  if (resetStopFlag) {
+    _stopCondition->reset();
+  }
   size_t nextNode = _findNextNode();
   // check for parser errors
   if (_finalRepresentation.hasErrors() ||
@@ -110,12 +113,12 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
     return;
   }
   // reset stop flag
-  _stopFlag.test_and_set();
+  _stopCondition->reset();
   // find the index of the next node and loop through the instructions
   size_t nextNode = _findNextNode();
-  while (_stopFlag.test_and_set() &&
+  while (!_stopCondition->getFlag() &&
          nextNode < _finalRepresentation.commandList.size()) {
-    nextNode = executeNextLine();
+    nextNode = executeNextLine(false);
     // check if there is a brekpoint on the next line
     if (nextNode < _finalRepresentation.commandList.size()) {
       FinalCommand &nextCommand = _finalRepresentation.commandList[nextNode];
