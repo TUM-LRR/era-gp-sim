@@ -40,27 +40,61 @@ TEST_F(SimulatorInstructionTest, SIMUCRASH) {
     msg += argument;  // it is not relevant for this text, if the arguments are
                       // inserted properly. They just need to exist
   }
-  //check that the custom error message is somewhere in the runtime message
+  // check that the custom error message is somewhere in the runtime message
   ASSERT_TRUE(msg.find(customErrorMsg) != std::string::npos);
 }
 
 TEST_F(SimulatorInstructionTest, SIMUCRASH_validation) {
-    using Type = AbstractSyntaxTreeNode::Type;
+  using Type = AbstractSyntaxTreeNode::Type;
+  load({"rv32i", "rv64i"});
+
+  MemoryAccess memoryAccess = getMemoryAccess();
+  auto factories = getFactories();
+
+  auto twoOpInstruction = factories.createInstructionNode("simucrash");
+  twoOpInstruction->addChild(factories.createDataNode(""));
+  ASSERT_TRUE(twoOpInstruction->validate(memoryAccess).isSuccess());
+  twoOpInstruction->addChild(factories.createDataNode(""));
+  ASSERT_FALSE(twoOpInstruction->validate(memoryAccess).isSuccess());
+
+  auto instrReg = factories.createInstructionNode("simucrash");
+  instrReg->addChild(std::make_unique<RegisterNode>("x0"));
+  ASSERT_FALSE(instrReg->validate(memoryAccess).isSuccess());
+  auto instrImm = factories.createInstructionNode("simucrash");
+  instrImm->addChild(factories.createImmediateNode(MemoryValue(64)));
+  ASSERT_FALSE(instrImm->validate(memoryAccess).isSuccess());
+}
+
+TEST_F(SimulatorInstructionTest, SIMUSLEEP) {
+  constexpr riscv::signed32_t sleeptime = 200;
+  load({"rv32i"});
+  auto factories = getFactories();
+  auto memoryAccess = getMemoryAccess();
+
+  auto instr = factories.createInstructionNode("simusleep");
+  instr->addChild(factories.createImmediateNode(
+      riscv::convert<riscv::signed32_t>(sleeptime)));
+
+  ASSERT_TRUE(instr->validate(memoryAccess).isSuccess());
+
+  auto start = std::chrono::high_resolution_clock::now();
+  instr->getValue(memoryAccess);
+  auto end = std::chrono::high_resolution_clock::now();
+  EXPECT_LE(std::chrono::milliseconds(sleeptime),
+            std::chrono::duration_cast<std::chrono::milliseconds>(end - start));
+}
+
+TEST_F(SimulatorInstructionTest, SIMUSLEEP_validation) {
     load({"rv32i", "rv64i"});
+
 
     MemoryAccess memoryAccess = getMemoryAccess();
     auto factories = getFactories();
 
-    auto twoOpInstruction = factories.createInstructionNode("simucrash");
-    twoOpInstruction->addChild(factories.createDataNode(""));
-    ASSERT_TRUE(twoOpInstruction->validate(memoryAccess).isSuccess());
-    twoOpInstruction->addChild(factories.createDataNode(""));
-    ASSERT_FALSE(twoOpInstruction->validate(memoryAccess).isSuccess());
-
-    auto instrReg = factories.createInstructionNode("simucrash");
-    instrReg->addChild(std::make_unique<RegisterNode>("x0"));
-    ASSERT_FALSE(instrReg->validate(memoryAccess).isSuccess());
-    auto instrImm = factories.createInstructionNode("simucrash");
-    instrImm->addChild(factories.createImmediateNode(MemoryValue(64)));
-    ASSERT_FALSE(instrImm->validate(memoryAccess).isSuccess());
+    auto twoOpInstr = factories.createInstructionNode("simusleep");
+    ASSERT_FALSE(twoOpInstr->validate(memoryAccess).isSuccess());
+    twoOpInstr->addChild(factories.createImmediateNode(riscv::convert<riscv::signed32_t>(42)));
+    ASSERT_TRUE(twoOpInstr->validate(memoryAccess).isSuccess());
+    twoOpInstr->addChild(factories.createImmediateNode(riscv::convert<riscv::signed32_t>(42)));
+    ASSERT_FALSE(twoOpInstr->validate(memoryAccess).isSuccess());
 }

@@ -221,13 +221,8 @@ struct ProgramCounterIncrement {
  */
 struct SleepInstructionAssembler {
   MemoryValue operator()(const MemoryValue& sleepTime) const {
-    constexpr uint32_t OPCODE = 0x51ee7 << 12;
-    MemoryValue assembled = conversions::convert(OPCODE, 32);
-    auto index = 0;
-    for (auto it = sleepTime.begin(); it != sleepTime.end(); ++it) {
-      assembled.put(index, *it);
-    }
-    return assembled;
+    constexpr uint32_t OPCODE = 0x72657374;
+    return conversions::convert(OPCODE, 32);
   }
 };
 }
@@ -281,9 +276,8 @@ void InstructionNodeFactory::_setupSimulatorInstructions(
         "simusleep", ProgramCounterIncrement<riscv::unsigned64_t>{},
         SleepInstructionAssembler{});
   }
-
-  //TODO think of a nice assembled format for simucrash
-  _factories.add<SimulatorCrashInstructionNode>("simucrash", MemoryValue(32));
+  constexpr riscv::unsigned32_t CRASH_OPCODE = 0x626f6f6d;
+  _factories.add<SimulatorCrashInstructionNode>("simucrash", riscv::convert<riscv::unsigned32_t>(CRASH_OPCODE));
 }
 
 void InstructionNodeFactory::_setupOtherInstructions() {}
