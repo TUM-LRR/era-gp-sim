@@ -9,10 +9,11 @@ set(TEST_ARCH_RISCV_SOURCES
   integer-instruction-test.cpp
   jump-instruction-test.cpp
   load-store-instruction-test.cpp
-  load-store-instruction-test.cpp
   lui-auipc-instruction-test.cpp
   mul-div-instruction-test.cpp
   rv64-only-instruction-test.cpp
+  register-test.cpp
+  assemble-test.cpp
   simulator-instructions-test.cpp
 )
 

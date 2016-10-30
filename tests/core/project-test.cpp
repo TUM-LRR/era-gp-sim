@@ -17,6 +17,7 @@
  */
 
 
+#include <chrono>
 #include <functional>
 
 // clang-format off
@@ -156,13 +157,14 @@ TEST_F(ProjectTestFixture, MemoryAccessTest) {
   EXPECT_EQ(zero,
             memoryAccess.setRegisterValue(std::string("pc"), testValue2).get());
 
-  for (int i = 0; i < 32; i++) {
+  //start with x1 as x0 is hardwired to 0
+  for (int i = 1; i < 32; i++) {
     std::string registerName = std::string("x") + std::to_string(i);
     EXPECT_NO_THROW(memoryAccess.putRegisterValue(registerName, testValue));
   }
   EXPECT_NO_THROW(memoryAccess.putRegisterValue(std::string("pc"), testValue));
 
-  for (int i = 0; i < 32; i++) {
+  for (int i = 1; i < 32; i++) {
     std::string registerName = std::string("x") + std::to_string(i);
     EXPECT_EQ(testValue, memoryAccess.getRegisterValue(registerName).get());
   }
@@ -291,4 +293,17 @@ TEST_F(ProjectTestFixture, ParserInterfaceTest) {
       parserInterface.getSyntaxRegex(SyntaxInformation::Token::Label));
   EXPECT_NO_THROW(
       parserInterface.getSyntaxRegex(SyntaxInformation::Token::Immediate));
+}
+
+TEST_F(ProjectTestFixture, SleepTest) {
+  std::chrono::milliseconds targetedSleep(1000);
+  MemoryAccess memoryAccess = projectModule.getMemoryAccess();
+
+  auto beforeSleep = std::chrono::high_resolution_clock::now();
+  memoryAccess.sleep(targetedSleep);
+  auto afterSleep = std::chrono::high_resolution_clock::now();
+  // should sleep now
+  EXPECT_LE(targetedSleep,
+            std::chrono::duration_cast<std::chrono::milliseconds>(afterSleep -
+                                                                  beforeSleep));
 }

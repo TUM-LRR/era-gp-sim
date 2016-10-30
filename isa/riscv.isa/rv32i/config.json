@@ -152,8 +152,8 @@
         {
             "length": 32,
             "format": "S",
-            "funct": 0,
             "key": {
+		"funct3": 0,
                 "opcode": 35
             },
             "mnemonic": "sb"
@@ -161,8 +161,8 @@
         {
             "length": 32,
             "format": "S",
-            "funct": 1,
             "key": {
+		"funct3": 1,
                 "opcode": 35
             },
             "mnemonic": "sh"
@@ -170,8 +170,8 @@
         {
             "length": 32,
             "format": "S",
-            "funct": 2,
             "key": {
+		"funct3": 2,
                 "opcode": 35
             },
             "mnemonic": "sw"
@@ -373,7 +373,7 @@
                     "id": 0,
                     "size": 32,
                     "alias": "zero",
-                    "constant": 0
+                    "constant": "0x0"
                 },
                 {
                     "name": "x1",

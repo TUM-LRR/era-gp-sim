@@ -42,18 +42,32 @@ namespace {
  *
  * \tparam SizeType The word size of the architecture.
  */
-template <typename SizeType>
+template <typename UnsignedWord, typename SignedWord>
 void _setupIntegerInstructions(FactoryMap& _factories) {
-  auto facade = _factories.integerInstructionFacade<SizeType>();
+  using SLTType =
+      typename SetLessThanInstructionNode<UnsignedWord, SignedWord>::Type;
+  using SLTOperands =
+      typename SetLessThanInstructionNode<UnsignedWord, SignedWord>::Operands;
 
-  facade.template add<AddInstructionNode>("add");
-  facade.template add<SubInstructionNode>("sub", false);
-  facade.template add<AndInstructionNode>("and");
-  facade.template add<OrInstructionNode>("or");
-  facade.template add<XorInstructionNode>("xor");
-  facade.template add<ShiftLeftLogicalInstructionNode>("sll");
-  facade.template add<ShiftRightLogicalInstructionNode>("srl");
-  facade.template add<ShiftRightArithmeticInstructionNode>("sra");
+  auto unsignedFacade = _factories.integerInstructionFacade<UnsignedWord>();
+  auto signedUnsignedFacade = _factories.typeFacade<UnsignedWord, SignedWord>();
+  unsignedFacade.template add<AddInstructionNode>("add");
+  unsignedFacade.template add<SubInstructionNode>("sub", false);
+  unsignedFacade.template add<AndInstructionNode>("and");
+  unsignedFacade.template add<OrInstructionNode>("or");
+  unsignedFacade.template add<XorInstructionNode>("xor");
+  unsignedFacade.template add<ShiftLeftLogicalInstructionNode>("sll");
+  unsignedFacade.template add<ShiftRightLogicalInstructionNode>("srl");
+  unsignedFacade.template add<ShiftRightArithmeticInstructionNode>("sra");
+
+  signedUnsignedFacade.template add<SetLessThanInstructionNode>(
+      "slt", SLTOperands::REGISTERS, SLTType::SIGNED);
+  signedUnsignedFacade.template add<SetLessThanInstructionNode>(
+      "sltu", SLTOperands::REGISTERS, SLTType::UNSIGNED);
+  signedUnsignedFacade.template add<SetLessThanInstructionNode>(
+      "slti", SLTOperands::IMMEDIATES, SLTType::SIGNED);
+  signedUnsignedFacade.template add<SetLessThanInstructionNode>(
+      "sltiu", SLTOperands::IMMEDIATES, SLTType::UNSIGNED);
 }
 
 /**
@@ -225,7 +239,8 @@ InstructionNodeFactory::InstructionNodeFactory(
   assert(wordSize == 32 || wordSize == 64);
 
   if (wordSize == 32) {
-    _setupIntegerInstructions<riscv::unsigned32_t>(_factories);
+    _setupIntegerInstructions<riscv::unsigned32_t, riscv::signed32_t>(
+        _factories);
     _setupBranchInstructions<riscv::unsigned32_t, riscv::signed32_t>(
         _factories);
     _setupJumpInstructions<riscv::unsigned32_t, riscv::signed32_t>(_factories);
@@ -236,7 +251,8 @@ InstructionNodeFactory::InstructionNodeFactory(
         instructions, _factories);
 
   } else if (wordSize == 64) {
-    _setupIntegerInstructions<riscv::unsigned64_t>(_factories);
+    _setupIntegerInstructions<riscv::unsigned64_t, riscv::signed64_t>(
+        _factories);
     _setupBranchInstructions<riscv::unsigned64_t, riscv::signed64_t>(
         _factories);
     _setupJumpInstructions<riscv::unsigned64_t, riscv::signed64_t>(_factories);
