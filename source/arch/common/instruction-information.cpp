@@ -119,6 +119,20 @@ bool InstructionInformation::isValid() const noexcept {
   return true;
 }
 
+InstructionInformation& InstructionInformation::operandLengths(const OperandLengthList &operandLengths) {
+    assert::that(operandLengths.size() > 0);
+    _operandLengths = operandLengths;
+    return *this;
+}
+
+bool InstructionInformation::hasOperandLengths() const {
+    return static_cast<bool>(_operandLengths);
+}
+const InstructionInformation::OperandLengthList & InstructionInformation::getOperandLengths() const {
+    assert::that(hasOperandLengths());
+    return *_operandLengths;
+}
+
 void InstructionInformation::_deserialize(InformationInterface::Format& data) {
   assert::that(data.count("mnemonic"));
   assert::that(data.count("format"));
@@ -130,4 +144,8 @@ void InstructionInformation::_deserialize(InformationInterface::Format& data) {
   length(data["length"]);
 
   key(static_cast<InstructionKey>(data["key"]));
+
+  if(data.count("operand length")) {
+    operandLengths(data["operand length"]);
+  }
 }
