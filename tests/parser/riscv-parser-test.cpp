@@ -118,13 +118,17 @@ TEST_F(RiscParserTest, MultipleDirectives) {
       "addi x0, x0, \\y\n"
       "addi x0, x0, \\x\n"
       ".endm\n"
+      ".macro add3\n"
+      "add2 3,4\n"
+      ".endm\n"
       "add1\n"
       "add1\n"
       "add2 5 + 7 << 2\n"
-      "add2 ZAHL, 3*9\n",
+      "add2 ZAHL, 3*9\n"
+      "add3\n",
       ParserMode::COMPILE);
   EXPECT_EQ(res.errorList.size(), 0);
-  EXPECT_EQ(res.commandList.size(), 3 + 3 + 4 + 5);
+  EXPECT_EQ(res.commandList.size(), 3 + 3 + 4 + 5 + 5);
 }
 
 TEST_F(RiscParserTest, WrongMacros) {
@@ -166,6 +170,9 @@ TEST_F(RiscParserTest, WrongMacros) {
       ".endm\n"
       ".macro add5\n"
       "addi x0, x0, 5\n"
+      "add6\n"
+      ".endm\n"
+      ".macro add6\n"
       "add5\n"
       ".endm\n"
       "add4\n"

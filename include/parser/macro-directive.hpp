@@ -85,6 +85,10 @@ class MacroDirective : public IntermediateDirective {
     return TargetSelector::THIS;
   }
 
+  virtual IntermediateExecutionTime executionTime() const {
+    return IntermediateExecutionTime::BEFORE_ALLOCATION;
+  }
+
   /**
    * \brief Inserts an operation into the internal command list.
    * \param pointer The operation to insert.

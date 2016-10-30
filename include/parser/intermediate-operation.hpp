@@ -43,6 +43,14 @@ using MemoryAddress = std::size_t;
  */
 enum class TargetSelector { KEEP, MAIN, THIS };
 
+/**
+ * Specifies whene an instruction should be executed.
+ *
+ * Some directives like macros need to be executed before memory allocation,
+ * otherwise they wouldn't be known during `allocateMemory`.
+ */
+enum class IntermediateExecutionTime { BEFORE_ALLOCATION, AFTER_ALLOCATION };
+
 class IntermediateOperation;
 class Architecture;
 class MemoryAllocator;
@@ -123,6 +131,13 @@ class IntermediateOperation {
    */
   virtual TargetSelector newTarget() const {
     return TargetSelector::KEEP;
+  }
+
+  /**
+   * Returns when to execute this operation.
+   */
+  virtual IntermediateExecutionTime executionTime() const {
+    return IntermediateExecutionTime::AFTER_ALLOCATION;
   }
 
   /**
