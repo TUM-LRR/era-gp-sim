@@ -24,6 +24,7 @@ Item {
     TreeView {
         id: registerTreeView
 
+        // Set the TreeView's style.
         anchors.fill: parent
         backgroundVisible: false
         style: TreeViewStyle {
@@ -70,6 +71,8 @@ Item {
                 font.weight: Font.Bold
                 color: "#585858"
             }
+            // The actual content of the register. Its appearance depends on the current
+            // format type (e.g. hex/bin/dec uses TextField, flag uses checkbox).
             Loader {
                 id: registerContentItem
                 anchors.top: registerTitleLabel.bottom

@@ -23,7 +23,6 @@ import QtQuick.Controls.Styles 1.4
 TextField {
     id: registerTextField
 
-    height: 22
     font.pointSize: 13
 
     Component.onCompleted: {
