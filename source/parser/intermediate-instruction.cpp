@@ -31,16 +31,18 @@ void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
   // First we need to check if the instruction is a macro.
   auto macro = state.macros.find(_name, _sources.size() + _targets.size());
   // If its a macro, execute every sub-instruction.
-  if (macro != state.macros.end()) {
-    for (int i = 0; i < macro->second.getOperationCount(); i++) {
-      macro->second.callOperationFunction(i,
-                                          getArgsVector(),
-                                          &IntermediateOperation::execute,
-                                          finalRepresentator,
-                                          table,
-                                          generator,
-                                          state,
-                                          memoryAccess);
+  if (macro.found()) {
+    if (!macro.isCyclic()) {
+      for (int i = 0; i < macro->second.getOperationCount(); i++) {
+        macro->second.callOperationFunction(i,
+                                            getArgsVector(),
+                                            &IntermediateOperation::execute,
+                                            finalRepresentator,
+                                            table,
+                                            generator,
+                                            state,
+                                            memoryAccess);
+      }
     }
   } else {
     // For a machine instruction, it is easy to "execute" it: just insert it
@@ -116,15 +118,19 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
   // Check if the instruction is a macro.
   auto macro = state.macros.find(_name, _sources.size() + _targets.size());
   // If its a macro, allocate every sub-instruction.
-  if (macro != state.macros.end()) {
-    for (int i = 0; i < macro->second.getOperationCount(); i++) {
-      macro->second.callOperationFunction(
-          i,
-          getArgsVector(),
-          &IntermediateOperation::allocateMemory,
-          architecture,
-          allocator,
-          state);
+  if (macro.found()) {
+    if (macro.isCyclic()) {
+      state.addError("Cyclic macro call!");
+    } else {
+      for (int i = 0; i < macro->second.getOperationCount(); i++) {
+        macro->second.callOperationFunction(
+            i,
+            getArgsVector(),
+            &IntermediateOperation::allocateMemory,
+            architecture,
+            allocator,
+            state);
+      }
     }
     return;
   }

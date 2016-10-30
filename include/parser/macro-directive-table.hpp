@@ -49,6 +49,8 @@ class MacroDirectiveTable {
                                        MacroDirective &,
                                        hash_pair>;
 
+  class MacroWrapper;
+
  public:
   /**
    * Inserts a macro into the table.
@@ -64,7 +66,7 @@ class MacroDirectiveTable {
    * \param argCount Number of arguments
    * \return Iterator to the macro if found. Otherwise `end()`.
    */
-  macro_map::const_iterator find(const std::string &name, size_t argCount);
+  MacroWrapper find(const std::string &name, size_t argCount);
 
   /**
    * Returns begin of the underlying map.
@@ -77,6 +79,56 @@ class MacroDirectiveTable {
   macro_map::const_iterator end();
 
  private:
+  /**
+   * Helper class to automatically set and unset the _isCompiling flag of the
+   * macro directive.
+   */
+  class MacroWrapper {
+   public:
+    MacroWrapper(macro_map::iterator i, const macro_map::iterator &end);
+    ~MacroWrapper();
+
+    MacroWrapper(const MacroWrapper &) = delete;
+    MacroWrapper &operator=(const MacroWrapper &) = delete;
+
+    MacroWrapper(MacroWrapper &&other)
+    : _i{std::move(other._i)}, _end{other._end}, _cyclic{other._cyclic} {
+      other._i = other._end;// Invalidate other by setting _i to _end.
+    }
+
+    MacroWrapper &operator=(MacroWrapper &&other) = delete;
+
+    /**
+     * These delegate the call to the underlying iterator. Assert that
+     * isCyclic() is false.
+     */
+    const macro_map::value_type &operator*();
+    macro_map::const_iterator operator->();
+
+    friend bool operator==(const MacroWrapper &first,
+                           const macro_map::const_iterator &second) {
+      return first._i == second;
+    }
+
+    friend bool operator!=(const MacroWrapper &first,
+                           const macro_map::const_iterator &second) {
+      return first._i != second;
+    }
+
+    bool isCyclic() {
+      return _cyclic;
+    }
+
+    bool found() {
+      return _i != _end;
+    }
+
+   private:
+    macro_map::iterator _i;
+    const macro_map::iterator _end;
+    bool _cyclic = false;
+  };
+
   macro_map _macros;
 };
 

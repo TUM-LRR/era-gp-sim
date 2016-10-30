@@ -32,8 +32,8 @@ bool MacroDirectiveTable::insert(MacroDirective &macro) {
 }
 
 auto MacroDirectiveTable::find(const std::string &name, size_t argCount)
-    -> macro_map::const_iterator {
-  return _macros.find({name, argCount});
+    -> MacroWrapper {
+  return {_macros.find({name, argCount}), _macros.end()};
 }
 
 auto MacroDirectiveTable::begin() -> macro_map::const_iterator {
@@ -42,4 +42,32 @@ auto MacroDirectiveTable::begin() -> macro_map::const_iterator {
 
 auto MacroDirectiveTable::end() -> macro_map::const_iterator {
   return _macros.end();
+}
+
+MacroDirectiveTable::MacroWrapper::MacroWrapper(macro_map::iterator i,
+                                                const macro_map::iterator &end)
+: _i(i), _end(end) {
+  if (i == end) return;
+  if (i->second.isCompiling())
+    _cyclic = true;
+  else
+    i->second._isCompiling = true;
+}
+
+MacroDirectiveTable::MacroWrapper::~MacroWrapper() {
+  if (!_cyclic && _i != _end) {
+    _i->second._isCompiling = false;
+  }
+}
+
+auto MacroDirectiveTable::MacroWrapper::operator*()
+    -> const macro_map::value_type & {
+  assert::that(!_cyclic && _i != _end);
+  return *_i;
+}
+
+auto MacroDirectiveTable::MacroWrapper::operator-> ()
+    -> macro_map::const_iterator {
+  assert::that(!_cyclic && _i != _end);
+  return _i;
 }

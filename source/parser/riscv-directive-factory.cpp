@@ -33,14 +33,15 @@ static DirectivePtr createInternal(const LineInterval &lines,
                                    const std::vector<std::string> &labels,
                                    const std::string &name,
                                    const std::vector<std::string> &arguments) {
-  return DirectivePtr{new T(lines, labels, name, arguments)};
+  return std::make_unique<T>(lines, labels, name, arguments);
 }
 
-const std::unordered_map<std::string,
-                         DirectivePtr (*)(const LineInterval &,
-                                          const std::vector<std::string> &,
-                                          const std::string &,
-                                          const std::vector<std::string> &)>
+const std::unordered_map<
+    std::string,
+    std::function<DirectivePtr(const LineInterval &,
+                               const std::vector<std::string> &,
+                               const std::string &,
+                               const std::vector<std::string> &)>>
     RiscVDirectiveFactory::mapping{
         {"section", createInternal<SectionDirective>},
         {"macro", createInternal<MacroDirective>},

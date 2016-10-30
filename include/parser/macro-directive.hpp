@@ -24,6 +24,8 @@
 
 class MacroDirective : public IntermediateDirective {
  public:
+  friend class MacroDirectiveTable;
+
   /**
    * \brief Instantiates a new MacroDirective with the given arguments.
    * \param lines     The line interval the operation occupies.
@@ -112,6 +114,14 @@ class MacroDirective : public IntermediateDirective {
    */
   std::pair<size_t, size_t> getParameterCount() const {
     return _macroParameters.getParameterCount();
+  }
+
+  /**
+   * Returns if an instance of the macro is currently compiling. Used to detect
+   * cyclic macro calls.
+   */
+  bool isCompiling() {
+    return _isCompiling;
   }
 
   /**
@@ -204,6 +214,8 @@ class MacroDirective : public IntermediateDirective {
    * \brief The operation list of the macro.
    */
   std::vector<IntermediateOperationPointer> _operations;
+
+  bool _isCompiling = false;
 };
 
 #endif /* ERAGPSIM_PARSER_MACRO_DIRECTIVE_HPP */

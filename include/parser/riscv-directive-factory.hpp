@@ -52,12 +52,13 @@ void create(const LineInterval &lines,
 /**
  * Maps names to directives.
  */
-extern const std::unordered_map<std::string,
-                                std::unique_ptr<IntermediateDirective> (*)(
-                                    const LineInterval &,
-                                    const std::vector<std::string> &,
-                                    const std::string &,
-                                    const std::vector<std::string> &)>
+extern const std::unordered_map<
+    std::string,
+    std::function<std::unique_ptr<IntermediateDirective>(
+        const LineInterval &,
+        const std::vector<std::string> &,
+        const std::string &,
+        const std::vector<std::string> &)>>
     mapping;
 }
 
