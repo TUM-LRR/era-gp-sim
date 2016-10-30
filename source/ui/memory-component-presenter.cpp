@@ -18,11 +18,10 @@
 */
 
 #include "ui/memory-component-presenter.hpp"
-#include <QDebug>
 #include <iostream>
 
+#include "common/assert.hpp"
 #include "common/string-conversions.hpp"
-#include "core/conversions.hpp"
 #include "core/memory-value.hpp"
 
 MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access,
@@ -48,7 +47,6 @@ MemoryComponentPresenter::~MemoryComponentPresenter() {
 
 void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
                                                std::size_t length) {
-  std::cout << "address: " << address << " length: " << length << std::endl;
   emit dataChanged(this->index(address), this->index(address + length - 1));
 }
 
@@ -61,8 +59,6 @@ void MemoryComponentPresenter::setValue(int address, QString number) {
 void MemoryComponentPresenter::setContextInformation(int addressStart,
                                                      int length,
                                                      int identifier) {
-  // this->dataChanged(this->index(addressStart, 0), this->index(addressStart +
-  // length, 2));
   // TODO
 }
 
@@ -75,10 +71,7 @@ int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
 QVariant
 MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   // check boundaries
-  if (!index.isValid()) {
-    qWarning() << "Warning: " << index.row() << ", " << index.column();
-    return QVariant();
-  }
+  assert::that(index.isValid());
 
   switch (role) {
     case AddressRole: {
@@ -99,7 +92,7 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
       return QString("");
     }
     default: {
-      qWarning() << "unknown column role";
+      // unknown column role, return empty value
       return QVariant();
     }
   }
