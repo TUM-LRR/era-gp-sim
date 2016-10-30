@@ -61,6 +61,10 @@ class SectionDirective : public IntermediateDirective {
                        CompileState& state,
                        MemoryAccess& memoryAccess);
 
+  virtual void allocateMemory(const Architecture& architecture,
+                              MemoryAllocator& allocator,
+                              CompileState& state);
+
  private:
   bool _hasName;
 

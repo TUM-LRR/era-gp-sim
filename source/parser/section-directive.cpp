@@ -24,6 +24,11 @@ void SectionDirective::execute(FinalRepresentation& finalRepresentator,
                                const SyntaxTreeGenerator& generator,
                                CompileState& state,
                                MemoryAccess& memoryAccess) {
+}
+
+void SectionDirective::allocateMemory(const Architecture& architecture,
+                                      MemoryAllocator& allocator,
+                                      CompileState& state) {
   if (!_hasName) {
     state.addError("Section name missing!");
     return;

@@ -195,6 +195,33 @@ TEST_F(RiscParserTest, WrongMacroUnclosed) {
   EXPECT_EQ(res.commandList.size(), 0);
 }
 
+TEST_F(RiscParserTest, MemoryDirectives) {
+  FinalRepresentation res;
+  res = parser.parse(
+      ".section data\n"
+      ".byte 200\n"
+      ".half 1251\n"
+      "label:.word  0xffffffff\n"
+      ".dword 0xfffffffff\n"
+      ".resb 2\n"
+      ".resh 3\n"
+      ".resw 4\n"
+      ".resd 1\n",
+      ParserMode::COMPILE);
+  EXPECT_EQ(res.errorList.size(), 0);
+  EXPECT_EQ(res.commandList.size(), 0);
+}
+
+TEST_F(RiscParserTest, WrongSection) {
+  FinalRepresentation res;
+  res = parser.parse(
+      ".section data\n"
+      "add x0, x0, x0\n",
+      ParserMode::COMPILE);
+  EXPECT_GE(res.errorList.size(), 1);
+  EXPECT_EQ(res.commandList.size(), 1);
+}
+
 TEST_F(RiscParserTest, MultipleInstructions) {
   FinalRepresentation res;
   res = parser.parse(
