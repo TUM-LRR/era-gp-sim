@@ -33,7 +33,7 @@
 
 class RegisterSet {
  public:
-   using Json = nlohmann::json;
+  using Json = nlohmann::json;
   /**
    * \brief Default constructor. Constructs an empty RegisterSet
    */
@@ -256,27 +256,40 @@ class RegisterSet {
   operator<<(std::ostream &stream, const RegisterSet &value);
 
  private:
-  // constant identifiers within a serialized RegisterSet
+  /**
+   * \brief constant identifiers within a serialized RegisterSet
+   */
   static const std::string _registerStringIdentifier;
   static const std::string _registerNameListStringIdentifier;
   static const std::string _registerDataMapStringIdentifier;
-  std::unordered_map<std::string, RegisterID>
-      _dict; /**< Brief Map mapping name -> RegisterID*/
-  std::vector<MemoryValue>
-      _register; /**< Brief Vector holding all the Registers with no parent*/
-  std::vector<bool>
-      _constant; /**< Brief is true if this ancestor Register is  constant*/
-  // I'm using set because that makes implementing the option to delete
-  // registers way easier, vector would've been enough at this moment
-  std::vector<std::set<std::string>>
-      _updateSet; /**< Brief Vector mapping RegisterID.address -> all
-                             childrens name of this Register*/
-  std::vector<std::string> _parentVector; /**< Brief Vector mapping
-                                             RegisterID.address -> parent name
-                                             of this Register*/
+  /**
+   * \brief Map mapping name -> RegisterID
+   */
+  std::unordered_map<std::string, RegisterID> _dict;
+  /**
+   * \brief Vector holding all the parent Registers/Registers with no parent
+   */
+  std::vector<MemoryValue> _register;
+  /**
+   * \brief Is true if this ancestor Register is constant
+   */
+  std::vector<bool> _constant;
+  /**
+   * \brief Vector mapping RegisterID.address -> all childrens name of this
+   *        Register
+   * \note I'm using set because that makes implementing the option to delete
+   *       registers way easier, Vector would've been enough at this moment
+   */
+  std::vector<std::set<std::string>> _updateSet;
+  /**
+   * \brief Vector mapping RegisterID.address -> parent name of this Register
+   */
+  std::vector<std::string> _parentVector;
+  /**
+   * \brief This function gets called for every changed Register
+   */
   std::function<void(const std::string &)> _callback = [](const std::string &) {
-  }; /**< Brief This function gets called for every changed
-Register*/
+  };
 
   /**
    * \brief returns a raw serialized version of this

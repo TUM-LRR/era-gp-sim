@@ -31,7 +31,7 @@
 
 class Memory {
  public:
-   using Json = nlohmann::json;
+  using Json = nlohmann::json;
   /**
    * \brief Default constructor. Constructs an empty Memory with default size
    *        (64 Bytes � 8 Bit)
@@ -136,8 +136,8 @@ class Memory {
    * \returns json
    */
   Json &serializeJSON(Json &json,
-                                char separator = _standardSeparator,
-                                std::size_t lineLength = 64) const;
+                      char separator = _standardSeparator,
+                      std::size_t lineLength = 64) const;
 
   /**
    * \brief converts the memory into serializeable strings
@@ -147,8 +147,8 @@ class Memory {
    * \returns json
    */
   Json serializeJSON(Json &&json = Json(),
-                               char separator = _standardSeparator,
-                               std::size_t lineLength = 64) const;
+                     char separator = _standardSeparator,
+                     std::size_t lineLength = 64) const;
 
   /**
    * \brief sets the memory to the data stored in json
@@ -174,21 +174,37 @@ class Memory {
   void clear();
 
  private:
-  // character to defaultly separate cells in serialized memory
+  /**
+   * \brief character defaulty separating serialized cells
+   */
   static constexpr char _standardSeparator = ',';
-  // constant identifiers within a serialized memory
+  /**
+   * \brief constant identifiers within a serialized memory
+   */
   static const std::string _byteCountStringIdentifier;
   static const std::string _byteSizeStringIdentifier;
   static const std::string _lineLengthStringIdentifier;
   static const std::string _separatorStringIdentifier;
   static const std::string _lineStringIdentifier;
   static const std::string _dataMapStringIdentifier;
-  std::size_t _byteSize;  /**< Brief Size of a Byte in bit*/
-  std::size_t _byteCount; /**< Brief Number of Bytes*/
-  MemoryValue _data;      /**< Brief MemoryValue holding *all* the data*/
+  /**
+   * \brief Size of a Byte in Bit
+   */
+  std::size_t _byteSize;
+  /**
+   * \brief Number of Bytes
+   */
+  std::size_t _byteCount;
+  /**
+   * \brief MemoryValue holding all the data
+   */
+  MemoryValue _data;
+  /**
+   * \brief This function gets called for every changed area in Memory
+   */
   std::function<void(const std::size_t, const std::size_t)> _callback = [](
       const std::size_t, const std::size_t) {
-  }; /**< Brief This function gets called for every changed area in Memory*/
+  };
 
   /**
    * \brief This Method is called whenever something in the Memory changes and
