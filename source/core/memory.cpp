@@ -20,13 +20,17 @@
 #include <unordered_map>
 
 #include "common/assert.hpp"
+#include "core/deserialization-error.hpp"
 #include "core/memory.hpp"
+
+using Json = nlohmann::json;
 
 const std::string Memory::_byteCountStringIdentifier = "memory_byteCount";
 const std::string Memory::_byteSizeStringIdentifier = "memory_byteSize";
 const std::string Memory::_lineLengthStringIdentifier = "memory_lineLength";
 const std::string Memory::_separatorStringIdentifier = "memory_separator";
 const std::string Memory::_lineStringIdentifier = "memory_line";
+const std::string Memory::_dataMapStringIdentifier = "memory_map";
 
 Memory::Memory() : Memory(64, 8) {
 }
@@ -37,7 +41,7 @@ Memory::Memory(std::size_t byteCount, std::size_t byteSize)
   assert::that(byteSize > 0);
 }
 
-Memory::Memory(const nlohmann::json& json)
+Memory::Memory(const Json& json)
 : Memory(*json.find(_byteCountStringIdentifier),
          *json.find(_byteSizeStringIdentifier)) {
   deserializeJSON(json);
@@ -153,23 +157,25 @@ Memory::_serializeRaw(char separator, std::size_t lineLength) const {
   return make_pair(std::move(meta), std::move(data));
 }
 
-nlohmann::json& Memory::serializeJSON(nlohmann::json& json,
-                                      char separator,
-                                      std::size_t lineLength) const {
+Json& Memory::serializeJSON(Json& json,
+                            char separator,
+                            std::size_t lineLength) const {
   auto data = _serializeRaw(separator, lineLength);
+  // json["meta"]=data.first;
+  json[_dataMapStringIdentifier] = data.second;
   for (auto i : data.first) {
     json[i.first] = i.second;
   }
-  for (auto i : data.second) {
-    json[i.first] = i.second;
-  }
+  // for (auto i : data.second) {
+  //   json[i.first] = i.second;
+  // }
   json[_separatorStringIdentifier] = separator;
   return json;
 }
 
-nlohmann::json Memory::serializeJSON(nlohmann::json&& json,
-                                     char separator,
-                                     std::size_t lineLength) const {
+Json Memory::serializeJSON(Json&& json,
+                           char separator,
+                           std::size_t lineLength) const {
   return serializeJSON(json, separator, lineLength);
 }
 
@@ -227,11 +233,13 @@ MemoryValue Memory::_deserializeLine(const std::string& line,
   return ret;
 }
 
-void Memory::deserializeJSON(const nlohmann::json& json) {
-  auto byteCountIt = json.find(_byteCountStringIdentifier);
-  auto byteSizeIt = json.find(_byteSizeStringIdentifier);
-  auto lineLengthIt = json.find(_lineLengthStringIdentifier);
-  auto separatorIt = json.find(_separatorStringIdentifier);
+void Memory::deserializeJSON(const Json& json) {
+  // TODO::look into making this const to not unnecessarily copy stuff
+  const auto byteCountIt = json.find(_byteCountStringIdentifier);
+  const auto byteSizeIt = json.find(_byteSizeStringIdentifier);
+  const auto lineLengthIt = json.find(_lineLengthStringIdentifier);
+  const auto separatorIt = json.find(_separatorStringIdentifier);
+  const auto dataMapIt = json.find(_dataMapStringIdentifier);
   // check that everything exists
   if (byteCountIt == json.end()) {
     throw DeserializationError("Could not deserialize Memory: Could not find " +
@@ -248,6 +256,10 @@ void Memory::deserializeJSON(const nlohmann::json& json) {
   if (separatorIt == json.end()) {
     throw DeserializationError("Could not deserialize Memory: Could not find " +
                                _separatorStringIdentifier);
+  }
+  if (dataMapIt == json.end()) {
+    throw DeserializationError("Could not deserialize Memory: Could not find " +
+                               _dataMapStringIdentifier);
   }
   // TODO::check types!
   // check that sizes match
@@ -273,7 +285,9 @@ void Memory::deserializeJSON(const nlohmann::json& json) {
     throw DeserializationError("Could not deserialize Memory: lineLength == 0");
   }
   const std::size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
+  // TODO::find separator
   const char separator = json[_separatorStringIdentifier].get<char>();
+  auto data = *dataMapIt;
   // iterate over all lines
   for (std::size_t i = 0; i < lineCount; ++i) {
     // the key is _lineStringIdentifier and the cell address
@@ -281,9 +295,10 @@ void Memory::deserializeJSON(const nlohmann::json& json) {
     name << _lineStringIdentifier;
     name << (i * lineLength);
     // find key
-    auto lineIterator = json.find(name.str());
+    auto lineIterator = data.find(name.str());
+    // auto lineIterator = json.find(name.str());
     // if key exists
-    if (lineIterator != json.end()) {
+    if (lineIterator != data.end()) {
       // deserialize Line
       MemoryValue value =
           _deserializeLine(*lineIterator, _byteSize, lineLength, separator);
@@ -305,6 +320,7 @@ std::ostream& operator<<(std::ostream& stream, const Memory& value) {
 
 void Memory::clear() {
   _data.clear();
+  _wasUpdated(0, _byteCount);
 }
 
 void Memory::_wasUpdated(const std::size_t address, const std::size_t amount) {

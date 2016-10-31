@@ -26,12 +26,12 @@
 #include <string>
 #include <utility>
 
-#include "core/deserialization-error.hpp"
 #include "core/memory-value.hpp"
 #include "third-party/json/json.hpp"
 
 class Memory {
  public:
+   using Json = nlohmann::json;
   /**
    * \brief Default constructor. Constructs an empty Memory with default size
    *        (64 Bytes � 8 Bit)
@@ -49,7 +49,7 @@ class Memory {
    * \brief Constructs an Memory with the data stored in json
    * \param json a json ontaining a representaion of a memory
    */
-  Memory(const nlohmann::json &json);
+  Memory(const Json &json);
 
   /**
    * \brief Copy constructor. Constructs the Memory with the copy of the
@@ -135,7 +135,7 @@ class Memory {
    * \param lineLength the length of a line in byte
    * \returns json
    */
-  nlohmann::json &serializeJSON(nlohmann::json &json,
+  Json &serializeJSON(Json &json,
                                 char separator = _standardSeparator,
                                 std::size_t lineLength = 64) const;
 
@@ -146,7 +146,7 @@ class Memory {
    * \param lineLength the length of a line in byte
    * \returns json
    */
-  nlohmann::json serializeJSON(nlohmann::json &&json = nlohmann::json(),
+  Json serializeJSON(Json &&json = Json(),
                                char separator = _standardSeparator,
                                std::size_t lineLength = 64) const;
 
@@ -154,7 +154,7 @@ class Memory {
    * \brief sets the memory to the data stored in json
    * \param json the json object to holding the data
    */
-  void deserializeJSON(const nlohmann::json &json);
+  void deserializeJSON(const Json &json);
 
   /**
    * \brief returns true iff this == other
@@ -182,6 +182,7 @@ class Memory {
   static const std::string _lineLengthStringIdentifier;
   static const std::string _separatorStringIdentifier;
   static const std::string _lineStringIdentifier;
+  static const std::string _dataMapStringIdentifier;
   std::size_t _byteSize;  /**< Brief Size of a Byte in bit*/
   std::size_t _byteCount; /**< Brief Number of Bytes*/
   MemoryValue _data;      /**< Brief MemoryValue holding *all* the data*/

@@ -26,8 +26,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "common/assert.hpp"
-#include "core/deserialization-error.hpp"
 #include "core/memory-value.hpp"
 #include "core/register-id.hpp"
 #include "third-party/json/json.hpp"
@@ -35,6 +33,7 @@
 
 class RegisterSet {
  public:
+   using Json = nlohmann::json;
   /**
    * \brief Default constructor. Constructs an empty RegisterSet
    */
@@ -220,7 +219,7 @@ class RegisterSet {
    * \param lineLength the length of a line in byte
    * \returns json
    */
-  nlohmann::json &serializeJSON(nlohmann::json &json) const;
+  Json &serializeJSON(Json &json) const;
   /**
    * \brief converts the memory into serializeable strings
    * \param json the json object to hold the data
@@ -228,7 +227,7 @@ class RegisterSet {
    * \param lineLength the length of a line in byte
    * \returns json
    */
-  nlohmann::json serializeJSON(nlohmann::json &&json = nlohmann::json()) const;
+  Json serializeJSON(Json &&json = Json()) const;
 
   /**
    * \brief returns true iff the number of parent registers is equal all parent
@@ -247,7 +246,7 @@ class RegisterSet {
    * \brief sets the memory to the data stored in json
    * \param json the json object to holding the data
    */
-  void deserializeJSON(const nlohmann::json &json);
+  void deserializeJSON(const Json &json);
 
   /**
    * \brief prints a representation of this into the stream
@@ -260,6 +259,7 @@ class RegisterSet {
   // constant identifiers within a serialized RegisterSet
   static const std::string _registerStringIdentifier;
   static const std::string _registerNameListStringIdentifier;
+  static const std::string _registerDataMapStringIdentifier;
   std::unordered_map<std::string, RegisterID>
       _dict; /**< Brief Map mapping name -> RegisterID*/
   std::vector<MemoryValue>

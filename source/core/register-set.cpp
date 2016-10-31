@@ -16,12 +16,18 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "common/assert.hpp"
 #include "common/string-conversions.hpp"
+#include "core/deserialization-error.hpp"
 #include "core/register-set.hpp"
 
-const std::string RegisterSet::_registerStringIdentifier = "register_";
+using Json = nlohmann::json;
+
+const std::string RegisterSet::_registerStringIdentifier = "register_value_";
 const std::string RegisterSet::_registerNameListStringIdentifier =
     "register_parent_vector";
+const std::string RegisterSet::_registerDataMapStringIdentifier =
+    "register_data_map";
 
 RegisterSet::RegisterSet() : _dict{}, _register{}, _updateSet{} {
 }
@@ -196,17 +202,24 @@ bool RegisterSet::existsRegister(const std::string &name) const {
   return iterator != _dict.end();
 }
 
-nlohmann::json &RegisterSet::serializeJSON(nlohmann::json &json) const {
+Json &RegisterSet::serializeJSON(Json &json) const {
   auto data = _serializeRaw();
+  std::map<std::string, std::string> dataMap;
   for (const auto &i : data) {
-    json[i.first] = i.second.toHexString(false, false);
+    dataMap[i.first] = i.second.toHexString(false, false);
   }
+  json[_registerDataMapStringIdentifier] = dataMap;
+  // for (const auto &i : data) {
+  //   json[i.first] = i.second.toHexString(false, false);
+  // }
   json[_registerNameListStringIdentifier] = _parentVector;
   return json;
 }
-nlohmann::json RegisterSet::serializeJSON(nlohmann::json &&json) const {
+
+Json RegisterSet::serializeJSON(Json &&json) const {
   return serializeJSON(json);
 }
+
 std::ostream &operator<<(std::ostream &stream, const RegisterSet &value) {
   stream << '{';
   for (std::size_t i = 0; i < value._register.size(); ++i) {
@@ -234,16 +247,33 @@ void RegisterSet::_wasUpdated(const std::size_t address) {
   }
 }
 
-void RegisterSet::deserializeJSON(const nlohmann::json &json) {
-  std::vector<std::string> parentVector =
-      json[_registerNameListStringIdentifier];
+void RegisterSet::deserializeJSON(const Json &json) {
+  const auto registerNameListIt = json.find(_registerNameListStringIdentifier);
+  const auto dataMapIt = json.find(_registerDataMapStringIdentifier);
+  if (registerNameListIt == json.end()) {
+    throw DeserializationError(
+        "Could not deserialize Registers: Could not find: " +
+        _registerNameListStringIdentifier);
+  }
+  if (dataMapIt == json.end()) {
+    throw DeserializationError(
+        "Could not deserialize Registers: Could not find: " +
+        _registerDataMapStringIdentifier);
+  }
+  std::vector<std::string> parentVector = *registerNameListIt;
+  const auto &dataMap = *dataMapIt;
   for (const auto &name : parentVector) {
     if (existsRegister(name)) {
-      const auto &value = json[_registerStringIdentifier + name];
+      const auto valueIt = dataMap.find(_registerStringIdentifier + name);
+      if (valueIt == dataMap.end()) {
+        throw DeserializationError(
+            "Could not deserialize Registers: Could not find Register: " +
+            name);
+      }
       // TODO::maybe use sommething else? Maybe something that throws some
       // Exceptions <3
       const auto &converted =
-          StringConversions::hexStringToMemoryValue(value, getSize(name));
+          StringConversions::hexStringToMemoryValue(*valueIt, getSize(name));
       put(name, converted.value());
     } else {
       // die and burn in hell
