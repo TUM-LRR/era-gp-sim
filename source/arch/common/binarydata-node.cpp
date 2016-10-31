@@ -33,7 +33,7 @@ MemoryValue BinaryDataNode::assemble() const {
   auto maxAppend = _rawData.size()%8;
   MemoryValue::Underlying copy = MemoryValue::Underlying{_rawData.begin(), _rawData.end()};
   for(auto i=0; i<maxAppend; ++i) {
-      copy.push_back(PADDING);
+      copy.push_back(BinaryDataNode::PADDING);
   }
   MemoryValue assembled = MemoryValue(copy, copy.size());
   return assembled;
