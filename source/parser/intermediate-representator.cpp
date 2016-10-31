@@ -32,25 +32,33 @@ IntermediateRepresentator::transform(const Architecture& architecture,
     state.addError("Macro not closed. Missing a macro end directive?");
   }
 
+  FinalRepresentation representation;
+  SymbolTable table;
+
+  // Some directives need to be executed before memory allocation.
+  for (const auto& i : _commandList) {
+    if (i->executionTime() == IntermediateExecutionTime::BEFORE_ALLOCATION)
+      i->execute(representation, table, generator, state, memoryAccess);
+  }
+
   allocator.clear();
 
-  // First of all, we reserve our memory.
+  // We reserve our memory.
   for (const auto& i : _commandList) {
     i->allocateMemory(architecture, allocator, state);
   }
 
   allocator.calculatePositions();
 
-  // Secondly, we insert all our labels/constants into the SymbolTable.
-  SymbolTable table;
+  // Next, we insert all our labels/constants into the SymbolTable.
   for (const auto& i : _commandList) {
     i->enhanceSymbolTable(table, allocator, state);
   }
 
   // Then, we execute their values.
-  FinalRepresentation representation;
   for (const auto& i : _commandList) {
-    i->execute(representation, table, generator, state, memoryAccess);
+    if (i->executionTime() == IntermediateExecutionTime::AFTER_ALLOCATION)
+      i->execute(representation, table, generator, state, memoryAccess);
   }
 
   representation.errorList = state.errorList;

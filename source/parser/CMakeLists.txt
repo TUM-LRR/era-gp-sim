@@ -13,14 +13,19 @@ set(PARSER_SOURCES
   riscv-regex.cpp
   syntax-information.cpp
   syntax-tree-generator.cpp
+  memory-reservation-directive.cpp
   macro-directive.cpp
   macro-end-directive.cpp
   expression-compiler-clike.cpp
   parser-factory.cpp
+  riscv-directive-factory.cpp
   integer-parser.cpp
   constant-directive.cpp
+  compile-state.cpp
   final-representation.cpp
   memory-allocator.cpp
+  macro-directive-table.cpp
+  memory-definition-directive.cpp
 )
 
 ########################################

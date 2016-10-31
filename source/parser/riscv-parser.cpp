@@ -26,6 +26,7 @@
 #include "arch/common/unit-information.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/intermediate-representator.hpp"
+#include "parser/riscv-directive-factory.hpp"
 #include "parser/riscv-regex.hpp"
 #include "parser/syntax-information.hpp"
 
@@ -93,22 +94,33 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
       }
 
       if (line_regex.hasInstruction()) {
+        bool is_directive = line_regex.isDirective();
         // Collect source and target parameters
         for (int i = 0; i < line_regex.getParameterCount(); i++) {
-          if (i == 0)
+          if (i == 0 && !is_directive)
             targets.push_back(line_regex.getParameter(i));
           else
             sources.push_back(line_regex.getParameter(i));
         }
 
-        intermediate.insertCommand(
-            IntermediateInstruction{
-                LineInterval(_compile_state.position.line()),
-                labels,
-                line_regex.getInstruction(),
-                sources,
-                targets},
-            _compile_state);
+        if (is_directive) {
+          RiscVDirectiveFactory::create(
+              LineInterval{_compile_state.position.line()},
+              labels,
+              line_regex.getInstruction(),
+              sources,
+              intermediate,
+              _compile_state);
+        } else {
+          intermediate.insertCommand(
+              IntermediateInstruction{
+                  LineInterval{_compile_state.position.line()},
+                  labels,
+                  line_regex.getInstruction(),
+                  sources,
+                  targets},
+              _compile_state);
+        }
 
         labels.clear();
         targets.clear();
@@ -135,6 +147,14 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   for (auto instruction : _architecture.getInstructions()) {
     // Matches all instruction mnemonics which don't end with a ':'
     info.addSyntaxRegex("\\b" + instruction.first + "\\b(?!:)",
+                        SyntaxInformation::Token::Instruction);
+  }
+
+  // Add directive regexes
+  for (auto directive : RiscVDirectiveFactory::mapping) {
+    // Matches all directive mnemonics starting with a '.' which don't end with
+    // a ':'
+    info.addSyntaxRegex("\\b\\." + directive.first + "\\b(?!:)",
                         SyntaxInformation::Token::Instruction);
   }
 

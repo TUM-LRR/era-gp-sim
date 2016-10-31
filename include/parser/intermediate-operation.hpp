@@ -43,6 +43,14 @@ using MemoryAddress = std::size_t;
  */
 enum class TargetSelector { KEEP, MAIN, THIS };
 
+/**
+ * Specifies whene an instruction should be executed.
+ *
+ * Some directives like macros need to be executed before memory allocation,
+ * otherwise they wouldn't be known during `allocateMemory`.
+ */
+enum class IntermediateExecutionTime { BEFORE_ALLOCATION, AFTER_ALLOCATION };
+
 class IntermediateOperation;
 class Architecture;
 class MemoryAllocator;
@@ -126,12 +134,37 @@ class IntermediateOperation {
   }
 
   /**
+   * Returns when to execute this operation.
+   */
+  virtual IntermediateExecutionTime executionTime() const {
+    return IntermediateExecutionTime::AFTER_ALLOCATION;
+  }
+
+  /**
    * \brief Inserts an operation into a possible internal command list.
    * \param pointer The operation to insert.
    */
   virtual void insert(IntermediateOperationPointer pointer) {
     // If this happens, something has gone wrong in our programming.
     assert::that(false);
+  }
+
+  /**
+   * Inserts a value for the variable parameter called name.
+   * \param name  Name of the parameter.
+   * \param value Value of the parameter.
+   */
+  virtual void
+  insertIntoArguments(const std::string& name, const std::string& value) {
+    // Nothing to do here.
+  }
+
+  /**
+   * Clones the operation if supported.
+   * \return Pointer to cloned operation if supported. Otherwise `nullptr`.
+   */
+  virtual IntermediateOperationPointer clone() {
+    return nullptr;
   }
 
  protected:
