@@ -1,30 +1,30 @@
 {
-    "name": "base3",
-    "extends": "with-deps-complex",
     "units": [
         {
-            "name": "fpu",
             "registers": [
                 {
-                    "name": "f0",
-                    "id": 13,
-                    "size": 64,
-                    "alias": "pc",
-                    "type": "program-counter"
+                    "id": 13, 
+                    "alias": "pc", 
+                    "type": "program-counter", 
+                    "name": "f0", 
+                    "size": 64
                 }
-            ]
-        },
+            ], 
+            "name": "fpu"
+        }, 
         {
-            "name": "cpu",
             "registers": [
                 {
-                    "name": "r5",
-                    "id": 13,
-                    "size": 64,
-                    "alias": "pc",
-                    "type": "program-counter"
+                    "id": 13, 
+                    "alias": "pc", 
+                    "type": "program-counter", 
+                    "name": "r5", 
+                    "size": 64
                 }
-            ]
+            ], 
+            "name": "cpu"
         }
-    ]
+    ], 
+    "extends": "with-deps-complex", 
+    "name": "base3"
 }
