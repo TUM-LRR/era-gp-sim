@@ -226,23 +226,27 @@ TEST(ArchCommonTest, TestArchitectureFormula) {
 TEST(ArchCommonTest, TestInstructionInformation) {
   auto instruction = InstructionInformation("add").format("R").length(69);
 
+  InstructionInformation::OperandLengthList operands = {32, 32, 12};
   InstructionKey key(InstructionKey({{"opcode", 6}, {"function", 9}}));
 
   EXPECT_FALSE(instruction.isValid());
   EXPECT_FALSE(instruction.hasKey());
+  EXPECT_FALSE(instruction.hasOperandLengths());
 
-  instruction.key(key);
+  instruction.key(key).operandLengths(operands);
 
   EXPECT_TRUE(instruction.isValid());
   EXPECT_TRUE(instruction.hasKey());
   EXPECT_TRUE(instruction.hasMnemonic());
   EXPECT_TRUE(instruction.hasFormat());
   EXPECT_TRUE(instruction.hasLength());
+  EXPECT_TRUE(instruction.hasOperandLengths());
 
   EXPECT_EQ(instruction.getKey(), key);
   EXPECT_EQ(instruction.getMnemonic(), "add");
   EXPECT_EQ(instruction.getFormat(), "R");
   EXPECT_EQ(instruction.getLength(), 69);
+  EXPECT_EQ(instruction.getOperandLengths(), operands);
 }
 
 TEST_F(ArchCommonTestFixture, TestInstructionSet) {
