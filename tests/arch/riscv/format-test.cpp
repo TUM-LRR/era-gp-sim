@@ -88,15 +88,15 @@ TEST_F(ImmediateFormatTest, JFormat) {
 struct InstructionFormatTest : public ::testing::Test {
   InstructionFormatTest() {
     auto add = InstructionInformation("add")
-                   .key(InstructionKey({{"opcode", 6}, {"function", 3}}))
+                   .key(InstructionKey({{"opcode", 6}, {"funct3", 0}, {"funct7", 0}}))
                    .format("R")
                    .length(32);
     auto sub = InstructionInformation("sub")
-                   .key(InstructionKey({{"opcode", 9}, {"function", 3}}))
+                   .key(InstructionKey({{"opcode", 9}, {"funct3", 3}}))
                    .format("I")
                    .length(32);
     auto beq = InstructionInformation("beq")
-                   .key(InstructionKey({{"opcode", 7}, {"function", 1}}))
+                   .key(InstructionKey({{"opcode", 7}, {"funct3", 1}}))
                    .format("SB")
                    .length(32);
     auto uinst = InstructionInformation("uinst")

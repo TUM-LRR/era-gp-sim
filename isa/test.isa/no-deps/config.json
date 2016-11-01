@@ -46,7 +46,7 @@
                 {
                     "id": 1,
                     "type": "float",
-                    "constant": 3.14,
+                    "constant": "0x4048f5c3",
                     "name": "r1",
                     "size": 16,
                     "enclosing": 0,

@@ -20,12 +20,12 @@
 #ifndef ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
 #define ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
 
-#include <atomic>
 #include <functional>
 #include <memory>
 #include <unordered_set>
 
 #include "arch/common/register-information.hpp"
+#include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
 #include "core/servant.hpp"
 #include "parser/final-representation.hpp"
@@ -43,6 +43,7 @@ class MacroInformation;
 class ParsingAndExecutionUnit : public Servant {
  public:
   using size_t = std::size_t;
+  using SharedCondition = MemoryAccess::SharedCondition;
   template <typename... T>
   using Callback = std::function<void(T...)>;
   template <typename T>
@@ -55,7 +56,7 @@ class ParsingAndExecutionUnit : public Servant {
   ParsingAndExecutionUnit(std::weak_ptr<Scheduler> &&scheduler,
                           MemoryAccess memoryAccess,
                           Architecture architecture,
-                          std::atomic_flag &stopFlag,
+                          SharedCondition stopCondition,
                           std::string parserName);
 
   /**
@@ -67,9 +68,8 @@ class ParsingAndExecutionUnit : public Servant {
   /**
    * Execute the next line of the assembler program
    *
-   * \return index of next instruction. Used internally.
    */
-  size_t executeNextLine();
+  void executeNextLine();
 
   /**
    * Execute the assembler program to the next breakpoint
@@ -146,7 +146,8 @@ class ParsingAndExecutionUnit : public Servant {
    *
    * \param callback
    */
-  void setThrowRuntimeErrorCallback(Callback<const std::string &> callback);
+  void
+  setThrowRuntimeErrorCallback(Callback<const ValidationResult &> callback);
 
   /**
    * Set the callback to set the macro list in the ui.
@@ -170,15 +171,29 @@ class ParsingAndExecutionUnit : public Servant {
    * Calculates the index of the next node according to the program counter.
    *
    * \return index of the next node.
-   *
    */
   size_t _findNextNode();
+
+  /**
+   * Executes a syntax tree node.
+   *
+   * \param nodeIndex the index of the syntax tree node
+   */
+  bool _executeNode(size_t nodeIndex);
+
+  /**
+   * Finds the next instruction and updates the line number in the ui.
+   *
+   * \param currentNode The index of the last executed node.
+   * \return the index of the next node
+   */
+  size_t _updateLineNumber(size_t currentNode);
 
   /** A unique_ptr to the parser. */
   std::unique_ptr<Parser> _parser;
 
-  /**  Reference to a std::atomic_flag to stop the execution. */
-  std::atomic_flag &_stopFlag;
+  /** Shared pointer to a ConditionTimer to stop the execution. */
+  SharedCondition _stopCondition;
 
   /** A FinalRepresentation created by the parser. */
   FinalRepresentation _finalRepresentation;
@@ -209,7 +224,7 @@ class ParsingAndExecutionUnit : public Servant {
   ListCallback<CompileError> _setErrorList;
 
   /** Callback to throw a runtime error. */
-  Callback<std::string> _throwRuntimeError;
+  Callback<const ValidationResult &> _throwRuntimeError;
 
   /** Callback to set the macro list in the ui.*/
   ListCallback<MacroInformation> _setMacroList;
