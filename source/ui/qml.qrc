@@ -31,6 +31,23 @@
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
+        <file>Components/Output/Buttons/Lightstrip Icon Selected.png</file>
+        <file>Components/Output/Buttons/Lightstrip Icon Selected@2x.png</file>
+        <file>Components/Output/Buttons/Lightstrip Icon.png</file>
+        <file>Components/Output/Buttons/Lightstrip Icon@2x.png</file>
+        <file>Components/Output/Buttons/Text Console Icon Selected.png</file>
+        <file>Components/Output/Buttons/Text Console Icon Selected@2x.png</file>
+        <file>Components/Output/Buttons/Text Console Icon.png</file>
+        <file>Components/Output/Buttons/Text Console Icon@2x.png</file>
+        <file>Components/Output/Buttons/Sevensegment Icon Selected.png</file>
+        <file>Components/Output/Buttons/Sevensegment Icon Selected@2x.png</file>
+        <file>Components/Output/Buttons/Sevensegment Icon.png</file>
+        <file>Components/Output/Buttons/Sevensegment Icon@2x.png</file>
+        <file>Components/Output/Buttons/Settings Icon Pressed.png</file>
+        <file>Components/Output/Buttons/Settings Icon Pressed@2x.png</file>
+        <file>Components/Output/Buttons/Settings Icon.png</file>
+        <file>Components/Output/Buttons/Settings Icon@2x.png</file>
+        <file>Components/Output/OutputSettingsWindow.qml</file>
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>

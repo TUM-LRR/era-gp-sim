@@ -12,6 +12,7 @@
 #include "ui/editor-component.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/register-model.hpp"
+#include "ui/output-component.hpp"
 //#include "ui/snapshotmodel.hpp"
 
 
@@ -54,6 +55,7 @@ class GuiProject : QObject {
   ProjectModule _projectModule;
   RegisterModel _registerModel;
   EditorComponent _editorComponent;
+  OutputComponent _outputComponent;
   // SnapshotModel snapmodel;
   MemoryComponentPresenter _memoryModel;
   // Core-Project;
