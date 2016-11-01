@@ -19,6 +19,7 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 1.5
+import QtQuick.Dialogs 1.2
 import "../Common"
 
 //decorates a Flickable with Scrollbars
@@ -91,6 +92,10 @@ ScrollView {
                   }
                   onExecutionLineChanged: {
                     textArea.line = line;
+                  }
+                  onRuntimeError: {
+                    runtimeErrorDialog.text = errorMessage;
+                    runtimeErrorDialog.open();
                   }
                 }
 
@@ -253,6 +258,16 @@ ScrollView {
                         newError.errorMessage = message;
                     }
                 }
+            }
+
+            //Dialog to show runtime errors
+            MessageDialog {
+              id: runtimeErrorDialog
+              title: "Runtime error"
+              standardButtons: StandardButton.Ok
+              onAccepted: {
+                close();
+              }
             }
 
             //input for zoom

@@ -20,22 +20,20 @@
 #ifndef ERAGPSIM_UI_EDITOR_COMPONENT_HPP_
 #define ERAGPSIM_UI_EDITOR_COMPONENT_HPP_
 
-#include <QColor>
 #include <QObject>
-#include <QQmlContext>
-#include <QQuickTextDocument>
-#include <QRegExp>
-#include <QTextCharFormat>
-#include <QTextDocument>
 #include <memory>
 
 #include "core/command-interface.hpp"
-#include "parser/code-position.hpp"
-#include "parser/compile-error.hpp"
 #include "parser/syntax-information.hpp"
 #include "ui/syntaxhighlighter.hpp"
 
 class ParserInterface;
+class ValidationResult;
+class QQmlContext;
+class QQuickTextDocument;
+class QTextCharFormat;
+class QColor;
+class CompileError;
 
 /**
  * This class is the c++ component for the QML Editor and manages its
@@ -90,6 +88,13 @@ class EditorComponent : public QObject {
    */
   void setCurrentLine(int line);
 
+  /**
+   * Shows a runtime error in the ui.
+   *
+   * \param validationResult The validation result which indicated the error.
+   */
+  void throwRuntimeError(const ValidationResult &validationResult);
+
   // void setMakroList(std::vector<Makro>&& makroList);
 
  private:
@@ -130,6 +135,9 @@ class EditorComponent : public QObject {
 
   /** Change the highlighted line which indicates the execution point. */
   void executionLineChanged(int line);
+
+  /** display a runtime error in the ui. */
+  void runtimeError(QString errorMessage);
 };
 
 #endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP_ */

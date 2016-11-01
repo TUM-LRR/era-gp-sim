@@ -10,6 +10,7 @@
 #include "core/memory-value.hpp"
 #include "core/project-module.hpp"
 #include "ui/editor-component.hpp"
+#include "ui/memory-component-presenter.hpp"
 #include "ui/register-model.hpp"
 //#include "ui/snapshotmodel.hpp"
 
@@ -54,7 +55,7 @@ class GuiProject : QObject {
   RegisterModel _registerModel;
   EditorComponent _editorComponent;
   // SnapshotModel snapmodel;
-  // MemoryComponentPresenter memorymodel;
+  MemoryComponentPresenter _memoryModel;
   // Core-Project;
   std::function<std::string(MemoryValue)> hexConversion;
   std::function<std::string(MemoryValue)> binConversion;
@@ -84,7 +85,7 @@ class GuiProject : QObject {
    * \param address The address of the memory
    * \param length The number of bytes that changed
    */
-  void memoryChanged(QVariant address, QVariant length);
+  void memoryChanged(std::size_t address, std::size_t length);
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP

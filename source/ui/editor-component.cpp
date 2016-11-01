@@ -19,10 +19,17 @@
 
 #include "ui/editor-component.hpp"
 
+#include <QColor>
 #include <QFontMetrics>
+#include <QQmlContext>
+#include <QQuickTextDocument>
+#include <QString>
+#include <QTextCharFormat>
 
+#include "arch/common/validation-result.hpp"
 #include "common/assert.hpp"
 #include "core/parser-interface.hpp"
+#include "parser/compile-error.hpp"
 
 EditorComponent::EditorComponent(QQmlContext *projectContext,
                                  ParserInterface parserInterface,
@@ -34,6 +41,11 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
       [this](std::size_t line) { setCurrentLine(line); });
   parserInterface.setSetErrorListCallback([this](
       const std::vector<CompileError> &errorList) { setErrorList(errorList); });
+
+  parserInterface.setThrowRuntimeErrorCallback(
+      [this](const ValidationResult &validationResult) {
+        throwRuntimeError(validationResult);
+      });
 
   // TODO select colors according to a theme/possibility to change colors
 
@@ -125,6 +137,12 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
 
 void EditorComponent::setCurrentLine(int line) {
   emit executionLineChanged(line);
+}
+
+void EditorComponent::throwRuntimeError(
+    const ValidationResult &validationResult) {
+  QString errorMessage = QString::fromStdString(validationResult.getMessage());
+  emit runtimeError(errorMessage);
 }
 
 void EditorComponent::_addKeywords(
