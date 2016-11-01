@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
-#include "include/arch/common/binarydata-node.hpp"
+#include "arch/common/binarydata-node.hpp"
 
 BinaryDataNode::BinaryDataNode() : AbstractSyntaxTreeNode(Type::OTHER) {}
 
@@ -33,7 +33,7 @@ MemoryValue BinaryDataNode::assemble() const {
   auto maxAppend = _rawData.size()%8;
   MemoryValue::Underlying copy = MemoryValue::Underlying{_rawData.begin(), _rawData.end()};
   for(auto i=0; i<maxAppend; ++i) {
-      copy.push_back(BinaryDataNode::PADDING);
+      copy.push_back(0);
   }
   MemoryValue assembled = MemoryValue(copy, copy.size());
   return assembled;

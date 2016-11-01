@@ -27,7 +27,6 @@
  */
 class BinaryDataNode : public AbstractSyntaxTreeNode {
  public:
-  static constexpr unsigned char PADDING = 0;
   using Data = std::string;
 
   /**
@@ -53,7 +52,7 @@ class BinaryDataNode : public AbstractSyntaxTreeNode {
    * Transforms the stores data into a MemoryValue and returns the MemoryValue.
    * The size of this MemoryValue depends on the size of stored data and
    * therefore is not suited to be used in an actual assembly format.
-   * Note: Due to a limitation concerning MemoryValue, the data may be padded to
+   * Note: Due to a limitation concerning MemoryValue, the data may be padded (with 0s) to
    * reach a size that is a multiple of 8.
    * This padding will only affect the data inside the MemoryValue and will not
    * be cached in the data this node stores.
