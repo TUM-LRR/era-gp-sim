@@ -71,7 +71,7 @@ ApplicationWindow {
                     enabled = false;
                     visible = false;
                     ui.addProject(placeholderItem, projectComponent,
-                      memorySize, architecture, baseExtensions, extensions, parser);
+                      memorySize, architecture, optionName, parser);
                 }
             }
         }

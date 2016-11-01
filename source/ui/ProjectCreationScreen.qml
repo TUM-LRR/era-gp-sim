@@ -25,7 +25,7 @@ Item {
     id: root
 
     signal buttonClicked(var memorySize,
-                  string architecture, var baseExtensions, var extensions, string parser);
+                  string architecture, var optionName, string parser);
 
     property var tab;
 
@@ -41,21 +41,19 @@ Item {
     Button {
         id: button
         anchors {
-            top: extensionGrid.bottom
+            top: optionSelector.bottom
             horizontalCenter: parent.horizontalCenter
 
-            topMargin: 0
+            topMargin: marginHeight
             bottomMargin: marginHeight
             leftMargin: marginWidth
             rightMargin: marginWidth
         }
-        enabled: false
         text: "create Project"
         onClicked: {
             tab.title = textInputName.text;
             root.buttonClicked(memorySizeSelector._value,
-              architectureSelector.currentText, baseExtensionsChecked, extensionsChecked,
-              parserSelector.currentText);
+              architectureSelector.currentText, optionSelector.currentText, parserSelector.currentText);
         }
     }
 
@@ -64,7 +62,7 @@ Item {
         id: textInputName
         anchors {
             top: parent.top
-            right: parent.horizontalCenter
+            right: parent.right
             left: parent.left
 
             topMargin: marginHeight
@@ -99,7 +97,7 @@ Item {
     NumericUpDown {
         id: memorySizeSelector
         anchors {
-            top: parent.top
+            top: textInputName.bottom
             left: parent.horizontalCenter
             right: parent.right
 
@@ -138,12 +136,8 @@ Item {
         model: ui.getArchitectures();
         onCurrentIndexChanged: {
           var currentArchitecture = model[currentIndex];
-          baseExtensionGrid.model = ui.getBaseExtensions(currentArchitecture);
-          extensionGrid.model = ui.getExtensions(currentArchitecture);
+          optionSelector.model = ui.getOptionNames(currentArchitecture);
           parserSelector.model = ui.getParsers(currentArchitecture);
-          extensionsChecked = [];
-          baseExtensionsChecked = [];
-          button.enabled = false;
         }
     }
 
@@ -160,7 +154,7 @@ Item {
     ComboBox {
       id: parserSelector
       anchors {
-        top: textInputName.bottom
+        top: memorySizeSelector.bottom
         left: parent.horizontalCenter
         right: parent.right
 
@@ -172,98 +166,26 @@ Item {
     }
 
     Text {
-      id: baseExtensionText
+      id: optionSelectorText
       anchors {
-        left: baseExtensionGrid.left
-        bottom: baseExtensionGrid.top
-
-        bottomMargin: marginHeight/5
+        left: optionSelector.left
+        bottom: optionSelector.top
       }
-      text: "Base extensions (check at least one)"
+      text: "Select a version."
     }
 
-    //choose base extensions
-    GridView {
-      id: baseExtensionGrid
-      height: contentHeight
-      anchors {
-        top: parserSelector.bottom
-        left: parent.left
-        right: parent.right
+    //select a formula for the architecture
+    ComboBox {
+        id: optionSelector
+        anchors {
+          top: architectureSelector.bottom
+          left: parent.left
+          right: parent.horizontalCenter
 
-        topMargin: marginHeight
-        bottomMargin: 0
-        leftMargin: marginWidth
-        rightMargin: marginWidth
-      }
-
-      Component {
-        id: checkboxDelegateBase
-        CheckBox {
-          text: modelData
-          onCheckedChanged: {
-            if(checked) {
-              button.enabled = true;
-              baseExtensionsChecked.push(text);
-            } else {
-              var index = baseExtensionsChecked.indexOf(text);
-              baseExtensionsChecked.splice(index, 1);
-              if(baseExtensionsChecked.length == 0) {
-                button.enabled = false;
-              }
-            }
-          }
+          topMargin: marginHeight
+          bottomMargin: 0
+          leftMargin: marginWidth
+          rightMargin: marginWidth
         }
-      }
-      delegate: checkboxDelegateBase
-      cellHeight: 50
-      interactive: false
-    }
-
-
-    Text {
-      id: extensionText
-      anchors {
-        left: extensionGrid.left
-        bottom: extensionGrid.top
-
-        bottomMargin: marginHeight/5
-      }
-      text: "Extensions"
-    }
-
-    //choose further extensions
-    GridView {
-      id: extensionGrid
-      height: contentHeight
-      anchors {
-        top: baseExtensionGrid.bottom
-        left: parent.left
-        right: parent.right
-
-        topMargin: marginHeight
-        bottomMargin: 0
-        leftMargin: marginWidth
-        rightMargin: marginWidth
-      }
-
-      Component {
-        id: checkboxDelegate
-        CheckBox {
-          text: modelData
-          onCheckedChanged: {
-            if(checked){
-              extensionsChecked.push(text);
-            } else {
-              var index = extensionsChecked.indexOf(text);
-              extensionsChecked.splice(index, 1);
-            }
-          }
-        }
-      }
-
-      delegate: checkboxDelegate
-      cellHeight: 50
-      interactive: false
     }
 }
