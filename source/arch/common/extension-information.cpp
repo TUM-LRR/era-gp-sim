@@ -211,6 +211,16 @@ bool ExtensionInformation::hasUnits() const noexcept {
   return !_units.empty();
 }
 
+ExtensionInformation&
+ExtensionInformation::addBuiltinMacro(const std::string& macro) {
+  _builtinMacros += macro;
+  return *this;
+}
+
+const std::string& ExtensionInformation::getBuiltinMacros() const noexcept {
+  return _builtinMacros;
+}
+
 ExtensionInformation& ExtensionInformation::merge(ExtensionList list) {
   assert(list.size() > 0);
   return merge<ExtensionList>(list);
@@ -236,6 +246,7 @@ ExtensionInformation::merge(const ExtensionInformation& other) {
 
   addInstructions(other.getInstructions());
   addUnits(other.getUnits());
+  addBuiltinMacro(other.getBuiltinMacros());
 
   return *this;
 }
@@ -284,6 +295,12 @@ void ExtensionInformation::_deserialize(InformationInterface::Format& data) {
 
   Utility::doIfThere(data, "instructions", [this](auto& instructions) {
     this->addInstructions(static_cast<InstructionSet>(instructions));
+  });
+
+  Utility::doIfThere(data, "builtin-macros", [this](auto& macros) {
+    for (auto& macro : macros) {
+      this->addBuiltinMacro(macro);
+    }
   });
 }
 

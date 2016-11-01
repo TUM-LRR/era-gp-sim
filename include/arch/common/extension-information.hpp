@@ -332,6 +332,17 @@ class ExtensionInformation : public InformationInterface {
   bool hasUnits() const noexcept;
 
   /**
+   * Concats the given macro definition to the current macro definitions.
+   */
+  ExtensionInformation& addBuiltinMacro(const std::string& macro);
+
+  /**
+   * Returns a string of concatenated macro definitions, supplied by this
+   * extension. If none of them exist, the string is empty.
+   */
+  const std::string& getBuiltinMacros() const noexcept;
+
+  /**
    * Merges the extension with a range of other extensions.
    *
    * See getMerge() for exact information on how an extension is merged.
@@ -436,6 +447,9 @@ class ExtensionInformation : public InformationInterface {
 
   /** The units supplied by the extension, if any. */
   UnitContainer _units;
+
+  /** A concatenation of macro definitions, supplied by the extension, if any */
+  std::string _builtinMacros;
 };
 
 #endif /* ERAGPSIM_ARCH_EXTENSION_INFORMATION_HPP */

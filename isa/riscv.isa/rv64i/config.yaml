@@ -104,6 +104,15 @@ instructions:
       opcode: 59
       funct3: 5
       funct7: 32
+builtin-macros:
+  - |
+    .macro negw, rd, rs
+    subw \rd, x0, \rs
+    .endm
+  - |
+    .macro sext.w, rd, rs
+    addiw \rd, \rs, x0
+    .endm
 units:
   - name: cpu
     registers:
