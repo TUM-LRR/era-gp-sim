@@ -76,7 +76,8 @@ TEST_F(IntegerInstructionTest, ADDI_32) {
   // test 32bit (unsigned) boundary: (2^32 -1) + 1 = 4294967295 + 1 = 0
   TEST_RI(2, convert<uint32_t>, "addi", 0xFFFFFFFFU, 1, 0);
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "addi", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "addi", immediateFactory,
+                           memoryAccess);
 }
 TEST_F(IntegerInstructionTest, ADDI_64) {
   load({"rv32i", "rv64i"});
@@ -90,7 +91,8 @@ TEST_F(IntegerInstructionTest, ADDI_64) {
   // 0
   TEST_RI(2, convert<uint64_t>, "addi", 0xFFFFFFFFFFFFFFFFULL, 1, 0);
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "addi", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "addi", immediateFactory,
+                           memoryAccess);
 }
 
 TEST_F(IntegerInstructionTest, ADDInstruction_testValidation) {
@@ -164,7 +166,8 @@ TEST_F(IntegerInstructionTest, ANDI_32) {
   TEST_RI(3, convert<uint32_t>, "andi", 0b010101, 0b101010, 0);
 
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "andi", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "andi", immediateFactory,
+                           memoryAccess);
 }
 
 TEST_F(IntegerInstructionTest, ANDI_64) {
@@ -181,7 +184,8 @@ TEST_F(IntegerInstructionTest, ANDI_64) {
   TEST_RI(1, convert<uint64_t>, "andi", 0b100100LL, 0b110110LL, 0b100100LL);
 
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "andi", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "andi", immediateFactory,
+                           memoryAccess);
 }
 
 TEST_F(IntegerInstructionTest, ANDInstruction_testValidation) {
@@ -229,7 +233,8 @@ TEST_F(IntegerInstructionTest, ORI_32) {
   TEST_RI(2, convert<uint32_t>, "ori", 0b101010, 0b010101, 0b111111);
   TEST_RI(3, convert<uint32_t>, "ori", 0b010101, 0b101010, 0b111111);
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "ori", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "ori", immediateFactory,
+                           memoryAccess);
 }
 TEST_F(IntegerInstructionTest, ORI_64) {
   load({"rv32i", "rv64i"});
@@ -240,7 +245,8 @@ TEST_F(IntegerInstructionTest, ORI_64) {
   TEST_RI(0, convert<uint64_t>, "ori", (0b1010110LL << 32), 0b10,
           ((0b1010110LL << 32) + 2));
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "ori", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "ori", immediateFactory,
+                           memoryAccess);
 }
 
 TEST_F(IntegerInstructionTest, ORInstruction_testValidation) {
@@ -287,7 +293,8 @@ TEST_F(IntegerInstructionTest, XORI_32) {
   TEST_RI(2, convert<uint32_t>, "xori", 0b101010, 0b010101, 0b111111);
   TEST_RI(3, convert<uint32_t>, "xori", 0b010101, 0b101010, 0b111111);
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "xori", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "xori", immediateFactory,
+                           memoryAccess);
 }
 
 TEST_F(IntegerInstructionTest, XORI_64) {
@@ -300,7 +307,8 @@ TEST_F(IntegerInstructionTest, XORI_64) {
   TEST_RI(0, convert<uint64_t>, "xori", (0b100000001010110LL << 5),
           (0b10LL << 5), (0b100000001010100LL << 5));
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "xori", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "xori", immediateFactory,
+                           memoryAccess);
 }
 
 TEST_F(IntegerInstructionTest, XORInstruction_testValidation) {
@@ -343,7 +351,8 @@ TEST_F(IntegerInstructionTest, SLLI_32) {
   // shifts use only the lower 5bit of the second operand
   TEST_RI(1, convert<uint32_t>, "slli", 1, 0b11100001, 2);
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "slli", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "slli", immediateFactory,
+                           memoryAccess);
 }
 TEST_F(IntegerInstructionTest, SLLI_64) {
   load({"rv32i", "rv64i"});
@@ -357,7 +366,8 @@ TEST_F(IntegerInstructionTest, SLLI_64) {
   TEST_RI(1, convert<uint64_t>, "slli", (0b1LL << 32), 0b11100001, 0b10LL
                                                                        << 32);
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "slli", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "slli", immediateFactory,
+                           memoryAccess);
 }
 
 TEST_F(IntegerInstructionTest, ShiftLeftInstruction_testValidation) {
@@ -399,7 +409,8 @@ TEST_F(IntegerInstructionTest, SRLI_32) {
   // shifts use only the lower 5bit of the second operand
   TEST_RI(1, convert<uint32_t>, "srli", 0b11, 0b11100001, 0b1);
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "srli", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "srli", immediateFactory,
+                           memoryAccess);
 }
 TEST_F(IntegerInstructionTest, SRLI_64) {
   load({"rv32i", "rv64i"});
@@ -411,7 +422,8 @@ TEST_F(IntegerInstructionTest, SRLI_64) {
   // shifts use only the lower 5bit of the second operand
   TEST_RI(1, convert<uint64_t>, "srli", 0b11LL << 32, 0b11100001, 0b11LL << 31);
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "srli", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "srli", immediateFactory,
+                           memoryAccess);
 }
 
 TEST_F(IntegerInstructionTest, ShiftRightInstruction_testValidation) {
@@ -461,7 +473,8 @@ TEST_F(IntegerInstructionTest, SRAI_32) {
   TEST_RI(1, convert<uint32_t>, "srai", 0b10000000000000000000000000110110,
           0b11100001, 0b11000000000000000000000000011011);
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "srai", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "srai", immediateFactory,
+                           memoryAccess);
 }
 
 TEST_F(IntegerInstructionTest, SRAI_64) {
@@ -477,7 +490,8 @@ TEST_F(IntegerInstructionTest, SRAI_64) {
   // shifts use only the lower 5bit of the second operand
   TEST_RI(1, convert<uint64_t>, "srai", 0b11LL << 32, 0b11100001, 0b11LL << 31);
   // test immediate boundary
-  test12BitImmediateBounds(getFactories(), "srai", immediateFactory, memoryAccess);
+  test12BitImmediateBounds(getFactories(), "srai", immediateFactory,
+                           memoryAccess);
 }
 
 TEST_F(IntegerInstructionTest, ShiftRightArithmeticInstruction_testValidation) {
@@ -488,4 +502,126 @@ TEST_F(IntegerInstructionTest, ShiftRightArithmeticInstruction_testValidation) {
                                    "sra", false);
   testIntegerInstructionValidation(memAccess, getFactories(), immediateFactory,
                                    "srai", true);
+}
+
+TEST_F(IntegerInstructionTest, SLT_32) {
+  load({"rv32i"});
+  MemoryAccess memoryAccess = getMemoryAccess();
+
+  TEST_RR(0, convert<int32_t>, "slt", 0, 1, 1);
+  TEST_RR(1, convert<int32_t>, "slt", 1, 0, 0);
+  TEST_RR(2, convert<int32_t>, "slt", 1, 1, 0);
+  TEST_RR(3, convert<int32_t>, "slt", INT32_MIN, INT32_MIN + 1, 1);
+  TEST_RR(4, convert<int32_t>, "slt", INT32_MAX, INT32_MAX, 0);
+}
+
+TEST_F(IntegerInstructionTest, SLT_64) {
+  load({"rv32i", "rv64i"});
+  MemoryAccess memoryAccess = getMemoryAccess();
+
+  TEST_RR(0, convert<int64_t>, "slt", 0, 1, 1);
+  TEST_RR(1, convert<int64_t>, "slt", 1, 0, 0);
+  TEST_RR(2, convert<int64_t>, "slt", 1, 1, 0);
+  TEST_RR(3, convert<int64_t>, "slt", INT64_MIN, INT64_MIN + 1, 1);
+  TEST_RR(4, convert<int64_t>, "slt", INT64_MAX, INT64_MAX, 0);
+}
+
+TEST_F(IntegerInstructionTest, SLTU_32) {
+  load({"rv32i"});
+  MemoryAccess memoryAccess = getMemoryAccess();
+
+  TEST_RR(0, convert<uint32_t>, "sltu", 0, 1, 1);
+  TEST_RR(1, convert<uint32_t>, "sltu", 1, 0, 0);
+  TEST_RR(2, convert<uint32_t>, "sltu", 1, 1, 0);
+  TEST_RR(3, convert<uint32_t>, "sltu", 0xFFFFFFFE, 0xFFFFFFFF, 1);
+  TEST_RR(4, convert<uint32_t>, "sltu", -1, -2, 0);
+  TEST_RR(5, convert<uint32_t>, "sltu", -2, -2, 0);
+}
+
+TEST_F(IntegerInstructionTest, SLTU_64) {
+  load({"rv32i", "rv64i"});
+  MemoryAccess memoryAccess = getMemoryAccess();
+
+  TEST_RR(0, convert<uint64_t>, "sltu", 0, 1, 1);
+  TEST_RR(1, convert<uint64_t>, "sltu", 1, 0, 0);
+  TEST_RR(2, convert<uint64_t>, "sltu", 1, 1, 0);
+  TEST_RR(3, convert<uint64_t>, "sltu", -2ULL, -1ULL, 1);
+  TEST_RR(4, convert<uint64_t>, "sltu", -1ULL, -2ULL, 0);
+  TEST_RR(5, convert<uint64_t>, "sltu", -2ULL, -2ULL, 0);
+}
+
+TEST_F(IntegerInstructionTest, SLTI_32) {
+  load({"rv32i"});
+  MemoryAccess memoryAccess = getMemoryAccess();
+
+  auto immediateFactory = ImmediateNodeFactory();
+  TEST_RI(0, convert<int32_t>, "slti", 0, 1, 1);
+  TEST_RI(1, convert<int32_t>, "slti", 1, 0, 0);
+  TEST_RI(2, convert<int32_t>, "slti", 1, 1, 0);
+  TEST_RI(3, convert<int32_t>, "slti", -42, 0, 1);
+
+  TEST_RI(4, convert<int32_t>, "slti", 0x7FF, 0x7FF, 0);
+  TEST_RI(5, convert<int32_t>, "slti", -2040, -2048, 0);
+  TEST_RI(6, convert<int32_t>, "slti", INT32_MIN, -2048, 1);
+}
+
+TEST_F(IntegerInstructionTest, SLTI_64) {
+  load({"rv32i", "rv64i"});
+  MemoryAccess memoryAccess = getMemoryAccess();
+
+  auto immediateFactory = ImmediateNodeFactory();
+  TEST_RI(0, convert<int64_t>, "slti", 0, 1, 1);
+  TEST_RI(1, convert<int64_t>, "slti", 1, 0, 0);
+  TEST_RI(2, convert<int64_t>, "slti", 1, 1, 0);
+  TEST_RI(3, convert<int64_t>, "slti", -42ULL, 0, 1);
+
+  TEST_RI(4, convert<int64_t>, "slti", 0x7FF, 0x7FF, 0);
+  TEST_RI(5, convert<int64_t>, "slti", -2040, -2048, 0);
+  TEST_RI(6, convert<int64_t>, "slti", INT64_MIN, -2048, 1);
+}
+
+TEST_F(IntegerInstructionTest, SLTIU_32) {
+  load({"rv32i"});
+  MemoryAccess memoryAccess = getMemoryAccess();
+
+  auto immediateFactory = ImmediateNodeFactory();
+  TEST_RI(0, convert<uint32_t>, "sltiu", 0, 1, 1);
+  TEST_RI(1, convert<uint32_t>, "sltiu", 1, 0, 0);
+  TEST_RI(2, convert<uint32_t>, "sltiu", 1, 1, 0);
+  TEST_RI(3, convert<uint32_t>, "sltiu", -42, 0, 0);
+
+  TEST_RI(4, convert<uint32_t>, "sltiu", 0xFFF, 0x7FF, 0);
+  TEST_RI(5, convert<uint32_t>, "sltiu", 0x7FF, -2048, 1);
+}
+
+TEST_F(IntegerInstructionTest, SLTIU_64) {
+  load({"rv32i", "rv64i"});
+  MemoryAccess memoryAccess = getMemoryAccess();
+
+  auto immediateFactory = ImmediateNodeFactory();
+  TEST_RI(0, convert<uint64_t>, "sltiu", 0, 1, 1);
+  TEST_RI(1, convert<uint64_t>, "sltiu", 1, 0, 0);
+  TEST_RI(2, convert<uint64_t>, "sltiu", 1, 1, 0);
+  TEST_RI(3, convert<uint64_t>, "sltiu", -42, 0, 0);
+
+  TEST_RI(4, convert<uint64_t>, "sltiu", 0xFFF, 0x7FF, 0);
+  TEST_RI(5, convert<uint64_t>, "sltiu", 0x7FF, -2048, 1);
+}
+
+TEST_F(IntegerInstructionTest, SetLessThanInstruction_testValidation) {
+  load({"rv32i"});
+
+  auto immediateFactory = ImmediateNodeFactory();
+  auto memAccess = getMemoryAccess();
+  auto factoryCollection = getFactories();
+
+  testIntegerInstructionValidation(memAccess, factoryCollection, immediateFactory,
+                                   "slt", false);
+  testIntegerInstructionValidation(memAccess, factoryCollection, immediateFactory,
+                                   "slti", true);
+
+  testIntegerInstructionValidation(memAccess, factoryCollection, immediateFactory,
+                                   "sltu", false);
+  testIntegerInstructionValidation(memAccess, factoryCollection, immediateFactory,
+                                   "sltiu", true);
 }
