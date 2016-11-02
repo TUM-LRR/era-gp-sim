@@ -15,8 +15,11 @@
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef ERAGPSIM_CORE_STANDARD_FLOAT_CONVERSIONS_HPP_
+#define ERAGPSIM_CORE_STANDARD_FLOAT_CONVERSIONS_HPP_
 
 #include <cstdint>
+#include <utility>
 
 #include "core/conversions.hpp"
 #include "core/memory-value.hpp"
@@ -27,58 +30,20 @@ typedef float float32_t;
 typedef double float64_t;
 typedef long double float128_t;
 
-struct convert32_u {
-  union {
-    std::uint32_t intRepresentation;
-    float32_t floatRepresentation;
-  } data{};
-  convert32_u(std::uint32_t intRepresentation) {
-    data.intRepresentation = intRepresentation;
-  }
-  convert32_u(float32_t floatRepresentation) {
-    data.floatRepresentation = floatRepresentation;
-  }
-};
-
-struct convert64_u {
-  union {
-    std::uint64_t intRepresentation;
-    float64_t floatRepresentation;
-  } data{};
-  convert64_u(std::uint64_t intRepresentation) {
-    data.intRepresentation = intRepresentation;
-  }
-  convert64_u(float64_t floatRepresentation) {
-    data.floatRepresentation = floatRepresentation;
-  }
-};
-
-MemoryValue convert(float32_t value) {
-  convert32_u conv{value};
-  return conversions::convert<std::uint32_t>(
-      conv.data.intRepresentation,
-      conversions::standardConversions::nonsigned,
-      32);
+namespace conversions {
+namespace detail {
+struct convert32_u;
+struct convert64_u;
+struct convert128_u;
+}
+namespace floatConversions {
+MemoryValue convert(float32_t value);
+MemoryValue convert(float64_t value);
+MemoryValue convert(float128_t value);
+float32_t convert32f(MemoryValue value);
+float64_t convert64f(MemoryValue value);
+float128_t convert128f(MemoryValue value);
+}
 }
 
-MemoryValue convert(float64_t value) {
-  convert64_u conv{value};
-  return conversions::convert<std::uint64_t>(
-      conv.data.intRepresentation,
-      conversions::standardConversions::nonsigned,
-      64);
-}
-
-float64_t convert64f(MemoryValue value) {
-  std::uint64_t intconv =
-      conversions::detail::convertUnsigned<std::uint64_t>(value);
-  convert64_u conv{intconv};
-  return conv.data.floatRepresentation;
-}
-
-float32_t convert32f(MemoryValue value) {
-  std::uint32_t intconv =
-      conversions::detail::convertUnsigned<std::uint32_t>(value);
-  convert32_u conv{intconv};
-  return conv.data.floatRepresentation;
-}
+#endif// ERAGPSIM_CORE_STANDARD_FLOAT_CONVERSIONS_HPP_

@@ -309,8 +309,8 @@ TEST(TestConversions, floatConversions) {
       582097.267f,
   };
   for (auto i : instance0) {
-    auto m = convert(i);
-    ASSERT_EQ(convert32f(m), i);
+    auto m = conversions::floatConversions::convert(i);
+    ASSERT_EQ(conversions::floatConversions::convert32f(m), i);
   }
   std::vector<double> instance1{
       0.0,
@@ -333,7 +333,7 @@ TEST(TestConversions, floatConversions) {
       582097.267,
   };
   for (auto i : instance1) {
-    auto m = convert(i);
-    ASSERT_EQ(convert64f(m), i);
+    auto m = conversions::floatConversions::convert(i);
+    ASSERT_EQ(conversions::floatConversions::convert64f(m), i);
   }
 }
