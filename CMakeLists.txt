@@ -16,10 +16,27 @@ include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-std=c++14" COMPILER_SUPPORTS_CXX_14)
 
 if (COMPILER_SUPPORTS_CXX_14)
-   add_compile_options(-std=c++14)
+    set(CMAKE_CXX_STANDARD 14)
 else()
- message(FATAL_ERROR "21st century, anyone?")
+    message(FATAL_ERROR "21st century, anyone?")
 endif()
+
+########################################
+# DEPENDENCIES
+########################################
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third-party)
+
+# The following variables are for Qt support
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# Find the actual Qt5 packages
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Qml REQUIRED)
+find_package(Qt5Quick REQUIRED)
+
+include_directories(/usr/local/opt/qt5/include/)
 
 ########################################
 # INCLUDES
@@ -28,6 +45,7 @@ endif()
 # For third-party includes (need relative to root)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${GTEST_INCLUDE_DIRS})
 
 ########################################
 # SUBDIRECTORIES
@@ -36,20 +54,13 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/source)
 
 ########################################
-# DEPENDENCIES
-########################################
-
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third-party)
-
-########################################
 # TESTS
 ########################################
 
-option(ERA_GP_SIM_TESTS "Enable tests" ON)
+option(ERA_GP_SIM_TESTS "Enable tests" OFF)
 
 if(ERA_GP_SIM_TESTS)
   message(STATUS "Enabling and adding tests")
   enable_testing()
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third-party/googletest)
   add_subdirectory(tests)
 endif()

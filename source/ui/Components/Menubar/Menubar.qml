@@ -23,7 +23,7 @@ import QtQuick.Controls 1.4
 
 MenuBar {
     /*Adding or deleting components in the tab-View*/
-    property TabView tabView
+    property var main
     property var component
     id: menubar
     Menu{
@@ -39,8 +39,7 @@ MenuBar {
             text: "New..."
             onTriggered: {
                 console.info("New triggerd");
-                tabView.addTab("test", component);
-                ui.new("risc5", "popup ergaenzen");
+                main.createProject();
             }
         }
         MenuItem{
@@ -68,9 +67,7 @@ MenuBar {
             text: "Close"
             onTriggered: {
                 console.info("Delete Triggerd");
-                var index=tabView.currentIndex;
-                tabView.removeTab(index);
-                ui.closeProject(index);
+                main.closeProject();
             }
         }
     }
@@ -98,4 +95,3 @@ MenuBar {
     }
 
 }
-

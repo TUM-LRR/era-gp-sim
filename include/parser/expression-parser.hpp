@@ -399,7 +399,7 @@ class ExpressionParser {
   bool decreaseStack(ParseState& state, const IToken& token) const {
     // To decrease the stack, we need the precedence of our operator and if we
     // may discard operators of equal precedence.
-    int mPrec   = precedence(token);
+    int mPrec = precedence(token);
     bool mEqual = popSamePrecedence(token);
 
     while (!state.operatorStack.empty() &&

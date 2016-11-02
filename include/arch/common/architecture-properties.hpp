@@ -28,6 +28,9 @@ namespace ArchitectureProperties {
 /** Type for the processor word size, in bits. */
 using word_size_t = unsigned short;
 
+/** Type for the architectures byte size, in bits */
+using byte_size_t = unsigned short;
+
 /*
  * The different kinds of endianness an extension may support.
  *
@@ -50,7 +53,7 @@ enum class Endianness { LITTLE, BIG, MIXED, BI };
  * Strict means the architecture does not allow misaligned memory accesses.
  * Relaxed means it does.
  */
-enum class AlignmentBehavior { STRICT, RELAXED };
+enum class AlignmentBehavior { ALIGN_STRICT, ALIGN_RELAXED };
 
 /**
  * Describes how the architecture represents signed values.

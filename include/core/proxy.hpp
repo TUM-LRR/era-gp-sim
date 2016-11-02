@@ -22,8 +22,8 @@
 #include <future>
 #include <memory>
 
-#include "core/scheduler.hpp"
 #include "common/tuple.hpp"
+#include "core/scheduler.hpp"
 
 #ifndef ERAGPSIM_CORE_PROXY_HPP
 #define ERAGPSIM_CORE_PROXY_HPP
@@ -82,7 +82,7 @@
   template <typename... Args>                                                 \
   void functionName(Args&&... args) {                                         \
     /* wrap the servant function in a lambda */                               \
-    auto servant        = _servant.get();                                     \
+    auto servant = _servant.get();                                            \
     auto functionLambda = [servant](auto&&... args) {                         \
       servant->functionName(std::forward<decltype(args)>(args)...);           \
     };                                                                        \
@@ -90,9 +90,9 @@
      * to the functionLambda*/                                                \
     auto task = [                                                             \
       functionLambda = std::move(functionLambda),                             \
-      tuple          = std::make_tuple(std::forward<Args>(args)...)           \
+      tuple = std::make_tuple(std::forward<Args>(args)...)                    \
     ]() mutable {                                                             \
-      TupleApply::apply(std::move(functionLambda), std::move(tuple));  \
+      TupleApply::apply(std::move(functionLambda), std::move(tuple));         \
     };                                                                        \
     servant->push(std::move(task));                                           \
   }
@@ -154,33 +154,33 @@
  * macros.
  *
  */
-#define POST_FUTURE_BLOCKING(functionName)                                 \
-  template <typename... Args>                                              \
-  auto functionName(Args&&... args) {                                      \
-    /* wrap the servant function in a lambda, return result */             \
-    auto servant        = _servant.get();                                  \
-    auto functionLambda = [servant](auto&&... args) {                      \
-      return servant->functionName(std::forward<decltype(args)>(args)...); \
-    };                                                                     \
-    /* create a task lambda and capture the functionLambda, a tuple of the \
-     * arguments and a promise. In the lambda, the tuple is applied to the \
-     * function and the promise is set with the result of the function */  \
-    std::promise<decltype(servant->functionName(args...))> promise;        \
-    auto task = [                                                          \
-      functionLambda = std::move(functionLambda),                          \
-      tuple          = std::make_tuple(std::forward<Args>(args)...),       \
-      &promise                                                             \
-    ]() mutable {                                                          \
-      try {                                                                \
-        auto result = TupleApply::apply(std::move(functionLambda),  \
-                                               std::move(tuple));          \
-        promise.set_value(result);                                         \
-      } catch (std::exception & e) {                                       \
-        promise.set_exception(std::make_exception_ptr(e));                 \
-      }                                                                    \
-    };                                                                     \
-    servant->push(std::move(task));                                        \
-    return promise.get_future().get();                                     \
+#define POST_FUTURE_BLOCKING(functionName)                                  \
+  template <typename... Args>                                               \
+  auto functionName(Args&&... args) {                                       \
+    /* wrap the servant function in a lambda, return result */              \
+    auto servant = _servant.get();                                          \
+    auto functionLambda = [servant](auto&&... args) {                       \
+      return servant->functionName(std::forward<decltype(args)>(args)...);  \
+    };                                                                      \
+    /* create a task lambda and capture the functionLambda, a tuple of the  \
+     * arguments and a promise. In the lambda, the tuple is applied to the  \
+     * function and the promise is set with the result of the function */   \
+    std::promise<decltype(servant->functionName(args...))> promise;         \
+    auto task = [                                                           \
+      functionLambda = std::move(functionLambda),                           \
+      tuple = std::make_tuple(std::forward<Args>(args)...),                 \
+      &promise                                                              \
+    ]() mutable {                                                           \
+      try {                                                                 \
+        auto result =                                                       \
+            TupleApply::apply(std::move(functionLambda), std::move(tuple)); \
+        promise.set_value(result);                                          \
+      } catch (std::exception & e) {                                        \
+        promise.set_exception(std::make_exception_ptr(e));                  \
+      }                                                                     \
+    };                                                                      \
+    servant->push(std::move(task));                                         \
+    return promise.get_future().get();                                      \
   }
 
 /**
@@ -210,7 +210,7 @@
   template <typename... Args>                                                  \
   auto functionName(Args&&... args) {                                          \
     /* wrap the servant function in a lambda, return result */                 \
-    auto servant        = _servant.get();                                      \
+    auto servant = _servant.get();                                             \
     auto functionLambda = [servant](auto&&... args) {                          \
       return servant->functionName(std::forward<decltype(args)>(args)...);     \
     };                                                                         \
@@ -226,12 +226,54 @@
      * the function  */                                                        \
     auto task = [                                                              \
       function = std::move(functionLambda),                                    \
-      tuple    = std::make_tuple(std::forward<Args>(args)...),                 \
-      promise  = std::move(promiseShared)                                      \
+      tuple = std::make_tuple(std::forward<Args>(args)...),                    \
+      promise = std::move(promiseShared)                                       \
     ]() mutable {                                                              \
       try {                                                                    \
         auto result =                                                          \
-            TupleApply::apply(std::move(function), std::move(tuple));   \
+            TupleApply::apply(std::move(function), std::move(tuple));          \
+        promise->set_value(result);                                            \
+      } catch (std::exception & e) {                                           \
+        promise->set_exception(std::make_exception_ptr(e));                    \
+      }                                                                        \
+    };                                                                         \
+                                                                               \
+    servant->push(std::move(task));                                            \
+    return future;                                                             \
+  }
+
+/**
+ * Same as POST_FUTURE(functionName), but creates a const function.
+ *
+ * \see POST_FUTURE(functionName)
+ *
+ */
+#define POST_FUTURE_CONST(functionName)                                        \
+  template <typename... Args>                                                  \
+  auto functionName(Args&&... args) const {                                    \
+    /* wrap the servant function in a lambda, return result */                 \
+    auto servant = _servant.get();                                             \
+    auto functionLambda = [servant](auto&&... args) {                          \
+      return servant->functionName(std::forward<decltype(args)>(args)...);     \
+    };                                                                         \
+    /* unique_ptr can't be used, because the task (a std::function object) has \
+     * to be copyable*/                                                        \
+    std::shared_ptr<std::promise<decltype(servant->functionName(args...))>>    \
+        promiseShared = std::make_shared<                                      \
+            std::promise<decltype(servant->functionName(args...))>>();         \
+    auto future = promiseShared->get_future();                                 \
+    /* create a task lambda and capture the functionLambda, a tuple of the     \
+     * arguments and the shared_ptr to the promise. In the lambda, the tuple   \
+     * is applied to the function and the promise is set with the result of    \
+     * the function  */                                                        \
+    auto task = [                                                              \
+      function = std::move(functionLambda),                                    \
+      tuple = std::make_tuple(std::forward<Args>(args)...),                    \
+      promise = std::move(promiseShared)                                       \
+    ]() mutable {                                                              \
+      try {                                                                    \
+        auto result =                                                          \
+            TupleApply::apply(std::move(function), std::move(tuple));          \
         promise->set_value(result);                                            \
       } catch (std::exception & e) {                                           \
         promise->set_exception(std::make_exception_ptr(e));                    \
@@ -276,34 +318,34 @@
  *
  * \see POST_CALLBACK_SAFE(functionName)
  */
-#define POST_CALLBACK_UNSAFE(functionName)                                  \
-  template <typename R, typename... Args>                                   \
-  void functionName##Unsafe(std::function<void(Result<R>)> callback,        \
-                            Args&&... args) {                               \
-    /* wrap the servant function in a lambda, return result */              \
-    auto servant        = _servant.get();                                   \
-    auto functionLambda = [servant](auto&&... args) {                       \
-      return servant->functionName(std::forward<decltype(args)>(args)...);  \
-    };                                                                      \
-    auto task = [                                                           \
-      functionLambda = std::move(functionLambda),                           \
-      tuple          = std::make_tuple(std::forward<Args>(args)...),        \
-      callback       = std::move(callback)                                  \
-    ]() mutable {                                                           \
-      /* A result object is created and the value/exception is set */       \
-      Result<R> result;                                                     \
-      try {                                                                 \
-        result.setValue(TupleApply::apply(std::move(functionLambda), \
-                                                 std::move(tuple)));        \
-      } catch (std::exception & e) {                                        \
-        result.setException(std::make_exception_ptr(e));                    \
-      }                                                                     \
-      /* the callback is called, the callback has to handle all checks for  \
-       *dead                                                                \
-       *objects and has to push the callback task to the right thread */    \
-      callback(result);                                                     \
-    };                                                                      \
-    servant->push(std::move(task));                                         \
+#define POST_CALLBACK_UNSAFE(functionName)                                   \
+  template <typename R, typename... Args>                                    \
+  void functionName##Unsafe(std::function<void(Result<R>)> callback,         \
+                            Args&&... args) {                                \
+    /* wrap the servant function in a lambda, return result */               \
+    auto servant = _servant.get();                                           \
+    auto functionLambda = [servant](auto&&... args) {                        \
+      return servant->functionName(std::forward<decltype(args)>(args)...);   \
+    };                                                                       \
+    auto task = [                                                            \
+      functionLambda = std::move(functionLambda),                            \
+      tuple = std::make_tuple(std::forward<Args>(args)...),                  \
+      callback = std::move(callback)                                         \
+    ]() mutable {                                                            \
+      /* A result object is created and the value/exception is set */        \
+      Result<R> result;                                                      \
+      try {                                                                  \
+        result.setValue(                                                     \
+            TupleApply::apply(std::move(functionLambda), std::move(tuple))); \
+      } catch (std::exception & e) {                                         \
+        result.setException(std::make_exception_ptr(e));                     \
+      }                                                                      \
+      /* the callback is called, the callback has to handle all checks for   \
+       *dead                                                                 \
+       *objects and has to push the callback task to the right thread */     \
+      callback(result);                                                      \
+    };                                                                       \
+    servant->push(std::move(task));                                          \
   }
 
 /**
@@ -371,21 +413,21 @@
                     std::weak_ptr<Servant> callerServant,                     \
                     Args&&... args) {                                         \
     /* wrap the servant function in a lambda, return result */                \
-    auto servant        = _servant.get();                                     \
+    auto servant = _servant.get();                                            \
     auto functionLambda = [servant](auto&&... args) {                         \
       return servant->functionName(std::forward<decltype(args)>(args)...);    \
     };                                                                        \
     auto task = [                                                             \
       functionLambda = std::move(functionLambda),                             \
-      tuple          = std::make_tuple(std::forward<Args>(args)...),          \
-      callerServant  = std::move(callerServant),                              \
-      callback       = std::move(callback)                                    \
+      tuple = std::make_tuple(std::forward<Args>(args)...),                   \
+      callerServant = std::move(callerServant),                               \
+      callback = std::move(callback)                                          \
     ]() mutable {                                                             \
       /* A result object is created and the value/exception is set */         \
       Result<R> result;                                                       \
       try {                                                                   \
-        result.setValue(TupleApply::apply(std::move(functionLambda),   \
-                                                 std::move(tuple)));          \
+        result.setValue(                                                      \
+            TupleApply::apply(std::move(functionLambda), std::move(tuple)));  \
       } catch (std::exception & e) {                                          \
         result.setException(std::make_exception_ptr(e));                      \
       }                                                                       \
@@ -394,8 +436,8 @@
        * this is the case */                                                  \
       auto callbackTask = [                                                   \
         weakServant = std::move(callerServant),                               \
-        callback    = std::move(callback),                                    \
-        result      = std::move(result)                                       \
+        callback = std::move(callback),                                       \
+        result = std::move(result)                                            \
       ] {                                                                     \
         if (auto servant = weakServant.lock()) {                              \
           callback(result);                                                   \
@@ -429,9 +471,9 @@
 template <typename Servant>
 class Proxy {
  public:
-     using SharedServant = std::shared_ptr<Servant>;
-     using ServantPromise = std::promise<SharedServant>;
-     using WeakScheduler = std::weak_ptr<Scheduler>;
+  using SharedServant = std::shared_ptr<Servant>;
+  using ServantPromise = std::promise<SharedServant>;
+  using WeakScheduler = std::weak_ptr<Scheduler>;
 
   /**
    * Creates a Proxy and a shared_ptr on a servant. The servant is created in
@@ -460,7 +502,7 @@ class Proxy {
             std::make_tuple(std::move(scheduler), std::forward<Args>(args)...)
       ]() mutable {
         TupleApply::apply(std::move(servantConstructionLambda),
-                                 std::move(tuple));
+                          std::move(tuple));
       };
       sharedScheduler->push(std::move(task));
     } else {
@@ -492,7 +534,7 @@ class Proxy {
   }
 
   Proxy(const Proxy& other) = default;
-  Proxy(Proxy&& other)      = default;
+  Proxy(Proxy&& other) = default;
   Proxy& operator=(const Proxy& other) = default;
   Proxy& operator=(Proxy&& other) = default;
 

@@ -40,7 +40,8 @@ void Memory::setCallback(
   _callback = callback;
 }
 
-MemoryValue Memory::get(const std::size_t address, const std::size_t amount) {
+MemoryValue
+Memory::get(const std::size_t address, const std::size_t amount) const {
   assert::that(address >= 0);
   assert::that(amount >= 0);
   assert::that(address + amount <= _byteCount);
@@ -54,6 +55,7 @@ void Memory::put(const std::size_t address, const MemoryValue& value) {
   assert::that(amount >= 0);
   assert::that(address + amount <= _byteCount);
   _data.write(value, address * _byteSize);
+  wasUpdated(address, amount);
 }
 
 MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {

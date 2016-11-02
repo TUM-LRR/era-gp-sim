@@ -1,0 +1,22 @@
+{
+    "architectures": [
+        {
+            "name": "riscv",
+            "options": [
+                          {
+                            "name": "Risc-V 32bit",
+                            "formula": ["rv32i",
+                                        "rv32m"]
+                          },
+                          {
+                            "name": "Risc-V 64bit",
+                            "formula": ["rv64i",
+                                        "rv64m"]
+                          }
+                        ],
+            "parsers": [
+                            "riscv"
+            ]
+        }
+    ]
+}
