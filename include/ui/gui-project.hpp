@@ -36,9 +36,10 @@
 
 
 /**
- * This Class holds the components, which will be needed for the project in cpp.
- * Its only for the gui and will allow conversions. Its a child of QObject, caus
- * this allows to set a context.
+ * This Class holds the components, which will be needed
+ * for the project in cpp.
+ * It is only for the gui and will allow conversions.
+ * It is a child of QObject, because * this allows to set a context.
  */
 
 class GuiProject : QObject {
@@ -48,9 +49,9 @@ class GuiProject : QObject {
   /**
    * The Constructor
    *
-   * \param context for the components to register themselfs
+   * \param context for the components to register themselvs
    * \param formula the architectures and extensions
-   * \param memorySize the size of the memory for the memorycomponent
+   * \param memorySize the size of the memory for the memoryComponent
    * \param parserName the name of the parser
    * \param parent the parent, its needed for the QObject
    */
@@ -61,9 +62,11 @@ class GuiProject : QObject {
              QObject* parent = 0);
 
   /**
-   * \brief Can set The global system in which numbers are presented
+   * \brief Can set The global system
+   * in which numbers are presented
    *
-   * \param base the name of the system, for exampel hex, oct, bin or dec
+   * \param base the name of the system,
+   *  for example hex, oct, bin or dec
    *
    */
   void changeSystem(std::string base);
@@ -79,7 +82,7 @@ class GuiProject : QObject {
   void run();
 
   /**
-   * \brief runs the actuall line
+   * \brief runs the actual line
    */
   void runLine();
 
@@ -94,7 +97,8 @@ class GuiProject : QObject {
   void stop();
 
   /**
-   * \brief  Resets the state of registers, memory and the execution point
+   * \brief  Resets the state of registers, memory
+   * and the execution point
    */
   void reset();
 
@@ -119,14 +123,15 @@ class GuiProject : QObject {
 
   /**
    * \brief loads a snapshot
-   * \param name The name of the snapshot, which schould be loaded
+   * \param name The name of the snapshot, which should be loaded
    */
   void loadSnapshot(QString name);
 
   /**
-   * @brief Functions for converting MemoryValues to strings. Names should
-   * explain the single Functions
-   * @return the string
+   * \brief Functions for converting MemoryValues to Strings.
+   *  Names should explain the single Functions
+   *
+   * \return the string
    */
   std::function<std::string(MemoryValue)> getHexConversion();
   std::function<std::string(MemoryValue)> getBinConversion();
@@ -136,9 +141,10 @@ class GuiProject : QObject {
   std::function<std::string(MemoryValue)> getDecimalFloatConversion();
 
   /**
-   * @brief Functions for converting strings to MemoryValues. Names should
-   * explain the single Functions
-   * @return the memoryValue
+   * \brief Functions for converting strings to MemoryValues.
+   * Names should explain the single Functions
+   *
+   * \return the memoryValue
    */
   std::function<MemoryValue(std::string)> getSignedToMemoryValue();
   std::function<MemoryValue(std::string)> getHexToMemoryValue();
@@ -150,17 +156,17 @@ class GuiProject : QObject {
 
  private:
   /**
-   * @brief the module in the core
+   * \brief the module in the core
    */
   ProjectModule _projectModule;
 
   /**
-   * @brief The model for the register
+   * \brief The model for the register
    */
   RegisterModel _registerModel;
 
   /**
-   * @brief the model of the editor
+   * \brief the model of the editor
    */
   EditorComponent _editorComponent;
 
@@ -169,7 +175,7 @@ class GuiProject : QObject {
   // Core-Project;
 
   /**
-   * @brief The Functions for the conversion
+   * \brief The Functions for the conversion
    */
   std::function<std::string(MemoryValue)> hexConversion;
   std::function<std::string(MemoryValue)> binConversion;
@@ -187,14 +193,14 @@ class GuiProject : QObject {
 
  signals:
   /**
-   * A signal to notify components that a register changed.
+   * \brief A signal to notify components that a register changed.
    *
    * \param name The name of the register that changed
    */
   void registerChanged(const QString& name);
 
   /**
-   * A signal to notify components that a part of the memory changed
+   * \brief A signal to notify components that a part of the memory changed
    *
    * \param address The address of the memory
    * \param length The number of bytes that changed
