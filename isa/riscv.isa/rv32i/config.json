@@ -2,6 +2,22 @@
     "alignment-behavior": "relaxed",
     "endianness": "little",
     "instructions": [
+	{
+            "length": 32,
+            "format": "custom",
+	    "key": {
+		"opcode": -1
+	     },
+            "mnemonic": "simucrash"
+        },
+	{
+            "length": 32,
+            "format": "custom",
+	    "key": {
+		"opcode": -1
+	     },
+            "mnemonic": "simusleep"
+        },
         {
             "length": 32,
             "format": "U",

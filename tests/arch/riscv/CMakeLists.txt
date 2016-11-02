@@ -14,6 +14,7 @@ set(TEST_ARCH_RISCV_SOURCES
   rv64-only-instruction-test.cpp
   register-test.cpp
   assemble-test.cpp
+  simulator-instructions-test.cpp
 )
 
 ########################################
