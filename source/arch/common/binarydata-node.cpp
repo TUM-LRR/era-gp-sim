@@ -30,13 +30,7 @@ ValidationResult BinaryDataNode::validate(MemoryAccess &memoryAccess) const {
 }
 
 MemoryValue BinaryDataNode::assemble() const {
-  auto maxAppend = _rawData.size()%8;
-  MemoryValue::Underlying copy = MemoryValue::Underlying{_rawData.begin(), _rawData.end()};
-  for(auto i=0; i<maxAppend; ++i) {
-      copy.push_back(0);
-  }
-  MemoryValue assembled = MemoryValue(copy, copy.size());
-  return assembled;
+  return MemoryValue(MemoryValue::Underlying{_rawData.begin(), _rawData.end()}, _rawData.size()*8);
 }
 
 MemoryValue BinaryDataNode::getValue(MemoryAccess &memoryAccess) const {
