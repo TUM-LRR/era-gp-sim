@@ -20,8 +20,7 @@
 
 #include "ui/ui.hpp"
 
-int main(int argc, char *argv[])
-{
-    Ui ui(argc, argv);
-    return ui.runUi();
+int main(int argc, char *argv[]) {
+  Ui ui(argc, argv);
+  return ui.runUi();
 }

@@ -18,7 +18,6 @@
  */
 
 
-
 #ifndef ERAGPSIM_UI_GUIPROJECT_HPP
 #define ERAGPSIM_UI_GUIPROJECT_HPP
 
@@ -31,13 +30,15 @@
 #include "core/memory-value.hpp"
 #include "core/project-module.hpp"
 #include "ui/editor-component.hpp"
+#include "ui/memory-component-presenter.hpp"
 #include "ui/register-model.hpp"
 //#include "ui/snapshotmodel.hpp"
 
 
 /**
  * This Class holds the components, which will be needed for the project in cpp.
- * Its only for the gui and will allow conversions. Its a child of QObject, caus this allows to set a context.
+ * Its only for the gui and will allow conversions. Its a child of QObject, caus
+ * this allows to set a context.
  */
 
 class GuiProject : QObject {
@@ -93,7 +94,7 @@ class GuiProject : QObject {
   void stop();
 
   /**
-   * @brief  Resets the state of registers, memory and the execution point
+   * \brief  Resets the state of registers, memory and the execution point
    */
   void reset();
 
@@ -123,7 +124,8 @@ class GuiProject : QObject {
   void loadSnapshot(QString name);
 
   /**
-   * @brief Functions for converting MemoryValues to strings. Names should explain the single Functions
+   * @brief Functions for converting MemoryValues to strings. Names should
+   * explain the single Functions
    * @return the string
    */
   std::function<std::string(MemoryValue)> getHexConversion();
@@ -134,7 +136,8 @@ class GuiProject : QObject {
   std::function<std::string(MemoryValue)> getDecimalFloatConversion();
 
   /**
-   * @brief Functions for converting strings to MemoryValues. Names should explain the single Functions
+   * @brief Functions for converting strings to MemoryValues. Names should
+   * explain the single Functions
    * @return the memoryValue
    */
   std::function<MemoryValue(std::string)> getSignedToMemoryValue();
@@ -161,9 +164,8 @@ class GuiProject : QObject {
    */
   EditorComponent _editorComponent;
 
-  //Missing Components:
   // SnapshotModel snapmodel;
-  // MemoryComponentPresenter memorymodel;
+  MemoryComponentPresenter _memoryModel;
   // Core-Project;
 
   /**
@@ -197,7 +199,7 @@ class GuiProject : QObject {
    * \param address The address of the memory
    * \param length The number of bytes that changed
    */
-  void memoryChanged(QVariant address, QVariant length);
+  void memoryChanged(std::size_t address, std::size_t length);
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP

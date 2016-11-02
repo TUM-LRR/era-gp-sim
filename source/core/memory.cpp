@@ -55,6 +55,7 @@ void Memory::put(const std::size_t address, const MemoryValue& value) {
   assert::that(amount >= 0);
   assert::that(address + amount <= _byteCount);
   _data.write(value, address * _byteSize);
+  wasUpdated(address, amount);
 }
 
 MemoryValue Memory::set(const std::size_t address, const MemoryValue& value) {

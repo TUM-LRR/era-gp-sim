@@ -26,6 +26,7 @@
 #include <unordered_set>
 
 #include "arch/common/register-information.hpp"
+#include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
 #include "core/servant.hpp"
 #include "parser/final-representation.hpp"
@@ -146,7 +147,8 @@ class ParsingAndExecutionUnit : public Servant {
    *
    * \param callback
    */
-  void setThrowRuntimeErrorCallback(Callback<const std::string &> callback);
+  void
+  setThrowRuntimeErrorCallback(Callback<const ValidationResult &> callback);
 
   /**
    * Set the callback to set the macro list in the ui.
@@ -209,7 +211,7 @@ class ParsingAndExecutionUnit : public Servant {
   ListCallback<CompileError> _setErrorList;
 
   /** Callback to throw a runtime error. */
-  Callback<std::string> _throwRuntimeError;
+  Callback<const ValidationResult &> _throwRuntimeError;
 
   /** Callback to set the macro list in the ui.*/
   ListCallback<MacroInformation> _setMacroList;

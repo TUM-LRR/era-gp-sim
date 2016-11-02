@@ -24,7 +24,8 @@ import "Components/Common"
 Item {
     id: root
 
-    signal buttonClicked(int memorySize, var type)
+    signal buttonClicked(var memorySize,
+                  string architecture, var optionName, string parser);
 
     property var tab;
 
@@ -33,14 +34,36 @@ Item {
 
     property var main;
 
+    property var baseExtensionsChecked: [];
+    property var extensionsChecked: [];
+
     //create the project
     Button {
         id: button
         anchors {
-            top: numericUpDown.bottom
-            bottom: parent.bottom
-            left: parent.left
+            top: optionSelector.bottom
+            horizontalCenter: parent.horizontalCenter
+
+            topMargin: marginHeight
+            bottomMargin: marginHeight
+            leftMargin: marginWidth
+            rightMargin: marginWidth
+        }
+        text: "create Project"
+        onClicked: {
+            tab.title = textInputName.text;
+            root.buttonClicked(memorySizeSelector._value,
+              architectureSelector.currentText, optionSelector.currentText, parserSelector.currentText);
+        }
+    }
+
+    //project name
+    TextField {
+        id: textInputName
+        anchors {
+            top: parent.top
             right: parent.right
+            left: parent.left
 
             topMargin: marginHeight
             bottomMargin: marginHeight
@@ -48,26 +71,31 @@ Item {
             rightMargin: marginWidth
         }
 
-        text: "create Project"
-        onClicked: {
-            tab.title = textInputName.text
-            root.buttonClicked(numericUpDown._value, comboBox.currentText);
-        }
+        placeholderText: "project name"
     }
-
 
     Text {
         id: memorySizeText
         anchors {
-            left: numericUpDown.left
-            bottom: numericUpDown.top
+            left: memorySizeSelector.left
+            bottom: memorySizeSelector.top
         }
         text: "Memory size"
     }
 
+    Text {
+      id: memorySizeFormat
+      anchors {
+        left: memorySizeSelector.right
+        verticalCenter: memorySizeSelector.verticalCenter
+        leftMargin: 3
+      }
+      text: "bytes"
+    }
+
     //choose the memory size
     NumericUpDown {
-        id: numericUpDown
+        id: memorySizeSelector
         anchors {
             top: textInputName.bottom
             left: parent.horizontalCenter
@@ -78,47 +106,86 @@ Item {
             leftMargin: marginWidth
             rightMargin: marginWidth
         }
-        _value: 1000
+        _value: 1024
+        _maxValue: 16384
+        _step: 4
     }
 
     Text {
         id: archText
         anchors {
-            left: comboBox.left
-            bottom: comboBox.top
+            left: architectureSelector.left
+            bottom: architectureSelector.top
         }
         text: "Architecture"
     }
 
     //choose the architecture
     ComboBox {
-        id: comboBox
+        id: architectureSelector
         anchors {
             top: textInputName.bottom
             left: parent.left
             right: parent.horizontalCenter
 
             topMargin: marginHeight
-            bottomMargin: 0
-            leftMargin: marginWidth
-            rightMargin: marginWidth
-        }
-        model: [ "risc-v"]
-    }
-
-    TextField {
-        id: textInputName
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-
-            topMargin: marginHeight
             bottomMargin: marginHeight
             leftMargin: marginWidth
             rightMargin: marginWidth
         }
+        model: ui.getArchitectures();
+        onCurrentIndexChanged: {
+          var currentArchitecture = model[currentIndex];
+          optionSelector.model = ui.getOptionNames(currentArchitecture);
+          parserSelector.model = ui.getParsers(currentArchitecture);
+        }
+    }
 
-        placeholderText: "project name"
+    Text {
+      id: parserText
+      anchors {
+        left: parserSelector.left
+        bottom: parserSelector.top
+      }
+      text: "Parser"
+    }
+
+    //choose the parser
+    ComboBox {
+      id: parserSelector
+      anchors {
+        top: memorySizeSelector.bottom
+        left: parent.horizontalCenter
+        right: parent.right
+
+        topMargin: marginHeight
+        bottomMargin: 0
+        leftMargin: marginWidth
+        rightMargin: marginWidth
+      }
+    }
+
+    Text {
+      id: optionSelectorText
+      anchors {
+        left: optionSelector.left
+        bottom: optionSelector.top
+      }
+      text: "Select a version."
+    }
+
+    //select a formula for the architecture
+    ComboBox {
+        id: optionSelector
+        anchors {
+          top: architectureSelector.bottom
+          left: parent.left
+          right: parent.horizontalCenter
+
+          topMargin: marginHeight
+          bottomMargin: 0
+          leftMargin: marginWidth
+          rightMargin: marginWidth
+        }
     }
 }
