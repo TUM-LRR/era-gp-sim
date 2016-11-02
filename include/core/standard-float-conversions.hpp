@@ -32,16 +32,55 @@ typedef long double float128_t;
 
 namespace conversions {
 namespace detail {
+  /**
+   * \brief struct used to convert 32bit floats to 32bit integer
+   */
 struct convert32_u;
+/**
+ * \brief struct used to convert 64bit floats to 64bit integer
+ */
 struct convert64_u;
+/**
+ * \brief struct used to convert 128bit floats to 128bit integer
+ */
 struct convert128_u;
 }
 namespace floatConversions {
+/**
+ * \brief converts a 32bit float to a MemoryValue
+ * \param value the value to be converted
+ * \return 32bit MemoryValue representing value
+ */
 MemoryValue convert(float32_t value);
+/**
+ * \brief converts a 64bit float to a MemoryValue
+ * \param value the value to be converted
+ * \return 64bit MemoryValue representing value
+ */
 MemoryValue convert(float64_t value);
+/**
+ * \brief converts a 128bit float to a MemoryValue
+ * \param value the value to be converted
+ * \return 128bit MemoryValue representing value
+ */
 MemoryValue convert(float128_t value);
+/**
+ * \brief converts a 32bit MemoryValue to a float
+ * \param value the value to be converted
+ * \return 32bit float representing value
+ */
 float32_t convert32f(MemoryValue value);
+/**
+ * \brief converts a 64bit MemoryValue to a float
+ * \param value the value to be converted
+ * \return 64bit float representing value
+ */
 float64_t convert64f(MemoryValue value);
+/**
+ * \brief converts a 128bit MemoryValue to a float
+ * \param value the value to be converted
+ * \return 128bit float representing value
+ */
 float128_t convert128f(MemoryValue value);
 }
 }
