@@ -95,9 +95,7 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
 }
 
 void EditorComponent::init(QQuickTextDocument *qDocument) {
-  if (this->_highlighter) {
-    assert::that(false);
-  }
+  assert::that(!_highlighter);
   _textDocument = qDocument->textDocument();
   // set tab width to 4 spaces
   QTextOption textOptions = _textDocument->defaultTextOption();
@@ -124,14 +122,10 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
   emit deleteErrors();
   for (const CompileError &error : errorList) {
     QColor color;
-    if (error.severity() == CompileErrorSeverity::ERROR) {
-      color = QColor(Qt::red);
-    }
-    if (error.severity() == CompileErrorSeverity::WARNING) {
-      color = QColor(Qt::yellow);
-    }
-    if (error.severity() == CompileErrorSeverity::INFORMATION) {
-      color = QColor(Qt::blue);
+    switch (error.severity()) {
+      case CompileErrorSeverity::ERROR: color = QColor(Qt::red); break;
+      case CompileErrorSeverity::WARNING: color = QColor(Qt::yellow); break;
+      case CompileErrorSeverity::INFORMATION: color = QColor(Qt::blue); break;
     }
     emit addError(QString::fromStdString(error.message()),
                   error.position().first.line(),
