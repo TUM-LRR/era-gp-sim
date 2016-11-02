@@ -31,7 +31,7 @@
 
 using namespace riscv;
 
-struct RV64OnlyInstructionsTest : public RiscvBaseTest {
+struct RV64OnlyInstructionTest : public RiscvBaseTest {
     std::string destId{"x1"}, srcId{"x2"}, src1Id{"x2"}, src2Id{"x3"};
 
     /**
@@ -120,7 +120,7 @@ struct RV64OnlyInstructionsTest : public RiscvBaseTest {
 };
 
 
-TEST_F(RV64OnlyInstructionsTest, Validation) {
+TEST_F(RV64OnlyInstructionTest, Validation) {
     load({"rv32i", "rv64i"});
   auto ri = {"addiw", "slliw", "srliw", "sraiw"};
   auto rr = {"addw", "subw", "sllw", "srlw", "sraw"};
@@ -184,7 +184,7 @@ TEST_F(RV64OnlyInstructionsTest, Validation) {
   }
 }
 
-TEST_F(RV64OnlyInstructionsTest, Add) {
+TEST_F(RV64OnlyInstructionTest, ADD) {
   std::string ri = "addiw";
   std::string rr = "addw";
 
@@ -200,7 +200,7 @@ TEST_F(RV64OnlyInstructionsTest, Add) {
   testRV64OnlyInstructions(ri, rr, UINT32_MAX, 0, UINT64_MAX);
 }
 
-TEST_F(RV64OnlyInstructionsTest, Sub) {
+TEST_F(RV64OnlyInstructionTest, SUB) {
   std::string rr = "subw";
 
   // What was 1-1 again?
@@ -213,7 +213,7 @@ TEST_F(RV64OnlyInstructionsTest, Sub) {
   testRV64OnlyInstructionRR(rr, -1, 0, UINT64_MAX);
 }
 
-TEST_F(RV64OnlyInstructionsTest, Sll) {
+TEST_F(RV64OnlyInstructionTest, SLL) {
   std::string ri = "slliw";
   std::string rr = "sllw";
 
@@ -228,7 +228,7 @@ TEST_F(RV64OnlyInstructionsTest, Sll) {
   testRV64OnlyInstructions(ri, rr, 1, 31, 0xFFFFFFFF80000000);
 }
 
-TEST_F(RV64OnlyInstructionsTest, Srl) {
+TEST_F(RV64OnlyInstructionTest, SRL) {
   std::string ri = "srliw";
   std::string rr = "srlw";
 
@@ -242,7 +242,7 @@ TEST_F(RV64OnlyInstructionsTest, Srl) {
   testRV64OnlyInstructions(ri, rr, -1, 0, UINT64_MAX);
 }
 
-TEST_F(RV64OnlyInstructionsTest, Sra) {
+TEST_F(RV64OnlyInstructionTest, SRA) {
   std::string ri = "sraiw";
   std::string rr = "sraw";
 

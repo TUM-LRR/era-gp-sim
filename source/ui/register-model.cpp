@@ -24,6 +24,7 @@
 #include "core/memory-manager.hpp"
 #include "core/memory-value.hpp"
 
+
 RegisterModel::RegisterModel(ArchitectureAccess &architectureAccess,
                              MemoryManager &memoryManager,
                              MemoryAccess &memoryAccess,
@@ -38,37 +39,21 @@ RegisterModel::RegisterModel(ArchitectureAccess &architectureAccess,
   UnitContainer registerUnits = architectureAccess.getRegisterUnits().get();
   // Iterate over each container and add the corresponding registers.
   for (auto unit : registerUnits) {
-    // Add all normal registers to the model.
-    for (auto it = unit.cbegin(); it != unit.cend(); ++it) {
+    const UnitInformation::SortedResult unitRegisters =
+        unit.getAllRegisterSorted(UnitInformation::IdOrder());
+    for (const RegisterInformation &registerItem : unitRegisters) {
       // Only add first-level registers to the dummy root item. Other registers
       // are referenced by their respective enclosing register.
-      if (!it->second.hasEnclosing()) {
+      if (!registerItem.hasEnclosing()) {
         _rootItem->addConstituent(
-            ConstituentInformation(it->second.getID(), 0));
+            ConstituentInformation(registerItem.getID(), 0));
       }
       // Add every register to map of all registers, organised by their
       // identifier.
       _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
-          it->first,
+          registerItem.getID(),
           std::unique_ptr<RegisterInformation>(
-              new RegisterInformation(it->second))));
-    }
-    // Add all special registers to the model.
-    for (auto it = unit.getSpecialRegisters().cbegin();
-         it != unit.getSpecialRegisters().cend();
-         ++it) {
-      // Only add first-level registers to the dummy root item. Other registers
-      // are referenced by their respective enclosing register.
-      if (!it->second.hasEnclosing()) {
-        _rootItem->addConstituent(
-            ConstituentInformation(it->second.getID(), 0));
-      }
-      // Add every register to map of all registers, organised by their
-      // identifier.
-      _items.insert(std::pair<id_t, std::unique_ptr<RegisterInformation>>(
-          it->second.getID(),
-          std::unique_ptr<RegisterInformation>(
-              new RegisterInformation(it->second))));
+              new RegisterInformation(registerItem))));
     }
   }
 }
@@ -96,7 +81,6 @@ void RegisterModel::updateContent(const QString &registerTitle) {
 QHash<int, QByteArray> RegisterModel::roleNames() const {
   QHash<int, QByteArray> roles;
   roles[TitleRole] = "Title";
-  roles[DataFormatsListRole] = "DataFormatsList";
   return roles;
 }
 
@@ -112,8 +96,6 @@ QVariant RegisterModel::data(const QModelIndex &index, int role) const {
 
   if (role == TitleRole) {
     return QString::fromStdString(information->getName());
-  } else if (role == DataFormatsListRole) {
-    return _dataFormatLists.at(information->getType());
   }
   return QVariant();
 }
@@ -143,6 +125,7 @@ RegisterModel::index(int row, int column, const QModelIndex &parent) const {
   }
   return QModelIndex();
 }
+
 
 QModelIndex RegisterModel::parent(const QModelIndex &index) const {
   // If the given index is invalid, return an invalid parent index.
@@ -229,15 +212,14 @@ void RegisterModel::registerContentChanged(
           registerContentCleared.toStdString(), registerItem->getSize());
     }
   }
+  // Notify core about the change.
   if (registerContentMemoryValue) {
     _memoryAccess.setRegisterValue(registerItem->getName(),
                                    *registerContentMemoryValue);
-  } else {
+  } else {// If conversion was unsuccessful, return empty MemoryValue.
     _memoryAccess.setRegisterValue(registerItem->getName(),
                                    MemoryValue(registerItem->getSize()));
   }
-  // Notify core.
-  // TODO...
 }
 
 
@@ -291,13 +273,14 @@ RegisterModel::contentStringForRegister(const QModelIndex &index,
 QString RegisterModel::displayFormatStringForRegister(
     const QModelIndex &index, unsigned int currentDataFormatIndex) const {
   if (index.internalPointer() != nullptr) {
+    // Get the register's current data format.
     RegisterInformation *registerItem =
         static_cast<RegisterInformation *>(index.internalPointer());
     Optional<QString> dataFormat =
         _dataFormatForRegisterItem(*registerItem, currentDataFormatIndex);
 
     if (dataFormat) {
-      // TODO: Get actual byte size
+      // Return corresponding display format string.
       return _computeDisplayFormatString(
           *dataFormat, registerItem->getSize(), 8);
     }
@@ -369,8 +352,6 @@ Optional<int> RegisterModel::_getRowRelativeToParent(
 
   // Return the index if it was found.
   if (it != parentItem->getConstituents().end()) {
-    // Rows are specified by integery objects, therefore an integer value is
-    // returned.
     return Optional<int>(
         std::distance(parentItem->getConstituents().begin(), it));
   }

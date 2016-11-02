@@ -175,7 +175,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
   // we could either make the validator a friend or give the noder a friendlier
   // interface. Would also solve the testability problem.
 
-  FRIEND_TEST(TestBranchInstructions, TestValidation);
+  FRIEND_TEST(BranchInstructionTest, Validation);
 
   /**
    * Checks a condition predicate between two operands.

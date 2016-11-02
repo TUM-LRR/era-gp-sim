@@ -44,10 +44,9 @@ struct AddInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
   using typename super::Operands;
   explicit AddInstructionNode(const InstructionInformation& information,
                               Operands operands)
-  : super(information, operands, [](const auto& first, const auto& second) {
-    return first + second;
-  }) {
-  }
+      : super(information, operands, [](const auto& first, const auto& second) {
+          return first + second;
+        }) {}
 };
 
 /**
@@ -62,11 +61,10 @@ struct SubInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
   using typename super::Operands;
   explicit SubInstructionNode(const InstructionInformation& information,
                               Operands)
-  : super(
-        information,
-        super::Operands::REGISTERS,
-        [](const auto& first, const auto& second) { return first - second; }) {
-  }
+      : super(information, super::Operands::REGISTERS,
+              [](const auto& first, const auto& second) {
+                return first - second;
+              }) {}
 };
 
 /**
@@ -81,10 +79,9 @@ struct AndInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
   using typename super::Operands;
   explicit AndInstructionNode(const InstructionInformation& information,
                               Operands operands)
-  : super(information, operands, [](const auto& first, const auto& second) {
-    return first & second;
-  }) {
-  }
+      : super(information, operands, [](const auto& first, const auto& second) {
+          return first & second;
+        }) {}
 };
 
 /**
@@ -99,10 +96,9 @@ struct OrInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
   using typename super::Operands;
   explicit OrInstructionNode(const InstructionInformation& information,
                              Operands operands)
-  : super(information, operands, [](const auto& first, const auto& second) {
-    return first | second;
-  }) {
-  }
+      : super(information, operands, [](const auto& first, const auto& second) {
+          return first | second;
+        }) {}
 };
 
 /**
@@ -117,10 +113,9 @@ struct XorInstructionNode : public AbstractIntegerInstructionNode<SizeType> {
   using typename super::Operands;
   explicit XorInstructionNode(const InstructionInformation& information,
                               Operands operands)
-  : super(information, operands, [](const auto& first, const auto& second) {
-    return first ^ second;
-  }) {
-  }
+      : super(information, operands, [](const auto& first, const auto& second) {
+          return first ^ second;
+        }) {}
 };
 
 /**
@@ -136,15 +131,17 @@ struct ShiftLeftLogicalInstructionNode
   using typename super::Operands;
   explicit ShiftLeftLogicalInstructionNode(
       const InstructionInformation& information, Operands operands)
-  : super(information, operands, [this](const auto& first, const auto& second) {
-    // For logical right shift, SizeType must be a unsigned integral type. Due
-    // to the fact that signed right shift is implementation/compiler specific
-    // and can be either a logical shift or a arithmetical shift
-    static_assert(std::is_unsigned<SizeType>::value,
-                  "SizeType must unsigned for SLL");
-    return first << Utility::lowerNBits<5>(second);
-  }) {
-  }
+      : super(information, operands,
+              [this](const auto& first, const auto& second) {
+                // For logical right shift, SizeType must be a unsigned integral
+                // type. Due
+                // to the fact that signed right shift is
+                // implementation/compiler specific
+                // and can be either a logical shift or a arithmetical shift
+                static_assert(std::is_unsigned<SizeType>::value,
+                              "SizeType must unsigned for SLL");
+                return first << Utility::lowerNBits<5>(second);
+              }) {}
 };
 
 /**
@@ -160,10 +157,10 @@ struct ShiftRightLogicalInstructionNode
   using typename super::Operands;
   explicit ShiftRightLogicalInstructionNode(
       const InstructionInformation& information, Operands operands)
-  : super(information, operands, [this](const auto& first, const auto& second) {
-    return first >> Utility::lowerNBits<5>(second);
-  }) {
-  }
+      : super(information, operands,
+              [this](const auto& first, const auto& second) {
+                return first >> Utility::lowerNBits<5>(second);
+              }) {}
 };
 
 /**
@@ -179,8 +176,7 @@ struct ShiftRightArithmeticInstructionNode
   using typename super::Operands;
   explicit ShiftRightArithmeticInstructionNode(
       const InstructionInformation& information, Operands operands)
-  : super(information, operands) {
-  }
+      : super(information, operands) {}
 
   /** \copydoc AbstractIntegerInstructionNode::_compute() */
   SizeType _compute(SizeType first, SizeType second) const noexcept override {
@@ -198,6 +194,50 @@ struct ShiftRightArithmeticInstructionNode
 
     return result;
   }
+};
+
+/**
+ * Represents a RISC-V "slt(u)(i)" instruction. For more information see RISC-V
+ * specification.
+ * \tparam UnsignedWord unsigned integer type that can hold exactly the range of
+ * values that this operation should operate on.
+ * \tparam SignedWord signed integer type that can hold exactly the range of
+ * values that this operation should operator on.
+ */
+template <typename UnsignedWord, typename SignedWord>
+struct SetLessThanInstructionNode
+    : public AbstractIntegerInstructionNode<UnsignedWord> {
+  /**
+ * Represents the type of this SetLessThan-Instruction.
+ * Use SIGNED for slt/slti: both operand values are interpreted as signed values
+ * Use UNSIGNED for sltu/sltui: both operand value are interpreted as unsigned
+ * values
+ */
+  enum class Type { SIGNED, UNSIGNED };
+
+  using super = AbstractIntegerInstructionNode<UnsignedWord>;
+  using typename super::Operands;
+
+  explicit SetLessThanInstructionNode(const InstructionInformation& info,
+                                      Operands operands, Type type)
+      : super(info, operands), _type(type) {}
+
+  UnsignedWord _compute(UnsignedWord first, UnsignedWord second) const
+      noexcept override {
+    bool insertOne = false;
+    if (_type == Type::SIGNED) {
+      insertOne =
+          static_cast<SignedWord>(first) < static_cast<SignedWord>(second);
+    } else {
+      insertOne = first < second;
+    }
+
+    //this will return 1 if insertOne == true, otherwise 0
+    return static_cast<UnsignedWord>(insertOne);
+  }
+
+ private:
+  Type _type;
 };
 }
 

@@ -155,8 +155,8 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
   }
 
  protected:
-  FRIEND_TEST(TestJumpInstructions, TestJALValidation);
-  FRIEND_TEST(TestJumpInstructions, TestJALRValidation);
+  FRIEND_TEST(JumpInstructionTest, JALValidation);
+  FRIEND_TEST(JumpInstructionTest, JALRValidation);
 
   /**
    * The actual, instruction-specific jump code.
