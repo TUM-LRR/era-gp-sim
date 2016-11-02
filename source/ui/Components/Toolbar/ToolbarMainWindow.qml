@@ -46,8 +46,8 @@ ToolBar {
         id: styleNotClicked
         ButtonStyle{
             background: Rectangle{
-            color: systemColors.button
-            anchors.fill: parent
+                color: systemColors.button
+                anchors.fill: parent
             }
         }
     }
@@ -56,10 +56,10 @@ ToolBar {
         id: styleClicked
         ButtonStyle{
             background: Rectangle{
-            color: systemColors.button
-            border.color: systemColors.highlight
-            border.width: 3
-            anchors.fill: parent
+                color: systemColors.button
+                border.color: systemColors.highlight
+                border.width: 3
+                anchors.fill: parent
             }
         }
     }
@@ -68,7 +68,7 @@ ToolBar {
     RowLayout{
         /*There should be no place between the right buttons*/
         spacing: 1
-        anchors.fill: parent        
+        anchors.fill: parent
 
         ToolButton{
             id: run
@@ -122,16 +122,17 @@ ToolBar {
                 setInactive();
             }
 
-//            /*Functions to enable/disable the Button*/
-//            function changeActive(){
-//                console.info("change Active")
-//                console.info("enabled: "+enabled);
-//                if(!enabled){
-//                    setActive();
-//                }else{
-//                    setInactive();
-//                }
-//            }
+
+            //            /*Functions to enable/disable the Button*/
+            //            function changeActive(){
+            //                console.info("change Active")
+            //                console.info("enabled: "+enabled);
+            //                if(!enabled){
+            //                    setActive();
+            //                }else{
+            //                    setInactive();
+            //                }
+            //            }
 
             function setActive(){
                 enabled=true;
@@ -143,14 +144,33 @@ ToolBar {
                 iconSource="Icons/StopButtonInactive.svg";
             }
 
-            Connections{
+            /*Connections{
                 target: ui
                 onDisableStop: {
                     stop.setInactive();
                     console.info("Geklappt");
                 }
+            }*/
+        }
+
+        ToolButton {
+            id: parseButton
+            text: "parse"
+            onClicked: {
+                ui.parse(tabView.currentIndex);
+                console.log("reset " + tabView.currentIndex);
             }
         }
+
+        ToolButton {
+            id: resetButton
+            text: "reset"
+            onClicked: {
+                ui.reset(tabView.currentIndex);
+            }
+        }
+
+
 
         /* The next Buttons should be on the right side*/
         Item{ Layout.fillWidth: true}
@@ -170,7 +190,7 @@ ToolBar {
 
             onClicked: {
                 console.info("Bin clicked");
-                ui.changeSystem(textBin.text);
+                ui.changeSystem(tabView.currentIndex, textBin.text);
                 style=styleClicked;
                 oct.notClicked();
                 dec.notClicked();
@@ -198,7 +218,7 @@ ToolBar {
             }
             onClicked: {
                 console.info("Oct clicked");
-                ui.changeSystem(textOct.text);
+                ui.changeSystem(tabView.currentIndex, textOct.text);
                 style=styleClicked;
                 bin.notClicked();
                 dec.notClicked();
@@ -225,7 +245,7 @@ ToolBar {
             style: styleNotClicked
             onClicked: {
                 console.info("Dec clicked");
-                ui.changeSystem(textDec.text);
+                ui.changeSystem(tabView.currentIndex, textDec.text);
                 style=styleClicked;
                 bin.notClicked();
                 oct.notClicked();
@@ -250,7 +270,7 @@ ToolBar {
             style: styleNotClicked
             onClicked: {
                 console.info("Hex clicked");
-                ui.changeSystem(textHex.text);
+                ui.changeSystem(tabView.currentIndex, textHex.text);
                 style=styleClicked;
                 bin.notClicked();
                 oct.notClicked();

@@ -52,7 +52,7 @@ class IntegerParser {
   static T parse(const std::string &str,
                  CompileState &state,
                  size_t start = 0,
-                 int base     = 10) {
+                 int base = 10) {
     size_t count;
     T result{};
     try {
@@ -79,7 +79,7 @@ class IntegerParser {
   parseInternal(const std::string &str, size_t start, int base, size_t &count) {
     assert::that((base == 0 || base >= 2) && base <= 36);
 
-    auto begin    = str.begin() + start;
+    auto begin = str.begin() + start;
     auto position = begin;
     bool negative = false;
     T value{};
@@ -123,13 +123,13 @@ class IntegerParser {
                     : std::numeric_limits<T>::max()};
     int max_last_digit{static_cast<int>(max_value % base)};
     max_value /= base;
-    if (max_value < 0) max_value           = -max_value;
+    if (max_value < 0) max_value = -max_value;
     if (max_last_digit < 0) max_last_digit = -max_last_digit;
 
     for (; position != str.end(); ++position) {
       T oldValue = value;
 
-      char c    = *position;
+      char c = *position;
       int digit = -1;
       if (c >= '0' && c <= '9') {
         digit = c - '0';

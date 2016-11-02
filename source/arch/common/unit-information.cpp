@@ -21,16 +21,16 @@
 
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
+#include "common/utility.hpp"
 
 UnitInformation::UnitInformation(InformationInterface::Format& data) {
   _deserialize(data);
 }
 
-UnitInformation::UnitInformation(const std::string& name) : _name(name) {
-}
+UnitInformation::UnitInformation(const std::string& name) : _name(name) {}
 
 UnitInformation::UnitInformation(const std::string& name, InitializerList list)
-: _name(name) {
+    : _name(name) {
   addRegisters(list);
 }
 
@@ -58,8 +58,8 @@ UnitInformation& UnitInformation::operator+=(const UnitInformation& other) {
   return *this;
 }
 
-UnitInformation&
-UnitInformation::deserialize(InformationInterface::Format& data) {
+UnitInformation& UnitInformation::deserialize(
+    InformationInterface::Format& data) {
   _deserialize(data);
   return *this;
 }
@@ -76,17 +76,15 @@ const std::string& UnitInformation::getName() const {
   return _name;
 }
 
-bool UnitInformation::hasName() const noexcept {
-  return !_name.empty();
-}
+bool UnitInformation::hasName() const noexcept { return !_name.empty(); }
 
 const UnitInformation::SpecialMap& UnitInformation::getSpecialRegisters() const
     noexcept {
   return _specialRegisters;
 }
 
-const RegisterInformation&
-UnitInformation::getSpecialRegister(Type type) const {
+const RegisterInformation& UnitInformation::getSpecialRegister(
+    Type type) const {
   assert::that(hasSpecialRegister(type));
   return _specialRegisters.at(type);
 }
@@ -104,19 +102,13 @@ UnitInformation& UnitInformation::addRegisters(InitializerList registers) {
   return addRegisters<InitializerList>(registers);
 }
 
-UnitInformation&
-UnitInformation::addRegister(const RegisterInformation& registerInformation) {
+UnitInformation& UnitInformation::addRegister(
+    const RegisterInformation& registerInformation) {
   if (registerInformation.isSpecial()) {
     // clang-format off
-    _specialRegisters.emplace(
-        registerInformation.getType(),
-        registerInformation
-    );
+      _specialRegisters[registerInformation.getType()] = registerInformation;
   } else {
-    _container.emplace(
-      registerInformation.getID(),
-      registerInformation
-    );
+      _container[registerInformation.getID()] = registerInformation;
     // clang-format on
   }
 
@@ -130,9 +122,34 @@ const RegisterInformation& UnitInformation::getRegister(id_t registerID) const {
   return iterator->second;
 }
 
-
 bool UnitInformation::hasRegister(id_t registerID) const noexcept {
   return _container.count(registerID);
+}
+
+UnitInformation::SortedResult UnitInformation::getRegisterSorted(
+    const Compare& comparator) const {
+  // container stores all non special registers
+  return _getSorted(_container, comparator);
+}
+
+UnitInformation::SortedResult UnitInformation::getSpecialRegisterSorted(
+    const Compare& comparator) const {
+  return _getSorted(_specialRegisters, comparator);
+}
+
+UnitInformation::SortedResult UnitInformation::getAllRegisterSorted(
+    const Compare& comparator) const {
+  SortedResult result = SortedResult{};
+  for (auto& reg : _container) {
+    result.push_back(
+        std::reference_wrapper<const RegisterInformation>(reg.second));
+  }
+  for (auto& reg : _specialRegisters) {
+    result.push_back(
+        std::reference_wrapper<const RegisterInformation>(reg.second));
+  }
+  std::sort(result.begin(), result.end(), comparator);
+  return result;
 }
 
 bool UnitInformation::isValid() const noexcept {

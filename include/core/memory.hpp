@@ -87,9 +87,8 @@ class Memory {
    * \brief Sets the callback to notify the gui about changes in the data
    * \param callback the callback to be set as _callback
    */
-  void
-  setCallback(const std::function<void(const std::size_t, const std::size_t)>
-                  &callback);
+  void setCallback(const std::function<void(const std::size_t,
+                                            const std::size_t)> &callback);
 
   /**
    * \brief Returns a MemoryValue holding the data stored in the Memory at
@@ -99,7 +98,8 @@ class Memory {
    * \returns MemoryValue holding the data stored in the Memory at
    *          [address;address+amount[
    */
-  MemoryValue get(const std::size_t address, const std::size_t amount = 1);
+  MemoryValue
+  get(const std::size_t address, const std::size_t amount = 1) const;
   /**
    * \brief Writes value into the Memory at address
    * \param address Starting address of the to be overwritten value

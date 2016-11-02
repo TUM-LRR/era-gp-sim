@@ -2,16 +2,16 @@
     "name": "base3",
     "units": [
         {
+            "name": "fpu",
             "registers": [
                 {
-                    "alias": "pc",
-                    "type": "program-counter",
-                    "size": 64,
+                    "name": "f0",
                     "id": 13,
-                    "name": "f0"
+                    "size": 64,
+                    "alias": "pc",
+                    "type": "program-counter"
                 }
-            ],
-            "name": "fpu"
+            ]
         }
     ]
 }

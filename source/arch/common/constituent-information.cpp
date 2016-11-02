@@ -88,6 +88,6 @@ void ConstituentInformation::_deserialize(Format& data) {
   assert::that(data.count("id"));
   assert::that(data.count("enclosing-index"));
 
-  _id              = static_cast<id_t>(data["id"]);
+  _id = static_cast<id_t>(data["id"]);
   _enclosingOffset = static_cast<bit_offset_t>(data["enclosing-index"]);
 }

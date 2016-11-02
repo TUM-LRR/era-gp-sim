@@ -200,10 +200,10 @@ class Multiregex {
         if (match.length(i) == targetLength) {
           // Found one. We set our multimatch and return it.
           assert::that(_choice.find(i) != _choice.end());//(this should actually
-                                                         //never fail, only if
-                                                         //something in this
-                                                         //implementation has
-                                                         //gone wrong)
+                                                         // never fail, only if
+          // something in this
+          // implementation has
+          // gone wrong)
           multimatch = MultiregexMatch<CharType>(
               data, match.position(0), match.length(0), _choice.at(i));
           return true;
@@ -243,7 +243,7 @@ class Multiregex {
       // Conditions that need to be fulfilled:
       //* The bracket must not be escaped.
       //* The bracket must not denote the start of a not-captured
-      //group/lookahead.
+      // group/lookahead.
       if (prev != '\\' && next != '?' && str[i] == '(') {
         ++count;
       }

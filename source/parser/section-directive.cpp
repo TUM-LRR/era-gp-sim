@@ -21,7 +21,9 @@
 
 void SectionDirective::execute(FinalRepresentation& finalRepresentator,
                                const SymbolTable& table,
-                               CompileState& state) {
+                               const SyntaxTreeGenerator& generator,
+                               CompileState& state,
+                               MemoryAccess& memoryAccess) {
   // Just set the section state to the current section. That's it.
   state.section = _section;
 }

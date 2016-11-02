@@ -3,15 +3,17 @@
 ########################################
 
 set(TEST_ARCH_RISCV_SOURCES
-	arch-riscv-tests.cpp
+  arithmetic-test-utils.cpp
+  branch-instruction-test.cpp
+  format-test.cpp
+  integer-instruction-test.cpp
+  jump-instruction-test.cpp
+  load-store-instruction-test.cpp
+  lui-auipc-instruction-test.cpp
+  mul-div-instruction-test.cpp
+  rv64-only-instruction-test.cpp
+  register-test.cpp
 )
-
-########################################
-# PACKAGES
-########################################
-
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
 
 ########################################
 # TARGET
@@ -19,7 +21,8 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 add_executable(era-sim-arch-riscv-tests ${TEST_ARCH_RISCV_SOURCES})
 
-target_link_libraries(era-sim-arch-riscv-tests era-sim-arch-common era-sim-arch-riscv)
-target_link_libraries(era-sim-arch-riscv-tests ${GTEST_BOTH_LIBRARIES} pthread)
+
+target_link_libraries(era-sim-arch-riscv-tests era-sim-arch-riscv)
+target_link_libraries(era-sim-arch-riscv-tests gtest gtest_main)
 
 add_test(era-sim-arch-riscv-tests era-sim-arch-riscv-tests)
