@@ -25,6 +25,7 @@
 #include "gtest/gtest.h"
 #include "core/memory-value.hpp"
 #include "core/conversions.hpp"
+#include "core/standard-float-conversions.hpp"
 // clang-format on
 
 namespace {
@@ -41,9 +42,9 @@ struct Gen {
   }
   Gen(const Gen &) = default;
   Gen &operator=(const Gen &) = default;
-  Gen(Gen &&)                 = default;
+  Gen(Gen &&) = default;
   Gen &operator=(Gen &&) = default;
-  ~Gen()                 = default;
+  ~Gen() = default;
 
   std::uint8_t operator()() {
     cached ^= true;
@@ -65,9 +66,9 @@ struct MemGen {
   }
   MemGen(const MemGen &) = default;
   MemGen &operator=(const MemGen &) = default;
-  MemGen(MemGen &&)                 = default;
+  MemGen(MemGen &&) = default;
   MemGen &operator=(MemGen &&) = default;
-  ~MemGen()                    = default;
+  ~MemGen() = default;
 
   MemoryValue operator()(std::size_t size) {
     std::size_t sizeInByte{(size + 7) / 8};
@@ -87,9 +88,9 @@ struct TGen {
   }
   TGen(const TGen &) = default;
   TGen &operator=(const TGen &) = default;
-  TGen(TGen &&)                 = default;
+  TGen(TGen &&) = default;
   TGen &operator=(TGen &&) = default;
-  ~TGen()                  = default;
+  ~TGen() = default;
 
   T operator()() {
     const std::size_t sizeInByte{(size + 7) / 8 - 1};
@@ -130,7 +131,7 @@ void testConversion(std::function<T()> &generator,
                     const conversions::SignFunction sgn2,
                     const conversions::ToIntegralFunction abs,
                     const MemoryValue &avoidM = MemoryValue{},
-                    const T &avoidT           = 0) {
+                    const T &avoidT = 0) {
   for (int i = 0; i < testAmount; ++i) {
     T instance0{generator()};
     if (avoidT == 0 || instance0 != avoidT) {
@@ -151,9 +152,9 @@ template <typename T, std::size_t size, std::size_t testAmount>
 void testConversion(std::function<std::uint8_t()> &gen,
                     conversions::Conversion con,
                     const MemoryValue &avoidM = MemoryValue{},
-                    const T &avoidT           = 0) {
+                    const T &avoidT = 0) {
   std::function<MemoryValue(std::size_t)> memGen = MemGen(gen);
-  std::function<T()> tGen                        = TGen<T, size>(gen);
+  std::function<T()> tGen = TGen<T, size>(gen);
   testConversion<T, size, testAmount>(
       tGen, memGen, con.toMem, con.sgn, con.toInt, avoidM, avoidT);
 }
@@ -284,4 +285,55 @@ TEST(TestConversions, onehundredandtwentyeight) {
                 conversions::convert<std::int8_t>(
                     -128, conversions::standardConversions::twosComplement, 8),
                 conversions::standardConversions::twosComplement));
+}
+
+TEST(TestConversions, floatConversions) {
+  std::vector<float> instance0{
+      0.0f,
+      0.1f,
+      3.1415f,
+      32821032.0f,
+      9138132.43f,
+      87687576.4f,
+      7718958.06f,
+      612041.200f,
+      5544.75565f,
+      54201.704f,
+      363.814400f,
+      39.481157f,
+      11397.0801f,
+      481.752142f,
+      48185.1953f,
+      86522.3599f,
+      2.00161672f,
+      582097.267f,
+  };
+  for (auto i : instance0) {
+    auto m = convert(i);
+    ASSERT_EQ(convert32f(m), i);
+  }
+  std::vector<double> instance1{
+      0.0,
+      0.1,
+      3.1415,
+      32821032.0,
+      9138132.43,
+      87687576.4,
+      7718958.06,
+      612041.200,
+      5544.75565,
+      54201.704,
+      363.814400,
+      39.481157,
+      11397.0801,
+      481.752142,
+      48185.1953,
+      86522.3599,
+      2.00161672,
+      582097.267,
+  };
+  for (auto i : instance1) {
+    auto m = convert(i);
+    ASSERT_EQ(convert64f(m), i);
+  }
 }
