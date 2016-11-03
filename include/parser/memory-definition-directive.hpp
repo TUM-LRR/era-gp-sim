@@ -92,6 +92,10 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   virtual void allocateMemory(const Architecture& architecture,
                               MemoryAllocator& allocator,
                               CompileState& state) {
+    if (_values.empty()) {
+      state.addError("Arguments missing here.");
+    }
+
     // So, we simply calculate and sum up our arguments.
     // Let's hope, the compiler optimizes this...
     CompileState temporaryState;
@@ -137,26 +141,30 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                        const SyntaxTreeGenerator& generator,
                        CompileState& state,
                        MemoryAccess& memoryAccess) {
-    // We first of all create our memory value locally.
-    MemoryValue data(_size);
+    if (_size > 0) {
+      // We first of all create our memory value locally.
+      MemoryValue data(_size);
 
-    // Then we write to it.
-    _processValues(
-        _values, _cellSize, state, [&](T value, std::size_t position) {
-          // For now. Later to be replaced by the real enum of the arch,
-          // maybe...
-          auto memoryValue =
-              conversions::convert(value,
-                                   conversions::standardConversions::helper::
-                                       twosComplement::toMemoryValueFunction,
-                                   _byteSize * _cellSize);
+      // Then we write to it.
+      _processValues(
+          _values, _cellSize, state, [&](T value, std::size_t position) {
+            // For now. Later to be replaced by the real enum of the arch,
+            // maybe...
+            auto memoryValue =
+                conversions::convert(value,
+                                     conversions::standardConversions::helper::
+                                         twosComplement::toMemoryValueFunction,
+                                     _byteSize * _cellSize);
 
-          // Once converted, we take down the value.
-          memoryValue.write(data, position);
-        });
+            // Once converted, we take down the value.
+            memoryValue.write(data, position);
+          });
 
-    // Then, let's do a (probably also here) expensive memory call.
-    memoryAccess.putMemoryValueAt(_absolutePosition, data);
+      // Then, let's do a (probably also here) expensive memory call.
+      memoryAccess.putMemoryValueAt(_absolutePosition, data);
+    } else {
+      state.addError("Nothing to reserve with memory definition.");
+    }
   }
 
  private:
