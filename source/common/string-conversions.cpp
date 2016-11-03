@@ -191,6 +191,8 @@ unsignedDecStringToMemoryValue(const std::string& stringValue,
     intermediateValue = std::stoll(stringValue, nullptr, 10);
   } catch (const std::invalid_argument& e) {
     return Optional<MemoryValue>();
+  } catch (const std::out_of_range& e) {
+      return Optional<MemoryValue>();
   }
   // Convert int to MemoryValue.
   MemoryValue result =
@@ -208,6 +210,8 @@ signedDecStringToMemoryValue(const std::string& stringValue,
     intermediateValue = std::stoll(stringValue, nullptr, 10);
   } catch (const std::invalid_argument& e) {
     return Optional<MemoryValue>();
+  } catch (const std::out_of_range& e) {
+      return Optional<MemoryValue>();
   }
   // Convert int to MemoryValue.
   MemoryValue result =

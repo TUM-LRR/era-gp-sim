@@ -107,6 +107,7 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
 void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
   MemoryValue address;
   bool foundMatchingLine = false;
+  int displayLine = line;
   // try to find the line in the cache
   auto iterator = _lineCommandCache.find(line);
   if (iterator != _lineCommandCache.end()) {
@@ -114,11 +115,12 @@ void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
     foundMatchingLine = true;
   } else {
     for (const auto &command : _finalRepresentation.commandList) {
-      if (command.position.lineStart == line) {
+      if (command.position.lineStart >= line) {
         // this command is on the given line, save the address in the cache.
+        displayLine = command.position.lineStart;
         auto size = _programCounter.getSize();
         address = conversions::convert(command.address, size);
-        _lineCommandCache.emplace(line, address);
+        _lineCommandCache.emplace(displayLine, address);
         foundMatchingLine = true;
         break;
       }
@@ -131,7 +133,7 @@ void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
   // a command on this line was found, set the program counter and the line in
   // the ui.
   _memoryAccess.putRegisterValue(_programCounter.getName(), address);
-  _setCurrentLine(line);
+  _setCurrentLine(displayLine);
 }
 
 void ParsingAndExecutionUnit::parse(std::string code) {

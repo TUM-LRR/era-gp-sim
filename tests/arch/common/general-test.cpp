@@ -78,7 +78,8 @@ struct ArchCommonTestFixture : ::testing::Test {
         .wordSize(32)
         .byteSize(8)
         .endianness(ArchitectureProperties::Endianness::MIXED)
-        .alignmentBehavior(ArchitectureProperties::AlignmentBehavior::STRICT);
+        .alignmentBehavior(
+            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 
     // clang-format off
     auto lr = InstructionInformation("lr")
@@ -280,7 +281,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   extension.byteSize(8);
   extension.endianness(ArchitectureProperties::Endianness::MIXED);
   extension.alignmentBehavior(
-      ArchitectureProperties::AlignmentBehavior::STRICT);
+      ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 
   EXPECT_TRUE(extension.isValid());
   EXPECT_TRUE(extension.isComplete());
@@ -296,7 +297,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   EXPECT_EQ(extension.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(extension.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::STRICT);
+            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 }
 
 TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
@@ -315,7 +316,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
   EXPECT_EQ(extension.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(extension.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::STRICT);
+            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 
   // This should now include the new instructions
   instructionSet += specialExtensionInformation.getInstructions();
@@ -344,7 +345,7 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
   EXPECT_EQ(architecture.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::STRICT);
+            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 
   instructionSet += specialExtensionInformation.getInstructions();
   EXPECT_EQ(architecture.getInstructions(), instructionSet);

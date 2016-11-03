@@ -19,6 +19,7 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 1.5
+import QtQuick.Dialogs 1.2
 import "../Common"
 
 //decorates a Flickable with Scrollbars
@@ -60,6 +61,7 @@ ScrollView {
                 textMargin: 2
                 property real unscaledWidth: Math.max(scrollView.viewport.width - sidebar.width, contentWidth)
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
+                property int line: 1
 
                 x: sidebar.width
                 selectByMouse: true
@@ -70,7 +72,6 @@ ScrollView {
                 wrapMode: TextEdit.NoWrap
                 Component.onCompleted: {
                     updateSize();
-                    editor.init(textDocument);
                 }
                 visible: true
                 onCursorRectangleChanged: cursorScroll(cursorRectangle)
@@ -83,6 +84,21 @@ ScrollView {
                     }
                 }
 
+                //Connection to react to the parse signal
+                Connections {
+                  target: editor
+                  onParseText: {
+                    editor.sendText(textArea.text);
+                  }
+                  onExecutionLineChanged: {
+                    textArea.line = line;
+                  }
+                  onRuntimeError: {
+                    runtimeErrorDialog.text = errorMessage;
+                    runtimeErrorDialog.open();
+                  }
+                }
+
                 //cursor line highlighting
                 Rectangle{
                     color: Qt.rgba(0.9, 0.9, 0.9, 0.2)
@@ -92,6 +108,14 @@ ScrollView {
                     visible: textArea.activeFocus
                     border.width: 1
                     border.color: Qt.rgba(0.7, 0.7, 0.7, 0.2)
+                }
+
+                // execution line highlighting
+                Rectangle{
+                  color: Qt.rgba(0.2, 0.8, 0.4, 0.2)
+                  y: textArea.cursorRectangle.height * (textArea.line - 1);
+                  height: textArea.cursorRectangle.height;
+                  width: Math.max(scrollView.width, textArea.contentWidth)
                 }
 
                 //scroll with the cursor
@@ -130,13 +154,6 @@ ScrollView {
                     target: scrollView.viewport
                     onWidthChanged: textArea.updateSize();
                     onHeightChanged: textArea.updateSize();
-                }
-
-                Connections {
-                    target: editor
-                    onAddError: {
-                        errorBar.addError(message, line, color);
-                    }
                 }
 
                 //information about the font
@@ -182,6 +199,17 @@ ScrollView {
                     y: textArea.textMargin/2
                     width: 5
 
+                    Connections {
+                        target: editor
+                        onAddError: {
+                            errorBar.addError(message, line, color);
+                        }
+
+                        Component.onCompleted: {
+                            editor.init(textArea.textDocument);
+                        }
+                    }
+
                     Component {
                         id: errorComponent
                         Item {
@@ -210,7 +238,7 @@ ScrollView {
                                 id: toolTip
                                 width: lineHighlight.width
                                 height: lineHighlight.height
-                                fontPixelSize: textArea.font.pixelSize*1.5
+                                fontPixelSize: textArea.font.pixelSize
                             }
 
                             Connections {
@@ -230,6 +258,16 @@ ScrollView {
                         newError.errorMessage = message;
                     }
                 }
+            }
+
+            //Dialog to show runtime errors
+            MessageDialog {
+              id: runtimeErrorDialog
+              title: "Runtime error"
+              standardButtons: StandardButton.Ok
+              onAccepted: {
+                close();
+              }
             }
 
             //input for zoom
