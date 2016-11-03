@@ -157,7 +157,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                                      _byteSize * _cellSize);
 
             // Once converted, we take down the value.
-            memoryValue.write(data, position);
+            data.write(memoryValue, position * _byteSize);
           });
 
       // Then, let's do a (probably also here) expensive memory call.
