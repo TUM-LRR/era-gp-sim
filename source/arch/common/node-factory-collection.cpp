@@ -85,17 +85,22 @@ NodeFactoryCollection::Node NodeFactoryCollection::createArithmeticNode(
   return _arithmeticFactory->createArithmeticNode(operation);
 }
 
-NodeFactoryCollection::NodeFactoryCollection(
-    std::shared_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
+NodeFactoryCollection::Node NodeFactoryCollection::createDataNode(const std::string &data) const {
+    assert(static_cast<bool>(_dataNodeFactory));
+    return _dataNodeFactory->createDataNode(data);
+}
+
+NodeFactoryCollection::NodeFactoryCollection(std::shared_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
     std::shared_ptr<AbstractImmediateNodeFactory> &&immediateFactory,
     std::shared_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,
     std::shared_ptr<AbstractRegisterNodeFactory> &&registerFactory,
-    std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory)
+    std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory, std::shared_ptr<AbstractDataNodeFactory> &&dataFactory)
 : _instructionFactory(std::move(instructionFactory))
 , _immediateFactory(std::move(immediateFactory))
 , _registerFactory(std::move(registerFactory))
 , _memoryAccessFactory(std::move(memoryAccessFactory))
-, _arithmeticFactory(std::move(arithmeticFactory)) {
+, _arithmeticFactory(std::move(arithmeticFactory))
+, _dataNodeFactory(std::move(dataFactory)){
   // We should at least have these factories
   // assert(static_cast<bool>(instructionFactory));
   // assert(static_cast<bool>(registerFactory));

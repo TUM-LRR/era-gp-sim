@@ -17,6 +17,7 @@
  */
 
 
+#include <chrono>
 #include <functional>
 
 // clang-format off
@@ -242,7 +243,10 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
                                   currentCommand.node->getValue(memoryAccess));
     nextNode = findNextNode(
         memoryAccess, addressCommandMapValidator, finalRepresentationValidator);
-    commandInterface.executeNextLine().get();
+    commandInterface.executeNextLine();
+    // sync with other thread
+    commandInterface.setBreakpoint(0).get();
+
     if (nextNode < finalRepresentationValidator.commandList.size()) {
       lastNode = nextNode;
       FinalCommand& nextCommand =
@@ -292,4 +296,17 @@ TEST_F(ProjectTestFixture, ParserInterfaceTest) {
       parserInterface.getSyntaxRegex(SyntaxInformation::Token::Label));
   EXPECT_NO_THROW(
       parserInterface.getSyntaxRegex(SyntaxInformation::Token::Immediate));
+}
+
+TEST_F(ProjectTestFixture, SleepTest) {
+  std::chrono::milliseconds targetedSleep(1000);
+  MemoryAccess memoryAccess = projectModule.getMemoryAccess();
+
+  auto beforeSleep = std::chrono::high_resolution_clock::now();
+  memoryAccess.sleep(targetedSleep);
+  auto afterSleep = std::chrono::high_resolution_clock::now();
+  // should sleep now
+  EXPECT_LE(targetedSleep,
+            std::chrono::duration_cast<std::chrono::milliseconds>(afterSleep -
+                                                                  beforeSleep));
 }

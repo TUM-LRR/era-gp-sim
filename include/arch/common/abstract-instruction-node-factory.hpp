@@ -21,7 +21,7 @@
 #include <memory>
 #include <string>
 
-class AbstractSyntaxTreeNode;
+#include "arch/common/abstract-instruction-node.hpp"
 
 /**
  * \brief The AbstractInstructionNodeFactory class
@@ -29,7 +29,7 @@ class AbstractSyntaxTreeNode;
  */
 class AbstractInstructionNodeFactory {
  public:
-  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using Node = std::unique_ptr<AbstractInstructionNode>;
 
   virtual ~AbstractInstructionNodeFactory() = default;
 
@@ -47,6 +47,7 @@ class AbstractInstructionNodeFactory {
    * instruction
    */
   virtual Node createInstructionNode(const std::string& mnemonic) const = 0;
+
 };
 
 #endif /* ERAGPSIM_ARCH_ABSTRACT_INSTRUCTION_NODE_FACTORY_HPP */

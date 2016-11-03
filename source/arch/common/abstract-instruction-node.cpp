@@ -14,15 +14,17 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+#include "include/arch/common/abstract-instruction-node.hpp"
 
-#ifndef ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP
-#define ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP
+AbstractInstructionNode::AbstractInstructionNode(
+    const InstructionInformation& info)
+    : AbstractSyntaxTreeNode(Type::INSTRUCTION), _information(info) {}
 
-#include "arch/common/abstract-arithmetic-node-factory.hpp"
-#include "arch/common/abstract-immediate-node-factory.hpp"
-#include "arch/common/abstract-instruction-node-factory.hpp"
-#include "arch/common/abstract-memory-access-node-factory.hpp"
-#include "arch/common/abstract-register-node-factory.hpp"
-#include "arch/common/abstract-data-node-factory.hpp"
+const std::string& AbstractInstructionNode::getIdentifier() const {
+  return _information.getMnemonic();
+}
 
-#endif /* ERAGPSIM_ARCH_ABSTRACT_NODE_FACTORIES_HPP */
+const InstructionInformation&
+AbstractInstructionNode::getInstructionInformation() const {
+  return _information;
+}

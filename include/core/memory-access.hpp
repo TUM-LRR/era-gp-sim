@@ -20,6 +20,10 @@
 #ifndef ERAGPSIM_CORE_MEMORY_ACCESS_HPP
 #define ERAGPSIM_CORE_MEMORY_ACCESS_HPP
 
+#include <chrono>
+#include <memory>
+
+#include "core/condition-timer.hpp"
 #include "core/project.hpp"
 #include "core/proxy.hpp"
 
@@ -29,7 +33,25 @@
  */
 class MemoryAccess : public Proxy<Project> {
  public:
-  MemoryAccess(const Proxy<Project>& proxy) : Proxy(proxy) {
+  using SharedCondition = std::shared_ptr<ConditionTimer>;
+
+  /**
+   * Constructs a new MemoryAccess.
+   *
+   */
+  MemoryAccess(const Proxy<Project>& proxy, SharedCondition conditionTimer)
+  : Proxy(proxy), _conditionTimer(conditionTimer) {
+  }
+
+  /**
+   * Lets the thread that calls this sleep for a specified amount of time.
+   * The sleep is interruptible through a stop flag.
+   *
+   * \param sleepDuration (minimum)duration of the sleep.
+   */
+  template <typename Rep, typename Period>
+  void sleep(const std::chrono::duration<Rep, Period> sleepDuration) {
+    _conditionTimer->waitFor(sleepDuration);
   }
 
   /**
@@ -132,6 +154,11 @@ class MemoryAccess : public Proxy<Project> {
    *
    */
   POST_FUTURE_CONST(getMemorySize)
+
+ private:
+  /** Condition timer which can block this thread for a specified time, but
+   * wakes up on notification. */
+  SharedCondition _conditionTimer;
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_ACCESS_HPP */

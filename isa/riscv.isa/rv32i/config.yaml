@@ -9,149 +9,258 @@ byte-size: 8
 signed-representation: twos-complement
 
 instructions:
+  - mnemonic: simusleep
+    length: 32
+    format: custom
+    operand length:
+      - 32
+    key:
+      opcode: -1
+  - mnemonic: simucrash
+    length: 32
+    format: custom
+    key:
+      opcode: -1
   - mnemonic: lui
     length: 32
     format: U
+    operand length:
+      - 0
+      - 20
     key:
       opcode: 55
   - mnemonic: auipc
     length: 32
     format: U
+    operand length:
+      - 0
+      - 20
     key:
       opcode: 23
   - mnemonic: jal
     length: 32
     format: UJ
+    operand length:
+      - 0
+      - 20
     key:
       opcode: 111
   - mnemonic: jalr
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 103
   - mnemonic: beq
     length: 32
     format: SB
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 99
       funct3: 0
   - mnemonic: bne
     length: 32
     format: SB
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 99
       funct3: 1
   - mnemonic: blt
     length: 32
     format: SB
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 99
       funct3: 4
   - mnemonic: bge
     length: 32
     format: SB
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 99
       funct3: 5
   - mnemonic: bltu
     length: 32
     format: SB
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 99
       funct3: 6
   - mnemonic: bgeu
     length: 32
     format: SB
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 99
       funct3: 7
   - mnemonic: lb
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 3
       funct3: 0
   - mnemonic: lh
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 3
       funct3: 1
   - mnemonic: lw
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 3
       funct3: 2
   - mnemonic: lbu
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 3
       funct3: 4
   - mnemonic: lhu
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 3
       funct3: 5
   - mnemonic: sb
     length: 32
     format: S
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 35
-    funct: 0
+      funct3: 0
   - mnemonic: sh
     length: 32
     format: S
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 35
-    funct: 1
+      funct3: 1
   - mnemonic: sw
     length: 32
     format: S
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 35
-    funct: 2
+      funct3: 2
   - mnemonic: addi
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 19
       funct3: 0
   - mnemonic: slti
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 19
       funct3: 2
   - mnemonic: sltiu
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 19
       funct3: 3
   - mnemonic: xori
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 19
       funct3: 4
   - mnemonic: ori
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 19
       funct3: 6
   - mnemonic: andi
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 19
       funct3: 7
   - mnemonic: slli
     length: 32
     format: R
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 19
       funct3: 1
@@ -159,6 +268,10 @@ instructions:
   - mnemonic: srli
     length: 32
     format: R
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 19
       funct3: 5
@@ -166,6 +279,10 @@ instructions:
   - mnemonic: srai
     length: 32
     format: R
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 19
       funct3: 5
@@ -247,7 +364,7 @@ units:
         id: 0
         alias: zero
         size: 32
-        constant: 0x0
+        constant: "0x0"
       - name: x1
         id: 1
         size: 32

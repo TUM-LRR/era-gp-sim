@@ -27,6 +27,8 @@ import "Components/Toolbar"
 ApplicationWindow {
     id: window
     visible: true
+    width: Screen.desktopAvailableWidth*0.7
+    height: Screen.desktopAvailableHeight*0.8
 
     menuBar: Menubar{
         component: tabs
@@ -71,7 +73,7 @@ ApplicationWindow {
                     enabled = false;
                     visible = false;
                     ui.addProject(placeholderItem, projectComponent,
-                      memorySize, architecture, baseExtensions, extensions, parser);
+                      memorySize, architecture, optionName, parser);
                 }
             }
         }
@@ -82,6 +84,16 @@ ApplicationWindow {
         id: projectComponent
         Splitview{
             anchors.fill: parent
+
+            SystemPalette {
+              id: systemPalette
+            }
+
+            handleDelegate: Rectangle {
+              width: 2
+              height: 2
+              color: Qt.darker(systemPalette.window, 1.5)
+            }
         }
     }
 }

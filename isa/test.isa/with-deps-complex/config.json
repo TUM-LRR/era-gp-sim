@@ -1,65 +1,65 @@
 {
-    "endianness": "little",
+    "word-size": 32, 
     "extends": [
-        "base1-complex",
+        "base1-complex", 
         "base2-complex"
-    ],
-    "word-size": 32,
-    "instructions": [
-        {
-            "length": 69,
-            "format": "R",
-            "key": {
-                "function": 3,
-                "opcode": 6
-            },
-            "mnemonic": "add"
-        },
-        {
-            "length": 69,
-            "format": "R",
-            "key": {
-                "function": 3,
-                "opcode": 9
-            },
-            "mnemonic": "sub"
-        }
-    ],
-    "byte-size": 8,
+    ], 
+    "name": "with-deps-complex", 
+    "endianness": "little", 
     "units": [
         {
-            "name": "cpu",
             "registers": [
                 {
-                    "name": "r0",
-                    "id": 0,
-                    "size": 32,
+                    "id": 0, 
+                    "alias": "zero", 
+                    "size": 32, 
+                    "name": "r0", 
                     "constituents": [
                         {
-                            "id": 1,
+                            "id": 1, 
                             "enclosing-index": 1
-                        },
+                        }, 
                         {
-                            "id": 2,
+                            "id": 2, 
                             "enclosing-index": 2
                         }
-                    ],
-                    "alias": "zero"
-                },
+                    ]
+                }, 
                 {
-                    "id": 1,
-                    "type": "float",
-                    "constant": "0x4048f5c3",
-                    "name": "r1",
-                    "size": 16,
-                    "enclosing": 0,
+                    "constant": "0x4048f5c3", 
+                    "name": "r1", 
+                    "enclosing": 0, 
+                    "size": 16, 
+                    "type": "float", 
+                    "id": 1, 
                     "aliases": [
-                        "foo",
+                        "foo", 
                         "bar"
                     ]
                 }
-            ]
+            ], 
+            "name": "cpu"
         }
-    ],
-    "name": "with-deps-complex"
+    ], 
+    "byte-size": 8, 
+    "instructions": [
+        {
+            "mnemonic": "add", 
+            "length": 69, 
+            "key": {
+                "function": 3, 
+                "opcode": 6
+            }, 
+            "format": "R"
+        }, 
+        {
+            "mnemonic": "sub", 
+            "length": 69, 
+            "key": {
+                "function": 3, 
+                "opcode": 9
+            }, 
+            "format": "R"
+        }
+    ]
 }

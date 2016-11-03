@@ -21,7 +21,6 @@
 
 #include "arch/common/architecture.hpp"
 #include "arch/common/unit-information.hpp"
-#include "arch/common/validation-result.hpp"
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
 #include "parser/parser-factory.hpp"
@@ -31,11 +30,11 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
     std::weak_ptr<Scheduler> &&scheduler,
     MemoryAccess memoryAccess,
     Architecture architecture,
-    std::atomic_flag &stopFlag,
+    SharedCondition stopCondition,
     std::string parserName)
 : Servant(std::move(scheduler))
 , _parser(ParserFactory::createParser(architecture, memoryAccess, parserName))
-, _stopFlag(stopFlag)
+, _stopCondition(stopCondition)
 , _finalRepresentation()
 , _addressCommandMap()
 , _lineCommandCache()
@@ -61,50 +60,22 @@ void ParsingAndExecutionUnit::execute() {
   if (_finalRepresentation.hasErrors()) {
     return;
   }
-  _stopFlag.test_and_set();
+  _stopCondition->reset();
   size_t nextNode = _findNextNode();
-  while (_stopFlag.test_and_set() &&
-         nextNode < _finalRepresentation.commandList.size()) {
-    nextNode = executeNextLine();
+  while (true) {
+    if (_stopCondition->getFlag()) break;
+    if (nextNode >= _finalRepresentation.commandList.size()) break;
+    if (!_executeNode(nextNode)) break;
+    nextNode = _updateLineNumber(nextNode);
   }
 }
 
-size_t ParsingAndExecutionUnit::executeNextLine() {
+void ParsingAndExecutionUnit::executeNextLine() {
+  _stopCondition->reset();
   size_t nextNode = _findNextNode();
-  // check for parser errors
-  if (_finalRepresentation.hasErrors() ||
-      nextNode >= _finalRepresentation.commandList.size()) {
-    return nextNode;
+  if (_executeNode(nextNode)) {
+    _updateLineNumber(nextNode);
   }
-  // reference to avoid copying a unique_ptr
-  FinalCommand &currentCommand = _finalRepresentation.commandList[nextNode];
-  // check for runtime errors
-  ValidationResult validationResult =
-      currentCommand.node->validateRuntime(_memoryAccess);
-  if (!validationResult.isSuccess()) {
-    // notify the ui of a runtime error
-    _throwRuntimeError(validationResult);
-    return nextNode;
-  }
-  // update the current line in the ui (pre-execution)
-  _setCurrentLine(currentCommand.position.lineStart);
-
-  MemoryValue programCounterValue =
-      currentCommand.node->getValue(_memoryAccess);
-  _memoryAccess.putRegisterValue(_programCounter.getName(),
-                                 programCounterValue);
-
-  // find the next instruction and update the current line in the
-  // ui (post-execution)
-  nextNode = _findNextNode();
-  // if there is no command after this, advance the line position by one.
-  size_t nextLine = currentCommand.position.lineStart + 1;
-  if (nextNode < _finalRepresentation.commandList.size()) {
-    FinalCommand &nextCommand = _finalRepresentation.commandList[nextNode];
-    nextLine = nextCommand.position.lineStart;
-  }
-  _setCurrentLine(nextLine);
-  return nextNode;
 }
 
 void ParsingAndExecutionUnit::executeToBreakpoint() {
@@ -113,15 +84,17 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
     return;
   }
   // reset stop flag
-  _stopFlag.test_and_set();
+  _stopCondition->reset();
   // find the index of the next node and loop through the instructions
   size_t nextNode = _findNextNode();
-  while (_stopFlag.test_and_set() &&
-         nextNode < _finalRepresentation.commandList.size()) {
-    nextNode = executeNextLine();
+  while (true) {
+    if (_stopCondition->getFlag()) break;
+    if (nextNode >= _finalRepresentation.commandList.size()) break;
+    if (!_executeNode(nextNode)) break;
+    nextNode = _updateLineNumber(nextNode);
     // check if there is a brekpoint on the next line
     if (nextNode < _finalRepresentation.commandList.size()) {
-      FinalCommand &nextCommand = _finalRepresentation.commandList[nextNode];
+      auto &nextCommand = _finalRepresentation.commandList[nextNode];
       size_t nextLine = nextCommand.position.lineStart;
       if (_breakpoints.count(nextLine) > 0) {
         // we reached a breakpoint
@@ -239,4 +212,43 @@ size_t ParsingAndExecutionUnit::_findNextNode() {
     return _finalRepresentation.commandList.size();
   }
   return iterator->second;
+}
+
+bool ParsingAndExecutionUnit::_executeNode(size_t nodeIndex) {
+  if (_finalRepresentation.hasErrors()) return false;
+  if (nodeIndex >= _finalRepresentation.commandList.size()) return false;
+
+  // reference to avoid copying a unique_ptr
+  auto &currentCommand = _finalRepresentation.commandList[nodeIndex];
+  // check for runtime errors
+  auto validationResult = currentCommand.node->validateRuntime(_memoryAccess);
+  if (!validationResult.isSuccess()) {
+    // notify the ui of a runtime error
+    _throwRuntimeError(validationResult);
+    return false;
+  }
+  // update the current line in the ui (pre-execution)
+  _setCurrentLine(currentCommand.position.lineStart);
+
+  MemoryValue programCounterValue =
+      currentCommand.node->getValue(_memoryAccess);
+  _memoryAccess.putRegisterValue(_programCounter.getName(),
+                                 programCounterValue);
+  return true;
+}
+
+size_t ParsingAndExecutionUnit::_updateLineNumber(size_t currentNode) {
+  assert::that(currentNode < _finalRepresentation.commandList.size());
+
+  size_t nextNode = _findNextNode();
+  // if there is no command after this, advance the line position by one.
+  auto &currentCommand = _finalRepresentation.commandList[currentNode];
+  size_t nextLine = currentCommand.position.lineStart + 1;
+  if (nextNode < _finalRepresentation.commandList.size()) {
+    // if there is another command, set the next line to its position
+    auto &nextCommand = _finalRepresentation.commandList[nextNode];
+    nextLine = nextCommand.position.lineStart;
+  }
+  _setCurrentLine(nextLine);
+  return nextNode;
 }
