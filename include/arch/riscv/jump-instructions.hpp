@@ -150,7 +150,8 @@ class JumpAndLinkImmediateInstructionNode
     auto maximumAllowedOffset = addressBoundary - programCounter;
 
     // Check if the program counter would underflow or overflow
-    if (-offset > programCounter || offset > maximumAllowedOffset) {
+    if ((offset < 0 && -offset > programCounter) ||
+        (offset > 0 && offset > maximumAllowedOffset)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Branch offset would invalidate program counter"));
@@ -292,7 +293,8 @@ class JumpAndLinkRegisterInstructionNode
     auto maximumAllowedOffset = addressBoundary - base;
 
     // Check if the program counter would underflow or overflow
-    if (-offset > base || offset > maximumAllowedOffset) {
+    if ((offset < 0 && -offset > base) ||
+        (offset > 0 && offset > maximumAllowedOffset)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Jump offset would invalidate program counter"));
