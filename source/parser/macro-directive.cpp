@@ -24,6 +24,9 @@ void MacroDirective::execute(FinalRepresentation& finalRepresentator,
                              const SyntaxTreeGenerator& generator,
                              CompileState& state,
                              MemoryAccess& memoryAccess) {
+  if (macroName().length() == 0) {
+    state.addError("Missing macro name.");
+  }
   _macroParameters.validate(state);
   state.registerMacro(*this);
 }

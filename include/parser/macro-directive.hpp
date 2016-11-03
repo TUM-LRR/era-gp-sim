@@ -39,8 +39,10 @@ class MacroDirective : public IntermediateDirective {
                  const std::string& name,
                  const std::vector<std::string>& arguments)
   : IntermediateDirective(lines, labels, name)
-  , _macroName(arguments[0])
-  , _macroParameters(arguments.begin() + 1, arguments.end())
+  , _macroName(arguments.size() > 0 ? arguments[0] : "")
+  , _macroParameters(arguments.size() > 0 ? arguments.begin() + 1
+                                          : arguments.end(),
+                     arguments.end())
   , _operations() {
   }
 
