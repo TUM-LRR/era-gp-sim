@@ -159,15 +159,6 @@ ToolBar {
         }
 
         ToolButton {
-            id: parseButton
-            text: "parse"
-            onClicked: {
-                ui.parse(tabView.currentIndex);
-                console.log("reset " + tabView.currentIndex);
-            }
-        }
-
-        ToolButton {
             id: resetButton
             text: "reset"
             onClicked: {
