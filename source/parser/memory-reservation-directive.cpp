@@ -47,6 +47,10 @@ void MemoryReservationDirective::allocateMemory(
 
 void MemoryReservationDirective::enhanceSymbolTable(
     SymbolTable& table, const MemoryAllocator& allocator, CompileState& state) {
+  if (_values.empty()) {
+    state.addError("Arguments missing here.");
+  }
+
   // We calculate the absolute memory position and enhance our symbol table.
   _absolutePosition = allocator.absolutePosition(_relativePosition);
   for (const auto& i : _labels) {
@@ -61,5 +65,9 @@ void MemoryReservationDirective::execute(
     CompileState& state,
     MemoryAccess& memoryAccess) {
   // Finally, we may put some zeros into memory.
-  memoryAccess.putMemoryValueAt(_absolutePosition, MemoryValue(_size));
+  if (_size > 0) {
+    memoryAccess.putMemoryValueAt(_absolutePosition, MemoryValue(_size));
+  } else {
+    state.addError("Empty memory reservation.");
+  }
 }
