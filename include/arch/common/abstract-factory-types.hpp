@@ -29,13 +29,15 @@ template <typename ImmediateNodeFactoryTemplate,
           typename ArithmeticNodeFactoryTemplate,
           typename MemoryAccessNodeFactoryTemplate,
           typename RegisterNodeFactoryTemplate,
-          typename InstructionNodeFactoryTemplate>
+          typename InstructionNodeFactoryTemplate,
+          typename DataNodeFactoryTemplate>
 struct AbstractFactoryTypes {
   using ImmediateNodeFactoryType    = ImmediateNodeFactoryTemplate;
   using ArithmeticNodeFactoryType   = ArithmeticNodeFactoryTemplate;
   using MemoryAccessNodeFactoryType = MemoryAccessNodeFactoryTemplate;
   using RegisterNodeFactoryType     = RegisterNodeFactoryTemplate;
   using InstructionNodeFactoryType  = InstructionNodeFactoryTemplate;
+  using DataNodeFactoryType         = DataNodeFactoryTemplate;
 
   static auto immediateFactory() {
     return makeFactory<ImmediateNodeFactoryType>();
@@ -56,6 +58,10 @@ struct AbstractFactoryTypes {
   static auto instructionFactory(const InstructionSet& instructions,
                                  const Architecture& architecture) {
     return makeFactory<InstructionNodeFactoryType>(instructions, architecture);
+  }
+
+  static auto dataNodeFactory() {
+      return makeFactory<DataNodeFactoryType>();
   }
 
   template <typename FactoryType,

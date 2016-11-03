@@ -37,7 +37,8 @@ class AbstractSyntaxTreeNode {
     IMMEDIATE,
     REGISTER,
     MEMORY_ACCESS,
-    ARITHMETIC
+    ARITHMETIC,
+    OTHER
   };
 
   /**
@@ -112,7 +113,6 @@ class AbstractSyntaxTreeNode {
    * \param node The node to be added.
    */
   virtual void addChild(Node&& node);
-
 
   /**
    * Inserts the the child node at the given index.

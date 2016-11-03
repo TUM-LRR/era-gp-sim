@@ -1,85 +1,85 @@
 {
-    "name": "rv32m",
+    "name": "rv32m", 
     "instructions": [
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "mul", 
+            "length": 32, 
             "key": {
-                "funct7": 1,
-                "opcode": 51,
-                "funct3": 0
-            },
-            "mnemonic": "mul"
-        },
+                "funct3": 0, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "mulh", 
+            "length": 32, 
             "key": {
-                "funct7": 1,
-                "opcode": 51,
-                "funct3": 1
-            },
-            "mnemonic": "mulh"
-        },
+                "funct3": 1, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "mulhsu", 
+            "length": 32, 
             "key": {
-                "funct7": 1,
-                "opcode": 51,
-                "funct3": 2
-            },
-            "mnemonic": "mulhsu"
-        },
+                "funct3": 2, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "mulhu", 
+            "length": 32, 
             "key": {
-                "funct7": 1,
-                "opcode": 51,
-                "funct3": 3
-            },
-            "mnemonic": "mulhu"
-        },
+                "funct3": 3, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "div", 
+            "length": 32, 
             "key": {
-                "funct7": 1,
-                "opcode": 51,
-                "funct3": 4
-            },
-            "mnemonic": "div"
-        },
+                "funct3": 4, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "divu", 
+            "length": 32, 
             "key": {
-                "funct7": 1,
-                "opcode": 51,
-                "funct3": 5
-            },
-            "mnemonic": "divu"
-        },
+                "funct3": 5, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "rem", 
+            "length": 32, 
             "key": {
-                "funct7": 1,
-                "opcode": 51,
-                "funct3": 6
-            },
-            "mnemonic": "rem"
-        },
+                "funct3": 6, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "remu", 
+            "length": 32, 
             "key": {
-                "funct7": 1,
-                "opcode": 51,
-                "funct3": 7
-            },
-            "mnemonic": "remu"
+                "funct3": 7, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
         }
     ]
 }

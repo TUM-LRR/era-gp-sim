@@ -76,7 +76,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   // funct7 - 6 bits long
   std::vector<bool> tmp;
 
-  tmp = Utility::convertToBinary(key["function"] >> 3);
+  tmp = Utility::convertToBinary(key["funct7"]);
   // push the last 7 bits
   pushBackFromEnd(res, tmp, 7);
 
@@ -90,7 +90,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   // funct3 - 3 bits long
   tmp.clear();
 
-  tmp = Utility::convertToBinary(key["function"]);
+  tmp = Utility::convertToBinary(key["funct3"]);
   pushBackFromEnd(res, tmp, 3);
 
   // destination
@@ -122,7 +122,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   // funct3 - 3 bits long
   tmp.clear();
 
-  tmp = Utility::convertToBinary(key["function"]);
+  tmp = Utility::convertToBinary(key["funct3"]);
   pushBackFromEnd(res, tmp, 3);
 
   // destination
@@ -155,7 +155,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
 
-  tmp = Utility::convertToBinary(key["function"]);
+  tmp = Utility::convertToBinary(key["funct3"]);
   pushBackFromEnd(res, tmp, 3);
 
   // imm[4:0]
@@ -189,7 +189,7 @@ operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
   for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
   // funct3 - 3 bits long
 
-  tmp = Utility::convertToBinary(key["function"]);
+  tmp = Utility::convertToBinary(key["funct3"]);
   pushBackFromEnd(res, tmp, 3);
 
   // imm[4:1]
