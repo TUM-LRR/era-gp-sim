@@ -32,6 +32,15 @@ SplitView{
         property int quotient
         property int faktor
 
+        SystemPalette {
+          id: systemPalette
+        }
+
+        handleDelegate: Rectangle {
+          width: 2
+          height: 2
+          color: Qt.darker(systemPalette.window, 1.5)
+        }
 
         orientation: Qt.Vertical
         Editor{
