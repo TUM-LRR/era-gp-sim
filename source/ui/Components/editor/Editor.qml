@@ -40,6 +40,9 @@ ScrollView {
         focus: false
         anchors.fill: parent
 
+        contentWidth: (textArea.contentWidth + sidebar.width)*scale.zoom;
+        contentHeight: textArea.contentHeight*scale.zoom;
+
         //wrapper item, Flickable can only have one child
         Item {
             id: item
@@ -63,6 +66,9 @@ ScrollView {
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
                 property int line: 1
 
+                width: (textArea.unscaledWidth)*scale.zoom;
+                height: (textArea.unscaledHeight)*scale.zoom;
+
                 x: sidebar.width
                 selectByMouse: true
                 smooth: true
@@ -71,7 +77,7 @@ ScrollView {
                 textFormat: TextEdit.PlainText
                 wrapMode: TextEdit.NoWrap
                 Component.onCompleted: {
-                    updateSize();
+                    cursorScroll(textArea.cursorRectangle);
                 }
                 visible: true
                 onCursorRectangleChanged: cursorScroll(cursorRectangle)
@@ -84,18 +90,31 @@ ScrollView {
                     }
                 }
 
+                //(re)start the parse timer, if an edit is made
+                onTextChanged: {
+                  editor.setTextChanged(true);
+                  parseTimer.restart();
+                }
+
                 //Connection to react to the parse signal
                 Connections {
                   target: editor
-                  onParseText: {
-                    editor.sendText(textArea.text);
-                  }
                   onExecutionLineChanged: {
                     textArea.line = line;
                   }
                   onRuntimeError: {
                     runtimeErrorDialog.text = errorMessage;
                     runtimeErrorDialog.open();
+                  }
+                }
+
+                //timer for parsing
+                Timer {
+                  id: parseTimer
+                  interval: 1000
+                  repeat: false
+                  onTriggered: {
+                    editor.parse();
                   }
                 }
 
@@ -139,21 +158,11 @@ ScrollView {
                     }
                 }
 
-                //updates the size of the TextEdit and the Flickable contentSize, has to be called when the viewport,
-                //the zoom or the contentSize changes
-                function updateSize() {
-                    textArea.width = (textArea.unscaledWidth - sidebar.width)*scale.zoom;
-                    textArea.height = (textArea.unscaledHeight)*scale.zoom;
-                    container.contentWidth = (textArea.contentWidth + sidebar.width)*scale.zoom;
-                    container.contentHeight = textArea.contentHeight*scale.zoom;
-                    textArea.cursorScroll(textArea.cursorRectangle);
-                }
-
-                onContentSizeChanged: updateSize();
+                onContentSizeChanged: textArea.cursorScroll(textArea.cursorRectangle);
                 Connections {
                     target: scrollView.viewport
-                    onWidthChanged: textArea.updateSize();
-                    onHeightChanged: textArea.updateSize();
+                    onWidthChanged: textArea.cursorScroll(textArea.cursorRectangle);
+                    onHeightChanged: textArea.cursorScroll(textArea.cursorRectangle);
                 }
 
                 //information about the font
@@ -190,6 +199,64 @@ ScrollView {
                             height: fontMetrics.height
                         }
                     }
+                }
+
+                function addBreakpoint(line) {
+                  var newBreakpoint =
+                  breakpointComponent.createObject(sidebar,
+                    {"y": line*textArea.cursorRectangle.height, "line": line});
+                }
+
+                //mouse area to add Breakpoints
+                MouseArea {
+                  id: breakpointTrigger
+                  width: parent.width
+                  height: parent.height
+                  x: 0
+                  y: 0
+                  z: 1
+                  propagateComposedEvents: false
+                  preventStealing: true
+                  hoverEnabled: true
+                  onClicked: {
+                      sidebar.addBreakpoint(Math.floor(mouse.y/textArea.cursorRectangle.height));
+                  }
+                }
+
+                Component{
+                  id: breakpointComponent
+                  Item {
+                    z: breakpointTrigger.z + 1
+                    id: breakpointItem
+                    property int line;
+                    property alias color: breakpointIcon.color
+                    width: breakpointTrigger.width
+                    height: textArea.cursorRectangle.height;
+                    Component.onCompleted: {
+                      editor.setBreakpoint(line + 1);
+                    }
+
+                    Rectangle {
+                        id: breakpointIcon
+                        height: parent.height
+                        width: height
+                        radius: width*0.5
+                        color: "red"
+                    }
+
+                    MouseArea {
+                      anchors.fill: parent
+                      width: 100
+                      height: textArea.cursorRectangle.height
+                      propagateComposedEvents: false
+                      preventStealing: true
+
+                      onClicked: {
+                        editor.deleteBreakpoint(line + 1);
+                        breakpointItem.destroy();
+                      }
+                    }
+                  }
                 }
 
                 //errors and warnings
@@ -289,7 +356,7 @@ ScrollView {
                                 scale.zoom = 1.0;
                             }
                         }
-                        textArea.updateSize();
+                        textArea.cursorScroll(textArea.cursorRectangle);
                         wheel.accepted = true;
                     }
                     else {
