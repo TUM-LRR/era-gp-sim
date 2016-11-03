@@ -72,6 +72,20 @@ class EditorComponent : public QObject {
   Q_INVOKABLE void setTextChanged(bool value);
 
   /**
+   * Adds a breakpoint.
+   *
+   * \param line The line of the breakpoint.
+   */
+  Q_INVOKABLE void setBreakpoint(int line);
+
+  /**
+   * Deletes a breakpoint.
+   *
+   * \param line The line of the breakpoint.
+   */
+  Q_INVOKABLE void deleteBreakpoint(int line);
+
+  /**
    * Set a new list of errors to display in the editor.
    *
    * \param errorList List of CompileError objects.

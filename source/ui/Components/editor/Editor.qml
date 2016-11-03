@@ -201,6 +201,64 @@ ScrollView {
                     }
                 }
 
+                function addBreakpoint(line) {
+                  var newBreakpoint =
+                  breakpointComponent.createObject(sidebar,
+                    {"y": line*textArea.cursorRectangle.height, "line": line});
+                }
+
+                //mouse area to add Breakpoints
+                MouseArea {
+                  id: breakpointTrigger
+                  width: parent.width
+                  height: parent.height
+                  x: 0
+                  y: 0
+                  z: 1
+                  propagateComposedEvents: false
+                  preventStealing: true
+                  hoverEnabled: true
+                  onClicked: {
+                      sidebar.addBreakpoint(Math.floor(mouse.y/textArea.cursorRectangle.height));
+                  }
+                }
+
+                Component{
+                  id: breakpointComponent
+                  Item {
+                    z: breakpointTrigger.z + 1
+                    id: breakpointItem
+                    property int line;
+                    property alias color: breakpointIcon.color
+                    width: breakpointTrigger.width
+                    height: textArea.cursorRectangle.height;
+                    Component.onCompleted: {
+                      editor.setBreakpoint(line + 1);
+                    }
+
+                    Rectangle {
+                        id: breakpointIcon
+                        height: parent.height
+                        width: height
+                        radius: width*0.5
+                        color: "red"
+                    }
+
+                    MouseArea {
+                      anchors.fill: parent
+                      width: 100
+                      height: textArea.cursorRectangle.height
+                      propagateComposedEvents: false
+                      preventStealing: true
+
+                      onClicked: {
+                        editor.deleteBreakpoint(line + 1);
+                        breakpointItem.destroy();
+                      }
+                    }
+                  }
+                }
+
                 //errors and warnings
                 Rectangle {
                     id: errorBar

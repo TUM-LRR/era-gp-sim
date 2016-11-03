@@ -118,6 +118,14 @@ void EditorComponent::setTextChanged(bool value) {
   _textChanged = value;
 }
 
+void EditorComponent::setBreakpoint(int line) {
+  _commandInterface.setBreakpoint(line);
+}
+
+void EditorComponent::deleteBreakpoint(int line) {
+  _commandInterface.deleteBreakpoint(line);
+}
+
 void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
   emit deleteErrors();
   for (const CompileError &error : errorList) {
