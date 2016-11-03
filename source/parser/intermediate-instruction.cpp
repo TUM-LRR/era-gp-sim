@@ -16,19 +16,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/intermediate-instruction.hpp"
 #include "arch/common/architecture.hpp"
 #include "common/assert.hpp"
+#include "parser/intermediate-instruction.hpp"
+
+#include "core/memory-access.hpp"
+#include "parser/macro-directive.hpp"
 
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       const SymbolTable& table,
                                       const SyntaxTreeGenerator& generator,
                                       CompileState& state,
                                       MemoryAccess& memoryAccess) {
-  // For a machine instruction, it is easy to "execute" it: just insert it into
-  // the final form.
-  finalRepresentator.commandList.push_back(
-      compileInstruction(table, generator, state, memoryAccess));
+  // First we need to check if the instruction is a macro.
+  auto macro = state.macros.find(_name, _sources.size() + _targets.size());
+  // If its a macro, execute every sub-instruction.
+  if (macro.found()) {
+    if (!macro.isCyclic()) {
+      for (int i = 0; i < macro->second.getOperationCount(); i++) {
+        macro->second.callOperationFunction(i,
+                                            getArgsVector(),
+                                            &IntermediateOperation::execute,
+                                            finalRepresentator,
+                                            table,
+                                            generator,
+                                            state,
+                                            memoryAccess);
+      }
+    }
+  } else {
+    // For a machine instruction, it is easy to "execute" it: just insert it
+    // into the final form.
+    finalRepresentator.commandList.push_back(
+        compileInstruction(table, generator, state, memoryAccess));
+  }
 }
 
 std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
@@ -94,13 +115,32 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
     return;
   }
 
+  // Check if the instruction is a macro.
+  auto macro = state.macros.find(_name, _sources.size() + _targets.size());
+  // If its a macro, allocate every sub-instruction.
+  if (macro.found()) {
+    if (macro.isCyclic()) {
+      state.addError("Cyclic macro call!");
+    } else {
+      for (int i = 0; i < macro->second.getOperationCount(); i++) {
+        macro->second.callOperationFunction(
+            i,
+            getArgsVector(),
+            &IntermediateOperation::allocateMemory,
+            architecture,
+            allocator,
+            state);
+      }
+    }
+    return;
+  }
+
   const auto& instructionSet = architecture.getInstructions();
 
   // toLower as long as not fixed in instruction set.
   auto opcode = Utility::toLower(_name);
-  if (!instructionSet.hasInstruction(opcode))
-  {
-    state.addError("Unknown opcode: " + _name);
+  if (!instructionSet.hasInstruction(opcode)) {
+    // state.addError("Unknown opcode: " + _name);
     return;
   }
 
@@ -108,4 +148,37 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
   std::size_t instructionLength =
       instructionSet[opcode].getLength() / architecture.getByteSize();
   _relativeAddress = allocator["text"].allocateRelative(instructionLength);
+}
+
+static bool isWordCharacter(char c) {
+  return (c == '_' || std::isalpha(c) || std::isdigit(c));
+}
+
+static void replaceInVector(std::vector<std::string>& vector,
+                            const std::string& name,
+                            const std::string& value) {
+  std::string search = '\\' + name;
+  for (int i = 0; i < vector.size(); i++) {
+    std::string& str{vector[i]};
+    // Replace all occurences of '\\name' that are followed by a non-word char.
+    std::string::size_type pos = 0;
+    while ((pos = str.find(search, pos)) != std::string::npos) {
+      // If search result is followed by a word character, skip it and continue.
+      if (pos + search.length() < str.length() &&
+          isWordCharacter(str.at(pos + search.length()))) {
+        pos += search.length();
+        continue;
+      }
+
+      // Insert value at position and skip it
+      str.replace(pos, search.length(), value);
+      pos += value.length();
+    }
+  }
+}
+
+void IntermediateInstruction::insertIntoArguments(const std::string& name,
+                                                  const std::string& value) {
+  replaceInVector(_sources, name, value);
+  replaceInVector(_targets, name, value);
 }
