@@ -1,50 +1,65 @@
 {
-  "name": "with-deps-complex",
-  "extends": [
-    "base1-complex",
-    "base2-complex"
-  ],
-  "endianness": "little",
-  "word-size": 32,
-  "units": [
-    {
-      "name": "cpu",
-      "registers": [
+    "word-size": 32, 
+    "extends": [
+        "base1-complex", 
+        "base2-complex"
+    ], 
+    "name": "with-deps-complex", 
+    "endianness": "little", 
+    "units": [
         {
-          "name": "r0",
-          "id": 0,
-          "size": 32,
-          "constituents": [
-            1,
-            2
-          ],
-          "alias": "zero"
-        },
-        {
-          "name": "r1",
-          "id": 1,
-          "size": 16,
-          "type": "float",
-          "enclosing": 0,
-          "constant": 3.14,
-          "aliases": [
-            "foo",
-            "bar"
-          ]
+            "registers": [
+                {
+                    "id": 0, 
+                    "alias": "zero", 
+                    "size": 32, 
+                    "name": "r0", 
+                    "constituents": [
+                        {
+                            "id": 1, 
+                            "enclosing-index": 1
+                        }, 
+                        {
+                            "id": 2, 
+                            "enclosing-index": 2
+                        }
+                    ]
+                }, 
+                {
+                    "constant": "0x4048f5c3", 
+                    "name": "r1", 
+                    "enclosing": 0, 
+                    "size": 16, 
+                    "type": "float", 
+                    "id": 1, 
+                    "aliases": [
+                        "foo", 
+                        "bar"
+                    ]
+                }
+            ], 
+            "name": "cpu"
         }
-      ]
-    }
-  ],
-  "instructions": [
-    {
-      "mnemonic": "add",
-      "opcode": 6,
-      "function": 3
-    },
-    {
-      "mnemonic": "sub",
-      "opcode": 9,
-      "function": 3
-    }
-  ]
+    ], 
+    "byte-size": 8, 
+    "instructions": [
+        {
+            "mnemonic": "add", 
+            "length": 69, 
+            "key": {
+                "function": 3, 
+                "opcode": 6
+            }, 
+            "format": "R"
+        }, 
+        {
+            "mnemonic": "sub", 
+            "length": 69, 
+            "key": {
+                "function": 3, 
+                "opcode": 9
+            }, 
+            "format": "R"
+        }
+    ]
 }

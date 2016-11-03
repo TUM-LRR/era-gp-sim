@@ -27,6 +27,8 @@ import "Components/Toolbar"
 ApplicationWindow {
     id: window
     visible: true
+    width: Screen.desktopAvailableWidth*0.7
+    height: Screen.desktopAvailableHeight*0.8
 
     menuBar: Menubar{
         component: tabs
@@ -34,20 +36,27 @@ ApplicationWindow {
     }
     toolBar: ToolbarMainWindow{
         id: toolbar
+        tabView: tabView
     }
 
     TabView{
         anchors.fill: parent
         id: tabView
+
+        Component.onCompleted: {
+            createProject()
+        }
     }
 
-    function createProject(name) {
-        tabView.addTab(name, tabs);
+    function createProject() {
+        tabView.addTab("Create new project...", tabs);
         tabView.currentIndex = tabView.count - 1;
     }
 
     function closeProject() {
-        tabView.removeTab(tabView.currentIndex);
+        var currentTabIndex = tabView.currentIndex;
+        tabView.removeTab(currentTabIndex);
+        ui.removeProject(currentTabIndex);
     }
 
     /*Component for a project, instantiated by the TabView*/
@@ -55,10 +64,18 @@ ApplicationWindow {
         id: tabs
 
         Item {
-            Component.onCompleted: {
-                ui.addProject(this, projectComponent);
+            id: placeholderItem
+            anchors.fill: parent
+            ProjectCreationScreen {
+                anchors.fill: parent
+                tab: parent.parent
+                onButtonClicked: {
+                    enabled = false;
+                    visible = false;
+                    ui.addProject(placeholderItem, projectComponent,
+                      memorySize, architecture, optionName, parser);
+                }
             }
-
         }
     }
 
@@ -67,6 +84,16 @@ ApplicationWindow {
         id: projectComponent
         Splitview{
             anchors.fill: parent
+
+            SystemPalette {
+              id: systemPalette
+            }
+
+            handleDelegate: Rectangle {
+              width: 2
+              height: 2
+              color: Qt.darker(systemPalette.window, 1.5)
+            }
         }
     }
 }

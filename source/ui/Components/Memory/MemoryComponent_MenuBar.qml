@@ -65,12 +65,6 @@ Item {
             onCurrentIndexChanged:{
                 console.log("representation of numbers changed")
             }
-
-            /*ToolTip_new {
-            id: tooltip1
-            //width: 200
-            //text: "Enter the text here. asdfljas la sjdlöaöls djfaösd jlasdflaksjd fas "
-            }*/
         }
         NumericUpDown {
             id: memory_size_chooser

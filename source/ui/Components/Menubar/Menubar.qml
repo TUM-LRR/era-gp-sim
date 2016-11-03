@@ -32,35 +32,39 @@ MenuBar {
             text: "Open..."
             onTriggered: {
                 console.info("Open triggerd");
+                ui.open("PopUp ergaenzen");
             }
         }
         MenuItem{
             text: "New..."
             onTriggered: {
                 console.info("New triggerd");
-                main.createProject("test");
+                main.createProject();
             }
         }
         MenuItem{
             text: "Save"
             onTriggered: {
                 console.info("Save triggerd");
+                ui.save(tabView.currentIndex);
             }
         }
         MenuItem{
             text: "Save as..."
             onTriggered: {
                 console.info("Save as triggerd");
+                ui.saveAs("popup ergaenzen", tabView.currentIndex);
             }
         }
         MenuItem{
             text: "Snapshot"
             onTriggered: {
                 console.info("Snapshot triggerd");
+                ui.snapshot("popup für name", tabView.currentIndex)
             }
         }
         MenuItem{
-            text: "Delete"
+            text: "Close"
             onTriggered: {
                 console.info("Delete Triggerd");
                 main.closeProject();
@@ -74,6 +78,7 @@ MenuBar {
             text: "Open"
             onTriggered: {
                 console.info("Open Settings triggerd")
+                ui.settings();
             }
         }
     }
@@ -84,9 +89,9 @@ MenuBar {
             text: "Open"
             onTriggered: {
                 console.info("Help open triggerd")
+                ui.help();
             }
         }
     }
 
 }
-

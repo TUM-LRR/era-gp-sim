@@ -16,23 +16,66 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_REGP_HPP_
-#define ERAGPSIM_CORE_REGP_HPP_
+#ifndef ERAGPSIM_CORE_REGISTERID_HPP_
+#define ERAGPSIM_CORE_REGISTERID_HPP_
 
 // The information to uniquely identify a register
 struct RegisterID {
-  int _adress;
-  int _begin;
-  int _end;
+  int address; /**< Brief Index of this Register within the vector of Registers
+                 with no parents */
+  int begin;  /**< Brief First index within the transitive grand-parent Register
+                 with no parents of this Register*/
+  int end;    /**< Brief First index within the transitive grand-parent Register
+                 with no parents no longer within this Register*/
+  /**
+   * \brief Default constructor. Constructs an empty RegisterID
+   */
   RegisterID() = default;
-  RegisterID(int adress, int begin, int end)
-  : _adress{adress}, _begin{begin}, _end{end} {
+  /**
+   * \brief Constructs an RegisterID with address addres, begin bgein and end
+   *        end
+   * \param address Index of this Register within the vector of Registers with
+   *        no parents
+   * \param begin First index within the transitive grand-parent Register with
+   *        no parents of this Register
+   * \param end First index within the transitive grand-parent Register with no
+   *        parents no longer within this Register
+   */
+  RegisterID(int address, int begin, int end)
+  : address{address}, begin{begin}, end{end} {
   }
-  RegisterID(RegisterID&& other)      = default;
+  /**
+   * \brief Move constructor. Constructs the RegisterID with the contents of
+   *        other using move semantics.
+   * \param other another RegisterID to be used as source to initialize the
+   *        elements of the RegisterID with
+   */
+  RegisterID(RegisterID&& other) = default;
+  /**
+   * \brief Copy constructor. Constructs the RegisterID with the copy of the
+   *        contents of other.
+   * \param other another RegisterID to be used as source to initialize the
+   *        elements of the RegisterID with
+   */
   RegisterID(const RegisterID& other) = default;
+  /**
+   * \brief Move constructor. Constructs the RegisterID with the contents of
+   *        other using move semantics.
+   * \param other another RegisterID to be used as source to initialize the
+   *        elements of the RegisterID with
+   */
   RegisterID& operator=(RegisterID&& other) = default;
+  /**
+   * \brief Copy constructor. Constructs the RegisterID with the copy of the
+   *        contents of other.
+   * \param other another RegisterID to be used as source to initialize the
+   *        elements of the RegisterID with
+   */
   RegisterID& operator=(const RegisterID& other) = default;
-  ~RegisterID()                                  = default;
+  /**
+   * \brief Destructs the RegisterID
+   */
+  ~RegisterID() = default;
 };
 
-#endif// ERAGPSIM_CORE_REGP_HPP_
+#endif// ERAGPSIM_CORE_REGISTERID_HPP_

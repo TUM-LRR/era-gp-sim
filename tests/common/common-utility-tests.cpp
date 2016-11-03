@@ -18,10 +18,12 @@
 */
 
 #include <gtest/gtest.h>
+#include <limits>
 #include <string>
 #include <vector>
 
 #include "common/utility.hpp"
+#include "core/conversions.hpp"
 
 TEST(UtilityTests, TestFileIO) {
   static const std::string testString = R"(
@@ -53,7 +55,7 @@ TEST(UtilityTest, TestTransformInto) {
 
 TEST(UtilityTest, TestTransform) {
   std::vector<int> v = {1, 2, 3, 4, 5};
-  auto w             = Utility::transform(v, [](auto& i) { return i + 1; });
+  auto w = Utility::transform(v, [](auto& i) { return i + 1; });
   for (int i = 0; i < v.size(); ++i) {
     EXPECT_EQ(w[i], i + 2);
   }
@@ -63,4 +65,39 @@ TEST(UtilityTest, TestStringTransforms) {
   EXPECT_EQ(Utility::toLower("FOOBAR"), "foobar");
   EXPECT_EQ(Utility::toUpper("foobar"), "FOOBAR");
   EXPECT_EQ(Utility::toLower(Utility::toUpper("foobar")), "foobar");
+}
+
+TEST(UtilityTest, TestBitChecks) {
+  // clang-format off
+  auto convert = [](int value) {
+    return conversions::convert(
+        value,
+        std::numeric_limits<int>::digits + 1,
+        8,
+        ArchitectureProperties::Endianness::LITTLE,
+        ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT
+    );
+  };
+  // clang-format on
+
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(0xFF), 0));
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(0xFF), 1));
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(-0xFF), 1));
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(-1), 0));
+
+  const std::size_t bits = 12;
+  const int max = 2047;
+  const int min = -2048;
+
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(max + 1), bits));
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(min - 1), bits));
+
+  EXPECT_TRUE(Utility::fitsIntoBits(convert(max), bits));
+  EXPECT_TRUE(Utility::fitsIntoBits(convert(min), bits));
+
+  EXPECT_TRUE(Utility::fitsIntoBits(convert(0xFFF), bits + 1));
+  EXPECT_TRUE(Utility::fitsIntoBits(convert(0xFFF), bits + 2));
+
+  EXPECT_FALSE(Utility::fitsIntoBits(convert(-0xFFF), bits));
+  EXPECT_TRUE(Utility::fitsIntoBits(convert(-0xFFF), bits + 1));
 }

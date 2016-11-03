@@ -17,17 +17,3 @@
  */
 
 #include "parser/intermediate-operation.hpp"
-
-void IntermediateOperation::enhanceSymbolTable(SymbolTable& table,
-                                               CompileState& state) {
-  // We assign an address, if we do not have one yet (usually, we should not
-  // have one).
-  if (_address == NULL_ADDRESS) {
-    determineMemoryPosition();
-  }
-
-  // Then, we insert all our labels.
-  for (const auto& i : _labels) {
-    table.insertEntry(i, std::to_string(_address), state);
-  }
-}
