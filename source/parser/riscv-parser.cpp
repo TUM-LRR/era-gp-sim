@@ -132,7 +132,8 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
 
   MemoryAllocator allocator(
       {MemorySectionDefinition("text", 1),
-       MemorySectionDefinition("data", _architecture.getWordSize())});
+       MemorySectionDefinition(
+           "data", _architecture.getWordSize() / _architecture.getByteSize())});
   return intermediate.transform(
       _architecture,
       SyntaxTreeGenerator{_factory_collection, argumentGeneratorFunction},
