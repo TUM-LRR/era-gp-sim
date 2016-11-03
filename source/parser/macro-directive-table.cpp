@@ -40,6 +40,10 @@ auto MacroDirectiveTable::begin() -> macro_map::const_iterator {
   return _macros.begin();
 }
 
+void MacroDirectiveTable::clear() {
+  _macros.clear();
+}
+
 auto MacroDirectiveTable::end() -> macro_map::const_iterator {
   return _macros.end();
 }

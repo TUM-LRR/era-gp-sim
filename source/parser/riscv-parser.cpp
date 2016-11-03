@@ -74,6 +74,7 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
 
   // Initialize compile state
   _compile_state.errorList.clear();
+  _compile_state.macros.clear();
   _compile_state.position = CodePosition(0, 0);
   _compile_state.mode = parserMode;
 

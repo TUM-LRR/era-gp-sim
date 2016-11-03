@@ -78,6 +78,11 @@ class MacroDirectiveTable {
    */
   macro_map::const_iterator end();
 
+  /**
+   * Clears the list of registered macros.
+   */
+  void clear();
+
  private:
   /**
    * Helper class to automatically set and unset the _isCompiling flag of the
