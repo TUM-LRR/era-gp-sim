@@ -51,5 +51,7 @@
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
+        <file>Components/Output/7-Segment/SevenSegment.qml</file>
+        <file>Components/Output/7-Segment/SevenSegment_Segment.qml</file>
     </qresource>
 </RCC>

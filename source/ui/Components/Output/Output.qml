@@ -39,6 +39,7 @@ Rectangle {
         id: outputTabView
 
         anchors.fill: parent
+
         // Position tab bar below the content frame.
         tabPosition: Qt.BottomEdge
 
