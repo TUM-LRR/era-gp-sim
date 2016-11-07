@@ -116,6 +116,7 @@ void GuiProject::stop() {
 void GuiProject::reset() {
   _projectModule.reset();
   _projectModule.getCommandInterface().setExecutionPoint(1);
+  _editorComponent.parse(true);
 }
 
 void GuiProject::saveText() {
