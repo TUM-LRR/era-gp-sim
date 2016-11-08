@@ -63,6 +63,10 @@ GuiProject::GuiProject(QQmlContext* context,
   // Alle Functions initialisieren
 }
 
+GuiProject::~GuiProject() {
+  stop();
+}
+
 void GuiProject::changeSystem(std::string base) {
   // Alle Komponenten informieren
 }
