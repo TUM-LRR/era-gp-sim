@@ -68,6 +68,31 @@ class GuiProject : QObject {
              QObject* parent = 0);
 
   /**
+   * Destructor
+   */
+  ~GuiProject();
+
+  /**
+   * Copy constructor is deleted, QObjects can not be copied.
+   */
+  GuiProject(const GuiProject& other) = delete;
+
+  /**
+   * Move constructor is deleted to avoid problems with the QObject members.
+   */
+  GuiProject(GuiProject&& other) = delete;
+
+  /**
+   * Copy assignement is deleted, QObjects can not be copied.
+   */
+  GuiProject& operator=(const GuiProject& other) = delete;
+
+  /**
+   * Move assignement is deleted to avoid problems with the QObject members.
+   */
+  GuiProject& operator=(GuiProject&& other) = delete;
+
+  /**
    * \brief Can set The global system
    * in which numbers are presented
    *

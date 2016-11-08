@@ -78,6 +78,10 @@ GuiProject::GuiProject(QQmlContext* context,
                    Qt::QueuedConnection);
 }
 
+GuiProject::~GuiProject() {
+  stop();
+}
+
 void GuiProject::changeSystem(std::string base) {
   // Alle Komponenten informieren
 }
