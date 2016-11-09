@@ -24,8 +24,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
-#include "arch/common/instruction-information.hpp"
+#include "arch/common/abstract-instruction-node-factory.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 
 namespace riscv {
@@ -35,15 +34,15 @@ namespace riscv {
  * functions.
  *
  * The purpose of this class is to reduce the boilerplate for adding nodes  *
- * to the factory mapping in the instruction-nod-factory, as well as for
+ * to the factory mapping in the instruction-node-factory, as well as for
  * accessing factories to create new
  * nodes.
  */
 class FactoryMap {
  public:
-  using Factory = std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
+  using Factory = std::function<std::unique_ptr<AbstractInstructionNode>(
       const InstructionInformation &)>;
-  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using Node = AbstractInstructionNodeFactory::Node;
 
   /**
    * An abstract base class for facades.
@@ -117,8 +116,8 @@ class FactoryMap {
      *                            version of the instruction.
      */
     template <template <typename> class InstructionType>
-    void
-    add(const std::string &instructionName, bool hasImmediateVersion = true) {
+    void add(const std::string &instructionName,
+             bool hasImmediateVersion = true) {
       // clang-format off
       _factories.addIntegerInstruction<InstructionType<SizeType>>(
           instructionName,

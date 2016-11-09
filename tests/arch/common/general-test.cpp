@@ -78,7 +78,8 @@ struct ArchCommonTestFixture : ::testing::Test {
         .wordSize(32)
         .byteSize(8)
         .endianness(ArchitectureProperties::Endianness::MIXED)
-        .alignmentBehavior(ArchitectureProperties::AlignmentBehavior::STRICT);
+        .alignmentBehavior(
+            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 
     // clang-format off
     auto lr = InstructionInformation("lr")
@@ -226,23 +227,27 @@ TEST(ArchCommonTest, TestArchitectureFormula) {
 TEST(ArchCommonTest, TestInstructionInformation) {
   auto instruction = InstructionInformation("add").format("R").length(69);
 
+  InstructionInformation::OperandLengthList operands = {32, 32, 12};
   InstructionKey key(InstructionKey({{"opcode", 6}, {"function", 9}}));
 
   EXPECT_FALSE(instruction.isValid());
   EXPECT_FALSE(instruction.hasKey());
+  EXPECT_FALSE(instruction.hasOperandLengths());
 
-  instruction.key(key);
+  instruction.key(key).operandLengths(operands);
 
   EXPECT_TRUE(instruction.isValid());
   EXPECT_TRUE(instruction.hasKey());
   EXPECT_TRUE(instruction.hasMnemonic());
   EXPECT_TRUE(instruction.hasFormat());
   EXPECT_TRUE(instruction.hasLength());
+  EXPECT_TRUE(instruction.hasOperandLengths());
 
   EXPECT_EQ(instruction.getKey(), key);
   EXPECT_EQ(instruction.getMnemonic(), "add");
   EXPECT_EQ(instruction.getFormat(), "R");
   EXPECT_EQ(instruction.getLength(), 69);
+  EXPECT_EQ(instruction.getOperandLengths(), operands);
 }
 
 TEST_F(ArchCommonTestFixture, TestInstructionSet) {
@@ -276,7 +281,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   extension.byteSize(8);
   extension.endianness(ArchitectureProperties::Endianness::MIXED);
   extension.alignmentBehavior(
-      ArchitectureProperties::AlignmentBehavior::STRICT);
+      ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 
   EXPECT_TRUE(extension.isValid());
   EXPECT_TRUE(extension.isComplete());
@@ -292,7 +297,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   EXPECT_EQ(extension.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(extension.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::STRICT);
+            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 }
 
 TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
@@ -311,7 +316,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
   EXPECT_EQ(extension.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(extension.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::STRICT);
+            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 
   // This should now include the new instructions
   instructionSet += specialExtensionInformation.getInstructions();
@@ -340,7 +345,7 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
   EXPECT_EQ(architecture.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::STRICT);
+            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
 
   instructionSet += specialExtensionInformation.getInstructions();
   EXPECT_EQ(architecture.getInstructions(), instructionSet);

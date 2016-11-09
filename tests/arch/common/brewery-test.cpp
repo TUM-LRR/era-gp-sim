@@ -81,7 +81,7 @@ TEST_F(DeserializationTest, BaseWithoutDependencies) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::STRICT);
+            Architecture::AlignmentBehavior::ALIGN_STRICT);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
 
@@ -104,7 +104,7 @@ TEST_F(DeserializationTest, BaseWithBasicDependencies) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::RELAXED);
+            Architecture::AlignmentBehavior::ALIGN_RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
 
@@ -135,7 +135,7 @@ TEST_F(DeserializationTest, BaseWithComplexDependenciesNoReset) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::RELAXED);
+            Architecture::AlignmentBehavior::ALIGN_RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
 

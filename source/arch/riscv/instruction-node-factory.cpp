@@ -18,6 +18,8 @@
 #include <string>
 
 #include "arch/common/architecture.hpp"
+#include "arch/common/crash-instruction-node.hpp"
+#include "arch/common/sleep-instruction-node.hpp"
 #include "arch/riscv/architecture-only-instructions.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/instruction-node.hpp"
@@ -199,6 +201,30 @@ void _addExtensionMIfPresent(const InstructionSet& instructionSet,
     _setupExtensionM<UnsignedWord, SignedWord>(_factories);
   }
 }
+
+/**
+ * Struct that returns the incremented program counter
+ */
+template <typename WordSize>
+struct ProgramCounterIncrement {
+  MemoryValue operator()(MemoryAccess& memoryAccess) const {
+    constexpr auto INSTRUCTION_SIZE = 32;
+    auto current = riscv::loadRegister<WordSize>(memoryAccess, "pc");
+    current += (INSTRUCTION_SIZE / riscv::BITS_PER_BYTE);
+    return riscv::convert<WordSize>(current);
+  }
+};
+
+/**
+ * Struct for a dynamic assembly of the SimulatorSleepInstructionNode depending
+ * on the operand
+ */
+struct SleepInstructionAssembler {
+  MemoryValue operator()(const MemoryValue& sleepTime) const {
+    constexpr uint32_t OPCODE = 0x72657374;
+    return conversions::convert(OPCODE, 32);
+  }
+};
 }
 
 InstructionNodeFactory::InstructionNodeFactory(
@@ -234,6 +260,24 @@ InstructionNodeFactory::InstructionNodeFactory(
   }
 
   _setupOtherInstructions();
+  _setupSimulatorInstructions(architecture);
+}
+
+void InstructionNodeFactory::_setupSimulatorInstructions(
+    const Architecture& architecture) {
+  using PCIncrementer = SimulatorSleepInstructionNode::PCIncrementer;
+
+  if (architecture.getWordSize() == 32) {
+    _factories.add<SimulatorSleepInstructionNode>(
+        "simusleep", ProgramCounterIncrement<riscv::unsigned32_t>{},
+        SleepInstructionAssembler{});
+  } else if (architecture.getWordSize() == 64) {
+    _factories.add<SimulatorSleepInstructionNode>(
+        "simusleep", ProgramCounterIncrement<riscv::unsigned64_t>{},
+        SleepInstructionAssembler{});
+  }
+  constexpr riscv::unsigned32_t CRASH_OPCODE = 0x626f6f6d;
+  _factories.add<SimulatorCrashInstructionNode>("simucrash", riscv::convert<riscv::unsigned32_t>(CRASH_OPCODE));
 }
 
 void InstructionNodeFactory::_setupOtherInstructions() {}

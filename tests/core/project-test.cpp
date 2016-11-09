@@ -222,8 +222,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
 
   // test if correct values for the assembled program are written into memory
   for (auto&& command : finalRepresentationValidator.commandList) {
-    // MemoryValue assembledValidator = command.node->assemble();
-    MemoryValue assembledValidator;
+     MemoryValue assembledValidator = command.node->assemble();
     MemoryValue assembledInMemory =
         memoryAccess
             .getMemoryValueAt(command.address, assembledValidator.getSize() / 8)

@@ -14,6 +14,7 @@ set(TEST_ARCH_RISCV_SOURCES
   rv64-only-instruction-test.cpp
   register-test.cpp
   assemble-test.cpp
+  simulator-instructions-test.cpp
 )
 
 ########################################
@@ -21,6 +22,7 @@ set(TEST_ARCH_RISCV_SOURCES
 ########################################
 
 add_executable(era-sim-arch-riscv-tests ${TEST_ARCH_RISCV_SOURCES})
+
 
 target_link_libraries(era-sim-arch-riscv-tests era-sim-arch-riscv)
 target_link_libraries(era-sim-arch-riscv-tests gtest gtest_main)

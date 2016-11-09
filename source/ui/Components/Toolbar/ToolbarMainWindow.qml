@@ -18,7 +18,7 @@
  */
 
 /*
-  This ile implements the toolbar for the Main Window
+  This file implements the toolbar for the Main Window
  */
 
 import QtQuick 2.0
@@ -27,34 +27,63 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.4
 
 ToolBar {
+    /*Knowing the active tab*/
+    property TabView tabView
+
     /*
-      The two components are for the buttons, so it can be senn, wether they are pressed
+      The Buttons should have the Systemcolors if they are clicked
+      */
+    SystemPalette{
+        id: systemColors
+        colorGroup: SystemPalette.Active
+    }
+
+    /*
+      The two components are for the buttons, so it can be seen, whether they are pressed
       */
     Component{
         id: styleNotClicked
         ButtonStyle{
             background: Rectangle{
-            color: "white"
-            anchors.fill: parent
+                color: systemColors.button
+                //anchors.fill: parent
+                implicitWidth: 40
+                implicitHeight: 20
             }
         }
     }
+
 
     Component{
         id: styleClicked
         ButtonStyle{
             background: Rectangle{
-            color: "lightblue"
-            anchors.fill: parent
+                color: systemColors.button
+                border.color: systemColors.highlight
+                border.width: 3
+                implicitHeight: 20
+                implicitWidth: 40
             }
         }
     }
+
+    Component{
+        id: tbText
+        Text{
+            id: textBin
+            text: currentText
+            font.bold: true
+            anchors.centerIn: parent
+            font.pixelSize: 16
+        }
+    }
+
 
     /* Showing the Buttons*/
     RowLayout{
         /*There should be no place between the right buttons*/
         spacing: 1
-        anchors.fill: parent        
+        anchors.fill: parent
 
         ToolButton{
             id: run
@@ -63,6 +92,7 @@ ToolBar {
             onClicked: {
                 console.info("Run clicked");
                 stop.setActive();
+                ui.run(tabView.currentIndex);
             }
         }
 
@@ -76,6 +106,7 @@ ToolBar {
             onClicked: {
                 console.info("runLine clicked");
                 stop.setActive();
+                ui.runLine(tabView.currentIndex);
             }
         }
 
@@ -88,6 +119,7 @@ ToolBar {
             onClicked: {
                 console.info("runBreakpoint clicked");
                 stop.setActive();
+                ui.runBreakpoint(tabView.currentIndex);
             }
         }
 
@@ -96,21 +128,15 @@ ToolBar {
         ToolButton{
             id: stop
             enabled: false
+            tooltip: "stop"
             //iconSource: "Icons/StopButtonInactiveWithBorder.svg"
             iconSource: "Icons/StopButtonInactive.svg"
             onClicked: {
                 console.info("Stop clicked");
+                ui.stop(tabView.currentIndex);
                 setInactive();
             }
 
-            /*Functions to enable/disable the Button*/
-            function changeActive(){
-                if(!enabled){
-                    setActive();
-                }else{
-                    setInactive();
-                }
-            }
 
             function setActive(){
                 enabled=true;
@@ -121,7 +147,35 @@ ToolBar {
                 enabled=false;
                 iconSource="Icons/StopButtonInactive.svg";
             }
+
+            /*Not implemented yet in the ui*/
+            /*Connections{
+                target: ui
+                onDisableStop: {
+                    stop.setInactive();
+                    console.info("Geklappt");
+                }
+            }*/
         }
+
+        ToolButton {
+            id: parseButton
+            text: "parse"
+            onClicked: {
+                ui.parse(tabView.currentIndex);
+                console.log("reset " + tabView.currentIndex);
+            }
+        }
+
+        ToolButton {
+            id: resetButton
+            text: "reset"
+            onClicked: {
+                ui.reset(tabView.currentIndex);
+            }
+        }
+
+
 
         /* The next Buttons should be on the right side*/
         Item{ Layout.fillWidth: true}
@@ -129,17 +183,16 @@ ToolBar {
         ToolButton{
             id: bin
             style: styleClicked
-            /*If there was no text, you could not read the Text*/
-            text: "           "
-            Text{
-                text: "Bin"
-                font.bold: true
+            Loader{
+                id: loadB
+                property string currentText: "Bin"
+                sourceComponent: tbText
                 anchors.centerIn: parent
-                font.pixelSize: 16
             }
 
             onClicked: {
                 console.info("Bin clicked");
+                ui.changeSystem(tabView.currentIndex, loadB.currentText);
                 style=styleClicked;
                 oct.notClicked();
                 dec.notClicked();
@@ -157,15 +210,16 @@ ToolBar {
         ToolButton{
             id: oct
             style: styleNotClicked
-            text: "          "
-            Text{
-                text: "Oct"
-                font.bold: true
+            Loader{
+                id: loadO
+                property string currentText: "Oct"
+                sourceComponent: tbText
                 anchors.centerIn: parent
-                font.pixelSize: 16
             }
+
             onClicked: {
                 console.info("Oct clicked");
+                ui.changeSystem(tabView.currentIndex, loadO.currentText);
                 style=styleClicked;
                 bin.notClicked();
                 dec.notClicked();
@@ -175,22 +229,21 @@ ToolBar {
             function notClicked(){
                 style=styleNotClicked;
             }
-
-
         }
+
 
         ToolButton{
             id: dec
-            text: "           "
-            Text{
-                text: "Dec"
-                font.bold: true
+            Loader{
+                id: loadD
+                property string currentText: "Dec"
+                sourceComponent: tbText
                 anchors.centerIn: parent
-                font.pixelSize: 16
             }
             style: styleNotClicked
             onClicked: {
                 console.info("Dec clicked");
+                ui.changeSystem(tabView.currentIndex, loadD.currentText);
                 style=styleClicked;
                 bin.notClicked();
                 oct.notClicked();
@@ -204,16 +257,16 @@ ToolBar {
 
         ToolButton{
             id: hex
-            text: "           "
-            Text{
-                text: "Hex"
-                font.bold: true
+            Loader{
+                id: loadH
+                property string currentText: "Bin"
+                sourceComponent: tbText
                 anchors.centerIn: parent
-                font.pixelSize: 16
             }
             style: styleNotClicked
             onClicked: {
                 console.info("Hex clicked");
+                ui.changeSystem(tabView.currentIndex, loadH.currentText);
                 style=styleClicked;
                 bin.notClicked();
                 oct.notClicked();
