@@ -115,6 +115,7 @@ class RegisterSet {
    * \brief Creates a Register with the name name and size size
    * \param name String uniquely representing the to be created Register
    * \param size Size of the Register in bit
+   * \param constant Makes it so this Register cannot be changed anymore
    */
   void createRegister(const std::string &name,
                       std::size_t size,
@@ -123,6 +124,7 @@ class RegisterSet {
    * \brief Creates a Register with the name name and stores a copy of value
    * \param name String uniquely representing the to be created Register
    * \param value Initial value of the register
+   * \param constant Makes it so this Register cannot be changed anymore
    */
   void createRegister(const std::string &name,
                       const MemoryValue &value,
@@ -133,6 +135,7 @@ class RegisterSet {
    * \param nameList Vector of Strings uniquely representing the to be created
    *        Register
    * \param value Initial value of the register
+   * \param constant Makes it so this Register cannot be changed anymore
    * \param silent option to make all aliases created by this be silent
    */
   void createRegister(const std::vector<std::string> &nameList,
@@ -145,6 +148,7 @@ class RegisterSet {
    * \param nameList Vector of Strings uniquely representing the to be created
    *        Register
    * \param size Size of the Register in bit
+   * \param constant Makes it so this Register cannot be changed anymore
    * \param silent option to make all aliases created by this be silent
    */
   void createRegister(const std::vector<std::string> &nameList,

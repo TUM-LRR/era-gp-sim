@@ -48,9 +48,9 @@
 
 using namespace riscv;
 
-class LoadStoreInstructionsTest : public RiscvBaseTest {
+class LoadStoreInstructionTest : public RiscvBaseTest {
  public:
-  LoadStoreInstructionsTest() : dest("x1"), base("x2"), src("x3") {
+  LoadStoreInstructionTest() : dest("x1"), base("x2"), src("x3") {
   }
   std::string dest, base, src;
 };
@@ -120,7 +120,7 @@ class LoadStoreInstructionsTest : public RiscvBaseTest {
 
 // Load Tests
 
-TEST_F(LoadStoreInstructionsTest, Load_RV32I) {
+TEST_F(LoadStoreInstructionTest, Load_32) {
   load({"rv32i"});
   auto memoryAccess = getMemoryAccess();
 
@@ -135,7 +135,7 @@ TEST_F(LoadStoreInstructionsTest, Load_RV32I) {
   TEST_LOAD(6, riscv::convert<uint32_t>, "lbu", 0x80, 0x80, 1);
 }
 
-TEST_F(LoadStoreInstructionsTest, Load_RV64_I) {
+TEST_F(LoadStoreInstructionTest, Load_64) {
   load({"rv32i", "rv64i"});
   auto memoryAccess = getMemoryAccess();
 
@@ -158,7 +158,7 @@ TEST_F(LoadStoreInstructionsTest, Load_RV64_I) {
 
 // Store Tests
 
-TEST_F(LoadStoreInstructionsTest, Store_RV32I) {
+TEST_F(LoadStoreInstructionTest, Store_32) {
   load({"rv32i"});
   auto memoryAccess = getMemoryAccess();
 
@@ -167,7 +167,7 @@ TEST_F(LoadStoreInstructionsTest, Store_RV32I) {
   TEST_STORE(2, riscv::convert<uint32_t>, "sb", 0x42, 1);
 }
 
-TEST_F(LoadStoreInstructionsTest, Store_RV64I) {
+TEST_F(LoadStoreInstructionTest, Store_64) {
   load({"rv32i", "rv64i"});
   auto memoryAccess = getMemoryAccess();
 

@@ -22,6 +22,7 @@
 #include <string>
 
 #include "arch/common/abstract-arithmetic-node-factory.hpp"
+#include "arch/common/abstract-data-node-factory.hpp"
 #include "arch/common/instruction-set.hpp"
 #include "core/memory-value.hpp"
 
@@ -55,7 +56,8 @@ class NodeFactoryCollection {
         FactoryTypes::immediateFactory(),
         FactoryTypes::memoryAccessFactory(),
         FactoryTypes::registerFactory(),
-        FactoryTypes::arithmeticFactory()
+        FactoryTypes::arithmeticFactory(),
+        FactoryTypes::dataNodeFactory()
     );
     // clang-format on
   }
@@ -96,19 +98,27 @@ class NodeFactoryCollection {
   Node createArithmeticNode(
       AbstractArithmeticNodeFactory::Operation operation) const;
 
+  /**
+   * It is asserted that a corresponding factory must be set prior to this method call.
+   * \copydoc AbstractDataNodeFactory::createDataNode
+   */
+  Node createDataNode(const std::string& data) const;
+
  private:
   NodeFactoryCollection(
       std::shared_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
       std::shared_ptr<AbstractImmediateNodeFactory> &&immediateFactory,
       std::shared_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,
       std::shared_ptr<AbstractRegisterNodeFactory> &&registerFactory,
-      std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory);
+      std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory,
+      std::shared_ptr<AbstractDataNodeFactory> &&dataFactory);
 
   std::shared_ptr<AbstractInstructionNodeFactory> _instructionFactory;
   std::shared_ptr<AbstractImmediateNodeFactory> _immediateFactory;
   std::shared_ptr<AbstractRegisterNodeFactory> _registerFactory;
   std::shared_ptr<AbstractMemoryAccessNodeFactory> _memoryAccessFactory;
   std::shared_ptr<AbstractArithmeticNodeFactory> _arithmeticFactory;
+  std::shared_ptr<AbstractDataNodeFactory> _dataNodeFactory;
 };
 
 #endif /* ERAGPSIM_ARCH_NODE_FACTORY_COLLECTION_HPP */

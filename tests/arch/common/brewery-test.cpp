@@ -28,8 +28,8 @@
 #include "arch/common/instruction-set.hpp"
 #include "arch/common/register-information.hpp"
 
-struct ArchDeserializationTestFixture : public ::testing::Test {
-  ArchDeserializationTestFixture() {
+struct DeserializationTest : public ::testing::Test {
+  DeserializationTest() {
     // clang-format off
     auto add = InstructionInformation("add")
                 .key(InstructionKey({{"opcode", 6}, {"function", 3}}))
@@ -57,7 +57,7 @@ struct ArchDeserializationTestFixture : public ::testing::Test {
           .size(16)
           .type(RegisterInformation::Type::FLOAT)
           .enclosing(0)
-          .constant(3.14)
+          .constant("0x4048f5c3")//3.14 in IEEE 754 floating point
           .addAliases({"foo", "bar"});
     // clang-format on
 
@@ -72,7 +72,7 @@ struct ArchDeserializationTestFixture : public ::testing::Test {
   std::vector<UnitInformation> units;
 };
 
-TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
+TEST_F(DeserializationTest, BaseWithoutDependencies) {
   ArchitectureFormula formula("test", {"no-deps"});
 
   auto architecture = ArchitectureBrewery(formula).brew();
@@ -81,7 +81,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::STRICT);
+            Architecture::AlignmentBehavior::ALIGN_STRICT);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
 
@@ -95,7 +95,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithoutDependencies) {
   }
 }
 
-TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
+TEST_F(DeserializationTest, BaseWithBasicDependencies) {
   ArchitectureFormula formula("test", {"with-deps-basic"});
 
   auto architecture = ArchitectureBrewery(formula).brew();
@@ -104,7 +104,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::RELAXED);
+            Architecture::AlignmentBehavior::ALIGN_RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
 
@@ -126,7 +126,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithBasicDependencies) {
   }
 }
 
-TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
+TEST_F(DeserializationTest, BaseWithComplexDependenciesNoReset) {
   ArchitectureFormula formula("test", {"with-deps-complex"});
 
   auto architecture = ArchitectureBrewery(formula).brew();
@@ -135,7 +135,7 @@ TEST_F(ArchDeserializationTestFixture, TestBaseWithComplexDependenciesNoReset) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::RELAXED);
+            Architecture::AlignmentBehavior::ALIGN_RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
 

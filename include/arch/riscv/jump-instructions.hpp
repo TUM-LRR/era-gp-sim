@@ -141,16 +141,12 @@ class JumpAndLinkImmediateInstructionNode
    */
   ValidationResult
   _validateResultingProgramCounter(MemoryAccess& memoryAccess) const override {
-    static const auto addressBoundary =
-        std::numeric_limits<UnsignedWord>::max();
 
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
-    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 1);
-
-    auto maximumAllowedOffset = addressBoundary - programCounter;
+    auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
 
     // Check if the program counter would underflow or overflow
-    if (-offset > programCounter || offset > maximumAllowedOffset) {
+    if (!riscv::isAddressValid(memoryAccess, programCounter + 2*offset)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Branch offset would invalidate program counter"));
@@ -283,16 +279,10 @@ class JumpAndLinkRegisterInstructionNode
    */
   ValidationResult
   _validateResultingProgramCounter(MemoryAccess& memoryAccess) const override {
-    static const auto addressBoundary =
-        std::numeric_limits<UnsignedWord>::max();
 
     auto base = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
-    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 2);
-
-    auto maximumAllowedOffset = addressBoundary - base;
-
-    // Check if the program counter would underflow or overflow
-    if (-offset > base || offset > maximumAllowedOffset) {
+    auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 2) + base;
+    if (!riscv::isAddressValid(memoryAccess, base+offset)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Jump offset would invalidate program counter"));
