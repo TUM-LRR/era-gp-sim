@@ -21,6 +21,7 @@
 #define ERAGPSIM_UI_EDITOR_COMPONENT_HPP_
 
 #include <QObject>
+#include <QTextDocument>
 #include <memory>
 
 #include "core/command-interface.hpp"
@@ -58,18 +59,31 @@ class EditorComponent : public QObject {
   Q_INVOKABLE void init(QQuickTextDocument *qDocument);
 
   /**
-   * Sends the editor-text to the core to start parsing the program
-   *
-   * \param text the content of the editor
+   * Invokes the parser with the current text of the editor.
    *
    */
-  Q_INVOKABLE void sendText(QString text);
+  Q_INVOKABLE void parse();
 
   /**
-   * emits a qml signal to parse the text.
+   * Set the _textChanged flag to a value.
    *
+   * \param value
    */
-  void parse();
+  Q_INVOKABLE void setTextChanged(bool value);
+
+  /**
+   * Adds a breakpoint.
+   *
+   * \param line The line of the breakpoint.
+   */
+  Q_INVOKABLE void setBreakpoint(int line);
+
+  /**
+   * Deletes a breakpoint.
+   *
+   * \param line The line of the breakpoint.
+   */
+  Q_INVOKABLE void deleteBreakpoint(int line);
 
   /**
    * Set a new list of errors to display in the editor.
@@ -123,15 +137,20 @@ class EditorComponent : public QObject {
   /** The command interface of the core */
   CommandInterface _commandInterface;
 
+  /** A pointer to the QTextDocument used by the editor. */
+  QTextDocument *_textDocument;
+
+  /** A boolean to check wether the text was changed since it was last parsed.
+   * The text has changed if this flag is true.
+   */
+  bool _textChanged;
+
  signals:
   /** A signal to delete all the errors in the editor. */
   void deleteErrors();
 
   /** A signal to add an error in the editor. */
   void addError(QString message, int line, QColor color);
-
-  /** A signal to send the text to the parser. */
-  void parseText();
 
   /** Change the highlighted line which indicates the execution point. */
   void executionLineChanged(int line);

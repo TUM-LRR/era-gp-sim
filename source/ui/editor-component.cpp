@@ -95,39 +95,46 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
 }
 
 void EditorComponent::init(QQuickTextDocument *qDocument) {
-  if (this->_highlighter) {
-    assert::that(false);
-  }
+  assert::that(!_highlighter);
+  _textDocument = qDocument->textDocument();
   // set tab width to 4 spaces
-  QTextOption textOptions = qDocument->textDocument()->defaultTextOption();
-  QFontMetrics fontMetrics(qDocument->textDocument()->defaultFont());
+  QTextOption textOptions = _textDocument->defaultTextOption();
+  QFontMetrics fontMetrics(_textDocument->defaultFont());
   textOptions.setTabStop(4 * fontMetrics.width(' '));
-  qDocument->textDocument()->setDefaultTextOption(textOptions);
+  _textDocument->setDefaultTextOption(textOptions);
 
-  _highlighter = (std::make_unique<SyntaxHighlighter>(
-      std::move(_keywords), qDocument->textDocument()));
-}
-
-void EditorComponent::sendText(QString text) {
-  _commandInterface.parse(text.toStdString());
+  _highlighter = (std::make_unique<SyntaxHighlighter>(std::move(_keywords),
+                                                      _textDocument));
 }
 
 void EditorComponent::parse() {
-  emit parseText();
+  if (_textChanged) {
+    _commandInterface.parse(_textDocument->toPlainText().toStdString());
+    _textChanged = false;
+  }
+}
+
+void EditorComponent::setTextChanged(bool value) {
+  _textChanged = value;
+}
+
+void EditorComponent::setBreakpoint(int line) {
+  _commandInterface.setBreakpoint(line);
+}
+
+void EditorComponent::deleteBreakpoint(int line) {
+  _commandInterface.deleteBreakpoint(line);
 }
 
 void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
   emit deleteErrors();
   for (const CompileError &error : errorList) {
     QColor color;
-    if (error.severity() == CompileErrorSeverity::ERROR) {
-      color = QColor(Qt::red);
-    }
-    if (error.severity() == CompileErrorSeverity::WARNING) {
-      color = QColor(Qt::yellow);
-    }
-    if (error.severity() == CompileErrorSeverity::INFORMATION) {
-      color = QColor(Qt::blue);
+    switch (error.severity()) {
+      case CompileErrorSeverity::ERROR: color = QColor(Qt::red); break;
+      case CompileErrorSeverity::WARNING: color = QColor(Qt::yellow); break;
+      case CompileErrorSeverity::INFORMATION: color = QColor(Qt::blue); break;
+      default: assert::that(false);
     }
     emit addError(QString::fromStdString(error.message()),
                   error.position().first.line(),
