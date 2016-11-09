@@ -204,14 +204,7 @@ bool RegisterSet::existsRegister(const std::string &name) const {
 
 Json &RegisterSet::serializeJSON(Json &json) const {
   auto data = _serializeRaw();
-  std::map<std::string, std::string> dataMap;
-  for (const auto &i : data) {
-    dataMap[i.first] = i.second.toHexString(false, false);
-  }
-  json[_registerDataMapStringIdentifier] = dataMap;
-  // for (const auto &i : data) {
-  //   json[i.first] = i.second.toHexString(false, false);
-  // }
+  json[_registerDataMapStringIdentifier] = data;
   json[_registerNameListStringIdentifier] = _parentVector;
   return json;
 }
@@ -232,10 +225,11 @@ std::ostream &operator<<(std::ostream &stream, const RegisterSet &value) {
   stream << '}';
   return stream;
 }
-std::map<std::string, MemoryValue> RegisterSet::_serializeRaw() const {
-  std::map<std::string, MemoryValue> map{};
+std::map<std::string, std::string> RegisterSet::_serializeRaw() const {
+  std::map<std::string, std::string> map{};
   for (std::size_t i = 0; i < _register.size(); ++i) {
-    map.emplace(_registerStringIdentifier + _parentVector[i], _register[i]);
+    map.emplace(_registerStringIdentifier + _parentVector[i],
+                _register[i].toHexString(false, false));
   }
   return map;
 }

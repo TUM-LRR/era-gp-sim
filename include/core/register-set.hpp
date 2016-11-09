@@ -294,7 +294,7 @@ class RegisterSet {
   /**
    * \brief returns a raw serialized version of this
    */
-  std::map<std::string, MemoryValue> _serializeRaw() const;
+  std::map<std::string, std::string> _serializeRaw() const;
 
   /**
    * \brief This Method is called whenever something in the Memory changes and

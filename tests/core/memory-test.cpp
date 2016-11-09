@@ -82,9 +82,15 @@ TEST(memory, serialization) {
   Memory instance1{memorySize, 8};
   instance1.deserializeJSON(json0);
   ASSERT_EQ(instance0, instance1);
-  nlohmann::json json1{};
-  instance0.serializeJSON(json1, ';', 1);
+  nlohmann::json json1 = instance0.serializeJSON(nlohmann::json{}, ';', 1);
   Memory instance2{memorySize, 8};
   instance2.deserializeJSON(json1);
   ASSERT_EQ(instance0, instance2);
+  Memory instance3{memorySize, 8};
+  instance3.put(0, MemoryValue{std::vector<std::uint8_t>{1}, 8});
+  instance3.put(memorySize - 1, MemoryValue{std::vector<std::uint8_t>{1}, 8});
+  nlohmann::json json2 = instance3.serializeJSON(nlohmann::json{}, ';', 1);
+  Memory instance4{json2};
+  //instance4.deserializeJSON(json2);
+  ASSERT_EQ(instance3, instance4);
 }

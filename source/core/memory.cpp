@@ -29,7 +29,7 @@ const std::string Memory::_byteCountStringIdentifier = "memory_byteCount";
 const std::string Memory::_byteSizeStringIdentifier = "memory_byteSize";
 const std::string Memory::_lineLengthStringIdentifier = "memory_lineLength";
 const std::string Memory::_separatorStringIdentifier = "memory_separator";
-const std::string Memory::_lineStringIdentifier = "memory_line";
+const std::string Memory::_lineStringIdentifier = "memory_line_";
 const std::string Memory::_dataMapStringIdentifier = "memory_map";
 
 Memory::Memory() : Memory(64, 8) {
@@ -162,14 +162,10 @@ Json& Memory::serializeJSON(Json& json,
                             char separator,
                             std::size_t lineLength) const {
   auto data = _serializeRaw(separator, lineLength);
-  // json["meta"]=data.first;
   json[_dataMapStringIdentifier] = data.second;
   for (auto i : data.first) {
     json[i.first] = i.second;
   }
-  // for (auto i : data.second) {
-  //   json[i.first] = i.second;
-  // }
   json[_separatorStringIdentifier] = separator;
   return json;
 }
@@ -235,7 +231,6 @@ MemoryValue Memory::_deserializeLine(const std::string& line,
 }
 
 void Memory::deserializeJSON(const Json& json) {
-  // TODO::look into making this const to not unnecessarily copy stuff
   const auto byteCountIt = json.find(_byteCountStringIdentifier);
   const auto byteSizeIt = json.find(_byteSizeStringIdentifier);
   const auto lineLengthIt = json.find(_lineLengthStringIdentifier);
@@ -286,7 +281,6 @@ void Memory::deserializeJSON(const Json& json) {
     throw DeserializationError("Could not deserialize Memory: lineLength == 0");
   }
   const std::size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
-  // TODO::find separator
   const char separator = json[_separatorStringIdentifier].get<char>();
   auto data = *dataMapIt;
   // iterate over all lines

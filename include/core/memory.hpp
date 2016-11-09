@@ -137,7 +137,7 @@ class Memory {
    */
   Json &serializeJSON(Json &json,
                       char separator = _standardSeparator,
-                      std::size_t lineLength = 64) const;
+                      std::size_t lineLength = 1) const;
 
   /**
    * \brief converts the memory into serializeable strings
@@ -148,7 +148,7 @@ class Memory {
    */
   Json serializeJSON(Json &&json = Json(),
                      char separator = _standardSeparator,
-                     std::size_t lineLength = 64) const;
+                     std::size_t lineLength = 1) const;
 
   /**
    * \brief sets the memory to the data stored in json
