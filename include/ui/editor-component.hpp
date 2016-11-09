@@ -138,6 +138,10 @@ class EditorComponent : public QObject {
 
   /** display a runtime error in the ui. */
   void runtimeError(QString errorMessage);
+
+  /** Update macros in editor. */
+  void updateMacros(const QVariantList &macroList);
+
 };
 
 #endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP_ */
