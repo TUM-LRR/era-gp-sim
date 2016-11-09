@@ -267,13 +267,14 @@ void Memory::_wasUpdated(const std::size_t address, const std::size_t amount) {
 
 bool Memory::isProtected(std::size_t address, std::size_t amount) const {
   // search for any pair overlapping with the area
-  for (const auto& pair : _protection) {
-    if (pair.first <= address + amount && pair.second >= address) {
+  auto it = _protection.lower_bound(address);
+  if (it != _protection.begin()) {
+    --it;
+  }
+  for (; it != _protection.end() && it->first <= address + amount; it++) {
+    if (it->first <= address + amount && it->second >= address) {
       return true;
     }
-    // if (pair.first > address + amount) {
-    //  return false;
-    //}
   }
   return false;
 }
