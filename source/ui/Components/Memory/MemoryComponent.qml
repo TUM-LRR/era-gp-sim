@@ -22,31 +22,9 @@ import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
 Item {
-    property int memory_size: menuBar.memory_value
-    onMemory_sizeChanged: {
-        if (memory_size < 0) {
-            memory_size = 0
-        }
+    property int number_bytes: numericRepresentationChooser.items.get(numericRepresentationChooser.currentIndex).bits;
 
-        while (memoryModel.count < memory_size) {
-            memoryModel.append({
-                                    address: "0x" + pad(
-                                                 memoryModel.count.toString(
-                                                     16).toUpperCase(), 5),
-                                    info: "info"
-                                })
-        }
-        while (memoryModel.count > memory_size) {
-            memoryModel.remove(memoryModel.count - 1, 1)
-        }
-    }
 
-    function pad(n, width, z) {
-        z = z || '0'
-        n = n + ''
-        return n.length >= width ? n : new Array(width - n.length + 1).join(
-                                       z) + n
-    }
 
     TableView {
         id: tableView
@@ -60,7 +38,7 @@ Item {
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
 
         TableViewColumn {
-            role: "address"
+            role: "address" + number_bytes
             title: "Adresse"
             movable: false
             resizable: false
@@ -82,6 +60,7 @@ Item {
             width: parent.width - 200
         }
         model: memoryModel
+
     }
 
     Component {
@@ -116,6 +95,8 @@ Item {
             }
             onEditingFinished: {
                     memoryModel.setValue(styleData.row, textFieldMemoryValue.text);
+                testvalue=Math.random(100);
+                console.log(testvalue);
             }
 
             placeholderText: "0x00"
@@ -124,9 +105,27 @@ Item {
         }
     }
 
-    MemoryComponent_MenuBar{
-        id:menuBar
-        height: 35
+
+    Rectangle {
+        id: menuBar
+        height: 25
+        width: parent.width
+
+        ComboBox {
+            id: numericRepresentationChooser
+            height: 25
+
+            property alias items: model
+            //content
+            currentIndex: 0
+
+            model: ListModel {
+                    id: model
+                    ListElement { text: "8 Bit"; bits: 8 }
+                    ListElement { text: "16 Bit"; bits: 16 }
+                    ListElement { text: "32 Bit"; bits: 32 }
+                }
+        }
     }
 
 

@@ -68,10 +68,12 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   assert::that(index.isValid());
 
   switch (role) {
-    case AddressRole: {
+    case AddressRole8:
+    case AddressRole16:
+    case AddressRole32: {
       // format index as hex value and return it
       return QString("%1")
-          .arg(index.row(), 4, 16, QLatin1Char('0'))
+          .arg(index.row() * numberOfBytes(role), 4, 16, QLatin1Char('0'))
           .toUpper()
           .prepend("0x");
     }
@@ -94,8 +96,19 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
 QHash<int, QByteArray> MemoryComponentPresenter::roleNames() const {
   // connect TableColumns in View with columns in this model
   QHash<int, QByteArray> roles;
-  roles[AddressRole] = "address";
+  roles[AddressRole8] = "address8";
+  roles[AddressRole16] = "address16";
+  roles[AddressRole32] = "address32";
   roles[ValueRole] = "value";
   roles[InfoRole] = "info";
   return roles;
+}
+
+int MemoryComponentPresenter::numberOfBytes(int role) const {
+  switch (role) {
+    case AddressRole8: return 1;
+    case AddressRole16: return 2;
+    case AddressRole32: return 4;
+    default: return 0;
+  }
 }

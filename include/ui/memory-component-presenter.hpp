@@ -98,6 +98,15 @@ class MemoryComponentPresenter : public QAbstractListModel {
    */
   QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
 
+  /**
+   * returns the number of bytes to be displayed in one memory cell.
+   * the role is an indicator of how many bytes are chosen by the user.
+   *
+   * /param role the display role for this cell in the QAbstractListModel
+   * /return the number of bytes to be shown in one cell
+   */
+  int numberOfBytes(int role) const;
+
   /** holds a MemoryAccess for accessing the memory */
   MemoryAccess _memoryAccess;
 
@@ -112,7 +121,9 @@ class MemoryComponentPresenter : public QAbstractListModel {
 
   /** enumeration of all roles of the columns */
   enum ColumnRoles {
-    AddressRole = Qt::UserRole,// avoid collisions with predefined roles
+    AddressRole8 = Qt::UserRole,// avoid collisions with predefined roles
+    AddressRole16,
+    AddressRole32,
     ValueRole,
     InfoRole
   };
