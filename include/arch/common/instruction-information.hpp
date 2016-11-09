@@ -42,6 +42,7 @@
 class InstructionInformation : public InformationInterface {
  public:
   using length_t = std::size_t;
+    using OperandLengthList = std::vector<unsigned int>;
 
   /**
   * Deserializes and constructs the `InstructionInformation` from the given
@@ -174,6 +175,24 @@ class InstructionInformation : public InformationInterface {
   /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
+  /**
+   * Sets an optional information on the operand length of this instruction
+   * \param operandLengths The operand length(s) to put
+   * \return The current instruction object
+   */
+  InstructionInformation& operandLengths(const OperandLengthList& operandLengths);
+
+  /**
+   *
+   * \return True if this instruction has information about the operand length(s) set, otherwise false
+   */
+  bool hasOperandLengths() const;
+
+  /**
+   * \return The information about operand length(s), if any.
+   */
+  const OperandLengthList& getOperandLengths() const;
+
  private:
   /**
   * Deserializes and constructs the `InstructionInformation` from the given
@@ -194,6 +213,9 @@ class InstructionInformation : public InformationInterface {
 
   /** The length of the instruction, in bits. */
   Optional<length_t> _length;
+
+  /** The operand lengths, if any */
+  Optional<OperandLengthList> _operandLengths;
 };
 
 #endif /* ERAGPSIM_ARCH_INSTRUCTION_INFORMATION_HPP */

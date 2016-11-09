@@ -80,6 +80,7 @@ void Memory::put(const std::size_t address, const MemoryValue& value) {
   assert::that(value.getSize() % _byteSize == 0);
   const std::size_t amount{value.getSize() / _byteSize};
   assert::that(amount >= 0);
+  // I could possibly implement an optional assertion check
   if (address + amount <= _byteCount) {
     _data.write(value, address * _byteSize);
   } else {

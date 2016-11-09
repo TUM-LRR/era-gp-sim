@@ -27,25 +27,24 @@
 #include "parser/parser-mode.hpp"
 
 ParsingAndExecutionUnit::ParsingAndExecutionUnit(
-    std::weak_ptr<Scheduler> &&scheduler,
-    MemoryAccess memoryAccess,
-    Architecture architecture,
-    SharedCondition stopCondition,
+    std::weak_ptr<Scheduler> &&scheduler, MemoryAccess memoryAccess,
+    Architecture architecture, SharedCondition stopCondition,
     std::string parserName)
-: Servant(std::move(scheduler))
-, _parser(ParserFactory::createParser(architecture, memoryAccess, parserName))
-, _stopCondition(stopCondition)
-, _finalRepresentation()
-, _addressCommandMap()
-, _lineCommandCache()
-, _memoryAccess(memoryAccess)
-, _breakpoints()
-, _syntaxInformation(_parser->getSyntaxInformation())
-, _setContextInformation([](const std::vector<ContextInformation> &x) {})
-, _setErrorList([](const std::vector<CompileError> &x) {})
-, _throwRuntimeError(([](const ValidationResult &x) {}))
-, _setMacroList(([](const std::vector<MacroInformation> &x) {}))
-, _setCurrentLine([](size_t x) {}) {
+    : Servant(std::move(scheduler)),
+      _parser(
+          ParserFactory::createParser(architecture, memoryAccess, parserName)),
+      _stopCondition(stopCondition),
+      _finalRepresentation(),
+      _addressCommandMap(),
+      _lineCommandCache(),
+      _memoryAccess(memoryAccess),
+      _breakpoints(),
+      _syntaxInformation(_parser->getSyntaxInformation()),
+      _setContextInformation([](const std::vector<ContextInformation> &x) {}),
+      _setErrorList([](const std::vector<CompileError> &x) {}),
+      _throwRuntimeError(([](const ValidationResult &x) {})),
+      _setMacroList(([](const std::vector<MacroInformation> &x) {})),
+      _setCurrentLine([](size_t x) {}) {
   // find the RegisterInformation object of the program counter
   for (UnitInformation unitInfo : architecture.getUnits()) {
     if (unitInfo.hasSpecialRegister(
@@ -107,6 +106,7 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
 void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
   MemoryValue address;
   bool foundMatchingLine = false;
+  int displayLine = line;
   // try to find the line in the cache
   auto iterator = _lineCommandCache.find(line);
   if (iterator != _lineCommandCache.end()) {
@@ -114,11 +114,12 @@ void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
     foundMatchingLine = true;
   } else {
     for (const auto &command : _finalRepresentation.commandList) {
-      if (command.position.lineStart == line) {
+      if (command.position.lineStart >= line) {
         // this command is on the given line, save the address in the cache.
+        displayLine = command.position.lineStart;
         auto size = _programCounter.getSize();
         address = conversions::convert(command.address, size);
-        _lineCommandCache.emplace(line, address);
+        _lineCommandCache.emplace(displayLine, address);
         foundMatchingLine = true;
         break;
       }
@@ -131,16 +132,16 @@ void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
   // a command on this line was found, set the program counter and the line in
   // the ui.
   _memoryAccess.putRegisterValue(_programCounter.getName(), address);
-  _setCurrentLine(line);
+  _setCurrentLine(displayLine);
 }
 
 void ParsingAndExecutionUnit::parse(std::string code) {
   // delete old assembled program in memory
-  /*for (const auto &command : _finalRepresentation.commandList) {
+  for (const auto &command : _finalRepresentation.commandList) {
     // create a empty MemoryValue as long as the command
     MemoryValue zero(command.node->assemble().getSize());
     _memoryAccess.putMemoryValueAt(command.address, zero);
-}*/
+  }
   // parse the new code and save the final representation
   _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
   _addressCommandMap = _finalRepresentation.createMapping();
@@ -148,9 +149,11 @@ void ParsingAndExecutionUnit::parse(std::string code) {
   // update the error list of the ui
   _setErrorList(_finalRepresentation.errorList);
   // assemble commands into memory
-  /*for (const auto &command : _finalRepresentation.commandList) {
-    _memoryAccess.putMemoryValueAt(command.address, command.node->assemble());
-}*/
+  if(!_finalRepresentation.hasErrors()) {
+      for (const auto &command : _finalRepresentation.commandList) {
+        _memoryAccess.putMemoryValueAt(command.address, command.node->assemble());
+      }
+  }
 }
 
 bool ParsingAndExecutionUnit::setBreakpoint(size_t line) {
@@ -161,8 +164,8 @@ void ParsingAndExecutionUnit::deleteBreakpoint(size_t line) {
   _breakpoints.erase(line);
 }
 
-SyntaxInformation::TokenIterable
-ParsingAndExecutionUnit::getSyntaxRegex(SyntaxInformation::Token token) const {
+SyntaxInformation::TokenIterable ParsingAndExecutionUnit::getSyntaxRegex(
+    SyntaxInformation::Token token) const {
   return _syntaxInformation.getSyntaxRegex(token);
 }
 

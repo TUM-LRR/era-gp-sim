@@ -1,5 +1,4 @@
-/*
- * C++ Assembler Interpreter
+/* C++ Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -14,23 +13,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+#include "arch/riscv/data-node-factory.hpp"
+#include "arch/common/binarydata-node.hpp"
 
-#ifndef TOOLBARMODEL_H
-#define TOOLBARMODEL_H
+using namespace riscv;
 
-#include <QObject>
-
-class ToolbarModel: public QObject{
-    Q_OBJECT
-public:
-    ToolbarModel();
-    Q_INVOKABLE void run();
-    Q_INVOKABLE void runLine();
-    Q_INVOKABLE void runBreakpoint();
-    Q_INVOKABLE void stop();
-    Q_INVOKABLE void changeSystem(QByteArray s);
-};
-
-#endif // TOOLBARMODEL_H
+DataNodeFactory::Node DataNodeFactory::createDataNode(const std::string &data) const {
+    return std::make_unique<BinaryDataNode>(data);
+}
