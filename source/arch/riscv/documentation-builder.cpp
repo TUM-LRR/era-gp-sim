@@ -21,14 +21,14 @@
 using Key = DocumentationBuilder::Key;
 
 const std::vector<std::string> DocumentationBuilder::_colors = {
-    "#ff0000", "#00ff00", "#0000ff"};
+    "#3366c4", "#66c433", "#c46633"};
 
-DocumentationBuilder::DocumentationBuilder() {}
+DocumentationBuilder::DocumentationBuilder() : _operandCount(0) {}
 
 std::string DocumentationBuilder::build() {
   assert::that(_hasKey(Key::INSTRUCTION));
   assert::that(_hasKey(Key::S_SYNTAX));
-  std::string result = "<html><b>";
+  std::string result = "<b>";
   result += _components[Key::INSTRUCTION];
   result += "</b>: <code>";
   result += _components[Key::S_SYNTAX];
@@ -37,7 +37,7 @@ std::string DocumentationBuilder::build() {
                "</p>");
   _optionalPut(result, Key::S_DESC);
   _optionalPut(result, Key::D_DESC, "<br>");
-  result += "</html>";
+  //result += "</html>";
   return result;
 }
 
@@ -61,9 +61,9 @@ DocumentationBuilder &DocumentationBuilder::operandDescription(
 
   existingOperandList += "<br><code><span style=\"color:";
   existingOperandList += _nextColor();
-  existingOperandList += "\">";
+  existingOperandList += "\"><b>";
   existingOperandList += name;
-  existingOperandList += "</span></code>: ";
+  existingOperandList += "</b></span></code>: ";
   existingOperandList += description;
   ++_operandCount;
   return *this;
@@ -82,9 +82,9 @@ DocumentationBuilder &DocumentationBuilder::shortSyntax(
   for (const std::string &ops : operands) {
     result += "<span style=\"color:";
     result += _colors[i % _colors.size()];
-    result += "\">";
+    result += "\"><b>";
     result += ops;
-    result += "</span>, ";
+    result += "</b></span>, ";
     ++i;
   }
   // remove last ", " and put into map

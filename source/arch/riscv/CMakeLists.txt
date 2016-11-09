@@ -11,6 +11,7 @@ set(ARCH_RISCV_SOURCES
   factory-map.cpp
   data-node-factory.cpp
   documentation-builder.cpp
+  instruction-context-information.cpp
 )
 
 ########################################
