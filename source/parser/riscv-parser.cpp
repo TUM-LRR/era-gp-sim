@@ -47,6 +47,12 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
     outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
   } else if (std::isalpha(operand[0])) {
     outputNode = nodeFactories.createRegisterNode(operand);
+  } else if (operand[0] == '\"') {
+    // Data nodes are mainly for meta instructions.
+    std::vector<char> outString;
+    StringParser::parseString(operand, outString, state);
+    std::string asString(outString.begin(), outString.end());
+    outputNode = nodeFactories.createDataNode(asString);
   } else {
     // using i32
     int32_t result =
