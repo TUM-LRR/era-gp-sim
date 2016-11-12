@@ -8,8 +8,12 @@ Item {
         id: greenBackground
         width: 360
         height: 360
-        color: "green"
+        // color: "green"
         anchors.fill: parent
+    }
+    Image {
+        id: pixelDisplayImage
+        source: "image://pixeldisplayprovider/red"
     }
 
     // Called from outside by the output tab view to signal that the settings // button for the current output item was pressed.

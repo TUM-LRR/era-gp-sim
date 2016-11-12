@@ -22,6 +22,7 @@
 #include "arch/common/architecture-formula.hpp"
 #include "common/assert.hpp"
 #include "common/utility.hpp"
+#include "ui/PixelDisplayProvider.hpp"
 
 
 Ui::Ui(int& argc, char** argv)
@@ -34,6 +35,8 @@ int Ui::runUi() {
   _engine.rootContext()->setContextProperty("ui", this);
 
   _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+  _engine.addImageProvider(QLatin1String("pixeldisplayprovider"),
+                           new PixelDisplayProvider());
 
   return _qmlApplication.exec();
 }
