@@ -47,6 +47,14 @@ class InstructionContextInformation {
                                const std::string& description,
                                const std::string& specialImmediateOperandDesc = "A 12 bit signed immediate");
 
+  void _arithmeticInstructionW(const std::string& mnemonic, const std::string& operationSign,
+                               const std::string& description,
+                               const std::string& specialImmediateOperandDesc = "A 12 bit signed immediate");
+
+  void _arithmeticInstructionIW(const std::string& mnemonic, const std::string& operationSign,
+                               const std::string& description,
+                               const std::string& specialImmediateOperandDesc = "A 12 bit signed immediate");
+
   void _loadInstruction(const std::string& mnemonic, const std::string& sizeDesc, int size);
 
   void _storeInstruction(const std::string& mnemonic, const std::string& sizeDesc, int size);

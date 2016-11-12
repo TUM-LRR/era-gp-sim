@@ -16,6 +16,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
 #include "arch/riscv/instruction-context-information.hpp"
+#include <iostream>
 #include "arch/riscv/documentation-builder.hpp"
 
 InstructionContextInformation::InstructionContextInformation(
@@ -48,7 +49,7 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
                           "Calculates the sum of &1 and &2 and stores the "
                           "result in the destination register");
   _arithmeticInstruction("sub", "-",
-                         "Subtracts &2 from &s and stores the result in the "
+                         "Subtracts &2 from &1 and stores the result in the "
                          "destionation register");
   _arithmeticInstructionI("and", "AND",
                           "Caclulates a bytewise AND of &1 and &2 and stores "
@@ -218,7 +219,8 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
   _branchInstruction("blt", "less than", "<", " (signed compare)");
   _branchInstruction("bltu", "less than", " (unsigned compare)");
   _branchInstruction("bge", "greater or equal to", ">=", " (signed compare)");
-  _branchInstruction("bgeu", "greater or equal to", ">=", " (unsigned compare)");
+  _branchInstruction("bgeu", "greater or equal to", ">=",
+                     " (unsigned compare)");
 
   // sleep & crash
   _add("simusleep",
@@ -237,6 +239,56 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
                "msg", "Message to be shown when this instruction is executed")
            .detailDescription("Terminates the running program showing msg")
            .build());
+
+  // RV64I
+  if (_is64BitArchitecture) {
+    _arithmeticInstructionIW(
+        "add", "+",
+        "Calculates the sum of the lower 32bit of &1 and the lower 32bit of &2 "
+        "and stores the "
+        "sign extended 64bit result in the destination register");
+    _arithmeticInstructionW("sub", "-",
+                           "Subtracts the lower 32bit of &2 from the lower "
+                           "32bit of &1 and stores the sign extended 64bit "
+                           "result in the "
+                           "destionation register");
+    _arithmeticInstructionIW(
+        "and", "AND",
+        "Caclulates a bytewise AND of the lower 32bit of &1 and the lower "
+        "32bit of &2 and stores "
+        "the sign extended 64 result in the destination register");
+    _arithmeticInstructionIW(
+        "or", "OR",
+        "Calculates a bytewise OR of the lower 32bit of &1 and the lower 32bit "
+        "of &2 and stores "
+        "the sign extended 64bit result in the destination register");
+    _arithmeticInstructionIW(
+        "xor", "XOR",
+        "Calculates a bytewise XOR of the lower 32bit of &1 and the lower "
+        "32bit of &2 and stores "
+        "the sign extended 64bit result in the destination register");
+    _arithmeticInstructionIW(
+        "sll", "<<",
+        "(Logical) shifts the content of the lower 32bit of &1 by &2 bits to "
+        "the left, inserting 0s in bit 0.<br>Note that only "
+        "the lower 5bit of &2 determine the shift amount. The result is sign "
+        "extended to 64bit",
+        "A 5bit unsigned immediate");
+    _arithmeticInstructionIW(
+        "srl", ">>",
+        "(Logical) shifts the content of the lower 32bit of &1 by &2 bits to "
+        "the right, inserting 0s in the last bit.<br>Note "
+        "that only the lower 5bit of &2 determine the shift "
+        "amount. The result is sign extended to 64bit",
+        "A 5bit unsigned immediate");
+    _arithmeticInstructionIW(
+        "sra", "<<",
+        "(Arithmetical) shifts the content of the lower 32bit of &1 by &2 bits "
+        "to the right, inserting the sign bit.<br>Note that "
+        "only the lower 5bit of &2 determine the shift "
+        "amount. The result is sign extended to 64bit",
+        "A 5bit unsigned immediate");
+  }
 
   // M-Extension
   if (architecture.getInstructions().hasInstruction("mul")) {
@@ -286,6 +338,24 @@ void InstructionContextInformation::_arithmeticInstructionI(
                          specialImmediateOperandDesc);
   _arithmeticInstruction(mnemonic + 'i', operationSign, description,
                          specialImmediateOperandDesc);
+}
+
+void InstructionContextInformation::_arithmeticInstructionW(
+    const std::string &mnemonic, const std::string &operationSign,
+    const std::string &description,
+    const std::string &specialImmediateOperandDesc) {
+  _arithmeticInstruction(mnemonic + 'w', operationSign, description,
+                         specialImmediateOperandDesc);
+}
+
+void InstructionContextInformation::_arithmeticInstructionIW(
+    const std::string &mnemonic, const std::string &operationSign,
+    const std::string &description,
+    const std::string &specialImmediateOperandDesc) {
+  _arithmeticInstruction(mnemonic + 'w', operationSign, description,
+                          specialImmediateOperandDesc);
+  _arithmeticInstruction(mnemonic + "iw", operationSign, description,
+                          specialImmediateOperandDesc);
 }
 
 void InstructionContextInformation::_arithmeticInstruction(
