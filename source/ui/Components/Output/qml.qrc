@@ -4,6 +4,7 @@
         <file>RedRectangle.qml</file>
         <file>GreenRectangle.qml</file>
         <file>BlueRectangle.qml</file>
+        <file>PixelDisplay.qml</file>
         <file>Output.qml</file>
     </qresource>
 </RCC>

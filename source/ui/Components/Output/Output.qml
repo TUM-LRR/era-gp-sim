@@ -56,6 +56,9 @@ Rectangle {
                 } else if (currentOutputItem["type"] == "TextConsole") {
                     tabComponent = Qt.createComponent("RedRectangle.qml");
                     tabTitle = "Buttons/Text Console Icon";
+                } else if (currentOutputItem["type"] == "PixelDisplay") {
+                    tabComponent = Qt.createComponent("PixelDisplay.qml");
+                    tabTitle = "Buttons/Lightstrip Icon";
                 }
                 var tab = outputTabView.addTab(tabTitle, tabComponent);
                 tab.active = true;

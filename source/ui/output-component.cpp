@@ -33,7 +33,8 @@ OutputComponent::OutputComponent(MemoryManager &memoryManager,
     _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "LightStrip"}, {"baseAddress", QVariant(0)}, {"numberOfStrips", QVariant(8)}}));
     _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "SevenSegment"}, {"baseAddress", QVariant(0)}, {"numberOfDigits", QVariant(2)}}));
     _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "TextConsole"}, {"baseAddress", QVariant(0)}, {"textMode", QVariant(0)}}));
-}
+    _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "PixelDisplay"}, {"baseAddress", QVariant(0)}}));
+  }
 
 
 QVariantList OutputComponent::getOutputItems() const {
@@ -48,6 +49,8 @@ void OutputComponent::addOutputItem(QString outputItemType) {
         _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "SevenSegment"}, {"baseAddress", QVariant(0)}, {"numberOfDigits", QVariant(2)}}));
     } else if (outputItemType == "TextConsole") {
         _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "TextConsole"}, {"baseAddress", QVariant(0)}, {"textMode", QVariant(0)}}));
+    } else if (outputItemType == "PixelDisplay") {
+      _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "PixelDisplay"}, {"baseAddress", QVariant(0)}}));
     }
 }
 
@@ -63,7 +66,7 @@ void OutputComponent::updateMemory(std::size_t address, std::size_t length) {
     emit memoryChanged(QVariant::fromValue(address), QVariant::fromValue(length));
 }
 
-void OutputComponent::putMemoryValue(int address, QVector<bool> memoryContentBitVector) {
+void OutputComponent::putMemoryValue(int address, QList<bool> memoryContentBitVector) {
     size_t memoryValueSize = memoryContentBitVector.size() + (8 - (memoryContentBitVector.size()%8))%8;
     MemoryValue memoryContent(memoryValueSize);
     for (size_t index = 0; index < memoryContentBitVector.size(); ++index) {
@@ -72,9 +75,9 @@ void OutputComponent::putMemoryValue(int address, QVector<bool> memoryContentBit
     _memoryAccess.putMemoryValueAt(address, memoryContent);
 }
 
-QVector<bool> OutputComponent::getMemoryContent(int address, int length) const {
+QList<bool> OutputComponent::getMemoryContent(int address, int length) const {
     MemoryValue content = _memoryAccess.getMemoryValueAt(address, length).get();
-    QVector<bool> contentVector;
+    QList<bool> contentVector;
     for (auto it = content.cbegin(); it != content.cend(); ++it) {
         contentVector.append(*it);
     }

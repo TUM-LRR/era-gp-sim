@@ -41,9 +41,9 @@ class OutputComponent : public QObject {
                            QQmlContext *projectContext,
                            QObject *parent = 0);
 
-  Q_INVOKABLE void putMemoryValue(int address, QVector<bool> memoryContentBitVector);
+  Q_INVOKABLE void putMemoryValue(int address, QList<bool> memoryContentBitVector);
 
-  Q_INVOKABLE QVector<bool> getMemoryContent(int address, int length) const;
+  Q_INVOKABLE QList<bool> getMemoryContent(int address, int length) const;
 
   Q_INVOKABLE QVariantList getOutputItems() const;
   Q_INVOKABLE void setOutputItemProperty(int outputItemIndex, QString property, QVariant newValue);
