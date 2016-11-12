@@ -16,6 +16,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <algorithm>
 #include <set>
 #include <sstream>
 #include <unordered_map>
@@ -79,7 +80,7 @@ void Memory::put(const std::size_t address,
   assert::that(value.getSize() % _byteSize == 0);
   const std::size_t amount{value.getSize() / _byteSize};
   assert::that(amount >= 0);
-  if (!ignoreProtection && isProtected(address, value.getSize())) {
+  if (!ignoreProtection && isProtected(address, amount)) {
     // do not write anything
     return;
   }
@@ -268,26 +269,35 @@ void Memory::_wasUpdated(const std::size_t address, const std::size_t amount) {
 bool Memory::isProtected(std::size_t address, std::size_t amount) const {
   // search for any pair overlapping with the area
   auto it = _protection.lower_bound(address);
-  if (it != _protection.begin()) {
-    --it;
-  }
+  if (it != _protection.begin()) --it;
   for (; it != _protection.end() && it->first <= address + amount; it++) {
-    if (it->first <= address + amount && it->second >= address) {
+    // std::cout << it->first << "<=" << (address + amount) << std::endl;
+    // std::cout << it->second << ">=" << (address) << std::endl;
+    if (_overlaps(it->first, it->second, address, amount, false)) {
       return true;
     }
   }
   return false;
 }
 
+bool Memory::_overlaps(std::size_t protectionBegin,
+                       std::size_t protectionEnd,
+                       std::size_t address,
+                       std::size_t amount,
+                       bool equal) const {
+  return protectionBegin < address + amount &&
+         (equal ? (protectionEnd >= address) : (protectionEnd > address));
+}
+
 void Memory::makeProtected(std::size_t address, std::size_t amount) {
-  if (!isProtected(address, amount)) {
+  if (!isProtected(std::min(address - 1, address), amount + 1)) {
     // naively insert into map
     _protection.insert(std::make_pair(address, address + amount));
   } else {
     // find all conflicting pairs
     std::vector<std::pair<std::size_t, std::size_t>> conflictList{};
     for (const auto& pair : _protection) {
-      if (pair.first <= address + amount && pair.second >= address) {
+      if (_overlaps(pair.first, pair.second, address, amount, true)) {
         conflictList.push_back(pair);
       }
     }
@@ -296,7 +306,7 @@ void Memory::makeProtected(std::size_t address, std::size_t amount) {
     std::size_t max = address + amount;
     for (const auto& pair : conflictList) {
       min = (pair.first < min) ? pair.first : min;
-      max = (pair.second < max) ? pair.second : max;
+      max = (pair.second > max) ? pair.second : max;
       _protection.erase(pair.first);
     }
     _protection.insert(std::make_pair(min, max));
@@ -305,12 +315,12 @@ void Memory::makeProtected(std::size_t address, std::size_t amount) {
 
 void Memory::removeProtection(std::size_t address, std::size_t amount) {
   // maybe I should use a Linked List instead
-  if (!isProtected(address, amount)) {
+  if (!isProtected(std::min(address - 1, address), amount + 1)) {
   } else {
     // find all conflicting pairs
     std::vector<std::pair<std::size_t, std::size_t>> conflictList{};
     for (const auto& pair : _protection) {
-      if (pair.first <= address + amount && pair.second >= address) {
+      if (_overlaps(pair.first, pair.second, address, amount, true)) {
         conflictList.push_back(pair);
       }
     }
@@ -319,7 +329,7 @@ void Memory::removeProtection(std::size_t address, std::size_t amount) {
     std::size_t max = address + amount;
     for (const auto& pair : conflictList) {
       min = (pair.first < min) ? pair.first : min;
-      max = (pair.second < max) ? pair.second : max;
+      max = (pair.second > max) ? pair.second : max;
       _protection.erase(pair.first);
     }
     if (min < address) {

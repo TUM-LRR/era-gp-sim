@@ -267,6 +267,16 @@ class Memory {
             std::map<std::string, std::string>>
   _serializeRaw(char separator = _standardSeparator,
                 std::size_t lineLength = 64) const;
+
+  /**
+   * \brief returns true if the protection area [protectionBegin, protectionEnd]
+   *        overlaps with the area [address, address + amount]
+   */
+  bool _overlaps(std::size_t protectionBegin,
+                  std::size_t protectionEnd,
+                  std::size_t address,
+                  std::size_t amount,
+                  bool equal) const;
 };
 
 #endif// ERAGPSIM_CORE_MEMORY_HPP_

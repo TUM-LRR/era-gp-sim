@@ -67,7 +67,7 @@ TEST(memory, readWrite) {
 }
 
 TEST(memory, serialization) {
-  constexpr std::size_t memorySize = 1024*64;
+  constexpr std::size_t memorySize = 1024 * 64;
   Memory instance0{memorySize, 8};
   std::uniform_int_distribution<std::uint16_t> dist{0, 255};
   std::mt19937 rand(0);// I need new numbers, I'm kinda really out of ideas
@@ -85,4 +85,54 @@ TEST(memory, serialization) {
   instance0.serializeJSON(json1, ';', 1);
   Memory instance2{json1};
   ASSERT_EQ(instance0, instance2);
+}
+
+TEST(memory, protection) {
+  const MemoryValue FF{std::vector<std::uint8_t>{0xFF}, 8};
+  const MemoryValue OO{std::vector<std::uint8_t>{0x00}, 8};
+  const MemoryValue FFFF{std::vector<std::uint8_t>{0xFF, 0xFF}, 16};
+  const MemoryValue OOOO{std::vector<std::uint8_t>{0x00, 0x00}, 16};
+  const std::vector<std::size_t> protectedSet{2, 3, 6, 7, 10, 11};
+  const std::vector<std::size_t> unprotectedSet{0, 1, 4, 5, 8, 9, 12, 13};
+  // create memory with protection
+  Memory memory(14, 8);// OOXXOOXXOO
+  memory.makeProtected(2);
+  memory.makeProtected(3);
+  memory.makeProtected(7);
+  memory.makeProtected(6);
+  memory.makeProtected(10, 2);
+  // Function to test
+  std::function<bool(bool)> testFunc = [&](bool b) {
+    for (auto i : protectedSet) {
+      if (memory.get(i) != OO) return false;
+    }
+    for (auto i : unprotectedSet) {
+      if (memory.get(i) != (b ? FF : OO)) return false;
+    }
+    return true;
+  };
+  // write into all cells
+  for (std::size_t i = 0; i < 14; ++i) {
+    memory.put(i, FF, false);
+  }
+  ASSERT_TRUE(testFunc(true));
+  for (std::size_t i = 0; i < 14; ++i) {
+    memory.put(i, OO, true);
+  }
+  for (std::size_t i = 1; i < 13; i += 2) {
+    memory.put(i, FFFF, false);
+  }
+  ASSERT_TRUE(testFunc(false));
+  for (std::size_t i = 0; i < 14; i += 2) {
+    memory.put(i, FFFF, false);
+  }
+  // remove protection again
+  ASSERT_TRUE(testFunc(true));
+  for (auto i : protectedSet) {
+    memory.removeProtection(i);
+  }
+  for (std::size_t i = 0; i < 14; ++i) {
+    memory.put(i, FF, false);
+    ASSERT_EQ(memory.get(i), FF);
+  }
 }
