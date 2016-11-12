@@ -37,7 +37,7 @@ Item {
         selectionMode: SelectionMode.NoSelection
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
 
-        headerDelegate: headerDelegate
+        headerVisible: false
 
         TableViewColumn {
             role: "address" + number_bytes
@@ -64,46 +64,7 @@ Item {
         model: memoryModel
     }
 
-    Component {
-        id: headerDelegate
 
-        ComboBox {
-            id: bitChooser
-            height: 25
-
-            // add model according to column
-            model: (styleData.value === "Adresse")? modelBits : modelNumeric;
-
-            ListModel {
-                id: modelBits
-                ListElement { text: "8 Bit"; bits: 8 }
-                ListElement { text: "16 Bit"; bits: 16 }
-                ListElement { text: "32 Bit"; bits: 32 }
-            }
-            ListModel {
-                id: modelNumeric
-                ListElement { text: "Binary"; bits: 8 }
-                ListElement { text: "Octal"; bits: 16 }
-                ListElement { text: "Hexadecimal"; bits: 32 }
-                ListElement { text: "Decimal"; bits: 32 }
-                ListElement { text: "Decimal (signed)"; bits: 32 }
-            }
-            Connections {
-                target: styleData
-                onPressedChanged: {
-                    if(styleData.pressed)
-                        bitChooser.__popup.toggleShow();
-                }
-            }
-            onCurrentIndexChanged: {
-                if(model === modelBits)
-                    number_bytes = model.get(bitChooser.currentIndex).bits;
-                else
-                    tableView.getColumn(styleData.column).role = "value" + model.get(bitChooser.currentIndex).bits;
-
-            }
-        }
-    }
 
     Component {
         id: editableContent
