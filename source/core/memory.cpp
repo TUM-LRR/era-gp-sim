@@ -271,8 +271,6 @@ bool Memory::isProtected(std::size_t address, std::size_t amount) const {
   auto it = _protection.lower_bound(address);
   if (it != _protection.begin()) --it;
   for (; it != _protection.end() && it->first <= address + amount; it++) {
-    // std::cout << it->first << "<=" << (address + amount) << std::endl;
-    // std::cout << it->second << ">=" << (address) << std::endl;
     if (_overlaps(it->first, it->second, address, amount, false)) {
       return true;
     }
