@@ -22,9 +22,9 @@ import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
 Item {
-    property int number_bytes: numericRepresentationChooser.items.get(numericRepresentationChooser.currentIndex).bits;
-
-
+    //property int number_bytes: numericRepresentationChooser.items.get(numericRepresentationChooser.currentIndex).bits;
+    property int number_bytes: 8
+    property alias tableView: tableView
 
     TableView {
         id: tableView
@@ -36,6 +36,8 @@ Item {
         anchors.right: parent.right
         selectionMode: SelectionMode.NoSelection
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
+
+        headerDelegate: headerDelegate
 
         TableViewColumn {
             role: "address" + number_bytes
@@ -60,7 +62,47 @@ Item {
             width: parent.width - 200
         }
         model: memoryModel
+    }
 
+    Component {
+        id: headerDelegate
+
+        ComboBox {
+            id: bitChooser
+            height: 25
+
+            // add model according to column
+            model: (styleData.value === "Adresse")? modelBits : modelNumeric;
+
+            ListModel {
+                id: modelBits
+                ListElement { text: "8 Bit"; bits: 8 }
+                ListElement { text: "16 Bit"; bits: 16 }
+                ListElement { text: "32 Bit"; bits: 32 }
+            }
+            ListModel {
+                id: modelNumeric
+                ListElement { text: "Binary"; bits: 8 }
+                ListElement { text: "Octal"; bits: 16 }
+                ListElement { text: "Hexadecimal"; bits: 32 }
+                ListElement { text: "Decimal"; bits: 32 }
+                ListElement { text: "Decimal (signed)"; bits: 32 }
+            }
+            Connections {
+                target: styleData
+                onPressedChanged: {
+                    if(styleData.pressed)
+                        bitChooser.__popup.toggleShow();
+                }
+            }
+            onCurrentIndexChanged: {
+                if(model === modelBits)
+                    number_bytes = model.get(bitChooser.currentIndex).bits;
+                else
+                    tableView.getColumn(styleData.column).role = "value" + model.get(bitChooser.currentIndex).bits;
+
+            }
+        }
     }
 
     Component {
@@ -106,27 +148,54 @@ Item {
     }
 
 
-    Rectangle {
+
+    ListView {
         id: menuBar
         height: 25
         width: parent.width
+       Connections {
+            target: tableView
+            onColumnCountChanged: {
+                while(headerDropdownList.count < tableView.columnCount)
+                    headerDropdownList.append(ListElement);
+                while(headerDropdownList.count > tableView.columnCount)
+                    headerDropdownList.remove(headerDropdownList.count - 1);
+                console.log("columncount changed "+headerDropdownList.count);
+            }
+        }
+        orientation: Qt.Horizontal
 
-        ComboBox {
-            id: numericRepresentationChooser
+        model: ListModel {
+            id: headerDropdownList
+        }
+        delegate: ComboBox {
+            id: bitChooser
             height: 25
+            width: tableView.getColumn(index).width
 
-            property alias items: model
-            //content
-            currentIndex: 0
+            model: (tableView.getColumn(index).role === "address" + number_bytes)? modelBits : modelNumeric;
 
-            model: ListModel {
-                    id: model
-                    ListElement { text: "8 Bit"; bits: 8 }
-                    ListElement { text: "16 Bit"; bits: 16 }
-                    ListElement { text: "32 Bit"; bits: 32 }
-                }
+            ListModel {
+                id: modelBits
+                ListElement { text: "8 Bit"; bits: 8 }
+                ListElement { text: "16 Bit"; bits: 16 }
+                ListElement { text: "32 Bit"; bits: 32 }
+            }
+            ListModel {
+                id: modelNumeric
+                ListElement { text: "Binary"; bits: 8 }
+                ListElement { text: "Octal"; bits: 16 }
+                ListElement { text: "Hexadecimal"; bits: 32 }
+                ListElement { text: "Decimal"; bits: 32 }
+                ListElement { text: "Decimal (signed)"; bits: 32 }
+            }
+
+            onCurrentIndexChanged: {
+                if(model === modelBits)
+                    number_bytes = model.get(bitChooser.currentIndex).bits;
+                else
+                    tableView.getColumn(index).role = "value" + model.get(bitChooser.currentIndex).bits;
+            }
         }
     }
-
-
 }
