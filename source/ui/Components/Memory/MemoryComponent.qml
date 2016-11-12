@@ -58,13 +58,23 @@ Item {
             role: "info"
             title: "Info"
             movable: false
-            resizable: false
-            width: parent.width - 200
+            resizable: true
+            width: parent.width - ((tableView.columnCount - 2) * 80) - (tableView.getColumn(0).width) - (25)
         }
         model: memoryModel
     }
 
-
+    Component {
+        id: column
+        TableViewColumn {
+            role: "value"
+            title: "Inhalt"
+            movable: false
+            resizable: false
+            width: 80
+            delegate: editableContent
+        }
+    }
 
     Component {
         id: editableContent
@@ -98,8 +108,6 @@ Item {
             }
             onEditingFinished: {
                     memoryModel.setValue(styleData.row, textFieldMemoryValue.text);
-                testvalue=Math.random(100);
-                console.log(testvalue);
             }
 
             placeholderText: "0x00"
@@ -109,53 +117,74 @@ Item {
     }
 
 
-
-    ListView {
+    Rectangle {
         id: menuBar
         height: 25
         width: parent.width
-       Connections {
-            target: tableView
-            onColumnCountChanged: {
-                while(headerDropdownList.count < tableView.columnCount)
-                    headerDropdownList.append(ListElement);
-                while(headerDropdownList.count > tableView.columnCount)
-                    headerDropdownList.remove(headerDropdownList.count - 1);
-                console.log("columncount changed "+headerDropdownList.count);
+
+        ListView {
+            id: header
+            height: parent.height
+            width:  parent.width - 25
+
+            orientation: Qt.Horizontal
+
+           Connections {
+                target: tableView
+                onColumnCountChanged: {
+                    while(headerDropdownList.count < tableView.columnCount)
+                        headerDropdownList.append(ListElement);
+                    while(headerDropdownList.count > tableView.columnCount)
+                        headerDropdownList.remove(headerDropdownList.count - 1);
+                }
+            }
+
+
+            model: ListModel {
+                id: headerDropdownList
+            }
+            delegate: ComboBox {
+                id: bitChooser
+                height: 25
+                width: tableView.getColumn(index).width
+
+                model: (tableView.getColumn(index).role === "address" + number_bytes)? modelBits : modelNumeric;
+
+                ListModel {
+                    id: modelBits
+                    ListElement { text: "8 Bit"; bits: 8 }
+                    ListElement { text: "16 Bit"; bits: 16 }
+                    ListElement { text: "32 Bit"; bits: 32 }
+                }
+                ListModel {
+                    id: modelNumeric
+                    ListElement { text: "Binary"; bits: 8 }
+                    ListElement { text: "Octal"; bits: 16 }
+                    ListElement { text: "Hexadecimal"; bits: 32 }
+                    ListElement { text: "Decimal"; bits: 32 }
+                    ListElement { text: "Decimal (signed)"; bits: 32 }
+                }
+
+                onCurrentIndexChanged: {
+                    if(model === modelBits) {
+                        number_bytes = model.get(bitChooser.currentIndex).bits;
+                    }
+                    else {
+                        tableView.getColumn(index).role = "value";// + model.get(bitChooser.currentIndex).bits;
+                    }
+                }
             }
         }
-        orientation: Qt.Horizontal
-
-        model: ListModel {
-            id: headerDropdownList
-        }
-        delegate: ComboBox {
-            id: bitChooser
+        Button {
+            anchors.right: parent.right
+            width: 25
             height: 25
-            width: tableView.getColumn(index).width
+            text: "+"
 
-            model: (tableView.getColumn(index).role === "address" + number_bytes)? modelBits : modelNumeric;
-
-            ListModel {
-                id: modelBits
-                ListElement { text: "8 Bit"; bits: 8 }
-                ListElement { text: "16 Bit"; bits: 16 }
-                ListElement { text: "32 Bit"; bits: 32 }
-            }
-            ListModel {
-                id: modelNumeric
-                ListElement { text: "Binary"; bits: 8 }
-                ListElement { text: "Octal"; bits: 16 }
-                ListElement { text: "Hexadecimal"; bits: 32 }
-                ListElement { text: "Decimal"; bits: 32 }
-                ListElement { text: "Decimal (signed)"; bits: 32 }
-            }
-
-            onCurrentIndexChanged: {
-                if(model === modelBits)
-                    number_bytes = model.get(bitChooser.currentIndex).bits;
-                else
-                    tableView.getColumn(index).role = "value" + model.get(bitChooser.currentIndex).bits;
+            onClicked: {
+                tableView.insertColumn( tableView.columnCount - 1, column);
+                tableView.horizontalScrollBarPolicy = Qt.ScrollBarAlwaysOff;
+                //tableView.getColumn(tableView.columnCount - 1).width -= 80;
             }
         }
     }
