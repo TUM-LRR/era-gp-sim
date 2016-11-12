@@ -117,16 +117,22 @@ class Memory {
    * \brief Writes value into the Memory at address
    * \param address Starting address of the to be overwritten value
    * \param value Value to write
+   * \param ignoreProtection if this is true do ignore all protection
    */
-  void put(const std::size_t address, const MemoryValue &value);
+  void put(const std::size_t address,
+           const MemoryValue &value,
+           bool ignoreProtection = false);
   /**
    * \brief Writes value into the Memory at address and returns the previous
    *        value
    * \param address Starting address of the to be overwritten value
    * \param value Value to write
+   * \param ignoreProtection if this is true do ignore all protection
    * \returns Value that was overwritten
    */
-  MemoryValue set(const std::size_t address, const MemoryValue &value);
+  MemoryValue set(const std::size_t address,
+                  const MemoryValue &value,
+                  bool ignoreProtection = false);
 
   /**
    * \brief converts the memory into serializeable strings
@@ -173,6 +179,33 @@ class Memory {
    */
   void clear();
 
+  /**
+   * \brief returns true iff any cells within the area is protected
+   * \param address first address of the to check area
+   * \param amount of cells to ckeck beginning with address
+   * \returns true iff any cells within the area is protected
+   */
+  bool isProtected(std::size_t address, std::size_t amount = 1) const;
+
+  /**
+   * \brief makes the area protected
+   * \param address first address of the to protect area
+   * \param amount of cells to protect beginning with address
+   */
+  void makeProtected(std::size_t address, std::size_t amount = 1);
+
+  /**
+   * \brief makes the area not protected
+   * \param address first address of the to unprotect area
+   * \param amount of cells to unprotect beginning with address
+   */
+  void removeProtection(std::size_t address, std::size_t amount = 1);
+
+  /**
+   * \brief makes nothing protected
+   */
+  void removeAllProtection();
+
  private:
   /**
    * \brief character defaulty separating serialized cells
@@ -203,8 +236,15 @@ class Memory {
    * \brief This function gets called for every changed area in Memory
    */
   std::function<void(const std::size_t, const std::size_t)> _callback = [](
-      const std::size_t, const std::size_t) {
-  };
+      const std::size_t, const std::size_t) {};
+  /**< Brief This function gets called for every changed area in Memory*/
+
+  /**
+   * \brief vector storing data about protected memory areas
+   * \note this takes linear time, one could improve this by implementing some
+   *       binary search, or using some indexed algorithm
+   */
+  std::map<std::size_t, std::size_t> _protection{};
 
   /**
    * \brief This Method is called whenever something in the Memory changes and
@@ -245,6 +285,16 @@ class Memory {
             std::map<std::string, std::string>>
   _serializeRaw(char separator = _standardSeparator,
                 std::size_t lineLength = 64) const;
+
+  /**
+   * \brief returns true if the protection area [protectionBegin, protectionEnd]
+   *        overlaps with the area [address, address + amount]
+   */
+  bool _overlaps(std::size_t protectionBegin,
+                  std::size_t protectionEnd,
+                  std::size_t address,
+                  std::size_t amount,
+                  bool equal) const;
 };
 
 #endif// ERAGPSIM_CORE_MEMORY_HPP_
