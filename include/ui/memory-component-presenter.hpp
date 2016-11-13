@@ -121,11 +121,25 @@ class MemoryComponentPresenter : public QAbstractListModel {
 
   /** enumeration of all roles of the columns */
   enum ColumnRoles {
-    AddressRole8 = Qt::UserRole,// avoid collisions with predefined roles
-    AddressRole16,
-    AddressRole32,
-    ValueRole,
-    InfoRole
+      AddressRole8 = Qt::UserRole,// avoid collisions with predefined roles
+      AddressRole16,
+      AddressRole32,
+      ValueRoleBin8,
+      ValueRoleBin16,
+      ValueRoleBin32,
+      ValueRoleOct8,
+      ValueRoleOct16,
+      ValueRoleOct32,
+      ValueRoleHex8,
+      ValueRoleHex16,
+      ValueRoleHex32,
+      ValueRoleDec8,
+      ValueRoleDec16,
+      ValueRoleDec32,
+      ValueRoleDecS8,
+      ValueRoleDecS16,
+      ValueRoleDecS32,
+      InfoRole
   };
 
  public slots:

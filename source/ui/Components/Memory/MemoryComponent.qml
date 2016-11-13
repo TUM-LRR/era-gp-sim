@@ -47,12 +47,12 @@ Item {
             width: 70
         }
         TableViewColumn {
-            role: "value"
+            role: "bin" + number_bytes
             title: "Inhalt"
             movable: false
-            resizable: false
+            resizable: true
             width: 80
-            delegate: editableContent
+            //delegate: editableContent
         }
         TableViewColumn {
             role: "info"
@@ -67,12 +67,12 @@ Item {
     Component {
         id: column
         TableViewColumn {
-            role: "value"
+            role: "bin" + number_bytes
             title: "Inhalt"
             movable: false
-            resizable: false
+            resizable: true
             width: 80
-            delegate: editableContent
+            //delegate: editableContent
         }
     }
 
@@ -87,7 +87,7 @@ Item {
                 }
             }
             font.bold: true
-            inputMask: "\\0\\xHH"
+            //inputMask: "\\0\\xHH"
             onActiveFocusChanged: {
                 cursorPosition = 2
             }
@@ -112,7 +112,6 @@ Item {
 
             placeholderText: "0x00"
             text: model.value
-
         }
     }
 
@@ -132,9 +131,9 @@ Item {
            Connections {
                 target: tableView
                 onColumnCountChanged: {
-                    while(headerDropdownList.count < tableView.columnCount)
+                    while(headerDropdownList.count < tableView.columnCount - 1)
                         headerDropdownList.append(ListElement);
-                    while(headerDropdownList.count > tableView.columnCount)
+                    while(headerDropdownList.count > tableView.columnCount - 1)
                         headerDropdownList.remove(headerDropdownList.count - 1);
                 }
             }
@@ -158,11 +157,11 @@ Item {
                 }
                 ListModel {
                     id: modelNumeric
-                    ListElement { text: "Binary"; bits: 8 }
-                    ListElement { text: "Octal"; bits: 16 }
-                    ListElement { text: "Hexadecimal"; bits: 32 }
-                    ListElement { text: "Decimal"; bits: 32 }
-                    ListElement { text: "Decimal (signed)"; bits: 32 }
+                    ListElement { text: "Binary"; role: "bin" }
+                    ListElement { text: "Octal"; role: "oct" }
+                    ListElement { text: "Hexadecimal"; role: "hex" }
+                    ListElement { text: "Decimal"; role: "dec" }
+                    ListElement { text: "Decimal (signed)"; role: "decs" }
                 }
 
                 onCurrentIndexChanged: {
@@ -170,7 +169,9 @@ Item {
                         number_bytes = model.get(bitChooser.currentIndex).bits;
                     }
                     else {
-                        tableView.getColumn(index).role = "value";// + model.get(bitChooser.currentIndex).bits;
+                        // explicitly create a property binding for number_bytes so the role gets updated correctly
+                        tableView.getColumn(index).role = Qt.binding(function() {
+                            return model.get(bitChooser.currentIndex).role + number_bytes })
                     }
                 }
             }
@@ -184,7 +185,6 @@ Item {
             onClicked: {
                 tableView.insertColumn( tableView.columnCount - 1, column);
                 tableView.horizontalScrollBarPolicy = Qt.ScrollBarAlwaysOff;
-                //tableView.getColumn(tableView.columnCount - 1).width -= 80;
             }
         }
     }
