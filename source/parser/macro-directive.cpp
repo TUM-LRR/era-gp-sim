@@ -17,7 +17,18 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "parser/intermediate-instruction.hpp"
 #include "parser/macro-directive.hpp"
+
+void MacroDirective::insert(IntermediateOperationPointer pointer) {
+  // Remember index of the first instruction so we can use its address for
+  // labels.
+  if (_firstInstruction < 0 &&
+      dynamic_cast<IntermediateInstruction*>(pointer.get()) != nullptr) {
+    _firstInstruction = _operations.size();
+  }
+  _operations.push_back(std::move(pointer));
+}
 
 void MacroDirective::execute(FinalRepresentation& finalRepresentator,
                              const SymbolTable& table,
@@ -29,6 +40,17 @@ void MacroDirective::execute(FinalRepresentation& finalRepresentator,
   }
   _macroParameters.validate(state);
   state.registerMacro(*this);
+}
+
+IntermediateOperationPointer
+MacroDirective::getOperation(size_t index,
+                             const std::vector<std::string>& arguments) const {
+  IntermediateOperationPointer ptr = _operations[index]->clone();
+
+  if (ptr == nullptr) return ptr;
+
+  _macroParameters.insertParameters(ptr, arguments);
+  return std::move(ptr);
 }
 
 MacroDirective::MacroParameters::MacroParameters(
@@ -57,7 +79,7 @@ MacroDirective::MacroParameters::MacroParameters(
   }
 }
 
-void MacroDirective::MacroParameters::validate(CompileState& state) {
+void MacroDirective::MacroParameters::validate(CompileState& state) const {
   bool containedDefault{false};
   for (auto param : _params) {
     // Check for empty names or default values
@@ -78,7 +100,7 @@ void MacroDirective::MacroParameters::validate(CompileState& state) {
 
 void MacroDirective::MacroParameters::insertParameters(
     IntermediateOperationPointer& operation,
-    const std::vector<std::string>& values) {
+    const std::vector<std::string>& values) const {
   // Since macros are identified by name and argument count, this function
   // should always be called with a valid size of `values`.
   assert::that(values.size() >= _minParams && values.size() <= _params.size());

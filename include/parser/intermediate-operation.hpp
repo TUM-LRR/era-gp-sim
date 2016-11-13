@@ -167,6 +167,18 @@ class IntermediateOperation {
     return nullptr;
   }
 
+  const LineInterval& lines() const {
+    return _lines;
+  }
+
+  const std::vector<std::string>& labels() const {
+    return _labels;
+  }
+
+  const std::string& name() const {
+    return _name;
+  }
+
  protected:
   /**
    * \brief The internal line interval.

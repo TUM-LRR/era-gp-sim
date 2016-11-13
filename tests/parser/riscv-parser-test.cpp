@@ -179,7 +179,7 @@ TEST_F(RiscParserTest, WrongMacros) {
       "add5\n",
       ParserMode::COMPILE);
   EXPECT_GE(res.errorList.size(), 5);
-  EXPECT_EQ(res.commandList.size(), 2);
+  EXPECT_LE(res.commandList.size(), 3);
 }
 
 

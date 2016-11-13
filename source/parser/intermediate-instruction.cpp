@@ -28,28 +28,10 @@ void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       const SyntaxTreeGenerator& generator,
                                       CompileState& state,
                                       MemoryAccess& memoryAccess) {
-  // First we need to check if the instruction is a macro.
-  auto macro = state.macros.find(_name, _sources.size() + _targets.size());
-  // If its a macro, execute every sub-instruction.
-  if (macro.found()) {
-    if (!macro.isCyclic()) {
-      for (int i = 0; i < macro->second.getOperationCount(); i++) {
-        macro->second.callOperationFunction(i,
-                                            getArgsVector(),
-                                            &IntermediateOperation::execute,
-                                            finalRepresentator,
-                                            table,
-                                            generator,
-                                            state,
-                                            memoryAccess);
-      }
-    }
-  } else {
-    // For a machine instruction, it is easy to "execute" it: just insert it
-    // into the final form.
-    finalRepresentator.commandList.push_back(
-        compileInstruction(table, generator, state, memoryAccess));
-  }
+  // For a machine instruction, it is easy to "execute" it: just insert it
+  // into the final form.
+  finalRepresentator.commandList.push_back(
+      compileInstruction(table, generator, state, memoryAccess));
 }
 
 std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
@@ -112,26 +94,6 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
                                              CompileState& state) {
   if (state.section != "text") {
     state.addError("Tried to define an instruction in not the text section.");
-    return;
-  }
-
-  // Check if the instruction is a macro.
-  auto macro = state.macros.find(_name, _sources.size() + _targets.size());
-  // If its a macro, allocate every sub-instruction.
-  if (macro.found()) {
-    if (macro.isCyclic()) {
-      state.addError("Cyclic macro call!");
-    } else {
-      for (int i = 0; i < macro->second.getOperationCount(); i++) {
-        macro->second.callOperationFunction(
-            i,
-            getArgsVector(),
-            &IntermediateOperation::allocateMemory,
-            architecture,
-            allocator,
-            state);
-      }
-    }
     return;
   }
 

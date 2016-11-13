@@ -26,6 +26,7 @@ set(PARSER_SOURCES
   memory-allocator.cpp
   macro-directive-table.cpp
   memory-definition-directive.cpp
+  intermediate-macro-instruction.cpp
 )
 
 ########################################

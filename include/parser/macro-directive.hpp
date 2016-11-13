@@ -95,9 +95,7 @@ class MacroDirective : public IntermediateDirective {
    * \brief Inserts an operation into the internal command list.
    * \param pointer The operation to insert.
    */
-  virtual void insert(IntermediateOperationPointer pointer) {
-    _operations.push_back(std::move(pointer));
-  }
+  virtual void insert(IntermediateOperationPointer pointer);
 
   /**
    * \brief Returns the macro name.
@@ -131,6 +129,21 @@ class MacroDirective : public IntermediateDirective {
   }
 
   /**
+   * Returns a copy of the instruction with index `index` after inserting
+   * arguments.
+   */
+  IntermediateOperationPointer
+  getOperation(size_t index, const std::vector<std::string>& arguments) const;
+
+  int firstInstructionIndex() const {
+    return _firstInstruction;
+  }
+
+  const std::string& getOperationName(size_t index) const {
+    return _operations[index]->name();
+  }
+
+  /**
    * Calls a function on an operation in this macro after given arguments have
    * been inserted.
    * \param index Index of the operation.
@@ -138,7 +151,7 @@ class MacroDirective : public IntermediateDirective {
    * \param func Function to call. Has to be a member of IntermediateOperation.
    * \param args Arguments for `func`.
    */
-  template <typename T, typename... U>
+  /*template <typename T, typename... U>
   void callOperationFunction(size_t index,
                              const std::vector<std::string>& arguments,
                              T func,
@@ -155,7 +168,7 @@ class MacroDirective : public IntermediateDirective {
 
     IntermediateOperation& op{ptr == nullptr ? *_operations[index] : *ptr};
     (op.*func)(args...);
-  }
+  }*/
 
  protected:
   /**
@@ -174,7 +187,7 @@ class MacroDirective : public IntermediateDirective {
      * Validates the macro parameters.
      * \param state Compile state to record errors.
      */
-    void validate(CompileState& state);
+    void validate(CompileState& state) const;
 
     /**
      * Inserts all parameters into the operation.
@@ -182,7 +195,7 @@ class MacroDirective : public IntermediateDirective {
      * \param values Values to insert for the parameters.
      */
     void insertParameters(IntermediateOperationPointer& operation,
-                          const std::vector<std::string>& values);
+                          const std::vector<std::string>& values) const;
 
     /**
      * Returns a pair with the minimum and maximum amount of parameters for this
@@ -222,6 +235,8 @@ class MacroDirective : public IntermediateDirective {
   std::vector<IntermediateOperationPointer> _operations;
 
   bool _isCompiling = false;
+
+  int _firstInstruction = -1;
 };
 
 #endif /* ERAGPSIM_PARSER_MACRO_DIRECTIVE_HPP */
