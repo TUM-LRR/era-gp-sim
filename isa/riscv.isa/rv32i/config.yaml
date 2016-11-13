@@ -54,6 +54,7 @@ instructions:
       - 12
     key:
       opcode: 103
+      funct3: 0
   - mnemonic: beq
     length: 32
     format: SB

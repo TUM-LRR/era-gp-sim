@@ -217,9 +217,8 @@
                 12
             ], 
             "key": {
-                "funct3": 1, 
-                "opcode": 35, 
-                "funct7": 0
+                "funct3": 3, 
+                "opcode": 35
             }, 
             "format": "S"
         }, 
