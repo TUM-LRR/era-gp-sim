@@ -45,11 +45,12 @@ class MemoryComponentPresenter : public QAbstractListModel {
    * and saves it to the internal memory object
    *
    * /param address the address of the cell to be updated
-   * /param newvalue the new value for the memory cell in hexadecimal
-   * representation
+   * /param newvalue the new value for the memory cell
+   * /param length_bit the number of bits shown in the string
+   * /param presentation which numeric representation is used (eg. hex, oct, bin)
    *
    */
-  Q_INVOKABLE void setValue(int address, QString newvalue);
+  Q_INVOKABLE void setValue(int address, QString newvalue, int length_bit, QString presentation);
 
   /**
    * sets the context information for memory cells (NOT IMPLEMENTED YET)

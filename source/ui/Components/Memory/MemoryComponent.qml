@@ -22,8 +22,8 @@ import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
 Item {
-    //property int number_bytes: numericRepresentationChooser.items.get(numericRepresentationChooser.currentIndex).bits;
-    property int number_bytes: 8
+    //property int number_bits: numericRepresentationChooser.items.get(numericRepresentationChooser.currentIndex).bits;
+    property int number_bits: 8
     property alias tableView: tableView
 
     TableView {
@@ -40,19 +40,19 @@ Item {
         headerVisible: false
 
         TableViewColumn {
-            role: "address" + number_bytes
+            role: "address" + number_bits
             title: "Adresse"
             movable: false
             resizable: false
             width: 70
         }
         TableViewColumn {
-            role: "bin" + number_bytes
+            role: "bin" + number_bits
             title: "Inhalt"
             movable: false
             resizable: true
             width: 80
-            //delegate: editableContent
+            delegate: inputBox
         }
         TableViewColumn {
             role: "info"
@@ -67,12 +67,24 @@ Item {
     Component {
         id: column
         TableViewColumn {
-            role: "bin" + number_bytes
+            role: "bin" + number_bits
             title: "Inhalt"
             movable: false
             resizable: true
             width: 80
             //delegate: editableContent
+        }
+    }
+
+    Component {
+        id: inputBox
+        TextField {
+            id: textFieldMemoryValue
+            text: styleData.value
+
+            onEditingFinished: {
+                    memoryModel.setValue(styleData.row, textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
+            }
         }
     }
 
@@ -107,7 +119,7 @@ Item {
 
             }
             onEditingFinished: {
-                    memoryModel.setValue(styleData.row, textFieldMemoryValue.text);
+                    memoryModel.setValue(styleData.row, textFieldMemoryValue.text, tableView.getColumn(styleData.column).role, number_bits);
             }
 
             placeholderText: "0x00"
@@ -147,7 +159,7 @@ Item {
                 height: 25
                 width: tableView.getColumn(index).width
 
-                model: (tableView.getColumn(index).role === "address" + number_bytes)? modelBits : modelNumeric;
+                model: (tableView.getColumn(index).role === "address" + number_bits)? modelBits : modelNumeric;
 
                 ListModel {
                     id: modelBits
@@ -166,12 +178,12 @@ Item {
 
                 onCurrentIndexChanged: {
                     if(model === modelBits) {
-                        number_bytes = model.get(bitChooser.currentIndex).bits;
+                        number_bits = model.get(bitChooser.currentIndex).bits;
                     }
                     else {
-                        // explicitly create a property binding for number_bytes so the role gets updated correctly
+                        // explicitly create a property binding for number_bits so the role gets updated correctly
                         tableView.getColumn(index).role = Qt.binding(function() {
-                            return model.get(bitChooser.currentIndex).role + number_bytes })
+                            return model.get(bitChooser.currentIndex).role + number_bits })
                     }
                 }
             }

@@ -46,10 +46,33 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
 }
 
 
-void MemoryComponentPresenter::setValue(int address, QString number) {
-  _memoryAccess.putMemoryValueAt(
-      address,
-      *StringConversions::hexStringToMemoryValue(number.toStdString(), 8));
+void MemoryComponentPresenter::setValue(int address,
+                                        QString number,
+                                        int length_bit,
+                                        QString presentation) {
+  if (presentation.startsWith("bin"))
+    _memoryAccess.putMemoryValueAt(address,
+                                   *StringConversions::binStringToMemoryValue(
+                                       number.toStdString(), length_bit));
+  /*else if (pres.startsWith("oct"))
+    _memoryAccess.putMemoryValueAt(address,
+                                   *StringConversions::octStringToMemoryValue(
+                                       number.toStdString(), length_bit));*/
+  else if (presentation.startsWith("hex"))
+    _memoryAccess.putMemoryValueAt(address,
+                                   *StringConversions::hexStringToMemoryValue(
+                                       number.toStdString(), length_bit));
+  else if (presentation.startsWith("decs"))
+    _memoryAccess.putMemoryValueAt(
+        address,
+        *StringConversions::unsignedDecStringToMemoryValue(number.toStdString(),
+                                                           length_bit));
+  else if (presentation.startsWith("dec"))
+    _memoryAccess.putMemoryValueAt(
+        address,
+        *StringConversions::signedDecStringToMemoryValue(number.toStdString(),
+                                                         length_bit));
+  return;
 }
 
 
