@@ -59,15 +59,15 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
                           "result in the destination register"));
   _arithmeticInstruction("sub", "-",
                          RISCV_TR("Subtracts %2 from %1 and stores the result in the "
-                         "destionation register"));
+                         "destination register"));
   _arithmeticInstructionI("and", RISCV_TR("AND"),
-                          RISCV_TR("Caclulates a bytewise AND of %1 and %2 and stores "
+                          RISCV_TR("Calculates a bitwise AND of %1 and %2 and stores "
                           "the result in the destination register"));
   _arithmeticInstructionI("or", RISCV_TR("OR"),
-                          RISCV_TR("Calculates a bytewise OR of %1 and %2 and stores "
+                          RISCV_TR("Calculates a bitwise OR of %1 and %2 and stores "
                           "the result in the destination register"));
   _arithmeticInstructionI("xor", RISCV_TR("XOR"),
-                          RISCV_TR("Calculates a bytewise XOR of %1 and %2 and stores "
+                          RISCV_TR("Calculates a bitwise XOR of %1 and %2 and stores "
                           "the result in the destination register"));
   _arithmeticInstructionI("sll", "<<",
                           RISCV_TR("(Logical) shifts the content of %1 by %2 bits to "
@@ -99,7 +99,7 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
                               "rs1 contains a number "
                               "that is less than rs2, the destination register "
                               "is filled with the value 1, if not, the "
-                              "destination register is filles with the value 0"))
+                              "destination register is fills with the value 0"))
            .build());
   _add("sltu",
        DocumentationBuilder()
@@ -113,7 +113,7 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
                               "If rs1 contains a number "
                               "that is less than rs2, the destination register "
                               "is filled with the value 1, if not, the "
-                              "destination register is filles with the value 0"))
+                              "destination register is fills with the value 0"))
            .build());
   _add("slti",
        DocumentationBuilder()
@@ -127,7 +127,7 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
                               "rs contains a number "
                               "that is less than imm, the destination register "
                               "is filled with the value 1, if not, the "
-                              "destination register is filles with the value 0"))
+                              "destination register is fills with the value 0"))
            .build());
   _add("sltiu",
        DocumentationBuilder()
@@ -215,7 +215,7 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
                RISCV_TR("A base register used for calculating the jump address in bytes"))
            .operandDescription("offset",
                                RISCV_TR("A signed 12 bit offset that is used to "
-                               "calculate the jump adress in bytes"))
+                               "calculate the jump address in bytes"))
            .shortDescription("rd = pc+4<br>pc=base+offset")
            .detailDescription(RISCV_TR("Performs a jump to a label or an instruction "
                               "address determined by adding base and offset. "
@@ -260,20 +260,20 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
                            RISCV_TR("Subtracts the lower 32bit of %2 from the lower "
                            "32bit of %1 and stores the sign extended 64bit "
                            "result in the "
-                           "destionation register"));
+                           "destination register"));
     _arithmeticInstructionIW(
         "and", RISCV_TR("AND"),
-        RISCV_TR("Caclulates a bytewise AND of the lower 32bit of %1 and the lower "
+        RISCV_TR("Calculates a bitwise AND of the lower 32bit of %1 and the lower "
         "32bit of %2 and stores "
         "the sign extended 64 result in the destination register"));
     _arithmeticInstructionIW(
         "or", RISCV_TR("OR"),
-        RISCV_TR("Calculates a bytewise OR of the lower 32bit of %1 and the lower 32bit "
+        RISCV_TR("Calculates a bitwise OR of the lower 32bit of %1 and the lower 32bit "
         "of %2 and stores "
         "the sign extended 64bit result in the destination register"));
     _arithmeticInstructionIW(
         "xor", RISCV_TR("XOR"),
-        RISCV_TR("Calculates a bytewise XOR of the lower 32bit of %1 and the lower "
+        RISCV_TR("Calculates a bitwise XOR of the lower 32bit of %1 and the lower "
         "32bit of %2 and stores "
         "the sign extended 64bit result in the destination register"));
     _arithmeticInstructionIW(
@@ -427,11 +427,11 @@ void InstructionContextInformation::_storeInstruction(
       .shortDescription("[base+offset] = source");
   builder
       .operandDescription(
-          "base", RISCV_TR("A base register used for calculating the memory adress"))
+          "base", RISCV_TR("A base register used for calculating the memory address"))
       .operandDescription("source", RISCV_TR("The register whose value will be stored"))
       .operandDescription("offset",
                           RISCV_TR("A 12 bit signed immediate offset that us used to "
-                          "calculate the memory adress"));
+                          "calculate the memory address"));
   auto detail = std::make_shared<Translateable>(RISCV_TR("Stores a %1 from the source register (using bit 0 to %2). The memory address is determined by adding base and offset"));
   detail->addOperand(sizeDesc);
   detail->addOperand(std::to_string(size-1));
