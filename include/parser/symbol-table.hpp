@@ -33,12 +33,27 @@
 class SymbolTable {
  public:
   /**
+ * \brief The SymbolType enum describes the type of symbol in this SymbolTable.
+ * This distinction helps with a type-depended replacement.
+ */
+  enum class SymbolType { LABEL, CONSTANT, OTHER };
+  using TableEntry = std::pair<std::string, SymbolType>;
+  using Table = std::map<std::string, TableEntry>;
+  using ReplacementFunction =
+      std::function<std::string(const std::string&, SymbolType)>;
+
+  struct SimpleReplacement {
+    std::string operator()(const std::string& repl, SymbolType type) const {
+      return repl;
+    }
+  };
+
+  /**
    * \brief Instantiates an empty symbol table with the given recursion depth.
    * \param maximumRecursionDepth The given recursion depth, defaults to 64.
    */
   SymbolTable(int maximumRecursionDepth = 64)
-  : _maximumRecursionDepth(maximumRecursionDepth) {
-  }
+      : _maximumRecursionDepth(maximumRecursionDepth) {}
 
   /**
    * \brief Inserts an entry into the SymbolTable and checks for any errors.
@@ -46,9 +61,8 @@ class SymbolTable {
    * \param replacement The symbol replacement.
    * \param state The compile state.
    */
-  void insertEntry(const std::string& name,
-                   const std::string& replacement,
-                   CompileState& state);
+  void insertEntry(const std::string& name, const std::string& replacement,
+                   CompileState& state, SymbolType type = SymbolType::OTHER);
 
   /**
    * \brief Clears the table.
@@ -59,29 +73,38 @@ class SymbolTable {
    * \brief Returns the internal symbol table.
    * \return The internal symbol table.
    */
-  const std::map<std::string, std::string>& table() const {
-    return _table;
-  }
+  const Table& table() const { return _table; }
 
   /**
    * \brief Replaces any symbols in the given string and records all occuring
    * errors.
    * \param source The source string.
    * \param state The compile state to log the errors.
+   * \param replacer An optional ReplacementFunction to define if a certain
+   * group of symbols (e.g. constants or labels) should be
+   * replaced differently. The replacement function takes the raw replacement
+   * string and the symbol type and returns a string that will replace the
+   * symbol.
    * \return The string with all symbols replaced (if the maximum recursion
    * depth has not been exceeded).
    */
-  std::string
-  replaceSymbols(const std::string& source, CompileState& state) const;
+  std::string replaceSymbols(
+      const std::string& source, CompileState& state,
+      ReplacementFunction replacer = SimpleReplacement{}) const;
 
   /**
    * \brief Replaces any symbols in the given vector of strings and records all
    * occuring errors.
    * \param source The source vector.
-   * \param state The compile state to log the errors.
+   * \param state The compile state to log the errors
+   * \param replacer An optional ReplacementFunction to define if a certain
+   * group of symbols (e.g. constants or labels) should be
+   * replaced differently. The replacement function takes the raw replacement
+   * string and the symbol type and returns a string that will replace the
+   * symbol
    */
-  void
-  replaceSymbols(std::vector<std::string>& source, CompileState& state) const;
+  void replaceSymbols(std::vector<std::string>& source, CompileState& state,
+                      ReplacementFunction replacer = SimpleReplacement{}) const;
 
  private:
   /**
@@ -94,7 +117,7 @@ class SymbolTable {
   /**
    * \brief The internal map to store the symbol table.
    */
-  std::map<std::string, std::string> _table;
+  Table _table;
 
   /**
    * \brief Denotes the maximum passes through the symbol table before an

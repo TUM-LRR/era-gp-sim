@@ -38,7 +38,7 @@ void SymbolTable::clearTable() {
 
 void SymbolTable::insertEntry(const std::string& name,
                               const std::string& replacement,
-                              CompileState& state) {
+                              CompileState& state, SymbolType type) {
   // Note: this method seems to be really slow. I feel like it is the regexes...
   // We could check them by hand, if it matters.
   // Expects a trimmed string.
@@ -64,11 +64,12 @@ void SymbolTable::insertEntry(const std::string& name,
   }
 
   // All conditions checked, insert!
-  _table[name] = replacement;
+  _table[name] = TableEntry{replacement, type};
 }
 
 std::string SymbolTable::replaceSymbols(const std::string& source,
-                                        CompileState& state) const {
+                                        CompileState& state,
+                                        ReplacementFunction replacer) const {
   std::string result = source;
 
   // If this is too slow, we should do something different, like: Instead of
@@ -81,14 +82,19 @@ std::string SymbolTable::replaceSymbols(const std::string& source,
   // Just make a copy and iterate over all defined symbols. If they match,
   // replace them.
   for (int i = 0; i < _maximumRecursionDepth; ++i) {
-    bool cont = false;// Actually, we could store all last results and check, if
-                      // one has already occured. Or just for one round... We
-                      // just have do differ from infinite recursion where one
-                      // pass gets us the same string again...
-    for (const auto& i : _table) {
+    bool cont = false;
+    // Actually, we could store all last results and check, if
+    // one has already occured. Or just for one round... We
+    // just have do differ from infinite recursion where one
+    // pass gets us the same string again...
+    for (const auto& entry : _table) {
       // Replace all symbol occurrences.
+      // call the replacer function with replacement string & type
+      const auto& replacement =
+              //    the replacement string, the symbol type
+          replacer(entry.second.first, entry.second.second);
       std::string newResult =
-          std::regex_replace(result, makeRegex(i.first), i.second);
+          std::regex_replace(result, makeRegex(entry.first), replacement);
       if (!cont && newResult != result) {
         cont = true;
       }
@@ -108,12 +114,12 @@ std::string SymbolTable::replaceSymbols(const std::string& source,
   return result;
 }
 
-
 void SymbolTable::replaceSymbols(std::vector<std::string>& source,
-                                 CompileState& state) const {
+                                 CompileState& state,
+                                 ReplacementFunction replacer) const {
   // We just replace the symbols for each of the vector elements.
 
   for (int i = 0; i < source.size(); i++) {
-    source[i] = replaceSymbols(source[i], state);
+    source[i] = replaceSymbols(source[i], state, replacer);
   }
 }

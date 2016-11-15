@@ -52,6 +52,11 @@ NodeFactoryCollection::Node NodeFactoryCollection::createImmediateNode(
   return _immediateFactory->createImmediateNode(numericalValue);
 }
 
+MemoryValue NodeFactoryCollection::labelToImmediate(const MemoryValue &labelValue, const std::string &instructionMnemonic, const MemoryValue &instructionAddress) const {
+    assert::that(static_cast<bool>(_immediateFactory));
+    return _immediateFactory->labelToImmediate(labelValue, instructionMnemonic, instructionAddress);
+}
+
 /**
  * It is asserted that a corresponding factory must be set prior to this
  * method call, otherwise the assertion will fail

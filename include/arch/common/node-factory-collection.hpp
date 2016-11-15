@@ -77,6 +77,13 @@ class NodeFactoryCollection {
   Node createImmediateNode(const MemoryValue &numericalValue) const;
 
   /**
+   * It is asserted that the ImmediateFactory must be set prior to this
+   * method call, otherwise the assertion will fail
+   * \copydoc AbstractImmediateNodeFactory::labelToImmediate
+   */
+  MemoryValue labelToImmediate(const MemoryValue& labelValue, const std::string& instructionMnemonic, const MemoryValue& instructionAddress) const;
+
+  /**
    * It is asserted that a corresponding factory must be set prior to this
    * method call, otherwise the assertion will fail
    * \copydoc AbstractRegisterNodeFactory::createRegisterNode
