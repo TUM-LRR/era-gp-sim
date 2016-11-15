@@ -21,6 +21,8 @@
 #define ERAGPSIM_UI_PIXEL_DISPLAY_HPP_
 
 #include <QImage>
+#include <QQmlEngine>
+#include <QQmlExtensionPlugin>
 #include <QQuickImageProvider>
 
 class PixelDisplayProvider : public QQuickImageProvider {
@@ -31,7 +33,7 @@ class PixelDisplayProvider : public QQuickImageProvider {
   QImage
   requestImage(const QString &id, QSize *size, const QSize &requestedSize) {
     int width = 100;
-    int height = 50;
+    int height = 100;
 
     if (size) *size = QSize(width, height);
     QImage image(requestedSize.width() > 0 ? requestedSize.width() : width,
@@ -39,9 +41,26 @@ class PixelDisplayProvider : public QQuickImageProvider {
                  QImage::Format_ARGB32);
     image.fill(QColor(id).rgba());
     image.setPixel(QPoint{20, 20}, 0xFF0000FFu);
+    image.setPixel(QPoint{20, 80}, 0xFF0000FFu);
+    image.setPixel(QPoint{80, 20}, 0xFF0000FFu);
+    image.setPixel(QPoint{80, 80}, 0xFF0000FFu);
 
     return image;
   }
 };
+
+// class ImageProviderExtensionPlugin : public QQmlExtensionPlugin {
+//   Q_OBJECT
+//   Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
+//  public:
+//   void registerTypes(const char *uri) {
+//     Q_UNUSED(uri);
+//   }
+//
+//   void initializeEngine(QQmlEngine *engine, const char *uri) {
+//     Q_UNUSED(uri);
+//     engine->addImageProvider("pixeldisplayprovider", new PixelDisplayProvider);
+//   }
+// };
 
 #endif// ERAGPSIM_UI_PIXEL_DISPLAY_HPP_

@@ -1,6 +1,8 @@
 #include <functional>
 
 #include "ui/gui-project.hpp"
+// #include "ui/pixel-display-provider.hpp"
+
 
 GuiProject::GuiProject(QQmlContext* context,
                        const ArchitectureFormula& formula,
@@ -26,6 +28,8 @@ GuiProject::GuiProject(QQmlContext* context,
 , editormodel(context)
 , snapmodel(context)
 , memorymodel(context)*/ {
+  // context->setContextProperty(QLatin1String("pixeldisplayprovider"),
+  //                            new PixelDisplayProvider);
   // set the callback for memory and register
   _projectModule.getMemoryManager().setUpdateRegisterCallback(
       [this](const std::string& name) {
@@ -57,6 +61,9 @@ GuiProject::GuiProject(QQmlContext* context,
                    Qt::QueuedConnection);
 
   std::string name[] = {"Apfel", "Banane"};
+
+  //_engine.addImageProvider(QLatin1String("pixeldisplayprovider"),
+  //                         new PixelDisplayProvider());
   // snapmodel.addList(name);
   // An alle Komponenten weitergeben
   // alle Komponenten initialisieren
