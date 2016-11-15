@@ -25,70 +25,104 @@ const std::vector<std::string> DocumentationBuilder::_colors = {
 
 DocumentationBuilder::DocumentationBuilder() : _operandCount(0) {}
 
-std::string DocumentationBuilder::build() {
+Translateable DocumentationBuilder::build() {
   assert::that(_hasKey(Key::INSTRUCTION));
   assert::that(_hasKey(Key::S_SYNTAX));
-  std::string result = "<b>";
-  result += _components[Key::INSTRUCTION];
-  result += "</b>: <code>";
-  result += _components[Key::S_SYNTAX];
-  result += "</code>";
-  _optionalPut(result, Key::OPERAND_DESC, "<p style=\"margin-left: 5%\">",
-               "</p>");
-  _optionalPut(result, Key::S_DESC);
-  _optionalPut(result, Key::D_DESC, "<br>");
-  //result += "</html>";
-  return result;
+  return Translateable(
+      "<b>%1</b>: <code>%2</code><p style=\"margin-left:5%\">%3</p>%4<br>%5",
+      {_components[Key::INSTRUCTION], _components[Key::S_SYNTAX],
+       _optional(Key::OPERAND_DESC), _optional(Key::S_DESC),
+       _optional(Key::D_DESC)});
+  //  std::string result = "<b>";
+  //  result += _components[Key::INSTRUCTION];
+  //  result += "</b>: <code>";
+  //  result += _components[Key::S_SYNTAX];
+  //  result += "</code>";
+  //  _optionalPut(result, Key::OPERAND_DESC, "<p style=\"margin-left: 5%\">",
+  //               "</p>");
+  //  _optionalPut(result, Key::S_DESC);
+  //  _optionalPut(result, Key::D_DESC, "<br>");
+  //  //result += "</html>";
+  //  return result;
 }
 
 DocumentationBuilder &DocumentationBuilder::instruction(const std::string &s) {
-  _add(Key::INSTRUCTION, s);
+  _add(Key::INSTRUCTION, std::make_shared<Translateable>(s));
   return *this;
 }
 
 DocumentationBuilder &DocumentationBuilder::detailDescription(
     const std::string &s) {
-  _add(Key::D_DESC, s);
+  _add(Key::D_DESC, std::make_shared<Translateable>(s));
   return *this;
 }
 
-DocumentationBuilder &DocumentationBuilder::operandDescription(
-    const std::string name, const std::string &description) {
-  auto it = _components.find(Key::OPERAND_DESC);
-  auto &existingOperandList = (it != _components.end())
-                                  ? (*it).second
-                                  : _components[Key::OPERAND_DESC] = "";
+DocumentationBuilder& DocumentationBuilder::detailDescription(const Translateable::TranslateablePtr &msg) {
+    _add(Key::D_DESC, msg);
+    return *this;
+}
 
-  existingOperandList += "<br><code><span style=\"color:";
-  existingOperandList += _nextColor();
-  existingOperandList += "\"><b>";
-  existingOperandList += name;
-  existingOperandList += "</b></span></code>: ";
-  existingOperandList += description;
+DocumentationBuilder &DocumentationBuilder::operandDescription(
+    const std::string &name, const std::string &description) {
+  auto it = _components.find(Key::OPERAND_DESC);
+  auto &existingTranslateable = (it != _components.end())
+                                    ? (*it).second
+                                    : _components[Key::OPERAND_DESC] =
+                                          std::make_shared<Translateable>("");
+  auto &baseString = existingTranslateable->getModifiableBaseString();
+  baseString += '%';
+  baseString += std::to_string(_operandCount + 1);  // will be %1, %2, ...
+  auto operand = std::make_shared<Translateable, std::string, std::initializer_list<const std::string>>(
+      "<br><code><span style=\"color:%1\"><b>%2</b></span></code>: %3",
+      {_nextColor(), name, description});
+  //  existingOperandList += "<br><code><span style=\"color:";
+  //  existingOperandList += _nextColor();
+  //  existingOperandList += "\"><b>";
+  //  existingOperandList += name;
+  //  existingOperandList += "</b></span></code>: ";
+  //  existingOperandList += description;
+  existingTranslateable->addOperand(operand);
   ++_operandCount;
   return *this;
 }
 
 DocumentationBuilder &DocumentationBuilder::shortDescription(
     const std::string &s) {
-  _add(Key::S_DESC, s);
+  _add(Key::S_DESC, std::make_shared<Translateable>(s));
   return *this;
 }
 
 DocumentationBuilder &DocumentationBuilder::shortSyntax(
     std::initializer_list<const std::string> operands) {
+  auto translateable = std::make_shared<Translateable>("");
   std::string result = "";
   auto i = 0;
-  for (const std::string &ops : operands) {
-    result += "<span style=\"color:";
-    result += _colors[i % _colors.size()];
-    result += "\"><b>";
-    result += ops;
-    result += "</b></span>, ";
+  for (const auto &op : operands) {
+    result += "<span style=\"color:%";
+    result += std::to_string((2 * i) + 1);  // will be %1, %3, ...
+    result += "\"><b>%";
+    result += std::to_string(2 + 2 * i);  // will be %2, %4, ...
+    result += "</b><span>, ";
+    translateable->addOperand(
+        std::make_shared<Translateable>(_colors[i % _colors.size()]));
+    translateable->addOperand(std::make_shared<Translateable>(op));
     ++i;
   }
-  // remove last ", " and put into map
-  _add(Key::S_SYNTAX, result.substr(0, result.size() - 2));
+
+  //  auto i = 0;
+  //  for (const std::string &ops : operands) {
+  //    result += "<span style=\"color:";
+  //    result += _colors[i % _colors.size()];
+  //    result += "\"><b>";
+  //    result += ops;
+  //    result += "</b></span>, ";
+  //    ++i;
+  //  }
+
+  // remove last ", " and put into translateable
+  translateable->getModifiableBaseString() +=
+      result.substr(0, result.size() - 2);
+  _add(Key::S_SYNTAX, translateable);
   return *this;
 }
 
@@ -96,12 +130,11 @@ const std::string &DocumentationBuilder::_nextColor() const {
   return _colors[_operandCount % _colors.size()];
 }
 
-void DocumentationBuilder::_optionalPut(std::string &string, const Key &key,
-                                        const std::string &start,
-                                        const std::string &end) {
+Translateable::TranslateablePtr DocumentationBuilder::_optional(
+    const Key &key) {
   if (_hasKey(key)) {
-    string += start;
-    string += _components[key];
-    string += end;
+    return _components[key];
+  } else {
+    return std::make_shared<Translateable>("");
   }
 }

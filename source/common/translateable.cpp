@@ -47,3 +47,15 @@ QString Translateable::translate(const QApplication &translater) const {
   }
   return translatedTotal;
 }
+
+std::string& Translateable::getModifiableBaseString() {
+    return _baseString;
+}
+
+void Translateable::addOperand(const TranslateablePtr &op) {
+    _operands.push_back(op);
+}
+
+void Translateable::addOperand(const std::string &op) {
+    _operands.push_back(std::make_shared<Translateable>(op));
+}

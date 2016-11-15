@@ -31,6 +31,6 @@ TEST_F(ContextInformationTest, allExist) {
     InstructionContextInformation info(arch);
     for(auto& pair : arch.getInstructions()) {
         const std::string& mnemonic = pair.second.getMnemonic();
-        EXPECT_FALSE(info.getContextInformation(mnemonic).empty()) << "Missing or invalid information for " << mnemonic;
+        EXPECT_TRUE(info.isContextInformationAvailable(mnemonic)) << "Missing or invalid information for " << mnemonic;
     }
 }

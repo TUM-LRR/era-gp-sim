@@ -20,40 +20,48 @@
 #include <unordered_map>
 
 #include "arch/common/architecture.hpp"
+#include "common/translateable.hpp"
+
+//Define a shorter, specialized version of QT_TRANSLATE_NOOP
+#define RISCV_TR(textToTranslate) QT_TRANSLATE_NOOP("RISCV instruction help text", textToTranslate)
 
 class InstructionContextInformation {
  public:
   InstructionContextInformation(const Architecture& architecture);
 
-  const std::string& getContextInformation(const std::string& mnemonic) const;
+  const Translateable &getContextInformation(const std::string& mnemonic) const;
 
-  const std::string& getContextInformation(
+  const Translateable &getContextInformation(
       const InstructionInformation& instructionInfo) const;
 
+  bool isContextInformationAvailable(const std::string& mnemonic) const;
+
+  bool isContextInformationAvailable(const InstructionInformation& instructionInfo) const;
+
  private:
-  using Table = std::unordered_map<std::string, std::string>;
+  using Table = std::unordered_map<std::string, Translateable>;
 
   void _gatherInfo(const Architecture& architecture);
 
   void _fill(const Architecture& architecture);
 
-  void _add(const std::string& key, const std::string& value);
+  void _add(const std::string& key, const Translateable& value);
 
   void _arithmeticInstruction(const std::string& mnemonic, const std::string& operationSign,
       const std::string& description,
-      const std::string& specialImmediateOperandDesc = "A 12 bit signed immediate");
+      const std::string& specialImmediateOperandDesc = RISCV_TR("A 12 bit signed immediate"));
 
   void _arithmeticInstructionI(const std::string& mnemonic, const std::string& operationSign,
                                const std::string& description,
-                               const std::string& specialImmediateOperandDesc = "A 12 bit signed immediate");
+                               const std::string& specialImmediateOperandDesc = RISCV_TR("A 12 bit signed immediate"));
 
   void _arithmeticInstructionW(const std::string& mnemonic, const std::string& operationSign,
                                const std::string& description,
-                               const std::string& specialImmediateOperandDesc = "A 12 bit signed immediate");
+                               const std::string& specialImmediateOperandDesc = RISCV_TR("A 12 bit signed immediate"));
 
   void _arithmeticInstructionIW(const std::string& mnemonic, const std::string& operationSign,
                                const std::string& description,
-                               const std::string& specialImmediateOperandDesc = "A 12 bit signed immediate");
+                               const std::string& specialImmediateOperandDesc = RISCV_TR("A 12 bit signed immediate"));
 
   void _loadInstruction(const std::string& mnemonic, const std::string& sizeDesc, int size);
 

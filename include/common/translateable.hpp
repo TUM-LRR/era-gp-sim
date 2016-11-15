@@ -27,8 +27,8 @@
 class Translateable {
     Q_DECLARE_TR_FUNCTIONS(Translateable)
 
+public:
     using TranslateablePtr = std::shared_ptr<Translateable>;
-    public:
 
     explicit Translateable(const std::string& baseString) : _baseString(baseString) {}
 
@@ -39,6 +39,12 @@ class Translateable {
     Translateable(const std::string& baseString, const std::initializer_list<std::reference_wrapper<Translateable>>& operands);
 
     QString translate(const QApplication& translater) const;
+
+    std::string& getModifiableBaseString();
+
+    void addOperand(const TranslateablePtr &op);
+
+    void addOperand(const std::string& op);
 private:
     std::string _baseString;
     std::vector<TranslateablePtr> _operands;
