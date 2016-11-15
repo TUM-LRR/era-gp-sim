@@ -84,3 +84,11 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
     }
   }
 }
+
+std::string IntermediateMacroInstruction::toString() const {
+  std::string str;
+  for(const auto& operation : _operations) {
+    str += operation->toString();
+  }
+  return str;
+}

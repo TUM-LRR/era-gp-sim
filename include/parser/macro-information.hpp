@@ -23,15 +23,13 @@
 #include "parser/code-position.hpp"
 
 /**
- * This is a dummy class, parser goup, please complete this.
+ * Class containing macro information.
  */
 class MacroInformation {
  public:
   /**
-   * \brief Instantiates a new compile error with the given arguments.
-   * \param message The error message.
-   * \param position The position interval of the error in the code.
-   * \param severity The severity of the error.
+   * \param code Parsed macro code
+   * \param position Position of the macro call
    */
   MacroInformation(const std::string& code,
                    const CodePositionInterval& position)

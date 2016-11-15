@@ -149,8 +149,7 @@ void ParsingAndExecutionUnit::parse(std::string code) {
   _lineCommandCache.clear();
   // update the error list of the ui
   _setErrorList(_finalRepresentation.errorList);
-  //_setMacroList(_finalRepresentation.macroList);TODO FinalRepresentation
-  //currently has no macro list :(
+  _setMacroList(_finalRepresentation.macroList);
   // assemble commands into memory
   /*for (const auto &command : _finalRepresentation.commandList) {
     _memoryAccess.putMemoryValueAt(command.address, command.node->assemble());

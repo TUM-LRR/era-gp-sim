@@ -22,6 +22,20 @@
 #include "parser/intermediate-macro-instruction.hpp"
 #include "parser/symbol-table.hpp"
 
+void IntermediateRepresentator::generateMacroInformation(
+    FinalRepresentation& representation) {
+  for (const auto& i : _commandList) {
+    if (dynamic_cast<IntermediateMacroInstruction*>(i.get()) == nullptr)
+      continue;
+
+    MacroInformation info{
+        static_cast<IntermediateMacroInstruction&>(*i).toString(),
+        {{i->lines().lineStart, 0}, {i->lines().lineEnd, 0}}};
+
+    representation.macroList.push_back(std::move(info));
+  }
+}
+
 FinalRepresentation
 IntermediateRepresentator::transform(const Architecture& architecture,
                                      const SyntaxTreeGenerator& generator,
@@ -44,6 +58,8 @@ IntermediateRepresentator::transform(const Architecture& architecture,
 
   IntermediateMacroInstruction::replaceWithMacros(
       _commandList.begin(), _commandList.end(), state);
+
+  generateMacroInformation(representation);
 
   allocator.clear();
 

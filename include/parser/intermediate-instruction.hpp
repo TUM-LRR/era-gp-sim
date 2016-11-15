@@ -117,6 +117,8 @@ class IntermediateInstruction : public IntermediateOperation {
     return IntermediateOperationPointer{new IntermediateInstruction{*this}};
   }
 
+  virtual std::string toString() const;
+
  protected:
   /**
    * \brief Compiles a vector of arguments (i.e. inserts symbols and converts to

@@ -75,6 +75,8 @@ class IntermediateMacroInstruction : public IntermediateOperation {
     }
   }
 
+  virtual std::string toString() const;
+
  private:
   std::vector<IntermediateOperationPointer> _operations;
   int _firstInstruction = -1;

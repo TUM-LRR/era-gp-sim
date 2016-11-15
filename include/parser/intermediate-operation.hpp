@@ -179,6 +179,10 @@ class IntermediateOperation {
     return _name;
   }
 
+  virtual std::string toString() const {
+    return _name + "\n";
+  }
+
  protected:
   /**
    * \brief The internal line interval.

@@ -122,6 +122,8 @@ class IntermediateRepresentator {
     }
   }
 
+  void generateMacroInformation(FinalRepresentation& representation);
+
   /**
    * \brief The internal command list.
    */

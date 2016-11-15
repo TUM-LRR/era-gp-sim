@@ -144,3 +144,28 @@ void IntermediateInstruction::insertIntoArguments(const std::string& name,
   replaceInVector(_sources, name, value);
   replaceInVector(_targets, name, value);
 }
+
+std::string IntermediateInstruction::toString() const {
+    std::string str = _name;
+
+    // Append targets
+    for (size_t i = 0; i < _targets.size(); i++) {
+      if (i != 0)
+        str += ", ";
+      else
+        str += " ";
+      str += _targets[i];
+    }
+
+    // Append sources
+    for (size_t i = 0; i < _sources.size(); i++) {
+      if (i == 0 && _targets.size() == 0)
+        str += " ";
+      else
+        str += ", ";
+      str += _sources[i];
+    }
+
+    str += "\n";
+    return str;
+  }
