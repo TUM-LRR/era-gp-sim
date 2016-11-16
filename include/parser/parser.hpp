@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_PARSER_HPP_
-#define ERAGPSIM_PARSER_PARSER_HPP_
+#ifndef ERAGPSIM_PARSER_PARSER_HPP
+#define ERAGPSIM_PARSER_PARSER_HPP
 
 #include <memory>
 #include <string>
@@ -51,8 +51,8 @@ class Parser {
   virtual const SyntaxInformation getSyntaxInformation() = 0;
 
 
-  Parser()          = default;
+  Parser() = default;
   virtual ~Parser() = default;
 };
 
-#endif// ERAGPSIM_PARSER_PARSER_HPP_
+#endif// ERAGPSIM_PARSER_PARSER_HPP

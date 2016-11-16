@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_INSTRUCTION_HPP_
-#define ERAGPSIM_PARSER_INTERMEDIATE_INSTRUCTION_HPP_
+#ifndef ERAGPSIM_PARSER_INTERMEDIATE_INSTRUCTION_HPP
+#define ERAGPSIM_PARSER_INTERMEDIATE_INSTRUCTION_HPP
 
 #include <map>
 #include <memory>
@@ -26,6 +26,9 @@
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "parser/intermediate-operation.hpp"
+
+class MemoryAllocator;
+class Architecture;
 
 
 /**
@@ -59,11 +62,35 @@ class IntermediateInstruction : public IntermediateOperation {
    * \param table The SymbolTable required for replacing the arguments.
    * \param generator The generator to transform the instructions.
    * \param state The CompileState logging all errors occuring.
+   * \param memoryAccess The MemoryAccess for verifying the syntax tree.
    */
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
                        const SyntaxTreeGenerator& generator,
-                       CompileState& state);
+                       CompileState& state,
+                       MemoryAccess& memoryAccess);
+
+  /**
+   * \brief Enhances the symbol table by the labels of the operation.
+   * \param table The SymbolTable to insert into.
+   * \param allocator The MemoryAllocator to get the memory positions from.
+   * \param state The CompileState to log possible errors.
+   */
+  virtual void enhanceSymbolTable(SymbolTable& table,
+                                  const MemoryAllocator& allocator,
+                                  CompileState& state);
+
+  /**
+   * \brief Reserves (not writes!) memory for the instruction.
+   * \param architecture The architecture for information about the memory
+   * format.
+   * \param allocator The allocator to reserve memory.
+   * \param state The CompileState to log possible errors.
+   */
+  virtual void allocateMemory(const Architecture& architecture,
+                              MemoryAllocator& allocator,
+                              CompileState& state);
+
 
   /**
    * \brief Converts this instruction into a syntax tree.
@@ -74,14 +101,10 @@ class IntermediateInstruction : public IntermediateOperation {
    */
   FinalCommand compileInstruction(const SymbolTable& table,
                                   const SyntaxTreeGenerator& generator,
-                                  CompileState& state);
+                                  CompileState& state,
+                                  MemoryAccess& memoryAccess);
 
  protected:
-  /**
-   * \brief Gets the position in program memory space.
-   */
-  virtual void determineMemoryPosition();
-
   /**
    * \brief Compiles a vector of arguments (i.e. inserts symbols and converts to
    * syntax tree nodes).
@@ -107,6 +130,16 @@ class IntermediateInstruction : public IntermediateOperation {
    * \brief The internal target arguments.
    */
   std::vector<std::string> _targets;
+
+  /**
+   * \brief The internal memory address.
+   */
+  MemoryAddress _address;
+
+  /**
+   * \brief The memory address inside the code section.
+   */
+  RelativeMemoryPosition _relativeAddress;
 };
 
 #endif

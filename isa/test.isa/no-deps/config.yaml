@@ -3,7 +3,8 @@ name: no-deps
 endianness: little
 alignment-behavior: strict
 word-size: 32
-signed-representation: sign-bit
+byte-size: 8
+
 units:
   - name: cpu
     registers:
@@ -21,12 +22,18 @@ units:
       size: 16
       type: float
       enclosing: 0
-      constant: 3.14
+      constant: "0x4048f5c3"
       aliases: [foo, bar]
 instructions:
   - mnemonic: add
-    opcode: 6
-    function: 3
+    length: 69
+    format: R
+    key:
+      opcode: 6
+      function: 3
   - mnemonic: sub
-    opcode: 9
-    function: 3
+    length: 69
+    format: R
+    key:
+      opcode: 9
+      function: 3
