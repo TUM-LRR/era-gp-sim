@@ -1,6 +1,8 @@
-#include "consolemodel.hpp"
+#include "ui/consolemodel.hpp"
 
-ConsoleModel::ConsoleModel(QQmlContext* context): QObject(), context(context), text(""){
+
+
+ConsoleModel::ConsoleModel(QQmlContext* context, MemoryAccess memoryAccess): QObject(), context(context), _memoryAccess(memoryAccess), text(""){
     context->setContextProperty("consoleModel",  this);
 }
 
@@ -11,19 +13,55 @@ QString ConsoleModel::getText(){
     return s;
 }
 
-void ConsoleModel::onDataChanged(){
-    emit dataChanged();
+void ConsoleModel::onDataChanged(std::size_t address, std::size_t length){
+    if(address>(start+maximumLength)){
+        return;
+    }
+    else if((address+length)<start){
+        return;
+    }
+    else{
+        emit dataChanged();
+    }
 }
 
 void ConsoleModel::getData(){
-    //Daten vom Core holen
-    //text löschen
-    //Werte in dezimalzahlen verwandeln, max bis 255
-    //in chars umwandeln und an text anhängen
+    text="";
+    //Variabe start: start der Eingabe
+    //Variable maxLength: Maximale Länge der Eingabe
+    if(mode ==0/*ArrayBased*/){
+        //Daten vom Core holen
+        //text löschen
+        //Werte in dezimalzahlen verwandeln, max bis 255 bis nullbyte erreicht
+        //in chars umwandeln und an text anhängen
+    }
+    else/*pipeline*/{
+        //Daten in angegebener Speicherzelle vom Core holen
+        //Daten an text anhängen
+    }
 
+    //Beispiel
     text += char(70);
     text += char(80);
+    text += char(10);
     text += char(95);
 
     emit textChanged();
 }
+
+void ConsoleModel::modeChanged(int newMode){
+    mode=newMode;
+    getData();
+}
+
+void ConsoleModel::clear(){
+    if(mode!=0){
+        text="";
+        emit textChanged();
+    }
+}
+
+void ConsoleModel::changeStart(int newStart){
+    start=newStart;
+}
+

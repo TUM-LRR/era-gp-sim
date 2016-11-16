@@ -10,6 +10,7 @@ set(UI_SOURCES
     memory-component-presenter.cpp
     ui.cpp
     gui-project.cpp
+    consolemodel.cpp
 )
 
 set(UI_HEADERS
@@ -19,6 +20,7 @@ set(UI_HEADERS
     ../../include/ui/editor-component.hpp
     ../../include/ui/memory-component-presenter.hpp
     ../../include/ui/ui.hpp
+    ../../include/ui/consolemodel.hpp
 )
 
 

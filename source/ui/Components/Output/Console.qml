@@ -3,6 +3,9 @@ import QtQuick 2.3
 import QtQuick.Controls 1.4
 
 Item {
+    property int mode: 1
+
+
     Rectangle{
         anchors.fill: parent
         color: "black"
@@ -19,6 +22,15 @@ Item {
 
             readOnly: true
             backgroundVisible: false
+            MouseArea{
+                id: clearArea
+               anchors.fill:parent
+               visible: true
+               acceptedButtons: Qt.RightButton
+               onDoubleClicked: {
+                   consoleModel.clear();
+               }
+            }
 
         }
 
@@ -27,7 +39,7 @@ Item {
             onTextChanged:{
                 textarea.text=consoleModel.getText();
                 console.info(textarea.text);
-                console.info("Juhu!");
+                //console.info("Juhu!");
             }
         }
         Connections{
@@ -35,6 +47,15 @@ Item {
             onDataChanged: {
                 consoleModel.getData();
             }
+        }
+    }
+    onModeChanged: {
+        consoleModel.modeChanged(mode);
+        if(mode ==0 /*mode == array-based*/){
+            clearArea.enabled=false;
+        }
+        else{
+            clearArea.enabled=true;
         }
     }
 }
