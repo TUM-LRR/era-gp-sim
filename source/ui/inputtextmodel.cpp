@@ -1,8 +1,9 @@
 #include <iostream>
 
-#include "inputtextmodel.hpp"
+#include "ui/inputtextmodel.hpp"
+#include "core/conversions.hpp"
 
-InputTextModel::InputTextModel(QQmlContext* context): QObject(), context(context)
+InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess m): QObject(), context(context), memoryAccess(m)
 {
     context->setContextProperty("inputtextMod", this);
 }
@@ -16,7 +17,9 @@ void InputTextModel::newText(QString text){
         char z=stdText.at(i);
         unsigned zahl=int(z);
         if(zahl<225){//else do nothing, was not a ascii sign
-            std::cout<<zahl<<std::endl;
+            //std::cout<<zahl<<std::endl;
+            MemoryValue m=conversions::convert(i);
+            memoryAccess.setMemoryValueAt(start+i, m, 8);
         }
     }
 }

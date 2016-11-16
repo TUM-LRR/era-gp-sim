@@ -33,5 +33,9 @@
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
+        <file>Components/Input/ButtonInput.qml</file>
+        <file>Components/Input/ClickInput.qml</file>
+        <file>Components/Input/Input.qml</file>
+        <file>Components/Input/TextInputSelf.qml</file>
     </qresource>
 </RCC>
