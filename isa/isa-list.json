@@ -1,0 +1,17 @@
+{
+    "architectures": [
+        {
+            "name": "riscv",
+            "base-extensions": [
+                            "rv32i",
+                            "rv64i"
+                          ],
+            "extensions": [ "rv32m",
+                            "rv64m"
+                          ],
+            "parsers": [
+                            "riscv"
+            ]
+        }
+    ]
+}

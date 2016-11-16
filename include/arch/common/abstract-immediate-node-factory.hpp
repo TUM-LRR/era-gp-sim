@@ -20,8 +20,7 @@
 
 #include <memory>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
-
+class AbstractSyntaxTreeNode;
 class MemoryValue;
 
 /**

@@ -13,46 +13,52 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP_
-#define ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP_
+#ifndef ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP
+#define ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP
 
 #include <string>
 #include <vector>
-#include "compile-state.hpp"
-#include "final-representation.hpp"
-#include "symbol-table.hpp"
+#include "common/assert.hpp"
+#include "parser/final-representation.hpp"
+#include "parser/line-interval.hpp"
+#include "parser/memory-allocator.hpp"
+#include "parser/symbol-table.hpp"
+#include "parser/syntax-tree-generator.hpp"
+
+struct CompileState;
 
 /**
- * \class LineInterval
- * \brief Representa an interval of lines, denoted by an upper and lower line
- * bound.
- */
-using LineInterval = std::pair<unsigned int, unsigned int>;
-
-/**
- * \class DummyMemoryAddress
  * \brief A memory address substitute as long as we do not have one.
  */
-using DummyMemoryAddress = unsigned int;
+using MemoryAddress = std::size_t;
 
 /**
- * \var NULL_ADDRESS
- * \brief A substitute for a not-initialized address.
+ * \brief Specifies the target for operations to put.
+ *
+ * This feature has been implemented to support macros. It allows that the
+ * operations are placed inside of other operations on syntax level.
  */
-static constexpr DummyMemoryAddress NULL_ADDRESS = 0;
+enum class TargetSelector { KEEP, MAIN, THIS };
+
+class IntermediateOperation;
+class Architecture;
+class MemoryAllocator;
 
 /**
- * \class IntermediateOperation
+ * \brief Convenience class for a pointer to an operation.
+ */
+using IntermediateOperationPointer = std::unique_ptr<IntermediateOperation>;
+
+/**
  * \brief Represents an abstract assembler operation in the parser-internal
  * intermediate form.
  */
 class IntermediateOperation {
  public:
   /**
-   * \fn IntermediateOperation::IntermediateOperation(const LineInterval& lines,
-   * const std::vector<std::string>& labels, const std::string& name)
    * \brief Instantiates a new IntermediateOperation with the given arguments.
    * (only for subclass use!)
    * \param lines The line interval the operation occupies.
@@ -62,106 +68,87 @@ class IntermediateOperation {
   IntermediateOperation(const LineInterval& lines,
                         const std::vector<std::string>& labels,
                         const std::string& name)
-  : _lines(lines), _labels(labels), _name(name), _address(NULL_ADDRESS) {
+  : _lines(lines), _labels(labels), _name(name) {
   }
 
   /**
-   * \fn IntermediateOperation::IntermediateOperation(const
-   * IntermediateOperation& other)
-   * \brief Default copy constructor.
-   * \param other The source IntermediateOperation instance.
-   */
-  IntermediateOperation(const IntermediateOperation& other) = default;
-
-  /**
-   * \fn IntermediateOperation::IntermediateOperation(IntermediateOperation&&
-   * other)
-   * \brief Default move constructor.
-   * \param other The source IntermediateOperation instance.
-   */
-  IntermediateOperation(IntermediateOperation&& other) = default;
-
-  /**
-   * \fn IntermediateOperation::operator =(const IntermediateOperation& other)
-   * \brief Default copy assignment operator.
-   * \param other The source IntermediateOperation instance.
-   */
-  IntermediateOperation&
-  operator=(const IntermediateOperation& other) = default;
-
-  /**
-   * \fn IntermediateOperation::operator =(IntermediateOperation&& other)
-   * \brief Default move assignment operator.
-   * \param other The source IntermediateOperation instance.
-   */
-  IntermediateOperation& operator=(IntermediateOperation&& other) = default;
-
-  /**
-   * \fn IntermediateOperation::~IntermediateOperation()
-   * \brief Default destructor.
-   */
-  ~IntermediateOperation() = default;
-
-  /**
-   * \fn IntermediateOperation::execute(FinalRepresentation& finalRepresentator,
-   * const SymbolTable& table, CompileState& state)
    * \brief Executes the given operation (somehow).
    * \param finalRepresentator The FinalRepresentation for possible output.
    * \param table The SymbolTable for possible replacements.
+   * \param generator The generator to transform the instructions.
    * \param state The CompileState to log possible errors.
+   * \param memoryAccess The MemoryAccess for verifying instructions or
+   * reserving data.
    */
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
-                       CompileState& state) = 0;
+                       const SyntaxTreeGenerator& generator,
+                       CompileState& state,
+                       MemoryAccess& memoryAccess) = 0;
 
   /**
-   * \fn IntermediateOperation::enhanceSymbolTable(SymbolTable& table,
-   * CompileState& state)
-   * \brief Enhances the symbol table by the labels of the operation.
-   * \param table The SymbolTable to insert into.
+   * \brief Reserves (not writes!) memory for the operation (if needed).
+   * \param architecture The architecture for information about the memory
+   * format.
+   * \param allocator The allocator to reserve memory.
    * \param state The CompileState to log possible errors.
    */
-  virtual void enhanceSymbolTable(SymbolTable& table, CompileState& state);
+  virtual void allocateMemory(const Architecture& architecture,
+                              MemoryAllocator& allocator,
+                              CompileState& state) {
+  }
 
   /**
-   * \fn IntermediateOperation::address()
-   * \brief Returns the memory address.
-   * \return The memory address.
+   * \brief Enhances the symbol table by the labels of the operation.
+   * \param table The SymbolTable to insert into.
+   * \param allocator The MemoryAllocator to get the memory positions from.
+   * \param state The CompileState to log possible errors.
    */
-  DummyMemoryAddress address() {
-    return _address;
+  virtual void enhanceSymbolTable(SymbolTable& table,
+                                  const MemoryAllocator& allocator,
+                                  CompileState& state) {
+  }
+
+  /**
+   * \brief Specifies if the this operation should be processed.
+   * \return True, if so, else false.
+   */
+  virtual bool shouldInsert() const {
+    return true;
+  }
+
+  /**
+   * \brief Specifies the new target for operations after this command.
+   * \return Normally, we keep the target.
+   */
+  virtual TargetSelector newTarget() const {
+    return TargetSelector::KEEP;
+  }
+
+  /**
+   * \brief Inserts an operation into a possible internal command list.
+   * \param pointer The operation to insert.
+   */
+  virtual void insert(IntermediateOperationPointer pointer) {
+    // If this happens, something has gone wrong in our programming.
+    assert::that(false);
   }
 
  protected:
   /**
-   * \fn IntermediateOperation::determineMemoryPosition()
-   * \brief Reserves space in memory for the operation and sets the address.
-   */
-  virtual void determineMemoryPosition() = 0;
-
-  /**
-   * \var IntermediateOperation::_lines
    * \brief The internal line interval.
    */
   LineInterval _lines;
 
   /**
-   * \var IntermediateOperation::_labels
    * \brief The internal label list.
    */
   std::vector<std::string> _labels;
 
   /**
-   * \var IntermediateOperation::_name
    * \brief The internal operation name.
    */
   std::string _name;
-
-  /**
-   * \var IntermediateOperation::_address
-   * \brief The internal memory address.
-   */
-  DummyMemoryAddress _address;
 };
 
 #endif

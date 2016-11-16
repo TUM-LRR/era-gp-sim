@@ -3,9 +3,17 @@
 ########################################
 
 set(TEST_PARSER_SOURCES
+  expression-compiler-test.cpp
   intermediate-instruction-test.cpp
   intermediate-representator-test.cpp
   symbol-table-test.cpp
+  string-parser-test.cpp
+  riscv-parser-test.cpp
+  syntax-tree-generator-test.cpp
+  parser-factory-test.cpp
+  syntax-information-test.cpp
+  integer-parser-test.cpp
+  memory-allocator-test.cpp
 )
 
 ########################################
@@ -14,8 +22,7 @@ set(TEST_PARSER_SOURCES
 
 add_executable(era-sim-parser-tests ${TEST_PARSER_SOURCES})
 
-target_link_libraries(era-sim-parser-tests era-sim-parser era-sim-common)
+target_link_libraries(era-sim-parser-tests era-sim-parser)
 target_link_libraries(era-sim-parser-tests gtest gtest_main)
 
-# test-name executable-name
 add_test(era-sim-parser-tests era-sim-parser-tests)

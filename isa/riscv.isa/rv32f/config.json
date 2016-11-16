@@ -1,418 +1,613 @@
 {
-  "name": "rv32f",
-  "instructions": [
-    {
-      "mnemonic": "flw",
-      "opcode": 7,
-      "funct3": 2
-    },
-    {
-      "mnemonic": "fsw",
-      "opcode": 39,
-      "funct3": 2
-    },
-    {
-      "mnemonic": "fmadds",
-      "opcode": 67,
-      "funct2": 0
-    },
-    {
-      "mnemonic": "fmsubs",
-      "opcode": 71,
-      "funct2": 0
-    },
-    {
-      "mnemonic": "fnsubs",
-      "opcode": 75,
-      "funct2": 0
-    },
-    {
-      "mnemonic": "fnmadds",
-      "opcode": 79,
-      "funct7": 0
-    },
-    {
-      "mnemonic": "fadds",
-      "opcode": 83,
-      "funct7": 0
-    },
-    {
-      "mnemonic": "fsubs",
-      "opcode": 83,
-      "funct7": 4
-    },
-    {
-      "mnemonic": "fmuls",
-      "opcode": 83,
-      "funct7": 8
-    },
-    {
-      "mnemonic": "fdivs",
-      "opcode": 83,
-      "funct7": 12
-    },
-    {
-      "mnemonic": "fsqrts",
-      "opcode": 83,
-      "funct7": 44,
-      "rs2": 0
-    },
-    {
-      "mnemonic": "fsgnjs",
-      "opcode": 83,
-      "funct3": 0,
-      "funct7": 16
-    },
-    {
-      "mnemonic": "fsgnjns",
-      "opcode": 83,
-      "funct3": 1,
-      "funct7": 16
-    },
-    {
-      "mnemonic": "fsgnjxs",
-      "opcode": 83,
-      "funct3": 2,
-      "funct7": 16
-    },
-    {
-      "mnemonic": "fmins",
-      "opcode": 83,
-      "funct3": 0,
-      "funct7": 20
-    },
-    {
-      "mnemonic": "fcvtws",
-      "opcode": 83,
-      "funct7": 96,
-      "rs2": 0
-    },
-    {
-      "mnemonic": "fcvtwus",
-      "opcode": 83,
-      "funct7": 96,
-      "rs2": 1
-    },
-    {
-      "mnemonic": "fmvxs",
-      "opcode": 83,
-      "funct3": 0,
-      "funct7": 112,
-      "rs2": 0
-    },
-    {
-      "mnemonic": "feqs",
-      "opcode": 83,
-      "funct3": 2,
-      "funct7": 80
-    },
-    {
-      "mnemonic": "flts",
-      "opcode": 83,
-      "funct3": 1,
-      "funct7": 80
-    },
-    {
-      "mnemonic": "fles",
-      "opcode": 83,
-      "funct3": 0,
-      "funct7": 80
-    },
-    {
-      "mnemonic": "fclasss",
-      "opcode": 83,
-      "funct3": 1,
-      "funct7": 112,
-      "rs2": 0
-    },
-    {
-      "mnemonic": "fcvtsw",
-      "opcode": 83,
-      "funct7": 104,
-      "rs2": 0
-    },
-    {
-      "mnemonic": "fcvtswu",
-      "opcode": 83,
-      "funct7": 104,
-      "rs2": 1
-    },
-    {
-      "mnemonic": "fmvsx",
-      "opcode": 83,
-      "funct3": 0,
-      "funct7": 120,
-      "rs2": 0
-    },
-    {
-      "mnemonic": "frcsr",
-      "opcode": 115,
-      "funct3": 2,
-      "funct7": 3,
-      "rs1": 0
-    },
-    {
-      "mnemonic": "frrm",
-      "opcode": 115,
-      "funct3": 2,
-      "funct7": 2,
-      "rs1": 0
-    },
-    {
-      "mnemonic": "frflags",
-      "opcode": 115,
-      "funct3": 2,
-      "funct7": 1,
-      "rs1": 0
-    },
-    {
-      "mnemonic": "fscsr",
-      "opcode": 115,
-      "funct3": 1,
-      "funct7": 3
-    },
-    {
-      "mnemonic": "fsrm",
-      "opcode": 115,
-      "funct3": 1,
-      "funct7": 2
-    },
-    {
-      "mnemonic": "fsflags",
-      "opcode": 115,
-      "funct3": 1,
-      "funct7": 1
-    },
-    {
-      "mnemonic": "fsrmi",
-      "opcode": 115,
-      "funct3": 5,
-      "funct7": 2,
-      "rs1": 0
-    },
-    {
-      "mnemonic": "fsflagsi",
-      "opcode": 115,
-      "funct3": 5,
-      "funct7": 1,
-      "rs1": 0
-    }
-  ],
-  "units": [
-    {
-      "name": "cpu",
-      "registers": [
+    "name": "rv32f",
+    "instructions": [
         {
-          "name": "f1",
-          "id": 1,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "I",
+            "key": {
+                "opcode": 7,
+                "funct3": 2
+            },
+            "mnemonic": "flw"
         },
         {
-          "name": "f2",
-          "id": 2,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "S",
+            "key": {
+                "opcode": 39,
+                "funct3": 2
+            },
+            "mnemonic": "fsw"
         },
         {
-          "name": "f3",
-          "id": 3,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "S",
+            "key": {
+                "funct2": 0,
+                "opcode": 67
+            },
+            "mnemonic": "fmadds"
         },
         {
-          "name": "f4",
-          "id": 4,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "S",
+            "key": {
+                "funct2": 0,
+                "opcode": 71
+            },
+            "mnemonic": "fmsubs"
         },
         {
-          "name": "f5",
-          "id": 5,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "S",
+            "key": {
+                "funct2": 0,
+                "opcode": 75
+            },
+            "mnemonic": "fnmsubs"
         },
         {
-          "name": "f6",
-          "id": 6,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "S",
+            "key": {
+                "funct7": 0,
+                "opcode": 79
+            },
+            "mnemonic": "fnmadds"
         },
         {
-          "name": "f7",
-          "id": 7,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 0,
+                "opcode": 83
+            },
+            "mnemonic": "fadds"
         },
         {
-          "name": "f8",
-          "id": 8,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 4,
+                "opcode": 83
+            },
+            "mnemonic": "fsubs"
         },
         {
-          "name": "f9",
-          "id": 9,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 8,
+                "opcode": 83
+            },
+            "mnemonic": "fmuls"
         },
         {
-          "name": "f10",
-          "id": 10,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 12,
+                "opcode": 83
+            },
+            "mnemonic": "fdivs"
         },
         {
-          "name": "f11",
-          "id": 11,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 44,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "mnemonic": "fsqrts"
         },
         {
-          "name": "f12",
-          "id": 12,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 16,
+                "opcode": 83,
+                "funct3": 0
+            },
+            "mnemonic": "fsgnjs"
         },
         {
-          "name": "f13",
-          "id": 13,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 16,
+                "opcode": 83,
+                "funct3": 1
+            },
+            "mnemonic": "fsgnjns"
         },
         {
-          "name": "f14",
-          "id": 14,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 16,
+                "opcode": 83,
+                "funct3": 2
+            },
+            "mnemonic": "fsgnjxs"
         },
         {
-          "name": "f15",
-          "id": 15,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 20,
+                "opcode": 83,
+                "funct3": 0
+            },
+            "mnemonic": "fmins"
         },
         {
-          "name": "f16",
-          "id": 16,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 96,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtws"
         },
         {
-          "name": "f17",
-          "id": 17,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 96,
+                "rs2": 1,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtwus"
         },
         {
-          "name": "f18",
-          "id": 18,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 112,
+                "rs2": 0,
+                "opcode": 83,
+                "funct3": 0
+            },
+            "mnemonic": "fmvxs"
         },
         {
-          "name": "f19",
-          "id": 19,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 80,
+                "opcode": 83,
+                "funct3": 2
+            },
+            "mnemonic": "feqs"
         },
         {
-          "name": "f20",
-          "id": 20,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 80,
+                "opcode": 83,
+                "funct3": 1
+            },
+            "mnemonic": "flts"
         },
         {
-          "name": "f21",
-          "id": 21,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 80,
+                "opcode": 83,
+                "funct3": 0
+            },
+            "mnemonic": "fles"
         },
         {
-          "name": "f22",
-          "id": 22,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 112,
+                "rs2": 0,
+                "opcode": 83,
+                "funct3": 1
+            },
+            "mnemonic": "fclasss"
         },
         {
-          "name": "f23",
-          "id": 23,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 104,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtsw"
         },
         {
-          "name": "f24",
-          "id": 24,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 104,
+                "rs2": 1,
+                "opcode": 83
+            },
+            "mnemonic": "fcvtswu"
         },
         {
-          "name": "f25",
-          "id": 25,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "R",
+            "key": {
+                "funct7": 120,
+                "rs2": 0,
+                "opcode": 83,
+                "funct3": 0
+            },
+            "mnemonic": "fmvsx"
         },
         {
-          "name": "f26",
-          "id": 26,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "I",
+            "key": {
+                "rs1": 0,
+                "funct7": 3,
+                "opcode": 115,
+                "funct3": 2
+            },
+            "mnemonic": "frcsr"
         },
         {
-          "name": "f27",
-          "id": 27,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "I",
+            "key": {
+                "rs1": 0,
+                "funct7": 2,
+                "opcode": 115,
+                "funct3": 2
+            },
+            "mnemonic": "frrm"
         },
         {
-          "name": "f28",
-          "id": 28,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "I",
+            "key": {
+                "rs1": 0,
+                "funct7": 1,
+                "opcode": 115,
+                "funct3": 2
+            },
+            "mnemonic": "frflags"
         },
         {
-          "name": "f29",
-          "id": 29,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "I",
+            "key": {
+                "funct7": 3,
+                "opcode": 115,
+                "funct3": 1
+            },
+            "mnemonic": "fscsr"
         },
         {
-          "name": "f30",
-          "id": 30,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "I",
+            "key": {
+                "funct7": 2,
+                "opcode": 115,
+                "funct3": 1
+            },
+            "mnemonic": "fsrm"
         },
         {
-          "name": "f31",
-          "id": 31,
-          "size": 32,
-          "type": "float"
+            "length": 32,
+            "format": "I",
+            "key": {
+                "funct7": 1,
+                "opcode": 115,
+                "funct3": 1
+            },
+            "mnemonic": "fsflags"
         },
         {
-          "name": "fcsr",
-          "id": 32,
-          "size": 32,
-          "type": "flag",
-          "constituents": [
-            33,
-            34
-          ]
+            "length": 32,
+            "format": "I",
+            "key": {
+                "rs1": 0,
+                "funct7": 2,
+                "opcode": 115,
+                "funct3": 5
+            },
+            "mnemonic": "fsrmi"
         },
         {
-          "name": "frm",
-          "id": 33,
-          "size": 3,
-          "type": "flag",
-          "enclosing": 32
-        },
-        {
-          "name": "fflags",
-          "id": 34,
-          "size": 5,
-          "type": "flag",
-          "enclosing": 32
+            "length": 32,
+            "format": "I",
+            "key": {
+                "rs1": 0,
+                "funct7": 1,
+                "opcode": 115,
+                "funct3": 5
+            },
+            "mnemonic": "fsflagsi"
         }
-      ]
-    }
-  ]
+    ],
+    "units": [
+        {
+            "name": "cpu",
+            "registers": [
+                {
+                    "name": "f1",
+                    "id": 1,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f2",
+                    "id": 2,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f3",
+                    "id": 3,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f4",
+                    "id": 4,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f5",
+                    "id": 5,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f6",
+                    "id": 6,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f7",
+                    "id": 7,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f8",
+                    "id": 8,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f9",
+                    "id": 9,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f10",
+                    "id": 10,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f11",
+                    "id": 11,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f12",
+                    "id": 12,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f13",
+                    "id": 13,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f14",
+                    "id": 14,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f15",
+                    "id": 15,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f16",
+                    "id": 16,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f17",
+                    "id": 17,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f18",
+                    "id": 18,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f19",
+                    "id": 19,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f20",
+                    "id": 20,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f21",
+                    "id": 21,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f22",
+                    "id": 22,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f23",
+                    "id": 23,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f24",
+                    "id": 24,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f25",
+                    "id": 25,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f26",
+                    "id": 26,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f27",
+                    "id": 27,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f28",
+                    "id": 28,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f29",
+                    "id": 29,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f30",
+                    "id": 30,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "f31",
+                    "id": 31,
+                    "size": 32,
+                    "type": "float"
+                },
+                {
+                    "name": "fcsr",
+                    "id": 32,
+                    "size": 64,
+                    "constituents": [
+                        {
+                            "id": 33,
+                            "enclosing-index": 5
+                        },
+                        {
+                            "id": 34,
+                            "enclosing-index": 0
+                        }
+                    ],
+                    "type": "flag"
+                },
+                {
+                    "name": "frm",
+                    "id": 33,
+                    "size": 3,
+                    "enclosing": 32,
+                    "type": "flag"
+                },
+                {
+                    "id": 34,
+                    "size": 5,
+                    "name": "fflags",
+                    "constituents": [
+                        {
+                            "id": 35,
+                            "enclosing-index": 0
+                        },
+                        {
+                            "id": 36,
+                            "enclosing-index": 1
+                        },
+                        {
+                            "id": 37,
+                            "enclosing-index": 2
+                        },
+                        {
+                            "id": 38,
+                            "enclosing-index": 3
+                        },
+                        {
+                            "id": 39,
+                            "enclosing-index": 4
+                        }
+                    ],
+                    "enclosing": 32,
+                    "type": "flag"
+                },
+                {
+                    "name": "nx",
+                    "id": 35,
+                    "size": 1,
+                    "enclosing": 24,
+                    "type": "flag"
+                },
+                {
+                    "name": "of",
+                    "id": 36,
+                    "size": 1,
+                    "enclosing": 24,
+                    "type": "flag"
+                },
+                {
+                    "name": "uf",
+                    "id": 37,
+                    "size": 1,
+                    "enclosing": 24,
+                    "type": "flag"
+                },
+                {
+                    "name": "dz",
+                    "id": 38,
+                    "size": 1,
+                    "enclosing": 24,
+                    "type": "flag"
+                },
+                {
+                    "name": "nv",
+                    "id": 39,
+                    "size": 1,
+                    "enclosing": 24,
+                    "type": "flag"
+                }
+            ]
+        }
+    ]
 }

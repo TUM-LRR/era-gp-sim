@@ -13,98 +13,114 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP_
-#define ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP_
+#ifndef ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP
+#define ERAGPSIM_PARSER_INTERMEDIATE_REPRESENTATOR_HPP
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
-#include "../arch/common/abstract-node-factories.hpp"
-#include "compile-state.hpp"
-#include "final-representation.hpp"
-#include "intermediate-operation.hpp"
-#include "symbol-table.hpp"
+#include "arch/common/abstract-syntax-tree-node.hpp"
+#include "parser/compile-state.hpp"
+#include "parser/final-representation.hpp"
+#include "parser/intermediate-operation.hpp"
+
+class SyntaxTreeGenerator;
+class Architecture;
 
 /**
- * \class IntermediateRepresentator
  * \brief Provides methods for collecting and compiling a command list.
  */
 class IntermediateRepresentator {
  public:
   /**
-   * \fn IntermediateRepresentator::IntermediateRepresentator()
    * \brief Instantiates an IntermediateRepresentator with the default values.
    */
-  IntermediateRepresentator() = default;
-
-  /**
-   * \fn IntermediateRepresentator::IntermediateRepresentator(const
-   * IntermediateRepresentator& other)
-   * \brief Default copy constructor.
-   * \param other The source IntermediateRepresentator instance.
-   */
-  IntermediateRepresentator(const IntermediateRepresentator& other) = default;
-
-  /**
-   * \fn
-   * IntermediateRepresentator::IntermediateRepresentator(IntermediateRepresentator&&
-   * other)
-   * \brief Default move constructor.
-   * \param other The source IntermediateRepresentator instance.
-   */
-  IntermediateRepresentator(IntermediateRepresentator&& other) = default;
-
-  /**
-   * \fn IntermediateRepresentator::operator =(const IntermediateRepresentator&
-   * other)
-   * \brief Default copy assignment operator.
-   * \param other The source IntermediateRepresentator instance.
-   */
-  IntermediateRepresentator&
-  operator=(const IntermediateRepresentator& other) = default;
-
-  /**
-   * \fn IntermediateRepresentator::operator =(IntermediateRepresentator&&
-   * other)
-   * \brief Default move assignment operator.
-   * \param other The source IntermediateRepresentator instance.
-   */
-  IntermediateRepresentator&
-  operator=(IntermediateRepresentator&& other) = default;
-
-  /**
-   * \fn IntermediateRepresentator::~IntermediateRepresentator()
-   * \brief Default destructor.
-   */
-  ~IntermediateRepresentator() = default;
-
-  /**
-   * \fn IntermediateRepresentator::insertCommand(const T& command)
-   * \brief Inserts the given command into the command list.
-   * \param command The given command.
-   * \tparam T The command type.
-   */
-  template <typename T>
-  void insertCommand(const T& command) {
-    _commandList.push_back(std::make_unique<T>(command));
+  IntermediateRepresentator() : _commandList(), _currentOutput(nullptr) {
   }
 
   /**
-   * \fn IntermediateRepresentator::transform(CompileState& state)
+   * \brief Inserts the given command into the command list.
+   * \param command The given command.
+   * \param state The compile state to save any possible errors.
+   * \tparam T The command type.
+   */
+  template <typename T>
+  void insertCommand(T&& command, CompileState& state) {
+    // First of all, we create our dear pointer.
+    IntermediateOperationPointer pointer =
+        std::make_unique<T>(std::move(command));
+
+    // We got to handle the three target selector cases right here.
+    if (command.newTarget() == TargetSelector::THIS) {
+      // If we want the current command as new target, we set it like so.
+      if (_currentOutput) {
+        // Nested macros are not supported.
+        state.addError("Error, nested macros are not supported.");
+      }
+      _currentOutput = std::move(pointer);
+    } else {
+      if (command.newTarget() == TargetSelector::MAIN) {
+        // For the main selector, we may also insert the old command (otherwise
+        // it and its sub commands might be lost).
+        if (!_currentOutput) {
+          // Classic bracket forgot to close problem.
+          state.addError("The start directive of the macro is missing.");
+        }
+        internalInsertCommand(std::move(_currentOutput));
+      }
+
+      // Finally, we may insert our handed-over command.
+      internalInsertCommand(std::move(pointer));
+    }
+  }
+
+  /**
    * \brief Transforms the commands to a syntax tree list.
+   * \param architecture The architecture for any specific memory/instruction
+   * information.
+   * \param generator A syntax tree generator to transform the instructions into
+   * a readable format for the architecture module.
+   * \param allocator A memory allocator for possible memory reservations.
    * \param state The compile state to report errors.
+   * \param memoryAccess The access to write into the memory.
    * \return The list of syntax trees to be interpreted by the architecture.
    */
-  FinalRepresentation transform(CompileState& state);
+  FinalRepresentation transform(const Architecture& architecture,
+                                const SyntaxTreeGenerator& generator,
+                                MemoryAllocator& allocator,
+                                CompileState& state,
+                                MemoryAccess& memoryAccess);
 
  private:
   /**
-   * \var IntermediateRepresentator::_commandList
+   * \brief Inserts an operation into the list.
+   * \param pointer The operation to insert, as pointer.
+   */
+  void internalInsertCommand(IntermediateOperationPointer pointer) {
+    // Of course, it should be valid and is allowed to be inserted.
+    if (pointer && pointer->shouldInsert()) {
+      // We got to decide if there is an alternative output.
+      if (_currentOutput) {
+        _currentOutput->insert(std::move(pointer));
+      } else {
+        _commandList.push_back(std::move(pointer));
+      }
+    }
+  }
+
+  /**
    * \brief The internal command list.
    */
-  std::vector<std::unique_ptr<IntermediateOperation>> _commandList;
+  std::vector<IntermediateOperationPointer> _commandList;
+
+  /**
+   * \brief The current target for operations.
+   */
+  IntermediateOperationPointer _currentOutput;
 };
 
 #endif

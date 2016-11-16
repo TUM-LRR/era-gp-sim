@@ -19,6 +19,8 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 1.5
+import QtQuick.Dialogs 1.2
+import "../Common"
 
 //decorates a Flickable with Scrollbars
 ScrollView {
@@ -59,6 +61,7 @@ ScrollView {
                 textMargin: 2
                 property real unscaledWidth: Math.max(scrollView.viewport.width - sidebar.width, contentWidth)
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
+                property int line: 1
 
                 x: sidebar.width
                 selectByMouse: true
@@ -69,7 +72,6 @@ ScrollView {
                 wrapMode: TextEdit.NoWrap
                 Component.onCompleted: {
                     updateSize();
-                    project.createHighlighter(textDocument);
                 }
                 visible: true
                 onCursorRectangleChanged: cursorScroll(cursorRectangle)
@@ -82,6 +84,21 @@ ScrollView {
                     }
                 }
 
+                //Connection to react to the parse signal
+                Connections {
+                  target: editor
+                  onParseText: {
+                    editor.sendText(textArea.text);
+                  }
+                  onExecutionLineChanged: {
+                    textArea.line = line;
+                  }
+                  onRuntimeError: {
+                    runtimeErrorDialog.text = errorMessage;
+                    runtimeErrorDialog.open();
+                  }
+                }
+
                 //cursor line highlighting
                 Rectangle{
                     color: Qt.rgba(0.9, 0.9, 0.9, 0.2)
@@ -91,6 +108,14 @@ ScrollView {
                     visible: textArea.activeFocus
                     border.width: 1
                     border.color: Qt.rgba(0.7, 0.7, 0.7, 0.2)
+                }
+
+                // execution line highlighting
+                Rectangle{
+                  color: Qt.rgba(0.2, 0.8, 0.4, 0.2)
+                  y: textArea.cursorRectangle.height * (textArea.line - 1);
+                  height: textArea.cursorRectangle.height;
+                  width: Math.max(scrollView.width, textArea.contentWidth)
                 }
 
                 //scroll with the cursor
@@ -173,38 +198,76 @@ ScrollView {
                     x: 0
                     y: textArea.textMargin/2
                     width: 5
-                    //test
-                    Component.onCompleted: {
-                        addError(10);
-                        addError(50);
+
+                    Connections {
+                        target: editor
+                        onAddError: {
+                            errorBar.addError(message, line, color);
+                        }
+
+                        Component.onCompleted: {
+                            editor.init(textArea.textDocument);
+                        }
                     }
 
                     Component {
                         id: errorComponent
                         Item {
+                            id: errorItem
+                            property color color : "red";
+                            property alias errorMessage: toolTip.text;
                             //TODO use a symbol instead of a red rectangle
                             Rectangle {
                                 width: errorBar.width
                                 height: fontMetrics.height
-                                color: "red"
+                                color: parent.color
                             }
 
                             //highlight the line
                             Rectangle {
+                                id: lineHighlight
                                 height: textArea.cursorRectangle.height
                                 width: scrollView.width
-                                color: "#33ff0019"
-                                border.color: "#33ff3300"
+                                //color: "#33ff0019"
+                                color: Qt.rgba(parent.color.r, parent.color.g, parent.color.b, 0.3)
+                                border.color: Qt.tint(parent.color, "#33ff3300")
+                            }
+
+                            //tooltip
+                            ToolTip {
+                                id: toolTip
+                                width: lineHighlight.width
+                                height: lineHighlight.height
+                                fontPixelSize: textArea.font.pixelSize
+                            }
+
+                            Connections {
+                                target: editor
+                                onDeleteErrors: {
+                                    errorItem.destroy();
+                                }
                             }
                         }
                     }
 
-                    function addError(lineNumber) {
+                    function addError(message, lineNumber, errorColor) {
                         var newError = errorComponent.createObject();
                         newError.y = (lineNumber-1)*fontMetrics.height;
                         newError.parent = errorBar;
+                        newError.color = errorColor;
+                        newError.errorMessage = message;
                     }
                 }
+            }
+
+            //Dialog to show runtime errors
+            MessageDialog {
+              id: runtimeErrorDialog
+              title: "Runtime error"
+              standardButtons: StandardButton.Ok
+              onAccepted: {
+                close();
+              }
             }
 
             //input for zoom

@@ -13,31 +13,31 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_INSTRUCTION_HPP_
-#define ERAGPSIM_PARSER_INTERMEDIATE_INSTRUCTION_HPP_
+#ifndef ERAGPSIM_PARSER_INTERMEDIATE_INSTRUCTION_HPP
+#define ERAGPSIM_PARSER_INTERMEDIATE_INSTRUCTION_HPP
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
-#include "../arch/common/abstract-node-factories.hpp"
-#include "intermediate-operation.hpp"
-#include "symbol-table.hpp"
+
+#include "arch/common/abstract-syntax-tree-node.hpp"
+#include "parser/intermediate-operation.hpp"
+
+class MemoryAllocator;
+class Architecture;
+
 
 /**
- * \class IntermediateInstruction
  * \brief Represents a machine instruction in the parser-internal intermediate
  * form.
  */
 class IntermediateInstruction : public IntermediateOperation {
  public:
   /**
-   * \fn IntermediateInstruction::IntermediateInstruction(const LineInterval&
-   * lines, const std::vector<std::string>& labels, const std::string& name,
-   * const std::vector<std::string>& sources, const std::vector<std::string>&
-   * targets)
    * \brief Instantiates a new compile error with the given arguments.
    * \param lines The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
@@ -56,87 +56,90 @@ class IntermediateInstruction : public IntermediateOperation {
   }
 
   /**
-   * \fn IntermediateInstruction::IntermediateInstruction(const
-   * IntermediateInstruction& other)
-   * \brief Default copy constructor.
-   * \param other The source IntermediateInstruction instance.
-   */
-  IntermediateInstruction(const IntermediateInstruction& other) = default;
-
-  /**
-   * \fn
-   * IntermediateInstruction::IntermediateInstruction(IntermediateInstruction&&
-   * other)
-   * \brief Default move constructor.
-   * \param other The source IntermediateInstruction instance.
-   */
-  IntermediateInstruction(IntermediateInstruction&& other) = default;
-
-  /**
-   * \fn IntermediateInstruction::operator =(const IntermediateInstruction&
-   * other)
-   * \brief Default copy assignment operator.
-   * \param other The source IntermediateInstruction instance.
-   */
-  IntermediateInstruction&
-  operator=(const IntermediateInstruction& other) = default;
-
-  /**
-   * \fn IntermediateInstruction::operator =(IntermediateInstruction&& other)
-   * \brief Default move assignment operator.
-   * \param other The source IntermediateInstruction instance.
-   */
-  IntermediateInstruction& operator=(IntermediateInstruction&& other) = default;
-
-  /**
-   * \fn IntermediateInstruction::~IntermediateInstruction()
-   * \brief Default destructor.
-   */
-  ~IntermediateInstruction() = default;
-
-  /**
-   * \fn IntermediateInstruction::execute(FinalRepresentation&
-   * finalRepresentator, const SymbolTable& table, CompileState& state)
    * \brief Converts this instruction into a syntax tree and inserts it into the
    * final representation.
    * \param finalRepresentator The FinalRepresentation to insert into.
    * \param table The SymbolTable required for replacing the arguments.
+   * \param generator The generator to transform the instructions.
    * \param state The CompileState logging all errors occuring.
+   * \param memoryAccess The MemoryAccess for verifying the syntax tree.
    */
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
-                       CompileState& state);
+                       const SyntaxTreeGenerator& generator,
+                       CompileState& state,
+                       MemoryAccess& memoryAccess);
 
   /**
-   * \fn IntermediateInstruction::compileInstruction(const SymbolTable& table,
-   * CompileState& state)
+   * \brief Enhances the symbol table by the labels of the operation.
+   * \param table The SymbolTable to insert into.
+   * \param allocator The MemoryAllocator to get the memory positions from.
+   * \param state The CompileState to log possible errors.
+   */
+  virtual void enhanceSymbolTable(SymbolTable& table,
+                                  const MemoryAllocator& allocator,
+                                  CompileState& state);
+
+  /**
+   * \brief Reserves (not writes!) memory for the instruction.
+   * \param architecture The architecture for information about the memory
+   * format.
+   * \param allocator The allocator to reserve memory.
+   * \param state The CompileState to log possible errors.
+   */
+  virtual void allocateMemory(const Architecture& architecture,
+                              MemoryAllocator& allocator,
+                              CompileState& state);
+
+
+  /**
    * \brief Converts this instruction into a syntax tree.
    * \param table The SymbolTable required for replacing the arguments.
+   * \param generator The generator to transform the instructions.
    * \param state The CompileState logging all errors occuring.
    * \return The resulting syntax tree of the node.
    */
-  std::unique_ptr<AbstractSyntaxTreeNode>
-  compileInstruction(const SymbolTable& table, CompileState& state);
+  FinalCommand compileInstruction(const SymbolTable& table,
+                                  const SyntaxTreeGenerator& generator,
+                                  CompileState& state,
+                                  MemoryAccess& memoryAccess);
 
  protected:
   /**
-   * \fn IntermediateInstruction::determineMemoryPosition()
-   * \brief Gets the position in program memory space.
+   * \brief Compiles a vector of arguments (i.e. inserts symbols and converts to
+   * syntax tree nodes).
+   * \param vector The vector to compile.
+   * \param table The SymbolTable required for replacing the arguments.
+   * \param generator The generator to transform the instructions.
+   * \param state The CompileState logging all errors occuring.
+   * \return The compiled vector of arguments.
    */
-  virtual void determineMemoryPosition();
+  std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
+  compileArgumentVector(const std::vector<std::string>& vector,
+                        const SymbolTable& table,
+                        const SyntaxTreeGenerator& generator,
+                        CompileState& state);
 
  private:
   /**
-   * \var IntermediateInstruction::_sources
    * \brief The internal source arguments.
    */
   std::vector<std::string> _sources;
 
   /**
-   * \var IntermediateInstruction::_targets
    * \brief The internal target arguments.
    */
   std::vector<std::string> _targets;
+
+  /**
+   * \brief The internal memory address.
+   */
+  MemoryAddress _address;
+
+  /**
+   * \brief The memory address inside the code section.
+   */
+  RelativeMemoryPosition _relativeAddress;
 };
 
 #endif
