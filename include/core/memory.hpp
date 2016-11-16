@@ -21,23 +21,36 @@
 
 #include <cstddef>
 #include <functional>
+#include <iostream>
+#include <map>
+#include <string>
+#include <utility>
 
-#include "common/assert.hpp"
 #include "core/memory-value.hpp"
+#include "third-party/json/json.hpp"
 
 class Memory {
  public:
+  using Json = nlohmann::json;
   /**
    * \brief Default constructor. Constructs an empty Memory with default size
    *        (64 Bytes � 8 Bit)
    */
   Memory();
+
   /**
    * \brief Constructs an empty Memory with cellCount Bytes � byteSize Bit
    * \param byteCount Number of Bytes
    * \param byteSize Size of a Byte in Bit
    */
   Memory(std::size_t byteCount, std::size_t byteSize = 8);
+
+  /**
+   * \brief Constructs an Memory with the data stored in json
+   * \param json a json ontaining a representaion of a memory
+   */
+  Memory(const Json &json);
+
   /**
    * \brief Copy constructor. Constructs the Memory with the copy of the
    *        contents of other.
@@ -87,9 +100,8 @@ class Memory {
    * \brief Sets the callback to notify the gui about changes in the data
    * \param callback the callback to be set as _callback
    */
-  void
-  setCallback(const std::function<void(const std::size_t, const std::size_t)>
-                  &callback);
+  void setCallback(const std::function<void(const std::size_t,
+                                            const std::size_t)> &callback);
 
   /**
    * \brief Returns a MemoryValue holding the data stored in the Memory at
@@ -99,35 +111,190 @@ class Memory {
    * \returns MemoryValue holding the data stored in the Memory at
    *          [address;address+amount[
    */
-  MemoryValue get(const std::size_t address, const std::size_t amount = 1);
+  MemoryValue
+  get(const std::size_t address, const std::size_t amount = 1) const;
   /**
    * \brief Writes value into the Memory at address
    * \param address Starting address of the to be overwritten value
    * \param value Value to write
+   * \param ignoreProtection if this is true do ignore all protection
    */
-  void put(const std::size_t address, const MemoryValue &value);
+  void put(const std::size_t address,
+           const MemoryValue &value,
+           bool ignoreProtection = false);
   /**
    * \brief Writes value into the Memory at address and returns the previous
    *        value
    * \param address Starting address of the to be overwritten value
    * \param value Value to write
+   * \param ignoreProtection if this is true do ignore all protection
    * \returns Value that was overwritten
    */
-  MemoryValue set(const std::size_t address, const MemoryValue &value);
+  MemoryValue set(const std::size_t address,
+                  const MemoryValue &value,
+                  bool ignoreProtection = false);
+
+  /**
+   * \brief converts the memory into serializeable strings
+   * \param json the json object to hold the data
+   * \param separator character used to separate the cells of each line
+   * \param lineLength the length of a line in byte
+   * \returns json
+   */
+  Json &serializeJSON(Json &json,
+                      char separator = _standardSeparator,
+                      std::size_t lineLength = 1) const;
+
+  /**
+   * \brief converts the memory into serializeable strings
+   * \param json the json object to hold the data
+   * \param separator character used to separate the cells of each line
+   * \param lineLength the length of a line in byte
+   * \returns json
+   */
+  Json serializeJSON(Json &&json = Json(),
+                     char separator = _standardSeparator,
+                     std::size_t lineLength = 1) const;
+
+  /**
+   * \brief sets the memory to the data stored in json
+   * \param json the json object to holding the data
+   */
+  void deserializeJSON(const Json &json);
+
+  /**
+   * \brief returns true iff this == other
+   * \returns the equality of this and other
+   */
+  bool operator==(const Memory &other) const;
+
+  /**
+   * \brief prints a representation of this into the stream
+   * \returns the stream
+   */
+  friend std::ostream &operator<<(std::ostream &stream, const Memory &value);
+
+  /**
+   * \brief sets everything to 0x00
+   */
+  void clear();
+
+  /**
+   * \brief returns true iff any cells within the area is protected
+   * \param address first address of the to check area
+   * \param amount of cells to ckeck beginning with address
+   * \returns true iff any cells within the area is protected
+   */
+  bool isProtected(std::size_t address, std::size_t amount = 1) const;
+
+  /**
+   * \brief makes the area protected
+   * \param address first address of the to protect area
+   * \param amount of cells to protect beginning with address
+   */
+  void makeProtected(std::size_t address, std::size_t amount = 1);
+
+  /**
+   * \brief makes the area not protected
+   * \param address first address of the to unprotect area
+   * \param amount of cells to unprotect beginning with address
+   */
+  void removeProtection(std::size_t address, std::size_t amount = 1);
+
+  /**
+   * \brief makes nothing protected
+   */
+  void removeAllProtection();
 
  private:
-  std::size_t _byteSize;  /**< Brief Size of a Byte in bit*/
-  std::size_t _byteCount; /**< Brief Number of Bytes*/
-  MemoryValue _data;      /**< Brief MemoryValue holding *all* the data*/
+  /**
+   * \brief character defaulty separating serialized cells
+   */
+  static constexpr char _standardSeparator = ',';
+  /**
+   * \brief constant identifiers within a serialized memory
+   */
+  static const std::string _byteCountStringIdentifier;
+  static const std::string _byteSizeStringIdentifier;
+  static const std::string _lineLengthStringIdentifier;
+  static const std::string _separatorStringIdentifier;
+  static const std::string _lineStringIdentifier;
+  static const std::string _dataMapStringIdentifier;
+  /**
+   * \brief Size of a Byte in Bit
+   */
+  std::size_t _byteSize;
+  /**
+   * \brief Number of Bytes
+   */
+  std::size_t _byteCount;
+  /**
+   * \brief MemoryValue holding all the data
+   */
+  MemoryValue _data;
+  /**
+   * \brief This function gets called for every changed area in Memory
+   */
   std::function<void(const std::size_t, const std::size_t)> _callback = [](
-      const std::size_t, const std::size_t) {
-  }; /**< Brief This function gets called for every changed area in Memory*/
+      const std::size_t, const std::size_t) {};
+  /**< Brief This function gets called for every changed area in Memory*/
+
+  /**
+   * \brief vector storing data about protected memory areas
+   * \note this takes linear time, one could improve this by implementing some
+   *       binary search, or using some indexed algorithm
+   */
+  std::map<std::size_t, std::size_t> _protection{};
 
   /**
    * \brief This Method is called whenever something in the Memory changes and
-   *        notifies the Gui ofthe change
+   *        notifies the Gui of the change
+   * \param address address of the updated value
+   * \param amount length of the updated value
    */
-  void wasUpdated(const std::size_t address, const std::size_t amount = 1);
+  void _wasUpdated(const std::size_t address, const std::size_t amount = 1);
+
+  /**
+   * \brief appends a string represenation of value to stream
+   * \param strm stringstream so append value to
+   * \param value value to append to strm
+   */
+  static void
+  _appendMemoryValue(std::stringstream &strm, const MemoryValue &value);
+
+  /**
+   * \brief converts a line of hex values to a MemoryValue
+   * \param line line containing all the data
+   * \param byteSize Size of a memory cell in bit
+   * \param lineLength maximum number of cells separated by separator
+   * \param separator char separating different cells
+   * \returns a long MemoryValue represenation of line
+   */
+  static MemoryValue _deserializeLine(const std::string &line,
+                                      std::size_t byteSize,
+                                      std::size_t lineLength,
+                                      char separator);
+
+  /**
+   * \brief converts the memory into serializeable strings
+   * \param separator character used to separate the cells of each line
+   * \param lineLength the length of a line in byte
+   * \returns a serialize representation of the Memory
+   */
+  std::pair<std::map<std::string, std::size_t>,
+            std::map<std::string, std::string>>
+  _serializeRaw(char separator = _standardSeparator,
+                std::size_t lineLength = 64) const;
+
+  /**
+   * \brief returns true if the protection area [protectionBegin, protectionEnd]
+   *        overlaps with the area [address, address + amount]
+   */
+  bool _overlaps(std::size_t protectionBegin,
+                  std::size_t protectionEnd,
+                  std::size_t address,
+                  std::size_t amount,
+                  bool equal) const;
 };
 
 #endif// ERAGPSIM_CORE_MEMORY_HPP_

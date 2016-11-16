@@ -20,8 +20,8 @@
 
 #include <memory>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
-#include "core/memory-value.hpp"
+class AbstractSyntaxTreeNode;
+class MemoryValue;
 
 /**
  * \brief The AbstractImmediateNodeFactory class
@@ -46,6 +46,16 @@ class AbstractImmediateNodeFactory {
    * immediate from the given numericalValue
    */
   virtual Node createImmediateNode(const MemoryValue &numericalValue) const = 0;
+
+   /**
+   * Returns a immediate value for the given label value.
+   * Due to the possibility that different instructions handle label values differently, the instruction mnemonic is required.
+   * \param labelValue The absolute address where the label is defined
+   * \param instructionMnemonic The mnemonic of the instruction whose operand is the current label
+   * \param instructionAddress The absolute address of the current instruction
+   * \return
+   */
+  virtual MemoryValue labelToImmediate(const MemoryValue& labelValue, const std::string& instructionMnemonic, const MemoryValue& instructionAddress) const = 0;
 };
 
 #endif /* ERAGPSIM_ARCH_ABSTRACT_IMMEDIATE_NODE_FACTORY_HPP */

@@ -18,12 +18,14 @@
 #ifndef ERAGPSIM_ARCH_COMMON_IMMEDIATE_NODE_HPP
 #define ERAGPSIM_ARCH_COMMON_IMMEDIATE_NODE_HPP
 
+#include <QtCore/qglobal.h>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "core/memory-value.hpp"
+
+class MemoryAccess;
 
 /** A node that contains a concrete memory value. */
 class ImmediateNode : public AbstractSyntaxTreeNode {
@@ -33,46 +35,39 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
    *
    * \param value The value of this node.
    */
-  ImmediateNode(MemoryValue value)
-  : AbstractSyntaxTreeNode(Type::IMMEDIATE), _value(value) {
-  }
+  ImmediateNode(const MemoryValue& value);
+
+  ~ImmediateNode() = default;
+
+  void setValue(const MemoryValue& value);
 
   /**
    * \return The concrete value
    */
-  virtual MemoryValue getValue(DummyMemoryAccess &memory_access) override {
-    return _value;
-  }
+  MemoryValue getValue(MemoryAccess& MemoryAccess) const override;
 
   /**
-   * \return true, if there are no children.
+   * \return success, if there are no children.
    */
-  virtual bool validate() override {
-    // Immediate values can't have any children
-    return AbstractSyntaxTreeNode::_children.size() == 0;
-  }
+  ValidationResult validate(MemoryAccess& memoryAccess) const override;
 
   /**
-   * \return An empty MemoryValue, because the instruction has to be
-   * assembled in the instruction node.
+   * \return Return the value of the immediate.
    */
-  virtual MemoryValue assemble() override {
-    return MemoryValue{};
-  }
+  MemoryValue assemble() const override;
 
   /**
    * Returns always the same string: "imm".
    *
    * \return The string "imm"
    */
-
-  virtual std::string getIdentifier() override {
-    return "Imm";
-  }
+  const std::string& getIdentifier() const override;
 
  private:
   MemoryValue _value;
-};
 
+  // needed, because getIdentifier returns a reference
+  static const std::string IMMEDIATE_IDENTIFIER;
+};
 
 #endif /* ERAGPSIM_ARCH_COMMON_IMMEDIATE_NODE_HPP */

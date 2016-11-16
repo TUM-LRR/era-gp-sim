@@ -1,53 +1,85 @@
 {
+    "name": "rv32m", 
     "instructions": [
         {
-            "funct3": 0,
-            "opcode": 51,
-            "mnemonic": "mul",
-            "funct7": 1
-        },
+            "mnemonic": "mul", 
+            "length": 32, 
+            "key": {
+                "funct3": 0, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "funct3": 1,
-            "opcode": 51,
-            "mnemonic": "mulh",
-            "funct7": 1
-        },
+            "mnemonic": "mulh", 
+            "length": 32, 
+            "key": {
+                "funct3": 1, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "funct3": 2,
-            "opcode": 51,
-            "mnemonic": "mulhsu",
-            "funct7": 1
-        },
+            "mnemonic": "mulhsu", 
+            "length": 32, 
+            "key": {
+                "funct3": 2, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "funct3": 3,
-            "opcode": 51,
-            "mnemonic": "mulhu",
-            "funct7": 1
-        },
+            "mnemonic": "mulhu", 
+            "length": 32, 
+            "key": {
+                "funct3": 3, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "funct3": 4,
-            "opcode": 51,
-            "mnemonic": "div",
-            "funct7": 1
-        },
+            "mnemonic": "div", 
+            "length": 32, 
+            "key": {
+                "funct3": 4, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "funct3": 5,
-            "opcode": 51,
-            "mnemonic": "divu",
-            "funct7": 1
-        },
+            "mnemonic": "divu", 
+            "length": 32, 
+            "key": {
+                "funct3": 5, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "funct3": 6,
-            "opcode": 51,
-            "mnemonic": "rem",
-            "funct7": 1
-        },
+            "mnemonic": "rem", 
+            "length": 32, 
+            "key": {
+                "funct3": 6, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
+        }, 
         {
-            "funct3": 7,
-            "opcode": 51,
-            "mnemonic": "remu",
-            "funct7": 1
+            "mnemonic": "remu", 
+            "length": 32, 
+            "key": {
+                "funct3": 7, 
+                "opcode": 51, 
+                "funct7": 1
+            }, 
+            "format": "R"
         }
-    ],
-    "name": "rv32m"
+    ]
 }

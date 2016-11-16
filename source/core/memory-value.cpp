@@ -16,75 +16,75 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
+#include <sstream>
+#include <vector>
+
+#include "common/assert.hpp"
 #include "core/memory-value.hpp"
 
 namespace {
-constexpr char hex[16]{'0',
-                       '1',
-                       '2',
-                       '3',
-                       '4',
-                       '5',
-                       '6',
-                       '7',
-                       '8',
-                       '9',
-                       'A',
-                       'B',
-                       'C',
-                       'D',
-                       'E',
-                       'F'};
 
-std::ostream &tohex(std::ostream &stream, std::uint8_t v) {
-  return stream << hex[(int)v / 16] << hex[(int)v % 16] << ';';
+std::ostream &tohex(std::ostream &stream, std::uint8_t value) {
+  static const char hex[] = "0123456789ABCDEF";
+  return stream << hex[value / 16] << hex[value % 16] << ';';
 }
 
-std::size_t byteAddressOfBit(std::size_t address) {
+auto byteAddressOfBit(MemoryValue::address_t address) {
   return address / 8;
 }
 
-std::size_t offset(std::size_t address) {
+auto offset(MemoryValue::address_t address) {
   return address % 8;
 }
 }
 
 
+MemoryValue::Reference::Reference(MemoryValue &memory, address_t address)
+: _memory(memory), _address(address) {
+}
+
+MemoryValue::Reference &MemoryValue::Reference::operator=(bool value) {
+  _memory.set(_address, value);
+  return *this;
+}
+
+MemoryValue::Reference::operator bool() const noexcept {
+  return _memory.get(_address);
+}
+
 MemoryValue::MemoryValue() : MemoryValue(8) {
 }
 
-MemoryValue::MemoryValue(const std::vector<uint8_t> &other,
-                         const std::size_t size)
+MemoryValue::MemoryValue(const Underlying &other, address_t size)
 : _size{size}, _data{other} {
-  assert::that(true);
   assert::that(size > 0);
   assert::that(_data.size() == (size + 7) / 8);
 }
 
-MemoryValue::MemoryValue(std::vector<uint8_t> &&other, const std::size_t size)
+MemoryValue::MemoryValue(Underlying &&other, address_t size)
 : _size{size}, _data{std::move(other)} {
   assert::that(size > 0);
   assert::that(_data.size() == (size + 7) / 8);
 }
 
-MemoryValue::MemoryValue(std::size_t size)
-: _size{size}, _data(std::size_t{(size + 7) / 8}, 0) {
+MemoryValue::MemoryValue(size_t size)
+: _size{size}, _data(address_t{(size + 7) / 8}, 0) {
   assert::that(size > 0);
 }
 
 MemoryValue::MemoryValue(const MemoryValue &other,
-                         const std::size_t begin,
-                         const std::size_t end)
-: _size{end - begin}, _data(std::size_t{(end - begin + 7) / 8}, 0) {
+                         address_t begin,
+                         address_t end)
+: _size{end - begin}, _data(address_t{(end - begin + 7) / 8}, 0) {
   assert::that(begin < end);
   assert::that(end <= other.getSize());
-  for (std::size_t i = 0; i < _data.size(); ++i) {
+  for (address_t i = 0; i < _data.size(); ++i) {
     _data[i] = other.getByteAt(begin + i * 8);
   }
 }
 
-MemoryValue
-MemoryValue::subSet(const std::size_t begin, const std::size_t end) const {
+MemoryValue MemoryValue::subSet(address_t begin, address_t end) const {
   return MemoryValue(*this, begin, end);
 }
 
@@ -97,13 +97,47 @@ constexpr uint8_t testAnd[8]{
 };
 }
 
-bool MemoryValue::get(const std::size_t address) const {
+MemoryValue::Iterator MemoryValue::begin() noexcept {
+  return {*this, 0};
+}
+
+MemoryValue::ConstIterator MemoryValue::cbegin() const noexcept {
+  return {*this, 0};
+}
+
+MemoryValue::ConstIterator MemoryValue::begin() const noexcept {
+  return {*this, 0};
+}
+
+MemoryValue::Iterator MemoryValue::end() noexcept {
+  return {*this, _size};
+}
+
+MemoryValue::ConstIterator MemoryValue::cend() const noexcept {
+  return {*this, _size};
+}
+
+MemoryValue::ConstIterator MemoryValue::end() const noexcept {
+  return {*this, _size};
+}
+
+MemoryValue::Iterator MemoryValue::getIterator(address_t address) {
+  assert::that(address <= _size);
+  return {*this, address};
+}
+
+MemoryValue::ConstIterator MemoryValue::getIterator(address_t address) const {
+  assert::that(address <= _size);
+  return {*this, address};
+}
+
+bool MemoryValue::get(address_t address) const {
   assert::that(address < getSize());
   assert::that(address >= 0);
   return (_data[byteAddressOfBit(address)] & testOr[offset(address)]) != 0;
 }
 
-void MemoryValue::put(const std::size_t address, const bool value) {
+void MemoryValue::put(address_t address, bool value) {
   assert::that(address < getSize());
   assert::that(address >= 0);
   // Setting or clearing the value bitwise.
@@ -114,7 +148,7 @@ void MemoryValue::put(const std::size_t address, const bool value) {
   }
 }
 
-bool MemoryValue::set(const std::size_t address, const bool value) {
+bool MemoryValue::set(address_t address, bool value) {
   assert::that(address < getSize());
   assert::that(address >= 0);
   if (((_data[byteAddressOfBit(address)] & testOr[offset(address)]) != 0) ==
@@ -125,18 +159,41 @@ bool MemoryValue::set(const std::size_t address, const bool value) {
   }
 }
 
-bool MemoryValue::flip(const std::size_t address) {
+bool MemoryValue::flip(address_t address) {
   assert::that(address < getSize());
   assert::that(address >= 0);
   _data[byteAddressOfBit(address)] ^= testOr[offset(address)];
   return !get(address);
 }
 
-std::size_t MemoryValue::getSize() const {
+MemoryValue::Reference MemoryValue::operator[](address_t address) {
+  return {*this, address};
+}
+
+MemoryValue::ConstReference MemoryValue::operator[](address_t address) const {
+  return get(address);
+}
+
+MemoryValue::address_t MemoryValue::getSize() const {
   return _size;
 }
 
-const std::vector<uint8_t> &MemoryValue::internal() const {
+bool MemoryValue::isZero() {
+  for (address_t i = 0; i < getSize(); ++i) {
+    if (get(i)) return false;
+  }
+  return true;
+}
+
+bool MemoryValue::front() const {
+  return get(0);
+}
+
+bool MemoryValue::back() const {
+  return get(_size - 1);
+}
+
+const MemoryValue::Underlying &MemoryValue::internal() const {
   return _data;
 }
 
@@ -152,7 +209,7 @@ bool MemoryValue::operator==(const MemoryValue &other) const {
     return false;
   }
 
-  for (std::size_t i = 0; i < _data.size() - 1; ++i) {
+  for (address_t i = 0; i < _data.size() - 1; ++i) {
     if (_data[i] != other._data[i]) return false;
   }
   return (_data[_data.size() - 1] & testEQ[offset(_size)]) ==
@@ -174,8 +231,8 @@ constexpr uint8_t write1[8]{
 }
 
 
-void MemoryValue::write(const MemoryValue &other, std::size_t begin) {
-  std::size_t end{begin + other._size};
+void MemoryValue::write(const MemoryValue &other, address_t begin) {
+  address_t end{begin + other._size};
   assert::that(begin < end);// _size > 0
   assert::that(end <= _size);
   // wipe clean
@@ -187,20 +244,26 @@ void MemoryValue::write(const MemoryValue &other, std::size_t begin) {
     // clear last byte
     _data[(end - 1) / 8] &= write1[(end - 1) % 8];
     // clear in between
-    for (std::size_t i = (begin / 8) + 1; i < (end - 1) / 8; ++i) {
+    for (address_t i = (begin / 8) + 1; i < (end - 1) / 8; ++i) {
       _data[i] = 0x00;
     }
   }
   // fill first byte
   _data[begin / 8] |= other.getByteAt(0) << (begin % 8);
-  std::size_t filled{8 - (begin % 8)};
+  address_t filled{8 - (begin % 8)};
   while (filled < other._size) {
     _data[(begin + filled) / 8] |= other.getByteAt(filled);
     filled += 8;
   }
 }
 
-std::uint8_t MemoryValue::getByteAt(std::size_t address) const {
+void MemoryValue::clear() {
+  for (auto &i : _data) {
+    i = 0x00;
+  }
+}
+
+std::uint8_t MemoryValue::getByteAt(address_t address) const {
   assert::that(address < getSize());
   assert::that(address >= 0);
 
@@ -224,7 +287,7 @@ std::ostream &operator<<(std::ostream &stream, const MemoryValue &value) {
   constexpr std::size_t intMinPrecision = 1;
 
   // Printing in binary format.
-  for (std::size_t i = value.getSize(); i > 0; --i) {
+  for (size_t i = value.getSize(); i > 0; --i) {
     // if (i % value._byteSize == 0 && i != value.getSize()) stream << '|';
     if (value.get(i - intMinPrecision))
       stream << '1';
@@ -235,7 +298,39 @@ std::ostream &operator<<(std::ostream &stream, const MemoryValue &value) {
   stream << "' : " << value._size << " -> [";
 
   // Printing as hex.
-  for (std::size_t i = 0; i < value._data.size(); ++i)
+  for (size_t i = 0; i < value._data.size(); ++i) {
     tohex(stream, value._data[i]);
+  }
+
   return stream << "]";
+}
+
+std::string MemoryValue::toHexString(bool Ox, bool leadingZeros) const {
+  static const char hex[] = "0123456789ABCDEF";
+  std::stringstream stream{};
+  if (Ox) {
+    stream << "0x";
+  }
+  bool zero = true;
+  // reversely iterate over all the bytes in value (high->low)
+  for (std::size_t l = (getSize() + 7) / 8; l-- > 0;) {
+    std::uint8_t byte = getByteAt(l * 8);
+    std::uint8_t upperChar = byte / 16;
+    std::uint8_t lowerChar = byte % 16;
+    // do not print if this is the first character && it's 0
+    if (leadingZeros || !zero || upperChar != 0) {
+      stream.put(hex[upperChar]);
+      zero = false;
+    }
+    // do not print if this is the first character && it's 0
+    if (leadingZeros || !zero || lowerChar != 0) {
+      stream.put(hex[lowerChar]);
+      zero = false;
+    }
+  }
+  // if no characters have been printed print 0
+  if (zero) {
+    stream.put('0');
+  }
+  return stream.str();
 }

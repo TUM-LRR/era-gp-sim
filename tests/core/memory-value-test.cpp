@@ -331,3 +331,127 @@ TEST(TestMemoryValue, write) {
     }
   }
 }
+
+TEST(TestMemoryValue, TestFrontAndBackWorkWell) {
+  MemoryValue memory(10);
+
+  memory.set(0, true);
+  EXPECT_TRUE(memory.front());
+
+  memory.set(0, false);
+  EXPECT_FALSE(memory.front());
+
+  memory.set(9, true);
+  EXPECT_TRUE(memory.back());
+
+  memory.set(9, false);
+  EXPECT_FALSE(memory.back());
+}
+
+TEST(TestMemoryValue, SubscriptOperatorAllowsRead) {
+  static std::random_device seed;
+  static std::uniform_int_distribution<std::size_t> distribution(0, 1);
+  static std::mt19937 generator(seed());
+
+  MemoryValue memory(100);
+
+  for (std::size_t i = 0; i < 100; ++i) {
+    auto value = distribution(generator);
+    memory.set(i, value);
+
+    ASSERT_EQ(memory.get(i), value);
+    ASSERT_EQ(memory[i], value);
+
+    // Make sure that the subscript operator does not change the value
+    ASSERT_EQ(memory.get(i), value);
+  }
+}
+
+TEST(TestMemoryValue, SubscriptOperatorAllowsWrite) {
+  static std::random_device seed;
+  static std::uniform_int_distribution<std::size_t> distribution(0, 1);
+  static std::mt19937 generator(seed());
+
+  MemoryValue memory(100);
+
+  for (std::size_t i = 0; i < 100; ++i) {
+    auto value = distribution(generator);
+
+    memory[i] = value;
+
+    ASSERT_EQ(memory.get(i), value);
+    ASSERT_EQ(memory[i], value);
+  }
+}
+
+TEST(TestMemoryValue, TestIteratorAccess) {
+  MemoryValue memory(10);
+
+  bool last = false;
+
+  std::generate(memory.begin(), memory.end(), [&last] {
+    last = !last;
+    return last;
+  });
+
+  EXPECT_EQ(*(memory.begin()), memory.front());
+
+  last = false;
+  auto iterator = memory.getIterator(1);
+  for (std::size_t i = 1; i < memory.getSize(); ++i, last = !last) {
+    EXPECT_EQ(*iterator, last);
+    EXPECT_EQ(*(++(--iterator)), last);
+    *iterator = !last;
+    EXPECT_EQ(*(++(--iterator)), !last);
+  }
+}
+
+TEST(TestMemoryValue, TestIteratorBehavior) {
+  MemoryValue memory(4);
+
+  EXPECT_EQ(memory.end() - memory.begin(), 4);
+  EXPECT_EQ(memory.begin() - memory.begin(), 0);
+  EXPECT_EQ(memory.end() - memory.end(), 0);
+
+  memory.set(0, true);
+  memory.set(1, false);
+  memory.set(2, true);
+  memory.set(3, false);
+
+  auto iterator = memory.begin();
+
+  EXPECT_EQ(*iterator, true);
+  EXPECT_EQ(iterator - memory.begin(), 0);
+
+  ++iterator;
+
+  EXPECT_EQ(*iterator, false);
+  EXPECT_EQ(iterator - memory.begin(), 1);
+
+  iterator += 2;
+
+  EXPECT_EQ(*iterator, false);
+  EXPECT_EQ(iterator - memory.begin(), 3);
+
+  ++iterator;
+
+  ASSERT_EQ(iterator.getAddress(), 4);
+  EXPECT_EQ(iterator, memory.end());
+
+  iterator -= 4;
+
+  EXPECT_EQ(iterator, memory.begin());
+  EXPECT_EQ(iterator + 4, memory.end());
+
+  EXPECT_EQ(*(iterator + 2), true);
+
+  MemoryValue memory2(4);
+  memory2.set(0, true);
+
+  EXPECT_NE(memory.begin(), memory2.begin());
+
+  // Evaluate in lambda else we get an "expression result unused error"
+  EXPECT_THROW(([&] { return memory.begin() > memory2.end(); })(),
+               assert::AssertionError);
+  EXPECT_THROW(memory.begin() - memory2.end(), assert::AssertionError);
+}
