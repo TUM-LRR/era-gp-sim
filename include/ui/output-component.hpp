@@ -22,6 +22,9 @@
 #include <QDebug>
 #include <QQmlContext>
 #include "core/memory-access.hpp"
+#include <QImage>
+
+//class QImage;
 
 class MemoryManager;
 
@@ -34,6 +37,7 @@ class OutputComponent : public QObject {
  signals:
   void memoryChanged(QVariant address, QVariant length);
   void outputItemSettingsChanged();
+  void newImage(QImage image);
 
  public:
   explicit OutputComponent(MemoryManager &memoryManager,

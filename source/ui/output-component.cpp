@@ -50,7 +50,7 @@ void OutputComponent::addOutputItem(QString outputItemType) {
     } else if (outputItemType == "TextConsole") {
         _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "TextConsole"}, {"baseAddress", QVariant(0)}, {"textMode", QVariant(0)}}));
     } else if (outputItemType == "PixelDisplay") {
-      _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "PixelDisplay"}, {"baseAddress", QVariant(0)}}));
+      _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "PixelDisplay"}, {"baseAddress", QVariant(0)}, {"breadth", QVariant(320)}, {"height", QVariant(240)}, {"colorMode", QVariant(0)}}));
     }
 }
 

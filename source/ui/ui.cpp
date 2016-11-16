@@ -22,6 +22,7 @@
 #include "arch/common/architecture-formula.hpp"
 #include "common/assert.hpp"
 #include "common/utility.hpp"
+#include "ui/pixel-display-painted-item.hpp"
 #include "ui/pixel-display-provider.hpp"
 
 
@@ -32,6 +33,9 @@ Ui::Ui(int& argc, char** argv)
 
 int Ui::runUi() {
   qRegisterMetaType<std::size_t>("std::size_t");
+  qRegisterMetaType<QImage>("QImage");
+  qmlRegisterType<PixelDisplayPaintedItem>(
+      "eragpsim.pixeldisplaypainteditem", 1, 0, "PixelDisplay");
   _engine.rootContext()->setContextProperty("ui", this);
 
   _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
