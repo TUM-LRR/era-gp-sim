@@ -23,6 +23,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import "./7-Segment/"
 
 Rectangle {
     id: rootRectangle
@@ -44,23 +45,47 @@ Rectangle {
         tabPosition: Qt.BottomEdge
 
         Component.onCompleted: {
-            for (var index = 0; index < outputComponent.getOutputItems().length; ++index) {
-                var currentOutputItem = outputComponent.getOutputItems()[index];
-                var tabComponent;
-                var tabTitle;
-                if (currentOutputItem["type"] == "LightStrip") {
-                    tabComponent = Qt.createComponent("LightStrip.qml");
-                    tabTitle = "Buttons/Lightstrip Icon";
-                } else if (currentOutputItem["type"] == "SevenSegment") {
-                    tabComponent = Qt.createComponent("BlueRectangle.qml");
-                    tabTitle = "Buttons/Sevensegment Icon";
-                } else if (currentOutputItem["type"] == "TextConsole") {
-                    tabComponent = Qt.createComponent("RedRectangle.qml");
-                    tabTitle = "Buttons/Text Console Icon";
-                }
-                var tab = outputTabView.addTab(tabTitle, tabComponent);
-                tab.active = true;
-                tab.item.outputItemIndex = index;
+//            for (var index = 0; index < outputComponent.getOutputItems().length; ++index) {
+//                var currentOutputItem = outputComponent.getOutputItems()[index];
+//                var tabComponent;
+//                var tabTitle;
+//                if (currentOutputItem["type"] == "LightStrip") {
+//                    tabComponent = Qt.createComponent("LightStrip.qml");
+//                    tabTitle = "Buttons/Lightstrip Icon";
+//                } else if (currentOutputItem["type"] == "SevenSegment") {
+//                    tabComponent = Qt.createComponent("7-Segment/SevenSegment.qml");
+//                    tabTitle = "Buttons/Sevensegment Icon";
+//                } else if (currentOutputItem["type"] == "TextConsole") {
+//                    tabComponent = Qt.createComponent("RedRectangle.qml");
+//                    tabTitle = "Buttons/Text Console Icon";
+//                }
+//                var tab = outputTabView.addTab(tabTitle, tabComponent);
+//                tab.active = true;
+//                tab.item.outputItemIndex = index;
+//            }
+        }
+
+        Tab {
+            title: "Buttons/Lightstrip Icon";
+
+            LightStrip {
+                outputItemIndex: 0
+            }
+        }
+
+        Tab {
+            title: "Buttons/Sevensegment Icon";
+
+            SevenSegment {
+                outputItemIndex: 1
+            }
+        }
+
+        Tab {
+            title: "Buttons/Text Console Icon";
+
+            RedRectangle {
+                outputItemIndex: 2
             }
         }
 

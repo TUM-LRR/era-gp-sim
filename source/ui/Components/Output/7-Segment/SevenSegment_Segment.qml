@@ -22,11 +22,11 @@ import QtQuick 2.0
 import QtQuick.Dialogs 1.0
 
 /*
-Represent one segment for a 7-segment display:
+Represent one generic segment for a 7-segment display:
 
   /\
   ||
-  ||
+  ||    <=========>
   ||
   \/
 
@@ -36,10 +36,8 @@ Item {
     id: segment
     property color color: "yellow"
 
-    height: 100
-    width: 10
-    x: 0
-    y: 0
+    height: 50
+    width: 0.1 * height
 
     Rectangle {
         id: ending1
