@@ -33,5 +33,6 @@
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
+        <file>Components/Output/Console.qml</file>
     </qresource>
 </RCC>
