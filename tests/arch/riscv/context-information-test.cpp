@@ -28,9 +28,10 @@ struct ContextInformationTest : RiscvBaseTest {
 
 TEST_F(ContextInformationTest, allExist) {
     Architecture arch = _project->getArchitectureAccess().getArchitecture().get();
-    InstructionContextInformation info(arch);
+    NodeFactoryCollection factories = getFactories();
     for(auto& pair : arch.getInstructions()) {
         const std::string& mnemonic = pair.second.getMnemonic();
-        EXPECT_TRUE(info.isContextInformationAvailable(mnemonic)) << "Missing or invalid information for " << mnemonic;
+        auto node = factories.createInstructionNode(mnemonic);
+        node->getInstructionDocumentation();//if a InstructionDocumentation exists, no assertion is thrown
     }
 }

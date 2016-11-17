@@ -19,6 +19,7 @@
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/instruction-information.hpp"
+#include "common/translateable.hpp"
 
 class AbstractInstructionNode : public AbstractSyntaxTreeNode
 {
@@ -38,6 +39,8 @@ public:
 
     /** \copydoc AbstractSyntaxTreeNode::getIdentifier() */
     const std::string& getIdentifier() const override;
+
+    virtual const Translateable& getInstructionDocumentation() const = 0;
 
 protected:
 

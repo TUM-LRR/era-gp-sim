@@ -12,6 +12,7 @@ set(ARCH_RISCV_SOURCES
   data-node-factory.cpp
   documentation-builder.cpp
   instruction-context-information.cpp
+  simulator-instructions.cpp
 )
 
 ########################################

@@ -97,6 +97,8 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
    * Description of all instructions that can be created by this factory
    */
   InstructionSet _instructionSet;
+
+  std::shared_ptr<InstructionContextInformation> _documentation;
 };
 }
 

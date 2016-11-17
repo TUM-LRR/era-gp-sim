@@ -26,6 +26,7 @@
 #include "arch/riscv/utility.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-value.hpp"
+#include "arch/riscv/instruction-context-information.hpp"
 
 namespace riscv {
 /** A node that represents a RISC V specific instruction */
@@ -44,6 +45,10 @@ class InstructionNode : public AbstractInstructionNode {
 
   /** \copydoc AbstractSyntaxTreeNode::assemble() */
   MemoryValue assemble() const override;
+
+  const Translateable &getInstructionDocumentation() const override;
+
+  void setDocumentation(const std::shared_ptr<InstructionContextInformation>& documentation);
 
  protected:
   using TypeList = std::initializer_list<super::Type>;
@@ -101,6 +106,9 @@ class InstructionNode : public AbstractInstructionNode {
    * \return True if the children match the given types, else false.
    */
   bool _compareChildTypes(TypeList list, size_t startIndex = 0) const;
+
+private:
+  std::shared_ptr<InstructionContextInformation> _documentation;
 };
 }
 
