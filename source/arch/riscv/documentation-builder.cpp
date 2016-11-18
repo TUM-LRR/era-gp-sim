@@ -21,6 +21,7 @@
 using Key = DocumentationBuilder::Key;
 
 const std::vector<std::string> DocumentationBuilder::_colors = {
+    //blue, red, orange/brown
     "#3366c4", "#66c433", "#c46633"};
 
 DocumentationBuilder::DocumentationBuilder() : _operandCount(0) {}
@@ -33,17 +34,6 @@ Translateable DocumentationBuilder::build() {
       {_components[Key::INSTRUCTION], _components[Key::S_SYNTAX],
        _optional(Key::OPERAND_DESC), _optional(Key::S_DESC),
        _optional(Key::D_DESC)});
-  //  std::string result = "<b>";
-  //  result += _components[Key::INSTRUCTION];
-  //  result += "</b>: <code>";
-  //  result += _components[Key::S_SYNTAX];
-  //  result += "</code>";
-  //  _optionalPut(result, Key::OPERAND_DESC, "<p style=\"margin-left: 5%\">",
-  //               "</p>");
-  //  _optionalPut(result, Key::S_DESC);
-  //  _optionalPut(result, Key::D_DESC, "<br>");
-  //  //result += "</html>";
-  //  return result;
 }
 
 DocumentationBuilder &DocumentationBuilder::instruction(const std::string &s) {
@@ -72,15 +62,10 @@ DocumentationBuilder &DocumentationBuilder::operandDescription(
   auto &baseString = existingTranslateable->getModifiableBaseString();
   baseString += '%';
   baseString += std::to_string(_operandCount + 1);  // will be %1, %2, ...
+  //all template arguments are explicitly given because gcc has a hard time guessing
   auto operand = std::make_shared<Translateable, std::string, std::initializer_list<const std::string>>(
       "<br><code><span style=\"color:%1\"><b>%2</b></span></code>: %3",
       {_nextColor(), name, description});
-  //  existingOperandList += "<br><code><span style=\"color:";
-  //  existingOperandList += _nextColor();
-  //  existingOperandList += "\"><b>";
-  //  existingOperandList += name;
-  //  existingOperandList += "</b></span></code>: ";
-  //  existingOperandList += description;
   existingTranslateable->addOperand(operand);
   ++_operandCount;
   return *this;
@@ -108,16 +93,6 @@ DocumentationBuilder &DocumentationBuilder::shortSyntax(
     translateable->addOperand(std::make_shared<Translateable>(op));
     ++i;
   }
-
-  //  auto i = 0;
-  //  for (const std::string &ops : operands) {
-  //    result += "<span style=\"color:";
-  //    result += _colors[i % _colors.size()];
-  //    result += "\"><b>";
-  //    result += ops;
-  //    result += "</b></span>, ";
-  //    ++i;
-  //  }
 
   // remove last ", " and put into translateable
   translateable->getModifiableBaseString() +=

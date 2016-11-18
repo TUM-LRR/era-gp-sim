@@ -41,21 +41,21 @@ Translateable::Translateable(
 }
 
 QString Translateable::translate(const QApplication &translater) const {
+  // translate the base string (still filled with the %s)
   QString translatedTotal = translater.tr(_baseString.c_str());
   for (const auto &op : _operands) {
+    // translate recursively all operands and insert them into the base string
     translatedTotal = translatedTotal.arg(op->translate(translater));
   }
   return translatedTotal;
 }
 
-std::string& Translateable::getModifiableBaseString() {
-    return _baseString;
-}
+std::string &Translateable::getModifiableBaseString() { return _baseString; }
 
 void Translateable::addOperand(const TranslateablePtr &op) {
-    _operands.push_back(op);
+  _operands.push_back(op);
 }
 
 void Translateable::addOperand(const std::string &op) {
-    _operands.push_back(std::make_shared<Translateable>(op));
+  _operands.push_back(std::make_shared<Translateable>(op));
 }

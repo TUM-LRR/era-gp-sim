@@ -200,6 +200,7 @@ class FactoryMap {
     _map.emplace(instructionName, [args...](const auto &information,
                                             const auto &documentation) {
       auto node = std::make_unique<InstructionType>(information, args...);
+      //set documentation before returning
       node->setDocumentation(documentation);
       return std::move(node);
     });

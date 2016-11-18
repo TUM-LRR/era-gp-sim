@@ -25,6 +25,9 @@
 
 namespace riscv {
 
+/**
+ * The RISCV adaption of SimulatorSleepInstructionNode
+ */
 class SleepInstruction : public SimulatorSleepInstructionNode {
 public:
 
@@ -34,13 +37,17 @@ public:
     MemoryValue assemble() const override;
 
     const Translateable& getInstructionDocumentation() const override;
-
+    /** \copydoc InstructionNode::getInstructionDocumentation */
     void setDocumentation(const std::shared_ptr<InstructionContextInformation>& documentation);
 
 private:
+    /** A pointer to the instruction documentation collection*/
     std::shared_ptr<InstructionContextInformation> _documentation;
 };
 
+/**
+ * The RISCV adaption of SimulatorCrashInstructionNode
+ */
 class CrashInstruction : public SimulatorCrashInstructionNode {
 public:
     CrashInstruction(const InstructionInformation& info) : SimulatorCrashInstructionNode(info) {}
@@ -48,10 +55,11 @@ public:
     MemoryValue assemble() const override;
 
     const Translateable& getInstructionDocumentation() const override;
-
+    /** \copydoc InstructionNode::getInstructionDocumentation */
     void setDocumentation(const std::shared_ptr<InstructionContextInformation>& documentation);
 
 private:
+    /** A pointer to the instruction documentation collection*/
     std::shared_ptr<InstructionContextInformation> _documentation;
 };
 }
