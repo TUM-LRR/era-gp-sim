@@ -1,8 +1,14 @@
 {
+    "word-size": 32,
+    "byte-size": 8,
+    "alignment-behavior": "relaxed",
+    "signed-representation": "twos-complement",
+    "name": "rv32i",
+    "endianness": "little",
     "builtin-macros": [
         ".macro la, rd, symbol\nauipc \\rd, ((\\symbol >> 12) & 0xfffff)\naddi \\rd, \\rd, (\\symbol & 0xfff)\n.endm\n",
         ".macro nop\naddi x0, x0, 0\n.endm\n",
-        ".macro li, rd, imm\nlui \\rd, ((\\imm >> 12) & 0xfffff)\naddi \\rd, x0, (\\imm & 0xfff)\n.endm\n",
+        ".macro li, rd, imm\nlui \\rd, ((\\imm >> 12) & 0xfffff)\naddi \\rd, \\rd, (\\imm & 0xfff)\n.endm\n",
         ".macro mv, rd, rs\naddi \\rd, \\rs, 0\n.endm\n",
         ".macro not, rd, rs\nxori \\rd, \\rs, -1\n.endm\n",
         ".macro neg, rd, rs\nsub \\rd, x0, \\rs\n.endm\n",
@@ -24,680 +30,674 @@
         ".macro call, offset\nauipc x6, ((\\offset >> 12) & 0xfffff)\njalr x1, x6, (\\offset & 0xfff)\n.endm\n",
         ".macro tail, offset\nauipc x6, ((\\offset >> 12) & 0xfffff)\njalr x0, x6, (\\offset & 0xfff)\n.endm\n"
     ],
-    "signed-representation": "twos-complement",
-    "byte-size": 8,
     "instructions": [
         {
             "length": 32,
+            "mnemonic": "simusleep",
+            "format": "custom",
             "operand length": [
                 32
             ],
-            "format": "custom",
             "key": {
                 "opcode": -1
-            },
-            "mnemonic": "simusleep"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "simucrash",
             "format": "custom",
             "key": {
                 "opcode": -1
-            },
-            "mnemonic": "simucrash"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "lui",
+            "format": "U",
             "operand length": [
                 0,
                 20
             ],
-            "format": "U",
             "key": {
                 "opcode": 55
-            },
-            "mnemonic": "lui"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "auipc",
+            "format": "U",
             "operand length": [
                 0,
                 20
             ],
-            "format": "U",
             "key": {
                 "opcode": 23
-            },
-            "mnemonic": "auipc"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "jal",
+            "format": "UJ",
             "operand length": [
                 0,
                 20
             ],
-            "format": "UJ",
             "key": {
                 "opcode": 111
-            },
-            "mnemonic": "jal"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "jalr",
+            "format": "I",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "I",
             "key": {
                 "opcode": 103
-            },
-            "mnemonic": "jalr"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "beq",
+            "format": "SB",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "SB",
             "key": {
                 "opcode": 99,
                 "funct3": 0
-            },
-            "mnemonic": "beq"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "bne",
+            "format": "SB",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "SB",
             "key": {
                 "opcode": 99,
                 "funct3": 1
-            },
-            "mnemonic": "bne"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "blt",
+            "format": "SB",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "SB",
             "key": {
                 "opcode": 99,
                 "funct3": 4
-            },
-            "mnemonic": "blt"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "bge",
+            "format": "SB",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "SB",
             "key": {
                 "opcode": 99,
                 "funct3": 5
-            },
-            "mnemonic": "bge"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "bltu",
+            "format": "SB",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "SB",
             "key": {
                 "opcode": 99,
                 "funct3": 6
-            },
-            "mnemonic": "bltu"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "bgeu",
+            "format": "SB",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "SB",
             "key": {
                 "opcode": 99,
                 "funct3": 7
-            },
-            "mnemonic": "bgeu"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "lb",
+            "format": "I",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "I",
             "key": {
                 "opcode": 3,
                 "funct3": 0
-            },
-            "mnemonic": "lb"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "lh",
+            "format": "I",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "I",
             "key": {
                 "opcode": 3,
                 "funct3": 1
-            },
-            "mnemonic": "lh"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "lw",
+            "format": "I",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "I",
             "key": {
                 "opcode": 3,
                 "funct3": 2
-            },
-            "mnemonic": "lw"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "lbu",
+            "format": "I",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "I",
             "key": {
                 "opcode": 3,
                 "funct3": 4
-            },
-            "mnemonic": "lbu"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "lhu",
+            "format": "I",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "I",
             "key": {
                 "opcode": 3,
                 "funct3": 5
-            },
-            "mnemonic": "lhu"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "sb",
+            "format": "S",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "S",
             "key": {
                 "opcode": 35,
                 "funct3": 0
-            },
-            "mnemonic": "sb"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "sh",
+            "format": "S",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "S",
             "key": {
                 "opcode": 35,
                 "funct3": 1
-            },
-            "mnemonic": "sh"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "sw",
+            "format": "S",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "S",
             "key": {
                 "opcode": 35,
                 "funct3": 2
-            },
-            "mnemonic": "sw"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "addi",
+            "format": "I",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "I",
             "key": {
                 "opcode": 19,
                 "funct3": 0
-            },
-            "mnemonic": "addi"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "slti",
+            "format": "I",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "I",
             "key": {
                 "opcode": 19,
                 "funct3": 2
-            },
-            "mnemonic": "slti"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "sltiu",
+            "format": "I",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "I",
             "key": {
                 "opcode": 19,
                 "funct3": 3
-            },
-            "mnemonic": "sltiu"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "xori",
+            "format": "I",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "I",
             "key": {
                 "opcode": 19,
                 "funct3": 4
-            },
-            "mnemonic": "xori"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "ori",
+            "format": "I",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "I",
             "key": {
                 "opcode": 19,
                 "funct3": 6
-            },
-            "mnemonic": "ori"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "andi",
+            "format": "I",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "I",
             "key": {
                 "opcode": 19,
                 "funct3": 7
-            },
-            "mnemonic": "andi"
+            }
         },
         {
             "length": 32,
+            "mnemonic": "slli",
+            "format": "R",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "R",
             "key": {
                 "opcode": 19,
-                "funct7": 0,
-                "funct3": 1
-            },
-            "mnemonic": "slli"
+                "funct3": 1,
+                "funct7": 0
+            }
         },
         {
             "length": 32,
+            "mnemonic": "srli",
+            "format": "R",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "R",
             "key": {
                 "opcode": 19,
-                "funct7": 0,
-                "funct3": 5
-            },
-            "mnemonic": "srli"
+                "funct3": 5,
+                "funct7": 0
+            }
         },
         {
             "length": 32,
+            "mnemonic": "srai",
+            "format": "R",
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "format": "R",
             "key": {
                 "opcode": 19,
-                "funct7": 32,
-                "funct3": 5
-            },
-            "mnemonic": "srai"
+                "funct3": 5,
+                "funct7": 32
+            }
         },
         {
             "length": 32,
+            "mnemonic": "add",
             "format": "R",
             "key": {
                 "opcode": 51,
-                "funct7": 0,
-                "funct3": 0
-            },
-            "mnemonic": "add"
+                "funct3": 0,
+                "funct7": 0
+            }
         },
         {
             "length": 32,
+            "mnemonic": "sub",
             "format": "R",
             "key": {
                 "opcode": 51,
-                "funct7": 32,
-                "funct3": 0
-            },
-            "mnemonic": "sub"
+                "funct3": 0,
+                "funct7": 32
+            }
         },
         {
             "length": 32,
+            "mnemonic": "sll",
             "format": "R",
             "key": {
                 "opcode": 51,
-                "funct7": 0,
-                "funct3": 1
-            },
-            "mnemonic": "sll"
+                "funct3": 1,
+                "funct7": 0
+            }
         },
         {
             "length": 32,
+            "mnemonic": "slt",
             "format": "R",
             "key": {
                 "opcode": 51,
-                "funct7": 0,
-                "funct3": 2
-            },
-            "mnemonic": "slt"
+                "funct3": 2,
+                "funct7": 0
+            }
         },
         {
             "length": 32,
+            "mnemonic": "sltu",
             "format": "R",
             "key": {
                 "opcode": 51,
-                "funct7": 0,
-                "funct3": 3
-            },
-            "mnemonic": "sltu"
+                "funct3": 3,
+                "funct7": 0
+            }
         },
         {
             "length": 32,
+            "mnemonic": "xor",
             "format": "R",
             "key": {
                 "opcode": 51,
-                "funct7": 0,
-                "funct3": 4
-            },
-            "mnemonic": "xor"
+                "funct3": 4,
+                "funct7": 0
+            }
         },
         {
             "length": 32,
+            "mnemonic": "srl",
             "format": "R",
             "key": {
                 "opcode": 51,
-                "funct7": 0,
-                "funct3": 5
-            },
-            "mnemonic": "srl"
+                "funct3": 5,
+                "funct7": 0
+            }
         },
         {
             "length": 32,
+            "mnemonic": "sra",
             "format": "R",
             "key": {
                 "opcode": 51,
-                "funct7": 32,
-                "funct3": 5
-            },
-            "mnemonic": "sra"
+                "funct3": 5,
+                "funct7": 32
+            }
         },
         {
             "length": 32,
+            "mnemonic": "or",
             "format": "R",
             "key": {
                 "opcode": 51,
-                "funct7": 0,
-                "funct3": 6
-            },
-            "mnemonic": "or"
+                "funct3": 6,
+                "funct7": 0
+            }
         },
         {
             "length": 32,
+            "mnemonic": "and",
             "format": "R",
             "key": {
                 "opcode": 51,
-                "funct7": 7,
-                "funct3": 0
-            },
-            "mnemonic": "and"
+                "funct3": 0,
+                "funct7": 7
+            }
         }
     ],
-    "word-size": 32,
     "units": [
         {
             "name": "cpu",
             "registers": [
                 {
-                    "name": "x0",
-                    "size": 32,
                     "alias": "zero",
+                    "name": "x0",
                     "constant": "0x0",
-                    "id": 0
+                    "id": 0,
+                    "size": 32
                 },
                 {
                     "name": "x1",
-                    "size": 32,
-                    "id": 1
+                    "id": 1,
+                    "size": 32
                 },
                 {
                     "name": "x2",
-                    "size": 32,
-                    "id": 2
+                    "id": 2,
+                    "size": 32
                 },
                 {
                     "name": "x3",
-                    "size": 32,
-                    "id": 3
+                    "id": 3,
+                    "size": 32
                 },
                 {
                     "name": "x4",
-                    "size": 32,
-                    "id": 4
+                    "id": 4,
+                    "size": 32
                 },
                 {
                     "name": "x5",
-                    "size": 32,
-                    "id": 5
+                    "id": 5,
+                    "size": 32
                 },
                 {
                     "name": "x6",
-                    "size": 32,
-                    "id": 6
+                    "id": 6,
+                    "size": 32
                 },
                 {
                     "name": "x7",
-                    "size": 32,
-                    "id": 7
+                    "id": 7,
+                    "size": 32
                 },
                 {
                     "name": "x8",
-                    "size": 32,
-                    "id": 8
+                    "id": 8,
+                    "size": 32
                 },
                 {
                     "name": "x9",
-                    "size": 32,
-                    "id": 9
+                    "id": 9,
+                    "size": 32
                 },
                 {
                     "name": "x10",
-                    "size": 32,
-                    "id": 10
+                    "id": 10,
+                    "size": 32
                 },
                 {
                     "name": "x11",
-                    "size": 32,
-                    "id": 11
+                    "id": 11,
+                    "size": 32
                 },
                 {
                     "name": "x12",
-                    "size": 32,
-                    "id": 12
+                    "id": 12,
+                    "size": 32
                 },
                 {
                     "name": "x13",
-                    "size": 32,
-                    "id": 13
+                    "id": 13,
+                    "size": 32
                 },
                 {
                     "name": "x14",
-                    "size": 32,
-                    "id": 14
+                    "id": 14,
+                    "size": 32
                 },
                 {
                     "name": "x15",
-                    "size": 32,
-                    "id": 15
+                    "id": 15,
+                    "size": 32
                 },
                 {
                     "name": "x16",
-                    "size": 32,
-                    "id": 16
+                    "id": 16,
+                    "size": 32
                 },
                 {
                     "name": "x17",
-                    "size": 32,
-                    "id": 17
+                    "id": 17,
+                    "size": 32
                 },
                 {
                     "name": "x18",
-                    "size": 32,
-                    "id": 18
+                    "id": 18,
+                    "size": 32
                 },
                 {
                     "name": "x19",
-                    "size": 32,
-                    "id": 19
+                    "id": 19,
+                    "size": 32
                 },
                 {
                     "name": "x20",
-                    "size": 32,
-                    "id": 20
+                    "id": 20,
+                    "size": 32
                 },
                 {
                     "name": "x21",
-                    "size": 32,
-                    "id": 21
+                    "id": 21,
+                    "size": 32
                 },
                 {
                     "name": "x22",
-                    "size": 32,
-                    "id": 22
+                    "id": 22,
+                    "size": 32
                 },
                 {
                     "name": "x23",
-                    "size": 32,
-                    "id": 23
+                    "id": 23,
+                    "size": 32
                 },
                 {
                     "name": "x24",
-                    "size": 32,
-                    "id": 24
+                    "id": 24,
+                    "size": 32
                 },
                 {
                     "name": "x25",
-                    "size": 32,
-                    "id": 25
+                    "id": 25,
+                    "size": 32
                 },
                 {
                     "name": "x26",
-                    "size": 32,
-                    "id": 26
+                    "id": 26,
+                    "size": 32
                 },
                 {
                     "name": "x27",
-                    "size": 32,
-                    "id": 27
+                    "id": 27,
+                    "size": 32
                 },
                 {
                     "name": "x28",
-                    "size": 32,
-                    "id": 28
+                    "id": 28,
+                    "size": 32
                 },
                 {
                     "name": "x29",
-                    "size": 32,
-                    "id": 29
+                    "id": 29,
+                    "size": 32
                 },
                 {
                     "name": "x30",
-                    "size": 32,
-                    "id": 30
+                    "id": 30,
+                    "size": 32
                 },
                 {
                     "name": "x31",
-                    "size": 32,
-                    "id": 31
+                    "id": 31,
+                    "size": 32
                 },
                 {
                     "name": "pc",
+                    "id": 32,
                     "size": 32,
-                    "type": "program-counter",
-                    "id": 32
+                    "type": "program-counter"
                 }
             ]
         }
-    ],
-    "alignment-behavior": "relaxed",
-    "name": "rv32i",
-    "endianness": "little"
+    ]
 }

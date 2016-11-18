@@ -371,7 +371,7 @@ builtin-macros:
   - |
     .macro li, rd, imm
     lui \rd, ((\imm >> 12) & 0xfffff)
-    addi \rd, x0, (\imm & 0xfff)
+    addi \rd, \rd, (\imm & 0xfff)
     .endm
   - |
     .macro mv, rd, rs

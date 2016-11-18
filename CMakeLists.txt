@@ -57,7 +57,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/source)
 # TESTS
 ########################################
 
-option(ERA_GP_SIM_TESTS "Enable tests" OFF)
+option(ERA_GP_SIM_TESTS "Enable tests" ON)
 
 if(ERA_GP_SIM_TESTS)
   message(STATUS "Enabling and adding tests")
