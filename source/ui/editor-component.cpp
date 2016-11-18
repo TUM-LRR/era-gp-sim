@@ -42,11 +42,6 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
   parserInterface.setSetErrorListCallback([this](
       const std::vector<CompileError> &errorList) { setErrorList(errorList); });
 
-  parserInterface.setThrowRuntimeErrorCallback(
-      [this](const ValidationResult &validationResult) {
-        throwRuntimeError(validationResult);
-      });
-
   // TODO select colors according to a theme/possibility to change colors
 
   // Add all instruction keywords to the syntax highlighter
@@ -145,10 +140,8 @@ void EditorComponent::setCurrentLine(int line) {
   emit executionLineChanged(line);
 }
 
-void EditorComponent::throwRuntimeError(
-    const ValidationResult &validationResult) {
-  QString errorMessage = QString::fromStdString(validationResult.getMessage());
-  emit runtimeError(errorMessage);
+QString EditorComponent::getText() {
+  return _textDocument->toPlainText();
 }
 
 void EditorComponent::_addKeywords(

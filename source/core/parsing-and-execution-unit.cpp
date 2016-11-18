@@ -27,24 +27,25 @@
 #include "parser/parser-mode.hpp"
 
 ParsingAndExecutionUnit::ParsingAndExecutionUnit(
-    std::weak_ptr<Scheduler> &&scheduler, MemoryAccess memoryAccess,
-    Architecture architecture, SharedCondition stopCondition,
+    std::weak_ptr<Scheduler> &&scheduler,
+    MemoryAccess memoryAccess,
+    Architecture architecture,
+    SharedCondition stopCondition,
     std::string parserName)
-    : Servant(std::move(scheduler)),
-      _parser(
-          ParserFactory::createParser(architecture, memoryAccess, parserName)),
-      _stopCondition(stopCondition),
-      _finalRepresentation(),
-      _addressCommandMap(),
-      _lineCommandCache(),
-      _memoryAccess(memoryAccess),
-      _breakpoints(),
-      _syntaxInformation(_parser->getSyntaxInformation()),
-      _setContextInformation([](const std::vector<ContextInformation> &x) {}),
-      _setErrorList([](const std::vector<CompileError> &x) {}),
-      _throwRuntimeError(([](const ValidationResult &x) {})),
-      _setMacroList(([](const std::vector<MacroInformation> &x) {})),
-      _setCurrentLine([](size_t x) {}) {
+: Servant(std::move(scheduler))
+, _parser(ParserFactory::createParser(architecture, memoryAccess, parserName))
+, _stopCondition(stopCondition)
+, _finalRepresentation()
+, _addressCommandMap()
+, _lineCommandCache()
+, _memoryAccess(memoryAccess)
+, _breakpoints()
+, _syntaxInformation(_parser->getSyntaxInformation())
+, _setContextInformation([](const std::vector<ContextInformation> &x) {})
+, _setErrorList([](const std::vector<CompileError> &x) {})
+, _throwError(([](const std::string &x, const std::vector<std::string> &y) {}))
+, _setMacroList(([](const std::vector<MacroInformation> &x) {}))
+, _setCurrentLine([](size_t x) {}) {
   // find the RegisterInformation object of the program counter
   for (UnitInformation unitInfo : architecture.getUnits()) {
     if (unitInfo.hasSpecialRegister(
@@ -149,10 +150,10 @@ void ParsingAndExecutionUnit::parse(std::string code) {
   // update the error list of the ui
   _setErrorList(_finalRepresentation.errorList);
   // assemble commands into memory
-  if(!_finalRepresentation.hasErrors()) {
-      for (const auto &command : _finalRepresentation.commandList) {
-        _memoryAccess.putMemoryValueAt(command.address, command.node->assemble());
-      }
+  if (!_finalRepresentation.hasErrors()) {
+    for (const auto &command : _finalRepresentation.commandList) {
+      _memoryAccess.putMemoryValueAt(command.address, command.node->assemble());
+    }
   }
 }
 
@@ -164,8 +165,8 @@ void ParsingAndExecutionUnit::deleteBreakpoint(size_t line) {
   _breakpoints.erase(line);
 }
 
-SyntaxInformation::TokenIterable ParsingAndExecutionUnit::getSyntaxRegex(
-    SyntaxInformation::Token token) const {
+SyntaxInformation::TokenIterable
+ParsingAndExecutionUnit::getSyntaxRegex(SyntaxInformation::Token token) const {
   return _syntaxInformation.getSyntaxRegex(token);
 }
 
@@ -179,9 +180,9 @@ void ParsingAndExecutionUnit::setSetErrorListCallback(
   _setErrorList = callback;
 }
 
-void ParsingAndExecutionUnit::setThrowRuntimeErrorCallback(
-    Callback<const ValidationResult &> callback) {
-  _throwRuntimeError = callback;
+void ParsingAndExecutionUnit::setThrowErrorCallback(
+    Callback<const std::string &, const std::vector<std::string> &> callback) {
+  _throwError = callback;
 }
 
 void ParsingAndExecutionUnit::setSetMacroListCallback(
@@ -225,7 +226,7 @@ bool ParsingAndExecutionUnit::_executeNode(size_t nodeIndex) {
   auto validationResult = currentCommand.node->validateRuntime(_memoryAccess);
   if (!validationResult.isSuccess()) {
     // notify the ui of a runtime error
-    _throwRuntimeError(validationResult);
+    _throwError(validationResult.getMessage(), validationResult.getArguments());
     return false;
   }
   // update the current line in the ui (pre-execution)

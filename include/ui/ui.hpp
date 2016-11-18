@@ -34,6 +34,8 @@
 #include "third-party/json/json.hpp"
 #include "ui/gui-project.hpp"
 
+class QUrl;
+
 /**
  * This class creates the QmlEngine and starts the qml application.
  *
@@ -160,19 +162,27 @@ class Ui : public QObject {
   Q_INVOKABLE void reset(int index);
 
   /**
-   * Call save on the specified project.
+   * Call saveText on the specified project.
    *
    * \param index The index of the project.
    */
-  Q_INVOKABLE void save(int index);
+  Q_INVOKABLE void saveText(int index);
 
   /**
-   * Call saveAs on the specified project.
+   * Call saveTextAs on the specified project.
    *
    * \param index The index of the project.
    * \param name The name/path of the save.
    */
-  Q_INVOKABLE void saveAs(int index, QString name);
+  Q_INVOKABLE void saveTextAs(int index, QUrl path);
+
+  /**
+   * Call loadText on the specified project.
+   *
+   * \param index The index of the project.
+   * \param name The name/path of the save.
+   */
+  Q_INVOKABLE void loadText(int index, QUrl path);
 
   /**
    * Call saveSnapshot on the specified project.

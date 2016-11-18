@@ -447,9 +447,8 @@ std::string loadFromFile(const std::string &filePath);
 template <typename Data>
 void storeToFile(const std::string &filePath, Data &&data) {
   std::ofstream file(filePath);
-  assert::that(static_cast<bool>(file));
+  file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
   file << std::forward<Data>(data);
-  assert::that(static_cast<bool>(file));
 }
 
 template <typename T>
@@ -500,8 +499,8 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
 }
 
 // push_back n elements from the end of the src vector
-void pushBackFromEnd(std::vector<bool>& dest,
-                     const std::vector<bool>& src,
+void pushBackFromEnd(std::vector<bool> &dest,
+                     const std::vector<bool> &src,
                      size_t n);
 
 

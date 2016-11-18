@@ -19,6 +19,8 @@
 
 #include "ui/ui.hpp"
 
+#include <QUrl>
+
 #include "arch/common/architecture-formula.hpp"
 #include "common/assert.hpp"
 #include "common/utility.hpp"
@@ -177,16 +179,22 @@ void Ui::reset(int index) {
   _projects[index]->reset();
 }
 
-void Ui::save(int index) {
+void Ui::saveText(int index) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects[index]->save();
+  _projects[index]->saveText();
 }
 
-void Ui::saveAs(int index, QString name) {
+void Ui::saveTextAs(int index, QUrl path) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects[index]->saveAs(name);
+  _projects[index]->saveTextAs(path);
+}
+
+void Ui::loadText(int index, QUrl path) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects[index]->loadText(path);
 }
 
 void Ui::saveSnapshot(int index, QString name) {

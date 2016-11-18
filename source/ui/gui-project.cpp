@@ -1,6 +1,28 @@
-#include <functional>
+/*
+* C++ Assembler Interpreter
+* Copyright (C) 2016 Chair of Computer Architecture
+* at Technical University of Munich
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "ui/gui-project.hpp"
+
+#include <QUrl>
+#include <functional>
+
+#include "common/utility.hpp"
 
 GuiProject::GuiProject(QQmlContext* context,
                        const ArchitectureFormula& formula,
@@ -19,10 +41,8 @@ GuiProject::GuiProject(QQmlContext* context,
                  _projectModule.getMemoryManager(),
                  _projectModule.getMemoryAccess(),
                  context)
-/*, registermodel(context)
-, editormodel(context)
-, snapmodel(context)
-, memorymodel(context)*/ {
+, _defaultTextFileSavePath() {
+  context->setContextProperty("guiProject", this);
   // set the callback for memory and register
   _projectModule.getMemoryManager().setUpdateRegisterCallback(
       [this](const std::string& name) {
@@ -33,6 +53,11 @@ GuiProject::GuiProject(QQmlContext* context,
       [this](std::size_t address, std::size_t length) {
         emit memoryChanged(address, length);
       });
+
+  _projectModule.getParserInterface().setThrowErrorCallback([this](
+      const std::string& message, const std::vector<std::string>& arguments) {
+    _throwError(message, arguments);
+  });
 
   // connect all receiving components to the callback signals
   QObject::connect(this,
@@ -85,21 +110,47 @@ void GuiProject::reset() {
   _projectModule.getCommandInterface().setExecutionPoint(1);
 }
 
-void GuiProject::save() {
-  // tell core
+void GuiProject::saveText() {
+  if (_defaultTextFileSavePath.isEmpty()) {
+    emit saveTextAs();
+  } else {
+    saveTextAs(_defaultTextFileSavePath);
+  }
 }
 
-void GuiProject::saveAs(QString name) {
-  std::string stdname = name.toStdString();
-  // tell core
+void GuiProject::saveTextAs(QUrl path) {
+  QString qName = path.path();
+  _defaultTextFileSavePath = qName;
+  std::string name = qName.toStdString();
+  std::string text = _editorComponent.getText().toStdString();
+  try {
+    Utility::storeToFile(name, text);
+  } catch (const std::ios_base::failure& exception) {
+    _throwError(std::string("Could not save file! ") + exception.what(),
+                std::vector<std::string>());
+  }
 }
 
-void GuiProject::saveSnapshot(QString name) {
-  std::string stdname = name.toStdString();
+void GuiProject::loadText(QUrl path) {
+  QString qName = path.path();
+  std::string filePath = qName.toStdString();
+  std::string text;
+  try {
+    text = Utility::loadFromFile(filePath);
+    QString qText = QString::fromStdString(text);
+    _editorComponent.setText(qText);
+  } catch (const std::ios_base::failure& exception) {
+    _throwError(std::string("Could not load file!") + exception.what(),
+                std::vector<std::string>());
+  }
+}
+
+void GuiProject::saveSnapshot(QString qName) {
+  std::string name = qName.toStdString();
   // dont know, what to do
 }
 
-void GuiProject::loadSnapshot(QString name) {
+void GuiProject::loadSnapshot(QString qName) {
 }
 
 
@@ -152,4 +203,10 @@ std::function<MemoryValue(std::string)> GuiProject::getUnsignedToMemoryValue() {
 
 std::function<MemoryValue(std::string)> GuiProject::getFloatToMemoryValue() {
   return floatToMemoryValue;
+}
+
+void GuiProject::_throwError(const std::string& message,
+                             const std::vector<std::string>& arguments) {
+  QString errorMessage = QString::fromStdString(message);
+  emit error(errorMessage);
 }
