@@ -147,6 +147,33 @@ TEST_F(PseudoInstructionTest, NEG_32) {
             convert<uint32_t>(-testValue));
 }
 
+TEST_F(PseudoInstructionTest, NEGW_64) {
+  load({"rv32i", "rv64i"});
+
+  auto memoryAccess = getMemoryAccess();
+  auto testValue = 0x1234567812345678;
+  memoryAccess.setRegisterValue("x1", convert<uint64_t>(testValue));
+
+  testPseudoInstruction(memoryAccess, "negw x2,x1", 1);
+
+  ASSERT_EQ(memoryAccess.getRegisterValue("x2").get(),
+            convert<uint64_t>(-(testValue & 0xFFFFFFFF)));
+}
+
+TEST_F(PseudoInstructionTest, SEXTW_64) {
+  load({"rv32i", "rv64i"});
+
+  auto memoryAccess = getMemoryAccess();
+  auto testValue = 0xFFFFFFFF80000001;
+  memoryAccess.setRegisterValue("x1",
+                                convert<uint64_t>(testValue & 0xFFFFFFFF));
+
+  testPseudoInstruction(memoryAccess, "sext.w x2,x1", 1);
+
+  ASSERT_EQ(memoryAccess.getRegisterValue("x2").get(),
+            convert<uint64_t>(testValue));
+}
+
 TEST_F(PseudoInstructionTest, SEQZ_32) {
   load({"rv32i"});
 

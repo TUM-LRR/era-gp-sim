@@ -365,6 +365,37 @@ builtin-macros:
     addi \rd, \rd, (\symbol & 0xfff)
     .endm
   - |
+    .macro lbg, rd, symbol
+    auipc \rd, ((\symbol >> 12) & 0xfffff)
+    lb \rd, \rd, (\symbol & 0xfff)
+    .endm
+  - |
+    .macro lhg, rd, symbol
+    auipc \rd, ((\symbol >> 12) & 0xfffff)
+    lh \rd, \rd, (\symbol & 0xfff)
+    .endm
+  - |
+    .macro lwg, rd, symbol
+    auipc \rd, ((\symbol >> 12) & 0xfffff)
+    lw \rd, \rd, (\symbol & 0xfff)
+    .endm
+# Disabled due to issues with parser
+#  - |
+#    .macro sbg, rd, symbol, rt
+#    auipc \rt, ((\symbol >> 12) & 0xfffff)
+#    sb \rt, \rd, (\symbol & 0xfff)
+#    .endm
+#  - |
+#    .macro shg, rd, symbol, rt
+#    auipc \rt, ((\symbol >> 12) & 0xfffff)
+#    sh \rt, \rd, (\symbol & 0xfff)
+#    .endm
+#  - |
+#    .macro swg, rd, symbol, rt
+#    auipc \rt, ((\symbol >> 12) & 0xfffff)
+#    sw \rt, \rd, (\symbol & 0xfff)
+#    .endm
+  - |
     .macro nop
     addi x0, x0, 0
     .endm
