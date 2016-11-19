@@ -84,11 +84,8 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
 
   for (std::string line; std::getline(stream, line);) {
     _compile_state.position = _compile_state.position.newLine();
-    line_regex.matchLine(line);
-    if (!line_regex.isValid()) {
-      // Add syntax error if line regex doesnt match
-      _compile_state.addError("Syntax Error", _compile_state.position);
-    } else {
+    line_regex.matchLine(line, _compile_state);
+    if (line_regex.isValid()) {
       // Collect labels until next instruction
       if (line_regex.hasLabel()) {
         labels.push_back(line_regex.getLabel());
@@ -164,9 +161,8 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   info.addSyntaxRegex(";.*", SyntaxInformation::Token::Comment);
 
   // Add label regex
-  // Matches words at the beginning of a line (ignoring whitespaces) which end
-  // with a ':'
-  info.addSyntaxRegex("^\\s*\\w+:", SyntaxInformation::Token::Label);
+  // Matches words which end with a ':'
+  info.addSyntaxRegex("\\b\\w+:", SyntaxInformation::Token::Label);
 
   // Add immediate regex
   // Matches arithmetic expressions containing digits, operators, brackets and

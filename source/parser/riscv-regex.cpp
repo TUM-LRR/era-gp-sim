@@ -18,57 +18,143 @@
 
 #include "parser/riscv-regex.hpp"
 
+#include <cctype>
 #include "common/assert.hpp"
-
-
-static const std::regex LINE_REGEX(
-    "\\s*"
-    "(?:(\\w+)\\s*\\:)?"// Label group
-    "\\s*"
-    "(([\\.\\w]+)"// Instruction group
-    "(?:\\s+"
-    "([^,;:\\s][^,;:]*(?!\\s))"// Parameter group
-    "(?:\\s*,\\s*"
-    "([^,;:\\s][^,;:]*(?!\\s))"// Parameter group
-    "(?:\\s*,\\s*"
-    "([^,;:\\s][^,;:]*(?!\\s)))?)?)?)?"// Parameter group
-    "\\s*"
-    "(?:;.*)?"// Comment group
-    ,
-    std::regex_constants::optimize);
 
 RiscvParser::RiscvRegex::RiscvRegex() {
 }
 
-void RiscvParser::RiscvRegex::matchLine(const std::string &line) {
-  std::regex_match(line, _matches, LINE_REGEX);
+static void trimRight(std::string &str) {
+  size_t pos = str.size() - 1;
+
+  while (pos >= 0 && std::isspace(str[pos])) pos--;
+
+  pos++;
+
+  if (pos < str.size() && pos >= 0) str.erase(pos);
+}
+
+// Returns true if successful
+bool RiscvParser::RiscvRegex::readInstructionOrLabel(const std::string &line,
+                                                     CompileState &state,
+                                                     size_t &pos) {
+  // Skip spaces
+  for (; pos < line.size() && std::isspace(line[pos]); pos++)
+    ;
+
+  // Add valid characters to _instruction
+  for (; pos < line.size() &&
+         (std::isalnum(line[pos]) || line[pos] == '_' || line[pos] == '.');
+       pos++)
+    _instruction.push_back(line[pos]);
+
+  // If we read through the whole string, the instruction is finished
+  if (pos >= line.size()) return true;
+
+  // If we hit a colon, its a label
+  if (line[pos] == ':') {
+    // If a label is already defined, add an error
+    if (_label.size() > 0) {
+      state.addError("Multiple labels per line aren't allowed!");
+      return false;
+    }
+
+    _label = _instruction;
+    _instruction.clear();
+    pos++;
+    return readInstructionOrLabel(line, state, pos);
+  }
+
+  // If we hit a space or a comment start, the instruction is finished
+  if (std::isspace(line[pos]) || line[pos] == ';') return true;
+
+  // Otherwise we hit an invalid character
+  state.addError("Invalid character in instruction name!");
+  return false;
+}
+
+// Returns true if successful
+bool RiscvParser::RiscvRegex::readParameter(const std::string &line,
+                                            CompileState &state,
+                                            size_t &pos) {
+  // Saves if we're inside a string
+  bool quoted = false;
+  std::string parameter;
+
+  // Skip spaces
+  for (; pos < line.size() && std::isspace(line[pos]); pos++)
+    ;
+
+  // Add characters to parameter until we hit a ',' outside of quotes
+  for (; pos < line.size(); pos++) {
+    if (line[pos] == '"' && line[pos - 1] != '\\') {
+      quoted = !quoted;
+    } else if (line[pos] == ',' && !quoted) {
+      pos++;
+      break;
+    } else if (line[pos] == ';' && !quoted) {
+      break;
+    } else {
+      parameter.push_back(line[pos]);
+    }
+  }
+
+  trimRight(parameter);
+
+  if (parameter.size() > 0) _parameters.push_back(parameter);
+
+  return true;
+}
+
+void RiscvParser::RiscvRegex::resetResults() {
+  _label.clear();
+  _instruction.clear();
+  _parameters.clear();
+  _isValid = false;
+}
+
+void RiscvParser::RiscvRegex::matchLine(const std::string &line,
+                                        CompileState &state) {
+  size_t pos = 0;
+
+  resetResults();
+
+  // Read instruction and label
+  if (!readInstructionOrLabel(line, state, pos)) return;
+
+  // Read parameters until it fails or we reached the end of the line or a
+  // comment
+  while (pos < line.size() && line[pos] != ';')
+    if (!readParameter(line, state, pos)) return;
+
+  _isValid = true;
 }
 
 bool RiscvParser::RiscvRegex::isValid() {
-  return !_matches.empty();
+  return _isValid;
 }
 
 bool RiscvParser::RiscvRegex::hasLabel() {
-  return _matches[1].matched;
+  return _label.size() > 0;
 }
 
 bool RiscvParser::RiscvRegex::hasInstruction() {
-  return _matches[2].matched;
+  return _instruction.size() > 0;
 }
 
 bool RiscvParser::RiscvRegex::isDirective() {
-  return hasInstruction() && _matches[3].str()[0] == '.';
+  return hasInstruction() && _instruction[0] == '.';
 }
 
 std::string RiscvParser::RiscvRegex::getLabel() {
-  return _matches[1].str();
+  return _label;
 }
 
 std::string RiscvParser::RiscvRegex::getInstruction() {
-  std::string instruction = _matches[3].str();
+  std::string instruction = _instruction;
 
   if (instruction[0] == '.') {
-    instruction = std::string{instruction, 1};
+    instruction.erase(0, 1);
   }
 
   return instruction;
@@ -76,13 +162,9 @@ std::string RiscvParser::RiscvRegex::getInstruction() {
 
 std::string RiscvParser::RiscvRegex::getParameter(int n) {
   assert::that(n >= 0 && n < getParameterCount());
-  assert::that(4 + n < _matches.size());
-  return _matches[4 + n];
+  return _parameters[n];
 }
 
 int RiscvParser::RiscvRegex::getParameterCount() {
-  if (_matches[6].matched) return 3;
-  if (_matches[5].matched) return 2;
-  if (_matches[4].matched) return 1;
-  return 0;
+  return _parameters.size();
 }

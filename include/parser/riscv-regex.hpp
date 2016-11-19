@@ -75,12 +75,24 @@ class RiscvParser::RiscvRegex {
   /**
    * Parses the next line.
    *
-   * \param line The line to parse
+   * \param line  The line to parse.
+   * \param state CompileState to record errors.
    */
-  void matchLine(const std::string &line);
+  void matchLine(const std::string &line, CompileState &state);
 
  private:
-  std::smatch _matches;
+  bool readInstructionOrLabel(const std::string &line,
+                              CompileState &state,
+                              size_t &pos);
+
+  bool readParameter(const std::string &line, CompileState &state, size_t &pos);
+
+  void resetResults();
+
+  bool _isValid;
+  std::string _label;
+  std::string _instruction;
+  std::vector<std::string> _parameters;
 };
 
 #endif
