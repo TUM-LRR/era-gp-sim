@@ -25,7 +25,7 @@ RiscvParser::RiscvRegex::RiscvRegex() {
 }
 
 static void trimRight(std::string &str) {
-  size_t pos = str.size() - 1;
+  int pos = str.size() - 1;
 
   while (pos >= 0 && std::isspace(str[pos])) pos--;
 
