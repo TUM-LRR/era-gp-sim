@@ -21,6 +21,7 @@
 #define ERAGPSIM_PARSER_MACRO_DIRECTIVE_TABLE_HPP
 
 #include <unordered_map>
+#include <string>
 #include "common/optional.hpp"
 
 class MacroDirective;
