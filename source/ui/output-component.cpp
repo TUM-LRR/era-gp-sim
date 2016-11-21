@@ -17,66 +17,82 @@
  */
 
 #include "ui/output-component.hpp"
+#include <QQuickItem>
+#include <QQuickView>
+#include "core/conversions.hpp"
 #include "core/memory-manager.hpp"
 #include "core/memory-value.hpp"
-#include "core/conversions.hpp"
-#include <QQuickView>
-#include <QQuickItem>
 
 OutputComponent::OutputComponent(MemoryManager &memoryManager,
                                  MemoryAccess &memoryAccess,
                                  QQmlContext *projectContext,
                                  QObject *parent)
-    : _memoryAccess(memoryAccess) {
-    projectContext->setContextProperty("outputComponent", this);
+: _memoryAccess(memoryAccess) {
+  // Make this component available to all QML output items.
+  projectContext->setContextProperty("outputComponent", this);
 
-    _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "LightStrip"}, {"baseAddress", QVariant(0)}, {"numberOfStrips", QVariant(8)}}));
-    _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "SevenSegment"}, {"baseAddress", QVariant(0)}, {"numberOfDigits", QVariant(2)}}));
-    _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "TextConsole"}, {"baseAddress", QVariant(0)}, {"textMode", QVariant(0)}}));
+  // Add all the output items and their default values.
+  _outputItemsInformation.push_back(
+      QVariant(QMap<QString, QVariant>{{"type", "LightStrip"},
+                                       {"baseAddress", QVariant(0)},
+                                       {"numberOfStrips", QVariant(8)}}));
+  _outputItemsInformation.push_back(
+      QVariant(QMap<QString, QVariant>{{"type", "SevenSegment"},
+                                       {"baseAddress", QVariant(0)},
+                                       {"numberOfDigits", QVariant(2)}}));
+  _outputItemsInformation.push_back(
+      QVariant(QMap<QString, QVariant>{{"type", "TextConsole"},
+                                       {"baseAddress", QVariant(0)},
+                                       {"textMode", QVariant(0)}}));
 }
 
 
-QVariantList OutputComponent::getOutputItems() const {
-    return _outputItems;
+QVariant OutputComponent::getOutputItem(int index) const {
+  return _outputItemsInformation[index];
 }
 
 
-void OutputComponent::addOutputItem(QString outputItemType) {
-    if (outputItemType == "LightStrip") {
-        _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "LightStrip"}, {"baseAddress", QVariant(0)}, {"numberOfStrips", QVariant(8)}}));
-    } else if (outputItemType == "SevenSegment") {
-        _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "SevenSegment"}, {"baseAddress", QVariant(0)}, {"numberOfDigits", QVariant(2)}}));
-    } else if (outputItemType == "TextConsole") {
-        _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "TextConsole"}, {"baseAddress", QVariant(0)}, {"textMode", QVariant(0)}}));
-    }
-}
-
-void OutputComponent::setOutputItemProperty(int ouputItemIndex, QString property, QVariant newValue) {
-    QMap<QString, QVariant> ouputItemProperties = _outputItems[ouputItemIndex].toMap();
-    ouputItemProperties[property] = newValue;
-    _outputItems[ouputItemIndex] = ouputItemProperties;
-    emit outputItemSettingsChanged();
+void OutputComponent::setOutputItemProperty(int ouputItemIndex,
+                                            QString property,
+                                            QVariant newValue) {
+  // Write the new value into the model.
+  QMap<QString, QVariant> ouputItemProperties =
+      _outputItemsInformation[ouputItemIndex].toMap();
+  ouputItemProperties[property] = newValue;
+  _outputItemsInformation[ouputItemIndex] = ouputItemProperties;
+  // Notify all instances of all output items that their settings might have
+  // changed.
+  emit outputItemSettingsChanged();
 }
 
 
 void OutputComponent::updateMemory(std::size_t address, std::size_t length) {
-    emit memoryChanged(QVariant::fromValue(address), QVariant::fromValue(length));
+  emit memoryChanged(QVariant::fromValue(address), QVariant::fromValue(length));
 }
 
-void OutputComponent::putMemoryValue(int address, QVector<bool> memoryContentBitVector) {
-    size_t memoryValueSize = memoryContentBitVector.size() + (8 - (memoryContentBitVector.size()%8))%8;
-    MemoryValue memoryContent(memoryValueSize);
-    for (size_t index = 0; index < memoryContentBitVector.size(); ++index) {
-        memoryContent.put(index, memoryContentBitVector.at(index));
-    }
-    _memoryAccess.putMemoryValueAt(address, memoryContent);
+void OutputComponent::putMemoryValue(int address,
+                                     QVector<bool> memoryContentBitVector) {
+  // Round up size of altered content up to bytes.
+  size_t memoryValueSize = memoryContentBitVector.size() +
+                           (8 - (memoryContentBitVector.size() % 8)) % 8;
+  // Create new MemoryValue.
+  MemoryValue memoryContent(memoryValueSize);
+  // Insert the bit values of the altered content into the newly create
+  // MemoryValue.
+  for (size_t index = 0; index < memoryContentBitVector.size(); ++index) {
+    memoryContent.put(index, memoryContentBitVector.at(index));
+  }
+  // Pass new value to Core.
+  _memoryAccess.putMemoryValueAt(address, memoryContent);
 }
 
 QVector<bool> OutputComponent::getMemoryContent(int address, int length) const {
-    MemoryValue content = _memoryAccess.getMemoryValueAt(address, length).get();
-    QVector<bool> contentVector;
-    for (auto it = content.cbegin(); it != content.cend(); ++it) {
-        contentVector.append(*it);
-    }
-    return contentVector;
+  // Fetch memory content from Core.
+  MemoryValue content = _memoryAccess.getMemoryValueAt(address, length).get();
+  // Convert memory content to a Bit-QVector.
+  QVector<bool> contentVector;
+  for (auto it = content.cbegin(); it != content.cend(); ++it) {
+    contentVector.append(*it);
+  }
+  return contentVector;
 }
