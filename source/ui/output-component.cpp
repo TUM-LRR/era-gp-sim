@@ -33,7 +33,7 @@ OutputComponent::OutputComponent(MemoryManager &memoryManager,
     _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "LightStrip"}, {"baseAddress", QVariant(0)}, {"numberOfStrips", QVariant(8)}}));
     _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "SevenSegment"}, {"baseAddress", QVariant(0)}, {"numberOfDigits", QVariant(2)}}));
     _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "TextConsole"}, {"baseAddress", QVariant(0)}, {"textMode", QVariant(0)}}));
-    _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "PixelDisplay"}, {"baseAddress", QVariant(0)}}));
+    _outputItems.push_back(QVariant(QMap<QString, QVariant>{{"type", "PixelDisplay"}, {"baseAddress", QVariant(0)}, {"breadth", QVariant(320)}, {"height", QVariant(240)}, {"colorMode", QVariant(0)}}));
   }
 
 

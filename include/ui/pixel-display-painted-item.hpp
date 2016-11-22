@@ -24,23 +24,111 @@
 #include <QPainter>
 #include <QQuickPaintedItem>
 #include <QRect>
+#include <cstdint>
+#include <functional>
 #include <memory>
+#include <utility>
+#include <vector>
+
+namespace colorMode {
+struct ColorMode;
+struct Options {
+  std::size_t pixelBaseAddress = 0;
+  std::size_t colorBaseAddress = 0;
+  std::size_t width = 320;
+  std::size_t height = 240;
+  std::size_t colorMode = 0;
+  // TODO::use enums, maybe
+  bool columns_rows = false;// false->row_major, true->columns->major
+  bool horizontallyMirrored = false;
+  bool verticallyMirrored = false;
+  bool tight = false;
+  bool colorTablePointerLike = true;
+  std::size_t freeBytes = 1;
+
+  ColorMode getColorMode() const;
+  std::uint32_t getPixel(std::size_t x, std::size_t y) const;
+  void updatePixel(std::shared_ptr<QImage> image,
+                   std::size_t x,
+                   std::size_t y) const;
+  void updateMemory(std::shared_ptr<QImage> image,
+                    std::size_t address,
+                    std::size_t amount) const;
+  void updateAllPixels(std::shared_ptr<QImage> image) const;
+  void updateAllColors(std::shared_ptr<QImage> image) const;
+  static ColorMode RGB;
+};
+struct ColorMode {
+  using GetPixelFunction =
+      std::function<std::uint32_t(const Options &, std::size_t, std::size_t)>;
+  using UpdateMemoryFunction = std::function<void(
+      const Options &, std::shared_ptr<QImage>, std::size_t, std::size_t)>;
+  using UpdateAllPixelsFunction =
+      std::function<void(const Options &, std::shared_ptr<QImage>)>;
+  using UpdateAllColorsFunction =
+      std::function<void(const Options &, std::shared_ptr<QImage>)>;
+  ColorMode(const GetPixelFunction &getPixel,
+            const UpdateMemoryFunction &updateMemory,
+            const UpdateAllPixelsFunction &updateAllPixels,
+            const UpdateAllColorsFunction &updateAllColors)
+  : getPixel{getPixel}
+  , updateMemory{updateMemory}
+  , updateAllPixels{updateAllPixels}
+  , updateAllColors{updateAllColors} {
+  }
+  GetPixelFunction getPixel;
+  UpdateMemoryFunction updateMemory;
+  UpdateAllPixelsFunction updateAllPixels;
+  UpdateAllColorsFunction updateAllColors;
+  // RGB:
+  const static GetPixelFunction RGBGetPixel;
+  const static UpdateMemoryFunction RGBUpdateMemory;
+  const static UpdateAllPixelsFunction RGBUpdateAllPixels;
+  const static UpdateAllColorsFunction RGBUpdateAllColors;
+};
+}
 
 class PixelDisplayPaintedItem : public QQuickPaintedItem {
-   Q_PROPERTY(void paint)
+  Q_PROPERTY(void paint)
  public:
   PixelDisplayPaintedItem(QQuickItem *parent = 0) : QQuickPaintedItem(parent) {
-    _image = std::make_shared<QImage>(100, 100, QImage::Format_RGB32);
+    _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_RGB32);
     _image->fill(QColor("#00FFFF").rgb());
+    _image->setPixel(20, 20, 0xFF0000u);
   }
 
   void paint(QPainter *painter) {
     std::cout << "paint!" << std::endl;
+    _options.updateAllPixels(_image);
     painter->drawImage(painter->window(), *_image);
   }
 
+  void memoryChanged(std::size_t address, std::size_t amount);
+
+  void redrawPixel(std::size_t x, std::size_t y);
+
+  void redrawAll();
+
+  std::uint32_t getColorAt(std::size_t address);
+
+  std::size_t getBaseAddress() const;
+  std::size_t getColorMode() const;
+  std::size_t getWidth() const;
+  std::size_t getHeight() const;
+  std::size_t getSizeInMemory() const;
+  std::size_t getCellSize() const;
+
  private:
   std::shared_ptr<QImage> _image;
+  colorMode::Options _options{};
+  std::size_t _baseAddress = 0;
+  std::size_t _breadth = 320;
+  std::size_t _height = 240;
+  std::size_t _colorMode = 0;
+
+  bool isInRange(std::size_t address, std::size_t amount) const;
+  std::vector<std::pair<std::size_t, std::size_t>>
+  pixelsInRange(std::size_t address, std::size_t amount) const;
 };
 
 #endif// ERAGPSIM_UI_PIXEL_DISPLAY_PAINTED_ITEM_HPP

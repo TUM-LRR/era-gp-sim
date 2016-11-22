@@ -11,6 +11,7 @@ set(UI_SOURCES
     ui.cpp
     gui-project.cpp
     output-component.cpp
+    pixel-display-painted-item.cpp
 )
 
 set(UI_HEADERS

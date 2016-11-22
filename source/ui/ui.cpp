@@ -61,7 +61,7 @@ void Ui::addProject(QQuickItem* tabItem,
 
   // parent is tabItem, so it gets destroyed at the same time
   QQmlContext* context = new QQmlContext(qmlContext(tabItem), tabItem);
-  _engine.addImageProvider("pixeldisplayprovider", new PixelDisplayProvider);
+  //_engine.addImageProvider("pixeldisplayprovider", new PixelDisplayProvider);
 
   // the pointer is not needed anywhere, the object is deleted by qml when
   // tabItem is deleted
@@ -77,6 +77,8 @@ void Ui::addProject(QQuickItem* tabItem,
 
   // set visual parent of the projectItem
   projectItem->setParentItem(tabItem);
+
+  //add memoryAccess as context property?
 }
 
 QStringList Ui::getArchitectures() const {
