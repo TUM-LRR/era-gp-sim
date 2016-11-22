@@ -65,7 +65,7 @@ class ParserInterface : public Proxy<ParsingAndExecutionUnit> {
    * \param callback std::function<void(const std::string&)> callback
    *
    */
-  POST(setThrowRuntimeErrorCallback)
+  POST(setThrowErrorCallback)
 
   /**
    * Set the callback which is used to inform the gui about the execution point

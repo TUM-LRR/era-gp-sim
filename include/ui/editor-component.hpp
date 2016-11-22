@@ -102,14 +102,14 @@ class EditorComponent : public QObject {
    */
   void setCurrentLine(int line);
 
-  /**
-   * Shows a runtime error in the ui.
-   *
-   * \param validationResult The validation result which indicated the error.
-   */
-  void throwRuntimeError(const ValidationResult &validationResult);
-
   // void setMakroList(std::vector<Makro>&& makroList);
+
+  /**
+   * Returns the plain text of this editor.
+   *
+   * \return Returns the text of this editor as a QString.
+   */
+  QString getText();
 
  private:
   /**
@@ -155,8 +155,12 @@ class EditorComponent : public QObject {
   /** Change the highlighted line which indicates the execution point. */
   void executionLineChanged(int line);
 
-  /** display a runtime error in the ui. */
-  void runtimeError(QString errorMessage);
+  /**
+   * Sets the text of this editor (replaces all current text)
+   *
+   * \param text The new text.
+   */
+  void setText(QString text);
 };
 
 #endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP_ */

@@ -34,6 +34,7 @@
 #include "ui/register-model.hpp"
 //#include "ui/snapshotmodel.hpp"
 
+class QUrl;
 
 /**
  * This Class holds the components, which will be needed
@@ -105,27 +106,34 @@ class GuiProject : QObject {
   /**
    * \brief saves the project
    */
-  void save();
+  void saveText();
 
   /**
    * \brief saves with another name
    *
    * \param name the new name
    */
-  void saveAs(QString name);
+  void saveTextAs(QUrl path);
+
+  /**
+   * \brief Load a text file into the editor.
+   *
+   * \param path the path of the file.
+   */
+  void loadText(QUrl path);
 
   /**
    * \brief takes a snapshot
    *
    * \param name name of the snapshot
    */
-  void saveSnapshot(QString name);
+  void saveSnapshot(QString qName);
 
   /**
    * \brief loads a snapshot
    * \param name The name of the snapshot, which should be loaded
    */
-  void loadSnapshot(QString name);
+  void loadSnapshot(QString qName);
 
   /**
    * \brief Functions for converting MemoryValues to Strings.
@@ -156,6 +164,14 @@ class GuiProject : QObject {
 
  private:
   /**
+   * Shows a runtime error in the ui.
+   *
+   * \param validationResult The validation result which indicated the error.
+   */
+  void _throwError(const std::string& message,
+                   const std::vector<std::string>& arguments);
+
+  /**
    * \brief the module in the core
    */
   ProjectModule _projectModule;
@@ -172,7 +188,11 @@ class GuiProject : QObject {
 
   // SnapshotModel snapmodel;
   MemoryComponentPresenter _memoryModel;
-  // Core-Project;
+
+  /**
+   * The default path to save the text of this project to.
+   */
+  QString _defaultTextFileSavePath;
 
   /**
    * \brief The Functions for the conversion
@@ -206,6 +226,18 @@ class GuiProject : QObject {
    * \param length The number of bytes that changed
    */
   void memoryChanged(std::size_t address, std::size_t length);
+
+  /**
+   * \brief A signal to notify the gui to ask the user for a save path for a
+   * text save.
+   */
+  void saveTextAs();
+
+  /** display an error in the ui.
+   *
+   * \param errorMessage The error message.
+   */
+  void error(QString errorMessage);
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP
