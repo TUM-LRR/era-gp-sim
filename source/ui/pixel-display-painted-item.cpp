@@ -129,7 +129,7 @@ const ColorMode::GetPixelFunction ColorMode::RGBGetPixel = [](
   std::size_t cellSize = 8;// TODO
   std::size_t sizeInBit = rBit + gBit + bBit;
   std::size_t byteSize =
-      (sizeInBit + cellSize - 1) / cellSize + o.tight ? 0 : o.freeBytes;
+      (sizeInBit + cellSize - 1) / cellSize + (o.tight ? 0 : o.freeBytes);
   std::size_t index =
       (o.columns_rows ? o.height : 1) + y * (o.columns_rows ? 1 : o.width);
   std::size_t address;
