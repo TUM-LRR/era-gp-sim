@@ -54,11 +54,15 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
           QVariantMap macroInformation;
           macroInformation["code"] = QString::fromStdString(it->macroCode());
           macroInformation["startLine"] =
-              QVariant::fromValue(it->position().first.line());
+              QVariant::fromValue(it->position().first.line()-1);
           macroInformation["endLine"] =
-              QVariant::fromValue(it->position().second.line());
+              QVariant::fromValue(it->position().second.line()-1);
+          int lineCount = (int)std::count(it->macroCode().begin(), it->macroCode().end(), '\n');
           macroInformation["lineCount"] = QVariant::fromValue(
-              it->position().second.line() - it->position().first.line() + 1);
+             lineCount);
+          qDebug() << macroInformation["lineCount"];
+          //macroInformation["lineCount"] = QVariant::fromValue(
+          //    it->position().second.line() - it->position().first.line() + 1);
           macroInformation["collapsed"] = QVariant::fromValue(true);
           updatedMacroList.append(macroInformation);
         }
