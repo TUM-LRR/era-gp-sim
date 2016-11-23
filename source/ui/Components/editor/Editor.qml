@@ -110,6 +110,9 @@ ScrollView {
 
                     // Update macros.
                     macroUpdatesOnTextChanged();
+                }
+
+                onLineCountChanged: {
                     // Update linenumbering
                     sidebar.updateLineNumbers();
                 }
@@ -278,7 +281,6 @@ ScrollView {
                         expandMacroSubeditor(Number(value));
                     });
 
-                    sidebar.updateLineNumbers();
                 }
 
 
@@ -314,7 +316,6 @@ ScrollView {
                     } else {
                         collapseMacroSubeditor(macroIndex);
                     }
-                    sidebar.updateLineNumbers();
                 }
 
                 // Expands the subeditor of the macro of given index by displaying subeditor component and inserting blank lines.
@@ -358,7 +359,7 @@ ScrollView {
                         macroDisplayObjects[i]["triangleButton"].y += cursorRectangle.height * macros[macroIndex]["lineCount"];
                     }
 
-                    // TODO: Adjust the cursor corresponding to the inserted lines (otherwise it's not where it was before).
+                    // Restore cursor position.
                     cursorPosition = cursorPos;
                 }
 
@@ -403,7 +404,7 @@ ScrollView {
                         macroDisplayObjects[i]["triangleButton"].y -= cursorRectangle.height * macros[macroIndex]["lineCount"];
                     }
 
-                    // TODO: Adjust the cursor corresponding to the removed lines (otherwise it's not where it was before).
+                    // Restore cursor position.
                     cursorPosition = cursorPos;
                 }
 
@@ -547,45 +548,32 @@ ScrollView {
                         _lineNumberObjects = [];
 
                         // Add new line numbers.
+                        var lineNumberLabels = getLineNumberLabels();
                         for (var line = 0; line < textArea.lineCount; ++line) {
                             var lineNumber = Qt.createQmlObject('import QtQuick 2.6; Text {color: "gray"; font: textArea.font}',
                                                                 lineNumbersBar);
                             // TODO: Find out why we need that correction factor... So strange;
                             // Not required before but now even required when using Repeater...
                             lineNumber.height = 1.05*fontMetrics.height;
-                            lineNumber.text = getLineNumberForLine(line+1);
+                            lineNumber.text = lineNumberLabels[line];
                             _lineNumberObjects[line] = lineNumber;
                         }
-
                     }
 
-                    // Calculate the corresponding line number for a given line.
-                    function getLineNumberForLine(line) {
-                        var lineNumber = line;
-                        // Find every macro that is placed above the requested line and factor out its
-                        // sub-lines.
-                        for (var macroIndex=0; macroIndex < textArea.macros.length; ++macroIndex) {
-                            var macro = textArea.macros[macroIndex];
-                            if (lineNumber > (macro["startLine"]+1)) {
-                                if (macro["collapsed"] == false) {
-                                    // Given line is a blank line belonging to the current macro expansion. Therefore,
-                                    // no line number required.
-                                    if (lineNumber <= (macro["startLine"]+1+macro["lineCount"])) {
-                                        return " ";
-                                    }
-                                    else { // The current macro expansion lies before the given line, so the blank lines of
-                                        // the macro expansion have to be factored out.
-                                        lineNumber -= macro["lineCount"];
-                                    }
-                                }
-                            }
-                            // All macros lying before the given line have been considered, so the current lineNumber
-                            // is correct.
-                            else {
-                                break;
+                    // Calculates the correct label for each line. I.e. blank lines that belong to macros are factored out.
+                    function getLineNumberLabels() {
+                        var lineNumberLabels = [];
+                        var currentLineNumberLabel = 0;
+                        for (var lineIndex = 0; lineIndex < textArea.lineCount; ++lineIndex) {
+                            // If line is a blank line belonging to a macro, return empty label.
+                            if (textArea.isPositionInsideMacroBlankLine(textArea.text, TextUtilities.getLineStartForLine(textArea.text, lineIndex))) {
+                                lineNumberLabels.push(" ");
+                            } else {    // Otherweise, return line number with blank lines factored out.
+                                currentLineNumberLabel++;
+                                lineNumberLabels.push(""+currentLineNumberLabel);
                             }
                         }
-                        return ""+lineNumber;
+                        return lineNumberLabels;
                     }
 
                 }
