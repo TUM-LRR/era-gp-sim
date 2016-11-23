@@ -67,15 +67,15 @@ struct ColorMode {
       std::function<void(const Options &, std::shared_ptr<QImage>)>;
   using UpdateAllColorsFunction =
       std::function<void(const Options &, std::shared_ptr<QImage>)>;
-  ColorMode(const GetPixelFunction &getPixel,
-            const UpdateMemoryFunction &updateMemory,
-            const UpdateAllPixelsFunction &updateAllPixels,
-            const UpdateAllColorsFunction &updateAllColors)
-  : getPixel{getPixel}
-  , updateMemory{updateMemory}
-  , updateAllPixels{updateAllPixels}
-  , updateAllColors{updateAllColors} {
-  }
+  // ColorMode(const GetPixelFunction &getPixel,
+  //           const UpdateMemoryFunction &updateMemory,
+  //           const UpdateAllPixelsFunction &updateAllPixels,
+  //           const UpdateAllColorsFunction &updateAllColors)
+  // : getPixel{getPixel}
+  // , updateMemory{updateMemory}
+  // , updateAllPixels{updateAllPixels}
+  // , updateAllColors{updateAllColors} {
+  // }
   GetPixelFunction getPixel;
   UpdateMemoryFunction updateMemory;
   UpdateAllPixelsFunction updateAllPixels;

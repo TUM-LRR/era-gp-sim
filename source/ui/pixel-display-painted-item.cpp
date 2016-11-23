@@ -112,13 +112,13 @@ void Options::updatePixel(std::shared_ptr<QImage> image,
 void Options::updateMemory(std::shared_ptr<QImage> image,
                            std::size_t address,
                            std::size_t amount) const {
-  // TODO
+  getColorMode().updateMemory(*this, image, address, amount);
 }
 void Options::updateAllPixels(std::shared_ptr<QImage> image) const {
   getColorMode().updateAllPixels(*this, image);
 }
 void Options::updateAllColors(std::shared_ptr<QImage> image) const {
-  // TODO
+  getColorMode().updateAllColors(*this, image);
 }
 
 const ColorMode::GetPixelFunction ColorMode::RGBGetPixel = [](
@@ -158,6 +158,9 @@ const ColorMode::GetPixelFunction ColorMode::RGBGetPixel = [](
       greenByte, conversions::standardConversions::nonsigned);
   std::uint8_t blue = conversions::convert<std::uint8_t>(
       blueByte, conversions::standardConversions::nonsigned);
+  red = ((4 * x / 256 % 3 == 0) ? 0 : (4 * x)) % 256;
+  green = ((4 * x / 256 % 3 == 1) ? 0 : (4 * x)) % 256;
+  blue = ((4 * x / 256 % 3 == 2) ? 0 : (4 * x)) % 256;
   red <<= 8 - rBit;
   green <<= 8 - gBit;
   blue <<= 8 - bBit;
@@ -168,7 +171,46 @@ const ColorMode::UpdateMemoryFunction ColorMode::RGBUpdateMemory = [](
     const Options &o,
     std::shared_ptr<QImage> image,
     std::size_t address,
-    std::size_t amount) -> void {};
+    std::size_t amount) -> void {
+  std::size_t rBit = 8;    // TODO
+  std::size_t gBit = 8;    // TODO
+  std::size_t bBit = 8;    // TODO
+  std::size_t cellSize = 8;// TODO
+  std::size_t sizeInBit = rBit + gBit + bBit;
+  std::size_t byteSize =
+      (sizeInBit + cellSize - 1) / cellSize + (o.tight ? 0 : o.freeBytes);
+  std::size_t pixelSize =
+      (o.tight ? ((sizeInBit * o.width * o.height + cellSize - 1) / cellSize)
+               : (((sizeInBit + cellSize - 1) / cellSize + o.freeBytes) *
+                  o.height * o.width));
+  std::size_t colorSize = 0;
+  if (address < o.pixelBaseAddress + pixelSize &&
+      address + amount > o.pixelBaseAddress) {
+    // Pixel Memory has been updated => update pixels in image
+    std::size_t minAddress = std::max(address, o.pixelBaseAddress);
+    std::size_t maxAddress =
+        std::min(address + amount, o.pixelBaseAddress + pixelSize);
+    std::size_t minIndex =
+        o.tight ? ((minAddress - o.pixelBaseAddress) * cellSize / sizeInBit)
+                : ((minAddress - o.pixelBaseAddress) / byteSize);
+    std::size_t maxIndex =
+        o.tight
+            ? (((maxAddress - o.pixelBaseAddress) * cellSize + cellSize - 1) /
+               sizeInBit)
+            : ((maxAddress - o.pixelBaseAddress + byteSize - 1) / byteSize);
+    // TODO::make this more efficient
+    for (std::size_t i = minIndex; i <= maxIndex; ++i) {
+      o.updatePixel(image,
+                    o.columns_rows ? (i / o.height) : (i % o.width),
+                    o.columns_rows ? (i % o.height) : (i / o.width));
+    }
+  }
+  if (address < o.colorBaseAddress + colorSize &&
+      address + amount > o.colorBaseAddress) {
+    // Color Memory has been updated => update colors in image
+  }
+
+};
 
 const ColorMode::UpdateAllPixelsFunction ColorMode::RGBUpdateAllPixels = [](
     const Options &o, std::shared_ptr<QImage> image) -> void {
