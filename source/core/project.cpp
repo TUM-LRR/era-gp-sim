@@ -19,10 +19,10 @@
 
 #include "core/project.hpp"
 
-#include "arch/common/architecture-formula.hpp"
 #include "arch/common/register-information.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
+#include "core/deserialization-error.hpp"
 
 Project::Project(std::weak_ptr<Scheduler> &&scheduler,
                  const ArchitectureFormula &architectureFormula,
@@ -30,7 +30,10 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
 : Servant(std::move(scheduler))
 , _architecture(Architecture::Brew(architectureFormula))
 , _memory(memorySize, _architecture.getByteSize())
-, _registerSet() {
+, _registerSet()
+, _architectureFormula(architectureFormula)
+, _errorCallback(
+      [](const std::string &s, const std::vector<std::string> &v) {}) {
   _architecture.validate();
 
   for (UnitInformation unitInfo : _architecture.getUnits()) {
@@ -48,12 +51,13 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
 void Project::_createRegister(RegisterInformation registerInfo,
                               UnitInformation unitInfo) {
   if (!registerInfo.hasEnclosing()) {
-      MemoryValue startValue{registerInfo.getSize()};
-      //if this register is hardwired to some constant
-      if(registerInfo.isConstant()) {
-          startValue = registerInfo.getConstant();
-      }
-    _registerSet.createRegister(registerInfo.getName(), startValue, registerInfo.isConstant());
+    MemoryValue startValue{registerInfo.getSize()};
+    // if this register is hardwired to some constant
+    if (registerInfo.isConstant()) {
+      startValue = registerInfo.getConstant();
+    }
+    _registerSet.createRegister(
+        registerInfo.getName(), startValue, registerInfo.isConstant());
     _registerSet.aliasRegister(
         registerInfo.getAliases(), registerInfo.getName(), 0, true);
     // create all constituents and their constituents
@@ -160,6 +164,44 @@ void Project::resetRegisters() {
   }
 }
 
+void Project::loadSnapshot(Json snapshot) {
+  bool valid = true;
+  if (!(snapshot.count("architecture-name") == 1)) valid = false;
+  if (!(snapshot.count("extensions") == 1)) valid = false;
+  if (!(snapshot.count("memory") == 1)) valid = false;
+  if (!(snapshot.count("registers") == 1)) valid = false;
+  if (snapshot["extensions"].empty()) valid = false;
+  if (!valid) {
+    _errorCallback("Snapshot format is not valid", std::vector<std::string>());
+    return;
+  }
+  try {
+    std::string architectureName = snapshot["architecture-name"];
+    std::vector<std::string> extensions = snapshot["extensions"];
+    ArchitectureFormula formula(architectureName);
+    for (const std::string &extension : extensions) {
+      formula.addExtension(extension);
+    }
+    if (formula != _architectureFormula) {
+      _errorCallback("This snapshot was created with a different architecture!",
+                     std::vector<std::string>());
+    }
+    _memory.deserializeJSON(snapshot["memory"]);
+    _registerSet.deserializeJSON(snapshot["registers"]);
+  } catch (const DeserializationError &exception) {
+    _errorCallback(exception.what(), std::vector<std::string>());
+  }
+}
+
+Project::Json Project::generateSnapshot() {
+  Json snapshot;
+  snapshot["architecture-name"] = _architectureFormula.getArchitectureName();
+  snapshot["extensions"] = _architectureFormula.getUnderlying();
+  snapshot["memory"] = _memory.serializeJSON();
+  snapshot["registers"] = _registerSet.serializeJSON();
+  return snapshot;
+}
+
 void Project::_setRegisterToZero(RegisterInformation registerInfo) {
   if (!registerInfo.isConstant() && !registerInfo.hasEnclosing()) {
     // create a empty MemoryValue as long as the register
@@ -199,6 +241,11 @@ void Project::setUpdateRegisterCallback(
 
 void Project::setUpdateMemoryCallback(Callback<size_t, size_t> callback) {
   _memory.setCallback(callback);
+}
+
+void Project::setErrorCallback(
+    Callback<const std::string &, const std::vector<std::string> &> callback) {
+  _errorCallback = callback;
 }
 
 Architecture Project::getArchitecture() const {

@@ -61,6 +61,28 @@ class MemoryManager : public Proxy<Project> {
    *
    */
   POST(setUpdateMemoryCallback)
+
+  /**
+   * Set the callback which is used to notify the gui of an error.
+   *
+   * \param callback Callback<const std::string &, const
+   * std::vector<std::string> &>
+   */
+  POST(setErrorCallback)
+
+  /**
+   * Loads a snapshot object and sets memory and registers accordingly.
+   *
+   * \param snapshot The snapshot object.
+   */
+  POST(loadSnapshot)
+
+  /**
+   * Generates a snapshot of the current state of memory and registers.
+   *
+   * \return A future to the generated json object.
+   */
+  POST_FUTURE(generateSnapshot)
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_MANAGER_HPP */

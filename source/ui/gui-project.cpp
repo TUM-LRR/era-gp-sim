@@ -59,6 +59,11 @@ GuiProject::GuiProject(QQmlContext* context,
     _throwError(message, arguments);
   });
 
+  _projectModule.getMemoryManager().setErrorCallback([this](
+      const std::string& message, const std::vector<std::string>& arguments) {
+    _throwError(message, arguments);
+  });
+
   // connect all receiving components to the callback signals
   QObject::connect(this,
                    SIGNAL(registerChanged(const QString&)),
