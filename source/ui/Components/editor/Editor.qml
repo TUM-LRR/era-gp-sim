@@ -75,7 +75,7 @@ ScrollView {
                 Component.onCompleted: {
                     updateSize();
                     // Temporary
-                    text = "addi x0, x0, 0\naddi x0, x0, 0\naddi x1, x1, 4\naddi x0, x0, 0\naddi x1, x1, 4";
+                    text = ".macro huhu\naddi x1, x1, 1\naddi x1, x1, 1\n.endm\n\nhuhu\n\naddi x1, x1, 1";
                 }
                 visible: true
                 onCursorRectangleChanged: cursorScroll(cursorRectangle)
@@ -92,6 +92,7 @@ ScrollView {
                         event.accepted = false;
                     } else {
                         triggeringKeyEvent = undefined;
+                        event.accepted = false;
                     }
                 }
 
@@ -199,7 +200,7 @@ ScrollView {
                 }
 
 
-                // Iterates over the current macros-arrays and removed the display objects of each macro.
+                // Iterates over the current macros-arrays and removes the display objects of each macro.
                 function removeCurrentMacros() {
                     // Iterate over all macro display objects and destroy them.
                     for (var macroRemovalIndex = 0; macroRemovalIndex < macroDisplayObjects.length; ++macroRemovalIndex) {
@@ -266,13 +267,29 @@ ScrollView {
                 }
 
 
+                // Saves the line count before a new change was made. Required for offsetting macros (see below).
+                property var oldLineCount: 0
+
                 onTextChanged: {
                     // Test is text was changed by user or the program (e.g. when expanding macro).
                     if (shouldUpdateText) {
+                        // When lines where inserted or removed above any macro its startLine has to be offset
+                        // in order to guarantee its blank lines are removed correctly when collapsing.
+                        // Calculate the number of lines inserted/deleted.
+                        var lineCountDifference = textArea.lineCount - oldLineCount;
+                        // Iterate over macros which have to be offset.
+                        var currentLine = TextUtilities.getLineNumberForPosition(textArea.text, textArea.cursorPosition);
+                        for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
+                            if (macros[macroIndex]["startLine"] >= (currentLine-1)) {
+                                macros[macroIndex]["startLine"] += lineCountDifference;
+                            }
+                        }
                         // Remove macros when new text was entered.
                         removeCurrentMacros();
                     }
+                    oldLineCount = textArea.lineCount;
                 }
+
 
 
                 // Called when a triangle button is pressed.
