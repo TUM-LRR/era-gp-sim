@@ -78,6 +78,11 @@ class SyntaxTreeGenerator {
       CompileState& state,
       MemoryAccess& memoryAccess) const;
 
+  /**
+   * Returns a reference to the NodeFactoryCollection used by this SyntaxTreeGenerator
+   */
+  const NodeFactoryCollection &getNodeFactories() const;
+
  private:
   /**
    * \brief The internal storage of the node factory collection.

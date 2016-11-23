@@ -79,3 +79,7 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
   // Return.
   return std::move(outputNode);
 }
+
+const NodeFactoryCollection& SyntaxTreeGenerator::getNodeFactories() const {
+    return _nodeFactories;
+}

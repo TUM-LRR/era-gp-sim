@@ -38,8 +38,7 @@ instructions:
       - 12
     key:
       opcode: 35
-      funct3: 1
-      funct7: 0
+      funct3: 3
   - mnemonic: slli
     length: 32
     format: R

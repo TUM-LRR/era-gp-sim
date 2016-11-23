@@ -42,6 +42,9 @@ ScrollView {
         focus: false
         anchors.fill: parent
 
+        contentWidth: (textArea.contentWidth + sidebar.width)*scale.zoom;
+        contentHeight: textArea.contentHeight*scale.zoom;
+
         //wrapper item, Flickable can only have one child
         Item {
             id: item
@@ -55,7 +58,7 @@ ScrollView {
                 origin.y: 0;
                 xScale: zoom;
                 yScale: zoom;
-                }
+            }
 
             //text field component
             TextEdit {
@@ -65,6 +68,9 @@ ScrollView {
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
                 property int line: 1
 
+                width: (textArea.unscaledWidth)*scale.zoom;
+                height: (textArea.unscaledHeight)*scale.zoom;
+
                 x: sidebar.width
                 selectByMouse: true
                 smooth: true
@@ -73,9 +79,7 @@ ScrollView {
                 textFormat: TextEdit.PlainText
                 wrapMode: TextEdit.NoWrap
                 Component.onCompleted: {
-                    updateSize();
-                    // Temporary
-                    text = ".macro huhu\naddi x1, x1, 1\naddi x1, x1, 1\n.endm\n\nhuhu\n\naddi x1, x1, 1";
+                    cursorScroll(textArea.cursorRectangle);
                 }
                 visible: true
                 onCursorRectangleChanged: cursorScroll(cursorRectangle)
@@ -96,19 +100,40 @@ ScrollView {
                     }
                 }
 
+
+                onTextChanged: {
+                    //(re)start the parse timer, if an edit is made
+                    if (shouldUpdateText) { // Prevent restart if change was made for macro expansion.
+                        editor.setTextChanged(true);
+                        parseTimer.restart();
+                    }
+
+                    // Update macros.
+                    macroUpdatesOnTextChanged();
+                    // Update linenumbering
+                    sidebar.updateLineNumbers();
+                }
+
                 //Connection to react to the parse signal
                 Connections {
-                  target: editor
-                  onParseText: {
-                    editor.sendText(textArea.text);
-                  }
-                  onExecutionLineChanged: {
-                    textArea.line = line;
-                  }
-                  onRuntimeError: {
-                    runtimeErrorDialog.text = errorMessage;
-                    runtimeErrorDialog.open();
-                  }
+                    target: editor
+                    onExecutionLineChanged: {
+                        textArea.line = line;
+                    }
+                    onRuntimeError: {
+                        runtimeErrorDialog.text = errorMessage;
+                        runtimeErrorDialog.open();
+                    }
+                }
+
+                //timer for parsing
+                Timer {
+                    id: parseTimer
+                    interval: 1000
+                    repeat: false
+                    onTriggered: {
+                        editor.parse();
+                    }
                 }
 
                 //cursor line highlighting
@@ -124,10 +149,10 @@ ScrollView {
 
                 // execution line highlighting
                 Rectangle{
-                  color: Qt.rgba(0.2, 0.8, 0.4, 0.2)
-                  y: textArea.cursorRectangle.height * (textArea.line - 1);
-                  height: textArea.cursorRectangle.height;
-                  width: Math.max(scrollView.width, textArea.contentWidth)
+                    color: Qt.rgba(0.2, 0.8, 0.4, 0.2)
+                    y: textArea.cursorRectangle.height * (textArea.line - 1);
+                    height: textArea.cursorRectangle.height;
+                    width: Math.max(scrollView.width, textArea.contentWidth)
                 }
 
                 //scroll with the cursor
@@ -151,21 +176,11 @@ ScrollView {
                     }
                 }
 
-                //updates the size of the TextEdit and the Flickable contentSize, has to be called when the viewport,
-                //the zoom or the contentSize changes
-                function updateSize() {
-                    textArea.width = (textArea.unscaledWidth - sidebar.width)*scale.zoom;
-                    textArea.height = (textArea.unscaledHeight)*scale.zoom;
-                    container.contentWidth = (textArea.contentWidth + sidebar.width)*scale.zoom;
-                    container.contentHeight = textArea.contentHeight*scale.zoom;
-                    textArea.cursorScroll(textArea.cursorRectangle);
-                }
-
-                onContentSizeChanged: updateSize();
+                onContentSizeChanged: textArea.cursorScroll(textArea.cursorRectangle);
                 Connections {
                     target: scrollView.viewport
-                    onWidthChanged: textArea.updateSize();
-                    onHeightChanged: textArea.updateSize();
+                    onWidthChanged: textArea.cursorScroll(textArea.cursorRectangle);
+                    onHeightChanged: textArea.cursorScroll(textArea.cursorRectangle);
                 }
 
                 //information about the font
@@ -239,9 +254,9 @@ ScrollView {
                         var yPos = textArea.positionToRectangle(linePosition).y + textArea.cursorRectangle.height
                         var subeditorComponent = Qt.createComponent("MacroSubeditor.qml");
                         var subeditor = subeditorComponent.createObject(textArea, {
-                                                                 "y": yPos,
-                                                                 "expandedHeight": cursorRectangle.height*macros[macroIndex]["lineCount"],
-                                                                 "text": macro["code"]});
+                                                                            "y": yPos,
+                                                                            "expandedHeight": cursorRectangle.height*macros[macroIndex]["lineCount"],
+                                                                            "text": macro["code"]});
                         macroDisplayObject["subeditor"] = subeditor;
                         // Add triangle-button to display object
                         var triangleButtonComponent = Qt.createComponent("MacroTriangleButton.qml");
@@ -270,7 +285,7 @@ ScrollView {
                 // Saves the line count before a new change was made. Required for offsetting macros (see below).
                 property var oldLineCount: 0
 
-                onTextChanged: {
+                function macroUpdatesOnTextChanged() {
                     // Test is text was changed by user or the program (e.g. when expanding macro).
                     if (shouldUpdateText) {
                         // When lines where inserted or removed above any macro its startLine has to be offset
@@ -534,7 +549,7 @@ ScrollView {
                         // Add new line numbers.
                         for (var line = 0; line < textArea.lineCount; ++line) {
                             var lineNumber = Qt.createQmlObject('import QtQuick 2.6; Text {color: "gray"; font: textArea.font}',
-                                                               lineNumbersBar);
+                                                                lineNumbersBar);
                             // TODO: Find out why we need that correction factor... So strange;
                             // Not required before but now even required when using Repeater...
                             lineNumber.height = 1.05*fontMetrics.height;
@@ -559,7 +574,7 @@ ScrollView {
                                         return " ";
                                     }
                                     else { // The current macro expansion lies before the given line, so the blank lines of
-                                           // the macro expansion have to be factored out.
+                                        // the macro expansion have to be factored out.
                                         lineNumber -= macro["lineCount"];
                                     }
                                 }
@@ -572,6 +587,68 @@ ScrollView {
                         }
                         return ""+lineNumber;
                     }
+
+                }
+
+                function addBreakpoint(line) {
+                    var newBreakpoint =
+                            breakpointComponent.createObject(sidebar,
+                                                             {"y": line*textArea.cursorRectangle.height, "line": line});
+                }
+
+                //mouse area to add Breakpoints
+                MouseArea {
+                    id: breakpointTrigger
+                    width: errorBar.width
+                    height: parent.height
+                    x: 0
+                    y: 0
+                    z: 1
+                    propagateComposedEvents: false
+                    preventStealing: true
+                    hoverEnabled: true
+                    onClicked: {
+                        sidebar.addBreakpoint(Math.floor(mouse.y/textArea.cursorRectangle.height));
+                    }
+                }
+
+                Component{
+                    id: breakpointComponent
+                    Item {
+                        z: breakpointTrigger.z + 1
+                        id: breakpointItem
+                        property int line;
+                        property alias color: breakpointIcon.color
+                        width: breakpointTrigger.width
+                        height: textArea.cursorRectangle.height;
+                        Component.onCompleted: {
+                            editor.setBreakpoint(line + 1);
+                        }
+
+                        Rectangle {
+                            id: breakpointIcon
+                            height: Math.min(parent.height, errorBar.width) * 0.8
+                            width: height
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.leftMargin: height*0.15
+                            radius: width*0.5
+                            color: "red"
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            width: 100
+                            height: textArea.cursorRectangle.height
+                            propagateComposedEvents: false
+                            preventStealing: true
+
+                            onClicked: {
+                                editor.deleteBreakpoint(line + 1);
+                                breakpointItem.destroy();
+                            }
+                        }
+                    }
                 }
 
                 //errors and warnings
@@ -580,7 +657,7 @@ ScrollView {
                     anchors.left: lineNumbersBar.right
                     anchors.leftMargin: 1
                     y: textArea.textMargin/2
-                    width: 13
+                    width: textArea.cursorRectangle.height*0.8
 
                     Connections {
                         target: editor
@@ -645,12 +722,12 @@ ScrollView {
 
             //Dialog to show runtime errors
             MessageDialog {
-              id: runtimeErrorDialog
-              title: "Runtime error"
-              standardButtons: StandardButton.Ok
-              onAccepted: {
-                close();
-              }
+                id: runtimeErrorDialog
+                title: "Runtime error"
+                standardButtons: StandardButton.Ok
+                onAccepted: {
+                    close();
+                }
             }
 
             //input for zoom
@@ -672,7 +749,7 @@ ScrollView {
                                 scale.zoom = 1.0;
                             }
                         }
-                        textArea.updateSize();
+                        textArea.cursorScroll(textArea.cursorRectangle);
                         wheel.accepted = true;
                     }
                     else {

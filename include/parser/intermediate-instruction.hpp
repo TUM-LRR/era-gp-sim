@@ -136,6 +136,7 @@ class IntermediateInstruction : public IntermediateOperation {
                         CompileState& state);
 
  private:
+
   /**
    * \brief The internal source arguments.
    */
