@@ -37,7 +37,7 @@ struct Options {
   std::size_t colorBaseAddress = 0;
   std::size_t width = 320;
   std::size_t height = 240;
-  std::size_t colorMode = 0;
+  std::size_t colorMode = 1;
   std::size_t rBit = 8;
   std::size_t gBit = 8;
   std::size_t bBit = 8;
@@ -51,9 +51,11 @@ struct Options {
 
   ColorMode getColorMode() const;
   std::uint32_t getPixel(std::size_t x, std::size_t y) const;
+  std::uint32_t getColor(std::size_t index) const;
   void updatePixel(std::shared_ptr<QImage> image,
                    std::size_t x,
                    std::size_t y) const;
+  void updateColor(std::shared_ptr<QImage> image, std::size_t index) const;
   void updateMemory(std::shared_ptr<QImage> image,
                     std::size_t address,
                     std::size_t amount) const;
@@ -98,9 +100,9 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_PROPERTY(void paint)
  public:
   PixelDisplayPaintedItem(QQuickItem *parent = 0) : QQuickPaintedItem(parent) {
-    _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_RGB32);
-    _image->fill(QColor("#00FFFF").rgb());
-    _image->setPixel(20, 20, 0xFF0000u);
+    _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_Mono);
+    //_image->fill(QColor("#00FFFF").rgb());
+    //_image->setPixel(20, 20, 0xFF0000u);
   }
 
   void paint(QPainter *painter) {
