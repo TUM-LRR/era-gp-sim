@@ -296,6 +296,7 @@ ScrollView {
                         var lineCountDifference = textArea.lineCount - oldLineCount;
                         // Iterate over macros which have to be offset.
                         var currentLine = TextUtilities.getLineNumberForPosition(textArea.text, textArea.cursorPosition);
+                        currentLine = convertRawLineNumberToDisplayLineNumber(textArea.text, currentLine);
                         for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
                             if (macros[macroIndex]["startLine"] >= (currentLine-1)) {
                                 macros[macroIndex]["startLine"] += lineCountDifference;
@@ -427,6 +428,17 @@ ScrollView {
                         }
                     }
                     return false;
+                }
+
+                // Converts a given line number inside the editor and factors out all blank lines inserted for macro expansions.
+                function convertRawLineNumberToDisplayLineNumber(text, rawLineNumber) {
+                    var lineNumber = 0;
+                    for (var lineIndex = 0; lineIndex <= rawLineNumber; ++lineIndex) {
+                        if (!isPositionInsideMacroBlankLine(text, TextUtilities.getLineStartForLine(text, lineIndex))) {
+                            lineNumber++;
+                        }
+                    }
+                    return lineNumber;
                 }
 
                 // Finds the position where blank lines for the macro expansion have to be inserted.
