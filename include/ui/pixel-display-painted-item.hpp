@@ -38,6 +38,9 @@ struct Options {
   std::size_t width = 320;
   std::size_t height = 240;
   std::size_t colorMode = 0;
+  std::size_t rBit = 8;
+  std::size_t gBit = 8;
+  std::size_t bBit = 8;
   // TODO::use enums, maybe
   bool columns_rows = false;// false->row_major, true->columns->major
   bool horizontallyMirrored = false;
@@ -57,34 +60,37 @@ struct Options {
   void updateAllPixels(std::shared_ptr<QImage> image) const;
   void updateAllColors(std::shared_ptr<QImage> image) const;
   static ColorMode RGB;
+  static ColorMode Monochrome;
 };
 struct ColorMode {
   using GetPixelFunction =
       std::function<std::uint32_t(const Options &, std::size_t, std::size_t)>;
+  using GetColorFunction =
+      std::function<std::uint32_t(const Options &, std::size_t)>;
   using UpdateMemoryFunction = std::function<void(
       const Options &, std::shared_ptr<QImage>, std::size_t, std::size_t)>;
   using UpdateAllPixelsFunction =
       std::function<void(const Options &, std::shared_ptr<QImage>)>;
   using UpdateAllColorsFunction =
       std::function<void(const Options &, std::shared_ptr<QImage>)>;
-  // ColorMode(const GetPixelFunction &getPixel,
-  //           const UpdateMemoryFunction &updateMemory,
-  //           const UpdateAllPixelsFunction &updateAllPixels,
-  //           const UpdateAllColorsFunction &updateAllColors)
-  // : getPixel{getPixel}
-  // , updateMemory{updateMemory}
-  // , updateAllPixels{updateAllPixels}
-  // , updateAllColors{updateAllColors} {
-  // }
+
   GetPixelFunction getPixel;
+  GetColorFunction getColor;
   UpdateMemoryFunction updateMemory;
   UpdateAllPixelsFunction updateAllPixels;
   UpdateAllColorsFunction updateAllColors;
   // RGB:
   const static GetPixelFunction RGBGetPixel;
+  const static GetColorFunction RGBGetColor;
   const static UpdateMemoryFunction RGBUpdateMemory;
   const static UpdateAllPixelsFunction RGBUpdateAllPixels;
   const static UpdateAllColorsFunction RGBUpdateAllColors;
+  // Monochrome
+  const static GetPixelFunction MonochromeGetPixel;
+  const static GetColorFunction MonochromeGetColor;
+  const static UpdateMemoryFunction MonochromeUpdateMemory;
+  const static UpdateAllPixelsFunction MonochromeUpdateAllPixels;
+  const static UpdateAllColorsFunction MonochromeUpdateAllColors;
 };
 }
 
