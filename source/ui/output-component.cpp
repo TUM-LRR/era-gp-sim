@@ -17,9 +17,6 @@
  */
 
 #include "ui/output-component.hpp"
-#include <QQuickItem>
-#include <QQuickView>
-#include "core/conversions.hpp"
 #include "core/memory-manager.hpp"
 #include "core/memory-value.hpp"
 

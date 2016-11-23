@@ -54,7 +54,7 @@ Rectangle {
            - settingsButtonPressed(): Signal for notifying the output item that its settigns button was pressed and
              that it should therefore display its settings menu. The settings button itself is part of the tab bar
              and not the output item itself.
-*/
+        */
         Tab {
             title: "Buttons/Lightstrip Icon"
             LightStrip {
