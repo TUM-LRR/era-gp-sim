@@ -36,6 +36,8 @@ class Architecture;
  * form.
  */
 class IntermediateInstruction : public IntermediateOperation {
+  friend class IntermediateMacroInstruction;
+
  public:
   /**
    * \brief Instantiates a new compile error with the given arguments.
@@ -104,6 +106,17 @@ class IntermediateInstruction : public IntermediateOperation {
                                   CompileState& state,
                                   MemoryAccess& memoryAccess);
 
+  MemoryAddress address() const {
+    return _address;
+  }
+
+  virtual void
+  insertIntoArguments(const std::string& name, const std::string& value);
+
+  virtual IntermediateOperationPointer clone() {
+    return IntermediateOperationPointer{new IntermediateInstruction{*this}};
+  }
+
  protected:
   /**
    * \brief Compiles a vector of arguments (i.e. inserts symbols and converts to
@@ -141,6 +154,18 @@ class IntermediateInstruction : public IntermediateOperation {
    * \brief The memory address inside the code section.
    */
   RelativeMemoryPosition _relativeAddress;
+
+  /**
+   * Constructs an argument vector from the sources and targets vectors.
+   * \return New vector containing all instruction arguments.
+   */
+  std::vector<std::string> getArgsVector() const {
+    std::vector<std::string> args;
+    args.reserve(_sources.size() + _targets.size());
+    args.insert(args.end(), _targets.begin(), _targets.end());
+    args.insert(args.end(), _sources.begin(), _sources.end());
+    return args;
+  }
 };
 
 #endif
