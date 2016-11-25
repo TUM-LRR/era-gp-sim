@@ -72,14 +72,17 @@ void GuiProject::parse() {
 }
 
 void GuiProject::run() {
+  _editorComponent.parse();
   _projectModule.getCommandInterface().execute();
 }
 
 void GuiProject::runLine() {
+  _editorComponent.parse();
   _projectModule.getCommandInterface().executeNextLine();
 }
 
 void GuiProject::runBreakpoint() {
+  _editorComponent.parse();
   _projectModule.getCommandInterface().executeToBreakpoint();
 }
 

@@ -98,6 +98,14 @@ void storeRegister(MemoryAccess& memoryAccess,
   auto memory = convert(value);
   memoryAccess.putRegisterValue(registerName, memory);
 }
+
+template <typename UnsignedWord>
+std::enable_if_t<std::is_unsigned<UnsignedWord>::value, bool>
+isAddressValid(MemoryAccess& memoryAccess, UnsignedWord absoluteAdress) {
+    UnsignedWord lowerBound = 0;//TODO first adress of assembled code
+    UnsignedWord upperBound = memoryAccess.getMemorySize().get();//TODO last adress of assembled code
+    return absoluteAdress >= lowerBound && absoluteAdress < upperBound;
+}
 }
 
 #endif /* ERAGPSIM_ARCH_RISCV_UTILITY_HPP */

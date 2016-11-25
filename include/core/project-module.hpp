@@ -20,7 +20,6 @@
 #ifndef ERAGPSIM_CORE_PROJECT_MODULE_HPP
 #define ERAGPSIM_CORE_PROJECT_MODULE_HPP
 
-#include <atomic>
 #include <memory>
 
 #include "core/architecture-access.hpp"
@@ -43,6 +42,8 @@ class ArchitectureFormula;
  */
 class ProjectModule {
  public:
+  using SharedCondition = MemoryAccess::SharedCondition;
+
   ProjectModule(const ArchitectureFormula& architectureFormula,
                 std::size_t memorySize,
                 const std::string& parserName);
@@ -91,6 +92,10 @@ class ProjectModule {
 
 
  private:
+  /** This object encapsulates a condition variable with a stop flag and a
+   * mutex. It is used to stop the execution on a user request.*/
+  SharedCondition _stopCondition;
+
   /** Scheduler for the project servant (active-object). */
   std::shared_ptr<Scheduler> _schedulerProject;
 
@@ -109,10 +114,6 @@ class ProjectModule {
 
   /** Proxy to access the architecture. */
   ArchitectureAccess _architectureAccess;
-
-  /** A std::atomic_flag to stop the execution. The ParsingAndExecutionUnit has
-   * a reference to this flag.*/
-  std::atomic_flag _stopFlag;
 
   /** Proxy object used to create the parser-and-execution servant and
    * initialize its proxies. */

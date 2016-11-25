@@ -19,6 +19,7 @@
 #include "parser/intermediate-instruction.hpp"
 #include "arch/common/architecture.hpp"
 #include "common/assert.hpp"
+#include "core/conversions.hpp"
 
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       const SymbolTable& table,
@@ -40,7 +41,18 @@ IntermediateInstruction::compileArgumentVector(
   // First of all, we insert all constants. Then, we convert every single one of
   // them to a syntax tree node.
   std::vector<std::string> cpy(vector);
-  table.replaceSymbols(cpy, state);
+  table.replaceSymbols(cpy, state, [&, generator](const std::string& replace, SymbolTable::SymbolType type) -> std::string {
+      //When inserting a label, we might transform its value into a relative one (depends on the instruction)
+      //We use NodeFactoryCollection::labelToImmediate which translates the value if necessary
+      if(type != SymbolTable::SymbolType::LABEL) {
+          return replace;
+      }else{
+          MemoryValue labelValue = conversions::convert<size_t>(std::stoul(replace), sizeof(size_t)*8);
+          MemoryValue instructionAdress = conversions::convert<size_t>(_relativeAddress.offset, sizeof(size_t)*8);
+          MemoryValue relativeAdress =  generator.getNodeFactories().labelToImmediate(labelValue, _name, instructionAdress);
+          return relativeAdress.toHexString(true, true);
+      }
+  });
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> output;
   output.reserve(cpy.size());
   for (const auto& i : cpy) {
@@ -82,7 +94,7 @@ void IntermediateInstruction::enhanceSymbolTable(
 
   // We insert all our labels.
   for (const auto& i : _labels) {
-    table.insertEntry(i, std::to_string(_address), state);
+    table.insertEntry(i, std::to_string(_address), state, SymbolTable::SymbolType::LABEL);
   }
 }
 
