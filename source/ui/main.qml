@@ -123,6 +123,7 @@ ApplicationWindow {
     }
 
     property alias fileDialog: fileDialog
+    property alias textDialog: textDialog
 
     //File dialog for selecting a file
     FileDialog {
@@ -133,6 +134,22 @@ ApplicationWindow {
       selectMultiple: false
       onAccepted: {
         onAcceptedFunction(fileDialog.fileUrl);
+      }
+    }
+
+    // Dialog to input text
+    Dialog {
+      id: textDialog
+      standardButtons: StandardButton.Cancel | StandardButton.Save
+      property var onAcceptedFunction
+      property alias placeholderText: textField.placeholderText
+
+      TextField {
+        id: textField
+      }
+      onAccepted: {
+        onAcceptedFunction(textField.text);
+        textField.text = "";
       }
     }
 }

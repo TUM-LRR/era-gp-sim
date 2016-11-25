@@ -45,6 +45,14 @@ Item {
             }
         }
 
+        /* react to signals from guiProject */
+        Connections {
+          target: guiProject
+          onSnapshotsChanged: {
+            listView.model = guiProject.getSnapshots();
+          }
+        }
+
         /*Shows, how the the entries should be presented*/
         Component {
             id: listDelegate
@@ -86,19 +94,19 @@ Item {
                             width: 250
 
                             acceptedButtons: Qt.RightButton | Qt.LeftButton
-                            Text{ text: name
+                            Text{ text: model.modelData
                                 font.bold: true
                             }
 
                             /*open and delete by clicks*/
                             onDoubleClicked: {
                                 if(mouse.button===Qt.LeftButton){
-                                    console.info("Left Double Click, load "+name);
-                                    snapshotModel.deleteClicked(name);
+                                    console.info("Left Double Click, load "+model.modelData);
+                                    guiProject.loadSnapshot(model.modelData);
                                 }
                                 else if(mouse.button===Qt.RightButton){
-                                    console.info("Right Double Click, delete "+ name);
-                                    snapshotModel.deleteClicked(name);
+                                    console.info("Right Double Click, delete "+ model.modelData);
+                                    guiProject.removeSnapshot(model.modelData);
                                 }
                              }
                         }
@@ -124,8 +132,8 @@ Item {
                                 anchors.centerIn: parent
                             }
                             onClicked: {
-                                console.info("Button Delete Clicked, delete "+name);
-                                snapshotModel.deleteClicked(name);
+                                console.info("Button Delete Clicked, delete "+model.modelData);
+                                guiProject.removeProject(model.modelData);
 
                             }
                         }
@@ -151,8 +159,8 @@ Item {
                                 anchors.centerIn: parent
                             }
                             onClicked: {
-                                console.info("Button Load Clicked, load "+name);
-                                snapshotModel.loadClicked(name);
+                                console.info("Button Load Clicked, load "+model.modelData);
+                                guiProject.loadSnapshot(model.modelData);
                             }
                         }
                     }
@@ -174,7 +182,7 @@ Item {
               anchors.left: parent.left
               anchors.bottom: parent.bottom
               anchors.right: parent.right
-              model: snapshotModel //listModel
+              model: guiProject.getSnapshots();
               delegate: listDelegate
         }
 

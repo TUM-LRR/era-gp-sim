@@ -82,7 +82,7 @@ class MemoryManager : public Proxy<Project> {
    *
    * \return A future to the generated json object.
    */
-  POST_FUTURE(generateSnapshot)
+  POST_FUTURE_CONST(generateSnapshot)
 };
 
 #endif /* ERAGPSIM_CORE_MEMORY_MANAGER_HPP */

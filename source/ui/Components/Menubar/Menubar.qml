@@ -42,11 +42,9 @@ MenuBar {
         MenuItem{
             text: "Load Text..."
             function openTextFile(filePath) {
-              console.log("open path: " + filePath);
               ui.loadText(main.currentIndex, filePath);
             }
             onTriggered: {
-                console.info("Open triggerd");
                 main.fileDialog.onAcceptedFunction = openTextFile;
                 main.fileDialog.selectExisting = true;
                 main.fileDialog.open();
@@ -55,14 +53,12 @@ MenuBar {
         MenuItem{
             text: "New..."
             onTriggered: {
-                console.info("New triggerd");
                 main.createProject();
             }
         }
         MenuItem{
             text: "Save"
             onTriggered: {
-                console.info("Save triggerd");
                 ui.saveText(main.currentIndex);
             }
         }
@@ -70,21 +66,24 @@ MenuBar {
             id: saveTextAs
             text: "Save as..."
             onTriggered: {
-                console.info("Save as triggerd");
                 actionSaveAs();
             }
         }
         MenuItem{
-            text: "Snapshot"
+            text: "Save Snapshot"
+            function saveSnapshot(name) {
+              console.log("save snapshot: " + name)
+              ui.saveSnapshot(tabView.currentIndex, name);
+            }
             onTriggered: {
-                console.info("Snapshot triggerd");
-                ui.snapshot("popup für name", tabView.currentIndex)
+                main.textDialog.onAcceptedFunction = saveSnapshot;
+                main.textDialog.placeholderText = "name";
+                main.textDialog.open();
             }
         }
         MenuItem{
             text: "Close"
             onTriggered: {
-                console.info("Delete Triggerd");
                 main.closeProject();
             }
         }

@@ -20,6 +20,7 @@
 #include "ui/gui-project.hpp"
 
 #include <QUrl>
+#include <cstdio>
 #include <functional>
 
 #include "common/utility.hpp"
@@ -75,12 +76,6 @@ GuiProject::GuiProject(QQmlContext* context,
                    &_memoryModel,
                    SLOT(onMemoryChanged(std::size_t, std::size_t)),
                    Qt::QueuedConnection);
-
-  std::string name[] = {"Apfel", "Banane"};
-  // snapmodel.addList(name);
-  // An alle Komponenten weitergeben
-  // alle Komponenten initialisieren
-  // Alle Functions initialisieren
 }
 
 void GuiProject::changeSystem(std::string base) {
@@ -151,13 +146,43 @@ void GuiProject::loadText(QUrl path) {
 }
 
 void GuiProject::saveSnapshot(QString qName) {
-  std::string name = qName.toStdString();
-  // dont know, what to do
+  std::string path = _snapshotPath(qName);
+  Json snapshot = _projectModule.getMemoryManager().generateSnapshot().get();
+  std::string snapshotString = snapshot.dump(4);
+  try {
+    Utility::storeToFile(path, snapshotString);
+    _snapshots.push_back(qName);
+    emit snapshotsChanged();
+  } catch (const std::exception& exception) {
+    _throwError(
+        std::string("Could not write snapshot to disk! ") + exception.what(),
+        std::vector<std::string>());
+  }
+}
+
+void GuiProject::removeSnapshot(QString qName) {
+  if (_snapshots.removeOne(qName)) {
+    std::remove(_snapshotPath(qName).c_str());
+  }
+  emit snapshotsChanged();
 }
 
 void GuiProject::loadSnapshot(QString qName) {
+  assert::that(_snapshots.contains(qName));
+  try {
+    std::string path = _snapshotPath(qName);
+    Json snapshot = Json::parse(Utility::loadFromFile(path));
+    _projectModule.getMemoryManager().loadSnapshot(snapshot);
+  } catch (const std::exception& exception) {
+    _throwError(
+        std::string("Could not load snapshot from file! ") + exception.what(),
+        std::vector<std::string>());
+  }
 }
 
+QStringList GuiProject::getSnapshots() {
+  return _snapshots;
+}
 
 std::function<std::string(MemoryValue)> GuiProject::getHexConversion() {
   return hexConversion;
@@ -214,4 +239,9 @@ void GuiProject::_throwError(const std::string& message,
                              const std::vector<std::string>& arguments) {
   QString errorMessage = QString::fromStdString(message);
   emit error(errorMessage);
+}
+
+std::string GuiProject::_snapshotPath(QString qName) {
+  std::string name = qName.toStdString();
+  return Utility::joinToRoot("snapshots", name + ".snapshot");
 }

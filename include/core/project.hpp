@@ -164,7 +164,7 @@ class Project : public Servant {
    *
    * \return The generated json object.
    */
-  Json generateSnapshot();
+  Json generateSnapshot() const;
 
   /**
    * Returns the callback used for conversion from a MemoryValue to a signed

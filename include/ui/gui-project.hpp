@@ -23,12 +23,15 @@
 
 #include <QObject>
 #include <QQmlContext>
+#include <QString>
+#include <QStringList>
 #include <functional>
 #include <string>
 
 #include "arch/common/architecture-formula.hpp"
 #include "core/memory-value.hpp"
 #include "core/project-module.hpp"
+#include "third-party/json/json.hpp"
 #include "ui/editor-component.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/register-model.hpp"
@@ -47,6 +50,8 @@ class GuiProject : QObject {
   Q_OBJECT
 
  public:
+  using Json = nlohmann::json;
+
   /**
    * The Constructor
    *
@@ -130,10 +135,23 @@ class GuiProject : QObject {
   void saveSnapshot(QString qName);
 
   /**
+   * \brief Removes a snapshot.
+   *
+   * \param qName name of the snapshot.
+   */
+  Q_INVOKABLE void removeSnapshot(QString qName);
+
+  /**
    * \brief loads a snapshot
    * \param name The name of the snapshot, which should be loaded
    */
-  void loadSnapshot(QString qName);
+  Q_INVOKABLE void loadSnapshot(QString qName);
+
+  /**
+   * Returns a list of snapshot names
+   *
+   */
+  Q_INVOKABLE QStringList getSnapshots();
 
   /**
    * \brief Functions for converting MemoryValues to Strings.
@@ -172,6 +190,14 @@ class GuiProject : QObject {
                    const std::vector<std::string>& arguments);
 
   /**
+   * Creates the filepath from a snapshot name
+   *
+   * \param qName name as QString.
+   * \return Returns the filepath as std::string.
+   */
+  std::string _snapshotPath(QString qName);
+
+  /**
    * \brief the module in the core
    */
   ProjectModule _projectModule;
@@ -193,6 +219,11 @@ class GuiProject : QObject {
    * The default path to save the text of this project to.
    */
   QString _defaultTextFileSavePath;
+
+  /**
+   * A list of the snapshot names of this project.
+   */
+  QStringList _snapshots;
 
   /**
    * \brief The Functions for the conversion
@@ -233,11 +264,19 @@ class GuiProject : QObject {
    */
   void saveTextAs();
 
-  /** display an error in the ui.
+  /**
+   * Display an error in the ui.
    *
    * \param errorMessage The error message.
    */
   void error(QString errorMessage);
+
+  /**
+   * Updates the snapshot list in the ui.
+   *
+   * \param snapshots The new list of snapshots.
+   */
+  void snapshotsChanged();
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP

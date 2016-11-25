@@ -193,7 +193,7 @@ void Project::loadSnapshot(Json snapshot) {
   }
 }
 
-Project::Json Project::generateSnapshot() {
+Project::Json Project::generateSnapshot() const {
   Json snapshot;
   snapshot["architecture-name"] = _architectureFormula.getArchitectureName();
   snapshot["extensions"] = _architectureFormula.getUnderlying();
