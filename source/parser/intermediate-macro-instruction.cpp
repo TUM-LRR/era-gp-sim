@@ -80,7 +80,8 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
                         std::to_string(static_cast<IntermediateInstruction*>(
                                            _operations[_firstInstruction].get())
                                            ->address()),
-                        state);
+                        state,
+                        SymbolTable::SymbolType::LABEL);
     }
   }
 }
