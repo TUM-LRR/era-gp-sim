@@ -48,6 +48,7 @@ Item {
         // Uses the RegisterModel to populate the registers.
         model: registerModel
 
+
         itemDelegate: Item {
             id: treeViewItemDelegate
 
@@ -88,20 +89,24 @@ Item {
                 width: 18
                 height: registerContentItem.height
                 property bool completed: false
-                model: ListModel {
-                    id: dataTypeFormatModel
-                    Component.onCompleted: {
-                        // Creates a ListModel from the list of data formats provided by the RegisterModel.
-                        // The corresponding list of data formats has to be fetched manually instead of
-                        // being exposed through a data role (such as model.Title) as the TreeView-model gets
-                        // released automatically at some point (i.e. when expanding, collapsing and expanding
-                        // an item). Likely a QML-bug.
-                        var list = registerModel.dataFormatListForRegister(styleData.index);
-                        list.forEach(function(entry) {
-                            append({"text": entry});
-                        });
+                model: {
+                    var type = registerModel.data(styleData.index, 1);
+                    switch (type) {
+                    case "Integer":
+                        return ["Binary", "Hexadecimal", "Decimal (Unsigned)", "Decimal (Signed)"];
+                    case "Float":
+                        return ["Binary", "Hexadecimal"];
+                    case "Vector":
+                        return ["Binary", "Hexadecimal"];
+                    case "Flag":
+                        return ["Flag", "Binary"];
+                    case "Link":
+                        return ["Binary", "Hexadecimal"];
+                    case "ProgramCounter":
+                        return ["Binary", "Hexadecimal"];
                     }
                 }
+
                 Component.onCompleted: {
                     // Try to restore a cached selected data type format.
                     if (attachedTreeView.dataTypeFormatCache[styleData.index] !== undefined) {
