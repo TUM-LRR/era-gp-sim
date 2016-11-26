@@ -51,7 +51,7 @@ Item {
             title: "Info"
             movable: false
             resizable: true
-            width: parent.width - ((tableView.columnCount - 2) * 80) - (tableView.getColumn(0).width) - (25)
+            width: 100 //parent.width - ((tableView.columnCount - 2) * 80) - (tableView.getColumn(0).width) - (25)
         }
         model: memoryModel
 
@@ -133,6 +133,8 @@ Item {
             id: header
             height: parent.height
             width:  parent.width - 25
+            //move header according to tableView
+            x: -tableView.flickableItem.contentX
 
             orientation: Qt.Horizontal
 
@@ -150,40 +152,63 @@ Item {
             model: ListModel {
                 id: headerDropdownList
             }
-            delegate: ComboBox {
-                id: bitChooser
+            delegate: Rectangle {
+                width: bitChooser.width + resizer.width
                 height: 25
-                width: tableView.getColumn(index).width
 
-                model: (tableView.getColumn(index).role === "address" + number_bits)? modelBits : modelNumeric;
+                    ComboBox {
+                    id: bitChooser
+                    height: 25
+                    width: resizer.x - bitChooser.x
 
-                ListModel {
-                    id: modelBits
-                    ListElement { text: "8 Bit"; bits: 8 }
-                    ListElement { text: "16 Bit"; bits: 16 }
-                    ListElement { text: "32 Bit"; bits: 32 }
-                }
-                ListModel {
-                    id: modelNumeric
-                    ListElement { text: "Binary"; role: "bin" }
-                    ListElement { text: "Octal"; role: "oct" }
-                    ListElement { text: "Hexadecimal"; role: "hex" }
-                    ListElement { text: "Decimal"; role: "dec" }
-                    ListElement { text: "Decimal (signed)"; role: "decs" }
-                }
-
-                onCurrentIndexChanged: {
-                    if(model === modelBits) {
-                        number_bits = model.get(bitChooser.currentIndex).bits;
+                    onWidthChanged: {
+                        tableView.getColumn(index).width = bitChooser.width + resizer.width;
                     }
-                    else {
-                        // explicitly create a property binding for number_bits so the role gets updated correctly
-                        tableView.getColumn(index).role = Qt.binding(function() {
-                            return model.get(bitChooser.currentIndex).role + number_bits })
+
+                    model: (tableView.getColumn(index).role === "address" + number_bits)? modelBits : modelNumeric;
+
+                    ListModel {
+                        id: modelBits
+                        ListElement { text: "8 Bit"; bits: 8 }
+                        ListElement { text: "16 Bit"; bits: 16 }
+                        ListElement { text: "32 Bit"; bits: 32 }
+                    }
+                    ListModel {
+                        id: modelNumeric
+                        ListElement { text: "Binary"; role: "bin" }
+                        ListElement { text: "Octal"; role: "oct" }
+                        ListElement { text: "Hexadecimal"; role: "hex" }
+                        ListElement { text: "Decimal"; role: "dec" }
+                        ListElement { text: "Decimal (signed)"; role: "decs" }
+                    }
+
+                    onCurrentIndexChanged: {
+                        if(model === modelBits) {
+                            number_bits = model.get(bitChooser.currentIndex).bits;
+                        }
+                        else {
+                            // explicitly create a property binding for number_bits so the role gets updated correctly
+                            tableView.getColumn(index).role = Qt.binding(function() {
+                                return model.get(bitChooser.currentIndex).role + number_bits })
+                        }
+                    }
+                }
+                Rectangle {
+                    id: resizer
+                    height: 25
+                    width: 5
+                    x: bitChooser.x + 50
+                    MouseArea {
+                        drag.axis: Drag.XAxis
+                        drag.target: resizer
+                        anchors.fill: parent
+                        cursorShape: Qt.SizeHorCursor
                     }
                 }
             }
         }
+
+
         Button {
             anchors.right: parent.right
             width: 25
@@ -192,7 +217,7 @@ Item {
 
             onClicked: {
                 tableView.insertColumn( tableView.columnCount - 1, column);
-                tableView.horizontalScrollBarPolicy = Qt.ScrollBarAlwaysOff;
+                //tableView.horizontalScrollBarPolicy = Qt.ScrollBarAlwaysOff;
             }
         }
     }
