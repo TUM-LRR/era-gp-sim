@@ -43,16 +43,8 @@ Item {
             role: "address" + number_bits
             title: "Adresse"
             movable: false
-            resizable: false
-            width: 70
-        }
-        TableViewColumn {
-            role: "bin" + number_bits
-            title: "Inhalt"
-            movable: false
             resizable: true
-            width: 80
-            delegate: inputBox
+            width: 70
         }
         TableViewColumn {
             role: "info"
@@ -62,6 +54,10 @@ Item {
             width: parent.width - ((tableView.columnCount - 2) * 80) - (tableView.getColumn(0).width) - (25)
         }
         model: memoryModel
+
+        Component.onCompleted: {
+            tableView.insertColumn( tableView.columnCount - 1, column);
+        }
     }
 
     Component {
@@ -72,7 +68,7 @@ Item {
             movable: false
             resizable: true
             width: 80
-            //delegate: editableContent
+            delegate: inputBox
         }
     }
 
