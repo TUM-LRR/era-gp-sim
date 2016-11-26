@@ -58,4 +58,15 @@ Item {
             clearArea.enabled=true;
         }
     }
+
+    ConsoleSettingsWindow{
+        id: settingsWindowC
+    }
+
+    function settingsButtonPressed(){
+        settingsWindowIT.show();
+    }
+
 }
+
+

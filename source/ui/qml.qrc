@@ -34,5 +34,6 @@
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
         <file>Components/Output/Console.qml</file>
+        <file>Components/Output/ConsoleSettingsWindow.qml</file>
     </qresource>
 </RCC>
