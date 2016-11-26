@@ -85,7 +85,7 @@ Item {
             height: 20
             y: 2
             x: 2
-            model: ["Choose Component","Snapshots", "Output", /*"Editor",*/ "Register", "Memory" ]
+            model: ["Choose Component","Snapshots", "Output", /*"Editor",*/ "Register", "Memory", "Input" ]
 
             onCurrentIndexChanged:{
                 if(currentIndex==0){
@@ -98,8 +98,11 @@ Item {
                 else if(currentIndex==3){
                     holder.change("register");
                 }
-                else{
+                else if (currrentIndex==4){
                     holder.change("memory");
+                }
+                else{
+                    holder.change("input");
                 }
             }
             onPressedChanged: {

@@ -1,90 +1,131 @@
 /*
- * C++ Assembler Interpreter
- * Copyright (C) 2016 Chair of Computer Architecture
- * at Technical University of Munich
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+  * C++ Assembler Interpreter
+  * Copyright (C) 2016 Chair of Computer Architecture
+  * at Technical University of Munich
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+
 
 
 /*this modul is the contaier for the input-windows*/
 
-import QtQuick 2.0
-import QtQuick.Controls 1.4
 
-Item {
-
-    /*Dummys, created by starting the window because of time reasons. They will not be active unless they are choosen*/
-    ButtonInput{
-        id: buttonI
-        anchors.fill: parent
-        visible: false
-        enabled: false
-    }
-
-    ClickInput{
-        id: clickI
-        anchors.fill: parent
-        visible: false
-        enabled: false
-    }
-
-    TextInputSelf{
-        id: textI
-        anchors.fill: parent
-        visible: false
-        enabled: false
-    }
-
-    /*Drop-Down button*/
-    ComboBox{
-        width: 150
-        model: ["Choose Input","Button", "Click", "Text" ]
-
-        onCurrentIndexChanged:{
-            /*If another line is choosen, an other Output will be set active, al others stay inactive*/
-            if(currentIndex==0){
-                buttonI.visible=false;
-                buttonI.enabled=false;
-                clickI.visible=false;
-                clickI.enabled=false;
-                textI.visible=false;
-                textI.enabled=false;
-            }else if(currentIndex==1){
-                buttonI.visible=true;
-                buttonI.enabled=true;
-                clickI.visible=false;
-                clickI.enabled=false;
-                textI.visible=false;
-                textI.enabled=false;
-            }else if(currentIndex==2){
-                buttonI.visible=false;
-                buttonI.enabled=false;
-                clickI.visible=true;
-                clickI.enabled=true;
-                textI.visible=false;
-                textI.enabled=false;
-            }else if(currentIndex==3){
-                buttonI.visible=false;
-                buttonI.enabled=false;
-                clickI.visible=false;
-                clickI.enabled=false;
-                textI.visible=true;
-                textI.enabled=true;
-            }
-        }
-    }
+ import QtQuick 2.6
+ import QtQuick.Controls 1.4
+ import QtQuick.Controls.Styles 1.4
 
 
-}
+ /*
+  Container for input items
+  */
+ Rectangle {
+     id: rootRectangle
+
+    // Color definitions
+     property color tabBarColor: Qt.rgba(236.0/255.0, 236.0/255.0, 236.0/255.0, 1.0)
+     property color innerBorderColor: "#AFAFAF"
+     property color highlightColor: "#4A90E2"
+     property color titleColor: "#4A4A4A"
+     property color titleColorHighlighted: "#111111"
+
+
+     // Allows to select the available input items
+     TabView {
+         id: inputTabView
+
+         anchors.fill: parent
+
+        // Position tab bar below the content frame.
+         tabPosition: Qt.BottomEdge
+
+
+         /* Each output item is represented by its corresponding tab inside the output tab bar.
+            Every output item needs the following properties to be able to connect with the output model:
+            - outputItemIndex: Unique index identifying each output item. Has to correspond with the item's
+              index inside the _outputItemsInformation-array of the output model (refer to output-component.hpp).
+            - settingsButtonPressed(): Signal for notifying the output item that its settigns button was pressed and
+              that it should therefore display its settings menu. The settings button itself is part of the tab bar
+              and not the output item itself.
+         */
+         Tab {
+             title: "Buttons"
+             ButtonInput{
+                 inputItemIndex: 0
+                 id: buttonI
+                 anchors.fill: parent
+             }
+         }
+
+
+         Tab {
+             title: "MouseArea"
+             ClickInput{
+                 inputItemIndex: 1
+                 id: clickI
+                 anchors.fill: parent
+             }
+         }
+
+         Tab {
+             title: "TextInput"
+             TextInputSelf{
+                 inputItemIndex: 2
+                 id: textI
+                 anchors.fill: parent
+             }
+         }
+
+
+         // Change TabView appearance
+         style: TabViewStyle {
+             tabBar: Rectangle {
+                 color: tabBarColor
+                 // Display border between tab bar and content frame.
+                 Rectangle {
+                     height: 1
+                     anchors.top: parent.top
+                     anchors.left: parent.left
+                     anchors.right: parent.right
+                     color: innerBorderColor
+                 }
+
+                 // Display output settings button in the rightmost corner of the tab bar.
+                 Button {
+                    id: settingsButton
+                     anchors.right: parent.right
+                     anchors.rightMargin: 4
+                     anchors.verticalCenter: parent.verticalCenter
+                     height: 18
+                     width: 18
+                     style: ButtonStyle {
+                         background: Rectangle {
+                             color: "#00000000"
+                             Image {
+                                source: (control.pressed) ? "Buttons/Settings_Icon_Pressed.png" : "Buttons/Settings _Icon.png"
+                             }
+                        }
+                     }
+                     // Clicking the settings button opens the output settings window in the currently active output item..
+                     onClicked: {
+                         inputTabView.getTab(inputTabView.currentIndex).item.settingsButtonPressed();
+                     }
+                 }
+             }
+
+
+
+         }
+     }
+ }

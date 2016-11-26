@@ -20,3 +20,13 @@ void InputClickModel::newClick(int x, int y){
 
    // std::cout << "X: "<<xMouseClick<<" Y: "<<yMouseClick<<std::endl;
 }
+
+void InputClickModel::setStart(int start){
+    if(memoryAccess.getMemorySize().get() > start+2){
+        this->start=start;
+    }
+}
+
+QString InputClickModel::getStart(){
+    return QString::fromStdString(std::to_string(start));
+}

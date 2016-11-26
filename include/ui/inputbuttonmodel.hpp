@@ -12,6 +12,8 @@ class InputButtonModel : public QObject
 public:
     InputButtonModel(QQmlContext* context, MemoryAccess m);
     Q_INVOKABLE void buttonClicked(int id);
+    Q_INVOKABLE QString getStart();
+    Q_INVOKABLE void setStart(int start);
 
 private:
     QQmlContext* context;

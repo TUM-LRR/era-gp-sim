@@ -37,5 +37,10 @@
         <file>Components/Input/ClickInput.qml</file>
         <file>Components/Input/Input.qml</file>
         <file>Components/Input/TextInputSelf.qml</file>
+        <file>Components/Input/ButtonInputSW.qml</file>
+        <file>Components/Input/ClickInputSW.qml</file>
+        <file>Components/Input/TextInputSW.qml</file>
+        <file>Components/Input/Buttons/Settings _Icon.png</file>
+        <file>Components/Input/Buttons/Settings_Icon_Pressed.png</file>
     </qresource>
 </RCC>

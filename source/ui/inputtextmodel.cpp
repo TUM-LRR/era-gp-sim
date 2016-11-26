@@ -23,3 +23,21 @@ void InputTextModel::newText(QString text){
         }
     }
 }
+
+void InputTextModel::setStart(int start){
+    if(memoryAccess.getMemorySize().get() >= start+maxLaenge){
+        this->start=start;
+    }
+}
+
+QString InputTextModel::getStart(){
+    return QString::fromStdString(std::to_string(start));
+}
+
+void InputTextModel::setMaxLaenge(int maxLaenge){
+    this->maxLaenge=maxLaenge;
+}
+
+int InputTextModel::getMaxLaenge(){
+    return maxLaenge
+}

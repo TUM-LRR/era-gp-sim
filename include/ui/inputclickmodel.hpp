@@ -11,6 +11,8 @@ class InputClickModel: QObject{
 public:
     InputClickModel(QQmlContext* context, MemoryAccess m);
     Q_INVOKABLE void newClick(int x, int y);
+    Q_INVOKABLE QString getStart();
+    Q_INVOKABLE void setStart(int start);
 
 
 private:

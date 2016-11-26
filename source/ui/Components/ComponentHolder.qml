@@ -23,6 +23,7 @@ import "Output"
 import "editor"
 import "Memory"
 import "Register"
+import "Input"
 
 Item {
     id: holder
@@ -59,6 +60,13 @@ Item {
         }
     }
 
+    Component{
+        id: input
+        Input{
+            anchors.fill: parent
+        }
+    }
+
     function change(comp){
         if(comp=="nothing"){
             //console.info(usual);
@@ -84,6 +92,12 @@ Item {
             actuall.destroy();
             actuall=object;
         }
+        else if(comp=="input"){
+            var object=input.createObject(holder);
+            actuall.destroy();
+            actuall=object;
+        }
+
         else{
             console.info("Unknowen component");
         }
