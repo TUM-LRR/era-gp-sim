@@ -21,19 +21,19 @@
 using Key = DocumentationBuilder::Key;
 
 const std::vector<std::string> DocumentationBuilder::_colors = {
-    //blue, red, orange/brown
+    // blue, red, orange/brown
     "#3366c4", "#66c433", "#c46633"};
 
 DocumentationBuilder::DocumentationBuilder() : _operandCount(0) {}
 
 Translateable DocumentationBuilder::build() {
   assert::that(_hasKey(Key::INSTRUCTION));
-  assert::that(_hasKey(Key::S_SYNTAX));
+  assert::that(_hasKey(Key::SHORT_SYNTAX));
   return Translateable(
       "<b>%1</b>: <code>%2</code><p style=\"margin-left:5%\">%3</p>%4<br>%5",
-      {_components[Key::INSTRUCTION], _components[Key::S_SYNTAX],
-       _optional(Key::OPERAND_DESC), _optional(Key::S_DESC),
-       _optional(Key::D_DESC)});
+      {_components[Key::INSTRUCTION], _components[Key::SHORT_SYNTAX],
+       _optional(Key::OPERAND_DESCRIPTION), _optional(Key::SHORT_DESCRIPTION),
+       _optional(Key::DETAIL_DESCRIPTION)});
 }
 
 DocumentationBuilder &DocumentationBuilder::instruction(const std::string &s) {
@@ -43,27 +43,32 @@ DocumentationBuilder &DocumentationBuilder::instruction(const std::string &s) {
 
 DocumentationBuilder &DocumentationBuilder::detailDescription(
     const std::string &s) {
-  _add(Key::D_DESC, std::make_shared<Translateable>(s));
+  _add(Key::DETAIL_DESCRIPTION, std::make_shared<Translateable>(s));
   return *this;
 }
 
-DocumentationBuilder& DocumentationBuilder::detailDescription(const Translateable::TranslateablePtr &msg) {
-    _add(Key::D_DESC, msg);
-    return *this;
+DocumentationBuilder &DocumentationBuilder::detailDescription(
+    const Translateable::TranslateablePtr &msg) {
+  _add(Key::DETAIL_DESCRIPTION, msg);
+  return *this;
 }
 
 DocumentationBuilder &DocumentationBuilder::operandDescription(
     const std::string &name, const std::string &description) {
-  auto it = _components.find(Key::OPERAND_DESC);
-  auto &existingTranslateable = (it != _components.end())
-                                    ? (*it).second
-                                    : _components[Key::OPERAND_DESC] =
-                                          std::make_shared<Translateable>("");
+  auto it = _components.find(Key::OPERAND_DESCRIPTION);
+  Translateable *existingTranslateable = nullptr;
+  if (it != _components.end()) {
+    existingTranslateable = &(*(it->second));
+  } else {
+    _components[Key::OPERAND_DESCRIPTION] = std::make_shared<Translateable>("");
+    existingTranslateable = &*(_components[Key::OPERAND_DESCRIPTION]);
+  }
   auto &baseString = existingTranslateable->getModifiableBaseString();
   baseString += '%';
   baseString += std::to_string(_operandCount + 1);  // will be %1, %2, ...
-  //all template arguments are explicitly given because gcc has a hard time guessing
-  auto operand = std::make_shared<Translateable, std::string, std::initializer_list<const std::string>>(
+  // all template arguments are explicitly given because gcc has a hard time
+  // guessing
+  auto operand = std::make_shared<Translateable, std::string, StringList>(
       "<br><code><span style=\"color:%1\"><b>%2</b></span></code>: %3",
       {_nextColor(), name, description});
   existingTranslateable->addOperand(operand);
@@ -73,12 +78,11 @@ DocumentationBuilder &DocumentationBuilder::operandDescription(
 
 DocumentationBuilder &DocumentationBuilder::shortDescription(
     const std::string &s) {
-  _add(Key::S_DESC, std::make_shared<Translateable>(s));
+  _add(Key::SHORT_DESCRIPTION, std::make_shared<Translateable>(s));
   return *this;
 }
 
-DocumentationBuilder &DocumentationBuilder::shortSyntax(
-    std::initializer_list<const std::string> operands) {
+DocumentationBuilder &DocumentationBuilder::shortSyntax(StringList operands) {
   auto translateable = std::make_shared<Translateable>("");
   std::string result = "";
   auto i = 0;
@@ -97,7 +101,7 @@ DocumentationBuilder &DocumentationBuilder::shortSyntax(
   // remove last ", " and put into translateable
   translateable->getModifiableBaseString() +=
       result.substr(0, result.size() - 2);
-  _add(Key::S_SYNTAX, translateable);
+  _add(Key::SHORT_SYNTAX, translateable);
   return *this;
 }
 
@@ -112,4 +116,13 @@ Translateable::TranslateablePtr DocumentationBuilder::_optional(
   } else {
     return std::make_shared<Translateable>("");
   }
+}
+
+void DocumentationBuilder::_add(const Key &key,
+                                const Translateable::TranslateablePtr &value) {
+  _components[key] = value;
+}
+
+bool DocumentationBuilder::_hasKey(const Key &key) const {
+  return _components.count(key);
 }

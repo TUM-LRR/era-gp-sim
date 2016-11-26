@@ -325,54 +325,54 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
 
   // M-Extension
   if (architecture.getInstructions().hasInstruction("mul")) {
-    _mInstruction("mul", "*", RISCV_TR("signed x signed multiplication"),
+    _mInstruction("mul", "*", RISCV_TR("a signed x signed multiplication"),
                   RISCV_TR("register used for the multiplicand"),
                   RISCV_TR("register used for the multiplier"),
                   RISCV_TR("lower"));
-    _mInstruction("mulh", "*", RISCV_TR("signed x signed multiplication"),
+    _mInstruction("mulh", "*", RISCV_TR("a signed x signed multiplication"),
                   RISCV_TR("register used for the multiplicand"),
                   RISCV_TR("register used for the multiplier"),
                   RISCV_TR("upper"));
-    _mInstruction("mulhu", "*", RISCV_TR("unsigned x unsigned multiplication"),
+    _mInstruction("mulhu", "*", RISCV_TR("an unsigned x unsigned multiplication"),
                   RISCV_TR("register used for the multiplicand"),
                   RISCV_TR("register used for the multiplier"),
                   RISCV_TR("upper"));
-    _mInstruction("mulhsu", "*", RISCV_TR("signed x unsigned multiplication"),
+    _mInstruction("mulhsu", "*", RISCV_TR("a signed x unsigned multiplication"),
                   RISCV_TR("register used for the multiplicand"),
                   RISCV_TR("register used for the multiplier"),
                   RISCV_TR("upper"));
 
-    _mInstruction("div", "/", RISCV_TR("signed-signed division"),
+    _mInstruction("div", "/", RISCV_TR("a signed-signed division"),
                   RISCV_TR("register used as dividend"),
                   RISCV_TR("register used as divisor"));
-    _mInstruction("divu", "/", RISCV_TR("unsigned-unsigned division"),
+    _mInstruction("divu", "/", RISCV_TR("an unsigned-unsigned division"),
                   RISCV_TR("register used as dividend"),
                   RISCV_TR("register used as divisor"));
-    _mInstruction("rem", "%", RISCV_TR("signed remainder operation"),
+    _mInstruction("rem", "%", RISCV_TR("a signed remainder operation"),
                   RISCV_TR("register used as dividend"),
                   RISCV_TR("register used as divisor"));
-    _mInstruction("remu", "%", RISCV_TR("unsigned remainder operation"),
+    _mInstruction("remu", "%", RISCV_TR("an unsigned remainder operation"),
                   RISCV_TR("register used as dividend"),
                   RISCV_TR("register used as divisor"));
 
     if (_is64BitArchitecture) {
       _mInstruction(
-          "mulw", "*", RISCV_TR("signed 32bit x signed 32bit multiplication"),
+          "mulw", "*", RISCV_TR("a signed 32bit x signed 32bit multiplication"),
           RISCV_TR("register used for the multiplicand"),
           RISCV_TR("register used for the multiplier"), RISCV_TR("lower"));
       _mInstruction("divw", "/",
-                    RISCV_TR("signed 32bit -signed 32bit division"),
+                    RISCV_TR("a signed 32bit -signed 32bit division"),
                     RISCV_TR("register used as dividend"),
                     RISCV_TR("register used as divisor"));
       _mInstruction("divuw", "/",
-                    RISCV_TR("unsigned 32bit -unsigned 32bit division"),
+                    RISCV_TR("an unsigned 32bit -unsigned 32bit division"),
                     RISCV_TR("register used as dividend"),
                     RISCV_TR("register used as divisor"));
-      _mInstruction("remw", "%", RISCV_TR("signed 32bit remainder operation"),
+      _mInstruction("remw", "%", RISCV_TR("a signed 32bit remainder operation"),
                     RISCV_TR("register used as dividend"),
                     RISCV_TR("register used as divisor"));
       _mInstruction("remuw", "%",
-                    RISCV_TR("unsigned 32bit remainder operation"),
+                    RISCV_TR("an unsigned 32bit remainder operation"),
                     RISCV_TR("register used as dividend"),
                     RISCV_TR("register used as divisor"));
     }
@@ -523,7 +523,7 @@ void InstructionContextInformation::_mInstruction(
       .operandDescription("rs1", operand1Desc)
       .operandDescription("rs2", operand2Desc);
   auto detail = std::make_shared<Translateable>(
-      RISCV_TR("Performs a %1 with rs1 and rs2 and stores the %2%3 of the "
+      RISCV_TR("Performs %1 with rs1 and rs2 and stores the %2%3 of the "
                "result in the destination register rd"));
   detail->addOperand(description);
   detail->addOperand(resultPart);

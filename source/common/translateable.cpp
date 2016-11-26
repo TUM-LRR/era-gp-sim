@@ -17,9 +17,8 @@
 
 #include "common/translateable.hpp"
 
-Translateable::Translateable(
-    const std::string &baseString,
-    const std::initializer_list<const std::string> &operands)
+Translateable::Translateable(const std::string &baseString,
+    const StringList &operands)
     : _baseString(baseString), _operands(operands.size()) {
   auto i = 0;
   for (const auto &stringOp : operands) {
@@ -28,10 +27,8 @@ Translateable::Translateable(
   }
 }
 
-Translateable::Translateable(
-    const std::string &baseString,
-    const std::initializer_list<std::reference_wrapper<Translateable> >
-        &operands)
+Translateable::Translateable(const std::string &baseString,
+    const TranslateableRefList &operands)
     : _baseString(baseString), _operands(operands.size()) {
   auto i = 0;
   for (Translateable &refOp : operands) {

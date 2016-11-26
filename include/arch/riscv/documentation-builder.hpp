@@ -20,6 +20,7 @@
 #include <unordered_map>
 #include <vector>
 #include "common/translateable.hpp"
+#include "common/utility.hpp"
 
 /**
  * A documentation builder can be used to build a text containing the
@@ -31,6 +32,8 @@
  */
 class DocumentationBuilder {
  public:
+    using StringList = Translateable::StringList;
+
   /**
  * A Key is the identifier for a certain component of the text.
  */
@@ -38,14 +41,14 @@ class DocumentationBuilder {
     /** The key for the instruction name*/
     INSTRUCTION,
     /** The key for a short syntax statement, e.g. "rd, rs, imm"*/
-    S_SYNTAX,
+    SHORT_SYNTAX,
     /** The key for operand description */
-    OPERAND_DESC,
+    OPERAND_DESCRIPTION,
     /** The key for a short description of what the instruction does expressed
        in some kind of pseudo-code: e.g. "rd=rs + imm" */
-    S_DESC,
+    SHORT_DESCRIPTION,
     /** The key for the detailed description of what the instruction does. */
-    D_DESC
+    DETAIL_DESCRIPTION
   };
 
   /**
@@ -126,29 +129,25 @@ class DocumentationBuilder {
    * \return The current DocumentationBuilder for chaining convenience
    */
   DocumentationBuilder& shortSyntax(
-      std::initializer_list<const std::string> operands);
+      StringList operands);
 
  private:
-  /** Hash-struct for the custom enum type Key */
-  struct KeyHash {
-    size_t operator()(const Key& k) const { return static_cast<size_t>(k); }
-  };
+  /** A list of colors in a html compliant format. These colors are used to mark each operand in a seperate color*/
+  static const std::vector<std::string> _colors;
 
   /**
    * Puts the key-value pair into the builders internal map
    * \param key The components key
    * \param value The components value
    */
-  void _add(const Key& key, const Translateable::TranslateablePtr& value) {
-    _components[key] = value;
-  }
+  void _add(const Key& key, const Translateable::TranslateablePtr& value);
 
   /**
    * Checks if the given key is available in the internal map
    * \param key
    * \return True, if there is a component already associated with this key, otherwise false
    */
-  bool _hasKey(const Key& key) const { return _components.count(key); }
+  bool _hasKey(const Key& key) const;
 
   /**
    * Returns the next html compliant color definition from the static color list
@@ -164,10 +163,7 @@ class DocumentationBuilder {
   Translateable::TranslateablePtr _optional(const Key& key);
 
   /** A map to store all components until building to offer arbitrary filling order */
-  std::unordered_map<Key, Translateable::TranslateablePtr, KeyHash> _components;
-
-  /** A list of colors in a html compliant format. These colors are used to mark each operand in a seperate color*/
-  static const std::vector<std::string> _colors;
+  std::unordered_map<Key, Translateable::TranslateablePtr, Utility::EnumHash<Key>> _components;
 
   /** A counter, counting the amount of operands */
   size_t _operandCount;

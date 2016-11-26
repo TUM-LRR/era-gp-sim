@@ -37,6 +37,9 @@ class Translateable {
 
  public:
   using TranslateablePtr = std::shared_ptr<Translateable>;
+  using TranslateablePtrList = std::initializer_list<TranslateablePtr>;
+  using StringList = std::initializer_list<const std::string>;
+  using TranslateableRefList = std::initializer_list<std::reference_wrapper<Translateable>>;
 
   /**
    * Constructs a Translateable with the given base string and empty arguments
@@ -52,7 +55,7 @@ class Translateable {
    * \param operands List of pointers to other Translateables to act as operands
    */
   Translateable(const std::string& baseString,
-                const std::initializer_list<TranslateablePtr>& operands)
+                const TranslateablePtrList& operands)
       : _baseString(baseString), _operands(operands) {}
 
   /**
@@ -63,7 +66,7 @@ class Translateable {
    * via the one-argument string constructor
    */
   Translateable(const std::string& baseString,
-                const std::initializer_list<const std::string>& operands);
+                const StringList& operands);
 
   /**
    * Constructs a Translateable with the given base string and the given list of
@@ -78,8 +81,7 @@ class Translateable {
    * \param operands List of references to existing Translateables.
    */
   Translateable(const std::string& baseString,
-                const std::initializer_list<
-                    std::reference_wrapper<Translateable>>& operands);
+                const TranslateableRefList& operands);
 
   /**
    * Returns a translated QString that is ready for e.g. being displayed.
