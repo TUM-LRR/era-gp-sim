@@ -68,28 +68,28 @@ void OutputComponent::updateMemory(std::size_t address, std::size_t length) {
 }
 
 void OutputComponent::putMemoryValue(int address,
-                                     QVector<bool> memoryContentBitVector) {
+                                     QList<bool> memoryContentBitList) {
   // Round up size of altered content up to bytes.
-  size_t memoryValueSize = memoryContentBitVector.size() +
-                           (8 - (memoryContentBitVector.size() % 8)) % 8;
+  size_t memoryValueSize = memoryContentBitList.size() +
+                           (8 - (memoryContentBitList.size() % 8)) % 8;
   // Create new MemoryValue.
   MemoryValue memoryContent(memoryValueSize);
   // Insert the bit values of the altered content into the newly create
   // MemoryValue.
-  for (size_t index = 0; index < memoryContentBitVector.size(); ++index) {
-    memoryContent.put(index, memoryContentBitVector.at(index));
+  for (size_t index = 0; index < memoryContentBitList.size(); ++index) {
+    memoryContent.put(index, memoryContentBitList.at(index));
   }
   // Pass new value to Core.
   _memoryAccess.putMemoryValueAt(address, memoryContent);
 }
 
-QVector<bool> OutputComponent::getMemoryContent(int address, int length) const {
+QList<bool> OutputComponent::getMemoryContent(int address, int length) const {
   // Fetch memory content from Core.
   MemoryValue content = _memoryAccess.getMemoryValueAt(address, length).get();
-  // Convert memory content to a Bit-QVector.
-  QVector<bool> contentVector;
+  // Convert memory content to a Bit-QList.
+  QList<bool> contentList;
   for (auto it = content.cbegin(); it != content.cend(); ++it) {
-    contentVector.append(*it);
+    contentList.append(*it);
   }
-  return contentVector;
+  return contentList;
 }

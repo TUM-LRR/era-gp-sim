@@ -69,10 +69,10 @@ class OutputComponent : public QObject {
    memory's
    content at a given address.
    @param address The address at which to put the updated content.
-   @param memoryContentBitVector The new content in bits.
+   @param memoryContentBitList The new content in bits.
    */
   Q_INVOKABLE void
-  putMemoryValue(int address, QVector<bool> memoryContentBitVector);
+  putMemoryValue(int address, QList<bool> memoryContentBitList);
 
   /**
    @brief getMemoryContent Allows a QML output item instance to fetch the
@@ -82,7 +82,7 @@ class OutputComponent : public QObject {
    @param length The length of the requested area in memory.
    @return Bit-Array with the requested memory content.
    */
-  Q_INVOKABLE QVector<bool> getMemoryContent(int address, int length) const;
+  Q_INVOKABLE QList<bool> getMemoryContent(int address, int length) const;
 
   /**
    @brief getOutputItem Returns the model data of the output item with the given
