@@ -24,11 +24,13 @@
 #include <functional>
 
 #include "common/utility.hpp"
+#include "ui/snapshot-component.hpp"
 
 GuiProject::GuiProject(QQmlContext* context,
                        const ArchitectureFormula& formula,
                        std::size_t memorySize,
                        const std::string& parserName,
+                       std::shared_ptr<SnapshotComponent> snapshotComponent,
                        QObject* parent)
 : QObject(parent)
 , _projectModule(formula, memorySize, parserName)
@@ -42,7 +44,9 @@ GuiProject::GuiProject(QQmlContext* context,
                  _projectModule.getMemoryManager(),
                  _projectModule.getMemoryAccess(),
                  context)
-, _defaultTextFileSavePath() {
+, _defaultTextFileSavePath()
+, _snapshotComponent(snapshotComponent)
+, _architectureFormulaString(SnapshotComponent::architectureToString(formula)) {
   context->setContextProperty("guiProject", this);
   // set the callback for memory and register
   _projectModule.getMemoryManager().setUpdateRegisterCallback(
@@ -150,13 +154,11 @@ void GuiProject::loadText(QUrl path) {
 }
 
 void GuiProject::saveSnapshot(QString qName) {
-  std::string path = _snapshotPath(qName);
   Json snapshot = _projectModule.getMemoryManager().generateSnapshot().get();
   std::string snapshotString = snapshot.dump(4);
   try {
-    Utility::storeToFile(path, snapshotString);
-    _snapshots.push_back(qName);
-    emit snapshotsChanged();
+    _snapshotComponent->addSnapshot(
+        _architectureFormulaString, qName, snapshotString);
   } catch (const std::exception& exception) {
     _throwError(
         std::string("Could not write snapshot to disk! ") + exception.what(),
@@ -165,16 +167,13 @@ void GuiProject::saveSnapshot(QString qName) {
 }
 
 void GuiProject::removeSnapshot(QString qName) {
-  if (_snapshots.removeOne(qName)) {
-    std::remove(_snapshotPath(qName).c_str());
-  }
-  emit snapshotsChanged();
+  _snapshotComponent->removeSnapshot(_architectureFormulaString, qName);
 }
 
 void GuiProject::loadSnapshot(QString qName) {
-  assert::that(_snapshots.contains(qName));
   try {
-    std::string path = _snapshotPath(qName);
+    std::string path =
+        _snapshotComponent->snapshotPath(_architectureFormulaString, qName);
     Json snapshot = Json::parse(Utility::loadFromFile(path));
     _projectModule.getMemoryManager().loadSnapshot(snapshot);
   } catch (const std::exception& exception) {
@@ -185,7 +184,7 @@ void GuiProject::loadSnapshot(QString qName) {
 }
 
 QStringList GuiProject::getSnapshots() {
-  return _snapshots;
+  return _snapshotComponent->getSnapshotList(_architectureFormulaString);
 }
 
 std::function<std::string(MemoryValue)> GuiProject::getHexConversion() {
@@ -243,9 +242,4 @@ void GuiProject::_throwError(const std::string& message,
                              const std::vector<std::string>& arguments) {
   QString errorMessage = QString::fromStdString(message);
   emit error(errorMessage);
-}
-
-std::string GuiProject::_snapshotPath(QString qName) {
-  std::string name = qName.toStdString();
-  return Utility::joinToRoot("snapshots", name + ".snapshot");
 }

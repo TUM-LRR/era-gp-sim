@@ -47,7 +47,7 @@ Item {
 
         /* react to signals from guiProject */
         Connections {
-          target: guiProject
+          target: snapshotComponent
           onSnapshotsChanged: {
             listView.model = guiProject.getSnapshots();
           }
@@ -133,7 +133,7 @@ Item {
                             }
                             onClicked: {
                                 console.info("Button Delete Clicked, delete "+model.modelData);
-                                guiProject.removeProject(model.modelData);
+                                guiProject.removeSnapshot(model.modelData);
 
                             }
                         }

@@ -1,0 +1,100 @@
+/*
+* C++ Assembler Interpreter
+* Copyright (C) 2016 Chair of Computer Architecture
+* at Technical University of Munich
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "ui/snapshot-component.hpp"
+
+#include <algorithm>
+
+SnapshotComponent::SnapshotComponent(const std::string& path, QObject* parent)
+: QObject(parent)
+, _path(QString::fromStdString(path))
+, _baseDirectory(QString::fromStdString(path)) {
+  // check if snapshot directory exists, if not, create it.
+  if (!_baseDirectory.exists()) {
+    QString baseDirName = _baseDirectory.dirName();
+    _baseDirectory.cdUp();
+    _baseDirectory.mkpath(QString::fromStdString(path));
+    _baseDirectory.cd(baseDirName);
+  }
+  // load all subdirectories and their snapshots
+  auto subDirectories =
+      _baseDirectory.entryList(QDir::AllDirs | QDir::NoDot | QDir::NoDotDot);
+  for (const auto& subDirectoryName : subDirectories) {
+    // There is a subdirectory for every combination of architecutre and
+    // extensions.
+    QDir subDirectory = _baseDirectory;
+    if (subDirectory.cd(subDirectoryName)) {
+      auto files = subDirectory.entryInfoList(QDir::Files | QDir::NoDot |
+                                              QDir::NoDotDot);
+      QStringList snapshots;
+      for (const auto& file : files) {
+        snapshots.push_back(file.completeBaseName());
+      }
+      _snapshotMap.insert(subDirectory.dirName(), snapshots);
+    }
+  }
+}
+
+QStringList SnapshotComponent::getSnapshotList(const QString& architecture) {
+  return _snapshotMap.value(architecture);
+}
+
+void SnapshotComponent::addSnapshot(const QString& architecture,
+                                    const QString& snapshot,
+                                    const std::string& data) {
+  if (!_baseDirectory.exists(architecture)) {
+    _baseDirectory.mkpath(architecture);
+  }
+  std::string path =
+      Utility::joinPaths(_baseDirectory.absolutePath().toStdString(),
+                         architecture.toStdString(),
+                         snapshot.toStdString() + ".snapshot");
+  Utility::storeToFile(path, data);
+  _snapshotMap[architecture].push_back(snapshot);
+  emit snapshotsChanged();
+}
+
+void SnapshotComponent::removeSnapshot(const QString& architecture,
+                                       const QString& snapshot) {
+  _snapshotMap[architecture].removeOne(snapshot);
+  std::string path =
+      Utility::joinPaths(_baseDirectory.absolutePath().toStdString(),
+                         architecture.toStdString(),
+                         snapshot.toStdString() + ".snapshot");
+  std::remove(path.c_str());
+  emit snapshotsChanged();
+}
+
+std::string SnapshotComponent::snapshotPath(const QString& architecture,
+                                            const QString& snapshot) {
+  return Utility::joinPaths(_baseDirectory.absolutePath().toStdString(),
+                            architecture.toStdString(),
+                            snapshot.toStdString() + ".snapshot");
+}
+
+QString
+SnapshotComponent::architectureToString(const ArchitectureFormula& formula) {
+  std::vector<std::string> underlying = formula.getUnderlying();
+  std::sort(underlying.begin(), underlying.end());
+  std::string architectureFormulaString = formula.getArchitectureName();
+  for (const std::string& s : formula) {
+    architectureFormulaString += s;
+  }
+  return QString::fromStdString(architectureFormulaString);
+}

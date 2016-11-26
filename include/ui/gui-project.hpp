@@ -26,6 +26,7 @@
 #include <QString>
 #include <QStringList>
 #include <functional>
+#include <memory>
 #include <string>
 
 #include "arch/common/architecture-formula.hpp"
@@ -35,6 +36,7 @@
 #include "ui/editor-component.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/register-model.hpp"
+#include "ui/snapshot-component.hpp"
 //#include "ui/snapshotmodel.hpp"
 
 class QUrl;
@@ -59,12 +61,14 @@ class GuiProject : QObject {
    * \param formula the architectures and extensions
    * \param memorySize the size of the memory for the memoryComponent
    * \param parserName the name of the parser
+   * \param snapshotComponent A shared pointer to the snapshot component.
    * \param parent the parent, its needed for the QObject
    */
   GuiProject(QQmlContext* context,
              const ArchitectureFormula& formula,
              std::size_t memorySize,
              const std::string& parserName,
+             std::shared_ptr<SnapshotComponent> snapshotComponent,
              QObject* parent = 0);
 
   /**
@@ -215,14 +219,6 @@ class GuiProject : QObject {
                    const std::vector<std::string>& arguments);
 
   /**
-   * Creates the filepath from a snapshot name
-   *
-   * \param qName name as QString.
-   * \return Returns the filepath as std::string.
-   */
-  std::string _snapshotPath(QString qName);
-
-  /**
    * \brief the module in the core
    */
   ProjectModule _projectModule;
@@ -237,7 +233,6 @@ class GuiProject : QObject {
    */
   EditorComponent _editorComponent;
 
-  // SnapshotModel snapmodel;
   MemoryComponentPresenter _memoryModel;
 
   /**
@@ -246,9 +241,14 @@ class GuiProject : QObject {
   QString _defaultTextFileSavePath;
 
   /**
-   * A list of the snapshot names of this project.
+   * A shared pointer to the configuration json (for snapshots,...)
    */
-  QStringList _snapshots;
+  std::shared_ptr<SnapshotComponent> _snapshotComponent;
+
+  /**
+   * The architecture formula, needed to save snapshot configuration.
+   */
+  QString _architectureFormulaString;
 
   /**
    * \brief The Functions for the conversion
@@ -295,13 +295,6 @@ class GuiProject : QObject {
    * \param errorMessage The error message.
    */
   void error(QString errorMessage);
-
-  /**
-   * Updates the snapshot list in the ui.
-   *
-   * \param snapshots The new list of snapshots.
-   */
-  void snapshotsChanged();
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP
