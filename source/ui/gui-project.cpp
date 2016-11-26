@@ -177,6 +177,7 @@ void GuiProject::loadSnapshot(QString qName) {
         _snapshotComponent->snapshotPath(_architectureFormulaString, qName);
     Json snapshot = Json::parse(Utility::loadFromFile(path));
     _projectModule.getMemoryManager().loadSnapshot(snapshot);
+    _editorComponent.parse(true);
   } catch (const std::exception& exception) {
     _throwError(
         std::string("Could not load snapshot from file! ") + exception.what(),
