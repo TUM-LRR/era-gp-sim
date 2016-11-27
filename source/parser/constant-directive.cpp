@@ -31,7 +31,7 @@ void ConstantDirective::execute(FinalRepresentation& finalRepresentator,
 void ConstantDirective::enhanceSymbolTable(SymbolTable& table, const MemoryAllocator &allocator,
                                            CompileState& state) {
   if (_arguments.size() != 2) {
-    state.addError("Malformed constant directive", state.position);
+    state.addError(P_TR("Malformed constant directive"), state.position);
     return;
   }
   expression = "(" + _arguments[1] + ")";

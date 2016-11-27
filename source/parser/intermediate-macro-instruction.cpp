@@ -37,7 +37,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     if (ptr != nullptr)
       _operations.push_back(std::move(ptr));
     else
-      state.addError(Translateable::createShared("Macro contains unsupported instruction '%1'.", {macro.getOperationName(i)}));
+      state.addError(Translateable::createShared(P_TR("Macro contains unsupported instruction '%1'."), {macro.getOperationName(i)}));
   }
 
   // Recursively replace macro instructions to support recursive macro calls
@@ -72,7 +72,7 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
   }
 
   if (_labels.size() > 0 && _firstInstruction < 0) {
-    state.addError("Labels cant point to macros without instructions!");
+    state.addError(P_TR("Labels cant point to macros without instructions!"));
   } else {
     for (const auto& i : _labels) {
       table.insertEntry(i,

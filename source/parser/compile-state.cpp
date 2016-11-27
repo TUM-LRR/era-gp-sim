@@ -23,7 +23,7 @@
 void CompileState::registerMacro(MacroDirective& macro) {
   bool success = macros.insert(macro);
   if (!success) {
-      addError(Translateable::createShared("Macro \"%1\" already exists!", {macro.macroName()}));
+      addError(Translateable::createShared(P_TR("Macro \"%1\" already exists!"), {macro.macroName()}));
   }
 }
 

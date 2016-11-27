@@ -80,7 +80,7 @@ class ExpressionTokenizer {
     } else {
       // We are done, but there is an unrecognized token. We return as if the
       // string was empty.
-      state.addError(Translateable::createShared("Unrecognized token at: %1", {temp.substr(0, 20)}),
+      state.addError(Translateable::createShared(P_TR("Unrecognized token at: %1"), {temp.substr(0, 20)}),
                      state.position >> currentPosition);
       return std::vector<ExpressionToken>();
     }

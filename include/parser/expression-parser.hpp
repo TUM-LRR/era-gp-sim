@@ -129,7 +129,7 @@ class ExpressionParser {
 
     // If there is more than one operand left, there must be an error.
     if (state.outputStack.size() != 1) {
-      recordError(state, "Malformed expression!");
+      recordError(state, P_TR("Malformed expression!"));
       return T();
     }
 
@@ -232,10 +232,10 @@ class ExpressionParser {
       // For the right error message, we got to determine the arity of our
       // operator.
       if (token.type == ITokenType::UNARY_OPERATOR) {
-          recordError(state,Translateable::createShared("'%1' is not a valid unary operator", {token.data}));
+          recordError(state,Translateable::createShared(P_TR("'%1' is not a valid unary operator"), {token.data}));
       } else if (token.type == ITokenType::BINARY_OPERATOR) {
         recordError(state,
-                    Translateable::createShared("'%1' is not a valid binary operator", {token.data}));
+                    Translateable::createShared(P_TR("'%1' is not a valid binary operator"), {token.data}));
       } else {
         // Undefined arity.
         assert::that(false);
@@ -263,7 +263,7 @@ class ExpressionParser {
     // If there has been nothing on it, there are some brackets closed that have
     // not been opened.
     if (state.operatorStack.empty()) {
-      recordError(state, "There are some opening brackets missing!");
+      recordError(state, P_TR("There are some opening brackets missing!"));
       return false;
     }
 
@@ -313,8 +313,8 @@ class ExpressionParser {
         // There were not enough operands on the stack.
         size_t left = count - i;
         recordError(state,
-                    left == 1 ? std::make_shared<Translateable>("There is an operand missing.")
-                              : Translateable::createShared("There are %1 operands missing.", {std::to_string(left)}));
+                    left == 1 ? std::make_shared<Translateable>(P_TR("There is an operand missing."))
+                              : Translateable::createShared(P_TR("There are %1 operands missing."), {std::to_string(left)}));
         return false;
       }
       output.push_back(state.outputStack.top());
@@ -381,7 +381,7 @@ class ExpressionParser {
       case ITokenType::BRACKET:
         // We should never apply a bracket token (then, some closing brackets
         // are missing).
-        recordError(state, "There are some closing brackets missing!");
+        recordError(state, P_TR("There are some closing brackets missing!"));
         return false;
       case ITokenType::UNARY_OPERATOR:
         // Handles the unary operator on the stack.

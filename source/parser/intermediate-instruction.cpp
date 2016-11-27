@@ -115,7 +115,7 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
                                              MemoryAllocator& allocator,
                                              CompileState& state) {
   if (state.section != "text") {
-    state.addError("Tried to define an instruction in not the text section.");
+    state.addError(P_TR("Tried to define an instruction in not the text section."));
     return;
   }
 

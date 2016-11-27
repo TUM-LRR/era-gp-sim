@@ -19,10 +19,15 @@
 #ifndef ERAGPSIM_COMPILE_ERROR_HPP
 #define ERAGPSIM_COMPILE_ERROR_HPP
 
+#include <QtGlobal>
 #include <string>
 
-#include "parser/code-position.hpp"
 #include "common/translateable.hpp"
+#include "parser/code-position.hpp"
+
+//define a shorter version specialized for compile error messages
+#define P_TR(textToTranslate) \
+  QT_TRANSLATE_NOOP("Parser Compile Errors", textToTranslate)
 
 /**
  * \brief Denotes the severity of a compiler error.
@@ -49,7 +54,7 @@ enum class CompileErrorSeverity {
  */
 class CompileError {
  public:
-    using TranslateablePtr = std::shared_ptr<Translateable>;
+  using TranslateablePtr = std::shared_ptr<Translateable>;
   /**
    * \brief Instantiates a new compile error with the given arguments. Marks
    * only a positional error.
@@ -57,11 +62,9 @@ class CompileError {
    * \param position The position of the error in the code.
    * \param severity The severity of the error.
    */
-  CompileError(const TranslateablePtr& message,
-               const CodePosition& position,
+  CompileError(const TranslateablePtr& message, const CodePosition& position,
                CompileErrorSeverity severity)
-  : CompileError(message, position, position >> 1, severity) {
-  }
+      : CompileError(message, position, position >> 1, severity) {}
 
   /**
    * \brief Instantiates a new compile error with the given arguments.
@@ -72,11 +75,9 @@ class CompileError {
    */
   CompileError(const TranslateablePtr& message,
                const CodePosition& startPosition,
-               const CodePosition& endPosition,
-               CompileErrorSeverity severity)
-  : CompileError(
-        message, CodePositionInterval(startPosition, endPosition), severity) {
-  }
+               const CodePosition& endPosition, CompileErrorSeverity severity)
+      : CompileError(message, CodePositionInterval(startPosition, endPosition),
+                     severity) {}
 
   /**
    * \brief Instantiates a new compile error with the given arguments.
@@ -87,15 +88,14 @@ class CompileError {
   CompileError(const TranslateablePtr& message,
                const CodePositionInterval& position,
                CompileErrorSeverity severity)
-  : _message(message), _position(position), _severity(severity) {
-  }
+      : _message(message), _position(position), _severity(severity) {}
 
   /**
    * \brief Returns the message of this error.
    * \return The message of the error.
    */
   const Translateable& message() const {
-      assert::that(_message);
+    assert::that(_message);
     return (*_message);
   }
 
@@ -103,17 +103,13 @@ class CompileError {
    * \brief Returns the position where this error occured.
    * \return The position of the error.
    */
-  const CodePositionInterval& position() const {
-    return _position;
-  }
+  const CodePositionInterval& position() const { return _position; }
 
   /**
    * \brief Returns the severity of the error.
    * \return The severity of the error.
    */
-  const CompileErrorSeverity severity() const {
-    return _severity;
-  }
+  const CompileErrorSeverity severity() const { return _severity; }
 
  private:
   /**

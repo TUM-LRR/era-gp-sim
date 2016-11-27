@@ -36,7 +36,7 @@ void MacroDirective::execute(FinalRepresentation& finalRepresentator,
                              CompileState& state,
                              MemoryAccess& memoryAccess) {
   if (macroName().length() == 0) {
-    state.addError("Missing macro name.");
+    state.addError(P_TR("Missing macro name."));
   }
   _macroParameters.validate(state);
   state.registerMacro(*this);
@@ -85,14 +85,14 @@ void MacroDirective::MacroParameters::validate(CompileState& state) const {
     // Check for empty names or default values
     if (param.first.size() == 0 ||
         (param.second && param.second->size() == 0)) {
-      state.addError("Malformed macro argument list!");
+      state.addError(P_TR("Malformed macro argument list!"));
       return;
     }
 
     // Check for missing default values after a default value.
     if (param.second) containedDefault = true;
     if (containedDefault && !param.second) {
-      state.addError("Default macro argument values have to be placed last!");
+      state.addError(P_TR("Default macro argument values have to be placed last!"));
       return;
     }
   }

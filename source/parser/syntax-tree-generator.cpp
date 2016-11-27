@@ -36,7 +36,7 @@ SyntaxTreeGenerator::transformOperand(const std::string& operand,
   // According to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
-    state.addError(Translateable::createShared("Invalid argument: '%1'", {operand}), state.position);
+    state.addError(Translateable::createShared(P_TR("Invalid argument: '%1'"), {operand}), state.position);
   }
 
   return std::move(outputNode);
@@ -54,7 +54,7 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
 
   if (!outputNode) {
     // The node creation failed!
-    state.addError(Translateable::createShared("Unknown operation: %1", {command_name}), state.position);
+    state.addError(Translateable::createShared(P_TR("Unknown operation: %1"), {command_name}), state.position);
     return std::move(outputNode);
   }
 
@@ -71,7 +71,7 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
   // Validate node.
   auto validationResult = outputNode->validate(memoryAccess);
   if (!validationResult) {
-    state.addError(Translateable::createShared("Invalid operation (%1): %2",{command_name, validationResult.getMessage()}),
+    state.addError(Translateable::createShared(P_TR("Invalid operation (%1): %2"),{command_name, validationResult.getMessage()}),
                    state.position);
   }
 

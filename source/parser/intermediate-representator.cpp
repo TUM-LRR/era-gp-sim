@@ -30,7 +30,7 @@ IntermediateRepresentator::transform(const Architecture& architecture,
                                      MemoryAccess& memoryAccess) {
   // Before everything begins, we got to check if we are still in a macro.
   if (_currentOutput) {
-    state.addError("Macro not closed. Missing a macro end directive?");
+    state.addError(P_TR("Macro not closed. Missing a macro end directive?"));
   }
 
   FinalRepresentation representation;

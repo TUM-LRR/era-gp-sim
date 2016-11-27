@@ -64,7 +64,7 @@ class IntermediateMacroInstruction : public IntermediateOperation {
       if (!macro.found()) continue;
 
       if (macro.isCyclic()) {
-        state.addError("Cyclic macro call!");
+        state.addError(P_TR("Cyclic macro call!"));
         continue;
       }
 

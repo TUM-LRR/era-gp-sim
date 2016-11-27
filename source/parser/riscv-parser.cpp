@@ -87,7 +87,7 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
     line_regex.matchLine(line);
     if (!line_regex.isValid()) {
       // Add syntax error if line regex doesnt match
-      _compile_state.addError("Syntax Error", _compile_state.position);
+      _compile_state.addError(P_TR("Syntax Error"), _compile_state.position);
     } else {
       // Collect labels until next instruction
       if (line_regex.hasLabel()) {
