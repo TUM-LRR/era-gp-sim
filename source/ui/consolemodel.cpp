@@ -30,9 +30,9 @@ void ConsoleModel::getData(){
     //Variable maxLength: Maximale Länge der Eingabe
     if(mode ==0/*ArrayBased*/){
         text="";
-        for(int i=0; i<maximumLength && i<_memoryAccess.getMemorySize.get() ; i++){
+        for(int i=0; i<maximumLength && i<_memoryAccess.getMemorySize().get() ; i++){
             MemoryValue m = _memoryAccess.getMemoryValueAt(start).get();
-            unsigned int z=conversions::convert(m, converisons::standardConversions::nonsigned);
+            unsigned int z=conversions::convert<uint32_t>(m);
             if(z==0){
                 break;
             }
@@ -45,7 +45,7 @@ void ConsoleModel::getData(){
     }
     else/*pipeline*/{
         MemoryValue m = _memoryAccess.getMemoryValueAt(start).get();
-        unsigned int z=conversions::convert(m, converisons::standardConversions::nonsigned);
+        unsigned int z=conversions::convert<uint32_t>(m);
         text+= char(z);
         //Daten in angegebener Speicherzelle vom Core holen
         //Daten an text anhängen

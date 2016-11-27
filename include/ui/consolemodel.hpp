@@ -17,7 +17,7 @@ class ConsoleModel: QObject{
 public:
     ConsoleModel(QQmlContext* context, MemoryAccess memoryAccess);
     Q_INVOKABLE QString getText();
-    void onDataChanged();
+    void onDataChanged(std::size_t address, std::size_t length);
     Q_INVOKABLE void getData();
     Q_INVOKABLE void modeChanged(int newMode);
     Q_INVOKABLE void clear();
