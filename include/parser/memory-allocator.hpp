@@ -207,7 +207,7 @@ class MemoryAllocator {
    * \param name The name of the section to be retrieved.
    * \return A reference on the memory section.
    */
-  MemorySection& operator[](std::string name);
+  MemorySection& operator[](const std::string& name);
 
   /**
    * \brief Accessor for the sections by index.
@@ -221,7 +221,7 @@ class MemoryAllocator {
    * \param name The name of the section to be retrieved.
    * \return A reference on the memory section.
    */
-  const MemorySection& at(std::string name) const;
+  const MemorySection& at(const std::string& name) const;
 
   /**
    * \brief Constant accessor for the sections by index.
@@ -236,6 +236,13 @@ class MemoryAllocator {
    * \return The calculated absolute position.
    */
   std::size_t absolutePosition(const RelativeMemoryPosition& relative) const;
+
+  /**
+   * \brief Checks if the given string the name of a section.
+   * \param name The name to check.
+   * \return True if and only if the name if the name of a memory section.
+   */
+  bool has(const std::string& name) const;
 
  private:
   /**

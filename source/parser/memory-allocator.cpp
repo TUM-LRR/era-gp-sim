@@ -130,8 +130,9 @@ std::size_t MemoryAllocator::calculatePositions() {
 }
 
 // Accessor functions...
-MemoryAllocator::MemorySection& MemoryAllocator::operator[](std::string name) {
-  assert::that(_nameToSection.find(name) != _nameToSection.end());
+MemoryAllocator::MemorySection& MemoryAllocator::
+operator[](const std::string& name) {
+  assert::that(has(name));
   return _sections[_nameToSection[name]];
 }
 
@@ -142,8 +143,8 @@ MemoryAllocator::MemorySection& MemoryAllocator::operator[](std::size_t index) {
 }
 
 const MemoryAllocator::MemorySection&
-MemoryAllocator::at(std::string name) const {
-  assert::that(_nameToSection.find(name) != _nameToSection.end());
+MemoryAllocator::at(const std::string& name) const {
+  assert::that(has(name));
   return _sections.at(_nameToSection.at(name));
 }
 
@@ -156,7 +157,11 @@ MemoryAllocator::at(std::size_t index) const {
 
 std::size_t MemoryAllocator::absolutePosition(
     const RelativeMemoryPosition& relative) const {
-  assert::that(_nameToSection.find(relative.section) != _nameToSection.end());
+  assert::that(has(relative.section));
   return _sections.at(_nameToSection.at(relative.section))
       .absoluteAddress(relative.offset);
+}
+
+bool MemoryAllocator::has(const std::string& name) const {
+  return _nameToSection.find(name) != _nameToSection.end();
 }
