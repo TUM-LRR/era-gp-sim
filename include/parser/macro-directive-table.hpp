@@ -20,63 +20,50 @@
 #ifndef ERAGPSIM_PARSER_MACRO_DIRECTIVE_TABLE_HPP
 #define ERAGPSIM_PARSER_MACRO_DIRECTIVE_TABLE_HPP
 
+#include <string>
 #include <unordered_map>
-#include "common/optional.hpp"
+#include <utility>
 
-class MacroDirective;
+#include "common/hash.hpp"
+#include "common/optional.hpp"
+#include "parser/macro-directive.hpp"
 
 class MacroDirectiveTable {
  private:
-  // Need to declare these types before the rest of the class
-
-  /**
-   * Helper class to hash the pair.
-   */
-  struct hash_pair {
-    // Partially from
-    // http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
-    size_t operator()(const std::pair<std::string, size_t> &pair) const {
-      size_t hash = 0;
-      hash ^= std::hash<std::string>{}(pair.first) + 0x9e3779b9 + (hash << 6) +
-              (hash >> 2);
-      hash ^= std::hash<size_t>{}(pair.second) + 0x9e3779b9 + (hash << 6) +
-              (hash >> 2);
-      return hash;
-    }
-  };
-
-  using macro_map = std::unordered_map<std::pair<const std::string &, size_t>,
-                                       MacroDirective &,
-                                       hash_pair>;
+  using MacroInstance = std::pair<std::string, size_t>;
+  using MacroMap = std::unordered_map<MacroInstance, MacroDirective>;
+  using MacroIterator = MacroMap::iterator;
+  using MacroConstIterator = MacroMap::const_iterator;
 
   class MacroWrapper;
 
  public:
+  using size_t = std::size_t;
   /**
    * Inserts a macro into the table.
    * \param macro Macro to insert.
    * \return True if successful.
    */
-  bool insert(MacroDirective &macro);
+  bool insert(const MacroDirective &macro);
 
   /**
-   * Tries to find a macro with the given name that accepts `argCount`
+   * Tries to find a macro with the given name that accepts `argumentCount`
    * arguments.
    * \param name Macro name
-   * \param argCount Number of arguments
+   * \param argumentCount Number of arguments
    * \return Iterator to the macro if found. Otherwise `end()`.
    */
-  MacroWrapper find(const std::string &name, size_t argCount);
+  MacroWrapper find(const std::string &name, size_t argumentCount);
 
   /**
    * Returns begin of the underlying map.
    */
-  macro_map::const_iterator begin();
+  MacroConstIterator begin();
 
   /**
    * Returns end of the underlying map.
    */
-  macro_map::const_iterator end();
+  MacroConstIterator end();
 
   /**
    * Clears the list of registered macros.
@@ -90,51 +77,34 @@ class MacroDirectiveTable {
    */
   class MacroWrapper {
    public:
-    MacroWrapper(macro_map::iterator i, const macro_map::iterator &end);
+    MacroWrapper(MacroIterator i, MacroIterator end);
+    MacroWrapper(MacroWrapper &&);
     ~MacroWrapper();
 
     MacroWrapper(const MacroWrapper &) = delete;
     MacroWrapper &operator=(const MacroWrapper &) = delete;
-
-    MacroWrapper(MacroWrapper &&other)
-    : _i{std::move(other._i)}, _end{other._end}, _cyclic{other._cyclic} {
-      other._i = other._end;// Invalidate other by setting _i to _end.
-    }
-
     MacroWrapper &operator=(MacroWrapper &&other) = delete;
 
     /**
      * These delegate the call to the underlying iterator. Assert that
      * isCyclic() is false.
      */
-    const macro_map::value_type &operator*();
-    macro_map::const_iterator operator->();
+    const MacroMap::value_type &operator*();
+    MacroConstIterator operator->();
 
-    friend bool operator==(const MacroWrapper &first,
-                           const macro_map::const_iterator &second) {
-      return first._i == second;
-    }
+    bool operator==(MacroConstIterator iterator) const noexcept;
+    bool operator!=(MacroConstIterator iterator) const noexcept;
 
-    friend bool operator!=(const MacroWrapper &first,
-                           const macro_map::const_iterator &second) {
-      return first._i != second;
-    }
-
-    bool isCyclic() {
-      return _cyclic;
-    }
-
-    bool found() {
-      return _i != _end;
-    }
+    bool isCyclic() const noexcept;
+    bool found() const noexcept;
 
    private:
-    macro_map::iterator _i;
-    const macro_map::iterator _end;
+    MacroIterator _iterator;
+    const MacroIterator _end;
     bool _cyclic = false;
   };
 
-  macro_map _macros;
+  MacroMap _macros;
 };
 
 #endif /* ERAGPSIM_PARSER_MACRO_DIRECTIVE_TABLE_HPP */
