@@ -65,8 +65,7 @@ RelativeMemoryPosition
 MemoryAllocator::MemorySection::allocateRelative(std::size_t size) {
   // We got to round up and so on...
   auto aligned =
-      Utility::discreteCeiling(_currentSize, _definition.dataAlignment) *
-      _definition.dataAlignment;
+      Utility::discreteCeiling(_currentSize, _definition.dataAlignment);
 
   // Now that we got the beginning of our memory section, we can add the size to
   // it.
@@ -123,8 +122,7 @@ std::size_t MemoryAllocator::calculatePositions() {
   // rounding up to align.
   for (auto& i : _sections) {
     auto sectionAlign = i._definition.sectionAlignment;
-    auto aligned =
-        Utility::discreteCeiling(position, sectionAlign) * sectionAlign;
+    auto aligned = Utility::discreteCeiling(position, sectionAlign);
     i._currentPosition = aligned;
     position = aligned + i._currentSize;
   }

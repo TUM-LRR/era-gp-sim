@@ -500,33 +500,43 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
 }
 
 // push_back n elements from the end of the src vector
-void pushBackFromEnd(std::vector<bool>& dest,
-                     const std::vector<bool>& src,
+void pushBackFromEnd(std::vector<bool> &dest,
+                     const std::vector<bool> &src,
                      size_t n);
 
 
-template <typename T>
-constexpr T discreteCeiling(T value, T divider) {
+template <typename T, typename S = T>
+constexpr T divideCeiling(T value, S divider) {
   return (value + divider - 1) / divider;
 }
 
 // Only for completeness.
-template <typename T>
-constexpr T discreteFloor(T value, T divider) {
+template <typename T, typename S = T>
+constexpr T divideFloor(T value, S divider) {
   return value / divider;
 }
 
-template<typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
-  struct EnumHash {
-    using argument_type = Enum;
-    using result_type = std::size_t;
-    using underlying_type = std::underlying_type_t<Enum>;
+template <typename T, typename S = T>
+constexpr T discreteCeiling(T value, S divider) {
+  return divideCeiling(value, divider) * divider;
+}
 
-    result_type operator()(const argument_type& argument) const {
-      const auto ordinal = static_cast<underlying_type>(argument);
-      return std::hash<underlying_type>{}(ordinal);
-    }
-  };
+template <typename T, typename S = T>
+constexpr T discreteFloor(T value, S divider) {
+  return divideFloor(value, divider) * divider;
+}
+
+template <typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
+struct EnumHash {
+  using argument_type = Enum;
+  using result_type = std::size_t;
+  using underlying_type = std::underlying_type_t<Enum>;
+
+  result_type operator()(const argument_type &argument) const {
+    const auto ordinal = static_cast<underlying_type>(argument);
+    return std::hash<underlying_type>{}(ordinal);
+  }
+};
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */
