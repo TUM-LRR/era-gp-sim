@@ -4,7 +4,7 @@
 #include "core/conversions.hpp"
 
 
-InputClickModel::InputClickModel(QQmlContext *context, MemoryAccess m): QObject(), context(context), memoryAccess(m),  xMouseClick(0), yMouseClick(0){
+InputClickModel::InputClickModel(QQmlContext *context, MemoryAccess m): QObject(), context(context), memoryAccess(m),  xMouseClick(0), yMouseClick(0), start(0){
     context->setContextProperty("inputClickMod", this);
 }
 
@@ -12,11 +12,11 @@ void InputClickModel::newClick(int x, int y){
     xMouseClick=x;
     yMouseClick=y;
     //Memory speichern als 2 Byte
-    MemoryValue m1= conversions::convert(xMouseClick);
-    MemoryValue m2= conversions::convert(yMouseClick);
+    MemoryValue m1= conversions::convert(xMouseClick, 8);
+    MemoryValue m2= conversions::convert(yMouseClick, 8);
 
-    memoryAccess.setMemoryValueAt(start, m1, 8);
-    memoryAccess.setMemoryValueAt(start+1, m2, 8);
+    memoryAccess.putMemoryValueAt(start, m1);
+    memoryAccess.putMemoryValueAt(start+1, m2);
 
    // std::cout << "X: "<<xMouseClick<<" Y: "<<yMouseClick<<std::endl;
 }

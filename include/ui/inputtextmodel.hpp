@@ -15,7 +15,7 @@ public:
     Q_INVOKABLE void setStart(int start);
     Q_INVOKABLE void setMaxLaenge(int maxLaenge);
     Q_INVOKABLE int getMaxLaenge();
-    Q_INVOKABLE QSTring getStart();
+    Q_INVOKABLE QString getStart();
 
 private:
     QQmlContext* context;

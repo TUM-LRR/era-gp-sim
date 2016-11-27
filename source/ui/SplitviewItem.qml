@@ -98,7 +98,7 @@ Item {
                 else if(currentIndex==3){
                     holder.change("register");
                 }
-                else if (currrentIndex==4){
+                else if (currentIndex==4){
                     holder.change("memory");
                 }
                 else{

@@ -3,7 +3,7 @@
 #include "ui/inputtextmodel.hpp"
 #include "core/conversions.hpp"
 
-InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess m): QObject(), context(context), memoryAccess(m)
+InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess m): QObject(), context(context), start(0), maxLaenge(20), memoryAccess(m)
 {
     context->setContextProperty("inputtextMod", this);
 }
@@ -18,8 +18,8 @@ void InputTextModel::newText(QString text){
         unsigned zahl=int(z);
         if(zahl<225){//else do nothing, was not a ascii sign
             //std::cout<<zahl<<std::endl;
-            MemoryValue m=conversions::convert(i);
-            memoryAccess.setMemoryValueAt(start+i, m, 8);
+            MemoryValue m=conversions::convert(zahl, 32);
+            memoryAccess.putMemoryValueAt(start+i, m);
         }
     }
 }
@@ -39,5 +39,5 @@ void InputTextModel::setMaxLaenge(int maxLaenge){
 }
 
 int InputTextModel::getMaxLaenge(){
-    return maxLaenge
+    return maxLaenge;
 }

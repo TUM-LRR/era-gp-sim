@@ -19,10 +19,13 @@ GuiProject::GuiProject(QQmlContext* context,
                  _projectModule.getMemoryManager(),
                  _projectModule.getMemoryAccess(),
                  context)
-/*, registermodel(context)
-, editormodel(context)
-, snapmodel(context)
-, memorymodel(context)*/ {
+/*, snapmodel(context)*/
+, _inputBM (context, _projectModule.getMemoryAccess())
+, _inputTM (context,
+           _projectModule.getMemoryAccess())
+, _inputCM (context,
+           _projectModule.getMemoryAccess())
+ {
   // set the callback for memory and register
   _projectModule.getMemoryManager().setUpdateRegisterCallback(
       [this](const std::string& name) {

@@ -32,6 +32,9 @@
 #include "ui/editor-component.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/register-model.hpp"
+#include "ui/inputbuttonmodel.hpp"
+#include "ui/inputtextmodel.hpp"
+#include "ui/inputclickmodel.hpp"
 //#include "ui/snapshotmodel.hpp"
 
 
@@ -170,9 +173,16 @@ class GuiProject : QObject {
    */
   EditorComponent _editorComponent;
 
-  // SnapshotModel snapmodel;
+  /**
+    *\brief The input-models
+    */
+  InputButtonModel _inputBM;
+  InputTextModel _inputTM;
+  InputClickModel _inputCM;
+
+  //SnapshotModel snapmodel;
   MemoryComponentPresenter _memoryModel;
-  // Core-Project;
+
 
   /**
    * \brief The Functions for the conversion

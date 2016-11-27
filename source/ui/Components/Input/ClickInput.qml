@@ -23,13 +23,15 @@ import QtQuick 2.0
 
 Item {
     property int inputItemIndex
+    anchors.top: parent.top
 
     Rectangle{
         id: area
         width: 255
         height: 255
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter:  parent.verticalCenter
+        anchors.top: xRect.bottom
+        //anchors.verticalCenter:  parent.verticalCenter
 
         color: "blue"
 
@@ -44,10 +46,13 @@ Item {
 
     }
     Rectangle{
+        id: xRect
         height: 40
-        anchors.bottom: area.top
         width: area.width
         anchors.left: area.left
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        color: "transparent"
 
         Text{
             anchors.bottom: parent.bottom
@@ -73,6 +78,8 @@ Item {
         height: area.height
         anchors.right: area.left
         anchors.top: area.top
+        color: "transparent"
+
         Text{
             anchors.top: parent.top
             anchors.right: parent.right

@@ -3,19 +3,19 @@
 #include "ui/inputbuttonmodel.hpp"
 #include "core/conversions.hpp"
 
-InputButtonModel::InputButtonModel(QQmlContext* context, MemoryAccess m) : QObject(), context(context), memoryAccess(m){
+InputButtonModel::InputButtonModel(QQmlContext* context, MemoryAccess m) : QObject(), context(context), start(0), memoryAccess(m){
     context->setContextProperty("inputButtonMod", this);
 }
 
 void InputButtonModel::buttonClicked(int id){
     //id an startadresse im Memory speichern
-    MemoryValue m=conversions::convert(id);
-    memoryAccess.setMemoryValueAt(start, m, 8);
+    MemoryValue m=conversions::convert(id, 8);
+    memoryAccess.putMemoryValueAt(start, m);
     std::cout << id<<std::endl;
 }
 
-void InputButtonModel::getStart(){
-    retrun QString::fromStdString(std::to_string(start));
+QString InputButtonModel::getStart(){
+    return QString::fromStdString(std::to_string(start));
 }
 
 void InputButtonModel::setStart(int start){
