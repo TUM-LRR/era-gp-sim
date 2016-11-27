@@ -83,14 +83,14 @@ class Translateable {
   Translateable(const std::string& baseString,
                 const TranslateableRefList& operands);
 
+  static TranslateablePtr createShared(const std::string& base, const StringList& args);
+
   /**
    * Returns a translated QString that is ready for e.g. being displayed.
-   * \param translater A Qt instance capable of providing the translation
-   * function
    * \return A QString that consists of all translated operands placed into the
    * translated base string
    */
-  QString translate(const QApplication& translater) const;
+  QString translate() const;
 
   /**
    * Returns a reference to the base string of this Translateable
