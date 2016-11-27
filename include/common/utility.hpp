@@ -515,6 +515,21 @@ template <typename T>
 constexpr T discreteFloor(T value, T divider) {
   return value / divider;
 }
+
+/**
+ * \brief roundToBoundary Rounds a given value up to a multiple of the
+ * given boundary.
+ * \param value Value to be rounded.
+ * \param boundary The value is rounded up to a multiple of the
+ * boundary.
+ * \return The rounded value.
+ */
+template<typename T>
+T roundToBoundary(const T& value, const T& boundary) {
+  return value + ((boundary - (value % boundary)) % boundary);
+}
+
+
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */
