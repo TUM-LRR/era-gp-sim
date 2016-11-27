@@ -22,9 +22,7 @@
 #include <algorithm>
 
 SnapshotComponent::SnapshotComponent(const std::string& path, QObject* parent)
-: QObject(parent)
-, _path(QString::fromStdString(path))
-, _baseDirectory(QString::fromStdString(path)) {
+: QObject(parent), _baseDirectory(QString::fromStdString(path)) {
   // check if snapshot directory exists, if not, create it.
   if (!_baseDirectory.exists()) {
     QString baseDirName = _baseDirectory.dirName();
@@ -32,7 +30,10 @@ SnapshotComponent::SnapshotComponent(const std::string& path, QObject* parent)
     _baseDirectory.mkpath(QString::fromStdString(path));
     _baseDirectory.cd(baseDirName);
   }
-  // load all subdirectories and their snapshots
+  QString fileExtensionFilter(_fileExtension);
+  fileExtensionFilter.prepend("*");
+  QStringList filterList = {fileExtensionFilter};
+  // Find all subdirectories and their snapshots
   auto subDirectories =
       _baseDirectory.entryList(QDir::AllDirs | QDir::NoDot | QDir::NoDotDot);
   for (const auto& subDirectoryName : subDirectories) {
@@ -40,8 +41,9 @@ SnapshotComponent::SnapshotComponent(const std::string& path, QObject* parent)
     // extensions.
     QDir subDirectory = _baseDirectory;
     if (subDirectory.cd(subDirectoryName)) {
-      auto files = subDirectory.entryInfoList(QDir::Files | QDir::NoDot |
-                                              QDir::NoDotDot);
+      // Get all snapshots names in the directory.
+      auto files = subDirectory.entryInfoList(
+          filterList, QDir::Files | QDir::NoDot | QDir::NoDotDot);
       QStringList snapshots;
       for (const auto& file : files) {
         snapshots.push_back(file.completeBaseName());
@@ -61,10 +63,7 @@ void SnapshotComponent::addSnapshot(const QString& architecture,
   if (!_baseDirectory.exists(architecture)) {
     _baseDirectory.mkpath(architecture);
   }
-  std::string path =
-      Utility::joinPaths(_baseDirectory.absolutePath().toStdString(),
-                         architecture.toStdString(),
-                         snapshot.toStdString() + ".snapshot");
+  std::string path = snapshotPath(architecture, snapshot);
   Utility::storeToFile(path, data);
   _snapshotMap[architecture].push_back(snapshot);
   emit snapshotsChanged();
@@ -73,10 +72,7 @@ void SnapshotComponent::addSnapshot(const QString& architecture,
 void SnapshotComponent::removeSnapshot(const QString& architecture,
                                        const QString& snapshot) {
   _snapshotMap[architecture].removeOne(snapshot);
-  std::string path =
-      Utility::joinPaths(_baseDirectory.absolutePath().toStdString(),
-                         architecture.toStdString(),
-                         snapshot.toStdString() + ".snapshot");
+  std::string path = snapshotPath(architecture, snapshot);
   std::remove(path.c_str());
   emit snapshotsChanged();
 }
@@ -85,7 +81,7 @@ std::string SnapshotComponent::snapshotPath(const QString& architecture,
                                             const QString& snapshot) {
   return Utility::joinPaths(_baseDirectory.absolutePath().toStdString(),
                             architecture.toStdString(),
-                            snapshot.toStdString() + ".snapshot");
+                            snapshot.toStdString() + _fileExtension);
 }
 
 QString

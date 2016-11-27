@@ -21,6 +21,8 @@
 #define ERAGPSIM_UI_SNAPSHOT_COMPONENT_HPP
 
 #include <QDir>
+#include <QHash>
+#include <QString>
 #include <QStringList>
 
 #include "arch/common/architecture-formula.hpp"
@@ -41,14 +43,14 @@ class SnapshotComponent : public QObject {
   /**
    * Return a list of snapshots for a specific Architecture formula.
    *
-   * \param formula The architecture of the snapshots.
+   * \param architecture The architecture of the snapshots.
    */
   QStringList getSnapshotList(const QString& architecture);
 
   /**
    * Add a snapshot for a specific architecture.
    *
-   * \param formula The architecture of the snapshots.
+   * \param architecture The architecture of the snapshots.
    * \param snapshot The name of the snapshot to add.
    */
   void addSnapshot(const QString& architecture,
@@ -58,7 +60,7 @@ class SnapshotComponent : public QObject {
   /**
    * Remove a snapshot for a specific architecture.
    *
-   * \param formula The architecture of the snapshots.
+   * \param architecture The architecture of the snapshots.
    * \param snapshot The name of the snapshot to remove.
    */
   void removeSnapshot(const QString& architecture, const QString& snapshot);
@@ -81,14 +83,14 @@ class SnapshotComponent : public QObject {
 
 
  private:
-  /** The json object is loaded and saved to this path. */
-  QString _path;
-
   /** The base directory of the configuration. */
   QDir _baseDirectory;
 
   /** A map of architecture-signature to a list of extensions. */
   QHash<QString, QStringList> _snapshotMap;
+
+  /** The file extension of snapshots. */
+  static constexpr auto _fileExtension = ".snapshot";
 
  signals:
   /** A signal that the snapshot list changed. */
