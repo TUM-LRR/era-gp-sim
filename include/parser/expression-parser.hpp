@@ -138,6 +138,7 @@ class ExpressionParser {
   }
 
  private:
+  using TranslateablePtr = Translateable::TranslateablePtr;
   // This enum is for the operator stack. It is a bit different from the
   // 'external' token enum.
   enum class ITokenType {
@@ -186,8 +187,12 @@ class ExpressionParser {
   };
 
   // Records an error in the parsing process.
-  void recordError(ParseState& state, const std::string& message) const {
+  void recordError(ParseState& state, const TranslateablePtr& message) const {
     state.state.addError(message, state.state.position >> state.curr.index);
+  }
+
+  void recordError(ParseState& state, const char* stringLiteral) const {
+      state.state.addError(stringLiteral, state.state.position >> state.curr.index);
   }
 
   // Handles the latest token stored in `state.curr`.
@@ -227,11 +232,10 @@ class ExpressionParser {
       // For the right error message, we got to determine the arity of our
       // operator.
       if (token.type == ITokenType::UNARY_OPERATOR) {
-        recordError(state,
-                    "'" + token.data + "' is not a valid unary operator!");
+          recordError(state,Translateable::createShared("'%1' is not a valid unary operator", {token.data}));
       } else if (token.type == ITokenType::BINARY_OPERATOR) {
         recordError(state,
-                    "'" + token.data + "' is not a valid binary operator!");
+                    Translateable::createShared("'%1' is not a valid binary operator", {token.data}));
       } else {
         // Undefined arity.
         assert::that(false);
@@ -309,9 +313,8 @@ class ExpressionParser {
         // There were not enough operands on the stack.
         size_t left = count - i;
         recordError(state,
-                    left == 1 ? "There is an operand missing."
-                              : "There are " + std::to_string(left) +
-                                    " operands missing.");
+                    left == 1 ? std::make_shared<Translateable>("There is an operand missing.")
+                              : Translateable::createShared("There are %1 operands missing.", {std::to_string(left)}));
         return false;
       }
       output.push_back(state.outputStack.top());

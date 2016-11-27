@@ -37,8 +37,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     if (ptr != nullptr)
       _operations.push_back(std::move(ptr));
     else
-      state.addError("Macro contains unsupported instruction '" +
-                     macro.getOperationName(i) + "'.");
+      state.addError(Translateable::createShared("Macro contains unsupported instruction '%1'.", {macro.getOperationName(i)}));
   }
 
   // Recursively replace macro instructions to support recursive macro calls

@@ -136,7 +136,7 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
       case CompileErrorSeverity::INFORMATION: color = QColor(Qt::blue); break;
       default: assert::that(false);
     }
-    emit addError(QString::fromStdString(error.message()),
+    emit addError(error.message().translate(),
                   error.position().first.line(),
                   color);
   }

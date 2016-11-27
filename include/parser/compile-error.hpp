@@ -22,6 +22,7 @@
 #include <string>
 
 #include "parser/code-position.hpp"
+#include "common/translateable.hpp"
 
 /**
  * \brief Denotes the severity of a compiler error.
@@ -48,6 +49,7 @@ enum class CompileErrorSeverity {
  */
 class CompileError {
  public:
+    using TranslateablePtr = std::shared_ptr<Translateable>;
   /**
    * \brief Instantiates a new compile error with the given arguments. Marks
    * only a positional error.
@@ -55,7 +57,7 @@ class CompileError {
    * \param position The position of the error in the code.
    * \param severity The severity of the error.
    */
-  CompileError(const std::string& message,
+  CompileError(const TranslateablePtr& message,
                const CodePosition& position,
                CompileErrorSeverity severity)
   : CompileError(message, position, position >> 1, severity) {
@@ -68,7 +70,7 @@ class CompileError {
    * \param endPosition The end position of the error in the code.
    * \param severity The severity of the error.
    */
-  CompileError(const std::string& message,
+  CompileError(const TranslateablePtr& message,
                const CodePosition& startPosition,
                const CodePosition& endPosition,
                CompileErrorSeverity severity)
@@ -82,7 +84,7 @@ class CompileError {
    * \param position The position interval of the error in the code.
    * \param severity The severity of the error.
    */
-  CompileError(const std::string& message,
+  CompileError(const TranslateablePtr& message,
                const CodePositionInterval& position,
                CompileErrorSeverity severity)
   : _message(message), _position(position), _severity(severity) {
@@ -92,8 +94,9 @@ class CompileError {
    * \brief Returns the message of this error.
    * \return The message of the error.
    */
-  const std::string& message() const {
-    return _message;
+  const Translateable& message() const {
+      assert::that(_message);
+    return (*_message);
   }
 
   /**
@@ -116,7 +119,7 @@ class CompileError {
   /**
    * \brief The internal message attribute.
    */
-  std::string _message;
+  TranslateablePtr _message;
 
   /**
    * \brief The internal position attribute.

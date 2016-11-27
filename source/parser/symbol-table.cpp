@@ -51,7 +51,7 @@ void SymbolTable::insertEntry(const std::string& name,
 
   if (!std::regex_search(name, VALID_NAME)) {
     // Basically, everything with a leading number is not accepted.
-    state.addError("Symbol '" + name + "' does not have a qualified name.",
+      state.addError(Translateable::createShared("Symbol '%1' does not have a qualified name.", {name}),
                    state.position);
     return;
   }
@@ -59,7 +59,7 @@ void SymbolTable::insertEntry(const std::string& name,
   if (_table.find(name) != _table.end()) {
     // We also fail, if we define the symbol twice in a commit (which would
     // count as double definition in a file).
-    state.addError("Symbol '" + name + "' defined twice.", state.position);
+    state.addError(Translateable::createShared("Symbol '%1' defined twice.", {name}), state.position);
     return;
   }
 

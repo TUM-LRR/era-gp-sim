@@ -23,6 +23,14 @@
 void CompileState::registerMacro(MacroDirective& macro) {
   bool success = macros.insert(macro);
   if (!success) {
-    addError("Macro \"" + macro.macroName() + "\" already exists!");
+      addError(Translateable::createShared("Macro \"%1\" already exists!", {macro.macroName()}));
   }
+}
+
+void CompileState::addError(const char *message) {
+    addError(message, position);
+}
+
+void CompileState::addError(const char *message, const CodePosition &position) {
+    addError(std::make_shared<Translateable>(message), position);
 }
