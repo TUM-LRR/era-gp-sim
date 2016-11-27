@@ -98,14 +98,14 @@ class StringParserEngine {
 
     // We check the beginning of the string...
     if (inputString[0] != separator) {
-        invokeError(Translateable::createShared("Something supposed to be a string does not begin with %1", {""+separator}),
+        invokeError(Translateable::createShared("Something supposed to be a string does not begin with %1", {std::string(1,separator)}),
           0, state);
       return false;
     }
 
     //...and the end.
     if (inputString[inputString.size() - 1] != separator) {
-        invokeError(Translateable::createShared("Something supposed to be a string does not end with %1", {""+separator}),
+        invokeError(Translateable::createShared("Something supposed to be a string does not end with %1", {std::string(1,separator)}),
           inputString.size() - 1, state);
       return false;
     }
