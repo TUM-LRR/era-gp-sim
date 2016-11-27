@@ -500,16 +500,25 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
 }
 
 template <typename T, typename S = T>
-constexpr T discreteCeiling(const T &value, const S &divider) {
+constexpr T divideCeiling(T value, S divider) {
   return (value + divider - 1) / divider;
 }
 
 // Only for completeness.
 template <typename T, typename S = T>
-constexpr T discreteFloor(const T &value, const S &divider) {
+constexpr T divideFloor(T value, S divider) {
   return value / divider;
 }
 
+template <typename T, typename S = T>
+constexpr T discreteCeiling(T value, S divider) {
+  return divideCeiling(value, divider) * divider;
+}
+
+template <typename T, typename S = T>
+constexpr T discreteFloor(T value, S divider) {
+  return divideFloor(value, divider) * divider;
+}
 
 template <typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
 struct EnumHash {
