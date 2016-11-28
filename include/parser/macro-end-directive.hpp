@@ -25,6 +25,20 @@
 class MacroEndDirective : public IntermediateDirective {
  public:
   /**
+   * \brief Instantiates a new MacroEndDirective with the given arguments.
+   * \param lines The line interval the operation occupies.
+   * \param labels The vector of labels assigned to the operation.
+   * \param name The name of the operation.
+   * \param arguments Arguments of the directive. Should be none.
+   */
+  MacroEndDirective(const LineInterval& lines,
+                    const std::vector<std::string>& labels,
+                    const std::string& name,
+                    const std::vector<std::string>& arguments)
+  : IntermediateDirective(lines, labels, name) {
+  }
+
+  /**
   * \brief Instantiates a new MacroEndDirective with the given arguments.
   * \param lines The line interval the operation occupies.
   * \param labels The vector of labels assigned to the operation.

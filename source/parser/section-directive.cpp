@@ -24,6 +24,15 @@ void SectionDirective::execute(FinalRepresentation& finalRepresentator,
                                const SyntaxTreeGenerator& generator,
                                CompileState& state,
                                MemoryAccess& memoryAccess) {
+}
+
+void SectionDirective::allocateMemory(const Architecture& architecture,
+                                      MemoryAllocator& allocator,
+                                      CompileState& state) {
+  if (!_hasName) {
+    state.addError("Section name missing!");
+    return;
+  }
   // Just set the section state to the current section. That's it.
   state.section = _section;
 }

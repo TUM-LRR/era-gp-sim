@@ -46,6 +46,11 @@ class RiscvParser::RiscvRegex {
   bool hasInstruction();
 
   /**
+   * Returns if the instruction is a parser directive.
+   */
+  bool isDirective();
+
+  /**
    * Returns the parsed label.
    */
   std::string getLabel();
