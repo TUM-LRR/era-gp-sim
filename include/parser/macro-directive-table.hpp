@@ -29,48 +29,15 @@
 #include "parser/macro-directive.hpp"
 
 class MacroDirectiveTable {
+ public:
+  using size_t = std::size_t;
+
  private:
   using MacroInstance = std::pair<std::string, size_t>;
   using MacroMap = std::unordered_map<MacroInstance, MacroDirective>;
   using MacroIterator = MacroMap::iterator;
   using MacroConstIterator = MacroMap::const_iterator;
 
-  class MacroWrapper;
-
- public:
-  using size_t = std::size_t;
-  /**
-   * Inserts a macro into the table.
-   * \param macro Macro to insert.
-   * \return True if successful.
-   */
-  bool insert(const MacroDirective &macro);
-
-  /**
-   * Tries to find a macro with the given name that accepts `argumentCount`
-   * arguments.
-   * \param name Macro name
-   * \param argumentCount Number of arguments
-   * \return Iterator to the macro if found. Otherwise `end()`.
-   */
-  MacroWrapper find(const std::string &name, size_t argumentCount);
-
-  /**
-   * Returns begin of the underlying map.
-   */
-  MacroConstIterator begin();
-
-  /**
-   * Returns end of the underlying map.
-   */
-  MacroConstIterator end();
-
-  /**
-   * Clears the list of registered macros.
-   */
-  void clear();
-
- private:
   /**
    * Helper class to automatically set and unset the _isCompiling flag of the
    * macro directive.
@@ -104,6 +71,39 @@ class MacroDirectiveTable {
     bool _cyclic = false;
   };
 
+ public:
+  /**
+   * Inserts a macro into the table.
+   * \param macro Macro to insert.
+   * \return True if successful.
+   */
+  bool insert(const MacroDirective &macro);
+
+  /**
+   * Tries to find a macro with the given name that accepts `argumentCount`
+   * arguments.
+   * \param name Macro name
+   * \param argumentCount Number of arguments
+   * \return Iterator to the macro if found. Otherwise `end()`.
+   */
+  MacroWrapper find(const std::string &name, size_t argumentCount);
+
+  /**
+   * Returns begin of the underlying map.
+   */
+  MacroConstIterator begin();
+
+  /**
+   * Returns end of the underlying map.
+   */
+  MacroConstIterator end();
+
+  /**
+   * Clears the list of registered macros.
+   */
+  void clear();
+
+ private:
   MacroMap _macros;
 };
 

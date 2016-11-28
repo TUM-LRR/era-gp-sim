@@ -26,8 +26,6 @@
 
 #include "parser/line-interval.hpp"
 
-struct CompileState;
-
 class MemoryValue;
 class CompileState;
 class Architecture;
@@ -36,6 +34,7 @@ class SymbolTable;
 class FinalRepresentation;
 class FinalCommand;
 class MemoryAccess;
+struct CompileState;
 
 /**
  * \brief A memory address substitute as long as we do not have one.

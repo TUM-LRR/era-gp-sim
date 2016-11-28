@@ -35,8 +35,6 @@ class Architecture;
  * form.
  */
 class IntermediateInstruction : public IntermediateOperation {
-  friend class IntermediateMacroInstruction;
-
  public:
   /**
    * \brief Instantiates a new compile error with the given arguments.
@@ -125,6 +123,8 @@ class IntermediateInstruction : public IntermediateOperation {
                         CompileState& state);
 
  private:
+  friend class IntermediateMacroInstruction;
+
   /**
    * \brief The internal source arguments.
    */
