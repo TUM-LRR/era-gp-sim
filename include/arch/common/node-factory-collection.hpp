@@ -24,6 +24,7 @@
 #include "arch/common/abstract-arithmetic-node-factory.hpp"
 #include "arch/common/abstract-data-node-factory.hpp"
 #include "arch/common/instruction-set.hpp"
+#include "arch/common/abstract-instruction-node.hpp"
 #include "core/memory-value.hpp"
 
 class Architecture;
@@ -41,6 +42,7 @@ class AbstractRegisterNodeFactory;
 class NodeFactoryCollection {
  public:
   using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+    using InstrNode = std::unique_ptr<AbstractInstructionNode>;
 
   /**
    * Default-constructs a NodeFactoryCollection.
@@ -67,7 +69,7 @@ class NodeFactoryCollection {
    * method call, otherwise the assertion will fail
    * \copydoc AbstractInstructionNodeFactory::createInstructionNode
    */
-  Node createInstructionNode(const std::string &mnemonic) const;
+  InstrNode createInstructionNode(const std::string &mnemonic) const;
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
