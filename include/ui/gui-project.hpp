@@ -111,7 +111,7 @@ class GuiProject : QObject {
   /**
    * \brief saves with another name
    *
-   * \param name the new name
+   * \param path the path to save to.
    */
   void saveTextAs(QUrl path);
 

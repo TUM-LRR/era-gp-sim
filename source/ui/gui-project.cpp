@@ -125,7 +125,7 @@ void GuiProject::saveTextAs(QUrl path) {
   std::string text = _editorComponent.getText().toStdString();
   try {
     Utility::storeToFile(name, text);
-  } catch (const std::ios_base::failure& exception) {
+  } catch (const std::exception& exception) {
     _throwError(std::string("Could not save file! ") + exception.what(),
                 std::vector<std::string>());
   }
@@ -139,7 +139,7 @@ void GuiProject::loadText(QUrl path) {
     text = Utility::loadFromFile(filePath);
     QString qText = QString::fromStdString(text);
     _editorComponent.setText(qText);
-  } catch (const std::ios_base::failure& exception) {
+  } catch (const std::exception& exception) {
     _throwError(std::string("Could not load file!") + exception.what(),
                 std::vector<std::string>());
   }
