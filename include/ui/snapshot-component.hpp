@@ -25,18 +25,21 @@
 #include <QString>
 #include <QStringList>
 
-#include "arch/common/architecture-formula.hpp"
-#include "third-party/json/json.hpp"
+class ArchitectureFormula;
 
+/**
+ * This class manages the names/paths of all snapshots which can be loaded.
+ * Snapshots can be saved and removed through this class.
+ */
 class SnapshotComponent : public QObject {
   Q_OBJECT
  public:
-  using Json = nlohmann::json;
-
+  using SnapshotMap = QHash<QString, QStringList>;
   /**
    * Construct a new SnapshotComponent from a string.
    *
-   * \param path The json object is loaded from this path.
+   * \param path The path of the snapshot directory.
+   * \param parent Pointer to the parent QObject. Defaults to 0.
    */
   SnapshotComponent(const std::string& path, QObject* parent = 0);
 
@@ -49,9 +52,11 @@ class SnapshotComponent : public QObject {
 
   /**
    * Add a snapshot for a specific architecture.
+   * Can throw a std::ios_base::failure exception.
    *
    * \param architecture The architecture of the snapshots.
    * \param snapshot The name of the snapshot to add.
+   * \param data The string of data of the snapshot.
    */
   void addSnapshot(const QString& architecture,
                    const QString& snapshot,
@@ -87,7 +92,7 @@ class SnapshotComponent : public QObject {
   QDir _baseDirectory;
 
   /** A map of architecture-signature to a list of extensions. */
-  QHash<QString, QStringList> _snapshotMap;
+  SnapshotMap _snapshotMap;
 
   /** The file extension of snapshots. */
   static constexpr auto _fileExtension = ".snapshot";

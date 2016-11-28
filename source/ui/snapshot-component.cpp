@@ -21,6 +21,8 @@
 
 #include <algorithm>
 
+#include "arch/common/architecture-formula.hpp"
+
 SnapshotComponent::SnapshotComponent(const std::string& path, QObject* parent)
 : QObject(parent), _baseDirectory(QString::fromStdString(path)) {
   // check if snapshot directory exists, if not, create it.

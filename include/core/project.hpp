@@ -156,8 +156,7 @@ class Project : public Servant {
    *
    * \param snapshot The snapshot object.
    */
-  void loadSnapshot(
-      Json snapshot);// TODO gui error callback(set through project module)
+  void loadSnapshot(Json snapshot);
 
   /**
    * Generates a snapshot of the current state of memory and registers.

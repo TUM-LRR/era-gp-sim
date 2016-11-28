@@ -159,7 +159,7 @@ class GuiProject : QObject {
   /**
    * \brief takes a snapshot
    *
-   * \param name name of the snapshot
+   * \param qName name of the snapshot
    */
   void saveSnapshot(QString qName);
 
@@ -172,7 +172,7 @@ class GuiProject : QObject {
 
   /**
    * \brief loads a snapshot
-   * \param name The name of the snapshot, which should be loaded
+   * \param qName The name of the snapshot which should be loaded.
    */
   Q_INVOKABLE void loadSnapshot(QString qName);
 
