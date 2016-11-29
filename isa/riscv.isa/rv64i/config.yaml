@@ -5,32 +5,46 @@ name: rv64i
 extends: rv32i
 
 word-size: 64
-byte-size: 8
 reset-units: true
 
 instructions:
   - mnemonic: lwu
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 3
       funct3: 6
   - mnemonic: ld
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 3
       funct3: 3
   - mnemonic: sd
     length: 32
     format: S
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 35
-      funct3: 1
-      funct7: 0
+      funct3: 3
   - mnemonic: slli
     length: 32
     format: R
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 19
       funct3: 1
@@ -38,6 +52,10 @@ instructions:
   - mnemonic: srai
     length: 32
     format: R
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 19
       funct3: 5
@@ -45,12 +63,20 @@ instructions:
   - mnemonic: addiw
     length: 32
     format: I
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 27
       funct3: 0
   - mnemonic: slliw
     length: 32
     format: R
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 27
       funct3: 1
@@ -58,6 +84,10 @@ instructions:
   - mnemonic: srliw
     length: 32
     format: R
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 27
       funct3: 5
@@ -65,6 +95,10 @@ instructions:
   - mnemonic: sraiw
     length: 32
     format: R
+    operand length:
+      - 0
+      - 0
+      - 12
     key:
       opcode: 27
       funct3: 5
@@ -111,7 +145,7 @@ units:
         id: 0
         alias: zero
         size: 64
-        constant: 0
+        constant: "0x0"
       - name: x1
         id: 1
         size: 64

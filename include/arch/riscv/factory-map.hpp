@@ -24,8 +24,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
-#include "arch/common/instruction-information.hpp"
+#include "arch/common/abstract-instruction-node-factory.hpp"
 #include "arch/riscv/integer-instructions.hpp"
 
 namespace riscv {
@@ -35,15 +34,17 @@ namespace riscv {
  * functions.
  *
  * The purpose of this class is to reduce the boilerplate for adding nodes  *
- * to the factory mapping in the instruction-nod-factory, as well as for
+ * to the factory mapping in the instruction-node-factory, as well as for
  * accessing factories to create new
  * nodes.
  */
 class FactoryMap {
  public:
-  using Factory = std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
-      const InstructionInformation &)>;
-  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using InstructionDocumentation =
+      std::shared_ptr<InstructionContextInformation>;
+  using Factory = std::function<std::unique_ptr<AbstractInstructionNode>(
+      const InstructionInformation &, const InstructionDocumentation &)>;
+  using Node = std::unique_ptr<AbstractInstructionNode>;
 
   /**
    * An abstract base class for facades.
@@ -117,8 +118,8 @@ class FactoryMap {
      *                            version of the instruction.
      */
     template <template <typename> class InstructionType>
-    void
-    add(const std::string &instructionName, bool hasImmediateVersion = true) {
+    void add(const std::string &instructionName,
+             bool hasImmediateVersion = true) {
       // clang-format off
       _factories.addIntegerInstruction<InstructionType<SizeType>>(
           instructionName,
@@ -166,17 +167,21 @@ class FactoryMap {
     using Operands = typename InstructionType::Operands;
 
     // clang-format off
-    _map.emplace(instructionName, [](const auto &information) {
-      return std::make_unique<InstructionType>(
+    _map.emplace(instructionName, [](const auto &information, const auto& documentation) {
+      auto node = std::make_unique<InstructionType>(
         information, Operands::REGISTERS);
+      node->setDocumentation(documentation);
+      return std::move(node);
     });
 
     if (hasImmediateVersion) {
-      _map.emplace(instructionName + 'i', [](const auto &information) {
-        return std::make_unique<InstructionType>(
+      _map.emplace(instructionName + 'i', [](const auto &information, const auto& documentation) {
+        auto node = std::make_unique<InstructionType>(
             information,
             Operands::IMMEDIATES
         );
+        node->setDocumentation(documentation);
+        return std::move(node);
       });
       // clang-format on
     }
@@ -192,8 +197,12 @@ class FactoryMap {
   template <typename InstructionType, typename... Args>
   void add(const std::string &instructionName, Args &&... args) {
     // Cannot preserve value category (simply) unfortunately
-    _map.emplace(instructionName, [args...](const auto &information) {
-      return std::make_unique<InstructionType>(information, args...);
+    _map.emplace(instructionName, [args...](const auto &information,
+                                            const auto &documentation) {
+      auto node = std::make_unique<InstructionType>(information, args...);
+      //set documentation before returning
+      node->setDocumentation(documentation);
+      return std::move(node);
     });
   }
 
@@ -222,11 +231,13 @@ class FactoryMap {
    * \return An abstract syntax tree node for the instruction.
    */
   Node create(const std::string &instructionName,
-              const InstructionInformation &information) const;
+              const InstructionInformation &information,
+              const InstructionDocumentation &documentation) const;
 
   /** \copydoc create() */
   Node operator()(const std::string &instructionName,
-                  const InstructionInformation &information) const;
+                  const InstructionInformation &information,
+                  const InstructionDocumentation &documentation) const;
 
  private:
   using Map = std::unordered_map<std::string, Factory>;

@@ -48,7 +48,12 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
 void Project::_createRegister(RegisterInformation registerInfo,
                               UnitInformation unitInfo) {
   if (!registerInfo.hasEnclosing()) {
-    _registerSet.createRegister(registerInfo.getName(), registerInfo.getSize());
+      MemoryValue startValue{registerInfo.getSize()};
+      //if this register is hardwired to some constant
+      if(registerInfo.isConstant()) {
+          startValue = registerInfo.getConstant();
+      }
+    _registerSet.createRegister(registerInfo.getName(), startValue, registerInfo.isConstant());
     _registerSet.aliasRegister(
         registerInfo.getAliases(), registerInfo.getName(), 0, true);
     // create all constituents and their constituents
@@ -91,7 +96,7 @@ void Project::_createConstituents(RegisterInformation enclosingRegister,
   }
 }
 
-MemoryValue Project::getMemoryValueAt(size_t address, size_t amount) {
+MemoryValue Project::getMemoryValueAt(size_t address, size_t amount) const {
   return _memory.get(address, amount);
 }
 
@@ -196,6 +201,6 @@ void Project::setUpdateMemoryCallback(Callback<size_t, size_t> callback) {
   _memory.setCallback(callback);
 }
 
-Architecture Project::getArchitecture() {
+Architecture Project::getArchitecture() const {
   return _architecture;
 }

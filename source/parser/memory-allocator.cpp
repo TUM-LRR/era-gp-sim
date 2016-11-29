@@ -19,43 +19,6 @@
 
 #include "parser/memory-allocator.hpp"
 
-// Relative memory position constructors.
-
-RelativeMemoryPosition::RelativeMemoryPosition(const std::string& section,
-                                               std::size_t offset)
-: section(section), offset(offset) {
-}
-
-RelativeMemoryPosition::RelativeMemoryPosition()
-: RelativeMemoryPosition("", 0) {
-}
-
-bool RelativeMemoryPosition::valid() {
-  return section != "";
-}
-
-//
-MemorySectionDefinition::MemorySectionDefinition(const std::string& name,
-                                                 std::size_t sectionAlignment,
-                                                 std::size_t dataAlignment)
-: name(name), sectionAlignment(sectionAlignment), dataAlignment(dataAlignment) {
-  assert::that(sectionAlignment > 0);
-  assert::that(dataAlignment > 0);
-
-  // Important: the section alignment (if this even makes sense) must be a
-  // multiple of the data alignment.
-  assert::that(sectionAlignment % dataAlignment == 0);
-}
-
-MemorySectionDefinition::MemorySectionDefinition(const std::string& name,
-                                                 std::size_t alignment)
-: MemorySectionDefinition(name, alignment, alignment) {
-}
-
-MemorySectionDefinition::MemorySectionDefinition(const std::string& name)
-: MemorySectionDefinition(name, 1, 1) {
-}
-
 void MemoryAllocator::MemorySection::clear() {
   // Really, just setting it to zero.
   _currentSize = 0;

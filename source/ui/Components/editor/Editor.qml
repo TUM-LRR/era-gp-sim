@@ -19,6 +19,7 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 1.5
+import QtQuick.Dialogs 1.2
 import "../Common"
 
 //decorates a Flickable with Scrollbars
@@ -38,6 +39,9 @@ ScrollView {
         id: container
         focus: false
         anchors.fill: parent
+
+        contentWidth: (textArea.contentWidth + sidebar.width)*scale.zoom;
+        contentHeight: textArea.contentHeight*scale.zoom;
 
         //wrapper item, Flickable can only have one child
         Item {
@@ -60,6 +64,10 @@ ScrollView {
                 textMargin: 2
                 property real unscaledWidth: Math.max(scrollView.viewport.width - sidebar.width, contentWidth)
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
+                property int line: 1
+
+                width: (textArea.unscaledWidth)*scale.zoom;
+                height: (textArea.unscaledHeight)*scale.zoom;
 
                 x: sidebar.width
                 selectByMouse: true
@@ -69,8 +77,7 @@ ScrollView {
                 textFormat: TextEdit.PlainText
                 wrapMode: TextEdit.NoWrap
                 Component.onCompleted: {
-                    updateSize();
-                    editor.init(textDocument);
+                    cursorScroll(textArea.cursorRectangle);
                 }
                 visible: true
                 onCursorRectangleChanged: cursorScroll(cursorRectangle)
@@ -83,6 +90,34 @@ ScrollView {
                     }
                 }
 
+                //(re)start the parse timer, if an edit is made
+                onTextChanged: {
+                  editor.setTextChanged(true);
+                  parseTimer.restart();
+                }
+
+                //Connection to react to the parse signal
+                Connections {
+                  target: editor
+                  onExecutionLineChanged: {
+                    textArea.line = line;
+                  }
+                  onRuntimeError: {
+                    runtimeErrorDialog.text = errorMessage;
+                    runtimeErrorDialog.open();
+                  }
+                }
+
+                //timer for parsing
+                Timer {
+                  id: parseTimer
+                  interval: 1000
+                  repeat: false
+                  onTriggered: {
+                    editor.parse();
+                  }
+                }
+
                 //cursor line highlighting
                 Rectangle{
                     color: Qt.rgba(0.9, 0.9, 0.9, 0.2)
@@ -92,6 +127,14 @@ ScrollView {
                     visible: textArea.activeFocus
                     border.width: 1
                     border.color: Qt.rgba(0.7, 0.7, 0.7, 0.2)
+                }
+
+                // execution line highlighting
+                Rectangle{
+                  color: Qt.rgba(0.2, 0.8, 0.4, 0.2)
+                  y: textArea.cursorRectangle.height * (textArea.line - 1);
+                  height: textArea.cursorRectangle.height;
+                  width: Math.max(scrollView.width, textArea.contentWidth)
                 }
 
                 //scroll with the cursor
@@ -115,28 +158,11 @@ ScrollView {
                     }
                 }
 
-                //updates the size of the TextEdit and the Flickable contentSize, has to be called when the viewport,
-                //the zoom or the contentSize changes
-                function updateSize() {
-                    textArea.width = (textArea.unscaledWidth - sidebar.width)*scale.zoom;
-                    textArea.height = (textArea.unscaledHeight)*scale.zoom;
-                    container.contentWidth = (textArea.contentWidth + sidebar.width)*scale.zoom;
-                    container.contentHeight = textArea.contentHeight*scale.zoom;
-                    textArea.cursorScroll(textArea.cursorRectangle);
-                }
-
-                onContentSizeChanged: updateSize();
+                onContentSizeChanged: textArea.cursorScroll(textArea.cursorRectangle);
                 Connections {
                     target: scrollView.viewport
-                    onWidthChanged: textArea.updateSize();
-                    onHeightChanged: textArea.updateSize();
-                }
-
-                Connections {
-                    target: editor
-                    onAddError: {
-                        errorBar.addError(message, line, color);
-                    }
+                    onWidthChanged: textArea.cursorScroll(textArea.cursorRectangle);
+                    onHeightChanged: textArea.cursorScroll(textArea.cursorRectangle);
                 }
 
                 //information about the font
@@ -175,12 +201,84 @@ ScrollView {
                     }
                 }
 
+                function addBreakpoint(line) {
+                  var newBreakpoint =
+                  breakpointComponent.createObject(sidebar,
+                    {"y": line*textArea.cursorRectangle.height, "line": line});
+                }
+
+                //mouse area to add Breakpoints
+                MouseArea {
+                  id: breakpointTrigger
+                  width: parent.width
+                  height: parent.height
+                  x: 0
+                  y: 0
+                  z: 1
+                  propagateComposedEvents: false
+                  preventStealing: true
+                  hoverEnabled: true
+                  onClicked: {
+                      sidebar.addBreakpoint(Math.floor(mouse.y/textArea.cursorRectangle.height));
+                  }
+                }
+
+                Component{
+                  id: breakpointComponent
+                  Item {
+                    z: breakpointTrigger.z + 1
+                    id: breakpointItem
+                    property int line;
+                    property alias color: breakpointIcon.color
+                    width: breakpointTrigger.width
+                    height: textArea.cursorRectangle.height;
+                    Component.onCompleted: {
+                      editor.setBreakpoint(line + 1);
+                    }
+
+                    Rectangle {
+                        id: breakpointIcon
+                        height: Math.min(parent.height, errorBar.width) * 0.8
+                        width: height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: height*0.15
+                        radius: width*0.5
+                        color: "red"
+                    }
+
+                    MouseArea {
+                      anchors.fill: parent
+                      width: 100
+                      height: textArea.cursorRectangle.height
+                      propagateComposedEvents: false
+                      preventStealing: true
+
+                      onClicked: {
+                        editor.deleteBreakpoint(line + 1);
+                        breakpointItem.destroy();
+                      }
+                    }
+                  }
+                }
+
                 //errors and warnings
                 Rectangle {
                     id: errorBar
                     x: 0
                     y: textArea.textMargin/2
-                    width: 5
+                    width: textArea.cursorRectangle.height*0.8
+
+                    Connections {
+                        target: editor
+                        onAddError: {
+                            errorBar.addError(message, line, color);
+                        }
+
+                        Component.onCompleted: {
+                            editor.init(textArea.textDocument);
+                        }
+                    }
 
                     Component {
                         id: errorComponent
@@ -210,7 +308,7 @@ ScrollView {
                                 id: toolTip
                                 width: lineHighlight.width
                                 height: lineHighlight.height
-                                fontPixelSize: textArea.font.pixelSize*1.5
+                                fontPixelSize: textArea.font.pixelSize
                             }
 
                             Connections {
@@ -232,6 +330,16 @@ ScrollView {
                 }
             }
 
+            //Dialog to show runtime errors
+            MessageDialog {
+              id: runtimeErrorDialog
+              title: "Runtime error"
+              standardButtons: StandardButton.Ok
+              onAccepted: {
+                close();
+              }
+            }
+
             //input for zoom
             MouseArea {
                 id: mouseInput
@@ -251,7 +359,7 @@ ScrollView {
                                 scale.zoom = 1.0;
                             }
                         }
-                        textArea.updateSize();
+                        textArea.cursorScroll(textArea.cursorRectangle);
                         wheel.accepted = true;
                     }
                     else {

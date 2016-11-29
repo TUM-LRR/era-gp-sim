@@ -22,7 +22,9 @@
 #include <string>
 
 #include "arch/common/abstract-arithmetic-node-factory.hpp"
+#include "arch/common/abstract-data-node-factory.hpp"
 #include "arch/common/instruction-set.hpp"
+#include "arch/common/abstract-instruction-node.hpp"
 #include "core/memory-value.hpp"
 
 class Architecture;
@@ -40,6 +42,7 @@ class AbstractRegisterNodeFactory;
 class NodeFactoryCollection {
  public:
   using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+    using InstrNode = std::unique_ptr<AbstractInstructionNode>;
 
   /**
    * Default-constructs a NodeFactoryCollection.
@@ -54,8 +57,9 @@ class NodeFactoryCollection {
         FactoryTypes::instructionFactory(instructionSet, architecture),
         FactoryTypes::immediateFactory(),
         FactoryTypes::memoryAccessFactory(),
-        FactoryTypes::registerFactory(),
-        FactoryTypes::arithmeticFactory()
+        FactoryTypes::registerFactory(architecture),
+        FactoryTypes::arithmeticFactory(),
+        FactoryTypes::dataNodeFactory()
     );
     // clang-format on
   }
@@ -65,7 +69,7 @@ class NodeFactoryCollection {
    * method call, otherwise the assertion will fail
    * \copydoc AbstractInstructionNodeFactory::createInstructionNode
    */
-  Node createInstructionNode(const std::string &mnemonic) const;
+  InstrNode createInstructionNode(const std::string &mnemonic) const;
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
@@ -73,6 +77,13 @@ class NodeFactoryCollection {
    * \copydoc AbstractImmediateNodeFactory::createImmediateNode
    */
   Node createImmediateNode(const MemoryValue &numericalValue) const;
+
+  /**
+   * It is asserted that the ImmediateFactory must be set prior to this
+   * method call, otherwise the assertion will fail
+   * \copydoc AbstractImmediateNodeFactory::labelToImmediate
+   */
+  MemoryValue labelToImmediate(const MemoryValue& labelValue, const std::string& instructionMnemonic, const MemoryValue& instructionAddress) const;
 
   /**
    * It is asserted that a corresponding factory must be set prior to this
@@ -96,19 +107,27 @@ class NodeFactoryCollection {
   Node createArithmeticNode(
       AbstractArithmeticNodeFactory::Operation operation) const;
 
+  /**
+   * It is asserted that a corresponding factory must be set prior to this method call.
+   * \copydoc AbstractDataNodeFactory::createDataNode
+   */
+  Node createDataNode(const std::string& data) const;
+
  private:
   NodeFactoryCollection(
       std::shared_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
       std::shared_ptr<AbstractImmediateNodeFactory> &&immediateFactory,
       std::shared_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,
       std::shared_ptr<AbstractRegisterNodeFactory> &&registerFactory,
-      std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory);
+      std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory,
+      std::shared_ptr<AbstractDataNodeFactory> &&dataFactory);
 
   std::shared_ptr<AbstractInstructionNodeFactory> _instructionFactory;
   std::shared_ptr<AbstractImmediateNodeFactory> _immediateFactory;
   std::shared_ptr<AbstractRegisterNodeFactory> _registerFactory;
   std::shared_ptr<AbstractMemoryAccessNodeFactory> _memoryAccessFactory;
   std::shared_ptr<AbstractArithmeticNodeFactory> _arithmeticFactory;
+  std::shared_ptr<AbstractDataNodeFactory> _dataNodeFactory;
 };
 
 #endif /* ERAGPSIM_ARCH_NODE_FACTORY_COLLECTION_HPP */

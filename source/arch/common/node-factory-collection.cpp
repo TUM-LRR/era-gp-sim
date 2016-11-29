@@ -35,7 +35,7 @@
  * method call, otherwise the assertion will fail
  * \copydoc AbstractInstructionNodeFactory::createInstructionNode
  */
-NodeFactoryCollection::Node NodeFactoryCollection::createInstructionNode(
+NodeFactoryCollection::InstrNode NodeFactoryCollection::createInstructionNode(
     const std::string &mnemonic) const {
   assert(static_cast<bool>(_instructionFactory));
   return _instructionFactory->createInstructionNode(mnemonic);
@@ -50,6 +50,11 @@ NodeFactoryCollection::Node NodeFactoryCollection::createImmediateNode(
     const MemoryValue &numericalValue) const {
   assert(static_cast<bool>(_immediateFactory));
   return _immediateFactory->createImmediateNode(numericalValue);
+}
+
+MemoryValue NodeFactoryCollection::labelToImmediate(const MemoryValue &labelValue, const std::string &instructionMnemonic, const MemoryValue &instructionAddress) const {
+    assert::that(static_cast<bool>(_immediateFactory));
+    return _immediateFactory->labelToImmediate(labelValue, instructionMnemonic, instructionAddress);
 }
 
 /**
@@ -85,17 +90,22 @@ NodeFactoryCollection::Node NodeFactoryCollection::createArithmeticNode(
   return _arithmeticFactory->createArithmeticNode(operation);
 }
 
-NodeFactoryCollection::NodeFactoryCollection(
-    std::shared_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
+NodeFactoryCollection::Node NodeFactoryCollection::createDataNode(const std::string &data) const {
+    assert(static_cast<bool>(_dataNodeFactory));
+    return _dataNodeFactory->createDataNode(data);
+}
+
+NodeFactoryCollection::NodeFactoryCollection(std::shared_ptr<AbstractInstructionNodeFactory> &&instructionFactory,
     std::shared_ptr<AbstractImmediateNodeFactory> &&immediateFactory,
     std::shared_ptr<AbstractMemoryAccessNodeFactory> &&memoryAccessFactory,
     std::shared_ptr<AbstractRegisterNodeFactory> &&registerFactory,
-    std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory)
+    std::shared_ptr<AbstractArithmeticNodeFactory> &&arithmeticFactory, std::shared_ptr<AbstractDataNodeFactory> &&dataFactory)
 : _instructionFactory(std::move(instructionFactory))
 , _immediateFactory(std::move(immediateFactory))
 , _registerFactory(std::move(registerFactory))
 , _memoryAccessFactory(std::move(memoryAccessFactory))
-, _arithmeticFactory(std::move(arithmeticFactory)) {
+, _arithmeticFactory(std::move(arithmeticFactory))
+, _dataNodeFactory(std::move(dataFactory)){
   // We should at least have these factories
   // assert(static_cast<bool>(instructionFactory));
   // assert(static_cast<bool>(registerFactory));

@@ -21,8 +21,8 @@
 #include <initializer_list>
 #include <string>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
-#include "arch/common/instruction-information.hpp"
+#include "arch/common/abstract-instruction-node.hpp"
+#include "arch/riscv/instruction-context-information.hpp"
 #include "arch/riscv/properties.hpp"
 #include "arch/riscv/utility.hpp"
 #include "core/conversions.hpp"
@@ -30,9 +30,9 @@
 
 namespace riscv {
 /** A node that represents a RISC V specific instruction */
-class InstructionNode : public AbstractSyntaxTreeNode {
+class InstructionNode : public AbstractInstructionNode {
  public:
-  using super = AbstractSyntaxTreeNode;
+  using super = AbstractInstructionNode;
 
   /**
    * Constructs a new node that represents a RISC V specific instruction.
@@ -46,8 +46,17 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   /** \copydoc AbstractSyntaxTreeNode::assemble() */
   MemoryValue assemble() const override;
 
-  /** \copydoc AbstractSyntaxTreeNode::getIdentifier() */
-  const std::string& getIdentifier() const override;
+  /** \copydoc AbstractInstructionNode::getInstructionDocumentation() */
+  const Translateable& getInstructionDocumentation() const override;
+
+  /**
+   * Provides a pointer to the RISCV instruction user documentation collection.
+   * The pointer is set when this instruction is created.
+   * \param documentation A pointer to the RISCV specific user documentation
+   * collection
+   */
+  void setDocumentation(
+      const std::shared_ptr<InstructionContextInformation>& documentation);
 
  protected:
   using TypeList = std::initializer_list<super::Type>;
@@ -79,7 +88,7 @@ class InstructionNode : public AbstractSyntaxTreeNode {
   template <typename WordSize>
   MemoryValue _incrementProgramCounter(MemoryAccess& memoryAccess) const {
     auto current = riscv::loadRegister<WordSize>(memoryAccess, "pc");
-    current += (_information.getLength() / riscv::BITS_PER_BYTE);
+    current += (getInstructionInformation().getLength() / riscv::BITS_PER_BYTE);
     return riscv::convert<WordSize>(current);
   }
 
@@ -106,8 +115,13 @@ class InstructionNode : public AbstractSyntaxTreeNode {
    */
   bool _compareChildTypes(TypeList list, size_t startIndex = 0) const;
 
-  /** The information object associated with the instruction. */
-  InstructionInformation _information;
+ private:
+  /**
+   * A pointer to the RISCV specific user instruction documentation.
+   * This is needed for the implementation of
+   * AbstractInstructionNode::getInstructionDocumentation()
+   */
+  std::shared_ptr<InstructionContextInformation> _documentation;
 };
 }
 

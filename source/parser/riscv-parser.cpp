@@ -152,7 +152,7 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   for (auto directive : RiscVDirectiveFactory::mapping) {
     // Matches all directive mnemonics starting with a '.' which don't end with
     // a ':'
-    info.addSyntaxRegex("\\b\\." + directive.first + "\\b(?!:)",
+    info.addSyntaxRegex("\\." + directive.first + "\\b(?!:)",
                         SyntaxInformation::Token::Instruction);
   }
 

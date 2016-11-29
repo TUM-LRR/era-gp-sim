@@ -19,6 +19,7 @@
 #define ERAGPSIM_ARCH_ABSTRACT_REGISTER_NODE_FACTORY_HPP
 
 #include <string>
+#include "arch/common/architecture.hpp"
 
 class AbstractSyntaxTreeNode;
 
@@ -29,6 +30,8 @@ class AbstractSyntaxTreeNode;
 class AbstractRegisterNodeFactory {
  public:
   using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+
+  explicit AbstractRegisterNodeFactory(const Architecture& arch) {}
 
   virtual ~AbstractRegisterNodeFactory() = default;
 
