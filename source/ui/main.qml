@@ -105,25 +105,34 @@ ApplicationWindow {
               menubar.actionSaveAs();
             }
             onError: {
-              errorDialog.text = errorMessage;
-              errorDialog.open();
-            }
-          }
-
-          //Dialog to show errors
-          MessageDialog {
-            id: errorDialog
-            title: "error"
-            standardButtons: StandardButton.Ok
-            onAccepted: {
-              close();
+              window.errorDialog.text = errorMessage;
+              window.errorDialog.open();
             }
           }
       }
     }
 
+    Connections {
+      target: snapshotComponent
+      onSnapshotError: {
+        errorDialog.text = errorMessage;
+        errorDialog.open();
+      }
+    }
+
+    property alias errorDialog: errorDialog
     property alias fileDialog: fileDialog
     property alias textDialog: textDialog
+
+    //Dialog to show errors
+    MessageDialog {
+      id: errorDialog
+      title: "error"
+      standardButtons: StandardButton.Ok
+      onAccepted: {
+        close();
+      }
+    }
 
     //File dialog for selecting a file
     FileDialog {

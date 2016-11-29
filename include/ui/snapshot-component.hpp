@@ -25,17 +25,21 @@
 #include <QSet>
 #include <QString>
 #include <QStringList>
+#include <QUrl>
+
+#include "core/snapshot.hpp"
 
 class ArchitectureFormula;
 
 /**
- * This class manages the names/paths of all snapshots which can be loaded.
+ * This class manages the names/paths of all snapshots.
  * Snapshots can be saved and removed through this class.
  */
 class SnapshotComponent : public QObject {
   Q_OBJECT
  public:
   using SnapshotMap = QHash<QString, QSet<QString>>;
+  using Json = Snapshot::Json;
   /**
    * Construct a new SnapshotComponent from a string.
    *
@@ -81,12 +85,18 @@ class SnapshotComponent : public QObject {
   snapshotPath(const QString& architecture, const QString& snapshot);
 
   /**
-   * Creates a string representation of the architecture formula.
-   *
-   * \param formula An architecture formula.
-   */
-  static QString architectureToString(const ArchitectureFormula& formula);
+  * Imports a snapshot (copies the file into the snapshot directory)
+  *
+  * \param qPath The path of the snapshot file.
+  */
+  Q_INVOKABLE void importSnapshot(QUrl qPath);
 
+  /**
+  * Creates a string representation of the architecture formula.
+  *
+  * \param formula An architecture formula.
+  */
+  static QString architectureToString(const ArchitectureFormula& formula);
 
  private:
   /** The base directory of the configuration. */
@@ -101,6 +111,9 @@ class SnapshotComponent : public QObject {
  signals:
   /** A signal that the snapshot list changed. */
   void snapshotsChanged();
+
+  /** Signal an error during snapshot importing */
+  void snapshotError(const QString& errorMessage);
 };
 
 #endif /* ERAGPSIM_UI_SNAPSHOT_COMPONENT_HPP */

@@ -19,9 +19,13 @@
 
 #include "ui/snapshot-component.hpp"
 
+#include <QFileInfo>
+#include <QUrl>
 #include <algorithm>
 
 #include "arch/common/architecture-formula.hpp"
+#include "common/utility.hpp"
+#include "core/snapshot.hpp"
 
 SnapshotComponent::SnapshotComponent(const std::string& path, QObject* parent)
 : QObject(parent), _baseDirectory(QString::fromStdString(path)) {
@@ -84,6 +88,25 @@ std::string SnapshotComponent::snapshotPath(const QString& architecture,
   return Utility::joinPaths(_baseDirectory.absolutePath().toStdString(),
                             architecture.toStdString(),
                             snapshot.toStdString() + _fileExtension);
+}
+
+void SnapshotComponent::importSnapshot(QUrl qPath) {
+  std::string path = qPath.path().toStdString();
+  try {
+    Json json = Json::parse(Utility::loadFromFile(path));
+    Snapshot snapshot(json);
+    if (!snapshot.isValid()) {
+      emit snapshotError("Import failed: Snapshot not valid.");
+      return;
+    }
+    ArchitectureFormula architectureFormula = snapshot.getArchitectureFormula();
+    QString architectureString = architectureToString(architectureFormula);
+    QFileInfo fileInfo(qPath.path());
+    addSnapshot(architectureString, fileInfo.completeBaseName(), json.dump(4));
+  } catch (const std::exception& exception) {
+    emit snapshotError("Import failed: " +
+                       QString::fromStdString(exception.what()));
+  }
 }
 
 QString

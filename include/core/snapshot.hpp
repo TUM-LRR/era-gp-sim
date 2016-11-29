@@ -20,9 +20,9 @@
 #ifndef ERAGPSIM_CORE_SNAPSHOT_HPP
 #define ERAGPSIM_CORE_SNAPSHOT_HPP
 
+#include "arch/common/architecture-formula.hpp"
 #include "third-party/json/json.hpp"
 
-class ArchitectureFormula;
 class Memory;
 class RegisterSet;
 

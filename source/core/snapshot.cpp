@@ -18,7 +18,10 @@
 */
 
 #include "core/snapshot.hpp"
+
 #include "common/assert.hpp"
+#include "core/memory.hpp"
+#include "core/register-set.hpp"
 
 Snapshot::Snapshot(const ArchitectureFormula& architectureFormula,
                    const Memory& memory,
@@ -30,7 +33,7 @@ Snapshot::Snapshot(const ArchitectureFormula& architectureFormula,
   _snapshot["registers"] = registerSet.serializeJSON();
 }
 
-Snapshot::Snapshot(Json json) _snapshot(json) {
+Snapshot::Snapshot(Json json) : _snapshot(json) {
 }
 
 bool Snapshot::isValid() {

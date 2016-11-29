@@ -82,6 +82,18 @@ MenuBar {
             }
         }
         MenuItem{
+            text: "Import Snapshot"
+            function importSnapshot(name) {
+              console.log("import snapshot: " + name);
+              var success = snapshotComponent.importSnapshot(name);
+            }
+            onTriggered: {
+              main.fileDialog.onAcceptedFunction = importSnapshot;
+              main.fileDialog.selectExisting = true;
+              main.fileDialog.open();
+            }
+        }
+        MenuItem{
             text: "Close"
             onTriggered: {
                 main.closeProject();
