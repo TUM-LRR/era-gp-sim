@@ -500,8 +500,8 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
 }
 
 // push_back n elements from the end of the src vector
-void pushBackFromEnd(std::vector<bool>& dest,
-                     const std::vector<bool>& src,
+void pushBackFromEnd(std::vector<bool> &dest,
+                     const std::vector<bool> &src,
                      size_t n);
 
 
@@ -530,6 +530,17 @@ T roundToBoundary(const T& value, const T& boundary) {
 }
 
 
+template<typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
+  struct EnumHash {
+    using argument_type = Enum;
+    using result_type = std::size_t;
+    using underlying_type = std::underlying_type_t<Enum>;
+
+    result_type operator()(const argument_type& argument) const {
+      const auto ordinal = static_cast<underlying_type>(argument);
+      return std::hash<underlying_type>{}(ordinal);
+    }
+  };
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */

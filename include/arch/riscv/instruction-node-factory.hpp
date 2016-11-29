@@ -92,11 +92,16 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
    */
   FactoryMap _factories;
 
-  /*!
+  /**
    * \brief _instructionSet
    * Description of all instructions that can be created by this factory
    */
   InstructionSet _instructionSet;
+
+  /**
+   * The RISCV specific user instruction documentation collection
+   */
+  std::shared_ptr<InstructionContextInformation> _documentation;
 };
 }
 

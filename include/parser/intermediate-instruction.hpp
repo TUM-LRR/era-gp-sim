@@ -26,10 +26,9 @@
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "parser/intermediate-operation.hpp"
+#include "parser/memory-allocator.hpp"
 
-class MemoryAllocator;
 class Architecture;
-
 
 /**
  * \brief Represents a machine instruction in the parser-internal intermediate
@@ -49,11 +48,7 @@ class IntermediateInstruction : public IntermediateOperation {
                           const std::vector<std::string>& labels,
                           const std::string& name,
                           const std::vector<std::string>& sources,
-                          const std::vector<std::string>& targets)
-  : IntermediateOperation(lines, labels, name)
-  , _sources(sources)
-  , _targets(targets) {
-  }
+                          const std::vector<std::string>& targets);
 
   /**
    * \brief Converts this instruction into a syntax tree and inserts it into the
@@ -104,6 +99,13 @@ class IntermediateInstruction : public IntermediateOperation {
                                   CompileState& state,
                                   MemoryAccess& memoryAccess);
 
+  MemoryAddress address() const;
+
+  virtual void
+  insertIntoArguments(const std::string& name, const std::string& value);
+
+  virtual IntermediateOperationPointer clone();
+
  protected:
   /**
    * \brief Compiles a vector of arguments (i.e. inserts symbols and converts to
@@ -121,6 +123,7 @@ class IntermediateInstruction : public IntermediateOperation {
                         CompileState& state);
 
  private:
+  friend class IntermediateMacroInstruction;
 
   /**
    * \brief The internal source arguments.
@@ -141,6 +144,12 @@ class IntermediateInstruction : public IntermediateOperation {
    * \brief The memory address inside the code section.
    */
   RelativeMemoryPosition _relativeAddress;
+
+  /**
+   * Constructs an argument vector from the sources and targets vectors.
+   * \return New vector containing all instruction arguments.
+   */
+  std::vector<std::string> getArgsVector() const;
 };
 
 #endif
