@@ -22,6 +22,7 @@
 
 #include <QDir>
 #include <QHash>
+#include <QSet>
 #include <QString>
 #include <QStringList>
 
@@ -34,7 +35,7 @@ class ArchitectureFormula;
 class SnapshotComponent : public QObject {
   Q_OBJECT
  public:
-  using SnapshotMap = QHash<QString, QStringList>;
+  using SnapshotMap = QHash<QString, QSet<QString>>;
   /**
    * Construct a new SnapshotComponent from a string.
    *
