@@ -89,7 +89,8 @@ bool RiscvParser::RiscvRegex::readParameter(const std::string &line,
   for (; pos < line.size(); pos++) {
     if (line[pos] == '"' && line[pos - 1] != '\\') {
       quoted = !quoted;
-    } else if (line[pos] == ',' && !quoted) {
+    }
+    if (line[pos] == ',' && !quoted) {
       pos++;
       break;
     } else if (line[pos] == ';' && !quoted) {
