@@ -25,7 +25,7 @@
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/immediate-node.hpp"
-#include "arch/common/register-node.hpp"
+#include "arch/riscv/register-node.hpp"
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/instruction-node.hpp"

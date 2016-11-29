@@ -15,22 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "arch/common/register-node.hpp"
+#include "arch/common/abstract-register-node.hpp"
 #include <sstream>
 
 #include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
 
-RegisterNode::RegisterNode(const std::string& identifier)
+AbstractRegisterNode::AbstractRegisterNode(const std::string& identifier)
 : AbstractSyntaxTreeNode(Type::REGISTER), _identifier(identifier) {
 }
 
-MemoryValue RegisterNode::getValue(MemoryAccess& memoryAccess) const {
+MemoryValue AbstractRegisterNode::getValue(MemoryAccess& memoryAccess) const {
   return memoryAccess.getRegisterValue(_identifier).get();
 }
 
-ValidationResult RegisterNode::validate(MemoryAccess& memoryAccess) const {
+ValidationResult AbstractRegisterNode::validate(MemoryAccess& memoryAccess) const {
   // Registers can't have any children
   if (AbstractSyntaxTreeNode::_children.size() == 0) {
     return ValidationResult::success();
@@ -40,27 +40,6 @@ ValidationResult RegisterNode::validate(MemoryAccess& memoryAccess) const {
                         "The register node must not have any arguments"));
 }
 
-const std::string& RegisterNode::getIdentifier() const {
+const std::string& AbstractRegisterNode::getIdentifier() const {
   return _identifier;
-}
-
-MemoryValue RegisterNode::assemble() const {
-  MemoryValue memValue{5};
-
-  std::size_t index;
-
-  // identifier is parsed into an integer
-  std::istringstream(_identifier) >> index;
-  // index is converted into a 5 bit memory value
-  // registers in riscv take up 5 bits in their assembled form
-  for (int i = 0; i < 5; i++) {
-    if (index % 2 == 0)
-      memValue.put(i, false);
-    else
-      memValue.put(i, true);
-
-    index /= 2;
-  }
-
-  return memValue;
 }

@@ -25,7 +25,7 @@
 #include "arch/common/abstract-syntax-tree-node.hpp"
 
 /** A node that represents a register. */
-class RegisterNode : public AbstractSyntaxTreeNode {
+class AbstractRegisterNode : public AbstractSyntaxTreeNode {
  public:
   using super = AbstractSyntaxTreeNode;
 
@@ -34,7 +34,7 @@ class RegisterNode : public AbstractSyntaxTreeNode {
    *
    * \param value The identifier for the register.
    */
-  RegisterNode(const std::string& identifier);
+  AbstractRegisterNode(const std::string& identifier);
 
   /**
    * \return The content of the register, represented by this node.
@@ -48,12 +48,7 @@ class RegisterNode : public AbstractSyntaxTreeNode {
 
   const std::string& getIdentifier() const override;
 
-  /**
-   * \return Assembled register identifier
-   */
-  MemoryValue assemble() const override;
-
- private:
+ protected:
   /**
    * Identifies a register
    */

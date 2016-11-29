@@ -26,6 +26,6 @@
 #include "core/memory-value.hpp"
 
 using AssemblerFunction =
-    std::function<std::vector<bool>(InstructionKey, std::vector<MemoryValue>)>;
+    std::function<MemoryValue(InstructionKey, std::vector<MemoryValue>)>;
 
 #endif /* ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP */

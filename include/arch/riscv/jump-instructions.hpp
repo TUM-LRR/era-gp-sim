@@ -23,7 +23,7 @@
 #include <memory>
 
 #include "arch/common/instruction-information.hpp"
-#include "arch/common/register-node.hpp"
+#include "arch/riscv/register-node.hpp"
 #include "arch/riscv/abstract-jump-instruction-node.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "common/utility.hpp"

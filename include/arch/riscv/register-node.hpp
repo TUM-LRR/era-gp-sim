@@ -14,30 +14,20 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+#ifndef ERAGPSIM_ARCH_RISCV_REGISTERNODE_HPP
+#define ERAGPSIM_ARCH_RISCV_REGISTERNODE_HPP
 
-#include <memory>
-#include <string>
-
-#include "arch/riscv/register-node.hpp"
-#include "arch/riscv/register-node-factory.hpp"
-#include "common/utility.hpp"
+#include "arch/common/abstract-register-node.hpp"
 
 namespace riscv {
 
-RegisterNodeFactory::RegisterNodeFactory(const Architecture &arch) : AbstractRegisterNodeFactory(arch), _availableRegisters() {
-    for(auto& unit : arch.getUnits()) {
-        for(auto& registerInfo : unit) {
-            _availableRegisters.insert(Utility::toLower(registerInfo.second.getName()));
-        }
-    }
+class RegisterNode : public AbstractRegisterNode {
+
+public:
+    explicit RegisterNode(const std::string &identifier);
+
+    MemoryValue assemble() const override;
+};
 }
 
-RegisterNodeFactory::Node RegisterNodeFactory::createRegisterNode(
-    const std::string &id) const {
-  if (_availableRegisters.count(Utility::toLower(id)) > 0) {
-    return std::make_unique<RegisterNode>(Utility::toLower(id));
-  } else {
-    return nullptr;
-  }
-}
-}
+#endif // ERAGPSIM_ARCH_RISCV_REGISTERNODE_HPP

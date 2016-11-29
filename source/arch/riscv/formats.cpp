@@ -20,237 +20,107 @@
 
 #include "arch/common/instruction-key.hpp"
 #include "arch/riscv/formats.hpp"
+#include "arch/riscv/utility.hpp"
 #include "common/utility.hpp"
 #include "core/memory-value.hpp"
 
+namespace {
+
+void pushBack(uint32_t& base, uint32_t value, std::size_t size) {
+  base <<= size;
+  base |= value;
+}
+
+void pushBack(uint32_t& base, const MemoryValue& value, std::size_t size) {
+  uint32_t numericalValue = riscv::convert<uint32_t>(value);
+  pushBack(base, numericalValue, size);
+}
+
+/**
+ * @brief pushBackInterval
+ * @param base
+ * @param value
+ * @param beginBit incl
+ * @param endBit incl
+ */
+void pushBackInterval(uint32_t& base, const MemoryValue& value, std::size_t beginBit, std::size_t endBit) {
+    uint32_t valueNum = riscv::convert<uint32_t>(value);
+    valueNum <<= 32-endBit-1;
+    valueNum >>= 32-endBit-1+beginBit;
+    pushBack(base, valueNum, endBit-beginBit+1);
+}
+}
+
 namespace riscv {
 
-const std::size_t REGISTER_SIZE = 4;
-
-// push the last n bits from the src vector to the dest vector
-void pushBackFromEnd(std::vector<bool>& dest,
-                     const std::vector<bool>& src,
-                     size_t n) {
-  int i = src.size() - n - 1;
-  while (++i < 0) dest.push_back(false);
-  for (; i < src.size(); i++) dest.push_back(src.at(i));
+MemoryValue RFormat::operator()(const InstructionKey& key,
+                                const std::vector<MemoryValue>& args) {
+  // put values backwards to allow shifting
+  uint32_t assembled = key["funct7"];
+  pushBack(assembled, key["funct7"], 7);
+  pushBack(assembled, args.at(2), 5);
+  pushBack(assembled, args.at(1), 5);
+  pushBack(assembled, key["funct3"], 3);
+  pushBack(assembled, args.at(0), 5);
+  pushBack(assembled, key["opcode"], 7);
+  return riscv::convert(assembled, 32);
 }
 
-// each format has it's own immediate format
-void immediateToIFormat(MemoryValue& vec) {
-  for (int i = 10; i >= 0; i--) vec.put(i, vec.get(20 + i));
-  for (std::size_t i = 31; i > 10; i--) vec.put(i, vec.get(31));
+MemoryValue IFormat::operator()(const InstructionKey& key,
+                                const std::vector<MemoryValue>& args) {
+    uint32_t assembled = 0;
+    pushBack(assembled, args.at(2), 12);
+    pushBack(assembled, args.at(1), 5);
+    pushBack(assembled, key["funct3"], 3);
+    pushBack(assembled, args.at(0), 5);
+    pushBack(assembled, key["opcode"], 7);
+    return riscv::convert(assembled, 32);
 }
 
-void immediateToSFormat(MemoryValue& vec) {
-  vec.put(0, vec.get(7));
-  for (std::size_t i = 4; i >= 1; i--) vec.put(i, vec.get(7 + i));
-  for (std::size_t i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
-  for (std::size_t i = 31; i > 10; i--) vec.put(i, vec.get(31));
+MemoryValue SFormat::operator()(const InstructionKey& key,
+                                const std::vector<MemoryValue>& args) {
+  uint32_t assembled = 0;
+  pushBackInterval(assembled, args.at(2), 5, 11);
+  pushBack(assembled, args.at(1), 5);
+  pushBack(assembled, args.at(0), 5);
+  pushBack(assembled, key["funct3"], 3);
+  pushBackInterval(assembled, args.at(2), 0, 4);
+  pushBack(assembled, key["opcode"], 7);
+  return riscv::convert(assembled, 32);
 }
 
-void immediateToBFormat(MemoryValue& vec) {
-  immediateToSFormat(vec);
-  vec.put(11, vec.get(0));
-  vec.put(0, false);
+MemoryValue SBFormat::operator()(const InstructionKey& key,
+                                 const std::vector<MemoryValue>& args) {
+  uint32_t assembled = 0;
+  pushBackInterval(assembled, args.at(2), 12, 12);
+  pushBackInterval(assembled, args.at(2), 5, 10);
+  pushBack(assembled, args.at(1), 5);
+  pushBack(assembled, args.at(0), 5);
+  pushBack(assembled, key["funct3"], 3);
+  pushBackInterval(assembled, args.at(2), 1, 4);
+  pushBackInterval(assembled, args.at(2), 11, 11);
+  pushBack(assembled, key["opcode"], 7);
+  return riscv::convert(assembled, 32);
 }
 
-void immediateToUFormat(MemoryValue& vec) {
-  for (int i = 12; i >= 0; i--) vec.put(i, false);
+MemoryValue UFormat::operator()(const InstructionKey& key,
+                                const std::vector<MemoryValue>& args) {
+  uint32_t assembled = 0;
+  pushBackInterval(assembled, args.at(1), 12, 31);
+  pushBack(assembled, args.at(0), 5);
+  pushBack(assembled, key["opcode"], 7);
+  return riscv::convert(assembled, 32);
 }
 
-void immediateToJFormat(MemoryValue& vec) {
-  // clang-format off
-      for (std::size_t i = 4; i >= 1; i--) vec.put(i, vec.get(20 + i));
-      vec.put(0, false);
-      for (std::size_t i = 10; i >= 5; i--) vec.put(i, vec.get(20 + i));
-      vec.put(11, vec.get(20));
-      for (std::size_t i = 31; i >= 20; i--) vec.put(i, vec.get(31));
-  // clang-format on
-}
-
-std::vector<bool> RFormat::
-operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
-  std::vector<bool> res;
-
-  // funct7 - 6 bits long
-  std::vector<bool> tmp;
-
-  tmp = Utility::convertToBinary(key["funct7"]);
-  // push the last 7 bits
-  pushBackFromEnd(res, tmp, 7);
-
-  auto argument = args.at(2);
-
-  // rs2
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
-  // rs1
-  argument = args.at(1);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
-  // funct3 - 3 bits long
-  tmp.clear();
-
-  tmp = Utility::convertToBinary(key["funct3"]);
-  pushBackFromEnd(res, tmp, 3);
-
-  // destination
-  argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
-
-  tmp.clear();
-  tmp = Utility::convertToBinary(key["opcode"]);
-  pushBackFromEnd(res, tmp, 7);
-
-  return res;
-}
-
-
-std::vector<bool> IFormat::
-operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
-  std::vector<bool> res;
-  std::vector<bool> tmp;
-
-  auto imm = args.at(2);
-
-  immediateToIFormat(imm);
-
-  // immediate - 12 bits long
-  for (int i = 11; i >= 0; i--) res.push_back(imm.get(i));
-  // rs1
-  auto argument = args.at(1);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
-  // funct3 - 3 bits long
-  tmp.clear();
-
-  tmp = Utility::convertToBinary(key["funct3"]);
-  pushBackFromEnd(res, tmp, 3);
-
-  // destination
-  argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
-
-  tmp.clear();
-  tmp = Utility::convertToBinary(key["opcode"]);
-  pushBackFromEnd(res, tmp, 7);
-
-  return res;
-}
-
-std::vector<bool> SFormat::
-operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
-  std::vector<bool> res;
-  std::vector<bool> tmp;
-
-  auto imm = args.at(2);
-
-  immediateToSFormat(imm);
-
-  // immediate[11:5]
-  for (std::size_t i = 11; i > 4; i--) res.push_back(imm.get(i));
-  // rs2
-  auto argument = args.at(1);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
-  // rs1
-  argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
-  // funct3 - 3 bits long
-
-  tmp = Utility::convertToBinary(key["funct3"]);
-  pushBackFromEnd(res, tmp, 3);
-
-  // imm[4:0]
-  for (int i = 4; i >= 0; i--) res.push_back(imm.get(i));
-
-  tmp.clear();
-  tmp = Utility::convertToBinary(key["opcode"]);
-  pushBackFromEnd(res, tmp, 7);
-
-  return res;
-}
-
-std::vector<bool> SBFormat::
-operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
-  std::vector<bool> res;
-  std::vector<bool> tmp;
-
-  auto imm = args.at(2);
-
-  immediateToBFormat(imm);
-
-  // imm[12]
-  res.push_back(imm.get(12));
-  // immediate[10:5]
-  for (std::size_t i = 10; i > 4; i--) res.push_back(imm.get(i));
-  // rs2
-  auto argument = args.at(1);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
-  // rs1
-  argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
-  // funct3 - 3 bits long
-
-  tmp = Utility::convertToBinary(key["funct3"]);
-  pushBackFromEnd(res, tmp, 3);
-
-  // imm[4:1]
-  for (std::size_t i = 4; i >= 1; i--) res.push_back(imm.get(i));
-  // imm[11]
-  res.push_back(imm.get(11));
-
-  tmp.clear();
-  tmp = Utility::convertToBinary(key["opcode"]);
-  pushBackFromEnd(res, tmp, 7);
-
-  return res;
-}
-
-std::vector<bool> UFormat::
-operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
-  std::vector<bool> res;
-  std::vector<bool> tmp;
-
-  auto imm = args.at(1);
-
-  immediateToUFormat(imm);
-
-  // immediate[31:12]
-  for (std::size_t i = 31; i >= 12; i--) res.push_back(imm.get(i));
-
-  // rd
-  auto argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
-
-  tmp = Utility::convertToBinary(key["opcode"]);
-  pushBackFromEnd(res, tmp, 7);
-
-  return res;
-}
-
-std::vector<bool> UJFormat::
-operator()(const InstructionKey& key, const std::vector<MemoryValue>& args) {
-  std::vector<bool> res;
-  std::vector<bool> tmp;
-
-  auto imm = args.at(1);
-
-  immediateToJFormat(imm);
-
-  // immediate[20]
-  res.push_back(imm.get(21));
-  // imm[10:1]
-  for (std::size_t i = 10; i >= 1; i--) res.push_back(imm.get(i));
-  // imm[11]
-  res.push_back(imm.get(11));
-  // imm[19:12]
-  for (std::size_t i = 19; i >= 12; i--) res.push_back(imm.get(i));
-
-  // rd
-  auto argument = args.at(0);
-  for (int i = REGISTER_SIZE; i >= 0; i--) res.push_back(argument.get(i));
-
-  tmp = Utility::convertToBinary(key["opcode"]);
-  pushBackFromEnd(res, tmp, 7);
-
-  return res;
+MemoryValue UJFormat::operator()(const InstructionKey& key,
+                                 const std::vector<MemoryValue>& args) {
+    uint32_t assembled = 0;
+    pushBackInterval(assembled, args.at(1), 20, 20);
+    pushBackInterval(assembled, args.at(1), 1, 10);
+    pushBackInterval(assembled, args.at(1), 11, 11);
+    pushBackInterval(assembled, args.at(1), 12, 19);
+    pushBack(assembled, args.at(0), 5);
+    pushBack(assembled, key["opcode"], 7);
+    return riscv::convert(assembled, 32);
 }
 }

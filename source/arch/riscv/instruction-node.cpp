@@ -71,14 +71,7 @@ MemoryValue InstructionNode::assemble() const {
     args.push_back(_children.at(i)->assemble());
   }
 
-  std::vector<bool> result = assembler(instructionKey, args);
-
-  MemoryValue assembledMemory(result.size());
-
-  for (int i = 0; i < result.size(); i++)
-    assembledMemory.put(result.size() - i - 1, result[i]);
-
-  return assembledMemory;
+  return assembler(instructionKey, args);
 }
 
 const Translateable& InstructionNode::getInstructionDocumentation() const {
