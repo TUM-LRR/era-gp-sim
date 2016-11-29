@@ -15,29 +15,23 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <memory>
-#include <string>
+#include "gtest/gtest.h"
+#include "arch/riscv/instruction-context-information.hpp"
 
-#include "arch/common/register-node.hpp"
-#include "arch/riscv/register-node-factory.hpp"
-#include "common/utility.hpp"
+#include "tests/arch/riscv/test-utils.hpp"
 
-namespace riscv {
-
-RegisterNodeFactory::RegisterNodeFactory(const Architecture &arch) : AbstractRegisterNodeFactory(arch), _availableRegisters() {
-    for(auto& unit : arch.getUnits()) {
-        for(auto& registerInfo : unit) {
-            _availableRegisters.insert(Utility::toLower(registerInfo.second.getName()));
-        }
+struct ContextInformationTest : RiscvBaseTest {
+    ContextInformationTest() : RiscvBaseTest() {
+        load({"rv32i", "rv32m", "rv64i", "rv64m"});
     }
-}
+};
 
-RegisterNodeFactory::Node RegisterNodeFactory::createRegisterNode(
-    const std::string &id) const {
-  if (_availableRegisters.count(Utility::toLower(id)) > 0) {
-    return std::make_unique<RegisterNode>(Utility::toLower(id));
-  } else {
-    return nullptr;
-  }
-}
+TEST_F(ContextInformationTest, allExist) {
+    Architecture arch = _project->getArchitectureAccess().getArchitecture().get();
+    NodeFactoryCollection factories = getFactories();
+    for(auto& pair : arch.getInstructions()) {
+        const std::string& mnemonic = pair.second.getMnemonic();
+        auto node = factories.createInstructionNode(mnemonic);
+        node->getInstructionDocumentation();//if a InstructionDocumentation exists, no assertion is thrown
+    }
 }

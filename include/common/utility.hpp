@@ -515,6 +515,18 @@ template <typename T>
 constexpr T discreteFloor(T value, T divider) {
   return value / divider;
 }
+
+template<typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
+  struct EnumHash {
+    using argument_type = Enum;
+    using result_type = std::size_t;
+    using underlying_type = std::underlying_type_t<Enum>;
+
+    result_type operator()(const argument_type& argument) const {
+      const auto ordinal = static_cast<underlying_type>(argument);
+      return std::hash<underlying_type>{}(ordinal);
+    }
+  };
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */

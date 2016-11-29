@@ -9,7 +9,7 @@ set(TEST_CORE_SOURCES
   register-set-test.cpp
   memory-test.cpp
   project-test.cpp
-  # queue-test.cpp # Sorry, they did fail sometimes. :(
+  queue-test.cpp
 )
 
 ########################################

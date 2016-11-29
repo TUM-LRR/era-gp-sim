@@ -19,6 +19,7 @@
 #include "parser/intermediate-representator.hpp"
 
 #include "arch/common/architecture.hpp"
+#include "parser/intermediate-macro-instruction.hpp"
 #include "parser/symbol-table.hpp"
 
 FinalRepresentation
@@ -40,6 +41,9 @@ IntermediateRepresentator::transform(const Architecture& architecture,
     if (i->executionTime() == IntermediateExecutionTime::BEFORE_ALLOCATION)
       i->execute(representation, table, generator, state, memoryAccess);
   }
+
+  IntermediateMacroInstruction::replaceWithMacros(
+      _commandList.begin(), _commandList.end(), state);
 
   allocator.clear();
 

@@ -19,6 +19,7 @@
 #define ERAGPSIM_ARCH_RISCV_IMMEDIATE_NODE_FACTORY_HPP
 
 #include <unordered_map>
+#include <unordered_set>
 
 #include "arch/common/abstract-immediate-node-factory.hpp"
 
@@ -54,6 +55,19 @@ class ImmediateNodeFactory : public AbstractImmediateNodeFactory {
    * nullptr if the given MemoryValue is invalid
    */
   virtual Node createImmediateNode(const MemoryValue &value) const override;
+
+  /**
+   * Returns a immediate value for the given label.
+   * When the instruction mnemonic denotes a jump/branch instruction with relative addressing, the relative address is returned.
+   * \param labelValue The absolute address where the label is defined
+   * \param instructionMnemonic The mnemonic of the instruction whose operand is the current label
+   * \param instructionAddress The absolute address of the current instruction
+   */
+  MemoryValue labelToImmediate(const MemoryValue& labelValue, const std::string& instructionMnemonic, const MemoryValue& instructionAddress) const override;
+
+private:
+  using MnemonicSet = std::unordered_set<std::string>;
+  static const MnemonicSet _addressRelativeInstructions;
 };
 }
 #endif /* ERAGPSIM_ARCH_RISCV_IMMEDIATE_NODE_FACTORY_HPP */
