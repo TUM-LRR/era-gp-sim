@@ -42,12 +42,18 @@ struct Options {
   std::size_t gBit = 8;
   std::size_t bBit = 8;
   // TODO::use enums, maybe
-  bool columns_rows = false;// false->row_major, true->columns->major
-  bool horizontallyMirrored = false;
-  bool verticallyMirrored = false;
+  // false->row_major, true->columns->major
+  bool columns_rows = false;
+  // mirrors the image horizontally
+  bool horizontallyMirrored = false;// TODO
+  // mirrors the image vertically
+  bool verticallyMirrored = false;// TODO
+  // packs pixel data as tight as possible
   bool tight = false;
+  // interpret ColorBaseAddress as pointer to the colorTable
   bool colorTablePointerLike = true;
   std::size_t freeBytes = 1;
+  std::size_t feeBits = 0;
 
   ColorMode getColorMode() const;
   std::uint32_t getPixel(std::size_t x, std::size_t y) const;
@@ -99,6 +105,8 @@ struct ColorMode {
 class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_PROPERTY(void paint)
  public:
+// PixelDisplayPaintedItem(QQuickItem *parent = 0) : QQuickPaintedItem(parent) {
+//  _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_RGB32);
   PixelDisplayPaintedItem(QQuickItem *parent = 0) : QQuickPaintedItem(parent) {
     _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_Mono);
     //_image->fill(QColor("#00FFFF").rgb());

@@ -26,7 +26,7 @@ Item {
     Component.onCompleted: {
         updateContent(outputComponent.getOutputItems()[outputItemIndex]["baseAddress"]);
     }
-    PixelDisplay{
+    PixelDisplayPaintedItem{
         id: pixeldisplaypainteditemid
         anchors.fill: parent
     }

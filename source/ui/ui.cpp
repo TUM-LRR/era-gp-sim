@@ -33,9 +33,9 @@ Ui::Ui(int& argc, char** argv)
 
 int Ui::runUi() {
   qRegisterMetaType<std::size_t>("std::size_t");
-  qRegisterMetaType<QImage>("QImage");
+  //qRegisterMetaType<QImage>("QImage");
   qmlRegisterType<PixelDisplayPaintedItem>(
-      "eragpsim.pixeldisplaypainteditem", 1, 0, "PixelDisplay");
+      "eragpsim.pixeldisplaypainteditem", 1, 0, "PixelDisplayPaintedItem");
   _engine.rootContext()->setContextProperty("ui", this);
 
   _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
