@@ -500,8 +500,8 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
 }
 
 // push_back n elements from the end of the src vector
-void pushBackFromEnd(std::vector<bool>& dest,
-                     const std::vector<bool>& src,
+void pushBackFromEnd(std::vector<bool> &dest,
+                     const std::vector<bool> &src,
                      size_t n);
 
 

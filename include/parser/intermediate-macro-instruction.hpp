@@ -19,8 +19,12 @@
 #ifndef ERAGPSIM_PARSER_INTERMEDIATE_MACRO_INSTRUCTION_HPP
 #define ERAGPSIM_PARSER_INTERMEDIATE_MACRO_INSTRUCTION_HPP
 
-#include "parser/intermediate-instruction.hpp"
 #include "parser/intermediate-operation.hpp"
+
+class CompileState;
+class IntermediateInstruction;
+class MacroDirective;
+class MemoryAllocator;
 
 /**
  * Wrapper instruction for an instanced macro.
@@ -49,34 +53,12 @@ class IntermediateMacroInstruction : public IntermediateOperation {
    * Replaces `IntermediateInstruction`s with `IntermediateMacroInstructions` in
    * iterable containers of `IntermediateOperationPointer`s.
    */
-  template <typename It>
-  static void replaceWithMacros(It begin, It end, CompileState& state) {
-    for (It i = begin; i != end; ++i) {
-      // Try casting to IntermediateInstruction, skip instruction if it doesn't
-      // work
-      if (dynamic_cast<IntermediateInstruction*>(i->get()) == nullptr) continue;
-
-      IntermediateInstruction& inst =
-          static_cast<IntermediateInstruction&>(**i);
-
-      auto macro = state.macros.find(
-          inst._name, inst._sources.size() + inst._targets.size());
-      if (!macro.found()) continue;
-
-      if (macro.isCyclic()) {
-        state.addError("Cyclic macro call!");
-        continue;
-      }
-
-      IntermediateOperationPointer newPtr =
-          std::make_unique<IntermediateMacroInstruction>(
-              inst, macro->second, state);
-      *i = std::move(newPtr);
-    }
-  }
+  static void replaceWithMacros(CommandIterator begin,
+                                CommandIterator end,
+                                CompileState& state);
 
  private:
-  std::vector<IntermediateOperationPointer> _operations;
+  CommandList _operations;
   int _firstInstruction = -1;
 };
 
