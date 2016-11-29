@@ -30,6 +30,7 @@
 #include "core/memory.hpp"
 #include "core/register-set.hpp"
 #include "core/servant.hpp"
+#include "core/snapshot.hpp"
 
 class RegisterInformation;
 class UnitInformation;
@@ -52,7 +53,7 @@ class Project : public Servant {
   using MemoryValueToString = std::function<std::string(MemoryValue)>;
   using StringToMemoryValue = std::function<MemoryValue(std::string)>;
 
-  using Json = nlohmann::json;
+  using Json = Snapshot::Json;
 
   /**
    * Creates a new Project
@@ -154,9 +155,9 @@ class Project : public Servant {
   /**
    * Loads a snapshot object and sets memory and registers accordingly.
    *
-   * \param snapshot The snapshot object.
+   * \param snapshotData The json snapshot object.
    */
-  void loadSnapshot(Json snapshot);
+  void loadSnapshot(Json snapshotData);
 
   /**
    * Generates a snapshot of the current state of memory and registers.

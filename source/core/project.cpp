@@ -164,42 +164,28 @@ void Project::resetRegisters() {
   }
 }
 
-void Project::loadSnapshot(Json snapshot) {
-  bool valid = true;
-  if (!(snapshot.count("architecture-name") == 1)) valid = false;
-  if (!(snapshot.count("extensions") == 1)) valid = false;
-  if (!(snapshot.count("memory") == 1)) valid = false;
-  if (!(snapshot.count("registers") == 1)) valid = false;
-  if (snapshot["extensions"].empty()) valid = false;
-  if (!valid) {
+void Project::loadSnapshot(Json snapshotData) {
+  Snapshot snapshot(snapshotData);
+  if (!snapshot.isValid()) {
     _errorCallback("Snapshot format is not valid", std::vector<std::string>());
     return;
   }
+  if (snapshot.getArchitectureFormula() != _architectureFormula) {
+    _errorCallback("This snapshot was created with a different architecture!",
+                   std::vector<std::string>());
+    return;
+  }
   try {
-    std::string architectureName = snapshot["architecture-name"];
-    std::vector<std::string> extensions = snapshot["extensions"];
-    ArchitectureFormula formula(architectureName);
-    for (const std::string &extension : extensions) {
-      formula.addExtension(extension);
-    }
-    if (formula != _architectureFormula) {
-      _errorCallback("This snapshot was created with a different architecture!",
-                     std::vector<std::string>());
-    }
-    _memory.deserializeJSON(snapshot["memory"]);
-    _registerSet.deserializeJSON(snapshot["registers"]);
+    _memory.deserializeJSON(snapshot.getMemoryJson());
+    _registerSet.deserializeJSON(snapshot.getRegisterJson());
   } catch (const DeserializationError &exception) {
     _errorCallback(exception.what(), std::vector<std::string>());
   }
 }
 
 Project::Json Project::generateSnapshot() const {
-  Json snapshot;
-  snapshot["architecture-name"] = _architectureFormula.getArchitectureName();
-  snapshot["extensions"] = _architectureFormula.getUnderlying();
-  snapshot["memory"] = _memory.serializeJSON();
-  snapshot["registers"] = _registerSet.serializeJSON();
-  return snapshot;
+  Snapshot snapshot(_architectureFormula, _memory, _registerSet);
+  return snapshot.getJson();
 }
 
 void Project::_setRegisterToZero(RegisterInformation registerInfo) {
