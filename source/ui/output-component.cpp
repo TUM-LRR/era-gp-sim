@@ -110,7 +110,15 @@ QString OutputComponent::getTextFromMemory(int start, QString currentText, int m
         text = currentText.toStdString();
         MemoryValue m = _memoryAccess.getMemoryValueAt(start).get();
         unsigned int z=conversions::convert<uint32_t>(m);
-        text+= char(z);
+        if(z == 0){
+            text= "";
+        }
+        else if(z == 127){//Delete sign
+            text = "";
+        }
+        else{
+            text+= char(z);
+        }
     }
     return QString::fromStdString(text);
 }

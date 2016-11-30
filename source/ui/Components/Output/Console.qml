@@ -43,9 +43,13 @@ Item {
             onMemoryChanged: {
                 //console.log("onMemoryChanged");
                 var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
+                var _mode = outputComponent.getOutputItem(outputItemIndex)["textMode"];
                 // Check if the memory address that was changed (at least partly) belongs to
                 // the output item's source space.
-                if ((address+length) >= _baseAddress) {
+                if ((address+length) >= _baseAddress && _mode == 0) {
+                    it.updateContent(_baseAddress);
+                }
+                else if(_mode != 0 && (address == _baseAddress|| (address<_baseAddress && address+length >= _baseAddress)) ){
                     it.updateContent(_baseAddress);
                 }
             }
