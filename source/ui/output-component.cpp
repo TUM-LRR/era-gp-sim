@@ -53,7 +53,7 @@ void OutputComponent::setOutputItemProperty(int ouputItemIndex,
                                             QString property,
                                             QVariant newValue) {
   // Write the new value into the model.
-  QMap<QString, QVariant> ouputItemProperties =
+  auto ouputItemProperties =
       _outputItemsInformation[ouputItemIndex].toMap();
   ouputItemProperties[property] = newValue;
   _outputItemsInformation[ouputItemIndex] = ouputItemProperties;
@@ -63,15 +63,14 @@ void OutputComponent::setOutputItemProperty(int ouputItemIndex,
 }
 
 
-void OutputComponent::updateMemory(std::size_t address, std::size_t length) {
+void OutputComponent::updateMemory(size_t address, size_t length) {
   emit memoryChanged(QVariant::fromValue(address), QVariant::fromValue(length));
 }
 
 void OutputComponent::putMemoryValue(int address,
                                      QList<bool> memoryContentBitList) {
   // Round up size of altered content up to bytes.
-  size_t memoryValueSize = memoryContentBitList.size() +
-                           (8 - (memoryContentBitList.size() % 8)) % 8;
+  auto memoryValueSize = Utility::roundToBoundary(memoryContentBitList.size(), 8);
   // Create new MemoryValue.
   MemoryValue memoryContent(memoryValueSize);
   // Insert the bit values of the altered content into the newly create
@@ -88,8 +87,8 @@ QList<bool> OutputComponent::getMemoryContent(int address, int length) const {
   MemoryValue content = _memoryAccess.getMemoryValueAt(address, length).get();
   // Convert memory content to a Bit-QList.
   QList<bool> contentList;
-  for (auto it = content.cbegin(); it != content.cend(); ++it) {
-    contentList.append(*it);
+  for (const auto& byte : content) {
+    contentList.append(byte);
   }
   return contentList;
 }

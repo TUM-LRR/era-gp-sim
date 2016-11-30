@@ -20,7 +20,13 @@
 #ifndef ERAGPSIM_PARSER_MACRO_DIRECTIVE_HPP
 #define ERAGPSIM_PARSER_MACRO_DIRECTIVE_HPP
 
+#include <string>
+#include <vector>
+
+#include "common/optional.hpp"
 #include "parser/intermediate-directive.hpp"
+
+class SymbolTable;
 
 class MacroDirective : public IntermediateDirective {
  public:
@@ -37,14 +43,7 @@ class MacroDirective : public IntermediateDirective {
   MacroDirective(const LineInterval& lines,
                  const std::vector<std::string>& labels,
                  const std::string& name,
-                 const std::vector<std::string>& arguments)
-  : IntermediateDirective(lines, labels, name)
-  , _macroName(arguments.size() > 0 ? arguments[0] : "")
-  , _macroParameters(arguments.size() > 0 ? arguments.begin() + 1
-                                          : arguments.end(),
-                     arguments.end())
-  , _operations() {
-  }
+                 const std::vector<std::string>& arguments);
 
   /**
    * \brief Instantiates a new MacroDirective with the given arguments.
@@ -58,12 +57,7 @@ class MacroDirective : public IntermediateDirective {
                  const std::vector<std::string>& labels,
                  const std::string& name,
                  const std::string& macroName,
-                 const std::vector<std::string>& macroParameters)
-  : IntermediateDirective(lines, labels, name)
-  , _macroName(macroName)
-  , _macroParameters(macroParameters)
-  , _operations() {
-  }
+                 const std::vector<std::string>& macroParameters);
 
   /**
    * \brief Executes the given macro (somehow).
@@ -83,13 +77,9 @@ class MacroDirective : public IntermediateDirective {
    * \brief Specifies the new target for operations after this command.
    * \return Set ourselves as target.
    */
-  virtual TargetSelector newTarget() const {
-    return TargetSelector::THIS;
-  }
+  virtual TargetSelector newTarget() const;
 
-  virtual IntermediateExecutionTime executionTime() const {
-    return IntermediateExecutionTime::BEFORE_ALLOCATION;
-  }
+  virtual IntermediateExecutionTime executionTime() const;
 
   /**
    * \brief Inserts an operation into the internal command list.
@@ -101,32 +91,24 @@ class MacroDirective : public IntermediateDirective {
    * \brief Returns the macro name.
    * \return The macro name.
    */
-  const std::string& macroName() const {
-    return _macroName;
-  }
+  const std::string& macroName() const;
 
   /**
    * Returns number of operations.
    */
-  size_t getOperationCount() const {
-    return _operations.size();
-  }
+  size_t getOperationCount() const;
 
   /**
    * Returns a pair with the minimum and maximum amount of parameters for this
    * macro.
    */
-  std::pair<size_t, size_t> getParameterCount() const {
-    return _macroParameters.getParameterCount();
-  }
+  std::pair<size_t, size_t> getParameterCount() const;
 
   /**
    * Returns if an instance of the macro is currently compiling. Used to detect
    * cyclic macro calls.
    */
-  bool isCompiling() {
-    return _isCompiling;
-  }
+  bool isCompiling();
 
   /**
    * Returns a copy of the instruction with index `index` after inserting
@@ -135,13 +117,9 @@ class MacroDirective : public IntermediateDirective {
   IntermediateOperationPointer
   getOperation(size_t index, const std::vector<std::string>& arguments) const;
 
-  int firstInstructionIndex() const {
-    return _firstInstruction;
-  }
+  int firstInstructionIndex() const;
 
-  const std::string& getOperationName(size_t index) const {
-    return _operations[index]->name();
-  }
+  const std::string& getOperationName(size_t index) const;
 
   /**
    * Calls a function on an operation in this macro after given arguments have

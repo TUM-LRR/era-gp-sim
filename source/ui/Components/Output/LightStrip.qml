@@ -44,14 +44,14 @@ Item {
         onOutputItemSettingsChanged: {
             console.log("onOutputItemSettingsChanged");
             updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
-            settingsWindow.updateSettings();
+            lightstripSettingsWindow.updateSettings();
         }
     }
 
     // Called from outside by the output tab view to signal that the settings button for the current
     // output item was pressed.
     onSettingsButtonPressed: {
-        settingsWindow.show();
+        lightstripSettingsWindow.show();
     }
 
     // Updates the content of the output model depending on the value in memory.
@@ -179,7 +179,7 @@ Item {
     }
 
     LightstripSettingsWindow {
-        id: settingsWindow
+        id: lightstripSettingsWindow
     }
 
 }

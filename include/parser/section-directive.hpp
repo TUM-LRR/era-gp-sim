@@ -17,10 +17,20 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP_
-#define ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP_
+#ifndef ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP
+#define ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP
+
+#include <string>
+#include <vector>
 
 #include "parser/intermediate-directive.hpp"
+
+class MemoryAllocator;
+class FinalRepresentation;
+class SymbolTable;
+class SyntaxTreeGenerator;
+class CompileState;
+class MemoryAccess;
 
 /**
  * \brief Represents a section directive in code.
@@ -39,11 +49,7 @@ class SectionDirective : public IntermediateDirective {
   SectionDirective(const LineInterval& lines,
                    const std::vector<std::string>& labels,
                    const std::string& name,
-                   const std::vector<std::string>& arguments)
-  : IntermediateDirective(lines, labels, name) {
-    _hasName = arguments.size() > 0;
-    if (_hasName) _section = arguments[0];
-  }
+                   const std::vector<std::string>& arguments);
 
   /**
    * \brief Executes the section directive and sets the compiler section to the

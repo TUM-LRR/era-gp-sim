@@ -18,6 +18,16 @@
 */
 
 #include "parser/section-directive.hpp"
+#include "parser/compile-state.hpp"
+
+SectionDirective::SectionDirective(const LineInterval& lines,
+                                   const std::vector<std::string>& labels,
+                                   const std::string& name,
+                                   const std::vector<std::string>& arguments)
+: IntermediateDirective(lines, labels, name) {
+  _hasName = arguments.size() > 0;
+  if (_hasName) _section = arguments[0];
+}
 
 void SectionDirective::execute(FinalRepresentation& finalRepresentator,
                                const SymbolTable& table,
