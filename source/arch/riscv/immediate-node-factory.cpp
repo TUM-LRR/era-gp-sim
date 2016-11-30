@@ -20,11 +20,23 @@
 
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/common/immediate-node.hpp"
+#include "arch/riscv/utility.hpp"
 
 namespace riscv {
 
 ImmediateNodeFactory::Node
 ImmediateNodeFactory::createImmediateNode(const MemoryValue &value) const {
   return std::make_unique<ImmediateNode>(value);
+}
+
+const ImmediateNodeFactory::MnemonicSet ImmediateNodeFactory::_addressRelativeInstructions = {"jal", "beq", "bne", "blt", "bltu", "bge", "bgeu"};
+
+MemoryValue ImmediateNodeFactory::labelToImmediate(const MemoryValue &labelValue, const std::string &instructionMnemonic, const MemoryValue &instructionAddress) const {
+    if(_addressRelativeInstructions.count(instructionMnemonic) > 0) {
+        auto abs = riscv::convert<riscv::unsigned64_t>(labelValue);
+        auto pc = riscv::convert<riscv::unsigned64_t>(instructionAddress);
+        return riscv::convert((abs-pc)/2);
+    }
+    return labelValue;
 }
 }

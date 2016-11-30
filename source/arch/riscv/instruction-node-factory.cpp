@@ -18,8 +18,6 @@
 #include <string>
 
 #include "arch/common/architecture.hpp"
-#include "arch/common/crash-instruction-node.hpp"
-#include "arch/common/sleep-instruction-node.hpp"
 #include "arch/riscv/architecture-only-instructions.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/instruction-node.hpp"
@@ -28,6 +26,7 @@
 #include "arch/riscv/lui-auipc-instructions.hpp"
 #include "arch/riscv/mul-div-instructions.hpp"
 #include "arch/riscv/word-instruction-wrapper.hpp"
+#include "arch/riscv/simulator-instructions.hpp"
 
 #include "common/utility.hpp"
 
@@ -214,22 +213,11 @@ struct ProgramCounterIncrement {
     return riscv::convert<WordSize>(current);
   }
 };
-
-/**
- * Struct for a dynamic assembly of the SimulatorSleepInstructionNode depending
- * on the operand
- */
-struct SleepInstructionAssembler {
-  MemoryValue operator()(const MemoryValue& sleepTime) const {
-    constexpr uint32_t OPCODE = 0x72657374;
-    return conversions::convert(OPCODE, 32);
-  }
-};
 }
 
 InstructionNodeFactory::InstructionNodeFactory(
     const InstructionSet& instructions, const Architecture& architecture)
-    : _instructionSet(instructions) {
+    : _instructionSet(instructions), _documentation(std::make_shared<InstructionContextInformation>(architecture)) {
   auto wordSize = architecture.getWordSize();
   assert(wordSize == 32 || wordSize == 64);
 
@@ -265,19 +253,15 @@ InstructionNodeFactory::InstructionNodeFactory(
 
 void InstructionNodeFactory::_setupSimulatorInstructions(
     const Architecture& architecture) {
-  using PCIncrementer = SimulatorSleepInstructionNode::PCIncrementer;
 
   if (architecture.getWordSize() == 32) {
-    _factories.add<SimulatorSleepInstructionNode>(
-        "simusleep", ProgramCounterIncrement<riscv::unsigned32_t>{},
-        SleepInstructionAssembler{});
+    _factories.add<riscv::SleepInstruction>(
+        "simusleep", ProgramCounterIncrement<riscv::unsigned32_t>{});
   } else if (architecture.getWordSize() == 64) {
-    _factories.add<SimulatorSleepInstructionNode>(
-        "simusleep", ProgramCounterIncrement<riscv::unsigned64_t>{},
-        SleepInstructionAssembler{});
+    _factories.add<riscv::SleepInstruction>(
+        "simusleep", ProgramCounterIncrement<riscv::unsigned64_t>{});
   }
-  constexpr riscv::unsigned32_t CRASH_OPCODE = 0x626f6f6d;
-  _factories.add<SimulatorCrashInstructionNode>("simucrash", riscv::convert<riscv::unsigned32_t>(CRASH_OPCODE));
+  _factories.add<riscv::CrashInstruction>("simucrash");
 }
 
 void InstructionNodeFactory::_setupOtherInstructions() {}
@@ -321,6 +305,6 @@ InstructionNodeFactory::Node InstructionNodeFactory::createInstructionNode(
   }
   auto information = _instructionSet.getInstruction(lower);
 
-  return _factories.create(lower, information);
+  return _factories.create(lower, information, _documentation);
 }
 }

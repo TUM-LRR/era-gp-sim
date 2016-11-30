@@ -74,6 +74,7 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
 
   // Initialize compile state
   _compile_state.errorList.clear();
+  _compile_state.macros.clear();
   _compile_state.position = CodePosition(0, 0);
   _compile_state.mode = parserMode;
 
@@ -154,7 +155,7 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   for (auto directive : RiscVDirectiveFactory::mapping) {
     // Matches all directive mnemonics starting with a '.' which don't end with
     // a ':'
-    info.addSyntaxRegex("\\b\\." + directive.first + "\\b(?!:)",
+    info.addSyntaxRegex("\\." + directive.first + "\\b(?!:)",
                         SyntaxInformation::Token::Instruction);
   }
 

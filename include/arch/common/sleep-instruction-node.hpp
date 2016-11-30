@@ -32,14 +32,11 @@
  * By this, the factory-implementor can choose the mnemonic for this instruction
  * and can customize it to the special needs of the implemented architecture.
  * Such special needs include to ensure that getValue() returnes the adress to
- * the next instruction (by specifying PCIncrementer) and implement a
- * architecture specific assembly of this
- * instruction (using Assembler).
+ * the next instruction (by specifying PCIncrementer)
  */
 class SimulatorSleepInstructionNode : public AbstractInstructionNode {
  public:
   using PCIncrementer = std::function<MemoryValue(MemoryAccess&)>;
-  using Assembler = std::function<MemoryValue(const MemoryValue&)>;
 
   /**
  * Creates a instruction that holds the execution for a certain time
@@ -50,8 +47,7 @@ class SimulatorSleepInstructionNode : public AbstractInstructionNode {
  * instruction \see Assembler
  */
   SimulatorSleepInstructionNode(const InstructionInformation& information,
-                                const PCIncrementer& pcIncrementFunction,
-                                const Assembler& assembleFunction);
+                                const PCIncrementer& pcIncrementFunction);
 
   /**
    * Returnes a success only if this instruction has exactly one child either of
@@ -65,8 +61,6 @@ class SimulatorSleepInstructionNode : public AbstractInstructionNode {
    * \return The same as validate()
    */
   ValidationResult validateRuntime(MemoryAccess& memoryAccess) const override;
-
-  MemoryValue assemble() const override;
 
   /**
    * Retrieves the numeric value of the operand and holds the execution of the
@@ -85,17 +79,6 @@ class SimulatorSleepInstructionNode : public AbstractInstructionNode {
    * documentation)
    */
   const PCIncrementer _pcIncFunction;
-  /**
- *Function to ensure matching architecture specific behaviour without the need
- *to extend.
- * This function should return a MemoryValue containing the assembly of this
- *instruction.
- * Note that a operand-specific assembly is possible as the parameter of this
- *function is
- * the assembly of the only operand and can therefore be used to assemble as
- *well.
- */
-  const Assembler _assembleFunction;
 };
 
 #endif  // ERAGPSIM_ARCH_COMMON_SLEEP_INSTRUCTION_NODE_HPP

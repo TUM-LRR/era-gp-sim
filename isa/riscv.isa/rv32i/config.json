@@ -1,179 +1,5 @@
 {
-    "units": [
-        {
-            "name": "cpu",
-            "registers": [
-                {
-                    "name": "x0",
-                    "alias": "zero",
-                    "constant": "0x0",
-                    "id": 0,
-                    "size": 32
-                },
-                {
-                    "name": "x1",
-                    "id": 1,
-                    "size": 32
-                },
-                {
-                    "name": "x2",
-                    "id": 2,
-                    "size": 32
-                },
-                {
-                    "name": "x3",
-                    "id": 3,
-                    "size": 32
-                },
-                {
-                    "name": "x4",
-                    "id": 4,
-                    "size": 32
-                },
-                {
-                    "name": "x5",
-                    "id": 5,
-                    "size": 32
-                },
-                {
-                    "name": "x6",
-                    "id": 6,
-                    "size": 32
-                },
-                {
-                    "name": "x7",
-                    "id": 7,
-                    "size": 32
-                },
-                {
-                    "name": "x8",
-                    "id": 8,
-                    "size": 32
-                },
-                {
-                    "name": "x9",
-                    "id": 9,
-                    "size": 32
-                },
-                {
-                    "name": "x10",
-                    "id": 10,
-                    "size": 32
-                },
-                {
-                    "name": "x11",
-                    "id": 11,
-                    "size": 32
-                },
-                {
-                    "name": "x12",
-                    "id": 12,
-                    "size": 32
-                },
-                {
-                    "name": "x13",
-                    "id": 13,
-                    "size": 32
-                },
-                {
-                    "name": "x14",
-                    "id": 14,
-                    "size": 32
-                },
-                {
-                    "name": "x15",
-                    "id": 15,
-                    "size": 32
-                },
-                {
-                    "name": "x16",
-                    "id": 16,
-                    "size": 32
-                },
-                {
-                    "name": "x17",
-                    "id": 17,
-                    "size": 32
-                },
-                {
-                    "name": "x18",
-                    "id": 18,
-                    "size": 32
-                },
-                {
-                    "name": "x19",
-                    "id": 19,
-                    "size": 32
-                },
-                {
-                    "name": "x20",
-                    "id": 20,
-                    "size": 32
-                },
-                {
-                    "name": "x21",
-                    "id": 21,
-                    "size": 32
-                },
-                {
-                    "name": "x22",
-                    "id": 22,
-                    "size": 32
-                },
-                {
-                    "name": "x23",
-                    "id": 23,
-                    "size": 32
-                },
-                {
-                    "name": "x24",
-                    "id": 24,
-                    "size": 32
-                },
-                {
-                    "name": "x25",
-                    "id": 25,
-                    "size": 32
-                },
-                {
-                    "name": "x26",
-                    "id": 26,
-                    "size": 32
-                },
-                {
-                    "name": "x27",
-                    "id": 27,
-                    "size": 32
-                },
-                {
-                    "name": "x28",
-                    "id": 28,
-                    "size": 32
-                },
-                {
-                    "name": "x29",
-                    "id": 29,
-                    "size": 32
-                },
-                {
-                    "name": "x30",
-                    "id": 30,
-                    "size": 32
-                },
-                {
-                    "name": "x31",
-                    "id": 31,
-                    "size": 32
-                },
-                {
-                    "id": 32,
-                    "name": "pc",
-                    "type": "program-counter",
-                    "size": 32
-                }
-            ]
-        }
-    ],
+    "signed-representation": "twos-complement",
     "endianness": "little",
     "builtin-macros": [
         ".macro la, rd, symbol\nauipc \\rd, ((\\symbol >> 12) & 0xfffff)\naddi \\rd, \\rd, (\\symbol & 0xfff)\n.endm\n",
@@ -203,504 +29,679 @@
         ".macro call, offset\nauipc x6, ((\\offset >> 12) & 0xfffff)\njalr x1, x6, (\\offset & 0xfff)\n.endm\n",
         ".macro tail, offset\nauipc x6, ((\\offset >> 12) & 0xfffff)\njalr x0, x6, (\\offset & 0xfff)\n.endm\n"
     ],
+    "word-size": 32,
+    "units": [
+        {
+            "name": "cpu",
+            "registers": [
+                {
+                    "size": 32,
+                    "name": "x0",
+                    "alias": "zero",
+                    "constant": "0x0",
+                    "id": 0
+                },
+                {
+                    "size": 32,
+                    "name": "x1",
+                    "id": 1
+                },
+                {
+                    "size": 32,
+                    "name": "x2",
+                    "id": 2
+                },
+                {
+                    "size": 32,
+                    "name": "x3",
+                    "id": 3
+                },
+                {
+                    "size": 32,
+                    "name": "x4",
+                    "id": 4
+                },
+                {
+                    "size": 32,
+                    "name": "x5",
+                    "id": 5
+                },
+                {
+                    "size": 32,
+                    "name": "x6",
+                    "id": 6
+                },
+                {
+                    "size": 32,
+                    "name": "x7",
+                    "id": 7
+                },
+                {
+                    "size": 32,
+                    "name": "x8",
+                    "id": 8
+                },
+                {
+                    "size": 32,
+                    "name": "x9",
+                    "id": 9
+                },
+                {
+                    "size": 32,
+                    "name": "x10",
+                    "id": 10
+                },
+                {
+                    "size": 32,
+                    "name": "x11",
+                    "id": 11
+                },
+                {
+                    "size": 32,
+                    "name": "x12",
+                    "id": 12
+                },
+                {
+                    "size": 32,
+                    "name": "x13",
+                    "id": 13
+                },
+                {
+                    "size": 32,
+                    "name": "x14",
+                    "id": 14
+                },
+                {
+                    "size": 32,
+                    "name": "x15",
+                    "id": 15
+                },
+                {
+                    "size": 32,
+                    "name": "x16",
+                    "id": 16
+                },
+                {
+                    "size": 32,
+                    "name": "x17",
+                    "id": 17
+                },
+                {
+                    "size": 32,
+                    "name": "x18",
+                    "id": 18
+                },
+                {
+                    "size": 32,
+                    "name": "x19",
+                    "id": 19
+                },
+                {
+                    "size": 32,
+                    "name": "x20",
+                    "id": 20
+                },
+                {
+                    "size": 32,
+                    "name": "x21",
+                    "id": 21
+                },
+                {
+                    "size": 32,
+                    "name": "x22",
+                    "id": 22
+                },
+                {
+                    "size": 32,
+                    "name": "x23",
+                    "id": 23
+                },
+                {
+                    "size": 32,
+                    "name": "x24",
+                    "id": 24
+                },
+                {
+                    "size": 32,
+                    "name": "x25",
+                    "id": 25
+                },
+                {
+                    "size": 32,
+                    "name": "x26",
+                    "id": 26
+                },
+                {
+                    "size": 32,
+                    "name": "x27",
+                    "id": 27
+                },
+                {
+                    "size": 32,
+                    "name": "x28",
+                    "id": 28
+                },
+                {
+                    "size": 32,
+                    "name": "x29",
+                    "id": 29
+                },
+                {
+                    "size": 32,
+                    "name": "x30",
+                    "id": 30
+                },
+                {
+                    "size": 32,
+                    "name": "x31",
+                    "id": 31
+                },
+                {
+                    "size": 32,
+                    "name": "pc",
+                    "id": 32,
+                    "type": "program-counter"
+                }
+            ]
+        }
+    ],
+    "alignment-behavior": "relaxed",
+    "byte-size": 8,
+    "name": "rv32i",
     "instructions": [
         {
+            "mnemonic": "simusleep",
             "length": 32,
-            "format": "custom",
             "key": {
                 "opcode": -1
             },
+            "format": "custom",
             "operand length": [
                 32
-            ],
-            "mnemonic": "simusleep"
+            ]
         },
         {
+            "mnemonic": "simucrash",
             "length": 32,
-            "format": "custom",
             "key": {
                 "opcode": -1
             },
-            "mnemonic": "simucrash"
+            "format": "custom"
         },
         {
+            "mnemonic": "lui",
             "length": 32,
-            "format": "U",
             "key": {
                 "opcode": 55
             },
+            "format": "U",
             "operand length": [
                 0,
                 20
-            ],
-            "mnemonic": "lui"
+            ]
         },
         {
+            "mnemonic": "auipc",
             "length": 32,
-            "format": "U",
             "key": {
                 "opcode": 23
             },
+            "format": "U",
             "operand length": [
                 0,
                 20
-            ],
-            "mnemonic": "auipc"
+            ]
         },
         {
+            "mnemonic": "jal",
             "length": 32,
-            "format": "UJ",
             "key": {
                 "opcode": 111
             },
+            "format": "UJ",
             "operand length": [
                 0,
                 20
-            ],
-            "mnemonic": "jal"
+            ]
         },
         {
+            "mnemonic": "jalr",
             "length": 32,
+            "key": {
+                "opcode": 103,
+                "funct3": 0
+            },
             "format": "I",
-            "key": {
-                "opcode": 103
-            },
             "operand length": [
                 0,
                 0,
                 12
-            ],
-            "mnemonic": "jalr"
+            ]
         },
         {
+            "mnemonic": "beq",
             "length": 32,
-            "format": "SB",
             "key": {
-                "funct3": 0,
-                "opcode": 99
+                "opcode": 99,
+                "funct3": 0
             },
+            "format": "SB",
             "operand length": [
                 0,
                 0,
                 12
-            ],
-            "mnemonic": "beq"
+            ]
         },
         {
+            "mnemonic": "bne",
             "length": 32,
+            "key": {
+                "opcode": 99,
+                "funct3": 1
+            },
             "format": "SB",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "blt",
+            "length": 32,
+            "key": {
+                "opcode": 99,
+                "funct3": 4
+            },
+            "format": "SB",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "bge",
+            "length": 32,
+            "key": {
+                "opcode": 99,
+                "funct3": 5
+            },
+            "format": "SB",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "bltu",
+            "length": 32,
+            "key": {
+                "opcode": 99,
+                "funct3": 6
+            },
+            "format": "SB",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "bgeu",
+            "length": 32,
+            "key": {
+                "opcode": 99,
+                "funct3": 7
+            },
+            "format": "SB",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "lb",
+            "length": 32,
+            "key": {
+                "opcode": 3,
+                "funct3": 0
+            },
+            "format": "I",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "lh",
+            "length": 32,
+            "key": {
+                "opcode": 3,
+                "funct3": 1
+            },
+            "format": "I",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "lw",
+            "length": 32,
+            "key": {
+                "opcode": 3,
+                "funct3": 2
+            },
+            "format": "I",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "lbu",
+            "length": 32,
+            "key": {
+                "opcode": 3,
+                "funct3": 4
+            },
+            "format": "I",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "lhu",
+            "length": 32,
+            "key": {
+                "opcode": 3,
+                "funct3": 5
+            },
+            "format": "I",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "sb",
+            "length": 32,
+            "key": {
+                "opcode": 35,
+                "funct3": 0
+            },
+            "format": "S",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "sh",
+            "length": 32,
+            "key": {
+                "opcode": 35,
+                "funct3": 1
+            },
+            "format": "S",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "sw",
+            "length": 32,
+            "key": {
+                "opcode": 35,
+                "funct3": 2
+            },
+            "format": "S",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "addi",
+            "length": 32,
+            "key": {
+                "opcode": 19,
+                "funct3": 0
+            },
+            "format": "I",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "slti",
+            "length": 32,
+            "key": {
+                "opcode": 19,
+                "funct3": 2
+            },
+            "format": "I",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "sltiu",
+            "length": 32,
+            "key": {
+                "opcode": 19,
+                "funct3": 3
+            },
+            "format": "I",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "xori",
+            "length": 32,
+            "key": {
+                "opcode": 19,
+                "funct3": 4
+            },
+            "format": "I",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "ori",
+            "length": 32,
+            "key": {
+                "opcode": 19,
+                "funct3": 6
+            },
+            "format": "I",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "andi",
+            "length": 32,
+            "key": {
+                "opcode": 19,
+                "funct3": 7
+            },
+            "format": "I",
+            "operand length": [
+                0,
+                0,
+                12
+            ]
+        },
+        {
+            "mnemonic": "slli",
+            "length": 32,
             "key": {
                 "funct3": 1,
-                "opcode": 99
+                "opcode": 19,
+                "funct7": 0
             },
+            "format": "R",
             "operand length": [
                 0,
                 0,
                 12
-            ],
-            "mnemonic": "bne"
+            ]
         },
         {
+            "mnemonic": "srli",
             "length": 32,
-            "format": "SB",
-            "key": {
-                "funct3": 4,
-                "opcode": 99
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "blt"
-        },
-        {
-            "length": 32,
-            "format": "SB",
             "key": {
                 "funct3": 5,
-                "opcode": 99
+                "opcode": 19,
+                "funct7": 0
             },
+            "format": "R",
             "operand length": [
                 0,
                 0,
                 12
-            ],
-            "mnemonic": "bge"
+            ]
         },
         {
+            "mnemonic": "srai",
             "length": 32,
-            "format": "SB",
-            "key": {
-                "funct3": 6,
-                "opcode": 99
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "bltu"
-        },
-        {
-            "length": 32,
-            "format": "SB",
-            "key": {
-                "funct3": 7,
-                "opcode": 99
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "bgeu"
-        },
-        {
-            "length": 32,
-            "format": "I",
-            "key": {
-                "funct3": 0,
-                "opcode": 3
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "lb"
-        },
-        {
-            "length": 32,
-            "format": "I",
-            "key": {
-                "funct3": 1,
-                "opcode": 3
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "lh"
-        },
-        {
-            "length": 32,
-            "format": "I",
-            "key": {
-                "funct3": 2,
-                "opcode": 3
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "lw"
-        },
-        {
-            "length": 32,
-            "format": "I",
-            "key": {
-                "funct3": 4,
-                "opcode": 3
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "lbu"
-        },
-        {
-            "length": 32,
-            "format": "I",
             "key": {
                 "funct3": 5,
-                "opcode": 3
+                "opcode": 19,
+                "funct7": 32
             },
+            "format": "R",
             "operand length": [
                 0,
                 0,
                 12
-            ],
-            "mnemonic": "lhu"
+            ]
         },
         {
+            "mnemonic": "add",
             "length": 32,
-            "format": "S",
             "key": {
                 "funct3": 0,
-                "opcode": 35
+                "opcode": 51,
+                "funct7": 0
             },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "sb"
+            "format": "R"
         },
         {
+            "mnemonic": "sub",
             "length": 32,
-            "format": "S",
+            "key": {
+                "funct3": 0,
+                "opcode": 51,
+                "funct7": 32
+            },
+            "format": "R"
+        },
+        {
+            "mnemonic": "sll",
+            "length": 32,
             "key": {
                 "funct3": 1,
-                "opcode": 35
+                "opcode": 51,
+                "funct7": 0
             },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "sh"
+            "format": "R"
         },
         {
+            "mnemonic": "slt",
             "length": 32,
-            "format": "S",
             "key": {
                 "funct3": 2,
-                "opcode": 35
+                "opcode": 51,
+                "funct7": 0
             },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "sw"
+            "format": "R"
         },
         {
+            "mnemonic": "sltu",
             "length": 32,
-            "format": "I",
-            "key": {
-                "funct3": 0,
-                "opcode": 19
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "addi"
-        },
-        {
-            "length": 32,
-            "format": "I",
-            "key": {
-                "funct3": 2,
-                "opcode": 19
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "slti"
-        },
-        {
-            "length": 32,
-            "format": "I",
             "key": {
                 "funct3": 3,
-                "opcode": 19
+                "opcode": 51,
+                "funct7": 0
             },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "sltiu"
+            "format": "R"
         },
         {
+            "mnemonic": "xor",
             "length": 32,
-            "format": "I",
             "key": {
                 "funct3": 4,
-                "opcode": 19
+                "opcode": 51,
+                "funct7": 0
             },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "xori"
+            "format": "R"
         },
         {
+            "mnemonic": "srl",
             "length": 32,
-            "format": "I",
+            "key": {
+                "funct3": 5,
+                "opcode": 51,
+                "funct7": 0
+            },
+            "format": "R"
+        },
+        {
+            "mnemonic": "sra",
+            "length": 32,
+            "key": {
+                "funct3": 5,
+                "opcode": 51,
+                "funct7": 32
+            },
+            "format": "R"
+        },
+        {
+            "mnemonic": "or",
+            "length": 32,
             "key": {
                 "funct3": 6,
-                "opcode": 19
+                "opcode": 51,
+                "funct7": 0
             },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "ori"
+            "format": "R"
         },
         {
+            "mnemonic": "and",
             "length": 32,
-            "format": "I",
-            "key": {
-                "funct3": 7,
-                "opcode": 19
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "andi"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct3": 1,
-                "funct7": 0,
-                "opcode": 19
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "slli"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct3": 5,
-                "funct7": 0,
-                "opcode": 19
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "srli"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct3": 5,
-                "funct7": 32,
-                "opcode": 19
-            },
-            "operand length": [
-                0,
-                0,
-                12
-            ],
-            "mnemonic": "srai"
-        },
-        {
-            "length": 32,
-            "format": "R",
             "key": {
                 "funct3": 0,
-                "funct7": 0,
-                "opcode": 51
+                "opcode": 51,
+                "funct7": 7
             },
-            "mnemonic": "add"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct3": 0,
-                "funct7": 32,
-                "opcode": 51
-            },
-            "mnemonic": "sub"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct3": 1,
-                "funct7": 0,
-                "opcode": 51
-            },
-            "mnemonic": "sll"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct3": 2,
-                "funct7": 0,
-                "opcode": 51
-            },
-            "mnemonic": "slt"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct3": 3,
-                "funct7": 0,
-                "opcode": 51
-            },
-            "mnemonic": "sltu"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct3": 4,
-                "funct7": 0,
-                "opcode": 51
-            },
-            "mnemonic": "xor"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct3": 5,
-                "funct7": 0,
-                "opcode": 51
-            },
-            "mnemonic": "srl"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct3": 5,
-                "funct7": 32,
-                "opcode": 51
-            },
-            "mnemonic": "sra"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct3": 6,
-                "funct7": 0,
-                "opcode": 51
-            },
-            "mnemonic": "or"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct3": 0,
-                "funct7": 7,
-                "opcode": 51
-            },
-            "mnemonic": "and"
+            "format": "R"
         }
-    ],
-    "byte-size": 8,
-    "alignment-behavior": "relaxed",
-    "signed-representation": "twos-complement",
-    "name": "rv32i",
-    "word-size": 32
+    ]
 }

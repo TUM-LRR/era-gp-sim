@@ -16,6 +16,7 @@ set(TEST_ARCH_RISCV_SOURCES
   assemble-test.cpp
   simulator-instructions-test.cpp
   pseudo-instruction-test.cpp
+  context-information-test.cpp
 )
 
 ########################################

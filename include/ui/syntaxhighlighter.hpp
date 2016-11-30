@@ -25,20 +25,31 @@
 
 #include "ui/keyword-rule.hpp"
 
-
+/**
+ * An implementation of a syntax highlighter for qml.
+ */
 class SyntaxHighlighter : QSyntaxHighlighter {
   Q_OBJECT
  public:
-  // creates a new SyntaxHighlighter with a list of KeywordRule objects and a
-  // pointer to the QTextDocument
-  // which should be highlighted
+  /** Creates a new SyntaxHighlighter.
+   *
+   * \param ruleList List of keywords for the syntax highlighter.
+   * \param document A pointer to the QTextDocument for this highlighter.
+   */
   SyntaxHighlighter(std::vector<KeywordRule> &&ruleList,
                     QTextDocument *document);
 
  protected:
+  /**
+   * Overrides method of QSyntaxHighlighter.
+   * This method highlights a block of text.
+   *
+   * \param text The text which is highlighted by this method.
+   */
   void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
 
  private:
+  /** A list of all keywords to highlight. */
   std::vector<KeywordRule> _keywords;
 };
 
