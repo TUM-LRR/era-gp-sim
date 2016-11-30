@@ -71,7 +71,7 @@ Rectangle {
 
         Tab {
             title: "Buttons/Text Console Icon"
-            RedRectangle {
+            Console{
                 outputItemIndex: 2
             }
         }

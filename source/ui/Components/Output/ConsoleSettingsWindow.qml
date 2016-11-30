@@ -21,18 +21,20 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.0
+import QtQuick.Layouts 1.3
 
 // Window for lightstrip settings.
 Window {
     id: settingsWindowC
     width: 400
     height: 200
+    property int outputItemIndex: 2
 
     title: "Console Settings"
 
     // Refreshes the window's control contentItem.
     function updateSettings() {
-        numberOfStripsTextField.text = outputComponent.getOutputItem(outputItemIndex)["numberOfStrips"];
+        baseAddressTextField.text = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
         var t = outputComponent.getOutputItem(outputItemIndex)["textMode"];
         if(t==0){
             ab.checked = true;
@@ -98,7 +100,7 @@ Window {
             }
 
             // Text field for settings the number of light-strips.
-            Rectangle {
+            RowLayout {
                 id: mode
                 ExclusiveGroup { id: modeGroup }
 

@@ -106,6 +106,15 @@ class OutputComponent : public QObject {
                                          QString property,
                                          QVariant newValue);
 
+  /**
+    \brief gets the Text from the Memory until a Nullbyte
+    or end of Memory is reached
+    \param start base Address to get from the memory
+    \param currentText The text, which is actuall at the textarea
+    \param mode the textMode
+    */
+  Q_INVOKABLE QString getTextFromMemory(int start, QString currentText, int mode);
+
  private:
   /// Interface for access memory content.
   MemoryAccess _memoryAccess;

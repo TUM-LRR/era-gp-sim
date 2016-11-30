@@ -3,7 +3,8 @@ import QtQuick 2.3
 import QtQuick.Controls 1.4
 
 Item {
-    property int mode: 1
+    property int outputItemIndex: 2
+    id: it
 
 
     Rectangle{
@@ -22,49 +23,53 @@ Item {
 
             readOnly: true
             backgroundVisible: false
-            MouseArea{
+            MouseArea{//Clears the Screen in pipelike mode
                 id: clearArea
                anchors.fill:parent
                visible: true
                acceptedButtons: Qt.RightButton
                onDoubleClicked: {
-                   consoleModel.clear();
+                   if(outputComponent.getOutputItem(outputItemIndex)["textMode"]!==0){
+                       textarea.text = "";
+                   }
                }
             }
 
         }
 
-        Connections{
-            target: consoleModel
-            onTextChanged:{
-                textarea.text=consoleModel.getText();
-                console.info(textarea.text);
-                //console.info("Juhu!");
+        Connections {
+            target: outputComponent
+            // Send when the memory changes (at any address).
+            onMemoryChanged: {
+                //console.log("onMemoryChanged");
+                var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
+                // Check if the memory address that was changed (at least partly) belongs to
+                // the output item's source space.
+                if ((address+length) >= _baseAddress) {
+                    it.updateContent(_baseAddress);
+                }
             }
-        }
-        Connections{
-            target: consoleModel
-            onDataChanged: {
-                consoleModel.getData();
+            // Send when any item's settings where updated.
+            onOutputItemSettingsChanged: {
+                //console.log("onOutputItemSettingsChanged");
+                it.updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
+                settingsWindowC.updateSettings();
             }
         }
     }
-    onModeChanged: {
-        consoleModel.modeChanged(mode);
-        if(mode ==0 /*mode == array-based*/){
-            clearArea.enabled=false;
-        }
-        else{
-            clearArea.enabled=true;
-        }
+    function updateContent(_baseAddress) {
+        var currentText = textarea.text;
+        var mode = textarea.text = outputComponent.getOutputItem(outputItemIndex)["textMode"];
+        textarea.text = outputComponent.getTextFromMemory(_baseAddress, currentText, mode);
     }
+
 
     ConsoleSettingsWindow{
         id: settingsWindowC
     }
 
     function settingsButtonPressed(){
-        settingsWindowIT.show();
+        settingsWindowC.show();
     }
 
 }

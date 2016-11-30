@@ -19,6 +19,7 @@
 #include "ui/output-component.hpp"
 #include "core/memory-manager.hpp"
 #include "core/memory-value.hpp"
+#include "core/conversions.hpp"
 
 OutputComponent::OutputComponent(MemoryManager &memoryManager,
                                  MemoryAccess &memoryAccess,
@@ -92,3 +93,25 @@ QList<bool> OutputComponent::getMemoryContent(int address, int length) const {
   }
   return contentList;
 }
+
+QString OutputComponent::getTextFromMemory(int start, QString currentText, int mode){
+    std::string text ="";
+    if(mode ==0/*ArrayBased*/){
+        for(int i=0; (start+i)<_memoryAccess.getMemorySize().get() ; i++){
+            MemoryValue m = _memoryAccess.getMemoryValueAt(start+i).get();
+            unsigned int z=conversions::convert<uint32_t>(m);
+            if(z==0){
+                break;
+            }
+            text +=char(z);
+        }
+    }
+    else/*pipeline*/{
+        text = currentText.toStdString();
+        MemoryValue m = _memoryAccess.getMemoryValueAt(start).get();
+        unsigned int z=conversions::convert<uint32_t>(m);
+        text+= char(z);
+    }
+    return QString::fromStdString(text);
+}
+
