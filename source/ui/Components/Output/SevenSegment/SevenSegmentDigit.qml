@@ -64,7 +64,7 @@ Rectangle {
      */
 
     // Segment 0 (middle-top)
-    SevenSegment_Segment {
+    SevenSegmentSegment {
         id: top
         x: 1
         y: digitBackground.thickness / 2
@@ -100,7 +100,7 @@ Rectangle {
     }
 
     // Segment 5 (left-top)
-    SevenSegment_Segment {
+    SevenSegmentSegment {
         id: left_top
         x: 0
         y: digitBackground.thickness / 2 + 1
@@ -126,7 +126,7 @@ Rectangle {
     }
 
     // Segment 1 (right-top)
-    SevenSegment_Segment {
+    SevenSegmentSegment {
         id: right_top
         x: digitBackground.width - digitBackground.thickness
         y: digitBackground.thickness / 2 + 1
@@ -152,7 +152,7 @@ Rectangle {
     }
 
     // Segment 6 (middle-middle)
-    SevenSegment_Segment {
+    SevenSegmentSegment {
         id: middle
         x: 1
         y: digitBackground.height / 2
@@ -188,7 +188,7 @@ Rectangle {
     }
 
     // Segment 4 (left-bottom)
-    SevenSegment_Segment {
+    SevenSegmentSegment {
         id: left_bottom
         x: 0
         y: digitBackground.height / 2 + 1
@@ -214,7 +214,7 @@ Rectangle {
     }
 
     // Segment 2 (right-bottom)
-    SevenSegment_Segment {
+    SevenSegmentSegment {
         id: right_bottom
         x: digitBackground.width - digitBackground.thickness
         y: digitBackground.height / 2 + 1
@@ -240,7 +240,7 @@ Rectangle {
     }
 
     // Segment 3 (middle-bottom)
-    SevenSegment_Segment {
+    SevenSegmentSegment {
         id: bottom
         x: 1
         y: digitBackground.height - digitBackground.thickness / 2

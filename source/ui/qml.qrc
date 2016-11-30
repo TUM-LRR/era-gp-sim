@@ -50,9 +50,9 @@
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
-        <file>Components/Output/7-Segment/SevenSegment.qml</file>
-        <file>Components/Output/7-Segment/SevenSegment_Segment.qml</file>
-        <file>Components/Output/7-Segment/SevenSegmentDigit.qml</file>
-        <file>Components/Output/7-Segment/SevenSegmentSettingsWindow.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegment.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegmentSegment.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegmentSettingsWindow.qml</file>
     </qresource>
 </RCC>
