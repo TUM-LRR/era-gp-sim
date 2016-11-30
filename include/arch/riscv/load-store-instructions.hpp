@@ -80,12 +80,24 @@ class LoadStoreInstructionNode : public InstructionNode {
 
   ValidationResult validateRuntime(MemoryAccess& memoryAccess) const override {
     std::size_t effectiveAddress = getEffectiveAddress(memoryAccess);
+
     if (effectiveAddress + _byteAmount - 1 >
         memoryAccess.getMemorySize().get()) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                            "The memory address %1 is out of range"),
-          std::to_string(effectiveAddress));
+                            "The memory area you are trying to access is "
+                            "out of range (area: [%1,%2])"),
+          std::to_string(effectiveAddress),
+          std::to_string(effectiveAddress + _byteAmount - 1));
+    }
+
+    if (memoryAccess.isMemoryProtectedAt(effectiveAddress, _byteAmount).get()) {
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "The memory area you are trying to access is "
+                            "protected (area: [%1,%2])"),
+          std::to_string(effectiveAddress),
+          std::to_string(effectiveAddress + _byteAmount - 1));
     }
 
     return ValidationResult::success();

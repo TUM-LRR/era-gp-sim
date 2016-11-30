@@ -48,12 +48,13 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
 void Project::_createRegister(RegisterInformation registerInfo,
                               UnitInformation unitInfo) {
   if (!registerInfo.hasEnclosing()) {
-      MemoryValue startValue{registerInfo.getSize()};
-      //if this register is hardwired to some constant
-      if(registerInfo.isConstant()) {
-          startValue = registerInfo.getConstant();
-      }
-    _registerSet.createRegister(registerInfo.getName(), startValue, registerInfo.isConstant());
+    MemoryValue startValue{registerInfo.getSize()};
+    // if this register is hardwired to some constant
+    if (registerInfo.isConstant()) {
+      startValue = registerInfo.getConstant();
+    }
+    _registerSet.createRegister(
+        registerInfo.getName(), startValue, registerInfo.isConstant());
     _registerSet.aliasRegister(
         registerInfo.getAliases(), registerInfo.getName(), 0, true);
     // create all constituents and their constituents
@@ -107,6 +108,19 @@ void Project::putMemoryValueAt(size_t address, const MemoryValue &value) {
 MemoryValue
 Project::setMemoryValueAt(size_t address, const MemoryValue &value) {
   return _memory.set(address, value);
+}
+
+bool Project::isMemoryProtectedAt(std::size_t address,
+                                  std::size_t amount) const {
+  return _memory.isProtected(address, amount);
+}
+
+void Project::makeMemoryProtected(std::size_t address, std::size_t amount) {
+  return _memory.makeProtected(address, amount);
+}
+
+void Project::removeMemoryProtection(std::size_t address, std::size_t amount) {
+  return _memory.removeProtection(address, amount);
 }
 
 MemoryValue Project::getRegisterValue(const std::string &name) const {
