@@ -11,16 +11,23 @@ class InputTextModel: QObject
     Q_OBJECT
 public:
     InputTextModel(QQmlContext* context, MemoryAccess m);
+
+    /**
+     * \brief Sets the new text which should be stored in the memory
+     * \param text the new Text
+     */
     Q_INVOKABLE void newText(QString text);
+
+
     Q_INVOKABLE void setStart(int start);
-    Q_INVOKABLE void setMaxLaenge(int maxLaenge);
+    Q_INVOKABLE void setMaxLength(int maxL);
     Q_INVOKABLE int getMaxLaenge();
     Q_INVOKABLE QString getStart();
 
 private:
     QQmlContext* context;
     int start;
-    int maxLaenge;
+    int maxLength;
     MemoryAccess memoryAccess;
 };
 

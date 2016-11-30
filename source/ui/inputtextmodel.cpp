@@ -34,10 +34,10 @@ QString InputTextModel::getStart(){
     return QString::fromStdString(std::to_string(start));
 }
 
-void InputTextModel::setMaxLaenge(int maxLaenge){
-    this->maxLaenge=maxLaenge;
+void InputTextModel::setMaxLength(int maxL){
+    this->maxLength=maxL;
 }
 
-int InputTextModel::getMaxLaenge(){
-    return maxLaenge;
+int InputTextModel::getMaxLength(){
+    return maxLength;
 }

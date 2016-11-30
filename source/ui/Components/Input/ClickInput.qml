@@ -38,8 +38,8 @@ Item {
         MouseArea{
             anchors.fill: parent
             onClicked: {
-                console.info(mouse.x);
-                console.info(mouse.y);
+                //console.info(mouse.x);
+                //console.info(mouse.y);
                 inputClickMod.newClick(mouse.x, mouse.y);
             }
         }

@@ -8,10 +8,10 @@ InputButtonModel::InputButtonModel(QQmlContext* context, MemoryAccess m) : QObje
 }
 
 void InputButtonModel::buttonClicked(int id){
-    //id an startadresse im Memory speichern
-    MemoryValue m=conversions::convert(id, 8);
+    //save id at start in Memory
+    MemoryValue m=conversions::convert(id, 32);
     memoryAccess.putMemoryValueAt(start, m);
-    std::cout << id<<std::endl;
+    //std::cout << id<<std::endl;
 }
 
 QString InputButtonModel::getStart(){
