@@ -18,8 +18,38 @@
 
 #include "parser/intermediate-macro-instruction.hpp"
 
+#include "parser/compile-state.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/macro-directive.hpp"
+#include "parser/memory-allocator.hpp"
+#include "parser/symbol-table.hpp"
+
+
+void IntermediateMacroInstruction::replaceWithMacros(CommandIterator begin,
+                                                     CommandIterator end,
+                                                     CompileState& state) {
+  for (auto i = begin; i != end; ++i) {
+    // Try casting to IntermediateInstruction, skip instruction if it doesn't
+    // work
+    if (dynamic_cast<IntermediateInstruction*>(i->get()) == nullptr) continue;
+
+    IntermediateInstruction& inst = static_cast<IntermediateInstruction&>(**i);
+
+    auto macro = state.macros.find(inst._name,
+                                   inst._sources.size() + inst._targets.size());
+    if (!macro.found()) continue;
+
+    if (macro.isCyclic()) {
+      state.addError("Cyclic macro call!");
+      continue;
+    }
+
+    IntermediateOperationPointer newPtr =
+        std::make_unique<IntermediateMacroInstruction>(
+            inst, macro->second, state);
+    *i = std::move(newPtr);
+  }
+}
 
 IntermediateMacroInstruction::IntermediateMacroInstruction(
     const IntermediateInstruction& ins,

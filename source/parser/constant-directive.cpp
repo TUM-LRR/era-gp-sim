@@ -17,7 +17,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <string>
+
 #include "parser/constant-directive.hpp"
+#include "parser/symbol-table.hpp"
+#include "parser/syntax-tree-generator.hpp"
 
 void ConstantDirective::execute(FinalRepresentation& finalRepresentator,
                                 const SymbolTable& table,

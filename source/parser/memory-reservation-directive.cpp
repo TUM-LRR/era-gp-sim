@@ -22,6 +22,20 @@
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
 #include "parser/expression-compiler-clike.hpp"
+#include "parser/symbol-table.hpp"
+
+MemoryReservationDirective::MemoryReservationDirective(
+    const LineInterval& lines,
+    const std::vector<std::string>& labels,
+    const std::string& name,
+    std::size_t cellSize,
+    const std::vector<std::string>& values,
+    const ArgumentCompileFunction& argumentCompile)
+: IntermediateDirective(lines, labels, name)
+, _cellSize(cellSize)
+, _values(values)
+, _argumentCompile(argumentCompile) {
+}
 
 void MemoryReservationDirective::allocateMemory(
     const Architecture& architecture, MemoryAllocator& allocator,

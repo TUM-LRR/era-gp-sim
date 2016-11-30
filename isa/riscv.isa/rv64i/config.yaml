@@ -5,7 +5,6 @@ name: rv64i
 extends: rv32i
 
 word-size: 64
-byte-size: 8
 reset-units: true
 
 instructions:

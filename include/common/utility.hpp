@@ -506,24 +506,36 @@ void pushBackFromEnd(std::vector<bool> &dest,
 
 
 template <typename T, typename S = T>
-constexpr T divideCeiling(T value, S divider) {
+constexpr T divideCeiling(const T& value, const S& divider) {
   return (value + divider - 1) / divider;
 }
 
 // Only for completeness.
 template <typename T, typename S = T>
-constexpr T divideFloor(T value, S divider) {
+constexpr T divideFloor(const T& value, const S& divider) {
   return value / divider;
 }
 
 template <typename T, typename S = T>
-constexpr T discreteCeiling(T value, S divider) {
+constexpr T discreteCeiling(const T& value, const S& divider) {
   return divideCeiling(value, divider) * divider;
 }
 
 template <typename T, typename S = T>
-constexpr T discreteFloor(T value, S divider) {
+constexpr T discreteFloor(const T& value, const S& divider) {
   return divideFloor(value, divider) * divider;
+}
+/**
+ * \brief roundToBoundary Rounds a given value up to a multiple of the
+ * given boundary.
+ * \param value Value to be rounded.
+ * \param boundary The value is rounded up to a multiple of the
+ * boundary.
+ * \return The rounded value.
+ */
+template<typename T>
+T roundToBoundary(const T& value, const T& boundary) {
+  return discreteCeiling(value, boundary);
 }
 
 template <typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
