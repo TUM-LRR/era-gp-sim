@@ -31,7 +31,7 @@ import QtQuick.Window 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
-// Window for sevent segment settings.
+// Window for seven segment settings.
 Window {
     id: settingsWindow
     width: 400
@@ -39,11 +39,13 @@ Window {
 
     title: "Seven-Segment Settings"
 
+    // Refreshes the window's control content.
     function updateSettings() {
-        numberOfStripsTextField.text = outputComponent.getOutputItems()[outputItemIndex]["numberOfDigits"];
+        numberOfDigitsTextField.text = outputComponent.getOutputItems()[outputItemIndex]["numberOfDigits"];
         baseAddressTextField.text = outputComponent.getOutputItems()[outputItemIndex]["baseAddress"];
     }
 
+    // The controls for editing seven segment settings.
     Row {
         anchors.fill: parent
         anchors.leftMargin: 15
@@ -57,10 +59,10 @@ Window {
         Column {
             spacing: 16
             Text {
-                text: "Memory Source:"
+                text: "Memory Source (Address):"
             }
             Text {
-                text: "Number of Strips:"
+                text: "Number of Digits:"
             }
         }
 
@@ -69,12 +71,13 @@ Window {
             id: controlsColumn
             spacing: 8
 
+            // Converts a given dec/hex/bin-string to an integer.
             function integerFromInputString(input) {
                 var base = 10;
-                if (input.indexOf("0x") == 0) {
+                if (input.indexOf("0x") === 0) {
                     base = 16;
                     input = input.slice(2);
-                } else if (input.indexOf("0b") == 0) {
+                } else if (input.indexOf("0b") === 0) {
                     input = input.slice(2);
                     base = 2;
                 }
@@ -90,6 +93,7 @@ Window {
                 onAccepted: { processInput(); }
                 onEditingFinished: { processInput(); }
 
+                // Reads the current input and passes the new value to the model.
                 function processInput() {
                     var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
                     if (inputValue !== undefined && inputValue >= 0) {
@@ -99,10 +103,10 @@ Window {
             }
 
             TextField {
-                id: numberOfStripsTextField
+                id: numberOfDigitsTextField
                 height: baseAddressTextField.height
 
-                text: numberOfStripsTextField.text = outputComponent.getOutputItems()[outputItemIndex]["numberOfDigits"];
+                text: numberOfDigitsTextField.text = outputComponent.getOutputItems()[outputItemIndex]["numberOfDigits"];
 
                 onAccepted: { processInput(); }
                 onEditingFinished: { processInput(); }
@@ -111,14 +115,33 @@ Window {
                     settingsWindow.updateSettings();
                 }
 
+                // Reads the current input and passes the new value to the model.
                 function processInput() {
-                    var inputValue = controlsColumn.integerFromInputString(String(numberOfStripsTextField.text));
-                    if (inputValue !== undefined && inputValue > 0) {
+                    var inputValue = controlsColumn.integerFromInputString(String(numberOfDigitsTextField.text));
+                    if (inputValue !== undefined && inputValue >= 0) {
                         outputComponent.setOutputItemProperty(outputItemIndex, "numberOfDigits", inputValue);
                     }
                 }
             }
 
+        }
+    }
+
+    // Button for accepting setting changes and closing the settings window.
+    Button {
+        id: doneButton
+
+        text: "Done"
+
+        anchors.right: parent.right
+        anchors.rightMargin: 5
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 5
+
+        onClicked: {
+            baseAddressTextField.processInput();
+            numberOfDigitsTextField.processInput();
+            close();
         }
     }
 }

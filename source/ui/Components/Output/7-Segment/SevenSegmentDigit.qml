@@ -309,6 +309,7 @@ Rectangle {
         duration: 100
     }
 
+    // Starts animation for displaying/hiding the digit's text
     function setTextVisibility(visible) {
         if (visible) {
             make_text_visible.start()

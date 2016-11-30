@@ -39,6 +39,8 @@ Item {
     // the model.
     property var outputItemIndex: 1
 
+    signal settingsButtonPressed()
+
     // Color definitions
     property var digitsInactiveColor: "#9B9B9B"
     property var digitsActiveColor: "#0080FF"
@@ -48,7 +50,6 @@ Item {
         target: outputComponent
         // Send when the memory changes (at any address).
         onMemoryChanged: {
-            console.log("onMemoryChanged");
             var _baseAddress = outputComponent.getOutputItems()[outputItemIndex]["baseAddress"];
             var numberOfDigits = outputComponent.getOutputItems()[outputItemIndex]["numberOfDigits"];
             // Check if the memory address that was changed (at least partly) belongs to
@@ -59,7 +60,6 @@ Item {
         }
         // Sent when any item's settings where updated.
         onOutputItemSettingsChanged: {
-            console.log("onOutputItemSettingsChanged");
             updateContent(outputComponent.getOutputItems()[outputItemIndex]["baseAddress"]);
             settingsWindow.updateSettings();
         }
@@ -68,6 +68,12 @@ Item {
     // Update the output item's content (there may already be some initial values in memory).
     Component.onCompleted: {
         updateContent(outputComponent.getOutputItems()[outputItemIndex]["baseAddress"]);
+    }
+
+    // Called from outside by the output tab view to signal that the settings button for the current
+    // output item was pressed.
+    onSettingsButtonPressed: {
+        sevenSegmentSettingsWindow.show();
     }
 
 
@@ -167,14 +173,8 @@ Item {
     }
 
 
-    // Called from outside by the output tab view to signal that the settings button for the current
-    // output item was pressed.
-    function settingsButtonPressed() {
-        settingsWindow.show();
-    }
-
     SevenSegmentSettingsWindow {
-        id: settingsWindow
+        id: sevenSegmentSettingsWindow
     }
 
 }
