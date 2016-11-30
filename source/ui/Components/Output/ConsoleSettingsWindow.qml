@@ -33,7 +33,7 @@ Window {
     // Refreshes the window's control contentItem.
     function updateSettings() {
         numberOfStripsTextField.text = outputComponent.getOutputItem(outputItemIndex)["numberOfStrips"];
-        var t = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
+        var t = outputComponent.getOutputItem(outputItemIndex)["textMode"];
         if(t==0){
             ab.checked = true;
         }
@@ -42,7 +42,7 @@ Window {
         }
     }
 
-    // The controls for editing lightstrip settings.
+    // The controls for editing console settings.
     Row {
         anchors.fill: parent
         anchors.leftMargin: 15
@@ -107,11 +107,17 @@ Window {
                     text: "ArrayBased"
                     checked: true
                     exclusiveGroup: modeGroup
+                    onClicked: {
+                        mode.processInput();
+                    }
                 }
                 RadioButton {
                     id: pl
                     text: "PipeLike"
                     exclusiveGroup: modeGroup
+                    onClicked: {
+                        mode.processInput();
+                    }
                 }
 
 
@@ -129,7 +135,7 @@ Window {
                         inputValue=1;
                     }
 
-                    outputComponent.setOutputItemProperty(outputItemIndex, "mode", inputValue);
+                    outputComponent.setOutputItemProperty(outputItemIndex, "textMode", inputValue);
 
                 }
             }
