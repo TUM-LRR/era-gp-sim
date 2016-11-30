@@ -110,6 +110,17 @@ class MemoryAccess : public Proxy<Project> {
   POST_FUTURE_CONST(isMemoryProtectedAt)
 
   /**
+   * Checks if any memory cells in the given area are protected.
+   *
+   * \param callback std::function<void(Result<R>)> callback to call with the
+   * value(s).
+   * \param callerServant std::weak_ptr<Servant> servant which called this.
+   * \param address The first address of the area to check
+   * \param amount The amount of cells to check
+   */
+  POST_CALLBACK_SAFE(isMemoryProtectedAt)
+
+  /**
    * Creates a memory protection.
    *
    * \param address The first address of the area to lock
@@ -124,17 +135,6 @@ class MemoryAccess : public Proxy<Project> {
    * \param value The amount of cells to unlock
    */
   POST(removeMemoryProtection)
-
-  /**
-   * Checks if any memory cells in the given area are protected.
-   *
-   * \param callback std::function<void(Result<R>)> callback to call with the
-   * value(s).
-   * \param callerServant std::weak_ptr<Servant> servant which called this.
-   * \param address The first address of the area to check
-   * \param amount The amount of cells to check
-   */
-  POST_CALLBACK_SAFE(isMemoryProtectedAt)
 
   /**
    * Returns the content of a register as MemoryValue.
