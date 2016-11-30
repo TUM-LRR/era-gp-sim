@@ -138,8 +138,8 @@ TEST_F(JumpInstructionTest, JALValidation) {
   // Typical instruction: JAL r1, -123 ; <link>, <20 bit offset>
 
   auto instruction = factory.createInstructionNode("JAL");
-  auto linkRegister = factory.createRegisterNode("r1");
-  auto invalidRegister = factory.createRegisterNode("r3");
+  auto linkRegister = factory.createRegisterNode("x1");
+  auto invalidRegister = factory.createRegisterNode("x3");
   MemoryAccess memoryAccess = getMemoryAccess();
 
   // For internal tests

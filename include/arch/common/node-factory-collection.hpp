@@ -57,7 +57,7 @@ class NodeFactoryCollection {
         FactoryTypes::instructionFactory(instructionSet, architecture),
         FactoryTypes::immediateFactory(),
         FactoryTypes::memoryAccessFactory(),
-        FactoryTypes::registerFactory(),
+        FactoryTypes::registerFactory(architecture),
         FactoryTypes::arithmeticFactory(),
         FactoryTypes::dataNodeFactory()
     );
