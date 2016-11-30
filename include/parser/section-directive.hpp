@@ -29,7 +29,7 @@ class MemoryAllocator;
 class FinalRepresentation;
 class SymbolTable;
 class SyntaxTreeGenerator;
-class CompileState;
+struct CompileState;
 class MemoryAccess;
 
 /**

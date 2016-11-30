@@ -34,9 +34,7 @@ class MacroEndDirective : public IntermediateDirective {
   MacroEndDirective(const LineInterval& lines,
                     const std::vector<std::string>& labels,
                     const std::string& name,
-                    const std::vector<std::string>& arguments)
-  : IntermediateDirective(lines, labels, name) {
-  }
+                    const std::vector<std::string>& arguments);
 
   /**
   * \brief Instantiates a new MacroEndDirective with the given arguments.
@@ -46,9 +44,7 @@ class MacroEndDirective : public IntermediateDirective {
   */
   MacroEndDirective(const LineInterval& lines,
                     const std::vector<std::string>& labels,
-                    const std::string& name)
-  : IntermediateDirective(lines, labels, name) {
-  }
+                    const std::string& name);
 
   /**
    * \brief Does probably nothing.

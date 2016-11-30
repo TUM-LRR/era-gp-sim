@@ -23,6 +23,13 @@
 #include "parser/symbol-table.hpp"
 #include "parser/syntax-tree-generator.hpp"
 
+ConstantDirective::ConstantDirective(const LineInterval& lines,
+                    const std::vector<std::string>& labels,
+                    const std::string& name,
+                    const std::vector<std::string>& arguments)
+  : IntermediateDirective(lines, labels, name), _arguments{arguments} {
+  }
+
 void ConstantDirective::execute(FinalRepresentation& finalRepresentator,
                                 const SymbolTable& table,
                                 const SyntaxTreeGenerator& generator,

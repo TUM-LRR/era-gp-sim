@@ -31,6 +31,8 @@ std::regex SymbolTable::makeRegex(const std::string name) const {
   return std::regex("\\b" + name + "\\b");
 }
 
+const SymbolTable::Table& SymbolTable::table() const noexcept { return _table; };
+
 void SymbolTable::clearTable() {
   // Simply clear everything.
   _table.clear();

@@ -64,47 +64,35 @@ struct CompileState {
    * position.
    * \param message The message for the error.
    */
-  void addError(const std::string& message) {
-    addError(message, position);
-  }
+  void addError(const std::string& message);
 
   /**
    * \brief Adds an error to the state-internal error list.
    * \param message The message for the error.
    * \param position The position where the error occurred.
    */
-  void addError(const std::string& message, const CodePosition& position) {
-    errorList.push_back(
-        CompileError(message, position, CompileErrorSeverity::ERROR));
-  }
+  void addError(const std::string& message, const CodePosition& position);
 
   /**
    * \brief Adds a warning to the state-internal error list at the current
    * position.
    * \param message The message for the warning.
    */
-  void addWarning(const std::string& message) {
-    addWarning(message, position);
-  }
+  void addWarning(const std::string& message);
 
   /**
    * \brief Adds a warning to the state-internal error list.
    * \param message The message for the warning.
    * \param position The position where the warning occurred.
    */
-  void addWarning(const std::string& message, const CodePosition& position) {
-    errorList.push_back(
-        CompileError(message, position, CompileErrorSeverity::WARNING));
-  }
+  void addWarning(const std::string& message, const CodePosition& position);
 
   /**
    * \brief Adds an information to the state-internal error list at the current
    * position.
    * \param message The message for the information.
    */
-  void addInformation(const std::string& message) {
-    addInformation(message, position);
-  }
+  void addInformation(const std::string& message);
 
   /**
    * \brief Adds an information to the state-internal error list.
@@ -112,10 +100,7 @@ struct CompileState {
    * \param position The position where the information is needed.
    */
   void
-  addInformation(const std::string& message, const CodePosition& position) {
-    errorList.push_back(
-        CompileError(message, position, CompileErrorSeverity::INFORMATION));
-  }
+  addInformation(const std::string& message, const CodePosition& position);
 
   /**
    * Registers a macro for compilation.

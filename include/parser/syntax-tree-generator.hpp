@@ -27,7 +27,7 @@
 #include "arch/common/node-factory-collection.hpp"
 
 class AbstractSyntaxTreeNode;
-class CompileState;
+struct CompileState;
 class MemoryAccess;
 
 /**

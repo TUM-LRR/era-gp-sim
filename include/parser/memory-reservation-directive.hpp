@@ -23,7 +23,14 @@
 
 #include <functional>
 #include "parser/intermediate-directive.hpp"
-#include "parser/memory-allocator.hpp"
+#include "parser/relative-memory-position.hpp"
+class MemoryAllocator;
+struct CompileState;
+struct LineInterval;
+class SymbolTable;
+class SyntaxTreeGenerator;
+class Architecture;
+struct FinalRepresentation;
 
 class MemoryReservationDirective : public IntermediateDirective {
  public:

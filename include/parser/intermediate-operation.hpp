@@ -27,7 +27,6 @@
 #include "parser/line-interval.hpp"
 
 class MemoryValue;
-class CompileState;
 class Architecture;
 class SyntaxTreeGenerator;
 class SymbolTable;
@@ -156,11 +155,11 @@ class IntermediateOperation {
    */
   virtual IntermediateOperationPointer clone();
 
-  const LineInterval& lines() const;
+  const LineInterval& lines() const noexcept;
 
-  const std::vector<std::string>& labels() const;
+  const std::vector<std::string>& labels() const noexcept;
 
-  const std::string& name() const;
+  const std::string& name() const noexcept;
 
  protected:
   /**

@@ -30,9 +30,7 @@ class ConstantDirective : public IntermediateDirective {
   ConstantDirective(const LineInterval& lines,
                     const std::vector<std::string>& labels,
                     const std::string& name,
-                    const std::vector<std::string>& arguments)
-  : IntermediateDirective(lines, labels, name), _arguments{arguments} {
-  }
+                    const std::vector<std::string>& arguments);
 
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,

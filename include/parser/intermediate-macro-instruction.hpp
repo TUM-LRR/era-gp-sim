@@ -21,7 +21,7 @@
 
 #include "parser/intermediate-operation.hpp"
 
-class CompileState;
+struct CompileState;
 class IntermediateInstruction;
 class MacroDirective;
 class MemoryAllocator;

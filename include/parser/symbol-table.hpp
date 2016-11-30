@@ -73,7 +73,7 @@ class SymbolTable {
    * \brief Returns the internal symbol table.
    * \return The internal symbol table.
    */
-  const Table& table() const { return _table; }
+  const Table& table() const noexcept;
 
   /**
    * \brief Replaces any symbols in the given string and records all occuring

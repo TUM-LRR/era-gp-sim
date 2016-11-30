@@ -23,6 +23,7 @@
 #include "core/memory-access.hpp"
 #include "parser/expression-compiler-clike.hpp"
 #include "parser/symbol-table.hpp"
+#include "parser/memory-allocator.hpp"
 
 MemoryReservationDirective::MemoryReservationDirective(
     const LineInterval& lines,

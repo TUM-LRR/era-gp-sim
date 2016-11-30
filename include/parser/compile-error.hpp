@@ -22,26 +22,7 @@
 #include <string>
 
 #include "parser/code-position.hpp"
-
-/**
- * \brief Denotes the severity of a compiler error.
- */
-enum class CompileErrorSeverity {
-  /**
-   * \brief The severity is an error, i.e. the program will not compile
-   * properly.
-   */
-  ERROR,
-  /**
-   * \brief The severity is a warning, i.e. the program will compile, but might
-   * show unexpected behavior.
-   */
-  WARNING,
-  /**
-   * \brief The severity is just an information, e.g. a hint for the user.
-   */
-  INFORMATION
-};
+#include "parser/compile-error-severity.hpp"
 
 /**
  * \brief Represents a mistake the compiler noticed.
@@ -57,9 +38,7 @@ class CompileError {
    */
   CompileError(const std::string& message,
                const CodePosition& position,
-               CompileErrorSeverity severity)
-  : CompileError(message, position, position >> 1, severity) {
-  }
+               CompileErrorSeverity severity);
 
   /**
    * \brief Instantiates a new compile error with the given arguments.
@@ -71,10 +50,7 @@ class CompileError {
   CompileError(const std::string& message,
                const CodePosition& startPosition,
                const CodePosition& endPosition,
-               CompileErrorSeverity severity)
-  : CompileError(
-        message, CodePositionInterval(startPosition, endPosition), severity) {
-  }
+               CompileErrorSeverity severity);
 
   /**
    * \brief Instantiates a new compile error with the given arguments.
@@ -84,33 +60,25 @@ class CompileError {
    */
   CompileError(const std::string& message,
                const CodePositionInterval& position,
-               CompileErrorSeverity severity)
-  : _message(message), _position(position), _severity(severity) {
-  }
+               CompileErrorSeverity severity);
 
   /**
    * \brief Returns the message of this error.
    * \return The message of the error.
    */
-  const std::string& message() const {
-    return _message;
-  }
+  const std::string& message() const noexcept;
 
   /**
    * \brief Returns the position where this error occured.
    * \return The position of the error.
    */
-  const CodePositionInterval& position() const {
-    return _position;
-  }
+  const CodePositionInterval& position() const noexcept;
 
   /**
    * \brief Returns the severity of the error.
    * \return The severity of the error.
    */
-  const CompileErrorSeverity severity() const {
-    return _severity;
-  }
+  const CompileErrorSeverity severity() const noexcept;
 
  private:
   /**

@@ -22,31 +22,12 @@
 
 #include "parser/expression-compiler.hpp"
 #include "parser/string-parser.hpp"
+#include "parser/integer-parser.hpp"
 
 /**
  * \brief Provides some basic expression compilers.
  */
 namespace CLikeExpressionCompilers {
-// Temporary parsing method, copied from the string parser, sightly modified.
-template <typename T>
-static T
-simpleNumberParse(const std::string& inputString, size_t start, int base) {
-  T value = 0;
-  for (auto i = inputString.begin() + start; i != inputString.end(); ++i) {
-    // We increment the base, then we decode the character.
-    value *= base;
-    auto chr = *i;
-    if (chr >= '0' && chr <= '9') {
-      value += (T)(chr - '0');
-    } else if (chr >= 'A' && chr <= 'Z') {
-      value += (T)(chr - 'A') + 10;
-    } else if (chr >= 'a' && chr <= 'z') {
-      value += (T)(chr - 'a') + 10;
-    }
-  }
-  return value;
-}
-
 /**
  * \brief Creates a default expression compiler, oriented at the C language.
  * \tparam IntType The given integer type.
@@ -277,24 +258,24 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
                                         [](const std::string& number,
                                            IntType& output,
                                            CompileState& state) -> bool {
-                                          output = simpleNumberParse<IntType>(
-                                              number, 2, 16);
+                                          output = IntegerParser<IntType>::parse(
+                                              number, state, 2, 16);
                                           return true;
                                         }},
       ExpressionLiteralDecoder<IntType>{"0b[01]+",
                                         [](const std::string& number,
                                            IntType& output,
                                            CompileState& state) -> bool {
-                                          output = simpleNumberParse<IntType>(
-                                              number, 2, 2);
+                                          output = IntegerParser<IntType>::parse(
+                                              number, state, 2, 2);
                                           return true;
                                         }},
       ExpressionLiteralDecoder<IntType>{"[0-9]+",
                                         [](const std::string& number,
                                            IntType& output,
                                            CompileState& state) -> bool {
-                                          output = simpleNumberParse<IntType>(
-                                              number, 0, 10);
+                                          output = IntegerParser<IntType>::parse(
+                                              number, state, 0, 10);
                                           return true;
                                         }},
       ExpressionLiteralDecoder<IntType>{

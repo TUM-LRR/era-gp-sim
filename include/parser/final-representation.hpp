@@ -22,9 +22,10 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
-#include "arch/common/abstract-syntax-tree-node.hpp"
 #include "parser/compile-error.hpp"
 #include "parser/line-interval.hpp"
+
+class AbstractSyntaxTreeNode;
 
 using MemoryAddress = std::size_t;
 

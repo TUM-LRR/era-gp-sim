@@ -27,6 +27,7 @@
 #include "core/memory-access.hpp"
 #include "parser/compile-state.hpp"
 #include "parser/parser.hpp"
+#include "parser/parser-mode.hpp"
 
 #include "parser/syntax-tree-generator.hpp"
 

@@ -23,7 +23,7 @@
 #include <functional>
 #include <string>
 #include <vector>
-#include "parser/compile-state.hpp"
+struct CompileState;
 
 // Personal note: it might have been good to program this thing with usage of
 // results/optionals.

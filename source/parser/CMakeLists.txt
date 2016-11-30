@@ -32,6 +32,8 @@ set(PARSER_SOURCES
   memory-section-definition.cpp
   code-position.cpp
   line-interval.cpp
+  compile-error.cpp
+  expression-tokenizer.cpp
 )
 
 ########################################

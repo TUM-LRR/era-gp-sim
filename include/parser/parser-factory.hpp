@@ -23,8 +23,9 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include "parser/parser.hpp"
-
+#include <functional>
+class Parser;
+class MemoryAccess;
 class Architecture;
 
 using ParserPtr = std::unique_ptr<Parser>;
@@ -33,6 +34,8 @@ using ParserPtr = std::unique_ptr<Parser>;
  * Provides methods for the instantiation of different Parser classes.
  */
 namespace ParserFactory {
+    using ParserBuildFunction = std::function<ParserPtr(const Architecture &,
+                                              const MemoryAccess &)>;
 
 /**
  * Instantiates a Parser for an Architecture by name.
@@ -52,8 +55,7 @@ ParserPtr createParser(const Architecture &arch,
  * names.
  */
 extern const std::unordered_map<std::string,
-                                ParserPtr (*)(const Architecture &,
-                                              const MemoryAccess &)>
+                                ParserBuildFunction>
     mapping;
 }
 

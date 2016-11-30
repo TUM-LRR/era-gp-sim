@@ -26,6 +26,9 @@
 #include "parser/memory-allocator.hpp"
 #include "parser/symbol-table.hpp"
 #include "parser/syntax-tree-generator.hpp"
+#include "parser/line-interval.hpp"
+#include "parser/memory-section-definition.hpp"
+#include "parser/relative-memory-position.hpp"
 
 IntermediateOperation::IntermediateOperation(
     const LineInterval& lines,
@@ -70,14 +73,14 @@ IntermediateOperationPointer IntermediateOperation::clone() {
   return nullptr;
 }
 
-const LineInterval& IntermediateOperation::lines() const {
+const LineInterval& IntermediateOperation::lines() const noexcept {
   return _lines;
 }
 
-const std::vector<std::string>& IntermediateOperation::labels() const {
+const std::vector<std::string>& IntermediateOperation::labels() const noexcept {
   return _labels;
 }
 
-const std::string& IntermediateOperation::name() const {
+const std::string& IntermediateOperation::name() const noexcept {
   return _name;
 }
