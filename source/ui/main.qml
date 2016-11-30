@@ -149,12 +149,21 @@ ApplicationWindow {
     // Dialog to input text
     Dialog {
       id: textDialog
-      standardButtons: StandardButton.Cancel | StandardButton.Save
+      standardButtons: StandardButton.Cancel;
       property var onAcceptedFunction
       property alias placeholderText: textField.placeholderText
 
       TextField {
         id: textField
+
+        onTextChanged: {
+          if(text == "") {
+           textDialog.standardButtons = StandardButton.Cancel;
+          }
+          else {
+            textDialog.standardButtons = StandardButton.Cancel | StandardButton.Save;
+          }
+        }
       }
       onAccepted: {
         onAcceptedFunction(textField.text);
