@@ -301,6 +301,7 @@ void Memory::deserializeJSON(const Json& json) {
       put(i * lineLength, value);
     }
   }
+  _wasUpdated();
 }
 
 bool Memory::operator==(const Memory& other) const {
