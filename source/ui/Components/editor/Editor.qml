@@ -129,7 +129,7 @@ ScrollView {
                 Connections {
                     target: editor
                     onExecutionLineChanged: {
-                        textArea.line = line;
+                        textArea.line = textArea.convertDisplayLineNumberToRawLineNumber(line);
                     }
                     onRuntimeError: {
                         runtimeErrorDialog.text = errorMessage;
@@ -443,7 +443,7 @@ ScrollView {
                     return false;
                 }
 
-                // Converts a given line number inside the editor and factors out all blank lines inserted for macro expansions.
+                // Accepts a given line number inside the editor and factors out all blank lines inserted for macro expansions.
                 function convertRawLineNumberToDisplayLineNumber(text, rawLineNumber) {
                     var lineNumber = 0;
                     for (var lineIndex = 0; lineIndex <= rawLineNumber; ++lineIndex) {
@@ -452,6 +452,18 @@ ScrollView {
                         }
                     }
                     return lineNumber;
+                }
+
+                // Accepts a given display line number (i.e. as in sidebar) and factors in all blank lines inserted for macro expansions.
+                function convertDisplayLineNumberToRawLineNumber(displayLineNumber) {
+                    var rawLineNumber = displayLineNumber;
+                    for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
+                        var macro = macros[macroIndex];
+                        if (macro["startLine"] < displayLineNumber && macro["collapsed"] === false) {
+                            rawLineNumber += macro["lineCount"];
+                        }
+                    }
+                    return rawLineNumber;
                 }
 
                 // Finds the position where blank lines for the macro expansion have to be inserted.
