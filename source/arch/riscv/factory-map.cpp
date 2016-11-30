@@ -44,13 +44,14 @@ operator[](const std::string& instructionName) const {
 
 FactoryMap::Node
 FactoryMap::create(const std::string& instructionName,
-                   const InstructionInformation& information) const {
-  return get(instructionName)(information);
+                   const InstructionInformation& information, const InstructionDocumentation &documentation) const {
+  return get(instructionName)(information, documentation);
 }
 
 FactoryMap::Node FactoryMap::
 operator()(const std::string& instructionName,
-           const InstructionInformation& information) const {
-  return create(instructionName, information);
+           const InstructionInformation& information,
+           const InstructionDocumentation& documentation) const {
+  return create(instructionName, information, documentation);
 }
 }

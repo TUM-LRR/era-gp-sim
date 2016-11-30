@@ -11,6 +11,7 @@ set(UI_SOURCES
     ui.cpp
     gui-project.cpp
     snapshot-component.cpp
+    output-component.cpp
 )
 
 set(UI_HEADERS
@@ -21,6 +22,7 @@ set(UI_HEADERS
     ../../include/ui/memory-component-presenter.hpp
     ../../include/ui/ui.hpp
     ../../include/ui/snapshot-component.hpp
+    ../../include/ui/output-component.hpp
 )
 
 

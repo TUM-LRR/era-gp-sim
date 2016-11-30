@@ -37,6 +37,9 @@ GuiProject::GuiProject(QQmlContext* context,
 , _editorComponent(context,
                    _projectModule.getParserInterface(),
                    _projectModule.getCommandInterface())
+, _outputComponent(_projectModule.getMemoryManager(),
+                   _projectModule.getMemoryAccess(),
+                   context)
 , _memoryModel(_projectModule.getMemoryAccess(),
                _projectModule.getMemoryManager(),
                context)
@@ -75,10 +78,17 @@ GuiProject::GuiProject(QQmlContext* context,
                    &_registerModel,
                    SLOT(updateContent(const QString&)),
                    Qt::QueuedConnection);
+
   QObject::connect(this,
                    SIGNAL(memoryChanged(std::size_t, std::size_t)),
                    &_memoryModel,
                    SLOT(onMemoryChanged(std::size_t, std::size_t)),
+                   Qt::QueuedConnection);
+
+  QObject::connect(this,
+                   SIGNAL(memoryChanged(std::size_t, std::size_t)),
+                   &_outputComponent,
+                   SLOT(updateMemory(std::size_t, std::size_t)),
                    Qt::QueuedConnection);
 }
 

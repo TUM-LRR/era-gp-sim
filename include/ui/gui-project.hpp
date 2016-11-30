@@ -35,9 +35,9 @@
 #include "third-party/json/json.hpp"
 #include "ui/editor-component.hpp"
 #include "ui/memory-component-presenter.hpp"
+#include "ui/output-component.hpp"
 #include "ui/register-model.hpp"
 #include "ui/snapshot-component.hpp"
-//#include "ui/snapshotmodel.hpp"
 
 class QUrl;
 
@@ -233,6 +233,15 @@ class GuiProject : QObject {
    */
   EditorComponent _editorComponent;
 
+  /**
+   * \brief _outputComponent The model for each output item (i.e
+   * lightstrip, sevensegment, console).
+   */
+  OutputComponent _outputComponent;
+
+  /**
+   * The c++ component for the memory.
+   */
   MemoryComponentPresenter _memoryModel;
 
   /**
