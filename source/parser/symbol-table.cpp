@@ -71,7 +71,7 @@ void SymbolTable::insertEntry(const std::string& name,
 
 std::string SymbolTable::replaceSymbols(const std::string& source,
                                         CompileState& state,
-                                        ReplacementFunction replacer) const {
+                                        const ReplacementFunction& replacer) const {
   std::string result = source;
 
   // If this is too slow, we should do something different, like: Instead of
@@ -118,10 +118,14 @@ std::string SymbolTable::replaceSymbols(const std::string& source,
 
 void SymbolTable::replaceSymbols(std::vector<std::string>& source,
                                  CompileState& state,
-                                 ReplacementFunction replacer) const {
+                                 const ReplacementFunction& replacer) const {
   // We just replace the symbols for each of the vector elements.
 
   for (int i = 0; i < source.size(); i++) {
     source[i] = replaceSymbols(source[i], state, replacer);
   }
 }
+
+const SymbolTable::ReplacementFunction SymbolTable::SIMPLE_REPLACE = [] (const std::string& repl, SymbolType type) -> std::string {
+      return repl;
+    };

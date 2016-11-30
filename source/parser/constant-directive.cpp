@@ -36,7 +36,7 @@ void ConstantDirective::execute(FinalRepresentation& finalRepresentator,
                                 CompileState& state,
                                 MemoryAccess& memoryAccess) {
   // Try to parse argument to catch errors early.
-  std::string fullExpression = table.replaceSymbols(expression, state);
+  std::string fullExpression = table.replaceSymbols(_expression, state);
   if (!fullExpression.empty()) {
     generator.transformOperand(fullExpression, state);
   } else {
@@ -67,6 +67,6 @@ void ConstantDirective::enhanceSymbolTable(SymbolTable& table,
     state.addError("Malformed constant directive", state.position);
     return;
   }
-  expression = "(" + _arguments[1] + ")";
-  table.insertEntry(_arguments[0], expression, state);
+  _expression = "(" + _arguments[1] + ")";
+  table.insertEntry(_arguments[0], _expression, state);
 }

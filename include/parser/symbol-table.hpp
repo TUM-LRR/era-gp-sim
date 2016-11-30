@@ -42,12 +42,6 @@ class SymbolTable {
   using ReplacementFunction =
       std::function<std::string(const std::string&, SymbolType)>;
 
-  struct SimpleReplacement {
-    std::string operator()(const std::string& repl, SymbolType type) const {
-      return repl;
-    }
-  };
-
   /**
    * \brief Instantiates an empty symbol table with the given recursion depth.
    * \param maximumRecursionDepth The given recursion depth, defaults to 64.
@@ -90,7 +84,7 @@ class SymbolTable {
    */
   std::string replaceSymbols(
       const std::string& source, CompileState& state,
-      ReplacementFunction replacer = SimpleReplacement{}) const;
+      const ReplacementFunction& replacer = SIMPLE_REPLACE) const;
 
   /**
    * \brief Replaces any symbols in the given vector of strings and records all
@@ -104,7 +98,9 @@ class SymbolTable {
    * symbol
    */
   void replaceSymbols(std::vector<std::string>& source, CompileState& state,
-                      ReplacementFunction replacer = SimpleReplacement{}) const;
+                      const ReplacementFunction& replacer = SIMPLE_REPLACE) const;
+
+  static const ReplacementFunction SIMPLE_REPLACE;
 
  private:
   /**
