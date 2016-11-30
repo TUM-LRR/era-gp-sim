@@ -1,34 +1,81 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.0
+import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 
 import "../Common"
 
 Item {
+    // Color definitions
+    property var lightstripInactiveColor: "#9B9B9B"
+    property var lightstripDefaultActiveColor: "#0080FF"
 
-    property int maxStrips: numUpDown._value
-    onMaxStripsChanged: {
-        if (maxStrips < 0) {
-            maxStrips = 0
+    // Index of output item relative to all available output outems.
+    // Required to identify this output item when communicating with
+    // the model.
+    property var outputItemIndex: 0
+
+    signal settingsButtonPressed()
+
+    ListModel {
+        id: lightstripModel
+    }
+
+    // Update the output item's content (there may already be some initial values in memory).
+    Component.onCompleted: {
+        updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
+    }
+
+    // Connect the output item to signals that the model might send.
+    Connections {
+        target: outputComponent
+        // Send when the memory changes (at any address).
+        onMemoryChanged: {
+            console.log("onMemoryChanged");
+            var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
+            // Check if the memory address that was changed (at least partly) belongs to
+            // the output item's source space.
+            if ((address+length) >= _baseAddress && (address <= (_baseAddress+(lightstripModel.count+7)/8))) {
+                updateContent(_baseAddress);
+            }
         }
-        while (strips.count < maxStrips) {
-            strips.append({ _color: "white" })
-        }
-        while (strips.count > maxStrips) {
-            strips.remove(strips.count - 1, 1)
+        // Send when any item's settings where updated.
+        onOutputItemSettingsChanged: {
+            console.log("onOutputItemSettingsChanged");
+            updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
+            settingsWindow.updateSettings();
         }
     }
 
-    NumericUpDown{
-        id: numUpDown
-        anchors.right: parent.right
-        anchors.rightMargin: 15
-        y: 10
+    // Called from outside by the output tab view to signal that the settings button for the current
+    // output item was pressed.
+    onSettingsButtonPressed: {
+        settingsWindow.show();
+    }
 
-        _step: 1
-        _value: 8
-        _minValue: 0
-        _maxValue: 16
+    // Updates the content of the output model depending on the value in memory.
+    function updateContent(_baseAddress) {
+        _updatelightstripModel();
+        var content = outputComponent.getMemoryContent(_baseAddress, (lightstripModel.count+7)/8);
+
+        for (var bitIndex = 0; bitIndex < content.length && bitIndex < lightstripModel.count; ++bitIndex) {
+            lightstripModel.setProperty(bitIndex, "active", content[bitIndex]);
+        }
+    }
+
+    // Updates the lightstripModel to correspond to the output item's settings values.
+    function _updatelightstripModel() {
+        var numberOfStrips = outputComponent.getOutputItem(outputItemIndex)["numberOfStrips"];
+        if (numberOfStrips < 0) {
+            numberOfStrips = 0
+        }
+        while (lightstripModel.count < numberOfStrips) {
+            lightstripModel.append({ activeColor: lightstripDefaultActiveColor, inactiveColor: lightstripInactiveColor, active: false })
+        }
+        while (lightstripModel.count > numberOfStrips) {
+            lightstripModel.remove(lightstripModel.count - 1, 1)
+        }
     }
 
     SystemPalette {
@@ -36,51 +83,58 @@ Item {
         colorGroup: SystemPalette.Active
     }
 
-    ListModel {
-        id: strips
-    }
-
+    // Background/Border of the lightstrip.
     Rectangle{
-        color: "#C7C7C7"
-        y: 50
-        height: 110
+        id: lightstripBackground
+        color: "#00000000"
+        anchors.verticalCenter: parent.verticalCenter
+        height: parent.height-20
         anchors.left: parent.left
+        anchors.leftMargin: 10
         anchors.right: parent.right
+        anchors.rightMargin: 10
+        radius: 5
+        border.color: lightstripInactiveColor
+        border.width: 2
 
+        // ListView for lights.
         ListView {
-            spacing: 10
+            spacing: (lightstripBackground.width)/(5*lightstripModel.count+1)
             anchors.fill: parent
-            anchors.leftMargin: 20
-            anchors.rightMargin: 20
-            anchors.topMargin: 5
-            anchors.bottomMargin: 5
+            anchors.leftMargin: (lightstripBackground.width)/(5*lightstripModel.count+1)
+            anchors.rightMargin: (lightstripBackground.width)/(5*lightstripModel.count+1)
+            anchors.topMargin: (lightstripBackground.width)/(5*lightstripModel.count+1)
+            anchors.bottomMargin: (lightstripBackground.width)/(5*lightstripModel.count+1)
 
             orientation: ListView.Horizontal
             interactive: false
 
-            model: strips
+            model: lightstripModel
             delegate: light
         }
     }
 
+    // Single light.
     Component {
         id: light
         Rectangle{
             id: rect
             property int _index: index
 
-            color: _color
-            height: 100
-            width: 20
+            color: (active == true) ? activeColor : inactiveColor
+            height: parent.height
+            anchors.verticalCenter: parent.center
+            width: (4*lightstripBackground.width)/(5*lightstripModel.count+1)
             border.color: systemColorPalette.highlight
             border.width: 0
-
+            radius: 5
 
             MouseArea{
                 anchors.fill: parent
                 hoverEnabled: true
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onClicked: {
+                    // Show change-color-dialog on right-click.
                     if(mouse.button === Qt.RightButton){
                         var newObject = Qt.createQmlObject('import QtQuick 2.2
                                                             import QtQuick.Dialogs 1.0
@@ -92,7 +146,7 @@ Item {
                                                                 title: "Please choose a color"
                                                                 currentColor: rect.color
                                                                 onAccepted: {
-                                                                    strips.set(rect._index,{_color: colorDialog.color.toString()});
+                                                                    lightstripModel.setProperty(rect._index, "activeColor", colorDialog.color.toString());
                                                                     colorDialog.close();
                                                                 }
                                                                 onRejected: {
@@ -103,11 +157,15 @@ Item {
                                                            light,
                                                            "colorChooser");
                     }
+                    // Set light active on left-click.
                     else {
-                        if(_color == "white")
-                            strips.set(_index,{_color: "yellow"});
-                        else
-                            strips.set(_index,{_color: "white"});
+                        lightstripModel.setProperty(_index, "active", !lightstripModel.get(_index).active);
+                        var memoryContent = [];
+                        for (var index = 0; index < lightstripModel.count; ++index) {
+                            memoryContent.push(lightstripModel.get(index).active);
+                        }
+                        var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
+                        outputComponent.putMemoryValue(_baseAddress, memoryContent);
                     }
                 }
                 onEntered: {
@@ -119,4 +177,9 @@ Item {
             }
         }
     }
+
+    LightstripSettingsWindow {
+        id: settingsWindow
+    }
+
 }

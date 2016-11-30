@@ -268,7 +268,7 @@ void RegisterSet::deserializeJSON(const Json &json) {
       // Exceptions <3
       const auto &converted =
           StringConversions::hexStringToMemoryValue(*valueIt, getSize(name));
-      put(name, converted.value());
+      put(name, *converted);
     } else {
       // die and burn in hell
       throw DeserializationError(
