@@ -66,15 +66,8 @@ MemoryValue
 Memory::get(const std::size_t address, const std::size_t amount) const {
   assert::that(address >= 0);
   assert::that(amount >= 0);
-  if (address + amount <= _byteCount) {
-    return _data.subSet(address * _byteSize, (address + amount) * _byteSize);
-  } else {
-    MemoryValue value =
-        _data.subSet(address * _byteSize, (address + amount) * _byteSize);
-    MemoryValue ret = MemoryValue(amount * _byteSize);
-    ret.write(value, 0);
-    return ret;
-  }
+  assert::that(address + amount <= _byteCount);
+  return _data.subSet(address * _byteSize, (address + amount) * _byteSize);
 }
 
 void Memory::put(const std::size_t address,
@@ -89,12 +82,9 @@ void Memory::put(const std::size_t address,
     // do not write anything
     return;
   }
-  if (address + amount <= _byteCount) {
-    _data.write(value, address * _byteSize);
-  } else {
-    _data.write(value.subSet(0, _byteSize * (_byteCount - address)),
-                address * _byteSize);
-  }
+  assert::that(address + amount <= _byteCount);
+  _data.write(value, address * _byteSize);
+  _wasUpdated(address, amount);
 }
 
 MemoryValue Memory::set(const std::size_t address,

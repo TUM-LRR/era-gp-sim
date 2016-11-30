@@ -16,13 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+#include <vector>
+
 #include "arch/common/architecture.hpp"
 #include "common/assert.hpp"
-#include "parser/intermediate-instruction.hpp"
-
-#include "core/memory-access.hpp"
-#include "parser/macro-directive.hpp"
 #include "core/conversions.hpp"
+#include "core/memory-access.hpp"
+#include "parser/final-representation.hpp"
+#include "parser/intermediate-instruction.hpp"
+#include "parser/macro-directive.hpp"
+#include "parser/symbol-table.hpp"
+#include "parser/syntax-tree-generator.hpp"
+
+IntermediateInstruction::IntermediateInstruction(
+    const LineInterval& lines,
+    const std::vector<std::string>& labels,
+    const std::string& name,
+    const std::vector<std::string>& sources,
+    const std::vector<std::string>& targets)
+: IntermediateOperation(lines, labels, name)
+, _sources(sources)
+, _targets(targets) {
+}
 
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       const SymbolTable& table,
@@ -44,18 +60,28 @@ IntermediateInstruction::compileArgumentVector(
   // First of all, we insert all constants. Then, we convert every single one of
   // them to a syntax tree node.
   std::vector<std::string> cpy(vector);
-  table.replaceSymbols(cpy, state, [&, generator](const std::string& replace, SymbolTable::SymbolType type) -> std::string {
-      //When inserting a label, we might transform its value into a relative one (depends on the instruction)
-      //We use NodeFactoryCollection::labelToImmediate which translates the value if necessary
-      if(type != SymbolTable::SymbolType::LABEL) {
+  table.replaceSymbols(
+      cpy,
+      state,
+      [&, generator](const std::string& replace,
+                     SymbolTable::SymbolType type) -> std::string {
+        // When inserting a label, we might transform its value into a relative
+        // one (depends on the instruction)
+        // We use NodeFactoryCollection::labelToImmediate which translates the
+        // value if necessary
+        if (type != SymbolTable::SymbolType::LABEL) {
           return replace;
-      }else{
-          MemoryValue labelValue = conversions::convert<size_t>(std::stoul(replace), sizeof(size_t)*8);
-          MemoryValue instructionAdress = conversions::convert<size_t>(_relativeAddress.offset, sizeof(size_t)*8);
-          MemoryValue relativeAdress =  generator.getNodeFactories().labelToImmediate(labelValue, _name, instructionAdress);
+        } else {
+          MemoryValue labelValue = conversions::convert<size_t>(
+              std::stoul(replace), sizeof(size_t) * 8);
+          MemoryValue instructionAdress = conversions::convert<size_t>(
+              _relativeAddress.offset, sizeof(size_t) * 8);
+          MemoryValue relativeAdress =
+              generator.getNodeFactories().labelToImmediate(
+                  labelValue, _name, instructionAdress);
           return relativeAdress.toHexString(true, true);
-      }
-  });
+        }
+      });
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> output;
   output.reserve(cpy.size());
   for (const auto& i : cpy) {
@@ -87,6 +113,10 @@ FinalCommand IntermediateInstruction::compileInstruction(
   return result;
 }
 
+MemoryAddress IntermediateInstruction::address() const {
+  return _address;
+}
+
 void IntermediateInstruction::enhanceSymbolTable(
     SymbolTable& table, const MemoryAllocator& allocator, CompileState& state) {
   if (_relativeAddress.valid()) {
@@ -97,7 +127,8 @@ void IntermediateInstruction::enhanceSymbolTable(
 
   // We insert all our labels.
   for (const auto& i : _labels) {
-    table.insertEntry(i, std::to_string(_address), state, SymbolTable::SymbolType::LABEL);
+    table.insertEntry(
+        i, std::to_string(_address), state, SymbolTable::SymbolType::LABEL);
   }
 }
 
@@ -181,3 +212,16 @@ std::string IntermediateInstruction::toString() const {
     str += "\n";
     return str;
   }
+
+
+IntermediateOperationPointer IntermediateInstruction::clone() {
+  return IntermediateOperationPointer{new IntermediateInstruction{*this}};
+}
+
+std::vector<std::string> IntermediateInstruction::getArgsVector() const {
+  std::vector<std::string> args;
+  args.reserve(_sources.size() + _targets.size());
+  args.insert(args.end(), _targets.begin(), _targets.end());
+  args.insert(args.end(), _sources.begin(), _sources.end());
+  return args;
+}

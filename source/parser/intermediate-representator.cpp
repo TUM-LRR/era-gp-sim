@@ -20,6 +20,7 @@
 
 #include "arch/common/architecture.hpp"
 #include "parser/intermediate-macro-instruction.hpp"
+#include "parser/memory-allocator.hpp"
 #include "parser/symbol-table.hpp"
 
 void IntermediateRepresentator::generateMacroInformation(
@@ -28,11 +29,40 @@ void IntermediateRepresentator::generateMacroInformation(
     if (dynamic_cast<IntermediateMacroInstruction*>(i.get()) == nullptr)
       continue;
 
-    MacroInformation info{
-        static_cast<IntermediateMacroInstruction&>(*i).toString(),
-        {{i->lines().lineStart, 0}, {i->lines().lineEnd, 0}}};
+    MacroInformation info(static_cast<IntermediateMacroInstruction&>(*i).toString(),
+                          CodePositionInterval(CodePosition(i->lines().lineStart, 0), CodePosition(i->lines().lineEnd, 0)));
 
     representation.macroList.push_back(std::move(info));
+  }
+}
+
+IntermediateRepresentator::IntermediateRepresentator()
+: _commandList(), _currentOutput(nullptr) {
+}
+
+void IntermediateRepresentator::insertCommandPtr(
+    IntermediateOperationPointer&& command, CompileState& state) {
+  // We got to handle the three target selector cases right here.
+  if (command->newTarget() == TargetSelector::THIS) {
+    // If we want the current command as new target, we set it like so.
+    if (_currentOutput) {
+      // Nested macros are not supported.
+      state.addError("Error, nested macros are not supported.");
+    }
+    _currentOutput = std::move(command);
+  } else {
+    if (command->newTarget() == TargetSelector::MAIN) {
+      // For the main selector, we may also insert the old command (otherwise
+      // it and its sub commands might be lost).
+      if (!_currentOutput) {
+        // Classic bracket forgot to close problem.
+        state.addError("The start directive of the macro is missing.");
+      }
+      internalInsertCommand(std::move(_currentOutput));
+    }
+
+    // Finally, we may insert our handed-over command.
+    internalInsertCommand(std::move(command));
   }
 }
 
@@ -77,12 +107,26 @@ IntermediateRepresentator::transform(const Architecture& architecture,
 
   // Then, we execute their values.
   for (const auto& i : _commandList) {
-    if (i->executionTime() == IntermediateExecutionTime::AFTER_ALLOCATION)
+    if (i->executionTime() == IntermediateExecutionTime::AFTER_ALLOCATION) {
       i->execute(representation, table, generator, state, memoryAccess);
+    }
   }
 
   representation.errorList = state.errorList;
 
   // Now, we are done.
   return representation;
+}
+
+void IntermediateRepresentator::internalInsertCommand(
+    IntermediateOperationPointer pointer) {
+  // Of course, it should be valid and is allowed to be inserted.
+  if (pointer && pointer->shouldInsert()) {
+    // We got to decide if there is an alternative output.
+    if (_currentOutput) {
+      _currentOutput->insert(std::move(pointer));
+    } else {
+      _commandList.push_back(std::move(pointer));
+    }
+  }
 }

@@ -16,6 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <set>
+
 #include "common/assert.hpp"
 #include "common/string-conversions.hpp"
 #include "core/deserialization-error.hpp"
@@ -266,7 +268,7 @@ void RegisterSet::deserializeJSON(const Json &json) {
       }
       // TODO::maybe use sommething else? Maybe something that throws some
       // Exceptions <3
-      const auto &converted =
+      auto converted =
           StringConversions::hexStringToMemoryValue(*valueIt, getSize(name));
       put(name, *converted);
     } else {

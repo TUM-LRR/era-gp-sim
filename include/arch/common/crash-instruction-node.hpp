@@ -42,8 +42,7 @@ class SimulatorCrashInstructionNode : public AbstractInstructionNode {
  * value (like a custom message text) the assembled format may not depend on the
  * operands assembled format.
  */
-  SimulatorCrashInstructionNode(const InstructionInformation &info,
-                                MemoryValue assembled);
+  SimulatorCrashInstructionNode(const InstructionInformation &info);
 
   /** \copydoc AbstractInstructionNode::validate() */
   ValidationResult validate(MemoryAccess &memoryAccess) const override;
@@ -55,19 +54,11 @@ class SimulatorCrashInstructionNode : public AbstractInstructionNode {
    */
   ValidationResult validateRuntime(MemoryAccess &memoryAccess) const override;
 
-  MemoryValue assemble() const override;
-
   /**
    * It is not intended to call this function as execution should stop when validateRuntime() fails. This
    * is asserted
    */
   MemoryValue getValue(MemoryAccess &memoryAccess) const override;
-
- private:
-  /**
-   * The assembled format of this instruction, ready to be returned for assemble()
-   */
-  MemoryValue _assembled;
 };
 
 #endif  // ERA_GP_SIM_ARCH_COMMON_CRASH_INSTRUCTION_NODE_HPP
