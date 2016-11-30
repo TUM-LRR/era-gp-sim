@@ -11,6 +11,9 @@ set(UI_SOURCES
     ui.cpp
     gui-project.cpp
     output-component.cpp
+    inputbuttonmodel.cpp
+    inputtextmodel.cpp
+    inputclickmodel.cpp
 )
 
 set(UI_HEADERS
@@ -21,6 +24,9 @@ set(UI_HEADERS
     ../../include/ui/memory-component-presenter.hpp
     ../../include/ui/ui.hpp
     ../../include/ui/output-component.hpp
+    ../../include/ui/inputbuttonmodel.hpp
+    ../../include/ui/inputclickmodel.hpp
+    ../../include/ui/inputtextmodel.hpp
 )
 
 

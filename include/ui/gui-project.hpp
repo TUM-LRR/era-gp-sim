@@ -171,11 +171,19 @@ class GuiProject : QObject {
    */
   EditorComponent _editorComponent;
 
+
   /**
    * @brief _outputComponent The model for each output item (i.e
    * lightstrip, sevensegment, console).
    */
   OutputComponent _outputComponent;
+
+  /**
+    *\brief The input-models
+    */
+  InputButtonModel _inputBM;
+  InputTextModel _inputTM;
+  InputClickModel _inputCM;
 
   // SnapshotModel snapmodel;
   MemoryComponentPresenter _memoryModel;
