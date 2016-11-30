@@ -92,9 +92,9 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   virtual void allocateMemory(const Architecture& architecture,
                               MemoryAllocator& allocator,
                               CompileState& state) {
-    if (_values.empty()) {
-      state.addError("Arguments missing here.");
-    }
+      if(_values.empty()) {
+          state.addError("Empty data definition", CodePosition(_lines.lineStart, _lines.lineEnd));
+      }
 
     // So, we simply calculate and sum up our arguments.
     // Let's hope, the compiler optimizes this...
@@ -168,13 +168,13 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   }
 
  private:
-  ProcessValuesFunction _processValues;
   std::size_t _byteSize;
   std::size_t _absolutePosition;
   RelativeMemoryPosition _relativePosition;
   std::size_t _size;
   std::size_t _cellSize;
   std::vector<std::string> _values;
+  ProcessValuesFunction _processValues;
 };
 
 #endif /* ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP */
