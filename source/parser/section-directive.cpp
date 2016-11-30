@@ -19,6 +19,7 @@
 
 #include "parser/section-directive.hpp"
 #include "parser/compile-state.hpp"
+#include "parser/memory-allocator.hpp"
 
 SectionDirective::SectionDirective(const LineInterval& lines,
                                    const std::vector<std::string>& labels,
