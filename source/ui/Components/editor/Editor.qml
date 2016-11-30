@@ -94,6 +94,14 @@ ScrollView {
                     else if (event.key === Qt.Key_Left || event.key === Qt.Key_Up || event.key === Qt.Key_Right || event.key === Qt.Key_Down) {
                         triggeringKeyEvent = event.key
                         event.accepted = false;
+                    } else if (event.key === Qt.Key_Backspace) {
+                        // Prevents deleting a blank line as it would mess up the proper deletion of any
+                        // macro expansion.
+                        if (isPositionInsideMacroBlankLine(textArea.text, textArea.cursorPosition-1)) {
+                            event.accepted = true;
+                        } else {
+                            event.accepted = false;
+                        }
                     } else {
                         triggeringKeyEvent = undefined;
                         event.accepted = false;
