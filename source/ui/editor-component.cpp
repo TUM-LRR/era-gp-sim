@@ -60,9 +60,6 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
           int lineCount = (int)std::count(it->macroCode().begin(), it->macroCode().end(), '\n');
           macroInformation["lineCount"] = QVariant::fromValue(
              lineCount);
-          qDebug() << macroInformation["lineCount"];
-          //macroInformation["lineCount"] = QVariant::fromValue(
-          //    it->position().second.line() - it->position().first.line() + 1);
           macroInformation["collapsed"] = QVariant::fromValue(true);
           updatedMacroList.append(macroInformation);
         }

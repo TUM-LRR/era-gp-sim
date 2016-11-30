@@ -7,7 +7,6 @@ ClipboardAdapter::ClipboardAdapter(QObject *parent) : QObject(parent) {
 
 void ClipboardAdapter::setText(QString text){
     clipboard->setText(text, QClipboard::Clipboard);
-    //clipboard->setText(text, QClipboard::Selection);
 }
 
 

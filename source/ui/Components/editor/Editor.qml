@@ -208,7 +208,6 @@ ScrollView {
                 Connections {
                     target: editor
                     onUpdateMacros: {
-                        console.log("onUpdateMacros");
                         // Make sure no old macros are still present.
                         textArea.removeCurrentMacros();
                         // Add the new macros.
@@ -288,9 +287,9 @@ ScrollView {
                 property var oldLineCount: 0
 
                 function macroUpdatesOnTextChanged() {
-                    // Test is text was changed by user or the program (e.g. when expanding macro).
+                    // Only update when text was changed by user but not by the program (e.g. when expanding macro).
                     if (shouldUpdateText) {
-                        // When lines where inserted or removed above any macro its startLine has to be offset
+                        // When lines where inserted or removed above any macro, its startLine has to be offset
                         // in order to guarantee its blank lines are removed correctly when collapsing.
                         // Calculate the number of lines inserted/deleted.
                         var lineCountDifference = textArea.lineCount - oldLineCount;
@@ -409,24 +408,30 @@ ScrollView {
                     cursorPosition = cursorPos;
                 }
 
-
                 // Returns true, if the given position is inside a blank line that was soley inserted for a macro expansion.
                 function isPositionInsideMacroBlankLine(text, position) {
                     var lineNumber = TextUtilities.getLineNumberForPosition(text, position);
                     var blankLineCount = 0;
+                    // Iterates over each macro and checks its blank lines. If a blank line is found that corresponds to
+                    // the given lineNumber, true is returned. If at some point the macro's line number surpasses the
+                    // given lineNumber, false is returned, as it is save to assume that lineNumber does not correspond
+                    // to a blank line.
                     for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
                         var clearedLineNumber = lineNumber-blankLineCount;
                         if (clearedLineNumber > macros[macroIndex]["startLine"]) {
                             if (macros[macroIndex]["collapsed"] === false) {
+                                // Given lineNumber lies within an macro expansion's blank lines.
                                 if (clearedLineNumber <= macros[macroIndex]["startLine"]+macros[macroIndex]["lineCount"]) {
                                     return true;
                                 }
+                                // Save number of blank lines to filter them out when reading macro-startLine information.
                                 blankLineCount += macros[macroIndex]["lineCount"];
                             }
                         } else {
                             return false;
                         }
                     }
+                    // Given lineNumber lies below any macro and therefore cannot correspond to a blank line.
                     return false;
                 }
 
@@ -499,10 +504,10 @@ ScrollView {
 
             // Text can be selected as always, however the blank lines inserted for macro expansions
             // should be removed when copied. This can be done through the
-            // ClipboardAdapter (Clipboard can not be accessed via QML directly).
+            // ClipboardAdapter (Clipboard cannot be accessed via QML directly).
             ClipboardAdapter {
                 id: clipboard
-                // Prevent loop, as clipboard is edited inside onDataChanged.
+                // Prevents loop, as clipboard is edited inside onDataChanged.
                 property var shouldUpdateClipboardText: true
                 // Edit copied text when clipboard data changed.
                 onDataChanged: {
