@@ -57,8 +57,7 @@ std::size_t Memory::getByteCount() const {
   return _byteCount;
 }
 
-void Memory::setCallback(
-    const std::function<void(const std::size_t, const std::size_t)>& callback) {
+void Memory::setCallback(const CallbackFunction& callback) {
   _callback = callback;
 }
 
@@ -149,28 +148,8 @@ MemoryValue Memory::trySet(std::size_t address,
 
 void Memory::_appendMemoryValue(std::stringstream& strm,
                                 const MemoryValue& value) {
-  static const char hex[] = "0123456789ABCDEF";
-  bool zero = true;
-  // reversely iterate over all the bytes in value (high->low)
-  for (std::size_t l = (value.getSize() + 7) / 8; l-- > 0;) {
-    std::uint8_t byte = value.getByteAt(l * 8);
-    std::uint8_t upperChar = byte / 16;
-    std::uint8_t lowerChar = byte % 16;
-    // do not print if this is the first character && it's 0
-    if (!zero || upperChar != 0) {
-      strm.put(hex[upperChar]);
-      zero = false;
-    }
-    // do not print if this is the first character && it's 0
-    if (!zero || lowerChar != 0) {
-      strm.put(hex[lowerChar]);
-      zero = false;
-    }
-  }
-  // if no characters have been printed print 0
-  if (zero) {
-    strm.put('0');
-  }
+  std::string s = value.toHexString(false, true);
+  strm << s;
 }
 
 std::pair<std::map<std::string, std::size_t>,
@@ -374,7 +353,7 @@ void Memory::_wasUpdated() {
   _wasUpdated(0, _byteCount);
 }
 
-void Memory::_wasUpdated(const std::size_t address, const std::size_t amount) {
+void Memory::_wasUpdated(std::size_t address, std::size_t amount) {
   _callback(address, amount);
 }
 

@@ -32,6 +32,8 @@
 class Memory {
  public:
   using Json = nlohmann::json;
+  using CallbackFunction =
+      std::function<void(const std::size_t, const std::size_t)>;
   /**
    * \brief Default constructor. Constructs an empty Memory with default size
    *        (64 Bytes � 8 Bit)
@@ -100,8 +102,7 @@ class Memory {
    * \brief Sets the callback to notify the gui about changes in the data
    * \param callback the callback to be set as _callback
    */
-  void setCallback(const std::function<void(const std::size_t,
-                                            const std::size_t)> &callback);
+  void setCallback(const CallbackFunction &callback);
 
   /**
    * \brief Returns a MemoryValue holding the data stored in the Memory at
@@ -271,9 +272,7 @@ class Memory {
   /**
    * \brief This function gets called for every changed area in Memory
    */
-  std::function<void(const std::size_t, const std::size_t)> _callback = [](
-      const std::size_t, const std::size_t) {};
-  /**< Brief This function gets called for every changed area in Memory*/
+  CallbackFunction _callback = [](const std::size_t, const std::size_t) {};
 
   /**
    * \brief vector storing data about protected memory areas
@@ -328,7 +327,7 @@ class Memory {
    * \param address address of the updated value
    * \param amount length of the updated value
    */
-  void _wasUpdated(const std::size_t address, const std::size_t amount = 1);
+  void _wasUpdated(std::size_t address, std::size_t amount = 1);
 
   /**
    * \brief appends a string represenation of value to stream

@@ -67,7 +67,7 @@ TEST(memory, readWrite) {
 }
 
 TEST(memory, serialization) {
-  constexpr std::size_t memorySize = 1024 * 64 - 1;
+  constexpr std::size_t memorySize = 1 * 64 - 0;
   Memory instance0{memorySize, 8};
   std::uniform_int_distribution<std::uint16_t> dist{0, 255};
   std::mt19937 rand(0);// I need new numbers, I'm kinda really out of ideas
@@ -91,7 +91,6 @@ TEST(memory, serialization) {
   instance3.put(memorySize - 1, MemoryValue{std::vector<std::uint8_t>{1}, 8});
   nlohmann::json json2 = instance3.serializeJSON(nlohmann::json{}, ';', 1);
   Memory instance4{json2};
-  // instance4.deserializeJSON(json2);
   ASSERT_EQ(instance3, instance4);
 }
 
