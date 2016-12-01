@@ -110,18 +110,40 @@ class Memory {
    * \param amount Number of Bytes comprising the value
    * \returns MemoryValue holding the data stored in the Memory at
    *          [address;address+amount[
+   * \throws AssertionError iff [address; address+amount[ is not subset of
+   *         [0; _byteCount[
    */
-  MemoryValue
-  get(const std::size_t address, const std::size_t amount = 1) const;
+  MemoryValue get(std::size_t address, std::size_t amount = 1) const;
+  /**
+   * \brief Returns a MemoryValue holding the data stored in the Memory at
+   *        [address; address+amount[
+   * \param address Starting location of the Value in the Memory
+   * \param amount Number of Bytes comprising the value
+   * \returns MemoryValue holding the data stored in the Memory at
+   *          [address;address+amount[ with 0 for all bytes not in
+   *          [0; _byteCount[
+   */
+  MemoryValue tryGet(std::size_t address, std::size_t amount = 1) const;
+  /**
+   * \brief Writes value into the Memory at address
+   * \param address Starting address of the to be overwritten value
+   * \param value Value to write
+   * \param ignoreProtection if this is true do ignore all protection
+   * \throws AssertionError iff [address; address+(value.size()/_byteSize)[ is
+   *         not subset of [0; _byteCount[ or value.size()%_byteSize != 0
+   */
+  void put(std::size_t address,
+           const MemoryValue &value,
+           bool ignoreProtection = false);
   /**
    * \brief Writes value into the Memory at address
    * \param address Starting address of the to be overwritten value
    * \param value Value to write
    * \param ignoreProtection if this is true do ignore all protection
    */
-  void put(const std::size_t address,
-           const MemoryValue &value,
-           bool ignoreProtection = false);
+  void tryPut(std::size_t address,
+              const MemoryValue &value,
+              bool ignoreProtection = false);
   /**
    * \brief Writes value into the Memory at address and returns the previous
    *        value
@@ -129,10 +151,24 @@ class Memory {
    * \param value Value to write
    * \param ignoreProtection if this is true do ignore all protection
    * \returns Value that was overwritten
+   * \throws AssertionError iff [address; address+(value.size()/_byteSize)[ is
+   *         not subset of [0; _byteCount[ or value.size()%_byteSize != 0
    */
-  MemoryValue set(const std::size_t address,
+  MemoryValue set(std::size_t address,
                   const MemoryValue &value,
                   bool ignoreProtection = false);
+  /**
+   * \brief Writes value into the Memory at address and returns the previous
+   *        value
+   * \param address Starting address of the to be overwritten value
+   * \param value Value to write
+   * \param ignoreProtection if this is true do ignore all protection
+   * \returns Value that was overwritten with 0 for all bytes not in
+   *          [0; _byteCount[
+   */
+  MemoryValue trySet(std::size_t address,
+                     const MemoryValue &value,
+                     bool ignoreProtection = false);
 
   /**
    * \brief converts the memory into serializeable strings
@@ -247,6 +283,46 @@ class Memory {
   std::map<std::size_t, std::size_t> _protection{};
 
   /**
+   * \brief Returns a MemoryValue holding the data stored in the Memory at
+   *        [address; address+amount[, undefined behaviour if
+   *        [address; address+amount[ is not subset of [0;_byteCount[
+   * \param address Starting location of the Value in the Memory
+   * \param amount Number of Bytes comprising the value
+   * \returns MemoryValue holding the data stored in the Memory at
+   *          [address;address+amount[
+   */
+  MemoryValue _get(std::size_t address, std::size_t amount = 1) const;
+  /**
+   * \brief Writes value into the Memory at address, undefined behaviour if
+   *        [address; address + value.size() / _byteSize[ is not subset of
+   *        [0;_byteCount[
+   * \param address Starting address of the to be overwritten value
+   * \param value Value to write
+   * \param amount precalculated amount of bytes stored in value
+   * \param ignoreProtection if this is true do ignore all protection
+   */
+  void _put(std::size_t address,
+            const MemoryValue &value,
+            std::size_t amount,
+            bool ignoreProtection = false);
+  /**
+   * \brief Writes value into the Memory at address and returns the previous
+   *        value, undefined behaviour if [address; address + value.size() /
+   *        _byteSize[ is not subset of [0;_byteCount[
+   * \param address Starting address of the to be overwritten value
+   * \param value Value to write
+   * \param ignoreProtection if this is true do ignore all protection
+   * \returns Value that was overwritten
+   */
+  MemoryValue _set(std::size_t address,
+                   const MemoryValue &value,
+                   bool ignoreProtection = false);
+  /**
+   * \brief This Method is called when the whole Memory changes and
+   *        notifies the Gui of the change
+   */
+  void _wasUpdated();
+  /**
    * \brief This Method is called whenever something in the Memory changes and
    *        notifies the Gui of the change
    * \param address address of the updated value
@@ -291,10 +367,10 @@ class Memory {
    *        overlaps with the area [address, address + amount]
    */
   bool _overlaps(std::size_t protectionBegin,
-                  std::size_t protectionEnd,
-                  std::size_t address,
-                  std::size_t amount,
-                  bool equal) const;
+                 std::size_t protectionEnd,
+                 std::size_t address,
+                 std::size_t amount,
+                 bool equal) const;
 };
 
 #endif// ERAGPSIM_CORE_MEMORY_HPP_
