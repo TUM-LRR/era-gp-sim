@@ -67,7 +67,7 @@ TEST(memory, readWrite) {
 }
 
 TEST(memory, serialization) {
-  constexpr std::size_t memorySize = 1 * 64 - 0;
+  constexpr std::size_t memorySize = 1024 * 64 - 1;
   Memory instance0{memorySize, 8};
   std::uniform_int_distribution<std::uint16_t> dist{0, 255};
   std::mt19937 rand(0);// I need new numbers, I'm kinda really out of ideas

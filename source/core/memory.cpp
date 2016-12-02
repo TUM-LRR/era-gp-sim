@@ -38,7 +38,10 @@ Memory::Memory() : Memory(64, 8) {
 }
 
 Memory::Memory(std::size_t byteCount, std::size_t byteSize)
-: _byteCount{byteCount}, _byteSize{byteSize}, _data{byteCount * byteSize} {
+: _byteCount{byteCount}
+, _byteSize{byteSize}
+, _data{byteCount * byteSize}
+, _callback{[](const std::size_t, const std::size_t) {}} {
   assert::that(byteCount > 0);
   assert::that(byteSize > 0);
 }
@@ -152,8 +155,7 @@ void Memory::_appendMemoryValue(std::stringstream& strm,
   strm << s;
 }
 
-std::pair<std::map<std::string, std::size_t>,
-          std::map<std::string, std::string>>
+Memory::RawMapPair
 Memory::_serializeRaw(char separator, std::size_t lineLength) const {
   if (lineLength > _byteCount) {
     lineLength = _byteCount;
@@ -346,14 +348,14 @@ std::ostream& operator<<(std::ostream& stream, const Memory& value) {
 
 void Memory::clear() {
   _data.clear();
+  _wasUpdated();
+}
+
+void Memory::_wasUpdated() const {
   _wasUpdated(0, _byteCount);
 }
 
-void Memory::_wasUpdated() {
-  _wasUpdated(0, _byteCount);
-}
-
-void Memory::_wasUpdated(std::size_t address, std::size_t amount) {
+void Memory::_wasUpdated(std::size_t address, std::size_t amount) const {
   _callback(address, amount);
 }
 
