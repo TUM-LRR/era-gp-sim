@@ -29,10 +29,11 @@ TextField {
 
     // Fetches the register's content with the appropiate format from the model.
     function registerContent() {
+        if (model === null) { return ""; }
         var registerContentString;
         switch (dataTypeFormatComboBox.currentText) {
         case "Binary":
-            registerContentString = model.BinaryData;//registerModel.data(styleData.index, 2);
+            registerContentString = model.BinaryData;
             break;
         case "Hexadecimal":
             registerContentString = model.HexData;
