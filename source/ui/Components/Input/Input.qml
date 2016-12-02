@@ -60,7 +60,7 @@
               and not the output item itself.
          */
          Tab {
-             title: "Buttons/Text Console Icon"
+             title: "Buttons/Arrow Button Input Icon"
              ButtonInput{
                  inputItemIndex: 0
                  id: buttonI
@@ -70,7 +70,7 @@
 
 
          Tab {
-             title: "Buttons/Text Console Icon"
+             title: "Buttons/Mouse Input Icon"
              ClickInput{
                  inputItemIndex: 1
                  id: clickI
@@ -113,7 +113,7 @@
                          background: Rectangle {
                              color: "#00000000"
                              Image {
-                                source: (control.pressed) ? "Buttons/Settings_Icon_Pressed.png" : "Buttons/Settings _Icon.png"
+                                source: (control.pressed) ? "Buttons/Settings_Icon_Pressed.png" : "Buttons/Settings_Icon.png"
                              }
                         }
                      }
