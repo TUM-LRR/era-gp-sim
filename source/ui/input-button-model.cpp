@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "ui/inputbuttonmodel.hpp"
+#include "ui/input-button-model.hpp"
 #include "core/conversions.hpp"
 
 InputButtonModel::InputButtonModel(QQmlContext* context, MemoryAccess m) : QObject(), context(context), start(0), memoryAccess(m){

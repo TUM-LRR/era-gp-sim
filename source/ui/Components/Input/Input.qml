@@ -60,7 +60,7 @@
               and not the output item itself.
          */
          Tab {
-             title: "Buttons"
+             title: "Buttons/Text Console Icon"
              ButtonInput{
                  inputItemIndex: 0
                  id: buttonI
@@ -70,7 +70,7 @@
 
 
          Tab {
-             title: "MouseArea"
+             title: "Buttons/Text Console Icon"
              ClickInput{
                  inputItemIndex: 1
                  id: clickI
@@ -79,7 +79,7 @@
          }
 
          Tab {
-             title: "TextInput"
+             title: "Buttons/Text Console Icon"
              TextInputSelf{
                  inputItemIndex: 2
                  id: textI
@@ -121,6 +121,18 @@
                      onClicked: {
                          inputTabView.getTab(inputTabView.currentIndex).item.settingsButtonPressed();
                      }
+                 }
+             }
+
+             tab: Rectangle {
+                 implicitWidth: icon.width + 20
+                 implicitHeight: 26
+                 color: Qt.rgba(0, 0, 0, 0)
+                 Image {
+                     id: icon
+                     anchors.centerIn: parent
+                     // Tab's title contains prefix for icon file; add suffix depending on selection.
+                     source: (styleData.selected) ? styleData.title + " Selected.png" : styleData.title + ".png"
                  }
              }
 

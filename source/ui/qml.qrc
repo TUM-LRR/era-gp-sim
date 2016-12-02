@@ -61,5 +61,7 @@
         <file>Components/Input/TextInputSW.qml</file>
         <file>Components/Input/Buttons/Settings _Icon.png</file>
         <file>Components/Input/Buttons/Settings_Icon_Pressed.png</file>
+	<file>Components/Input/Buttons/Text Console Icon Selected.png</file>
+        <file>Components/Input/Buttons/Text Console Icon.png</file>
     </qresource>
 </RCC>

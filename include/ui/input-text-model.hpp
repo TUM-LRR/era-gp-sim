@@ -21,7 +21,7 @@ public:
 
     Q_INVOKABLE void setStart(int start);
     Q_INVOKABLE void setMaxLength(int maxL);
-    Q_INVOKABLE int getMaxLaenge();
+    Q_INVOKABLE int getMaxLength();
     Q_INVOKABLE QString getStart();
 
 private:

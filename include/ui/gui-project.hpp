@@ -33,6 +33,9 @@
 #include "ui/memory-component-presenter.hpp"
 #include "ui/register-model.hpp"
 #include "ui/output-component.hpp"
+#include "ui/input-button-model.hpp"
+#include "ui/input-text-model.hpp"
+#include "ui/input-click-model.hpp"
 //#include "ui/snapshotmodel.hpp"
 
 

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "ui/inputclickmodel.hpp"
+#include "ui/input-click-model.hpp"
 #include "core/conversions.hpp"
 
 

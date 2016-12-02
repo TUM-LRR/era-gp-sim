@@ -1,16 +1,16 @@
 #include <iostream>
 
-#include "ui/inputtextmodel.hpp"
+#include "ui/input-text-model.hpp"
 #include "core/conversions.hpp"
 
-InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess m): QObject(), context(context), start(0), maxLaenge(20), memoryAccess(m)
+InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess m): QObject(), context(context), start(0), maxLength(20), memoryAccess(m)
 {
     context->setContextProperty("inputtextMod", this);
 }
 
 void InputTextModel::newText(QString text){
     std::string stdText=text.toStdString();
-    std::cout<<stdText<<std::endl;
+    //std::cout<<stdText<<std::endl;
 
 
     for(unsigned i=0; i<stdText.length(); i++){
@@ -25,7 +25,7 @@ void InputTextModel::newText(QString text){
 }
 
 void InputTextModel::setStart(int start){
-    if(memoryAccess.getMemorySize().get() >= start+maxLaenge){
+    if(memoryAccess.getMemorySize().get() >= start+maxLength){
         this->start=start;
     }
 }
