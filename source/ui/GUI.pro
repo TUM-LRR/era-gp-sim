@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     registermodel.cpp \
     qproject.cpp \
     syntaxhighlighter.cpp \
-    editor-component.cpp
+    editor-component.cpp \
+    pixel-display-painted-item-cpp
 
 RESOURCES += qml.qrc
 
@@ -23,4 +24,5 @@ HEADERS += \
     ../../include/ui/registermodel.hpp \
     ../../include/ui/qproject.hpp \
     ../../include/ui/syntaxhighlighter.hpp \
-    ../../include/ui/editor-component.hpp
+    ../../include/ui/editor-component.hpp \
+    ../../include/ui/pixel-display-pited-item.hpp

@@ -22,6 +22,7 @@ set(UI_HEADERS
     ../../include/ui/memory-component-presenter.hpp
     ../../include/ui/ui.hpp
     ../../include/ui/output-component.hpp
+    ../../include/ui/pixel-display-painted-item.hpp
 )
 
 

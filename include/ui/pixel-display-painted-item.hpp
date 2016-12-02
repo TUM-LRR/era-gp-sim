@@ -30,6 +30,11 @@
 #include <utility>
 #include <vector>
 
+#include <iostream>
+#include "common/optional.hpp"
+//#include "core/memory-access.hpp"
+#include "ui/output-component.hpp"
+
 namespace colorMode {
 struct ColorMode;
 struct Options {
@@ -103,10 +108,13 @@ struct ColorMode {
 }
 
 class PixelDisplayPaintedItem : public QQuickPaintedItem {
-  Q_PROPERTY(void paint)
+  Q_OBJECT
+  Q_PROPERTY(OutputComponent outputComponentPointer WRITE setOutputComponent)
  public:
-// PixelDisplayPaintedItem(QQuickItem *parent = 0) : QQuickPaintedItem(parent) {
-//  _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_RGB32);
+  // PixelDisplayPaintedItem(QQuickItem *parent = 0) : QQuickPaintedItem(parent)
+  // {
+  //  _image = std::make_shared<QImage>(_breadth, _height,
+  //  QImage::Format_RGB32);
   PixelDisplayPaintedItem(QQuickItem *parent = 0) : QQuickPaintedItem(parent) {
     _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_Mono);
     //_image->fill(QColor("#00FFFF").rgb());
@@ -125,6 +133,10 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
 
   void redrawAll();
 
+  void setOutputComponent(OutputComponent &o){
+    _outputComponentPointer=&o;
+  }
+
   std::uint32_t getColorAt(std::size_t address);
 
   std::size_t getBaseAddress() const;
@@ -141,6 +153,8 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   std::size_t _breadth = 320;
   std::size_t _height = 240;
   std::size_t _colorMode = 0;
+
+  Optional<OutputComponent*> _outputComponentPointer;
 
   bool isInRange(std::size_t address, std::size_t amount) const;
   std::vector<std::pair<std::size_t, std::size_t>>
