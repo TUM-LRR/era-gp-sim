@@ -1,6 +1,5 @@
 #snapshot files
 *.snapshot
-snapshots/
 
 # Created by https://www.gitignore.io/api/emacs,c++,sass,c,qt
 
