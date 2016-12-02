@@ -93,7 +93,7 @@ Window {
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
                     var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
-                    if (inputValue !== undefined && inputValue > 0) {
+                    if (inputValue !== undefined && inputValue >= 0) {
                         outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
                     }
                 }
@@ -158,7 +158,7 @@ Window {
 
         onClicked: {
             baseAddressTextField.processInput();
-            mode.processInput();
+            //mode.processInput(); //Pipelike will be updated two times
             close();
         }
     }

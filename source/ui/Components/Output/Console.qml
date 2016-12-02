@@ -4,6 +4,8 @@ import QtQuick.Controls 1.4
 
 Item {
     property int outputItemIndex: 2
+    property int oldMode: 0
+    property var oldAddress: 0
     id: it
 
 
@@ -34,6 +36,9 @@ Item {
                    }
                }
             }
+            function clear(){
+                text = "";
+            }
 
         }
 
@@ -56,14 +61,29 @@ Item {
             // Send when any item's settings where updated.
             onOutputItemSettingsChanged: {
                 //console.log("onOutputItemSettingsChanged");
+                var mode = outputComponent.getOutputItem(outputItemIndex)["textMode"];
+                var baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
+                if(mode == oldMode && baseAddress == oldAddress){
+                    return;
+                }
                 it.updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
                 settingsWindowC.updateSettings();
             }
         }
     }
     function updateContent(_baseAddress) {
+        var mode = outputComponent.getOutputItem(outputItemIndex)["textMode"];
+        if(oldMode !== mode){
+            oldMode = mode;
+            textarea.clear();
+        }
+
+        if(oldAddress !== _baseAddress){
+            oldAddress = _baseAddress;
+            textarea.clear();
+        }
+
         var currentText = textarea.text;
-        var mode = textarea.text = outputComponent.getOutputItem(outputItemIndex)["textMode"];
         textarea.text = outputComponent.getTextFromMemory(_baseAddress, currentText, mode);
     }
 
