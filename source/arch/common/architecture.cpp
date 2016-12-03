@@ -104,6 +104,11 @@ const InstructionSet& Architecture::getInstructions() const {
   return _base.getInstructions();
 }
 
+const std::string& Architecture::getBuiltinMacros() const {
+  assert(isValidated());
+  return _base.getBuiltinMacros();
+}
+
 const NodeFactoryCollection& Architecture::getNodeFactories() const {
   return _factories;
 }

@@ -12,11 +12,50 @@ GuiProject::GuiProject(QQmlContext* context,
 , _editorComponent(context,
                    _projectModule.getParserInterface(),
                    _projectModule.getCommandInterface())
-, _registerModel(_projectModule.getArchitectureAccess(), _projectModule.getMemoryManager(), _projectModule.getMemoryAccess(), context)
+, _memoryModel(_projectModule.getMemoryAccess(),
+               _projectModule.getMemoryManager(),
+               context)
+, _registerModel(_projectModule.getArchitectureAccess(),
+                 _projectModule.getMemoryManager(),
+                 _projectModule.getMemoryAccess(),
+                 context)
+, _outputComponent(_projectModule.getMemoryManager(),
+                   _projectModule.getMemoryAccess(),
+                   context)
 /*, registermodel(context)
 , editormodel(context)
 , snapmodel(context)
 , memorymodel(context)*/ {
+  // set the callback for memory and register
+  _projectModule.getMemoryManager().setUpdateRegisterCallback(
+      [this](const std::string& name) {
+        emit registerChanged(QString::fromStdString(name));
+      });
+
+  _projectModule.getMemoryManager().setUpdateMemoryCallback(
+      [this](std::size_t address, std::size_t length) {
+        emit memoryChanged(address, length);
+      });
+
+  // connect all receiving components to the callback signals
+  QObject::connect(this,
+                   SIGNAL(registerChanged(const QString&)),
+                   &_registerModel,
+                   SLOT(updateContent(const QString&)),
+                   Qt::QueuedConnection);
+
+  QObject::connect(this,
+                   SIGNAL(memoryChanged(std::size_t, std::size_t)),
+                   &_memoryModel,
+                   SLOT(onMemoryChanged(std::size_t, std::size_t)),
+                   Qt::QueuedConnection);
+
+  QObject::connect(this,
+                   SIGNAL(memoryChanged(std::size_t,std::size_t)),
+                   &_outputComponent,
+                   SLOT(updateMemory(std::size_t, std::size_t)),
+                   Qt::QueuedConnection);
+
   std::string name[] = {"Apfel", "Banane"};
   // snapmodel.addList(name);
   // An alle Komponenten weitergeben
@@ -33,14 +72,17 @@ void GuiProject::parse() {
 }
 
 void GuiProject::run() {
+  _editorComponent.parse();
   _projectModule.getCommandInterface().execute();
 }
 
 void GuiProject::runLine() {
+  _editorComponent.parse();
   _projectModule.getCommandInterface().executeNextLine();
 }
 
 void GuiProject::runBreakpoint() {
+  _editorComponent.parse();
   _projectModule.getCommandInterface().executeToBreakpoint();
 }
 

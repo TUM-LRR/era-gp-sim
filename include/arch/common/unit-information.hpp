@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_ARCH_UNIT_INFORMATION_HPP
 #define ERAGPSIM_ARCH_UNIT_INFORMATION_HPP
 
+#include <functional>
 #include <initializer_list>
 #include <string>
 #include <unordered_map>
@@ -46,10 +47,77 @@ class UnitInformation : public UnderlyingRegisterContainer,
  public:
   using super = UnderlyingRegisterContainer;
   using CONTAINER_ADAPTER_MEMBERS;
-  using Type            = RegisterInformation::Type;
-  using id_t            = RegisterInformation::id_t;
+  using Type = RegisterInformation::Type;
+  using id_t = RegisterInformation::id_t;
   using InitializerList = std::initializer_list<RegisterInformation>;
-  using SpecialMap      = std::unordered_map<Type, RegisterInformation>;
+  using SpecialMap = std::unordered_map<Type, RegisterInformation>;
+  using Compare = std::function<bool(const RegisterInformation&,
+                                     const RegisterInformation&)>;
+  using SortedResult = std::vector<std::reference_wrapper<const RegisterInformation>>;
+
+  /**
+  * Convenience comparator for sorting RegisterInformation in ascending
+  * alphabetical order (by name)
+  */
+  struct AlphabeticOrder {
+   public:
+    bool operator()(const RegisterInformation& first,
+                    const RegisterInformation& second) const {
+      return first.getName() < second.getName();
+    }
+  };
+
+  /**
+   * Convenience comparator for sorting RegisterInformation in ascending
+   * numerical order (by ID)
+   */
+  struct IdOrder {
+   public:
+    bool operator()(const RegisterInformation& first,
+                    const RegisterInformation& second) const {
+      return first.getID() < second.getID();
+    }
+  };
+
+  /**
+   * Convenience comparator for sorting RegisterInformation in a custom order
+   * defined
+   * by type.
+   */
+  struct TypeOrder {
+    using TypeList = std::initializer_list<Type>;
+    /**
+     * Creates a new Type Comparator
+     * \param types List of types that define the sorting order. {A, B, C} means
+     * the following order:
+     * A < B < C
+     * @param compareWhenEqual Another Comparator that is used for defining an
+     * order inside a type group.
+     * {A, B, C} & AlphabeticOrder results into: <a10, a20, a30, b1, b2, b3, c1>
+     */
+    TypeOrder(TypeList types = TypeList(),
+              Compare compareWhenEqual = AlphabeticOrder())
+        : _typeOrder(types), _equalCompare(compareWhenEqual) {}
+
+    bool operator()(const RegisterInformation& first,
+                    const RegisterInformation& second) const {
+      auto indexFirst =
+          std::find(_typeOrder.begin(), _typeOrder.end(), first.getType());
+      auto indexSecond =
+          std::find(_typeOrder.begin(), _typeOrder.end(), second.getType());
+      if (indexFirst == indexSecond) {
+        // same type
+        return _equalCompare(first, second);
+      } else {
+        // different type
+        return indexFirst < indexSecond;
+      }
+    }
+
+   private:
+    std::vector<Type> _typeOrder;
+    Compare _equalCompare;
+  };
 
   /**
    * Deserializes the `UnitInformation` from the given data.
@@ -258,10 +326,48 @@ class UnitInformation : public UnderlyingRegisterContainer,
    */
   bool hasRegister(id_t registerID) const noexcept;
 
+  /**
+   * Returns all registers that aren't special registers.
+   * The result is sorted using the given Comparator
+   * \param comparator See AlphabeticOrder, IdOrder and TypeOrder
+   */
+  SortedResult getRegisterSorted(const Compare& comparator) const;
+  /**
+   * Returns all registers that are special registers.
+   * The result is sorted using the given Comparator
+   * \param comparator See AlphabeticOrder, IdOrder and TypeOrder
+   */
+  SortedResult getSpecialRegisterSorted(const Compare& comparator) const;
+  /**
+   * Returns all registers (both special and not special).
+   * The result is sorted using the given Comparator
+   * \param comparator See AlphabeticOrder, IdOrder and TypeOrder
+   */
+  SortedResult getAllRegisterSorted(const Compare& comparator) const;
+
   /** \copydoc BuilderInterface::isValid() */
   bool isValid() const noexcept override;
 
  private:
+  /**
+   * Returns a sorted vector containing all elements of range using the given
+   * comparator
+   * \tparam Range Container type
+   * \param range
+   * \param comparator
+   * \return SortedResult containing all elements of range, sorted using
+   * comparator
+   */
+  template <class Range>
+  SortedResult _getSorted(Range& range, const Compare& comparator) const {
+    SortedResult result{};
+    for (auto& element : range) {
+      result.push_back(std::reference_wrapper<const RegisterInformation>(element.second));
+    }
+    std::sort(result.begin(), result.end(), comparator);
+    return result;
+  }
+
   /**
    * Deserializes the `UnitInformation` from the given data.
    *

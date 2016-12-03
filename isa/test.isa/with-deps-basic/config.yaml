@@ -24,7 +24,7 @@ units:
       size: 16
       type: float
       enclosing: 0
-      constant: 3.14
+      constant: "0x4048f5c3"
       aliases: [foo, bar]
 instructions:
   - mnemonic: add

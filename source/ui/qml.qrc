@@ -27,13 +27,31 @@
         <file>Components/Toolbar/Icons/StopButtonActiveWithBorder.svg</file>
         <file>Components/Toolbar/Icons/StopButtonInactive.svg</file>
         <file>Components/Toolbar/Icons/StopButtonInactiveWithBorder.svg</file>
-        <file>Components/Menubar/ToolbarMainWindow.qml</file>
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
         <file>Components/editor/HelpToolTip.qml</file>
+        <file>Components/Output/Buttons/Lightstrip Icon Selected.png</file>
+        <file>Components/Output/Buttons/Lightstrip Icon Selected@2x.png</file>
+        <file>Components/Output/Buttons/Lightstrip Icon.png</file>
+        <file>Components/Output/Buttons/Lightstrip Icon@2x.png</file>
+        <file>Components/Output/Buttons/Text Console Icon Selected.png</file>
+        <file>Components/Output/Buttons/Text Console Icon Selected@2x.png</file>
+        <file>Components/Output/Buttons/Text Console Icon.png</file>
+        <file>Components/Output/Buttons/Text Console Icon@2x.png</file>
+        <file>Components/Output/Buttons/Sevensegment Icon Selected.png</file>
+        <file>Components/Output/Buttons/Sevensegment Icon Selected@2x.png</file>
+        <file>Components/Output/Buttons/Sevensegment Icon.png</file>
+        <file>Components/Output/Buttons/Sevensegment Icon@2x.png</file>
+        <file>Components/Output/Buttons/Settings Icon Pressed.png</file>
+        <file>Components/Output/Buttons/Settings Icon Pressed@2x.png</file>
+        <file>Components/Output/Buttons/Settings Icon.png</file>
+        <file>Components/Output/Buttons/Settings Icon@2x.png</file>
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
+        <file>Components/Output/7-Segment/SevenSegment.qml</file>
+        <file>Components/Output/7-Segment/SevenSegment_Segment.qml</file>
+        <file>Components/Output/LightstripSettingsWindow.qml</file>
     </qresource>
 </RCC>

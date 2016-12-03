@@ -211,6 +211,23 @@ bool ExtensionInformation::hasUnits() const noexcept {
   return !_units.empty();
 }
 
+ExtensionInformation&
+ExtensionInformation::addBuiltinMacro(const std::string& macro) {
+  _builtinMacros.insert(macro);
+
+  // Regenerate the cached concatenation
+  _builtinMacrosCache = "";
+  for (const auto& macro : _builtinMacros) {
+    _builtinMacrosCache += std::string{macro};
+  }
+
+  return *this;
+}
+
+const std::string& ExtensionInformation::getBuiltinMacros() const noexcept {
+  return _builtinMacrosCache;
+}
+
 ExtensionInformation& ExtensionInformation::merge(ExtensionList list) {
   assert(list.size() > 0);
   return merge<ExtensionList>(list);
@@ -236,6 +253,10 @@ ExtensionInformation::merge(const ExtensionInformation& other) {
 
   addInstructions(other.getInstructions());
   addUnits(other.getUnits());
+
+  for (auto& macro : other._builtinMacros) {
+    addBuiltinMacro(macro);
+  }
 
   return *this;
 }
@@ -285,6 +306,12 @@ void ExtensionInformation::_deserialize(InformationInterface::Format& data) {
   Utility::doIfThere(data, "instructions", [this](auto& instructions) {
     this->addInstructions(static_cast<InstructionSet>(instructions));
   });
+
+  Utility::doIfThere(data, "builtin-macros", [this](auto& macros) {
+    for (auto& macro : macros) {
+      this->addBuiltinMacro(macro);
+    }
+  });
 }
 
 void ExtensionInformation::_parseEndianness(
@@ -308,9 +335,11 @@ void ExtensionInformation::_parseAlignmentBehavior(
     InformationInterface::Format& data) {
   Utility::doIfThere(data, "alignment-behavior", [this](auto& behavior) {
     if (behavior == "strict") {
-      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::STRICT;
+      _alignmentBehavior =
+          ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT;
     } else if (behavior == "relaxed") {
-      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::RELAXED;
+      _alignmentBehavior =
+          ArchitectureProperties::AlignmentBehavior::ALIGN_RELAXED;
     } else {
       assert(false);
     }

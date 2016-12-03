@@ -7,8 +7,10 @@ set(UI_SOURCES
     register-model.cpp
     syntaxhighlighter.cpp
     editor-component.cpp
+    memory-component-presenter.cpp
     ui.cpp
     gui-project.cpp
+    output-component.cpp
 )
 
 set(UI_HEADERS
@@ -16,12 +18,14 @@ set(UI_HEADERS
     ../../include/ui/gui-project.hpp
     ../../include/ui/syntaxhighlighter.hpp
     ../../include/ui/editor-component.hpp
+    ../../include/ui/memory-component-presenter.hpp
     ../../include/ui/ui.hpp
+    ../../include/ui/output-component.hpp
 )
 
 
 ########################################
-# EXECUTABLe
+# EXECUTABLE
 ########################################
 
 qt5_add_resources(UI_RESOURCES qml.qrc)

@@ -1,65 +1,65 @@
 {
-    "name": "rv64d",
+    "name": "rv64d", 
     "instructions": [
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "fcvtld", 
+            "length": 32, 
             "key": {
-                "funct7": 97,
-                "rs2": 2,
-                "opcode": 83
-            },
-            "mnemonic": "fcvtld"
-        },
+                "opcode": 83, 
+                "rs2": 2, 
+                "funct7": 97
+            }, 
+            "format": "R"
+        }, 
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "fcvtlud", 
+            "length": 32, 
             "key": {
-                "funct7": 97,
-                "rs2": 3,
-                "opcode": 83
-            },
-            "mnemonic": "fcvtlud"
-        },
+                "opcode": 83, 
+                "rs2": 3, 
+                "funct7": 97
+            }, 
+            "format": "R"
+        }, 
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "fmvxd", 
+            "length": 32, 
             "key": {
-                "funct7": 113,
-                "rs2": 0,
-                "opcode": 83
-            },
-            "mnemonic": "fmvxd"
-        },
+                "opcode": 83, 
+                "rs2": 0, 
+                "funct7": 113
+            }, 
+            "format": "R"
+        }, 
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "fcvtdl", 
+            "length": 32, 
             "key": {
-                "funct7": 105,
-                "rs2": 2,
-                "opcode": 83
-            },
-            "mnemonic": "fcvtdl"
-        },
+                "opcode": 83, 
+                "rs2": 2, 
+                "funct7": 105
+            }, 
+            "format": "R"
+        }, 
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "fcvtslu", 
+            "length": 32, 
             "key": {
-                "funct7": 105,
-                "rs2": 3,
-                "opcode": 83
-            },
-            "mnemonic": "fcvtslu"
-        },
+                "opcode": 83, 
+                "rs2": 3, 
+                "funct7": 105
+            }, 
+            "format": "R"
+        }, 
         {
-            "length": 32,
-            "format": "R",
+            "mnemonic": "fmvdx", 
+            "length": 32, 
             "key": {
-                "funct7": 121,
-                "rs2": 0,
-                "opcode": 83
-            },
-            "mnemonic": "fmvdx"
+                "opcode": 83, 
+                "rs2": 0, 
+                "funct7": 121
+            }, 
+            "format": "R"
         }
     ]
 }

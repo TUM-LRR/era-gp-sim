@@ -23,7 +23,10 @@
 
 #include "parser/code-position.hpp"
 #include "parser/compile-error.hpp"
+#include "parser/macro-directive-table.hpp"
 #include "parser/parser-mode.hpp"
+
+class MacroDirective;
 
 // Note: this class should be reworked and rebuilt to a full-grown class...
 
@@ -50,6 +53,11 @@ struct CompileState {
    \brief Specifies the section the compiler is currently in.
    */
   std::string section = "text";
+
+  /**
+   * Saves registered macros.
+   */
+  MacroDirectiveTable macros;
 
   /**
    * \brief Adds an error to the state-internal error list at the current
@@ -108,6 +116,12 @@ struct CompileState {
     errorList.push_back(
         CompileError(message, position, CompileErrorSeverity::INFORMATION));
   }
+
+  /**
+   * Registers a macro for compilation.
+   * \param macro Macro to register.
+   */
+  void registerMacro(MacroDirective& macro);
 };
 
 #endif

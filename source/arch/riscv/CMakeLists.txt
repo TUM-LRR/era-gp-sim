@@ -9,6 +9,10 @@ set(ARCH_RISCV_SOURCES
   instruction-node-factory.cpp
   formats.cpp
   factory-map.cpp
+  data-node-factory.cpp
+  documentation-builder.cpp
+  instruction-context-information.cpp
+  simulator-instructions.cpp
 )
 
 ########################################
@@ -17,4 +21,4 @@ set(ARCH_RISCV_SOURCES
 
 add_library(era-sim-arch-riscv STATIC ${ARCH_RISCV_SOURCES})
 
-target_link_libraries(era-sim-arch-riscv era-sim-common era-sim-arch-common)
+target_link_libraries(era-sim-arch-riscv era-sim-common era-sim-arch-common era-sim-core)

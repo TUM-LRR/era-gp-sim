@@ -18,12 +18,31 @@
 */
 
 #include "parser/section-directive.hpp"
+#include "parser/compile-state.hpp"
+
+SectionDirective::SectionDirective(const LineInterval& lines,
+                                   const std::vector<std::string>& labels,
+                                   const std::string& name,
+                                   const std::vector<std::string>& arguments)
+: IntermediateDirective(lines, labels, name) {
+  _hasName = arguments.size() > 0;
+  if (_hasName) _section = arguments[0];
+}
 
 void SectionDirective::execute(FinalRepresentation& finalRepresentator,
                                const SymbolTable& table,
                                const SyntaxTreeGenerator& generator,
                                CompileState& state,
                                MemoryAccess& memoryAccess) {
+}
+
+void SectionDirective::allocateMemory(const Architecture& architecture,
+                                      MemoryAllocator& allocator,
+                                      CompileState& state) {
+  if (!_hasName) {
+    state.addError("Section name missing!");
+    return;
+  }
   // Just set the section state to the current section. That's it.
   state.section = _section;
 }

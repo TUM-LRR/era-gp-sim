@@ -175,7 +175,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
   // we could either make the validator a friend or give the noder a friendlier
   // interface. Would also solve the testability problem.
 
-  FRIEND_TEST(TestBranchInstructions, TestValidation);
+  FRIEND_TEST(BranchInstructionTest, Validation);
 
   /**
    * Checks a condition predicate between two operands.
@@ -273,16 +273,10 @@ class AbstractBranchInstructionNode : public InstructionNode {
    */
   ValidationResult
   _validateResultingProgramCounter(MemoryAccess& memoryAccess) const {
-    static const auto addressBoundary =
-        std::numeric_limits<UnsignedWord>::max();
-
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
-    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 1);
-
-    auto maximumAllowedOffset = addressBoundary - programCounter;
-
+    auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
     // Check if the program counter would underflow or overflow
-    if (-offset > programCounter || offset > maximumAllowedOffset) {
+    if (!riscv::isAddressValid(memoryAccess, programCounter + 2*offset)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Branch offset would invalidate program counter"));

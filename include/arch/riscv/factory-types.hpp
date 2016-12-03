@@ -24,13 +24,15 @@
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/register-node-factory.hpp"
+#include "arch/riscv/data-node-factory.hpp"
 
 namespace riscv {
 using FactoryTypes = AbstractFactoryTypes<ImmediateNodeFactory,
                                           NoSuchFactory,
                                           NoSuchFactory,
                                           RegisterNodeFactory,
-                                          InstructionNodeFactory>;
+                                          InstructionNodeFactory,
+                                          DataNodeFactory>;
 }
 
 #endif /* ERAGPSIM_ARCH_RISCV_RISCV_TYPES_HPP */

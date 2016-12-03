@@ -45,10 +45,12 @@ class MemoryManager;
  * data (i.e. register's content) is fetched from core when requested (see data-
  * method).
  *
- * Registers of all levels are being held inside the _items-map where they are
- * identified by a unique register identifier. Nesting is realised by specifying
- * a parent register identifier and possibly several child register identifiers
- * inside the RegisterInformation obejcts.
+ * Registers of all levels are being held inside the _items-pointer-map where
+ * they are identified by a unique register identifier. These pointers are
+ * required in order to be able to pass them to the corresponding QModelIndex
+ * (refer to index-method).Nesting is realised by specifying a parent register
+ * identifier and possibly several child register identifiers inside the
+ * RegisterInformation obejcts.
  * The _rootItem is used as a top-level dummy register not holding any actual
  * data but just referencing the visible top-level registers.
  */
@@ -67,14 +69,16 @@ class RegisterModel : public QAbstractItemModel {
   /**
    * \brief The RegisterModelRole enum Identifies different kinds of data stored
    * for each register.
+   *
    * There is no role for the register's content; refer to data method's
    * description for an explanation.
    */
-  enum RegisterModelRole { TitleRole, DataFormatsListRole };
+  enum RegisterModelRole { TitleRole };
 
   /**
    * \brief index Returns a QModelIndex for the specified item inside the
    * model.
+   *
    * A model must provide an index to each item (i.e. register) it contains.
    * QModelIndexes provide a common interface for delegates to access data
    * inside a model independent of its internal structure. Each index contains
@@ -125,7 +129,7 @@ class RegisterModel : public QAbstractItemModel {
    * data is requested.
    * \param role The data role specifying the requested type of data (e.g.
    * content, title).
-   * \return The QML-compatable piece of data (e.g. QString, QStringList).
+   * \return The QML-compatable piece of data (e.g. QString).
    */
   QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
 
@@ -155,18 +159,12 @@ class RegisterModel : public QAbstractItemModel {
       Q_DECL_OVERRIDE;
 
   /**
-   * \brief updateContent Sets the content (i.e. AB01DE23) of a specified
-   * register.
-   * \param registerTitle The unique title of the register whose
-   * content shall be altered.
-   * \param registerContent The new register value.
-   */
-  void updateContent(const std::string &registerTitle);
-
-  /**
    * \brief registerContentChanged Notifies the Core when a register's content
-   * was changed by the use.
+   * was changed by the user.
+   * \param index The register's index.
    * \param registerContent The register's new content value.
+   * \param currentDataFormatIndex The register's currently selected data
+   * format.
    */
   Q_INVOKABLE void registerContentChanged(const QModelIndex &index,
                                           const QString &registerContent,
@@ -207,8 +205,8 @@ class RegisterModel : public QAbstractItemModel {
    * 32-bit register with Hex-format).
    * For a detailed explanation of the use of this method, refer to the
    * description of `data`.
-   * \param registerIdentifierContainer QVariant-value containing the identifier
-   * of the register whose display format string is requested.
+   * \param index QModelIndex corresponding to the register whose display format
+   * string is requested.
    * \param currentDataFormatIndex Index of the data format currently active for
    * the register whose display format string is requested.
    * \return A QString-value in the correct format to be used with the
@@ -245,8 +243,7 @@ class RegisterModel : public QAbstractItemModel {
                      << "Binary"},
       {RegisterInformation::Type::VECTOR,
        QStringList() << "Binary"
-                     << "Hexadecimal"
-                     << "Vector"},
+                     << "Hexadecimal"},
       {RegisterInformation::Type::LINK,
        QStringList() << "Binary"
                      << "Hexadecimal"},
@@ -289,6 +286,17 @@ class RegisterModel : public QAbstractItemModel {
    */
   Optional<int>
   _getRowRelativeToParent(RegisterInformation &registerItem) const;
+
+
+ public slots:
+  /**
+   * \brief updateContent Sets the content (i.e. AB01DE23) of a specified
+   * register.
+   * \param registerTitle The unique title of the register whose
+   * content shall be altered.
+   * \param registerContent The new register value.
+   */
+  void updateContent(const QString &registerTitle);
 };
 
 #endif// ERAGPSIM_UI_REGISTERMODEL_HPP

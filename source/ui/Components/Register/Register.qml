@@ -24,6 +24,7 @@ Item {
     TreeView {
         id: registerTreeView
 
+        // Set the TreeView's style.
         anchors.fill: parent
         backgroundVisible: false
         style: TreeViewStyle {
@@ -63,12 +64,21 @@ Item {
             Label {
                 id: registerTitleLabel
                 anchors.left: registerContentItem.left
-                anchors.leftMargin: 1
                 anchors.top: parent.top
+                height: 18
                 text: model.Title
                 font.pointSize: 15
                 font.weight: Font.Bold
                 color: "#585858"
+            }
+            // The actual content of the register. Its appearance depends on the current
+            // format type (e.g. hex/bin/dec uses TextField, flag uses checkbox).
+            Loader {
+                id: registerContentItem
+                anchors.top: registerTitleLabel.bottom
+                anchors.topMargin: 3
+                anchors.left: parent.left
+                anchors.right: dataTypeFormatComboBox.left
             }
             // The list of available data formats.
             ComboBox {
@@ -146,14 +156,6 @@ Item {
                         visible: false
                     }
                 }
-            }
-            Loader {
-                id: registerContentItem
-
-                anchors.top: registerTitleLabel.bottom
-                anchors.topMargin: 3
-                anchors.left: parent.left
-                anchors.right: dataTypeFormatComboBox.left
             }
         }
 

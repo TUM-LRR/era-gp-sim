@@ -21,6 +21,7 @@
 
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
+#include "common/utility.hpp"
 
 UnitInformation::UnitInformation(InformationInterface::Format& data) {
   _deserialize(data);
@@ -123,6 +124,32 @@ const RegisterInformation& UnitInformation::getRegister(id_t registerID) const {
 
 bool UnitInformation::hasRegister(id_t registerID) const noexcept {
   return _container.count(registerID);
+}
+
+UnitInformation::SortedResult UnitInformation::getRegisterSorted(
+    const Compare& comparator) const {
+  // container stores all non special registers
+  return _getSorted(_container, comparator);
+}
+
+UnitInformation::SortedResult UnitInformation::getSpecialRegisterSorted(
+    const Compare& comparator) const {
+  return _getSorted(_specialRegisters, comparator);
+}
+
+UnitInformation::SortedResult UnitInformation::getAllRegisterSorted(
+    const Compare& comparator) const {
+  SortedResult result = SortedResult{};
+  for (auto& reg : _container) {
+    result.push_back(
+        std::reference_wrapper<const RegisterInformation>(reg.second));
+  }
+  for (auto& reg : _specialRegisters) {
+    result.push_back(
+        std::reference_wrapper<const RegisterInformation>(reg.second));
+  }
+  std::sort(result.begin(), result.end(), comparator);
+  return result;
 }
 
 bool UnitInformation::isValid() const noexcept {

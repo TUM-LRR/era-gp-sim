@@ -17,10 +17,20 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP_
-#define ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP_
+#ifndef ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP
+#define ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP
+
+#include <string>
+#include <vector>
 
 #include "parser/intermediate-directive.hpp"
+
+class MemoryAllocator;
+class FinalRepresentation;
+class SymbolTable;
+class SyntaxTreeGenerator;
+class CompileState;
+class MemoryAccess;
 
 /**
  * \brief Represents a section directive in code.
@@ -34,14 +44,12 @@ class SectionDirective : public IntermediateDirective {
    * with this one!?).
    * \param name The name of the command, might not be equal to the section. It
    * has no meaning for the directive.
-   * \param seciton The name of the section.
+   * \param arguments Arguments of the directive. First should be section name.
    */
   SectionDirective(const LineInterval& lines,
                    const std::vector<std::string>& labels,
                    const std::string& name,
-                   const std::string& section)
-  : IntermediateDirective(lines, labels, name), _section(section) {
-  }
+                   const std::vector<std::string>& arguments);
 
   /**
    * \brief Executes the section directive and sets the compiler section to the
@@ -59,7 +67,13 @@ class SectionDirective : public IntermediateDirective {
                        CompileState& state,
                        MemoryAccess& memoryAccess);
 
+  virtual void allocateMemory(const Architecture& architecture,
+                              MemoryAllocator& allocator,
+                              CompileState& state);
+
  private:
+  bool _hasName;
+
   /**
    * \brief The section to change to.
    */

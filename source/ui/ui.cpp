@@ -30,6 +30,7 @@ Ui::Ui(int& argc, char** argv)
 }
 
 int Ui::runUi() {
+  qRegisterMetaType<std::size_t>("std::size_t");
   _engine.rootContext()->setContextProperty("ui", this);
 
   _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
@@ -39,15 +40,15 @@ int Ui::runUi() {
 
 void Ui::addProject(QQuickItem* tabItem,
                     QQmlComponent* projectComponent,
-                    QVariant memorySizeQVariant,
-                    QString architecture,
-                    QStringList extensionsQString,
-                    QString parser) {
+                    const QVariant& memorySizeQVariant,
+                    const QString& architecture,
+                    const QString& optionName,
+                    const QString& parser) {
   // create ArchitectureFormula
   ArchitectureFormula architectureFormula(architecture.toStdString());
 
-  // add all extensions
-  for (const auto& qstring : extensionsQString) {
+  // add all extensions which are defined for this option
+  for (const auto& qstring : _getOptionFormula(architecture, optionName)) {
     architectureFormula.addExtension(qstring.toStdString());
   }
   // get the memory size from the qvariant object.
@@ -76,12 +77,21 @@ QStringList Ui::getArchitectures() const {
   return _architectureMap.keys();
 }
 
-QStringList Ui::getExtensions(QString architectureName) const {
-  return _architectureMap.find(architectureName).value().first;
+QStringList Ui::getOptionNames(QString architectureName) const {
+  auto formulaMap =
+      std::get<0>(_architectureMap.find(architectureName).value());
+  return formulaMap.keys();
+}
+
+QStringList
+Ui::_getOptionFormula(QString architectureName, QString optionName) const {
+  auto formulaMap =
+      std::get<0>(_architectureMap.find(architectureName).value());
+  return formulaMap.find(optionName).value();
 }
 
 QStringList Ui::getParsers(QString architectureName) const {
-  return _architectureMap.find(architectureName).value().second;
+  return std::get<1>(_architectureMap.find(architectureName).value());
 }
 
 void Ui::_loadArchitectures() {
@@ -93,22 +103,29 @@ void Ui::_loadArchitectures() {
 
   for (auto& architecture : data["architectures"]) {
     assert::that(architecture.count("name"));
-    assert::that(architecture.count("extensions"));
-    assert::that(!architecture["extensions"].empty());
+    assert::that(architecture.count("options"));
+    assert::that(!architecture["options"].empty());
     assert::that(architecture.count("parsers"));
     assert::that(!architecture["parsers"].empty());
 
-    QStringList extensionList;
+    QMap<QString, QStringList> optionNameFormulaMap;
     QStringList parserList;
-    for (auto& extension : architecture["extensions"]) {
-      extensionList.push_back(QString::fromStdString(extension));
+    for (const auto& option : architecture["options"]) {
+      assert::that(option.count("name"));
+      assert::that(option.count("formula"));
+      assert::that(!option["formula"].empty());
+      QStringList formula;
+      for (const auto& extension : option["formula"]) {
+        formula.push_back(QString::fromStdString(extension));
+      }
+      optionNameFormulaMap.insert(QString::fromStdString(option["name"]),
+                                  formula);
     }
-    for (auto& parser : architecture["parsers"]) {
+    for (const auto& parser : architecture["parsers"]) {
       parserList.push_back(QString::fromStdString(parser));
     }
-    _architectureMap.insert(
-        QString::fromStdString(architecture["name"]),
-        QPair<QStringList, QStringList>(extensionList, parserList));
+    _architectureMap.insert(QString::fromStdString(architecture["name"]),
+                            std::make_tuple(optionNameFormulaMap, parserList));
   }
 }
 

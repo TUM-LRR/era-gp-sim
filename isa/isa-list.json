@@ -2,15 +2,18 @@
     "architectures": [
         {
             "name": "riscv",
-            "extensions": [ "rv32d",
-                            "rv32f",
-                            "rv32i",
-                            "rv32m",
-                            "rv64d",
-                            "rv64f",
-                            "rv64i",
-                            "rv64m"
-                          ],
+            "options": [
+                          {
+                            "name": "Risc-V 32bit",
+                            "formula": ["rv32i",
+                                        "rv32m"]
+                          },
+                          {
+                            "name": "Risc-V 64bit",
+                            "formula": ["rv64i",
+                                        "rv64m"]
+                          }
+                        ],
             "parsers": [
                             "riscv"
             ]
