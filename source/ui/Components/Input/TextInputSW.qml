@@ -31,8 +31,9 @@ Window {
     title: "Click Input Settings"
 
     // Refreshes the window's control contentItem.
-    function updateSettings(QString) {
+    function updateSettings() {
         baseAddressTextField.text = inputtextMod.getStart();
+        maxLength.text=inputtextMod.getMaxLength();
     }
 
     // The controls for editing input settings.
@@ -106,6 +107,10 @@ Window {
             }
 
         }
+    }
+
+    Component.objectName: {
+        updateSettings();
     }
 
     // Button for accepting setting changes and closing the settings window.

@@ -31,7 +31,7 @@ Window {
     title: "Button Input Settings"
 
     // Refreshes the window's control contentItem.
-    function updateSettings(QString) {
+    function updateSettings() {
         baseAddressTextField.text = inputButtonMod.getStart();
     }
 
@@ -88,6 +88,10 @@ Window {
             }
 
         }
+    }
+
+    Component.onCompleted:{
+        updateSettings();
     }
 
     // Button for accepting setting changes and closing the settings window.
