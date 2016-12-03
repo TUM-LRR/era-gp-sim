@@ -109,7 +109,7 @@ Window {
         }
     }
 
-    Component.objectName: {
+    Component.onCompleted: {
         updateSettings();
     }
 
