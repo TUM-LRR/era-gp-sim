@@ -25,6 +25,16 @@ MenuBar {
     id: menubar
     property var main
 
+    function saveSnapshot(name) {
+      ui.saveSnapshot(tabView.currentIndex, name);
+    }
+
+    function actionSnapshot() {
+      main.textDialog.onAcceptedFunction = saveSnapshot;
+      main.textDialog.placeholderText = "name";
+      main.textDialog.open();
+    }
+
     function saveAs(filePath) {
       console.log("save path: " + filePath)
       ui.saveTextAs(tabView.currentIndex, filePath);
@@ -71,20 +81,13 @@ MenuBar {
         }
         MenuItem{
             text: "Save Snapshot"
-            function saveSnapshot(name) {
-              console.log("save snapshot: " + name)
-              ui.saveSnapshot(tabView.currentIndex, name);
-            }
             onTriggered: {
-                main.textDialog.onAcceptedFunction = saveSnapshot;
-                main.textDialog.placeholderText = "name";
-                main.textDialog.open();
+                actionSnapshot();
             }
         }
         MenuItem{
             text: "Import Snapshot"
             function importSnapshot(name) {
-              console.log("import snapshot: " + name);
               var success = snapshotComponent.importSnapshot(name);
             }
             onTriggered: {

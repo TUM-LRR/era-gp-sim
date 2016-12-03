@@ -31,6 +31,8 @@ ApplicationWindow {
     width: Screen.desktopAvailableWidth*0.7
     height: Screen.desktopAvailableHeight*0.8
 
+    property alias menubar: menubar
+
     menuBar: Menubar {
       id: menubar
       main: window
