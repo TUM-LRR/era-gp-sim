@@ -18,14 +18,102 @@
 */
 
 #include "parser/macro-directive.hpp"
+#include "parser/compile-state.hpp"
+#include "parser/intermediate-instruction.hpp"
+
+MacroDirective::MacroDirective(const LineInterval& lines,
+                               const std::vector<std::string>& labels,
+                               const std::string& name,
+                               const std::vector<std::string>& arguments)
+: IntermediateDirective(lines, labels, name)
+, _macroName(arguments.size() > 0 ? arguments[0] : "")
+, _macroParameters(arguments.size() > 0 ? arguments.begin() + 1
+                                        : arguments.end(),
+                   arguments.end())
+, _operations() {
+}
+
+MacroDirective::MacroDirective(const LineInterval& lines,
+                               const std::vector<std::string>& labels,
+                               const std::string& name,
+                               const std::string& macroName,
+                               const std::vector<std::string>& macroParameters)
+: IntermediateDirective(lines, labels, name)
+, _macroName(macroName)
+, _macroParameters(macroParameters)
+, _operations() {
+}
+
+void MacroDirective::insert(IntermediateOperationPointer pointer) {
+  // Remember index of the first instruction so we can use its address for
+  // labels.
+  if (_firstInstruction < 0 &&
+      dynamic_cast<IntermediateInstruction*>(pointer.get()) != nullptr) {
+    _firstInstruction = _operations.size();
+  }
+  _operations.push_back(std::move(pointer));
+}
 
 void MacroDirective::execute(FinalRepresentation& finalRepresentator,
                              const SymbolTable& table,
                              const SyntaxTreeGenerator& generator,
                              CompileState& state,
                              MemoryAccess& memoryAccess) {
+  if (macroName().length() == 0) {
+    state.addError("Missing macro name.");
+  }
   _macroParameters.validate(state);
   state.registerMacro(*this);
+}
+
+TargetSelector MacroDirective::newTarget() const {
+  return TargetSelector::THIS;
+}
+
+IntermediateExecutionTime MacroDirective::executionTime() const {
+  return IntermediateExecutionTime::BEFORE_ALLOCATION;
+}
+
+const std::string& MacroDirective::macroName() const {
+  return _macroName;
+}
+
+/**
+ * Returns number of operations.
+ */
+size_t MacroDirective::getOperationCount() const {
+  return _operations.size();
+}
+
+std::pair<size_t, size_t> MacroDirective::getParameterCount() const {
+  return _macroParameters.getParameterCount();
+}
+
+/**
+ * Returns if an instance of the macro is currently compiling. Used to detect
+ * cyclic macro calls.
+ */
+bool MacroDirective::isCompiling() {
+  return _isCompiling;
+}
+
+IntermediateOperationPointer
+MacroDirective::getOperation(size_t index,
+                             const std::vector<std::string>& arguments) const {
+  IntermediateOperationPointer ptr = _operations[index]->clone();
+
+  if (ptr == nullptr) return ptr;
+
+  _macroParameters.insertParameters(ptr, arguments);
+  return std::move(ptr);
+}
+
+int MacroDirective::firstInstructionIndex() const {
+  return _firstInstruction;
+}
+
+const std::string& MacroDirective::getOperationName(size_t index) const {
+  return _operations[index]->name();
 }
 
 MacroDirective::MacroParameters::MacroParameters(
@@ -54,7 +142,7 @@ MacroDirective::MacroParameters::MacroParameters(
   }
 }
 
-void MacroDirective::MacroParameters::validate(CompileState& state) {
+void MacroDirective::MacroParameters::validate(CompileState& state) const {
   bool containedDefault{false};
   for (auto param : _params) {
     // Check for empty names or default values
@@ -75,7 +163,7 @@ void MacroDirective::MacroParameters::validate(CompileState& state) {
 
 void MacroDirective::MacroParameters::insertParameters(
     IntermediateOperationPointer& operation,
-    const std::vector<std::string>& values) {
+    const std::vector<std::string>& values) const {
   // Since macros are identified by name and argument count, this function
   // should always be called with a valid size of `values`.
   assert::that(values.size() >= _minParams && values.size() <= _params.size());

@@ -35,7 +35,7 @@
  * method call, otherwise the assertion will fail
  * \copydoc AbstractInstructionNodeFactory::createInstructionNode
  */
-NodeFactoryCollection::Node NodeFactoryCollection::createInstructionNode(
+NodeFactoryCollection::InstrNode NodeFactoryCollection::createInstructionNode(
     const std::string &mnemonic) const {
   assert(static_cast<bool>(_instructionFactory));
   return _instructionFactory->createInstructionNode(mnemonic);
@@ -50,6 +50,11 @@ NodeFactoryCollection::Node NodeFactoryCollection::createImmediateNode(
     const MemoryValue &numericalValue) const {
   assert(static_cast<bool>(_immediateFactory));
   return _immediateFactory->createImmediateNode(numericalValue);
+}
+
+MemoryValue NodeFactoryCollection::labelToImmediate(const MemoryValue &labelValue, const std::string &instructionMnemonic, const MemoryValue &instructionAddress) const {
+    assert::that(static_cast<bool>(_immediateFactory));
+    return _immediateFactory->labelToImmediate(labelValue, instructionMnemonic, instructionAddress);
 }
 
 /**

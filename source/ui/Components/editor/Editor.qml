@@ -238,8 +238,11 @@ ScrollView {
 
                     Rectangle {
                         id: breakpointIcon
-                        height: parent.height
+                        height: Math.min(parent.height, errorBar.width) * 0.8
                         width: height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: height*0.15
                         radius: width*0.5
                         color: "red"
                     }
@@ -264,7 +267,7 @@ ScrollView {
                     id: errorBar
                     x: 0
                     y: textArea.textMargin/2
-                    width: 5
+                    width: textArea.cursorRectangle.height*0.8
 
                     Connections {
                         target: editor
