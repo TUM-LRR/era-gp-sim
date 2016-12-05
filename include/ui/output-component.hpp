@@ -20,11 +20,11 @@
 #define ERAGPSIM_UI_OUTPUTCOMPONENT_HPP
 
 #include <QDebug>
+#include <QImage>
 #include <QQmlContext>
 #include "core/memory-access.hpp"
-#include <QImage>
 
-//class QImage;
+// class QImage;
 
 class MemoryManager;
 
@@ -45,15 +45,22 @@ class OutputComponent : public QObject {
                            QQmlContext *projectContext,
                            QObject *parent = 0);
 
-  Q_INVOKABLE void putMemoryValue(int address, QList<bool> memoryContentBitVector);
+  Q_INVOKABLE void
+  putMemoryValue(int address, QList<bool> memoryContentBitVector);
 
   Q_INVOKABLE QList<bool> getMemoryContent(int address, int length) const;
 
   Q_INVOKABLE QVariantList getOutputItems() const;
-  Q_INVOKABLE void setOutputItemProperty(int outputItemIndex, QString property, QVariant newValue);
+  Q_INVOKABLE void setOutputItemProperty(int outputItemIndex,
+                                         QString property,
+                                         QVariant newValue);
   Q_INVOKABLE void addOutputItem(QString outputItemType);
 
-private:
+  MemoryAccess &getMemoryAccess() {
+    return _memoryAccess;
+  }
+
+ private:
   MemoryAccess _memoryAccess;
   QVariantList _outputItems;
 };

@@ -40,8 +40,8 @@ struct ColorMode;
 struct Options {
   std::size_t pixelBaseAddress = 0;
   std::size_t colorBaseAddress = 0;
-  std::size_t width = 320;
-  std::size_t height = 240;
+  std::size_t width = 32;
+  std::size_t height = 24;
   std::size_t colorMode = 1;
   std::size_t rBit = 8;
   std::size_t gBit = 8;
@@ -61,31 +61,43 @@ struct Options {
   std::size_t feeBits = 0;
 
   ColorMode getColorMode() const;
-  std::uint32_t getPixel(std::size_t x, std::size_t y) const;
-  std::uint32_t getColor(std::size_t index) const;
-  void updatePixel(std::shared_ptr<QImage> image,
+  std::uint32_t getPixel(Optional<OutputComponent *> memoryAccess,
+                         std::size_t x,
+                         std::size_t y) const;
+  std::uint32_t
+  getColor(Optional<OutputComponent *> memoryAccess, std::size_t index) const;
+  void updatePixel(Optional<OutputComponent *> memoryAccess,
+                   std::shared_ptr<QImage> image,
                    std::size_t x,
                    std::size_t y) const;
-  void updateColor(std::shared_ptr<QImage> image, std::size_t index) const;
-  void updateMemory(std::shared_ptr<QImage> image,
+  void updateColor(Optional<OutputComponent *> memoryAccess,
+                   std::shared_ptr<QImage> image,
+                   std::size_t index) const;
+  void updateMemory(Optional<OutputComponent *> memoryAccess,
+                    std::shared_ptr<QImage> image,
                     std::size_t address,
                     std::size_t amount) const;
-  void updateAllPixels(std::shared_ptr<QImage> image) const;
-  void updateAllColors(std::shared_ptr<QImage> image) const;
+  void updateAllPixels(Optional<OutputComponent *> memoryAccess,
+                       std::shared_ptr<QImage> image) const;
+  void updateAllColors(Optional<OutputComponent *> memoryAccess,
+                       std::shared_ptr<QImage> image) const;
   static ColorMode RGB;
   static ColorMode Monochrome;
 };
 struct ColorMode {
-  using GetPixelFunction =
-      std::function<std::uint32_t(const Options &, std::size_t, std::size_t)>;
-  using GetColorFunction =
-      std::function<std::uint32_t(const Options &, std::size_t)>;
-  using UpdateMemoryFunction = std::function<void(
-      const Options &, std::shared_ptr<QImage>, std::size_t, std::size_t)>;
-  using UpdateAllPixelsFunction =
-      std::function<void(const Options &, std::shared_ptr<QImage>)>;
-  using UpdateAllColorsFunction =
-      std::function<void(const Options &, std::shared_ptr<QImage>)>;
+  using GetPixelFunction = std::function<std::uint32_t(
+      Optional<OutputComponent *>, const Options &, std::size_t, std::size_t)>;
+  using GetColorFunction = std::function<std::uint32_t(
+      Optional<OutputComponent *>, const Options &, std::size_t)>;
+  using UpdateMemoryFunction = std::function<void(Optional<OutputComponent *>,
+                                                  const Options &,
+                                                  std::shared_ptr<QImage>,
+                                                  std::size_t,
+                                                  std::size_t)>;
+  using UpdateAllPixelsFunction = std::function<void(
+      Optional<OutputComponent *>, const Options &, std::shared_ptr<QImage>)>;
+  using UpdateAllColorsFunction = std::function<void(
+      Optional<OutputComponent *>, const Options &, std::shared_ptr<QImage>)>;
 
   GetPixelFunction getPixel;
   GetColorFunction getColor;
@@ -109,7 +121,7 @@ struct ColorMode {
 
 class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_OBJECT
-  Q_PROPERTY(OutputComponent outputComponentPointer WRITE setOutputComponent)
+  Q_PROPERTY(OutputComponent *outputComponentPointer WRITE setOutputComponent)
  public:
   // PixelDisplayPaintedItem(QQuickItem *parent = 0) : QQuickPaintedItem(parent)
   // {
@@ -123,8 +135,12 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
 
   void paint(QPainter *painter) {
     std::cout << "paint!" << std::endl;
-    _options.updateAllPixels(_image);
+    _options.updateAllPixels(_outputComponentPointer, _image);
+    (*_outputComponentPointer)
+        ->getMemoryAccess()
+        .putMemoryValueAt(7, MemoryValue(std::vector<std::uint8_t>{0xFF}, 8));
     painter->drawImage(painter->window(), *_image);
+    std::cout << "I did do the paint!" << std::endl;
   }
 
   void memoryChanged(std::size_t address, std::size_t amount);
@@ -133,8 +149,8 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
 
   void redrawAll();
 
-  void setOutputComponent(OutputComponent &o){
-    _outputComponentPointer=&o;
+  void setOutputComponent(OutputComponent *o) {
+    _outputComponentPointer = o;
   }
 
   std::uint32_t getColorAt(std::size_t address);
@@ -150,11 +166,11 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   std::shared_ptr<QImage> _image;
   colorMode::Options _options{};
   std::size_t _baseAddress = 0;
-  std::size_t _breadth = 320;
-  std::size_t _height = 240;
+  std::size_t _breadth = 32;
+  std::size_t _height = 24;
   std::size_t _colorMode = 0;
 
-  Optional<OutputComponent*> _outputComponentPointer;
+  Optional<OutputComponent *> _outputComponentPointer;
 
   bool isInRange(std::size_t address, std::size_t amount) const;
   std::vector<std::pair<std::size_t, std::size_t>>

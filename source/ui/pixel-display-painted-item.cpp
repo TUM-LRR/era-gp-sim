@@ -102,36 +102,49 @@ ColorMode Options::getColorMode() const {
   return RGB;
 }
 
-std::uint32_t Options::getPixel(std::size_t x, std::size_t y) const {
-  return getColorMode().getPixel(*this, x, y);
+std::uint32_t Options::getPixel(Optional<OutputComponent *> memoryAccess,
+                                std::size_t x,
+                                std::size_t y) const {
+  return getColorMode().getPixel(memoryAccess, *this, x, y);
 }
-std::uint32_t Options::getColor(std::size_t index) const {
-  return getColorMode().getColor(*this, index);
+std::uint32_t Options::getColor(Optional<OutputComponent *> memoryAccess,
+                                std::size_t index) const {
+  return getColorMode().getColor(memoryAccess, *this, index);
 }
-void Options::updatePixel(std::shared_ptr<QImage> image,
+void Options::updatePixel(Optional<OutputComponent *> memoryAccess,
+                          std::shared_ptr<QImage> image,
                           std::size_t x,
                           std::size_t y) const {
-  image->setPixel(x, y, getPixel(x, y));
+  image->setPixel(x, y, getPixel(memoryAccess, x, y));
 }
-void Options::updateColor(std::shared_ptr<QImage> image,
+void Options::updateColor(Optional<OutputComponent *> memoryAccess,
+                          std::shared_ptr<QImage> image,
                           std::size_t index) const {
-  image->setColor(index, getColor(index));
+  image->setColor(index, getColor(memoryAccess, index));
 }
-void Options::updateMemory(std::shared_ptr<QImage> image,
+void Options::updateMemory(Optional<OutputComponent *> memoryAccess,
+                           std::shared_ptr<QImage> image,
                            std::size_t address,
                            std::size_t amount) const {
-  getColorMode().updateMemory(*this, image, address, amount);
+  getColorMode().updateMemory(memoryAccess, *this, image, address, amount);
 }
-void Options::updateAllPixels(std::shared_ptr<QImage> image) const {
-  getColorMode().updateAllPixels(*this, image);
+void Options::updateAllPixels(Optional<OutputComponent *> memoryAccess,
+                              std::shared_ptr<QImage> image) const {
+  if (memoryAccess)
+    std::cout << "I have fuckin memory access, yeah!" << std::endl;
+  getColorMode().updateAllPixels(memoryAccess, *this, image);
 }
-void Options::updateAllColors(std::shared_ptr<QImage> image) const {
-  getColorMode().updateAllColors(*this, image);
+void Options::updateAllColors(Optional<OutputComponent *> memoryAccess,
+                              std::shared_ptr<QImage> image) const {
+  getColorMode().updateAllColors(memoryAccess, *this, image);
 }
 
 // RGB*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*
 const ColorMode::GetPixelFunction ColorMode::RGBGetPixel = [](
-    const Options &o, std::size_t x, std::size_t y) -> std::uint32_t {
+    Optional<OutputComponent *> memoryAccess,
+    const Options &o,
+    std::size_t x,
+    std::size_t y) -> std::uint32_t {
   std::size_t cellSize = 8;// TODO
   std::size_t sizeInBit = o.rBit + o.gBit + o.bBit;
   std::size_t byteSize =
@@ -177,9 +190,12 @@ const ColorMode::GetPixelFunction ColorMode::RGBGetPixel = [](
 };
 
 const ColorMode::GetColorFunction ColorMode::RGBGetColor = [](
-    const Options &o, std::size_t index) -> std::uint32_t { return 0; };
+    Optional<OutputComponent *> memoryAccess,
+    const Options &o,
+    std::size_t index) -> std::uint32_t { return 0; };
 
 const ColorMode::UpdateMemoryFunction ColorMode::RGBUpdateMemory = [](
+    Optional<OutputComponent *> memoryAccess,
     const Options &o,
     std::shared_ptr<QImage> image,
     std::size_t address,
@@ -209,7 +225,8 @@ const ColorMode::UpdateMemoryFunction ColorMode::RGBUpdateMemory = [](
             : ((maxAddress - o.pixelBaseAddress + byteSize - 1) / byteSize);
     // TODO::make this more efficient evtl
     for (std::size_t i = minIndex; i <= maxIndex; ++i) {
-      o.updatePixel(image,
+      o.updatePixel(memoryAccess,
+                    image,
                     o.columns_rows ? (i / o.height) : (i % o.width),
                     o.columns_rows ? (i % o.height) : (i / o.width));
     }
@@ -222,20 +239,27 @@ const ColorMode::UpdateMemoryFunction ColorMode::RGBUpdateMemory = [](
 };
 
 const ColorMode::UpdateAllPixelsFunction ColorMode::RGBUpdateAllPixels = [](
-    const Options &o, std::shared_ptr<QImage> image) -> void {
+    Optional<OutputComponent *> memoryAccess,
+    const Options &o,
+    std::shared_ptr<QImage> image) -> void {
   for (std::size_t y = 0; y < o.height; ++y) {
     for (std::size_t x = 0; x < o.width; ++x) {
-      o.updatePixel(image, x, y);
+      o.updatePixel(memoryAccess, image, x, y);
     }
   }
 };
 
 const ColorMode::UpdateAllColorsFunction ColorMode::RGBUpdateAllColors = [](
-    const Options &o, std::shared_ptr<QImage> image) -> void {};
+    Optional<OutputComponent *> memoryAccess,
+    const Options &o,
+    std::shared_ptr<QImage> image) -> void {};
 
 // Monochrome*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*
 const ColorMode::GetPixelFunction ColorMode::MonochromeGetPixel = [](
-    const Options &o, std::size_t x, std::size_t y) -> std::uint32_t {
+    Optional<OutputComponent *> memoryAccess,
+    const Options &o,
+    std::size_t x,
+    std::size_t y) -> std::uint32_t {
   std::size_t cellSize = 8;          // TODO
   std::size_t bitsPerByte = cellSize;// TODO
   std::size_t index =
@@ -244,14 +268,23 @@ const ColorMode::GetPixelFunction ColorMode::MonochromeGetPixel = [](
   std::size_t bitOffset = index % bitsPerByte;
   // TODO::*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*
   // the memory access goes somewhere here, kinda
-  MemoryValue mem{cellSize};// just need to get 32 bit of memory here
+  MemoryValue mem;
+  if (memoryAccess) {
+    auto m = ((*memoryAccess)->getMemoryAccess().getMemoryValueAt(address, 1));
+    mem = m.get();
+  } else {
+    mem = MemoryValue(cellSize);
+  }
+  // just need to get some bit of memory here
   bool b = mem.get(bitOffset);
   // *-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*
-  b = (x + y) % 2 == 0;
+  //b = (x + y) % 2 == 0;
   return b ? 1 : 0;
 };
 const ColorMode::GetColorFunction ColorMode::MonochromeGetColor = [](
-    const Options &o, std::size_t index) -> std::uint32_t {
+    Optional<OutputComponent *> memoryAccess,
+    const Options &o,
+    std::size_t index) -> std::uint32_t {
   std::size_t cellSize = 8;// TODO
   std::size_t colorSize = (32 + cellSize - 1) / cellSize;
   std::size_t colorTablePointer = o.colorBaseAddress;
@@ -269,6 +302,7 @@ const ColorMode::GetColorFunction ColorMode::MonochromeGetColor = [](
   ;
 };
 const ColorMode::UpdateMemoryFunction ColorMode::MonochromeUpdateMemory = [](
+    Optional<OutputComponent *> memoryAccess,
     const Options &o,
     std::shared_ptr<QImage> image,
     std::size_t address,
@@ -290,7 +324,8 @@ const ColorMode::UpdateMemoryFunction ColorMode::MonochromeUpdateMemory = [](
         (maxAddress - o.pixelBaseAddress) * bitsPerByte + bitsPerByte - 1;
     // TODO::make this more efficient evtl
     for (std::size_t i = minIndex; i <= maxIndex; ++i) {
-      o.updatePixel(image,
+      o.updatePixel(memoryAccess,
+                    image,
                     o.columns_rows ? (i / o.height) : (i % o.width),
                     o.columns_rows ? (i % o.height) : (i / o.width));
     }
@@ -317,24 +352,28 @@ const ColorMode::UpdateMemoryFunction ColorMode::MonochromeUpdateMemory = [](
       std::size_t maxIndex =
           (maxAddress - colorTablePointer + size32 - 1) / size32;
       for (std::size_t i = minIndex; i <= maxIndex; ++i) {
-        o.updateColor(image, i);
+        o.updateColor(memoryAccess, image, i);
       }
     }
   }
 };
 const ColorMode::UpdateAllPixelsFunction ColorMode::MonochromeUpdateAllPixels =
-    [](const Options &o, std::shared_ptr<QImage> image) -> void {
+    [](Optional<OutputComponent *> memoryAccess,
+       const Options &o,
+       std::shared_ptr<QImage> image) -> void {
   for (std::size_t y = 0; y < o.height; ++y) {
     for (std::size_t x = 0; x < o.width; ++x) {
-      o.updatePixel(image, x, y);
+      o.updatePixel(memoryAccess, image, x, y);
     }
   }
 };
 const ColorMode::UpdateAllColorsFunction ColorMode::MonochromeUpdateAllColors =
-    [](const Options &o, std::shared_ptr<QImage> image) -> void {
+    [](Optional<OutputComponent *> memoryAccess,
+       const Options &o,
+       std::shared_ptr<QImage> image) -> void {
   std::size_t colorCount = 2;
   for (std::size_t i = 0; i < colorCount; ++i) {
-    o.updateColor(image, i);
+    o.updateColor(memoryAccess, image, i);
   }
 };
 

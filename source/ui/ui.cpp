@@ -24,6 +24,7 @@
 #include "common/utility.hpp"
 #include "ui/pixel-display-painted-item.hpp"
 #include "ui/pixel-display-provider.hpp"
+#include "ui/output-component.hpp"
 
 
 Ui::Ui(int& argc, char** argv)
@@ -33,7 +34,7 @@ Ui::Ui(int& argc, char** argv)
 
 int Ui::runUi() {
   qRegisterMetaType<std::size_t>("std::size_t");
-  //qRegisterMetaType<QImage>("QImage");
+  qRegisterMetaType<OutputComponent*>("OutputComponentP");
   qmlRegisterType<PixelDisplayPaintedItem>(
       "eragpsim.pixeldisplaypainteditem", 1, 0, "PixelDisplayPaintedItem");
   _engine.rootContext()->setContextProperty("ui", this);

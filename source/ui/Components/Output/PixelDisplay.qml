@@ -30,8 +30,6 @@ Item {
         id: pixeldisplaypainteditemid
         anchors.fill: parent
         outputComponentPointer : outputComponent
-        something: "QML\\('')/"
-        property var nothing : something
     }
 
     // Connect the output item to signals that the model might send.
@@ -47,9 +45,6 @@ Item {
             if ((address+length) >= _baseAddress && (address <= (_baseAddress+1))) {
                 updateContent(_baseAddress);
             }
-            console.log("[nothing]: "+pixeldisplaypainteditemid.nothing);
-            console.log("[somehing]: "+pixeldisplaypainteditemid.something);
-            //pixeldisplaypainteditemid.paint();
         }
         // Send when any item's settings where updated.
         onOutputItemSettingsChanged: {
