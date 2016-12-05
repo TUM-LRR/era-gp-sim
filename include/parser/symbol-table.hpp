@@ -53,7 +53,8 @@ class SymbolTable {
    * \param maximumRecursionDepth The given recursion depth, defaults to 64.
    */
   SymbolTable(int maximumRecursionDepth = 64)
-      : _maximumRecursionDepth(maximumRecursionDepth) {}
+  : _maximumRecursionDepth(maximumRecursionDepth) {
+  }
 
   /**
    * \brief Inserts an entry into the SymbolTable and checks for any errors.
@@ -61,8 +62,10 @@ class SymbolTable {
    * \param replacement The symbol replacement.
    * \param state The compile state.
    */
-  void insertEntry(const std::string& name, const std::string& replacement,
-                   CompileState& state, SymbolType type = SymbolType::OTHER);
+  void insertEntry(const std::string& name,
+                   const std::string& replacement,
+                   CompileState& state,
+                   SymbolType type = SymbolType::OTHER);
 
   /**
    * \brief Clears the table.
@@ -73,7 +76,9 @@ class SymbolTable {
    * \brief Returns the internal symbol table.
    * \return The internal symbol table.
    */
-  const Table& table() const { return _table; }
+  const Table& table() const {
+    return _table;
+  }
 
   /**
    * \brief Replaces any symbols in the given string and records all occuring
@@ -88,9 +93,10 @@ class SymbolTable {
    * \return The string with all symbols replaced (if the maximum recursion
    * depth has not been exceeded).
    */
-  std::string replaceSymbols(
-      const std::string& source, CompileState& state,
-      ReplacementFunction replacer = SimpleReplacement{}) const;
+  std::string
+  replaceSymbols(const std::string& source,
+                 CompileState& state,
+                 ReplacementFunction replacer = SimpleReplacement{}) const;
 
   /**
    * \brief Replaces any symbols in the given vector of strings and records all
@@ -103,7 +109,8 @@ class SymbolTable {
    * string and the symbol type and returns a string that will replace the
    * symbol
    */
-  void replaceSymbols(std::vector<std::string>& source, CompileState& state,
+  void replaceSymbols(std::vector<std::string>& source,
+                      CompileState& state,
                       ReplacementFunction replacer = SimpleReplacement{}) const;
 
  private:

@@ -19,6 +19,7 @@
 
 #include "parser/section-directive.hpp"
 #include "parser/compile-state.hpp"
+#include "parser/memory-allocator.hpp"
 
 SectionDirective::SectionDirective(const LineInterval& lines,
                                    const std::vector<std::string>& labels,
@@ -41,6 +42,10 @@ void SectionDirective::allocateMemory(const Architecture& architecture,
                                       CompileState& state) {
   if (!_hasName) {
     state.addError("Section name missing!");
+    return;
+  }
+  if (!allocator.has(_section)) {
+    state.addError("Specified section non-existent!");
     return;
   }
   // Just set the section state to the current section. That's it.
