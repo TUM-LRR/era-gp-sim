@@ -81,15 +81,12 @@ IntermediateRepresentator::transform(const Architecture& architecture,
   allocator.clear();
 
   // We reserve our memory.
-  for (const auto& i : _commandList) {
-    i->allocateMemory(architecture, allocator, state);
+  for (const auto& command : _commandList) {
+    command->allocateMemory(architecture, allocator, state);
   }
 
   std::size_t allocatedSize = allocator.calculatePositions();
   auto allowedSizeFuture = memoryAccess.getMemorySize();
-
-  // Not sure about this... (if needed or not)
-  allowedSizeFuture.wait();
   std::size_t allowedSize = allowedSizeFuture.get();
 
   if (allocatedSize > allowedSize) {

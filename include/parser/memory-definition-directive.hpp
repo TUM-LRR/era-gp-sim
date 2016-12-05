@@ -27,8 +27,8 @@
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
-#include "intermediate-directive.hpp"
 #include "parser/expression-compiler-clike.hpp"
+#include "parser/intermediate-directive.hpp"
 #include "parser/memory-allocator.hpp"
 #include "parser/relative-memory-position.hpp"
 #include "parser/string-parser.hpp"
@@ -98,9 +98,10 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   virtual void allocateMemory(const Architecture& architecture,
                               MemoryAllocator& allocator,
                               CompileState& state) {
-      if(_values.empty()) {
-          state.addError("Empty data definition", CodePosition(_lines.lineStart, _lines.lineEnd));
-      }
+    if (_values.empty()) {
+      state.addError("Empty data definition",
+                     CodePosition(_lines.lineStart, _lines.lineEnd));
+    }
 
     // So, we simply calculate and sum up our arguments.
     // Let's hope, the compiler optimizes this...

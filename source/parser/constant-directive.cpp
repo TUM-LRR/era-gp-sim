@@ -33,17 +33,13 @@ void ConstantDirective::execute(FinalRepresentation& finalRepresentator,
   if (!fullExpression.empty()) {
     generator.transformOperand(fullExpression, state);
   } else {
-      // better error messages:
-      //0 arguments -> this argument should be the name
-      //1 argument -> this argument should be the value
-      //>1 arguments -> too many
+    // better error messages:
+    // 0 arguments -> this argument should be the name
+    // 1 argument -> this argument should be the value
+    //>1 arguments -> too many
     switch (_arguments.size()) {
-      case 0:
-        state.addError("Missing constant name", state.position);
-        break;
-      case 1:
-        state.addError("Missing constant value", state.position);
-        break;
+      case 0: state.addError("Missing constant name", state.position); break;
+      case 1: state.addError("Missing constant value", state.position); break;
       default:
         state.addError(
             "Malformed constant directive, too many operands provided",
