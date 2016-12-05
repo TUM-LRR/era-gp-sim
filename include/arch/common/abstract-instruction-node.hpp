@@ -19,7 +19,6 @@
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/instruction-information.hpp"
-#include "common/translateable.hpp"
 
 class AbstractInstructionNode : public AbstractSyntaxTreeNode
 {
@@ -40,19 +39,8 @@ public:
     /** \copydoc AbstractSyntaxTreeNode::getIdentifier() */
     const std::string& getIdentifier() const override;
 
-    /**
-     * Returns a Translateable text containing any help text/instruction documentation about this instruction.
-     * Note that this member function should be independent from any children as it may be called for the user
-     * to display information how to define a valid instruction of this kind.
-     * \return A Translateable text containing information dedicated to the user about this instruction
-     */
-    virtual const Translateable& getInstructionDocumentation() const = 0;
-
 protected:
 
-    /**
-     * Returns the InstructionInformation of this Instruction
-     */
     const InstructionInformation& getInstructionInformation() const;
 
 private:

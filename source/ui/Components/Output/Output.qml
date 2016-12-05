@@ -20,111 +20,71 @@
 
 /*this modul is the contaier for the output-windows*/
 
-import QtQuick 2.6
+import QtQuick 2.0
 import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
 
-/*
- Container for output items (e.g. lightstrip, seven-segment, text console).
- */
-Rectangle {
-    id: rootRectangle
+Item {
 
-    // Color definitions
-    property color tabBarColor: Qt.rgba(236.0/255.0, 236.0/255.0, 236.0/255.0, 1.0)
-    property color innerBorderColor: "#AFAFAF"
-    property color highlightColor: "#4A90E2"
-    property color titleColor: "#4A4A4A"
-    property color titleColorHighlighted: "#111111"
-
-    // Allows to select the available output items (e.g. Lightstrip, Seven-Segment, Console)
-    TabView {
-        id: outputTabView
-
+    /*Dummys, created by starting the window because of time reasons. They will not be active unless they are choosen*/
+    LightStrip{
+        id: greenBackground
         anchors.fill: parent
+        visible: false
+        enabled: false
+    }
 
-        // Position tab bar below the content frame.
-        tabPosition: Qt.BottomEdge
+    BlueRectangle{
+        id: blueBackground
+        anchors.fill: parent
+        visible: false
+        enabled: false
+    }
 
+    RedRectangle{
+        id: redBackground
+        anchors.fill: parent
+        visible: false
+        enabled: false
+    }
 
-        /* Each output item is represented by its corresponding tab inside the output tab bar.
-           Every output item needs the following properties to be able to connect with the output model:
-           - outputItemIndex: Unique index identifying each output item. Has to correspond with the item's
-             index inside the _outputItemsInformation-array of the output model (refer to output-component.hpp).
-           - settingsButtonPressed(): Signal for notifying the output item that its settigns button was pressed and
-             that it should therefore display its settings menu. The settings button itself is part of the tab bar
-             and not the output item itself.
-        */
-        Tab {
-            title: "Buttons/Lightstrip Icon"
-            LightStrip {
-                outputItemIndex: 0
-            }
-        }
+    /*Drop-Down button*/
+    ComboBox{
+        width: 150
+        model: ["Choose Output","Red Rectangle", "Blue Rectangle", "Light Strip"]
 
-        Tab {
-            title: "Buttons/Sevensegment Icon"
-            BlueRectangle {
-                outputItemIndex: 1
-            }
-        }
-
-        Tab {
-            title: "Buttons/Text Console Icon"
-            RedRectangle {
-                outputItemIndex: 2
-            }
-        }
-
-
-
-        // Change TabView appearance
-        style: TabViewStyle {
-            tabBar: Rectangle {
-                color: tabBarColor
-                // Display border between tab bar and content frame.
-                Rectangle {
-                    height: 1
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    color: innerBorderColor
-                }
-
-                // Display output settings button in the rightmost corner of the tab bar.
-                Button {
-                    id: settingsButton
-                    anchors.right: parent.right
-                    anchors.rightMargin: 4
-                    anchors.verticalCenter: parent.verticalCenter
-                    height: 18
-                    width: 18
-                    style: ButtonStyle {
-                        background: Rectangle {
-                            color: "#00000000"
-                            Image {
-                                source: (control.pressed) ? "Buttons/Settings Icon Pressed.png" : "Buttons/Settings Icon.png"
-                            }
-                        }
-                    }
-                    // Clicking the settings button opens the output settings window in the currently active output item..
-                    onClicked: {
-                        outputTabView.getTab(outputTabView.currentIndex).item.settingsButtonPressed();
-                    }
-                }
-            }
-
-            tab: Rectangle {
-                implicitWidth: icon.width + 20
-                implicitHeight: 26
-                color: Qt.rgba(0, 0, 0, 0)
-                Image {
-                    id: icon
-                    anchors.centerIn: parent
-                    // Tab's title contains prefix for icon file; add suffix depending on selection.
-                    source: (styleData.selected) ? styleData.title + " Selected.png" : styleData.title + ".png"
-                }
+        onCurrentIndexChanged:{
+            /*If another line is choosen, an other Output will be set active, al others stay inactive*/
+            if(currentIndex==0){
+                redBackground.visible=false;
+                redBackground.enabled=false;
+                blueBackground.visible=false;
+                blueBackground.enabled=false;
+                greenBackground.visible=false;
+                greenBackground.enabled=false;
+            }else if(currentIndex==1){
+                redBackground.visible=true;
+                redBackground.enabled=true;
+                blueBackground.visible=false;
+                blueBackground.enabled=false;
+                greenBackground.visible=false;
+                greenBackground.enabled=false;
+            }else if(currentIndex==2){
+                redBackground.visible=false;
+                redBackground.enabled=false;
+                blueBackground.visible=true;
+                blueBackground.enabled=true;
+                greenBackground.visible=false;
+                greenBackground.enabled=false;
+            }else if(currentIndex==3){
+                redBackground.visible=false;
+                redBackground.enabled=false;
+                blueBackground.visible=false;
+                blueBackground.enabled=false;
+                greenBackground.visible=true;
+                greenBackground.enabled=true;
             }
         }
     }
+
+
 }

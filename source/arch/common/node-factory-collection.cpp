@@ -35,7 +35,7 @@
  * method call, otherwise the assertion will fail
  * \copydoc AbstractInstructionNodeFactory::createInstructionNode
  */
-NodeFactoryCollection::InstrNode NodeFactoryCollection::createInstructionNode(
+NodeFactoryCollection::Node NodeFactoryCollection::createInstructionNode(
     const std::string &mnemonic) const {
   assert(static_cast<bool>(_instructionFactory));
   return _instructionFactory->createInstructionNode(mnemonic);

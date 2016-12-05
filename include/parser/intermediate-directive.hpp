@@ -19,11 +19,7 @@
 #ifndef ERAGPSIM_PARSER_INTERMEDIATE_DIRECTIVE_HPP
 #define ERAGPSIM_PARSER_INTERMEDIATE_DIRECTIVE_HPP
 
-#include <string>
-#include <vector>
-
 #include "parser/intermediate-operation.hpp"
-#include "parser/line-interval.hpp"
 
 /**
  * \brief Represents a directive in the parser-internal intermediate form.
@@ -39,10 +35,13 @@ class IntermediateDirective : public IntermediateOperation {
    */
   IntermediateDirective(const LineInterval& lines,
                         const std::vector<std::string>& labels,
-                        const std::string& name);
+                        const std::string& name)
+  : IntermediateOperation(lines, labels, name) {
+  }
 
- protected:
-  virtual void determineMemoryPosition();
+protected:
+  virtual void determineMemoryPosition()
+  {}
 };
 
 #endif

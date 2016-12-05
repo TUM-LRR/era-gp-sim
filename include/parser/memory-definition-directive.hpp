@@ -20,19 +20,14 @@
 #ifndef ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP
 #define ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP
 
-#include <cstddef>
 #include <functional>
-
 #include "arch/common/architecture.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
 #include "intermediate-directive.hpp"
 #include "parser/expression-compiler-clike.hpp"
-#include "parser/memory-allocator.hpp"
-#include "parser/relative-memory-position.hpp"
 #include "parser/string-parser.hpp"
-#include "parser/symbol-table.hpp"
 
 /**
  * \brief A directive to reserve memory and writes specified data to it.
@@ -41,13 +36,12 @@
 template <typename T>
 class MemoryDefinitionDirective : public IntermediateDirective {
  public:
-  using size_t = std::size_t;
-  using MemoryStorageFunction = std::function<void(T, size_t)>;
+  using MemoryStorageFunction = std::function<void(T, std::size_t)>;
   using ProcessValuesFunction =
-      std::function<size_t(const std::vector<std::string>&,
-                           size_t,
-                           CompileState&,
-                           const MemoryStorageFunction&)>;
+      std::function<std::size_t(const std::vector<std::string>&,
+                                std::size_t,
+                                CompileState&,
+                                const MemoryStorageFunction&)>;
 
   /**
  * \brief Instantiates a new MemoryDefinitionDirective with the given arguments.
@@ -62,7 +56,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   MemoryDefinitionDirective(const LineInterval& lines,
                             const std::vector<std::string>& labels,
                             const std::string& name,
-                            size_t cellSize,
+                            std::size_t cellSize,
                             const std::vector<std::string>& values,
                             const ProcessValuesFunction& processValues)
   : IntermediateDirective(lines, labels, name)
@@ -101,8 +95,9 @@ class MemoryDefinitionDirective : public IntermediateDirective {
     // So, we simply calculate and sum up our arguments.
     // Let's hope, the compiler optimizes this...
     CompileState temporaryState;
-    size_t sizeInBytes = _processValues(
-        _values, _cellSize, temporaryState, [](T value, size_t position) {});
+    std::size_t sizeInBytes = _processValues(
+        _values, _cellSize, temporaryState, [](T value, std::size_t position) {
+        });
 
     // Next, we got to allocate our memory.
     _relativePosition = allocator[state.section].allocateRelative(sizeInBytes);
@@ -146,18 +141,19 @@ class MemoryDefinitionDirective : public IntermediateDirective {
     MemoryValue data(_size);
 
     // Then we write to it.
-    _processValues(_values, _cellSize, state, [&](T value, size_t position) {
-      // For now. Later to be replaced by the real enum of the arch,
-      // maybe...
-      auto memoryValue =
-          conversions::convert(value,
-                               conversions::standardConversions::helper::
-                                   twosComplement::toMemoryValueFunction,
-                               _byteSize * _cellSize);
+    _processValues(
+        _values, _cellSize, state, [&](T value, std::size_t position) {
+          // For now. Later to be replaced by the real enum of the arch,
+          // maybe...
+          auto memoryValue =
+              conversions::convert(value,
+                                   conversions::standardConversions::helper::
+                                       twosComplement::toMemoryValueFunction,
+                                   _byteSize * _cellSize);
 
-      // Once converted, we take down the value.
-      memoryValue.write(data, position);
-    });
+          // Once converted, we take down the value.
+          memoryValue.write(data, position);
+        });
 
     // Then, let's do a (probably also here) expensive memory call.
     memoryAccess.putMemoryValueAt(_absolutePosition, data);
@@ -165,11 +161,11 @@ class MemoryDefinitionDirective : public IntermediateDirective {
 
  private:
   ProcessValuesFunction _processValues;
-  size_t _byteSize;
-  size_t _absolutePosition;
+  std::size_t _byteSize;
+  std::size_t _absolutePosition;
   RelativeMemoryPosition _relativePosition;
-  size_t _size;
-  size_t _cellSize;
+  std::size_t _size;
+  std::size_t _cellSize;
   std::vector<std::string> _values;
 };
 

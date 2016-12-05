@@ -67,7 +67,6 @@ class ExtensionInformation : public InformationInterface {
   using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
   using word_size_t = ArchitectureProperties::word_size_t;
   using byte_size_t = ArchitectureProperties::byte_size_t;
-  using MacroContainer = std::unordered_set<std::string>;
 
   /**
    * Deserializes the `ExtensionInformation` object from the given data.
@@ -333,18 +332,6 @@ class ExtensionInformation : public InformationInterface {
   bool hasUnits() const noexcept;
 
   /**
-   * Adds the given macro definition to the container, holding all builtin
-   * macros.
-   */
-  ExtensionInformation& addBuiltinMacro(const std::string& macro);
-
-  /**
-   * Returns a string of concatenated macro definitions, supplied by this
-   * extension. If none of them exist, the string is empty.
-   */
-  const std::string& getBuiltinMacros() const noexcept;
-
-  /**
    * Merges the extension with a range of other extensions.
    *
    * See getMerge() for exact information on how an extension is merged.
@@ -449,11 +436,6 @@ class ExtensionInformation : public InformationInterface {
 
   /** The units supplied by the extension, if any. */
   UnitContainer _units;
-
-  /** A set of macro definitions, supplied by the extension, if any */
-  MacroContainer _builtinMacros;
-  /** A cache for the concatenated macros */
-  std::string _builtinMacrosCache;
 };
 
 #endif /* ERAGPSIM_ARCH_EXTENSION_INFORMATION_HPP */

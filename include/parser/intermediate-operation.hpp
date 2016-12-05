@@ -19,21 +19,15 @@
 #ifndef ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP
 #define ERAGPSIM_PARSER_INTERMEDIATE_OPERATION_HPP
 
-#include <cstddef>
-#include <memory>
 #include <string>
 #include <vector>
-
+#include "common/assert.hpp"
+#include "parser/final-representation.hpp"
 #include "parser/line-interval.hpp"
+#include "parser/memory-allocator.hpp"
+#include "parser/symbol-table.hpp"
+#include "parser/syntax-tree-generator.hpp"
 
-class MemoryValue;
-class CompileState;
-class Architecture;
-class SyntaxTreeGenerator;
-class SymbolTable;
-class FinalRepresentation;
-class FinalCommand;
-class MemoryAccess;
 struct CompileState;
 
 /**
@@ -64,7 +58,7 @@ class MemoryAllocator;
 /**
  * \brief Convenience class for a pointer to an operation.
  */
-using IntermediateOperationPointer = std::shared_ptr<IntermediateOperation>;
+using IntermediateOperationPointer = std::unique_ptr<IntermediateOperation>;
 
 /**
  * \brief Represents an abstract assembler operation in the parser-internal
@@ -81,7 +75,9 @@ class IntermediateOperation {
    */
   IntermediateOperation(const LineInterval& lines,
                         const std::vector<std::string>& labels,
-                        const std::string& name);
+                        const std::string& name)
+  : _lines(lines), _labels(labels), _name(name) {
+  }
 
   /**
    * \brief Executes the given operation (somehow).
@@ -107,7 +103,8 @@ class IntermediateOperation {
    */
   virtual void allocateMemory(const Architecture& architecture,
                               MemoryAllocator& allocator,
-                              CompileState& state);
+                              CompileState& state) {
+  }
 
   /**
    * \brief Enhances the symbol table by the labels of the operation.
@@ -117,30 +114,40 @@ class IntermediateOperation {
    */
   virtual void enhanceSymbolTable(SymbolTable& table,
                                   const MemoryAllocator& allocator,
-                                  CompileState& state);
+                                  CompileState& state) {
+  }
 
   /**
    * \brief Specifies if the this operation should be processed.
    * \return True, if so, else false.
    */
-  virtual bool shouldInsert() const;
+  virtual bool shouldInsert() const {
+    return true;
+  }
 
   /**
    * \brief Specifies the new target for operations after this command.
    * \return Normally, we keep the target.
    */
-  virtual TargetSelector newTarget() const;
+  virtual TargetSelector newTarget() const {
+    return TargetSelector::KEEP;
+  }
 
   /**
    * Returns when to execute this operation.
    */
-  virtual IntermediateExecutionTime executionTime() const;
+  virtual IntermediateExecutionTime executionTime() const {
+    return IntermediateExecutionTime::AFTER_ALLOCATION;
+  }
 
   /**
    * \brief Inserts an operation into a possible internal command list.
    * \param pointer The operation to insert.
    */
-  virtual void insert(IntermediateOperationPointer pointer);
+  virtual void insert(IntermediateOperationPointer pointer) {
+    // If this happens, something has gone wrong in our programming.
+    assert::that(false);
+  }
 
   /**
    * Inserts a value for the variable parameter called name.
@@ -148,19 +155,29 @@ class IntermediateOperation {
    * \param value Value of the parameter.
    */
   virtual void
-  insertIntoArguments(const std::string& name, const std::string& value);
+  insertIntoArguments(const std::string& name, const std::string& value) {
+    // Nothing to do here.
+  }
 
   /**
    * Clones the operation if supported.
    * \return Pointer to cloned operation if supported. Otherwise `nullptr`.
    */
-  virtual IntermediateOperationPointer clone();
+  virtual IntermediateOperationPointer clone() {
+    return nullptr;
+  }
 
-  const LineInterval& lines() const;
+  const LineInterval& lines() const {
+    return _lines;
+  }
 
-  const std::vector<std::string>& labels() const;
+  const std::vector<std::string>& labels() const {
+    return _labels;
+  }
 
-  const std::string& name() const;
+  const std::string& name() const {
+    return _name;
+  }
 
   virtual std::string toString() const {
     return _name + "\n";
@@ -182,8 +199,5 @@ class IntermediateOperation {
    */
   std::string _name;
 };
-
-using CommandList = std::vector<IntermediateOperationPointer>;
-using CommandIterator = typename CommandList::iterator;
 
 #endif

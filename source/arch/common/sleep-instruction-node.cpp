@@ -23,10 +23,12 @@
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
 
-SimulatorSleepInstructionNode::SimulatorSleepInstructionNode(const InstructionInformation &information,
-    const PCIncrementer &pcIncrementFunction)
+SimulatorSleepInstructionNode::SimulatorSleepInstructionNode(
+    const InstructionInformation &information,
+    const PCIncrementer &pcIncrementFunction, const Assembler &assembleFunction)
     : AbstractInstructionNode(information),
-      _pcIncFunction(pcIncrementFunction) {}
+      _pcIncFunction(pcIncrementFunction),
+      _assembleFunction(assembleFunction) {}
 
 ValidationResult SimulatorSleepInstructionNode::validate(
     MemoryAccess &memoryAccess) const {
@@ -64,6 +66,11 @@ ValidationResult SimulatorSleepInstructionNode::validate(
 ValidationResult SimulatorSleepInstructionNode::validateRuntime(
     MemoryAccess &memoryAccess) const {
   return validate(memoryAccess);
+}
+
+MemoryValue SimulatorSleepInstructionNode::assemble() const {
+  MemoryValue timeOperand = _children.at(0)->assemble();
+  return _assembleFunction(timeOperand);
 }
 
 MemoryValue SimulatorSleepInstructionNode::getValue(

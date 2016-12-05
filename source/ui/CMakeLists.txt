@@ -11,7 +11,6 @@ set(UI_SOURCES
     memory-component-presenter.cpp
     ui.cpp
     gui-project.cpp
-    output-component.cpp
 )
 
 set(UI_HEADERS
@@ -22,7 +21,6 @@ set(UI_HEADERS
     ../../include/ui/clipboard-adapter.hpp
     ../../include/ui/memory-component-presenter.hpp
     ../../include/ui/ui.hpp
-    ../../include/ui/output-component.hpp
 )
 
 

@@ -37,10 +37,6 @@ class RiscvBaseTest : public ::testing::Test {
     return _project->getMemoryAccess();
   }
 
-  const Architecture getArchitecture() {
-    return _project->getArchitectureAccess().getArchitecture().get();
-  }
-
   const NodeFactoryCollection getFactories() {
     ArchitectureAccess access = _project->getArchitectureAccess();
     return access.getArchitecture().get().getNodeFactories();

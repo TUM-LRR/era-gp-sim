@@ -241,7 +241,7 @@ TEST_F(RiscParserTest, MalformedInstructions) {
   FinalRepresentation res;
   res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7, 9\nble  ",
                      ParserMode::COMPILE);
-  EXPECT_EQ(res.errorList.size(), 5);
+  EXPECT_EQ(res.errorList.size(), 3);
   EXPECT_EQ(res.commandList.size(), 3);
 }
 
@@ -264,7 +264,7 @@ TEST_F(RiscParserTest, MixedErrors) {
       "\n"
       "_addition456: ADD x0, x0, x0; kommentar",
       ParserMode::COMPILE);
-  EXPECT_EQ(res.errorList.size(), 4);
+  EXPECT_EQ(res.errorList.size(), 2);
   EXPECT_EQ(res.commandList.size(), 5);
 }
 

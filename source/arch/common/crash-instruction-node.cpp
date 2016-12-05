@@ -17,8 +17,9 @@
 #include "include/arch/common/crash-instruction-node.hpp"
 #include <QtCore/qglobal.h>
 
-SimulatorCrashInstructionNode::SimulatorCrashInstructionNode(const InstructionInformation &info)
-    : AbstractInstructionNode(info) {}
+SimulatorCrashInstructionNode::SimulatorCrashInstructionNode(
+    const InstructionInformation &info, MemoryValue assembled)
+    : AbstractInstructionNode(info), _assembled(assembled) {}
 
 ValidationResult SimulatorCrashInstructionNode::validate(
     MemoryAccess &memoryAccess) const {
@@ -45,6 +46,10 @@ ValidationResult SimulatorCrashInstructionNode::validateRuntime(
       QT_TRANSLATE_NOOP("Simulator-Debug-Crash-Message",
                         "Program terminated.\nCause:\n%1"),
       customMsg);
+}
+
+MemoryValue SimulatorCrashInstructionNode::assemble() const {
+  return _assembled;
 }
 
 MemoryValue SimulatorCrashInstructionNode::getValue(

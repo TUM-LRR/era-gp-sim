@@ -80,13 +80,4 @@ MemoryValue InstructionNode::assemble() const {
 
   return assembledMemory;
 }
-
-const Translateable& InstructionNode::getInstructionDocumentation() const {
-    assert::that(_documentation && _documentation->isContextInformationAvailable(getInstructionInformation().getMnemonic()));
-    return _documentation->getContextInformation(getInstructionInformation());
-}
-
-void InstructionNode::setDocumentation(const std::shared_ptr<InstructionContextInformation> &documentation) {
-    _documentation = documentation;
-}
 }

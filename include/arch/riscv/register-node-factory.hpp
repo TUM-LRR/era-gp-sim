@@ -28,11 +28,7 @@ namespace riscv {
  * \brief The RegisterNodeFactory class is a concrete implementation
  * of AbstractRegisterNodeFactory for the RISC-V architecture.
  */
-class RegisterNodeFactory : public AbstractRegisterNodeFactory {
-public:
-
-   explicit RegisterNodeFactory(const Architecture& arch);
-
+struct RegisterNodeFactory : public AbstractRegisterNodeFactory {
   /**
    * \brief createRegisterNode
    * Creates and returns a new AbstractSyntaxTreeNode that handles register
@@ -43,9 +39,6 @@ public:
    */
   virtual std::unique_ptr<AbstractSyntaxTreeNode>
   createRegisterNode(const std::string &id) const override;
-
-private:
-    std::unordered_set<std::string> _availableRegisters;
 };
 }
 

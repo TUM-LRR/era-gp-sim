@@ -22,8 +22,7 @@
 
 
 #include <functional>
-#include "parser/intermediate-directive.hpp"
-#include "parser/memory-allocator.hpp"
+#include "intermediate-directive.hpp"
 
 class MemoryReservationDirective : public IntermediateDirective {
  public:
@@ -41,7 +40,12 @@ class MemoryReservationDirective : public IntermediateDirective {
                              const std::string& name,
                              std::size_t cellSize,
                              const std::vector<std::string>& values,
-                             const ArgumentCompileFunction& argumentCompile);
+                             const ArgumentCompileFunction& argumentCompile)
+  : IntermediateDirective(lines, labels, name)
+  , _cellSize(cellSize)
+  , _values(values)
+  , _argumentCompile(argumentCompile) {
+  }
 
   /**
    * \brief Executes the given operation (somehow).

@@ -10,9 +10,6 @@ set(ARCH_RISCV_SOURCES
   formats.cpp
   factory-map.cpp
   data-node-factory.cpp
-  documentation-builder.cpp
-  instruction-context-information.cpp
-  simulator-instructions.cpp
 )
 
 ########################################

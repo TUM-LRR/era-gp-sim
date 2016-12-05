@@ -23,6 +23,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "arch/common/abstract-syntax-tree-node.hpp"
 #include "parser/compile-state.hpp"
 #include "parser/final-representation.hpp"
 #include "parser/intermediate-operation.hpp"
@@ -38,7 +39,8 @@ class IntermediateRepresentator {
   /**
    * \brief Instantiates an IntermediateRepresentator with the default values.
    */
-  IntermediateRepresentator();
+  IntermediateRepresentator() : _commandList(), _currentOutput(nullptr) {
+  }
 
   /**
    * \brief Inserts the given command into the command list.
@@ -50,7 +52,7 @@ class IntermediateRepresentator {
   void insertCommand(T&& command, CompileState& state) {
     // First of all, we create our dear pointer.
     IntermediateOperationPointer pointer =
-        std::make_shared<T>(std::move(command));
+        std::make_unique<T>(std::move(command));
 
     insertCommandPtr(std::move(pointer), state);
   }
@@ -60,8 +62,31 @@ class IntermediateRepresentator {
    * \param command The given command.
    * \param state The compile state to save any possible errors.
    */
-  void
-  insertCommandPtr(IntermediateOperationPointer&& command, CompileState& state);
+  void insertCommandPtr(IntermediateOperationPointer&& command,
+                        CompileState& state) {
+    // We got to handle the three target selector cases right here.
+    if (command->newTarget() == TargetSelector::THIS) {
+      // If we want the current command as new target, we set it like so.
+      if (_currentOutput) {
+        // Nested macros are not supported.
+        state.addError("Error, nested macros are not supported.");
+      }
+      _currentOutput = std::move(command);
+    } else {
+      if (command->newTarget() == TargetSelector::MAIN) {
+        // For the main selector, we may also insert the old command (otherwise
+        // it and its sub commands might be lost).
+        if (!_currentOutput) {
+          // Classic bracket forgot to close problem.
+          state.addError("The start directive of the macro is missing.");
+        }
+        internalInsertCommand(std::move(_currentOutput));
+      }
+
+      // Finally, we may insert our handed-over command.
+      internalInsertCommand(std::move(command));
+    }
+  }
 
   /**
    * \brief Transforms the commands to a syntax tree list.
@@ -85,14 +110,24 @@ class IntermediateRepresentator {
    * \brief Inserts an operation into the list.
    * \param pointer The operation to insert, as pointer.
    */
-  void internalInsertCommand(IntermediateOperationPointer pointer);
+  void internalInsertCommand(IntermediateOperationPointer pointer) {
+    // Of course, it should be valid and is allowed to be inserted.
+    if (pointer && pointer->shouldInsert()) {
+      // We got to decide if there is an alternative output.
+      if (_currentOutput) {
+        _currentOutput->insert(std::move(pointer));
+      } else {
+        _commandList.push_back(std::move(pointer));
+      }
+    }
+  }
 
   void generateMacroInformation(FinalRepresentation& representation);
 
   /**
    * \brief The internal command list.
    */
-  CommandList _commandList;
+  std::vector<IntermediateOperationPointer> _commandList;
 
   /**
    * \brief The current target for operations.

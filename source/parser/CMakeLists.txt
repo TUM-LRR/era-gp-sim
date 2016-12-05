@@ -27,11 +27,6 @@ set(PARSER_SOURCES
   macro-directive-table.cpp
   memory-definition-directive.cpp
   intermediate-macro-instruction.cpp
-  intermediate-directive.cpp
-  relative-memory-position.cpp
-  memory-section-definition.cpp
-  code-position.cpp
-  line-interval.cpp
 )
 
 ########################################

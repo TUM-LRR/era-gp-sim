@@ -109,7 +109,7 @@ class ValidationResult {
   template <typename... Args>
   void addArguments(const std::string& firstArgument, Args&&... arguments) {
     _arguments.push_back(firstArgument);
-    addArguments(std::forward<Args>(arguments)...);
+    insert(std::forward<Args>(arguments)...);
   }
 
   bool _success;

@@ -40,11 +40,9 @@ namespace riscv {
  */
 class FactoryMap {
  public:
-  using InstructionDocumentation =
-      std::shared_ptr<InstructionContextInformation>;
   using Factory = std::function<std::unique_ptr<AbstractInstructionNode>(
-      const InstructionInformation &, const InstructionDocumentation &)>;
-  using Node = std::unique_ptr<AbstractInstructionNode>;
+      const InstructionInformation &)>;
+  using Node = AbstractInstructionNodeFactory::Node;
 
   /**
    * An abstract base class for facades.
@@ -167,21 +165,17 @@ class FactoryMap {
     using Operands = typename InstructionType::Operands;
 
     // clang-format off
-    _map.emplace(instructionName, [](const auto &information, const auto& documentation) {
-      auto node = std::make_unique<InstructionType>(
+    _map.emplace(instructionName, [](const auto &information) {
+      return std::make_unique<InstructionType>(
         information, Operands::REGISTERS);
-      node->setDocumentation(documentation);
-      return std::move(node);
     });
 
     if (hasImmediateVersion) {
-      _map.emplace(instructionName + 'i', [](const auto &information, const auto& documentation) {
-        auto node = std::make_unique<InstructionType>(
+      _map.emplace(instructionName + 'i', [](const auto &information) {
+        return std::make_unique<InstructionType>(
             information,
             Operands::IMMEDIATES
         );
-        node->setDocumentation(documentation);
-        return std::move(node);
       });
       // clang-format on
     }
@@ -197,12 +191,8 @@ class FactoryMap {
   template <typename InstructionType, typename... Args>
   void add(const std::string &instructionName, Args &&... args) {
     // Cannot preserve value category (simply) unfortunately
-    _map.emplace(instructionName, [args...](const auto &information,
-                                            const auto &documentation) {
-      auto node = std::make_unique<InstructionType>(information, args...);
-      //set documentation before returning
-      node->setDocumentation(documentation);
-      return std::move(node);
+    _map.emplace(instructionName, [args...](const auto &information) {
+      return std::make_unique<InstructionType>(information, args...);
     });
   }
 
@@ -231,13 +221,11 @@ class FactoryMap {
    * \return An abstract syntax tree node for the instruction.
    */
   Node create(const std::string &instructionName,
-              const InstructionInformation &information,
-              const InstructionDocumentation &documentation) const;
+              const InstructionInformation &information) const;
 
   /** \copydoc create() */
   Node operator()(const std::string &instructionName,
-                  const InstructionInformation &information,
-                  const InstructionDocumentation &documentation) const;
+                  const InstructionInformation &information) const;
 
  private:
   using Map = std::unordered_map<std::string, Factory>;

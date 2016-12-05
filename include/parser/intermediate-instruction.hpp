@@ -26,15 +26,18 @@
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "parser/intermediate-operation.hpp"
-#include "parser/memory-allocator.hpp"
 
+class MemoryAllocator;
 class Architecture;
+
 
 /**
  * \brief Represents a machine instruction in the parser-internal intermediate
  * form.
  */
 class IntermediateInstruction : public IntermediateOperation {
+  friend class IntermediateMacroInstruction;
+
  public:
   /**
    * \brief Instantiates a new compile error with the given arguments.
@@ -48,7 +51,11 @@ class IntermediateInstruction : public IntermediateOperation {
                           const std::vector<std::string>& labels,
                           const std::string& name,
                           const std::vector<std::string>& sources,
-                          const std::vector<std::string>& targets);
+                          const std::vector<std::string>& targets)
+  : IntermediateOperation(lines, labels, name)
+  , _sources(sources)
+  , _targets(targets) {
+  }
 
   /**
    * \brief Converts this instruction into a syntax tree and inserts it into the
@@ -99,12 +106,16 @@ class IntermediateInstruction : public IntermediateOperation {
                                   CompileState& state,
                                   MemoryAccess& memoryAccess);
 
-  MemoryAddress address() const;
+  MemoryAddress address() const {
+    return _address;
+  }
 
   virtual void
   insertIntoArguments(const std::string& name, const std::string& value);
 
-  virtual IntermediateOperationPointer clone();
+  virtual IntermediateOperationPointer clone() {
+    return IntermediateOperationPointer{new IntermediateInstruction{*this}};
+  }
 
   virtual std::string toString() const;
 
@@ -125,7 +136,6 @@ class IntermediateInstruction : public IntermediateOperation {
                         CompileState& state);
 
  private:
-  friend class IntermediateMacroInstruction;
 
   /**
    * \brief The internal source arguments.
@@ -151,7 +161,13 @@ class IntermediateInstruction : public IntermediateOperation {
    * Constructs an argument vector from the sources and targets vectors.
    * \return New vector containing all instruction arguments.
    */
-  std::vector<std::string> getArgsVector() const;
+  std::vector<std::string> getArgsVector() const {
+    std::vector<std::string> args;
+    args.reserve(_sources.size() + _targets.size());
+    args.insert(args.end(), _targets.begin(), _targets.end());
+    args.insert(args.end(), _sources.begin(), _sources.end());
+    return args;
+  }
 };
 
 #endif

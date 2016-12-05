@@ -22,29 +22,13 @@
 
 #include "parser/code-position.hpp"
 
+#include "common/assert.hpp"
+
 /**
  * \brief Represents an interval of lines, denoted by an upper and lower line
  * bound.
  */
 struct LineInterval {
-  /**
-   * \brief Creates a new line interval with a given upper and lower bound.
-   * \param start The lower bound of the interval.
-   * \param end The upper bound of the interval.
-   */
-  LineInterval(CodeCoordinate start, CodeCoordinate end);
-
-  /**
-   * \brief Creates a new line interval containing only one line.
-   * \param line The upper and lower bound of the interval.
-   */
-  explicit LineInterval(CodeCoordinate line);
-
-  /**
-   * \brief Creates a line interval containing only line 0.
-   */
-  LineInterval();
-
   /**
    * \brief The upper line bound of the interval.
    */
@@ -54,6 +38,28 @@ struct LineInterval {
    * \brief The lower line bound of the interval.
    */
   CodeCoordinate lineEnd;
+
+  /**
+   * \brief Creates a new line interval with a given upper and lower bound.
+   * \param start The lower bound of the interval.
+   * \param end The upper bound of the interval.
+   */
+  LineInterval(CodeCoordinate start, CodeCoordinate end)
+  : lineStart(start), lineEnd(end) {
+  }
+
+  /**
+   * \brief Creates a new line interval containing only one line.
+   * \param line The upper and lower bound of the interval.
+   */
+  LineInterval(CodeCoordinate line) : LineInterval(line, line) {
+  }
+
+  /**
+   * \brief Creates a line interval containing only line 0.
+   */
+  LineInterval() : LineInterval(0, 0) {
+  }
 };
 
 #endif /* ERAGPSIM_PARSER_LINE_INTERVAL_HPP */

@@ -17,32 +17,26 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <string>
-
-#include "common/assert.hpp"
 #include "parser/macro-directive-table.hpp"
+
 #include "parser/macro-directive.hpp"
 
-bool MacroDirectiveTable::insert(const MacroDirective &macro) {
+bool MacroDirectiveTable::insert(MacroDirective &macro) {
   auto paramCount = macro.getParameterCount();
-  // Insert macro for every possible amount of arguments
-  for (auto count = paramCount.first; count <= paramCount.second; count++) {
-    MacroInstance instance(macro.macroName(), count);
-    auto result = _macros.emplace(instance, macro);
-    if (!result.second) {
-      return false;
-    }
+  // Insert macro for every possible amount of characters.
+  for (int i = paramCount.first; i <= paramCount.second; i++) {
+    bool success = _macros.insert({{macro.macroName(), i}, macro}).second;
+    if (!success) return false;
   }
   return true;
 }
 
-MacroDirectiveTable::MacroWrapper
-MacroDirectiveTable::find(const std::string &name, size_t argumentCount) {
-  auto iterator = _macros.find({name, argumentCount});
-  return {iterator, _macros.end()};
+auto MacroDirectiveTable::find(const std::string &name, size_t argCount)
+    -> MacroWrapper {
+  return {_macros.find({name, argCount}), _macros.end()};
 }
 
-MacroDirectiveTable::MacroConstIterator MacroDirectiveTable::begin() {
+auto MacroDirectiveTable::begin() -> macro_map::const_iterator {
   return _macros.begin();
 }
 
@@ -50,60 +44,34 @@ void MacroDirectiveTable::clear() {
   _macros.clear();
 }
 
-MacroDirectiveTable::MacroConstIterator MacroDirectiveTable::end() {
+auto MacroDirectiveTable::end() -> macro_map::const_iterator {
   return _macros.end();
 }
 
-MacroDirectiveTable::MacroWrapper::MacroWrapper(MacroMap::iterator iterator,
-                                                MacroMap::iterator end)
-: _iterator(iterator), _end(end) {
-  if (iterator == end) return;
-  if (iterator->second.isCompiling()) {
+MacroDirectiveTable::MacroWrapper::MacroWrapper(macro_map::iterator i,
+                                                const macro_map::iterator &end)
+: _i(i), _end(end) {
+  if (i == end) return;
+  if (i->second.isCompiling())
     _cyclic = true;
-  } else {
-    iterator->second._isCompiling = true;
-  }
-}
-
-MacroDirectiveTable::MacroWrapper::MacroWrapper(MacroWrapper &&other)
-: _iterator{std::move(other._iterator)}
-, _end{other._end}
-, _cyclic{other._cyclic} {
-  other._iterator = other._end;// Invalidate other by setting _iterator to _end.
+  else
+    i->second._isCompiling = true;
 }
 
 MacroDirectiveTable::MacroWrapper::~MacroWrapper() {
-  if (!_cyclic && _iterator != _end) {
-    _iterator->second._isCompiling = false;
+  if (!_cyclic && _i != _end) {
+    _i->second._isCompiling = false;
   }
 }
 
-bool MacroDirectiveTable::MacroWrapper::
-operator==(MacroConstIterator iterator) const noexcept {
-  return _iterator == iterator;
+auto MacroDirectiveTable::MacroWrapper::operator*()
+    -> const macro_map::value_type & {
+  assert::that(!_cyclic && _i != _end);
+  return *_i;
 }
 
-bool MacroDirectiveTable::MacroWrapper::
-operator!=(MacroConstIterator iterator) const noexcept {
-  return !(*this == iterator);
-}
-
-const MacroDirectiveTable::MacroMap::value_type &
-    MacroDirectiveTable::MacroWrapper::operator*() {
-  assert::that(!_cyclic && _iterator != _end);
-  return *_iterator;
-}
-
-MacroDirectiveTable::MacroConstIterator MacroDirectiveTable::MacroWrapper::
-operator->() {
-  assert::that(!_cyclic && _iterator != _end);
-  return _iterator;
-}
-
-bool MacroDirectiveTable::MacroWrapper::isCyclic() const noexcept {
-  return _cyclic;
-}
-
-bool MacroDirectiveTable::MacroWrapper::found() const noexcept {
-  return _iterator != _end;
+auto MacroDirectiveTable::MacroWrapper::operator-> ()
+    -> macro_map::const_iterator {
+  assert::that(!_cyclic && _i != _end);
+  return _i;
 }

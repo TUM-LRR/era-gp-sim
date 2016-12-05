@@ -22,7 +22,6 @@
 #include <string>
 
 #include "arch/common/abstract-instruction-node.hpp"
-#include "arch/riscv/instruction-context-information.hpp"
 #include "arch/riscv/properties.hpp"
 #include "arch/riscv/utility.hpp"
 #include "core/conversions.hpp"
@@ -45,18 +44,6 @@ class InstructionNode : public AbstractInstructionNode {
 
   /** \copydoc AbstractSyntaxTreeNode::assemble() */
   MemoryValue assemble() const override;
-
-  /** \copydoc AbstractInstructionNode::getInstructionDocumentation() */
-  const Translateable& getInstructionDocumentation() const override;
-
-  /**
-   * Provides a pointer to the RISCV instruction user documentation collection.
-   * The pointer is set when this instruction is created.
-   * \param documentation A pointer to the RISCV specific user documentation
-   * collection
-   */
-  void setDocumentation(
-      const std::shared_ptr<InstructionContextInformation>& documentation);
 
  protected:
   using TypeList = std::initializer_list<super::Type>;
@@ -114,14 +101,6 @@ class InstructionNode : public AbstractInstructionNode {
    * \return True if the children match the given types, else false.
    */
   bool _compareChildTypes(TypeList list, size_t startIndex = 0) const;
-
- private:
-  /**
-   * A pointer to the RISCV specific user instruction documentation.
-   * This is needed for the implementation of
-   * AbstractInstructionNode::getInstructionDocumentation()
-   */
-  std::shared_ptr<InstructionContextInformation> _documentation;
 };
 }
 

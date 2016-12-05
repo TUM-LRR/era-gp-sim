@@ -61,7 +61,7 @@ TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
 TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   auto generator = buildGenerator();
   CompileState state;
-  auto output = generator.transformOperand("x18", state);
+  auto output = generator.transformOperand("r18", state);
   ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<RegisterNode>(output)));
 }
@@ -70,15 +70,15 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   auto generator = buildGenerator();
   CompileState state;
 
-  auto arg1 = generator.transformOperand("x1", state);
+  auto arg1 = generator.transformOperand("r1", state);
   ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
 
-  auto arg2 = generator.transformOperand("x1", state);
+  auto arg2 = generator.transformOperand("r1", state);
   ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
 
-  auto arg3 = generator.transformOperand("x2", state);
+  auto arg3 = generator.transformOperand("r2", state);
   ASSERT_EQ(state.errorList.size(), 0);
   ASSERT_TRUE((isInstance<RegisterNode>(arg2)));
 
