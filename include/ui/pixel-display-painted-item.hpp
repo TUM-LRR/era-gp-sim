@@ -55,10 +55,12 @@ struct Options {
   bool verticallyMirrored = false;// TODO
   // packs pixel data as tight as possible
   bool tight = false;
+  // interpret PixelBaseAddress as pointer to the PixelBuffer
+  bool pixelBufferPointerLike = false;
   // interpret ColorBaseAddress as pointer to the colorTable
-  bool colorTablePointerLike = true;
+  bool colorTablePointerLike  = false;
   std::size_t freeBytes = 1;
-  std::size_t feeBits = 0;
+  std::size_t freeBits = 0;
 
   ColorMode getColorMode() const;
   std::uint32_t getPixel(Optional<OutputComponent *> memoryAccess,
@@ -66,6 +68,13 @@ struct Options {
                          std::size_t y) const;
   std::uint32_t
   getColor(Optional<OutputComponent *> memoryAccess, std::size_t index) const;
+  std::uint32_t getPixelFromBuffer(const MemoryValue &buffer,
+                                   std::size_t offset,
+                                   std::size_t x,
+                                   std::size_t y) const;
+  std::uint32_t getColorFromBuffer(const MemoryValue &buffer,
+                                   std::size_t offset,
+                                   std::size_t index) const;
   void updatePixel(Optional<OutputComponent *> memoryAccess,
                    std::shared_ptr<QImage> image,
                    std::size_t x,
@@ -89,6 +98,14 @@ struct ColorMode {
       Optional<OutputComponent *>, const Options &, std::size_t, std::size_t)>;
   using GetColorFunction = std::function<std::uint32_t(
       Optional<OutputComponent *>, const Options &, std::size_t)>;
+  using GetPixelFromBufferFunction =
+      std::function<std::uint32_t(const MemoryValue &,
+                                  std::size_t,
+                                  const Options &,
+                                  std::size_t,
+                                  std::size_t)>;
+  using GetColorFromBufferFunction = std::function<std::uint32_t(
+      const MemoryValue &, std::size_t, const Options &, std::size_t)>;
   using UpdateMemoryFunction = std::function<void(Optional<OutputComponent *>,
                                                   const Options &,
                                                   std::shared_ptr<QImage>,
@@ -101,18 +118,24 @@ struct ColorMode {
 
   GetPixelFunction getPixel;
   GetColorFunction getColor;
+  GetPixelFromBufferFunction getPixelFromBuffer;
+  GetColorFromBufferFunction getColorFromBuffer;
   UpdateMemoryFunction updateMemory;
   UpdateAllPixelsFunction updateAllPixels;
   UpdateAllColorsFunction updateAllColors;
   // RGB:
   const static GetPixelFunction RGBGetPixel;
   const static GetColorFunction RGBGetColor;
+  const static GetPixelFromBufferFunction RGBGetPixelFromBuffer;
+  const static GetColorFromBufferFunction RGBGetColorFromBuffer;
   const static UpdateMemoryFunction RGBUpdateMemory;
   const static UpdateAllPixelsFunction RGBUpdateAllPixels;
   const static UpdateAllColorsFunction RGBUpdateAllColors;
   // Monochrome
   const static GetPixelFunction MonochromeGetPixel;
   const static GetColorFunction MonochromeGetColor;
+  const static GetPixelFromBufferFunction MonochromeGetPixelFromBuffer;
+  const static GetColorFromBufferFunction MonochromeGetColorFromBuffer;
   const static UpdateMemoryFunction MonochromeUpdateMemory;
   const static UpdateAllPixelsFunction MonochromeUpdateAllPixels;
   const static UpdateAllColorsFunction MonochromeUpdateAllColors;
@@ -136,9 +159,7 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   void paint(QPainter *painter) {
     std::cout << "paint!" << std::endl;
     _options.updateAllPixels(_outputComponentPointer, _image);
-    (*_outputComponentPointer)
-        ->getMemoryAccess()
-        .putMemoryValueAt(7, MemoryValue(std::vector<std::uint8_t>{0xFF}, 8));
+    _options.updateAllColors(_outputComponentPointer, _image);
     painter->drawImage(painter->window(), *_image);
     std::cout << "I did do the paint!" << std::endl;
   }
