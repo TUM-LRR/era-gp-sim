@@ -24,11 +24,11 @@
 #include "parser/syntax-tree-generator.hpp"
 
 ConstantDirective::ConstantDirective(const LineInterval& lines,
-                    const std::vector<std::string>& labels,
-                    const std::string& name,
-                    const std::vector<std::string>& arguments)
-  : IntermediateDirective(lines, labels, name), _arguments{arguments} {
-  }
+                                     const std::vector<std::string>& labels,
+                                     const std::string& name,
+                                     const std::vector<std::string>& arguments)
+: IntermediateDirective(lines, labels, name), _arguments{arguments} {
+}
 
 void ConstantDirective::execute(FinalRepresentation& finalRepresentator,
                                 const SymbolTable& table,
@@ -40,17 +40,13 @@ void ConstantDirective::execute(FinalRepresentation& finalRepresentator,
   if (!fullExpression.empty()) {
     generator.transformOperand(fullExpression, state);
   } else {
-      // better error messages:
-      //0 arguments -> this argument should be the name
-      //1 argument -> this argument should be the value
-      //>1 arguments -> too many
+    // better error messages:
+    // 0 arguments -> this argument should be the name
+    // 1 argument -> this argument should be the value
+    //>1 arguments -> too many
     switch (_arguments.size()) {
-      case 0:
-        state.addError("Missing constant name", state.position);
-        break;
-      case 1:
-        state.addError("Missing constant value", state.position);
-        break;
+      case 0: state.addError("Missing constant name", state.position); break;
+      case 1: state.addError("Missing constant value", state.position); break;
       default:
         state.addError(
             "Malformed constant directive, too many operands provided",
@@ -68,5 +64,9 @@ void ConstantDirective::enhanceSymbolTable(SymbolTable& table,
     return;
   }
   _expression = "(" + _arguments[1] + ")";
-  table.insertEntry(_arguments[0], _expression, state);
+  table.insertEntry(
+      _arguments[0],
+      _expression,
+      /*TODO*/ CodePositionInterval(CodePosition(0), CodePosition(0)),
+      state);
 }

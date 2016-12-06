@@ -128,7 +128,12 @@ void IntermediateInstruction::enhanceSymbolTable(
   // We insert all our labels.
   for (const auto& i : _labels) {
     table.insertEntry(
-        i, std::to_string(_address), state, SymbolTable::SymbolType::LABEL);
+        i,
+        std::to_string(_address),
+        /*TODO*/ CodePositionInterval(CodePosition(0), CodePosition(0)),
+        state,
+        SymbolTable::SymbolBehavior::DYNAMIC,
+        SymbolTable::SymbolType::LABEL);
   }
 }
 

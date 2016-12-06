@@ -98,9 +98,10 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   virtual void allocateMemory(const Architecture& architecture,
                               MemoryAllocator& allocator,
                               CompileState& state) {
-      if(_values.empty()) {
-          state.addError("Empty data definition", CodePosition(_lines.lineStart, _lines.lineEnd));
-      }
+    if (_values.empty()) {
+      state.addError("Empty data definition",
+                     CodePosition(_lines.lineStart, _lines.lineEnd));
+    }
 
     // So, we simply calculate and sum up our arguments.
     // Let's hope, the compiler optimizes this...
@@ -128,7 +129,11 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                                   CompileState& state) {
     _absolutePosition = allocator.absolutePosition(_relativePosition);
     for (const auto& i : _labels) {
-      table.insertEntry(i, std::to_string(_absolutePosition), state);
+      table.insertEntry(
+          i,
+          std::to_string(_absolutePosition),
+          /*TODO*/ CodePositionInterval(CodePosition(0), CodePosition(0)),
+          state);
     }
   }
 

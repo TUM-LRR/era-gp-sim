@@ -504,25 +504,45 @@ void pushBackFromEnd(std::vector<bool> &dest,
                      const std::vector<bool> &src,
                      size_t n);
 
+template <typename T>
+struct IterableRevert {
+  T &iterable;
+  auto begin() {
+    return iterable.rbegin();
+  }
+
+  auto end() {
+    return iterable.rend();
+  }
+
+  IterableRevert(T &iterable) : iterable(iterable) {
+  }
+};
+
+template <typename T>
+IterableRevert<T> revertIterable(T &iterable) {
+  return IterableRevert<T>(iterable);
+}
+
 
 template <typename T, typename S = T>
-constexpr T divideCeiling(const T& value, const S& divider) {
+constexpr auto divideCeiling(const T &value, const S &divider) {
   return (value + divider - 1) / divider;
 }
 
 // Only for completeness.
 template <typename T, typename S = T>
-constexpr T divideFloor(const T& value, const S& divider) {
+constexpr auto divideFloor(const T &value, const S &divider) {
   return value / divider;
 }
 
 template <typename T, typename S = T>
-constexpr T discreteCeiling(const T& value, const S& divider) {
+constexpr auto discreteCeiling(const T &value, const S &divider) {
   return divideCeiling(value, divider) * divider;
 }
 
 template <typename T, typename S = T>
-constexpr T discreteFloor(const T& value, const S& divider) {
+constexpr auto discreteFloor(const T &value, const S &divider) {
   return divideFloor(value, divider) * divider;
 }
 /**
@@ -533,8 +553,8 @@ constexpr T discreteFloor(const T& value, const S& divider) {
  * boundary.
  * \return The rounded value.
  */
-template<typename T>
-T roundToBoundary(const T& value, const T& boundary) {
+template <typename T>
+T roundToBoundary(const T &value, const T &boundary) {
   return discreteCeiling(value, boundary);
 }
 

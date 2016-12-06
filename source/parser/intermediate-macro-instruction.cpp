@@ -106,12 +106,15 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
     state.addError("Labels cant point to macros without instructions!");
   } else {
     for (const auto& i : _labels) {
-      table.insertEntry(i,
-                        std::to_string(static_cast<IntermediateInstruction*>(
-                                           _operations[_firstInstruction].get())
-                                           ->address()),
-                        state,
-                        SymbolTable::SymbolType::LABEL);
+      table.insertEntry(
+          i,
+          std::to_string(static_cast<IntermediateInstruction*>(
+                             _operations[_firstInstruction].get())
+                             ->address()),
+          /*TODO*/ CodePositionInterval(CodePosition(0), CodePosition(0)),
+          state,
+          SymbolTable::SymbolBehavior::DYNAMIC,
+          SymbolTable::SymbolType::LABEL);
     }
   }
 }

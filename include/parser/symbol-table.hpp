@@ -24,7 +24,10 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <unordered_set>
 #include "parser/compile-state.hpp"
+#include "parser/code-position.hpp"
+#include "common/multiregex.hpp"
 
 /**
  * \brief Contains methods to manage symbols and replace them in strings. It
@@ -37,17 +40,44 @@ class SymbolTable {
  * This distinction helps with a type-depended replacement.
  */
   enum class SymbolType { LABEL, CONSTANT, OTHER };
-  using TableEntry = std::pair<std::string, SymbolType>;
+  enum class SymbolBehavior { STATIC, DYNAMIC };
+  class TableEntry {
+   public:
+    friend SymbolTable;
+    TableEntry(const std::string& name,
+               const std::string& specifiedReplacement,
+               CodePositionInterval position,
+               SymbolBehavior behavior = SymbolBehavior::STATIC,
+               SymbolType type = SymbolType::OTHER);
+    void checkDependency(const TableEntry& entry);
+    const std::string& name() const noexcept;
+    const std::string& specifiedReplacement() const noexcept;
+    const std::string& finalReplacement() const noexcept;
+    SymbolType type() const noexcept;
+    SymbolBehavior behavior() const noexcept;
+    const CodePositionInterval& position() const noexcept;
+    const std::regex& searchRegex() const noexcept;
+    const std::set<std::string>& dependencies() const noexcept;
+
+   private:
+    void finalReplacement(const std::string& finalReplacement);
+    std::string _name;
+    std::string _specifiedReplacement;
+    std::string _finalReplacement;
+    SymbolType _type;
+    SymbolBehavior _behavior;
+    CodePositionInterval _position;
+    std::regex _searchRegex;
+    std::set<std::string> _dependencies;
+  };
   using Table = std::map<std::string, TableEntry>;
   using ReplacementFunction =
       std::function<std::string(const std::string&, SymbolType)>;
 
   /**
-   * \brief Instantiates an empty symbol table with the given recursion depth.
-   * \param maximumRecursionDepth The given recursion depth, defaults to 64.
+   * \brief Instantiates an empty symbol table.
    */
-  SymbolTable(int maximumRecursionDepth = 64)
-      : _maximumRecursionDepth(maximumRecursionDepth) {}
+  SymbolTable() = default;
 
   /**
    * \brief Inserts an entry into the SymbolTable and checks for any errors.
@@ -55,13 +85,19 @@ class SymbolTable {
    * \param replacement The symbol replacement.
    * \param state The compile state.
    */
-  void insertEntry(const std::string& name, const std::string& replacement,
-                   CompileState& state, SymbolType type = SymbolType::OTHER);
+  void insertEntry(const std::string& name,
+                   const std::string& replacement,
+                   const CodePositionInterval& position,
+                   CompileState& state,
+                   SymbolBehavior behavior = SymbolBehavior::STATIC,
+                   SymbolType type = SymbolType::OTHER);
 
   /**
    * \brief Clears the table.
    */
   void clearTable();
+
+  bool finalizeEntries();
 
   /**
    * \brief Returns the internal symbol table.
@@ -82,9 +118,10 @@ class SymbolTable {
    * \return The string with all symbols replaced (if the maximum recursion
    * depth has not been exceeded).
    */
-  std::string replaceSymbols(
-      const std::string& source, CompileState& state,
-      const ReplacementFunction& replacer = SIMPLE_REPLACE) const;
+  std::string
+  replaceSymbols(const std::string& source,
+                 CompileState& state,
+                 const ReplacementFunction& replacer = SIMPLE_REPLACE) const;
 
   /**
    * \brief Replaces any symbols in the given vector of strings and records all
@@ -97,29 +134,25 @@ class SymbolTable {
    * string and the symbol type and returns a string that will replace the
    * symbol
    */
-  void replaceSymbols(std::vector<std::string>& source, CompileState& state,
-                      const ReplacementFunction& replacer = SIMPLE_REPLACE) const;
+  void
+  replaceSymbols(std::vector<std::string>& source,
+                 CompileState& state,
+                 const ReplacementFunction& replacer = SIMPLE_REPLACE) const;
 
   static const ReplacementFunction SIMPLE_REPLACE;
 
  private:
-  /**
-   * \brief Turns the name into a search regex for the distinct word.
-   * \param name The name to transform.
-   * \return The resulting regex.
-   */
-  std::regex makeRegex(const std::string name) const;
+  bool checkCyclic(std::vector<std::string>& order);
+  bool doDfs(std::vector<std::string>& order,
+             std::unordered_set<std::string>& visited,
+             const std::string& startNode);
+  void prepareSymbols(const std::vector<std::string>& order);
 
   /**
    * \brief The internal map to store the symbol table.
    */
   Table _table;
-
-  /**
-   * \brief Denotes the maximum passes through the symbol table before an
-   * infinite recursion error.
-   */
-  int _maximumRecursionDepth;
+  std::vector<std::string> _replacementOrder;
 };
 
 #endif

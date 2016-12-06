@@ -44,6 +44,24 @@ struct MultiregexMatch {
   using String = std::basic_string<CharType>;
 
   /**
+   * \brief Creates a new multiregex match with the given arguments.
+   * \param source The COMPLETE source string (the relevant part will be cut
+   * out).
+   * \param position The positition of the match in the string.
+   * \param length The length of the match.
+   * \param choice The taken choice.
+   */
+  MultiregexMatch(const String& source = "",
+                  size_t position = 0,
+                  size_t length = 0,
+                  size_t choice = 0)
+  : position(position)
+  , length(length)
+  , choice(choice)
+  , source(source.substr(position, length)) {
+  }
+
+  /**
    * \brief The position in the string where the match is located.
    */
   size_t position;
@@ -62,30 +80,6 @@ struct MultiregexMatch {
    * \brief The match as string.
    */
   String source;
-
-  /**
-   * \brief Creates a new multiregex match with the given arguments.
-   * \param source_ The COMPLETE source string (the relevant part will be cut
-   * out).
-   * \param position_ The positition of the match in the string.
-   * \param length_ The length of the match.
-   * \param choice_ The taken choice.
-   */
-  MultiregexMatch(const String& source_,
-                  size_t position_,
-                  size_t length_,
-                  size_t choice_)
-  : position(position_)
-  , length(length_)
-  , choice(choice_)
-  , source(source_.substr(position_, length_)) {
-  }
-
-  /**
-   * \brief Creates an empty multiregex match.
-   */
-  MultiregexMatch() : position(0), length(0), choice(0), source("") {
-  }
 };
 
 /**
@@ -145,6 +139,8 @@ class Multiregex {
    * \brief The internal regex matches.
    */
   using RegexMatch = std::match_results<StringIterator>;
+
+  using MultiReplaceFunction = std::function<String(std::size_t)>;
 
   /**
    * \brief Creates a multiregex with the given prefix and suffix.
@@ -219,11 +215,41 @@ class Multiregex {
    * \param data The string to match.
    * \return True if and only if the matching succeeds.
    */
-  bool search(const std::basic_string<CharType>& data) const {
+  bool search(const String& data) const {
     MultiregexMatch<CharType> multimatch;
 
     // We do also record the data, but simply do not use nor return it.
     return search(data, multimatch);
+  }
+
+  String replace(const String& data, const MultiReplaceFunction& replacement) const {
+    MultiregexMatch<CharType> multimatch;
+    String substring = data;
+    String result;
+    while (search(substring, multimatch))
+    {
+      auto end = multimatch.position + multimatch.length;
+      result += substring.substr(0, multimatch.position);
+      result += replacement(multimatch.choice);
+      substring = substring.substr(end);
+    }
+    result += substring;
+    return result;
+  }
+
+  String recursiveReplace(const String& data, const MultiReplaceFunction& replacement) const {
+    MultiregexMatch<CharType> multimatch;
+    String substring = data;
+    String result;
+    while (search(substring, multimatch))
+    {
+      auto end = multimatch.position + multimatch.length;
+      result += substring.substr(0, multimatch.position);
+      result += recursiveReplace(replacement(multimatch.choice), replacement);
+      substring = substring.substr(end);
+    }
+    result += substring;
+    return result;
   }
 
  private:

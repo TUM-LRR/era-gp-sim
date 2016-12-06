@@ -105,6 +105,12 @@ IntermediateRepresentator::transform(const Architecture& architecture,
     i->enhanceSymbolTable(table, allocator, state);
   }
 
+  auto noCycle = table.finalizeEntries();
+  if (!noCycle)
+  {
+    state.addError("Detected a cycle between symbols.");
+  } 
+
   if (allocatedSize <= allowedSize) {
     // Then, we execute their values.
     for (const auto& i : _commandList) {
