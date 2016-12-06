@@ -16,12 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+#include <vector>
+
 #include "arch/common/architecture.hpp"
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
+#include "parser/final-representation.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/macro-directive.hpp"
+#include "parser/symbol-table.hpp"
+#include "parser/syntax-tree-generator.hpp"
+
+IntermediateInstruction::IntermediateInstruction(
+    const LineInterval& lines,
+    const std::vector<std::string>& labels,
+    const std::string& name,
+    const std::vector<std::string>& sources,
+    const std::vector<std::string>& targets)
+: IntermediateOperation(lines, labels, name)
+, _sources(sources)
+, _targets(targets) {
+}
 
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       const SymbolTable& table,
@@ -96,6 +113,10 @@ FinalCommand IntermediateInstruction::compileInstruction(
   return result;
 }
 
+MemoryAddress IntermediateInstruction::address() const {
+  return _address;
+}
+
 void IntermediateInstruction::enhanceSymbolTable(
     SymbolTable& table, const MemoryAllocator& allocator, CompileState& state) {
   if (_relativeAddress.valid()) {
@@ -165,4 +186,16 @@ void IntermediateInstruction::insertIntoArguments(const std::string& name,
                                                   const std::string& value) {
   replaceInVector(_sources, name, value);
   replaceInVector(_targets, name, value);
+}
+
+IntermediateOperationPointer IntermediateInstruction::clone() {
+  return IntermediateOperationPointer{new IntermediateInstruction{*this}};
+}
+
+std::vector<std::string> IntermediateInstruction::getArgsVector() const {
+  std::vector<std::string> args;
+  args.reserve(_sources.size() + _targets.size());
+  args.insert(args.end(), _targets.begin(), _targets.end());
+  args.insert(args.end(), _sources.begin(), _sources.end());
+  return args;
 }

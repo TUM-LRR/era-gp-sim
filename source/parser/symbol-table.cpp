@@ -38,7 +38,8 @@ void SymbolTable::clearTable() {
 
 void SymbolTable::insertEntry(const std::string& name,
                               const std::string& replacement,
-                              CompileState& state, SymbolType type) {
+                              CompileState& state,
+                              SymbolType type) {
   // Note: this method seems to be really slow. I feel like it is the regexes...
   // We could check them by hand, if it matters.
   // Expects a trimmed string.
@@ -91,7 +92,7 @@ std::string SymbolTable::replaceSymbols(const std::string& source,
       // Replace all symbol occurrences.
       // call the replacer function with replacement string & type
       const auto& replacement =
-              //    the replacement string, the symbol type
+          //    the replacement string, the symbol type
           replacer(entry.second.first, entry.second.second);
       std::string newResult =
           std::regex_replace(result, makeRegex(entry.first), replacement);

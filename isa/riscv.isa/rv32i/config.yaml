@@ -358,6 +358,135 @@ instructions:
       opcode: 51
       funct3: 0
       funct7: 7
+
+builtin-macros:
+  - |
+    .macro la, rd, symbol
+    auipc \rd, ((\symbol >> 12) & 0xfffff)
+    addi \rd, \rd, (\symbol & 0xfff)
+    .endm
+  - |
+    .macro lbg, rd, symbol
+    auipc \rd, ((\symbol >> 12) & 0xfffff)
+    lb \rd, \rd, (\symbol & 0xfff)
+    .endm
+  - |
+    .macro lhg, rd, symbol
+    auipc \rd, ((\symbol >> 12) & 0xfffff)
+    lh \rd, \rd, (\symbol & 0xfff)
+    .endm
+  - |
+    .macro lwg, rd, symbol
+    auipc \rd, ((\symbol >> 12) & 0xfffff)
+    lw \rd, \rd, (\symbol & 0xfff)
+    .endm
+# Disabled due to issues with parser
+#  - |
+#    .macro sbg, rd, symbol, rt
+#    auipc \rt, ((\symbol >> 12) & 0xfffff)
+#    sb \rt, \rd, (\symbol & 0xfff)
+#    .endm
+#  - |
+#    .macro shg, rd, symbol, rt
+#    auipc \rt, ((\symbol >> 12) & 0xfffff)
+#    sh \rt, \rd, (\symbol & 0xfff)
+#    .endm
+#  - |
+#    .macro swg, rd, symbol, rt
+#    auipc \rt, ((\symbol >> 12) & 0xfffff)
+#    sw \rt, \rd, (\symbol & 0xfff)
+#    .endm
+  - |
+    .macro nop
+    addi x0, x0, 0
+    .endm
+  - |
+    .macro li, rd, imm
+    lui \rd, ((\imm >> 12) & 0xfffff)
+    addi \rd, \rd, (\imm & 0xfff)
+    .endm
+  - |
+    .macro mv, rd, rs
+    addi \rd, \rs, 0
+    .endm
+  - |
+    .macro not, rd, rs
+    xori \rd, \rs, -1
+    .endm
+  - |
+    .macro neg, rd, rs
+    sub \rd, x0, \rs
+    .endm
+  - |
+    .macro seqz, rd, rs
+    sltiu \rd, \rs, 1
+    .endm
+  - |
+   .macro snez, rd, rs
+    sltu \rd, x0, \rs
+    .endm
+  - |
+    .macro sltz, rd, rs
+    slt \rd, \rs, x0
+    .endm
+  - |
+    .macro sgtz, rd, rs
+    slt \rd, x0, \rs
+    .endm
+  - |
+    .macro beqz, rs, offset
+    beq \rs, x0, \offset
+    .endm
+  - |
+    .macro bnez, rs, offset
+    bne \rs, x0, \offset
+    .endm
+  - |
+    .macro blez, rs, offset
+    bge x0, \rs, \offset
+    .endm
+  - |
+    .macro bgez, rs, offset
+    bge \rs, x0, \offset
+    .endm
+  - |
+    .macro bltz, rs, offset
+    blt \rs, x0, \offset
+    .endm
+  - |
+    .macro bgtz, rs, offset
+    blt x0, \rs, \offset
+    .endm
+  - |
+    .macro j, offset
+    jal x0, \offset
+    .endm
+  - |
+    .macro jal, offset
+    jal x1, \offset
+    .endm
+  - |
+    .macro jr, rs
+    jalr x0, \rs, 0
+    .endm
+  - |
+    .macro jalr, rs
+    jalr x1, \rs, 0
+    .endm
+  - |
+    .macro ret
+    jalr x0, x1, 0
+    .endm
+  - |
+    .macro call, offset
+    auipc x6, ((\offset >> 12) & 0xfffff)
+    jalr x1, x6, (\offset & 0xfff)
+    .endm
+  - |
+    .macro tail, offset
+    auipc x6, ((\offset >> 12) & 0xfffff)
+    jalr x0, x6, (\offset & 0xfff)
+    .endm
 units:
   - name: cpu
     registers:

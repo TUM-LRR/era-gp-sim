@@ -32,6 +32,7 @@
 #include "ui/editor-component.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/register-model.hpp"
+#include "ui/output-component.hpp"
 //#include "ui/snapshotmodel.hpp"
 
 
@@ -169,6 +170,12 @@ class GuiProject : QObject {
    * \brief the model of the editor
    */
   EditorComponent _editorComponent;
+
+  /**
+   * @brief _outputComponent The model for each output item (i.e
+   * lightstrip, sevensegment, console).
+   */
+  OutputComponent _outputComponent;
 
   // SnapshotModel snapmodel;
   MemoryComponentPresenter _memoryModel;

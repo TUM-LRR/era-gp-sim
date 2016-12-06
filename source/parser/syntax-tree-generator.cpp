@@ -80,5 +80,5 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
 }
 
 const NodeFactoryCollection& SyntaxTreeGenerator::getNodeFactories() const {
-    return _nodeFactories;
+  return _nodeFactories;
 }

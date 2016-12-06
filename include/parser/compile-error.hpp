@@ -22,6 +22,7 @@
 #include <QtGlobal>
 #include <string>
 
+#include "common/assert.hpp"
 #include "common/translateable.hpp"
 #include "parser/code-position.hpp"
 
