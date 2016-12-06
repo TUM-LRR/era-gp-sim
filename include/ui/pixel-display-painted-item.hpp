@@ -40,9 +40,9 @@ struct ColorMode;
 struct Options {
   std::size_t pixelBaseAddress = 0;
   std::size_t colorBaseAddress = 0;
-  std::size_t width = 32;
-  std::size_t height = 24;
-  std::size_t colorMode = 1;
+  std::size_t width = 4;
+  std::size_t height = 4;
+  std::size_t colorMode = 0;
   std::size_t rBit = 8;
   std::size_t gBit = 8;
   std::size_t bBit = 8;
@@ -58,7 +58,7 @@ struct Options {
   // interpret PixelBaseAddress as pointer to the PixelBuffer
   bool pixelBufferPointerLike = false;
   // interpret ColorBaseAddress as pointer to the colorTable
-  bool colorTablePointerLike  = false;
+  bool colorTablePointerLike = false;
   std::size_t freeBytes = 1;
   std::size_t freeBits = 0;
 
@@ -146,12 +146,12 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_OBJECT
   Q_PROPERTY(OutputComponent *outputComponentPointer WRITE setOutputComponent)
  public:
-  // PixelDisplayPaintedItem(QQuickItem *parent = 0) : QQuickPaintedItem(parent)
-  // {
-  //  _image = std::make_shared<QImage>(_breadth, _height,
-  //  QImage::Format_RGB32);
   PixelDisplayPaintedItem(QQuickItem *parent = 0) : QQuickPaintedItem(parent) {
-    _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_Mono);
+    _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_RGB32);
+    // PixelDisplayPaintedItem(QQuickItem *parent = 0) :
+    // QQuickPaintedItem(parent) {
+    //   _image = std::make_shared<QImage>(_breadth, _height,
+    //   QImage::Format_Mono);
     //_image->fill(QColor("#00FFFF").rgb());
     //_image->setPixel(20, 20, 0xFF0000u);
   }
@@ -187,8 +187,8 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   std::shared_ptr<QImage> _image;
   colorMode::Options _options{};
   std::size_t _baseAddress = 0;
-  std::size_t _breadth = 32;
-  std::size_t _height = 24;
+  std::size_t _breadth = 4;
+  std::size_t _height = 4;
   std::size_t _colorMode = 0;
 
   Optional<OutputComponent *> _outputComponentPointer;

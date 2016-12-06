@@ -218,8 +218,10 @@ const ColorMode::GetPixelFromBufferFunction ColorMode::RGBGetPixelFromBuffer =
   std::size_t bitOffset = beginBit - (offset * cellSize);
   // Load from buffer!
   MemoryValue mem{sizeInBit};
-  if (buffer.getSize() < bitOffset + sizeInBit) {
+  if (buffer.getSize() > bitOffset + sizeInBit) {
     mem = buffer.subSet(bitOffset, bitOffset + sizeInBit);
+  } else {
+    return 0xFFFF00FF;
   }
   MemoryValue blueByte = mem.subSet(0, o.bBit);
   MemoryValue greenByte = mem.subSet(o.bBit, o.bBit + o.gBit);
