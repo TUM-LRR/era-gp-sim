@@ -41,6 +41,9 @@ GuiProject::GuiProject(QQmlContext* context,
                  _projectModule.getMemoryManager(),
                  _projectModule.getMemoryAccess(),
                  context)
+, _outputComponent(_projectModule.getMemoryManager(),
+                   _projectModule.getMemoryAccess(),
+                   context)
 , _defaultTextFileSavePath() {
   context->setContextProperty("guiProject", this);
   // set the callback for memory and register
@@ -65,10 +68,17 @@ GuiProject::GuiProject(QQmlContext* context,
                    &_registerModel,
                    SLOT(updateContent(const QString&)),
                    Qt::QueuedConnection);
+
   QObject::connect(this,
                    SIGNAL(memoryChanged(std::size_t, std::size_t)),
                    &_memoryModel,
                    SLOT(onMemoryChanged(std::size_t, std::size_t)),
+                   Qt::QueuedConnection);
+
+  QObject::connect(this,
+                   SIGNAL(memoryChanged(std::size_t, std::size_t)),
+                   &_outputComponent,
+                   SLOT(updateMemory(std::size_t, std::size_t)),
                    Qt::QueuedConnection);
 
   std::string name[] = {"Apfel", "Banane"};
