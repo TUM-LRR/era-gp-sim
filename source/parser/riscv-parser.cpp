@@ -26,6 +26,7 @@
 #include "arch/common/unit-information.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/intermediate-representator.hpp"
+#include "parser/riscv-directive-factory.hpp"
 #include "parser/riscv-regex.hpp"
 #include "parser/syntax-information.hpp"
 
@@ -47,6 +48,12 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
     outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
   } else if (std::isalpha(operand[0])) {
     outputNode = nodeFactories.createRegisterNode(operand);
+  } else if (operand[0] == '\"') {
+    // Data nodes are mainly for meta instructions.
+    std::vector<char> outString;
+    StringParser::parseString(operand, outString, state);
+    std::string asString(outString.begin(), outString.end());
+    outputNode = nodeFactories.createDataNode(asString);
   } else {
     // using i32
     int32_t result =
@@ -73,6 +80,7 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
 
   // Initialize compile state
   _compile_state.errorList.clear();
+  _compile_state.macros.clear();
   _compile_state.position = CodePosition(0, 0);
   _compile_state.mode = parserMode;
 
@@ -93,22 +101,33 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
       }
 
       if (line_regex.hasInstruction()) {
+        bool is_directive = line_regex.isDirective();
         // Collect source and target parameters
         for (int i = 0; i < line_regex.getParameterCount(); i++) {
-          if (i == 0)
+          if (i == 0 && !is_directive)
             targets.push_back(line_regex.getParameter(i));
           else
             sources.push_back(line_regex.getParameter(i));
         }
 
-        intermediate.insertCommand(
-            IntermediateInstruction{
-                LineInterval(_compile_state.position.line()),
-                labels,
-                line_regex.getInstruction(),
-                sources,
-                targets},
-            _compile_state);
+        if (is_directive) {
+          RiscVDirectiveFactory::create(
+              LineInterval{_compile_state.position.line()},
+              labels,
+              line_regex.getInstruction(),
+              sources,
+              intermediate,
+              _compile_state);
+        } else {
+          intermediate.insertCommand(
+              IntermediateInstruction{
+                  LineInterval{_compile_state.position.line()},
+                  labels,
+                  line_regex.getInstruction(),
+                  sources,
+                  targets},
+              _compile_state);
+        }
 
         labels.clear();
         targets.clear();
@@ -117,9 +136,10 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
     }
   }
 
-  MemoryAllocator allocator(
-      {MemorySectionDefinition("text", 1),
-       MemorySectionDefinition("data", _architecture.getWordSize())});
+  auto byteAlignment =
+      _architecture.getWordSize() / _architecture.getByteSize();
+  MemoryAllocator allocator({MemorySectionDefinition("text", 1),
+                             MemorySectionDefinition("data", byteAlignment)});
   return intermediate.transform(
       _architecture,
       SyntaxTreeGenerator{_factory_collection, argumentGeneratorFunction},
@@ -135,6 +155,14 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   for (auto instruction : _architecture.getInstructions()) {
     // Matches all instruction mnemonics which don't end with a ':'
     info.addSyntaxRegex("\\b" + instruction.first + "\\b(?!:)",
+                        SyntaxInformation::Token::Instruction);
+  }
+
+  // Add directive regexes
+  for (auto directive : RiscVDirectiveFactory::mapping) {
+    // Matches all directive mnemonics starting with a '.' which don't end with
+    // a ':'
+    info.addSyntaxRegex("\\." + directive.first + "\\b(?!:)",
                         SyntaxInformation::Token::Instruction);
   }
 

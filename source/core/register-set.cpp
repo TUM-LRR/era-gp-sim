@@ -16,10 +16,20 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <set>
+
+#include "common/assert.hpp"
+#include "common/string-conversions.hpp"
+#include "core/deserialization-error.hpp"
 #include "core/register-set.hpp"
 
-const std::function<void(const std::string &)> RegisterSet::emptyCallback =
-    [](const std::string &) {};
+using Json = nlohmann::json;
+
+const std::string RegisterSet::_registerStringIdentifier = "register_value_";
+const std::string RegisterSet::_registerNameListStringIdentifier =
+    "register_parent_vector";
+const std::string RegisterSet::_registerDataMapStringIdentifier =
+    "register_data_map";
 
 RegisterSet::RegisterSet() : _dict{}, _register{}, _updateSet{} {
 }
@@ -44,10 +54,10 @@ void RegisterSet::put(const std::string &name, const MemoryValue &value) {
   auto registerIterator = _dict.find(name);
   assert::that(registerIterator != _dict.end());
   auto registerID = registerIterator->second;
-  if(!_constant[registerID.address]){
+  if (!_constant[registerID.address]) {
     assert::that(value.getSize() == (registerID.end - registerID.begin));
     _register[registerID.address].write(value, registerID.begin);
-    wasUpdated(registerID.address);
+    _wasUpdated(registerID.address);
   }
 }
 
@@ -58,17 +68,17 @@ RegisterSet::set(const std::string &name, const MemoryValue &value) {
   auto registerID = registerIterator->second;
   MemoryValue previous{
       _register[registerID.address].subSet(registerID.begin, registerID.end)};
-  if(!_constant[registerID.address]){
+  if (!_constant[registerID.address]) {
     assert::that(value.getSize() == (registerID.end - registerID.begin));
     _register[registerID.address].write(value, registerID.begin);
-    wasUpdated(registerID.address);
+    _wasUpdated(registerID.address);
   }
   return previous;
 }
 
 std::size_t RegisterSet::getSize(const std::string &name) const {
+  assert::that(existsRegister(name));
   auto registerIterator = _dict.find(name);
-  assert::that(registerIterator != _dict.end());
   auto registerID = registerIterator->second;
   return registerID.end - registerID.begin;
 }
@@ -87,8 +97,9 @@ void RegisterSet::createRegister(const std::string &name,
   _dict.emplace(name, RegisterID(_register.size(), 0, value.getSize()));
   _register.emplace_back(MemoryValue(value));
   _updateSet.push_back(std::set<std::string>{name});
+  _parentVector.push_back(name);
   _constant.push_back(constant);
-  wasUpdated(_register.size() - 1);
+  _wasUpdated(_register.size() - 1);
 }
 void RegisterSet::createRegister(const std::vector<std::string> &nameList,
                                  const MemoryValue &value,
@@ -167,8 +178,104 @@ void RegisterSet::aliasRegister(const std::vector<std::string> &nameList,
   }
 }
 
-void RegisterSet::wasUpdated(const std::size_t address) {
+// there is currently still a slight edge case where this is not fully reflexive
+bool RegisterSet::operator==(const RegisterSet &other) const {
+  if (_parentVector.size() != other._parentVector.size()) {
+    return false;
+  }
+  for (const auto &name : _parentVector) {
+    if (!other.existsRegister(name)) {
+      return false;
+    } else {
+      if (getSize(name) != other.getSize(name)) {
+        return false;
+      } else {
+        if (get(name) != other.get(name)) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+bool RegisterSet::existsRegister(const std::string &name) const {
+  auto iterator = _dict.find(name);
+  return iterator != _dict.end();
+}
+
+Json &RegisterSet::serializeJSON(Json &json) const {
+  auto data = _serializeRaw();
+  json[_registerDataMapStringIdentifier] = data;
+  json[_registerNameListStringIdentifier] = _parentVector;
+  return json;
+}
+
+Json RegisterSet::serializeJSON(Json &&json) const {
+  return serializeJSON(json);
+}
+
+std::ostream &operator<<(std::ostream &stream, const RegisterSet &value) {
+  stream << '{';
+  for (std::size_t i = 0; i < value._register.size(); ++i) {
+    stream << '[';
+    stream << value._parentVector[i];
+    stream << " = ";
+    stream << value._register[i].toHexString(true, true);
+    stream << "];";
+  }
+  stream << '}';
+  return stream;
+}
+std::map<std::string, std::string> RegisterSet::_serializeRaw() const {
+  std::map<std::string, std::string> map{};
+  for (std::size_t i = 0; i < _register.size(); ++i) {
+    map.emplace(_registerStringIdentifier + _parentVector[i],
+                _register[i].toHexString(false, false));
+  }
+  return map;
+}
+
+
+void RegisterSet::_wasUpdated(const std::size_t address) {
   for (auto name : _updateSet[address]) {
     _callback(name);
+  }
+}
+
+void RegisterSet::deserializeJSON(const Json &json) {
+  const auto registerNameListIt = json.find(_registerNameListStringIdentifier);
+  const auto dataMapIt = json.find(_registerDataMapStringIdentifier);
+  if (registerNameListIt == json.end()) {
+    throw DeserializationError(
+        "Could not deserialize Registers: Could not find: " +
+        _registerNameListStringIdentifier);
+  }
+  if (dataMapIt == json.end()) {
+    throw DeserializationError(
+        "Could not deserialize Registers: Could not find: " +
+        _registerDataMapStringIdentifier);
+  }
+  std::vector<std::string> parentVector = *registerNameListIt;
+  const auto &dataMap = *dataMapIt;
+  for (const auto &name : parentVector) {
+    if (existsRegister(name)) {
+      const auto valueIt = dataMap.find(_registerStringIdentifier + name);
+      if (valueIt == dataMap.end()) {
+        throw DeserializationError(
+            "Could not deserialize Registers: Could not find Register: " +
+            name);
+      }
+      // TODO::maybe use sommething else? Maybe something that throws some
+      // Exceptions <3
+      auto converted =
+          StringConversions::hexStringToMemoryValue(*valueIt, getSize(name));
+      put(name, *converted);
+    } else {
+      // die and burn in hell
+      throw DeserializationError(
+          "Could not deserialize Registers: There is no such Register: \"" +
+          name + "\"");
+    }
   }
 }

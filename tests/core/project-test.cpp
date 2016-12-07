@@ -157,7 +157,7 @@ TEST_F(ProjectTestFixture, MemoryAccessTest) {
   EXPECT_EQ(zero,
             memoryAccess.setRegisterValue(std::string("pc"), testValue2).get());
 
-  //start with x1 as x0 is hardwired to 0
+  // start with x1 as x0 is hardwired to 0
   for (int i = 1; i < 32; i++) {
     std::string registerName = std::string("x") + std::to_string(i);
     EXPECT_NO_THROW(memoryAccess.putRegisterValue(registerName, testValue));
@@ -222,8 +222,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
 
   // test if correct values for the assembled program are written into memory
   for (auto&& command : finalRepresentationValidator.commandList) {
-    // MemoryValue assembledValidator = command.node->assemble();
-    MemoryValue assembledValidator;
+    MemoryValue assembledValidator = command.node->assemble();
     MemoryValue assembledInMemory =
         memoryAccess
             .getMemoryValueAt(command.address, assembledValidator.getSize() / 8)

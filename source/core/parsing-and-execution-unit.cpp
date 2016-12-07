@@ -138,11 +138,13 @@ void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
 
 void ParsingAndExecutionUnit::parse(std::string code) {
   // delete old assembled program in memory
-  /*for (const auto &command : _finalRepresentation.commandList) {
-    // create a empty MemoryValue as long as the command
-    MemoryValue zero(command.node->assemble().getSize());
-    _memoryAccess.putMemoryValueAt(command.address, zero);
-}*/
+  if (!_finalRepresentation.hasErrors()) {
+    for (const auto &command : _finalRepresentation.commandList) {
+      // create a empty MemoryValue as long as the command
+      MemoryValue zero(command.node->assemble().getSize());
+      _memoryAccess.putMemoryValueAt(command.address, zero);
+    }
+  }
   // parse the new code and save the final representation
   _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
   _addressCommandMap = _finalRepresentation.createMapping();
@@ -150,9 +152,11 @@ void ParsingAndExecutionUnit::parse(std::string code) {
   // update the error list of the ui
   _setErrorList(_finalRepresentation.errorList);
   // assemble commands into memory
-  /*for (const auto &command : _finalRepresentation.commandList) {
-    _memoryAccess.putMemoryValueAt(command.address, command.node->assemble());
-}*/
+  if (!_finalRepresentation.hasErrors()) {
+    for (const auto &command : _finalRepresentation.commandList) {
+      _memoryAccess.putMemoryValueAt(command.address, command.node->assemble());
+    }
+  }
 }
 
 bool ParsingAndExecutionUnit::setBreakpoint(size_t line) {
