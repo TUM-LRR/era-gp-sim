@@ -27,8 +27,8 @@
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
-#include "intermediate-directive.hpp"
 #include "parser/expression-compiler-clike.hpp"
+#include "parser/intermediate-directive.hpp"
 #include "parser/memory-allocator.hpp"
 #include "parser/relative-memory-position.hpp"
 #include "parser/string-parser.hpp"
@@ -98,6 +98,11 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   virtual void allocateMemory(const Architecture& architecture,
                               MemoryAllocator& allocator,
                               CompileState& state) {
+    if (_values.empty()) {
+      state.addError("Empty data definition",
+                     CodePosition(_lines.lineStart, _lines.lineEnd));
+    }
+
     // So, we simply calculate and sum up our arguments.
     // Let's hope, the compiler optimizes this...
     CompileState temporaryState;
@@ -142,35 +147,40 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                        const SyntaxTreeGenerator& generator,
                        CompileState& state,
                        MemoryAccess& memoryAccess) {
-    // We first of all create our memory value locally.
-    MemoryValue data(_size);
+    if (_size > 0) {
+      // We first of all create our memory value locally.
+      MemoryValue data(_size);
 
-    // Then we write to it.
-    _processValues(_values, _cellSize, state, [&](T value, size_t position) {
-      // For now. Later to be replaced by the real enum of the arch,
-      // maybe...
-      auto memoryValue =
-          conversions::convert(value,
-                               conversions::standardConversions::helper::
-                                   twosComplement::toMemoryValueFunction,
-                               _byteSize * _cellSize);
+      // Then we write to it.
+      _processValues(
+          _values, _cellSize, state, [&](T value, std::size_t position) {
+            // For now. Later to be replaced by the real enum of the arch,
+            // maybe...
+            auto memoryValue =
+                conversions::convert(value,
+                                     conversions::standardConversions::helper::
+                                         twosComplement::toMemoryValueFunction,
+                                     _byteSize * _cellSize);
 
-      // Once converted, we take down the value.
-      memoryValue.write(data, position);
-    });
+            // Once converted, we take down the value.
+            data.write(memoryValue, position * _byteSize);
+          });
 
-    // Then, let's do a (probably also here) expensive memory call.
-    memoryAccess.putMemoryValueAt(_absolutePosition, data);
+      // Then, let's do a (probably also here) expensive memory call.
+      memoryAccess.putMemoryValueAt(_absolutePosition, data);
+    } else {
+      state.addError("Nothing to reserve with memory definition.");
+    }
   }
 
  private:
-  ProcessValuesFunction _processValues;
-  size_t _byteSize;
-  size_t _absolutePosition;
+  std::size_t _byteSize;
+  std::size_t _absolutePosition;
   RelativeMemoryPosition _relativePosition;
   size_t _size;
   size_t _cellSize;
   std::vector<std::string> _values;
+  ProcessValuesFunction _processValues;
 };
 
 #endif /* ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP */

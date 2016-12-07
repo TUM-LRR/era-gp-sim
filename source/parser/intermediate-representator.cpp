@@ -19,6 +19,7 @@
 #include "parser/intermediate-representator.hpp"
 
 #include "arch/common/architecture.hpp"
+#include "core/memory-access.hpp"
 #include "parser/intermediate-macro-instruction.hpp"
 #include "parser/memory-allocator.hpp"
 #include "parser/symbol-table.hpp"
@@ -69,8 +70,9 @@ IntermediateRepresentator::transform(const Architecture& architecture,
 
   // Some directives need to be executed before memory allocation.
   for (const auto& i : _commandList) {
-    if (i->executionTime() == IntermediateExecutionTime::BEFORE_ALLOCATION)
+    if (i->executionTime() == IntermediateExecutionTime::BEFORE_ALLOCATION) {
       i->execute(representation, table, generator, state, memoryAccess);
+    }
   }
 
   IntermediateMacroInstruction::replaceWithMacros(
@@ -79,21 +81,33 @@ IntermediateRepresentator::transform(const Architecture& architecture,
   allocator.clear();
 
   // We reserve our memory.
-  for (const auto& i : _commandList) {
-    i->allocateMemory(architecture, allocator, state);
+  for (const auto& command : _commandList) {
+    command->allocateMemory(architecture, allocator, state);
   }
 
-  allocator.calculatePositions();
+  std::size_t allocatedSize = allocator.calculatePositions();
+  auto allowedSizeFuture = memoryAccess.getMemorySize();
+  std::size_t allowedSize = allowedSizeFuture.get();
+
+  if (allocatedSize > allowedSize) {
+    state.addError("Too much memory allocated: " +
+                   std::to_string(allocatedSize) + " requested, maximum is " +
+                   std::to_string(allowedSize) +
+                   " (please note: because of aligning memory, the first value "
+                   "might be actually bigger than the memory allocated)");
+  }
 
   // Next, we insert all our labels/constants into the SymbolTable.
   for (const auto& i : _commandList) {
     i->enhanceSymbolTable(table, allocator, state);
   }
 
-  // Then, we execute their values.
-  for (const auto& i : _commandList) {
-    if (i->executionTime() == IntermediateExecutionTime::AFTER_ALLOCATION) {
-      i->execute(representation, table, generator, state, memoryAccess);
+  if (allocatedSize <= allowedSize) {
+    // Then, we execute their values.
+    for (const auto& i : _commandList) {
+      if (i->executionTime() == IntermediateExecutionTime::AFTER_ALLOCATION) {
+        i->execute(representation, table, generator, state, memoryAccess);
+      }
     }
   }
 
