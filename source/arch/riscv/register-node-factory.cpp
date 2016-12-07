@@ -20,11 +20,24 @@
 
 #include "arch/common/register-node.hpp"
 #include "arch/riscv/register-node-factory.hpp"
+#include "common/utility.hpp"
 
 namespace riscv {
 
-RegisterNodeFactory::Node
-RegisterNodeFactory::createRegisterNode(const std::string &id) const {
-  return std::make_unique<RegisterNode>(id);
+RegisterNodeFactory::RegisterNodeFactory(const Architecture &arch) : AbstractRegisterNodeFactory(arch), _availableRegisters() {
+    for(auto& unit : arch.getUnits()) {
+        for(auto& registerInfo : unit) {
+            _availableRegisters.insert(Utility::toLower(registerInfo.second.getName()));
+        }
+    }
+}
+
+RegisterNodeFactory::Node RegisterNodeFactory::createRegisterNode(
+    const std::string &id) const {
+  if (_availableRegisters.count(Utility::toLower(id)) > 0) {
+    return std::make_unique<RegisterNode>(Utility::toLower(id));
+  } else {
+    return nullptr;
+  }
 }
 }

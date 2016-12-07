@@ -51,8 +51,8 @@ struct AbstractFactoryTypes {
     return makeFactory<MemoryAccessNodeFactoryType>();
   }
 
-  static auto registerFactory() {
-    return makeFactory<RegisterNodeFactoryType>();
+  static auto registerFactory(const Architecture& architecture) {
+    return makeFactory<RegisterNodeFactoryType>(architecture);
   }
 
   static auto instructionFactory(const InstructionSet& instructions,

@@ -48,6 +48,12 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
     outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
   } else if (std::isalpha(operand[0])) {
     outputNode = nodeFactories.createRegisterNode(operand);
+  } else if (operand[0] == '\"') {
+    // Data nodes are mainly for meta instructions.
+    std::vector<char> outString;
+    StringParser::parseString(operand, outString, state);
+    std::string asString(outString.begin(), outString.end());
+    outputNode = nodeFactories.createDataNode(asString);
   } else {
     // using i32
     int32_t result =
@@ -130,9 +136,10 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
     }
   }
 
-  MemoryAllocator allocator(
-      {MemorySectionDefinition("text", 1),
-       MemorySectionDefinition("data", _architecture.getWordSize())});
+  auto byteAlignment =
+      _architecture.getWordSize() / _architecture.getByteSize();
+  MemoryAllocator allocator({MemorySectionDefinition("text", 1),
+                             MemorySectionDefinition("data", byteAlignment)});
   return intermediate.transform(
       _architecture,
       SyntaxTreeGenerator{_factory_collection, argumentGeneratorFunction},
@@ -155,7 +162,7 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   for (auto directive : RiscVDirectiveFactory::mapping) {
     // Matches all directive mnemonics starting with a '.' which don't end with
     // a ':'
-    info.addSyntaxRegex("\\b\\." + directive.first + "\\b(?!:)",
+    info.addSyntaxRegex("\\." + directive.first + "\\b(?!:)",
                         SyntaxInformation::Token::Instruction);
   }
 
