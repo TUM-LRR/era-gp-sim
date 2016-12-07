@@ -62,9 +62,9 @@ class OutputComponent : public QObject {
 
  public:
   OutputComponent(MemoryManager &memoryManager,
-                           MemoryAccess &memoryAccess,
-                           QQmlContext *projectContext,
-                           QObject *parent = 0);
+                  MemoryAccess &memoryAccess,
+                  QQmlContext *projectContext,
+                  QObject *parent = 0);
 
   /**
    \brief putMemoryValue Allows a QML output item instance to change the
@@ -113,7 +113,9 @@ class OutputComponent : public QObject {
     \param currentText The text, which is actuall at the textarea
     \param mode the textMode
     */
-  Q_INVOKABLE QString getTextFromMemory(int start, QString currentText, int mode);
+  Q_INVOKABLE QString getTextFromMemory(int start,
+                                        QString currentText,
+                                        int mode);
 
  private:
   /// Interface for access memory content.

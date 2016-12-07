@@ -46,24 +46,23 @@ Item {
             target: outputComponent
             // Send when the memory changes (at any address).
             onMemoryChanged: {
-                //console.log("onMemoryChanged");
                 var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
                 var _mode = outputComponent.getOutputItem(outputItemIndex)["textMode"];
                 // Check if the memory address that was changed (at least partly) belongs to
                 // the output item's source space.
-                if ((address+length) >= _baseAddress && _mode == 0) {
+                if ((address+length) >= _baseAddress && _mode === 0) {
                     it.updateContent(_baseAddress);
-                }
-                else if(_mode != 0 && (address == _baseAddress|| (address<_baseAddress && address+length >= _baseAddress)) ){
-                    it.updateContent(_baseAddress);
+                }else if(_mode !== 0 ){
+                    if(address<=_baseAddress && address+length >= _baseAddress){
+                        it.updateContent(_baseAddress);
+                    }
                 }
             }
             // Send when any item's settings where updated.
             onOutputItemSettingsChanged: {
-                //console.log("onOutputItemSettingsChanged");
                 var mode = outputComponent.getOutputItem(outputItemIndex)["textMode"];
                 var baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
-                if(mode == oldMode && baseAddress == oldAddress){
+                if(mode === oldMode && baseAddress === oldAddress){
                     return;
                 }
                 it.updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);

@@ -36,10 +36,9 @@ Window {
     function updateSettings() {
         baseAddressTextField.text = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
         var t = outputComponent.getOutputItem(outputItemIndex)["textMode"];
-        if(t==0){
+        if(t === 0){
             ab.checked = true;
-        }
-        else{
+        } else {
             pl.checked = true;
         }
     }
@@ -105,7 +104,7 @@ Window {
                 ExclusiveGroup { id: modeGroup }
 
                 RadioButton{
-                    id:ab
+                    id: ab
                     text: "ArrayBased"
                     checked: true
                     exclusiveGroup: modeGroup
@@ -129,14 +128,7 @@ Window {
 
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
-                    var inputValue;
-                    if(ab.checked){
-                        inputValue=0;
-                    }
-                    else{
-                        inputValue=1;
-                    }
-
+                    var inputValue = !ab.checked;
                     outputComponent.setOutputItemProperty(outputItemIndex, "textMode", inputValue);
 
                 }
@@ -158,7 +150,6 @@ Window {
 
         onClicked: {
             baseAddressTextField.processInput();
-            //mode.processInput(); //Pipelike will be updated two times
             close();
         }
     }
