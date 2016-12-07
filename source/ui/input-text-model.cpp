@@ -1,43 +1,43 @@
 #include <iostream>
 
-#include "ui/input-text-model.hpp"
 #include "core/conversions.hpp"
+#include "ui/input-text-model.hpp"
 
-InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess m): QObject(), context(context), start(0), maxLength(20), memoryAccess(m)
-{
-    context->setContextProperty("inputtextMod", this);
+InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess memoryAccess)
+: QObject()
+, context(context)
+, start(0)
+, maxLength(20)
+, memoryAccess(memoryAccess) {
+  context->setContextProperty("inputtextMod", this);
 }
 
-void InputTextModel::newText(QString text){
-    std::string stdText=text.toStdString();
-    //std::cout<<stdText<<std::endl;
-
-
-    for(unsigned i=0; i<stdText.length(); i++){
-        char z=stdText.at(i);
-        unsigned zahl=int(z);
-        if(zahl<225){//else do nothing, was not a ascii sign
-            //std::cout<<zahl<<std::endl;
-            MemoryValue m=conversions::convert(zahl, 32);
-            memoryAccess.putMemoryValueAt(start+i, m);
-        }
+void InputTextModel::newText(QString text) {
+  std::string stdText = text.toStdString();
+  for (size_t i = 0; i < stdText.length(); i++) {
+    char z = stdText.at(i);
+    unsigned number = int(z);
+    if (zahl < 225) {// else do nothing, was not a ascii sign
+      MemoryValue m = conversions::convert(number, 32);
+      memoryAccess.putMemoryValueAt(start + i, m);
     }
+  }
 }
 
-void InputTextModel::setStart(int start){
-    if(memoryAccess.getMemorySize().get() >= start+maxLength){
-        this->start=start;
-    }
+void InputTextModel::setStart(unsigned int start) {
+  if (memoryAccess.getMemorySize().get() >= start + maximumLength) {
+    this->start = start;
+  }
 }
 
-QString InputTextModel::getStart(){
-    return QString::fromStdString(std::to_string(start));
+QString InputTextModel::getStart() {
+  return QString::fromStdString(std::to_string(start));
 }
 
-void InputTextModel::setMaxLength(int maxL){
-    this->maxLength=maxL;
+void InputTextModel::setMaximumLength(unsigned int maximumLength) {
+  this->maximumLength = maximumLength;
 }
 
-int InputTextModel::getMaxLength(){
-    return maxLength;
+unsigned int InputTextModel::getMaximumLength() {
+  return maximumLength;
 }

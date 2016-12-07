@@ -29,7 +29,7 @@ Item {
     id: holder
     /*usual component of the holder*/
     property var usual
-    property QtObject actuall: Rectangle{}
+    property QtObject actual: Rectangle{}
 
 
     /*All possible Components*/
@@ -68,38 +68,31 @@ Item {
     }
 
     function change(comp){
-        if(comp=="nothing"){
+        if(comp === "nothing"){
             //console.info(usual);
             change(usual);
-        }
-        else if(comp=="snapshots"){
+        } else if(comp === "snapshots"){
             var object=snapshots.createObject(holder);
+            actual.destroy();
+            actual=object;
+        }else if(comp === "output"){
+            var object = output.createObject(holder);
+            actual.destroy();
+            actual = object;
+        }else if(comp === "register"){
+            var object = register.createObject(holder);
             actuall.destroy();
-            actuall=object;
-        }
-        else if(comp=="output"){
-            var object=output.createObject(holder);
-            actuall.destroy();
-            actuall=object;
-        }
-        else if(comp=="register"){
-            var object=register.createObject(holder);
-            actuall.destroy();
-            actuall=object;
-        }
-        else if(comp=="memory"){
-            var object=memory.createObject(holder);
-            actuall.destroy();
-            actuall=object;
-        }
-        else if(comp=="input"){
-            var object=input.createObject(holder);
-            actuall.destroy();
-            actuall=object;
-        }
-
-        else{
-            console.info("Unknowen component");
+            actuall=  object;
+        }else if(comp === "memory"){
+            var object = memory.createObject(holder);
+            actual.destroy();
+            actual = object;
+        }else if(comp === "input"){
+            var object = input.createObject(holder);
+            actual.destroy();
+            actual = object;
+        }else{
+            console.info("Unknown component");
         }
     }
 }
