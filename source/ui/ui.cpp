@@ -31,9 +31,8 @@ Ui::Ui(int& argc, char** argv)
 }
 
 int Ui::runUi() {
-    qmlRegisterType<ClipboardAdapter>("ClipboardAdapter", 1, 0, "ClipboardAdapter");
-
-    _engine.rootContext()->setContextProperty("ui", this);
+  qmlRegisterType<ClipboardAdapter>(
+      "ClipboardAdapter", 1, 0, "ClipboardAdapter");
   qRegisterMetaType<std::size_t>("std::size_t");
   _engine.rootContext()->setContextProperty("ui", this);
 

@@ -47,24 +47,24 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
         throwRuntimeError(validationResult);
       });
 
-  parserInterface.setSetMacroListCallback(
-      [this](const std::vector<MacroInformation> &macroList) {
-        QVariantList updatedMacroList;
-        for (auto it = macroList.begin(); it != macroList.end(); ++it) {
-          QVariantMap macroInformation;
-          macroInformation["code"] = QString::fromStdString(it->macroCode());
-          macroInformation["startLine"] =
-              QVariant::fromValue(it->position().first.line()-1);
-          macroInformation["endLine"] =
-              QVariant::fromValue(it->position().second.line()-1);
-          int lineCount = (int)std::count(it->macroCode().begin(), it->macroCode().end(), '\n');
-          macroInformation["lineCount"] = QVariant::fromValue(
-             lineCount);
-          macroInformation["collapsed"] = QVariant::fromValue(true);
-          updatedMacroList.append(macroInformation);
-        }
-        emit updateMacros(updatedMacroList);
-      });
+  parserInterface.setSetMacroListCallback([this](
+      const std::vector<MacroInformation> &macroList) {
+    QVariantList updatedMacroList;
+    for (auto it = macroList.begin(); it != macroList.end(); ++it) {
+      QVariantMap macroInformation;
+      macroInformation["code"] = QString::fromStdString(it->macroCode());
+      macroInformation["startLine"] =
+          QVariant::fromValue(it->position().first.line() - 1);
+      macroInformation["endLine"] =
+          QVariant::fromValue(it->position().second.line() - 1);
+      int lineCount =
+          (int)std::count(it->macroCode().begin(), it->macroCode().end(), '\n');
+      macroInformation["lineCount"] = QVariant::fromValue(lineCount);
+      macroInformation["collapsed"] = QVariant::fromValue(true);
+      updatedMacroList.append(macroInformation);
+    }
+    emit updateMacros(updatedMacroList);
+  });
 
   // TODO select colors according to a theme/possibility to change colors
 

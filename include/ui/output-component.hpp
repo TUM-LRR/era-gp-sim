@@ -62,9 +62,9 @@ class OutputComponent : public QObject {
 
  public:
   OutputComponent(MemoryManager &memoryManager,
-                           MemoryAccess &memoryAccess,
-                           QQmlContext *projectContext,
-                           QObject *parent = 0);
+                  MemoryAccess &memoryAccess,
+                  QQmlContext *projectContext,
+                  QObject *parent = 0);
 
   /**
    \brief putMemoryValue Allows a QML output item instance to change the

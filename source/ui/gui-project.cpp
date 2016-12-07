@@ -51,7 +51,7 @@ GuiProject::GuiProject(QQmlContext* context,
                    Qt::QueuedConnection);
 
   QObject::connect(this,
-                   SIGNAL(memoryChanged(std::size_t,std::size_t)),
+                   SIGNAL(memoryChanged(std::size_t, std::size_t)),
                    &_outputComponent,
                    SLOT(updateMemory(std::size_t, std::size_t)),
                    Qt::QueuedConnection);

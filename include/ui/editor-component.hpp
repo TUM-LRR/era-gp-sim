@@ -160,7 +160,6 @@ class EditorComponent : public QObject {
 
   /** Update macros in editor. */
   void updateMacros(const QVariantList &macroList);
-
 };
 
 #endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP_ */
