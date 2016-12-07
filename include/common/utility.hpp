@@ -500,21 +500,55 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
 }
 
 // push_back n elements from the end of the src vector
-void pushBackFromEnd(std::vector<bool>& dest,
-                     const std::vector<bool>& src,
+void pushBackFromEnd(std::vector<bool> &dest,
+                     const std::vector<bool> &src,
                      size_t n);
 
 
-template <typename T>
-constexpr T discreteCeiling(T value, T divider) {
+template <typename T, typename S = T>
+constexpr T divideCeiling(const T& value, const S& divider) {
   return (value + divider - 1) / divider;
 }
 
 // Only for completeness.
-template <typename T>
-constexpr T discreteFloor(T value, T divider) {
+template <typename T, typename S = T>
+constexpr T divideFloor(const T& value, const S& divider) {
   return value / divider;
 }
+
+template <typename T, typename S = T>
+constexpr T discreteCeiling(const T& value, const S& divider) {
+  return divideCeiling(value, divider) * divider;
+}
+
+template <typename T, typename S = T>
+constexpr T discreteFloor(const T& value, const S& divider) {
+  return divideFloor(value, divider) * divider;
+}
+/**
+ * \brief roundToBoundary Rounds a given value up to a multiple of the
+ * given boundary.
+ * \param value Value to be rounded.
+ * \param boundary The value is rounded up to a multiple of the
+ * boundary.
+ * \return The rounded value.
+ */
+template<typename T>
+T roundToBoundary(const T& value, const T& boundary) {
+  return discreteCeiling(value, boundary);
+}
+
+template <typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
+struct EnumHash {
+  using argument_type = Enum;
+  using result_type = std::size_t;
+  using underlying_type = std::underlying_type_t<Enum>;
+
+  result_type operator()(const argument_type &argument) const {
+    const auto ordinal = static_cast<underlying_type>(argument);
+    return std::hash<underlying_type>{}(ordinal);
+  }
+};
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */

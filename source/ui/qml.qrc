@@ -26,7 +26,6 @@
         <file>Components/Toolbar/Icons/StopButtonActiveWithBorder.svg</file>
         <file>Components/Toolbar/Icons/StopButtonInactive.svg</file>
         <file>Components/Toolbar/Icons/StopButtonInactiveWithBorder.svg</file>
-        <file>Components/Menubar/ToolbarMainWindow.qml</file>
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
@@ -46,7 +45,6 @@
         <file>Components/Output/Buttons/Settings Icon Pressed@2x.png</file>
         <file>Components/Output/Buttons/Settings Icon.png</file>
         <file>Components/Output/Buttons/Settings Icon@2x.png</file>
-        <file>Components/Output/OutputSettingsWindow.qml</file>
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
@@ -54,5 +52,6 @@
         <file>Components/Output/SevenSegment/SevenSegmentSegment.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentSettingsWindow.qml</file>
+        <file>Components/Output/LightstripSettingsWindow.qml</file>
     </qresource>
 </RCC>

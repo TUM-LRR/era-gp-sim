@@ -26,6 +26,7 @@
 #include "arch/riscv/lui-auipc-instructions.hpp"
 #include "arch/riscv/mul-div-instructions.hpp"
 #include "arch/riscv/word-instruction-wrapper.hpp"
+#include "arch/riscv/simulator-instructions.hpp"
 
 #include "common/utility.hpp"
 
@@ -199,11 +200,24 @@ void _addExtensionMIfPresent(const InstructionSet& instructionSet,
     _setupExtensionM<UnsignedWord, SignedWord>(_factories);
   }
 }
+
+/**
+ * Struct that returns the incremented program counter
+ */
+template <typename WordSize>
+struct ProgramCounterIncrement {
+  MemoryValue operator()(MemoryAccess& memoryAccess) const {
+    constexpr auto INSTRUCTION_SIZE = 32;
+    auto current = riscv::loadRegister<WordSize>(memoryAccess, "pc");
+    current += (INSTRUCTION_SIZE / riscv::BITS_PER_BYTE);
+    return riscv::convert<WordSize>(current);
+  }
+};
 }
 
 InstructionNodeFactory::InstructionNodeFactory(
     const InstructionSet& instructions, const Architecture& architecture)
-    : _instructionSet(instructions) {
+    : _instructionSet(instructions), _documentation(std::make_shared<InstructionContextInformation>(architecture)) {
   auto wordSize = architecture.getWordSize();
   assert(wordSize == 32 || wordSize == 64);
 
@@ -234,6 +248,20 @@ InstructionNodeFactory::InstructionNodeFactory(
   }
 
   _setupOtherInstructions();
+  _setupSimulatorInstructions(architecture);
+}
+
+void InstructionNodeFactory::_setupSimulatorInstructions(
+    const Architecture& architecture) {
+
+  if (architecture.getWordSize() == 32) {
+    _factories.add<riscv::SleepInstruction>(
+        "simusleep", ProgramCounterIncrement<riscv::unsigned32_t>{});
+  } else if (architecture.getWordSize() == 64) {
+    _factories.add<riscv::SleepInstruction>(
+        "simusleep", ProgramCounterIncrement<riscv::unsigned64_t>{});
+  }
+  _factories.add<riscv::CrashInstruction>("simucrash");
 }
 
 void InstructionNodeFactory::_setupOtherInstructions() {}
@@ -277,6 +305,6 @@ InstructionNodeFactory::Node InstructionNodeFactory::createInstructionNode(
   }
   auto information = _instructionSet.getInstruction(lower);
 
-  return _factories.create(lower, information);
+  return _factories.create(lower, information, _documentation);
 }
 }

@@ -41,8 +41,8 @@ Window {
 
     // Refreshes the window's control content.
     function updateSettings() {
-        numberOfDigitsTextField.text = outputComponent.getOutputItems()[outputItemIndex]["numberOfDigits"];
-        baseAddressTextField.text = outputComponent.getOutputItems()[outputItemIndex]["baseAddress"];
+        numberOfDigitsTextField.text = outputComponent.getOutputItem(outputItemIndex)["numberOfDigits"];
+        baseAddressTextField.text = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
     }
 
     // The controls for editing seven segment settings.
@@ -88,7 +88,7 @@ Window {
             TextField {
                 id: baseAddressTextField
 
-                text: outputComponent.getOutputItems()[outputItemIndex]["baseAddress"]
+                text: outputComponent.getOutputItem(outputItemIndex)["baseAddress"]
 
                 onAccepted: { processInput(); }
                 onEditingFinished: { processInput(); }
@@ -106,7 +106,7 @@ Window {
                 id: numberOfDigitsTextField
                 height: baseAddressTextField.height
 
-                text: numberOfDigitsTextField.text = outputComponent.getOutputItems()[outputItemIndex]["numberOfDigits"];
+                text: numberOfDigitsTextField.text = outputComponent.getOutputItem(outputItemIndex)["numberOfDigits"];
 
                 onAccepted: { processInput(); }
                 onEditingFinished: { processInput(); }

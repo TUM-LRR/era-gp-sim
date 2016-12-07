@@ -13,6 +13,10 @@ set(TEST_ARCH_RISCV_SOURCES
   mul-div-instruction-test.cpp
   rv64-only-instruction-test.cpp
   register-test.cpp
+  assemble-test.cpp
+  simulator-instructions-test.cpp
+  pseudo-instruction-test.cpp
+  context-information-test.cpp
 )
 
 ########################################

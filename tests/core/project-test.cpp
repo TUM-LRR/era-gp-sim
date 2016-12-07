@@ -17,6 +17,7 @@
  */
 
 
+#include <chrono>
 #include <functional>
 
 // clang-format off
@@ -156,7 +157,7 @@ TEST_F(ProjectTestFixture, MemoryAccessTest) {
   EXPECT_EQ(zero,
             memoryAccess.setRegisterValue(std::string("pc"), testValue2).get());
 
-  //start with x1 as x0 is hardwired to 0
+  // start with x1 as x0 is hardwired to 0
   for (int i = 1; i < 32; i++) {
     std::string registerName = std::string("x") + std::to_string(i);
     EXPECT_NO_THROW(memoryAccess.putRegisterValue(registerName, testValue));
@@ -221,8 +222,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
 
   // test if correct values for the assembled program are written into memory
   for (auto&& command : finalRepresentationValidator.commandList) {
-    // MemoryValue assembledValidator = command.node->assemble();
-    MemoryValue assembledValidator;
+    MemoryValue assembledValidator = command.node->assemble();
     MemoryValue assembledInMemory =
         memoryAccess
             .getMemoryValueAt(command.address, assembledValidator.getSize() / 8)
@@ -242,7 +242,10 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
                                   currentCommand.node->getValue(memoryAccess));
     nextNode = findNextNode(
         memoryAccess, addressCommandMapValidator, finalRepresentationValidator);
-    commandInterface.executeNextLine().get();
+    commandInterface.executeNextLine();
+    // sync with other thread
+    commandInterface.setBreakpoint(0).get();
+
     if (nextNode < finalRepresentationValidator.commandList.size()) {
       lastNode = nextNode;
       FinalCommand& nextCommand =
@@ -292,4 +295,17 @@ TEST_F(ProjectTestFixture, ParserInterfaceTest) {
       parserInterface.getSyntaxRegex(SyntaxInformation::Token::Label));
   EXPECT_NO_THROW(
       parserInterface.getSyntaxRegex(SyntaxInformation::Token::Immediate));
+}
+
+TEST_F(ProjectTestFixture, SleepTest) {
+  std::chrono::milliseconds targetedSleep(1000);
+  MemoryAccess memoryAccess = projectModule.getMemoryAccess();
+
+  auto beforeSleep = std::chrono::high_resolution_clock::now();
+  memoryAccess.sleep(targetedSleep);
+  auto afterSleep = std::chrono::high_resolution_clock::now();
+  // should sleep now
+  EXPECT_LE(targetedSleep,
+            std::chrono::duration_cast<std::chrono::milliseconds>(afterSleep -
+                                                                  beforeSleep));
 }

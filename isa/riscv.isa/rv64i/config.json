@@ -1,157 +1,15 @@
 {
     "extends": "rv32i",
-    "reset-units": true,
-    "word-size": 64,
-    "instructions": [
-        {
-            "length": 32,
-            "format": "I",
-            "key": {
-                "opcode": 3,
-                "funct3": 6
-            },
-            "mnemonic": "lwu"
-        },
-        {
-            "length": 32,
-            "format": "I",
-            "key": {
-                "opcode": 3,
-                "funct3": 3
-            },
-            "mnemonic": "ld"
-        },
-        {
-            "length": 32,
-            "format": "S",
-            "key": {
-                "funct7": 0,
-                "opcode": 35,
-                "funct3": 1
-            },
-            "mnemonic": "sd"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct7": 0,
-                "opcode": 19,
-                "funct3": 1
-            },
-            "mnemonic": "slli"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct7": 1,
-                "opcode": 19,
-                "funct3": 5
-            },
-            "mnemonic": "srai"
-        },
-        {
-            "length": 32,
-            "format": "I",
-            "key": {
-                "opcode": 27,
-                "funct3": 0
-            },
-            "mnemonic": "addiw"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct7": 0,
-                "opcode": 27,
-                "funct3": 1
-            },
-            "mnemonic": "slliw"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct7": 0,
-                "opcode": 27,
-                "funct3": 5
-            },
-            "mnemonic": "srliw"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct7": 32,
-                "opcode": 27,
-                "funct3": 5
-            },
-            "mnemonic": "sraiw"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct7": 0,
-                "opcode": 59,
-                "funct3": 0
-            },
-            "mnemonic": "addw"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct7": 32,
-                "opcode": 59,
-                "funct3": 0
-            },
-            "mnemonic": "subw"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct7": 0,
-                "opcode": 59,
-                "funct3": 1
-            },
-            "mnemonic": "sllw"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct7": 0,
-                "opcode": 59,
-                "funct3": 5
-            },
-            "mnemonic": "srlw"
-        },
-        {
-            "length": 32,
-            "format": "R",
-            "key": {
-                "funct7": 32,
-                "opcode": 59,
-                "funct3": 5
-            },
-            "mnemonic": "sraw"
-        }
-    ],
-    "name": "rv64i",
     "units": [
         {
             "name": "cpu",
             "registers": [
                 {
                     "name": "x0",
-                    "id": 0,
-                    "size": 64,
                     "alias": "zero",
-                    "constant": "0x0"
+                    "constant": "0x0",
+                    "id": 0,
+                    "size": 64
                 },
                 {
                     "name": "x1",
@@ -309,13 +167,203 @@
                     "size": 64
                 },
                 {
-                    "name": "pc",
                     "id": 32,
-                    "size": 64,
-                    "type": "program-counter"
+                    "name": "pc",
+                    "type": "program-counter",
+                    "size": 64
                 }
             ]
         }
     ],
-    "byte-size": 8
+    "builtin-macros": [
+        ".macro ldg, rd, symbol\nauipc \\rd, ((\\symbol >> 12) & 0xfffff)\nld \\rd, \\rd, (\\symbol & 0xfff)\n.endm\n",
+        ".macro negw, rd, rs\nsubw \\rd, x0, \\rs\n.endm\n",
+        ".macro sext.w, rd, rs\naddiw \\rd, \\rs, 0\n.endm\n"
+    ],
+    "word-size": 64,
+    "reset-units": true,
+    "name": "rv64i",
+    "instructions": [
+        {
+            "key": {
+                "funct3": 6,
+                "opcode": 3
+            },
+            "format": "I",
+            "length": 32,
+            "operand length": [
+                0,
+                0,
+                12
+            ],
+            "mnemonic": "lwu"
+        },
+        {
+            "key": {
+                "funct3": 3,
+                "opcode": 3
+            },
+            "format": "I",
+            "length": 32,
+            "operand length": [
+                0,
+                0,
+                12
+            ],
+            "mnemonic": "ld"
+        },
+        {
+            "key": {
+                "funct3": 3,
+                "opcode": 35
+            },
+            "format": "S",
+            "length": 32,
+            "operand length": [
+                0,
+                0,
+                12
+            ],
+            "mnemonic": "sd"
+        },
+        {
+            "key": {
+                "funct7": 0,
+                "funct3": 1,
+                "opcode": 19
+            },
+            "format": "R",
+            "length": 32,
+            "operand length": [
+                0,
+                0,
+                12
+            ],
+            "mnemonic": "slli"
+        },
+        {
+            "key": {
+                "funct7": 1,
+                "funct3": 5,
+                "opcode": 19
+            },
+            "format": "R",
+            "length": 32,
+            "operand length": [
+                0,
+                0,
+                12
+            ],
+            "mnemonic": "srai"
+        },
+        {
+            "key": {
+                "funct3": 0,
+                "opcode": 27
+            },
+            "format": "I",
+            "length": 32,
+            "operand length": [
+                0,
+                0,
+                12
+            ],
+            "mnemonic": "addiw"
+        },
+        {
+            "key": {
+                "funct7": 0,
+                "funct3": 1,
+                "opcode": 27
+            },
+            "format": "R",
+            "length": 32,
+            "operand length": [
+                0,
+                0,
+                12
+            ],
+            "mnemonic": "slliw"
+        },
+        {
+            "key": {
+                "funct7": 0,
+                "funct3": 5,
+                "opcode": 27
+            },
+            "format": "R",
+            "length": 32,
+            "operand length": [
+                0,
+                0,
+                12
+            ],
+            "mnemonic": "srliw"
+        },
+        {
+            "key": {
+                "funct7": 32,
+                "funct3": 5,
+                "opcode": 27
+            },
+            "format": "R",
+            "length": 32,
+            "operand length": [
+                0,
+                0,
+                12
+            ],
+            "mnemonic": "sraiw"
+        },
+        {
+            "key": {
+                "funct7": 0,
+                "funct3": 0,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "addw"
+        },
+        {
+            "key": {
+                "funct7": 32,
+                "funct3": 0,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "subw"
+        },
+        {
+            "key": {
+                "funct7": 0,
+                "funct3": 1,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "sllw"
+        },
+        {
+            "key": {
+                "funct7": 0,
+                "funct3": 5,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "srlw"
+        },
+        {
+            "key": {
+                "funct7": 32,
+                "funct3": 5,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "sraw"
+        }
+    ]
 }

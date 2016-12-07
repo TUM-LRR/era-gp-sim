@@ -29,15 +29,9 @@ AssemblerFunction getAssemblerFromFormat(const std::string& format) {
 }
 
 InstructionNode::InstructionNode(const InstructionInformation& information)
-: super(Type::INSTRUCTION), _information(information) {
-}
+    : super(information) {}
 
-const std::string& InstructionNode::getIdentifier() const {
-  return _information.getMnemonic();
-}
-
-bool InstructionNode::_requireChildren(Type type,
-                                       size_t startIndex,
+bool InstructionNode::_requireChildren(Type type, size_t startIndex,
                                        size_t amount) const {
   auto first = _children.begin();
   std::advance(first, startIndex);
@@ -65,6 +59,7 @@ bool InstructionNode::_compareChildTypes(TypeList list,
 
 MemoryValue InstructionNode::assemble() const {
   AssemblerFunction assembler;
+  auto& _information = getInstructionInformation();
   InstructionKey instructionKey = _information.getKey();
   const char* format = _information.getFormat().c_str();
 
@@ -84,5 +79,14 @@ MemoryValue InstructionNode::assemble() const {
     assembledMemory.put(result.size() - i - 1, result[i]);
 
   return assembledMemory;
+}
+
+const Translateable& InstructionNode::getInstructionDocumentation() const {
+    assert::that(_documentation && _documentation->isContextInformationAvailable(getInstructionInformation().getMnemonic()));
+    return _documentation->getContextInformation(getInstructionInformation());
+}
+
+void InstructionNode::setDocumentation(const std::shared_ptr<InstructionContextInformation> &documentation) {
+    _documentation = documentation;
 }
 }

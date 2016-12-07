@@ -1,16 +1,16 @@
 {
-    "name": "base2-basic",
+    "word-size": 69, 
+    "name": "base2-basic", 
     "instructions": [
         {
-            "length": 69,
-            "format": "R",
+            "mnemonic": "sll", 
+            "length": 69, 
             "key": {
-                "function": 6,
-                "width": 6,
+                "function": 6, 
+                "width": 6, 
                 "opcode": 6
-            },
-            "mnemonic": "sll"
+            }, 
+            "format": "R"
         }
-    ],
-    "word-size": 69
+    ]
 }

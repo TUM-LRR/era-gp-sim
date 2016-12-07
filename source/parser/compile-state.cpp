@@ -1,5 +1,4 @@
-/*
- * C++ Assembler Interpreter
+/* C++ Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -17,28 +16,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TOOLBARMODEL_H
-#define TOOLBARMODEL_H
+#include "parser/compile-state.hpp"
 
-#include <QObject>
-#include <QQmlContext>
+#include "parser/macro-directive.hpp"
 
-class ToolbarModel: public QObject{
-    Q_OBJECT
-public:
-    ToolbarModel(QQmlContext* context);
-    Q_INVOKABLE void run(int index);
-    Q_INVOKABLE void runLine(int index);
-    Q_INVOKABLE void runBreakpoint(int index);
-    Q_INVOKABLE void stop(int index);
-    Q_INVOKABLE void changeSystem(QByteArray s);
-    void finishExecution();
-
-private:
-    QQmlContext* context;
-
-signals:
-    void disableStop();
-};
-
-#endif // TOOLBARMODEL_H
+void CompileState::registerMacro(MacroDirective& macro) {
+  bool success = macros.insert(macro);
+  if (!success) {
+    addError("Macro \"" + macro.macroName() + "\" already exists!");
+  }
+}

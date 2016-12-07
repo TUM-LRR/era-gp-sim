@@ -50,8 +50,8 @@ Item {
         target: outputComponent
         // Send when the memory changes (at any address).
         onMemoryChanged: {
-            var _baseAddress = outputComponent.getOutputItems()[outputItemIndex]["baseAddress"];
-            var numberOfDigits = outputComponent.getOutputItems()[outputItemIndex]["numberOfDigits"];
+            var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
+            var numberOfDigits = outputComponent.getOutputItem(outputItemIndex)["numberOfDigits"];
             // Check if the memory address that was changed (at least partly) belongs to
             // the output item's source space.
             if ((address+length) >= _baseAddress && (address <= (_baseAddress+(numberOfDigits)))) {
@@ -60,14 +60,14 @@ Item {
         }
         // Sent when any item's settings where updated.
         onOutputItemSettingsChanged: {
-            updateContent(outputComponent.getOutputItems()[outputItemIndex]["baseAddress"]);
-            settingsWindow.updateSettings();
+            updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
+            sevenSegmentSettingsWindow.updateSettings();
         }
     }
 
     // Update the output item's content (there may already be some initial values in memory).
     Component.onCompleted: {
-        updateContent(outputComponent.getOutputItems()[outputItemIndex]["baseAddress"]);
+        updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
     }
 
     // Called from outside by the output tab view to signal that the settings button for the current
@@ -132,7 +132,7 @@ Item {
                     memoryContent.push(sevenSegmentDigitsModel.get(digitIndex)["segment6"]);
                     memoryContent.push(false);  // Fill one byte.
                 }
-                var _baseAddress = outputComponent.getOutputItems()[outputItemIndex]["baseAddress"];
+                var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
                 outputComponent.putMemoryValue(_baseAddress, memoryContent);
             }
         }
@@ -160,7 +160,7 @@ Item {
 
     // Updates the sevenSegmentDigitsModel to correspond to the output item's settings values.
     function _updateSevenSegmentDigitsModel() {
-        var numberOfDigits = outputComponent.getOutputItems()[outputItemIndex]["numberOfDigits"];
+        var numberOfDigits = outputComponent.getOutputItem(outputItemIndex)["numberOfDigits"];
         if (numberOfDigits < 0) {
             numberOfDigits = 0;
         }

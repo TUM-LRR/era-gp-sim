@@ -18,21 +18,20 @@
  */
 
 /*
-  This ile implements the toolbar for the Main Window
+  This file implements the toolbar for the Main Window
  */
 
 import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.4
-import QtQuick.Controls 1.1
 
 ToolBar {
     /*Knowing the active tab*/
     property TabView tabView
 
     /*
-      The Buttons should have the Systemcilors if they are clicked
+      The Buttons should have the Systemcolors if they are clicked
       */
     SystemPalette{
         id: systemColors
@@ -40,17 +39,20 @@ ToolBar {
     }
 
     /*
-      The two components are for the buttons, so it can be senn, wether they are pressed
+      The two components are for the buttons, so it can be seen, whether they are pressed
       */
     Component{
         id: styleNotClicked
         ButtonStyle{
             background: Rectangle{
                 color: systemColors.button
-                anchors.fill: parent
+                //anchors.fill: parent
+                implicitWidth: 40
+                implicitHeight: 20
             }
         }
     }
+
 
     Component{
         id: styleClicked
@@ -59,10 +61,23 @@ ToolBar {
                 color: systemColors.button
                 border.color: systemColors.highlight
                 border.width: 3
-                anchors.fill: parent
+                implicitHeight: 20
+                implicitWidth: 40
             }
         }
     }
+
+    Component{
+        id: tbText
+        Text{
+            id: textBin
+            text: currentText
+            font.bold: true
+            anchors.centerIn: parent
+            font.pixelSize: 16
+        }
+    }
+
 
     /* Showing the Buttons*/
     RowLayout{
@@ -123,17 +138,6 @@ ToolBar {
             }
 
 
-            //            /*Functions to enable/disable the Button*/
-            //            function changeActive(){
-            //                console.info("change Active")
-            //                console.info("enabled: "+enabled);
-            //                if(!enabled){
-            //                    setActive();
-            //                }else{
-            //                    setInactive();
-            //                }
-            //            }
-
             function setActive(){
                 enabled=true;
                 iconSource="Icons/StopButtonActive.svg";
@@ -144,6 +148,7 @@ ToolBar {
                 iconSource="Icons/StopButtonInactive.svg";
             }
 
+            /*Not implemented yet in the ui*/
             /*Connections{
                 target: ui
                 onDisableStop: {
@@ -178,19 +183,16 @@ ToolBar {
         ToolButton{
             id: bin
             style: styleClicked
-            /*If there was no text, you could not read the Text*/
-            text: "           "
-            Text{
-                id: textBin
-                text: "Bin"
-                font.bold: true
+            Loader{
+                id: loadB
+                property string currentText: "Bin"
+                sourceComponent: tbText
                 anchors.centerIn: parent
-                font.pixelSize: 16
             }
 
             onClicked: {
                 console.info("Bin clicked");
-                ui.changeSystem(tabView.currentIndex, textBin.text);
+                ui.changeSystem(tabView.currentIndex, loadB.currentText);
                 style=styleClicked;
                 oct.notClicked();
                 dec.notClicked();
@@ -208,17 +210,16 @@ ToolBar {
         ToolButton{
             id: oct
             style: styleNotClicked
-            text: "          "
-            Text{
-                id: textOct
-                text: "Oct"
-                font.bold: true
+            Loader{
+                id: loadO
+                property string currentText: "Oct"
+                sourceComponent: tbText
                 anchors.centerIn: parent
-                font.pixelSize: 16
             }
+
             onClicked: {
                 console.info("Oct clicked");
-                ui.changeSystem(tabView.currentIndex, textOct.text);
+                ui.changeSystem(tabView.currentIndex, loadO.currentText);
                 style=styleClicked;
                 bin.notClicked();
                 dec.notClicked();
@@ -228,24 +229,21 @@ ToolBar {
             function notClicked(){
                 style=styleNotClicked;
             }
-
-
         }
+
 
         ToolButton{
             id: dec
-            text: "           "
-            Text{
-                id: textDec
-                text: "Dec"
-                font.bold: true
+            Loader{
+                id: loadD
+                property string currentText: "Dec"
+                sourceComponent: tbText
                 anchors.centerIn: parent
-                font.pixelSize: 16
             }
             style: styleNotClicked
             onClicked: {
                 console.info("Dec clicked");
-                ui.changeSystem(tabView.currentIndex, textDec.text);
+                ui.changeSystem(tabView.currentIndex, loadD.currentText);
                 style=styleClicked;
                 bin.notClicked();
                 oct.notClicked();
@@ -259,18 +257,16 @@ ToolBar {
 
         ToolButton{
             id: hex
-            text: "           "
-            Text{
-                id: textHex
-                text: "Hex"
-                font.bold: true
+            Loader{
+                id: loadH
+                property string currentText: "Bin"
+                sourceComponent: tbText
                 anchors.centerIn: parent
-                font.pixelSize: 16
             }
             style: styleNotClicked
             onClicked: {
                 console.info("Hex clicked");
-                ui.changeSystem(tabView.currentIndex, textHex.text);
+                ui.changeSystem(tabView.currentIndex, loadH.currentText);
                 style=styleClicked;
                 bin.notClicked();
                 oct.notClicked();

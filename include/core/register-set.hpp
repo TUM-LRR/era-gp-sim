@@ -26,12 +26,14 @@
 #include <unordered_map>
 #include <vector>
 
-#include "common/assert.hpp"
 #include "core/memory-value.hpp"
 #include "core/register-id.hpp"
+#include "third-party/json/json.hpp"
+
 
 class RegisterSet {
  public:
+  using Json = nlohmann::json;
   /**
    * \brief Default constructor. Constructs an empty RegisterSet
    */
@@ -210,29 +212,95 @@ class RegisterSet {
                      const std::size_t begin = 0,
                      const bool silent = false);
 
+  /**
+   * \brief converts the memory into serializeable strings
+   * \param json the json object to hold the data
+   * \param separator character used to separate the cells of each line
+   * \param lineLength the length of a line in byte
+   * \returns json
+   */
+  Json &serializeJSON(Json &json) const;
+  /**
+   * \brief converts the memory into serializeable strings
+   * \param json the json object to hold the data
+   * \param separator character used to separate the cells of each line
+   * \param lineLength the length of a line in byte
+   * \returns json
+   */
+  Json serializeJSON(Json &&json = Json()) const;
+
+  /**
+   * \brief returns true iff the number of parent registers is equal all parent
+   *        registers of this exist in other and have the same length and data
+   * \param other RegisterSet to compare this with
+   * \returns equality of this and other
+   */
+  bool operator==(const RegisterSet &other) const;
+
+  /**
+   * \brief returns true iff there exists a Register with name name
+   */
+  bool existsRegister(const std::string &name) const;
+
+  /**
+   * \brief sets the memory to the data stored in json
+   * \param json the json object to holding the data
+   */
+  void deserializeJSON(const Json &json);
+
+  /**
+   * \brief prints a representation of this into the stream
+   * \returns the stream
+   */
+  friend std::ostream &
+  operator<<(std::ostream &stream, const RegisterSet &value);
+
  private:
-  std::unordered_map<std::string, RegisterID>
-      _dict; /**< Brief Map mapping name -> RegisterID*/
-  std::vector<MemoryValue>
-      _register; /**< Brief Vector holding all the Registers with no parent*/
-  std::vector<bool>
-      _constant; /**< Brief is true if this ancestor Register is  constant*/
-  // I'm using set because that makes implementing the option to delete
-  // registers way easier, vector would've been enough at this moment
-  std::vector<std::set<std::string>>
-      _updateSet; /**< Brief Vector mapping RegisterID.address -> all
-                             childrens name of this Register*/
-  static const std::function<void(const std::string &)>
-      emptyCallback; /**< Brief An empty function that does absolutely
-                                nothing, used as default for _callback*/
-  std::function<void(const std::string &)> _callback =
-      emptyCallback; /**< Brief This function gets called for every changed
-                                Register*/
+  /**
+   * \brief constant identifiers within a serialized RegisterSet
+   */
+  static const std::string _registerStringIdentifier;
+  static const std::string _registerNameListStringIdentifier;
+  static const std::string _registerDataMapStringIdentifier;
+  /**
+   * \brief Map mapping name -> RegisterID
+   */
+  std::unordered_map<std::string, RegisterID> _dict;
+  /**
+   * \brief Vector holding all the parent Registers/Registers with no parent
+   */
+  std::vector<MemoryValue> _register;
+  /**
+   * \brief Is true if this ancestor Register is constant
+   */
+  std::vector<bool> _constant;
+  /**
+   * \brief Vector mapping RegisterID.address -> all childrens name of this
+   *        Register
+   * \note I'm using set because that makes implementing the option to delete
+   *       registers way easier, Vector would've been enough at this moment
+   */
+  std::vector<std::set<std::string>> _updateSet;
+  /**
+   * \brief Vector mapping RegisterID.address -> parent name of this Register
+   */
+  std::vector<std::string> _parentVector;
+  /**
+   * \brief This function gets called for every changed Register
+   */
+  std::function<void(const std::string &)> _callback = [](const std::string &) {
+  };
+
+  /**
+   * \brief returns a raw serialized version of this
+   */
+  std::map<std::string, std::string> _serializeRaw() const;
+
   /**
    * \brief This Method is called whenever something in the Memory changes and
    *        notifies the Gui ofthe change
    */
-  void wasUpdated(const std::size_t address);
+  void _wasUpdated(const std::size_t address);
 };
 
 #endif// ERAGPSIM_CORE_REGISTERSET_HPP

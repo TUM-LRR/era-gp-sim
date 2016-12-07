@@ -28,8 +28,8 @@
 #include <QQuickItem>
 #include <QString>
 #include <QStringList>
-#include <vector>
 #include <tuple>
+#include <vector>
 
 #include "third-party/json/json.hpp"
 #include "ui/gui-project.hpp"
@@ -46,7 +46,7 @@ class Ui : public QObject {
  public:
   using Json = nlohmann::json;
   using ArchitectureMap =
-      QMap<QString, std::tuple<QStringList, QStringList, QStringList>>;
+      QMap<QString, std::tuple<QMap<QString, QStringList>, QStringList>>;
 
   /**
    * \brief Creates a new Ui object.
@@ -81,8 +81,7 @@ class Ui : public QObject {
                               QQmlComponent* projectComponent,
                               const QVariant& memorySizeQVariant,
                               const QString& architecture,
-                              const QStringList& baseExtensionsQString,
-                              const QStringList& extensionsQString,
+                              const QString& optionName,
                               const QString& parser);
   /**
    * Returns a list of architecture names.
@@ -91,18 +90,11 @@ class Ui : public QObject {
   Q_INVOKABLE QStringList getArchitectures() const;
 
   /**
-   * Returns a list of the base extensions of an architecture.
+   * Returns a list of names of different architecture versions.
    *
    * \param architectureName The name of the architecture.
    */
-  Q_INVOKABLE QStringList getBaseExtensions(QString architectureName) const;
-
-  /**
-   * Returns a list of extension names of an architecture.
-   *
-   * \param architectureName The name of the architecture.
-   */
-  Q_INVOKABLE QStringList getExtensions(QString architectureName) const;
+  Q_INVOKABLE QStringList getOptionNames(QString architectureName) const;
 
   /**
    * Returns a list of parser names of an architecture.
@@ -201,6 +193,15 @@ class Ui : public QObject {
  private:
   /** loads the architectures and extensions from a json file. */
   void _loadArchitectures();
+
+  /**
+   * Returns a list of extensions to create a specific architecture version.
+   *
+   * \param architectureName The name of the architecture.
+   * \param optionName The name of the option/version.
+   */
+  QStringList
+  _getOptionFormula(QString architectureName, QString optionName) const;
 
   /** This map contains the Architectures as string and a list of their
    * extensions as vector of strings. */

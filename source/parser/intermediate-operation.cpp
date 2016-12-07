@@ -16,4 +16,68 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+#include <vector>
+
 #include "parser/intermediate-operation.hpp"
+
+#include "common/assert.hpp"
+#include "parser/final-representation.hpp"
+#include "parser/memory-allocator.hpp"
+#include "parser/symbol-table.hpp"
+#include "parser/syntax-tree-generator.hpp"
+
+IntermediateOperation::IntermediateOperation(
+    const LineInterval& lines,
+    const std::vector<std::string>& labels,
+    const std::string& name)
+: _lines(lines), _labels(labels), _name(name) {
+}
+
+void IntermediateOperation::allocateMemory(const Architecture& architecture,
+                                           MemoryAllocator& allocator,
+                                           CompileState& state) {
+}
+
+void IntermediateOperation::enhanceSymbolTable(SymbolTable& table,
+                                               const MemoryAllocator& allocator,
+                                               CompileState& state) {
+}
+
+bool IntermediateOperation::shouldInsert() const {
+  return true;
+}
+
+TargetSelector IntermediateOperation::newTarget() const {
+  return TargetSelector::KEEP;
+}
+
+IntermediateExecutionTime IntermediateOperation::executionTime() const {
+  return IntermediateExecutionTime::AFTER_ALLOCATION;
+}
+
+void IntermediateOperation::insert(IntermediateOperationPointer pointer) {
+  // If this happens, something has gone wrong in our programming.
+  assert::that(false);
+}
+
+void IntermediateOperation::insertIntoArguments(const std::string& name,
+                                                const std::string& value) {
+  // Nothing to do here.
+}
+
+IntermediateOperationPointer IntermediateOperation::clone() {
+  return nullptr;
+}
+
+const LineInterval& IntermediateOperation::lines() const {
+  return _lines;
+}
+
+const std::vector<std::string>& IntermediateOperation::labels() const {
+  return _labels;
+}
+
+const std::string& IntermediateOperation::name() const {
+  return _name;
+}
