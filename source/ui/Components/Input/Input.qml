@@ -51,18 +51,11 @@
          tabPosition: Qt.BottomEdge
 
 
-         /* Each output item is represented by its corresponding tab inside the output tab bar.
-            Every output item needs the following properties to be able to connect with the output model:
-            - outputItemIndex: Unique index identifying each output item. Has to correspond with the item's
-              index inside the _outputItemsInformation-array of the output model (refer to output-component.hpp).
-            - settingsButtonPressed(): Signal for notifying the output item that its settigns button was pressed and
-              that it should therefore display its settings menu. The settings button itself is part of the tab bar
-              and not the output item itself.
-         */
+         /* Each input item is represented by its corresponding tab inside the input tab bar. */
+
          Tab {
              title: "Buttons/Arrow Button Input Icon"
              ButtonInput{
-                 inputItemIndex: 0
                  id: buttonI
                  anchors.fill: parent
              }
@@ -72,7 +65,6 @@
          Tab {
              title: "Buttons/Mouse Input Icon"
              ClickInput{
-                 inputItemIndex: 1
                  id: clickI
                  anchors.fill: parent
              }
@@ -81,7 +73,6 @@
          Tab {
              title: "Buttons/Text Console Icon"
              TextInputSelf{
-                 inputItemIndex: 2
                  id: textI
                  anchors.fill: parent
              }
@@ -101,7 +92,7 @@
                      color: innerBorderColor
                  }
 
-                 // Display output settings button in the rightmost corner of the tab bar.
+                 // Display input settings button in the rightmost corner of the tab bar.
                  Button {
                     id: settingsButton
                      anchors.right: parent.right
@@ -117,7 +108,7 @@
                              }
                         }
                      }
-                     // Clicking the settings button opens the output settings window in the currently active output item..
+                     // Clicking the settings button opens the input settings window in the currently active input item..
                      onClicked: {
                          inputTabView.getTab(inputTabView.currentIndex).item.settingsButtonPressed();
                      }

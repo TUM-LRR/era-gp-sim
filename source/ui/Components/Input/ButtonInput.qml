@@ -22,8 +22,6 @@ import QtQuick.Controls 1.4
 
 Item {
 
-    property int inputItemIndex
-
     Rectangle{
         id: middle
         height: 40

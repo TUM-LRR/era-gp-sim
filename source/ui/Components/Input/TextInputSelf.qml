@@ -22,7 +22,6 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 Item {
-    property int inputItemIndex
     Rectangle{
         color: "black"
         anchors.left: parent.left
@@ -38,7 +37,7 @@ Item {
             anchors.fill: parent
 
             readOnly: false
-            maximumLength: 20
+            maximumLength: 2
 
             menu: null
 
@@ -61,9 +60,22 @@ Item {
 
     }
 
+    Component.onCompleted: {
+        text.maximumLength = inputtextMod.getMaximumLength();
+    }
+
+    //update Maximum Length
+    Connections {
+        target: inputtextMod
+        // Send when maximum Length was changed
+        onMaximumLengthChanged: {
+            text.maximumLength = inputtextMod.getMaximumLength();
+        }
+    }
+
+
     function settingsButtonPressed(){
         settingsWindowIT.show();
-        text.maximumLength=settingsWindowIT.getMaxLaenge();
     }
 
     TextInputSW{

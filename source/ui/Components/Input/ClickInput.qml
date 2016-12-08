@@ -22,7 +22,6 @@ import QtQuick 2.0
 
 
 Item {
-    property int inputItemIndex
     anchors.top: parent.top
 
     Rectangle{
@@ -31,7 +30,6 @@ Item {
         height: 255
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: xRect.bottom
-        //anchors.verticalCenter:  parent.verticalCenter
 
         color: "blue"
 

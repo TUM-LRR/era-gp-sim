@@ -22,7 +22,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.0
 
-// Window for lightstrip settings.
+// Window for input per click settings.
 Window {
     id: settingsWindowIC
     width: 400
@@ -71,7 +71,7 @@ Window {
                 return parseInt(input, base);
             }
 
-            // Text field for setting the output item's source address in memory.
+            // Text field for setting the input item's source address in memory.
             TextField {
                 id: baseAddressTextField
 
@@ -81,7 +81,7 @@ Window {
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
                     var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
-                    if (inputValue !== undefined && inputValue > 0) {
+                    if (inputValue !== undefined && inputValue >= 0) {
                         inputClickMod.setStart(inputValue);
                     }
                 }

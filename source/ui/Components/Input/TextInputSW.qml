@@ -22,18 +22,18 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.0
 
-// Window for lightstrip settings.
+// Window for input per Text settings.
 Window {
     id: settingsWindowIT
     width: 400
     height: 200
 
-    title: "Click Input Settings"
+    title: "Text Input Settings"
 
     // Refreshes the window's control contentItem.
     function updateSettings() {
         baseAddressTextField.text = inputtextMod.getStart();
-        maxLength.text=inputtextMod.getMaxLength();
+        maxLength.text=inputtextMod.getMaximumLength();
     }
 
     // The controls for editing input settings.
@@ -75,7 +75,7 @@ Window {
                 return parseInt(input, base);
             }
 
-            // Text field for setting the output item's source address in memory.
+            // Text field for setting the input item's source address in memory.
             TextField {
                 id: baseAddressTextField
 
@@ -85,7 +85,7 @@ Window {
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
                     var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
-                    if (inputValue !== undefined && inputValue > 0) {
+                    if (inputValue !== undefined && inputValue >= 0) {
                         inputtextMod.setStart(inputValue);
                     }
                 }
@@ -99,9 +99,9 @@ Window {
 
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
-                    var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
+                    var inputValue = controlsColumn.integerFromInputString(String(maxLength.text));
                     if (inputValue !== undefined && inputValue > 0) {
-                        inputtextMod.setStart(inputValue);
+                        inputtextMod.setMaximumLength(inputValue);
                     }
                 }
             }
@@ -126,11 +126,12 @@ Window {
 
         onClicked: {
             baseAddressTextField.processInput();
+            maxLength.processInput();
             close();
         }
     }
 
-    function getMaxLaenge(){
+    function getMaximumLength(){
         return controlsColumn.integerFromInputString(maxLength.text);
     }
 }
