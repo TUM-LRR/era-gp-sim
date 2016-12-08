@@ -103,7 +103,7 @@ ScrollView {
                     textArea.line = line;
                   }
                   onRuntimeError: {
-                    runtimeErrorDialog.text = errorMessage;
+                    runtimeErrorDialog.text = issueMessage;
                     runtimeErrorDialog.open();
                   }
                 }
@@ -172,7 +172,7 @@ ScrollView {
                 }
             }
 
-            //area left of the TextEdit, contains lineNumbers, errorMessages, Breakpoints,...
+            //area left of the TextEdit, contains lineNumbers, issueMessages, Breakpoints,...
             Rectangle {
                 id: sidebar
                 focus: false
@@ -214,7 +214,6 @@ ScrollView {
                   height: parent.height
                   x: 0
                   y: 0
-                  z: 1
                   propagateComposedEvents: false
                   preventStealing: true
                   hoverEnabled: true
@@ -269,10 +268,16 @@ ScrollView {
                     y: textArea.textMargin/2
                     width: textArea.cursorRectangle.height*0.8
 
+                    property var issueMarks: ({});
+
                     Connections {
                         target: editor
-                        onAddError: {
-                            errorBar.addError(message, line, color);
+                        onAddIssue: {
+                            errorBar.addIssue(message, line, color);
+                        }
+
+                        onDeleteErrors: {
+                            errorBar.issueMarks = ({});
                         }
 
                         Component.onCompleted: {
@@ -280,52 +285,212 @@ ScrollView {
                         }
                     }
 
+                    // Each line wich contains any issue (error, warning or information) is marked by
+                    // an issueMark. An issueMark is the container of one or more issueItems.
                     Component {
-                        id: errorComponent
+                        id: issueMarkComponent
+
                         Item {
-                            id: errorItem
-                            property color color : "red";
-                            property alias errorMessage: toolTip.text;
-                            //TODO use a symbol instead of a red rectangle
-                            Rectangle {
-                                width: errorBar.width
-                                height: fontMetrics.height
-                                color: parent.color
-                            }
+                            id: issueMark
 
-                            //highlight the line
-                            Rectangle {
-                                id: lineHighlight
-                                height: textArea.cursorRectangle.height
-                                width: scrollView.width
-                                //color: "#33ff0019"
-                                color: Qt.rgba(parent.color.r, parent.color.g, parent.color.b, 0.3)
-                                border.color: Qt.tint(parent.color, "#33ff3300")
-                            }
+                            height: textArea.cursorRectangle.height
+                            width: scrollView.width
 
-                            //tooltip
-                            ToolTip {
-                                id: toolTip
-                                width: lineHighlight.width
-                                height: lineHighlight.height
-                                fontPixelSize: textArea.font.pixelSize
-                            }
+                            // If the issue mark is expanded, it shows the issue icon inside the errorBar as well
+                            // as the issueLineHighlight along with its issueItems (containing issue messages).
+                            // If collapsed, it only shows the issue icon inside the errorBar.
+                            property var expanded: true
+                            // An issue mark is a container for one or more issueItems which can have varying issueTypes.
+                            // Therefore the container always displays the most important issueType among all its
+                            // child-issueItems (Error > Warning > Information).
+                            property var dominantIssueType: ""
 
-                            Connections {
-                                target: editor
-                                onDeleteErrors: {
-                                    errorItem.destroy();
+                            // Color definitions
+                            property var errorColorSolid: Qt.rgba(1.0, 80.0/255.0, 0.0, 0.4)
+                            property var errorColorLight: Qt.rgba(1.0, 80.0/255.0, 0.0, 0.14)
+                            property var warningColorSolid: Qt.rgba(1.0, 185.0/255.0, 10.0/255.0, 0.4)
+                            property var warningColorLight: Qt.rgba(1.0, 185.0/255.0, 10.0/255.0, 0.14)
+                            property var informationColorSolid: Qt.rgba(0.0, 117.0/255.0, 255.0/255.0, 0.4)
+                            property var informationColorLight: Qt.rgba(0.0, 117.0/255.0, 255.0/255.0, 0.14)
+
+                            // The issue's Icon inside the error bar.
+                            Image {
+                                id: issueIcon
+
+                                width: errorBar.width-2
+                                height: errorBar.width-2
+                                x: 1
+                                anchors.verticalCenter: issueLineHighlight.verticalCenter
+                                source: {
+                                    switch (dominantIssueType) {
+                                    case "Error":
+                                        return "Issue Icons/Error Icon.png";
+                                    case "Warning":
+                                        return "Issue Icons/Warning Icon.png";
+                                    case "Information":
+                                        return "Issue Icons/Information Icon.png";
+                                    default:
+                                        return "Issue Icons/Error Icon.png";
+                                    }
+                                }
+
+                                // Use issueIcon as button for expanding/collapsing issueMark.
+                                MouseArea {
+                                    anchors.fill: parent
+                                    preventStealing: true
+                                    onClicked: {
+                                        expanded = !expanded;
+                                    }
                                 }
                             }
+
+                            // Highlights the line the issue belongs to.
+                            Rectangle {
+                                id: issueLineHighlight
+
+                                color: errorColorLight
+                                visible: expanded
+
+                                anchors.fill: parent
+
+                                property var issueItems: []
+
+                                // An issueItem marks an issue (error, warning, information) inside the corresponding line.
+                                Component {
+                                    id: issueItemComponent
+
+                                    Rectangle {
+                                        id: issueMarkTextBackground
+
+                                        // The issue message to display.
+                                        property var issueMessage: "";
+                                        // The type of issue (error, warning, information).
+                                        property var issueType: "";
+                                        // Margin between issue item icon, issue text and right edge.
+                                        property var _textMargin: 4
+
+                                        color: {
+                                            switch (issueType) {
+                                            case "Error":
+                                                return errorColorSolid;
+                                            case "Warning":
+                                                return warningColorSolid;
+                                            case "Information":
+                                                return informationColorSolid;
+                                            default:
+                                                return errorColorSolid;
+                                            }
+                                        }
+
+                                        width: issueText.width + 3 * _textMargin + issueItemIcon.width
+
+                                        // Each issueItem displays an icon corresponding to its issueType.
+                                        Image {
+                                            id: issueItemIcon
+                                            width: errorBar.width-2
+                                            height: errorBar.width-2
+                                            anchors.right: issueText.left
+                                            anchors.rightMargin: _textMargin
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            source: {
+                                                switch (issueType) {
+                                                case "Error":
+                                                    return "Issue Icons/Error Icon.png";
+                                                case "Warning":
+                                                    return "Issue Icons/Warning Icon.png";
+                                                case "Information":
+                                                    return "Issue Icons/Information Icon.png";
+                                                default:
+                                                    return "Issue Icons/Error Icon.png";
+                                                }
+                                            }
+                                        }
+
+                                        // Displays the issueMessage (error message, warning message, information message).
+                                        Text {
+                                            id: issueText
+                                            anchors.right: parent.right
+                                            anchors.rightMargin: _textMargin
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            font.pixelSize: 0.6*parent.height
+                                            text: issueMessage
+                                        }
+
+                                        // Tooltip for showing issueMessage on mouse over.
+                                        ToolTip {
+                                            id: toolTip
+                                            width: issueLineHighlight.width
+                                            height: issueLineHighlight.height
+                                            fontPixelSize: textArea.font.pixelSize
+                                            text: issueMessage
+                                        }
+                                    }
+
+                                }
+
+                                Connections {
+                                    target: editor
+                                    onDeleteErrors: {
+                                        issueMark.destroy();
+                                    }
+                                }
+
+                                // Adds a new issue item to the current issueMark.
+                                function addIssueItem(message, issueType) {
+                                    var newIssueItem = issueItemComponent.createObject();
+                                    newIssueItem.parent = issueLineHighlight;
+                                    newIssueItem.anchors.right = issueLineHighlight.right;
+                                    newIssueItem.height = issueLineHighlight.height;
+                                    newIssueItem.y = issueLineHighlight.height * (issueItems.length);
+                                    newIssueItem.issueMessage = message;
+                                    newIssueItem.issueType = issueType;
+                                    issueItems.push(newIssueItem);
+                                }
+                            }
+
+                            // Adds a new issue item to the current issueMark.
+                            function addIssueItem(message, issueType) {
+                                issueLineHighlight.addIssueItem(message, issueType);
+                            }
                         }
+
                     }
 
-                    function addError(message, lineNumber, errorColor) {
-                        var newError = errorComponent.createObject();
-                        newError.y = (lineNumber-1)*fontMetrics.height;
-                        newError.parent = errorBar;
-                        newError.color = errorColor;
-                        newError.errorMessage = message;
+                    // Adds a new issue of given type (error, warning, information) to the given line.
+                    function addIssue(message, lineNumber, issueType) {
+                        // If no issueMark exist, create a new one (issueMarks contain the actual issues
+                        // for each line).
+                        var newIssue;
+                        if (issueMarks[lineNumber] === undefined) {
+                            newIssue = issueMarkComponent.createObject();
+                            newIssue.y = (lineNumber-1)*fontMetrics.height*1.05;
+                            newIssue.parent = errorBar;
+                            issueMarks[lineNumber] = newIssue;
+                        } else {
+                            newIssue = issueMarks[lineNumber];
+                        }
+                        // Add a new issueItem to the issueMark.
+                        newIssue.addIssueItem(message, issueType);
+                        // Check if the issueMark's dominantIssueType should change.
+                        newIssue.dominantIssueType =
+                                (issueTypePriority(issueType) > issueTypePriority(newIssue.dominantIssueType))
+                                ? issueType
+                                : newIssue.dominantIssueType;
+                    }
+
+                    // Assigns a priority to each issue type. Required for calculating an issueMark's
+                    // dominantIssueType.
+                    function issueTypePriority(issueType) {
+                        switch (issueType) {
+                        case "Error":
+                            return 3;
+                        case "Warning":
+                            return 2;
+                        case "Information":
+                            return 1;
+                        default:
+                            return 0;
+                        }
                     }
                 }
             }

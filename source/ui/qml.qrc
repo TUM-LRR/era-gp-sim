@@ -52,5 +52,11 @@
         <file>Components/Output/7-Segment/SevenSegment.qml</file>
         <file>Components/Output/7-Segment/SevenSegment_Segment.qml</file>
         <file>Components/Output/LightstripSettingsWindow.qml</file>
+        <file>Components/editor/Issue Icons/Error Icon.png</file>
+        <file>Components/editor/Issue Icons/Error Icon@2x.png</file>
+        <file>Components/editor/Issue Icons/Information Icon.png</file>
+        <file>Components/editor/Issue Icons/Information Icon@2x.png</file>
+        <file>Components/editor/Issue Icons/Warning Icon.png</file>
+        <file>Components/editor/Issue Icons/Warning Icon@2x.png</file>
     </qresource>
 </RCC>
