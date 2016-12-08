@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
-#ifndef ERAGPSIM_UI_TRANSLATEABLE_PREPARATION_HPP
-#define ERAGPSIM_UI_TRANSLATEABLE_PREPARATION_HPP
+#ifndef ERAGPSIM_UI_TRANSLATEABLE_PROCESSING_HPP
+#define ERAGPSIM_UI_TRANSLATEABLE_PROCESSING_HPP
 
 #include <QString>
 #include "common/translateable.hpp"
@@ -36,4 +36,4 @@ QString translate(const Translateable& translateable);
  */
 QString translate(const Translateable::TranslateablePtr& transPtr);
 
-#endif // ERAGPSIM_UI_TRANSLATEABLE_PREPARATION_HPP
+#endif // ERAGPSIM_UI_TRANSLATEABLE_PROCESSING_HPP

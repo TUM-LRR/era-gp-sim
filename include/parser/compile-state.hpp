@@ -28,13 +28,34 @@
 
 class MacroDirective;
 
+/**
+  * These macros simplifies adding compile errors to the compile state.
+  * The macros embed the QT_TRANSLATE macro, so it is not needed to enclose the
+ * message when using the macros
+  */
+#define addErrorHereT(msg, ...) \
+  addErrorHere(QT_TRANSLATE_NOOP("Parser Error Messages", msg), ##__VA_ARGS__);
+#define addErrorT(pos, msg, ...) \
+  addError(pos, QT_TRANSLATE_NOOP("Parser Error Messages", msg), ##__VA_ARGS__);
+#define addWarningHereT(msg, ...)                                   \
+  addWarningHere(QT_TRANSLATE_NOOP("Parser Warning Messages", msg), \
+                 ##__VA_ARGS__);
+#define addWarningT(pos, msg, ...)                                   \
+  addWarning(pos, QT_TRANSLATE_NOOP("Parser Warning Messages", msg), \
+             ##__VA_ARGS__);
+#define addInformationHereT(msg, ...)                                       \
+  addInformationHere(QT_TRANSLATE_NOOP("Parser Information Messages", msg), \
+                     ##__VA_ARGS__);
+#define addInformationT(pos, msg, ...)                                       \
+  addInformation(pos, QT_TRANSLATE_NOOP("Parser Information Messages", msg), \
+                 ##__VA_ARGS__);
+
 // Note: this class should be reworked and rebuilt to a full-grown class...
 
 /**
  \brief Contains all relevant information for a compile run.
  */
 struct CompileState {
-  using TranslateablePtr = Translateable::TranslateablePtr;
   /**
    \brief Denotes the mode of the compiler.
    */
@@ -63,85 +84,71 @@ struct CompileState {
   /**
    * \brief Adds an error to the state-internal error list at the current
    * position.
-   * \param message The message for the error as Translateable
+   * \param messageArgs The construction arguments for a Translateable, holding
+   * the message
    */
-  void addError(const TranslateablePtr& message) {
-    addError(message, position);
-  }
-
-  /**
-   * \brief Adds an error to the state-internal error list at the current
-   * position.
-   * As the message must be translateable, const char* is used as type instead
-   * of std::string, because
-   * only strings known fully to compile-time can be translated. A string like
-   * this: "somestring"+somevalue_or_runtime_string results to type std::string,
-   * but cannot be translated.
-   * If such a string shall be translated, use Translateable
-   * \param message The message for the error as string literal
-   */
-  void addError(const char* message);
-
-  /**
-   * \brief Adds an error to the state-internal error list.
-   * \param message The message for the error as Translateable
-   * \param position The position where the error occurred.
-   */
-  void addError(const TranslateablePtr& message, const CodePosition& position) {
-    errorList.push_back(
-        CompileError(message, position, CompileErrorSeverity::ERROR));
+  template <typename... Args>
+  void addErrorHere(const Args&... messageArgs) {
+    addError(position, messageArgs...);
   }
 
   /**
    * \brief Adds an error to the state-internal error list.
-   * As the message must be translateable, const char* is used as type instead
-   * of std::string, because
-   * only strings known fully to compile-time can be translated. A string like
-   * this: "somestring"+somevalue_or_runtime_string results to type std::string,
-   * but cannot be translated.
-   * \param message The message for the error as string literal
    * \param position The position where the error occurred.
+   * \param messageArgs The construction arguments for a Translateable, holding
+   * the message
    */
-  void addError(const char* message, const CodePosition& position);
+  template <typename... Args>
+  void addError(const CodePosition& position, const Args&... messageArgs) {
+    errorList.emplace_back(std::make_shared<Translateable>(messageArgs...),
+                           position, CompileErrorSeverity::ERROR);
+  }
 
   /**
    * \brief Adds a warning to the state-internal error list at the current
    * position.
-   * \param message The message for the warning.
+   * \param messageArgs The construction arguments for a Translateable, holding
+   * the message
    */
-  void addWarning(const TranslateablePtr& message) {
-    addWarning(message, position);
+  template <typename... Args>
+  void addWarningHere(const Args&... messageArgs) {
+    addWarning(position, messageArgs...);
   }
 
   /**
    * \brief Adds a warning to the state-internal error list.
-   * \param message The message for the warning.
    * \param position The position where the warning occurred.
+   * \param messageArgs The construction arguments for a Translateable, holding
+   * the message
    */
-  void addWarning(const TranslateablePtr& message,
-                  const CodePosition& position) {
-    errorList.push_back(
-        CompileError(message, position, CompileErrorSeverity::WARNING));
+  template <typename... Args>
+  void addWarning(const CodePosition& position, const Args&... messageArgs) {
+    errorList.emplace_back(std::make_shared<Translateable>(messageArgs...),
+                           position, CompileErrorSeverity::WARNING);
   }
 
   /**
    * \brief Adds an information to the state-internal error list at the current
    * position.
-   * \param message The message for the information.
+   * \param messageArgs The construction arguments for a Translateable, holding
+   * the message
    */
-  void addInformation(const TranslateablePtr& message) {
-    addInformation(message, position);
+  template <typename... Args>
+  void addInformationHere(const Args&... messageArgs) {
+    addInformation(position, messageArgs...);
   }
 
   /**
    * \brief Adds an information to the state-internal error list.
-   * \param message The message for the information.
    * \param position The position where the information is needed.
+   * \param messageArgs The construction arguments for a Translateable, holding
+   * the message
    */
-  void addInformation(const TranslateablePtr& message,
-                      const CodePosition& position) {
-    errorList.push_back(
-        CompileError(message, position, CompileErrorSeverity::INFORMATION));
+  template <typename... Args>
+  void addInformation(const CodePosition& position,
+                      const Args&... messageArgs) {
+    errorList.push_back(std::make_shared<Translateable>(messageArgs...),
+                        position, CompileErrorSeverity::INFORMATION);
   }
 
   /**

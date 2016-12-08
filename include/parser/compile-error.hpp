@@ -26,10 +26,6 @@
 #include "common/translateable.hpp"
 #include "parser/code-position.hpp"
 
-//define a shorter version specialized for compile error messages
-#define P_TR(textToTranslate) \
-  QT_TRANSLATE_NOOP("Parser Compile Errors", textToTranslate)
-
 /**
  * \brief Denotes the severity of a compiler error.
  */
@@ -95,10 +91,7 @@ class CompileError {
    * \brief Returns the message of this error.
    * \return The message of the error.
    */
-  const Translateable& message() const {
-    assert::that(_message);
-    return (*_message);
-  }
+  const Translateable& message() const;
 
   /**
    * \brief Returns the position where this error occured.

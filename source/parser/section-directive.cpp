@@ -41,11 +41,11 @@ void SectionDirective::allocateMemory(const Architecture& architecture,
                                       MemoryAllocator& allocator,
                                       CompileState& state) {
   if (!_hasName) {
-    state.addError(P_TR("Section name missing!"));
+    state.addErrorHereT("Section name missing!");
     return;
   }
   if (!allocator.has(_section)) {
-    state.addError("Specified section non-existent!");
+    state.addErrorHereT("Specified section non-existent!");
     return;
   }
   // Just set the section state to the current section. That's it.

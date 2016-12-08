@@ -17,39 +17,15 @@
 
 #include "common/translateable.hpp"
 
-Translateable::Translateable(const std::string &baseString,
-    const StringList &operands)
-    : _baseString(baseString), _operands(operands.size()) {
-  auto i = 0;
-  for (const auto &stringOp : operands) {
-    _operands[i] = std::make_shared<Translateable>(stringOp);
-    ++i;
-  }
-}
+Translateable::Translateable() {}
 
-Translateable::Translateable(const std::string &baseString,
-    const TranslateableRefList &operands)
-    : _baseString(baseString), _operands(operands.size()) {
-  auto i = 0;
-  for (Translateable &refOp : operands) {
-    _operands[i] = std::shared_ptr<Translateable>(&refOp);
-    ++i;
-  }
-}
+Translateable::Translateable(const std::string &baseString)
+    : _baseString(baseString) {}
 
-Translateable::TranslateablePtr Translateable::createShared(const std::string &base, const StringList &args) {
-    return std::make_shared<Translateable>(base, args);
-}
+Translateable::Translateable(const char *baseString)
+    : Translateable(std::string{baseString}) {}
 
-QString Translateable::translate() const {
-  // translate the base string (still filled with the %s)
-  QString translatedTotal = QObject::tr(_baseString.c_str());
-  for (const auto &op : _operands) {
-    // translate recursively all operands and insert them into the base string
-    translatedTotal = translatedTotal.arg(op->translate());
-  }
-  return translatedTotal;
-}
+Translateable::Translateable(const std::string &baseString, const NO_TR_POSSIBLE &key) : Translateable(baseString) {}
 
 std::string &Translateable::getModifiableBaseString() { return _baseString; }
 
@@ -58,5 +34,17 @@ void Translateable::addOperand(const TranslateablePtr &op) {
 }
 
 void Translateable::addOperand(const std::string &op) {
-  _operands.push_back(std::make_shared<Translateable>(op));
+  _operands.push_back(createShared(op));
+}
+
+Translateable::TranslateablePtr Translateable::createShared(const Translateable::TranslateablePtr& arg) {
+    return arg;
+}
+
+const std::string& Translateable::getBaseString() const {
+    return _baseString;
+}
+
+const std::vector<Translateable::TranslateablePtr>& Translateable::getOperands() const {
+    return _operands;
 }

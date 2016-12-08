@@ -52,15 +52,14 @@ void SymbolTable::insertEntry(const std::string& name,
 
   if (!std::regex_search(name, VALID_NAME)) {
     // Basically, everything with a leading number is not accepted.
-      state.addError(Translateable::createShared(P_TR("Symbol '%1' does not have a qualified name."), {name}),
-                   state.position);
+      state.addErrorHereT("Symbol '%1' does not have a qualified name.", name);
     return;
   }
 
   if (_table.find(name) != _table.end()) {
     // We also fail, if we define the symbol twice in a commit (which would
     // count as double definition in a file).
-    state.addError(Translateable::createShared(P_TR("Symbol '%1' defined twice."), {name}), state.position);
+    state.addErrorHereT("Symbol '%1' defined twice.", name);
     return;
   }
 
@@ -110,7 +109,7 @@ std::string SymbolTable::replaceSymbols(const std::string& source,
 
   // If we come here, we have replaced too often and abort, suspecting an
   // infinite loop.
-  state.addError(P_TR("Exceeded recursion replacement depth."), state.position);
+  state.addErrorHereT("Exceeded recursion replacement depth.");
 
   return result;
 }

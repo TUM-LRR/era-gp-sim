@@ -41,18 +41,17 @@ class ExpressionTokenizer {
    * \param definitions The token list.
    */
   ExpressionTokenizer(const std::vector<ExpressionTokenDefinition>& definitions)
-  : _typeMapping()
-  , _tokenizeRegex(
-        "^", "", buildRegexVector(definitions), std::regex::optimize) {
-  }
+      : _typeMapping(),
+        _tokenizeRegex("^", "", buildRegexVector(definitions),
+                       std::regex::optimize) {}
 
   /**
      * \brief Tokenizes a given string and records any errors.
    * \param data The string to tokenize.
    * \param state The compile state to note down any errors.
    */
-  std::vector<ExpressionToken>
-  tokenize(const std::string& data, CompileState& state) const {
+  std::vector<ExpressionToken> tokenize(const std::string& data,
+                                        CompileState& state) const {
     std::vector<ExpressionToken> output;
     MSMatch match;
     size_t currentPosition = 0;
@@ -80,16 +79,16 @@ class ExpressionTokenizer {
     } else {
       // We are done, but there is an unrecognized token. We return as if the
       // string was empty.
-      state.addError(Translateable::createShared(P_TR("Unrecognized token at: %1"), {temp.substr(0, 20)}),
-                     state.position >> currentPosition);
+      state.addErrorT(state.position >> currentPosition,
+                      "Unrecognized token at: %1", temp.substr(0, 20));
       return std::vector<ExpressionToken>();
     }
   }
 
  private:
   // Internal method for constructing the token regexes.
-  std::vector<std::string>
-  buildRegexVector(const std::vector<ExpressionTokenDefinition>& definitions) {
+  std::vector<std::string> buildRegexVector(
+      const std::vector<ExpressionTokenDefinition>& definitions) {
     std::vector<std::string> output;
     output.reserve(definitions.size() + 1);
 

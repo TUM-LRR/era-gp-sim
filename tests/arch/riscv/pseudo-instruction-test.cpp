@@ -61,7 +61,7 @@ class PseudoInstructionTest : public RiscvBaseTest {
 
     // Assert that no compile error occurred
     for (auto& compileError : rep.errorList) {
-      ASSERT_TRUE(false) << compileError.message();
+      ASSERT_TRUE(false) << compileError.message().getBaseString();
     }
 
     // Assert that the amount of parsed instructions is equal to the expected
