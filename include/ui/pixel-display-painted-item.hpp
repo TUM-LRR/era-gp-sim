@@ -35,14 +35,17 @@
 //#include "core/memory-access.hpp"
 #include "ui/output-component.hpp"
 
+#define PSIZE 16
+#define CMODE 1
+
 namespace colorMode {
 struct ColorMode;
 struct Options {
   std::size_t pixelBaseAddress = 0;
   std::size_t colorBaseAddress = 0;
-  std::size_t width = 4;
-  std::size_t height = 4;
-  std::size_t colorMode = 0;
+  std::size_t width = PSIZE;
+  std::size_t height = PSIZE;
+  std::size_t colorMode = CMODE;
   std::size_t rBit = 8;
   std::size_t gBit = 8;
   std::size_t bBit = 8;
@@ -147,11 +150,11 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_PROPERTY(OutputComponent *outputComponentPointer WRITE setOutputComponent)
  public:
   PixelDisplayPaintedItem(QQuickItem *parent = 0) : QQuickPaintedItem(parent) {
+#if CMODE == 0
     _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_RGB32);
-    // PixelDisplayPaintedItem(QQuickItem *parent = 0) :
-    // QQuickPaintedItem(parent) {
-    //   _image = std::make_shared<QImage>(_breadth, _height,
-    //   QImage::Format_Mono);
+#else
+    _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_Mono);
+#endif
     //_image->fill(QColor("#00FFFF").rgb());
     //_image->setPixel(20, 20, 0xFF0000u);
   }
@@ -164,38 +167,18 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
     std::cout << "I did do the paint!" << std::endl;
   }
 
-  void memoryChanged(std::size_t address, std::size_t amount);
-
-  void redrawPixel(std::size_t x, std::size_t y);
-
-  void redrawAll();
+  Q_INVOKABLE void memoryChanged(std::size_t address, std::size_t amount);
 
   void setOutputComponent(OutputComponent *o) {
     _outputComponentPointer = o;
   }
 
-  std::uint32_t getColorAt(std::size_t address);
-
-  std::size_t getBaseAddress() const;
-  std::size_t getColorMode() const;
-  std::size_t getWidth() const;
-  std::size_t getHeight() const;
-  std::size_t getSizeInMemory() const;
-  std::size_t getCellSize() const;
-
  private:
   std::shared_ptr<QImage> _image;
   colorMode::Options _options{};
-  std::size_t _baseAddress = 0;
-  std::size_t _breadth = 4;
-  std::size_t _height = 4;
-  std::size_t _colorMode = 0;
-
+  std::size_t _breadth = PSIZE;
+  std::size_t _height = PSIZE;
   Optional<OutputComponent *> _outputComponentPointer;
-
-  bool isInRange(std::size_t address, std::size_t amount) const;
-  std::vector<std::pair<std::size_t, std::size_t>>
-  pixelsInRange(std::size_t address, std::size_t amount) const;
 };
 
 #endif// ERAGPSIM_UI_PIXEL_DISPLAY_PAINTED_ITEM_HPP

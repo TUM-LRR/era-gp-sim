@@ -27,69 +27,11 @@
 
 void PixelDisplayPaintedItem::memoryChanged(std::size_t address,
                                             std::size_t amount) {
-  for (auto i : pixelsInRange(address, amount)) {
-    redrawPixel(i.first, i.second);
-  }
-}
-
-void PixelDisplayPaintedItem::redrawPixel(std::size_t x, std::size_t y) {
-  _image->setPixel(
-      x,
-      y,
-      getColorAt(getBaseAddress() + (x + y * getWidth()) * getCellSize()));
-}
-
-void PixelDisplayPaintedItem::redrawAll() {
-  for (std::size_t y = 0; y < getHeight(); ++y) {
-    for (std::size_t x = 0; x < getWidth(); ++x) {
-      redrawPixel(x, y);
-    }
-  }
-}
-
-bool PixelDisplayPaintedItem::isInRange(std::size_t address,
-                                        std::size_t amount) const {
-  return address >= getBaseAddress() &&
-         address + amount < getBaseAddress() + getSizeInMemory();
-}
-
-std::vector<std::pair<std::size_t, std::size_t>>
-PixelDisplayPaintedItem::pixelsInRange(std::size_t address,
-                                       std::size_t amount) const {
-  std::vector<std::pair<std::size_t, std::size_t>> ret{};
-  for (std::size_t i =
-           std::max(std::size_t{0}, address - getBaseAddress()) / getCellSize();
-       i < std::min(getSizeInMemory(), address + amount - getBaseAddress()) /
-               getCellSize();
-       ++i) {
-    ret.push_back(std::make_pair(i % getWidth(), i / getWidth()));
-  }
-  return ret;
-}
-
-std::size_t PixelDisplayPaintedItem::getBaseAddress() const {
-  return _options.pixelBaseAddress;
-}
-std::size_t PixelDisplayPaintedItem::getColorMode() const {
-  return _options.colorMode;
-}
-std::size_t PixelDisplayPaintedItem::getWidth() const {
-  return _options.width;
-}
-std::size_t PixelDisplayPaintedItem::getHeight() const {
-  return _options.height;
-}
-std::size_t PixelDisplayPaintedItem::getSizeInMemory() const {
-  return getWidth() * getHeight() * getCellSize();
-}
-std::size_t PixelDisplayPaintedItem::getCellSize() const {
-  return 4;
-}
-
-std::uint32_t PixelDisplayPaintedItem::getColorAt(std::size_t address) {
-  MemoryValue mem{8 * getCellSize()};// just need to get 32 bit of memory here
-  return conversions::convert<std::uint32_t>(
-      mem, conversions::standardConversions::nonsigned);
+  std::cout << "PixelDisplayPaintedItem memory changed" << std::endl;
+  _options.updateAllPixels(_outputComponentPointer, _image);
+  _options.updateAllColors(_outputComponentPointer, _image);
+  // TODO::use efficient updateMemory
+  update();
 }
 
 namespace colorMode {
@@ -171,7 +113,6 @@ const ColorMode::GetPixelFunction ColorMode::RGBGetPixel = [](
     pixelBufferPointer = conversions::convert<std::size_t>(
         pixelPointer, conversions::standardConversions::nonsigned);
   }
-  // TODO forward to from buffer
   std::size_t sizeInBit = o.rBit + o.gBit + o.bBit;
   std::size_t byteSize =
       (sizeInBit + cellSize - 1) / cellSize + (o.tight ? 0 : o.freeBytes);
@@ -185,9 +126,7 @@ const ColorMode::GetPixelFunction ColorMode::RGBGetPixel = [](
   } else {
     address += byteSize * index;
   }
-  // TODO::*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*
-  // the memory access goes somewhere here, kinda
-  MemoryValue buffer{1};// just need to get 32 bit of memory here
+  MemoryValue buffer{1};
   if (memoryAccess) {
     buffer = (*memoryAccess)
                  ->getMemoryAccess()

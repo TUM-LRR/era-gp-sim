@@ -40,6 +40,7 @@ Item {
         onMemoryChanged: {
             console.log("onMemoryChanged");
             var _baseAddress = outputComponent.getOutputItems()[outputItemIndex]["baseAddress"];
+            pixeldisplaypainteditemid.memoryChanged(address, length);
             // Check if the memory address that was changed (at least partly)
             // belongs to the output item's source space.
             if ((address+length) >= _baseAddress && (address <= (_baseAddress+1))) {
