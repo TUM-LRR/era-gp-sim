@@ -34,6 +34,10 @@ set(PARSER_SOURCES
   line-interval.cpp
   compile-error.cpp
   expression-tokenizer.cpp
+  symbol-graph.cpp
+  symbol-replacer.cpp
+  symbol.cpp
+  symbol-graph-evaluation.cpp
 )
 
 ########################################

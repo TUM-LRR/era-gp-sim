@@ -18,10 +18,10 @@
 
 #include "parser/symbol-table.hpp"
 
-#include "common/assert.hpp"
-#include "common/utility.hpp"
 #include <stack>
 #include <unordered_set>
+#include "common/assert.hpp"
+#include "common/utility.hpp"
 
 // This speeds things up a bit.
 static const std::regex TRIMMED =
@@ -64,7 +64,7 @@ const std::string& SymbolTable::TableEntry::finalReplacement() const noexcept {
 SymbolTable::SymbolType SymbolTable::TableEntry::type() const noexcept {
   return _type;
 }
-SymbolTable::SymbolBehavior SymbolTable::TableEntry::behavior() const noexcept{
+SymbolTable::SymbolBehavior SymbolTable::TableEntry::behavior() const noexcept {
   return _behavior;
 }
 const CodePositionInterval& SymbolTable::TableEntry::position() const noexcept {
@@ -179,8 +179,7 @@ bool SymbolTable::doDfs(std::vector<std::string>& order,
         // Then mark it as visited.
         visited.insert(j);
       }
-      if (currentPathSet.find(j) != currentPathSet.end())
-      {
+      if (currentPathSet.find(j) != currentPathSet.end()) {
         return false;
       }
     }
@@ -220,8 +219,7 @@ void SymbolTable::prepareSymbols(const std::vector<std::string>& order) {
   for (auto& i : Utility::revertIterable(order)) {
     auto& entry = _table.at(i);
     std::string result = entry.specifiedReplacement();
-    if (entry.behavior() == SymbolBehavior::STATIC)
-    {
+    if (entry.behavior() == SymbolBehavior::STATIC) {
       for (const auto& j : entry.dependencies()) {
         result = std::regex_replace(
             result, entry.searchRegex(), entry.finalReplacement());
@@ -262,12 +260,10 @@ SymbolTable::replaceSymbols(const std::string& source,
     // call the replacer function with replacement string & type
     const auto& entry = _table.at(name);
     auto replacement = entry.finalReplacement();
-    if (entry.behavior() == SymbolBehavior::DYNAMIC)
-    {
+    if (entry.behavior() == SymbolBehavior::DYNAMIC) {
       replacement = replacer(entry.finalReplacement(), entry.type());
     }
-    result =
-        std::regex_replace(result, entry.searchRegex(), replacement);
+    result = std::regex_replace(result, entry.searchRegex(), replacement);
   }
 
   return result;

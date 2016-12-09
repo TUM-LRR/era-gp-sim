@@ -237,21 +237,6 @@ class Multiregex {
     return result;
   }
 
-  String recursiveReplace(const String& data, const MultiReplaceFunction& replacement) const {
-    MultiregexMatch<CharType> multimatch;
-    String substring = data;
-    String result;
-    while (search(substring, multimatch))
-    {
-      auto end = multimatch.position + multimatch.length;
-      result += substring.substr(0, multimatch.position);
-      result += recursiveReplace(replacement(multimatch.choice), replacement);
-      substring = substring.substr(end);
-    }
-    result += substring;
-    return result;
-  }
-
  private:
   // Counts the number of opening brackets in the string which denote the start
   // of a regex group.

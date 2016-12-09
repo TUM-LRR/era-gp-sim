@@ -23,11 +23,11 @@
 #include <regex>
 #include <set>
 #include <string>
-#include <vector>
 #include <unordered_set>
-#include "parser/compile-state.hpp"
-#include "parser/code-position.hpp"
+#include <vector>
 #include "common/multiregex.hpp"
+#include "parser/code-position.hpp"
+#include "parser/compile-state.hpp"
 
 /**
  * \brief Contains methods to manage symbols and replace them in strings. It
