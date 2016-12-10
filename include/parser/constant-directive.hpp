@@ -35,10 +35,12 @@ class ConstantDirective : public IntermediateDirective {
   virtual void execute(FinalRepresentation& finalRepresentator,
                        const SymbolTable& table,
                        const SyntaxTreeGenerator& generator,
-                       CompileState& state, MemoryAccess& memoryAccess) override;
+                       CompileState& state,
+                       MemoryAccess& memoryAccess) override;
 
-  virtual void
-  enhanceSymbolTable(SymbolTable& table, const MemoryAllocator& allocator,CompileState& state) override;
+  virtual void enhanceSymbolTable(SymbolTable& table,
+                                  const MemoryAllocator& allocator,
+                                  CompileState& state) override;
 
  private:
   std::vector<std::string> _arguments;

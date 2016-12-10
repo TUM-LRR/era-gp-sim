@@ -20,45 +20,45 @@
 #include "parser/compile-error.hpp"
 
 CompileError::CompileError(const std::string& message,
-               const CodePosition& position,
-               CompileErrorSeverity severity)
-  : CompileError(message, position, position >> 1, severity) {
-  }
-
-  CompileError::CompileError(const std::string& message,
-               const CodePosition& startPosition,
-               const CodePosition& endPosition,
-               CompileErrorSeverity severity)
-  : CompileError(
-        message, CodePositionInterval(startPosition, endPosition), severity) {
-  }
+                           const CodePosition& position,
+                           CompileErrorSeverity severity)
+: CompileError(message, position, position >> 1, severity) {
+}
 
 CompileError::CompileError(const std::string& message,
-               const CodePositionInterval& position,
-               CompileErrorSeverity severity)
-  : _message(message), _position(position), _severity(severity) {
-  }
+                           const CodePosition& startPosition,
+                           const CodePosition& endPosition,
+                           CompileErrorSeverity severity)
+: CompileError(
+      message, CodePositionInterval(startPosition, endPosition), severity) {
+}
 
-   /**
-   * \brief Returns the message of this error.
-   * \return The message of the error.
-   */
-  const std::string& CompileError::message() const noexcept {
-    return _message;
-  }
+CompileError::CompileError(const std::string& message,
+                           const CodePositionInterval& position,
+                           CompileErrorSeverity severity)
+: _message(message), _position(position), _severity(severity) {
+}
 
-  /**
-   * \brief Returns the position where this error occured.
-   * \return The position of the error.
-   */
-  const CodePositionInterval& CompileError::position() const noexcept {
-    return _position;
-  }
+/**
+* \brief Returns the message of this error.
+* \return The message of the error.
+*/
+const std::string& CompileError::message() const noexcept {
+  return _message;
+}
 
-  /**
-   * \brief Returns the severity of the error.
-   * \return The severity of the error.
-   */
-  const CompileErrorSeverity CompileError::severity() const noexcept {
-    return _severity;
-  }
+/**
+ * \brief Returns the position where this error occured.
+ * \return The position of the error.
+ */
+const CodePositionInterval& CompileError::position() const noexcept {
+  return _position;
+}
+
+/**
+ * \brief Returns the severity of the error.
+ * \return The severity of the error.
+ */
+const CompileErrorSeverity CompileError::severity() const noexcept {
+  return _severity;
+}

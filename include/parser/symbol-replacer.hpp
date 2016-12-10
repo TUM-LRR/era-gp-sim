@@ -28,15 +28,16 @@ class SymbolGraphEvaluation;
 
 class SymbolReplacer {
  public:
+  using size_t = std::size_t;
   using DynamicReplacer = std::function<std::string(const Symbol&)>;
   static const DynamicReplacer IDENTITY_REPLACE;
 
   SymbolReplacer(const SymbolGraphEvaluation& evaluation,
                  const DynamicReplacer& replacer = IDENTITY_REPLACE,
-                 std::size_t maximumReplaceCount = 64);
+                 size_t maximumReplaceCount = 64);
   SymbolReplacer(const std::vector<Symbol>& symbols,
                  const DynamicReplacer& replacer = IDENTITY_REPLACE,
-                 std::size_t maximumReplaceCount = 64);
+                 size_t maximumReplaceCount = 64);
 
   std::string replace(const std::string& data) const;
   void replace(std::vector<std::string>& dataVector) const;
@@ -45,7 +46,7 @@ class SymbolReplacer {
   std::vector<Symbol> _symbols;
   MSRegex _matchRegex;
   DynamicReplacer _replacer;
-  std::size_t _maximumReplaceCount;
+  size_t _maximumReplaceCount;
 };
 
 #endif /* ERAGPSIM_PARSER_SYMBOL_REPLACER_HPP */

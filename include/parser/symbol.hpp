@@ -31,7 +31,7 @@ class Symbol {
   Symbol(const std::string& name,
          const std::string& value,
          const CodePositionInterval position,
-         SymbolBehavior behavior);
+         SymbolBehavior behavior = SymbolBehavior::STATIC);
 
   const std::string& name() const noexcept;
   const std::string& value() const noexcept;

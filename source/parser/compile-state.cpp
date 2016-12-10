@@ -27,31 +27,32 @@ void CompileState::registerMacro(MacroDirective& macro) {
   }
 }
 
-  void CompileState::addError(const std::string& message) {
-    addError(message, position);
-  }
+void CompileState::addError(const std::string& message) {
+  addError(message, position);
+}
 
-  void CompileState::addError(const std::string& message, const CodePosition& position) {
-    errorList.push_back(
-        CompileError(message, position, CompileErrorSeverity::ERROR));
-  }
+void CompileState::addError(const std::string& message,
+                            const CodePosition& position) {
+  errorList.push_back(
+      CompileError(message, position, CompileErrorSeverity::ERROR));
+}
 
-  void CompileState::addWarning(const std::string& message) {
-    addWarning(message, position);
-  }
+void CompileState::addWarning(const std::string& message) {
+  addWarning(message, position);
+}
 
-  void CompileState::addWarning(const std::string& message, const CodePosition& position) {
-    errorList.push_back(
-        CompileError(message, position, CompileErrorSeverity::WARNING));
-  }
+void CompileState::addWarning(const std::string& message,
+                              const CodePosition& position) {
+  errorList.push_back(
+      CompileError(message, position, CompileErrorSeverity::WARNING));
+}
 
-  void CompileState::addInformation(const std::string& message) {
-    addInformation(message, position);
-  }
+void CompileState::addInformation(const std::string& message) {
+  addInformation(message, position);
+}
 
-  void
-  CompileState::addInformation(const std::string& message, const CodePosition& position) {
-    errorList.push_back(
-        CompileError(message, position, CompileErrorSeverity::INFORMATION));
-  }
-
+void CompileState::addInformation(const std::string& message,
+                                  const CodePosition& position) {
+  errorList.push_back(
+      CompileError(message, position, CompileErrorSeverity::INFORMATION));
+}

@@ -23,6 +23,8 @@
 #include "common/utility.hpp"
 #include "parser/symbol-graph-evaluation.hpp"
 
+using size_t = std::size_t;
+
 void SymbolGraph::addNode(const Symbol& symbol) {
   auto newNode = SymbolNode(symbol, _nodes.size());
   for (auto& node : _nodes) {
@@ -37,38 +39,51 @@ void SymbolGraph::addNode(const Symbol& symbol) {
 
 class PartialEvaluation {
  public:
-  PartialEvaluation(const std::vector<std::size_t>& topologicOrder,
-                    const std::vector<std::size_t>& sampleCycle)
+  PartialEvaluation(const std::vector<size_t>& topologicOrder,
+                    const std::vector<size_t>& sampleCycle)
   : _topologicOrder(topologicOrder), _sampleCycle(sampleCycle) {
   }
 
-  const std::vector<std::size_t>& topologicOrder() const noexcept {
+  const std::vector<size_t>& topologicOrder() const noexcept {
     return _topologicOrder;
   }
-  const std::vector<std::size_t>& sampleCycle() const noexcept {
+  const std::vector<size_t>& sampleCycle() const noexcept {
     return _sampleCycle;
   }
 
  private:
-  std::vector<std::size_t> _topologicOrder;
-  std::vector<std::size_t> _sampleCycle;
+  std::vector<size_t> _topologicOrder;
+  std::vector<size_t> _sampleCycle;
 };
 
 struct StackEntry {
-  std::size_t index;
-  std::size_t position;
+  size_t index;
+  size_t position;
 
-  StackEntry(std::size_t index, std::size_t position)
-  : index(index), position(position) {
+  StackEntry(size_t index, size_t position) : index(index), position(position) {
   }
 };
 
-static std::vector<std::size_t>
+static std::vector<size_t>
+decomposeCycle(size_t startNode, std::stack<StackEntry>& stack) {
+  std::vector<size_t> cycle;
+  cycle.push_back(startNode);
+  assert::that(!stack.empty());
+  while (stack.top().index != startNode) {
+    cycle.push_back(stack.top().index);
+    stack.pop();
+    assert::that(!stack.empty());
+  }
+  cycle.push_back(startNode);
+  return cycle;
+}
+
+static std::vector<size_t>
 connectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes,
-             std::vector<std::size_t>& topologicOrder,
+             std::vector<size_t>& topologicOrder,
              std::vector<bool>& visited,
-             std::size_t start) {
-  std::stack<std::size_t> toVisit;
+             size_t start) {
+  std::stack<size_t> toVisit;
   std::stack<StackEntry> emulatedStack;
   std::vector<bool> fastLookup(nodes.size());
 
@@ -85,15 +100,7 @@ connectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes,
         toVisit.push(neighbor);
       }
     } else if (fastLookup[node]) {
-      std::vector<std::size_t> cycle;
-      cycle.push_back(node);
-      assert::that(toVisit.empty());
-      while (toVisit.top() != node) {
-        cycle.push_back(toVisit.top());
-        toVisit.pop();
-        assert::that(toVisit.empty());
-      }
-      return cycle;
+      return decomposeCycle(node, emulatedStack);
     }
 
     while (!emulatedStack.empty() &&
@@ -105,18 +112,20 @@ connectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes,
     }
   }
 
-  return {};
+  return std::vector<size_t>();
 }
 
 static PartialEvaluation
 disconnectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes) {
   std::vector<bool> visited(nodes.size());
-  std::vector<std::size_t> topologicOrder;
-  for (const auto& node : Utility::range<std::size_t>(0, nodes.size())) {
-    if (!visited[node]) {
-      auto result = connectedDfs(nodes, topologicOrder, visited, node);
-      if (!result.empty()) {
-        return PartialEvaluation({}, result);
+  std::vector<size_t> topologicOrder;
+  if (!nodes.empty()) {
+    for (const auto& node : Utility::range<size_t>(0, nodes.size())) {
+      if (!visited[node]) {
+        auto result = connectedDfs(nodes, topologicOrder, visited, node);
+        if (!result.empty()) {
+          return PartialEvaluation({}, result);
+        }
       }
     }
   }
@@ -126,7 +135,7 @@ disconnectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes) {
 
 static std::vector<Symbol>
 prepareSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes,
-               const std::vector<std::size_t>& topologicOrder) {
+               const std::vector<size_t>& topologicOrder) {
   std::vector<std::string> values;
   for (const auto& node : nodes) {
     values.push_back(node.symbol().value());
@@ -141,7 +150,7 @@ prepareSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes,
     }
   }
   std::vector<Symbol> symbols;
-  for (std::size_t nodeIndex = 0; nodeIndex < nodes.size(); ++nodeIndex) {
+  for (size_t nodeIndex = 0; nodeIndex < nodes.size(); ++nodeIndex) {
     const auto& symbol = nodes[nodeIndex].symbol();
     const auto& nodeValue = values[nodeIndex];
     symbols.push_back(
@@ -150,14 +159,14 @@ prepareSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes,
   return symbols;
 }
 
-static std::vector<std::vector<std::size_t>>
+static std::vector<std::vector<size_t>>
 checkDoubleSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes) {
-  std::unordered_map<std::string, std::vector<std::size_t>> nameTest;
+  std::unordered_map<std::string, std::vector<size_t>> nameTest;
   for (const auto& node : nodes) {
     nameTest[node.symbol().name()].push_back(node.index());
   }
 
-  std::vector<std::vector<std::size_t>> duplicates;
+  std::vector<std::vector<size_t>> duplicates;
   for (const auto& combined : nameTest) {
     auto& sameIdentifier = combined.second;
     if (sameIdentifier.size() > 1) {
@@ -167,14 +176,15 @@ checkDoubleSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes) {
   return duplicates;
 }
 
-static std::vector<std::size_t>
+static std::vector<size_t>
 checkSymbolNames(const std::vector<SymbolGraph::SymbolNode>& nodes) {
-  std::vector<std::size_t> invalidNames;
+  std::vector<size_t> invalidNames;
   for (const auto& node : nodes) {
     if (!node.symbol().nameValid()) {
       invalidNames.push_back(node.index());
     }
   }
+  return invalidNames;
 }
 
 SymbolGraphEvaluation SymbolGraph::evaluate() const {
@@ -182,7 +192,8 @@ SymbolGraphEvaluation SymbolGraph::evaluate() const {
   auto invalidNames = checkSymbolNames(_nodes);
   auto result = disconnectedDfs(_nodes);
   std::vector<Symbol> symbols;
-  if (!result.sampleCycle().empty()) {
+  if (result.sampleCycle().empty() && doubleSymbols.empty() &&
+      invalidNames.empty()) {
     symbols = prepareSymbols(_nodes, result.topologicOrder());
   }
   return SymbolGraphEvaluation(invalidNames,
@@ -192,18 +203,17 @@ SymbolGraphEvaluation SymbolGraph::evaluate() const {
                                symbols);
 }
 
-SymbolGraph::SymbolNode::SymbolNode(const Symbol& symbol, std::size_t index)
+SymbolGraph::SymbolNode::SymbolNode(const Symbol& symbol, size_t index)
 : _symbol(symbol), _index(index), _adjacent() {
 }
 
 const Symbol& SymbolGraph::SymbolNode::symbol() const noexcept {
   return _symbol;
 }
-std::size_t SymbolGraph::SymbolNode::index() const noexcept {
+size_t SymbolGraph::SymbolNode::index() const noexcept {
   return _index;
 }
-const std::vector<std::size_t>& SymbolGraph::SymbolNode::adjacent() const
-    noexcept {
+const std::vector<size_t>& SymbolGraph::SymbolNode::adjacent() const noexcept {
   return _adjacent;
 }
 

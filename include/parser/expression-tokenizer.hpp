@@ -40,7 +40,8 @@ class ExpressionTokenizer {
    * \brief Creates a new expression tokenizer out of a token list.
    * \param definitions The token list.
    */
-  ExpressionTokenizer(const std::vector<ExpressionTokenDefinition>& definitions);
+  ExpressionTokenizer(
+      const std::vector<ExpressionTokenDefinition>& definitions);
 
   /**
      * \brief Tokenizes a given string and records any errors.

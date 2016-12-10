@@ -21,60 +21,61 @@
 #include "common/multiregex.hpp"
 #include "parser/compile-state.hpp"
 
-ExpressionTokenizer::ExpressionTokenizer(const std::vector<ExpressionTokenDefinition>& definitions)
-  : _typeMapping()
-  , _tokenizeRegex(
-        "^", "", buildRegexVector(definitions), std::regex::optimize) {
-  }
+ExpressionTokenizer::ExpressionTokenizer(
+    const std::vector<ExpressionTokenDefinition>& definitions)
+: _typeMapping()
+, _tokenizeRegex("^", "", buildRegexVector(definitions), std::regex::optimize) {
+}
 
 std::vector<ExpressionToken>
-  ExpressionTokenizer::tokenize(const std::string& data, CompileState& state) const {
-    std::vector<ExpressionToken> output;
-    MSMatch match;
-    size_t currentPosition = 0;
-    std::string temp = data;
+ExpressionTokenizer::tokenize(const std::string& data,
+                              CompileState& state) const {
+  std::vector<ExpressionToken> output;
+  MSMatch match;
+  size_t currentPosition = 0;
+  std::string temp = data;
 
-    // We loop until we cannot match anything any more.
-    while (_tokenizeRegex.search(temp, match)) {
-      // if match.choice==0 we got some whitespace which we simply ignore.
-      if (match.choice > 0) {
-        // If not, we got another token.
-        output.push_back(ExpressionToken{match.source,
-                                         _typeMapping.at(match.choice - 1),
-                                         currentPosition + match.position});
-      }
-
-      // Now we update our position and the rest string and continue.
-      size_t rpos = match.position + match.length;
-      temp = temp.substr(rpos);
-      currentPosition += rpos;
+  // We loop until we cannot match anything any more.
+  while (_tokenizeRegex.search(temp, match)) {
+    // if match.choice==0 we got some whitespace which we simply ignore.
+    if (match.choice > 0) {
+      // If not, we got another token.
+      output.push_back(ExpressionToken{match.source,
+                                       _typeMapping.at(match.choice - 1),
+                                       currentPosition + match.position});
     }
 
-    if (temp.empty()) {
-      // We are done, and the string has been parsed completely.
-      return output;
-    } else {
-      // We are done, but there is an unrecognized token. We return as if the
-      // string was empty.
-      state.addError("Unrecognized token at: " + temp.substr(0, 20),
-                     state.position >> currentPosition);
-      return std::vector<ExpressionToken>();
-    }
+    // Now we update our position and the rest string and continue.
+    size_t rpos = match.position + match.length;
+    temp = temp.substr(rpos);
+    currentPosition += rpos;
   }
 
-std::vector<std::string>
-  ExpressionTokenizer::buildRegexVector(const std::vector<ExpressionTokenDefinition>& definitions) {
-    std::vector<std::string> output;
-    output.reserve(definitions.size() + 1);
-
-    // We copy the regexes from our definitions and also include a whitespace
-    // finder.
-    output.push_back("\\s+");
-    _typeMapping.reserve(definitions.size());
-    for (const ExpressionTokenDefinition& i : definitions) {
-      // And while doing that, we are setting the regex to token type mapping.
-      _typeMapping.push_back(i.type);
-      output.push_back(i.regex);
-    }
+  if (temp.empty()) {
+    // We are done, and the string has been parsed completely.
     return output;
+  } else {
+    // We are done, but there is an unrecognized token. We return as if the
+    // string was empty.
+    state.addError("Unrecognized token at: " + temp.substr(0, 20),
+                   state.position >> currentPosition);
+    return std::vector<ExpressionToken>();
   }
+}
+
+std::vector<std::string> ExpressionTokenizer::buildRegexVector(
+    const std::vector<ExpressionTokenDefinition>& definitions) {
+  std::vector<std::string> output;
+  output.reserve(definitions.size() + 1);
+
+  // We copy the regexes from our definitions and also include a whitespace
+  // finder.
+  output.push_back("\\s+");
+  _typeMapping.reserve(definitions.size());
+  for (const ExpressionTokenDefinition& i : definitions) {
+    // And while doing that, we are setting the regex to token type mapping.
+    _typeMapping.push_back(i.type);
+    output.push_back(i.regex);
+  }
+  return output;
+}

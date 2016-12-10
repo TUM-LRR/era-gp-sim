@@ -20,17 +20,17 @@
 #include "parser/macro-end-directive.hpp"
 
 MacroEndDirective::MacroEndDirective(const LineInterval& lines,
-                    const std::vector<std::string>& labels,
-                    const std::string& name,
-                    const std::vector<std::string>& arguments)
-  : IntermediateDirective(lines, labels, name) {
-  }
+                                     const std::vector<std::string>& labels,
+                                     const std::string& name,
+                                     const std::vector<std::string>& arguments)
+: IntermediateDirective(lines, labels, name) {
+}
 
-  MacroEndDirective::MacroEndDirective(const LineInterval& lines,
-                    const std::vector<std::string>& labels,
-                    const std::string& name)
-  : IntermediateDirective(lines, labels, name) {
-  }
+MacroEndDirective::MacroEndDirective(const LineInterval& lines,
+                                     const std::vector<std::string>& labels,
+                                     const std::string& name)
+: IntermediateDirective(lines, labels, name) {
+}
 
 
 void MacroEndDirective::execute(FinalRepresentation& finalRepresentator,

@@ -20,10 +20,10 @@
 #ifndef ERAGPSIM_PARSER_PARSER_FACTORY_HPP_
 #define ERAGPSIM_PARSER_PARSER_FACTORY_HPP_
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include <functional>
 class Parser;
 class MemoryAccess;
 class Architecture;
@@ -34,8 +34,8 @@ using ParserPtr = std::unique_ptr<Parser>;
  * Provides methods for the instantiation of different Parser classes.
  */
 namespace ParserFactory {
-    using ParserBuildFunction = std::function<ParserPtr(const Architecture &,
-                                              const MemoryAccess &)>;
+using ParserBuildFunction =
+    std::function<ParserPtr(const Architecture &, const MemoryAccess &)>;
 
 /**
  * Instantiates a Parser for an Architecture by name.
@@ -54,9 +54,7 @@ ParserPtr createParser(const Architecture &arch,
  * See parser-factory.cpp for the definition including all available parser
  * names.
  */
-extern const std::unordered_map<std::string,
-                                ParserBuildFunction>
-    mapping;
+extern const std::unordered_map<std::string, ParserBuildFunction> mapping;
 }
 
 #endif /* ERAGPSIM_PARSER_PARSER_FACTORY_HPP */

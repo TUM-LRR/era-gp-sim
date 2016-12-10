@@ -25,24 +25,25 @@
 
 class SymbolGraphEvaluation {
  public:
-  SymbolGraphEvaluation(const std::vector<std::size_t>& invalidNames,
-                        const std::vector<std::vector<std::size_t>>& duplicates,
-                        const std::vector<std::size_t>& sampleCycle,
-                        const std::vector<std::size_t>& topologicOrder,
+  using size_t = std::size_t;
+  SymbolGraphEvaluation(const std::vector<size_t>& invalidNames,
+                        const std::vector<std::vector<size_t>>& duplicates,
+                        const std::vector<size_t>& sampleCycle,
+                        const std::vector<size_t>& topologicOrder,
                         const std::vector<Symbol>& symbols);
 
   bool valid() const noexcept;
-  const std::vector<std::size_t>& invalidNames() const noexcept;
-  const std::vector<std::vector<std::size_t>>& duplicates() const noexcept;
-  const std::vector<std::size_t>& sampleCycle() const noexcept;
-  const std::vector<std::size_t>& topologicOrder() const noexcept;
+  const std::vector<size_t>& invalidNames() const noexcept;
+  const std::vector<std::vector<size_t>>& duplicates() const noexcept;
+  const std::vector<size_t>& sampleCycle() const noexcept;
+  const std::vector<size_t>& topologicOrder() const noexcept;
   const std::vector<Symbol>& symbols() const noexcept;
 
  private:
-  std::vector<std::size_t> _invalidNames;
-  std::vector<std::vector<std::size_t>> _duplicates;
-  std::vector<std::size_t> _sampleCycle;
-  std::vector<std::size_t> _topologicOrder;
+  std::vector<size_t> _invalidNames;
+  std::vector<std::vector<size_t>> _duplicates;
+  std::vector<size_t> _sampleCycle;
+  std::vector<size_t> _topologicOrder;
   std::vector<Symbol> _symbols;
 };
 

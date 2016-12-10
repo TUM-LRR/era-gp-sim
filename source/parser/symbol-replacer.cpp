@@ -28,6 +28,9 @@ static MSRegex constructSymbolRegex(std::vector<Symbol> symbols) {
     assert::that(i.nameValid());
     names.push_back(i.name());
   }
+  if (names.empty()) {
+    names.push_back("none^");
+  }
   return MSRegex("\\b", "\\b", names, std::regex::optimize);
 }
 

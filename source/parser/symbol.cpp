@@ -25,8 +25,7 @@ static const std::regex TRIMMED =
 static const std::regex VALID_NAME =
     std::regex("^[A-Za-z_][A-Za-z0-9_]*$", std::regex_constants::optimize);
 
-
-static bool symbolNameValid(const std::string name) {
+static bool symbolNameValid(const std::string& name) {
   return std::regex_search(name, VALID_NAME);
 }
 
@@ -38,7 +37,7 @@ Symbol::Symbol(const std::string& name,
 , _value(value)
 , _position(position)
 , _behavior(behavior)
-, _regex(symbolNameValid(name) ? ("\\b" + name + "\\b") : ("no^"),
+, _regex((symbolNameValid(name) ? ("\\b" + name + "\\b") : ("no^")),
          std::regex::optimize) {
   assert::that(!std::regex_search(name, TRIMMED));
 }

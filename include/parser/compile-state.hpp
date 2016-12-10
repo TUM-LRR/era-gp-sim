@@ -99,8 +99,7 @@ struct CompileState {
    * \param message The message for the information.
    * \param position The position where the information is needed.
    */
-  void
-  addInformation(const std::string& message, const CodePosition& position);
+  void addInformation(const std::string& message, const CodePosition& position);
 
   /**
    * Registers a macro for compilation.

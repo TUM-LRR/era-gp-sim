@@ -17,13 +17,13 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <cstdint>
 #include "parser/memory-reservation-directive.hpp"
+#include <cstdint>
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
 #include "parser/expression-compiler-clike.hpp"
-#include "parser/symbol-table.hpp"
 #include "parser/memory-allocator.hpp"
+#include "parser/symbol-table.hpp"
 
 MemoryReservationDirective::MemoryReservationDirective(
     const LineInterval& lines,

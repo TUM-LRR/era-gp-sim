@@ -21,8 +21,8 @@
 #define ERAGPSIM_PARSER_EXPRESSION_COMPILER_CLIKE_HPP
 
 #include "parser/expression-compiler.hpp"
-#include "parser/string-parser.hpp"
 #include "parser/integer-parser.hpp"
+#include "parser/string-parser.hpp"
 
 /**
  * \brief Provides some basic expression compilers.
@@ -254,30 +254,27 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
             return true;
           }}};
   auto literalDecoders = std::vector<ExpressionLiteralDecoder<IntType>>{
-      ExpressionLiteralDecoder<IntType>{"0x[0-9a-fA-F]+",
-                                        [](const std::string& number,
-                                           IntType& output,
-                                           CompileState& state) -> bool {
-                                          output = IntegerParser<IntType>::parse(
-                                              number, state, 2, 16);
-                                          return true;
-                                        }},
-      ExpressionLiteralDecoder<IntType>{"0b[01]+",
-                                        [](const std::string& number,
-                                           IntType& output,
-                                           CompileState& state) -> bool {
-                                          output = IntegerParser<IntType>::parse(
-                                              number, state, 2, 2);
-                                          return true;
-                                        }},
-      ExpressionLiteralDecoder<IntType>{"[0-9]+",
-                                        [](const std::string& number,
-                                           IntType& output,
-                                           CompileState& state) -> bool {
-                                          output = IntegerParser<IntType>::parse(
-                                              number, state, 0, 10);
-                                          return true;
-                                        }},
+      ExpressionLiteralDecoder<IntType>{
+          "0x[0-9a-fA-F]+",
+          [](const std::string& number, IntType& output, CompileState& state)
+              -> bool {
+                output = IntegerParser<IntType>::parse(number, state, 2, 16);
+                return true;
+              }},
+      ExpressionLiteralDecoder<IntType>{
+          "0b[01]+",
+          [](const std::string& number, IntType& output, CompileState& state)
+              -> bool {
+                output = IntegerParser<IntType>::parse(number, state, 2, 2);
+                return true;
+              }},
+      ExpressionLiteralDecoder<IntType>{
+          "[0-9]+",
+          [](const std::string& number, IntType& output, CompileState& state)
+              -> bool {
+                output = IntegerParser<IntType>::parse(number, state, 0, 10);
+                return true;
+              }},
       ExpressionLiteralDecoder<IntType>{
           "'.*?'",
           [](const std::string& number,

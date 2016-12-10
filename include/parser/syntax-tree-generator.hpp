@@ -79,9 +79,10 @@ class SyntaxTreeGenerator {
       MemoryAccess& memoryAccess) const;
 
   /**
-   * Returns a reference to the NodeFactoryCollection used by this SyntaxTreeGenerator
+   * Returns a reference to the NodeFactoryCollection used by this
+   * SyntaxTreeGenerator
    */
-  const NodeFactoryCollection &getNodeFactories() const;
+  const NodeFactoryCollection& getNodeFactories() const;
 
  private:
   /**

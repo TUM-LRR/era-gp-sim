@@ -23,12 +23,12 @@
 
 #include "common/assert.hpp"
 #include "parser/final-representation.hpp"
-#include "parser/memory-allocator.hpp"
-#include "parser/symbol-table.hpp"
-#include "parser/syntax-tree-generator.hpp"
 #include "parser/line-interval.hpp"
+#include "parser/memory-allocator.hpp"
 #include "parser/memory-section-definition.hpp"
 #include "parser/relative-memory-position.hpp"
+#include "parser/symbol-table.hpp"
+#include "parser/syntax-tree-generator.hpp"
 
 IntermediateOperation::IntermediateOperation(
     const LineInterval& lines,

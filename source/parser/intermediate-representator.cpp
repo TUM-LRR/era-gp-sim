@@ -106,10 +106,9 @@ IntermediateRepresentator::transform(const Architecture& architecture,
   }
 
   auto noCycle = table.finalizeEntries();
-  if (!noCycle)
-  {
+  if (!noCycle) {
     state.addError("Detected a cycle between symbols.");
-  } 
+  }
 
   if (allocatedSize <= allowedSize) {
     // Then, we execute their values.
