@@ -49,9 +49,7 @@ class IntegerParser {
    *
    * \return The parsed integer. Undefined if parsing fails.
    */
-  static T parse(const std::string &str,
-                 CompileState &state,
-                 size_t start = 0,
+  static T parse(const std::string &str, CompileState &state, size_t start = 0,
                  int base = 10) {
     size_t count;
     T result{};
@@ -60,10 +58,12 @@ class IntegerParser {
       if (count < str.length() - start) throw std::invalid_argument("");
     } catch (std::out_of_range &) {
       state.errorList.emplace_back(
-          "Integer out of range.", state.position, CompileErrorSeverity::ERROR);
+          std::make_shared<Translateable>("Integer out of range."),
+          state.position, CompileErrorSeverity::ERROR);
     } catch (std::invalid_argument &) {
       state.errorList.emplace_back(
-          "Integer syntax error.", state.position, CompileErrorSeverity::ERROR);
+          std::make_shared<Translateable>("Integer syntax error."),
+          state.position, CompileErrorSeverity::ERROR);
     }
     return result;
   }
@@ -75,8 +75,8 @@ class IntegerParser {
    * std::numeric_limits specialization Designed to mimic the specification of
    * std::stoi, std::stoul, etc.
    */
-  static T
-  parseInternal(const std::string &str, size_t start, int base, size_t &count) {
+  static T parseInternal(const std::string &str, size_t start, int base,
+                         size_t &count) {
     assert::that((base == 0 || base >= 2) && base <= 36);
 
     auto begin = str.begin() + start;
@@ -104,7 +104,7 @@ class IntegerParser {
       if (*position == 'x' || *position == 'X') {
         if (base == 0 || base == 16) {
           base = 16;
-          ++position;// Skip the 'x'
+          ++position;  // Skip the 'x'
         }
       } else if (base == 0) {
         base = 8;
@@ -169,21 +169,16 @@ class IntegerParser {
 
 // Specializations using the standard conversion methods
 template <>
-int IntegerParser<int>::parseInternal(const std::string &str,
-                                      size_t start,
-                                      int base,
-                                      size_t &count);
+int IntegerParser<int>::parseInternal(const std::string &str, size_t start,
+                                      int base, size_t &count);
 
 template <>
-long IntegerParser<long>::parseInternal(const std::string &str,
-                                        size_t start,
-                                        int base,
-                                        size_t &count);
+long IntegerParser<long>::parseInternal(const std::string &str, size_t start,
+                                        int base, size_t &count);
 
 template <>
 long long IntegerParser<long long>::parseInternal(const std::string &str,
-                                                  size_t start,
-                                                  int base,
+                                                  size_t start, int base,
                                                   size_t &count);
 
 template <>

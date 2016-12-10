@@ -26,9 +26,8 @@
 #include "core/memory-access.hpp"
 #include "parser/compile-state.hpp"
 
-std::unique_ptr<AbstractSyntaxTreeNode>
-SyntaxTreeGenerator::transformOperand(const std::string& operand,
-                                      CompileState& state) const {
+std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(
+    const std::string& operand, CompileState& state) const {
   // We invoke our node generator to get a node!
   std::unique_ptr<AbstractSyntaxTreeNode> outputNode =
       _argumentGenerator(operand, _nodeFactories, state);
@@ -36,7 +35,7 @@ SyntaxTreeGenerator::transformOperand(const std::string& operand,
   // According to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
-    state.addError("Invalid argument: '" + operand + "'", state.position);
+    state.addErrorHereT("Invalid argument: '%1'", operand);
   }
 
   return std::move(outputNode);
@@ -46,15 +45,14 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
     const std::string& command_name,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
-    CompileState& state,
-    MemoryAccess& memoryAccess) const {
+    CompileState& state, MemoryAccess& memoryAccess) const {
   // Just create an instruction node and add all output and input nodes
   // (operands).
   auto outputNode = _nodeFactories.createInstructionNode(command_name);
 
   if (!outputNode) {
     // The node creation failed!
-    state.addError("Unknown operation: " + command_name, state.position);
+    state.addErrorHereT("Unknown operation: %1", command_name);
     return std::move(outputNode);
   }
 
@@ -71,9 +69,8 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
   // Validate node.
   auto validationResult = outputNode->validate(memoryAccess);
   if (!validationResult) {
-    state.addError("Invalid operation (" + command_name + "): " +
-                       validationResult.getMessage(),
-                   state.position);
+    state.addErrorHereT("Invalid operation (%1): %2", command_name,
+                        validationResult.getMessage());
   }
 
   // Return.
@@ -81,5 +78,5 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
 }
 
 const NodeFactoryCollection& SyntaxTreeGenerator::getNodeFactories() const {
-    return _nodeFactories;
+  return _nodeFactories;
 }

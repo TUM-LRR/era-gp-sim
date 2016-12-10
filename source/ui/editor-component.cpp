@@ -30,6 +30,7 @@
 #include "common/assert.hpp"
 #include "core/parser-interface.hpp"
 #include "parser/compile-error.hpp"
+#include "ui/translateable-processing.hpp"
 
 EditorComponent::EditorComponent(QQmlContext *projectContext,
                                  ParserInterface parserInterface,
@@ -131,7 +132,7 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
       case CompileErrorSeverity::INFORMATION: color = QColor(Qt::blue); break;
       default: assert::that(false);
     }
-    emit addError(QString::fromStdString(error.message()),
+    emit addError(translate(error.message()),
                   error.position().first.line(),
                   color);
   }

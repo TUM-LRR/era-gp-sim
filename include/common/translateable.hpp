@@ -17,14 +17,42 @@
 #ifndef ERAGPSIM_COMMON_TRANSLATEABLE_HPP
 #define ERAGPSIM_COMMON_TRANSLATEABLE_HPP
 
-#include <QApplication>
-#include <QString>
 #include <initializer_list>
 #include <memory>
 #include <string>
 #include <vector>
 
 /**
+ * One Note about the translating concept:
+ * We use the build-in Qt translating features, which roughly work like this:
+ * A string literal in the source code is marked for translation using one of
+ * the QT-supplied macros (like QT_TRANSLATE_NOOP).
+ * These macros just serve as markers for an external Qt-Application (named
+ * QTLinguist) which scans the source code, gathers all literals
+ * and creates a table with collected literal associated with its translated
+ * version. The table can then be saved to an external file that will
+ * be loaded at runtime.
+ * The string literal in the source code will NOT be translated just by the
+ * marker macros, the actual translation (if a table was loaded) is done via
+ * a call of QObject::tr().
+ * So far, so good.
+ * When writing translateable messages, care must be taken that the string to be
+ * translated (e.g. the message displayed to the user) is a
+ * string LITERAL (of type const char* or char[n]). Any other representation of
+ * a string, like std::string or QString, is only available at runtime,
+ * therefore QTLinguist cannot determine its value by looking at the source
+ * code.
+ * This is the reason why no constructor with std::string or QString exists,
+ * because in most of the cases where one would like to call a std::string
+ * constructor,
+ * the call will look like this: Translateable("error in line "+_line+". Severe
+ * error!").
+ * As mentioned above, the Translateable should be created with a runtime
+ * parameter: Translateable(QT_TR_NOOP("context info", "error in line %1. Severe
+ * error!"), _line).
+ * For those rare cases, where a std::string is needed as base string, a special
+ * constructor is provided with a special key "NO_TR_POSSIBLE".
+ *
  * A Translateable is a piece of text that can be translated and retrieved.
  * A Translateable consists of a frame string (base string) and some operands.
  * These operands themselves are also Translateables, so in the translation
@@ -32,70 +60,46 @@
  * translated as well and then placed into the frame string.
  */
 class Translateable {
-  Q_DECLARE_TR_FUNCTIONS(
-      Translateable)  // needed for declaring the use of QObject::tr()
-
  public:
   using TranslateablePtr = std::shared_ptr<Translateable>;
-  using TranslateablePtrList = std::initializer_list<TranslateablePtr>;
-  using StringList = std::initializer_list<const std::string>;
-  using TranslateableRefList = std::initializer_list<std::reference_wrapper<Translateable>>;
+
+  struct NO_TR_POSSIBLE {};
 
   /**
    * Constructs a Translateable with the given base string and empty arguments
    * \param baseString The base/frame string of this Translateable
    */
-  explicit Translateable(const std::string& baseString)
-      : _baseString(baseString) {}
+  explicit Translateable(const char* baseString);
 
-  /**
-   * Constructs a Translateable with the given base string and the given list of
-   * Translateables as operands
-   * \param baseString The base/frame string of this Translateable
-   * \param operands List of pointers to other Translateables to act as operands
-   */
-  Translateable(const std::string& baseString,
-                const TranslateablePtrList& operands)
-      : _baseString(baseString), _operands(operands) {}
+  Translateable(const std::string& baseString, const NO_TR_POSSIBLE& key);
 
-  /**
-   * Constructs a Translateable with the given base string and the given list of
-   * strings as operands
-   * \param baseString The base/frame string of this Translateable
-   * \param operands List of strings that will be converted to a Translateable
-   * via the one-argument string constructor
-   */
-  Translateable(const std::string& baseString,
-                const StringList& operands);
+  Translateable();
 
-  /**
-   * Constructs a Translateable with the given base string and the given list of
-   * Translateables as operands.
-   * Note: At least gcc sometimes seems to have a hard time identifying this
-   * constructor when applying template type deduction;
-   * Other possibilities are:
-   * - Use the constructor with smart pointers to Translateable
-   * - Use the one-argument string constructor and add other operands via
-   * Translateable::addOperand
-   * \param baseString The base/frame string of this Translateable
-   * \param operands List of references to existing Translateables.
-   */
-  Translateable(const std::string& baseString,
-                const TranslateableRefList& operands);
+  Translateable(Translateable& copy) = default;
 
-  /**
-   * Returns a translated QString that is ready for e.g. being displayed.
-   * \param translater A Qt instance capable of providing the translation
-   * function
-   * \return A QString that consists of all translated operands placed into the
-   * translated base string
-   */
-  QString translate(const QApplication& translater) const;
+  Translateable(const Translateable& copy) = default;
+
+  Translateable(Translateable&& move) = default;
+
+  template <typename... Args>
+  Translateable(const char* base, Args&&... arguments)
+      : _baseString(base),
+        _operands{createShared(std::forward<Args>(arguments))...} {}
 
   /**
    * Returns a reference to the base string of this Translateable
    */
   std::string& getModifiableBaseString();
+
+  /**
+   * \return A reference to the base string of this Translateable
+   */
+  const std::string& getBaseString() const;
+
+  /**
+   * \return All (runtime) operands of this Translateable
+   */
+  const std::vector<TranslateablePtr>& getOperands() const;
 
   /**
    * Adds the given operand to the operands of this Translateable
@@ -110,7 +114,25 @@ class Translateable {
    */
   void addOperand(const std::string& op);
 
+  template <typename... Args>
+  void addOperand(const char* base, Args&&... args) {
+    addOperand(std::make_shared<Translateable>(base, args...));
+  }
+
  private:
+  Translateable(const std::string& baseString);
+
+  template <typename T>
+  static TranslateablePtr createShared(const T& arg) {
+      //not using std::make_shared as the function cannot access
+      //a private/protected constructor...
+      //solutions, like a wrapper or derived type accessing the constructor
+      //would make the code less understandable
+    return std::shared_ptr<Translateable>(new Translateable{arg});
+  }
+
+  TranslateablePtr createShared(const TranslateablePtr& arg);
+
   std::string _baseString;
   std::vector<TranslateablePtr> _operands;
 };

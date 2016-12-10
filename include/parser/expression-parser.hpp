@@ -28,6 +28,8 @@
 #include "common/multiregex.hpp"
 #include "parser/expression-compiler-definitions.hpp"
 
+#define recordErrorT(parseState, msg, ...) recordError(parseState, QT_TRANSLATE_NOOP("Expression Parser Error", msg), ##__VA_ARGS__)
+
 /**
  * \brief Parses a given token stream and evaluates it.
  * \tparam T The number output type.
@@ -129,7 +131,7 @@ class ExpressionParser {
 
     // If there is more than one operand left, there must be an error.
     if (state.outputStack.size() != 1) {
-      recordError(state, "Malformed expression!");
+      recordErrorT(state, "Malformed expression!");
       return T();
     }
 
@@ -138,6 +140,7 @@ class ExpressionParser {
   }
 
  private:
+  using TranslateablePtr = Translateable::TranslateablePtr;
   // This enum is for the operator stack. It is a bit different from the
   // 'external' token enum.
   enum class ITokenType {
@@ -186,8 +189,9 @@ class ExpressionParser {
   };
 
   // Records an error in the parsing process.
-  void recordError(ParseState& state, const std::string& message) const {
-    state.state.addError(message, state.state.position >> state.curr.index);
+  template<typename... Args>
+  void recordError(ParseState& state, const Args&... message) const {
+    state.state.addError(state.state.position >> state.curr.index, message...);
   }
 
   // Handles the latest token stored in `state.curr`.
@@ -227,11 +231,9 @@ class ExpressionParser {
       // For the right error message, we got to determine the arity of our
       // operator.
       if (token.type == ITokenType::UNARY_OPERATOR) {
-        recordError(state,
-                    "'" + token.data + "' is not a valid unary operator!");
+          recordErrorT(state, "'%1' is not a valid unary operator", token.data);
       } else if (token.type == ITokenType::BINARY_OPERATOR) {
-        recordError(state,
-                    "'" + token.data + "' is not a valid binary operator!");
+        recordErrorT(state, "'%1' is not a valid binary operator", token.data);
       } else {
         // Undefined arity.
         assert::that(false);
@@ -259,7 +261,7 @@ class ExpressionParser {
     // If there has been nothing on it, there are some brackets closed that have
     // not been opened.
     if (state.operatorStack.empty()) {
-      recordError(state, "There are some opening brackets missing!");
+      recordErrorT(state, "There are some opening brackets missing!");
       return false;
     }
 
@@ -308,10 +310,11 @@ class ExpressionParser {
       if (state.outputStack.empty()) {
         // There were not enough operands on the stack.
         size_t left = count - i;
-        recordError(state,
-                    left == 1 ? "There is an operand missing."
-                              : "There are " + std::to_string(left) +
-                                    " operands missing.");
+        if(left == 1) {
+            recordErrorT(state, "There is an operand missing.");
+        }else{
+            recordErrorT(state, "There are %1 operands missing.", std::to_string(left));
+        }
         return false;
       }
       output.push_back(state.outputStack.top());
@@ -378,7 +381,7 @@ class ExpressionParser {
       case ITokenType::BRACKET:
         // We should never apply a bracket token (then, some closing brackets
         // are missing).
-        recordError(state, "There are some closing brackets missing!");
+        recordErrorT(state, "There are some closing brackets missing!");
         return false;
       case ITokenType::UNARY_OPERATOR:
         // Handles the unary operator on the stack.
