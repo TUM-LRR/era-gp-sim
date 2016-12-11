@@ -22,38 +22,52 @@ import QtQuick 2.0
 import QtQuick.Controls 1.4
 
 MenuBar {
-    /*Adding or deleting components in the tab-View*/
-    property var main
-    property var component
     id: menubar
+    property var main
+
+    function saveAs(filePath) {
+      console.log("save path: " + filePath)
+      ui.saveTextAs(tabView.currentIndex, filePath);
+    }
+
+    function actionSaveAs() {
+      main.fileDialog.onAcceptedFunction = saveAs;
+      main.fileDialog.selectExisting = false;
+      main.fileDialog.open();
+    }
+
     Menu{
+        id: fileMenu
         title: "File"
         MenuItem{
-            text: "Open..."
+            text: "Load Code..."
+            function openTextFile(filePath) {
+              console.log("open path: " + filePath);
+              ui.loadText(main.currentIndex, filePath);
+            }
             onTriggered: {
-                console.info("Open triggerd");
-                ui.open("PopUp ergaenzen");
+                main.fileDialog.onAcceptedFunction = openTextFile;
+                main.fileDialog.selectExisting = true;
+                main.fileDialog.open();
             }
         }
         MenuItem{
             text: "New..."
             onTriggered: {
-                console.info("New triggerd");
                 main.createProject();
             }
         }
         MenuItem{
-            text: "Save"
+            text: "Save Code"
             onTriggered: {
-                console.info("Save triggerd");
-                ui.save(tabView.currentIndex);
+                ui.saveText(main.currentIndex);
             }
         }
         MenuItem{
-            text: "Save as..."
+            id: saveTextAs
+            text: "Save Code as..."
             onTriggered: {
-                console.info("Save as triggerd");
-                ui.saveAs("popup ergaenzen", tabView.currentIndex);
+                actionSaveAs();
             }
         }
         MenuItem{
@@ -93,5 +107,4 @@ MenuBar {
             }
         }
     }
-
 }
