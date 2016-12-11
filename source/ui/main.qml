@@ -31,6 +31,8 @@ ApplicationWindow {
     width: Screen.desktopAvailableWidth*0.7
     height: Screen.desktopAvailableHeight*0.8
 
+    property alias menubar: menubar
+
     menuBar: Menubar {
       id: menubar
       main: window
@@ -105,24 +107,34 @@ ApplicationWindow {
               menubar.actionSaveAs();
             }
             onError: {
-              errorDialog.text = errorMessage;
-              errorDialog.open();
-            }
-          }
-
-          //Dialog to show errors
-          MessageDialog {
-            id: errorDialog
-            title: "error"
-            standardButtons: StandardButton.Ok
-            onAccepted: {
-              close();
+              window.errorDialog.text = errorMessage;
+              window.errorDialog.open();
             }
           }
       }
     }
 
+    Connections {
+      target: snapshotComponent
+      onSnapshotError: {
+        errorDialog.text = errorMessage;
+        errorDialog.open();
+      }
+    }
+
+    property alias errorDialog: errorDialog
     property alias fileDialog: fileDialog
+    property alias textDialog: textDialog
+
+    //Dialog to show errors
+    MessageDialog {
+      id: errorDialog
+      title: "error"
+      standardButtons: StandardButton.Ok
+      onAccepted: {
+        close();
+      }
+    }
 
     //File dialog for selecting a file
     FileDialog {
@@ -133,6 +145,46 @@ ApplicationWindow {
       selectMultiple: false
       onAccepted: {
         onAcceptedFunction(fileDialog.fileUrl);
+      }
+    }
+
+    // Dialog to input text
+    Dialog {
+      id: textDialog
+      title: "Save snapshot"
+      standardButtons: StandardButton.Cancel;
+      property var onAcceptedFunction
+      property alias placeholderText: textField.placeholderText
+      Text {
+        id: description
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        wrapMode: Text.WordWrap
+        textFormat: Text.StyledText
+        text: "<p>Save a snapshot of the current register and memory state to disk. " +
+         "Your snapshot files can be found here:</p> " +
+         "<a href=\"" + snapshotComponent.getSnapshotBasePath().toString() + "\">" +
+         snapshotComponent.getSnapshotBasePath().toString() + "</a>"
+         onLinkActivated: Qt.openUrlExternally(snapshotComponent.getSnapshotBasePath())
+      }
+      TextField {
+        id: textField
+        anchors.topMargin: 10
+        anchors.top: description.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        onTextChanged: {
+          if(text == "") {
+           textDialog.standardButtons = StandardButton.Cancel;
+          }
+          else {
+            textDialog.standardButtons = StandardButton.Cancel | StandardButton.Save;
+          }
+        }
+      }
+      onAccepted: {
+        onAcceptedFunction(textField.text);
+        textField.text = "";
       }
     }
 }

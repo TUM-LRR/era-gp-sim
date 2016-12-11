@@ -23,17 +23,22 @@
 
 #include <QObject>
 #include <QQmlContext>
+#include <QString>
+#include <QStringList>
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "arch/common/architecture-formula.hpp"
 #include "core/memory-value.hpp"
 #include "core/project-module.hpp"
+#include "third-party/json/json.hpp"
 #include "ui/editor-component.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/output-component.hpp"
 #include "ui/register-model.hpp"
+#include "ui/snapshot-component.hpp"
 
 class QUrl;
 
@@ -48,6 +53,8 @@ class GuiProject : QObject {
   Q_OBJECT
 
  public:
+  using Json = nlohmann::json;
+
   /**
    * The Constructor
    *
@@ -55,13 +62,40 @@ class GuiProject : QObject {
    * \param formula the architectures and extensions
    * \param memorySize the size of the memory for the memoryComponent
    * \param parserName the name of the parser
+   * \param snapshotComponent A shared pointer to the snapshot component.
    * \param parent the parent, its needed for the QObject
    */
   GuiProject(QQmlContext* context,
              const ArchitectureFormula& formula,
              std::size_t memorySize,
              const std::string& parserName,
+             const std::shared_ptr<SnapshotComponent>& snapshotComponent,
              QObject* parent = 0);
+
+  /**
+   * Destructor
+   */
+  ~GuiProject();
+
+  /**
+   * Copy constructor is deleted, QObjects can not be copied.
+   */
+  GuiProject(const GuiProject& other) = delete;
+
+  /**
+   * Move constructor is deleted to avoid problems with the QObject members.
+   */
+  GuiProject(GuiProject&& other) = delete;
+
+  /**
+   * Copy assignement is deleted, QObjects can not be copied.
+   */
+  GuiProject& operator=(const GuiProject& other) = delete;
+
+  /**
+   * Move assignement is deleted to avoid problems with the QObject members.
+   */
+  GuiProject& operator=(GuiProject&& other) = delete;
 
   /**
    * \brief Can set The global system
@@ -126,15 +160,28 @@ class GuiProject : QObject {
   /**
    * \brief takes a snapshot
    *
-   * \param name name of the snapshot
+   * \param qName name of the snapshot
    */
-  void saveSnapshot(QString qName);
+  void saveSnapshot(const QString& qName);
+
+  /**
+   * \brief Removes a snapshot.
+   *
+   * \param qName name of the snapshot.
+   */
+  Q_INVOKABLE void removeSnapshot(const QString& qName);
 
   /**
    * \brief loads a snapshot
-   * \param name The name of the snapshot, which should be loaded
+   * \param qName The name of the snapshot which should be loaded.
    */
-  void loadSnapshot(QString qName);
+  Q_INVOKABLE void loadSnapshot(const QString& qName);
+
+  /**
+   * Returns a list of snapshot names
+   *
+   */
+  Q_INVOKABLE QStringList getSnapshots();
 
   /**
    * \brief Functions for converting MemoryValues to Strings.
@@ -188,18 +235,30 @@ class GuiProject : QObject {
   EditorComponent _editorComponent;
 
   /**
-   * @brief _outputComponent The model for each output item (i.e
+   * \brief _outputComponent The model for each output item (i.e
    * lightstrip, sevensegment, console).
    */
   OutputComponent _outputComponent;
 
-  // SnapshotModel snapmodel;
+  /**
+   * The c++ component for the memory.
+   */
   MemoryComponentPresenter _memoryModel;
 
   /**
    * The default path to save the text of this project to.
    */
   QString _defaultTextFileSavePath;
+
+  /**
+   * A shared pointer to the configuration json (for snapshots,...)
+   */
+  std::shared_ptr<SnapshotComponent> _snapshotComponent;
+
+  /**
+   * The architecture formula, needed to save snapshot configuration.
+   */
+  QString _architectureFormulaString;
 
   /**
    * \brief The Functions for the conversion
@@ -240,7 +299,8 @@ class GuiProject : QObject {
    */
   void saveTextAs();
 
-  /** display an error in the ui.
+  /**
+   * Display an error in the ui.
    *
    * \param errorMessage The error message.
    */

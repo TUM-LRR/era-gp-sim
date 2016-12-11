@@ -28,6 +28,7 @@
 #include <QQuickItem>
 #include <QString>
 #include <QStringList>
+#include <memory>
 #include <tuple>
 #include <vector>
 
@@ -35,6 +36,7 @@
 #include "ui/gui-project.hpp"
 
 class QUrl;
+class SnapshotComponent;
 
 /**
  * This class creates the QmlEngine and starts the qml application.
@@ -225,6 +227,9 @@ class Ui : public QObject {
 
   /** A list of pointers to the GuiProjects. */
   std::vector<GuiProject*> _projects;
+
+  /** A shared pointer to a config json object. */
+  std::shared_ptr<SnapshotComponent> _snapshots;
 };
 
 #endif /* ERAGPSIM_UI_UI_HPP */

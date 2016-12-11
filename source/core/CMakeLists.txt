@@ -12,6 +12,7 @@ set(CORE_SOURCES
   memory.cpp
   scheduler.cpp
   condition-timer.cpp
+  snapshot.cpp
 )
 
 ########################################

@@ -142,7 +142,7 @@ class ParsingAndExecutionUnit : public Servant {
   void setSetErrorListCallback(ListCallback<CompileError> callback);
 
   /**
-   * Set the callback which is used to notify the gui of a runtime error.
+   * Set the callback which is used to notify the gui of an error.
    *
    * \param callback
    */

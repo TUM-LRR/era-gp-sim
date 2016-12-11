@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QTextDocument>
 #include <memory>
+#include <vector>
 
 #include "core/command-interface.hpp"
 #include "parser/syntax-information.hpp"
@@ -61,8 +62,10 @@ class EditorComponent : public QObject {
   /**
    * Invokes the parser with the current text of the editor.
    *
+   * \param force Set to true to force reparsing even if the code did not
+   * change. Defaults to false.
    */
-  Q_INVOKABLE void parse();
+  Q_INVOKABLE void parse(bool force = false);
 
   /**
    * Set the _textChanged flag to a value.
@@ -107,7 +110,7 @@ class EditorComponent : public QObject {
   /**
    * Returns the plain text of this editor.
    *
-   * \return Returns the text of this editor as a QString.
+   * \returns The text of this editor as a QString.
    */
   QString getText();
 

@@ -25,6 +25,16 @@ MenuBar {
     id: menubar
     property var main
 
+    function saveSnapshot(name) {
+      ui.saveSnapshot(tabView.currentIndex, name);
+    }
+
+    function actionSnapshot() {
+      main.textDialog.onAcceptedFunction = saveSnapshot;
+      main.textDialog.placeholderText = "name";
+      main.textDialog.open();
+    }
+
     function saveAs(filePath) {
       console.log("save path: " + filePath)
       ui.saveTextAs(tabView.currentIndex, filePath);
@@ -36,13 +46,18 @@ MenuBar {
       main.fileDialog.open();
     }
 
-    Menu{
+    Menu {
         id: fileMenu
         title: "File"
-        MenuItem{
+        MenuItem {
+          text: "New..."
+          onTriggered: {
+            main.createProject();
+          }
+        }
+        MenuItem {
             text: "Load Code..."
             function openTextFile(filePath) {
-              console.log("open path: " + filePath);
               ui.loadText(main.currentIndex, filePath);
             }
             onTriggered: {
@@ -51,42 +66,45 @@ MenuBar {
                 main.fileDialog.open();
             }
         }
-        MenuItem{
-            text: "New..."
-            onTriggered: {
-                main.createProject();
-            }
-        }
-        MenuItem{
+        MenuItem {
             text: "Save Code"
             onTriggered: {
                 ui.saveText(main.currentIndex);
             }
         }
-        MenuItem{
+        MenuItem {
             id: saveTextAs
             text: "Save Code as..."
             onTriggered: {
                 actionSaveAs();
             }
         }
-        MenuItem{
-            text: "Snapshot"
+        MenuItem {
+            text: "Import Snapshot"
+            function importSnapshot(name) {
+              var success = snapshotComponent.importSnapshot(name);
+            }
             onTriggered: {
-                console.info("Snapshot triggerd");
-                ui.snapshot("popup für name", tabView.currentIndex)
+              main.fileDialog.onAcceptedFunction = importSnapshot;
+              main.fileDialog.selectExisting = true;
+              main.fileDialog.open();
             }
         }
-        MenuItem{
+        MenuItem {
+          text: "Save Snapshot"
+          onTriggered: {
+            actionSnapshot();
+          }
+        }
+        MenuItem {
             text: "Close"
             onTriggered: {
-                console.info("Delete Triggerd");
                 main.closeProject();
             }
         }
     }
 
-    Menu{
+    Menu {
         title: "Settings"
         MenuItem{
             text: "Open"
@@ -97,7 +115,7 @@ MenuBar {
         }
     }
 
-    Menu{
+    Menu {
         title: "Help"
         MenuItem{
             text: "Open"

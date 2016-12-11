@@ -103,8 +103,8 @@ void EditorComponent::init(QQuickTextDocument *qDocument) {
                                                       _textDocument));
 }
 
-void EditorComponent::parse() {
-  if (_textChanged) {
+void EditorComponent::parse(bool force) {
+  if (_textChanged || force) {
     _commandInterface.parse(_textDocument->toPlainText().toStdString());
     _textChanged = false;
   }
