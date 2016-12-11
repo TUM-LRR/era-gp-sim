@@ -48,19 +48,17 @@ GuiProject::GuiProject(QQmlContext* context,
   context->setContextProperty("guiProject", this);
   // set the callback for memory and register
   _projectModule.getMemoryManager().setUpdateRegisterCallback(
-      [this](const std::string& name) {
+      [this](const auto& name) {
         emit registerChanged(QString::fromStdString(name));
       });
 
-  _projectModule.getMemoryManager().setUpdateMemoryCallback(
-      [this](std::size_t address, std::size_t length) {
-        emit memoryChanged(address, length);
-      });
+  _projectModule.getMemoryManager().setUpdateMemoryCallback([this](
+      auto address, auto length) { emit memoryChanged(address, length); });
 
-  _projectModule.getParserInterface().setThrowErrorCallback([this](
-      const std::string& message, const std::vector<std::string>& arguments) {
-    _throwError(message, arguments);
-  });
+  _projectModule.getParserInterface().setThrowErrorCallback(
+      [this](const auto& message, const auto& arguments) {
+        _throwError(message, arguments);
+      });
 
   // connect all receiving components to the callback signals
   QObject::connect(this,
@@ -128,30 +126,28 @@ void GuiProject::saveText() {
   }
 }
 
-void GuiProject::saveTextAs(QUrl path) {
-  QString qName = path.path();
+void GuiProject::saveTextAs(const QUrl& path) {
+  auto qName = path.path();
   _defaultTextFileSavePath = qName;
-  std::string name = qName.toStdString();
-  std::string text = _editorComponent.getText().toStdString();
+  auto name = qName.toStdString();
+  auto text = _editorComponent.getText().toStdString();
   try {
     Utility::storeToFile(name, text);
   } catch (const std::exception& exception) {
-    _throwError(std::string("Could not save file! ") + exception.what(),
-                std::vector<std::string>());
+    _throwError(std::string("Could not save file! ") + exception.what(), {});
   }
 }
 
-void GuiProject::loadText(QUrl path) {
-  QString qName = path.path();
-  std::string filePath = qName.toStdString();
+void GuiProject::loadText(const QUrl& path) {
+  auto qName = path.path();
+  auto filePath = qName.toStdString();
   std::string text;
   try {
     text = Utility::loadFromFile(filePath);
-    QString qText = QString::fromStdString(text);
+    auto qText = QString::fromStdString(text);
     _editorComponent.setText(qText);
   } catch (const std::exception& exception) {
-    _throwError(std::string("Could not load file!") + exception.what(),
-                std::vector<std::string>());
+    _throwError(std::string("Could not load file!") + exception.what(), {});
   }
 }
 
@@ -217,6 +213,6 @@ std::function<MemoryValue(std::string)> GuiProject::getFloatToMemoryValue() {
 
 void GuiProject::_throwError(const std::string& message,
                              const std::vector<std::string>& arguments) {
-  QString errorMessage = QString::fromStdString(message);
+  auto errorMessage = QString::fromStdString(message);
   emit error(errorMessage);
 }

@@ -40,13 +40,12 @@ MenuBar {
         id: fileMenu
         title: "File"
         MenuItem{
-            text: "Load Text..."
+            text: "Load Code..."
             function openTextFile(filePath) {
               console.log("open path: " + filePath);
               ui.loadText(main.currentIndex, filePath);
             }
             onTriggered: {
-                console.info("Open triggerd");
                 main.fileDialog.onAcceptedFunction = openTextFile;
                 main.fileDialog.selectExisting = true;
                 main.fileDialog.open();
@@ -55,22 +54,19 @@ MenuBar {
         MenuItem{
             text: "New..."
             onTriggered: {
-                console.info("New triggerd");
                 main.createProject();
             }
         }
         MenuItem{
-            text: "Save"
+            text: "Save Code"
             onTriggered: {
-                console.info("Save triggerd");
                 ui.saveText(main.currentIndex);
             }
         }
         MenuItem{
             id: saveTextAs
-            text: "Save as..."
+            text: "Save Code as..."
             onTriggered: {
-                console.info("Save as triggerd");
                 actionSaveAs();
             }
         }
