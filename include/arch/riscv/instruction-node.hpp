@@ -19,20 +19,25 @@
 #define ERAGPSIM_ARCH_RISCV_INSTRUCTION_NODE_HPP
 
 #include <initializer_list>
+#include <memory>
 #include <string>
 
 #include "arch/common/abstract-instruction-node.hpp"
 #include "arch/riscv/instruction-context-information.hpp"
 #include "arch/riscv/properties.hpp"
 #include "arch/riscv/utility.hpp"
-#include "core/conversions.hpp"
 #include "core/memory-value.hpp"
 
 namespace riscv {
-/** A node that represents a RISC V specific instruction */
+
+/**
+ * A node that represents a RISC V specific instruction
+ */
 class InstructionNode : public AbstractInstructionNode {
  public:
   using super = AbstractInstructionNode;
+  using InstructionContextInformationPointer =
+      std::shared_ptr<InstructionContextInformation>;
 
   /**
    * Constructs a new node that represents a RISC V specific instruction.
@@ -55,8 +60,8 @@ class InstructionNode : public AbstractInstructionNode {
    * \param documentation A pointer to the RISCV specific user documentation
    * collection
    */
-  void setDocumentation(
-      const std::shared_ptr<InstructionContextInformation>& documentation);
+  void
+  setDocumentation(const InstructionContextInformationPointer& documentation);
 
  protected:
   using TypeList = std::initializer_list<super::Type>;

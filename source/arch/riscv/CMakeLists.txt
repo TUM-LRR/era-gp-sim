@@ -7,7 +7,7 @@ set(ARCH_RISCV_SOURCES
   immediate-node-factory.cpp
   register-node-factory.cpp
   instruction-node-factory.cpp
-  formats.cpp
+  format.cpp
   factory-map.cpp
   data-node-factory.cpp
   documentation-builder.cpp

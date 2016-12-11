@@ -1,37 +1,38 @@
-#include <cassert>
+/* C++ Assembler Interpreter
+ * Copyright (C) 2016 Chair of Computer Architecture
+ * at Technical University of Munich
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
+
+
 #include <string>
+#include <vector>
 
 #include "arch/common/instruction-assembler.hpp"
 #include "arch/common/instruction-key.hpp"
 #include "arch/riscv/formats.hpp"
 #include "arch/riscv/instruction-node.hpp"
+#include "common/assert.hpp"
 
 namespace riscv {
 
-AssemblerFunction getAssemblerFromFormat(const std::string& format) {
-  AssemblerFunction assemblerFunction;
-  if (format == "R") {
-    assemblerFunction = RFormat();
-  } else if (format == "I") {
-    assemblerFunction = IFormat();
-  } else if (format == "S") {
-    assemblerFunction = SFormat();
-  } else if (format == "U") {
-    assemblerFunction = UFormat();
-  } else if (format == "SB") {
-    assemblerFunction = SBFormat();
-  } else if (format == "UJ") {
-    assemblerFunction = UJFormat();
-  } else {
-    assemblerFunction = RFormat();
-  }
-  return assemblerFunction;
+InstructionNode::InstructionNode(const InstructionInformation& information)
+: super(information) {
 }
 
-InstructionNode::InstructionNode(const InstructionInformation& information)
-    : super(information) {}
-
-bool InstructionNode::_requireChildren(Type type, size_t startIndex,
+bool InstructionNode::_requireChildren(Type type,
+                                       size_t startIndex,
                                        size_t amount) const {
   auto first = _children.begin();
   std::advance(first, startIndex);
@@ -58,28 +59,23 @@ bool InstructionNode::_compareChildTypes(TypeList list,
 }
 
 MemoryValue InstructionNode::assemble() const {
-  AssemblerFunction assembler;
-  auto& _information = getInstructionInformation();
-  InstructionKey instructionKey = _information.getKey();
-  const char* format = _information.getFormat().c_str();
-
-  assembler = getAssemblerFromFormat(format);
-
-  std::vector<MemoryValue> args;
-
-  for (int i = 0; i < _children.size(); i++) {
-    args.push_back(_children.at(i)->assemble());
+  Format::Arguments arguments;
+  for (const auto& child : _children) {
+    arguments.emplace_back(child.assemble());
   }
 
-  return assembler(instructionKey, args);
+  return Format::assemble(_information, arguments);
 }
 
 const Translateable& InstructionNode::getInstructionDocumentation() const {
-    assert::that(_documentation && _documentation->isContextInformationAvailable(getInstructionInformation().getMnemonic()));
-    return _documentation->getContextInformation(getInstructionInformation());
+  assert::that(_documentation &&
+               _documentation->isContextInformationAvailable(
+                   _information.getMnemonic()));
+  return _documentation->getContextInformation(getInstructionInformation());
 }
 
-void InstructionNode::setDocumentation(const std::shared_ptr<InstructionContextInformation> &documentation) {
-    _documentation = documentation;
+void InstructionNode::setDocumentation(
+    const InstructionContextInformationPointer& documentation) {
+  _documentation = documentation;
 }
 }

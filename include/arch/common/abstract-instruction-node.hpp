@@ -21,43 +21,44 @@
 #include "arch/common/instruction-information.hpp"
 #include "common/translateable.hpp"
 
-class AbstractInstructionNode : public AbstractSyntaxTreeNode
-{
-public:
-    /**
-     * Constructs a new node that represents a instruction.
-     *
-     * \param The information object associated with the instruction.
-     */
-    AbstractInstructionNode(const InstructionInformation& information);
+class AbstractInstructionNode : public AbstractSyntaxTreeNode {
+ public:
+  /**
+   * Constructs a new node that represents a instruction.
+   *
+   * \param The information object associated with the instruction.
+   */
+  AbstractInstructionNode(const InstructionInformation& information);
 
-    virtual ~AbstractInstructionNode() = default;
+  virtual ~AbstractInstructionNode() = default;
 
-    //to make this class abstract
-    /** \copydoc AbstractSyntaxTreeNode::getValue() */
-    virtual MemoryValue getValue(MemoryAccess &memoryAccess) const override = 0;
+  // to make this class abstract
+  /** \copydoc AbstractSyntaxTreeNode::getValue() */
+  virtual MemoryValue getValue(MemoryAccess& memoryAccess) const override = 0;
 
-    /** \copydoc AbstractSyntaxTreeNode::getIdentifier() */
-    const std::string& getIdentifier() const override;
+  /** \copydoc AbstractSyntaxTreeNode::getIdentifier() */
+  const std::string& getIdentifier() const override;
 
-    /**
-     * Returns a Translateable text containing any help text/instruction documentation about this instruction.
-     * Note that this member function should be independent from any children as it may be called for the user
-     * to display information how to define a valid instruction of this kind.
-     * \return A Translateable text containing information dedicated to the user about this instruction
-     */
-    virtual const Translateable& getInstructionDocumentation() const = 0;
+  /**
+   * Returns a Translateable text containing any help text/instruction
+   * documentation about this instruction.
+   * Note that this member function should be independent from any children as
+   * it may be called for the user
+   * to display information how to define a valid instruction of this kind.
+   * \return A Translateable text containing information dedicated to the user
+   * about this instruction
+   */
+  virtual const Translateable& getInstructionDocumentation() const = 0;
 
-protected:
+ protected:
+  /**
+   * Returns the InstructionInformation of this Instruction
+   */
+  const InstructionInformation& getInstructionInformation() const;
 
-    /**
-     * Returns the InstructionInformation of this Instruction
-     */
-    const InstructionInformation& getInstructionInformation() const;
-
-private:
-    /** The information object associated with the instruction. */
-    InstructionInformation _information;
+ private:
+  /** The information object associated with the instruction. */
+  InstructionInformation _information;
 };
 
-#endif // ERAGPSIM_ARCH_COMMON_ABSTRACT_INSTRUCTION_NODE_HPP
+#endif// ERAGPSIM_ARCH_COMMON_ABSTRACT_INSTRUCTION_NODE_HPP

@@ -25,6 +25,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <limits>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -500,8 +501,8 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
 }
 
 // push_back n elements from the end of the src vector
-void pushBackFromEnd(std::vector<bool>& dest,
-                     const std::vector<bool>& src,
+void pushBackFromEnd(std::vector<bool> &dest,
+                     const std::vector<bool> &src,
                      size_t n);
 
 
@@ -516,17 +517,75 @@ constexpr T discreteFloor(T value, T divider) {
   return value / divider;
 }
 
-template<typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
-  struct EnumHash {
-    using argument_type = Enum;
-    using result_type = std::size_t;
-    using underlying_type = std::underlying_type_t<Enum>;
+template <typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
+struct EnumHash {
+  using argument_type = Enum;
+  using result_type = std::size_t;
+  using underlying_type = std::underlying_type_t<Enum>;
 
-    result_type operator()(const argument_type& argument) const {
-      const auto ordinal = static_cast<underlying_type>(argument);
-      return std::hash<underlying_type>{}(ordinal);
-    }
-  };
+  result_type operator()(const argument_type &argument) const {
+    const auto ordinal = static_cast<underlying_type>(argument);
+    return std::hash<underlying_type>{}(ordinal);
+  }
+};
+
+/**
+ * Creates a mask of the given number of bits set.
+ *
+ * \tparam T the integral type the mask should have.
+ * \param numberOfBits The width the mask should have.
+ * \return A mask of `numberOfBits` exactly set (1) bits.
+ */
+template <typename T>
+constexpr T bitMask(std::size_t numberOfBits) noexcept {
+  return (static_cast<T>(1) << numberOfBits) - 1;
+}
+
+/**
+ * Appends N bits of the first argument to the given second argument.
+ *
+ * \tparam numerOfBits The number of bits to append.
+ * \param original The original value to append to.
+ * \param value The value whose bits to append.
+ * \return The result of the operation.
+ */
+template <std::size_t numberOfBits, typename T, typename U>
+constexpr T appendBits(const T &original, const U &value) noexcept {
+  constexpr auto mask = bitMask<U>(numberOfBits);
+
+  // clang-format off
+  static_assert(
+    numberOfBits <= std::numeric_limits<T>::digits,
+    "Attempting to append more bits than possible"
+  );
+  // clang-format on
+
+  // We left-shift the original value by x bits and OR in
+  // exactly x bits at the right end (least-significant) bits
+  return (original << numberOfBits) | (value & mask);
+}
+
+template <std::size_t firstBit, std::size_t lastBit, typename T>
+constexpr T sliceBits(const T &original) noexcept {
+  constexpr std::size_t numberOfBits = lastBit - firstBit + 1;
+
+  // clang-format off
+  static_assert(
+    numberOfBits <= std::numeric_limits<T>::digits,
+    "Attempting to append more bits than possible"
+  );
+  // clang-format on
+
+  constexpr auto mask = bitMask<T>(numberOfBits);
+
+  return (original & (mask << firstBit)) >> firstBit;
+}
+
+template <std::size_t firstBit, std::size_t lastBit, typename T, typename U>
+constexpr T appendBitSlice(const T &original, const U &value) {
+  constexpr auto slice = sliceBits<firstBit, lastBit>(value);
+  return appendBits<firstBit + lastBit + 1>(original, slice);
+}
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */
