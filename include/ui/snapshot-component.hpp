@@ -93,6 +93,11 @@ class SnapshotComponent : public QObject {
   Q_INVOKABLE void importSnapshot(const QUrl& qPath);
 
   /**
+   * \returns the path of the snapshot directory.
+   */
+  Q_INVOKABLE QUrl getSnapshotBasePath();
+
+  /**
   * Creates a string representation of the architecture formula.
   *
   * \param formula An architecture formula.

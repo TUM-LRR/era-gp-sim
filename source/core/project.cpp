@@ -167,19 +167,19 @@ void Project::resetRegisters() {
 void Project::loadSnapshot(const Json &snapshotData) {
   Snapshot snapshot(snapshotData);
   if (!snapshot.isValid()) {
-    _errorCallback("Snapshot format is not valid", std::vector<std::string>());
+    _errorCallback("Snapshot format is not valid.", {});
     return;
   }
   if (snapshot.getArchitectureFormula() != _architectureFormula) {
-    _errorCallback("This snapshot was created with a different architecture!",
-                   std::vector<std::string>());
+    _errorCallback("This snapshot was created with a different architecture.",
+                   {});
     return;
   }
   try {
     _memory.deserializeJSON(snapshot.getMemoryJson());
     _registerSet.deserializeJSON(snapshot.getRegisterJson());
   } catch (const DeserializationError &exception) {
-    _errorCallback(exception.what(), std::vector<std::string>());
+    _errorCallback(exception.what(), {});
   }
 }
 

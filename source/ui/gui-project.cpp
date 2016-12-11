@@ -70,7 +70,7 @@ GuiProject::GuiProject(
 
   _projectModule.getMemoryManager().setErrorCallback(
       [this](const auto& message, const auto& arguments) {
-        _throwError(message, arguments);
+        this->_throwError(message, arguments);
       });
 
   // connect all receiving components to the callback signals
@@ -172,7 +172,7 @@ void GuiProject::saveSnapshot(const QString& qName) {
   } catch (const std::exception& exception) {
     _throwError(
         std::string("Could not write snapshot to disk! ") + exception.what(),
-        std::vector<std::string>());
+        {});
   }
 }
 
@@ -190,7 +190,7 @@ void GuiProject::loadSnapshot(const QString& qName) {
   } catch (const std::exception& exception) {
     _throwError(
         std::string("Could not load snapshot from file! ") + exception.what(),
-        std::vector<std::string>());
+        {});
   }
 }
 

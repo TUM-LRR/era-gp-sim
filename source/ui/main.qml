@@ -151,13 +151,28 @@ ApplicationWindow {
     // Dialog to input text
     Dialog {
       id: textDialog
+      title: "Save snapshot"
       standardButtons: StandardButton.Cancel;
       property var onAcceptedFunction
       property alias placeholderText: textField.placeholderText
-
+      Text {
+        id: description
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        wrapMode: Text.WordWrap
+        textFormat: Text.StyledText
+        text: "<p>Save a snapshot of the current register and memory state to disk. " +
+         "Your snapshot files can be found here:</p> " +
+         "<a href=\"" + snapshotComponent.getSnapshotBasePath().toString() + "\">" +
+         snapshotComponent.getSnapshotBasePath().toString() + "</a>"
+         onLinkActivated: Qt.openUrlExternally(snapshotComponent.getSnapshotBasePath())
+      }
       TextField {
         id: textField
-
+        anchors.topMargin: 10
+        anchors.top: description.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
         onTextChanged: {
           if(text == "") {
            textDialog.standardButtons = StandardButton.Cancel;

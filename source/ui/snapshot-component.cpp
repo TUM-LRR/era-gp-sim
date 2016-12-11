@@ -109,6 +109,10 @@ void SnapshotComponent::importSnapshot(const QUrl& qPath) {
   }
 }
 
+QUrl SnapshotComponent::getSnapshotBasePath() {
+  return QUrl::fromLocalFile(_baseDirectory.absolutePath());
+}
+
 QString
 SnapshotComponent::architectureToString(const ArchitectureFormula& formula) {
   auto underlying = formula.getUnderlying();
