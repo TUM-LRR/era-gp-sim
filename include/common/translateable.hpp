@@ -79,8 +79,6 @@ class Translateable {
 
   Translateable(const Translateable& copy) = default;
 
-  Translateable(Translateable&& move) = default;
-
   template <typename... Args>
   Translateable(const char* base, Args&&... arguments)
       : _baseString(base),

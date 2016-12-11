@@ -18,21 +18,9 @@
 */
 
 #include "arch/common/validation-result.hpp"
-#include <cassert>
 
 const ValidationResult ValidationResult::success() {
-  return ValidationResult{true, "", {}};
-}
-
-const ValidationResult ValidationResult::fail(const std::string& message) {
-  return fail(message, {});
-}
-
-const ValidationResult
-ValidationResult::fail(const std::string& message,
-                       std::initializer_list<std::string> arguments) {
-  assert(message != "");
-  return ValidationResult{false, message, arguments};
+  return ValidationResult{true};
 }
 
 bool ValidationResult::isSuccess() const {
@@ -43,20 +31,6 @@ ValidationResult::operator bool() const {
   return _success;
 }
 
-const std::string& ValidationResult::getMessage() const {
+const Translateable &ValidationResult::getMessage() const {
   return _message;
-}
-
-const std::vector<std::string>& ValidationResult::getArguments() const {
-  return _arguments;
-}
-
-ValidationResult::ValidationResult(bool success,
-                                   const std::string& message,
-                                   std::initializer_list<std::string> arguments)
-: _success(success), _message(message), _arguments(arguments) {
-}
-
-void ValidationResult::addArguments(const std::string& argument) {
-  _arguments.push_back(argument);
 }

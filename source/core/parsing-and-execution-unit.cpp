@@ -228,7 +228,7 @@ bool ParsingAndExecutionUnit::_executeNode(size_t nodeIndex) {
   auto validationResult = currentCommand.node->validateRuntime(_memoryAccess);
   if (!validationResult.isSuccess()) {
     // notify the ui of a runtime error
-    _throwError(validationResult.getMessage(), validationResult.getArguments());
+      _throwError(validationResult.getMessage().getBaseString(), {});
     return false;
   }
   // update the current line in the ui (pre-execution)
