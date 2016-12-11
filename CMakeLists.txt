@@ -36,6 +36,11 @@ find_package(Qt5Quick REQUIRED)
 
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
+add_definitions(${Qt5Widgets_DEFINITIONS})
+
+# Add compiler flags for building executables (-fPIE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+
 ########################################
 # INCLUDES
 ########################################
