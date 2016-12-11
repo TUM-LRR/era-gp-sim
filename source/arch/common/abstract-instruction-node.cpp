@@ -18,13 +18,9 @@
 
 AbstractInstructionNode::AbstractInstructionNode(
     const InstructionInformation& info)
-    : AbstractSyntaxTreeNode(Type::INSTRUCTION), _information(info) {}
+: AbstractSyntaxTreeNode(Type::INSTRUCTION), _information(info) {
+}
 
 const std::string& AbstractInstructionNode::getIdentifier() const {
   return _information.getMnemonic();
-}
-
-const InstructionInformation&
-AbstractInstructionNode::getInstructionInformation() const {
-  return _information;
 }
