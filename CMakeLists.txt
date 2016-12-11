@@ -34,7 +34,7 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Qml REQUIRED)
 find_package(Qt5Quick REQUIRED)
 
-include_directories(/usr/local/opt/qt5/include/)
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
 ########################################
 # INCLUDES
