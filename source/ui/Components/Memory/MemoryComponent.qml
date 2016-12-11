@@ -20,6 +20,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
+import QtGraphicalEffects 1.0
 
 Item {
     //property int number_bits: numericRepresentationChooser.items.get(numericRepresentationChooser.currentIndex).bits;
@@ -209,16 +210,37 @@ Item {
                 }
             }
         }
-
-        Button {
-            anchors.right: parent.right
-            width: 25
+        Rectangle {
+            id: buttonFadeOut
+            width: 50
             height: 25
-            text: "+"
+            anchors.right: parent.right
+            color: "transparent"
+            LinearGradient{
+                anchors.fill: parent
+                        start: Qt.point(0, 0)
+                        end: Qt.point(parent.width, 0)
 
-            onClicked: {
-                tableView.insertColumn( tableView.columnCount - 1, column);
-                //tableView.horizontalScrollBarPolicy = Qt.ScrollBarAlwaysOff;
+            gradient: Gradient {
+                    GradientStop { position: 0.0; color: "#00000000" }
+                    GradientStop { position: 0.4; color: "white" }
+                }
+            }
+
+            Button {
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.rightMargin: 1
+                anchors.topMargin: 1
+                anchors.bottomMargin: 1
+                width: 25
+
+                text: "+"
+
+                onClicked: {
+                    tableView.insertColumn( tableView.columnCount - 1, column);
+                }
             }
         }
     }
