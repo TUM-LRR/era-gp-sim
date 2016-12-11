@@ -23,6 +23,6 @@
 void CompileState::registerMacro(MacroDirective& macro) {
   bool success = macros.insert(macro);
   if (!success) {
-    addError("Macro \"" + macro.macroName() + "\" already exists!");
+      addErrorHereT("Macro \"%1\" already exists!", macro.macroName())
   }
 }

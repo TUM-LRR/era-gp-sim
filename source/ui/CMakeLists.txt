@@ -10,6 +10,9 @@ set(UI_SOURCES
     memory-component-presenter.cpp
     ui.cpp
     gui-project.cpp
+    snapshot-component.cpp
+    output-component.cpp
+    translateable-processing.cpp
 )
 
 set(UI_HEADERS
@@ -19,6 +22,8 @@ set(UI_HEADERS
     ../../include/ui/editor-component.hpp
     ../../include/ui/memory-component-presenter.hpp
     ../../include/ui/ui.hpp
+    ../../include/ui/snapshot-component.hpp
+    ../../include/ui/output-component.hpp
 )
 
 
@@ -26,11 +31,25 @@ set(UI_HEADERS
 # EXECUTABLE
 ########################################
 
-qt5_add_resources(UI_RESOURCES qml.qrc)
-qt5_wrap_cpp(UI_HEADERS_WRAPPED ${UI_HEADERS})
+if (ERA_GP_SIM_BUILD_GUI)
+  qt5_add_resources(UI_RESOURCES qml.qrc)
+  qt5_wrap_cpp(UI_HEADERS_WRAPPED ${UI_HEADERS})
 
-add_executable(gui ${UI_SOURCES} ${UI_RESOURCES} ${UI_HEADERS_WRAPPED})
+  add_executable(
+    era-sim
+    ${UI_SOURCES}
+    ${UI_RESOURCES}
+    ${UI_HEADERS_WRAPPED}
+  )
+  target_link_libraries(era-sim era-sim-core)
 
-target_link_libraries(gui era-sim-core)
+  qt5_use_modules(era-sim Widgets Qml Quick)
 
-qt5_use_modules(gui Widgets Qml Quick)
+  # Copy the binary to the build/bin folder
+  add_custom_command(TARGET era-sim
+          POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy
+          ${CMAKE_CURRENT_BINARY_DIR}/era-sim
+          ${CMAKE_BINARY_DIR}/bin
+  )
+endif()

@@ -15,6 +15,7 @@ set(TEST_ARCH_RISCV_SOURCES
   register-test.cpp
   assemble-test.cpp
   simulator-instructions-test.cpp
+  pseudo-instruction-test.cpp
   context-information-test.cpp
 )
 
@@ -22,10 +23,11 @@ set(TEST_ARCH_RISCV_SOURCES
 # TARGET
 ########################################
 
-add_executable(era-sim-arch-riscv-tests ${TEST_ARCH_RISCV_SOURCES})
+if (ERA_GP_SIM_BUILD_ARCH)
+  add_executable(era-sim-arch-riscv-tests ${TEST_ARCH_RISCV_SOURCES})
 
+  target_link_libraries(era-sim-arch-riscv-tests era-sim-arch-riscv)
+  target_link_libraries(era-sim-arch-riscv-tests gtest gtest_main)
 
-target_link_libraries(era-sim-arch-riscv-tests era-sim-arch-riscv)
-target_link_libraries(era-sim-arch-riscv-tests gtest gtest_main)
-
-add_test(era-sim-arch-riscv-tests era-sim-arch-riscv-tests)
+  add_test(era-sim-arch-riscv-tests era-sim-arch-riscv-tests)
+endif()

@@ -17,21 +17,42 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <string>
+
 #include "parser/constant-directive.hpp"
+#include "parser/symbol-table.hpp"
+#include "parser/syntax-tree-generator.hpp"
 
 void ConstantDirective::execute(FinalRepresentation& finalRepresentator,
                                 const SymbolTable& table,
                                 const SyntaxTreeGenerator& generator,
-                                CompileState& state, MemoryAccess &memoryAccess) {
+                                CompileState& state,
+                                MemoryAccess& memoryAccess) {
   // Try to parse argument to catch errors early.
   std::string fullExpression = table.replaceSymbols(expression, state);
-  generator.transformOperand(fullExpression, state);
+  if (!fullExpression.empty()) {
+    generator.transformOperand(fullExpression, state);
+  } else {
+    // better error messages:
+    // 0 arguments -> this argument should be the name
+    // 1 argument -> this argument should be the value
+    //>1 arguments -> too many
+    switch (_arguments.size()) {
+      case 0: state.addErrorHereT("Missing constant name"); break;
+      case 1: state.addErrorHereT("Missing constant value"); break;
+      default:
+        state.addErrorHereT(
+            "Malformed constant directive, too many operands provided");
+        break;
+    }
+  }
 }
 
-void ConstantDirective::enhanceSymbolTable(SymbolTable& table, const MemoryAllocator &allocator,
+void ConstantDirective::enhanceSymbolTable(SymbolTable& table,
+                                           const MemoryAllocator& allocator,
                                            CompileState& state) {
   if (_arguments.size() != 2) {
-    state.addError("Malformed constant directive", state.position);
+    state.addErrorHereT("Malformed constant directive");
     return;
   }
   expression = "(" + _arguments[1] + ")";

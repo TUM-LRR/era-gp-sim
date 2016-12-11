@@ -1,365 +1,369 @@
 {
+    "extends": "rv32i",
     "units": [
         {
+            "name": "cpu",
             "registers": [
                 {
-                    "id": 0, 
-                    "alias": "zero", 
-                    "constant": "0x0", 
-                    "name": "x0", 
+                    "name": "x0",
+                    "alias": "zero",
+                    "constant": "0x0",
+                    "id": 0,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 1, 
-                    "name": "x1", 
+                    "name": "x1",
+                    "id": 1,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 2, 
-                    "name": "x2", 
+                    "name": "x2",
+                    "id": 2,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 3, 
-                    "name": "x3", 
+                    "name": "x3",
+                    "id": 3,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 4, 
-                    "name": "x4", 
+                    "name": "x4",
+                    "id": 4,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 5, 
-                    "name": "x5", 
+                    "name": "x5",
+                    "id": 5,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 6, 
-                    "name": "x6", 
+                    "name": "x6",
+                    "id": 6,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 7, 
-                    "name": "x7", 
+                    "name": "x7",
+                    "id": 7,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 8, 
-                    "name": "x8", 
+                    "name": "x8",
+                    "id": 8,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 9, 
-                    "name": "x9", 
+                    "name": "x9",
+                    "id": 9,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 10, 
-                    "name": "x10", 
+                    "name": "x10",
+                    "id": 10,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 11, 
-                    "name": "x11", 
+                    "name": "x11",
+                    "id": 11,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 12, 
-                    "name": "x12", 
+                    "name": "x12",
+                    "id": 12,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 13, 
-                    "name": "x13", 
+                    "name": "x13",
+                    "id": 13,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 14, 
-                    "name": "x14", 
+                    "name": "x14",
+                    "id": 14,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 15, 
-                    "name": "x15", 
+                    "name": "x15",
+                    "id": 15,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 16, 
-                    "name": "x16", 
+                    "name": "x16",
+                    "id": 16,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 17, 
-                    "name": "x17", 
+                    "name": "x17",
+                    "id": 17,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 18, 
-                    "name": "x18", 
+                    "name": "x18",
+                    "id": 18,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 19, 
-                    "name": "x19", 
+                    "name": "x19",
+                    "id": 19,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 20, 
-                    "name": "x20", 
+                    "name": "x20",
+                    "id": 20,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 21, 
-                    "name": "x21", 
+                    "name": "x21",
+                    "id": 21,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 22, 
-                    "name": "x22", 
+                    "name": "x22",
+                    "id": 22,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 23, 
-                    "name": "x23", 
+                    "name": "x23",
+                    "id": 23,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 24, 
-                    "name": "x24", 
+                    "name": "x24",
+                    "id": 24,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 25, 
-                    "name": "x25", 
+                    "name": "x25",
+                    "id": 25,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 26, 
-                    "name": "x26", 
+                    "name": "x26",
+                    "id": 26,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 27, 
-                    "name": "x27", 
+                    "name": "x27",
+                    "id": 27,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 28, 
-                    "name": "x28", 
+                    "name": "x28",
+                    "id": 28,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 29, 
-                    "name": "x29", 
+                    "name": "x29",
+                    "id": 29,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 30, 
-                    "name": "x30", 
+                    "name": "x30",
+                    "id": 30,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 31, 
-                    "name": "x31", 
+                    "name": "x31",
+                    "id": 31,
                     "size": 64
-                }, 
+                },
                 {
-                    "id": 32, 
-                    "type": "program-counter", 
-                    "name": "pc", 
+                    "id": 32,
+                    "name": "pc",
+                    "type": "program-counter",
                     "size": 64
                 }
-            ], 
-            "name": "cpu"
+            ]
         }
-    ], 
-    "word-size": 64, 
-    "extends": "rv32i", 
-    "name": "rv64i", 
-    "reset-units": true, 
-    "byte-size": 8, 
+    ],
+    "builtin-macros": [
+        ".macro ldg, rd, symbol\nauipc \\rd, ((\\symbol >> 12) & 0xfffff)\nld \\rd, \\rd, (\\symbol & 0xfff)\n.endm\n",
+        ".macro negw, rd, rs\nsubw \\rd, x0, \\rs\n.endm\n",
+        ".macro sext.w, rd, rs\naddiw \\rd, \\rs, 0\n.endm\n"
+    ],
+    "word-size": 64,
+    "reset-units": true,
+    "name": "rv64i",
     "instructions": [
         {
-            "mnemonic": "lwu", 
-            "length": 32, 
-            "operand length": [
-                0, 
-                0, 
-                12
-            ], 
             "key": {
-                "funct3": 6, 
+                "funct3": 6,
                 "opcode": 3
-            }, 
-            "format": "I"
-        }, 
-        {
-            "mnemonic": "ld", 
-            "length": 32, 
+            },
+            "format": "I",
+            "length": 32,
             "operand length": [
-                0, 
-                0, 
+                0,
+                0,
                 12
-            ], 
+            ],
+            "mnemonic": "lwu"
+        },
+        {
             "key": {
-                "funct3": 3, 
+                "funct3": 3,
                 "opcode": 3
-            }, 
-            "format": "I"
-        }, 
-        {
-            "mnemonic": "sd", 
-            "length": 32, 
+            },
+            "format": "I",
+            "length": 32,
             "operand length": [
-                0, 
-                0, 
+                0,
+                0,
                 12
-            ], 
+            ],
+            "mnemonic": "ld"
+        },
+        {
             "key": {
-                "funct3": 3, 
+                "funct3": 3,
                 "opcode": 35
-            }, 
-            "format": "S"
-        }, 
-        {
-            "mnemonic": "slli", 
-            "length": 32, 
+            },
+            "format": "S",
+            "length": 32,
             "operand length": [
-                0, 
-                0, 
+                0,
+                0,
                 12
-            ], 
-            "key": {
-                "funct3": 1, 
-                "opcode": 19, 
-                "funct7": 0
-            }, 
-            "format": "R"
-        }, 
+            ],
+            "mnemonic": "sd"
+        },
         {
-            "mnemonic": "srai", 
-            "length": 32, 
-            "operand length": [
-                0, 
-                0, 
-                12
-            ], 
             "key": {
-                "funct3": 5, 
-                "opcode": 19, 
-                "funct7": 1
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 0,
+                "funct3": 1,
+                "opcode": 19
+            },
+            "format": "R",
+            "length": 32,
+            "operand length": [
+                0,
+                0,
+                12
+            ],
+            "mnemonic": "slli"
+        },
         {
-            "mnemonic": "addiw", 
-            "length": 32, 
-            "operand length": [
-                0, 
-                0, 
-                12
-            ], 
             "key": {
-                "funct3": 0, 
+                "funct7": 1,
+                "funct3": 5,
+                "opcode": 19
+            },
+            "format": "R",
+            "length": 32,
+            "operand length": [
+                0,
+                0,
+                12
+            ],
+            "mnemonic": "srai"
+        },
+        {
+            "key": {
+                "funct3": 0,
                 "opcode": 27
-            }, 
-            "format": "I"
-        }, 
-        {
-            "mnemonic": "slliw", 
-            "length": 32, 
+            },
+            "format": "I",
+            "length": 32,
             "operand length": [
-                0, 
-                0, 
+                0,
+                0,
                 12
-            ], 
-            "key": {
-                "funct3": 1, 
-                "opcode": 27, 
-                "funct7": 0
-            }, 
-            "format": "R"
-        }, 
+            ],
+            "mnemonic": "addiw"
+        },
         {
-            "mnemonic": "srliw", 
-            "length": 32, 
+            "key": {
+                "funct7": 0,
+                "funct3": 1,
+                "opcode": 27
+            },
+            "format": "R",
+            "length": 32,
             "operand length": [
-                0, 
-                0, 
+                0,
+                0,
                 12
-            ], 
-            "key": {
-                "funct3": 5, 
-                "opcode": 27, 
-                "funct7": 0
-            }, 
-            "format": "R"
-        }, 
+            ],
+            "mnemonic": "slliw"
+        },
         {
-            "mnemonic": "sraiw", 
-            "length": 32, 
+            "key": {
+                "funct7": 0,
+                "funct3": 5,
+                "opcode": 27
+            },
+            "format": "R",
+            "length": 32,
             "operand length": [
-                0, 
-                0, 
+                0,
+                0,
                 12
-            ], 
-            "key": {
-                "funct3": 5, 
-                "opcode": 27, 
-                "funct7": 32
-            }, 
-            "format": "R"
-        }, 
+            ],
+            "mnemonic": "srliw"
+        },
         {
-            "mnemonic": "addw", 
-            "length": 32, 
             "key": {
-                "funct3": 0, 
-                "opcode": 59, 
-                "funct7": 0
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 32,
+                "funct3": 5,
+                "opcode": 27
+            },
+            "format": "R",
+            "length": 32,
+            "operand length": [
+                0,
+                0,
+                12
+            ],
+            "mnemonic": "sraiw"
+        },
         {
-            "mnemonic": "subw", 
-            "length": 32, 
             "key": {
-                "funct3": 0, 
-                "opcode": 59, 
-                "funct7": 32
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 0,
+                "funct3": 0,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "addw"
+        },
         {
-            "mnemonic": "sllw", 
-            "length": 32, 
             "key": {
-                "funct3": 1, 
-                "opcode": 59, 
-                "funct7": 0
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 32,
+                "funct3": 0,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "subw"
+        },
         {
-            "mnemonic": "srlw", 
-            "length": 32, 
             "key": {
-                "funct3": 5, 
-                "opcode": 59, 
-                "funct7": 0
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 0,
+                "funct3": 1,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "sllw"
+        },
         {
-            "mnemonic": "sraw", 
-            "length": 32, 
             "key": {
-                "funct3": 5, 
-                "opcode": 59, 
-                "funct7": 32
-            }, 
-            "format": "R"
+                "funct7": 0,
+                "funct3": 5,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "srlw"
+        },
+        {
+            "key": {
+                "funct7": 32,
+                "funct3": 5,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "sraw"
         }
     ]
 }

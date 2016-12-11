@@ -16,12 +16,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+#include <vector>
+
 #include "arch/common/architecture.hpp"
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
+#include "parser/final-representation.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/macro-directive.hpp"
+#include "parser/symbol-table.hpp"
+#include "parser/syntax-tree-generator.hpp"
+
+IntermediateInstruction::IntermediateInstruction(
+    const LineInterval& lines, const std::vector<std::string>& labels,
+    const std::string& name, const std::vector<std::string>& sources,
+    const std::vector<std::string>& targets)
+    : IntermediateOperation(lines, labels, name),
+      _sources(sources),
+      _targets(targets) {}
 
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       const SymbolTable& table,
@@ -36,18 +50,14 @@ void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
 
 std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
 IntermediateInstruction::compileArgumentVector(
-    const std::vector<std::string>& vector,
-    const SymbolTable& table,
-    const SyntaxTreeGenerator& generator,
-    CompileState& state) {
+    const std::vector<std::string>& vector, const SymbolTable& table,
+    const SyntaxTreeGenerator& generator, CompileState& state) {
   // First of all, we insert all constants. Then, we convert every single one of
   // them to a syntax tree node.
   std::vector<std::string> cpy(vector);
   table.replaceSymbols(
-      cpy,
-      state,
-      [&, generator](const std::string& replace,
-                     SymbolTable::SymbolType type) -> std::string {
+      cpy, state, [&, generator](const std::string& replace,
+                                 SymbolTable::SymbolType type) -> std::string {
         // When inserting a label, we might transform its value into a relative
         // one (depends on the instruction)
         // We use NodeFactoryCollection::labelToImmediate which translates the
@@ -60,8 +70,8 @@ IntermediateInstruction::compileArgumentVector(
           MemoryValue instructionAdress = conversions::convert<size_t>(
               _relativeAddress.offset, sizeof(size_t) * 8);
           MemoryValue relativeAdress =
-              generator.getNodeFactories().labelToImmediate(
-                  labelValue, _name, instructionAdress);
+              generator.getNodeFactories().labelToImmediate(labelValue, _name,
+                                                            instructionAdress);
           return relativeAdress.toHexString(true, true);
         }
       });
@@ -81,10 +91,8 @@ IntermediateInstruction::compileArgumentVector(
 }
 
 FinalCommand IntermediateInstruction::compileInstruction(
-    const SymbolTable& table,
-    const SyntaxTreeGenerator& generator,
-    CompileState& state,
-    MemoryAccess& memoryAccess) {
+    const SymbolTable& table, const SyntaxTreeGenerator& generator,
+    CompileState& state, MemoryAccess& memoryAccess) {
   // We replace all occurenced in target in source (using a copy of them).
   auto srcCompiled = compileArgumentVector(_sources, table, generator, state);
   auto trgCompiled = compileArgumentVector(_targets, table, generator, state);
@@ -96,6 +104,8 @@ FinalCommand IntermediateInstruction::compileInstruction(
   return result;
 }
 
+MemoryAddress IntermediateInstruction::address() const { return _address; }
+
 void IntermediateInstruction::enhanceSymbolTable(
     SymbolTable& table, const MemoryAllocator& allocator, CompileState& state) {
   if (_relativeAddress.valid()) {
@@ -106,8 +116,8 @@ void IntermediateInstruction::enhanceSymbolTable(
 
   // We insert all our labels.
   for (const auto& i : _labels) {
-    table.insertEntry(
-        i, std::to_string(_address), state, SymbolTable::SymbolType::LABEL);
+    table.insertEntry(i, std::to_string(_address), state,
+                      SymbolTable::SymbolType::LABEL);
   }
 }
 
@@ -115,7 +125,8 @@ void IntermediateInstruction::allocateMemory(const Architecture& architecture,
                                              MemoryAllocator& allocator,
                                              CompileState& state) {
   if (state.section != "text") {
-    state.addError("Tried to define an instruction in not the text section.");
+    state.addErrorHereT(
+        "Tried to define an instruction in not the text section.");
     return;
   }
 
@@ -139,8 +150,7 @@ static bool isWordCharacter(char c) {
 }
 
 static void replaceInVector(std::vector<std::string>& vector,
-                            const std::string& name,
-                            const std::string& value) {
+                            const std::string& name, const std::string& value) {
   std::string search = '\\' + name;
   for (int i = 0; i < vector.size(); i++) {
     std::string& str{vector[i]};
@@ -165,4 +175,16 @@ void IntermediateInstruction::insertIntoArguments(const std::string& name,
                                                   const std::string& value) {
   replaceInVector(_sources, name, value);
   replaceInVector(_targets, name, value);
+}
+
+IntermediateOperationPointer IntermediateInstruction::clone() {
+  return IntermediateOperationPointer{new IntermediateInstruction{*this}};
+}
+
+std::vector<std::string> IntermediateInstruction::getArgsVector() const {
+  std::vector<std::string> args;
+  args.reserve(_sources.size() + _targets.size());
+  args.insert(args.end(), _targets.begin(), _targets.end());
+  args.insert(args.end(), _sources.begin(), _sources.end());
+  return args;
 }

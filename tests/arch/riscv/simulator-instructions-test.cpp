@@ -35,10 +35,9 @@ TEST_F(SimulatorInstructionTest, SIMUCRASH) {
   // test runtime behaviour
   ValidationResult result = instr->validateRuntime(memoryAccess);
   ASSERT_FALSE(result.isSuccess());
-  std::string msg = result.getMessage();
-  for (auto& argument : result.getArguments()) {
-    msg += argument;  // it is not relevant for this text, if the arguments are
-                      // inserted properly. They just need to exist
+  std::string msg = result.getMessage().getBaseString();
+  for(auto& opPtr : result.getMessage().getOperands()) {
+      msg+=opPtr->getBaseString();//no real replacement neccessary
   }
   // check that the custom error message is somewhere in the runtime message
   ASSERT_TRUE(msg.find(customErrorMsg) != std::string::npos);

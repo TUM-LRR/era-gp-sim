@@ -448,9 +448,8 @@ std::string loadFromFile(const std::string &filePath);
 template <typename Data>
 void storeToFile(const std::string &filePath, Data &&data) {
   std::ofstream file(filePath);
-  assert::that(static_cast<bool>(file));
+  file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
   file << std::forward<Data>(data);
-  assert::that(static_cast<bool>(file));
 }
 
 template <typename T>
@@ -500,22 +499,17 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
   return binary;
 }
 
-// push_back n elements from the end of the src vector
-void pushBackFromEnd(std::vector<bool> &dest,
-                     const std::vector<bool> &src,
-                     size_t n);
-
-
-template <typename T>
-constexpr T discreteCeiling(T value, T divider) {
+template <typename T, typename S = T>
+constexpr T divideCeiling(const T &value, const S &divider) {
   return (value + divider - 1) / divider;
 }
 
 // Only for completeness.
-template <typename T>
-constexpr T discreteFloor(T value, T divider) {
+template <typename T, typename S = T>
+constexpr T divideFloor(const T &value, const S &divider) {
   return value / divider;
 }
+
 
 template <typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
 struct EnumHash {

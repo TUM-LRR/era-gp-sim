@@ -115,11 +115,15 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
     auto destination = _children[0]->getIdentifier();
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
 
+    // Perform the jump. The return value of _jump() is the new program
+    // counter. This has to be done before the return address is written
+    // into the destination register, to allow jumps that use the same
+    // register as base/destination register like jalr x1,x1,0
+    auto result = _jump(programCounter, memoryAccess);
+
     // Store the return address (pc + 4) in the destination register
     riscv::storeRegister<UnsignedWord>(
         memoryAccess, destination, programCounter + 4);
-
-    auto result = _jump(programCounter, memoryAccess);
 
     return riscv::convert<UnsignedWord>(result);
   }
@@ -196,7 +200,8 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    *
    * \return A `ValidationResult` indicating the result of the check.
    */
-  virtual ValidationResult _validateOffset(MemoryAccess& memoryAccess) const = 0;
+  virtual ValidationResult
+  _validateOffset(MemoryAccess& memoryAccess) const = 0;
 
   /**
    * Validates the program counter that would resulting from the instruction.

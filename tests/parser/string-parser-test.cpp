@@ -29,7 +29,7 @@ void doTestInternal(const std::basic_string<CharTypeIn>& provided,
   bool result = StringParser::parseString(provided, output, state);
   if (succeed) {
     for (const auto& i : state.errorList) {
-      std::cout << i.message() << std::endl;
+      std::cout << i.message().getBaseString() << std::endl;
     }
     ASSERT_EQ(expected,
               std::basic_string<CharTypeOut>(output.begin(), output.end()));

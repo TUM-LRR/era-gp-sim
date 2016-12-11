@@ -47,10 +47,10 @@ class ArchitectureFormula;
  */
 class Architecture : public BuilderInterface {
  public:
-  using Endianness        = ArchitectureProperties::Endianness;
+  using Endianness = ArchitectureProperties::Endianness;
   using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
-  using word_size_t       = ArchitectureProperties::word_size_t;
-  using byte_size_t       = ArchitectureProperties::byte_size_t;
+  using word_size_t = ArchitectureProperties::word_size_t;
+  using byte_size_t = ArchitectureProperties::byte_size_t;
 
   /**
    * Brews an architecture given a formula.
@@ -193,6 +193,12 @@ class Architecture : public BuilderInterface {
    * an extension and validated by calling `validate()`. This is asserted!
    */
   const InstructionSet& getInstructions() const;
+
+  /**
+   * Returns a string of concatenated macro definitions. If none of them exist,
+   * the string is empty.
+   */
+  const std::string& getBuiltinMacros() const;
 
   /**
    * Sets the architecture's node factory collection.
