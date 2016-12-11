@@ -49,15 +49,17 @@ GuiProject::GuiProject(QQmlContext* context,
   // set the callback for memory and register
   _projectModule.getMemoryManager().setUpdateRegisterCallback(
       [this](const auto& name) {
-        emit registerChanged(QString::fromStdString(name));
+        emit this->registerChanged(QString::fromStdString(name));
       });
 
-  _projectModule.getMemoryManager().setUpdateMemoryCallback([this](
-      auto address, auto length) { emit memoryChanged(address, length); });
+  _projectModule.getMemoryManager().setUpdateMemoryCallback(
+      [this](auto address, auto length) {
+        emit this->memoryChanged(address, length);
+      });
 
   _projectModule.getParserInterface().setThrowErrorCallback(
       [this](const auto& message, const auto& arguments) {
-        _throwError(message, arguments);
+        this->_throwError(message, arguments);
       });
 
   // connect all receiving components to the callback signals
