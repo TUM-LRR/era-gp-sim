@@ -38,7 +38,8 @@ void SymbolTable::clearTable() {
 
 void SymbolTable::insertEntry(const std::string& name,
                               const std::string& replacement,
-                              CompileState& state, SymbolType type) {
+                              CompileState& state,
+                              SymbolType type) {
   // Note: this method seems to be really slow. I feel like it is the regexes...
   // We could check them by hand, if it matters.
   // Expects a trimmed string.
@@ -51,15 +52,14 @@ void SymbolTable::insertEntry(const std::string& name,
 
   if (!std::regex_search(name, VALID_NAME)) {
     // Basically, everything with a leading number is not accepted.
-    state.addError("Symbol '" + name + "' does not have a qualified name.",
-                   state.position);
+      state.addErrorHereT("Symbol '%1' does not have a qualified name.", name);
     return;
   }
 
   if (_table.find(name) != _table.end()) {
     // We also fail, if we define the symbol twice in a commit (which would
     // count as double definition in a file).
-    state.addError("Symbol '" + name + "' defined twice.", state.position);
+    state.addErrorHereT("Symbol '%1' defined twice.", name);
     return;
   }
 
@@ -91,7 +91,7 @@ std::string SymbolTable::replaceSymbols(const std::string& source,
       // Replace all symbol occurrences.
       // call the replacer function with replacement string & type
       const auto& replacement =
-              //    the replacement string, the symbol type
+          //    the replacement string, the symbol type
           replacer(entry.second.first, entry.second.second);
       std::string newResult =
           std::regex_replace(result, makeRegex(entry.first), replacement);
@@ -109,7 +109,7 @@ std::string SymbolTable::replaceSymbols(const std::string& source,
 
   // If we come here, we have replaced too often and abort, suspecting an
   // infinite loop.
-  state.addError("Exceeded recursion replacement depth.", state.position);
+  state.addErrorHereT("Exceeded recursion replacement depth.");
 
   return result;
 }

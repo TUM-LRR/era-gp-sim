@@ -34,6 +34,10 @@ GuiProject::GuiProject(QQmlContext* context,
                        QObject* parent)
 : QObject(parent)
 , _projectModule(formula, memorySize, parserName)
+, _registerModel(_projectModule.getArchitectureAccess(),
+                 _projectModule.getMemoryManager(),
+                 _projectModule.getMemoryAccess(),
+                 context)
 , _editorComponent(context,
                    _projectModule.getParserInterface(),
                    _projectModule.getCommandInterface())
@@ -43,29 +47,25 @@ GuiProject::GuiProject(QQmlContext* context,
 , _memoryModel(_projectModule.getMemoryAccess(),
                _projectModule.getMemoryManager(),
                context)
-, _registerModel(_projectModule.getArchitectureAccess(),
-                 _projectModule.getMemoryManager(),
-                 _projectModule.getMemoryAccess(),
-                 context)
 , _defaultTextFileSavePath()
 , _snapshotComponent(snapshotComponent)
 , _architectureFormulaString(SnapshotComponent::architectureToString(formula)) {
   context->setContextProperty("guiProject", this);
   // set the callback for memory and register
   _projectModule.getMemoryManager().setUpdateRegisterCallback(
-      [this](const std::string& name) {
-        emit registerChanged(QString::fromStdString(name));
+      [this](const auto& name) {
+        emit this->registerChanged(QString::fromStdString(name));
       });
 
   _projectModule.getMemoryManager().setUpdateMemoryCallback(
-      [this](std::size_t address, std::size_t length) {
-        emit memoryChanged(address, length);
+      [this](auto address, auto length) {
+        emit this->memoryChanged(address, length);
       });
 
-  _projectModule.getParserInterface().setThrowErrorCallback([this](
-      const std::string& message, const std::vector<std::string>& arguments) {
-    _throwError(message, arguments);
-  });
+  _projectModule.getParserInterface().setThrowErrorCallback(
+      [this](const auto& message, const auto& arguments) {
+        this->_throwError(message, arguments);
+      });
 
   _projectModule.getMemoryManager().setErrorCallback([this](
       const std::string& message, const std::vector<std::string>& arguments) {
@@ -137,30 +137,28 @@ void GuiProject::saveText() {
   }
 }
 
-void GuiProject::saveTextAs(QUrl path) {
-  QString qName = path.path();
+void GuiProject::saveTextAs(const QUrl& path) {
+  auto qName = path.path();
   _defaultTextFileSavePath = qName;
-  std::string name = qName.toStdString();
-  std::string text = _editorComponent.getText().toStdString();
+  auto name = qName.toStdString();
+  auto text = _editorComponent.getText().toStdString();
   try {
     Utility::storeToFile(name, text);
-  } catch (const std::ios_base::failure& exception) {
-    _throwError(std::string("Could not save file! ") + exception.what(),
-                std::vector<std::string>());
+  } catch (const std::exception& exception) {
+    _throwError(std::string("Could not save file! ") + exception.what(), {});
   }
 }
 
-void GuiProject::loadText(QUrl path) {
-  QString qName = path.path();
-  std::string filePath = qName.toStdString();
+void GuiProject::loadText(const QUrl& path) {
+  auto qName = path.path();
+  auto filePath = qName.toStdString();
   std::string text;
   try {
     text = Utility::loadFromFile(filePath);
-    QString qText = QString::fromStdString(text);
+    auto qText = QString::fromStdString(text);
     _editorComponent.setText(qText);
-  } catch (const std::ios_base::failure& exception) {
-    _throwError(std::string("Could not load file!") + exception.what(),
-                std::vector<std::string>());
+  } catch (const std::exception& exception) {
+    _throwError(std::string("Could not load file!") + exception.what(), {});
   }
 }
 
@@ -252,6 +250,6 @@ std::function<MemoryValue(std::string)> GuiProject::getFloatToMemoryValue() {
 
 void GuiProject::_throwError(const std::string& message,
                              const std::vector<std::string>& arguments) {
-  QString errorMessage = QString::fromStdString(message);
+  auto errorMessage = QString::fromStdString(message);
   emit error(errorMessage);
 }

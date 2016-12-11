@@ -12,6 +12,7 @@ set(UI_SOURCES
     gui-project.cpp
     snapshot-component.cpp
     output-component.cpp
+    translateable-processing.cpp
 )
 
 set(UI_HEADERS

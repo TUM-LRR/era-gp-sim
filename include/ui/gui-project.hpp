@@ -28,6 +28,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "arch/common/architecture-formula.hpp"
 #include "core/memory-value.hpp"
@@ -145,16 +146,16 @@ class GuiProject : QObject {
   /**
    * \brief saves with another name
    *
-   * \param name the new name
+   * \param path the path to save to.
    */
-  void saveTextAs(QUrl path);
+  void saveTextAs(const QUrl& path);
 
   /**
    * \brief Load a text file into the editor.
    *
    * \param path the path of the file.
    */
-  void loadText(QUrl path);
+  void loadText(const QUrl& path);
 
   /**
    * \brief takes a snapshot
@@ -303,7 +304,7 @@ class GuiProject : QObject {
    *
    * \param errorMessage The error message.
    */
-  void error(QString errorMessage);
+  void error(const QString& errorMessage);
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP

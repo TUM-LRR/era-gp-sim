@@ -37,12 +37,12 @@ ApplicationWindow {
       id: menubar
       main: window
     }
-    toolBar: ToolbarMainWindow{
+    toolBar: ToolbarMainWindow {
         id: toolbar
         tabView: tabView
     }
 
-    TabView{
+    TabView {
         anchors.fill: parent
         id: tabView
 
@@ -63,7 +63,7 @@ ApplicationWindow {
     }
 
     /*Component for a project, instantiated by the TabView*/
-    Component{
+    Component {
         id: tabs
 
         Item {
@@ -83,11 +83,11 @@ ApplicationWindow {
     }
 
     //this component is instantiated by the addProject method
-    Component{
+    Component {
         id: projectComponent
         Item {
           anchors.fill: parent
-          Splitview{
+          Splitview {
               anchors.fill: parent
 
               SystemPalette {

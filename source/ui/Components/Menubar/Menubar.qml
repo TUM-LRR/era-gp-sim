@@ -50,7 +50,7 @@ MenuBar {
         id: fileMenu
         title: "File"
         MenuItem{
-            text: "Load Text..."
+            text: "Load Code..."
             function openTextFile(filePath) {
               ui.loadText(main.currentIndex, filePath);
             }
@@ -67,14 +67,14 @@ MenuBar {
             }
         }
         MenuItem{
-            text: "Save"
+            text: "Save Code"
             onTriggered: {
                 ui.saveText(main.currentIndex);
             }
         }
         MenuItem{
             id: saveTextAs
-            text: "Save as..."
+            text: "Save Code as..."
             onTriggered: {
                 actionSaveAs();
             }
