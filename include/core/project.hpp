@@ -21,6 +21,8 @@
 #define ERAGPSIM_CORE_PROJECT_HPP_
 
 #include <functional>
+#include <string>
+#include <vector>
 
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
@@ -48,6 +50,8 @@ class Project : public Servant {
  public:
   template <typename... T>
   using Callback = std::function<void(T...)>;
+  using ErrorCallback =
+      Callback<const std::string &, const std::vector<std::string> &>;
 
   using size_t = std::size_t;
   using MemoryValueToString = std::function<std::string(MemoryValue)>;
@@ -157,7 +161,7 @@ class Project : public Servant {
    *
    * \param snapshotData The json snapshot object.
    */
-  void loadSnapshot(Json snapshotData);
+  void loadSnapshot(const Json &snapshotData);
 
   /**
    * Generates a snapshot of the current state of memory and registers.
@@ -231,8 +235,7 @@ class Project : public Servant {
    *
    * \param callback
    */
-  void setErrorCallback(
-      Callback<const std::string &, const std::vector<std::string> &> callback);
+  void setErrorCallback(ErrorCallback callback);
 
   /**
    * Returns the architecture object.
@@ -281,8 +284,7 @@ class Project : public Servant {
   ArchitectureFormula _architectureFormula;
 
   /** A callback to signal a error to the ui. */
-  Callback<const std::string &, const std::vector<std::string> &>
-      _errorCallback;
+  ErrorCallback _errorCallback;
 };
 
 #endif /* ERAGPSIM_CORE_PROJECT_HPP_ */

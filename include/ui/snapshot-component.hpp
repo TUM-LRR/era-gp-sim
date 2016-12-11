@@ -26,6 +26,7 @@
 #include <QString>
 #include <QStringList>
 #include <QUrl>
+#include <string>
 
 #include "core/snapshot.hpp"
 
@@ -46,7 +47,7 @@ class SnapshotComponent : public QObject {
    * \param path The path of the snapshot directory.
    * \param parent Pointer to the parent QObject. Defaults to 0.
    */
-  SnapshotComponent(const std::string& path, QObject* parent = 0);
+  SnapshotComponent(const QString& path, QObject* parent = 0);
 
   /**
    * Return a list of snapshots for a specific Architecture formula.
@@ -76,7 +77,7 @@ class SnapshotComponent : public QObject {
   void removeSnapshot(const QString& architecture, const QString& snapshot);
 
   /**
-   * Returns the path of a snapshot of a specific architecture and name.
+   * \returns the path of a snapshot of a specific architecture and name.
    *
    * \param architecture The architecture string.
    * \param snapshot The name of the snapshot.
@@ -89,7 +90,7 @@ class SnapshotComponent : public QObject {
   *
   * \param qPath The path of the snapshot file.
   */
-  Q_INVOKABLE void importSnapshot(QUrl qPath);
+  Q_INVOKABLE void importSnapshot(const QUrl& qPath);
 
   /**
   * Creates a string representation of the architecture formula.
@@ -102,7 +103,7 @@ class SnapshotComponent : public QObject {
   /** The base directory of the configuration. */
   QDir _baseDirectory;
 
-  /** A map of architecture-signature to a list of extensions. */
+  /** A map of architecture-signature to a list of snapshot names. */
   SnapshotMap _snapshotMap;
 
   /** The file extension of snapshots. */

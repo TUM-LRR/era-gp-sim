@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QTextDocument>
 #include <memory>
+#include <vector>
 
 #include "core/command-interface.hpp"
 #include "parser/syntax-information.hpp"
@@ -109,7 +110,7 @@ class EditorComponent : public QObject {
   /**
    * Returns the plain text of this editor.
    *
-   * \return Returns the text of this editor as a QString.
+   * \returns The text of this editor as a QString.
    */
   QString getText();
 

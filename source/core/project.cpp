@@ -164,7 +164,7 @@ void Project::resetRegisters() {
   }
 }
 
-void Project::loadSnapshot(Json snapshotData) {
+void Project::loadSnapshot(const Json &snapshotData) {
   Snapshot snapshot(snapshotData);
   if (!snapshot.isValid()) {
     _errorCallback("Snapshot format is not valid", std::vector<std::string>());
@@ -229,8 +229,7 @@ void Project::setUpdateMemoryCallback(Callback<size_t, size_t> callback) {
   _memory.setCallback(callback);
 }
 
-void Project::setErrorCallback(
-    Callback<const std::string &, const std::vector<std::string> &> callback) {
+void Project::setErrorCallback(ErrorCallback callback) {
   _errorCallback = callback;
 }
 

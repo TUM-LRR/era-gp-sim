@@ -32,8 +32,8 @@ Ui::Ui(int& argc, char** argv)
 , _qmlApplication(argc, argv)
 , _engine()
 , _projects()
-, _snapshots(
-      std::make_shared<SnapshotComponent>(Utility::joinToRoot("snapshots"))) {
+, _snapshots(std::make_shared<SnapshotComponent>(
+      QString::fromStdString(Utility::joinToRoot("snapshots")))) {
   _loadArchitectures();
 }
 

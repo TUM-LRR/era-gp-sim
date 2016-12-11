@@ -37,10 +37,10 @@ Snapshot::Snapshot(Json json) : _snapshot(json) {
 }
 
 bool Snapshot::isValid() {
-  if (!(_snapshot.count("architecture-name") == 1)) return false;
-  if (!(_snapshot.count("extensions") == 1)) return false;
-  if (!(_snapshot.count("memory") == 1)) return false;
-  if (!(_snapshot.count("registers") == 1)) return false;
+  if (!_snapshot.count("architecture-name")) return false;
+  if (!_snapshot.count("extensions")) return false;
+  if (!_snapshot.count("memory")) return false;
+  if (!_snapshot.count("registers")) return false;
 
   return true;
 }

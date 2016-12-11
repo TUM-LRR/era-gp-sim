@@ -27,13 +27,13 @@
 #include "common/utility.hpp"
 #include "core/snapshot.hpp"
 
-SnapshotComponent::SnapshotComponent(const std::string& path, QObject* parent)
-: QObject(parent), _baseDirectory(QString::fromStdString(path)) {
+SnapshotComponent::SnapshotComponent(const QString& path, QObject* parent)
+: QObject(parent), _baseDirectory(path) {
   // check if snapshot directory exists, if not, create it.
   if (!_baseDirectory.exists()) {
     QString baseDirName = _baseDirectory.dirName();
     _baseDirectory.cdUp();
-    _baseDirectory.mkpath(QString::fromStdString(path));
+    _baseDirectory.mkpath(path);
     _baseDirectory.cd(baseDirName);
   }
   QString fileExtensionFilter(_fileExtension);
@@ -90,17 +90,17 @@ std::string SnapshotComponent::snapshotPath(const QString& architecture,
                             snapshot.toStdString() + _fileExtension);
 }
 
-void SnapshotComponent::importSnapshot(QUrl qPath) {
-  std::string path = qPath.path().toStdString();
+void SnapshotComponent::importSnapshot(const QUrl& qPath) {
+  auto path = qPath.path().toStdString();
   try {
-    Json json = Json::parse(Utility::loadFromFile(path));
+    auto json = Json::parse(Utility::loadFromFile(path));
     Snapshot snapshot(json);
     if (!snapshot.isValid()) {
       emit snapshotError("Import failed: Snapshot not valid.");
       return;
     }
-    ArchitectureFormula architectureFormula = snapshot.getArchitectureFormula();
-    QString architectureString = architectureToString(architectureFormula);
+    auto architectureFormula = snapshot.getArchitectureFormula();
+    auto architectureString = architectureToString(architectureFormula);
     QFileInfo fileInfo(qPath.path());
     addSnapshot(architectureString, fileInfo.completeBaseName(), json.dump(4));
   } catch (const std::exception& exception) {
@@ -111,11 +111,11 @@ void SnapshotComponent::importSnapshot(QUrl qPath) {
 
 QString
 SnapshotComponent::architectureToString(const ArchitectureFormula& formula) {
-  std::vector<std::string> underlying = formula.getUnderlying();
+  auto underlying = formula.getUnderlying();
   std::sort(underlying.begin(), underlying.end());
-  std::string architectureFormulaString = formula.getArchitectureName();
-  for (const std::string& s : formula) {
-    architectureFormulaString += s;
+  auto architectureFormulaString = formula.getArchitectureName();
+  for (const auto& extension : underlying) {
+    architectureFormulaString += extension;
   }
   return QString::fromStdString(architectureFormulaString);
 }

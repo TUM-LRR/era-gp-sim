@@ -46,10 +46,16 @@ MenuBar {
       main.fileDialog.open();
     }
 
-    Menu{
+    Menu {
         id: fileMenu
         title: "File"
-        MenuItem{
+        MenuItem {
+          text: "New..."
+          onTriggered: {
+            main.createProject();
+          }
+        }
+        MenuItem {
             text: "Load Code..."
             function openTextFile(filePath) {
               ui.loadText(main.currentIndex, filePath);
@@ -60,32 +66,20 @@ MenuBar {
                 main.fileDialog.open();
             }
         }
-        MenuItem{
-            text: "New..."
-            onTriggered: {
-                main.createProject();
-            }
-        }
-        MenuItem{
+        MenuItem {
             text: "Save Code"
             onTriggered: {
                 ui.saveText(main.currentIndex);
             }
         }
-        MenuItem{
+        MenuItem {
             id: saveTextAs
             text: "Save Code as..."
             onTriggered: {
                 actionSaveAs();
             }
         }
-        MenuItem{
-            text: "Save Snapshot"
-            onTriggered: {
-                actionSnapshot();
-            }
-        }
-        MenuItem{
+        MenuItem {
             text: "Import Snapshot"
             function importSnapshot(name) {
               var success = snapshotComponent.importSnapshot(name);
@@ -96,7 +90,13 @@ MenuBar {
               main.fileDialog.open();
             }
         }
-        MenuItem{
+        MenuItem {
+          text: "Save Snapshot"
+          onTriggered: {
+            actionSnapshot();
+          }
+        }
+        MenuItem {
             text: "Close"
             onTriggered: {
                 main.closeProject();
@@ -104,7 +104,7 @@ MenuBar {
         }
     }
 
-    Menu{
+    Menu {
         title: "Settings"
         MenuItem{
             text: "Open"
@@ -115,7 +115,7 @@ MenuBar {
         }
     }
 
-    Menu{
+    Menu {
         title: "Help"
         MenuItem{
             text: "Open"

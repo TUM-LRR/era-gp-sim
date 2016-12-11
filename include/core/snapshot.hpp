@@ -49,30 +49,30 @@ class Snapshot {
   Snapshot(Json json);
 
   /**
-   * \return Returns true if the snapshot is valid, false if not.
+   * \returns true if the snapshot is valid, false if not.
    * This method only checks the structure of the snapshot, the content of the
    * components could still be invalid.
    */
   bool isValid();
 
   /**
-   * \return returns a json object which can be used to deserialize the memory.
+   * \returns A json object which can be used to deserialize the memory.
    */
   Json getMemoryJson();
 
   /**
-   * \return Returns a json object which can be used to deserialize the
+   * \returns A json object which can be used to deserialize the
    * registers.
    */
   Json getRegisterJson();
 
   /**
-   * \return Returns the architecture formula of this snapshot.
+   * \returns The architecture formula of this snapshot.
    */
   ArchitectureFormula getArchitectureFormula();
 
   /**
-   * \return Returns the underlying json object.
+   * \returns The underlying json object.
    */
   Json getJson();
 

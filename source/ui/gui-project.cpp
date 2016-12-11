@@ -26,12 +26,13 @@
 #include "common/utility.hpp"
 #include "ui/snapshot-component.hpp"
 
-GuiProject::GuiProject(QQmlContext* context,
-                       const ArchitectureFormula& formula,
-                       std::size_t memorySize,
-                       const std::string& parserName,
-                       std::shared_ptr<SnapshotComponent> snapshotComponent,
-                       QObject* parent)
+GuiProject::GuiProject(
+    QQmlContext* context,
+    const ArchitectureFormula& formula,
+    std::size_t memorySize,
+    const std::string& parserName,
+    const std::shared_ptr<SnapshotComponent>& snapshotComponent,
+    QObject* parent)
 : QObject(parent)
 , _projectModule(formula, memorySize, parserName)
 , _registerModel(_projectModule.getArchitectureAccess(),
@@ -67,10 +68,10 @@ GuiProject::GuiProject(QQmlContext* context,
         this->_throwError(message, arguments);
       });
 
-  _projectModule.getMemoryManager().setErrorCallback([this](
-      const std::string& message, const std::vector<std::string>& arguments) {
-    _throwError(message, arguments);
-  });
+  _projectModule.getMemoryManager().setErrorCallback(
+      [this](const auto& message, const auto& arguments) {
+        _throwError(message, arguments);
+      });
 
   // connect all receiving components to the callback signals
   QObject::connect(this,
@@ -162,7 +163,7 @@ void GuiProject::loadText(const QUrl& path) {
   }
 }
 
-void GuiProject::saveSnapshot(QString qName) {
+void GuiProject::saveSnapshot(const QString& qName) {
   Json snapshot = _projectModule.getMemoryManager().generateSnapshot().get();
   std::string snapshotString = snapshot.dump(4);
   try {
@@ -175,11 +176,11 @@ void GuiProject::saveSnapshot(QString qName) {
   }
 }
 
-void GuiProject::removeSnapshot(QString qName) {
+void GuiProject::removeSnapshot(const QString& qName) {
   _snapshotComponent->removeSnapshot(_architectureFormulaString, qName);
 }
 
-void GuiProject::loadSnapshot(QString qName) {
+void GuiProject::loadSnapshot(const QString& qName) {
   try {
     std::string path =
         _snapshotComponent->snapshotPath(_architectureFormulaString, qName);

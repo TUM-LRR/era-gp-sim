@@ -69,7 +69,7 @@ class GuiProject : QObject {
              const ArchitectureFormula& formula,
              std::size_t memorySize,
              const std::string& parserName,
-             std::shared_ptr<SnapshotComponent> snapshotComponent,
+             const std::shared_ptr<SnapshotComponent>& snapshotComponent,
              QObject* parent = 0);
 
   /**
@@ -162,20 +162,20 @@ class GuiProject : QObject {
    *
    * \param qName name of the snapshot
    */
-  void saveSnapshot(QString qName);
+  void saveSnapshot(const QString& qName);
 
   /**
    * \brief Removes a snapshot.
    *
    * \param qName name of the snapshot.
    */
-  Q_INVOKABLE void removeSnapshot(QString qName);
+  Q_INVOKABLE void removeSnapshot(const QString& qName);
 
   /**
    * \brief loads a snapshot
    * \param qName The name of the snapshot which should be loaded.
    */
-  Q_INVOKABLE void loadSnapshot(QString qName);
+  Q_INVOKABLE void loadSnapshot(const QString& qName);
 
   /**
    * Returns a list of snapshot names
