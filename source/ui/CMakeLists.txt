@@ -28,11 +28,12 @@ set(UI_HEADERS
 # EXECUTABLE
 ########################################
 
-qt5_add_resources(UI_RESOURCES qml.qrc)
-qt5_wrap_cpp(UI_HEADERS_WRAPPED ${UI_HEADERS})
+if (ERA_GP_SIM_BUILD_GUI)
+  qt5_add_resources(UI_RESOURCES qml.qrc)
+  qt5_wrap_cpp(UI_HEADERS_WRAPPED ${UI_HEADERS})
 
-add_executable(gui ${UI_SOURCES} ${UI_RESOURCES} ${UI_HEADERS_WRAPPED})
+  add_executable(gui ${UI_SOURCES} ${UI_RESOURCES} ${UI_HEADERS_WRAPPED})
+  target_link_libraries(gui era-sim-core)
 
-target_link_libraries(gui era-sim-core)
-
-qt5_use_modules(gui Widgets Qml Quick)
+  qt5_use_modules(gui Widgets Qml Quick)
+endif()

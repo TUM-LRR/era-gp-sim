@@ -20,9 +20,10 @@ set(TEST_PARSER_SOURCES
 # TARGET
 ########################################
 
-add_executable(era-sim-parser-tests ${TEST_PARSER_SOURCES})
+if (ERA_GP_SIM_BUILD_PARSER)
+  add_executable(era-sim-parser-tests ${TEST_PARSER_SOURCES})
+  add_test(era-sim-parser-tests era-sim-parser-tests)
 
-target_link_libraries(era-sim-parser-tests era-sim-parser)
-target_link_libraries(era-sim-parser-tests gtest gtest_main)
-
-add_test(era-sim-parser-tests era-sim-parser-tests)
+  target_link_libraries(era-sim-parser-tests era-sim-parser)
+  target_link_libraries(era-sim-parser-tests gtest gtest_main)
+endif()

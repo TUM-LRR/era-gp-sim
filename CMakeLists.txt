@@ -54,6 +54,15 @@ include_directories(${GTEST_INCLUDE_DIRS})
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/source)
 
 ########################################
+# BINARIES
+########################################
+
+option(ERA_GP_SIM_BUILD_ARCH "Enable compilation of arch modules" ON)
+option(ERA_GP_SIM_BUILD_PARSER "Enable compilation of parser modules" ON)
+option(ERA_GP_SIM_BUILD_CORE "Enable compilation of core modules" ON)
+option(ERA_GP_SIM_BUILD_GUI "Enable compilation of gui modules" ON)
+
+########################################
 # TESTS
 ########################################
 
