@@ -13,16 +13,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "parser/compile-state.hpp"
+#include "parser/compile-error.hpp"
 
-#include "parser/macro-directive.hpp"
-
-void CompileState::registerMacro(MacroDirective& macro) {
-  bool success = macros.insert(macro);
-  if (!success) {
-      addErrorHereT("Macro \"%1\" already exists!", macro.macroName())
+const Translateable& CompileError::message() const {
+    assert::that(_message);
+    return (*_message);
   }
-}

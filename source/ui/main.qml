@@ -20,6 +20,7 @@
 import QtQuick 2.6
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
+import QtQuick.Dialogs 1.2
 import "Components"
 import "Components/Menubar"
 import "Components/Toolbar"
@@ -30,16 +31,16 @@ ApplicationWindow {
     width: Screen.desktopAvailableWidth*0.7
     height: Screen.desktopAvailableHeight*0.8
 
-    menuBar: Menubar{
-        component: tabs
-        main: window
+    menuBar: Menubar {
+      id: menubar
+      main: window
     }
-    toolBar: ToolbarMainWindow{
+    toolBar: ToolbarMainWindow {
         id: toolbar
         tabView: tabView
     }
 
-    TabView{
+    TabView {
         anchors.fill: parent
         id: tabView
 
@@ -60,7 +61,7 @@ ApplicationWindow {
     }
 
     /*Component for a project, instantiated by the TabView*/
-    Component{
+    Component {
         id: tabs
 
         Item {
@@ -80,20 +81,58 @@ ApplicationWindow {
     }
 
     //this component is instantiated by the addProject method
-    Component{
+    Component {
         id: projectComponent
-        Splitview{
-            anchors.fill: parent
+        Item {
+          anchors.fill: parent
+          Splitview {
+              anchors.fill: parent
 
-            SystemPalette {
-              id: systemPalette
-            }
+              SystemPalette {
+                id: systemPalette
+              }
 
-            handleDelegate: Rectangle {
-              width: 2
-              height: 2
-              color: Qt.darker(systemPalette.window, 1.5)
+              handleDelegate: Rectangle {
+                width: 2
+                height: 2
+                color: Qt.darker(systemPalette.window, 1.5)
+              }
+          }
+
+          Connections {
+            target: guiProject
+            onSaveTextAs: {
+              menubar.actionSaveAs();
             }
-        }
+            onError: {
+              errorDialog.text = errorMessage;
+              errorDialog.open();
+            }
+          }
+
+          //Dialog to show errors
+          MessageDialog {
+            id: errorDialog
+            title: "error"
+            standardButtons: StandardButton.Ok
+            onAccepted: {
+              close();
+            }
+          }
+      }
+    }
+
+    property alias fileDialog: fileDialog
+
+    //File dialog for selecting a file
+    FileDialog {
+      id: fileDialog
+      property var onAcceptedFunction
+      selectExisting: false
+      selectFolder: false
+      selectMultiple: false
+      onAccepted: {
+        onAcceptedFunction(fileDialog.fileUrl);
+      }
     }
 }

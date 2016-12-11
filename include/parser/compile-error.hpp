@@ -19,8 +19,11 @@
 #ifndef ERAGPSIM_COMPILE_ERROR_HPP
 #define ERAGPSIM_COMPILE_ERROR_HPP
 
+#include <QtGlobal>
 #include <string>
 
+#include "common/assert.hpp"
+#include "common/translateable.hpp"
 #include "parser/code-position.hpp"
 
 /**
@@ -48,6 +51,7 @@ enum class CompileErrorSeverity {
  */
 class CompileError {
  public:
+  using TranslateablePtr = std::shared_ptr<Translateable>;
   /**
    * \brief Instantiates a new compile error with the given arguments. Marks
    * only a positional error.
@@ -55,11 +59,9 @@ class CompileError {
    * \param position The position of the error in the code.
    * \param severity The severity of the error.
    */
-  CompileError(const std::string& message,
-               const CodePosition& position,
+  CompileError(const TranslateablePtr& message, const CodePosition& position,
                CompileErrorSeverity severity)
-  : CompileError(message, position, position >> 1, severity) {
-  }
+      : CompileError(message, position, position >> 1, severity) {}
 
   /**
    * \brief Instantiates a new compile error with the given arguments.
@@ -68,13 +70,11 @@ class CompileError {
    * \param endPosition The end position of the error in the code.
    * \param severity The severity of the error.
    */
-  CompileError(const std::string& message,
+  CompileError(const TranslateablePtr& message,
                const CodePosition& startPosition,
-               const CodePosition& endPosition,
-               CompileErrorSeverity severity)
-  : CompileError(
-        message, CodePositionInterval(startPosition, endPosition), severity) {
-  }
+               const CodePosition& endPosition, CompileErrorSeverity severity)
+      : CompileError(message, CodePositionInterval(startPosition, endPosition),
+                     severity) {}
 
   /**
    * \brief Instantiates a new compile error with the given arguments.
@@ -82,41 +82,34 @@ class CompileError {
    * \param position The position interval of the error in the code.
    * \param severity The severity of the error.
    */
-  CompileError(const std::string& message,
+  CompileError(const TranslateablePtr& message,
                const CodePositionInterval& position,
                CompileErrorSeverity severity)
-  : _message(message), _position(position), _severity(severity) {
-  }
+      : _message(message), _position(position), _severity(severity) {}
 
   /**
    * \brief Returns the message of this error.
    * \return The message of the error.
    */
-  const std::string& message() const {
-    return _message;
-  }
+  const Translateable& message() const;
 
   /**
    * \brief Returns the position where this error occured.
    * \return The position of the error.
    */
-  const CodePositionInterval& position() const {
-    return _position;
-  }
+  const CodePositionInterval& position() const { return _position; }
 
   /**
    * \brief Returns the severity of the error.
    * \return The severity of the error.
    */
-  const CompileErrorSeverity severity() const {
-    return _severity;
-  }
+  const CompileErrorSeverity severity() const { return _severity; }
 
  private:
   /**
    * \brief The internal message attribute.
    */
-  std::string _message;
+  TranslateablePtr _message;
 
   /**
    * \brief The internal position attribute.

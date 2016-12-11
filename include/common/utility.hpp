@@ -447,9 +447,8 @@ std::string loadFromFile(const std::string &filePath);
 template <typename Data>
 void storeToFile(const std::string &filePath, Data &&data) {
   std::ofstream file(filePath);
-  assert::that(static_cast<bool>(file));
+  file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
   file << std::forward<Data>(data);
-  assert::that(static_cast<bool>(file));
 }
 
 template <typename T>
@@ -505,17 +504,26 @@ void pushBackFromEnd(std::vector<bool> &dest,
                      size_t n);
 
 
-template <typename T>
-constexpr T discreteCeiling(T value, T divider) {
+template <typename T, typename S = T>
+constexpr T divideCeiling(const T& value, const S& divider) {
   return (value + divider - 1) / divider;
 }
 
 // Only for completeness.
-template <typename T>
-constexpr T discreteFloor(T value, T divider) {
+template <typename T, typename S = T>
+constexpr T divideFloor(const T& value, const S& divider) {
   return value / divider;
 }
 
+template <typename T, typename S = T>
+constexpr T discreteCeiling(const T& value, const S& divider) {
+  return divideCeiling(value, divider) * divider;
+}
+
+template <typename T, typename S = T>
+constexpr T discreteFloor(const T& value, const S& divider) {
+  return divideFloor(value, divider) * divider;
+}
 /**
  * \brief roundToBoundary Rounds a given value up to a multiple of the
  * given boundary.
@@ -526,21 +534,20 @@ constexpr T discreteFloor(T value, T divider) {
  */
 template<typename T>
 T roundToBoundary(const T& value, const T& boundary) {
-  return value + ((boundary - (value % boundary)) % boundary);
+  return discreteCeiling(value, boundary);
 }
 
+template <typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
+struct EnumHash {
+  using argument_type = Enum;
+  using result_type = std::size_t;
+  using underlying_type = std::underlying_type_t<Enum>;
 
-template<typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
-  struct EnumHash {
-    using argument_type = Enum;
-    using result_type = std::size_t;
-    using underlying_type = std::underlying_type_t<Enum>;
-
-    result_type operator()(const argument_type& argument) const {
-      const auto ordinal = static_cast<underlying_type>(argument);
-      return std::hash<underlying_type>{}(ordinal);
-    }
-  };
+  result_type operator()(const argument_type &argument) const {
+    const auto ordinal = static_cast<underlying_type>(argument);
+    return std::hash<underlying_type>{}(ordinal);
+  }
+};
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */
