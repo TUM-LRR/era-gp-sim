@@ -51,12 +51,6 @@ class AbstractInstructionNode : public AbstractSyntaxTreeNode {
   virtual const Translateable& getInstructionDocumentation() const = 0;
 
  protected:
-  /**
-   * Returns the InstructionInformation of this Instruction
-   */
-  const InstructionInformation& getInstructionInformation() const;
-
- private:
   /** The information object associated with the instruction. */
   InstructionInformation _information;
 };

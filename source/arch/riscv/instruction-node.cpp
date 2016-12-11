@@ -19,9 +19,8 @@
 #include <string>
 #include <vector>
 
-#include "arch/common/instruction-assembler.hpp"
 #include "arch/common/instruction-key.hpp"
-#include "arch/riscv/formats.hpp"
+#include "arch/riscv/format.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "common/assert.hpp"
 
@@ -61,7 +60,7 @@ bool InstructionNode::_compareChildTypes(TypeList list,
 MemoryValue InstructionNode::assemble() const {
   Format::Arguments arguments;
   for (const auto& child : _children) {
-    arguments.emplace_back(child.assemble());
+    arguments.emplace_back(child->assemble());
   }
 
   return Format::assemble(_information, arguments);
@@ -71,7 +70,7 @@ const Translateable& InstructionNode::getInstructionDocumentation() const {
   assert::that(_documentation &&
                _documentation->isContextInformationAvailable(
                    _information.getMnemonic()));
-  return _documentation->getContextInformation(getInstructionInformation());
+  return _documentation->getContextInformation(_information);
 }
 
 void InstructionNode::setDocumentation(

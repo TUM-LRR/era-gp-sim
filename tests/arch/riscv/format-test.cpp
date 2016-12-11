@@ -28,10 +28,10 @@
 #include "arch/common/immediate-node.hpp"
 #include "arch/common/instruction-key.hpp"
 #include "arch/common/instruction-set.hpp"
-#include "arch/riscv/register-node.hpp"
-#include "arch/riscv/formats.hpp"
+#include "arch/riscv/format.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/integer-instructions.hpp"
+#include "arch/riscv/register-node.hpp"
 #include "core/memory-value.hpp"
 
 using namespace riscv;
@@ -86,10 +86,11 @@ TEST_F(ImmediateFormatTest, JFormat) {
 
 struct InstructionFormatTest : public ::testing::Test {
   InstructionFormatTest() {
-    auto add = InstructionInformation("add")
-                   .key(InstructionKey({{"opcode", 6}, {"funct3", 0}, {"funct7", 0}}))
-                   .format("R")
-                   .length(32);
+    auto add =
+        InstructionInformation("add")
+            .key(InstructionKey({{"opcode", 6}, {"funct3", 0}, {"funct7", 0}}))
+            .format("R")
+            .length(32);
     auto sub = InstructionInformation("sub")
                    .key(InstructionKey({{"opcode", 9}, {"funct3", 3}}))
                    .format("I")

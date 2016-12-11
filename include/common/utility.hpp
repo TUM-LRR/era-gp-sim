@@ -500,13 +500,13 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
 }
 
 template <typename T, typename S = T>
-constexpr T divideCeiling(const T &value, const S &divider) {
+constexpr T discreteCeiling(const T &value, const S &divider) {
   return (value + divider - 1) / divider;
 }
 
 // Only for completeness.
 template <typename T, typename S = T>
-constexpr T divideFloor(const T &value, const S &divider) {
+constexpr T discreteFloor(const T &value, const S &divider) {
   return value / divider;
 }
 

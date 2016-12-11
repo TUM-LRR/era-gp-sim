@@ -27,6 +27,7 @@
 #include "arch/riscv/properties.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
+#include "core/memory-value.hpp"
 
 namespace riscv {
 /**
@@ -124,8 +125,8 @@ T appendBits(T& original, const MemoryValue& memoryValue) {
   return ::Utility::appendBits<numberOfBits>(original, number);
 }
 
-template <std::size_t firstBit, std::size_t lastBit, typename T, typename U>
-T appendBitSlice(const T& original, const U& value) {
+template <std::size_t firstBit, std::size_t lastBit, typename T>
+T appendBitSlice(const T& original, const MemoryValue& memoryValue) {
   auto number = convert<T>(memoryValue);
   return ::Utility::appendBitSlice<firstBit, lastBit>(original, number);
 }

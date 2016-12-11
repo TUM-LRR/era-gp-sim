@@ -93,7 +93,7 @@ class InstructionNode : public AbstractInstructionNode {
   template <typename WordSize>
   MemoryValue _incrementProgramCounter(MemoryAccess& memoryAccess) const {
     auto current = riscv::loadRegister<WordSize>(memoryAccess, "pc");
-    current += (getInstructionInformation().getLength() / riscv::BITS_PER_BYTE);
+    current += (_information.getLength() / riscv::BITS_PER_BYTE);
     return riscv::convert<WordSize>(current);
   }
 
