@@ -29,5 +29,9 @@ if (ERA_SIM_BUILD_ARCH)
   target_link_libraries(era-sim-arch-riscv-tests era-sim-arch-riscv)
   target_link_libraries(era-sim-arch-riscv-tests gtest gtest_main)
 
-  add_test(era-sim-arch-riscv-tests era-sim-arch-riscv-tests)
+  add_test(
+    NAME era-sim-arch-riscv-tests
+    COMMAND era-sim-arch-riscv-tests
+    WORKING_DIRECTORY ${ERA_SIM_BINARY_DIR}
+  )
 endif()

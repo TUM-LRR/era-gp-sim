@@ -65,8 +65,9 @@ option(ERA_SIM_BUILD_PARSER "Enable compilation of parser modules" ON)
 option(ERA_SIM_BUILD_CORE "Enable compilation of core modules" ON)
 option(ERA_SIM_BUILD_GUI "Enable compilation of gui modules" ON)
 
-message(STATUS "Building to directory ${CMAKE_BINARY_DIR}/bin")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(ERA_SIM_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
+message(STATUS "Building to directory ${ERA_SIM_BINARY_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ERA_SIM_BINARY_DIR})
 
 ########################################
 # TESTS

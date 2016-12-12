@@ -23,5 +23,9 @@ if (ERA_SIM_BUILD_CORE)
   target_link_libraries(era-sim-core-tests gtest gtest_main)
 
   # test-name executable-name
-  add_test(era-sim-core-tests era-sim-core-tests)
+  add_test(
+    NAME era-sim-core-tests
+    COMMAND era-sim-core-tests
+    WORKING_DIRECTORY ${ERA_SIM_BINARY_DIR}
+  )
 endif()
