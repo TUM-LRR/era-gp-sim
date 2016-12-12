@@ -74,7 +74,7 @@ class PseudoInstructionTest : public riscv::BaseFixture {
 };
 
 TEST_F(PseudoInstructionTest, LA_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
   memoryAccess.setRegisterValue("pc", convert<uint32_t>(0));
@@ -87,7 +87,7 @@ TEST_F(PseudoInstructionTest, LA_32) {
 }
 
 TEST_F(PseudoInstructionTest, NOP_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
   testPseudoInstruction(memoryAccess, "nop", 1);
@@ -96,7 +96,7 @@ TEST_F(PseudoInstructionTest, NOP_32) {
 }
 
 TEST_F(PseudoInstructionTest, LI_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   // TODO Use 0xFFF.. instead of 0x111.. for this test.
   // Currently, the first one does not work due to issues with the parser.
@@ -109,7 +109,7 @@ TEST_F(PseudoInstructionTest, LI_32) {
 }
 
 TEST_F(PseudoInstructionTest, MV_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
   auto testValue = 0x12345678;
@@ -122,7 +122,7 @@ TEST_F(PseudoInstructionTest, MV_32) {
 }
 
 TEST_F(PseudoInstructionTest, NOT_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
   auto testValue = 0x12345678;
@@ -135,7 +135,7 @@ TEST_F(PseudoInstructionTest, NOT_32) {
 }
 
 TEST_F(PseudoInstructionTest, NEG_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
   auto testValue = 0x12345678;
@@ -148,7 +148,7 @@ TEST_F(PseudoInstructionTest, NEG_32) {
 }
 
 TEST_F(PseudoInstructionTest, NEGW_64) {
-  load({"rv32i", "rv64i"});
+  loadArchitecture({"rv32i", "rv64i"});
 
   auto memoryAccess = getMemoryAccess();
   auto testValue = 0x1234567812345678;
@@ -161,7 +161,7 @@ TEST_F(PseudoInstructionTest, NEGW_64) {
 }
 
 TEST_F(PseudoInstructionTest, SEXTW_64) {
-  load({"rv32i", "rv64i"});
+  loadArchitecture({"rv32i", "rv64i"});
 
   auto memoryAccess = getMemoryAccess();
   auto testValue = 0xFFFFFFFF80000001;
@@ -175,7 +175,7 @@ TEST_F(PseudoInstructionTest, SEXTW_64) {
 }
 
 TEST_F(PseudoInstructionTest, SEQZ_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
 
@@ -191,7 +191,7 @@ TEST_F(PseudoInstructionTest, SEQZ_32) {
 }
 
 TEST_F(PseudoInstructionTest, SNEZ_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
 
@@ -207,7 +207,7 @@ TEST_F(PseudoInstructionTest, SNEZ_32) {
 }
 
 TEST_F(PseudoInstructionTest, SLTZ_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
 
@@ -223,7 +223,7 @@ TEST_F(PseudoInstructionTest, SLTZ_32) {
 }
 
 TEST_F(PseudoInstructionTest, SGTZ_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
 
@@ -239,7 +239,7 @@ TEST_F(PseudoInstructionTest, SGTZ_32) {
 }
 
 TEST_F(PseudoInstructionTest, BEQZ_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
 
@@ -257,7 +257,7 @@ TEST_F(PseudoInstructionTest, BEQZ_32) {
 }
 
 TEST_F(PseudoInstructionTest, BNEZ_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
 
@@ -275,7 +275,7 @@ TEST_F(PseudoInstructionTest, BNEZ_32) {
 }
 
 TEST_F(PseudoInstructionTest, BLEZ_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
 
@@ -293,7 +293,7 @@ TEST_F(PseudoInstructionTest, BLEZ_32) {
 }
 
 TEST_F(PseudoInstructionTest, BGEZ_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
 
@@ -311,7 +311,7 @@ TEST_F(PseudoInstructionTest, BGEZ_32) {
 }
 
 TEST_F(PseudoInstructionTest, BLTZ_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
 
@@ -329,7 +329,7 @@ TEST_F(PseudoInstructionTest, BLTZ_32) {
 }
 
 TEST_F(PseudoInstructionTest, BGTZ_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
 
@@ -347,7 +347,7 @@ TEST_F(PseudoInstructionTest, BGTZ_32) {
 }
 
 TEST_F(PseudoInstructionTest, J_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
   memoryAccess.setRegisterValue("pc", convert<uint32_t>(8));
@@ -358,7 +358,7 @@ TEST_F(PseudoInstructionTest, J_32) {
 }
 
 TEST_F(PseudoInstructionTest, JAL_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
   memoryAccess.setRegisterValue("pc", convert<uint32_t>(8));
@@ -370,7 +370,7 @@ TEST_F(PseudoInstructionTest, JAL_32) {
 }
 
 TEST_F(PseudoInstructionTest, JR_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
   auto testValue = 42;
@@ -383,7 +383,7 @@ TEST_F(PseudoInstructionTest, JR_32) {
 }
 
 TEST_F(PseudoInstructionTest, JALR_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
   auto testValue = 42;
@@ -398,7 +398,7 @@ TEST_F(PseudoInstructionTest, JALR_32) {
 }
 
 TEST_F(PseudoInstructionTest, CALL_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
   memoryAccess.setRegisterValue("pc", convert<uint32_t>(0));
@@ -412,7 +412,7 @@ TEST_F(PseudoInstructionTest, CALL_32) {
 }
 
 TEST_F(PseudoInstructionTest, TAIL_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   auto memoryAccess = getMemoryAccess();
   memoryAccess.setRegisterValue("pc", convert<uint32_t>(0));

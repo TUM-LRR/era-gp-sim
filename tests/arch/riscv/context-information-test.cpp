@@ -22,13 +22,13 @@
 
 struct ContextInformationTest : public riscv::BaseFixture {
     ContextInformationTest() : public riscv::BaseFixture() {
-        load({"rv32i", "rv32m", "rv64i", "rv64m"});
+        loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
     }
 };
 
 TEST_F(ContextInformationTest, allExist) {
     Architecture arch = _project->getArchitectureAccess().getArchitecture().get();
-    NodeFactoryCollection factories = getFactories();
+    NodeFactoryCollection factories = factories;
     for(auto& pair : arch.getInstructions()) {
         const std::string& mnemonic = pair.second.getMnemonic();
         auto node = factories.createInstructionNode(mnemonic);

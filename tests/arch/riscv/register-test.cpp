@@ -50,7 +50,7 @@ struct RISCVRegisterTest : public riscv::BaseFixture {
 };
 
 TEST_F(RISCVRegisterTest, RV32I) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   
   // x0 is read-only with 0
@@ -65,7 +65,7 @@ TEST_F(RISCVRegisterTest, RV32I) {
 
     // factory works
     ASSERT_EQ(convert<uint32_t>(42),
-              getFactories()
+              factories
                   .createRegisterNode("x" + std::to_string(i))
                   ->getValue(memoryAccess));
 
@@ -76,7 +76,7 @@ TEST_F(RISCVRegisterTest, RV32I) {
 }
 
 TEST_F(RISCVRegisterTest, RV64I) {
-  load({"rv32i", "rv64i"});
+  loadArchitecture({"rv32i", "rv64i"});
   
 
   // x0 is read-only with 0
@@ -91,7 +91,7 @@ TEST_F(RISCVRegisterTest, RV64I) {
 
     // factory works
     ASSERT_EQ(convert<uint64_t>(42),
-              getFactories()
+              factories
                   .createRegisterNode("x" + std::to_string(i))
                   ->getValue(memoryAccess));
 

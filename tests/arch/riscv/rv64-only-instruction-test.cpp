@@ -40,13 +40,13 @@ struct RV64OnlyInstructionTest : public riscv::BaseFixture {
                                  uint64_t op1,
                                  uint64_t op2,
                                  uint64_t expectedResult) {
-    load({"rv32i", "rv64i"});
+    loadArchitecture({"rv32i", "rv64i"});
     
 
     memoryAccess.putRegisterValue(srcId, riscv::convert<uint64_t>(op1));
 
     // Set up instruction
-    auto instrFactory = getFactories();
+    auto instrFactory = factories;
     auto immediateFactory = ImmediateNodeFactory{};
     auto instr = instrFactory.createInstructionNode(instructionName);
 
@@ -76,14 +76,14 @@ struct RV64OnlyInstructionTest : public riscv::BaseFixture {
                                  uint64_t op1,
                                  uint64_t op2,
                                  uint64_t expectedResult) {
-    load({"rv32i", "rv64i"});
+    loadArchitecture({"rv32i", "rv64i"});
     
 
     memoryAccess.putRegisterValue(src1Id, riscv::convert<uint64_t>(op1));
     memoryAccess.putRegisterValue(src2Id, riscv::convert<uint64_t>(op2));
 
     // Set up instruction
-    auto instrFactory = getFactories();
+    auto instrFactory = factories;
     auto immediateFactory = ImmediateNodeFactory{};
     auto instr = instrFactory.createInstructionNode(instructionName);
 
@@ -120,12 +120,12 @@ struct RV64OnlyInstructionTest : public riscv::BaseFixture {
 
 
 TEST_F(RV64OnlyInstructionTest, Validation) {
-  load({"rv32i", "rv64i"});
+  loadArchitecture({"rv32i", "rv64i"});
   auto ri = {"addiw", "slliw", "srliw", "sraiw"};
   auto rr = {"addw", "subw", "sllw", "srlw", "sraw"};
 
   std::string registerId = "x1";// Not relevant
-  auto instrFactory = getFactories();
+  auto instrFactory = factories;
   auto immediateFactory = ImmediateNodeFactory{};
   
 

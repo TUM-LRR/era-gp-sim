@@ -53,12 +53,12 @@ struct LuiAuipcInstructionTest : public riscv::BaseFixture {
   performLuiTest(int32_t input,
                  T expectedOutput,
                  ArchitectureFormula::InitializerList modules) {
-    load(modules, 10);
-    
+    loadArchitecture(modules, 10);
 
+    auto& memoryAccess = getMemoryAccess();
 
     // Create factory & instruction
-    auto instrFactory = getFactories();
+    auto instrFactory = factories;
     auto immediateFactory = ImmediateNodeFactory{};
     auto instr = instrFactory.createInstructionNode("lui");
 
@@ -98,16 +98,14 @@ struct LuiAuipcInstructionTest : public riscv::BaseFixture {
                    T initialPc,
                    T expectedOutput,
                    ArchitectureFormula::InitializerList modules) {
-    load(modules, 10);
+    loadArchitecture(modules, 10);
 
-    
-
-
+    auto& memoryAccess = getMemoryAccess();
     // Set pc to a value
     memoryAccess.putRegisterValue(pcId, riscv::convert<T>(initialPc));
 
     // Create factory & instruction
-    auto instrFactory = getFactories();
+    auto instrFactory = factories;
     auto immediateFactory = ImmediateNodeFactory{};
     auto instr = instrFactory.createInstructionNode("auipc");
 
@@ -129,10 +127,11 @@ struct LuiAuipcInstructionTest : public riscv::BaseFixture {
 };
 
 TEST_F(LuiAuipcInstructionTest, Validation) {
-  load({"rv32i"});
-  
+  loadArchitecture({"rv32i"});
+  auto& memoryAccess = getMemoryAccess();
+
   auto immediateFactory = ImmediateNodeFactory{};
-  auto fact = getFactories();
+  auto fact = factories;
   auto lui = fact.createInstructionNode("lui");
   auto auipc = fact.createInstructionNode("auipc");
 

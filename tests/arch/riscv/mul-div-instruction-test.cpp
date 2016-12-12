@@ -30,7 +30,8 @@ struct MulDivInstructionTest : public riscv::BaseFixture {
 
 TEST_F(MulDivInstructionTest, MUL_32) {
   loadArchitecture({"rv32i", "rv32m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint32_t>, "mul", 42, 0, 0);
   TEST_RR(1, convert<uint32_t>, "mul", 0, 42, 0);
@@ -49,7 +50,8 @@ TEST_F(MulDivInstructionTest, MUL_32) {
 
 TEST_F(MulDivInstructionTest, MUL_64) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0,
           convert<uint64_t>,
@@ -103,7 +105,8 @@ TEST_F(MulDivInstructionTest, MUL_64) {
 
 TEST_F(MulDivInstructionTest, MULH_32) {
   loadArchitecture({"rv32i", "rv32m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint32_t>, "mulh", 0x00000000, 0x00000000, 0x00000000);
   TEST_RR(1, convert<uint32_t>, "mulh", 0x00000001, 0x00000001, 0x00000000);
@@ -124,7 +127,8 @@ TEST_F(MulDivInstructionTest, MULH_32) {
 
 TEST_F(MulDivInstructionTest, MULH_64) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint64_t>, "mulh", 0x00000000, 0x00000000, 0x00000000);
   TEST_RR(1, convert<uint64_t>, "mulh", 0x00000001, 0x00000001, 0x00000000);
@@ -154,7 +158,8 @@ TEST_F(MulDivInstructionTest, MULH_64) {
 
 TEST_F(MulDivInstructionTest, MULHU_32) {
   loadArchitecture({"rv32i", "rv32m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint32_t>, "mulhu", 0x00000000, 0x00000000, 0x00000000);
   TEST_RR(1, convert<uint32_t>, "mulhu", 0x00000001, 0x00000001, 0x00000000);
@@ -175,7 +180,8 @@ TEST_F(MulDivInstructionTest, MULHU_32) {
 
 TEST_F(MulDivInstructionTest, MULHU_64) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint64_t>, "mulhu", 0x00000000, 0x00000000, 0x00000000);
   TEST_RR(1, convert<uint64_t>, "mulhu", 0x00000001, 0x00000001, 0x00000000);
@@ -216,7 +222,8 @@ TEST_F(MulDivInstructionTest, MULHU_64) {
 
 TEST_F(MulDivInstructionTest, MULHSU_32) {
   loadArchitecture({"rv32i", "rv32m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint32_t>, "mulhsu", 0x00000000, 0x00000000, 0x00000000);
   TEST_RR(1, convert<uint32_t>, "mulhsu", 0x00000001, 0x00000001, 0x00000000);
@@ -237,7 +244,8 @@ TEST_F(MulDivInstructionTest, MULHSU_32) {
 
 TEST_F(MulDivInstructionTest, MULHSU_64) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint64_t>, "mulhsu", 0x00000000, 0x00000000, 0x00000000);
   TEST_RR(1, convert<uint64_t>, "mulhsu", 0x00000001, 0x00000001, 0x00000000);
@@ -265,7 +273,8 @@ TEST_F(MulDivInstructionTest, MULHSU_64) {
 
 TEST_F(MulDivInstructionTest, MULW) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint64_t>, "mulw", 0x00000000, 0x00000000, 0x00000000);
   TEST_RR(1, convert<uint64_t>, "mulw", 0x00000001, 0x00000001, 0x00000001);
@@ -294,7 +303,8 @@ TEST_F(MulDivInstructionTest, MULW) {
 
 TEST_F(MulDivInstructionTest, MultiplicationValidation) {
   loadArchitecture({"rv32i", "rv32m"});
-  auto instructionFactory = getFactories();
+  auto& memoryAccess = getMemoryAccess();
+  auto instructionFactory = factories;
   auto immediateFactory = ImmediateNodeFactory();
   auto memAccess = getMemoryAccess();
   testIntegerInstructionValidation(
@@ -306,15 +316,18 @@ TEST_F(MulDivInstructionTest, MultiplicationValidation) {
   testIntegerInstructionValidation(
       memAccess, instructionFactory, immediateFactory, "mulhsu", false);
   loadArchitecture({"rv32i", "rv64i", "rv32m", "rv64m"});
-  auto instructionFactory64 = getFactories();
   memAccess = getMemoryAccess();
+
+  auto instructionFactory64 = factories;
+
   testIntegerInstructionValidation(
       memAccess, instructionFactory64, immediateFactory, "mulw", false);
 }
 
 TEST_F(MulDivInstructionTest, DIV_32) {
   loadArchitecture({"rv32i", "rv32m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint32_t>, "div", 20, 6, 3);
   TEST_RR(1, convert<uint32_t>, "div", -20, 6, -3);
@@ -331,8 +344,8 @@ TEST_F(MulDivInstructionTest, DIV_32) {
 
 TEST_F(MulDivInstructionTest, DIV_64) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
+  auto& memoryAccess = getMemoryAccess();
 
-  
 
   TEST_RR(0, convert<uint64_t>, "div", 20, 6, 3);
   TEST_RR(1, convert<uint64_t>, "div", -20, 6, -3);
@@ -351,7 +364,8 @@ TEST_F(MulDivInstructionTest, DIV_64) {
 
 TEST_F(MulDivInstructionTest, DIVU_32) {
   loadArchitecture({"rv32i", "rv32m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint32_t>, "divu", 20, 6, 3);
   TEST_RR(1, convert<uint32_t>, "divu", -20, 6, 715827879);
@@ -369,7 +383,8 @@ TEST_F(MulDivInstructionTest, DIVU_32) {
 
 TEST_F(MulDivInstructionTest, DIVU_64) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint64_t>, "divu", 20, 6, 3);
   TEST_RR(1, convert<uint64_t>, "divu", -20, 6, 3074457345618258599);
@@ -391,7 +406,8 @@ TEST_F(MulDivInstructionTest, DIVU_64) {
 
 TEST_F(MulDivInstructionTest, DIVW) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint64_t>, "divw", 20, 6, 3);
   TEST_RR(1, convert<uint64_t>, "divw", -20, 6, -3);
@@ -410,7 +426,8 @@ TEST_F(MulDivInstructionTest, DIVW) {
 
 TEST_F(MulDivInstructionTest, DIVUW) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint64_t>, "divuw", 20, 6, 3);
   TEST_RR(1, convert<uint64_t>, "divuw", 0xFFFFFFEC, 6, 715827879);
@@ -428,7 +445,8 @@ TEST_F(MulDivInstructionTest, DIVUW) {
 
 TEST_F(MulDivInstructionTest, DivisionValidation) {
   loadArchitecture({"rv32i", "rv32m"});
-  auto instructionFactory = getFactories();
+  auto& memoryAccess = getMemoryAccess();
+  auto instructionFactory = factories;
   auto immediateFactory = ImmediateNodeFactory();
   auto memAccess = getMemoryAccess();
   testIntegerInstructionValidation(
@@ -437,8 +455,9 @@ TEST_F(MulDivInstructionTest, DivisionValidation) {
       memAccess, instructionFactory, immediateFactory, "divu", false);
 
   loadArchitecture({"rv32i", "rv64i", "rv32m", "rv64m"});
-  auto instructionFactory64 = getFactories();
   memAccess = getMemoryAccess();
+  auto instructionFactory64 = factories;
+
   testIntegerInstructionValidation(
       memAccess, instructionFactory64, immediateFactory, "divw", false);
   testIntegerInstructionValidation(
@@ -447,7 +466,8 @@ TEST_F(MulDivInstructionTest, DivisionValidation) {
 
 TEST_F(MulDivInstructionTest, REM_32) {
   loadArchitecture({"rv32i", "rv32m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint32_t>, "rem", 20, 6, 2);
   TEST_RR(1, convert<uint32_t>, "rem", -20, 6, -2);
@@ -465,7 +485,8 @@ TEST_F(MulDivInstructionTest, REM_32) {
 
 TEST_F(MulDivInstructionTest, REM_64) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint64_t>, "rem", 20, 6, 2);
   TEST_RR(1, convert<uint64_t>, "rem", -20, 6, -2);
@@ -483,7 +504,8 @@ TEST_F(MulDivInstructionTest, REM_64) {
 
 TEST_F(MulDivInstructionTest, REMU_32) {
   loadArchitecture({"rv32i", "rv32m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint32_t>, "remu", 20, 6, 2);
   TEST_RR(1, convert<uint32_t>, "remu", -20, 6, 2);
@@ -500,7 +522,8 @@ TEST_F(MulDivInstructionTest, REMU_32) {
 
 TEST_F(MulDivInstructionTest, REMU_64) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint64_t>, "remu", 20, 6, 2);
   TEST_RR(1, convert<uint64_t>, "remu", -20, 6, 2);
@@ -523,7 +546,8 @@ TEST_F(MulDivInstructionTest, REMU_64) {
 
 TEST_F(MulDivInstructionTest, REMW) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint64_t>, "remw", 20, 6, 2);
   TEST_RR(1, convert<uint64_t>, "remw", -20, 6, -2);
@@ -547,7 +571,8 @@ TEST_F(MulDivInstructionTest, REMW) {
 
 TEST_F(MulDivInstructionTest, REMUW) {
   loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-  
+  auto& memoryAccess = getMemoryAccess();
+
 
   TEST_RR(0, convert<uint64_t>, "remuw", 20, 6, 2);
   TEST_RR(1, convert<uint64_t>, "remuw", -20, 6, 2);
@@ -570,7 +595,8 @@ TEST_F(MulDivInstructionTest, REMUW) {
 
 TEST_F(MulDivInstructionTest, RemainderValidation) {
   loadArchitecture({"rv32i", "rv32m"});
-  auto instructionFactory = getFactories();
+  auto& memoryAccess = getMemoryAccess();
+  auto instructionFactory = factories;
   auto immediateFactory = ImmediateNodeFactory();
   auto memAccess = getMemoryAccess();
   testIntegerInstructionValidation(
@@ -579,8 +605,9 @@ TEST_F(MulDivInstructionTest, RemainderValidation) {
       memAccess, instructionFactory, immediateFactory, "remu", false);
 
   loadArchitecture({"rv32i", "rv64i", "rv32m", "rv64m"});
-  auto instructionFactory64 = getFactories();
+  auto instructionFactory64 = factories;
   memAccess = getMemoryAccess();
+
   testIntegerInstructionValidation(
       memAccess, instructionFactory64, immediateFactory, "remw", false);
   testIntegerInstructionValidation(

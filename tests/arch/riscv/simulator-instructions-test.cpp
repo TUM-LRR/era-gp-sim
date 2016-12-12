@@ -21,11 +21,11 @@
 struct SimulatorInstructionTest : public riscv::BaseFixture {};
 
 TEST_F(SimulatorInstructionTest, SIMUCRASH) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
   std::string customErrorMsg = "Oh no, something went wrong :(";
   
-  auto factories = getFactories();
+  auto factories = factories;
 
   auto instr = factories.createInstructionNode("simucrash");
   ASSERT_FALSE(instr->validate(memoryAccess).isSuccess());
@@ -45,10 +45,10 @@ TEST_F(SimulatorInstructionTest, SIMUCRASH) {
 
 TEST_F(SimulatorInstructionTest, SIMUCRASH_validation) {
   using Type = AbstractSyntaxTreeNode::Type;
-  load({"rv32i", "rv64i"});
+  loadArchitecture({"rv32i", "rv64i"});
 
   
-  auto factories = getFactories();
+  auto factories = factories;
 
   auto twoOpInstruction = factories.createInstructionNode("simucrash");
   twoOpInstruction->addChild(factories.createDataNode(""));
@@ -66,8 +66,8 @@ TEST_F(SimulatorInstructionTest, SIMUCRASH_validation) {
 
 TEST_F(SimulatorInstructionTest, SIMUSLEEP) {
   constexpr riscv::signed32_t sleeptime = 200;
-  load({"rv32i"});
-  auto factories = getFactories();
+  loadArchitecture({"rv32i"});
+  auto factories = factories;
   auto memoryAccess = getMemoryAccess();
 
   auto instr = factories.createInstructionNode("simusleep");
@@ -84,11 +84,11 @@ TEST_F(SimulatorInstructionTest, SIMUSLEEP) {
 }
 
 TEST_F(SimulatorInstructionTest, SIMUSLEEP_validation) {
-    load({"rv32i", "rv64i"});
+    loadArchitecture({"rv32i", "rv64i"});
 
 
     
-    auto factories = getFactories();
+    auto factories = factories;
 
     auto twoOpInstr = factories.createInstructionNode("simusleep");
     ASSERT_FALSE(twoOpInstr->validate(memoryAccess).isSuccess());
