@@ -17,8 +17,8 @@
   * along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
 
-#ifndef INPUTTEXTMODEL_H
-#define INPUTTEXTMODEL_H
+#ifndef INPUTTEXTMODEL_HPP
+#define INPUTTEXTMODEL_HPP
 
 #include <QObject>
 #include <QQmlContext>
@@ -73,4 +73,4 @@ class InputTextModel : QObject {
   void maximumLengthChanged();
 };
 
-#endif// INPUTTEXTMODEL_H
+#endif// INPUTTEXTMODEL_HPP

@@ -28,8 +28,8 @@ InputButtonModel::InputButtonModel(QQmlContext* context,
 
 void InputButtonModel::buttonClicked(unsigned int id) {
   // save id at start in Memory
-  MemoryValue m = conversions::convert(id, 32);
-  _memoryAccess.putMemoryValueAt(_start, m);
+  MemoryValue memoryValue = conversions::convert(id, 32);
+  _memoryAccess.putMemoryValueAt(_start, memoryValue);
 }
 
 QString InputButtonModel::getStart() {
@@ -38,6 +38,6 @@ QString InputButtonModel::getStart() {
 
 void InputButtonModel::setStart(unsigned int start) {
   if (_memoryAccess.getMemorySize().get() > start + 2) {
-    this->_start = start;
+    _start = start;
   }
 }
