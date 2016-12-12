@@ -24,7 +24,6 @@
 
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
-#include "arch/common/register-node.hpp"
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "tests/arch/riscv/test-utils.hpp"
@@ -32,96 +31,96 @@
 using namespace riscv;
 
 struct RV64OnlyInstructionTest : public RiscvBaseTest {
-    std::string destId{"x1"}, srcId{"x2"}, src1Id{"x2"}, src2Id{"x3"};
+  std::string destId{"x1"}, srcId{"x2"}, src1Id{"x2"}, src2Id{"x3"};
 
-    /**
-     * Tests Register-Immediate instructions.
-     */
-    void testRV64OnlyInstructionRI(const std::string& instructionName,
-                                   uint64_t op1,
-                                   uint64_t op2,
-                                   uint64_t expectedResult) {
-      load({"rv32i", "rv64i"});
-      MemoryAccess memoryAccess = getMemoryAccess();
+  /**
+   * Tests Register-Immediate instructions.
+   */
+  void testRV64OnlyInstructionRI(const std::string& instructionName,
+                                 uint64_t op1,
+                                 uint64_t op2,
+                                 uint64_t expectedResult) {
+    load({"rv32i", "rv64i"});
+    MemoryAccess memoryAccess = getMemoryAccess();
 
-      memoryAccess.putRegisterValue(srcId, riscv::convert<uint64_t>(op1));
+    memoryAccess.putRegisterValue(srcId, riscv::convert<uint64_t>(op1));
 
-      // Set up instruction
-      auto instrFactory = getFactories();
-      auto immediateFactory = ImmediateNodeFactory{};
-      auto instr = instrFactory.createInstructionNode(instructionName);
+    // Set up instruction
+    auto instrFactory = getFactories();
+    auto immediateFactory = ImmediateNodeFactory{};
+    auto instr = instrFactory.createInstructionNode(instructionName);
 
-      // Fill instruction with arguments
-      ASSERT_TRUE(instr);
-      ASSERT_FALSE(instr->validate(memoryAccess));
-      instr->addChild(std::make_unique<RegisterNode>(destId));
-      ASSERT_FALSE(instr->validate(memoryAccess));
-      instr->addChild(std::make_unique<RegisterNode>(srcId));
-      ASSERT_FALSE(instr->validate(memoryAccess));
-      instr->addChild(
-          immediateFactory.createImmediateNode(riscv::convert<uint64_t>(op2)));
-      ASSERT_TRUE(instr->validate(memoryAccess));
+    // Fill instruction with arguments
+    ASSERT_TRUE(instr);
+    ASSERT_FALSE(instr->validate(memoryAccess));
+    instr->addChild(std::make_unique<RegisterNode>(destId));
+    ASSERT_FALSE(instr->validate(memoryAccess));
+    instr->addChild(std::make_unique<RegisterNode>(srcId));
+    ASSERT_FALSE(instr->validate(memoryAccess));
+    instr->addChild(
+        immediateFactory.createImmediateNode(riscv::convert<uint64_t>(op2)));
+    ASSERT_TRUE(instr->validate(memoryAccess));
 
-      // Execute
-      instr->getValue(memoryAccess);
+    // Execute
+    instr->getValue(memoryAccess);
 
-      // Check result
-      MemoryValue result = memoryAccess.getRegisterValue(destId).get();
-      ASSERT_EQ(riscv::convert<uint64_t>(result), expectedResult);
-    }
+    // Check result
+    MemoryValue result = memoryAccess.getRegisterValue(destId).get();
+    ASSERT_EQ(riscv::convert<uint64_t>(result), expectedResult);
+  }
 
-    /**
-     * Tests Register-Register instructions.
-     */
-    void testRV64OnlyInstructionRR(const std::string& instructionName,
-                                   uint64_t op1,
-                                   uint64_t op2,
-                                   uint64_t expectedResult) {
-        load({"rv32i", "rv64i"});
-      MemoryAccess memoryAccess = getMemoryAccess();
+  /**
+   * Tests Register-Register instructions.
+   */
+  void testRV64OnlyInstructionRR(const std::string& instructionName,
+                                 uint64_t op1,
+                                 uint64_t op2,
+                                 uint64_t expectedResult) {
+    load({"rv32i", "rv64i"});
+    MemoryAccess memoryAccess = getMemoryAccess();
 
-      memoryAccess.putRegisterValue(src1Id, riscv::convert<uint64_t>(op1));
-      memoryAccess.putRegisterValue(src2Id, riscv::convert<uint64_t>(op2));
+    memoryAccess.putRegisterValue(src1Id, riscv::convert<uint64_t>(op1));
+    memoryAccess.putRegisterValue(src2Id, riscv::convert<uint64_t>(op2));
 
-      // Set up instruction
-      auto instrFactory = getFactories();
-      auto immediateFactory = ImmediateNodeFactory{};
-      auto instr = instrFactory.createInstructionNode(instructionName);
+    // Set up instruction
+    auto instrFactory = getFactories();
+    auto immediateFactory = ImmediateNodeFactory{};
+    auto instr = instrFactory.createInstructionNode(instructionName);
 
-      // Fill instruction with arguments
-      ASSERT_TRUE(instr);
-      ASSERT_FALSE(instr->validate(memoryAccess));
-      instr->addChild(std::make_unique<RegisterNode>(destId));
-      ASSERT_FALSE(instr->validate(memoryAccess));
-      instr->addChild(std::make_unique<RegisterNode>(src1Id));
-      ASSERT_FALSE(instr->validate(memoryAccess));
-      instr->addChild(std::make_unique<RegisterNode>(src2Id));
-      ASSERT_TRUE(instr->validate(memoryAccess));
+    // Fill instruction with arguments
+    ASSERT_TRUE(instr);
+    ASSERT_FALSE(instr->validate(memoryAccess));
+    instr->addChild(std::make_unique<RegisterNode>(destId));
+    ASSERT_FALSE(instr->validate(memoryAccess));
+    instr->addChild(std::make_unique<RegisterNode>(src1Id));
+    ASSERT_FALSE(instr->validate(memoryAccess));
+    instr->addChild(std::make_unique<RegisterNode>(src2Id));
+    ASSERT_TRUE(instr->validate(memoryAccess));
 
-      // Execute
-      instr->getValue(memoryAccess);
+    // Execute
+    instr->getValue(memoryAccess);
 
-      // Check result
-      MemoryValue result = memoryAccess.getRegisterValue(destId).get();
-      ASSERT_EQ(riscv::convert<uint64_t>(result), expectedResult);
-    }
+    // Check result
+    MemoryValue result = memoryAccess.getRegisterValue(destId).get();
+    ASSERT_EQ(riscv::convert<uint64_t>(result), expectedResult);
+  }
 
-    /**
-     * Tests both Register-Immediate & Register-Register instructions.
-     */
-    void testRV64OnlyInstructions(const std::string& instructionNameRI,
-                                  const std::string& instructionNameRR,
-                                  uint64_t op1,
-                                  uint64_t op2,
-                                  uint64_t expectedResult) {
-      testRV64OnlyInstructionRI(instructionNameRI, op1, op2, expectedResult);
-      testRV64OnlyInstructionRR(instructionNameRR, op1, op2, expectedResult);
-    }
+  /**
+   * Tests both Register-Immediate & Register-Register instructions.
+   */
+  void testRV64OnlyInstructions(const std::string& instructionNameRI,
+                                const std::string& instructionNameRR,
+                                uint64_t op1,
+                                uint64_t op2,
+                                uint64_t expectedResult) {
+    testRV64OnlyInstructionRI(instructionNameRI, op1, op2, expectedResult);
+    testRV64OnlyInstructionRR(instructionNameRR, op1, op2, expectedResult);
+  }
 };
 
 
 TEST_F(RV64OnlyInstructionTest, Validation) {
-    load({"rv32i", "rv64i"});
+  load({"rv32i", "rv64i"});
   auto ri = {"addiw", "slliw", "srliw", "sraiw"};
   auto rr = {"addw", "subw", "sllw", "srlw", "sraw"};
 

@@ -559,6 +559,15 @@ constexpr T appendBits(const T &original, const U &value) noexcept {
   return (original << numberOfBits) | (value & mask);
 }
 
+/**
+ * Slices out a range of bits from a value.
+ *
+ * \tparam firstBit The bit at which to start the slice.
+ * \tparam lastBit The bit at which to end the slice.
+ * \param original The value to slice.
+ * \return The bits between `firstBit` and `lastBit` within the given `original`
+ * value.
+ */
 template <std::size_t firstBit, std::size_t lastBit, typename T>
 constexpr T sliceBits(const T &original) noexcept {
   constexpr std::size_t numberOfBits = lastBit - firstBit + 1;
@@ -575,10 +584,13 @@ constexpr T sliceBits(const T &original) noexcept {
   return (original & (mask << firstBit)) >> firstBit;
 }
 
+/**
+ * Appends a slice of bits from one number to the back of another number.
+ */
 template <std::size_t firstBit, std::size_t lastBit, typename T, typename U>
-constexpr T appendBitSlice(const T &original, const U &value) {
-  constexpr auto slice = sliceBits<firstBit, lastBit>(value);
-  return appendBits<firstBit + lastBit + 1>(original, slice);
+T appendBitSlice(const T &original, const U &value) {
+  auto slice = sliceBits<firstBit, lastBit>(value);
+  return appendBits<lastBit - firstBit + 1>(original, slice);
 }
 }
 

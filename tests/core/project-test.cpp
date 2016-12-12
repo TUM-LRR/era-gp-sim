@@ -320,7 +320,7 @@ TEST_F(ProjectTestFixture, SleepTest) {
 }
 
 TEST_F(ProjectTestFixture, SerializationTest) {
-  std::mt19937 randomGenerator(8210511586);
+  std::mt19937 randomGenerator((std::random_device())());
   std::uniform_int_distribution<std::uint32_t> distribution(0, UINT32_MAX);
   MemoryManager memoryManager = projectModule.getMemoryManager();
   MemoryAccess memoryAccess = projectModule.getMemoryAccess();

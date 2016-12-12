@@ -17,6 +17,9 @@
 
 #include "arch/riscv/register-node.hpp"
 #include "arch/riscv/utility.hpp"
+#include "common/assert.hpp"
+
+namespace riscv {
 
 RegisterNode::RegisterNode(const std::string& identifier)
 : AbstractRegisterNode(identifier) {
@@ -24,18 +27,8 @@ RegisterNode::RegisterNode(const std::string& identifier)
 
 MemoryValue RegisterNode::assemble() const {
   // all register identifiers of riscv start with x
-  auto number = getIdentifier().substr(1);
-  if (!number.empty()) {
-    try {
-      unsigned int registerId = std::stoi(number);
-      return conversions::convert(registerId,
-                                  5,
-                                  riscv::BITS_PER_BYTE,
-                                  riscv::ENDIANNESS,
-                                  riscv::SIGNED_REPRESENTATION);
-    } catch (std::invalid_argument& ignore) {
-    } catch (std::out_of_range& ignore) {
-    }
-  }
-  return MemoryValue{5};
+  auto registerIdentifier = std::stoi(getIdentifier().substr(1));
+  assert::that(registerIdentifier < 32);
+  return riscv::convert(registerIdentifier);
+}
 }

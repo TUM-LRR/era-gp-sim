@@ -34,7 +34,12 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Qml REQUIRED)
 find_package(Qt5Quick REQUIRED)
 
-include_directories(/usr/local/opt/qt5/include/)
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
+
+add_definitions(${Qt5Widgets_DEFINITIONS})
+
+# Add compiler flags for building executables (-fPIE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 ########################################
 # INCLUDES

@@ -4,6 +4,7 @@
 
 set(ARCH_COMMON_SOURCES
   abstract-syntax-tree-node.cpp
+  abstract-register-node.cpp
   architecture-brewery.cpp
   architecture.cpp
   architecture-formula.cpp

@@ -26,11 +26,14 @@ AbstractRegisterNode::AbstractRegisterNode(const std::string& identifier)
 : AbstractSyntaxTreeNode(Type::REGISTER), _identifier(identifier) {
 }
 
+AbstractRegisterNode::~AbstractRegisterNode() = default;
+
 MemoryValue AbstractRegisterNode::getValue(MemoryAccess& memoryAccess) const {
   return memoryAccess.getRegisterValue(_identifier).get();
 }
 
-ValidationResult AbstractRegisterNode::validate(MemoryAccess& memoryAccess) const {
+ValidationResult
+AbstractRegisterNode::validate(MemoryAccess& memoryAccess) const {
   // Registers can't have any children
   if (AbstractSyntaxTreeNode::_children.size() == 0) {
     return ValidationResult::success();

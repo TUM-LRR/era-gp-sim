@@ -3,15 +3,16 @@
 ########################################
 
 set(ARCH_RISCV_SOURCES
-  instruction-node.cpp
-  immediate-node-factory.cpp
-  register-node-factory.cpp
-  instruction-node-factory.cpp
-  format.cpp
-  factory-map.cpp
   data-node-factory.cpp
   documentation-builder.cpp
+  factory-map.cpp
+  format.cpp
+  immediate-node-factory.cpp
   instruction-context-information.cpp
+  instruction-node-factory.cpp
+  instruction-node.cpp
+  register-node-factory.cpp
+  register-node.cpp
   simulator-instructions.cpp
 )
 

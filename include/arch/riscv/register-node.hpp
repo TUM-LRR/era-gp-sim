@@ -14,20 +14,35 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+
 #ifndef ERAGPSIM_ARCH_RISCV_REGISTERNODE_HPP
 #define ERAGPSIM_ARCH_RISCV_REGISTERNODE_HPP
+
+#include <string>
 
 #include "arch/common/abstract-register-node.hpp"
 
 namespace riscv {
 
+/**
+ * A concrete register node for RISC-V.
+ *
+ * It differs mainly from other register nodes in that it must handle
+ * assembly specifically for RISC-V.
+ */
 class RegisterNode : public AbstractRegisterNode {
+ public:
+  /**
+   * Constructs the register node with the given identifier.
+   * \param  identifier The string identifier for the register.
+   */
+  explicit RegisterNode(const std::string &identifier);
 
-public:
-    explicit RegisterNode(const std::string &identifier);
-
-    MemoryValue assemble() const override;
+  /**
+   * \copydoc AbstractSyntaxTreeNode::assemble()
+   */
+  MemoryValue assemble() const override;
 };
 }
 
-#endif // ERAGPSIM_ARCH_RISCV_REGISTERNODE_HPP
+#endif// ERAGPSIM_ARCH_RISCV_REGISTERNODE_HPP
