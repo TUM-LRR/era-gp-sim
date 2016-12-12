@@ -128,7 +128,7 @@ MemoryValue U(const InstructionKey& key, const Arguments& arguments) {
   using riscv::appendBitSlice;
 
   riscv::unsigned32_t bits = 0;
-  bits = appendBitSlice<12, 31>(bits, arguments[1]);
+  bits = appendBitSlice<0, 19>(bits, arguments[1]);
   bits = appendBits<5>(bits, arguments[0]);
   bits = appendBits<7>(bits, key["opcode"]);
 
