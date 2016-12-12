@@ -60,10 +60,10 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/source)
 # BINARIES
 ########################################
 
-option(ERA_GP_SIM_BUILD_ARCH "Enable compilation of arch modules" ON)
-option(ERA_GP_SIM_BUILD_PARSER "Enable compilation of parser modules" ON)
-option(ERA_GP_SIM_BUILD_CORE "Enable compilation of core modules" ON)
-option(ERA_GP_SIM_BUILD_GUI "Enable compilation of gui modules" ON)
+option(ERA_SIM_BUILD_ARCH "Enable compilation of arch modules" ON)
+option(ERA_SIM_BUILD_PARSER "Enable compilation of parser modules" ON)
+option(ERA_SIM_BUILD_CORE "Enable compilation of core modules" ON)
+option(ERA_SIM_BUILD_GUI "Enable compilation of gui modules" ON)
 
 message(STATUS "Building to directory ${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -72,9 +72,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # TESTS
 ########################################
 
-option(ERA_GP_SIM_TESTS "Enable tests" ON)
+option(ERA_SIM_TESTS "Enable tests" ON)
 
-if(ERA_GP_SIM_TESTS)
+if(ERA_SIM_TESTS)
   message(STATUS "Enabling and adding tests")
   enable_testing()
   add_subdirectory(tests)

@@ -31,7 +31,7 @@ set(UI_HEADERS
 # EXECUTABLE
 ########################################
 
-if (ERA_GP_SIM_BUILD_GUI)
+if (ERA_SIM_BUILD_GUI)
   qt5_add_resources(UI_RESOURCES qml.qrc)
   qt5_wrap_cpp(UI_HEADERS_WRAPPED ${UI_HEADERS})
 

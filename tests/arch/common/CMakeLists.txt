@@ -12,7 +12,7 @@ set(TEST_ARCH_COMMON_SOURCES
 # TARGET
 ########################################
 
-if (ERA_GP_SIM_BUILD_ARCH)
+if (ERA_SIM_BUILD_ARCH)
   add_executable(era-sim-arch-common-tests ${TEST_ARCH_COMMON_SOURCES})
 
   target_link_libraries(era-sim-arch-common-tests era-sim-arch-common)

@@ -39,7 +39,7 @@ set(PARSER_SOURCES
 # TARGET
 ########################################
 
-if (ERA_GP_SIM_BUILD_PARSER)
+if (ERA_SIM_BUILD_PARSER)
   add_library(era-sim-parser STATIC ${PARSER_SOURCES})
   target_link_libraries(era-sim-parser era-sim-common era-sim-arch-common)
 endif()

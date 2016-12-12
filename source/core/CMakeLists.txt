@@ -19,7 +19,7 @@ set(CORE_SOURCES
 # TARGET
 ########################################
 
-if (ERA_GP_SIM_BUILD_CORE)
+if (ERA_SIM_BUILD_CORE)
   add_library(era-sim-core STATIC ${CORE_SOURCES})
 
   target_link_libraries(era-sim-core era-sim-common era-sim-parser era-sim-arch-common)

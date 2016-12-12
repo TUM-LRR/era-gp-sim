@@ -16,7 +16,7 @@ set(TEST_CORE_SOURCES
 # TARGET
 ########################################
 
-if (ERA_GP_SIM_BUILD_CORE)
+if (ERA_SIM_BUILD_CORE)
   add_executable(era-sim-core-tests ${TEST_CORE_SOURCES})
 
   target_link_libraries(era-sim-core-tests era-sim-core)
