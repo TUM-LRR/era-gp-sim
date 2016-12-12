@@ -26,111 +26,111 @@
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/lui-auipc-instructions.hpp"
-#include "tests/arch/riscv/test-utils.hpp"
+#include "tests/arch/riscv/base-fixture.hpp"
 
 using namespace riscv;
 
-struct LuiAuipcInstructionTest : public RiscvBaseTest {
+struct LuiAuipcInstructionTest : public riscv::BaseFixture {
+  LuiAuipcInstructionTest() : destId("x1"), pcId("pc") {
+  }
 
-    LuiAuipcInstructionTest() : destId("x1"), pcId("pc") {}
-
-    std::string destId, pcId;
+  std::string destId, pcId;
 
 
-    /**
-     * Tests the lui instruction.
-     *
-     * \tparam T The unsigned word size of the architecture. The result of the lui
-     *         operation must be of that type.
-     * \param input The input to the lui instruction (passed as immediate value)
-     * \param expectedOutput The expected output of the lui instruction
-     * \param modules The modules to be passed to the architecture formula
-     */
-    template <typename T>
-    typename std::enable_if<std::is_integral<T>::value &&
-                                std::is_unsigned<T>::value,
-                            void>::type
-    performLuiTest(int32_t input,
+  /**
+   * Tests the lui instruction.
+   *
+   * \tparam T The unsigned word size of the architecture. The result of the lui
+   *         operation must be of that type.
+   * \param input The input to the lui instruction (passed as immediate value)
+   * \param expectedOutput The expected output of the lui instruction
+   * \param modules The modules to be passed to the architecture formula
+   */
+  template <typename T>
+  typename std::enable_if<std::is_integral<T>::value &&
+                              std::is_unsigned<T>::value,
+                          void>::type
+  performLuiTest(int32_t input,
+                 T expectedOutput,
+                 ArchitectureFormula::InitializerList modules) {
+    load(modules, 10);
+    
+
+
+    // Create factory & instruction
+    auto instrFactory = getFactories();
+    auto immediateFactory = ImmediateNodeFactory{};
+    auto instr = instrFactory.createInstructionNode("lui");
+
+    // Fill arguments
+    ASSERT_FALSE(instr->validate(memoryAccess));
+    instr->addChild(std::make_unique<RegisterNode>(destId));
+    ASSERT_FALSE(instr->validate(memoryAccess));
+    instr->addChild(
+        immediateFactory.createImmediateNode(riscv::convert<int32_t>(input)));
+    ASSERT_TRUE(instr->validate(memoryAccess));
+
+    // Execute
+    instr->getValue(memoryAccess);
+
+    // Check result
+    MemoryValue result = memoryAccess.getRegisterValue(destId).get();
+    ASSERT_EQ(riscv::convert<T>(result), expectedOutput);
+  }
+
+
+  /**
+   * Tests the auipc instruction.
+   *
+   * \tparam T The unsigned word size of the architecture. The result of the
+   * auipc
+   *         operation must be of that type
+   * \param input The input to the auipc operation (passed as immediate)
+   * \param initialPc The initial value of the pc (program counter)
+   * \param expectedOutput The expected value of the destination register
+   * \param modules The modules passed to the architecture formula
+   */
+  template <typename T>
+  typename std::enable_if<std::is_integral<T>::value &&
+                              std::is_unsigned<T>::value,
+                          void>::type
+  performAuipcTest(uint32_t input,
+                   T initialPc,
                    T expectedOutput,
                    ArchitectureFormula::InitializerList modules) {
-      load(modules, 10);
-      MemoryAccess memoryAccess = getMemoryAccess();
+    load(modules, 10);
+
+    
 
 
-      // Create factory & instruction
-      auto instrFactory = getFactories();
-      auto immediateFactory = ImmediateNodeFactory{};
-      auto instr = instrFactory.createInstructionNode("lui");
+    // Set pc to a value
+    memoryAccess.putRegisterValue(pcId, riscv::convert<T>(initialPc));
 
-      // Fill arguments
-      ASSERT_FALSE(instr->validate(memoryAccess));
-      instr->addChild(std::make_unique<RegisterNode>(destId));
-      ASSERT_FALSE(instr->validate(memoryAccess));
-      instr->addChild(
-          immediateFactory.createImmediateNode(riscv::convert<int32_t>(input)));
-      ASSERT_TRUE(instr->validate(memoryAccess));
+    // Create factory & instruction
+    auto instrFactory = getFactories();
+    auto immediateFactory = ImmediateNodeFactory{};
+    auto instr = instrFactory.createInstructionNode("auipc");
 
-      // Execute
-      instr->getValue(memoryAccess);
+    // Fill arguments
+    ASSERT_FALSE(instr->validate(memoryAccess));
+    instr->addChild(std::make_unique<RegisterNode>(destId));
+    ASSERT_FALSE(instr->validate(memoryAccess));
+    instr->addChild(
+        immediateFactory.createImmediateNode(riscv::convert<uint32_t>(input)));
+    ASSERT_TRUE(instr->validate(memoryAccess));
 
-      // Check result
-      MemoryValue result = memoryAccess.getRegisterValue(destId).get();
-      ASSERT_EQ(riscv::convert<T>(result), expectedOutput);
-    }
+    // Execute
+    instr->getValue(memoryAccess);
 
-
-    /**
-     * Tests the auipc instruction.
-     *
-     * \tparam T The unsigned word size of the architecture. The result of the auipc
-     *         operation must be of that type
-     * \param input The input to the auipc operation (passed as immediate)
-     * \param initialPc The initial value of the pc (program counter)
-     * \param expectedOutput The expected value of the destination register
-     * \param modules The modules passed to the architecture formula
-     */
-    template <typename T>
-    typename std::enable_if<std::is_integral<T>::value &&
-                                std::is_unsigned<T>::value,
-                            void>::type
-    performAuipcTest(uint32_t input,
-                     T initialPc,
-                     T expectedOutput,
-                     ArchitectureFormula::InitializerList modules) {
-      load(modules, 10);
-
-      MemoryAccess memoryAccess = getMemoryAccess();
-
-
-      // Set pc to a value
-      memoryAccess.putRegisterValue(pcId, riscv::convert<T>(initialPc));
-
-      // Create factory & instruction
-      auto instrFactory = getFactories();
-      auto immediateFactory = ImmediateNodeFactory{};
-      auto instr = instrFactory.createInstructionNode("auipc");
-
-      // Fill arguments
-      ASSERT_FALSE(instr->validate(memoryAccess));
-      instr->addChild(std::make_unique<RegisterNode>(destId));
-      ASSERT_FALSE(instr->validate(memoryAccess));
-      instr->addChild(
-          immediateFactory.createImmediateNode(riscv::convert<uint32_t>(input)));
-      ASSERT_TRUE(instr->validate(memoryAccess));
-
-      // Execute
-      instr->getValue(memoryAccess);
-
-      // Check result
-      MemoryValue result = memoryAccess.getRegisterValue(destId).get();
-      ASSERT_EQ(riscv::convert<T>(result), expectedOutput);
-    }
-
+    // Check result
+    MemoryValue result = memoryAccess.getRegisterValue(destId).get();
+    ASSERT_EQ(riscv::convert<T>(result), expectedOutput);
+  }
 };
 
 TEST_F(LuiAuipcInstructionTest, Validation) {
   load({"rv32i"});
-  MemoryAccess memoryAccess = getMemoryAccess();
+  
   auto immediateFactory = ImmediateNodeFactory{};
   auto fact = getFactories();
   auto lui = fact.createInstructionNode("lui");

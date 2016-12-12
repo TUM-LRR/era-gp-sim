@@ -27,11 +27,11 @@
 #include "arch/riscv/utility.hpp"
 #include "core/memory-access.hpp"
 
-#include "tests/arch/riscv/test-utils.hpp"
+#include "tests/arch/riscv/base-fixture.hpp"
 
 using namespace riscv;
 
-struct RISCVRegisterTest : RiscvBaseTest {
+struct RISCVRegisterTest : public riscv::BaseFixture {
   void set(const std::string id, MemoryValue value) {
     getMemoryAccess().putRegisterValue(id, value);
   }
@@ -52,7 +52,7 @@ struct RISCVRegisterTest : RiscvBaseTest {
 TEST_F(RISCVRegisterTest, RV32I) {
   load({"rv32i"});
 
-  MemoryAccess memoryAccess = getMemoryAccess();
+  
   // x0 is read-only with 0
   ASSERT_TRUE(get("x0").isZero());
   set("x0", convert<uint32_t>(42));
@@ -77,7 +77,7 @@ TEST_F(RISCVRegisterTest, RV32I) {
 
 TEST_F(RISCVRegisterTest, RV64I) {
   load({"rv32i", "rv64i"});
-  MemoryAccess memoryAccess = getMemoryAccess();
+  
 
   // x0 is read-only with 0
   ASSERT_TRUE(get("x0").isZero());

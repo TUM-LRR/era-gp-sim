@@ -15,106 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <gtest/gtest.h>
-#include <cstdint>
-#include <iostream>
-#include <iostream>
-#include <iterator>
-#include <memory>
-#include <vector>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
-#include "arch/common/immediate-node.hpp"
-#include "arch/common/immediate-node.hpp"
-#include "arch/common/instruction-key.hpp"
-#include "arch/common/instruction-set.hpp"
-#include "arch/riscv/format.hpp"
-#include "arch/riscv/instruction-node.hpp"
-#include "arch/riscv/integer-instructions.hpp"
-#include "arch/riscv/register-node.hpp"
-#include "core/memory-value.hpp"
+#include "gtest/gtest.h"
+
+#include "tests/arch/riscv/base-fixture.hpp"
 
 using namespace riscv;
 
-// testing the immediate transformations
-// struct ImmediateFormatTest : public ::testing::Test {
-//   ImmediateFormatTest() {
-//     for (int i = 0; i < 6; i++) {
-//       auto vect = std::vector<uint8_t>(std::begin(v[i]), std::end(v[i]));
-//       valueP[i] = new MemoryValue(vect, 32);
-//     }
-//   }
-//
-//   ~ImmediateFormatTest() {
-//     for (int i = 0; i < 6; i++) delete valueP[i];
-//     delete[] valueP;
-//   }
-//
-//   uint8_t v[6][4] = {{0x78, 0xEF, 0xCD, 0x0B},
-//                      {0xBC, 0x00, 0x00, 0x00},
-//                      {0xBE, 0x00, 0x00, 0x00},
-//                      {0xBE, 0x00, 0x00, 0x00},
-//                      {0X00, 0xE0, 0xCD, 0x0B},
-//                      {0xBC, 0xE0, 0x0D, 0x00}};
-//   MemoryValue **valueP = new MemoryValue *[6];
-// };
-//
-// TEST_F(ImmediateFormatTest, IFormat) {
-//   immediateToIFormat(*valueP[0]);
-//   ASSERT_EQ(*valueP[1], *valueP[0]);
+// Test plan:
+// Test all formats.
+// For each format, create an instruction.
+// Assemble it and compare it to hand-assembled values.
+// Then change the arguments slightly and ensure changes propagate.
+
+struct InstructionFormatsFixture : public riscv::BaseFixture {
+  InstructionFormatsFixture();
+};
+
+// R-Format, for register-register instructions (like `add`)
+// TEST(InstructionFormats, RFormat) {
+//   auto
 // }
-//
-// TEST_F(ImmediateFormatTest, SFormat) {
-//   immediateToSFormat(*valueP[0]);
-//   ASSERT_EQ(*valueP[2], *valueP[0]);
-// }
-//
-// TEST_F(ImmediateFormatTest, BFormat) {
-//   immediateToBFormat(*valueP[0]);
-//   ASSERT_EQ(*valueP[3], *valueP[0]);
-// }
-//
-// TEST_F(ImmediateFormatTest, UFormat) {
-//   immediateToUFormat(*valueP[0]);
-//   ASSERT_EQ(*valueP[4], *valueP[0]);
-// }
-//
-// TEST_F(ImmediateFormatTest, JFormat) {
-//   immediateToJFormat(*valueP[0]);
-//   ASSERT_EQ(*valueP[5], *valueP[0]);
-// }
-//
-// struct InstructionFormatTest : public ::testing::Test {
-//   InstructionFormatTest() {
-//     auto add =
-//         InstructionInformation("add")
-//             .key(InstructionKey({{"opcode", 6}, {"funct3", 0}, {"funct7",
-//             0}}))
-//             .format("R")
-//             .length(32);
-//     auto sub = InstructionInformation("sub")
-//                    .key(InstructionKey({{"opcode", 9}, {"funct3", 3}}))
-//                    .format("I")
-//                    .length(32);
-//     auto beq = InstructionInformation("beq")
-//                    .key(InstructionKey({{"opcode", 7}, {"funct3", 1}}))
-//                    .format("SB")
-//                    .length(32);
-//     auto uinst = InstructionInformation("uinst")
-//                      .key(InstructionKey({{"opcode", 3}, {"function", 5}}))
-//                      .format("U")
-//                      .length(32);
-//     instructionSet.addInstructions(InstructionSet({add, sub, beq, uinst}));
-//   }
-//
-//   ~InstructionFormatTest() {
-//   }
-//
-//   InstructionSet instructionSet;
-// };
-//
-// // testing the different formats
-// TEST_F(InstructionFormatTest, RFormat) {
+
+// TEST(InstructionFormats, RFormat) {
 //   using Operands = AddInstructionNode<uint32_t>::Operands;
 //   auto addInfo = instructionSet.getInstruction("add");
 //   AddInstructionNode<uint32_t> addInstr(addInfo, Operands::REGISTERS);
@@ -129,7 +52,7 @@ using namespace riscv;
 //   std::cout << addInstr.assemble() << std::endl;
 // }
 //
-// TEST_F(InstructionFormatTest, IFormat) {
+// TEST(InstructionFormats, IFormat) {
 //   using Operands = AddInstructionNode<uint32_t>::Operands;
 //   auto addInfo = instructionSet.getInstruction("sub");
 //   AddInstructionNode<uint32_t> addInstr(addInfo, Operands::IMMEDIATES);
@@ -147,7 +70,7 @@ using namespace riscv;
 //   std::cout << addInstr.assemble() << std::endl;
 // }
 //
-// TEST_F(InstructionFormatTest, SBFormat) {
+// TEST(InstructionFormats, SBFormat) {
 //   using Operands = AddInstructionNode<uint32_t>::Operands;
 //   auto beqInfo = instructionSet.getInstruction("beq");
 //   AddInstructionNode<uint32_t> beqInstr(beqInfo, Operands::IMMEDIATES);
@@ -165,7 +88,7 @@ using namespace riscv;
 //   std::cout << beqInstr.assemble() << std::endl;
 // }
 //
-// TEST_F(InstructionFormatTest, UFormat) {
+// TEST(InstructionFormats, UFormat) {
 //   using Operands = AddInstructionNode<uint32_t>::Operands;
 //   auto uInfo = instructionSet.getInstruction("uinst");
 //   AddInstructionNode<uint32_t> uInst(uInfo, Operands::IMMEDIATES);

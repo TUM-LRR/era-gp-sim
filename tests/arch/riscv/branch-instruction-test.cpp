@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <cassert>
 #include <memory>
 #include <unordered_map>
 
@@ -27,48 +26,51 @@
 #include "arch/riscv/abstract-branch-instruction-node.hpp"
 #include "arch/riscv/abstract-branch-instruction-node.hpp"
 #include "arch/riscv/control-flow-instructions.hpp"
+#include "common/assert.hpp"
 
-#include "tests/arch/riscv/test-utils.hpp"
+#include "tests/arch/riscv/base-fixture.hpp"
 
+// Must put in namespace so that `FRIEND_TEST` works
 namespace riscv {
 
-struct BranchInstructionTest : public RiscvBaseTest {
+struct BranchInstructionTest : public riscv::BaseFixture {
   using address_t = std::uint32_t;
   using offset_t = std::int32_t;
+  using super = riscv::BaseFixture;
 
   using RelationMap = std::unordered_map<
-      std::string, std::function<bool(riscv::signed32_t, riscv::signed32_t)>>;
+      std::string,
+      std::function<bool(riscv::signed32_t, riscv::signed32_t)>>;
 
   static RelationMap relationMap;
 
-  BranchInstructionTest() : RiscvBaseTest(), progress(0) {
-    load({"rv32i"}, 1024);
-    factory = getFactories();
-
+  BranchInstructionTest() : super({"rvi32i"}, 1024), progress(0) {
     setInitialAddress(666);
   }
 
   void setInitialAddress(address_t address) {
-    MemoryAccess memoryAccess = getMemoryAccess();
     initialAddress = address;
-    riscv::storeRegister(memoryAccess, "pc", initialAddress);
+    riscv::storeRegister(getMemoryAccess(), "pc", initialAddress);
   }
 
   template <typename T>
-  void branch(const std::string& mnemonic, const T& firstRegisterName,
-              const T& secondRegisterName, offset_t offset) {
-    MemoryAccess memoryAccess = getMemoryAccess();
-    auto instruction = factory.createInstructionNode(mnemonic);
+  void branch(const std::string& mnemonic,
+              const T& firstRegisterName,
+              const T& secondRegisterName,
+              offset_t offset) {
+    auto instruction = factories.createInstructionNode(mnemonic);
 
-    auto firstRegister = factory.createRegisterNode(firstRegisterName);
-    auto secondRegister = factory.createRegisterNode(secondRegisterName);
+    auto firstRegister = factories.createRegisterNode(firstRegisterName);
+    auto secondRegister = factories.createRegisterNode(secondRegisterName);
 
     auto offsetMemory = riscv::convert(offset);
-    auto offsetImmediate = factory.createImmediateNode(offsetMemory);
+    auto offsetImmediate = factories.createImmediateNode(offsetMemory);
 
     instruction->addChild(std::move(firstRegister));
     instruction->addChild(std::move(secondRegister));
     instruction->addChild(std::move(offsetImmediate));
+
+    auto& memoryAccess = getMemoryAccess();
 
     ASSERT_TRUE(instruction->validate(memoryAccess).isSuccess());
 
@@ -77,9 +79,11 @@ struct BranchInstructionTest : public RiscvBaseTest {
   }
 
   template <typename T = riscv::signed32_t>
-  void testBranch(const std::string& mnemonic, const T& firstValue,
-                  const T& secondValue, offset_t offset) {
-    MemoryAccess memoryAccess = getMemoryAccess();
+  void testBranch(const std::string& mnemonic,
+                  const T& firstValue,
+                  const T& secondValue,
+                  offset_t offset) {
+    auto memoryAccess = getMemoryAccess();
 
     riscv::storeRegister(memoryAccess, "x1", firstValue);
     riscv::storeRegister(memoryAccess, "x2", secondValue);
@@ -95,7 +99,7 @@ struct BranchInstructionTest : public RiscvBaseTest {
       // testJAL multiple times in a fixture
       progress += offset * 2;
     } else {
-      progress += 4; // TODO Make nicer
+      progress += 4;// TODO Make nicer
     }
 
     EXPECT_EQ(resultingProgramCounter, initialAddress + progress);
@@ -128,22 +132,21 @@ TEST_F(BranchInstructionTest, Validation) {
 
   // Typical instruction: BEQ r1, r2, 123 ; <first> <second> <12 bit offset>
 
-  auto& factory = getFactories();
-  MemoryAccess memoryAccess = getMemoryAccess();
+  auto& memoryAccess = getMemoryAccess();
 
-  auto instruction = factory.createInstructionNode("BEQ");
-  auto firstRegister = factory.createRegisterNode("x1");
-  auto secondRegister = factory.createRegisterNode("x2");
-  auto invalidRegister = factory.createRegisterNode("x3");
+  auto instruction = factories.createInstructionNode("BEQ");
+  auto firstRegister = factories.createRegisterNode("x1");
+  auto secondRegister = factories.createRegisterNode("x2");
+  auto invalidRegister = factories.createRegisterNode("x3");
 
   // For internal tests
   auto internal = dynamic_cast<BranchNode*>(instruction.get());
-  // assert::test
-  assert(internal != nullptr);
+
+  assert::gtest(internal != nullptr);
 
   // First create an invalid target (i.e. greater than 11 bit)
   MemoryValue target = riscv::convert(0xFFF);
-  auto targetImmediate = factory.createImmediateNode(target);
+  auto targetImmediate = factories.createImmediateNode(target);
 
   EXPECT_FALSE(instruction->validate(memoryAccess).isSuccess());
 
@@ -168,7 +171,7 @@ TEST_F(BranchInstructionTest, Validation) {
   EXPECT_FALSE(instruction->validate(memoryAccess).isSuccess());
 
   // This should work now
-  targetImmediate = factory.createImmediateNode(riscv::convert(-0x800));
+  targetImmediate = factories.createImmediateNode(riscv::convert(-0x800));
   instruction->setChild(2, std::move(targetImmediate));
   EXPECT_TRUE(internal->_validateNumberOfChildren().isSuccess());
   EXPECT_TRUE(internal->_validateOperandTypes().isSuccess());
@@ -250,5 +253,4 @@ TEST_F(BranchInstructionTest, BGEUIsNotTakenWhenShouldnt) {
   testUnsignedBranch("bgeu", 0xBEEF, 0xDEAD, 0x7FF);
   testUnsignedBranch("bgeu", 0xFF, 0xFFFF, -0x800);
 }
-
 }

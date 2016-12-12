@@ -26,11 +26,11 @@
 #include "arch/common/architecture.hpp"
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
-#include "tests/arch/riscv/test-utils.hpp"
+#include "tests/arch/riscv/base-fixture.hpp"
 
 using namespace riscv;
 
-struct RV64OnlyInstructionTest : public RiscvBaseTest {
+struct RV64OnlyInstructionTest : public riscv::BaseFixture {
   std::string destId{"x1"}, srcId{"x2"}, src1Id{"x2"}, src2Id{"x3"};
 
   /**
@@ -41,7 +41,7 @@ struct RV64OnlyInstructionTest : public RiscvBaseTest {
                                  uint64_t op2,
                                  uint64_t expectedResult) {
     load({"rv32i", "rv64i"});
-    MemoryAccess memoryAccess = getMemoryAccess();
+    
 
     memoryAccess.putRegisterValue(srcId, riscv::convert<uint64_t>(op1));
 
@@ -77,7 +77,7 @@ struct RV64OnlyInstructionTest : public RiscvBaseTest {
                                  uint64_t op2,
                                  uint64_t expectedResult) {
     load({"rv32i", "rv64i"});
-    MemoryAccess memoryAccess = getMemoryAccess();
+    
 
     memoryAccess.putRegisterValue(src1Id, riscv::convert<uint64_t>(op1));
     memoryAccess.putRegisterValue(src2Id, riscv::convert<uint64_t>(op2));
@@ -127,7 +127,7 @@ TEST_F(RV64OnlyInstructionTest, Validation) {
   std::string registerId = "x1";// Not relevant
   auto instrFactory = getFactories();
   auto immediateFactory = ImmediateNodeFactory{};
-  MemoryAccess memoryAccess = getMemoryAccess();
+  
 
   for (auto& name : ri) {
     // Check if register-immediate command does not allow register-register

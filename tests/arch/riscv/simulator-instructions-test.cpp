@@ -16,15 +16,15 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
 #include "arch/common/binarydata-node.hpp"
-#include "tests/arch/riscv/test-utils.hpp"
+#include "tests/arch/riscv/base-fixture.hpp"
 
-struct SimulatorInstructionTest : public RiscvBaseTest {};
+struct SimulatorInstructionTest : public riscv::BaseFixture {};
 
 TEST_F(SimulatorInstructionTest, SIMUCRASH) {
   load({"rv32i"});
 
   std::string customErrorMsg = "Oh no, something went wrong :(";
-  MemoryAccess memoryAccess = getMemoryAccess();
+  
   auto factories = getFactories();
 
   auto instr = factories.createInstructionNode("simucrash");
@@ -47,7 +47,7 @@ TEST_F(SimulatorInstructionTest, SIMUCRASH_validation) {
   using Type = AbstractSyntaxTreeNode::Type;
   load({"rv32i", "rv64i"});
 
-  MemoryAccess memoryAccess = getMemoryAccess();
+  
   auto factories = getFactories();
 
   auto twoOpInstruction = factories.createInstructionNode("simucrash");
@@ -87,7 +87,7 @@ TEST_F(SimulatorInstructionTest, SIMUSLEEP_validation) {
     load({"rv32i", "rv64i"});
 
 
-    MemoryAccess memoryAccess = getMemoryAccess();
+    
     auto factories = getFactories();
 
     auto twoOpInstr = factories.createInstructionNode("simusleep");

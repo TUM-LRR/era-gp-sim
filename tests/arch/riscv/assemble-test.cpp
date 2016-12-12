@@ -16,24 +16,24 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
 #include <gtest/gtest.h>
-#include "tests/arch/riscv/test-utils.hpp"
+#include "tests/arch/riscv/base-fixture.hpp"
 
-struct AssembleTest32 : RiscvBaseTest {
+using namespace riscv;
+
+struct AssembleTest32 : public riscv::BaseFixture {
   using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
 
-  AssembleTest32() {
-    load({"rv32i"});
-    _factories = getFactories();
-  }
-
-  void fillRegisterRegister(Node& cmd, const std::string d0,
-                            const std::string r0, const std::string r1) const {
+  void fillRegisterRegister(Node& cmd,
+                            const std::string d0,
+                            const std::string r0,
+                            const std::string r1) const {
     cmd->addChild(createRegister(d0));
     cmd->addChild(createRegister(r0));
     cmd->addChild(createRegister(r1));
   }
 
-  void fillRegisterImmediate(Node& cmd, const std::string d0,
+  void fillRegisterImmediate(Node& cmd,
+                             const std::string d0,
                              const std::string r0,
                              riscv::signed32_t imm) const {
     cmd->addChild(createRegister(d0));
@@ -52,9 +52,6 @@ struct AssembleTest32 : RiscvBaseTest {
   Node createRegister(const std::string r) const {
     return _factories.createRegisterNode(r);
   }
-
- private:
-  NodeFactoryCollection _factories;
 };
 
 TEST_F(AssembleTest32, formatR) {

@@ -27,7 +27,7 @@
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
 
-#include "test-utils.hpp"
+#include "tests/arch/riscv/base-fixture.hpp"
 
 /*
  * BIG TODO:
@@ -47,7 +47,7 @@
 
 using namespace riscv;
 
-class LoadStoreInstructionTest : public RiscvBaseTest {
+class LoadStoreInstructionTest : public riscv::BaseFixture {
  public:
   LoadStoreInstructionTest() : dest("x1"), base("x2"), src("x3") {
   }

@@ -18,10 +18,10 @@
 #include "gtest/gtest.h"
 #include "arch/riscv/instruction-context-information.hpp"
 
-#include "tests/arch/riscv/test-utils.hpp"
+#include "tests/arch/riscv/base-fixture.hpp"
 
-struct ContextInformationTest : RiscvBaseTest {
-    ContextInformationTest() : RiscvBaseTest() {
+struct ContextInformationTest : public riscv::BaseFixture {
+    ContextInformationTest() : public riscv::BaseFixture() {
         load({"rv32i", "rv32m", "rv64i", "rv64m"});
     }
 };

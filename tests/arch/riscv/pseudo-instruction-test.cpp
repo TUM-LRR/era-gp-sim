@@ -26,7 +26,7 @@
 
 using namespace riscv;
 
-class PseudoInstructionTest : public RiscvBaseTest {
+class PseudoInstructionTest : public riscv::BaseFixture {
  public:
   /**
    * Executes instructions in a very easy way.
