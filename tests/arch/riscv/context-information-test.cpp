@@ -15,23 +15,24 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "gtest/gtest.h"
-#include "arch/riscv/instruction-context-information.hpp"
+#include <string>
 
+#include "gtest/gtest.h"
+
+#include "arch/riscv/instruction-context-information.hpp"
 #include "tests/arch/riscv/base-fixture.hpp"
 
 struct ContextInformationTest : public riscv::BaseFixture {
-    ContextInformationTest() : public riscv::BaseFixture() {
-        loadArchitecture({"rv32i", "rv32m", "rv64i", "rv64m"});
-    }
+  using super = riscv::BaseFixture;
+  ContextInformationTest() : super({"rv32i", "rv32m", "rv64i", "rv64m"}) {
+  }
 };
 
 TEST_F(ContextInformationTest, allExist) {
-    Architecture arch = _project->getArchitectureAccess().getArchitecture().get();
-    NodeFactoryCollection factories = factories;
-    for(auto& pair : arch.getInstructions()) {
-        const std::string& mnemonic = pair.second.getMnemonic();
-        auto node = factories.createInstructionNode(mnemonic);
-        node->getInstructionDocumentation();//if a InstructionDocumentation exists, no assertion is thrown
-    }
+  for (auto& pair : getArchitecture().getInstructions()) {
+    const std::string& mnemonic = pair.second.getMnemonic();
+    auto node = factories.createInstructionNode(mnemonic);
+    // if a InstructionDocumentation exists, no assertion is thrown
+    node->getInstructionDocumentation();
+  }
 }
