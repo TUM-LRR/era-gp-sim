@@ -41,7 +41,7 @@ struct RV64OnlyInstructionTest : public riscv::BaseFixture {
                                  uint64_t op2,
                                  uint64_t expectedResult) {
     loadArchitecture({"rv32i", "rv64i"});
-    
+    auto& memoryAccess = getMemoryAccess();
 
     memoryAccess.putRegisterValue(srcId, riscv::convert<uint64_t>(op1));
 
@@ -77,7 +77,7 @@ struct RV64OnlyInstructionTest : public riscv::BaseFixture {
                                  uint64_t op2,
                                  uint64_t expectedResult) {
     loadArchitecture({"rv32i", "rv64i"});
-    
+    auto& memoryAccess = getMemoryAccess();
 
     memoryAccess.putRegisterValue(src1Id, riscv::convert<uint64_t>(op1));
     memoryAccess.putRegisterValue(src2Id, riscv::convert<uint64_t>(op2));
@@ -121,13 +121,14 @@ struct RV64OnlyInstructionTest : public riscv::BaseFixture {
 
 TEST_F(RV64OnlyInstructionTest, Validation) {
   loadArchitecture({"rv32i", "rv64i"});
+  auto& memoryAccess = getMemoryAccess();
   auto ri = {"addiw", "slliw", "srliw", "sraiw"};
   auto rr = {"addw", "subw", "sllw", "srlw", "sraw"};
 
   std::string registerId = "x1";// Not relevant
   auto instrFactory = factories;
   auto immediateFactory = ImmediateNodeFactory{};
-  
+
 
   for (auto& name : ri) {
     // Check if register-immediate command does not allow register-register
