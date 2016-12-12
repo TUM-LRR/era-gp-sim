@@ -36,11 +36,6 @@ find_package(Qt5Quick REQUIRED)
 
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
-add_definitions(${Qt5Widgets_DEFINITIONS})
-
-# Add compiler flags for building executables (-fPIE)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-
 ########################################
 # INCLUDES
 ########################################
@@ -49,12 +44,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${GTEST_INCLUDE_DIRS})
-
-########################################
-# SUBDIRECTORIES
-########################################
-
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/source)
 
 ########################################
 # BINARIES
@@ -68,6 +57,12 @@ option(ERA_SIM_BUILD_GUI "Enable compilation of gui modules" ON)
 set(ERA_SIM_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
 message(STATUS "Building to directory ${ERA_SIM_BINARY_DIR}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ERA_SIM_BINARY_DIR})
+
+########################################
+# SUBDIRECTORIES
+########################################
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/source)
 
 ########################################
 # TESTS
