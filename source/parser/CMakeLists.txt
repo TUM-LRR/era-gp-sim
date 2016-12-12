@@ -38,6 +38,7 @@ set(PARSER_SOURCES
   symbol-replacer.cpp
   symbol.cpp
   symbol-graph-evaluation.cpp
+  error-list.cpp
 )
 
 ########################################
