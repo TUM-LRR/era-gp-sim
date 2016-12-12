@@ -44,12 +44,4 @@ if (ERA_SIM_BUILD_GUI)
   target_link_libraries(era-sim era-sim-core)
 
   qt5_use_modules(era-sim Widgets Qml Quick)
-
-  # Copy the binary to the build/bin folder
-  add_custom_command(TARGET era-sim
-          POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy
-          ${CMAKE_CURRENT_BINARY_DIR}/era-sim
-          ${CMAKE_BINARY_DIR}/bin
-  )
 endif()
