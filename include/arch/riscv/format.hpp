@@ -28,6 +28,28 @@ class InstructionInformation;
 class InstructionKey;
 
 namespace riscv {
+
+/**
+ * Holds assembler functions for RISC-V instruction formats.
+ *
+ * The `Format` namespace hosts functions that can produce a binary
+ * representation of an instruction, given its static information and dynamic
+ * arguments. The *static* information refers to the `InstructionInformation`
+ * object, which stores information about the instruction format for an
+ * instruction, as well as the instruction-specific values that are encoded for
+ * each instruction, irrespective of its operands (such as the function bits or
+ * opcode). The *dynamic* arguments are the registers or operands that are
+ * supplied to the instruction at run-time.
+ *
+ * The 6 formats implemented here are (as specified by the RISC-V standard):
+ *
+ * - R (register-register instructions, like `add`)
+ * - I (register-integer instructions, like `xori`)
+ * - S (store instructions)
+ * - SB (branch instructions)
+ * - U (LUI, AUIPC)
+ * - UJ (JAL)
+ */
 namespace Format {
 
 using Arguments = std::vector<MemoryValue>;
@@ -49,13 +71,24 @@ AssemblerFunction getAssembler(const std::string& format);
  * \param  instructionInformation The instruction information
  *                                to assemble for.
  * \param  arguments The arguments to assemble.
- * @return The assembled memory value.
+ * \return The assembled memory value.
  */
 MemoryValue assemble(const InstructionInformation& instructionInformation,
                      const Arguments& arguments);
 
 /*
- * funct7 | rs2 | rs1 | funct3 | rd | opcode
+ * Assembles instructions with the `R` format.
+ *
+ * `R` is the format for all *register-register* operations, such as most
+ * arithmetic operations that combine two input registers and store their result
+ * in an output register. Its layout is:
+ *
+ * `funct7 | rs2 | rs1 | funct3 | rd | opcode`
+ *
+ * This format is characterized by first encoding ten function bits, `funct7`
+ * and `funct3`, that further specialize the `opcode` of the instruction. It
+ * then takes two input registers, `rs1` and `rs2` and one output register
+ * `rs3`.
  */
 MemoryValue R(const InstructionKey& key, const Arguments& arguments);
 
