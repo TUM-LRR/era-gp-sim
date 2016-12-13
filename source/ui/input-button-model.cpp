@@ -28,7 +28,7 @@ InputButtonModel::InputButtonModel(QQmlContext* context,
 
 void InputButtonModel::buttonClicked(unsigned int id) {
   // save id at start in Memory
-  MemoryValue memoryValue = conversions::convert(id, 32);
+  auto memoryValue = conversions::convert(id, 32);
   _memoryAccess.putMemoryValueAt(_start, memoryValue);
 }
 

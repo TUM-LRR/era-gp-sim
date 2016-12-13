@@ -30,13 +30,13 @@ InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess memoryAccess)
 }
 
 void InputTextModel::newText(QString text) {
-  std::string stdText = text.toStdString();
+  auto stdText = text.toStdString();
   for (size_t i = 0; i < stdText.length(); i++) {
     if(_start + i > _memoryAccess.getMemorySize().get()){
         //Too long
         break;
     }
-    unsigned number = stdText[i];
+    auto number = stdText[i];
     if (number < 225) {// else do nothing, was not an ascii sign
       MemoryValue m = conversions::convert(number, 32);
       _memoryAccess.putMemoryValueAt(_start + i, m);
@@ -54,12 +54,12 @@ QString InputTextModel::getStart() {
   return QString::number(_start);
 }
 
-void InputTextModel::setMaximumLength(unsigned int maximumLength) {
+void InputTextModel::setMaximumLength(length_t maximumLength) {
   _maximumLength = maximumLength;
   emit maximumLengthChanged();
 
 }
 
-unsigned int InputTextModel::getMaximumLength() {
+length_t InputTextModel::getMaximumLength() {
   return _maximumLength;
 }

@@ -28,8 +28,8 @@ InputClickModel::InputClickModel(QQmlContext *context,
 
 void InputClickModel::newClick(int x, int y) {
   // save in Memory as 2 bytes
-  MemoryValue xMemory = conversions::convert(x, 32);
-  MemoryValue yMemory = conversions::convert(y, 32);
+  auto xMemory = conversions::convert(x, 32);
+  auto yMemory = conversions::convert(y, 32);
 
   _memoryAccess.putMemoryValueAt(_start, xMemory);
   _memoryAccess.putMemoryValueAt(_start + 1, yMemory);
