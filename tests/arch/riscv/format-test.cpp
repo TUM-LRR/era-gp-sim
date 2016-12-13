@@ -15,8 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
+#include <utility>
+
 #include "gtest/gtest.h"
 
+#include "arch/common/abstract-instruction-node-factory.hpp"
+#include "arch/riscv/properties.hpp"
+#include "arch/riscv/utility.hpp"
 #include "tests/arch/riscv/base-fixture.hpp"
 
 using namespace riscv;
@@ -27,16 +32,46 @@ using namespace riscv;
 // Assemble it and compare it to hand-assembled values.
 // Then change the arguments slightly and ensure changes propagate.
 
-struct InstructionFormatsFixture : public riscv::BaseFixture {
-  InstructionFormatsFixture();
+struct FormatTests : public riscv::BaseFixture {
+  using raw_t = riscv::unsigned32_t;
+  using Node = AbstractInstructionNodeFactory::Node;
+
+  static raw_t assemble(const Node& instruction) {
+    auto memoryValue = instruction->assemble();
+    return riscv::convert<raw_t>(memoryValue);
+  }
 };
 
-// R-Format, for register-register instructions (like `add`)
-// TEST(InstructionFormats, RFormat) {
-//   auto
-// }
+// clang-format off
+#define ASSEMBLE_R(funct7, rs2, rs1, funct3, rd, opcode) \
+  (funct7 << 25) | \
+  (rs2 << 20)    | \
+  (rs1 << 15)    | \
+  (funct3 << 12) | \
+  (rd << 7)      | \
+  opcode
+// clang-format on
 
-// TEST(InstructionFormats, RFormat) {
+TEST_F(FormatTests, RFormat) {
+  // The R format is used by register-register operations, like ADD
+
+  auto instruction = factories.createInstructionNode("ADD");
+
+  auto destinationRegister = factories.createRegisterNode("x1");
+  auto firstSourceRegister = factories.createRegisterNode("x2");
+  auto secondSourceRegister = factories.createRegisterNode("x16");
+
+  instruction->addChild(std::move(destinationRegister));
+  instruction->addChild(std::move(firstSourceRegister));
+  instruction->addChild(std::move(secondSourceRegister));
+
+  raw_t expected = ASSEMBLE_R(0, 16u, 2u, 0, 1u, 0b0110011);
+
+  EXPECT_EQ(assemble(instruction), expected);
+}
+
+// // testing the different formats
+// TEST_F(InstructionFormatTest, RFormat) {
 //   using Operands = AddInstructionNode<uint32_t>::Operands;
 //   auto addInfo = instructionSet.getInstruction("add");
 //   AddInstructionNode<uint32_t> addInstr(addInfo, Operands::REGISTERS);

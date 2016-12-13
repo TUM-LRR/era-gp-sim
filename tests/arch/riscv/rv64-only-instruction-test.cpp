@@ -30,15 +30,7 @@
 
 using namespace riscv;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-struct RV64OnlyInstructionTest : public RiscvBaseTest {
-=======
 struct RV64OnlyInstructionTest : public riscv::BaseFixture {
->>>>>>> master
-=======
-struct RV64OnlyInstructionTest : public riscv::BaseFixture {
->>>>>>> feature/refactor-tests-a-little-bit
   std::string destId{"x1"}, srcId{"x2"}, src1Id{"x2"}, src2Id{"x3"};
 
   /**
@@ -48,33 +40,14 @@ struct RV64OnlyInstructionTest : public riscv::BaseFixture {
                                  uint64_t op1,
                                  uint64_t op2,
                                  uint64_t expectedResult) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-    load({"rv32i", "rv64i"});
-    MemoryAccess memoryAccess = getMemoryAccess();
-=======
     loadArchitecture({"rv32i", "rv64i"});
     auto& memoryAccess = getMemoryAccess();
->>>>>>> master
-=======
-    loadArchitecture({"rv32i", "rv64i"});
-    auto& memoryAccess = getMemoryAccess();
->>>>>>> feature/refactor-tests-a-little-bit
 
     memoryAccess.putRegisterValue(srcId, riscv::convert<uint64_t>(op1));
 
     // Set up instruction
-<<<<<<< HEAD
-<<<<<<< HEAD
-    auto instrFactory = getFactories();
-=======
-    auto instrFactory = factories;
->>>>>>> master
-=======
-    auto instrFactory = factories;
->>>>>>> feature/refactor-tests-a-little-bit
     auto immediateFactory = ImmediateNodeFactory{};
-    auto instr = instrFactory.createInstructionNode(instructionName);
+    auto instr = factories.createInstructionNode(instructionName);
 
     // Fill instruction with arguments
     ASSERT_TRUE(instr);
@@ -102,34 +75,15 @@ struct RV64OnlyInstructionTest : public riscv::BaseFixture {
                                  uint64_t op1,
                                  uint64_t op2,
                                  uint64_t expectedResult) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-    load({"rv32i", "rv64i"});
-    MemoryAccess memoryAccess = getMemoryAccess();
-=======
     loadArchitecture({"rv32i", "rv64i"});
     auto& memoryAccess = getMemoryAccess();
->>>>>>> master
-=======
-    loadArchitecture({"rv32i", "rv64i"});
-    auto& memoryAccess = getMemoryAccess();
->>>>>>> feature/refactor-tests-a-little-bit
 
     memoryAccess.putRegisterValue(src1Id, riscv::convert<uint64_t>(op1));
     memoryAccess.putRegisterValue(src2Id, riscv::convert<uint64_t>(op2));
 
     // Set up instruction
-<<<<<<< HEAD
-<<<<<<< HEAD
-    auto instrFactory = getFactories();
-=======
-    auto instrFactory = factories;
->>>>>>> master
-=======
-    auto instrFactory = factories;
->>>>>>> feature/refactor-tests-a-little-bit
     auto immediateFactory = ImmediateNodeFactory{};
-    auto instr = instrFactory.createInstructionNode(instructionName);
+    auto instr = factories.createInstructionNode(instructionName);
 
     // Fill instruction with arguments
     ASSERT_TRUE(instr);
@@ -164,28 +118,18 @@ struct RV64OnlyInstructionTest : public riscv::BaseFixture {
 
 
 TEST_F(RV64OnlyInstructionTest, Validation) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-  load({"rv32i", "rv64i"});
-=======
   loadArchitecture({"rv32i", "rv64i"});
   auto& memoryAccess = getMemoryAccess();
->>>>>>> master
-=======
-  loadArchitecture({"rv32i", "rv64i"});
-  auto& memoryAccess = getMemoryAccess();
->>>>>>> feature/refactor-tests-a-little-bit
+
   auto ri = {"addiw", "slliw", "srliw", "sraiw"};
   auto rr = {"addw", "subw", "sllw", "srlw", "sraw"};
 
   std::string registerId = "x1";// Not relevant
-  auto instrFactory = factories;
   auto immediateFactory = ImmediateNodeFactory{};
-
 
   for (auto& name : ri) {
     // Check if register-immediate command does not allow register-register
-    auto instr = instrFactory.createInstructionNode(name);
+    auto instr = factories.createInstructionNode(name);
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(std::make_unique<RegisterNode>(registerId));
@@ -197,28 +141,28 @@ TEST_F(RV64OnlyInstructionTest, Validation) {
     constexpr uint64_t negativeBoundary = -2048;
     constexpr uint64_t negativeOverflow = negativeBoundary - 1;
 
-    instr = instrFactory.createInstructionNode(name);
+    instr = factories.createInstructionNode(name);
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(immediateFactory.createImmediateNode(
         riscv::convert<uint64_t>(boundary)));
     ASSERT_TRUE(instr->validate(memoryAccess));
 
-    instr = instrFactory.createInstructionNode(name);
+    instr = factories.createInstructionNode(name);
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(immediateFactory.createImmediateNode(
         riscv::convert<uint64_t>(overflow)));
     ASSERT_FALSE(instr->validate(memoryAccess));
 
-    instr = instrFactory.createInstructionNode(name);
+    instr = factories.createInstructionNode(name);
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(immediateFactory.createImmediateNode(
         riscv::convert<int64_t>(negativeBoundary)));
     ASSERT_TRUE(instr->validate(memoryAccess));
 
-    instr = instrFactory.createInstructionNode(name);
+    instr = factories.createInstructionNode(name);
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(immediateFactory.createImmediateNode(
@@ -228,7 +172,7 @@ TEST_F(RV64OnlyInstructionTest, Validation) {
 
   for (auto& name : rr) {
     // Check if register-register command does not allow register-immediate
-    auto instr = instrFactory.createInstructionNode(name);
+    auto instr = factories.createInstructionNode(name);
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(std::make_unique<RegisterNode>(registerId));
     instr->addChild(

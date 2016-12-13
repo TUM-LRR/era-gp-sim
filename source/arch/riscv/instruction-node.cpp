@@ -58,12 +58,12 @@ bool InstructionNode::_compareChildTypes(TypeList list,
 }
 
 MemoryValue InstructionNode::assemble() const {
-  Format::Arguments arguments;
+  Format::Operands operands;
   for (const auto& child : _children) {
-    arguments.emplace_back(child->assemble());
+    operands.emplace_back(child->assemble());
   }
 
-  return Format::assemble(_information, arguments);
+  return Format::assemble(_information, operands);
 }
 
 const Translateable& InstructionNode::getInstructionDocumentation() const {
