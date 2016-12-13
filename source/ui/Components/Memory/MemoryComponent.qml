@@ -145,8 +145,8 @@ Item {
                     onColumnCountChanged: {
                         while(headerDropdownList.count < tableView.columnCount - 1)
                             headerDropdownList.append(ListElement);
-                        while(headerDropdownList.count > tableView.columnCount - 1)
-                            headerDropdownList.remove(headerDropdownList.count - 1);
+                        //while(headerDropdownList.count > tableView.columnCount - 1)
+                        //    headerDropdownList.remove(headerDropdownList.count - 1);
                     }
                 }
 
@@ -157,6 +157,8 @@ Item {
                 delegate: Rectangle {
                     width: bitChooser.width + resizer.width
                     height: 25
+
+                    property alias text: bitChooser.currentText
 
                         ComboBox {
                         id: bitChooser
@@ -182,6 +184,8 @@ Item {
                             ListElement { text: "Hexadecimal"; role: "hex" }
                             ListElement { text: "Decimal"; role: "dec" }
                             ListElement { text: "Decimal (signed)"; role: "decs" }
+
+                            ListElement { text : "remove..." }
                         }
 
                         onCurrentIndexChanged: {
@@ -189,9 +193,15 @@ Item {
                                 number_bits = model.get(bitChooser.currentIndex).bits;
                             }
                             else {
-                                // explicitly create a property binding for number_bits so the role gets updated correctly
-                                tableView.getColumn(index).role = Qt.binding(function() {
-                                    return model.get(bitChooser.currentIndex).role + number_bits })
+                                if(bitChooser.currentText == "remove...") {
+                                    tableView.removeColumn(index);
+                                    headerDropdownList.remove(index);
+                                }
+                                else {
+                                    // explicitly create a property binding for number_bits so the role gets updated correctly
+                                    tableView.getColumn(index).role = Qt.binding(function() {
+                                        return model.get(bitChooser.currentIndex).role + number_bits })
+                                }
                             }
                         }
                     }
