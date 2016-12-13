@@ -15,11 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
+#include <cstdint>
+#include <string>
 #include <utility>
 
 #include "gtest/gtest.h"
 
 #include "arch/common/abstract-instruction-node-factory.hpp"
+#include "arch/common/abstract-register-node-factory.hpp"
+#include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/riscv/properties.hpp"
 #include "arch/riscv/utility.hpp"
 #include "tests/arch/riscv/base-fixture.hpp"
@@ -34,9 +38,30 @@ using namespace riscv;
 
 struct FormatTests : public riscv::BaseFixture {
   using raw_t = riscv::unsigned32_t;
-  using Node = AbstractInstructionNodeFactory::Node;
+  using immediate_t = std::uint32_t;
+  using InstructionNode = AbstractInstructionNodeFactory::Node;
+  using RegisterNode = AbstractRegisterNodeFactory::Node;
+  using AbstractNode = AbstractSyntaxTreeNode::Node;
 
-  static raw_t assemble(const Node& instruction) {
+  auto createRegisterNode(const std::string& identifier) const {
+    return factories.createRegisterNode(identifier);
+  }
+
+  auto createImmediateNode(immediate_t immediate) const {
+    auto memoryValue = riscv::convert(immediate);
+    return factories.createImmediateNode(memoryValue);
+  }
+
+  auto createInstructionNode(const std::string& identifier) const {
+    return factories.createInstructionNode(identifier);
+  }
+
+  void addChild(InstructionNode& instruction, AbstractNode& child) const {
+    instruction->addChild(std::move(child));
+  }
+
+
+  static raw_t assemble(const InstructionNode& instruction) {
     auto memoryValue = instruction->assemble();
     return riscv::convert<raw_t>(memoryValue);
   }
@@ -50,90 +75,144 @@ struct FormatTests : public riscv::BaseFixture {
   (funct3 << 12) | \
   (rd << 7)      | \
   opcode
+
+#define ASSEMBLE_I(immediate, rs1, funct3, rd, opcode) \
+  (immediate << 20) | \
+  (rs1 << 15)       | \
+  (funct3 << 12)    | \
+  (rd << 7)         | \
+  opcode
+
+#define ASSEMBLE_S(offset, source, base, funct3, opcode) \
+  (((offset & (127 << 5)) >> 5) << 25) | \
+  (source << 20)                       | \
+  (base << 15)                         | \
+  (funct3 << 12)                       | \
+  ((offset & 31) << 7)                 | \
+  opcode
 // clang-format on
 
 TEST_F(FormatTests, RFormat) {
-  // The R format is used by register-register operations, like ADD
+  // The `R` format is used by register-register operations, like ADD
+  // Its layout is: `funct7 | rs2 | rs1 | funct3 | rd | opcode`
 
-  auto instruction = factories.createInstructionNode("ADD");
+  auto instruction = createInstructionNode("ADD");
 
-  auto destinationRegister = factories.createRegisterNode("x1");
-  auto firstSourceRegister = factories.createRegisterNode("x2");
-  auto secondSourceRegister = factories.createRegisterNode("x16");
+  auto destinationRegister = createRegisterNode("x1");
+  auto firstSourceRegister = createRegisterNode("x2");
+  auto secondSourceRegister = createRegisterNode("x16");
 
-  instruction->addChild(std::move(destinationRegister));
-  instruction->addChild(std::move(firstSourceRegister));
-  instruction->addChild(std::move(secondSourceRegister));
+  addChild(instruction, destinationRegister);
+  addChild(instruction, firstSourceRegister);
+  addChild(instruction, secondSourceRegister);
 
   raw_t expected = ASSEMBLE_R(0, 16u, 2u, 0, 1u, 0b0110011);
 
-  EXPECT_EQ(assemble(instruction), expected);
+  auto assembly = assemble(instruction);
+  EXPECT_EQ(assembly, expected);
+  EXPECT_NE(assembly, expected + 1);
+
+  // Now change stuff around and expect a different assembly
+  instruction->setChild(2, createRegisterNode("x22"));
+
+  assembly = assemble(instruction);
+  EXPECT_NE(assembly, expected);
+
+  expected = ASSEMBLE_R(0, 22u, 2u, 0, 1u, 0b0110011);
+  EXPECT_EQ(assembly, expected);
+
+  instruction->setChild(0, createRegisterNode("x6"));
+
+  assembly = assemble(instruction);
+  EXPECT_NE(assembly, expected);
+
+  expected = ASSEMBLE_R(0, 22u, 2u, 0, 6u, 0b0110011);
+  EXPECT_EQ(assembly, expected);
 }
 
-// // testing the different formats
-// TEST_F(InstructionFormatTest, RFormat) {
-//   using Operands = AddInstructionNode<uint32_t>::Operands;
-//   auto addInfo = instructionSet.getInstruction("add");
-//   AddInstructionNode<uint32_t> addInstr(addInfo, Operands::REGISTERS);
-//
-//   AbstractSyntaxTreeNode::Node r1(new RegisterNode("1"));
-//   AbstractSyntaxTreeNode::Node r2(new RegisterNode("2"));
-//   AbstractSyntaxTreeNode::Node rd(new RegisterNode("3"));
-//   addInstr.addChild(std::move(rd));
-//   addInstr.addChild(std::move(r2));
-//   addInstr.addChild(std::move(r1));
-//
-//   std::cout << addInstr.assemble() << std::endl;
-// }
-//
-// TEST(InstructionFormats, IFormat) {
-//   using Operands = AddInstructionNode<uint32_t>::Operands;
-//   auto addInfo = instructionSet.getInstruction("sub");
-//   AddInstructionNode<uint32_t> addInstr(addInfo, Operands::IMMEDIATES);
-//
-//   MemoryValue val(4 * 8);
-//   val.put(22, true);
-//   val.put(23, true);
-//   AbstractSyntaxTreeNode::Node imm(new ImmediateNode(val));
-//   AbstractSyntaxTreeNode::Node r2(new RegisterNode("2"));
-//   AbstractSyntaxTreeNode::Node rd(new RegisterNode("3"));
-//   addInstr.addChild(std::move(rd));
-//   addInstr.addChild(std::move(r2));
-//   addInstr.addChild(std::move(imm));
-//
-//   std::cout << addInstr.assemble() << std::endl;
-// }
-//
-// TEST(InstructionFormats, SBFormat) {
-//   using Operands = AddInstructionNode<uint32_t>::Operands;
-//   auto beqInfo = instructionSet.getInstruction("beq");
-//   AddInstructionNode<uint32_t> beqInstr(beqInfo, Operands::IMMEDIATES);
-//
-//   MemoryValue val(4 * 8);
-//   val.put(22, true);
-//   val.put(23, true);
-//   AbstractSyntaxTreeNode::Node imm(new ImmediateNode(val));
-//   AbstractSyntaxTreeNode::Node r2(new RegisterNode("2"));
-//   AbstractSyntaxTreeNode::Node r1(new RegisterNode("3"));
-//   beqInstr.addChild(std::move(r1));
-//   beqInstr.addChild(std::move(r2));
-//   beqInstr.addChild(std::move(imm));
-//
-//   std::cout << beqInstr.assemble() << std::endl;
-// }
-//
-// TEST(InstructionFormats, UFormat) {
-//   using Operands = AddInstructionNode<uint32_t>::Operands;
-//   auto uInfo = instructionSet.getInstruction("uinst");
-//   AddInstructionNode<uint32_t> uInst(uInfo, Operands::IMMEDIATES);
-//
-//   MemoryValue val(4 * 8);
-//   val.put(22, true);
-//   val.put(23, true);
-//   AbstractSyntaxTreeNode::Node imm(new ImmediateNode(val));
-//   AbstractSyntaxTreeNode::Node rd(new RegisterNode("3"));
-//   uInst.addChild(std::move(rd));
-//   uInst.addChild(std::move(imm));
-//
-//   std::cout << uInst.assemble() << std::endl;
-// }
+TEST_F(FormatTests, IFormat) {
+  // The `I` format is used by register-immediate operations, like XORI
+  // Its layout is: `imm[11:0] | rs1 | funct3 | rd | opcode`
+
+  auto instruction = createInstructionNode("XORI");
+
+  auto destinationRegister = createRegisterNode("x1");
+  auto sourceRegister = createRegisterNode("x31");
+  auto immediate = createImmediateNode(1234);
+
+  addChild(instruction, destinationRegister);
+  addChild(instruction, sourceRegister);
+  addChild(instruction, immediate);
+
+  raw_t expected = ASSEMBLE_I(1234u, 31u, 0b100, 1u, 0b0010011);
+
+  auto assembly = assemble(instruction);
+  EXPECT_EQ(assembly, expected);
+  EXPECT_NE(assembly, expected + 1);
+
+  // Now change stuff around and expect a different assembly
+  instruction->setChild(1, createRegisterNode("x5"));
+
+  assembly = assemble(instruction);
+  EXPECT_NE(assembly, expected);
+
+  expected = ASSEMBLE_I(1234u, 5u, 0b100, 1u, 0b0010011);
+  EXPECT_EQ(assembly, expected);
+
+  // 2047 is the last value that should fit into a 12 bit signed immediate
+  instruction->setChild(2, createImmediateNode(2047));
+
+  assembly = assemble(instruction);
+  EXPECT_NE(assembly, expected);
+
+  expected = ASSEMBLE_I(2047u, 5u, 0b100, 1u, 0b0010011);
+  EXPECT_EQ(assembly, expected);
+}
+
+TEST_F(FormatTests, SFormat) {
+  // The `S` format is for store operations.
+  // Its layout is:
+  // `imm[11] | imm[10:5] | rs2 | rs1 | funct3 | imm[4:1] | imm[0] | opcode`
+
+  auto instruction = createInstructionNode("SH");
+
+  auto baseRegister = createRegisterNode("x1");
+  auto sourceRegister = createRegisterNode("x14");
+  auto offset = createImmediateNode(1234);
+
+  addChild(instruction, baseRegister);
+  addChild(instruction, sourceRegister);
+  addChild(instruction, offset);
+
+  raw_t expected = ASSEMBLE_S(1234u, 14u, 1u, 0b001, 0b0100011);
+
+  auto assembly = assemble(instruction);
+  EXPECT_EQ(assembly, expected);
+  EXPECT_NE(assembly, expected + 1);
+
+  // Now change stuff around and expect a different assembly
+  instruction->setChild(1, createRegisterNode("x5"));
+
+  assembly = assemble(instruction);
+  EXPECT_NE(assembly, expected);
+
+  expected = ASSEMBLE_S(1234u, 5u, 1u, 0b001, 0b0100011);
+  EXPECT_EQ(assembly, expected);
+
+  instruction->setChild(2, createImmediateNode(0));
+
+  assembly = assemble(instruction);
+  EXPECT_NE(assembly, expected);
+
+  expected = ASSEMBLE_S(0, 5u, 1u, 0b001, 0b0100011);
+  EXPECT_EQ(assembly, expected);
+}
+
+TEST_F(FormatTests, SBFormat) {
+}
+
+TEST_F(FormatTests, UFormat) {
+}
+
+TEST_F(FormatTests, UJFormat) {
+}
