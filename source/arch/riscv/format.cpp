@@ -47,106 +47,106 @@ AssemblerFunction getAssembler(const std::string& format) {
 }
 
 MemoryValue assemble(const InstructionInformation& instructionInformation,
-                     const Arguments& arguments) {
+                     const Operands& operands) {
   const auto assembler = getAssembler(instructionInformation.getFormat());
-  return assembler(instructionInformation.getKey(), arguments);
+  return assembler(instructionInformation.getKey(), operands);
 }
 
 
-MemoryValue R(const InstructionKey& key, const Arguments& arguments) {
+MemoryValue R(const InstructionKey& key, const Operands& operands) {
   // Enable ADL (for riscv::appendBits)
   using Utility::appendBits;
   using riscv::appendBits;
 
   auto bits = key["funct7"];
   bits = appendBits<7>(bits, key["funct7"]);
-  bits = appendBits<5>(bits, arguments[2]);
-  bits = appendBits<5>(bits, arguments[1]);
+  bits = appendBits<5>(bits, operands[2]);
+  bits = appendBits<5>(bits, operands[1]);
   bits = appendBits<3>(bits, key["funct3"]);
-  bits = appendBits<5>(bits, arguments[0]);
+  bits = appendBits<5>(bits, operands[0]);
   bits = appendBits<7>(bits, key["opcode"]);
 
   return riscv::convert(bits, 32);
 }
 
-MemoryValue I(const InstructionKey& key, const Arguments& arguments) {
+MemoryValue I(const InstructionKey& key, const Operands& operands) {
   // Enable ADL (for riscv::appendBits)
   using Utility::appendBits;
   using riscv::appendBits;
 
   riscv::unsigned32_t bits = 0;
-  bits = appendBits<12>(bits, arguments[2]);
-  bits = appendBits<5>(bits, arguments[1]);
+  bits = appendBits<12>(bits, operands[2]);
+  bits = appendBits<5>(bits, operands[1]);
   bits = appendBits<3>(bits, key["funct3"]);
-  bits = appendBits<5>(bits, arguments[0]);
+  bits = appendBits<5>(bits, operands[0]);
   bits = appendBits<7>(bits, key["opcode"]);
 
   return riscv::convert(bits, 32);
 }
 
-MemoryValue S(const InstructionKey& key, const Arguments& arguments) {
+MemoryValue S(const InstructionKey& key, const Operands& operands) {
   // Enable ADL (for riscv::appendBits)
   using Utility::appendBits;
   using riscv::appendBits;
   using riscv::appendBitSlice;
 
   riscv::unsigned32_t bits = 0;
-  bits = appendBitSlice<5, 11>(bits, arguments[2]);
-  bits = appendBits<5>(bits, arguments[1]);
-  bits = appendBits<5>(bits, arguments[0]);
+  bits = appendBitSlice<5, 11>(bits, operands[2]);
+  bits = appendBits<5>(bits, operands[1]);
+  bits = appendBits<5>(bits, operands[0]);
   bits = appendBits<3>(bits, key["funct3"]);
-  bits = appendBitSlice<0, 4>(bits, arguments[2]);
+  bits = appendBitSlice<0, 4>(bits, operands[2]);
   bits = appendBits<7>(bits, key["opcode"]);
 
   return riscv::convert(bits, 32);
 }
 
-MemoryValue SB(const InstructionKey& key, const Arguments& arguments) {
+MemoryValue SB(const InstructionKey& key, const Operands& operands) {
   // Enable ADL (for riscv::appendBits)
   using Utility::appendBits;
   using riscv::appendBits;
   using riscv::appendBitSlice;
 
   riscv::unsigned32_t bits = 0;
-  bits = appendBitSlice<12, 12>(bits, arguments[2]);
-  bits = appendBitSlice<5, 10>(bits, arguments[2]);
-  bits = appendBits<5>(bits, arguments[1]);
-  bits = appendBits<5>(bits, arguments[0]);
+  bits = appendBitSlice<12, 12>(bits, operands[2]);
+  bits = appendBitSlice<5, 10>(bits, operands[2]);
+  bits = appendBits<5>(bits, operands[1]);
+  bits = appendBits<5>(bits, operands[0]);
   bits = appendBits<3>(bits, key["funct3"]);
-  bits = appendBitSlice<1, 4>(bits, arguments[2]);
-  bits = appendBitSlice<11, 11>(bits, arguments[2]);
+  bits = appendBitSlice<1, 4>(bits, operands[2]);
+  bits = appendBitSlice<11, 11>(bits, operands[2]);
   bits = appendBits<7>(bits, key["opcode"]);
 
 
   return riscv::convert(bits, 32);
 }
 
-MemoryValue U(const InstructionKey& key, const Arguments& arguments) {
+MemoryValue U(const InstructionKey& key, const Operands& operands) {
   // Enable ADL (for riscv::appendBits)
   using Utility::appendBits;
   using riscv::appendBits;
   using riscv::appendBitSlice;
 
   riscv::unsigned32_t bits = 0;
-  bits = appendBitSlice<0, 19>(bits, arguments[1]);
-  bits = appendBits<5>(bits, arguments[0]);
+  bits = appendBitSlice<0, 19>(bits, operands[1]);
+  bits = appendBits<5>(bits, operands[0]);
   bits = appendBits<7>(bits, key["opcode"]);
 
   return riscv::convert(bits, 32);
 }
 
-MemoryValue UJ(const InstructionKey& key, const Arguments& arguments) {
+MemoryValue UJ(const InstructionKey& key, const Operands& operands) {
   // Enable ADL (for riscv::appendBits)
   using Utility::appendBits;
   using riscv::appendBits;
   using riscv::appendBitSlice;
 
   riscv::unsigned32_t bits = 0;
-  bits = appendBitSlice<20, 20>(bits, arguments[1]);
-  bits = appendBitSlice<1, 10>(bits, arguments[1]);
-  bits = appendBitSlice<11, 11>(bits, arguments[1]);
-  bits = appendBitSlice<12, 19>(bits, arguments[1]);
-  bits = appendBits<5>(bits, arguments[0]);
+  bits = appendBitSlice<20, 20>(bits, operands[1]);
+  bits = appendBitSlice<1, 10>(bits, operands[1]);
+  bits = appendBitSlice<11, 11>(bits, operands[1]);
+  bits = appendBitSlice<12, 19>(bits, operands[1]);
+  bits = appendBits<5>(bits, operands[0]);
   bits = appendBits<7>(bits, key["opcode"]);
 
   return riscv::convert(bits, 32);
