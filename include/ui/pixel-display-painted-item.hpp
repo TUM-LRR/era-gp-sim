@@ -119,12 +119,36 @@ struct ColorMode {
   using UpdateAllColorsFunction = std::function<void(
       Optional<OutputComponent *>, const Options &, std::shared_ptr<QImage>)>;
 
+  /*
+   * \brief returns the color of the pixel at (x,y)
+   */
   GetPixelFunction getPixel;
+  /*
+   * \brief returns the color from the color Table at the index index
+   */
   GetColorFunction getColor;
+  /*
+   * \brief returns the color of the pixel at (x,y) fetching the data from the
+   *        prefetched Buffer buffer
+   */
   GetPixelFromBufferFunction getPixelFromBuffer;
+  /*
+   * \brief returns the color from the color Table at the index index fetching
+   *        the data from the prefetched Buffer buffer
+   */
   GetColorFromBufferFunction getColorFromBuffer;
+  /*
+   * \brief updates the image wherever the given change in memory modified the
+   *        image
+   */
   UpdateMemoryFunction updateMemory;
+  /*
+   * \brief updates all pixels of the image
+   */
   UpdateAllPixelsFunction updateAllPixels;
+  /*
+   * \brief updates all colors of the image
+   */
   UpdateAllColorsFunction updateAllColors;
   // RGB:
   const static GetPixelFunction RGBGetPixel;
