@@ -12,12 +12,15 @@ set(TEST_ARCH_COMMON_SOURCES
 # TARGET
 ########################################
 
-if (ERA_GP_SIM_BUILD_ARCH)
+if (ERA_SIM_BUILD_ARCH)
   add_executable(era-sim-arch-common-tests ${TEST_ARCH_COMMON_SOURCES})
 
   target_link_libraries(era-sim-arch-common-tests era-sim-arch-common)
   target_link_libraries(era-sim-arch-common-tests gtest gtest_main)
 
-  # test-name executable-name
-  add_test(era-sim-arch-common-tests era-sim-arch-common-tests)
+  add_test(
+    NAME era-sim-arch-common-tests
+    COMMAND era-sim-arch-common-tests
+    WORKING_DIRECTORY ${ERA_SIM_BINARY_DIR}
+  )
 endif()
