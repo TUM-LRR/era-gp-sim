@@ -29,6 +29,7 @@ MemoryValue RegisterNode::assemble() const {
   // all register identifiers of riscv start with x
   auto registerIdentifier = std::stoi(getIdentifier().substr(1));
   assert::that(registerIdentifier < 32);
+
   return riscv::convert(registerIdentifier);
 }
 }

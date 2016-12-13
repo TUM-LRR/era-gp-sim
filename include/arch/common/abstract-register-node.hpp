@@ -15,14 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
-#define ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
+#ifndef ERAGPSIM_ARCH_COMMON_ABSTRACT_REGISTER_NODE_HPP
+#define ERAGPSIM_ARCH_COMMON_ABSTRACT_REGISTER_NODE_HPP
 
 #include <QtCore/qglobal.h>
-#include <memory>
 #include <string>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/validation-result.hpp"
+#include "core/memory-value.hpp"
 
 /**
  * A node that represents a register.
@@ -60,4 +61,4 @@ class AbstractRegisterNode : public AbstractSyntaxTreeNode {
   std::string _identifier;
 };
 
-#endif /* ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP */
+#endif /* ERAGPSIM_ARCH_COMMON_ABSTRACT_REGISTER_NODE_HPP */

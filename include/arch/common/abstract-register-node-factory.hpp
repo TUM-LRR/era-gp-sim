@@ -18,10 +18,12 @@
 #ifndef ERAGPSIM_ARCH_ABSTRACT_REGISTER_NODE_FACTORY_HPP
 #define ERAGPSIM_ARCH_ABSTRACT_REGISTER_NODE_FACTORY_HPP
 
+#include <memory>
 #include <string>
-#include "arch/common/architecture.hpp"
 
-class AbstractSyntaxTreeNode;
+#include "arch/common/abstract-register-node.hpp"
+
+class Architecture;
 
 /**
  * \brief The AbstractRegisterNodeFactory class
@@ -29,9 +31,10 @@ class AbstractSyntaxTreeNode;
  */
 class AbstractRegisterNodeFactory {
  public:
-  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using Node = std::unique_ptr<AbstractRegisterNode>;
 
-  explicit AbstractRegisterNodeFactory(const Architecture& arch) {}
+  explicit AbstractRegisterNodeFactory(const Architecture& arch) {
+  }
 
   virtual ~AbstractRegisterNodeFactory() = default;
 
@@ -46,7 +49,7 @@ class AbstractRegisterNodeFactory {
    * \return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given registerAddress is invalid
    */
-  virtual Node createRegisterNode(const std::string &registerAddress) const = 0;
+  virtual Node createRegisterNode(const std::string& registerAddress) const = 0;
 };
 
 #endif /* ERAGPSIM_ARCH_ABSTRACT_REGISTER_NODE_FACTORY_HPP */

@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_RISCV_REGISTERNODE_HPP
-#define ERAGPSIM_ARCH_RISCV_REGISTERNODE_HPP
+#ifndef ERAGPSIM_ARCH_RISCV_REGISTER_NODE_HPP
+#define ERAGPSIM_ARCH_RISCV_REGISTER_NODE_HPP
 
 #include <string>
 
@@ -45,4 +45,4 @@ class RegisterNode : public AbstractRegisterNode {
 };
 }
 
-#endif// ERAGPSIM_ARCH_RISCV_REGISTERNODE_HPP
+#endif// ERAGPSIM_ARCH_RISCV_REGISTER_NODE_HPP

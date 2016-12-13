@@ -29,10 +29,11 @@ struct ContextInformationTest : public riscv::BaseFixture {
 };
 
 TEST_F(ContextInformationTest, allExist) {
-  for (auto& pair : getArchitecture().getInstructions()) {
+  auto arch = project->getArchitectureAccess().getArchitecture().get();
+  for (auto& pair : arch.getInstructions()) {
     const std::string& mnemonic = pair.second.getMnemonic();
     auto node = factories.createInstructionNode(mnemonic);
-    // if a InstructionDocumentation exists, no assertion is thrown
+    // If a InstructionDocumentation exists, no assertion is thrown
     node->getInstructionDocumentation();
   }
 }
