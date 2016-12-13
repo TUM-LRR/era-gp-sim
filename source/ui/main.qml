@@ -1,21 +1,21 @@
 /*
- * C++ Assembler Interpreter
- * Copyright (C) 2016 Chair of Computer Architecture
- * at Technical University of Munich
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+* C++ Assembler Interpreter
+* Copyright (C) 2016 Chair of Computer Architecture
+* at Technical University of Munich
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 import QtQuick 2.6
 import QtQuick.Window 2.2
@@ -32,13 +32,15 @@ ApplicationWindow {
     height: Screen.desktopAvailableHeight*0.8
 
     property alias menubar: menubar
+    property alias toolbar: toolbar
 
     menuBar: Menubar {
-      id: menubar
-      main: window
+        id: menubar
+        main: window
     }
     toolBar: ToolbarMainWindow {
         id: toolbar
+        visible: false
         tabView: tabView
     }
 
@@ -49,6 +51,34 @@ ApplicationWindow {
         Component.onCompleted: {
             createProject()
         }
+
+        onCurrentIndexChanged: {
+            updateMenuState();
+        }
+
+        function getCurrentProjectIndex() {
+            return tabView.getTab(tabView.currentIndex).item.projectIndex;
+        }
+    }
+
+    // this function should be called when the tab is switched
+    function updateMenuState() {
+        if (tabView.count === 0 || tabView.getCurrentProjectIndex() === -1) {
+            // deactivate project specific functions if there is no valid project at the current index
+            toolbar.visible = false;
+            toolbar.enabled = false;
+            menubar.fileMenu.setProjectMenuEnabled(false);
+        }
+        else {
+            // enable menus otherwise (could have been disabled before)
+            showMenus();
+        }
+    }
+
+    function showMenus() {
+        toolbar.visible = true;
+        toolbar.enabled = true;
+        menubar.fileMenu.setProjectMenuEnabled(true);
     }
 
     function createProject() {
@@ -58,8 +88,15 @@ ApplicationWindow {
 
     function closeProject() {
         var currentTabIndex = tabView.currentIndex;
+        var currentProjectIndex = tabView.getCurrentProjectIndex();
         tabView.removeTab(currentTabIndex);
-        ui.removeProject(currentTabIndex);
+        if(currentProjectIndex !== -1) {
+            ui.removeProject(currentProjectIndex);
+        }
+        updateMenuState();
+        if(tabView.count === 0) {
+            createProject();
+        }
     }
 
     /*Component for a project, instantiated by the TabView*/
@@ -68,6 +105,8 @@ ApplicationWindow {
 
         Item {
             id: placeholderItem
+            //index of the project in the project vector (-1 if no project exists)
+            property int projectIndex: -1
             anchors.fill: parent
             ProjectCreationScreen {
                 anchors.fill: parent
@@ -75,116 +114,117 @@ ApplicationWindow {
                 onButtonClicked: {
                     enabled = false;
                     visible = false;
-                    ui.addProject(placeholderItem, projectComponent,
-                      memorySize, architecture, optionName, parser);
+                    placeholderItem.projectIndex = ui.addProject(placeholderItem, projectComponent,
+                        memorySize, architecture, optionName, parser);
+                        window.showMenus();
+                    }
                 }
             }
         }
-    }
 
-    //this component is instantiated by the addProject method
-    Component {
-        id: projectComponent
-        Item {
-          anchors.fill: parent
-          Splitview {
-              anchors.fill: parent
+        //this component is instantiated by the addProject method
+        Component {
+            id: projectComponent
+            Item {
+                anchors.fill: parent
+                Splitview {
+                    anchors.fill: parent
 
-              SystemPalette {
-                id: systemPalette
-              }
+                    SystemPalette {
+                        id: systemPalette
+                    }
 
-              handleDelegate: Rectangle {
-                width: 2
-                height: 2
-                color: Qt.darker(systemPalette.window, 1.5)
-              }
-          }
+                    handleDelegate: Rectangle {
+                        width: 2
+                        height: 2
+                        color: Qt.darker(systemPalette.window, 1.5)
+                    }
+                }
 
-          Connections {
-            target: guiProject
-            onSaveTextAs: {
-              menubar.actionSaveAs();
+                Connections {
+                    target: guiProject
+                    onSaveTextAs: {
+                        menubar.actionSaveAs();
+                    }
+                    onError: {
+                        window.errorDialog.text = errorMessage;
+                        window.errorDialog.open();
+                    }
+                }
             }
-            onError: {
-              window.errorDialog.text = errorMessage;
-              window.errorDialog.open();
-            }
-          }
-      }
-    }
-
-    Connections {
-      target: snapshotComponent
-      onSnapshotError: {
-        errorDialog.text = errorMessage;
-        errorDialog.open();
-      }
-    }
-
-    property alias errorDialog: errorDialog
-    property alias fileDialog: fileDialog
-    property alias textDialog: textDialog
-
-    //Dialog to show errors
-    MessageDialog {
-      id: errorDialog
-      title: "error"
-      standardButtons: StandardButton.Ok
-      onAccepted: {
-        close();
-      }
-    }
-
-    //File dialog for selecting a file
-    FileDialog {
-      id: fileDialog
-      property var onAcceptedFunction
-      selectExisting: false
-      selectFolder: false
-      selectMultiple: false
-      onAccepted: {
-        onAcceptedFunction(fileDialog.fileUrl);
-      }
-    }
-
-    // Dialog to input text
-    Dialog {
-      id: textDialog
-      title: "Save snapshot"
-      standardButtons: StandardButton.Cancel;
-      property var onAcceptedFunction
-      property alias placeholderText: textField.placeholderText
-      Text {
-        id: description
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        wrapMode: Text.WordWrap
-        textFormat: Text.StyledText
-        text: "<p>Save a snapshot of the current register and memory state to disk. " +
-         "Your snapshot files can be found here:</p> " +
-         "<a href=\"" + snapshotComponent.getSnapshotBasePath().toString() + "\">" +
-         snapshotComponent.getSnapshotBasePath().toString() + "</a>"
-         onLinkActivated: Qt.openUrlExternally(snapshotComponent.getSnapshotBasePath())
-      }
-      TextField {
-        id: textField
-        anchors.topMargin: 10
-        anchors.top: description.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        onTextChanged: {
-          if(text == "") {
-           textDialog.standardButtons = StandardButton.Cancel;
-          }
-          else {
-            textDialog.standardButtons = StandardButton.Cancel | StandardButton.Save;
-          }
         }
-      }
-      onAccepted: {
-        onAcceptedFunction(textField.text);
-        textField.text = "";
-      }
+
+        Connections {
+            target: snapshotComponent
+            onSnapshotError: {
+                errorDialog.text = errorMessage;
+                errorDialog.open();
+            }
+        }
+
+        property alias errorDialog: errorDialog
+        property alias fileDialog: fileDialog
+        property alias textDialog: textDialog
+
+        //Dialog to show errors
+        MessageDialog {
+            id: errorDialog
+            title: "error"
+            standardButtons: StandardButton.Ok
+            onAccepted: {
+                close();
+            }
+        }
+
+        //File dialog for selecting a file
+        FileDialog {
+            id: fileDialog
+            property var onAcceptedFunction
+            selectExisting: false
+            selectFolder: false
+            selectMultiple: false
+            onAccepted: {
+                onAcceptedFunction(fileDialog.fileUrl);
+            }
+        }
+
+        // Dialog to input text
+        Dialog {
+            id: textDialog
+            title: "Save snapshot"
+            standardButtons: StandardButton.Cancel;
+            property var onAcceptedFunction
+            property alias placeholderText: textField.placeholderText
+            Text {
+                id: description
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                wrapMode: Text.WordWrap
+                textFormat: Text.StyledText
+                text: "<p>Save a snapshot of the current register and memory state to disk. " +
+                "Your snapshot files can be found here:</p> " +
+                "<a href=\"" + snapshotComponent.getSnapshotBasePath().toString() + "\">" +
+                snapshotComponent.getSnapshotBasePath().toString() + "</a>"
+                onLinkActivated: Qt.openUrlExternally(snapshotComponent.getSnapshotBasePath())
+            }
+            TextField {
+                id: textField
+                anchors.topMargin: 10
+                anchors.top: description.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                onTextChanged: {
+                    if(text == "") {
+                        textDialog.standardButtons = StandardButton.Cancel;
+                    }
+                    else {
+                        textDialog.standardButtons = StandardButton.Cancel | StandardButton.Save;
+                    }
+                }
+            }
+            onAccepted: {
+                onAcceptedFunction(textField.text);
+                textField.text = "";
+            }
+        }
     }
-}

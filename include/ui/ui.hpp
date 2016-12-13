@@ -81,12 +81,12 @@ class Ui : public QObject {
    * \param projectComponent The QQmlComponent to be used to create the qml part
    * of the project.
    */
-  Q_INVOKABLE void addProject(QQuickItem* tabItem,
-                              QQmlComponent* projectComponent,
-                              const QVariant& memorySizeQVariant,
-                              const QString& architecture,
-                              const QString& optionName,
-                              const QString& parser);
+  Q_INVOKABLE int addProject(QQuickItem* tabItem,
+                             QQmlComponent* projectComponent,
+                             const QVariant& memorySizeQVariant,
+                             const QString& architecture,
+                             const QString& optionName,
+                             const QString& parser);
   /**
    * Returns a list of architecture names.
    *

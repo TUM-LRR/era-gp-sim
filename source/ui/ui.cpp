@@ -46,12 +46,12 @@ int Ui::runUi() {
   return _qmlApplication.exec();
 }
 
-void Ui::addProject(QQuickItem* tabItem,
-                    QQmlComponent* projectComponent,
-                    const QVariant& memorySizeQVariant,
-                    const QString& architecture,
-                    const QString& optionName,
-                    const QString& parser) {
+int Ui::addProject(QQuickItem* tabItem,
+                   QQmlComponent* projectComponent,
+                   const QVariant& memorySizeQVariant,
+                   const QString& architecture,
+                   const QString& optionName,
+                   const QString& parser) {
   // create ArchitectureFormula
   ArchitectureFormula architectureFormula(architecture.toStdString());
 
@@ -65,8 +65,9 @@ void Ui::addProject(QQuickItem* tabItem,
   // parent is tabItem, so it gets destroyed at the same time
   QQmlContext* context = new QQmlContext(qmlContext(tabItem), tabItem);
 
-  // the pointer is not needed anywhere, the object is deleted by qml when
+  // save the project pointer in a vector, the object is deleted by qml when
   // tabItem is deleted
+  int projectIndex = _projects.size();
   _projects.push_back(new GuiProject(context,
                                      architectureFormula,
                                      memorySize,
@@ -83,6 +84,8 @@ void Ui::addProject(QQuickItem* tabItem,
 
   // set visual parent of the projectItem
   projectItem->setParentItem(tabItem);
+
+  return projectIndex;
 }
 
 QStringList Ui::getArchitectures() const {
