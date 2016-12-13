@@ -117,22 +117,83 @@ MemoryValue R(const InstructionKey& key, const Operands& operands);
 MemoryValue I(const InstructionKey& key, const Operands& operands);
 
 /*
- * imm[11:5] | rs2 | rs1 | funct3 | imm[4:0] | opcode
+ * Assembles instructions with the `S` format.
+ *
+ * The `S` format is used by the various *store* instructions (`SB`, `SH`, `SW`
+ * and `SD` for the 64-bit extension). All such instructions take a source
+ * register for the value to store, as well as a base register and immediate
+ * offset whose sum gives the memory address at which to store the contents of
+ * the first register.
+ *
+ * `imm[11] | imm[10:5] | rs2 | rs1 | funct3 | imm[4:1] | imm[0] | opcode`
+ *
+ * As can be seen, next to the two source registers (for contents and as the
+ * address base value), three function bits specialize the opcode. Also, the 12
+ * bit immediate is split into two pieces, holding the first 5 and the last 7
+ * bits, respectively.
+ *
+ * \param key The key of the instruction.
+ * \param operands The operands of the instruction.
+ * \return A `MemoryValue` holding the result of assembling the instruction.
  */
 MemoryValue S(const InstructionKey& key, const Operands& operands);
 
 /*
- * imm[31:12] | rd | opcode
- */
-MemoryValue U(const InstructionKey& key, const Operands& operands);
-
-/*
- * The same as SFormat except the immediate encoding.
+ * Assembles instructions with the `SB` format.
+ *
+ * The `SB` format is the same as `S` in the high level function of its bits,
+ * but differs in the interpretation of the immediate bits. Whereas the `S`
+ * immediate represented a 12 bit value, the `SB` immediate actually represents
+ * a 13 bit immediate with the LSB set to zero. That is, the 12 bit immediate
+ * supplied is implicitly left-shifted by one bit:
+ *
+ * `imm[12] | imm[10:5] | rs2 | rs1 | funct3 | imm[4:1] | imm[11] | opcode`
+ *
+ * The slightly awkward encoding was chosen to maximize overlapping regions of
+ * bits and thus simplify decoding logic.
+ *
+ * \param key The key of the instruction.
+ * \param operands The operands of the instruction.
+ * \return A `MemoryValue` holding the result of assembling the instruction.
  */
 MemoryValue SB(const InstructionKey& key, const Operands& operands);
 
 /*
- * The same as UFormat except the immediate encoding.
+ * Assembles instructions with the `U` format.
+ *
+ * Instructions with the `U` format expect the largest kind of immediate, which
+ * is 20 bits wide. Such instructions include `LUI` and `AUIPC`. It is
+ * noteworthy that the `U`-type immediate is interpreted as the 20 high bits of
+ * a 32-bit immediate. That is, the 20 bit immediate supplied is implicitly
+ * left-shifted by 12 bits, the low bits being filled with zeros:
+ *
+ * `imm[31:12] | rd | opcode`
+ *
+ * The difference between the `U` and `UJ` format is that the `UJ` format
+ * interprets its immediate as being left-shifted by only a single bits, i.e.
+ * filling bits 1 to 20 of the resulting 32 bit immediate.
+ *
+ * \param key The key of the instruction.
+ * \param operands The operands of the instruction.
+ * \return A `MemoryValue` holding the result of assembling the instruction.
+ */
+MemoryValue U(const InstructionKey& key, const Operands& operands);
+
+/*
+ * Assembles instructions with the `UJ` format.
+ *
+ * The difference between the `UJ` and `U` formats is analogous to the
+ * difference between `S` and `SB`. That is, they differ only in the
+ * interpretation of the immediate bits. Whereas `U` immediates encode the high
+ * 20 bits of a 32 bit immediate, `UJ` immediates are implicitly left-shifted by
+ * only one bit, i.e. representing a 21 bit immediate with the LSB always set to
+ * zero.
+ *
+ * `imm[20:1] | rd | opcode`
+ *
+ * \param key The key of the instruction.
+ * \param operands The operands of the instruction.
+ * \return A `MemoryValue` holding the result of assembling the instruction.
  */
 MemoryValue UJ(const InstructionKey& key, const Operands& operands);
 }
