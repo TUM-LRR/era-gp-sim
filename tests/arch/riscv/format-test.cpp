@@ -15,7 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <gtest/gtest.h>
+
+#include "gtest/gtest.h"
+
 #include <cstdint>
 #include <iostream>
 #include <iostream>
@@ -28,11 +30,6 @@
 #include "arch/common/immediate-node.hpp"
 #include "arch/common/instruction-key.hpp"
 #include "arch/common/instruction-set.hpp"
-#include "arch/riscv/format.hpp"
-#include "arch/riscv/instruction-node.hpp"
-#include "arch/riscv/integer-instructions.hpp"
-#include "arch/riscv/register-node.hpp"
-#include "core/memory-value.hpp"
 
 using namespace riscv;
 

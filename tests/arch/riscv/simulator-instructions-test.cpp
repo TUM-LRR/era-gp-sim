@@ -16,16 +16,21 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
 #include "arch/common/binarydata-node.hpp"
-#include "tests/arch/riscv/test-utils.hpp"
+#include "arch/common/register-node.hpp"
+#include "arch/riscv/properties.hpp"
+#include "arch/riscv/utility.hpp"
 
-struct SimulatorInstructionTest : public RiscvBaseTest {};
+#include "tests/arch/riscv/base-fixture.hpp"
+
+using namespace riscv;
+
+struct SimulatorInstructionTest : public riscv::BaseFixture {};
 
 TEST_F(SimulatorInstructionTest, SIMUCRASH) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
+  auto& memoryAccess = getMemoryAccess();
 
   std::string customErrorMsg = "Oh no, something went wrong :(";
-  MemoryAccess memoryAccess = getMemoryAccess();
-  auto factories = getFactories();
 
   auto instr = factories.createInstructionNode("simucrash");
   ASSERT_FALSE(instr->validate(memoryAccess).isSuccess());
@@ -36,8 +41,8 @@ TEST_F(SimulatorInstructionTest, SIMUCRASH) {
   ValidationResult result = instr->validateRuntime(memoryAccess);
   ASSERT_FALSE(result.isSuccess());
   std::string msg = result.getMessage().getBaseString();
-  for(auto& opPtr : result.getMessage().getOperands()) {
-      msg+=opPtr->getBaseString();//no real replacement neccessary
+  for (auto& opPtr : result.getMessage().getOperands()) {
+    msg += opPtr->getBaseString();// no real replacement neccessary
   }
   // check that the custom error message is somewhere in the runtime message
   ASSERT_TRUE(msg.find(customErrorMsg) != std::string::npos);
@@ -45,10 +50,9 @@ TEST_F(SimulatorInstructionTest, SIMUCRASH) {
 
 TEST_F(SimulatorInstructionTest, SIMUCRASH_validation) {
   using Type = AbstractSyntaxTreeNode::Type;
-  load({"rv32i", "rv64i"});
+  loadArchitecture({"rv32i", "rv64i"});
+  auto& memoryAccess = getMemoryAccess();
 
-  MemoryAccess memoryAccess = getMemoryAccess();
-  auto factories = getFactories();
 
   auto twoOpInstruction = factories.createInstructionNode("simucrash");
   twoOpInstruction->addChild(factories.createDataNode(""));
@@ -66,9 +70,8 @@ TEST_F(SimulatorInstructionTest, SIMUCRASH_validation) {
 
 TEST_F(SimulatorInstructionTest, SIMUSLEEP) {
   constexpr riscv::signed32_t sleeptime = 200;
-  load({"rv32i"});
-  auto factories = getFactories();
-  auto memoryAccess = getMemoryAccess();
+  loadArchitecture({"rv32i"});
+  auto& memoryAccess = getMemoryAccess();
 
   auto instr = factories.createInstructionNode("simusleep");
   instr->addChild(factories.createImmediateNode(
@@ -84,16 +87,15 @@ TEST_F(SimulatorInstructionTest, SIMUSLEEP) {
 }
 
 TEST_F(SimulatorInstructionTest, SIMUSLEEP_validation) {
-    load({"rv32i", "rv64i"});
+  loadArchitecture({"rv32i", "rv64i"});
+  auto& memoryAccess = getMemoryAccess();
 
-
-    MemoryAccess memoryAccess = getMemoryAccess();
-    auto factories = getFactories();
-
-    auto twoOpInstr = factories.createInstructionNode("simusleep");
-    ASSERT_FALSE(twoOpInstr->validate(memoryAccess).isSuccess());
-    twoOpInstr->addChild(factories.createImmediateNode(riscv::convert<riscv::signed32_t>(42)));
-    ASSERT_TRUE(twoOpInstr->validate(memoryAccess).isSuccess());
-    twoOpInstr->addChild(factories.createImmediateNode(riscv::convert<riscv::signed32_t>(42)));
-    ASSERT_FALSE(twoOpInstr->validate(memoryAccess).isSuccess());
+  auto twoOpInstr = factories.createInstructionNode("simusleep");
+  ASSERT_FALSE(twoOpInstr->validate(memoryAccess).isSuccess());
+  twoOpInstr->addChild(
+      factories.createImmediateNode(riscv::convert<riscv::signed32_t>(42)));
+  ASSERT_TRUE(twoOpInstr->validate(memoryAccess).isSuccess());
+  twoOpInstr->addChild(
+      factories.createImmediateNode(riscv::convert<riscv::signed32_t>(42)));
+  ASSERT_FALSE(twoOpInstr->validate(memoryAccess).isSuccess());
 }

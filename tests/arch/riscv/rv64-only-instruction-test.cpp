@@ -26,11 +26,15 @@
 #include "arch/common/architecture.hpp"
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
-#include "tests/arch/riscv/test-utils.hpp"
+#include "tests/arch/riscv/base-fixture.hpp"
 
 using namespace riscv;
 
+<<<<<<< HEAD
 struct RV64OnlyInstructionTest : public RiscvBaseTest {
+=======
+struct RV64OnlyInstructionTest : public riscv::BaseFixture {
+>>>>>>> master
   std::string destId{"x1"}, srcId{"x2"}, src1Id{"x2"}, src2Id{"x3"};
 
   /**
@@ -40,13 +44,22 @@ struct RV64OnlyInstructionTest : public RiscvBaseTest {
                                  uint64_t op1,
                                  uint64_t op2,
                                  uint64_t expectedResult) {
+<<<<<<< HEAD
     load({"rv32i", "rv64i"});
     MemoryAccess memoryAccess = getMemoryAccess();
+=======
+    loadArchitecture({"rv32i", "rv64i"});
+    auto& memoryAccess = getMemoryAccess();
+>>>>>>> master
 
     memoryAccess.putRegisterValue(srcId, riscv::convert<uint64_t>(op1));
 
     // Set up instruction
+<<<<<<< HEAD
     auto instrFactory = getFactories();
+=======
+    auto instrFactory = factories;
+>>>>>>> master
     auto immediateFactory = ImmediateNodeFactory{};
     auto instr = instrFactory.createInstructionNode(instructionName);
 
@@ -76,14 +89,23 @@ struct RV64OnlyInstructionTest : public RiscvBaseTest {
                                  uint64_t op1,
                                  uint64_t op2,
                                  uint64_t expectedResult) {
+<<<<<<< HEAD
     load({"rv32i", "rv64i"});
     MemoryAccess memoryAccess = getMemoryAccess();
+=======
+    loadArchitecture({"rv32i", "rv64i"});
+    auto& memoryAccess = getMemoryAccess();
+>>>>>>> master
 
     memoryAccess.putRegisterValue(src1Id, riscv::convert<uint64_t>(op1));
     memoryAccess.putRegisterValue(src2Id, riscv::convert<uint64_t>(op2));
 
     // Set up instruction
+<<<<<<< HEAD
     auto instrFactory = getFactories();
+=======
+    auto instrFactory = factories;
+>>>>>>> master
     auto immediateFactory = ImmediateNodeFactory{};
     auto instr = instrFactory.createInstructionNode(instructionName);
 
@@ -120,14 +142,19 @@ struct RV64OnlyInstructionTest : public RiscvBaseTest {
 
 
 TEST_F(RV64OnlyInstructionTest, Validation) {
+<<<<<<< HEAD
   load({"rv32i", "rv64i"});
+=======
+  loadArchitecture({"rv32i", "rv64i"});
+  auto& memoryAccess = getMemoryAccess();
+>>>>>>> master
   auto ri = {"addiw", "slliw", "srliw", "sraiw"};
   auto rr = {"addw", "subw", "sllw", "srlw", "sraw"};
 
   std::string registerId = "x1";// Not relevant
-  auto instrFactory = getFactories();
+  auto instrFactory = factories;
   auto immediateFactory = ImmediateNodeFactory{};
-  MemoryAccess memoryAccess = getMemoryAccess();
+
 
   for (auto& name : ri) {
     // Check if register-immediate command does not allow register-register

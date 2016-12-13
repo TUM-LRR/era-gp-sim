@@ -27,7 +27,7 @@
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/load-store-instructions.hpp"
 
-#include "test-utils.hpp"
+#include "tests/arch/riscv/base-fixture.hpp"
 
 /*
  * BIG TODO:
@@ -47,7 +47,7 @@
 
 using namespace riscv;
 
-class LoadStoreInstructionTest : public RiscvBaseTest {
+class LoadStoreInstructionTest : public riscv::BaseFixture {
  public:
   LoadStoreInstructionTest() : dest("x1"), base("x2"), src("x3") {
   }
@@ -76,14 +76,14 @@ class LoadStoreInstructionTest : public RiscvBaseTest {
   memoryAccess.setMemoryValueAt(                                         \
       0, loadValue_##contextNbr.subSet(0, byteAmount* BITS_PER_BYTE));   \
   auto instr_##contextNbr =                                              \
-      getFactories().createInstructionNode(instructionName);             \
+      factories.createInstructionNode(instructionName);             \
   ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
-  instr_##contextNbr->addChild(getFactories().createRegisterNode(dest)); \
+  instr_##contextNbr->addChild(factories.createRegisterNode(dest)); \
   ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
-  instr_##contextNbr->addChild(getFactories().createRegisterNode(base)); \
+  instr_##contextNbr->addChild(factories.createRegisterNode(base)); \
   ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
   instr_##contextNbr->addChild(                                          \
-      getFactories().createImmediateNode(convertFunction(0)));           \
+      factories.createImmediateNode(convertFunction(0)));           \
   ASSERT_TRUE(instr_##contextNbr->validate(memoryAccess));               \
   instr_##contextNbr->getValue(memoryAccess);                            \
   ASSERT_EQ(memoryAccess.getRegisterValue(dest).get(),                   \
@@ -104,14 +104,14 @@ class LoadStoreInstructionTest : public RiscvBaseTest {
   memoryAccess.putRegisterValue(base, convertFunction(0));               \
   memoryAccess.setRegisterValue(src, storeValue_##contextNbr);           \
   auto instr_##contextNbr =                                              \
-      getFactories().createInstructionNode(instructionName);             \
+      factories.createInstructionNode(instructionName);             \
   ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
-  instr_##contextNbr->addChild(getFactories().createRegisterNode(base)); \
+  instr_##contextNbr->addChild(factories.createRegisterNode(base)); \
   ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
-  instr_##contextNbr->addChild(getFactories().createRegisterNode(src));  \
+  instr_##contextNbr->addChild(factories.createRegisterNode(src));  \
   ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
   instr_##contextNbr->addChild(                                          \
-      getFactories().createImmediateNode(convertFunction(0)));           \
+      factories.createImmediateNode(convertFunction(0)));           \
   ASSERT_TRUE(instr_##contextNbr->validate(memoryAccess));               \
   instr_##contextNbr->getValue(memoryAccess);                            \
   ASSERT_EQ(memoryAccess.getMemoryValueAt(0, byteAmount).get(),          \
@@ -120,7 +120,7 @@ class LoadStoreInstructionTest : public RiscvBaseTest {
 // Load Tests
 
 TEST_F(LoadStoreInstructionTest, Load_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
   auto memoryAccess = getMemoryAccess();
 
   TEST_LOAD(0, riscv::convert<uint32_t>, "lw", 0xDEADBEEF, 0xDEADBEEF, 4);
@@ -135,7 +135,7 @@ TEST_F(LoadStoreInstructionTest, Load_32) {
 }
 
 TEST_F(LoadStoreInstructionTest, Load_64) {
-  load({"rv32i", "rv64i"});
+  loadArchitecture({"rv32i", "rv64i"});
   auto memoryAccess = getMemoryAccess();
 
   // clang-format off
@@ -158,7 +158,7 @@ TEST_F(LoadStoreInstructionTest, Load_64) {
 // Store Tests
 
 TEST_F(LoadStoreInstructionTest, Store_32) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
   auto memoryAccess = getMemoryAccess();
 
   TEST_STORE(0, riscv::convert<uint32_t>, "sw", 0xBADC0DED, 4);
@@ -167,7 +167,7 @@ TEST_F(LoadStoreInstructionTest, Store_32) {
 }
 
 TEST_F(LoadStoreInstructionTest, Store_64) {
-  load({"rv32i", "rv64i"});
+  loadArchitecture({"rv32i", "rv64i"});
   auto memoryAccess = getMemoryAccess();
 
   TEST_STORE(0, riscv::convert<uint64_t>, "sd", 0xC0CAC01AADD511FE, 8);
