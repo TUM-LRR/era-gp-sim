@@ -16,8 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
 #include "arch/common/binarydata-node.hpp"
-#include "arch/common/register-node.hpp"
 #include "arch/riscv/properties.hpp"
+#include "arch/riscv/register-node.hpp"
 #include "arch/riscv/utility.hpp"
 
 #include "tests/arch/riscv/base-fixture.hpp"

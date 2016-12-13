@@ -17,9 +17,9 @@
 
 #include <string>
 
-#include "arch/riscv/instruction-context-information.hpp"
 #include "gtest/gtest.h"
 
+#include "arch/riscv/instruction-context-information.hpp"
 #include "tests/arch/riscv/base-fixture.hpp"
 
 struct ContextInformationTest : public riscv::BaseFixture {
@@ -29,11 +29,10 @@ struct ContextInformationTest : public riscv::BaseFixture {
 };
 
 TEST_F(ContextInformationTest, allExist) {
-  auto arch = project->getArchitectureAccess().getArchitecture().get();
-  for (auto& pair : arch.getInstructions()) {
+  for (auto& pair : getArchitecture().getInstructions()) {
     const std::string& mnemonic = pair.second.getMnemonic();
     auto node = factories.createInstructionNode(mnemonic);
-    // If a InstructionDocumentation exists, no assertion is thrown
+    // if a InstructionDocumentation exists, no assertion is thrown
     node->getInstructionDocumentation();
   }
 }

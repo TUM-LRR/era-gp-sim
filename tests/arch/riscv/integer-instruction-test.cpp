@@ -25,13 +25,10 @@
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/immediate-node.hpp"
-<<<<<<< HEAD
-#include "arch/riscv/register-node.hpp"
-=======
->>>>>>> master
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/instruction-node.hpp"
+#include "arch/riscv/register-node.hpp"
 #include "core/conversions.hpp"
 
 #include "tests/arch/riscv/arithmetic-test-utils.hpp"

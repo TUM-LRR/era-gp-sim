@@ -65,7 +65,7 @@ TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   CompileState state;
   auto output = generator.transformOperand("x18", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(output)));
+  ASSERT_TRUE((isInstance<riscv::RegisterNode>(output)));
 }
 
 TEST(SyntaxTreeGenerator, instantiateCommandNode) {
@@ -74,15 +74,15 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
 
   auto arg1 = generator.transformOperand("x1", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
+  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
 
   auto arg2 = generator.transformOperand("x1", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
+  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
 
   auto arg3 = generator.transformOperand("x2", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(arg2)));
+  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg2)));
 
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> sources;
   sources.push_back(std::move(arg1));

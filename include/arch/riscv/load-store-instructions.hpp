@@ -21,7 +21,6 @@
 #define ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_
 
 #include <QtGlobal>
-#include <cassert>
 #include <string>
 
 #include "arch/common/validation-result.hpp"
@@ -155,7 +154,7 @@ class LoadInstructionNode
   }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(super::validate(memoryAccess));
+    assert::that(super::validate(memoryAccess));
 
     const std::string& dest = super::_children.at(0)->getIdentifier();
     std::size_t effectiveAddress = super::getEffectiveAddress(memoryAccess);
@@ -305,7 +304,7 @@ class StoreInstructionNode
   }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(super::validate(memoryAccess));
+    assert::that(super::validate(memoryAccess));
 
     const std::string& src = super::_children.at(1)->getIdentifier();
     std::size_t effectiveAddress = super::getEffectiveAddress(memoryAccess);
