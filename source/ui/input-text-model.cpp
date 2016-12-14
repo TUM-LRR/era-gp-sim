@@ -20,6 +20,8 @@
 #include "core/conversions.hpp"
 #include "ui/input-text-model.hpp"
 
+using length_t = unsigned ;
+
 InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess memoryAccess)
 : QObject()
 , _context(context)

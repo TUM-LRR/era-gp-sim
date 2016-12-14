@@ -42,7 +42,7 @@ Item {
             text: "\u2191"
         }
         onClicked: {
-            inputButtonMod.buttonClicked(0);
+            inputButtonMod.buttonClicked(4);
         }
     }
 

@@ -81,8 +81,8 @@ Item {
             actual = object;
         }else if(comp === "register"){
             var object = register.createObject(holder);
-            actuall.destroy();
-            actuall=  object;
+            actual.destroy();
+            actual=  object;
         }else if(comp === "memory"){
             var object = memory.createObject(holder);
             actual.destroy();
