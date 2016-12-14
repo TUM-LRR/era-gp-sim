@@ -42,7 +42,8 @@ void MemoryReservationDirective::allocateMemory(
     MemoryAllocator& allocator,
     CompileState& state) {
   if (_values.empty()) {
-    state.addWarningT(CodePosition(_lines.lineStart, _lines.lineEnd), "Implicit reservation of 0 bytes, missing arguments?");
+    state.addWarningT(CodePosition(_lines.lineStart, _lines.lineEnd),
+                      "Implicit reservation of 0 bytes, missing arguments?");
   }
   // So, we simply calculate and sum up our arguments.
   std::size_t sizeInCells = 0;
@@ -53,7 +54,8 @@ void MemoryReservationDirective::allocateMemory(
     if (result > 0) {
       sizeInCells += result;
     } else {
-      state.addWarningT(CodePosition(_lines.lineStart, _lines.lineEnd), "Reserving 0 bytes");
+      state.addWarningT(CodePosition(_lines.lineStart, _lines.lineEnd),
+                        "Reserving 0 bytes");
     }
   }
 
@@ -70,10 +72,6 @@ void MemoryReservationDirective::allocateMemory(
 
 void MemoryReservationDirective::enhanceSymbolTable(
     SymbolTable& table, const MemoryAllocator& allocator, CompileState& state) {
-  if (_values.empty()) {
-    state.addError("Arguments missing here.");
-  }
-
   // We calculate the absolute memory position and enhance our symbol table.
   _absolutePosition = allocator.absolutePosition(_relativePosition);
   for (const auto& i : _labels) {
