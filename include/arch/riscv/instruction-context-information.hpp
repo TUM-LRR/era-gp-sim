@@ -18,6 +18,7 @@
 #define ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
 
 #include <unordered_map>
+#include <QtGlobal>
 
 #include "arch/common/architecture.hpp"
 #include "common/translateable.hpp"

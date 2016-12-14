@@ -18,6 +18,7 @@
 */
 
 #include "parser/memory-reservation-directive.hpp"
+#include <cstdint>
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
 #include "parser/expression-compiler-clike.hpp"
@@ -36,16 +37,24 @@ MemoryReservationDirective::MemoryReservationDirective(
 , _argumentCompile(argumentCompile) {
 }
 
-
 void MemoryReservationDirective::allocateMemory(
     const Architecture& architecture,
     MemoryAllocator& allocator,
     CompileState& state) {
+  if (_values.empty()) {
+    state.addWarningT(CodePosition(_lines.lineStart, _lines.lineEnd), "Implicit reservation of 0 bytes, missing arguments?");
+  }
   // So, we simply calculate and sum up our arguments.
   std::size_t sizeInCells = 0;
   for (const auto& i : _values) {
+    // b/c of the definition of argumentCompile and the C standard, the result
+    // is non-negative.
     auto result = _argumentCompile(i, state);
-    sizeInCells += result;
+    if (result > 0) {
+      sizeInCells += result;
+    } else {
+      state.addWarningT(CodePosition(_lines.lineStart, _lines.lineEnd), "Reserving 0 bytes");
+    }
   }
 
   // Now, we got the number of cells to reserve. Let's calculate the number of
@@ -81,7 +90,5 @@ void MemoryReservationDirective::execute(
   // Finally, we may put some zeros into memory.
   if (_size > 0) {
     memoryAccess.putMemoryValueAt(_absolutePosition, MemoryValue(_size));
-  } else {
-    state.addError("Empty memory reservation.");
   }
 }

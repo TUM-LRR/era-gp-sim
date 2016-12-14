@@ -27,8 +27,8 @@
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
-#include "intermediate-directive.hpp"
 #include "parser/expression-compiler-clike.hpp"
+#include "parser/intermediate-directive.hpp"
 #include "parser/memory-allocator.hpp"
 #include "parser/relative-memory-position.hpp"
 #include "parser/string-parser.hpp"
@@ -99,7 +99,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                               MemoryAllocator& allocator,
                               CompileState& state) {
     if (_values.empty()) {
-      state.addError("Arguments missing here.");
+      state.addErrorT(CodePosition(_lines.lineStart, _lines.lineEnd), "Empty data definition");
     }
 
     // So, we simply calculate and sum up our arguments.
@@ -151,34 +151,35 @@ class MemoryDefinitionDirective : public IntermediateDirective {
       MemoryValue data(_size);
 
       // Then we write to it.
-      _processValues(_values, _cellSize, state, [&](T value, size_t position) {
-        // For now. Later to be replaced by the real enum of the arch,
-        // maybe...
-        auto memoryValue =
-            conversions::convert(value,
-                                 conversions::standardConversions::helper::
-                                     twosComplement::toMemoryValueFunction,
-                                 _byteSize * _cellSize);
+      _processValues(
+          _values, _cellSize, state, [&](T value, std::size_t position) {
+            // For now. Later to be replaced by the real enum of the arch,
+            // maybe...
+            auto memoryValue =
+                conversions::convert(value,
+                                     conversions::standardConversions::helper::
+                                         twosComplement::toMemoryValueFunction,
+                                     _byteSize * _cellSize);
 
-        // Once converted, we take down the value.
-        data.write(memoryValue, position * _byteSize);
-      });
+            // Once converted, we take down the value.
+            data.write(memoryValue, position * _byteSize);
+          });
 
       // Then, let's do a (probably also here) expensive memory call.
       memoryAccess.putMemoryValueAt(_absolutePosition, data);
     } else {
-      state.addError("Nothing to reserve with memory definition.");
+      state.addErrorHereT("Nothing to reserve with memory definition.");
     }
   }
 
  private:
-  ProcessValuesFunction _processValues;
-  size_t _byteSize;
-  size_t _absolutePosition;
+  std::size_t _byteSize;
+  std::size_t _absolutePosition;
   RelativeMemoryPosition _relativePosition;
   size_t _size;
   size_t _cellSize;
   std::vector<std::string> _values;
+  ProcessValuesFunction _processValues;
 };
 
 #endif /* ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP */

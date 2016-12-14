@@ -32,7 +32,7 @@
  */
 class DocumentationBuilder {
  public:
-    using StringList = Translateable::StringList;
+    using StringList = std::initializer_list<const std::string>;
 
   /**
  * A Key is the identifier for a certain component of the text.
