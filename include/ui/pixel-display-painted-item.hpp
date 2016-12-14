@@ -36,13 +36,13 @@
 #include "ui/output-component.hpp"
 
 #define PSIZE 16
-#define CMODE 0
+#define CMODE 1
 
 namespace colorMode {
 struct ColorMode;
 struct Options {
   std::size_t pixelBaseAddress = 0;
-  std::size_t colorBaseAddress = 0;
+  std::size_t colorBaseAddress = 4;
   std::size_t width = PSIZE;
   std::size_t height = PSIZE;
   std::size_t colorMode = CMODE;
@@ -59,9 +59,9 @@ struct Options {
   // packs pixel data as tight as possible
   bool tight = false;
   // interpret PixelBaseAddress as pointer to the PixelBuffer
-  bool pixelBufferPointerLike = false;
+  bool pixelBufferPointerLike = true;
   // interpret ColorBaseAddress as pointer to the colorTable
-  bool colorTablePointerLike = false;
+  bool colorTablePointerLike = true;
   std::size_t freeBytes = 1;
   std::size_t freeBits = 0;
 
@@ -213,6 +213,12 @@ struct ColorMode {
    * \brief updates all colors of the image
    */
   UpdateAllColorsFunction updateAllColors;
+
+  static std::size_t loadPointer(Optional<OutputComponent *> memoryAccess,
+                          std::size_t address,
+                          bool indirect,
+                          std::size_t cellSize,
+                          std::size_t pointerSize);
   // RGB:
   const static GetPixelFunction RGBGetPixel;
   const static GetColorFunction RGBGetColor;

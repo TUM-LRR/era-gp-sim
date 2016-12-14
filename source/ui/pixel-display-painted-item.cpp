@@ -92,6 +92,30 @@ void Options::updateAllColors(Optional<OutputComponent *> memoryAccess,
   getColorMode().updateAllColors(memoryAccess, *this, image);
 }
 
+std::size_t ColorMode::loadPointer(Optional<OutputComponent *> memoryAccess,
+                                   std::size_t address,
+                                   bool indirect,
+                                   std::size_t cellSize,
+                                   std::size_t pointerSize) {
+  if (indirect) {
+    if (memoryAccess) {
+      MemoryValue pointer =
+          (*memoryAccess)
+              ->getMemoryAccess()
+              .getMemoryValueAt(address,
+                                (pointerSize + cellSize - 1) / cellSize)
+              .get();
+      return conversions::convert<std::size_t>(
+          pointer, conversions::standardConversions::nonsigned);
+    } else {
+      return 0;
+    }
+  } else {
+    return address;
+  }
+}
+
+
 // RGB*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*
 const ColorMode::GetPixelFunction ColorMode::RGBGetPixel = [](
     Optional<OutputComponent *> memoryAccess,
@@ -100,20 +124,12 @@ const ColorMode::GetPixelFunction ColorMode::RGBGetPixel = [](
     std::size_t y) -> std::uint32_t {
   std::size_t cellSize = 8;    // TODO
   std::size_t pointerSize = 32;// TODO
-  std::size_t pixelBufferPointer = o.pixelBaseAddress;
-  if (o.pixelBufferPointerLike) {
-    MemoryValue pixelPointer{pointerSize};
-    if (memoryAccess) {
-      pixelPointer =
-          (*memoryAccess)
-              ->getMemoryAccess()
-              .getMemoryValueAt(pixelBufferPointer,
-                                (pointerSize + cellSize - 1) / cellSize)
-              .get();
-    }
-    pixelBufferPointer = conversions::convert<std::size_t>(
-        pixelPointer, conversions::standardConversions::nonsigned);
-  }
+  std::size_t pixelBufferPointer =
+      ColorMode::loadPointer(memoryAccess,
+                             o.pixelBaseAddress,
+                             o.pixelBufferPointerLike,
+                             cellSize,
+                             pointerSize);
   std::size_t sizeInBit = o.rBit + o.gBit + o.bBit;
   std::size_t byteSize =
       (sizeInBit + cellSize - 1) / cellSize + (o.tight ? 0 : o.freeBytes);
@@ -202,17 +218,11 @@ const ColorMode::UpdateMemoryFunction ColorMode::RGBUpdateMemory = [](
       o.updateAllPixels(memoryAccess, image);
       hasAlreadyUpdatedAllPixels = true;
     } else {
-      MemoryValue pixelPointer{pointerSize};
-      if (memoryAccess) {
-        pixelPointer =
-            (*memoryAccess)
-                ->getMemoryAccess()
-                .getMemoryValueAt(pixelBufferPointer,
-                                  (pointerSize + cellSize - 1) / cellSize)
-                .get();
-      }
-      pixelBufferPointer = conversions::convert<std::size_t>(
-          pixelPointer, conversions::standardConversions::nonsigned);
+      pixelBufferPointer = ColorMode::loadPointer(memoryAccess,
+                                                  o.pixelBaseAddress,
+                                                  o.pixelBufferPointerLike,
+                                                  cellSize,
+                                                  pointerSize);
     }
   }
   std::size_t sizeInBit = o.rBit + o.gBit + o.bBit;
@@ -269,20 +279,12 @@ const ColorMode::UpdateAllPixelsFunction ColorMode::RGBUpdateAllPixels = [](
     std::shared_ptr<QImage> image) -> void {
   std::size_t cellSize = 8;    // TODO
   std::size_t pointerSize = 32;// TODO
-  std::size_t pixelBufferPointer = o.pixelBaseAddress;
-  if (o.pixelBufferPointerLike) {
-    MemoryValue pixelPointer{pointerSize};
-    if (memoryAccess) {
-      pixelPointer =
-          (*memoryAccess)
-              ->getMemoryAccess()
-              .getMemoryValueAt(pixelBufferPointer,
-                                (pointerSize + cellSize - 1) / cellSize)
-              .get();
-    }
-    pixelBufferPointer = conversions::convert<std::size_t>(
-        pixelPointer, conversions::standardConversions::nonsigned);
-  }
+  std::size_t pixelBufferPointer =
+      ColorMode::loadPointer(memoryAccess,
+                             o.pixelBaseAddress,
+                             o.pixelBufferPointerLike,
+                             cellSize,
+                             pointerSize);
   std::size_t sizeOfColorInBit = o.rBit + o.gBit + o.bBit;
   if (!o.tight) {
     sizeOfColorInBit =
@@ -335,20 +337,12 @@ const ColorMode::GetColorFunction ColorMode::MonochromeGetColor = [](
   std::size_t pointerSize = 32;// TODO
   constexpr std::size_t colorSizeInBit = 32;
   std::size_t colorSize = (32 + cellSize - 1) / cellSize;
-  std::size_t colorTablePointer = o.colorBaseAddress;
-  if (o.colorTablePointerLike) {
-    MemoryValue colorTableBaseAddress{pointerSize};
-    if (memoryAccess) {
-      colorTableBaseAddress =
-          (*memoryAccess)
-              ->getMemoryAccess()
-              .getMemoryValueAt(colorTablePointer,
-                                (pointerSize + cellSize - 1) / cellSize)
-              .get();
-    }
-    colorTablePointer = conversions::convert<std::size_t>(
-        colorTableBaseAddress, conversions::standardConversions::nonsigned);
-  }
+  std::size_t colorTablePointer =
+      ColorMode::loadPointer(memoryAccess,
+                             o.colorBaseAddress,
+                             o.colorTablePointerLike,
+                             cellSize,
+                             pointerSize);
   MemoryValue buffer{colorSizeInBit};
   if (memoryAccess) {
     buffer = (*memoryAccess)
@@ -415,17 +409,11 @@ const ColorMode::UpdateMemoryFunction ColorMode::MonochromeUpdateMemory = [](
       o.updateAllPixels(memoryAccess, image);
       hasAlreadyUpdatedAllPixels = true;
     } else {
-      MemoryValue pixelPointer{pointerSize};
-      if (memoryAccess) {
-        pixelPointer =
-            (*memoryAccess)
-                ->getMemoryAccess()
-                .getMemoryValueAt(pixelBufferPointer,
-                                  (pointerSize + cellSize - 1) / cellSize)
-                .get();
-      }
-      pixelBufferPointer = conversions::convert<std::size_t>(
-          pixelPointer, conversions::standardConversions::nonsigned);
+      pixelBufferPointer = ColorMode::loadPointer(memoryAccess,
+                                                  o.pixelBaseAddress,
+                                                  o.pixelBufferPointerLike,
+                                                  cellSize,
+                                                  pointerSize);
     }
   }
   std::size_t pixelBufferSize = (o.width * o.height + cellSize - 1) / cellSize;
@@ -476,17 +464,11 @@ const ColorMode::UpdateMemoryFunction ColorMode::MonochromeUpdateMemory = [](
       o.updateAllColors(memoryAccess, image);
       hasAlreadyUpdatedAllColors = true;
     } else {
-      MemoryValue colorPointer{pointerSize};
-      if (memoryAccess) {
-        colorPointer =
-            (*memoryAccess)
-                ->getMemoryAccess()
-                .getMemoryValueAt(colorBufferPointer,
-                                  (pointerSize + cellSize - 1) / cellSize)
-                .get();
-      }
-      colorBufferPointer = conversions::convert<std::size_t>(
-          colorPointer, conversions::standardConversions::nonsigned);
+      colorBufferPointer = ColorMode::loadPointer(memoryAccess,
+                                                  o.colorBaseAddress,
+                                                  o.colorTablePointerLike,
+                                                  cellSize,
+                                                  pointerSize);
     }
   }
   constexpr std::size_t colorCount = 2;
@@ -510,22 +492,13 @@ const ColorMode::UpdateAllPixelsFunction ColorMode::MonochromeUpdateAllPixels =
        std::shared_ptr<QImage> image) -> void {
   std::size_t cellSize = 8;    // TODO
   std::size_t pointerSize = 32;// TODO
-  std::size_t pixelBufferPointer = o.pixelBaseAddress;
-  if (o.pixelBufferPointerLike) {
-    MemoryValue pixelPointer{pointerSize};
-    if (memoryAccess) {
-      pixelPointer =
-          (*memoryAccess)
-              ->getMemoryAccess()
-              .getMemoryValueAt(pixelBufferPointer,
-                                (pointerSize + cellSize - 1) / cellSize)
-              .get();
-    }
-    pixelBufferPointer = conversions::convert<std::size_t>(
-        pixelPointer, conversions::standardConversions::nonsigned);
-  }
+  std::size_t pixelBufferPointer =
+      ColorMode::loadPointer(memoryAccess,
+                             o.pixelBaseAddress,
+                             o.pixelBufferPointerLike,
+                             cellSize,
+                             pointerSize);
   std::size_t bitsPerByte = cellSize - o.freeBits;
-
   std::size_t sizeInMemory =
       (o.width * o.height + bitsPerByte - 1) / bitsPerByte;
   MemoryValue buffer{1};
@@ -551,20 +524,12 @@ const ColorMode::UpdateAllColorsFunction ColorMode::MonochromeUpdateAllColors =
   std::size_t pointerSize = 32;// TODO
   constexpr std::size_t colorSizeInBit = 32;
   std::size_t colorSize = (colorSizeInBit + cellSize - 1) / cellSize;
-  std::size_t colorTablePointer = o.colorBaseAddress;
-  if (o.colorTablePointerLike) {
-    MemoryValue colorTableBaseAddress{pointerSize};
-    if (memoryAccess) {
-      colorTableBaseAddress =
-          (*memoryAccess)
-              ->getMemoryAccess()
-              .getMemoryValueAt(colorTablePointer,
-                                (pointerSize + cellSize - 1) / cellSize)
-              .get();
-    }
-    colorTablePointer = conversions::convert<std::size_t>(
-        colorTableBaseAddress, conversions::standardConversions::nonsigned);
-  }
+  std::size_t colorTablePointer =
+      ColorMode::loadPointer(memoryAccess,
+                             o.colorBaseAddress,
+                             o.colorTablePointerLike,
+                             cellSize,
+                             pointerSize);
   MemoryValue buffer{colorSize * cellSize * colorCount};
   if (memoryAccess) {
     buffer = (*memoryAccess)
