@@ -69,50 +69,50 @@ struct FormatTests : public riscv::BaseFixture {
 
 // clang-format off
 #define ASSEMBLE_R(funct7, rs2, rs1, funct3, rd, opcode) \
-  (funct7 << 25) | \
-  (rs2 << 20)    | \
-  (rs1 << 15)    | \
-  (funct3 << 12) | \
-  (rd << 7)      | \
-  opcode
+  ((funct7) << 25) | \
+  ((rs2) << 20)    | \
+  ((rs1) << 15)    | \
+  ((funct3) << 12) | \
+  ((rd) << 7)      | \
+  (opcode)
 
 #define ASSEMBLE_I(immediate, rs1, funct3, rd, opcode) \
-  (immediate << 20) | \
-  (rs1 << 15)       | \
-  (funct3 << 12)    | \
-  (rd << 7)         | \
-  opcode
+  ((immediate) << 20) | \
+  ((rs1) << 15)       | \
+  ((funct3) << 12)    | \
+  ((rd) << 7)         | \
+  (opcode)
 
 #define ASSEMBLE_S(offset, source, base, funct3, opcode) \
   (((offset & (127 << 5)) >> 5) << 25) | \
-  (source << 20)                       | \
-  (base << 15)                         | \
-  (funct3 << 12)                       | \
+  ((source) << 20)                       | \
+  ((base) << 15)                         | \
+  ((funct3) << 12)                       | \
   ((offset & 31) << 7)                 | \
-  opcode
+  (opcode)
 
 #define ASSEMBLE_SB(offset, source, base, funct3, opcode) \
   (((offset & 2048) >> 11) << 31)     | \
   (((offset & (63 << 4)) >> 4) << 25) | \
-  (source << 20)                      | \
-  (base << 15)                        | \
-  (funct3 << 12)                      | \
+  ((source) << 20)                      | \
+  ((base) << 15)                        | \
+  ((funct3) << 12)                      | \
   ((offset & 15) << 8)                | \
   (((offset & 1024) >> 10) << 7)      | \
-  opcode
+  (opcode)
 
 #define ASSEMBLE_U(immediate, rd, opcode) \
-  (immediate << 12) | \
-  (rd << 7)         | \
-  opcode
+  ((immediate) << 12) | \
+  ((rd) << 7)         | \
+  (opcode)
 
 #define ASSEMBLE_UJ(immediate, rd, opcode) \
-  (((immediate & (1 << 19)) >> 19) << 31)  | \
-  ((immediate & 1023) << 21)                 | \
-  (((immediate & 1024) >> 10) << 20)       | \
-  (((immediate & (255 << 11)) >> 11) << 12)  | \
-  (rd << 7)                                | \
-  opcode
+  ((((immediate) & (1 << 19)) >> 19) << 31)  | \
+  (((immediate) & 1023) << 21)                 | \
+  ((((immediate) & 1024) >> 10) << 20)       | \
+  ((((immediate) & (255 << 11)) >> 11) << 12)  | \
+  ((rd) << 7)                                | \
+  (opcode)
 // clang-format on
 
 TEST_F(FormatTests, RFormat) {
