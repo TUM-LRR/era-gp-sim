@@ -90,6 +90,29 @@ struct FormatTests : public riscv::BaseFixture {
   (funct3 << 12)                       | \
   ((offset & 31) << 7)                 | \
   opcode
+
+#define ASSEMBLE_SB(offset, source, base, funct3, opcode) \
+  (((offset & 2048) >> 11) << 31)     | \
+  (((offset & (63 << 4)) >> 4) << 25) | \
+  (source << 20)                      | \
+  (base << 15)                        | \
+  (funct3 << 12)                      | \
+  ((offset & 15) << 8)                | \
+  (((offset & 1024) >> 10) << 7)      | \
+  opcode
+
+#define ASSEMBLE_U(immediate, rd, opcode) \
+  (immediate << 12) | \
+  (rd << 7)         | \
+  opcode
+
+#define ASSEMBLE_UJ(immediate, rd, opcode) \
+  (((immediate & (1 << 19)) >> 19) << 31)  | \
+  ((immediate & 1023) << 21)                 | \
+  (((immediate & 1024) >> 10) << 20)       | \
+  (((immediate & (255 << 11)) >> 11) << 12)  | \
+  (rd << 7)                                | \
+  opcode
 // clang-format on
 
 TEST_F(FormatTests, RFormat) {
@@ -209,10 +232,117 @@ TEST_F(FormatTests, SFormat) {
 }
 
 TEST_F(FormatTests, SBFormat) {
+  // The `SB` format is for branch operations.
+  // Its layout is:
+  // `imm[12] | imm[10:5] | rs2 | rs1 | funct3 | imm[4:1] | imm[11] | opcode`
+
+  auto instruction = createInstructionNode("BGE");
+
+  auto firstRegister = createRegisterNode("x1");
+  auto secondRegister = createRegisterNode("x14");
+  auto offset = createImmediateNode(1234);
+
+  addChild(instruction, firstRegister);
+  addChild(instruction, secondRegister);
+  addChild(instruction, offset);
+
+  raw_t expected = ASSEMBLE_SB(1234u, 14u, 1u, 0b101, 0b1100011);
+
+  auto assembly = assemble(instruction);
+  EXPECT_EQ(assembly, expected);
+  EXPECT_NE(assembly, expected + 1);
+
+  // Now change stuff around and expect a different assembly
+  instruction->setChild(1, createRegisterNode("x5"));
+
+  assembly = assemble(instruction);
+  EXPECT_NE(assembly, expected);
+
+  expected = ASSEMBLE_SB(1234u, 5u, 1u, 0b101, 0b1100011);
+  EXPECT_EQ(assembly, expected);
+
+  instruction->setChild(2, createImmediateNode(0));
+
+  assembly = assemble(instruction);
+  EXPECT_NE(assembly, expected);
+
+  expected = ASSEMBLE_SB(0, 5u, 1u, 0b101, 0b1100011);
+  EXPECT_EQ(assembly, expected);
 }
 
 TEST_F(FormatTests, UFormat) {
+  // The `U` format is for LUI and AUIPC instructions (in the base ISA).
+  // The layout is:
+  // `imm[31] | imm[30:20] | imm[19:15] | imm[14:12] | rd | opcode`
+
+  auto instruction = createInstructionNode("LUI");
+
+  auto destinationRegister = createRegisterNode("x7");
+  auto immediate = createImmediateNode(123456);
+
+  addChild(instruction, destinationRegister);
+  addChild(instruction, immediate);
+
+  raw_t expected = ASSEMBLE_U(123456u, 7u, 0b0110111);
+
+  auto assembly = assemble(instruction);
+  EXPECT_EQ(assembly, expected);
+  EXPECT_NE(assembly, expected + 1);
+
+  // Now change stuff around and expect a different assembly
+  instruction->setChild(0, createRegisterNode("x5"));
+
+  assembly = assemble(instruction);
+  EXPECT_NE(assembly, expected);
+
+  expected = ASSEMBLE_U(123456u, 5u, 0b0110111);
+  EXPECT_EQ(assembly, expected);
+
+  instruction->setChild(1, createImmediateNode(0));
+
+  assembly = assemble(instruction);
+  EXPECT_NE(assembly, expected);
+
+  expected = ASSEMBLE_U(0, 5u, 0b0110111);
+
+  EXPECT_EQ(assembly, expected);
 }
 
 TEST_F(FormatTests, UJFormat) {
+  // The `UJ` format is for the JAL instruction (in the base ISA).
+  // The layout is:
+  // `imm[20] | imm[10:5] | imm[4:1] | imm[11] | imm[19:15] | imm[14:12] | rd |
+  // opcode`
+
+  auto instruction = createInstructionNode("JAL");
+
+  auto destinationRegister = createRegisterNode("x20");
+  auto immediate = createImmediateNode(123456);
+
+  addChild(instruction, destinationRegister);
+  addChild(instruction, immediate);
+
+  raw_t expected = ASSEMBLE_UJ(123456u, 20u, 0b1101111);
+
+  auto assembly = assemble(instruction);
+  EXPECT_EQ(assembly, expected);
+  EXPECT_NE(assembly, expected + 1);
+
+  // Now change stuff around and expect a different assembly
+  instruction->setChild(0, createRegisterNode("x5"));
+
+  assembly = assemble(instruction);
+  EXPECT_NE(assembly, expected);
+
+  expected = ASSEMBLE_UJ(123456u, 5u, 0b1101111);
+  EXPECT_EQ(assembly, expected);
+
+  instruction->setChild(1, createImmediateNode(0));
+
+  assembly = assemble(instruction);
+  EXPECT_NE(assembly, expected);
+
+  expected = ASSEMBLE_UJ(0, 5u, 0b1101111);
+
+  EXPECT_EQ(assembly, expected);
 }

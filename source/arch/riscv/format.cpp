@@ -108,13 +108,13 @@ MemoryValue SB(const InstructionKey& key, const Operands& operands) {
   using riscv::appendBitSlice;
 
   riscv::unsigned32_t bits = 0;
-  bits = appendBitSlice<12, 12>(bits, operands[2]);
-  bits = appendBitSlice<5, 10>(bits, operands[2]);
+  bits = appendBitSlice<11, 11>(bits, operands[2]);
+  bits = appendBitSlice<4, 9>(bits, operands[2]);
   bits = appendBits<5>(bits, operands[1]);
   bits = appendBits<5>(bits, operands[0]);
   bits = appendBits<3>(bits, key["funct3"]);
-  bits = appendBitSlice<1, 4>(bits, operands[2]);
-  bits = appendBitSlice<11, 11>(bits, operands[2]);
+  bits = appendBitSlice<0, 3>(bits, operands[2]);
+  bits = appendBitSlice<10, 10>(bits, operands[2]);
   bits = appendBits<7>(bits, key["opcode"]);
 
 
@@ -142,10 +142,10 @@ MemoryValue UJ(const InstructionKey& key, const Operands& operands) {
   using riscv::appendBitSlice;
 
   riscv::unsigned32_t bits = 0;
-  bits = appendBitSlice<20, 20>(bits, operands[1]);
-  bits = appendBitSlice<1, 10>(bits, operands[1]);
-  bits = appendBitSlice<11, 11>(bits, operands[1]);
-  bits = appendBitSlice<12, 19>(bits, operands[1]);
+  bits = appendBitSlice<19, 19>(bits, operands[1]);
+  bits = appendBitSlice<0, 9>(bits, operands[1]);
+  bits = appendBitSlice<10, 10>(bits, operands[1]);
+  bits = appendBitSlice<11, 18>(bits, operands[1]);
   bits = appendBits<5>(bits, operands[0]);
   bits = appendBits<7>(bits, key["opcode"]);
 

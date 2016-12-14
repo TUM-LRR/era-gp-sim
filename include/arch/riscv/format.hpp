@@ -167,7 +167,7 @@ MemoryValue SB(const InstructionKey& key, const Operands& operands);
  * a 32-bit immediate. That is, the 20 bit immediate supplied is implicitly
  * left-shifted by 12 bits, the low bits being filled with zeros:
  *
- * `imm[31:12] | rd | opcode`
+ * `imm[31] | imm[30:20] | imm[19:15] | imm[14:12] | rd | opcode`
  *
  * The difference between the `U` and `UJ` format is that the `UJ` format
  * interprets its immediate as being left-shifted by only a single bits, i.e.
@@ -189,7 +189,11 @@ MemoryValue U(const InstructionKey& key, const Operands& operands);
  * only one bit, i.e. representing a 21 bit immediate with the LSB always set to
  * zero.
  *
- * `imm[20:1] | rd | opcode`
+ * `imm[20] | imm[10:5] | imm[4:1] | imm[11] | imm[19:15] | imm[14:12] | rd |
+ * opcode`
+ *
+ * Note again that the encoding of the bits is different, to maximize overlap
+ * with the `U`-type immediate.
  *
  * \param key The key of the instruction.
  * \param operands The operands of the instruction.
