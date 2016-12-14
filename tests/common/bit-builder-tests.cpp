@@ -22,6 +22,7 @@
 
 #include "gtest/gtest.h"
 
+#include "common/assert.hpp"
 #include "common/bit-builder.hpp"
 
 std::uint64_t maskOfN(std::uint64_t width) {
@@ -30,6 +31,7 @@ std::uint64_t maskOfN(std::uint64_t width) {
 
 TEST(BitBuilderTest, CanBuildBits) {
   const int NUMBER_OF_ITERATIONS = 100;
+  const std::uint64_t MAGIC_NUMBER = 123'456'789;
 
   std::random_device seed;
   std::mt19937 generator(seed());
@@ -44,7 +46,7 @@ TEST(BitBuilderTest, CanBuildBits) {
     auto third = random();
     auto fourth = random();
 
-    auto bits = BitBuilder<std::uint64_t>()
+    auto bits = BitBuilder<std::uint64_t>(MAGIC_NUMBER)
                     .addBit(first, 2)
                     .addUpTo(second, 8)
                     .addStartingAt(third, 14)
@@ -56,7 +58,8 @@ TEST(BitBuilderTest, CanBuildBits) {
 
     // clang-format off
     std::uint64_t expected
-      = ((first & 4) >> 2)
+      = MAGIC_NUMBER
+      | ((first & 4) >> 2)
       | ((second & 511) << 1)
       | (((third & (maskOfN(50) << 14)) >> 14) << 10)
       | (((fourth & 30) >> 1) << 60);
@@ -71,4 +74,23 @@ TEST(BitBuilderTest, CanBuildBits) {
       << fourth;
     // clang-format on
   }
+}
+
+TEST(BitBuilderTest, FailsWhenExceedingLength) {
+  EXPECT_THROW(BitBuilder<std::uint8_t>().add(std::uint64_t(500)),
+               assert::AssertionError);
+}
+
+TEST(BitBuilderTest, FaislWhenAccessingInvalidBit) {
+  EXPECT_THROW(BitBuilder<std::uint64_t>().addUpTo(std::uint8_t(500), 10),
+               assert::AssertionError);
+
+  EXPECT_THROW(BitBuilder<std::uint64_t>().addStartingAt(std::uint8_t(500), 10),
+               assert::AssertionError);
+
+  EXPECT_THROW(BitBuilder<std::uint64_t>().addRange(std::uint8_t(500), 30, 40),
+               assert::AssertionError);
+
+  EXPECT_THROW(BitBuilder<std::uint64_t>().addBit(std::uint64_t(500), 69),
+               assert::AssertionError);
 }
