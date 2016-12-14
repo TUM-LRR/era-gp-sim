@@ -23,6 +23,8 @@
 #include <cstddef>
 #include <limits>
 
+#include "common/assert.hpp"
+
 /**
  * A class to construct bitfields piecewise.
  *
@@ -63,8 +65,8 @@ class BitBuilder {
    */
   template <typename U>
   BitBuilder& addBit(const U& value, index_t index) {
-    assert(index < std::numeric_limits<U>::digits);
-    assert(_size < _capacity);
+    assert::that(index < std::numeric_limits<U>::digits);
+    assert::that(_size < _capacity);
 
     const bool bit = value & (U(1) << index);
     if (bit) {
@@ -88,9 +90,9 @@ class BitBuilder {
   BitBuilder& addRange(const U& value, index_t firstBit, index_t lastBit) {
     const auto width = lastBit - firstBit + 1;
 
-    assert(firstBit < std::numeric_limits<U>::digits);
-    assert(lastBit < std::numeric_limits<U>::digits);
-    assert(_size + width <= _capacity);
+    assert::that(firstBit < std::numeric_limits<U>::digits);
+    assert::that(lastBit < std::numeric_limits<U>::digits);
+    assert::that(_size + width <= _capacity);
 
     // Create a mask of `width` many bits
     const U mask = (U(1) << width) - 1;
