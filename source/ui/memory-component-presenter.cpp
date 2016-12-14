@@ -42,7 +42,12 @@ MemoryComponentPresenter::~MemoryComponentPresenter() {
 
 void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
                                                std::size_t length) {
-  emit dataChanged(this->index(address), this->index(address + length - 1));
+  emit dataChanged(this->index(address / 1),
+                   this->index(address + length - 1));//  8bit
+  emit dataChanged(this->index(address / 2),
+                   this->index(address + length - 1));// 16bit
+  emit dataChanged(this->index(address / 4),
+                   this->index(address + length - 1));// 32bit
 }
 
 
@@ -116,7 +121,10 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   }
 
   MemoryValue memory_cell =
-      _memoryAccess.getMemoryValueAt(index.row(), number_of_bits / 8).get();
+      _memoryAccess
+          .getMemoryValueAt(index.row() * (number_of_bits / 8),
+                            number_of_bits / 8)
+          .get();
   std::string stringvalue;
   if (role_string.startsWith("bin"))
     stringvalue = StringConversions::toBinString(memory_cell);
