@@ -73,6 +73,9 @@ GuiProject::GuiProject(
         this->_throwError(message, arguments);
       });
 
+  _projectModule.getCommandInterface().setExecutionStoppedCallback(
+      [this]() { emit this->executionStopped(); });
+
   // connect all receiving components to the callback signals
   QObject::connect(this,
                    SIGNAL(registerChanged(const QString&)),

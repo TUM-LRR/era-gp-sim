@@ -27,8 +27,25 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.4
 
 ToolBar {
-    /*Knowing the active tab*/
-    property TabView tabView
+    property alias rowLayout: rowLayout
+
+    // hides and disables the toolbar
+    function hideToolbar() {
+        visible = false;
+        enabled = false;
+    }
+
+    // makes sure the toolbar is shown and in the proper state
+    function showToolbar() {
+        visible = true;
+        enabled = true;
+        if (tabView.getCurrentProjectItem().isRunning) {
+            rowLayout.setExecutionState();
+        }
+        else {
+            rowLayout.setStoppedState();
+        }
+    }
 
     /*
       The Buttons should have the Systemcolors if they are clicked
@@ -81,9 +98,29 @@ ToolBar {
 
     /* Showing the Buttons*/
     RowLayout{
-        /*There should be no place between the right buttons*/
+        id: rowLayout
+        /*There should be no space between the right buttons*/
         spacing: 1
         anchors.fill: parent
+
+        // has to be called when starting the execution to properly set the toolbar state
+        function setExecutionState() {
+            tabView.getCurrentProjectItem().isRunning = true;
+            run.enabled = false;
+            runLine.enabled = false;
+            runBreakpoint.enabled = false;
+            stop.enabled = true;
+            stop.iconSource = "Icons/StopButtonActive.svg";
+        }
+
+        // has to be called after every execution stops to properly set the toolbar state
+        function setStoppedState() {
+          run.enabled = true;
+          runLine.enabled = true;
+          runBreakpoint.enabled = true;
+          stop.enabled = false;
+          stop.iconSource = "Icons/StopButtonInactive.svg";
+        }
 
         ToolButton{
             id: run
@@ -91,7 +128,7 @@ ToolBar {
             iconSource: "Icons/RunButton.svg"
             onClicked: {
                 console.info("Run clicked");
-                stop.setActive();
+                rowLayout.setExecutionState();
                 ui.run(tabView.getCurrentProjectId());
             }
         }
@@ -105,7 +142,7 @@ ToolBar {
             iconSource: "Icons/RunLineButton.svg"
             onClicked: {
                 console.info("runLine clicked");
-                stop.setActive();
+                rowLayout.setExecutionState();
                 ui.runLine(tabView.getCurrentProjectId());
             }
         }
@@ -118,7 +155,7 @@ ToolBar {
             iconSource: "Icons/RunBreakpointButton.svg"
             onClicked: {
                 console.info("runBreakpoint clicked");
-                stop.setActive();
+                rowLayout.setExecutionState();
                 ui.runBreakpoint(tabView.getCurrentProjectId());
             }
         }
@@ -129,7 +166,6 @@ ToolBar {
             id: stop
             enabled: false
             tooltip: "stop"
-            //iconSource: "Icons/StopButtonInactiveWithBorder.svg"
             iconSource: "Icons/StopButtonInactive.svg"
             onClicked: {
                 console.info("Stop clicked");
@@ -147,15 +183,6 @@ ToolBar {
                 enabled=false;
                 iconSource="Icons/StopButtonInactive.svg";
             }
-
-            /*Not implemented yet in the ui*/
-            /*Connections{
-                target: ui
-                onDisableStop: {
-                    stop.setInactive();
-                    console.info("Geklappt");
-                }
-            }*/
         }
 
         ToolButton {

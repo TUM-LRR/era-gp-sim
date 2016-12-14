@@ -41,7 +41,6 @@ ApplicationWindow {
     toolBar: ToolbarMainWindow {
         id: toolbar
         visible: false
-        tabView: tabView
     }
 
     TabView {
@@ -56,12 +55,20 @@ ApplicationWindow {
             updateMenuState();
         }
 
-        function getCurrentProjectId() {
-            return tabView.getTab(tabView.currentIndex).item.projectId;
+        // get the project of the current tab, is undefined if there is no tab.
+        function getCurrentProjectItem() {
+            return tabView.getTab(tabView.currentIndex).item;
         }
 
+        // get the id of the project in the current tab, undefined if there is no tab.
+        function getCurrentProjectId() {
+            return getCurrentProjectItem().projectId;
+        }
+
+        // returns false if there is only a creation screen in the current tab.
+        // Undefined if there is no tab.
         function isCurrentProjectValid() {
-            return tabView.getTab(tabView.currentIndex).item.projectValid;
+            return getCurrentProjectItem().projectValid;
         }
     }
 
@@ -69,8 +76,7 @@ ApplicationWindow {
     function updateMenuState() {
         if (tabView.count === 0 || !tabView.isCurrentProjectValid()) {
             // deactivate project specific functions if there is no valid project at the current index
-            toolbar.visible = false;
-            toolbar.enabled = false;
+            toolbar.hideToolbar();
             menubar.fileMenu.setProjectMenuEnabled(false);
         }
         else {
@@ -80,8 +86,7 @@ ApplicationWindow {
     }
 
     function showMenus() {
-        toolbar.visible = true;
-        toolbar.enabled = true;
+        toolbar.showToolbar();
         menubar.fileMenu.setProjectMenuEnabled(true);
     }
 
@@ -100,6 +105,7 @@ ApplicationWindow {
         }
         updateMenuState();
         if(tabView.count === 0) {
+            // create a new tab if there is no tab anymore, prevents a blank screen.
             createProject();
         }
     }
@@ -110,10 +116,16 @@ ApplicationWindow {
 
         Item {
             id: placeholderItem
+
             // if there is a project for this tab in the backend, this is true
             property bool projectValid: false
-            //index of the project in the project vector
+
+            // index of the project in the project vector
             property int projectId: -1
+
+            // indicates the execution state of this project
+            property bool isRunning: false
+
             anchors.fill: parent
             ProjectCreationScreen {
                 anchors.fill: parent
@@ -157,6 +169,10 @@ ApplicationWindow {
                     onError: {
                         window.errorDialog.text = errorMessage;
                         window.errorDialog.open();
+                    }
+                    onExecutionStopped: {
+                        toolbar.rowLayout.setStoppedState();
+                        placeholderItem.isRunning = false;
                     }
                 }
             }
