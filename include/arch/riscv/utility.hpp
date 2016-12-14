@@ -40,7 +40,7 @@ namespace riscv {
  *
  * \return The converted value.
  */
-template <typename T>
+template <typename T = riscv::unsigned32_t>
 T convert(const MemoryValue& memoryValue) {
   return conversions::convert<T>(memoryValue,
                                  riscv::BITS_PER_BYTE,

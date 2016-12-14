@@ -22,11 +22,17 @@
 #include "arch/riscv/format.hpp"
 #include "arch/riscv/properties.hpp"
 #include "arch/riscv/utility.hpp"
+#include "common/bit-builder.hpp"
 #include "common/utility.hpp"
 #include "core/memory-value.hpp"
 
 namespace riscv {
 namespace Format {
+namespace Detail {
+riscv::unsigned32_t convert(const MemoryValue& memoryValue) {
+  return riscv::convert<riscv::unsigned32_t>(memoryValue);
+}
+}
 
 AssemblerFunction getAssembler(const std::string& format) {
   // clang-format off
@@ -52,102 +58,95 @@ MemoryValue assemble(const InstructionInformation& instructionInformation,
   return assembler(instructionInformation.getKey(), operands);
 }
 
-
 MemoryValue R(const InstructionKey& key, const Operands& operands) {
-  // Enable ADL (for riscv::appendBits)
-  using Utility::appendBits;
-  using riscv::appendBits;
-
-  auto bits = key["funct7"];
-  bits = appendBits<7>(bits, key["funct7"]);
-  bits = appendBits<5>(bits, operands[2]);
-  bits = appendBits<5>(bits, operands[1]);
-  bits = appendBits<3>(bits, key["funct3"]);
-  bits = appendBits<5>(bits, operands[0]);
-  bits = appendBits<7>(bits, key["opcode"]);
+  using Detail::convert;
+  auto bits = BitBuilder<riscv::unsigned32_t>(key["funct7"])
+                  .addUpTo(key["opcode"], 6)
+                  .addUpTo(convert(operands[0]), 4)
+                  .addUpTo(key["funct3"], 2)
+                  .addUpTo(convert(operands[1]), 4)
+                  .addUpTo(convert(operands[2]), 4)
+                  .addUpTo(key["funct7"], 6)
+                  .build();
 
   return riscv::convert(bits, 32);
 }
 
 MemoryValue I(const InstructionKey& key, const Operands& operands) {
-  // Enable ADL (for riscv::appendBits)
-  using Utility::appendBits;
-  using riscv::appendBits;
+  using Detail::convert;
 
-  riscv::unsigned32_t bits = 0;
-  bits = appendBits<12>(bits, operands[2]);
-  bits = appendBits<5>(bits, operands[1]);
-  bits = appendBits<3>(bits, key["funct3"]);
-  bits = appendBits<5>(bits, operands[0]);
-  bits = appendBits<7>(bits, key["opcode"]);
+  auto bits = BitBuilder<riscv::unsigned32_t>()
+                  .addUpTo(key["opcode"], 6)
+                  .addUpTo(convert(operands[0]), 4)
+                  .addUpTo(key["funct3"], 2)
+                  .addUpTo(convert(operands[1]), 4)
+                  .addUpTo(convert(operands[2]), 11)
+                  .build();
 
   return riscv::convert(bits, 32);
 }
 
 MemoryValue S(const InstructionKey& key, const Operands& operands) {
-  // Enable ADL (for riscv::appendBits)
-  using Utility::appendBits;
-  using riscv::appendBits;
-  using riscv::appendBitSlice;
+  using Detail::convert;
 
-  riscv::unsigned32_t bits = 0;
-  bits = appendBitSlice<5, 11>(bits, operands[2]);
-  bits = appendBits<5>(bits, operands[1]);
-  bits = appendBits<5>(bits, operands[0]);
-  bits = appendBits<3>(bits, key["funct3"]);
-  bits = appendBitSlice<0, 4>(bits, operands[2]);
-  bits = appendBits<7>(bits, key["opcode"]);
+  const auto immediate = convert(operands[2]);
+
+  auto bits = BitBuilder<riscv::unsigned32_t>()
+                  .addUpTo(key["opcode"], 6)
+                  .addUpTo(immediate, 4)
+                  .addUpTo(key["funct3"], 2)
+                  .addUpTo(convert(operands[0]), 4)
+                  .addUpTo(convert(operands[1]), 4)
+                  .addRange(immediate, 5, 11)
+                  .build();
 
   return riscv::convert(bits, 32);
 }
 
 MemoryValue SB(const InstructionKey& key, const Operands& operands) {
-  // Enable ADL (for riscv::appendBits)
-  using Utility::appendBits;
-  using riscv::appendBits;
-  using riscv::appendBitSlice;
+  using Detail::convert;
 
-  riscv::unsigned32_t bits = 0;
-  bits = appendBitSlice<11, 11>(bits, operands[2]);
-  bits = appendBitSlice<4, 9>(bits, operands[2]);
-  bits = appendBits<5>(bits, operands[1]);
-  bits = appendBits<5>(bits, operands[0]);
-  bits = appendBits<3>(bits, key["funct3"]);
-  bits = appendBitSlice<0, 3>(bits, operands[2]);
-  bits = appendBitSlice<10, 10>(bits, operands[2]);
-  bits = appendBits<7>(bits, key["opcode"]);
+  const auto immediate = convert(operands[2]);
 
+  auto bits = BitBuilder<riscv::unsigned32_t>()
+                  .addUpTo(key["opcode"], 6)
+                  .addBit(immediate, 10)
+                  .addRange(immediate, 0, 3)
+                  .addUpTo(key["funct3"], 2)
+                  .addUpTo(convert(operands[0]), 4)
+                  .addUpTo(convert(operands[1]), 4)
+                  .addRange(immediate, 4, 9)
+                  .addBit(immediate, 11)
+                  .build();
 
   return riscv::convert(bits, 32);
 }
 
 MemoryValue U(const InstructionKey& key, const Operands& operands) {
-  // Enable ADL (for riscv::appendBits)
-  using Utility::appendBits;
-  using riscv::appendBits;
-  using riscv::appendBitSlice;
+  using Detail::convert;
 
-  riscv::unsigned32_t bits = 0;
-  bits = appendBitSlice<0, 19>(bits, operands[1]);
-  bits = appendBits<5>(bits, operands[0]);
-  bits = appendBits<7>(bits, key["opcode"]);
+  auto bits = BitBuilder<riscv::unsigned32_t>()
+                  .addUpTo(key["opcode"], 6)
+                  .addUpTo(convert(operands[0]), 4)
+                  .addUpTo(convert(operands[1]), 19)
+                  .build();
 
   return riscv::convert(bits, 32);
 }
 
 MemoryValue UJ(const InstructionKey& key, const Operands& operands) {
-  // Enable ADL (for riscv::appendBits)
-  using Utility::appendBits;
-  using riscv::appendBits;
-  using riscv::appendBitSlice;
+  using Detail::convert;
 
-  riscv::unsigned32_t bits = 0;
-  bits = appendBitSlice<19, 19>(bits, operands[1]);
-  bits = appendBitSlice<0, 9>(bits, operands[1]);
-  bits = appendBitSlice<10, 10>(bits, operands[1]);
-  bits = appendBitSlice<11, 18>(bits, operands[1]);
-  bits = appendBits<5>(bits, operands[0]);
-  bits = appendBits<7>(bits, key["opcode"]);
+  const auto immediate = convert(operands[1]);
+
+  auto bits = BitBuilder<riscv::unsigned32_t>()
+                  .addUpTo(key["opcode"], 6)
+                  .addUpTo(convert(operands[0]), 4)
+                  .addRange(immediate, 11, 18)
+                  .addBit(immediate, 10)
+                  .addRange(immediate, 0, 9)
+                  .addBit(immediate, 19)
+                  .build();
 
   return riscv::convert(bits, 32);
 }
