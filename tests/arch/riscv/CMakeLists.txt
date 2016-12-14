@@ -3,20 +3,20 @@
 ########################################
 
 set(TEST_ARCH_RISCV_SOURCES
-  arithmetic-test-utils.cpp
-  branch-instruction-test.cpp
+  # arithmetic-test-utils.cpp
+  # branch-instruction-test.cpp
   format-test.cpp
-  integer-instruction-test.cpp
-  jump-instruction-test.cpp
-  load-store-instruction-test.cpp
-  lui-auipc-instruction-test.cpp
-  mul-div-instruction-test.cpp
-  rv64-only-instruction-test.cpp
-  register-test.cpp
-  assemble-test.cpp
-  simulator-instructions-test.cpp
-  pseudo-instruction-test.cpp
-  context-information-test.cpp
+  # integer-instruction-test.cpp
+  # jump-instruction-test.cpp
+  # load-store-instruction-test.cpp
+  # lui-auipc-instruction-test.cpp
+  # mul-div-instruction-test.cpp
+  # rv64-only-instruction-test.cpp
+  # register-test.cpp
+  # assemble-test.cpp
+  # simulator-instructions-test.cpp
+  # pseudo-instruction-test.cpp
+  # context-information-test.cpp
 )
 
 ########################################
