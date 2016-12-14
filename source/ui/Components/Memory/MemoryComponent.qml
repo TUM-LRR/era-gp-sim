@@ -23,14 +23,13 @@ import QtQuick.Controls.Styles 1.4
 import QtGraphicalEffects 1.0
 
 Item {
-    //property int number_bits: numericRepresentationChooser.items.get(numericRepresentationChooser.currentIndex).bits;
+    // number_bits: holds the number of bits shown in each memory cell,
+    // it is used for calculating the address and for fetching the right amount of bits from the core
     property int number_bits: 8
-    property alias tableView: tableView
+
 
     TableView {
         id: tableView
-        // alternatingRowColors: false
-        //anchors.fill: parent
         anchors.top: menuBar.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -38,11 +37,16 @@ Item {
         selectionMode: SelectionMode.NoSelection
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
 
+        // we have a completly custom header (due to a bug in qml)
         headerVisible: false
 
+        // the default MemoryView consists of three columns:
+        // 1. address                               (fixed)
+        // 2. content of each memory cell           (dynamic)
+        // 3. additional information on each cell   (fixed)
         TableViewColumn {
             role: "address" + number_bits
-            title: "Adresse"
+            title: "Address"
             movable: false
             resizable: true
             width: 70
@@ -52,20 +56,24 @@ Item {
             title: "Info"
             movable: false
             resizable: true
-            width: 100 //parent.width - ((tableView.columnCount - 2) * 80) - (tableView.getColumn(0).width) - (25)
+            width: 100
         }
+
         model: memoryModel
 
+        // add a column with the content for each cell at startup
         Component.onCompleted: {
             tableView.insertColumn( tableView.columnCount - 1, column);
         }
     }
 
     Component {
+        // component for a column with the contents of the memory
+        // default settings: Binary number representation
         id: column
         TableViewColumn {
             role: "bin" + number_bits
-            title: "Inhalt"
+            title: "Content"
             movable: false
             resizable: true
             width: 80
@@ -74,58 +82,27 @@ Item {
     }
 
     Component {
+        // makes each memory cell editable by using a textbox
+        // when editing is finished the new value is passed to the memory in the core
         id: inputBox
         TextField {
             id: textFieldMemoryValue
             text: styleData.value
 
             onEditingFinished: {
-                    memoryModel.setValue(styleData.row, textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
+                // update internal memory; use right number representation and byte size
+                memoryModel.setValue(styleData.row, textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
             }
         }
     }
 
-    Component {
-        id: editableContent
-        TextField {
-            id: textFieldMemoryValue
-            style: TextFieldStyle {
-                background: Rectangle {
-                    id: styleRec
-                    color: "transparent"
-                }
-            }
-            font.bold: true
-            //inputMask: "\\0\\xHH"
-            onActiveFocusChanged: {
-                cursorPosition = 2
-            }
-            onHoveredChanged: {
-                //styleRec.border.width=2
-            }
-            onCursorPositionChanged: {
-                //jump to TextField in following memory segment
-                if(cursorPosition >= inputMask.length - 4)
-                    nextItemInFocusChain(true).forceActiveFocus()
-                //jump to TextField in preceeding memory segment
-                if(cursorPosition <= 1 && selectedText == "")
-                    nextItemInFocusChain(false).forceActiveFocus()
-            }
-
-            Keys.onDeletePressed: {
-
-            }
-            onEditingFinished: {
-                    memoryModel.setValue(styleData.row, textFieldMemoryValue.text, tableView.getColumn(styleData.column).role, number_bits);
-            }
-
-            placeholderText: "0x00"
-            text: model.value
-        }
-    }
 
 
     Rectangle {
+        // the menu bar above the memory table for adding new columns and changing the representation
+        // due to a bug in the qml table header (mouse interaction) it wasn't possible to just override
+        // the existing table header.
+        // It is build upon a list of interactive ComboBoxes
         id: menuBar
         height: 25
         width: parent.width
@@ -135,18 +112,17 @@ Item {
                 id: header
                 height: parent.height
                 width:  tableView.flickableItem.contentWidth
-                //move header according to tableView
+                // move header left and right as the tableView is moved by the horizontal scroll bars
                 x: -tableView.flickableItem.contentX
 
                 orientation: Qt.Horizontal
 
-               Connections {
+                Connections {
                     target: tableView
                     onColumnCountChanged: {
+                        // dynamically add columns that were added by the user
                         while(headerDropdownList.count < tableView.columnCount - 1)
                             headerDropdownList.append(ListElement);
-                        //while(headerDropdownList.count > tableView.columnCount - 1)
-                        //    headerDropdownList.remove(headerDropdownList.count - 1);
                     }
                 }
 
@@ -154,21 +130,31 @@ Item {
                 model: ListModel {
                     id: headerDropdownList
                 }
+
+
                 delegate: Rectangle {
+                    // part of the header for every single column
+                    // consists of a ComboBox and a rectangle for resizing the column width
+
                     width: bitChooser.width + resizer.width
                     height: 25
 
                     property alias text: bitChooser.currentText
 
-                        ComboBox {
+                    ComboBox {
+                        // the ComboBox above each row
+                        // the user can either choose the number of bits or the numberical representation of a memory cell depending on the column
+
                         id: bitChooser
                         height: 25
-                        width: resizer.x - bitChooser.x
 
+                        // bin width to the position of resizer
+                        width: resizer.x - bitChooser.x
                         onWidthChanged: {
                             tableView.getColumn(index).width = bitChooser.width + resizer.width;
                         }
 
+                        // choose the right underlaying model depending on the column it is responsible for
                         model: (tableView.getColumn(index).role === "address" + number_bits)? modelBits : modelNumeric;
 
                         ListModel {
@@ -189,14 +175,18 @@ Item {
                         }
 
                         onCurrentIndexChanged: {
+                            // depending on the usage there are 3 different actions
+                            // 1. update the number of bits in each memory cell
                             if(model === modelBits) {
                                 number_bits = model.get(bitChooser.currentIndex).bits;
                             }
                             else {
+                                // 2. dynamically remove the column
                                 if(bitChooser.currentText == "remove...") {
                                     tableView.removeColumn(index);
                                     headerDropdownList.remove(index);
                                 }
+                                // 3. update the numeric representation of the memory values
                                 else {
                                     // explicitly create a property binding for number_bits so the role gets updated correctly
                                     tableView.getColumn(index).role = Qt.binding(function() {
@@ -206,21 +196,28 @@ Item {
                         }
                     }
                     Rectangle {
+                        // this rectangle is a resizer located next to each ComboBox in the header of the memory.
+                        // by dragging this rectangle to the left or right someone could resize the width of each column
                         id: resizer
                         height: 25
                         width: 5
-                        x: bitChooser.x + 70
+                        x: bitChooser.x + 70 // default width of a column
                         MouseArea {
                             drag.axis: Drag.XAxis
                             drag.target: resizer
                             anchors.fill: parent
                             cursorShape: Qt.SizeHorCursor
+                            //give a minimum size for column width
+                            drag.minimumX: bitChooser.x + 40
                         }
                     }
                 }
             }
         }
         Rectangle {
+            // this rectancle is only used for styling
+            // it provides a fadeout effect on the right side of the header
+            // when there are too many columns the ComboBoxes slightly disappear with a fadeout effect on the right
             id: buttonFadeOut
             width: 50
             height: 25
@@ -238,6 +235,7 @@ Item {
             }
 
             Button {
+                // this button is used for creating new columns for the memory
                 anchors.right: parent.right
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
