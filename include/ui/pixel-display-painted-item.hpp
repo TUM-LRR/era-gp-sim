@@ -215,10 +215,14 @@ struct ColorMode {
   UpdateAllColorsFunction updateAllColors;
 
   static std::size_t loadPointer(Optional<OutputComponent *> memoryAccess,
-                          std::size_t address,
-                          bool indirect,
-                          std::size_t cellSize,
-                          std::size_t pointerSize);
+                                 std::size_t address,
+                                 bool indirect,
+                                 std::size_t cellSize,
+                                 std::size_t pointerSize);
+  static MemoryValue getMemoryValueAt(Optional<OutputComponent *> memoryAccess,
+                                      std::size_t address,
+                                      std::size_t length,
+                                      std::size_t defaultLength = 1);
   // RGB:
   const static GetPixelFunction RGBGetPixel;
   const static GetColorFunction RGBGetColor;
@@ -242,7 +246,8 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_OBJECT
   Q_PROPERTY(OutputComponent *outputComponentPointer WRITE setOutputComponent)
  public:
-  PixelDisplayPaintedItem(QQuickItem *parent = 0) : QQuickPaintedItem(parent) {
+  PixelDisplayPaintedItem(QQuickItem *parent = 0)
+  : QQuickPaintedItem(parent), _options{} {
 #if CMODE == 0
     _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_RGB32);
 #else
@@ -268,7 +273,7 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
 
  private:
   std::shared_ptr<QImage> _image;
-  colorMode::Options _options{};
+  colorMode::Options _options;
   std::size_t _breadth = PSIZE;
   std::size_t _height = PSIZE;
   Optional<OutputComponent *> _outputComponentPointer;

@@ -99,12 +99,8 @@ std::size_t ColorMode::loadPointer(Optional<OutputComponent *> memoryAccess,
                                    std::size_t pointerSize) {
   if (indirect) {
     if (memoryAccess) {
-      MemoryValue pointer =
-          (*memoryAccess)
-              ->getMemoryAccess()
-              .getMemoryValueAt(address,
-                                (pointerSize + cellSize - 1) / cellSize)
-              .get();
+      MemoryValue pointer = ColorMode::getMemoryValueAt(
+          memoryAccess, address, (pointerSize + cellSize - 1) / cellSize);
       return conversions::convert<std::size_t>(
           pointer, conversions::standardConversions::nonsigned);
     } else {
@@ -113,6 +109,22 @@ std::size_t ColorMode::loadPointer(Optional<OutputComponent *> memoryAccess,
   } else {
     return address;
   }
+}
+MemoryValue
+ColorMode::getMemoryValueAt(Optional<OutputComponent *> memoryAccess,
+                            std::size_t address,
+                            std::size_t length,
+                            std::size_t defaultLength) {
+  if (memoryAccess) {
+    if ((*memoryAccess)->getMemoryAccess().getMemorySize().get() >=
+        address + length) {
+      return (*memoryAccess)
+          ->getMemoryAccess()
+          .getMemoryValueAt(address, length)
+          .get();
+    }
+  }
+  return MemoryValue{defaultLength};
 }
 
 
@@ -143,13 +155,8 @@ const ColorMode::GetPixelFunction ColorMode::RGBGetPixel = [](
   } else {
     address += byteSize * index;
   }
-  MemoryValue buffer{1};
-  if (memoryAccess) {
-    buffer = (*memoryAccess)
-                 ->getMemoryAccess()
-                 .getMemoryValueAt(address, byteSize + (bitOffset > 0 ? 1 : 0))
-                 .get();
-  }
+  MemoryValue buffer = ColorMode::getMemoryValueAt(
+      memoryAccess, address, byteSize + (bitOffset > 0 ? 1 : 0));
   return o.getPixelFromBuffer(buffer, address, x, y);
 };
 
@@ -256,14 +263,10 @@ const ColorMode::UpdateMemoryFunction ColorMode::RGBUpdateMemory = [](
           o.tight ? (minIndex * sizeInBit / cellSize) : (minIndex * sizeInByte);
       std::size_t endOffset =
           o.tight ? (maxIndex * sizeInBit / cellSize) : (maxIndex * sizeInByte);
-      MemoryValue buffer{1};
-      if (memoryAccess) {
-        buffer = (*memoryAccess)
-                     ->getMemoryAccess()
-                     .getMemoryValueAt(pixelBufferPointer + beginOffset,
-                                       endOffset - beginOffset)
-                     .get();
-      }
+      MemoryValue buffer =
+          ColorMode::getMemoryValueAt(memoryAccess,
+                                      pixelBufferPointer + beginOffset,
+                                      endOffset - beginOffset);
       for (std::size_t index = minIndex; index < maxIndex; index++) {
         std::size_t x = o.columns_rows ? (index / o.height) : (index % o.width);
         std::size_t y = o.columns_rows ? (index % o.height) : (index / o.width);
@@ -292,13 +295,8 @@ const ColorMode::UpdateAllPixelsFunction ColorMode::RGBUpdateAllPixels = [](
   }
   std::size_t sizeInMemory =
       (sizeOfColorInBit * o.width * o.height + cellSize - 1) / cellSize;
-  MemoryValue buffer{1};
-  if (memoryAccess) {
-    buffer = (*memoryAccess)
-                 ->getMemoryAccess()
-                 .getMemoryValueAt(pixelBufferPointer, sizeInMemory)
-                 .get();
-  }
+  MemoryValue buffer = ColorMode::getMemoryValueAt(
+      memoryAccess, pixelBufferPointer, sizeInMemory);
   for (std::size_t y = 0; y < o.height; ++y) {
     for (std::size_t x = 0; x < o.width; ++x) {
       image->setPixel(x, y, o.getPixelFromBuffer(buffer, 0, x, y));
@@ -322,11 +320,7 @@ const ColorMode::GetPixelFunction ColorMode::MonochromeGetPixel = [](
   std::size_t index =
       x * (o.columns_rows ? o.height : 1) + y * (o.columns_rows ? 1 : o.width);
   std::size_t address = o.pixelBaseAddress + index / bitsPerByte;
-  MemoryValue buffer{1};
-  if (memoryAccess) {
-    buffer =
-        (*memoryAccess)->getMemoryAccess().getMemoryValueAt(address, 1).get();
-  }
+  MemoryValue buffer = ColorMode::getMemoryValueAt(memoryAccess, address, 1);
   return o.getPixelFromBuffer(buffer, address, x, y);
 };
 const ColorMode::GetColorFunction ColorMode::MonochromeGetColor = [](
@@ -343,14 +337,11 @@ const ColorMode::GetColorFunction ColorMode::MonochromeGetColor = [](
                              o.colorTablePointerLike,
                              cellSize,
                              pointerSize);
-  MemoryValue buffer{colorSizeInBit};
-  if (memoryAccess) {
-    buffer = (*memoryAccess)
-                 ->getMemoryAccess()
-                 .getMemoryValueAt(colorTablePointer + (index * colorSize),
-                                   colorSize)
-                 .get();
-  }
+  MemoryValue buffer =
+      ColorMode::getMemoryValueAt(memoryAccess,
+                                  colorTablePointer + (index * colorSize),
+                                  colorSize,
+                                  colorSizeInBit);
   return o.getColorFromBuffer(buffer, index * colorSize, index);
 };
 
@@ -432,21 +423,12 @@ const ColorMode::UpdateMemoryFunction ColorMode::MonochromeUpdateMemory = [](
       }
       std::size_t beginOffset = minIndex / bitsPerByte;
       std::size_t endOffset = (maxIndex + bitsPerByte - 1) / bitsPerByte;
-      // TODO from here
-      MemoryValue buffer{1};
-      if (memoryAccess) {
-        buffer = (*memoryAccess)
-                     ->getMemoryAccess()
-                     .getMemoryValueAt(pixelBufferPointer,
-                                       pixelBufferSize)// this could be
-                                                       // optimized, we don't
-                                                       // actually need the
-                                                       // whole pixel buffer,
-                                                       // but anyways
-                     //  .getMemoryValueAt(pixelBufferPointer + beginOffset,
-                     //                    endOffset - beginOffset)
-                     .get();
-      }
+      MemoryValue buffer = ColorMode::getMemoryValueAt(
+          memoryAccess, pixelBufferPointer, pixelBufferSize);
+      // this could be optimized, we don't actually need the whole pixel buffer,
+      // but anyways... (I'm not sure I'm calculating the offset correctly TODO)
+      //  .getMemoryValueAt(pixelBufferPointer + beginOffset,
+      //                    endOffset - beginOffset)
       for (std::size_t index = minIndex; index < maxIndex; index++) {
         std::size_t x = o.columns_rows ? (index / o.height) : (index % o.width);
         std::size_t y = o.columns_rows ? (index % o.height) : (index / o.width);
@@ -501,13 +483,8 @@ const ColorMode::UpdateAllPixelsFunction ColorMode::MonochromeUpdateAllPixels =
   std::size_t bitsPerByte = cellSize - o.freeBits;
   std::size_t sizeInMemory =
       (o.width * o.height + bitsPerByte - 1) / bitsPerByte;
-  MemoryValue buffer{1};
-  if (memoryAccess) {
-    buffer = (*memoryAccess)
-                 ->getMemoryAccess()
-                 .getMemoryValueAt(pixelBufferPointer, sizeInMemory)
-                 .get();
-  }
+  MemoryValue buffer = ColorMode::getMemoryValueAt(
+      memoryAccess, pixelBufferPointer, sizeInMemory);
   for (std::size_t y = 0; y < o.height; ++y) {
     for (std::size_t x = 0; x < o.width; ++x) {
       image->setPixel(x, y, o.getPixelFromBuffer(buffer, 0, x, y));
@@ -530,13 +507,11 @@ const ColorMode::UpdateAllColorsFunction ColorMode::MonochromeUpdateAllColors =
                              o.colorTablePointerLike,
                              cellSize,
                              pointerSize);
-  MemoryValue buffer{colorSize * cellSize * colorCount};
-  if (memoryAccess) {
-    buffer = (*memoryAccess)
-                 ->getMemoryAccess()
-                 .getMemoryValueAt(colorTablePointer, colorSize * colorCount)
-                 .get();
-  }
+  MemoryValue buffer =
+      ColorMode::getMemoryValueAt(memoryAccess,
+                                  colorTablePointer,
+                                  colorSize * colorCount,
+                                  colorSize * cellSize * colorCount);
   for (std::size_t i = 0; i < colorCount; ++i) {
     image->setColor(i, o.getColorFromBuffer(buffer, 0, i));
   }
