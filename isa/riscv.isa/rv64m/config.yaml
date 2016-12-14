@@ -2,6 +2,8 @@
 
 name: rv64m
 
+extends: rv32m
+
 instructions:
   - mnemonic: mulw
     length: 32

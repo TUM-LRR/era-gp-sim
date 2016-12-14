@@ -24,6 +24,9 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
+/*
+ Container for output items (e.g. lightstrip, seven-segment, text console).
+ */
 Rectangle {
     id: rootRectangle
 
@@ -34,32 +37,42 @@ Rectangle {
     property color titleColor: "#4A4A4A"
     property color titleColorHighlighted: "#111111"
 
-    // Allows to select the available output views (e.g. Lightstrip, Seven-Segment, Console)
+    // Allows to select the available output items (e.g. Lightstrip, Seven-Segment, Console)
     TabView {
         id: outputTabView
 
         anchors.fill: parent
+
         // Position tab bar below the content frame.
         tabPosition: Qt.BottomEdge
 
-        Component.onCompleted: {
-            for (var index = 0; index < outputComponent.getOutputItems().length; ++index) {
-                var currentOutputItem = outputComponent.getOutputItems()[index];
-                var tabComponent;
-                var tabTitle;
-                if (currentOutputItem["type"] == "LightStrip") {
-                    tabComponent = Qt.createComponent("LightStrip.qml");
-                    tabTitle = "Buttons/Lightstrip Icon";
-                } else if (currentOutputItem["type"] == "SevenSegment") {
-                    tabComponent = Qt.createComponent("BlueRectangle.qml");
-                    tabTitle = "Buttons/Sevensegment Icon";
-                } else if (currentOutputItem["type"] == "TextConsole") {
-                    tabComponent = Qt.createComponent("RedRectangle.qml");
-                    tabTitle = "Buttons/Text Console Icon";
-                }
-                var tab = outputTabView.addTab(tabTitle, tabComponent);
-                tab.active = true;
-                tab.item.outputItemIndex = index;
+
+        /* Each output item is represented by its corresponding tab inside the output tab bar.
+           Every output item needs the following properties to be able to connect with the output model:
+           - outputItemIndex: Unique index identifying each output item. Has to correspond with the item's
+             index inside the _outputItemsInformation-array of the output model (refer to output-component.hpp).
+           - settingsButtonPressed(): Signal for notifying the output item that its settigns button was pressed and
+             that it should therefore display its settings menu. The settings button itself is part of the tab bar
+             and not the output item itself.
+        */
+        Tab {
+            title: "Buttons/Lightstrip Icon"
+            LightStrip {
+                outputItemIndex: 0
+            }
+        }
+
+        Tab {
+            title: "Buttons/Sevensegment Icon"
+            BlueRectangle {
+                outputItemIndex: 1
+            }
+        }
+
+        Tab {
+            title: "Buttons/Text Console Icon"
+            RedRectangle {
+                outputItemIndex: 2
             }
         }
 
@@ -94,7 +107,7 @@ Rectangle {
                             }
                         }
                     }
-                    // Clicking the settings button opens the output settings window.
+                    // Clicking the settings button opens the output settings window in the currently active output item..
                     onClicked: {
                         outputTabView.getTab(outputTabView.currentIndex).item.settingsButtonPressed();
                     }

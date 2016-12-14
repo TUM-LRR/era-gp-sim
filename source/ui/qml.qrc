@@ -45,9 +45,11 @@
         <file>Components/Output/Buttons/Settings Icon Pressed@2x.png</file>
         <file>Components/Output/Buttons/Settings Icon.png</file>
         <file>Components/Output/Buttons/Settings Icon@2x.png</file>
-        <file>Components/Output/OutputSettingsWindow.qml</file>
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
+        <file>Components/Output/7-Segment/SevenSegment.qml</file>
+        <file>Components/Output/7-Segment/SevenSegment_Segment.qml</file>
+        <file>Components/Output/LightstripSettingsWindow.qml</file>
     </qresource>
 </RCC>

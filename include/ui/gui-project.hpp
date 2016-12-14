@@ -197,7 +197,8 @@ class GuiProject : QObject {
   EditorComponent _editorComponent;
 
   /**
-   * \brief Component for graphical output
+   * \brief _outputComponent The model for each output item (i.e
+   * lightstrip, sevensegment, console).
    */
   OutputComponent _outputComponent;
 
