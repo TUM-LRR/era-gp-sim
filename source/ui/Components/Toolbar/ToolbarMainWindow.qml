@@ -92,7 +92,7 @@ ToolBar {
             onClicked: {
                 console.info("Run clicked");
                 stop.setActive();
-                ui.run(tabView.getCurrentProjectIndex());
+                ui.run(tabView.getCurrentProjectId());
             }
         }
 
@@ -106,7 +106,7 @@ ToolBar {
             onClicked: {
                 console.info("runLine clicked");
                 stop.setActive();
-                ui.runLine(tabView.getCurrentProjectIndex());
+                ui.runLine(tabView.getCurrentProjectId());
             }
         }
 
@@ -119,7 +119,7 @@ ToolBar {
             onClicked: {
                 console.info("runBreakpoint clicked");
                 stop.setActive();
-                ui.runBreakpoint(tabView.getCurrentProjectIndex());
+                ui.runBreakpoint(tabView.getCurrentProjectId());
             }
         }
 
@@ -133,7 +133,7 @@ ToolBar {
             iconSource: "Icons/StopButtonInactive.svg"
             onClicked: {
                 console.info("Stop clicked");
-                ui.stop(tabView.getCurrentProjectIndex());
+                ui.stop(tabView.getCurrentProjectId());
                 setInactive();
             }
 
@@ -162,8 +162,8 @@ ToolBar {
             id: parseButton
             text: "parse"
             onClicked: {
-                ui.parse(tabView.getCurrentProjectIndex());
-                console.log("reset " + tabView.getCurrentProjectIndex());
+                ui.parse(tabView.getCurrentProjectId());
+                console.log("reset " + tabView.getCurrentProjectId());
             }
         }
 
@@ -171,7 +171,7 @@ ToolBar {
             id: resetButton
             text: "reset"
             onClicked: {
-                ui.reset(tabView.getCurrentProjectIndex());
+                ui.reset(tabView.getCurrentProjectId());
             }
         }
 
@@ -192,7 +192,7 @@ ToolBar {
 
             onClicked: {
                 console.info("Bin clicked");
-                ui.changeSystem(tabView.getCurrentProjectIndex(), loadB.currentText);
+                ui.changeSystem(tabView.getCurrentProjectId(), loadB.currentText);
                 style=styleClicked;
                 oct.notClicked();
                 dec.notClicked();
@@ -219,7 +219,7 @@ ToolBar {
 
             onClicked: {
                 console.info("Oct clicked");
-                ui.changeSystem(tabView.getCurrentProjectIndex(), loadO.currentText);
+                ui.changeSystem(tabView.getCurrentProjectId(), loadO.currentText);
                 style=styleClicked;
                 bin.notClicked();
                 dec.notClicked();
@@ -243,7 +243,7 @@ ToolBar {
             style: styleNotClicked
             onClicked: {
                 console.info("Dec clicked");
-                ui.changeSystem(tabView.getCurrentProjectIndex(), loadD.currentText);
+                ui.changeSystem(tabView.getCurrentProjectId(), loadD.currentText);
                 style=styleClicked;
                 bin.notClicked();
                 oct.notClicked();
@@ -266,7 +266,7 @@ ToolBar {
             style: styleNotClicked
             onClicked: {
                 console.info("Hex clicked");
-                ui.changeSystem(tabView.getCurrentProjectIndex(), loadH.currentText);
+                ui.changeSystem(tabView.getCurrentProjectId(), loadH.currentText);
                 style=styleClicked;
                 bin.notClicked();
                 oct.notClicked();

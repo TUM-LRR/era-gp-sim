@@ -56,14 +56,18 @@ ApplicationWindow {
             updateMenuState();
         }
 
-        function getCurrentProjectIndex() {
-            return tabView.getTab(tabView.currentIndex).item.projectIndex;
+        function getCurrentProjectId() {
+            return tabView.getTab(tabView.currentIndex).item.projectId;
+        }
+
+        function isCurrentProjectValid() {
+            return tabView.getTab(tabView.currentIndex).item.projectValid;
         }
     }
 
     // this function should be called when the tab is switched
     function updateMenuState() {
-        if (tabView.count === 0 || tabView.getCurrentProjectIndex() === -1) {
+        if (tabView.count === 0 || !tabView.isCurrentProjectValid()) {
             // deactivate project specific functions if there is no valid project at the current index
             toolbar.visible = false;
             toolbar.enabled = false;
@@ -88,10 +92,11 @@ ApplicationWindow {
 
     function closeProject() {
         var currentTabIndex = tabView.currentIndex;
-        var currentProjectIndex = tabView.getCurrentProjectIndex();
+        var currentProjectId = tabView.getCurrentProjectId();
+        var isValid = tabView.isCurrentProjectValid();
         tabView.removeTab(currentTabIndex);
-        if(currentProjectIndex !== -1) {
-            ui.removeProject(currentProjectIndex);
+        if(isValid) {
+            ui.removeProject(currentProjectId);
         }
         updateMenuState();
         if(tabView.count === 0) {
@@ -105,8 +110,10 @@ ApplicationWindow {
 
         Item {
             id: placeholderItem
-            //index of the project in the project vector (-1 if no project exists)
-            property int projectIndex: -1
+            // if there is a project for this tab in the backend, this is true
+            property bool projectValid: false
+            //index of the project in the project vector
+            property int projectId: -1
             anchors.fill: parent
             ProjectCreationScreen {
                 anchors.fill: parent
@@ -114,9 +121,10 @@ ApplicationWindow {
                 onButtonClicked: {
                     enabled = false;
                     visible = false;
-                    placeholderItem.projectIndex = ui.addProject(placeholderItem, projectComponent,
+                    placeholderItem.projectId = ui.addProject(placeholderItem, projectComponent,
                         memorySize, architecture, optionName, parser);
                         window.showMenus();
+                    projectValid = true;
                     }
                 }
             }

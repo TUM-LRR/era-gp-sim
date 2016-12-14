@@ -27,7 +27,7 @@ MenuBar {
     property alias fileMenu: fileMenu
 
     function saveSnapshot(name) {
-        ui.saveSnapshot(tabView.getCurrentProjectIndex(), name);
+        ui.saveSnapshot(tabView.getCurrentProjectId(), name);
     }
 
     function actionSnapshot() {
@@ -38,7 +38,7 @@ MenuBar {
 
     function saveAs(filePath) {
         console.log("save path: " + filePath)
-        ui.saveTextAs(tabView.getCurrentProjectIndex(), filePath);
+        ui.saveTextAs(tabView.getCurrentProjectId(), filePath);
     }
 
     function actionSaveAs() {
@@ -53,11 +53,11 @@ MenuBar {
 
         // sets the enabled values of the project related menu entries.
         function setProjectMenuEnabled(value) {
-            loadCode.enabled = value;
-            saveCode.enabled = value;
-            saveCodeAs.enabled = value;
-            importSnapshot.enabled = value;
-            saveSnapshot.enabled = value;
+            loadCodeMenu.enabled = value;
+            saveCodeMenu.enabled = value;
+            saveCodeAsMenu.enabled = value;
+            importSnapshotMenu.enabled = value;
+            saveSnapshotMenu.enabled = value;
         }
 
         MenuItem {
@@ -77,10 +77,10 @@ MenuBar {
         MenuSeparator {}
 
         MenuItem {
-            id: loadCode
+            id: loadCodeMenu
             text: "Load Code..."
             function openTextFile(filePath) {
-                ui.loadText(tabView.getCurrentProjectIndex(), filePath);
+                ui.loadText(tabView.getCurrentProjectId(), filePath);
             }
             onTriggered: {
                 main.fileDialog.onAcceptedFunction = openTextFile;
@@ -90,15 +90,15 @@ MenuBar {
         }
 
         MenuItem {
-            id: saveCode
+            id: saveCodeMenu
             text: "Save Code"
             onTriggered: {
-                ui.saveText(tabView.getCurrentProjectIndex());
+                ui.saveText(tabView.getCurrentProjectId());
             }
         }
 
         MenuItem {
-            id: saveCodeAs
+            id: saveCodeAsMenu
             text: "Save Code as..."
             onTriggered: {
                 actionSaveAs();
@@ -106,7 +106,7 @@ MenuBar {
         }
 
         MenuItem {
-            id: importSnapshot
+            id: importSnapshotMenu
             text: "Import Snapshot"
             function importSnapshot(name) {
                 var success = snapshotComponent.importSnapshot(name);
@@ -119,7 +119,7 @@ MenuBar {
         }
 
         MenuItem {
-            id: saveSnapshot
+            id: saveSnapshotMenu
             text: "Save Snapshot"
             onTriggered: {
                 actionSnapshot();

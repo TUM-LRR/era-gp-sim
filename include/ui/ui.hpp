@@ -30,7 +30,7 @@
 #include <QStringList>
 #include <memory>
 #include <tuple>
-#include <vector>
+#include <unordered_map>
 
 #include "third-party/json/json.hpp"
 #include "ui/gui-project.hpp"
@@ -51,6 +51,8 @@ class Ui : public QObject {
   using Json = nlohmann::json;
   using ArchitectureMap =
       QMap<QString, std::tuple<QMap<QString, QStringList>, QStringList>>;
+  using id_t = unsigned int;
+  using ProjectMap = std::unordered_map<id_t, GuiProject*>;
 
   /**
    * \brief Creates a new Ui object.
@@ -108,99 +110,99 @@ class Ui : public QObject {
   Q_INVOKABLE QStringList getParsers(QString architectureName) const;
 
   /**
-   * Removes a Project from the _projects vector. Does not delete it.
+   * Removes a Project from the _projects map. Does not delete it.
    *
-   * \param index The index of the project to remove.
+   * \param id The id of the project to remove.
    */
-  Q_INVOKABLE void removeProject(int index);
+  Q_INVOKABLE void removeProject(int id);
 
   /**
    * Calls changeSystem on the specified project.
    *
    * \param base The name of the numerical system.
    */
-  Q_INVOKABLE void changeSystem(int index, QString base);
+  Q_INVOKABLE void changeSystem(int id, QString base);
 
   /**
    * Calls parse on the specified project.
    *
-   * \param index The index of the project.
+   * \param id The id of the project.
    */
-  Q_INVOKABLE void parse(int index);
+  Q_INVOKABLE void parse(int id);
 
   /**
    * Call run on the specified project.
    *
-   * \param index The index of the project.
+   * \param id The id of the project.
    */
-  Q_INVOKABLE void run(int index);
+  Q_INVOKABLE void run(int id);
 
   /**
    * Call runLine on the specified project.
    *
-   * \param index The index of the project.
+   * \param id The id of the project.
    */
-  Q_INVOKABLE void runLine(int index);
+  Q_INVOKABLE void runLine(int id);
 
   /**
    * Call runBreakpoint on the specified project.
    *
-   * \param index The index of the project.
+   * \param id The id of the project.
    */
-  Q_INVOKABLE void runBreakpoint(int index);
+  Q_INVOKABLE void runBreakpoint(int id);
 
   /**
    * Call stop on the specified project.
    *
-   * \param index The index of the project.
+   * \param id The id of the project.
    */
-  Q_INVOKABLE void stop(int index);
+  Q_INVOKABLE void stop(int id);
 
   /**
    * Call stop on the specified project.
    *
-   * \param index The index of the project.
+   * \param id The id of the project.
    */
-  Q_INVOKABLE void reset(int index);
+  Q_INVOKABLE void reset(int id);
 
   /**
    * Call saveText on the specified project.
    *
-   * \param index The index of the project.
+   * \param id The id of the project.
    */
-  Q_INVOKABLE void saveText(int index);
+  Q_INVOKABLE void saveText(int id);
 
   /**
    * Call saveTextAs on the specified project.
    *
-   * \param index The index of the project.
+   * \param id The id of the project.
    * \param name The name/path of the save.
    */
-  Q_INVOKABLE void saveTextAs(int index, QUrl path);
+  Q_INVOKABLE void saveTextAs(int id, QUrl path);
 
   /**
    * Call loadText on the specified project.
    *
-   * \param index The index of the project.
+   * \param id The id of the project.
    * \param name The name/path of the save.
    */
-  Q_INVOKABLE void loadText(int index, QUrl path);
+  Q_INVOKABLE void loadText(int id, QUrl path);
 
   /**
    * Call saveSnapshot on the specified project.
    *
-   * \param index The index of the project.
+   * \param id The id of the project.
    * \param name The name of the snapshot.
    */
-  Q_INVOKABLE void saveSnapshot(int index, QString name);
+  Q_INVOKABLE void saveSnapshot(int id, QString name);
 
   /**
    * Call loadSnapshot on the specified project.
    *
-   * \param index The index of the project.
+   * \param id The id of the project.
    * \param name The name of the snapshot.
    */
-  Q_INVOKABLE void loadSnapshot(int index, QString name);
+  Q_INVOKABLE void loadSnapshot(int id, QString name);
 
  private:
   /** loads the architectures and extensions from a json file. */
@@ -225,11 +227,14 @@ class Ui : public QObject {
   /** The QmlEngine of this program. */
   QQmlApplicationEngine _engine;
 
-  /** A list of pointers to the GuiProjects. */
-  std::vector<GuiProject*> _projects;
+  /** A map of ids and pointers to the GuiProjects. */
+  ProjectMap _projects;
 
   /** A shared pointer to a config json object. */
   std::shared_ptr<SnapshotComponent> _snapshots;
+
+  /** An id which is incremented for each project which is created. */
+  static id_t _rollingProjectId;
 };
 
 #endif /* ERAGPSIM_UI_UI_HPP */
