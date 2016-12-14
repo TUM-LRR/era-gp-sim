@@ -54,6 +54,7 @@ void MemoryComponentPresenter::setValue(int address,
     _memoryAccess.putMemoryValueAt(address,
                                    *StringConversions::binStringToMemoryValue(
                                        number.toStdString(), length_bit));
+  // not yet implemented by conversions
   /*else if (pres.startsWith("oct"))
     _memoryAccess.putMemoryValueAt(address,
                                    *StringConversions::octStringToMemoryValue(
@@ -119,6 +120,7 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   std::string stringvalue;
   if (role_string.startsWith("bin"))
     stringvalue = StringConversions::toBinString(memory_cell);
+  // not yet implemented by conversions
   // else if (role_string.startsWith("oct"))
   //  stringvalue = StringConversions::toOctString(memory_cell);
   else if (role_string.startsWith("hex"))
@@ -131,9 +133,6 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
     stringvalue = "unknown format";
 
   return QString::fromStdString(stringvalue);
-
-  // unknown column role, return empty value
-  // return QVariant();
 }
 
 
