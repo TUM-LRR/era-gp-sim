@@ -36,7 +36,7 @@
 #include "ui/output-component.hpp"
 
 #define PSIZE 16
-#define CMODE 1
+#define CMODE 0
 
 namespace colorMode {
 struct ColorMode;
@@ -65,35 +65,98 @@ struct Options {
   std::size_t freeBytes = 1;
   std::size_t freeBits = 0;
 
+  /*
+   * \brief returns the current ColorMode
+   */
   ColorMode getColorMode() const;
+  /*
+   * \brief returns the color of the pixel at (x,y)
+   * \param memoryAccess source to load the data from
+   * \param x X position of the Pixel
+   * \param y Y position of the Pixel
+   */
   std::uint32_t getPixel(Optional<OutputComponent *> memoryAccess,
                          std::size_t x,
                          std::size_t y) const;
+  /*
+   * \brief returns the color from the color Table at the index index
+   * \param memoryAccess source to load the data from
+   * \param index index of the entry in the color Table
+   */
   std::uint32_t
   getColor(Optional<OutputComponent *> memoryAccess, std::size_t index) const;
+  /*
+   * \brief returns the color of the pixel at (x,y) fetching the data from the
+   *        prefetched Buffer buffer
+   * \param buffer Buffer containing the pixel data for the to be drawn Pixel
+   * \param offset difference between the starting address of buffer and the
+   *        pixelBuffer
+   * \param x X position of the Pixel
+   * \param y Y position of the Pixel
+   */
   std::uint32_t getPixelFromBuffer(const MemoryValue &buffer,
                                    std::size_t offset,
                                    std::size_t x,
                                    std::size_t y) const;
+  /*
+   * \brief returns the color from the color Table at the index index fetching
+   *        the data from the prefetched Buffer buffer
+   * \param buffer Buffer containing the color data for the color at index
+   * \param offset difference between the starting address of buffer and the
+   *        colorBuffer
+   * \param index index of the entry in the color Table
+   */
   std::uint32_t getColorFromBuffer(const MemoryValue &buffer,
                                    std::size_t offset,
                                    std::size_t index) const;
+  /*
+   * \brief redraws the Pixel at (x,y)
+   * \param memoryAccess source to load the data from
+   * \param image the image to be graced with the pixel at (x,y)
+   * \param x X position of the Pixel
+   * \param y Y position of the Pixel
+   */
   void updatePixel(Optional<OutputComponent *> memoryAccess,
                    std::shared_ptr<QImage> image,
                    std::size_t x,
                    std::size_t y) const;
+  /*
+   * \brief updates the color from the color Table at the index index
+   * \param memoryAccess source to load the data from
+   * \param image Image whichs color table at entry index should be updated
+   * \param index index of the entry in the color Table
+   */
   void updateColor(Optional<OutputComponent *> memoryAccess,
                    std::shared_ptr<QImage> image,
                    std::size_t index) const;
+  /*
+   * \brief updates all pixels of the image
+   * \param memoryAccess source to load the data from
+   * \param image Image to be be updated
+   * \param address begin address in the memory that has changed
+   * \param amount length of the area that has changed memory cells in it
+   */
   void updateMemory(Optional<OutputComponent *> memoryAccess,
                     std::shared_ptr<QImage> image,
                     std::size_t address,
                     std::size_t amount) const;
+  /*
+   * \brief updates all pixels of the image
+   * \param memoryAccess source to load the data from
+   * \param image Image to be be updated
+   */
   void updateAllPixels(Optional<OutputComponent *> memoryAccess,
                        std::shared_ptr<QImage> image) const;
+  /*
+   * \brief updates all colors of the image
+   * \param memoryAccess source to load the data from
+   * \param image Image to be be updated
+   */
   void updateAllColors(Optional<OutputComponent *> memoryAccess,
                        std::shared_ptr<QImage> image) const;
+  // The color mode used for RGB Color Mode
   static ColorMode RGB;
+  // The color mode used for Monochrome ColorMode
   static ColorMode Monochrome;
 };
 struct ColorMode {
