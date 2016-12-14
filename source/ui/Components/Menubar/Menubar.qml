@@ -22,57 +22,89 @@ import QtQuick 2.0
 import QtQuick.Controls 1.4
 
 MenuBar {
-    /*Adding or deleting components in the tab-View*/
-    property var main
-    property var component
     id: menubar
-    Menu{
+    property var main
+
+    function saveSnapshot(name) {
+      ui.saveSnapshot(tabView.currentIndex, name);
+    }
+
+    function actionSnapshot() {
+      main.textDialog.onAcceptedFunction = saveSnapshot;
+      main.textDialog.placeholderText = "name";
+      main.textDialog.open();
+    }
+
+    function saveAs(filePath) {
+      console.log("save path: " + filePath)
+      ui.saveTextAs(tabView.currentIndex, filePath);
+    }
+
+    function actionSaveAs() {
+      main.fileDialog.onAcceptedFunction = saveAs;
+      main.fileDialog.selectExisting = false;
+      main.fileDialog.open();
+    }
+
+    Menu {
+        id: fileMenu
         title: "File"
-        MenuItem{
-            text: "Open..."
+        MenuItem {
+          text: "New..."
+          onTriggered: {
+            main.createProject();
+          }
+        }
+        MenuItem {
+            text: "Load Code..."
+            function openTextFile(filePath) {
+              ui.loadText(main.currentIndex, filePath);
+            }
             onTriggered: {
-                console.info("Open triggerd");
-                ui.open("PopUp ergaenzen");
+                main.fileDialog.onAcceptedFunction = openTextFile;
+                main.fileDialog.selectExisting = true;
+                main.fileDialog.open();
             }
         }
-        MenuItem{
-            text: "New..."
+        MenuItem {
+            text: "Save Code"
             onTriggered: {
-                console.info("New triggerd");
-                main.createProject();
+                ui.saveText(main.currentIndex);
             }
         }
-        MenuItem{
-            text: "Save"
+        MenuItem {
+            id: saveTextAs
+            text: "Save Code as..."
             onTriggered: {
-                console.info("Save triggerd");
-                ui.save(tabView.currentIndex);
+                actionSaveAs();
             }
         }
-        MenuItem{
-            text: "Save as..."
+        MenuItem {
+            text: "Import Snapshot"
+            function importSnapshot(name) {
+              var success = snapshotComponent.importSnapshot(name);
+            }
             onTriggered: {
-                console.info("Save as triggerd");
-                ui.saveAs("popup ergaenzen", tabView.currentIndex);
+              main.fileDialog.onAcceptedFunction = importSnapshot;
+              main.fileDialog.selectExisting = true;
+              main.fileDialog.open();
             }
         }
-        MenuItem{
-            text: "Snapshot"
-            onTriggered: {
-                console.info("Snapshot triggerd");
-                ui.snapshot("popup für name", tabView.currentIndex)
-            }
+        MenuItem {
+          text: "Save Snapshot"
+          onTriggered: {
+            actionSnapshot();
+          }
         }
-        MenuItem{
+        MenuItem {
             text: "Close"
             onTriggered: {
-                console.info("Delete Triggerd");
                 main.closeProject();
             }
         }
     }
 
-    Menu{
+    Menu {
         title: "Settings"
         MenuItem{
             text: "Open"
@@ -83,7 +115,7 @@ MenuBar {
         }
     }
 
-    Menu{
+    Menu {
         title: "Help"
         MenuItem{
             text: "Open"
@@ -93,5 +125,4 @@ MenuBar {
             }
         }
     }
-
 }

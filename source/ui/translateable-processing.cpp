@@ -15,25 +15,22 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <string>
+#include <QObject>
 
-#include "arch/riscv/instruction-context-information.hpp"
-#include "gtest/gtest.h"
+#include "ui/translateable-processing.hpp"
+#include "common/assert.hpp"
 
-#include "tests/arch/riscv/base-fixture.hpp"
+QString translate(const Translateable &translateable) {
+    // translate the base string (still filled with the %s)
+    QString translatedTotal = QObject::tr(translateable.getBaseString().c_str());
+    for (const auto &op : translateable.getOperands()) {
+      // translate recursively all operands and insert them into the base string
+      translatedTotal = translatedTotal.arg(translate(op));
+    }
+    return translatedTotal;
+}
 
-struct ContextInformationTest : public riscv::BaseFixture {
-  using super = riscv::BaseFixture;
-  ContextInformationTest() : super({"rv32i", "rv32m", "rv64i", "rv64m"}) {
-  }
-};
-
-TEST_F(ContextInformationTest, allExist) {
-  auto arch = project->getArchitectureAccess().getArchitecture().get();
-  for (auto& pair : arch.getInstructions()) {
-    const std::string& mnemonic = pair.second.getMnemonic();
-    auto node = factories.createInstructionNode(mnemonic);
-    // If a InstructionDocumentation exists, no assertion is thrown
-    node->getInstructionDocumentation();
-  }
+QString translate(const Translateable::TranslateablePtr &transPtr) {
+    assert::that(transPtr);
+    return translate(*transPtr);
 }

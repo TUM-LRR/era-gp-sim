@@ -17,7 +17,6 @@
 
 #include <climits>
 
-
 #include "common/assert.hpp"
 #include "gtest/gtest.h"
 
@@ -27,11 +26,11 @@
 #include "arch/riscv/utility.hpp"
 #include "core/memory-access.hpp"
 
-#include "tests/arch/riscv/test-utils.hpp"
+#include "tests/arch/riscv/base-fixture.hpp"
 
 using namespace riscv;
 
-struct RISCVRegisterTest : RiscvBaseTest {
+struct RISCVRegisterTest : public riscv::BaseFixture {
   void set(const std::string id, MemoryValue value) {
     getMemoryAccess().putRegisterValue(id, value);
   }
@@ -50,13 +49,15 @@ struct RISCVRegisterTest : RiscvBaseTest {
 };
 
 TEST_F(RISCVRegisterTest, RV32I) {
-  load({"rv32i"});
+  loadArchitecture({"rv32i"});
 
-  MemoryAccess memoryAccess = getMemoryAccess();
+
   // x0 is read-only with 0
   ASSERT_TRUE(get("x0").isZero());
   set("x0", convert<uint32_t>(42));
   ASSERT_TRUE(get("x0").isZero());
+
+  auto& memoryAccess = getMemoryAccess();
 
   // test all other 31 registers
   for (auto i = 1; i < 32; ++i) {
@@ -65,8 +66,7 @@ TEST_F(RISCVRegisterTest, RV32I) {
 
     // factory works
     ASSERT_EQ(convert<uint32_t>(42),
-              getFactories()
-                  .createRegisterNode("x" + std::to_string(i))
+              factories.createRegisterNode("x" + std::to_string(i))
                   ->getValue(memoryAccess));
 
     // is capable of holding 32bit
@@ -76,8 +76,8 @@ TEST_F(RISCVRegisterTest, RV32I) {
 }
 
 TEST_F(RISCVRegisterTest, RV64I) {
-  load({"rv32i", "rv64i"});
-  MemoryAccess memoryAccess = getMemoryAccess();
+  loadArchitecture({"rv32i", "rv64i"});
+  auto& memoryAccess = getMemoryAccess();
 
   // x0 is read-only with 0
   ASSERT_TRUE(get("x0").isZero());
@@ -91,8 +91,7 @@ TEST_F(RISCVRegisterTest, RV64I) {
 
     // factory works
     ASSERT_EQ(convert<uint64_t>(42),
-              getFactories()
-                  .createRegisterNode("x" + std::to_string(i))
+              factories.createRegisterNode("x" + std::to_string(i))
                   ->getValue(memoryAccess));
 
     // is capable of holding 64bit

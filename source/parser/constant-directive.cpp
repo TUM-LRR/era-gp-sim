@@ -38,12 +38,11 @@ void ConstantDirective::execute(FinalRepresentation& finalRepresentator,
     // 1 argument -> this argument should be the value
     //>1 arguments -> too many
     switch (_arguments.size()) {
-      case 0: state.addError("Missing constant name", state.position); break;
-      case 1: state.addError("Missing constant value", state.position); break;
+      case 0: state.addErrorHereT("Missing constant name"); break;
+      case 1: state.addErrorHereT("Missing constant value"); break;
       default:
-        state.addError(
-            "Malformed constant directive, too many operands provided",
-            state.position);
+        state.addErrorHereT(
+            "Malformed constant directive, too many operands provided");
         break;
     }
   }
@@ -53,7 +52,7 @@ void ConstantDirective::enhanceSymbolTable(SymbolTable& table,
                                            const MemoryAllocator& allocator,
                                            CompileState& state) {
   if (_arguments.size() != 2) {
-    state.addError("Malformed constant directive", state.position);
+    state.addErrorHereT("Malformed constant directive");
     return;
   }
   expression = "(" + _arguments[1] + ")";

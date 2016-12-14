@@ -3,12 +3,10 @@
 ########################################
 
 cmake_minimum_required(VERSION 3.2)
-set(CMAKE_BUILD_TYPE_INIT "Debug")
-
 project(era-sim)
 
 ########################################
-# C++ Versioning
+# C++ VERSIONING
 ########################################
 
 include(CheckCXXCompilerFlag)
@@ -36,7 +34,7 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Qml REQUIRED)
 find_package(Qt5Quick REQUIRED)
 
-include_directories(/usr/local/opt/qt5/include/)
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
 ########################################
 # INCLUDES
@@ -48,6 +46,19 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 ########################################
+# BINARIES
+########################################
+
+option(ERA_SIM_BUILD_ARCH "Enable compilation of arch modules" ON)
+option(ERA_SIM_BUILD_PARSER "Enable compilation of parser modules" ON)
+option(ERA_SIM_BUILD_CORE "Enable compilation of core modules" ON)
+option(ERA_SIM_BUILD_GUI "Enable compilation of gui modules" ON)
+
+set(ERA_SIM_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
+message(STATUS "Building to directory ${ERA_SIM_BINARY_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ERA_SIM_BINARY_DIR})
+
+########################################
 # SUBDIRECTORIES
 ########################################
 
@@ -57,9 +68,9 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/source)
 # TESTS
 ########################################
 
-option(ERA_GP_SIM_TESTS "Enable tests" ON)
+option(ERA_SIM_TESTS "Enable tests" ON)
 
-if(ERA_GP_SIM_TESTS)
+if(ERA_SIM_TESTS)
   message(STATUS "Enabling and adding tests")
   enable_testing()
   add_subdirectory(tests)

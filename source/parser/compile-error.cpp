@@ -15,25 +15,9 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <string>
+#include "parser/compile-error.hpp"
 
-#include "arch/riscv/instruction-context-information.hpp"
-#include "gtest/gtest.h"
-
-#include "tests/arch/riscv/base-fixture.hpp"
-
-struct ContextInformationTest : public riscv::BaseFixture {
-  using super = riscv::BaseFixture;
-  ContextInformationTest() : super({"rv32i", "rv32m", "rv64i", "rv64m"}) {
+const Translateable& CompileError::message() const {
+    assert::that(_message);
+    return (*_message);
   }
-};
-
-TEST_F(ContextInformationTest, allExist) {
-  auto arch = project->getArchitectureAccess().getArchitecture().get();
-  for (auto& pair : arch.getInstructions()) {
-    const std::string& mnemonic = pair.second.getMnemonic();
-    auto node = factories.createInstructionNode(mnemonic);
-    // If a InstructionDocumentation exists, no assertion is thrown
-    node->getInstructionDocumentation();
-  }
-}
