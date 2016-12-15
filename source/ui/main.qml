@@ -37,10 +37,12 @@ ApplicationWindow {
     menuBar: Menubar {
         id: menubar
         main: window
+        Component.onCompleted: {
+            window.updateMenuState();
+        }
     }
     toolBar: ToolbarMainWindow {
         id: toolbar
-        visible: false
     }
 
     TabView {
@@ -77,7 +79,7 @@ ApplicationWindow {
         if (tabView.count === 0 || !tabView.isCurrentProjectValid()) {
             // deactivate project specific functions if there is no valid project at the current index
             toolbar.hideToolbar();
-            menubar.fileMenu.setProjectMenuEnabled(false);
+            menubar.setMenuEnabled(false);
         }
         else {
             // enable menus otherwise (could have been disabled before)
@@ -87,7 +89,7 @@ ApplicationWindow {
 
     function showMenus() {
         toolbar.showToolbar();
-        menubar.fileMenu.setProjectMenuEnabled(true);
+        menubar.setMenuEnabled(true);
     }
 
     function createProject() {

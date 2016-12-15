@@ -24,7 +24,6 @@ import QtQuick.Controls 1.4
 MenuBar {
     id: menubar
     property var main
-    property alias fileMenu: fileMenu
 
     function saveSnapshot(name) {
         ui.saveSnapshot(tabView.getCurrentProjectId(), name);
@@ -47,18 +46,14 @@ MenuBar {
         main.fileDialog.open();
     }
 
-    Menu {
-        id: fileMenu
-        title: "File"
+    function setMenuEnabled(value) {
+        codeMenu.enabled = value;
+        snapshotMenu.enabled = value;
+    }
 
-        // sets the enabled values of the project related menu entries.
-        function setProjectMenuEnabled(value) {
-            loadCodeMenu.enabled = value;
-            saveCodeMenu.enabled = value;
-            saveCodeAsMenu.enabled = value;
-            importSnapshotMenu.enabled = value;
-            saveSnapshotMenu.enabled = value;
-        }
+    Menu {
+        id: projectMenu
+        title: "Project"
 
         MenuItem {
             text: "New Project..."
@@ -73,8 +68,11 @@ MenuBar {
                 main.closeProject();
             }
         }
+    }
 
-        MenuSeparator {}
+    Menu {
+        id: codeMenu
+        title: "Code"
 
         MenuItem {
             id: loadCodeMenu
@@ -104,6 +102,11 @@ MenuBar {
                 actionSaveAs();
             }
         }
+    }
+
+    Menu {
+        id: snapshotMenu
+        title: "Snapshots"
 
         MenuItem {
             id: importSnapshotMenu
