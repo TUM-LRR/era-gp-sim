@@ -31,41 +31,45 @@
 #include "parser/syntax-information.hpp"
 
 #include "core/conversions.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/expression-compiler-clike.hpp"
+#include "parser/intermediate-parameters.hpp"
 
 const SyntaxTreeGenerator::ArgumentNodeGenerator
     RiscvParser::argumentGeneratorFunction =
         [](const std::string& operand,
            const NodeFactoryCollection& nodeFactories,
-           CompileState& state) -> std::unique_ptr<AbstractSyntaxTreeNode> {
-  // These checks are performed:
-  // * Empty argument? Shouldn't happen, kill the compilation with fire.
-  // * First character is a letter? We have replace all constants by now, so it
-  // must be a register - or an undefined constant!
-  // * If not? Try to compile the expression!
-  std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
-  if (operand.empty()) {
-    outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
-  } else if (std::isalpha(operand[0])) {
-    outputNode = nodeFactories.createRegisterNode(operand);
-  } else if (operand[0] == '\"') {
-    // Data nodes are mainly for meta instructions.
-    std::vector<char> outString;
-    StringParser::parseString(operand, outString, state);
-    std::string asString(outString.begin(), outString.end());
-    outputNode = nodeFactories.createDataNode(asString);
-  } else {
-    // using i32
-    int32_t result =
-        CLikeExpressionCompilers::CLikeCompilerI32.compile(operand, state);
-    outputNode = nodeFactories.createImmediateNode(
-        conversions::convert(result,
-                             conversions::standardConversions::helper::
-                                 twosComplement::toMemoryValueFunction,
-                             32));
-  }
-  return std::move(outputNode);
-};
+           CompileErrorAnnotator& annotator)
+    -> std::unique_ptr<AbstractSyntaxTreeNode> {
+      // These checks are performed:
+      // * Empty argument? Shouldn't happen, kill the compilation with fire.
+      // * First character is a letter? We have replace all constants by now, so
+      // it
+      // must be a register - or an undefined constant!
+      // * If not? Try to compile the expression!
+      std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
+      if (operand.empty()) {
+        outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
+      } else if (std::isalpha(operand[0])) {
+        outputNode = nodeFactories.createRegisterNode(operand);
+      } else if (operand[0] == '\"') {
+        // Data nodes are mainly for meta instructions.
+        std::vector<char> outString;
+        StringParser::parseString(operand, annotator, outString);
+        std::string asString(outString.begin(), outString.end());
+        outputNode = nodeFactories.createDataNode(asString);
+      } else {
+        // using i32
+        int32_t result = CLikeExpressionCompilers::CLikeCompilerI32.compile(
+            operand, annotator);
+        outputNode = nodeFactories.createImmediateNode(
+            conversions::convert(result,
+                                 conversions::standardConversions::helper::
+                                     twosComplement::toMemoryValueFunction,
+                                 32));
+      }
+      return std::move(outputNode);
+    };
 
 RiscvParser::RiscvParser(const Architecture& architecture,
                          const MemoryAccess& memoryAccess)
@@ -79,21 +83,19 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
   std::istringstream stream{text};
 
   // Initialize compile state
-  _compile_state.errorList.clear();
-  _compile_state.macros.clear();
-  _compile_state.position = CodePosition(0, 0);
-  _compile_state.mode = parserMode;
-
+  CompileErrorList errorList;
+  CodePosition position;
 
   RiscvRegex line_regex;
   std::vector<std::string> labels, sources, targets;
 
   for (std::string line; std::getline(stream, line);) {
-    _compile_state.position = _compile_state.position.newLine();
+    position = position.newLine();
     line_regex.matchLine(line);
     if (!line_regex.isValid()) {
       // Add syntax error if line regex doesnt match
-      _compile_state.addError("Syntax Error", _compile_state.position);
+      errorList.add("Syntax Error",
+                    CodePositionInterval(position, position >> 1));
     } else {
       // Collect labels until next instruction
       if (line_regex.hasLabel()) {
@@ -110,23 +112,24 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
             sources.push_back(line_regex.getParameter(i));
         }
 
+        CompileErrorAnnotator positionErrorAnnotation(
+            errorList, CodePositionInterval(position, position >> 1));
         if (is_directive) {
           RiscVDirectiveFactory::create(
-              LineInterval{_compile_state.position.line()},
+              LineInterval(position.line()),
               labels,
               line_regex.getInstruction(),
               sources,
               intermediate,
-              _compile_state);
+              positionErrorAnnotation /*TODO better positions*/);
         } else {
           intermediate.insertCommand(
-              IntermediateInstruction{
-                  LineInterval{_compile_state.position.line()},
-                  labels,
-                  line_regex.getInstruction(),
-                  sources,
-                  targets},
-              _compile_state);
+              IntermediateInstruction(LineInterval(position.line()),
+                                      labels,
+                                      line_regex.getInstruction(),
+                                      sources,
+                                      targets),
+              positionErrorAnnotation /*TODO better positions*/);
         }
 
         labels.clear();
@@ -141,10 +144,11 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
        MemorySectionDefinition(
            "data", _architecture.getWordSize() / _architecture.getByteSize())});
   return intermediate.transform(
-      _architecture,
-      SyntaxTreeGenerator{_factory_collection, argumentGeneratorFunction},
-      allocator,
-      _compile_state,
+      TransformationParameters(
+          _architecture,
+          allocator,
+          SyntaxTreeGenerator(_factory_collection, argumentGeneratorFunction)),
+      errorList,
       _memoryAccess);
 }
 

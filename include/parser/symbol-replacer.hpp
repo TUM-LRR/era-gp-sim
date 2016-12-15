@@ -40,7 +40,6 @@ class SymbolReplacer {
                  size_t maximumReplaceCount = 64);
 
   std::string replace(const std::string& data) const;
-  void replace(std::vector<std::string>& dataVector) const;
 
  private:
   std::vector<Symbol> _symbols;

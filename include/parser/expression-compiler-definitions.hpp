@@ -23,10 +23,7 @@
 #include <functional>
 #include <string>
 #include <vector>
-struct CompileState;
-
-// Personal note: it might have been good to program this thing with usage of
-// results/optionals.
+class CompileErrorAnnotator;
 
 /**
  * \brief Denotes the type of an expression token in which a text is broken down
@@ -107,7 +104,7 @@ struct ExpressionBinaryOperator {
   /**
    * \brief Applies the operator on two numbers and records any possible errors.
    */
-  std::function<bool(const T&, const T&, T&, CompileState&)> handler;
+  std::function<bool(const T&, const T&, T&, CompileErrorAnnotator&)> handler;
 };
 
 /**
@@ -127,7 +124,7 @@ struct ExpressionUnaryOperator {
   /**
    * \brief Applies the operator on one number and records any possible errors.
    */
-  std::function<bool(const T&, T&, CompileState&)> handler;
+  std::function<bool(const T&, T&, CompileErrorAnnotator&)> handler;
 };
 
 /**
@@ -144,7 +141,7 @@ struct ExpressionLiteralDecoder {
   /**
    * \brief Decodes the literal into the number type.
    */
-  std::function<bool(std::string, T&, CompileState&)> decoder;
+  std::function<bool(std::string, T&, CompileErrorAnnotator&)> decoder;
 };
 
 /**

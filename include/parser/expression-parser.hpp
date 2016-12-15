@@ -26,6 +26,8 @@
 #include <unordered_map>
 #include "common/assert.hpp"
 #include "common/multiregex.hpp"
+#include "parser/code-position.hpp"
+#include "parser/compile-error-annotator.hpp"
 #include "parser/expression-compiler-definitions.hpp"
 
 /**
@@ -105,10 +107,10 @@ class ExpressionParser {
    * successful. If now, `T()` will be returned.
    */
   T parse(const std::vector<ExpressionToken>& tokens,
-          CompileState& externalState) const {
+          CompileErrorAnnotator& annotator) const {
     // The parse state is only used in this class (it contains references as
     // members).
-    ParseState state(tokens, externalState);
+    ParseState state(tokens, annotator);
 
     for (const auto& i : tokens) {
       // We iterate through each token and try to handle it.
@@ -156,7 +158,8 @@ class ExpressionParser {
 
   // A function definition for internal decoding (the regex is found in a
   // different variable).
-  using ILiteralDecoder = std::function<bool(std::string, T&, CompileState&)>;
+  using ILiteralDecoder =
+      std::function<bool(std::string, T&, CompileErrorAnnotator&)>;
 
   // The state to carry all internal data (to prevent long parameter lists).
   struct ParseState {
@@ -169,8 +172,8 @@ class ExpressionParser {
     // Reference on the token vector.
     const std::vector<ExpressionToken>& tokens;
 
-    // Reference to the compile state.
-    CompileState& state;
+    // Reference to the compile error annotator.
+    CompileErrorAnnotator& annotator;
 
     // Output stack for temporary numbers.
     std::stack<T> outputStack;
@@ -179,15 +182,18 @@ class ExpressionParser {
     std::stack<IToken> operatorStack;
 
     // Constructor, for reference assignment mainly.
-    ParseState(const std::vector<ExpressionToken>& xtokens,
-               CompileState& xstate)
-    : tokens(xtokens), state(xstate) {
+    ParseState(const std::vector<ExpressionToken>& tokens,
+               CompileErrorAnnotator& annotator)
+    : tokens(tokens), annotator(annotator) {
     }
   };
 
   // Records an error in the parsing process.
   void recordError(ParseState& state, const std::string& message) const {
-    state.state.addError(message, state.state.position >> state.curr.index);
+    auto newPosition = state.annotator.position().first >> state.curr.index;
+    CodePositionInterval newInterval(
+        newPosition, newPosition >> 1);// TODO better error ranges
+    state.annotator.add(message, newInterval);
   }
 
   // Handles the latest token stored in `state.curr`.
@@ -286,7 +292,7 @@ class ExpressionParser {
       // literal decoder we should use.
       T parsed;
       if (!_literalDecoders.at(match.choice)(
-              state.curr.data, parsed, state.state)) {
+              state.curr.data, parsed, state.annotator)) {
         // This may also fail...
         return false;
       }
@@ -335,7 +341,7 @@ class ExpressionParser {
     // We try to apply it to the stack.
     T outputValue;
     if (!_unaryOperators.at(token.data)
-             .handler(args[0], outputValue, state.state)) {
+             .handler(args[0], outputValue, state.annotator)) {
       return false;
     }
 
@@ -356,7 +362,7 @@ class ExpressionParser {
     // We try to apply it to the stack.
     T outputValue;
     if (!_binaryOperators.at(token.data)
-             .handler(args[0], args[1], outputValue, state.state)) {
+             .handler(args[0], args[1], outputValue, state.annotator)) {
       return false;
     }
 

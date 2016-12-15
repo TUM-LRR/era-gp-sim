@@ -17,35 +17,41 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_COMPILE_ERROR_LIST_HPP
-#define ERAGPSIM_PARSER_COMPILE_ERROR_LIST_HPP
+#ifndef ERAGPSIM_PARSER_COMPILE_ERROR_ANNOTATOR_HPP
+#define ERAGPSIM_PARSER_COMPILE_ERROR_ANNOTATOR_HPP
 
-#include <functional>
-#include <vector>
+class CompileError;
+class CompileErrorList;
+#include <string>
 #include "parser/code-position.hpp"
 #include "parser/compile-error-severity.hpp"
-#include "parser/compile-error.hpp"
 
-class CompileErrorList {
+class CompileErrorAnnotator {
  public:
-  CompileErrorList() = default;
+  CompileErrorAnnotator(CompileErrorList& list,
+                        const CodePositionInterval& position);
+  CompileErrorAnnotator(CompileErrorAnnotator& source,
+                        const CodePositionInterval& position);
+  CompileErrorAnnotator(CompileErrorList& list,
+                        const CodePosition& start,
+                        const CodePosition& end);
+  CompileErrorAnnotator(CompileErrorAnnotator& source,
+                        const CodePosition& start,
+                        const CodePosition& end);
 
-  const std::vector<CompileError> errors() const noexcept;
-  bool hasErrors() const;
-  bool hasWarnings() const;
-  bool hasInformation() const;
-  bool empty() const;
-  std::size_t errorCount() const;
-  std::size_t warningCount() const;
-  std::size_t informationCount() const;
-  std::size_t size() const;
   void add(const CompileError& error);
   void add(const std::string& message,
            const CodePositionInterval& interval,
            CompileErrorSeverity severity = CompileErrorSeverity::ERROR);
+  void add(const std::string& message,
+           CompileErrorSeverity severity = CompileErrorSeverity::ERROR);
+
+  CompileErrorList& errorList() noexcept;
+  const CodePositionInterval position() const noexcept;
 
  private:
-  std::vector<CompileError> _errors;
+  CompileErrorList& _list;
+  CodePositionInterval _position;
 };
 
-#endif /* ERAGPSIM_PARSER_COMPILE_ERROR_LIST_HPP */
+#endif /* ERAGPSIM_PARSER_COMPILE_ERROR_ANNOTATOR_HPP */

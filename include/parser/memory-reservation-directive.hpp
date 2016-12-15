@@ -25,7 +25,7 @@
 #include "parser/intermediate-directive.hpp"
 #include "parser/relative-memory-position.hpp"
 class MemoryAllocator;
-struct CompileState;
+class CompileErrorAnnotator;
 struct LineInterval;
 class SymbolTable;
 class SyntaxTreeGenerator;
@@ -35,7 +35,7 @@ struct FinalRepresentation;
 class MemoryReservationDirective : public IntermediateDirective {
  public:
   using ArgumentCompileFunction =
-      std::function<std::size_t(const std::string&, CompileState&)>;
+      std::function<std::size_t(const std::string&, CompileErrorAnnotator&)>;
   /**
  * \brief Instantiates a new IntermediateDirective with the given arguments.
  * (only for subclass use!)
@@ -59,10 +59,9 @@ class MemoryReservationDirective : public IntermediateDirective {
    * \param memoryAccess The MemoryAccess for verifying instructions or
    * reserving data.
    */
-  virtual void execute(FinalRepresentation& finalRepresentator,
-                       const SymbolTable& table,
-                       const SyntaxTreeGenerator& generator,
-                       CompileState& state,
+  virtual void execute(const ExecuteImmutableArguments& immutable,
+                       CompileErrorAnnotator& annotator,
+                       FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
   /**
@@ -72,9 +71,10 @@ class MemoryReservationDirective : public IntermediateDirective {
    * \param allocator The allocator to reserve memory.
    * \param state The CompileState to log possible errors.
    */
-  virtual void allocateMemory(const Architecture& architecture,
+  virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
+                              CompileErrorAnnotator& annotator,
                               MemoryAllocator& allocator,
-                              CompileState& state);
+                              SectionTracker& tracker);
 
   /**
    * \brief Enhances the symbol table by the labels of the operation.
@@ -82,9 +82,10 @@ class MemoryReservationDirective : public IntermediateDirective {
    * \param allocator The MemoryAllocator to get the memory positions from.
    * \param state The CompileState to log possible errors.
    */
-  virtual void enhanceSymbolTable(SymbolTable& table,
-                                  const MemoryAllocator& allocator,
-                                  CompileState& state);
+  virtual void
+  enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
+                     CompileErrorAnnotator& annotator,
+                     SymbolGraph& graph);
 
  private:
   ArgumentCompileFunction _argumentCompile;

@@ -23,11 +23,13 @@
 
 #include "common/assert.hpp"
 #include "parser/final-representation.hpp"
+#include "parser/intermediate-parameters.hpp"
 #include "parser/line-interval.hpp"
 #include "parser/memory-allocator.hpp"
 #include "parser/memory-section-definition.hpp"
 #include "parser/relative-memory-position.hpp"
-#include "parser/symbol-table.hpp"
+#include "parser/symbol-graph.hpp"
+#include "parser/symbol-replacer.hpp"
 #include "parser/syntax-tree-generator.hpp"
 
 IntermediateOperation::IntermediateOperation(
@@ -37,14 +39,23 @@ IntermediateOperation::IntermediateOperation(
 : _lines(lines), _labels(labels), _name(name) {
 }
 
-void IntermediateOperation::allocateMemory(const Architecture& architecture,
-                                           MemoryAllocator& allocator,
-                                           CompileState& state) {
+void IntermediateOperation::enhanceSymbolTable(
+    const EnhanceSymbolTableImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
+    SymbolGraph& graph) {
 }
 
-void IntermediateOperation::enhanceSymbolTable(SymbolTable& table,
-                                               const MemoryAllocator& allocator,
-                                               CompileState& state) {
+void IntermediateOperation::allocateMemory(
+    const PreprocessingImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
+    MemoryAllocator& allocator,
+    SectionTracker& tracker) {
+}
+
+void IntermediateOperation::precompile(
+    const PreprocessingImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
+    MacroDirectiveTable& macroTable) {
 }
 
 bool IntermediateOperation::shouldInsert() const {
@@ -53,10 +64,6 @@ bool IntermediateOperation::shouldInsert() const {
 
 TargetSelector IntermediateOperation::newTarget() const {
   return TargetSelector::KEEP;
-}
-
-IntermediateExecutionTime IntermediateOperation::executionTime() const {
-  return IntermediateExecutionTime::AFTER_ALLOCATION;
 }
 
 void IntermediateOperation::insert(IntermediateOperationPointer pointer) {

@@ -19,7 +19,7 @@
 
 #include "parser/expression-tokenizer.hpp"
 #include "common/multiregex.hpp"
-#include "parser/compile-state.hpp"
+#include "parser/compile-error-annotator.hpp"
 
 ExpressionTokenizer::ExpressionTokenizer(
     const std::vector<ExpressionTokenDefinition>& definitions)
@@ -29,7 +29,7 @@ ExpressionTokenizer::ExpressionTokenizer(
 
 std::vector<ExpressionToken>
 ExpressionTokenizer::tokenize(const std::string& data,
-                              CompileState& state) const {
+                              CompileErrorAnnotator& annotator) const {
   std::vector<ExpressionToken> output;
   MSMatch match;
   size_t currentPosition = 0;
@@ -57,8 +57,10 @@ ExpressionTokenizer::tokenize(const std::string& data,
   } else {
     // We are done, but there is an unrecognized token. We return as if the
     // string was empty.
-    state.addError("Unrecognized token at: " + temp.substr(0, 20),
-                   state.position >> currentPosition);
+    annotator.add("Unrecognized token at: " + temp.substr(0, 20),
+                  CodePositionInterval(
+                      annotator.position().first >> currentPosition,
+                      annotator.position().first >> (currentPosition + 1)));
     return std::vector<ExpressionToken>();
   }
 }

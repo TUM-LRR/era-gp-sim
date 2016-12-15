@@ -18,16 +18,20 @@
 
 #include "parser/intermediate-macro-instruction.hpp"
 
-#include "parser/compile-state.hpp"
+#include "parser/compile-error-annotator.hpp"
 #include "parser/intermediate-instruction.hpp"
+#include "parser/macro-directive-table.hpp"
 #include "parser/macro-directive.hpp"
 #include "parser/memory-allocator.hpp"
-#include "parser/symbol-table.hpp"
+#include "parser/symbol-graph.hpp"
+#include "parser/symbol-replacer.hpp"
 
 
-void IntermediateMacroInstruction::replaceWithMacros(CommandIterator begin,
-                                                     CommandIterator end,
-                                                     CompileState& state) {
+void IntermediateMacroInstruction::replaceWithMacros(
+    CommandIterator begin,
+    CommandIterator end,
+    MacroDirectiveTable& macroTable,
+    CompileErrorAnnotator& annotator) {
   for (auto i = begin; i != end; ++i) {
     // Try casting to IntermediateInstruction, skip instruction if it doesn't
     // work
@@ -35,18 +39,18 @@ void IntermediateMacroInstruction::replaceWithMacros(CommandIterator begin,
 
     IntermediateInstruction& inst = static_cast<IntermediateInstruction&>(**i);
 
-    auto macro = state.macros.find(inst._name,
-                                   inst._sources.size() + inst._targets.size());
+    auto macro = macroTable.find(inst._name,
+                                 inst._sources.size() + inst._targets.size());
     if (!macro.found()) continue;
 
     if (macro.isCyclic()) {
-      state.addError("Cyclic macro call!");
+      annotator.add("Cyclic macro call!");
       continue;
     }
 
     IntermediateOperationPointer newPtr =
         std::make_unique<IntermediateMacroInstruction>(
-            inst, macro->second, state);
+            inst, macro->second, macroTable, annotator);
     *i = std::move(newPtr);
   }
 }
@@ -54,7 +58,8 @@ void IntermediateMacroInstruction::replaceWithMacros(CommandIterator begin,
 IntermediateMacroInstruction::IntermediateMacroInstruction(
     const IntermediateInstruction& ins,
     const MacroDirective& macro,
-    CompileState& state)
+    MacroDirectiveTable& macroTable,
+    CompileErrorAnnotator& annotator)
 : IntermediateOperation(ins.lines(), ins.labels(), ins.name()) {
   for (size_t i = 0; i < macro.getOperationCount(); i++) {
     if (i == macro.firstInstructionIndex()) {
@@ -64,57 +69,57 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     IntermediateOperationPointer ptr =
         macro.getOperation(i, ins.getArgsVector());
 
-    if (ptr != nullptr)
+    if (ptr != nullptr) {
       _operations.push_back(std::move(ptr));
-    else
-      state.addError("Macro contains unsupported instruction '" +
-                     macro.getOperationName(i) + "'.");
+    } else {
+      annotator.add("Macro contains unsupported instruction '" +
+                    macro.getOperationName(i) + "'.");
+    }
   }
 
   // Recursively replace macro instructions to support recursive macro calls
-  replaceWithMacros(_operations.begin(), _operations.end(), state);
+  replaceWithMacros(
+      _operations.begin(), _operations.end(), macroTable, annotator);
 }
-
 void IntermediateMacroInstruction::execute(
+    const ExecuteImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
     FinalRepresentation& finalRepresentator,
-    const SymbolTable& table,
-    const SyntaxTreeGenerator& generator,
-    CompileState& state,
     MemoryAccess& memoryAccess) {
   for (const auto& operation : _operations) {
-    operation->execute(
-        finalRepresentator, table, generator, state, memoryAccess);
+    operation->execute(immutable, annotator, finalRepresentator, memoryAccess);
   }
 }
 
 void IntermediateMacroInstruction::allocateMemory(
-    const Architecture& architecture,
+    const PreprocessingImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
     MemoryAllocator& allocator,
-    CompileState& state) {
+    SectionTracker& tracker) {
   for (const auto& operation : _operations) {
-    operation->allocateMemory(architecture, allocator, state);
+    operation->allocateMemory(immutable, annotator, allocator, tracker);
   }
 }
 
 void IntermediateMacroInstruction::enhanceSymbolTable(
-    SymbolTable& table, const MemoryAllocator& allocator, CompileState& state) {
+    const EnhanceSymbolTableImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
+    SymbolGraph& graph) {
   for (const auto& operation : _operations) {
-    operation->enhanceSymbolTable(table, allocator, state);
+    operation->enhanceSymbolTable(immutable, annotator, graph);
   }
 
   if (_labels.size() > 0 && _firstInstruction < 0) {
-    state.addError("Labels cant point to macros without instructions!");
+    annotator.add("Labels cant point to macros without instructions!");
   } else {
-    for (const auto& i : _labels) {
-      table.insertEntry(
-          i,
+    for (const auto& label : _labels) {
+      graph.addNode(Symbol(
+          label,
           std::to_string(static_cast<IntermediateInstruction*>(
                              _operations[_firstInstruction].get())
                              ->address()),
-          /*TODO*/ CodePositionInterval(CodePosition(0), CodePosition(0)),
-          state,
-          SymbolTable::SymbolBehavior::DYNAMIC,
-          SymbolTable::SymbolType::LABEL);
+          CodePositionInterval(CodePosition(0), CodePosition(0)) /*TODO*/,
+          SymbolBehavior::DYNAMIC));
     }
   }
 }

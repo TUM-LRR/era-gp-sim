@@ -25,7 +25,7 @@
 #include <stdexcept>
 #include <string>
 #include "common/assert.hpp"
-#include "parser/compile-state.hpp"
+#include "parser/compile-error-annotator.hpp"
 
 /**
  * Provides methods for integer parsing.
@@ -50,7 +50,7 @@ class IntegerParser {
    * \return The parsed integer. Undefined if parsing fails.
    */
   static T parse(const std::string &str,
-                 CompileState &state,
+                 CompileErrorAnnotator &annotator,
                  size_t start = 0,
                  int base = 10) {
     size_t count;
@@ -59,11 +59,9 @@ class IntegerParser {
       result = parseInternal(str, start, base, count);
       if (count < str.length() - start) throw std::invalid_argument("");
     } catch (std::out_of_range &) {
-      state.errorList.emplace_back(
-          "Integer out of range.", state.position, CompileErrorSeverity::ERROR);
+      annotator.add("Integer out of range.");
     } catch (std::invalid_argument &) {
-      state.errorList.emplace_back(
-          "Integer syntax error.", state.position, CompileErrorSeverity::ERROR);
+      annotator.add("Integer syntax error.");
     }
     return result;
   }

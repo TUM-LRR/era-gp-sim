@@ -62,14 +62,8 @@ std::string SymbolReplacer::replace(const std::string& data) const {
     }
   }
 
-  // ERROR!
+  // ERROR! TODO
   return result;
-}
-
-void SymbolReplacer::replace(std::vector<std::string>& dataVector) const {
-  for (auto& entry : dataVector) {
-    entry = replace(entry);
-  }
 }
 
 const SymbolReplacer::DynamicReplacer SymbolReplacer::IDENTITY_REPLACE =

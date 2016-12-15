@@ -24,19 +24,19 @@
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
-#include "parser/compile-state.hpp"
+#include "parser/compile-error-annotator.hpp"
 
 std::unique_ptr<AbstractSyntaxTreeNode>
 SyntaxTreeGenerator::transformOperand(const std::string& operand,
-                                      CompileState& state) const {
+                                      CompileErrorAnnotator& annotator) const {
   // We invoke our node generator to get a node!
   std::unique_ptr<AbstractSyntaxTreeNode> outputNode =
-      _argumentGenerator(operand, _nodeFactories, state);
+      _argumentGenerator(operand, _nodeFactories, annotator);
 
   // According to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
-    state.addError("Invalid argument: '" + operand + "'", state.position);
+    annotator.add("Invalid argument: '" + operand + "'");
   }
 
   return std::move(outputNode);
@@ -44,9 +44,9 @@ SyntaxTreeGenerator::transformOperand(const std::string& operand,
 
 std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
     const std::string& command_name,
+    CompileErrorAnnotator& annotator,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
-    CompileState& state,
     MemoryAccess& memoryAccess) const {
   // Just create an instruction node and add all output and input nodes
   // (operands).
@@ -54,7 +54,7 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
 
   if (!outputNode) {
     // The node creation failed!
-    state.addError("Unknown operation: " + command_name, state.position);
+    annotator.add("Unknown operation: " + command_name);
     return std::move(outputNode);
   }
 
@@ -71,9 +71,8 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
   // Validate node.
   auto validationResult = outputNode->validate(memoryAccess);
   if (!validationResult) {
-    state.addError("Invalid operation (" + command_name + "): " +
-                       validationResult.getMessage(),
-                   state.position);
+    annotator.add("Invalid operation (" + command_name + "): " +
+                  validationResult.getMessage());
   }
 
   // Return.

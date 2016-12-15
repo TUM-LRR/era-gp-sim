@@ -53,10 +53,9 @@ class MacroEndDirective : public IntermediateDirective {
    * \param generator The generator to transform the instructions.
    * \param state The CompileState to log possible errors.
    */
-  virtual void execute(FinalRepresentation& finalRepresentator,
-                       const SymbolTable& table,
-                       const SyntaxTreeGenerator& generator,
-                       CompileState& state,
+  virtual void execute(const ExecuteImmutableArguments& immutable,
+                       CompileErrorAnnotator& annotator,
+                       FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
   /**

@@ -23,12 +23,13 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "parser/compile-state.hpp"
 #include "parser/final-representation.hpp"
 #include "parser/intermediate-operation.hpp"
 
 class SyntaxTreeGenerator;
 class Architecture;
+class TransformationParameters;
+class CompileErrorList;
 
 /**
  * \brief Provides methods for collecting and compiling a command list.
@@ -47,12 +48,12 @@ class IntermediateRepresentator {
    * \tparam T The command type.
    */
   template <typename T>
-  void insertCommand(T&& command, CompileState& state) {
+  void insertCommand(T&& command, CompileErrorAnnotator& annotator) {
     // First of all, we create our dear pointer.
     IntermediateOperationPointer pointer =
         std::make_shared<T>(std::move(command));
 
-    insertCommandPtr(std::move(pointer), state);
+    insertCommandPtr(std::move(pointer), annotator);
   }
 
   /**
@@ -60,8 +61,8 @@ class IntermediateRepresentator {
    * \param command The given command.
    * \param state The compile state to save any possible errors.
    */
-  void
-  insertCommandPtr(IntermediateOperationPointer&& command, CompileState& state);
+  void insertCommandPtr(IntermediateOperationPointer&& command,
+                        CompileErrorAnnotator& annotator);
 
   /**
    * \brief Transforms the commands to a syntax tree list.
@@ -74,10 +75,8 @@ class IntermediateRepresentator {
    * \param memoryAccess The access to write into the memory.
    * \return The list of syntax trees to be interpreted by the architecture.
    */
-  FinalRepresentation transform(const Architecture& architecture,
-                                const SyntaxTreeGenerator& generator,
-                                MemoryAllocator& allocator,
-                                CompileState& state,
+  FinalRepresentation transform(const TransformationParameters& parameters,
+                                CompileErrorList errorList,
                                 MemoryAccess& memoryAccess);
 
  private:

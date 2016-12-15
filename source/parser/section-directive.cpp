@@ -18,8 +18,9 @@
 */
 
 #include "parser/section-directive.hpp"
-#include "parser/compile-state.hpp"
+#include "parser/compile-error-annotator.hpp"
 #include "parser/memory-allocator.hpp"
+#include "parser/section-tracker.hpp"
 
 SectionDirective::SectionDirective(const LineInterval& lines,
                                    const std::vector<std::string>& labels,
@@ -30,24 +31,25 @@ SectionDirective::SectionDirective(const LineInterval& lines,
   if (_hasName) _section = arguments[0];
 }
 
-void SectionDirective::execute(FinalRepresentation& finalRepresentator,
-                               const SymbolTable& table,
-                               const SyntaxTreeGenerator& generator,
-                               CompileState& state,
+void SectionDirective::execute(const ExecuteImmutableArguments& immutable,
+                               CompileErrorAnnotator& annotator,
+                               FinalRepresentation& finalRepresentator,
                                MemoryAccess& memoryAccess) {
 }
 
-void SectionDirective::allocateMemory(const Architecture& architecture,
-                                      MemoryAllocator& allocator,
-                                      CompileState& state) {
+void SectionDirective::allocateMemory(
+    const PreprocessingImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
+    MemoryAllocator& allocator,
+    SectionTracker& tracker) {
   if (!_hasName) {
-    state.addError("Section name missing!");
+    annotator.add("Section name missing!");
     return;
   }
   if (!allocator.has(_section)) {
-    state.addError("Specified section non-existent!");
+    annotator.add("Specified section non-existent!");
     return;
   }
   // Just set the section state to the current section. That's it.
-  state.section = _section;
+  tracker.section(_section);
 }

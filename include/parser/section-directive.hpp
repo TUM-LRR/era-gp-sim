@@ -61,15 +61,15 @@ class SectionDirective : public IntermediateDirective {
    * \param state The compile state which denotes the current section of the
    * compiler.
    */
-  virtual void execute(FinalRepresentation& finalRepresentator,
-                       const SymbolTable& table,
-                       const SyntaxTreeGenerator& generator,
-                       CompileState& state,
+  virtual void execute(const ExecuteImmutableArguments& immutable,
+                       CompileErrorAnnotator& annotator,
+                       FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
-  virtual void allocateMemory(const Architecture& architecture,
+  virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
+                              CompileErrorAnnotator& annotator,
                               MemoryAllocator& allocator,
-                              CompileState& state);
+                              SectionTracker& tracker);
 
  private:
   bool _hasName;

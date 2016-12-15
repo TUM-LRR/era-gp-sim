@@ -19,8 +19,11 @@
 
 #include <string>
 
+#include "parser/compile-error-annotator.hpp"
 #include "parser/constant-directive.hpp"
-#include "parser/symbol-table.hpp"
+#include "parser/intermediate-parameters.hpp"
+#include "parser/symbol-graph.hpp"
+#include "parser/symbol-replacer.hpp"
 #include "parser/syntax-tree-generator.hpp"
 
 ConstantDirective::ConstantDirective(const LineInterval& lines,
@@ -30,43 +33,41 @@ ConstantDirective::ConstantDirective(const LineInterval& lines,
 : IntermediateDirective(lines, labels, name), _arguments{arguments} {
 }
 
-void ConstantDirective::execute(FinalRepresentation& finalRepresentator,
-                                const SymbolTable& table,
-                                const SyntaxTreeGenerator& generator,
-                                CompileState& state,
+void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
+                                CompileErrorAnnotator& annotator,
+                                FinalRepresentation& finalRepresentator,
                                 MemoryAccess& memoryAccess) {
   // Try to parse argument to catch errors early.
-  std::string fullExpression = table.replaceSymbols(_expression, state);
+  std::string fullExpression = immutable.replacer().replace(_expression);
   if (!fullExpression.empty()) {
-    generator.transformOperand(fullExpression, state);
+    immutable.generator().transformOperand(fullExpression, annotator);
   } else {
     // better error messages:
     // 0 arguments -> this argument should be the name
     // 1 argument -> this argument should be the value
     //>1 arguments -> too many
     switch (_arguments.size()) {
-      case 0: state.addError("Missing constant name", state.position); break;
-      case 1: state.addError("Missing constant value", state.position); break;
+      case 0: annotator.add("Missing constant name"); break;
+      case 1: annotator.add("Missing constant value"); break;
       default:
-        state.addError(
-            "Malformed constant directive, too many operands provided",
-            state.position);
+        annotator.add(
+            "Malformed constant directive, too many operands provided");
         break;
     }
   }
 }
 
-void ConstantDirective::enhanceSymbolTable(SymbolTable& table,
-                                           const MemoryAllocator& allocator,
-                                           CompileState& state) {
+void ConstantDirective::enhanceSymbolTable(
+    const EnhanceSymbolTableImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
+    SymbolGraph& graph) {
   if (_arguments.size() != 2) {
-    state.addError("Malformed constant directive", state.position);
+    annotator.add("Malformed constant directive");
     return;
   }
   _expression = "(" + _arguments[1] + ")";
-  table.insertEntry(
-      _arguments[0],
-      _expression,
-      /*TODO*/ CodePositionInterval(CodePosition(0), CodePosition(0)),
-      state);
+  graph.addNode(
+      Symbol(_arguments[0],
+             _expression,
+             /*TODO*/ CodePositionInterval(CodePosition(0), CodePosition(0))));
 }

@@ -18,7 +18,7 @@
 
 #ifndef ERAGPSIM_PARSER_SYMBOL_TABLE_HPP
 #define ERAGPSIM_PARSER_SYMBOL_TABLE_HPP
-
+/*
 #include <map>
 #include <regex>
 #include <set>
@@ -27,18 +27,18 @@
 #include <vector>
 #include "common/multiregex.hpp"
 #include "parser/code-position.hpp"
-#include "parser/compile-state.hpp"
+#include "parser/compile-error-annotator.hpp"
 
 /**
  * \brief Contains methods to manage symbols and replace them in strings. It
  * also checks for errors.
- */
+ *
 class SymbolTable {
  public:
   /**
  * \brief The SymbolType enum describes the type of symbol in this SymbolTable.
  * This distinction helps with a type-depended replacement.
- */
+ *
   enum class SymbolType { LABEL, CONSTANT, OTHER };
   enum class SymbolBehavior { STATIC, DYNAMIC };
   class TableEntry {
@@ -76,7 +76,7 @@ class SymbolTable {
 
   /**
    * \brief Instantiates an empty symbol table.
-   */
+   *
   SymbolTable() = default;
 
   /**
@@ -84,7 +84,7 @@ class SymbolTable {
    * \param name The symbol name.
    * \param replacement The symbol replacement.
    * \param state The compile state.
-   */
+   *
   void insertEntry(const std::string& name,
                    const std::string& replacement,
                    const CodePositionInterval& position,
@@ -94,7 +94,7 @@ class SymbolTable {
 
   /**
    * \brief Clears the table.
-   */
+   *
   void clearTable();
 
   bool finalizeEntries();
@@ -102,7 +102,7 @@ class SymbolTable {
   /**
    * \brief Returns the internal symbol table.
    * \return The internal symbol table.
-   */
+   *
   const Table& table() const noexcept;
 
   /**
@@ -117,7 +117,7 @@ class SymbolTable {
    * symbol.
    * \return The string with all symbols replaced (if the maximum recursion
    * depth has not been exceeded).
-   */
+   *
   std::string
   replaceSymbols(const std::string& source,
                  CompileState& state,
@@ -133,7 +133,7 @@ class SymbolTable {
    * replaced differently. The replacement function takes the raw replacement
    * string and the symbol type and returns a string that will replace the
    * symbol
-   */
+   *
   void
   replaceSymbols(std::vector<std::string>& source,
                  CompileState& state,
@@ -150,9 +150,10 @@ class SymbolTable {
 
   /**
    * \brief The internal map to store the symbol table.
-   */
+   *
   Table _table;
   std::vector<std::string> _replacementOrder;
 };
 
 #endif
+*/

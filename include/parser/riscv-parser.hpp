@@ -25,7 +25,6 @@
 #include "arch/common/architecture.hpp"
 #include "arch/common/node-factory-collection.hpp"
 #include "core/memory-access.hpp"
-#include "parser/compile-state.hpp"
 #include "parser/parser-mode.hpp"
 #include "parser/parser.hpp"
 
@@ -52,11 +51,6 @@ class RiscvParser : public Parser {
       argumentGeneratorFunction;
 
  protected:
-  /**
-   * Saves an internal compile state.
-   */
-  CompileState _compile_state;
-
   /**
    * The NodeFactoryCollection used to create the syntax tree nodes
    */

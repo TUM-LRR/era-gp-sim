@@ -16,13 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/symbol-table.hpp"
+#include "parser/symbol-graph.hpp"
+#include "parser/symbol-replacer.hpp"
 
 #include <stack>
 #include <unordered_set>
 #include "common/assert.hpp"
 #include "common/utility.hpp"
-
+/*
 // This speeds things up a bit.
 static const std::regex TRIMMED =
     std::regex("(^\\s+|\\s+$)", std::regex_constants::optimize);
@@ -281,3 +282,4 @@ void SymbolTable::replaceSymbols(std::vector<std::string>& source,
 
 const SymbolTable::ReplacementFunction SymbolTable::SIMPLE_REPLACE = [](
     const std::string& repl, SymbolType type) -> std::string { return repl; };
+*/

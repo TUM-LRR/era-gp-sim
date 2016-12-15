@@ -19,21 +19,26 @@
 #include "parser/string-parser.hpp"
 #include <iostream>
 #include "gtest/gtest.h"
+#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
+#define DEFINE_ANNOTATOR      \
+  CompileErrorList errorList; \
+  CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
 
 template <typename CharTypeIn, typename CharTypeOut>
 void doTestInternal(const std::basic_string<CharTypeIn>& provided,
                     const std::basic_string<CharTypeOut>& expected,
                     bool succeed) {
-  CompileState state;
+  DEFINE_ANNOTATOR;
   std::vector<CharTypeOut> output;
-  bool result = StringParser::parseString(provided, output, state);
+  bool result = StringParser::parseString(provided, annotator, output);
   if (succeed) {
-    for (const auto& i : state.errorList) {
-      std::cout << i.message() << std::endl;
+    for (const auto& error : annotator.errorList().errors()) {
+      std::cout << error.message() << std::endl;
     }
     ASSERT_EQ(expected,
               std::basic_string<CharTypeOut>(output.begin(), output.end()));
-    ASSERT_EQ(0, state.errorList.size());
+    ASSERT_EQ(0, annotator.errorList().size());
   }
   ASSERT_EQ(succeed, result);
 }

@@ -24,6 +24,7 @@
 #include "parser/intermediate-directive.hpp"
 
 class IntermediateRepresentator;
+class CompileErrorAnnotator;
 
 /**
  * Provides methods for the instantiation of different RiscvParser directives.
@@ -47,7 +48,7 @@ void create(const LineInterval &lines,
             const std::string &name,
             const std::vector<std::string> &arguments,
             IntermediateRepresentator &intermediate,
-            CompileState &state);
+            CompileErrorAnnotator &annotator);
 
 /**
  * Maps names to directives.

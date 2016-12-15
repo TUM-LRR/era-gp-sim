@@ -22,8 +22,11 @@
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
 #include "parser/expression-compiler-clike.hpp"
+#include "parser/intermediate-parameters.hpp"
 #include "parser/memory-allocator.hpp"
-#include "parser/symbol-table.hpp"
+#include "parser/section-tracker.hpp"
+#include "parser/symbol-graph.hpp"
+#include "parser/symbol-replacer.hpp"
 
 MemoryReservationDirective::MemoryReservationDirective(
     const LineInterval& lines,
@@ -39,24 +42,24 @@ MemoryReservationDirective::MemoryReservationDirective(
 }
 
 void MemoryReservationDirective::allocateMemory(
-    const Architecture& architecture,
+    const PreprocessingImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
     MemoryAllocator& allocator,
-    CompileState& state) {
+    SectionTracker& tracker) {
   if (_values.empty()) {
-    state.addWarning("Implicit reservation of 0 bytes, missing arguments?",
-                     CodePosition(_lines.lineStart, _lines.lineEnd));
+    annotator.add("Implicit reservation of 0 bytes, missing arguments?",
+                  CompileErrorSeverity::WARNING);
   }
   // So, we simply calculate and sum up our arguments.
   std::size_t sizeInCells = 0;
-  for (const auto& i : _values) {
+  for (const auto& value : _values) {
     // b/c of the definition of argumentCompile and the C standard, the result
     // is non-negative.
-    auto result = _argumentCompile(i, state);
+    auto result = _argumentCompile(value, annotator);
     if (result > 0) {
       sizeInCells += result;
     } else {
-      state.addWarning("Reserving 0 bytes",
-                       CodePosition(_lines.lineStart, _lines.lineEnd));
+      annotator.add("Reserving 0 bytes", CompileErrorSeverity::WARNING);
     }
   }
 
@@ -65,30 +68,31 @@ void MemoryReservationDirective::allocateMemory(
   auto sizeInBytes = sizeInCells * _cellSize;
 
   // Next, we got to allocate our memory.
-  _relativePosition = allocator[state.section].allocateRelative(sizeInBytes);
+  _relativePosition =
+      allocator[tracker.section()].allocateRelative(sizeInBytes);
 
   // The bit size is store for further usage.
-  _size = sizeInBytes * architecture.getByteSize();
+  _size = sizeInBytes * immutable.architecture().getByteSize();
 }
 
 void MemoryReservationDirective::enhanceSymbolTable(
-    SymbolTable& table, const MemoryAllocator& allocator, CompileState& state) {
+    const EnhanceSymbolTableImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
+    SymbolGraph& graph) {
   // We calculate the absolute memory position and enhance our symbol table.
-  _absolutePosition = allocator.absolutePosition(_relativePosition);
-  for (const auto& i : _labels) {
-    table.insertEntry(
-        i,
+  _absolutePosition = immutable.allocator().absolutePosition(_relativePosition);
+  for (const auto& label : _labels) {
+    graph.addNode(Symbol(
+        label,
         std::to_string(_absolutePosition),
-        /*TODO*/ CodePositionInterval(CodePosition(0), CodePosition(0)),
-        state);
+        /*TODO*/ CodePositionInterval(CodePosition(0), CodePosition(0))));
   }
 }
 
 void MemoryReservationDirective::execute(
+    const ExecuteImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
     FinalRepresentation& finalRepresentator,
-    const SymbolTable& table,
-    const SyntaxTreeGenerator& generator,
-    CompileState& state,
     MemoryAccess& memoryAccess) {
   // Finally, we may put some zeros into memory.
   if (_size > 0) {

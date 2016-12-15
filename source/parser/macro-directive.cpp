@@ -18,8 +18,9 @@
 */
 
 #include "parser/macro-directive.hpp"
-#include "parser/compile-state.hpp"
+#include "parser/compile-error-annotator.hpp"
 #include "parser/intermediate-instruction.hpp"
+#include "parser/macro-directive-table.hpp"
 
 MacroDirective::MacroDirective(const LineInterval& lines,
                                const std::vector<std::string>& labels,
@@ -54,24 +55,29 @@ void MacroDirective::insert(IntermediateOperationPointer pointer) {
   _operations.push_back(std::move(pointer));
 }
 
-void MacroDirective::execute(FinalRepresentation& finalRepresentator,
-                             const SymbolTable& table,
-                             const SyntaxTreeGenerator& generator,
-                             CompileState& state,
-                             MemoryAccess& memoryAccess) {
-  if (macroName().length() == 0) {
-    state.addError("Missing macro name.");
+void MacroDirective::precompile(
+    const PreprocessingImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
+    MacroDirectiveTable& macroTable) {
+  if (macroName().empty()) {
+    annotator.add("Missing macro name.");
   }
-  _macroParameters.validate(state);
-  state.registerMacro(*this);
+  _macroParameters.validate(annotator);
+  auto success = macroTable.insert(*this);
+  if (!success) {
+    annotator.add("Macro \"" + macroName() + "\" already exists!");
+  }
 }
 
+
+void MacroDirective::execute(const ExecuteImmutableArguments& immutable,
+                             CompileErrorAnnotator& annotator,
+                             FinalRepresentation& finalRepresentator,
+                             MemoryAccess& memoryAccess) {
+  // Probably nothing here.
+}
 TargetSelector MacroDirective::newTarget() const {
   return TargetSelector::THIS;
-}
-
-IntermediateExecutionTime MacroDirective::executionTime() const {
-  return IntermediateExecutionTime::BEFORE_ALLOCATION;
 }
 
 const std::string& MacroDirective::macroName() const {
@@ -142,20 +148,21 @@ MacroDirective::MacroParameters::MacroParameters(
   }
 }
 
-void MacroDirective::MacroParameters::validate(CompileState& state) const {
-  bool containedDefault{false};
+void MacroDirective::MacroParameters::validate(
+    CompileErrorAnnotator& annotator) const {
+  bool containedDefault = false;
   for (auto param : _params) {
     // Check for empty names or default values
     if (param.first.size() == 0 ||
         (param.second && param.second->size() == 0)) {
-      state.addError("Malformed macro argument list!");
+      annotator.add("Malformed macro argument list!");
       return;
     }
 
     // Check for missing default values after a default value.
     if (param.second) containedDefault = true;
     if (containedDefault && !param.second) {
-      state.addError("Default macro argument values have to be placed last!");
+      annotator.add("Default macro argument values have to be placed last!");
       return;
     }
   }

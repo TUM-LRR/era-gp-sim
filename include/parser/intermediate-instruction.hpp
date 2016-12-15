@@ -50,41 +50,20 @@ class IntermediateInstruction : public IntermediateOperation {
                           const std::vector<std::string>& sources,
                           const std::vector<std::string>& targets);
 
-  /**
-   * \brief Converts this instruction into a syntax tree and inserts it into the
-   * final representation.
-   * \param finalRepresentator The FinalRepresentation to insert into.
-   * \param table The SymbolTable required for replacing the arguments.
-   * \param generator The generator to transform the instructions.
-   * \param state The CompileState logging all errors occuring.
-   * \param memoryAccess The MemoryAccess for verifying the syntax tree.
-   */
-  virtual void execute(FinalRepresentation& finalRepresentator,
-                       const SymbolTable& table,
-                       const SyntaxTreeGenerator& generator,
-                       CompileState& state,
+  virtual void execute(const ExecuteImmutableArguments& immutable,
+                       CompileErrorAnnotator& annotator,
+                       FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
-  /**
-   * \brief Enhances the symbol table by the labels of the operation.
-   * \param table The SymbolTable to insert into.
-   * \param allocator The MemoryAllocator to get the memory positions from.
-   * \param state The CompileState to log possible errors.
-   */
-  virtual void enhanceSymbolTable(SymbolTable& table,
-                                  const MemoryAllocator& allocator,
-                                  CompileState& state);
+  virtual void
+  enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
+                     CompileErrorAnnotator& annotator,
+                     SymbolGraph& graph);
 
-  /**
-   * \brief Reserves (not writes!) memory for the instruction.
-   * \param architecture The architecture for information about the memory
-   * format.
-   * \param allocator The allocator to reserve memory.
-   * \param state The CompileState to log possible errors.
-   */
-  virtual void allocateMemory(const Architecture& architecture,
+  virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
+                              CompileErrorAnnotator& annotator,
                               MemoryAllocator& allocator,
-                              CompileState& state);
+                              SectionTracker& tracker);
 
 
   /**
@@ -94,9 +73,8 @@ class IntermediateInstruction : public IntermediateOperation {
    * \param state The CompileState logging all errors occuring.
    * \return The resulting syntax tree of the node.
    */
-  FinalCommand compileInstruction(const SymbolTable& table,
-                                  const SyntaxTreeGenerator& generator,
-                                  CompileState& state,
+  FinalCommand compileInstruction(const ExecuteImmutableArguments& immutable,
+                                  CompileErrorAnnotator& annotator,
                                   MemoryAccess& memoryAccess);
 
   MemoryAddress address() const;
@@ -118,9 +96,9 @@ class IntermediateInstruction : public IntermediateOperation {
    */
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
   compileArgumentVector(const std::vector<std::string>& vector,
-                        const SymbolTable& table,
-                        const SyntaxTreeGenerator& generator,
-                        CompileState& state);
+                        const ExecuteImmutableArguments& immutable,
+                        CompileErrorAnnotator& annotator,
+                        MemoryAccess& memoryAccess);
 
  private:
   friend class IntermediateMacroInstruction;

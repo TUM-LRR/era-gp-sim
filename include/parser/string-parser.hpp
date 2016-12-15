@@ -26,7 +26,7 @@
 #include <unordered_map>
 #include <vector>
 #include "common/utility.hpp"
-#include "parser/compile-state.hpp"
+#include "parser/compile-error-annotator.hpp"
 
 /**
  * \brief Provides help methods for parsing strings.
@@ -57,7 +57,7 @@ class StringParserEngine {
    * \param separator The separator (e.g. " or ') to indicate the end or begin
    * of a string.
    * \param output The data output to append data to.
-   * \param state The compile state to write errors to.
+   * \param annotator The compile annotator to write errors to.
    * \return True, if the conversion has been successful. If not, it returns
    * false.
    */
@@ -65,15 +65,15 @@ class StringParserEngine {
                                    size_t& index,
                                    char separator,
                                    Output& output,
-                                   CompileState& state) {
+                                   CompileErrorAnnotator& annotator) {
     auto chr = inputString[index];
     if (chr == separator) {
       // No Ansi C-like string concatenation, yet. Sorry!
-      invokeError("Found an unescaped separator in a string", index, state);
+      invokeError("Found an unescaped separator in a string", index, annotator);
       return false;
     } else {
       // If we do not have a separator: we convert the character!
-      if (!stringConvertCharacter(inputString, index, output, state)) {
+      if (!stringConvertCharacter(inputString, index, output, annotator)) {
         return false;
       }
     }
@@ -86,15 +86,15 @@ class StringParserEngine {
    * \brief Checks, if a string is wrapped by two separators.
    * \param inputString The string to check.
    * \param separator The separator which should wrap the string.
-   * \param state The compile state to note down any errors.
+   * \param annotator The compile annotator to note down any errors.
    * \return True, if the string is wrapped. Else, it returns false.
    */
   static bool checkIfWrapped(const String& inputString,
                              char separator,
-                             CompileState& state) {
+                             CompileErrorAnnotator& annotator) {
     // If the string is too small, it cannot even contain the two brackets.
     if (inputString.size() < 2) {
-      invokeError("The supposed string literal is too small!", 0, state);
+      invokeError("The supposed string literal is too small!", 0, annotator);
       return false;
     }
 
@@ -105,7 +105,7 @@ class StringParserEngine {
               "Something supposed to be a string does not begin with ") +
               separator,
           0,
-          state);
+          annotator);
       return false;
     }
 
@@ -115,7 +115,7 @@ class StringParserEngine {
           std::string("Something supposed to be a string does not end with ") +
               separator,
           inputString.size() - 1,
-          state);
+          annotator);
       return false;
     }
 
@@ -123,11 +123,13 @@ class StringParserEngine {
   }
 
  private:
-  // This method notes down an error in the given compile state.
+  // This method notes down an error in the given compile annotator.
   static void invokeError(const std::string& message,
                           size_t position,
-                          CompileState& state) {
-    state.addError(message, state.position >> position);
+                          CompileErrorAnnotator& annotator) {
+    auto newCoordinate = annotator.position().first >> position;
+    auto newPosition = CodePositionInterval(newCoordinate, newCoordinate >> 1);
+    annotator.add(message, newPosition);// TODO make better error ranges
   }
 
   // Returns true, if there is still data after the current index in the string
@@ -141,7 +143,7 @@ class StringParserEngine {
   static bool decodeUTF8CodePoint(const String& inputString,
                                   size_t& index,
                                   uint32_t& codePoint,
-                                  CompileState& state) {
+                                  CompileErrorAnnotator& annotator) {
     auto chr = inputString[index];
     if ((chr & 0x80) == 0) {
       // If the most significant bit is a 0, we got an ASCII character and can
@@ -162,7 +164,7 @@ class StringParserEngine {
           // If we cannot find another byte, but we need it, we are screwed.
           invokeError("Reached end of string with unfinished code point.",
                       index,
-                      state);
+                      annotator);
           return false;
         }
 
@@ -171,7 +173,7 @@ class StringParserEngine {
         auto nchr = inputString[index];
 
         if ((nchr & 0xc0) != 0x80) {
-          invokeError("Erroneous in-code point character.", index, state);
+          invokeError("Erroneous in-code point character.", index, annotator);
           return false;
         }
 
@@ -185,10 +187,11 @@ class StringParserEngine {
         wchr <<= 1;
       }
 
-      // As stated before 10<DATA> is an in-code point byte, so if we have size
+      // As annotatord before 10<DATA> is an in-code point byte, so if we have
+      // size
       // 0 (b/c we check the second most significant byte), we got an error.
       if (size == 0) {
-        invokeError("Invalid-formed code point detected!", index, state);
+        invokeError("Invalid-formed code point detected!", index, annotator);
         return false;
       } else {
         // If not, we need to get the rest of data out of the first character,
@@ -202,7 +205,7 @@ class StringParserEngine {
           // catch these too.
           invokeError("The specified code point is outside the Unicode range!",
                       index,
-                      state);
+                      annotator);
           return false;
         }
         return true;
@@ -214,7 +217,7 @@ class StringParserEngine {
   static bool decodeUTF16CodePoint(const String& inputString,
                                    size_t& index,
                                    uint32_t& codePoint,
-                                   CompileState& state) {
+                                   CompileErrorAnnotator& annotator) {
     auto chr = inputString[index] & 0xffff;
     if (chr <= 0xd7ff || chr >= 0xe000) {
       // In this case, we got a normal one-short sized code point.
@@ -228,15 +231,16 @@ class StringParserEngine {
             "Invalid-formed code point detected (one-short-sized code point "
             "does not begin with a high surrogate character)!",
             index,
-            state);
+            annotator);
         return false;
       }
 
       if (!requireCharacter(inputString, index)) {
         // If there is no second short in the string, throw an error, b/c we
         // still need one.
-        invokeError(
-            "End of string detecten while decoding code point!", index, state);
+        invokeError("End of string detecten while decoding code point!",
+                    index,
+                    annotator);
         return false;
       }
 
@@ -248,7 +252,7 @@ class StringParserEngine {
             "Invalid-formed code point detected (second short of code point is "
             "not a low surrogate character)!",
             index,
-            state);
+            annotator);
         return false;
       }
 
@@ -264,7 +268,7 @@ class StringParserEngine {
   static bool decodeUTF32CodePoint(const String& inputString,
                                    size_t& index,
                                    uint32_t& codePoint,
-                                   CompileState& state) {
+                                   CompileErrorAnnotator& annotator) {
     // This is by far the easiest decode. We take the value from the stream and
     // take it as code point, but only if it is inside the Unicode
     // specification.
@@ -272,7 +276,7 @@ class StringParserEngine {
     if (codePoint > 0x10ffff) {
       invokeError("The specified code point is outside the Unicode range!",
                   index,
-                  state);
+                  annotator);
       return false;
     }
     return true;
@@ -282,14 +286,14 @@ class StringParserEngine {
   static bool decodeCodePoint(const String& inputString,
                               size_t& index,
                               uint32_t& codePoint,
-                              CompileState& state) {
+                              CompileErrorAnnotator& annotator) {
     // We got a sizeof-decision tree or so here...
     if (sizeof(CharType) >= 4) {
-      return decodeUTF32CodePoint(inputString, index, codePoint, state);
+      return decodeUTF32CodePoint(inputString, index, codePoint, annotator);
     } else if (sizeof(CharType) >= 2) {
-      return decodeUTF16CodePoint(inputString, index, codePoint, state);
+      return decodeUTF16CodePoint(inputString, index, codePoint, annotator);
     } else if (sizeof(CharType) == 1) {
-      return decodeUTF8CodePoint(inputString, index, codePoint, state);
+      return decodeUTF8CodePoint(inputString, index, codePoint, annotator);
     } else {
       return false;
     }
@@ -360,7 +364,7 @@ class StringParserEngine {
                                          size_t& index,
                                          Output& output,
                                          int size,
-                                         CompileState& state) {
+                                         CompileErrorAnnotator& annotator) {
     size_t startIndex = index;
 
     auto len = crawlIndex(inputString, index, isHex, size);
@@ -368,14 +372,15 @@ class StringParserEngine {
     // Important: The size of the specified index in the string must equal to
     // the maximum size.
     if (len != size) {
-      invokeError("Not the right size for the escape sequence", index, state);
+      invokeError(
+          "Not the right size for the escape sequence", index, annotator);
       return false;
     }
 
     // Then we get and encode the code point.
     uint32_t codePoint =
         simpleNumberParse<uint32_t>(inputString, startIndex + 1, len, 16);
-    return encodeCodePoint(inputString, codePoint, index, output, state);
+    return encodeCodePoint(inputString, codePoint, index, output, annotator);
   }
 
   // Gets the corresponding character for a simple one-byte long escape
@@ -409,10 +414,10 @@ class StringParserEngine {
   static bool parseEscapeCharacter(const String& inputString,
                                    size_t& index,
                                    Output& output,
-                                   CompileState& state) {
+                                   CompileErrorAnnotator& annotator) {
     if (!requireCharacter(inputString, index)) {
       // A \ followed by an end of string is not valid.
-      invokeError("Unfinished escape sequence!", index, state);
+      invokeError("Unfinished escape sequence!", index, annotator);
       return false;
     }
 
@@ -428,10 +433,12 @@ class StringParserEngine {
       return true;
     } else if (chr == 'u') {
       // Decoding a Unicode code point in the range  up to 65535.
-      return parseUnicodeEscapeSequence(inputString, index, output, 4, state);
+      return parseUnicodeEscapeSequence(
+          inputString, index, output, 4, annotator);
     } else if (chr == 'U') {
       // Decoding an arbitrary Unicode code point.
-      return parseUnicodeEscapeSequence(inputString, index, output, 8, state);
+      return parseUnicodeEscapeSequence(
+          inputString, index, output, 8, annotator);
     } else if (chr == 'x') {
       // Decoding a unit-sized character, ignoring all UTF alignments.
       auto len = crawlIndex(inputString, index, isHex, sizeof(OutType) * 2);
@@ -448,13 +455,13 @@ class StringParserEngine {
             "The specified octal sequence wants to encode a character out "
             "of byte size.",
             index,
-            state);
+            annotator);
         return false;
       }
       output.push_back(ret);
     } else {
       // If nothing of the above applies, we got an invalid escape sequence.
-      invokeError("Detected invalid escape sequence!", index, state);
+      invokeError("Detected invalid escape sequence!", index, annotator);
       return false;
     }
     return true;
@@ -464,20 +471,20 @@ class StringParserEngine {
   static bool stringConvertCharacter(const String& inputString,
                                      size_t& index,
                                      Output& output,
-                                     CompileState& state) {
+                                     CompileErrorAnnotator& annotator) {
     auto chr = inputString[index];
     if (chr == '\\') {
       // This is, where the fun begins! Escape character parsing... Yay!
-      if (!parseEscapeCharacter(inputString, index, output, state)) {
+      if (!parseEscapeCharacter(inputString, index, output, annotator)) {
         return false;
       }
     } else {
       // If not, we just convert source to target encoding.
       uint32_t codePoint;
-      if (!decodeCodePoint(inputString, index, codePoint, state)) {
+      if (!decodeCodePoint(inputString, index, codePoint, annotator)) {
         return false;
       }
-      if (!encodeCodePoint(inputString, codePoint, index, output, state)) {
+      if (!encodeCodePoint(inputString, codePoint, index, output, annotator)) {
         return false;
       }
       ++index;
@@ -489,7 +496,7 @@ class StringParserEngine {
   static bool encodeUTF8CodePoint(const String& inputString,
                                   uint32_t codePoint,
                                   Output& output,
-                                  CompileState& state) {
+                                  CompileErrorAnnotator& annotator) {
     if (codePoint <= 0x7f) {
       // If we are in ascii range, there is no need to encode more.
       output.push_back(codePoint);
@@ -519,7 +526,7 @@ class StringParserEngine {
   static bool encodeUTF16CodePoint(const String& inputString,
                                    uint32_t codePoint,
                                    Output& output,
-                                   CompileState& state) {
+                                   CompileErrorAnnotator& annotator) {
     if (codePoint <= 0xffff) {
       // We got a one-short code point.
       output.push_back((uint16_t)codePoint);
@@ -539,7 +546,7 @@ class StringParserEngine {
   static bool encodeUTF32CodePoint(const String& inputString,
                                    uint32_t codePoint,
                                    Output& output,
-                                   CompileState& state) {
+                                   CompileErrorAnnotator& annotator) {
     // Trivial. ;)
     output.push_back(codePoint);
     return true;
@@ -550,23 +557,23 @@ class StringParserEngine {
                               uint32_t codePoint,
                               size_t& index,
                               Output& output,
-                              CompileState& state) {
+                              CompileErrorAnnotator& annotator) {
     if (codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
       // First of all, we cross out all out of range and surrogate code points,
       // then we do not need to check in the single methods any more.
       invokeError("The specified code point is outside the Unicode range!",
                   index,
-                  state);
+                  annotator);
       return false;
     }
 
     // Another sizeof discambigulation.
     if (sizeof(OutType) >= 4) {
-      return encodeUTF32CodePoint(inputString, codePoint, output, state);
+      return encodeUTF32CodePoint(inputString, codePoint, output, annotator);
     } else if (sizeof(OutType) >= 2) {
-      return encodeUTF16CodePoint(inputString, codePoint, output, state);
+      return encodeUTF16CodePoint(inputString, codePoint, output, annotator);
     } else if (sizeof(OutType) == 1) {
-      return encodeUTF8CodePoint(inputString, codePoint, output, state);
+      return encodeUTF8CodePoint(inputString, codePoint, output, annotator);
     } else {
       return false;
     }
@@ -583,25 +590,25 @@ namespace StringParser {
 * \tparam OutT The output integer type.
 * \param inputString The input data.
 * \param output The output vector to append to.
-* \param state The compile state to note errors down.
+* \param annotator The compile annotator to note errors down.
 * \return True, if the conversion has been successful, else false.
 */
 template <typename CharT, typename OutT>
 static bool parseString(const std::basic_string<CharT>& inputString,
-                        std::vector<OutT>& output,
-                        CompileState& state) {
+                        CompileErrorAnnotator& annotator,
+                        std::vector<OutT>& output) {
   using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
   using OutType = Utility::TypeBarrier<OutT, std::is_integral>;
 
   if (!StringParserEngine<CharType, OutType>::checkIfWrapped(
-          inputString, '\"', state)) {
+          inputString, '\"', annotator)) {
     return false;
   }
 
   size_t index = 1;
   while (inputString.size() - 1 > index) {
     if (!StringParserEngine<CharType, OutType>::stringParseCharacter(
-            inputString, index, '\"', output, state)) {
+            inputString, index, '\"', output, annotator)) {
       return false;
     }
   }
@@ -615,24 +622,24 @@ static bool parseString(const std::basic_string<CharT>& inputString,
 * \tparam OutT The output integer type.
 * \param inputString The input data.
 * \param output The output vector to append to.
-* \param state The compile state to note errors down.
+* \param annotator The compile annotator to note errors down.
 * \return True, if the conversion has been successful, else false.
 */
 template <typename CharT, typename OutT>
 static bool parseCharacter(const std::basic_string<CharT>& inputString,
-                           std::vector<OutT>& output,
-                           CompileState& state) {
+                           CompileErrorAnnotator& annotator,
+                           std::vector<OutT>& output) {
   using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
   using OutType = Utility::TypeBarrier<OutT, std::is_integral>;
 
   if (!StringParserEngine<CharType, OutType>::checkIfWrapped(
-          inputString, '\'', state)) {
+          inputString, '\'', annotator)) {
     return false;
   }
 
   size_t index = 1;
   if (!StringParserEngine<CharType, OutType>::stringParseCharacter(
-          inputString, index, '\'', output, state)) {
+          inputString, index, '\'', output, annotator)) {
     return false;
   }
 

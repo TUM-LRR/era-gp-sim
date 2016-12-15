@@ -33,21 +33,23 @@ class IntermediateMacroInstruction : public IntermediateOperation {
  public:
   IntermediateMacroInstruction(const IntermediateInstruction&,
                                const MacroDirective&,
-                               CompileState& state);
+                               MacroDirectiveTable& macroTable,
+                               CompileErrorAnnotator& annotator);
 
-  virtual void execute(FinalRepresentation& finalRepresentator,
-                       const SymbolTable& table,
-                       const SyntaxTreeGenerator& generator,
-                       CompileState& state,
+  virtual void execute(const ExecuteImmutableArguments& immutable,
+                       CompileErrorAnnotator& annotator,
+                       FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
-  virtual void allocateMemory(const Architecture& architecture,
-                              MemoryAllocator& allocator,
-                              CompileState& state);
+  virtual void
+  enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
+                     CompileErrorAnnotator& annotator,
+                     SymbolGraph& graph);
 
-  virtual void enhanceSymbolTable(SymbolTable& table,
-                                  const MemoryAllocator& allocator,
-                                  CompileState& state);
+  virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
+                              CompileErrorAnnotator& annotator,
+                              MemoryAllocator& allocator,
+                              SectionTracker& tracker);
 
   /**
    * Replaces `IntermediateInstruction`s with `IntermediateMacroInstructions` in
@@ -55,7 +57,8 @@ class IntermediateMacroInstruction : public IntermediateOperation {
    */
   static void replaceWithMacros(CommandIterator begin,
                                 CommandIterator end,
-                                CompileState& state);
+                                MacroDirectiveTable& macroTable,
+                                CompileErrorAnnotator& annotator);
 
  private:
   CommandList _operations;

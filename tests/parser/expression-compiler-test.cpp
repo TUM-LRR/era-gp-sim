@@ -18,26 +18,31 @@
 
 #include "common/utility.hpp"
 #include "gtest/gtest.h"
+#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/expression-compiler-clike.hpp"
+#define DEFINE_ANNOTATOR      \
+  CompileErrorList errorList; \
+  CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
 
 // Passing test case.
 #define TEST_CASE_P(expr)                                            \
   {                                                                  \
-    CompileState state;                                              \
+    DEFINE_ANNOTATOR                                                 \
     int output = CLikeExpressionCompilers::CLikeCompilerI32.compile( \
-        STRINGIFY(expr), state);                                     \
+        STRINGIFY(expr), annotator);                                 \
     int expected = (expr);                                           \
     ASSERT_EQ(output, expected);                                     \
-    ASSERT_TRUE(state.errorList.empty());                            \
+    ASSERT_TRUE(annotator.errorList().empty());                      \
   }
 
 // Failing test case.
-#define TEST_CASE_E(expr)                                                \
-  {                                                                      \
-    CompileState state;                                                  \
-    int output =                                                         \
-        CLikeExpressionCompilers::CLikeCompilerI32.compile(expr, state); \
-    ASSERT_TRUE(!state.errorList.empty());                               \
+#define TEST_CASE_E(expr)                                                    \
+  {                                                                          \
+    DEFINE_ANNOTATOR                                                         \
+    int output =                                                             \
+        CLikeExpressionCompilers::CLikeCompilerI32.compile(expr, annotator); \
+    ASSERT_TRUE(!annotator.errorList().empty());                             \
   }
 
 // We need to surpass some warnings, b/c we intentionally want to use

@@ -20,22 +20,29 @@
 
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
+#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/intermediate-macro-instruction.hpp"
+#include "parser/intermediate-parameters.hpp"
+#include "parser/macro-directive-table.hpp"
 #include "parser/memory-allocator.hpp"
-#include "parser/symbol-table.hpp"
+#include "parser/section-tracker.hpp"
+#include "parser/symbol-graph-evaluation.hpp"
+#include "parser/symbol-graph.hpp"
+#include "parser/symbol-replacer.hpp"
 
 IntermediateRepresentator::IntermediateRepresentator()
 : _commandList(), _currentOutput(nullptr) {
 }
 
 void IntermediateRepresentator::insertCommandPtr(
-    IntermediateOperationPointer&& command, CompileState& state) {
+    IntermediateOperationPointer&& command, CompileErrorAnnotator& annotator) {
   // We got to handle the three target selector cases right here.
   if (command->newTarget() == TargetSelector::THIS) {
     // If we want the current command as new target, we set it like so.
     if (_currentOutput) {
       // Nested macros are not supported.
-      state.addError("Error, nested macros are not supported.");
+      annotator.add("Error, nested macros are not supported.");
     }
     _currentOutput = std::move(command);
   } else {
@@ -43,8 +50,8 @@ void IntermediateRepresentator::insertCommandPtr(
       // For the main selector, we may also insert the old command (otherwise
       // it and its sub commands might be lost).
       if (!_currentOutput) {
-        // Classic bracket forgot to close problem.
-        state.addError("The start directive of the macro is missing.");
+        // Classic bracket-forgot-to-close problem.
+        annotator.add("The start directive of the macro is missing.");
       }
       internalInsertCommand(std::move(_currentOutput));
     }
@@ -55,73 +62,68 @@ void IntermediateRepresentator::insertCommandPtr(
 }
 
 FinalRepresentation
-IntermediateRepresentator::transform(const Architecture& architecture,
-                                     const SyntaxTreeGenerator& generator,
-                                     MemoryAllocator& allocator,
-                                     CompileState& state,
+IntermediateRepresentator::transform(const TransformationParameters& parameters,
+                                     CompileErrorList errorList,
                                      MemoryAccess& memoryAccess) {
-  // Before everything begins, we got to check if we are still in a macro.
+  CompileErrorAnnotator annotator(errorList, CodePositionInterval(0, 0));// TODO
   if (_currentOutput) {
-    state.addError("Macro not closed. Missing a macro end directive?");
+    annotator.add(
+        "Macro not closed. Missing a macro end directive?");// TODO Code
+                                                            // Position
   }
 
   FinalRepresentation representation;
-  SymbolTable table;
 
-  // Some directives need to be executed before memory allocation.
-  for (const auto& i : _commandList) {
-    if (i->executionTime() == IntermediateExecutionTime::BEFORE_ALLOCATION) {
-      i->execute(representation, table, generator, state, memoryAccess);
-    }
+  PreprocessingImmutableArguments preprocessingArguments(
+      parameters.architecture(), parameters.generator());
+
+  MacroDirectiveTable macroTable;
+  for (const auto& command : _commandList) {
+    command->precompile(preprocessingArguments, annotator, macroTable);
   }
 
   IntermediateMacroInstruction::replaceWithMacros(
-      _commandList.begin(), _commandList.end(), state);
+      _commandList.begin(), _commandList.end(), macroTable, annotator);
 
-  allocator.clear();
-
-  // We reserve our memory.
-  for (const auto& i : _commandList) {
-    i->allocateMemory(architecture, allocator, state);
+  MemoryAllocator allocator(parameters.allocator());
+  SectionTracker tracker;
+  for (const auto& command : _commandList) {
+    command->allocateMemory(
+        preprocessingArguments, annotator, allocator, tracker);
   }
 
   std::size_t allocatedSize = allocator.calculatePositions();
   auto allowedSizeFuture = memoryAccess.getMemorySize();
-
-  // Not sure about this... (if needed or not)
-  allowedSizeFuture.wait();
   std::size_t allowedSize = allowedSizeFuture.get();
 
   if (allocatedSize > allowedSize) {
-    state.addError("Too much memory allocated: " +
-                   std::to_string(allocatedSize) + " requested, maximum is " +
-                   std::to_string(allowedSize) +
-                   " (please note: because of aligning memory, the first value "
-                   "might be actually bigger than the memory allocated)");
+    annotator.add("Too much memory allocated: " +
+                  std::to_string(allocatedSize) + " requested, maximum is " +
+                  std::to_string(allowedSize) +
+                  " (please note: because of aligning memory, the first value "
+                  "might be actually bigger than the memory allocated)");
+    representation.errorList = annotator.errorList().errors();
+    return representation;
   }
 
-  // Next, we insert all our labels/constants into the SymbolTable.
-  for (const auto& i : _commandList) {
-    i->enhanceSymbolTable(table, allocator, state);
+  SymbolGraph graph;
+  EnhanceSymbolTableImmutableArguments symbolTableArguments(
+      preprocessingArguments, allocator);
+  for (const auto& command : _commandList) {
+    command->enhanceSymbolTable(symbolTableArguments, annotator, graph);
   }
 
-  auto noCycle = table.finalizeEntries();
-  if (!noCycle) {
-    state.addError("Detected a cycle between symbols.");
+  auto graphEvaluation = graph.evaluate();// TODO more graph evaluation!
+  SymbolReplacer replacer(graphEvaluation);
+  ExecuteImmutableArguments executeArguments(symbolTableArguments, replacer);
+  for (const auto& command : _commandList) {
+    command->execute(executeArguments, annotator, representation, memoryAccess);
   }
 
-  if (allocatedSize <= allowedSize) {
-    // Then, we execute their values.
-    for (const auto& i : _commandList) {
-      if (i->executionTime() == IntermediateExecutionTime::AFTER_ALLOCATION) {
-        i->execute(representation, table, generator, state, memoryAccess);
-      }
-    }
-  }
+  representation.errorList =
+      annotator.errorList()
+          .errors();// TODO beautify by making FinalRepresentation a class.
 
-  representation.errorList = state.errorList;
-
-  // Now, we are done.
   return representation;
 }
 

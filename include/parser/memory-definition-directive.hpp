@@ -27,12 +27,17 @@
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
+#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/expression-compiler-clike.hpp"
 #include "parser/intermediate-directive.hpp"
+#include "parser/intermediate-parameters.hpp"
 #include "parser/memory-allocator.hpp"
 #include "parser/relative-memory-position.hpp"
+#include "parser/section-tracker.hpp"
 #include "parser/string-parser.hpp"
-#include "parser/symbol-table.hpp"
+#include "parser/symbol-graph.hpp"
+#include "parser/symbol-replacer.hpp"
 
 /**
  * \brief A directive to reserve memory and writes specified data to it.
@@ -46,7 +51,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   using ProcessValuesFunction =
       std::function<size_t(const std::vector<std::string>&,
                            size_t,
-                           CompileState&,
+                           CompileErrorAnnotator&,
                            const MemoryStorageFunction&)>;
 
   /**
@@ -95,27 +100,30 @@ class MemoryDefinitionDirective : public IntermediateDirective {
    * \param allocator The allocator to reserve memory.
    * \param state The CompileState to log possible errors.
    */
-  virtual void allocateMemory(const Architecture& architecture,
+  virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
+                              CompileErrorAnnotator& annotator,
                               MemoryAllocator& allocator,
-                              CompileState& state) {
+                              SectionTracker& tracker) {
     if (_values.empty()) {
-      state.addError("Empty data definition",
-                     CodePosition(_lines.lineStart, _lines.lineEnd));
+      annotator.add("Empty data definition");
     }
 
     // So, we simply calculate and sum up our arguments.
     // Let's hope, the compiler optimizes this...
-    CompileState temporaryState;
+    CompileErrorList temporaryVector;
+    CompileErrorAnnotator temporary(
+        temporaryVector, CodePosition(0), CodePosition(0));
     size_t sizeInBytes = _processValues(
-        _values, _cellSize, temporaryState, [](T value, size_t position) {});
+        _values, _cellSize, temporary, [](T value, size_t position) {});
 
     // Next, we got to allocate our memory.
-    _relativePosition = allocator[state.section].allocateRelative(sizeInBytes);
+    _relativePosition =
+        allocator[tracker.section()].allocateRelative(sizeInBytes);
 
     // The bit size is store for further usage.
-    _size = sizeInBytes * architecture.getByteSize();
+    _size = sizeInBytes * immutable.architecture().getByteSize();
 
-    _byteSize = architecture.getByteSize();
+    _byteSize = immutable.architecture().getByteSize();
   }
 
   /**
@@ -124,16 +132,17 @@ class MemoryDefinitionDirective : public IntermediateDirective {
    * \param allocator The MemoryAllocator to get the memory positions from.
    * \param state The CompileState to log possible errors.
    */
-  virtual void enhanceSymbolTable(SymbolTable& table,
-                                  const MemoryAllocator& allocator,
-                                  CompileState& state) {
-    _absolutePosition = allocator.absolutePosition(_relativePosition);
-    for (const auto& i : _labels) {
-      table.insertEntry(
-          i,
+  virtual void
+  enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
+                     CompileErrorAnnotator& annotator,
+                     SymbolGraph& graph) {
+    _absolutePosition =
+        immutable.allocator().absolutePosition(_relativePosition);
+    for (const auto& label : _labels) {
+      graph.addNode(Symbol(
+          label,
           std::to_string(_absolutePosition),
-          /*TODO*/ CodePositionInterval(CodePosition(0), CodePosition(0)),
-          state);
+          CodePositionInterval(CodePosition(0), CodePosition(0)) /*TODO*/));
     }
   }
 
@@ -146,10 +155,9 @@ class MemoryDefinitionDirective : public IntermediateDirective {
    * \param memoryAccess The MemoryAccess for verifying instructions or
    * reserving data.
    */
-  virtual void execute(FinalRepresentation& finalRepresentator,
-                       const SymbolTable& table,
-                       const SyntaxTreeGenerator& generator,
-                       CompileState& state,
+  virtual void execute(const ExecuteImmutableArguments& immutable,
+                       CompileErrorAnnotator& annotator,
+                       FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess) {
     if (_size > 0) {
       // We first of all create our memory value locally.
@@ -157,7 +165,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
 
       // Then we write to it.
       _processValues(
-          _values, _cellSize, state, [&](T value, std::size_t position) {
+          _values, _cellSize, annotator, [&](T value, std::size_t position) {
             // For now. Later to be replaced by the real enum of the arch,
             // maybe...
             auto memoryValue =
@@ -173,7 +181,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
       // Then, let's do a (probably also here) expensive memory call.
       memoryAccess.putMemoryValueAt(_absolutePosition, data);
     } else {
-      state.addError("Nothing to reserve with memory definition.");
+      annotator.add("Nothing to reserve with memory definition.");
     }
   }
 

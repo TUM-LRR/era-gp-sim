@@ -26,14 +26,26 @@
 
 #include "parser/line-interval.hpp"
 
-class MemoryValue;
 class Architecture;
-class SyntaxTreeGenerator;
-class SymbolTable;
+class SymbolReplacer;
+class MemoryAllocator;
+
+class MemoryValue;
 class FinalRepresentation;
 class FinalCommand;
 class MemoryAccess;
-struct CompileState;
+class CompileErrorAnnotator;
+class SectionTracker;
+class MacroDirectiveTable;
+class SymbolGraph;
+
+class IntermediateOperation;
+class Architecture;
+class MemoryAllocator;
+
+class ExecuteImmutableArguments;
+class EnhanceSymbolTableImmutableArguments;
+class PreprocessingImmutableArguments;
 
 /**
  * \brief A memory address substitute as long as we do not have one.
@@ -47,18 +59,6 @@ using MemoryAddress = std::size_t;
  * operations are placed inside of other operations on syntax level.
  */
 enum class TargetSelector { KEEP, MAIN, THIS };
-
-/**
- * Specifies whene an instruction should be executed.
- *
- * Some directives like macros need to be executed before memory allocation,
- * otherwise they wouldn't be known during `allocateMemory`.
- */
-enum class IntermediateExecutionTime { BEFORE_ALLOCATION, AFTER_ALLOCATION };
-
-class IntermediateOperation;
-class Architecture;
-class MemoryAllocator;
 
 /**
  * \brief Convenience class for a pointer to an operation.
@@ -82,41 +82,24 @@ class IntermediateOperation {
                         const std::vector<std::string>& labels,
                         const std::string& name);
 
-  /**
-   * \brief Executes the given operation (somehow).
-   * \param finalRepresentator The FinalRepresentation for possible output.
-   * \param table The SymbolTable for possible replacements.
-   * \param generator The generator to transform the instructions.
-   * \param state The CompileState to log possible errors.
-   * \param memoryAccess The MemoryAccess for verifying instructions or
-   * reserving data.
-   */
-  virtual void execute(FinalRepresentation& finalRepresentator,
-                       const SymbolTable& table,
-                       const SyntaxTreeGenerator& generator,
-                       CompileState& state,
+  virtual void execute(const ExecuteImmutableArguments& immutable,
+                       CompileErrorAnnotator& annotator,
+                       FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess) = 0;
 
-  /**
-   * \brief Reserves (not writes!) memory for the operation (if needed).
-   * \param architecture The architecture for information about the memory
-   * format.
-   * \param allocator The allocator to reserve memory.
-   * \param state The CompileState to log possible errors.
-   */
-  virtual void allocateMemory(const Architecture& architecture,
-                              MemoryAllocator& allocator,
-                              CompileState& state);
+  virtual void
+  enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
+                     CompileErrorAnnotator& annotator,
+                     SymbolGraph& graph);
 
-  /**
-   * \brief Enhances the symbol table by the labels of the operation.
-   * \param table The SymbolTable to insert into.
-   * \param allocator The MemoryAllocator to get the memory positions from.
-   * \param state The CompileState to log possible errors.
-   */
-  virtual void enhanceSymbolTable(SymbolTable& table,
-                                  const MemoryAllocator& allocator,
-                                  CompileState& state);
+  virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
+                              CompileErrorAnnotator& annotator,
+                              MemoryAllocator& allocator,
+                              SectionTracker& tracker);
+
+  virtual void precompile(const PreprocessingImmutableArguments& immutable,
+                          CompileErrorAnnotator& annotator,
+                          MacroDirectiveTable& macroTable);
 
   /**
    * \brief Specifies if the this operation should be processed.
@@ -129,11 +112,6 @@ class IntermediateOperation {
    * \return Normally, we keep the target.
    */
   virtual TargetSelector newTarget() const;
-
-  /**
-   * Returns when to execute this operation.
-   */
-  virtual IntermediateExecutionTime executionTime() const;
 
   /**
    * \brief Inserts an operation into a possible internal command list.

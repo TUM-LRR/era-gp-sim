@@ -20,13 +20,18 @@
 #include <vector>
 
 #include "arch/common/architecture.hpp"
+#include "arch/common/architecture.hpp"
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
+#include "parser/compile-error-annotator.hpp"
 #include "parser/final-representation.hpp"
 #include "parser/intermediate-instruction.hpp"
+#include "parser/intermediate-parameters.hpp"
 #include "parser/macro-directive.hpp"
-#include "parser/symbol-table.hpp"
+#include "parser/section-tracker.hpp"
+#include "parser/symbol-graph.hpp"
+#include "parser/symbol-replacer.hpp"
 #include "parser/syntax-tree-generator.hpp"
 
 IntermediateInstruction::IntermediateInstruction(
@@ -40,74 +45,52 @@ IntermediateInstruction::IntermediateInstruction(
 , _targets(targets) {
 }
 
-void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
-                                      const SymbolTable& table,
-                                      const SyntaxTreeGenerator& generator,
-                                      CompileState& state,
-                                      MemoryAccess& memoryAccess) {
+void IntermediateInstruction::execute(
+    const ExecuteImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
+    FinalRepresentation& finalRepresentator,
+    MemoryAccess& memoryAccess) {
   // For a machine instruction, it is easy to "execute" it: just insert it
   // into the final form.
   finalRepresentator.commandList.push_back(
-      compileInstruction(table, generator, state, memoryAccess));
+      compileInstruction(immutable, annotator, memoryAccess));
 }
 
 std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
 IntermediateInstruction::compileArgumentVector(
     const std::vector<std::string>& vector,
-    const SymbolTable& table,
-    const SyntaxTreeGenerator& generator,
-    CompileState& state) {
-  // First of all, we insert all constants. Then, we convert every single one of
-  // them to a syntax tree node.
-  std::vector<std::string> cpy(vector);
-  table.replaceSymbols(
-      cpy,
-      state,
-      [&, generator](const std::string& replace,
-                     SymbolTable::SymbolType type) -> std::string {
-        // When inserting a label, we might transform its value into a relative
-        // one (depends on the instruction)
-        // We use NodeFactoryCollection::labelToImmediate which translates the
-        // value if necessary
-        if (type != SymbolTable::SymbolType::LABEL) {
-          return replace;
-        } else {
-          MemoryValue labelValue = conversions::convert<size_t>(
-              std::stoul(replace), sizeof(size_t) * 8);
-          MemoryValue instructionAdress = conversions::convert<size_t>(
-              _relativeAddress.offset, sizeof(size_t) * 8);
-          MemoryValue relativeAdress =
-              generator.getNodeFactories().labelToImmediate(
-                  labelValue, _name, instructionAdress);
-          return relativeAdress.toHexString(true, true);
-        }
-      });
+    const ExecuteImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
+    MemoryAccess& memoryAccess) {
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> output;
-  output.reserve(cpy.size());
-  for (const auto& i : cpy) {
-    std::unique_ptr<AbstractSyntaxTreeNode> argument{
-        generator.transformOperand(i, state)};
+  output.reserve(vector.size());
+  for (const auto& operand : vector) {
+    auto replaced = immutable.replacer().replace(operand);
+    auto transformed =
+        immutable.generator().transformOperand(replaced, annotator);
 
-    // Only add argument node if creation was successfull.
+    // Only add argument node if creation was successful.
     // Otherwise AbstractSyntaxTreeNode::validate() segfaults.
-    if (argument) {
-      output.emplace_back(std::move(argument));
+    if (transformed) {
+      output.emplace_back(std::move(transformed));
     }
   }
   return output;
 }
 
 FinalCommand IntermediateInstruction::compileInstruction(
-    const SymbolTable& table,
-    const SyntaxTreeGenerator& generator,
-    CompileState& state,
+    const ExecuteImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
     MemoryAccess& memoryAccess) {
   // We replace all occurenced in target in source (using a copy of them).
-  auto srcCompiled = compileArgumentVector(_sources, table, generator, state);
-  auto trgCompiled = compileArgumentVector(_targets, table, generator, state);
+  auto srcCompiled =
+      compileArgumentVector(_sources, immutable, annotator, memoryAccess);
+  auto trgCompiled =
+      compileArgumentVector(_targets, immutable, annotator, memoryAccess);
+  // TODO: Rework FinalCommand
   FinalCommand result;
-  result.node = std::move(generator.transformCommand(
-      _name, srcCompiled, trgCompiled, state, memoryAccess));
+  result.node = std::move(immutable.generator().transformCommand(
+      _name, annotator, srcCompiled, trgCompiled, memoryAccess));
   result.position = _lines;
   result.address = _address;
   return result;
@@ -118,45 +101,46 @@ MemoryAddress IntermediateInstruction::address() const {
 }
 
 void IntermediateInstruction::enhanceSymbolTable(
-    SymbolTable& table, const MemoryAllocator& allocator, CompileState& state) {
+    const EnhanceSymbolTableImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
+    SymbolGraph& graph) {
   if (_relativeAddress.valid()) {
-    _address = allocator.absolutePosition(_relativeAddress);
+    _address = immutable.allocator().absolutePosition(_relativeAddress);
   } else {
     _address = 0;
   }
 
   // We insert all our labels.
-  for (const auto& i : _labels) {
-    table.insertEntry(
-        i,
-        std::to_string(_address),
-        /*TODO*/ CodePositionInterval(CodePosition(0), CodePosition(0)),
-        state,
-        SymbolTable::SymbolBehavior::DYNAMIC,
-        SymbolTable::SymbolType::LABEL);
+  for (const auto& label : _labels) {
+    graph.addNode(
+        Symbol(label,
+               std::to_string(_address),
+               CodePositionInterval(CodePosition(0), CodePosition(0)) /*TODO*/,
+               SymbolBehavior::DYNAMIC));
   }
 }
 
-void IntermediateInstruction::allocateMemory(const Architecture& architecture,
-                                             MemoryAllocator& allocator,
-                                             CompileState& state) {
-  if (state.section != "text") {
-    state.addError("Tried to define an instruction in not the text section.");
+void IntermediateInstruction::allocateMemory(
+    const PreprocessingImmutableArguments& immutable,
+    CompileErrorAnnotator& annotator,
+    MemoryAllocator& allocator,
+    SectionTracker& tracker) {
+  if (tracker.section() != "text") {
+    annotator.add("Tried to define an instruction in not the text section.");
     return;
   }
 
-  const auto& instructionSet = architecture.getInstructions();
+  const auto& instructionSet = immutable.architecture().getInstructions();
 
   // toLower as long as not fixed in instruction set.
-  auto opcode = Utility::toLower(_name);
-  if (!instructionSet.hasInstruction(opcode)) {
+  if (!instructionSet.hasInstruction(_name)) {
     // state.addError("Unknown opcode: " + _name);
     return;
   }
 
   // For now. Later to be reworked with a bit-level memory allocation?
-  std::size_t instructionLength =
-      instructionSet[opcode].getLength() / architecture.getByteSize();
+  auto instructionLength = instructionSet[_name].getLength() /
+                           immutable.architecture().getByteSize();
   _relativeAddress = allocator["text"].allocateRelative(instructionLength);
 }
 

@@ -18,30 +18,58 @@
 */
 
 #include "parser/compile-error-list.hpp"
+#include <algorithm>
 
-const std::vector<CompileError> errors() const noexcept{
-    return _errors;
+const std::vector<CompileError> CompileErrorList::errors() const noexcept {
+  return _errors;
 }
 
-static bool existsError(const std::vector<CompileError>& errors, CompileErrorSeverity severity)
-{
-    return std::any_of(errors.begin(), errors.end(), [] (const CompileError& error) {
-            return error.severity() == severity;
-        });
+static bool existsError(const std::vector<CompileError>& errors,
+                        CompileErrorSeverity severity) {
+  return std::any_of(
+      errors.begin(), errors.end(), [severity](const CompileError& error) {
+        return error.severity() == severity;
+      });
 }
 
-    bool hasErrors() const {
-        return existsError(_errors, CompileErrorSeverity::ERROR);
-    }
-    bool hasWarnings() const{
-        return existsError(_errors, CompileErrorSeverity::ERROR);
-    }
-    bool hasInformation() const{
-        return existsError(_errors, CompileErrorSeverity::ERROR);
-    }
-    void add(const CompileError& error){
-        _errors.push_back(error);
-    }
-    void add(const std::string& message, const CodePositionInterval& interval, CompileErrorSeverity severity){
-        _errors.push_back(CompileError(message, interval, severity));
-    }
+static std::size_t countError(const std::vector<CompileError>& errors,
+                              CompileErrorSeverity severity) {
+  return std::count_if(
+      errors.begin(), errors.end(), [severity](const CompileError& error) {
+        return error.severity() == severity;
+      });
+}
+
+bool CompileErrorList::hasErrors() const {
+  return existsError(_errors, CompileErrorSeverity::ERROR);
+}
+bool CompileErrorList::hasWarnings() const {
+  return existsError(_errors, CompileErrorSeverity::WARNING);
+}
+bool CompileErrorList::hasInformation() const {
+  return existsError(_errors, CompileErrorSeverity::INFORMATION);
+}
+bool CompileErrorList::empty() const {
+  return _errors.empty();
+}
+std::size_t CompileErrorList::errorCount() const {
+  return countError(_errors, CompileErrorSeverity::ERROR);
+}
+std::size_t CompileErrorList::warningCount() const {
+  return countError(_errors, CompileErrorSeverity::WARNING);
+}
+std::size_t CompileErrorList::informationCount() const {
+  return countError(_errors, CompileErrorSeverity::INFORMATION);
+}
+std::size_t CompileErrorList::size() const {
+  return _errors.size();
+}
+
+void CompileErrorList::add(const CompileError& error) {
+  _errors.push_back(error);
+}
+void CompileErrorList::add(const std::string& message,
+                           const CodePositionInterval& interval,
+                           CompileErrorSeverity severity) {
+  _errors.push_back(CompileError(message, interval, severity));
+}

@@ -33,10 +33,9 @@ MacroEndDirective::MacroEndDirective(const LineInterval& lines,
 }
 
 
-void MacroEndDirective::execute(FinalRepresentation& finalRepresentator,
-                                const SymbolTable& table,
-                                const SyntaxTreeGenerator& generator,
-                                CompileState& state,
+void MacroEndDirective::execute(const ExecuteImmutableArguments& immutable,
+                                CompileErrorAnnotator& annotator,
+                                FinalRepresentation& finalRepresentator,
                                 MemoryAccess& memoryAccess) {
   // Probably nothing here.
 }

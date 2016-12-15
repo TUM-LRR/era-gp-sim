@@ -27,7 +27,7 @@
 #include "arch/common/node-factory-collection.hpp"
 
 class AbstractSyntaxTreeNode;
-struct CompileState;
+class CompileErrorAnnotator;
 class MemoryAccess;
 
 /**
@@ -38,7 +38,9 @@ class SyntaxTreeGenerator {
  public:
   using ArgumentNodeGenerator =
       std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
-          const std::string&, const NodeFactoryCollection&, CompileState&)>;
+          const std::string&,
+          const NodeFactoryCollection&,
+          CompileErrorAnnotator&)>;
 
   /**
    * \brief Creates a new syntax tree generator with the given node factory
@@ -60,7 +62,8 @@ class SyntaxTreeGenerator {
    * \return The transformed operand.
    */
   std::unique_ptr<AbstractSyntaxTreeNode>
-  transformOperand(const std::string& operand, CompileState& state) const;
+  transformOperand(const std::string& operand,
+                   CompileErrorAnnotator& annotator) const;
 
   /**
    * \brief Transforms the given instruction/command into a syntax tree, adds
@@ -73,9 +76,9 @@ class SyntaxTreeGenerator {
    */
   std::unique_ptr<AbstractSyntaxTreeNode> transformCommand(
       const std::string& command_name,
+      CompileErrorAnnotator& annotator,
       std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
       std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
-      CompileState& state,
       MemoryAccess& memoryAccess) const;
 
   /**
