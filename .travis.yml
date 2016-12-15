@@ -65,12 +65,11 @@ before_script:
   - cmake --version
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
+  - sudo bash -c "echo '/tmp/logbt-coredumps/core.%p.%E' > /proc/sys/kernel/core_pattern"
 
 script:
   - make VERBOSE=1 -j4
-  # modify corepattern for logbt
-  - sudo bash -c "echo '/tmp/logbt-coredumps/core.%p.%E' > /proc/sys/kernel/core_pattern"
   - ./logbt ctest -v -j4
 
 notifications:
