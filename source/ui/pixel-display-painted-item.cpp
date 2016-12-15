@@ -31,7 +31,6 @@ void PixelDisplayPaintedItem::memoryChanged(std::size_t address,
   //_options.updateAllPixels(_outputComponentPointer, _image);
   //_options.updateAllColors(_outputComponentPointer, _image);
   _options.updateMemory(_outputComponentPointer, _image, address, amount);
-  // TODO::use efficient updateMemory
   update();
 }
 
@@ -90,6 +89,16 @@ void Options::updateAllPixels(Optional<OutputComponent *> memoryAccess,
 void Options::updateAllColors(Optional<OutputComponent *> memoryAccess,
                               std::shared_ptr<QImage> image) const {
   getColorMode().updateAllColors(memoryAccess, *this, image);
+}
+
+std::shared_ptr<QImage> Options::makeImage() const {
+  QImage::Format format = QImage::Format_RGB32;
+  switch (colorMode) {
+    case 0: format = QImage::Format_RGB32; break;
+    case 1: format = QImage::Format_Mono; break;
+    default: break;
+  }
+  return std::make_shared<QImage>(width, height, format);
 }
 
 std::size_t ColorMode::loadPointer(Optional<OutputComponent *> memoryAccess,

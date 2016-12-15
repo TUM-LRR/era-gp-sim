@@ -154,6 +154,8 @@ struct Options {
    */
   void updateAllColors(Optional<OutputComponent *> memoryAccess,
                        std::shared_ptr<QImage> image) const;
+
+  std::shared_ptr<QImage> makeImage() const;
   // The color mode used for RGB Color Mode
   static ColorMode RGB;
   // The color mode used for Monochrome ColorMode
@@ -248,11 +250,10 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
  public:
   PixelDisplayPaintedItem(QQuickItem *parent = 0)
   : QQuickPaintedItem(parent), _options{} {
-#if CMODE == 0
-    _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_RGB32);
-#else
-    _image = std::make_shared<QImage>(_breadth, _height, QImage::Format_Mono);
-#endif
+    _options.colorMode = CMODE;
+    _options.width = PSIZE;
+    _options.height = PSIZE;
+    _image = _options.makeImage();
     //_image->fill(QColor("#00FFFF").rgb());
     //_image->setPixel(20, 20, 0xFF0000u);
   }
@@ -267,6 +268,28 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
 
   Q_INVOKABLE void memoryChanged(std::size_t address, std::size_t amount);
 
+  // I maybe should use enums
+  void setColorMode(std::size_t colorMode) {
+    if (_options.colorMode != colorMode) {
+      _options.colorMode = colorMode;
+      _image = _options.makeImage();
+      _options.updateAllPixels(_outputComponentPointer, _image);
+      _options.updateAllColors(_outputComponentPointer, _image);
+      update();
+    }
+  }
+
+  void resize(std::size_t width, std::size_t height) {
+    if (_options.width != width || _options.height != height) {
+      _options.width = width;
+      _options.height = height;
+      _image = _options.makeImage();
+      _options.updateAllPixels(_outputComponentPointer, _image);
+      _options.updateAllColors(_outputComponentPointer, _image);
+      update();
+    }
+  }
+
   void setOutputComponent(OutputComponent *o) {
     _outputComponentPointer = o;
   }
@@ -274,8 +297,6 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
  private:
   std::shared_ptr<QImage> _image;
   colorMode::Options _options;
-  std::size_t _breadth = PSIZE;
-  std::size_t _height = PSIZE;
   Optional<OutputComponent *> _outputComponentPointer;
 };
 
