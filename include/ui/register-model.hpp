@@ -74,7 +74,15 @@ class RegisterModel : public QAbstractItemModel {
    * (e.g. binary, hexadecimal etc.). A particular register selects the
    * corresponding content role depending on which format it should display.
    */
-  enum RegisterModelRole { TitleRole, TypeRole, BinaryDataRole, HexDataRole, SignedDecDataRole, UnsignedDecDataRole, FlagDataRole };
+  enum RegisterModelRole {
+    TitleRole,
+    TypeRole,
+    BinaryDataRole,
+    HexDataRole,
+    SignedDecDataRole,
+    UnsignedDecDataRole,
+    FlagDataRole
+  };
 
   /**
    * \brief index Returns a QModelIndex for the specified item inside the
@@ -156,12 +164,17 @@ class RegisterModel : public QAbstractItemModel {
    * \param currentDataFormatIndex The register's currently selected data
    * format.
    */
-  Q_INVOKABLE void registerContentChanged(const QModelIndex &index,
-                                          const QString &registerContent,
-                                          const QString &currentDataFormatIndex);
+  Q_INVOKABLE void
+  registerContentChanged(const QModelIndex &index,
+                         const QString &registerContent,
+                         const QString &currentDataFormatIndex);
 
 
  private:
+  using MemoryValueToStringConversion = std::function<std::string(MemoryValue)>;
+  using StringToMemoryValueConversion =
+      std::function<Optional<MemoryValue>(std::string, std::size_t)>;
+
   /// The dummy top-level item holding references to the visible top-level
   /// registers.
   std::unique_ptr<RegisterInformation> _rootItem;
@@ -172,6 +185,15 @@ class RegisterModel : public QAbstractItemModel {
   /// Interface for communicating register data changes to core.
   MemoryAccess _memoryAccess;
 
+  /// Map between format type string (e.g. "UnsignedDecData") and corresponding
+  /// MemoryValue to string conversion function.
+  static const std::map<QByteArray, MemoryValueToStringConversion>
+      _memoryValueToStringConversions;
+
+  /// Map between format format type description (e.g. "Decimal (Unsigned)") and
+  /// corresponding string to MemoryValue conversion function.
+  static const std::map<QString, StringToMemoryValueConversion>
+      _stringToMemoryValueConversions;
 
   /**
    * \brief _getRowRelativeToParent Returns the row of a given register relative

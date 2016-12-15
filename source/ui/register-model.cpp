@@ -25,6 +25,22 @@
 #include "core/memory-value.hpp"
 
 
+const std::map<QByteArray, RegisterModel::MemoryValueToStringConversion>
+    RegisterModel::_memoryValueToStringConversions = {
+        {"BinaryData", StringConversions::toBinString},
+        {"HexData", StringConversions::toHexString},
+        {"SignedDecData", StringConversions::toSignedDecString},
+        {"UnsignedDecData", StringConversions::toUnsignedDecString}};
+
+const std::map<QString, RegisterModel::StringToMemoryValueConversion>
+    RegisterModel::_stringToMemoryValueConversions = {
+        {"Binary", StringConversions::binStringToMemoryValue},
+        {"Hexadecimal", StringConversions::hexStringToMemoryValue},
+        {"Decimal (Signed)", StringConversions::signedDecStringToMemoryValue},
+        {"Decimal (Unsigned)",
+         StringConversions::unsignedDecStringToMemoryValue}};
+
+
 RegisterModel::RegisterModel(ArchitectureAccess &architectureAccess,
                              MemoryManager &memoryManager,
                              MemoryAccess &memoryAccess,
@@ -101,37 +117,26 @@ QVariant RegisterModel::data(const QModelIndex &index, int role) const {
       static_cast<RegisterInformation *>(index.internalPointer());
 
   switch (role) {
-  case TitleRole:
-      return QString::fromStdString(registerItem->getName());
-  case TypeRole:
+    case TitleRole: return QString::fromStdString(registerItem->getName());
+    case TypeRole:
       switch (registerItem->getType()) {
-      case RegisterInformation::Type::INTEGER:
-          return "Integer";
-      case RegisterInformation::Type::FLOAT:
-          return "Float";
-      case RegisterInformation::Type::VECTOR:
-          return "Vector";
-      case RegisterInformation::Type::FLAG:
-          return "Flag";
-      case RegisterInformation::Type::LINK:
-          return "Link";
-      case RegisterInformation::Type::PROGRAM_COUNTER:
+        case RegisterInformation::Type::INTEGER: return "Integer";
+        case RegisterInformation::Type::FLOAT: return "Float";
+        case RegisterInformation::Type::VECTOR: return "Vector";
+        case RegisterInformation::Type::FLAG: return "Flag";
+        case RegisterInformation::Type::LINK: return "Link";
+        case RegisterInformation::Type::PROGRAM_COUNTER:
           return "ProgramCounter";
       }
-  case BinaryDataRole:
+    case FlagDataRole:
+      return _memoryAccess.getRegisterValue(registerItem->getName())
+          .get()
+          .get(0);
+    default:
+      auto registerValue =
+          _memoryAccess.getRegisterValue(registerItem->getName()).get();
       return QString::fromStdString(
-          StringConversions::toBinString(_memoryAccess.getRegisterValue(registerItem->getName()).get()));
-  case HexDataRole:
-      return QString::fromStdString(
-          StringConversions::toHexString(_memoryAccess.getRegisterValue(registerItem->getName()).get()));
-  case SignedDecDataRole:
-      return QString::fromStdString(
-          StringConversions::toSignedDecString(_memoryAccess.getRegisterValue(registerItem->getName()).get()));
-  case UnsignedDecDataRole:
-      return QString::fromStdString(
-          StringConversions::toUnsignedDecString(_memoryAccess.getRegisterValue(registerItem->getName()).get()));
-  case FlagDataRole:
-      return _memoryAccess.getRegisterValue(registerItem->getName()).get().get(0);
+          _memoryValueToStringConversions.at(roleNames()[role])(registerValue));
   }
   return QVariant();
 }
@@ -214,35 +219,18 @@ int RegisterModel::columnCount(const QModelIndex &parent) const {
 }
 
 
-void RegisterModel::registerContentChanged(
-    const QModelIndex &index,
-    const QString &registerContent,
-    const QString &dataFormat) {
+void RegisterModel::registerContentChanged(const QModelIndex &index,
+                                           const QString &registerContent,
+                                           const QString &dataFormat) {
   RegisterInformation *registerItem =
       static_cast<RegisterInformation *>(index.internalPointer());
   // Remove whitespaces.
   QString registerContentCleared = registerContent;
   registerContentCleared.remove(QChar(' '));
   // Convert content string to MemoryValue.
-  Optional<MemoryValue> registerContentMemoryValue;
-  if (dataFormat == "Binary") {
-    registerContentMemoryValue = StringConversions::binStringToMemoryValue(
-        registerContentCleared.toStdString(), registerItem->getSize());
-  } else if (dataFormat == "Hexadecimal") {
-    registerContentMemoryValue = StringConversions::hexStringToMemoryValue(
-        registerContentCleared.toStdString(), registerItem->getSize());
-  } else if (dataFormat == "Decimal (Unsigned)") {
-    registerContentMemoryValue =
-        StringConversions::unsignedDecStringToMemoryValue(
-            registerContentCleared.toStdString(), registerItem->getSize());
-  } else if (dataFormat == "Decimal (Signed)") {
-    registerContentMemoryValue =
-        StringConversions::signedDecStringToMemoryValue(
-            registerContentCleared.toStdString(), registerItem->getSize());
-  } else if (dataFormat == "Flag") {
-    registerContentMemoryValue = StringConversions::binStringToMemoryValue(
-        registerContentCleared.toStdString(), registerItem->getSize());
-  }
+  Optional<MemoryValue> registerContentMemoryValue =
+      _stringToMemoryValueConversions.at(dataFormat)(
+          registerContentCleared.toStdString(), registerItem->getSize());
   // Notify core about the change.
   if (registerContentMemoryValue) {
     _memoryAccess.setRegisterValue(registerItem->getName(),

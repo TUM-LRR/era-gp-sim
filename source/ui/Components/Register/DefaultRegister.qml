@@ -82,7 +82,7 @@ TextField {
     }
 
     function format(registerContentString) {
-        registerContentString = registerContentString.replace(/ /gi, '');
+        registerContentString = registerContentString.replace(/ /g, '');
         if (dataTypeFormatComboBox.currentText === "Binary" || dataTypeFormatComboBox.currentText === "Hexadecimal") {
             var characterPerByte = (dataTypeFormatComboBox.currentText === "Hexadecimal") ? 2 : 8;
             // Insert new spaces
