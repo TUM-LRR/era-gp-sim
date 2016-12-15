@@ -601,6 +601,12 @@ T appendBitSlice(const T &original, const U &value) {
   auto slice = sliceBits<firstBit, lastBit>(value);
   return appendBits<lastBit - firstBit + 1>(original, slice);
 }
+
+template <typename T>
+constexpr T mostSignificantBit(const T &value) {
+  constexpr auto width = sizeof(T) * 8;
+  return value & (T(1) << (width - 1));
+}
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */

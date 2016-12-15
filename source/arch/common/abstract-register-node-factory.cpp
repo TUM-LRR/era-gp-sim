@@ -13,20 +13,18 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <string>
+#include "arch/common/abstract-register-node-factory.hpp"
+#include "arch/common/architecture.hpp"
 
-#include "arch/riscv/register-node.hpp"
-#include "arch/riscv/utility.hpp"
-
-namespace riscv {
-
-RegisterNode::RegisterNode(const std::string& name, id_t id)
-: super(name), _id(riscv::convert(id)) {
-}
-
-MemoryValue RegisterNode::assemble() const {
-  return _id;
-}
+AbstractRegisterNodeFactory::AbstractRegisterNodeFactory(
+    const Architecture& architecture) {
+  for (const auto& unit : architecture.getUnits()) {
+    for (const auto& registerInformation : unit) {
+      const auto id = registerInformation.first;
+      const auto name = Utility::toLower(registerInformation.second.getName());
+      _registerIdentifiers.emplace(name, id);
+    }
+  }
 }

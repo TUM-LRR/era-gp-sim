@@ -51,10 +51,12 @@ bool AbstractSyntaxTreeNode::hasChildren() const noexcept {
 }
 
 void AbstractSyntaxTreeNode::addChild(Node&& node) {
+  assert::that(node != nullptr);
   _children.emplace_back(std::move(node));
 }
 
 void AbstractSyntaxTreeNode::insertChild(size_t index, Node&& node) {
+  assert::that(node != nullptr);
   assert::that(index < _children.size());
 
   auto iterator = _children.cbegin();
@@ -64,6 +66,7 @@ void AbstractSyntaxTreeNode::insertChild(size_t index, Node&& node) {
 }
 
 void AbstractSyntaxTreeNode::setChild(size_t index, Node&& node) {
+  assert::that(node != nullptr);
   assert::that(index < _children.size());
 
   _children[index] = std::move(node);

@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <memory>
 #include <string>
 
 #include "arch/common/architecture.hpp"
@@ -25,22 +24,22 @@
 
 namespace riscv {
 
-RegisterNodeFactory::RegisterNodeFactory(const Architecture& architecture)
-: AbstractRegisterNodeFactory(architecture), _availableRegisters() {
-  for (auto& unit : architecture.getUnits()) {
-    for (auto& registerInfo : unit) {
-      _availableRegisters.insert(
-          Utility::toLower(registerInfo.second.getName()));
+RegisterNodeFactory::RegisterNodeFactory(const Architecture& architecture) {
+  for (const auto& unit : architecture.getUnits()) {
+    for (const auto& registerInformation : unit) {
+      const auto id = registerInformation.first;
+      const auto name = Utility::toLower(registerInformation.second.getName());
+      _registerIdentifiers.emplace(name, id);
     }
   }
 }
 
 RegisterNodeFactory::Node
 RegisterNodeFactory::createRegisterNode(const std::string& id) const {
-  if (_availableRegisters.count(Utility::toLower(id)) > 0) {
-    return std::make_unique<RegisterNode>(Utility::toLower(id));
-  } else {
-    return nullptr;
+  auto iterator = _registerIdentifiers.find(Utility::toLower(id));
+  if (iterator != _registerIdentifiers.end()) {
+    return std::make_unique<RegisterNode>(iterator->first, iterator->second);
   }
+  return nullptr;
 }
 }

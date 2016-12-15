@@ -15,21 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "arch/common/abstract-register-node.hpp"
-#include <sstream>
+#include <QtGlobal>
+#include <string>
 
+#include "arch/common/abstract-register-node.hpp"
 #include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
 
-AbstractRegisterNode::AbstractRegisterNode(const std::string& identifier)
-: AbstractSyntaxTreeNode(Type::REGISTER), _identifier(identifier) {
+AbstractRegisterNode::AbstractRegisterNode(const std::string& name)
+: super(Type::REGISTER), _name(name) {
 }
 
 AbstractRegisterNode::~AbstractRegisterNode() = default;
 
 MemoryValue AbstractRegisterNode::getValue(MemoryAccess& memoryAccess) const {
-  return memoryAccess.getRegisterValue(_identifier).get();
+  return memoryAccess.getRegisterValue(_name).get();
 }
 
 ValidationResult
@@ -44,5 +45,5 @@ AbstractRegisterNode::validate(MemoryAccess& memoryAccess) const {
 }
 
 const std::string& AbstractRegisterNode::getIdentifier() const {
-  return _identifier;
+  return _name;
 }
