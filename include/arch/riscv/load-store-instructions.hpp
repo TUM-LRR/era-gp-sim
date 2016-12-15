@@ -25,6 +25,7 @@
 
 #include "arch/common/validation-result.hpp"
 #include "arch/riscv/instruction-node.hpp"
+#include "common/assert.hpp"
 
 namespace riscv {
 

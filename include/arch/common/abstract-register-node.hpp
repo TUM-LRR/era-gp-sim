@@ -52,7 +52,7 @@ class AbstractRegisterNode : public AbstractSyntaxTreeNode {
   ValidationResult validate(MemoryAccess& memoryAccess) const override;
 
   /**
-   * @return The identifier of the register.
+   * \return The identifier of the register.
    */
   const std::string& getIdentifier() const override;
 

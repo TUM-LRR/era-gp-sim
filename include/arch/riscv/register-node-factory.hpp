@@ -23,7 +23,7 @@
 
 #include "arch/common/abstract-register-node-factory.hpp"
 
-class Archiitecture;
+class Architecture;
 
 namespace riscv {
 

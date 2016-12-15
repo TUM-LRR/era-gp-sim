@@ -22,6 +22,7 @@
 #include "arch/riscv/format.hpp"
 #include "arch/riscv/properties.hpp"
 #include "arch/riscv/utility.hpp"
+#include "common/assert.hpp"
 #include "common/bit-builder.hpp"
 #include "common/utility.hpp"
 #include "core/memory-value.hpp"

@@ -113,9 +113,8 @@ void storeRegister(MemoryAccess& memoryAccess,
 template <typename UnsignedWord>
 std::enable_if_t<std::is_unsigned<UnsignedWord>::value, bool>
 isAddressValid(MemoryAccess& memoryAccess, UnsignedWord absoluteAdress) {
-  UnsignedWord lowerBound = 0;// TODO first adress of assembled code
-  UnsignedWord upperBound =
-      memoryAccess.getMemorySize().get();// TODO last adress of assembled code
+  UnsignedWord lowerBound = 0;
+  UnsignedWord upperBound = memoryAccess.getMemorySize().get();
   return absoluteAdress >= lowerBound && absoluteAdress < upperBound;
 }
 
