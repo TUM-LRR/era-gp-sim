@@ -40,6 +40,7 @@ Ui::Ui(int& argc, char** argv)
 
 int Ui::runUi() {
   qRegisterMetaType<std::size_t>("std::size_t");
+  qRegisterMetaType<id_t>("id_t");
   _engine.rootContext()->setContextProperty("ui", this);
   _engine.rootContext()->setContextProperty("snapshotComponent",
                                             _snapshots.get());
@@ -47,12 +48,12 @@ int Ui::runUi() {
   return _qmlApplication.exec();
 }
 
-int Ui::addProject(QQuickItem* tabItem,
-                   QQmlComponent* projectComponent,
-                   const QVariant& memorySizeQVariant,
-                   const QString& architecture,
-                   const QString& optionName,
-                   const QString& parser) {
+id_t Ui::addProject(QQuickItem* tabItem,
+                    QQmlComponent* projectComponent,
+                    const QVariant& memorySizeQVariant,
+                    const QString& architecture,
+                    const QString& optionName,
+                    const QString& parser) {
   // create ArchitectureFormula
   ArchitectureFormula architectureFormula(architecture.toStdString());
 
