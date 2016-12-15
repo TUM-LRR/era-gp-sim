@@ -60,7 +60,8 @@ MemoryValue assemble(const InstructionInformation& instructionInformation,
 
 MemoryValue R(const InstructionKey& key, const Operands& operands) {
   using Detail::convert;
-  auto bits = BitBuilder<riscv::unsigned32_t>(key["funct7"])
+
+  auto bits = BitBuilder<riscv::unsigned32_t>()
                   .addUpTo(key["opcode"], 6)
                   .addUpTo(convert(operands[0]), 4)
                   .addUpTo(key["funct3"], 2)
