@@ -21,6 +21,7 @@
 #include <string>
 
 #include "arch/common/abstract-register-node.hpp"
+#include "arch/common/architecture-properties.hpp"
 
 namespace riscv {
 
@@ -32,16 +33,23 @@ namespace riscv {
  */
 class RegisterNode : public AbstractRegisterNode {
  public:
+  using super = AbstractRegisterNode;
+  using id_t = ArchitectureProperties::register_id_t;
+
   /**
    * Constructs the register node with the given identifier.
-   * \param  identifier The string identifier for the register.
+   * \param identifier The numeric identifier for the register.
    */
-  explicit RegisterNode(const std::string &identifier);
+  explicit RegisterNode(const std::string& name, id_t id);
 
   /**
    * \copydoc AbstractSyntaxTreeNode::assemble()
    */
   MemoryValue assemble() const override;
+
+ private:
+  /** The numeric identifier of a register, as a memory value. */
+  MemoryValue _id;
 };
 }
 

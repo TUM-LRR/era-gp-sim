@@ -61,7 +61,7 @@ TEST_F(SimulatorInstructionTest, SIMUCRASH_validation) {
   ASSERT_FALSE(twoOpInstruction->validate(memoryAccess).isSuccess());
 
   auto instrReg = factories.createInstructionNode("simucrash");
-  instrReg->addChild(std::make_unique<RegisterNode>("x0"));
+  instrReg->addChild(factories.createRegisterNode("x0"));
   ASSERT_FALSE(instrReg->validate(memoryAccess).isSuccess());
   auto instrImm = factories.createInstructionNode("simucrash");
   instrImm->addChild(factories.createImmediateNode(MemoryValue(64)));

@@ -18,6 +18,7 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <string>
 #include <unordered_map>
 
 #include "gtest/gtest.h"
@@ -74,6 +75,7 @@ TEST_F(IntegerInstructionTest, ADDI_32) {
   // test immediate boundary
   test12BitImmediateBounds(factories, "addi", immediateFactory, memoryAccess);
 }
+
 TEST_F(IntegerInstructionTest, ADDI_64) {
   loadArchitecture({"rv32i", "rv64i"});
   auto& memoryAccess = getMemoryAccess();

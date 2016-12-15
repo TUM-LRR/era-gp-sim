@@ -20,20 +20,22 @@
 #ifndef ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP
 #define ERAGPSIM_ARCH_REGISTER_INFORMATION_HPP
 
-#include <cassert>
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <iterator>
 #include <string>
 #include <type_traits>
 #include <vector>
 
-#include "core/memory-value.hpp"
+#include "arch/common/architecture-properties.hpp"
 #include "arch/common/constituent-information.hpp"
 #include "arch/common/information-interface.hpp"
+#include "common/assert.hpp"
 #include "common/builder-interface.hpp"
 #include "common/optional.hpp"
 #include "common/utility.hpp"
+#include "core/memory-value.hpp"
 
 /**
  * Holds information about a register.
@@ -58,8 +60,8 @@
  */
 class RegisterInformation : public InformationInterface {
  public:
-  using id_t = std::size_t;
-  using size_t = unsigned short;
+  using id_t = ArchitectureProperties::register_id_t;
+  using size_t = std::uint16_t;
   using AliasContainer = std::vector<std::string>;
   using AliasList = std::initializer_list<std::string>;
   using ConstituentContainer = std::vector<ConstituentInformation>;
@@ -220,7 +222,8 @@ class RegisterInformation : public InformationInterface {
    *
    * The constant value will be converted to MemoryValue (that is the internal
    * storage type, also for integral types). The constant value must represent
-   * a number that fits into this register (so the number represented by this string
+   * a number that fits into this register (so the number represented by this
+   * string
    * may not be greater than getSize() bits)
    *
    * \param constant The new hardwired constant.
@@ -344,7 +347,7 @@ class RegisterInformation : public InformationInterface {
     // Make sure none of the constituents are the enclosing register
     // of this register, or the register itself.
     // clang-format off
-      assert(Utility::noneOf(range, [this](auto& constituent) {
+      assert::that(Utility::noneOf(range, [this](auto& constituent) {
         if (_enclosing && constituent.getID() == *_enclosing) return true;
         return constituent.getID() == _id;
       }));
@@ -375,8 +378,8 @@ class RegisterInformation : public InformationInterface {
    *
    * \return The current register object.
    */
-  RegisterInformation& addConstituent(
-      const ConstituentInformation& constituent);
+  RegisterInformation&
+  addConstituent(const ConstituentInformation& constituent);
 
   /**
    * Returns the information objects of the constituents of the register.
@@ -442,7 +445,8 @@ class RegisterInformation : public InformationInterface {
   /** The ID of the register's enclosing register, if one exists. */
   Optional<id_t> _enclosing;
 
-  /** The information objects of the register's
+  /**
+   * The information objects of the register's
    *  directly constituent registers, if any .
    */
   ConstituentContainer _constituents;

@@ -19,9 +19,9 @@
 #define ERAGPSIM_ARCH_RISCV_REGISTER_NODE_FACTORY_HPP
 
 #include <string>
-#include <unordered_set>
 
 #include "arch/common/abstract-register-node-factory.hpp"
+#include "arch/common/architecture-properties.hpp"
 
 class Architecture;
 
@@ -35,6 +35,11 @@ class RegisterNodeFactory : public AbstractRegisterNodeFactory {
  public:
   using super = AbstractRegisterNodeFactory;
 
+  /**
+   * Constructs a new `RegisterNodeFactory`.
+   * \param  architecture The architecture object to give
+   *                      information to the factory.
+   */
   explicit RegisterNodeFactory(const Architecture& architecture);
 
   /**
@@ -47,7 +52,10 @@ class RegisterNodeFactory : public AbstractRegisterNodeFactory {
   Node createRegisterNode(const std::string& id) const override;
 
  private:
-  std::unordered_set<std::string> _availableRegisters;
+  using id_t = ArchitectureProperties::register_id_t;
+
+  /** A map from register identifiers to their numeric IDs. */
+  std::unordered_map<std::string, id_t> _registerIdentifiers;
 };
 }
 

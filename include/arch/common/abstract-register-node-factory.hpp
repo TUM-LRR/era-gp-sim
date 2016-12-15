@@ -23,8 +23,6 @@
 
 #include "arch/common/abstract-register-node.hpp"
 
-class Architecture;
-
 /**
  * \brief The AbstractRegisterNodeFactory class
  * Abstract factory type for creating SyntaxTreeNodes of type register access
@@ -33,23 +31,19 @@ class AbstractRegisterNodeFactory {
  public:
   using Node = std::unique_ptr<AbstractRegisterNode>;
 
-  explicit AbstractRegisterNodeFactory(const Architecture& arch) {
-  }
-
+  /**
+   * Destructor.
+   */
   virtual ~AbstractRegisterNodeFactory() = default;
 
   /**
-   * \brief createRegisterNode
-   * Creates and returns an architecture-specific implementation of a
-   * SyntaxTreeNode of type register access, linked to the given
-   * registerAddress. If the given registerAddress is invalid a nullptr is
-   * returned.
+   * Creates a register node for the given identifier.
    *
-   * \param registerAdress Identifier or alias linking to a valid register
-   * \return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
-   * nullptr if the given registerAddress is invalid
+   * \id registerAdress Identifier or alias linking to a register.
+   * \return If the identifier is valid, an `AbstractRegisterNode`, else
+   * a `nullptr`.
    */
-  virtual Node createRegisterNode(const std::string& registerAddress) const = 0;
+  virtual Node createRegisterNode(const std::string& id) const = 0;
 };
 
 #endif /* ERAGPSIM_ARCH_ABSTRACT_REGISTER_NODE_FACTORY_HPP */

@@ -20,6 +20,8 @@
 #ifndef ERAGPSIM_ARCH_ARCHITECTURE_PROPERTIES_HPP
 #define ERAGPSIM_ARCH_ARCHITECTURE_PROPERTIES_HPP
 
+#include <cstdint>
+
 /**
  * Contains some enum and type declarations used for information objects.
  */
@@ -30,6 +32,9 @@ using word_size_t = unsigned short;
 
 /** Type for the architectures byte size, in bits */
 using byte_size_t = unsigned short;
+
+/** The numeric type to identify a register. */
+using register_id_t = unsigned short;
 
 /*
  * The different kinds of endianness an extension may support.
