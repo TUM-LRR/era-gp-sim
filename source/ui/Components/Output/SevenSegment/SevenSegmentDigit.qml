@@ -59,12 +59,12 @@ Rectangle {
 
     /*
       Segments:
-      Will fit their sizes to the parents dimensions.
+      Will fit their sizes to the parent's dimensions.
       Displays the index of the digit in a byte that represent the segment's state.
      */
 
     // Segment 0 (middle-top)
-    SevenSegmentSegment {
+    SevenSegmentEdge {
         id: top
         x: 1
         y: digitBackground.thickness / 2
@@ -100,7 +100,7 @@ Rectangle {
     }
 
     // Segment 5 (left-top)
-    SevenSegmentSegment {
+    SevenSegmentEdge {
         id: left_top
         x: 0
         y: digitBackground.thickness / 2 + 1
@@ -126,7 +126,7 @@ Rectangle {
     }
 
     // Segment 1 (right-top)
-    SevenSegmentSegment {
+    SevenSegmentEdge {
         id: right_top
         x: digitBackground.width - digitBackground.thickness
         y: digitBackground.thickness / 2 + 1
@@ -152,7 +152,7 @@ Rectangle {
     }
 
     // Segment 6 (middle-middle)
-    SevenSegmentSegment {
+    SevenSegmentEdge {
         id: middle
         x: 1
         y: digitBackground.height / 2
@@ -188,7 +188,7 @@ Rectangle {
     }
 
     // Segment 4 (left-bottom)
-    SevenSegmentSegment {
+    SevenSegmentEdge {
         id: left_bottom
         x: 0
         y: digitBackground.height / 2 + 1
@@ -214,7 +214,7 @@ Rectangle {
     }
 
     // Segment 2 (right-bottom)
-    SevenSegmentSegment {
+    SevenSegmentEdge {
         id: right_bottom
         x: digitBackground.width - digitBackground.thickness
         y: digitBackground.height / 2 + 1
@@ -240,7 +240,7 @@ Rectangle {
     }
 
     // Segment 3 (middle-bottom)
-    SevenSegmentSegment {
+    SevenSegmentEdge {
         id: bottom
         x: 1
         y: digitBackground.height - digitBackground.thickness / 2

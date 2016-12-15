@@ -49,7 +49,7 @@
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
         <file>Components/Output/SevenSegment/SevenSegment.qml</file>
-        <file>Components/Output/SevenSegment/SevenSegmentSegment.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegmentEdge.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentSettingsWindow.qml</file>
         <file>Components/Output/LightstripSettingsWindow.qml</file>

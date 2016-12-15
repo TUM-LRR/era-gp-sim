@@ -123,13 +123,9 @@ Item {
                 sevenSegmentDigitsModel.setProperty(index, segmentIdentifier, !sevenSegmentDigitsModel.get(index)[segmentIdentifier]);
                 var memoryContent = [];
                 for (var digitIndex = (sevenSegmentDigitsModel.count -1); digitIndex >= 0; --digitIndex) {
-                    memoryContent.push(sevenSegmentDigitsModel.get(digitIndex)["segment0"]);
-                    memoryContent.push(sevenSegmentDigitsModel.get(digitIndex)["segment1"]);
-                    memoryContent.push(sevenSegmentDigitsModel.get(digitIndex)["segment2"]);
-                    memoryContent.push(sevenSegmentDigitsModel.get(digitIndex)["segment3"]);
-                    memoryContent.push(sevenSegmentDigitsModel.get(digitIndex)["segment4"]);
-                    memoryContent.push(sevenSegmentDigitsModel.get(digitIndex)["segment5"]);
-                    memoryContent.push(sevenSegmentDigitsModel.get(digitIndex)["segment6"]);
+                    for (var currentSegmentIndex = 0; currentSegmentIndex < 7; ++currentSegmentIndex) {
+                        memoryContent.push(sevenSegmentDigitsModel.get(digitIndex)["segment" + currentSegmentIndex]);
+                    }
                     memoryContent.push(false);  // Fill one byte.
                 }
                 var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
@@ -137,7 +133,6 @@ Item {
             }
         }
     }
-
 
 
     // Updates the content of the output model depending on the value in memory.
@@ -148,13 +143,11 @@ Item {
         for (var digitIndex = 0; digitIndex < sevenSegmentDigitsModel.count; ++digitIndex) {
             // Iterate memory bytewise from right to left, so the rightmost digit represents the first byte in memory.
             var digitInContentIndex = sevenSegmentDigitsModel.count -1 - digitIndex;
-            sevenSegmentDigitsModel.setProperty(digitIndex, "segment0", content[digitInContentIndex*8+0]);
-            sevenSegmentDigitsModel.setProperty(digitIndex, "segment1", content[digitInContentIndex*8+1]);
-            sevenSegmentDigitsModel.setProperty(digitIndex, "segment2", content[digitInContentIndex*8+2]);
-            sevenSegmentDigitsModel.setProperty(digitIndex, "segment3", content[digitInContentIndex*8+3]);
-            sevenSegmentDigitsModel.setProperty(digitIndex, "segment4", content[digitInContentIndex*8+4]);
-            sevenSegmentDigitsModel.setProperty(digitIndex, "segment5", content[digitInContentIndex*8+5]);
-            sevenSegmentDigitsModel.setProperty(digitIndex, "segment6", content[digitInContentIndex*8+6]);
+            for (var currentSegmentIndex = 0; currentSegmentIndex < 7; ++currentSegmentIndex) {
+                var segmentIdentifier = "segment" + currentSegmentIndex;
+                var bitValue = content[digitInContentIndex*8+currentSegmentIndex];
+                sevenSegmentDigitsModel.setProperty(digitIndex, segmentIdentifier, bitValue);
+            }
         }
     }
 
@@ -172,9 +165,7 @@ Item {
         }
     }
 
-
     SevenSegmentSettingsWindow {
         id: sevenSegmentSettingsWindow
     }
-
 }

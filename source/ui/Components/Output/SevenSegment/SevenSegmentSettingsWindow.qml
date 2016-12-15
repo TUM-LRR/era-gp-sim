@@ -78,8 +78,8 @@ Window {
                     base = 16;
                     input = input.slice(2);
                 } else if (input.indexOf("0b") === 0) {
-                    input = input.slice(2);
                     base = 2;
+                    input = input.slice(2);
                 }
                 return parseInt(input, base);
             }
