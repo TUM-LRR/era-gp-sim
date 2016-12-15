@@ -22,10 +22,10 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
+            - llvm-toolchain-precise-3.7
           packages:
-            - clang-3.6
-      env: COMPILER=clang++-3.6
+            - clang-3.7
+      env: COMPILER=clang++-3.7
 
 before_install:
  # What is the current file size max for core files?
@@ -50,15 +50,6 @@ install:
       && (brew outdated cmake || brew upgrade cmake)
       && cmake --version;
     fi
-
-before_script:
-  - export CXX=$COMPILER CC=$CCOMPILER
-  - cmake --version
-  - mkdir build
-  - cd build
-  - cmake ..
-
-script:
   # install mason
   - mkdir ./mason/
   - curl -sSfL https://github.com/mapbox/mason/archive/v0.2.0.tar.gz | tar --gunzip --extract --strip-components=1 --directory=./mason/
@@ -68,6 +59,15 @@ script:
   - export PATH=$(./mason/mason prefix gdb 7.12)/bin:${PATH}
   # install logbt
   - curl -sSfL https://github.com/mapbox/logbt/archive/v1.6.0.tar.gz | tar --gunzip --extract --strip-components=2 --exclude="*md" --exclude="test*" --directory=.
+
+before_script:
+  - export CXX=$COMPILER
+  - cmake --version
+  - mkdir build
+  - cd build
+  - cmake ..
+
+script:
   - make VERBOSE=1 -j4
   # modify corepattern for logbt
   - sudo bash -c "echo '/tmp/logbt-coredumps/core.%p.%E' > /proc/sys/kernel/core_pattern"
