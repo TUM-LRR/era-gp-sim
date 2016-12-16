@@ -65,6 +65,7 @@ class ExtensionInformation : public InformationInterface {
   using ExtensionList = std::initializer_list<ExtensionInformation>;
   using Endianness = ArchitectureProperties::Endianness;
   using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
+  using SignedRepresentation = ArchitectureProperties::SignedRepresentation;
   using word_size_t = ArchitectureProperties::word_size_t;
   using byte_size_t = ArchitectureProperties::byte_size_t;
   using MacroContainer = std::unordered_set<std::string>;
