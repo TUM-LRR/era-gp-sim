@@ -248,55 +248,51 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_OBJECT
   Q_PROPERTY(OutputComponent *outputComponentPointer WRITE setOutputComponent)
  public:
-  PixelDisplayPaintedItem(QQuickItem *parent = 0)
-  : QQuickPaintedItem(parent), _options{} {
-    _options.colorMode = CMODE;
-    _options.width = PSIZE;
-    _options.height = PSIZE;
-    _image = _options.makeImage();
-    //_image->fill(QColor("#00FFFF").rgb());
-    //_image->setPixel(20, 20, 0xFF0000u);
-  }
+  /*
+   * \brief constructs a new PixelDisplayPaintedItem
+   * \param parent the parent
+   */
+  PixelDisplayPaintedItem(QQuickItem *parent = 0);
 
-  void paint(QPainter *painter) {
-    std::cout << "paint!" << std::endl;
-    _options.updateAllPixels(_outputComponentPointer, _image);
-    _options.updateAllColors(_outputComponentPointer, _image);
-    painter->drawImage(painter->window(), *_image);
-    std::cout << "I did do the paint!" << std::endl;
-  }
+  /*
+   * \brief paints the image held by this onto the painter
+   * \param painter the painter to be drawn upon
+   */
+  void paint(QPainter *painter);
 
+  /*
+   * \brief redraws the necessary pixels for the changed bytes in memory
+   * \param address first byte that was modified
+   * \param amount length of the area of modified bytes
+   */
   Q_INVOKABLE void memoryChanged(std::size_t address, std::size_t amount);
 
-  // I maybe should use enums
-  void setColorMode(std::size_t colorMode) {
-    if (_options.colorMode != colorMode) {
-      _options.colorMode = colorMode;
-      _image = _options.makeImage();
-      _options.updateAllPixels(_outputComponentPointer, _image);
-      _options.updateAllColors(_outputComponentPointer, _image);
-      update();
-    }
-  }
+  /*
+   * \brief sets the colorMode
+   * \param colorMode The colorMode to be set active
+   * \Note I maybe should use enums but enums in qt are annoying
+   */
+  void setColorMode(std::size_t colorMode);
 
-  void resize(std::size_t width, std::size_t height) {
-    if (_options.width != width || _options.height != height) {
-      _options.width = width;
-      _options.height = height;
-      _image = _options.makeImage();
-      _options.updateAllPixels(_outputComponentPointer, _image);
-      _options.updateAllColors(_outputComponentPointer, _image);
-      update();
-    }
-  }
+  /*
+   * \brief sets the size of the image
+   * \param width new width of the image
+   * \param width new height of the image
+   */
+  void resize(std::size_t width, std::size_t height);
 
-  void setOutputComponent(OutputComponent *o) {
-    _outputComponentPointer = o;
-  }
+  /*
+   * \brief sets the OutputComponent
+   * \param o pointer to the OutputComponent
+   */
+  void setOutputComponent(OutputComponent *o);
 
  private:
+  /// shared pointer to the image
   std::shared_ptr<QImage> _image;
+  /// struct storing the options used to draw the image
   colorMode::Options _options;
+  /// pointer to the OutputComponent used to get the memoryAccess
   Optional<OutputComponent *> _outputComponentPointer;
 };
 

@@ -25,6 +25,24 @@
 #include "core/memory-value.hpp"
 #include "ui/pixel-display-painted-item.hpp"
 
+PixelDisplayPaintedItem::PixelDisplayPaintedItem(QQuickItem *parent)
+: QQuickPaintedItem(parent), _options{} {
+  _options.colorMode = CMODE;
+  _options.width = PSIZE;
+  _options.height = PSIZE;
+  _image = _options.makeImage();
+  //_image->fill(QColor("#00FFFF").rgb());
+  //_image->setPixel(20, 20, 0xFF0000u);
+}
+
+void PixelDisplayPaintedItem::paint(QPainter *painter) {
+  std::cout << "paint!" << std::endl;
+  _options.updateAllPixels(_outputComponentPointer, _image);
+  _options.updateAllColors(_outputComponentPointer, _image);
+  painter->drawImage(painter->window(), *_image);
+  std::cout << "I did do the paint!" << std::endl;
+}
+
 void PixelDisplayPaintedItem::memoryChanged(std::size_t address,
                                             std::size_t amount) {
   std::cout << "PixelDisplayPaintedItem memory changed" << std::endl;
@@ -32,6 +50,31 @@ void PixelDisplayPaintedItem::memoryChanged(std::size_t address,
   //_options.updateAllColors(_outputComponentPointer, _image);
   _options.updateMemory(_outputComponentPointer, _image, address, amount);
   update();
+}
+
+void PixelDisplayPaintedItem::setColorMode(std::size_t colorMode) {
+  if (_options.colorMode != colorMode) {
+    _options.colorMode = colorMode;
+    _image = _options.makeImage();
+    _options.updateAllPixels(_outputComponentPointer, _image);
+    _options.updateAllColors(_outputComponentPointer, _image);
+    update();
+  }
+}
+
+void PixelDisplayPaintedItem::resize(std::size_t width, std::size_t height) {
+  if (_options.width != width || _options.height != height) {
+    _options.width = width;
+    _options.height = height;
+    _image = _options.makeImage();
+    _options.updateAllPixels(_outputComponentPointer, _image);
+    _options.updateAllColors(_outputComponentPointer, _image);
+    update();
+  }
+}
+
+void PixelDisplayPaintedItem::setOutputComponent(OutputComponent *o) {
+  _outputComponentPointer = o;
 }
 
 namespace colorMode {
