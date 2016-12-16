@@ -160,6 +160,55 @@ void PixelDisplayPaintedItem::setFreeBits(std::size_t freeBits) {
   }
 }
 
+std::size_t PixelDisplayPaintedItem::getPixelBaseAddress() {
+  return _options.pixelBaseAddress;
+}
+std::size_t PixelDisplayPaintedItem::getColorBaseAddress() {
+  return _options.colorBaseAddress;
+}
+std::size_t PixelDisplayPaintedItem::getWidth() {
+  return _options.width;
+}
+std::size_t PixelDisplayPaintedItem::getHeight() {
+  return _options.height;
+}
+std::size_t PixelDisplayPaintedItem::getColorMode() {
+  return _options.colorMode;
+}
+std::size_t PixelDisplayPaintedItem::getRBit() {
+  return _options.rBit;
+}
+std::size_t PixelDisplayPaintedItem::getGBit() {
+  return _options.gBit;
+}
+std::size_t PixelDisplayPaintedItem::getBBit() {
+  return _options.bBit;
+}
+bool PixelDisplayPaintedItem::getColumns_rows() {
+  return _options.columns_rows;
+}
+bool PixelDisplayPaintedItem::getHorizontallyMirrored() {
+  return _options.horizontallyMirrored;
+}
+bool PixelDisplayPaintedItem::getVerticallyMirrored() {
+  return _options.verticallyMirrored;
+}
+bool PixelDisplayPaintedItem::getTight() {
+  return _options.tight;
+}
+bool PixelDisplayPaintedItem::getPixelBufferPointerLike() {
+  return _options.pixelBufferPointerLike;
+}
+bool PixelDisplayPaintedItem::getColorTablePointerLike() {
+  return _options.colorTablePointerLike;
+}
+std::size_t PixelDisplayPaintedItem::getFreeBytes() {
+  return _options.freeBytes;
+}
+std::size_t PixelDisplayPaintedItem::getFreeBits() {
+  return _options.freeBits;
+}
+
 void PixelDisplayPaintedItem::resize(std::size_t width, std::size_t height) {
   if (_options.width != width || _options.height != height) {
     _options.width = width;

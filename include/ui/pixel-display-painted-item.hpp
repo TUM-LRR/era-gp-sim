@@ -302,6 +302,23 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   void setFreeBytes(std::size_t freeBytes);
   void setFreeBits(std::size_t freeBits);
 
+  std::size_t getPixelBaseAddress();
+  std::size_t getColorBaseAddress();
+  std::size_t getWidth();
+  std::size_t getHeight();
+  std::size_t getColorMode();
+  std::size_t getRBit();
+  std::size_t getGBit();
+  std::size_t getBBit();
+  bool getColumns_rows();
+  bool getHorizontallyMirrored();
+  bool getVerticallyMirrored();
+  bool getTight();
+  bool getPixelBufferPointerLike();
+  bool getColorTablePointerLike();
+  std::size_t getFreeBytes();
+  std::size_t getFreeBits();
+
  private:
   /// shared pointer to the image
   std::shared_ptr<QImage> _image;
