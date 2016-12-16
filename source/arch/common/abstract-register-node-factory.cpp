@@ -13,14 +13,18 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
-#include "include/arch/common/abstract-instruction-node.hpp"
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-AbstractInstructionNode::AbstractInstructionNode(
-    const InstructionInformation& info)
-: AbstractSyntaxTreeNode(Type::INSTRUCTION), _information(info) {
-}
+#include "arch/common/abstract-register-node-factory.hpp"
+#include "arch/common/architecture.hpp"
 
-const std::string& AbstractInstructionNode::getIdentifier() const {
-  return _information.getMnemonic();
+AbstractRegisterNodeFactory::AbstractRegisterNodeFactory(
+    const Architecture& architecture) {
+  for (const auto& unit : architecture.getUnits()) {
+    for (const auto& registerInformation : unit) {
+      const auto id = registerInformation.first;
+      const auto name = Utility::toLower(registerInformation.second.getName());
+      _registerIdentifiers.emplace(name, id);
+    }
+  }
 }

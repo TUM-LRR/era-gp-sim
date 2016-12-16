@@ -47,9 +47,7 @@ struct LuiAuipcInstructionTest : public riscv::BaseFixture {
    * \param modules The modules to be passed to the architecture formula
    */
   template <typename T>
-  typename std::enable_if<std::is_integral<T>::value &&
-                              std::is_unsigned<T>::value,
-                          void>::type
+  std::enable_if_t<std::is_integral<T>::value && std::is_unsigned<T>::value>
   performLuiTest(int32_t input,
                  T expectedOutput,
                  ArchitectureFormula::InitializerList modules) {
@@ -58,23 +56,21 @@ struct LuiAuipcInstructionTest : public riscv::BaseFixture {
     auto& memoryAccess = getMemoryAccess();
 
     // Create factory & instruction
-    auto instrFactory = factories;
-    auto immediateFactory = ImmediateNodeFactory{};
-    auto instr = instrFactory.createInstructionNode("lui");
+    auto instr = factories.createInstructionNode("lui");
 
     // Fill arguments
     ASSERT_FALSE(instr->validate(memoryAccess));
-    instr->addChild(std::make_unique<RegisterNode>(destId));
+    instr->addChild(factories.createRegisterNode(destId));
     ASSERT_FALSE(instr->validate(memoryAccess));
     instr->addChild(
-        immediateFactory.createImmediateNode(riscv::convert<int32_t>(input)));
+        factories.createImmediateNode(riscv::convert<int32_t>(input)));
     ASSERT_TRUE(instr->validate(memoryAccess));
 
     // Execute
     instr->getValue(memoryAccess);
 
     // Check result
-    MemoryValue result = memoryAccess.getRegisterValue(destId).get();
+    auto result = memoryAccess.getRegisterValue(destId).get();
     ASSERT_EQ(riscv::convert<T>(result), expectedOutput);
   }
 
@@ -105,24 +101,25 @@ struct LuiAuipcInstructionTest : public riscv::BaseFixture {
     memoryAccess.putRegisterValue(pcId, riscv::convert<T>(initialPc));
 
     // Create factory & instruction
-    auto instrFactory = factories;
-    auto immediateFactory = ImmediateNodeFactory{};
-    auto instr = instrFactory.createInstructionNode("auipc");
+    auto instr = factories.createInstructionNode("auipc");
 
     // Fill arguments
     ASSERT_FALSE(instr->validate(memoryAccess));
-    instr->addChild(std::make_unique<RegisterNode>(destId));
+    instr->addChild(factories.createRegisterNode(destId));
     ASSERT_FALSE(instr->validate(memoryAccess));
     instr->addChild(
-        immediateFactory.createImmediateNode(riscv::convert<uint32_t>(input)));
+        factories.createImmediateNode(riscv::convert<uint32_t>(input)));
     ASSERT_TRUE(instr->validate(memoryAccess));
 
     // Execute
-    instr->getValue(memoryAccess);
+    auto pc = instr->getValue(memoryAccess);
 
-    // Check result
-    MemoryValue result = memoryAccess.getRegisterValue(destId).get();
-    ASSERT_EQ(riscv::convert<T>(result), expectedOutput);
+    // Check that the result is (1) placed into the destination register
+    auto destinationAfter = memoryAccess.getRegisterValue(destId).get();
+    ASSERT_EQ(riscv::convert<T>(destinationAfter), expectedOutput);
+
+    // And (2) is added to the program counter
+    ASSERT_EQ(riscv::convert<T>(pc), expectedOutput);
   }
 };
 
@@ -130,27 +127,23 @@ TEST_F(LuiAuipcInstructionTest, Validation) {
   loadArchitecture({"rv32i"});
   auto& memoryAccess = getMemoryAccess();
 
-  auto immediateFactory = ImmediateNodeFactory{};
-  auto fact = factories;
-  auto lui = fact.createInstructionNode("lui");
-  auto auipc = fact.createInstructionNode("auipc");
+  auto lui = factories.createInstructionNode("lui");
+  auto auipc = factories.createInstructionNode("auipc");
 
   ASSERT_FALSE(lui->validate(memoryAccess) || auipc->validate(memoryAccess));
   // Just add some dummy registers
-  lui->addChild(std::make_unique<RegisterNode>(destId));
-  auipc->addChild(std::make_unique<RegisterNode>(destId));
+  lui->addChild(factories.createRegisterNode(destId));
+  auipc->addChild(factories.createRegisterNode(destId));
   ASSERT_FALSE(lui->validate(memoryAccess) || auipc->validate(memoryAccess));
   // Add an immediate value, that can't be represented by 20 bits
   lui->addChild(
-      immediateFactory.createImmediateNode(riscv::convert<uint32_t>(1 << 20)));
+      factories.createImmediateNode(riscv::convert<uint32_t>(1 << 20)));
   // Add a valid immediate
-  auipc->addChild(
-      immediateFactory.createImmediateNode(riscv::convert<uint32_t>(1)));
+  auipc->addChild(factories.createImmediateNode(riscv::convert<uint32_t>(1)));
   ASSERT_FALSE(lui->validate(memoryAccess));
   ASSERT_TRUE(auipc->validate(memoryAccess));
   // Add another immediate (which is not allowed)
-  auipc->addChild(
-      immediateFactory.createImmediateNode(riscv::convert<uint32_t>(1)));
+  auipc->addChild(factories.createImmediateNode(riscv::convert<uint32_t>(1)));
   ASSERT_FALSE(auipc->validate(memoryAccess));
 }
 

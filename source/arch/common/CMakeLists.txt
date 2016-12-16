@@ -4,6 +4,7 @@
 
 set(ARCH_COMMON_SOURCES
   abstract-syntax-tree-node.cpp
+  abstract-register-node.cpp
   architecture-brewery.cpp
   architecture.cpp
   architecture-formula.cpp
@@ -18,7 +19,6 @@ set(ARCH_COMMON_SOURCES
   node-factory-collection.cpp
   node-factory-collection-maker.cpp
   register-information.cpp
-  register-node.cpp
   unit-information.cpp
   validation-result.cpp
   constituent-information.cpp

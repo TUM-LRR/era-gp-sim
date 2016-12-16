@@ -15,35 +15,42 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_ABSTRACT_REGISTER_NODE_FACTORY_HPP
-#define ERAGPSIM_ARCH_ABSTRACT_REGISTER_NODE_FACTORY_HPP
+#ifndef ERAGPSIM_ARCH_RISCV_REGISTER_NODE_HPP
+#define ERAGPSIM_ARCH_RISCV_REGISTER_NODE_HPP
 
-#include <memory>
 #include <string>
 
 #include "arch/common/abstract-register-node.hpp"
+#include "arch/common/architecture-properties.hpp"
+
+namespace riscv {
 
 /**
- * \brief The AbstractRegisterNodeFactory class
- * Abstract factory type for creating SyntaxTreeNodes of type register access
+ * A concrete register node for RISC-V.
+ *
+ * It differs mainly from other register nodes in that it must handle
+ * assembly specifically for RISC-V.
  */
-class AbstractRegisterNodeFactory {
+class RegisterNode : public AbstractRegisterNode {
  public:
-  using Node = std::unique_ptr<AbstractRegisterNode>;
+  using super = AbstractRegisterNode;
+  using id_t = ArchitectureProperties::register_id_t;
 
   /**
-   * Destructor.
+   * Constructs the register node with the given identifier.
+   * \param identifier The numeric identifier for the register.
    */
-  virtual ~AbstractRegisterNodeFactory() = default;
+  explicit RegisterNode(const std::string& name, id_t id);
 
   /**
-   * Creates a register node for the given identifier.
-   *
-   * \id registerAdress Identifier or alias linking to a register.
-   * \return If the identifier is valid, an `AbstractRegisterNode`, else
-   * a `nullptr`.
+   * \copydoc AbstractSyntaxTreeNode::assemble()
    */
-  virtual Node createRegisterNode(const std::string& id) const = 0;
+  MemoryValue assemble() const override;
+
+ private:
+  /** The numeric identifier of a register, as a memory value. */
+  MemoryValue _id;
 };
+}
 
-#endif /* ERAGPSIM_ARCH_ABSTRACT_REGISTER_NODE_FACTORY_HPP */
+#endif// ERAGPSIM_ARCH_RISCV_REGISTER_NODE_HPP

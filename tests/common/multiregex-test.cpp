@@ -18,7 +18,7 @@
 */
 
 #include "common/multiregex.hpp"
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 TEST(Multiregex, simple) {
   // Only test if matches.
