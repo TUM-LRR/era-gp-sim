@@ -248,7 +248,7 @@ TEST_F(RiscParserTest, MalformedInstructions) {
 TEST_F(RiscParserTest, BadCharacters) {
   FinalRepresentation res;
   res = parser.parse("ðŸ…±ðŸ…»ðŸ…¾ðŸ†‡ðŸ†‡ x13, x4,7", ParserMode::COMPILE);
-  EXPECT_EQ(res.errorList.size(), 1);
+  EXPECT_EQ(res.errorList.size(), 2);
   EXPECT_EQ(res.commandList.size(), 0);
 }
 

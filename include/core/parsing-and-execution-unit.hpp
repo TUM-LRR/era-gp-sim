@@ -142,12 +142,12 @@ class ParsingAndExecutionUnit : public Servant {
   void setSetErrorListCallback(ListCallback<CompileError> callback);
 
   /**
-   * Set the callback which is used to notify the gui of a runtime error.
+   * Set the callback which is used to notify the gui of an error.
    *
    * \param callback
    */
-  void
-  setThrowRuntimeErrorCallback(Callback<const ValidationResult &> callback);
+  void setThrowErrorCallback(
+      Callback<const std::string &, const std::vector<std::string> &> callback);
 
   /**
    * Set the callback to set the macro list in the ui.
@@ -224,7 +224,7 @@ class ParsingAndExecutionUnit : public Servant {
   ListCallback<CompileError> _setErrorList;
 
   /** Callback to throw a runtime error. */
-  Callback<const ValidationResult &> _throwRuntimeError;
+  Callback<const std::string &, const std::vector<std::string> &> _throwError;
 
   /** Callback to set the macro list in the ui.*/
   ListCallback<MacroInformation> _setMacroList;

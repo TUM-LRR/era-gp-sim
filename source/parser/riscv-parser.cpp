@@ -48,6 +48,12 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
     outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
   } else if (std::isalpha(operand[0])) {
     outputNode = nodeFactories.createRegisterNode(operand);
+  } else if (operand[0] == '\"') {
+    // Data nodes are mainly for meta instructions.
+    std::vector<char> outString;
+    StringParser::parseString(operand, outString, state);
+    std::string asString(outString.begin(), outString.end());
+    outputNode = nodeFactories.createDataNode(asString);
   } else {
     // using i32
     int32_t result =
@@ -85,7 +91,10 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
   for (std::string line; std::getline(stream, line);) {
     _compile_state.position = _compile_state.position.newLine();
     line_regex.matchLine(line, _compile_state);
-    if (line_regex.isValid()) {
+    if (!line_regex.isValid()) {
+      // Add syntax error if line regex doesnt match
+      _compile_state.addErrorHereT("Syntax Error");
+    } else {
       // Collect labels until next instruction
       if (line_regex.hasLabel()) {
         labels.push_back(line_regex.getLabel());
@@ -127,9 +136,10 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
     }
   }
 
-  MemoryAllocator allocator(
-      {MemorySectionDefinition("text", 1),
-       MemorySectionDefinition("data", _architecture.getWordSize())});
+  auto byteAlignment =
+      _architecture.getWordSize() / _architecture.getByteSize();
+  MemoryAllocator allocator({MemorySectionDefinition("text", 1),
+                             MemorySectionDefinition("data", byteAlignment)});
   return intermediate.transform(
       _architecture,
       SyntaxTreeGenerator{_factory_collection, argumentGeneratorFunction},
@@ -161,8 +171,9 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   info.addSyntaxRegex(";.*", SyntaxInformation::Token::Comment);
 
   // Add label regex
-  // Matches words which end with a ':'
-  info.addSyntaxRegex("\\b\\w+:", SyntaxInformation::Token::Label);
+  // Matches words at the beginning of a line (ignoring whitespaces) which end
+  // with a ':'
+  info.addSyntaxRegex("^\\s*\\w+:", SyntaxInformation::Token::Label);
 
   // Add immediate regex
   // Matches arithmetic expressions containing digits, operators, brackets and

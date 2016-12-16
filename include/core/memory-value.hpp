@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <iostream>
 #include <iterator>
+#include <string>
 #include <type_traits>
 #include <vector>
 
@@ -493,7 +494,7 @@ class MemoryValue {
    * \returns 8 bit after address [address, address+8[
    */
   std::uint8_t getByteAt(address_t address) const;
-  //I made this public because I use it *everywhere*
+  // I made this public because I use it *everywhere*
 
   std::string toHexString(bool Ox, bool noLeadingZeros) const;
   /**
@@ -525,7 +526,10 @@ class MemoryValue {
 #endif
 
  private:
-  address_t _size;  /**< Brief Size of the MemoryValue in Bit*/
-  Underlying _data; /**< Brief The Data stored by the MemoryValue*/
+  /** Size of the MemoryValue in Bit*/
+  address_t _size;
+
+  /** The Data stored by the MemoryValue */
+  Underlying _data;
 };
 #endif// ERAGPSIM_CORE_MEMORYVALUE_HPP_

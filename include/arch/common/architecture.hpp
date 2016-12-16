@@ -195,6 +195,12 @@ class Architecture : public BuilderInterface {
   const InstructionSet& getInstructions() const;
 
   /**
+   * Returns a string of concatenated macro definitions. If none of them exist,
+   * the string is empty.
+   */
+  const std::string& getBuiltinMacros() const;
+
+  /**
    * Sets the architecture's node factory collection.
    *
    * This is a template method to more flexibly copy *or* move another

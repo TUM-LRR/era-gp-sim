@@ -55,7 +55,7 @@ bool RiscvParser::RiscvRegex::readInstructionOrLabel(const std::string &line,
   if (line[pos] == ':') {
     // If a label is already defined, add an error
     if (_label.size() > 0) {
-      state.addError("Multiple labels per line aren't allowed!");
+      state.addErrorHereT("Multiple labels per line aren't allowed!");
       return false;
     }
 
@@ -69,7 +69,7 @@ bool RiscvParser::RiscvRegex::readInstructionOrLabel(const std::string &line,
   if (std::isspace(line[pos]) || line[pos] == ';') return true;
 
   // Otherwise we hit an invalid character
-  state.addError("Invalid character in instruction name!");
+  state.addErrorHereT("Invalid character in instruction name!");
   return false;
 }
 
