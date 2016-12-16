@@ -110,12 +110,16 @@ ScrollView {
 
                 //timer for parsing
                 Timer {
-                  id: parseTimer
-                  interval: 1000
-                  repeat: false
-                  onTriggered: {
-                    editor.parse();
-                  }
+                    id: parseTimer
+                    interval: 1000
+                    repeat: false
+                    onTriggered: {
+                        // don't parse while executing to avoid parsing multiple
+                        // times on stopping (onStopped triggers parse)
+                        if(!tabView.getCurrentProjectItem().isRunning) {
+                            editor.parse();
+                        }
+                    }
                 }
 
                 //cursor line highlighting

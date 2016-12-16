@@ -174,6 +174,8 @@ ApplicationWindow {
                     }
                     onExecutionStopped: {
                         toolbar.rowLayout.setStoppedState();
+                        // reparse in case a parse was blocked during execution.
+                        editor.parse();
                         placeholderItem.isRunning = false;
                     }
                 }
