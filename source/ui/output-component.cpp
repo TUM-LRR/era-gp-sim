@@ -71,7 +71,8 @@ void OutputComponent::putMemoryValue(int address,
                                      QList<bool> memoryContentBitList) {
   // Round up size of altered content up to bytes.
   auto memoryValueSize =
-      Utility::roundToBoundary(memoryContentBitList.size(), 8);
+      Utility::discreteCeiling(memoryContentBitList.size(), 8);
+
   // Create new MemoryValue.
   MemoryValue memoryContent(memoryValueSize);
   // Insert the bit values of the altered content into the newly create

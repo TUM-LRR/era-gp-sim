@@ -18,8 +18,8 @@
 #ifndef ERAGPSIM_TESTS_ARCH_RISCV_ARITHMETIC_TEST_UTILS_HPP_
 #define ERAGPSIM_TESTS_ARCH_RISCV_ARITHMETIC_TEST_UTILS_HPP_
 
-#include <cassert>
 #include <cstdint>
+#include <string>
 #include <unordered_map>
 
 #include "gtest/gtest.h"
@@ -30,13 +30,13 @@
 using namespace riscv;
 
 void testIntegerInstructionValidation(MemoryAccess& memAccess,
-                                      const NodeFactoryCollection& instrF,
+                                      const NodeFactoryCollection& factories,
                                       ImmediateNodeFactory& immF,
-                                      std::string instructionToken,
+                                      const std::string& instructionToken,
                                       bool isImmediateInstr);
 
-void test12BitImmediateBounds(const NodeFactoryCollection& instrF,
-                              std::string instructionToken,
+void test12BitImmediateBounds(const NodeFactoryCollection& factories,
+                              const std::string& instructionToken,
                               ImmediateNodeFactory& immF,
                               MemoryAccess& access);
 
@@ -69,11 +69,11 @@ void test12BitImmediateBounds(const NodeFactoryCollection& instrF,
   auto cmd_##contextNbr = factories.createInstructionNode(instruction);        \
   ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess());          \
   /*Assemble instruction with destination & operands*/                         \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(dest));            \
+  cmd_##contextNbr->addChild(factories.createRegisterNode(dest));              \
   ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess());          \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(op1));             \
+  cmd_##contextNbr->addChild(factories.createRegisterNode(op1));               \
   ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess());          \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(op2));             \
+  cmd_##contextNbr->addChild(factories.createRegisterNode(op2));               \
   ASSERT_TRUE(cmd_##contextNbr->validate(memoryAccess).isSuccess());           \
   /* Save values of operand registers to determine change*/                    \
   MemoryValue preOp1_##contextNbr = memoryAccess.getRegisterValue(op1).get();  \
@@ -117,10 +117,10 @@ void test12BitImmediateBounds(const NodeFactoryCollection& instrF,
   auto cmd_##contextNbr = factories.createInstructionNode(instruction);        \
   ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess())           \
       << "empty instruction node validation failed";                           \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(dest));            \
+  cmd_##contextNbr->addChild(factories.createRegisterNode(dest));              \
   ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess())           \
       << "instruction node + destination register node validation failed";     \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(reg));             \
+  cmd_##contextNbr->addChild(factories.createRegisterNode(reg));               \
   ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess())           \
       << "instruction node + 2 register nodes validation failed";              \
   cmd_##contextNbr->addChild(                                                  \

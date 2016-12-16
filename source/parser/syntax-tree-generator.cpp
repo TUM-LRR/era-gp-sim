@@ -21,13 +21,14 @@
 #include <cctype>
 #include <regex>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/abstract-instruction-node.hpp"
 #include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
 #include "parser/compile-state.hpp"
 
-std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(
-    const std::string& operand, CompileState& state) const {
+std::unique_ptr<AbstractSyntaxTreeNode>
+SyntaxTreeGenerator::transformOperand(const std::string& operand,
+                                      CompileState& state) const {
   // We invoke our node generator to get a node!
   std::unique_ptr<AbstractSyntaxTreeNode> outputNode =
       _argumentGenerator(operand, _nodeFactories, state);
@@ -41,11 +42,12 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(
   return std::move(outputNode);
 }
 
-std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
+std::unique_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
     const std::string& command_name,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
-    CompileState& state, MemoryAccess& memoryAccess) const {
+    CompileState& state,
+    MemoryAccess& memoryAccess) const {
   // Just create an instruction node and add all output and input nodes
   // (operands).
   auto outputNode = _nodeFactories.createInstructionNode(command_name);
@@ -69,7 +71,8 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
   // Validate node.
   auto validationResult = outputNode->validate(memoryAccess);
   if (!validationResult) {
-    state.addErrorHereT("Invalid operation (%1): %2", command_name,
+    state.addErrorHereT("Invalid operation (%1): %2",
+                        command_name,
                         validationResult.getMessage());
   }
 

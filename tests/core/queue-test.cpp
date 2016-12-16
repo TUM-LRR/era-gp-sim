@@ -55,10 +55,10 @@ class MoveOnlyObject {
   
 public:
   MoveOnlyObject(std::size_t v=0) : _value(v) {}
-  MoveOnlyObject(const MoveOnlyObject& other) = default;
-  MoveOnlyObject(MoveOnlyObject&& other) = delete;
-  MoveOnlyObject& operator=(const MoveOnlyObject& other) = default;
-  MoveOnlyObject& operator=(MoveOnlyObject&& other) = delete;
+  MoveOnlyObject(const MoveOnlyObject& other) = delete;
+  MoveOnlyObject(MoveOnlyObject&& other) = default;
+  MoveOnlyObject& operator=(const MoveOnlyObject& other) = delete;
+  MoveOnlyObject& operator=(MoveOnlyObject&& other) = default;
   
   explicit operator std::size_t() const { return _value; }
 };

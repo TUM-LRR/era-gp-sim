@@ -25,6 +25,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <limits>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -498,43 +499,25 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
   return binary;
 }
 
-// push_back n elements from the end of the src vector
-void pushBackFromEnd(std::vector<bool> &dest,
-                     const std::vector<bool> &src,
-                     size_t n);
-
-
 template <typename T, typename S = T>
-constexpr T divideCeiling(const T& value, const S& divider) {
+constexpr T divideCeiling(T value, S divider) {
   return (value + divider - 1) / divider;
 }
 
 // Only for completeness.
 template <typename T, typename S = T>
-constexpr T divideFloor(const T& value, const S& divider) {
+constexpr T divideFloor(T value, S divider) {
   return value / divider;
 }
 
 template <typename T, typename S = T>
-constexpr T discreteCeiling(const T& value, const S& divider) {
+constexpr T discreteCeiling(T value, S divider) {
   return divideCeiling(value, divider) * divider;
 }
 
 template <typename T, typename S = T>
-constexpr T discreteFloor(const T& value, const S& divider) {
+constexpr T discreteFloor(T value, S divider) {
   return divideFloor(value, divider) * divider;
-}
-/**
- * \brief roundToBoundary Rounds a given value up to a multiple of the
- * given boundary.
- * \param value Value to be rounded.
- * \param boundary The value is rounded up to a multiple of the
- * boundary.
- * \return The rounded value.
- */
-template<typename T>
-T roundToBoundary(const T& value, const T& boundary) {
-  return discreteCeiling(value, boundary);
 }
 
 template <typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
@@ -548,6 +531,82 @@ struct EnumHash {
     return std::hash<underlying_type>{}(ordinal);
   }
 };
+
+/**
+ * Creates a mask of the given number of bits set.
+ *
+ * \tparam T the integral type the mask should have.
+ * \param numberOfBits The width the mask should have.
+ * \return A mask of `numberOfBits` exactly set (1) bits.
+ */
+template <typename T>
+constexpr T bitMask(std::size_t numberOfBits) noexcept {
+  return (static_cast<T>(1) << numberOfBits) - 1;
+}
+
+/**
+ * Appends N bits of the first argument to the given second argument.
+ *
+ * \tparam numerOfBits The number of bits to append.
+ * \param original The original value to append to.
+ * \param value The value whose bits to append.
+ * \return The result of the operation.
+ */
+template <std::size_t numberOfBits, typename T, typename U>
+constexpr T appendBits(const T &original, const U &value) noexcept {
+  constexpr auto mask = bitMask<U>(numberOfBits);
+
+  // clang-format off
+  static_assert(
+    numberOfBits <= std::numeric_limits<T>::digits,
+    "Attempting to append more bits than possible"
+  );
+  // clang-format on
+
+  // We left-shift the original value by x bits and OR in
+  // exactly x bits at the right end (least-significant) bits
+  return (original << numberOfBits) | (value & mask);
+}
+
+/**
+ * Slices out a range of bits from a value.
+ *
+ * \tparam firstBit The bit at which to start the slice.
+ * \tparam lastBit The bit at which to end the slice.
+ * \param original The value to slice.
+ * \return The bits between `firstBit` and `lastBit` within the given `original`
+ * value.
+ */
+template <std::size_t firstBit, std::size_t lastBit, typename T>
+constexpr T sliceBits(const T &original) noexcept {
+  constexpr std::size_t numberOfBits = lastBit - firstBit + 1;
+
+  // clang-format off
+  static_assert(
+    numberOfBits <= std::numeric_limits<T>::digits,
+    "Attempting to append more bits than possible"
+  );
+  // clang-format on
+
+  constexpr auto mask = bitMask<T>(numberOfBits);
+
+  return (original & (mask << firstBit)) >> firstBit;
+}
+
+/**
+ * Appends a slice of bits from one number to the back of another number.
+ */
+template <std::size_t firstBit, std::size_t lastBit, typename T, typename U>
+T appendBitSlice(const T &original, const U &value) {
+  auto slice = sliceBits<firstBit, lastBit>(value);
+  return appendBits<lastBit - firstBit + 1>(original, slice);
+}
+
+template <typename T>
+constexpr T mostSignificantBit(const T &value) {
+  constexpr auto width = sizeof(T) * 8;
+  return value & (T(1) << (width - 1));
+}
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */

@@ -21,7 +21,9 @@
 #define ERAGPSIM_ARCH_COMMON_CONSTITUENT_INFORMATION_HPP
 
 #include <cstddef>
+#include <cstdint>
 
+#include "arch/common/architecture-properties.hpp"
 #include "arch/common/information-interface.hpp"
 #include "common/optional.hpp"
 
@@ -43,9 +45,9 @@
  */
 class ConstituentInformation final : public InformationInterface {
  public:
-  using id_t         = std::size_t;
-  using bit_offset_t = unsigned short;
-  using super        = InformationInterface;
+  using id_t = ArchitectureProperties::register_id_t;
+  using bit_offset_t = std::uint16_t;
+  using super = InformationInterface;
 
   /**
    * Deserializes the constituent information from a data format.

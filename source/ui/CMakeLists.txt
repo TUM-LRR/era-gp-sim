@@ -12,6 +12,9 @@ set(UI_SOURCES
     gui-project.cpp
     snapshot-component.cpp
     output-component.cpp
+    input-button-model.cpp
+    input-text-model.cpp
+    input-click-model.cpp
     translateable-processing.cpp
 )
 
@@ -24,6 +27,9 @@ set(UI_HEADERS
     ../../include/ui/ui.hpp
     ../../include/ui/snapshot-component.hpp
     ../../include/ui/output-component.hpp
+    ../../include/ui/input-button-model.hpp
+    ../../include/ui/input-click-model.hpp
+    ../../include/ui/input-text-model.hpp
 )
 
 
