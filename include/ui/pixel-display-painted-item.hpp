@@ -268,13 +268,6 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_INVOKABLE void memoryChanged(std::size_t address, std::size_t amount);
 
   /*
-   * \brief sets the colorMode
-   * \param colorMode The colorMode to be set active
-   * \Note I maybe should use enums but enums in qt are annoying
-   */
-  void setColorMode(std::size_t colorMode);
-
-  /*
    * \brief sets the size of the image
    * \param width new width of the image
    * \param width new height of the image
@@ -286,6 +279,28 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
    * \param o pointer to the OutputComponent
    */
   void setOutputComponent(OutputComponent *o);
+
+  void setPixelBaseAddress(std::size_t pixelBaseAddress);
+  void setColorBaseAddress(std::size_t colorBaseAddress);
+  void setWidth(std::size_t width);
+  void setHeight(std::size_t height);
+  /*
+   * \brief sets the colorMode
+   * \param colorMode The colorMode to be set active
+   * \Note I maybe should use enums but enums in qt are annoying
+   */
+  void setColorMode(std::size_t colorMode);
+  void setRBit(std::size_t rBit);
+  void setGBit(std::size_t gBit);
+  void setBBit(std::size_t bBit);
+  void setColumns_rows(bool columns_rows);
+  void setHorizontallyMirrored(bool horizontallyMirrored);
+  void setVerticallyMirrored(bool verticallyMirrored);
+  void setTight(bool tight);
+  void setPixelBufferPointerLike(bool pixelBufferPointerLike);
+  void setColorTablePointerLike(bool colorTablePointerLike);
+  void setFreeBytes(std::size_t freeBytes);
+  void setFreeBits(std::size_t freeBits);
 
  private:
   /// shared pointer to the image

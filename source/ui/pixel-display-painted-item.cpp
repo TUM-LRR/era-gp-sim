@@ -52,12 +52,110 @@ void PixelDisplayPaintedItem::memoryChanged(std::size_t address,
   update();
 }
 
+void PixelDisplayPaintedItem::setPixelBaseAddress(
+    std::size_t pixelBaseAddress) {
+  if (_options.pixelBaseAddress != pixelBaseAddress) {
+    _options.pixelBaseAddress = pixelBaseAddress;
+    _options.updateAllPixels(_outputComponentPointer, _image);
+    update();
+  }
+}
+void PixelDisplayPaintedItem::setColorBaseAddress(
+    std::size_t colorBaseAddress) {
+  if (_options.colorBaseAddress != colorBaseAddress) {
+    _options.colorBaseAddress = colorBaseAddress;
+    _options.updateAllColors(_outputComponentPointer, _image);
+    update();
+  }
+}
+void PixelDisplayPaintedItem::setWidth(std::size_t width) {
+  if (_options.width != width) {
+    resize(width, _options.height);
+  }
+}
+void PixelDisplayPaintedItem::setHeight(std::size_t height) {
+  if (_options.height != height) {
+    resize(_options.width, height);
+  }
+}
 void PixelDisplayPaintedItem::setColorMode(std::size_t colorMode) {
   if (_options.colorMode != colorMode) {
     _options.colorMode = colorMode;
     _image = _options.makeImage();
     _options.updateAllPixels(_outputComponentPointer, _image);
     _options.updateAllColors(_outputComponentPointer, _image);
+    update();
+  }
+}
+void PixelDisplayPaintedItem::setRBit(std::size_t rBit) {
+  if (_options.rBit != rBit) {
+    _options.rBit = rBit;
+    _options.updateAllPixels(_outputComponentPointer, _image);
+    update();
+  }
+}
+void PixelDisplayPaintedItem::setGBit(std::size_t gBit) {
+  if (_options.gBit != gBit) {
+    _options.gBit = gBit;
+    _options.updateAllPixels(_outputComponentPointer, _image);
+    update();
+  }
+}
+void PixelDisplayPaintedItem::setBBit(std::size_t bBit) {
+  if (_options.bBit != bBit) {
+    _options.bBit = bBit;
+    _options.updateAllPixels(_outputComponentPointer, _image);
+    update();
+  }
+}
+void PixelDisplayPaintedItem::setColumns_rows(bool columns_rows) {
+  if (_options.columns_rows != columns_rows) {
+    _options.columns_rows = columns_rows;
+    _options.updateAllPixels(_outputComponentPointer, _image);
+    update();
+  }
+}
+void PixelDisplayPaintedItem::setHorizontallyMirrored(
+    bool horizontallyMirrored) {
+  // TODO::set flag in painter
+}
+void PixelDisplayPaintedItem::setVerticallyMirrored(bool verticallyMirrored) {
+  // TODO::set flag in painter
+}
+void PixelDisplayPaintedItem::setTight(bool tight) {
+  if (_options.tight != tight) {
+    _options.tight = tight;
+    _options.updateAllPixels(_outputComponentPointer, _image);
+    update();
+  }
+}
+void PixelDisplayPaintedItem::setPixelBufferPointerLike(
+    bool pixelBufferPointerLike) {
+  if (_options.pixelBufferPointerLike != pixelBufferPointerLike) {
+    _options.pixelBufferPointerLike = pixelBufferPointerLike;
+    _options.updateAllPixels(_outputComponentPointer, _image);
+    update();
+  }
+}
+void PixelDisplayPaintedItem::setColorTablePointerLike(
+    bool colorTablePointerLike) {
+  if (_options.colorTablePointerLike != colorTablePointerLike) {
+    _options.colorTablePointerLike = colorTablePointerLike;
+    _options.updateAllColors(_outputComponentPointer, _image);
+    update();
+  }
+}
+void PixelDisplayPaintedItem::setFreeBytes(std::size_t freeBytes) {
+  if (_options.freeBytes != freeBytes) {
+    _options.freeBytes = freeBytes;
+    _options.updateAllPixels(_outputComponentPointer, _image);
+    update();
+  }
+}
+void PixelDisplayPaintedItem::setFreeBits(std::size_t freeBits) {
+  if (_options.freeBits != freeBits) {
+    _options.freeBits = freeBits;
+    _options.updateAllPixels(_outputComponentPointer, _image);
     update();
   }
 }
