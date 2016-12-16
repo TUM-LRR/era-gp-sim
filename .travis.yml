@@ -50,15 +50,6 @@ install:
       && (brew outdated cmake || brew upgrade cmake)
       && cmake --version;
     fi
-  # install mason
-  - mkdir ./mason/
-  - curl -sSfL https://github.com/mapbox/mason/archive/v0.2.0.tar.gz | tar --gunzip --extract --strip-components=1 --directory=./mason/
-  # install gdb via mason
-  - ./mason/mason install gdb 7.12
-  # put GDB on PATH
-  - export PATH=$(./mason/mason prefix gdb 7.12)/bin:${PATH}
-  # install logbt
-  - curl -sSfL https://github.com/mapbox/logbt/archive/v1.6.0.tar.gz | tar --gunzip --extract --strip-components=2 --exclude="*md" --exclude="test*" --directory=.
 
 before_script:
   - export CXX=$COMPILER
@@ -66,11 +57,12 @@ before_script:
   - mkdir build
   - cd build
   - cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
+  - cp ../scripts/logbt.sh .
   - sudo bash -c "echo '/tmp/logbt-coredumps/core.%p.%E' > /proc/sys/kernel/core_pattern"
 
 script:
   - make VERBOSE=1 -j4
-  - ./logbt ctest -v -j4
+  - ./logbt.sh ctest -v -j4
 
 notifications:
   email: false
