@@ -16,16 +16,26 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
+            - gdb
       env: COMPILER=g++-5
     - compiler: clang
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
+            - llvm-toolchain-precise-3.7
           packages:
-            - clang-3.6
-      env: COMPILER=clang++-3.6
+            - clang-3.7
+            - gdb
+      env: COMPILER=clang++-3.7
+
+before_install:
+ # What is the current file size max for core files?
+ # It is usually 0, which means no core file will be dumped if there is a crash
+ - ulimit -c
+ - ulimit -a -S
+ - ulimit -a -H
+ - cat /proc/sys/kernel/core_pattern
 
 install:
   - CMAKE_VERSION_MM=3.2
@@ -44,15 +54,18 @@ install:
     fi
 
 before_script:
-  - export CXX=$COMPILER CC=$CCOMPILER
+  - export CXX=$COMPILER
   - cmake --version
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
+  - cp ../scripts/logbt.sh .
+  - sudo chmod a+x logbt.sh
+  - sudo bash -c "echo '/tmp/logbt-coredumps/core.%p.%E' > /proc/sys/kernel/core_pattern"
 
 script:
-  - make VERBOSE=1 -j 4
-  - ctest --verbose -j 4
+  - make VERBOSE=1 -j4
+  - ./logbt.sh ctest -v -j4
 
 notifications:
   email: false

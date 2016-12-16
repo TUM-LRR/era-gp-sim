@@ -33,7 +33,7 @@ SplitView{
         faktor: 2
         quotient: 3
         usual1: "snapshots"
-        usual2: "output"
+        usual2: "input"
 
     }
 

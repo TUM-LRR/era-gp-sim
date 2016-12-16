@@ -37,6 +37,9 @@
 #include "ui/editor-component.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/output-component.hpp"
+#include "ui/input-button-model.hpp"
+#include "ui/input-text-model.hpp"
+#include "ui/input-click-model.hpp"
 #include "ui/register-model.hpp"
 #include "ui/snapshot-component.hpp"
 
@@ -234,6 +237,7 @@ class GuiProject : QObject {
    */
   EditorComponent _editorComponent;
 
+
   /**
    * \brief _outputComponent The model for each output item (i.e
    * lightstrip, sevensegment, console).
@@ -241,6 +245,13 @@ class GuiProject : QObject {
   OutputComponent _outputComponent;
 
   /**
+    *\brief The input-models
+    */
+  InputButtonModel _inputBM;
+  InputTextModel _inputTM;
+  InputClickModel _inputCM;
+
+  /*
    * The c++ component for the memory.
    */
   MemoryComponentPresenter _memoryModel;
