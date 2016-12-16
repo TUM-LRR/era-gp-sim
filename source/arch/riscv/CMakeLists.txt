@@ -11,6 +11,7 @@ set(ARCH_RISCV_SOURCES
   instruction-context-information.cpp
   instruction-node-factory.cpp
   instruction-node.cpp
+  lui-auipc-instructions.cpp
   register-node-factory.cpp
   register-node.cpp
   simulator-instructions.cpp

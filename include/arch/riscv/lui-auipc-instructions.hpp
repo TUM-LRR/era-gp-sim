@@ -41,9 +41,7 @@ namespace riscv {
  */
 class LuiAuipcValidationNode : public InstructionNode {
  public:
-  LuiAuipcValidationNode(const InstructionInformation &information)
-  : InstructionNode(information) {
-  }
+  explicit LuiAuipcValidationNode(const InstructionInformation &information);
 
   MemoryValue getValue(MemoryAccess &memoryAccess) const override = 0;
 
@@ -86,6 +84,39 @@ class LuiAuipcValidationNode : public InstructionNode {
    * (See RISC-V specification for reference). So a custom datatype is
    * defined to use in the getValue() method. */
   using InternalUnsigned = std::uint32_t;
+
+  /**
+   * The common portion of both AUIPC and LUI that retrieves the immediate.
+   *
+   * Some preprocessing and possible sign-extension is done.
+   *
+   * \param  memoryAccess Access to the memory.
+   */
+  template <typename UnsignedWord>
+  UnsignedWord _getImmediate(MemoryAccess &memoryAccess) const {
+    static const auto internalWidth =
+        std::numeric_limits<InternalUnsigned>::digits;
+
+    auto immediate = _children[1]->getValue(memoryAccess);
+
+    // Convert the offset to an internal integer representation
+    auto immediateConverted = riscv::convert<InternalUnsigned>(immediate);
+    // Perform a bitwise shift, filling the lower 12 bits with zeros
+    immediateConverted <<= 12;
+
+    // On non-RV32 architectures, the result of the last
+    // operation (that has always a width of 32 bits) must be sign extended,
+    // to the architectures word size (e.g. 64 bit)
+    auto result = static_cast<UnsignedWord>(immediateConverted);
+
+    // Check if sign-expansion is needed
+    auto sign = Utility::mostSignificantBit(immediateConverted);
+    if (sign && sizeof(UnsignedWord) > sizeof(InternalUnsigned)) {
+      return result | (~std::uint64_t{0} << internalWidth);
+    }
+
+    return result;
+  }
 };
 
 /**
@@ -95,39 +126,20 @@ class LuiAuipcValidationNode : public InstructionNode {
 template <typename UnsignedWord>
 class LuiInstructionNode : public LuiAuipcValidationNode {
  public:
+  using super = LuiAuipcValidationNode;
+
   LuiInstructionNode(const InstructionInformation &information)
-  : LuiAuipcValidationNode(information) {
+  : super(information) {
   }
 
   MemoryValue getValue(MemoryAccess &memoryAccess) const override {
-    static const auto internalWidth =
-        std::numeric_limits<InternalUnsigned>::digits;
-    static const auto unsignedWidth = std::numeric_limits<UnsignedWord>::digits;
-
     assert::that(validate(memoryAccess).isSuccess());
 
-    auto offset = _children[1]->getValue(memoryAccess);
-
-    // Convert the offset to an internal integer representation
-    auto offsetConverted = riscv::convert<InternalUnsigned>(offset);
-    // Perform a bitwise shift, filling the lower 12 bits with zeros
-    offsetConverted <<= 12;
-
-    // On non-RV32 architectures, the result of the last
-    // operation (that has always a width of 32 bits) must be sign extended,
-    // to the architectures word size (e.g. 64 bit)
-    auto result = static_cast<UnsignedWord>(offsetConverted);
-
-    // Check if sign-expansion is needed
-    auto sign = Utility::mostSignificantBit(offsetConverted);
-    if (sign && unsignedWidth > internalWidth) {
-      // Fill up the rest of the bits
-      result |= ~UnsignedWord(0) << internalWidth;
-    }
+    auto immediate = _getImmediate<UnsignedWord>(memoryAccess);
 
     // Convert back into a memory value and store it in the register
-    const auto &destination = _children[0]->getIdentifier();
-    memoryAccess.putRegisterValue(destination, riscv::convert(result));
+    auto destination = _children[0]->getIdentifier();
+    memoryAccess.putRegisterValue(destination, riscv::convert(immediate));
 
     return _incrementProgramCounter<UnsignedWord>(memoryAccess);
   }
@@ -140,59 +152,30 @@ class LuiInstructionNode : public LuiAuipcValidationNode {
 template <typename UnsignedWord>
 class AuipcInstructionNode : public LuiAuipcValidationNode {
  public:
+  using super = LuiAuipcValidationNode;
+
   AuipcInstructionNode(const InstructionInformation &information)
-  : LuiAuipcValidationNode(information) {
+  : super(information) {
   }
 
   MemoryValue getValue(MemoryAccess &memoryAccess) const override {
     assert::that(validate(memoryAccess).isSuccess());
 
-    const auto &destination = _children[0]->getIdentifier();
-    auto offset = _children[1]->getValue(memoryAccess);
-    auto programCounterMemory = memoryAccess.getRegisterValue("pc").get();
+    auto programCounter = memoryAccess.getRegisterValue("pc").get();
+    auto programCounterConverted = riscv::convert<UnsignedWord>(programCounter);
 
-    // Convert to the unsigned type of the architecture
-    auto offsetConverted = riscv::convert<InternalUnsigned>(offset);
-    auto programCounter = riscv::convert<UnsignedWord>(programCounterMemory);
-
-    // Fill lower 12 bits with 0
-    offsetConverted <<= 12;
-
-    // On non-RV32 architectures, the result of the last
-    // operation (that has always a width of 32 bits) must be sign expanded,
-    // to the architectures word size (e.g. 64 bit)
-    auto result = static_cast<UnsignedWord>(offsetConverted);
-    // Check if sign-expansion is needed
-    if ((sizeof(UnsignedWord) - sizeof(InternalUnsigned)) > 0) {
-      // Aquire the sign bit
-      const UnsignedWord length = sizeof(InternalUnsigned) * CHAR_BIT;
-      InternalUnsigned sign =
-          (offsetConverted & (InternalUnsigned{1} << (length - 1)));
-      // Do sign-expansion if needed
-      if (sign > 0) {
-        // Sign-expansion is quite easy here: All the bits above the lower
-        // 32 bits are set to 1.
-        const auto requiredLength = sizeof(UnsignedWord) * CHAR_BIT;
-        result |= (length < requiredLength) ? (~UnsignedWord{0} << length) : 0;
-      }
-    }
+    auto immediate = _getImmediate<UnsignedWord>(memoryAccess);
 
     // Add the offset to the program counter
-    programCounter += result;
-
+    programCounterConverted += immediate;
     // Convert the result back into a MemoryValue
-    auto resultMemory = riscv::convert(programCounter);
+    auto result = riscv::convert(programCounterConverted);
 
-    memoryAccess.putRegisterValue(destination, resultMemory);
+    auto destination = _children[0]->getIdentifier();
+    memoryAccess.putRegisterValue(destination, result);
 
-    return resultMemory;
+    return result;
   }
-
- private:
-  /* The AUIPC instruction performs its operation ALWAYS on 32 bits
-    * (See RISC-V specification for reference). So a custom datatype is
-    * defined to use in the getValue() method. */
-  using InternalUnsigned = std::uint32_t;
 };
 
 }// Namespace riscv
