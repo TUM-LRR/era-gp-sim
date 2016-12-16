@@ -36,8 +36,11 @@ template <typename SignedWord, typename UnsignedWord>
 class LoadStoreInstructionNode : public InstructionNode {
  public:
   LoadStoreInstructionNode(const InstructionInformation& instructionInformation,
-                           std::size_t byteAmount)
-  : InstructionNode(instructionInformation), _byteAmount(byteAmount) {
+                           std::size_t byteAmount,
+                           bool writesProtectedMemory)
+  : InstructionNode(instructionInformation)
+  , _byteAmount(byteAmount)
+  , _writesProtectedMemory(writesProtectedMemory) {
   }
 
   /* Ensure this class is pure virtual */
@@ -91,7 +94,8 @@ class LoadStoreInstructionNode : public InstructionNode {
           std::to_string(effectiveAddress + _byteAmount - 1));
     }
 
-    if (memoryAccess.isMemoryProtectedAt(effectiveAddress, _byteAmount).get()) {
+    if (_writesProtectedMemory &&
+        memoryAccess.isMemoryProtectedAt(effectiveAddress, _byteAmount).get()) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "The memory area you are trying to access is "
@@ -138,6 +142,11 @@ class LoadStoreInstructionNode : public InstructionNode {
    * The amount of bytes, this load/store operation operates on.
    */
   std::size_t _byteAmount;
+
+  /**
+   * Whether this node writes into protected memory.
+   */
+  bool _writesProtectedMemory;
 };
 
 /**
@@ -163,7 +172,7 @@ class LoadInstructionNode
 
   LoadInstructionNode(const InstructionInformation& instructionInformation,
                       Type type)
-  : super(instructionInformation, getByteAmount(type)), _type(type) {
+  : super(instructionInformation, getByteAmount(type), false), _type(type) {
   }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
@@ -313,7 +322,7 @@ class StoreInstructionNode
 
   StoreInstructionNode(const InstructionInformation& instructionInformation,
                        Type type)
-  : super(instructionInformation, getByteAmount(type)), _type(type) {
+  : super(instructionInformation, getByteAmount(type), true), _type(type) {
   }
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
