@@ -426,20 +426,20 @@ TEST_F(PseudoInstructionTest, JALR_32) {
             convert<std::uint32_t>(4));
 }
 
-// TEST_F(PseudoInstructionTest, CALL_32) {
-//   loadArchitecture({"rv32i"});
-//
-//   auto& memoryAccess = getMemoryAccess();
-//   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-//
-//   testPseudoInstruction(memoryAccess, "call 0x12345678", 2);
-//
-//   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
-//             convert<std::uint32_t>(0x12345678));
-//   // Return address must be 8, because call is translated to two instructions
-//   ASSERT_EQ(memoryAccess.getRegisterValue("x1").get(),
-//             convert<std::uint32_t>(8));
-// }
+TEST_F(PseudoInstructionTest, CALL_32) {
+  loadArchitecture({"rv32i"});
+
+  auto& memoryAccess = getMemoryAccess();
+  memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
+
+  testPseudoInstruction(memoryAccess, "call 0x12345678", 2);
+
+  ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
+            convert<std::uint32_t>(0x12345678));
+  // Return address must be 8, because call is translated to two instructions
+  ASSERT_EQ(memoryAccess.getRegisterValue("x1").get(),
+            convert<std::uint32_t>(8));
+}
 
 TEST_F(PseudoInstructionTest, TAIL_32) {
   loadArchitecture({"rv32i"});

@@ -114,12 +114,12 @@ struct LuiAuipcInstructionTest : public riscv::BaseFixture {
     // Execute
     auto pc = instr->getValue(memoryAccess);
 
-    // Check that the result is (1) placed into the destination register
+    // Check that the result is placed into the destination register
     auto destinationAfter = memoryAccess.getRegisterValue(destId).get();
     ASSERT_EQ(riscv::convert<T>(destinationAfter), expectedOutput);
 
-    // And (2) is added to the program counter
-    ASSERT_EQ(riscv::convert<T>(pc), expectedOutput);
+    // And the program counter is advanced
+    ASSERT_EQ(riscv::convert<T>(pc), initialPc + 4);
   }
 };
 

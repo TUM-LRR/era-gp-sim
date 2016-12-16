@@ -174,7 +174,7 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
     auto destination = _children[0]->getIdentifier();
     memoryAccess.putRegisterValue(destination, result);
 
-    return result;
+    return _incrementProgramCounter<UnsignedWord>(memoryAccess);
   }
 };
 
