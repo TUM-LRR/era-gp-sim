@@ -31,19 +31,19 @@ Translateable DocumentationBuilder::build() {
   assert::that(_hasKey(Key::SHORT_SYNTAX));
   return Translateable(
       "<b>%1</b>: <code>%2</code><p style=\"margin-left:5%\">%3</p>%4<br>%5",
-      {_components[Key::INSTRUCTION], _components[Key::SHORT_SYNTAX],
+      _components[Key::INSTRUCTION], _components[Key::SHORT_SYNTAX],
        _optional(Key::OPERAND_DESCRIPTION), _optional(Key::SHORT_DESCRIPTION),
-       _optional(Key::DETAIL_DESCRIPTION)});
+       _optional(Key::DETAIL_DESCRIPTION));
 }
 
 DocumentationBuilder &DocumentationBuilder::instruction(const std::string &s) {
-  _add(Key::INSTRUCTION, std::make_shared<Translateable>(s));
+    _add(Key::INSTRUCTION, std::make_shared<Translateable>(s, Translateable::NO_TR_POSSIBLE{}));
   return *this;
 }
 
 DocumentationBuilder &DocumentationBuilder::detailDescription(
     const std::string &s) {
-  _add(Key::DETAIL_DESCRIPTION, std::make_shared<Translateable>(s));
+    _add(Key::DETAIL_DESCRIPTION, std::make_shared<Translateable>(s, Translateable::NO_TR_POSSIBLE{}));
   return *this;
 }
 
@@ -66,19 +66,15 @@ DocumentationBuilder &DocumentationBuilder::operandDescription(
   auto &baseString = existingTranslateable->getModifiableBaseString();
   baseString += '%';
   baseString += std::to_string(_operandCount + 1);  // will be %1, %2, ...
-  // all template arguments are explicitly given because gcc has a hard time
-  // guessing
-  auto operand = std::make_shared<Translateable, std::string, StringList>(
-      "<br><code><span style=\"color:%1\"><b>%2</b></span></code>: %3",
-      {_nextColor(), name, description});
-  existingTranslateable->addOperand(operand);
+  existingTranslateable->addOperand("<br><code><span style=\"color:%1\"><b>%2</b></span></code>: %3",
+                                    _nextColor(), name, description);
   ++_operandCount;
   return *this;
 }
 
 DocumentationBuilder &DocumentationBuilder::shortDescription(
     const std::string &s) {
-  _add(Key::SHORT_DESCRIPTION, std::make_shared<Translateable>(s));
+    _add(Key::SHORT_DESCRIPTION, std::make_shared<Translateable>(s, Translateable::NO_TR_POSSIBLE{}));
   return *this;
 }
 
@@ -92,9 +88,8 @@ DocumentationBuilder &DocumentationBuilder::shortSyntax(StringList operands) {
     result += "\"><b>%";
     result += std::to_string(2 + 2 * i);  // will be %2, %4, ...
     result += "</b><span>, ";
-    translateable->addOperand(
-        std::make_shared<Translateable>(_colors[i % _colors.size()]));
-    translateable->addOperand(std::make_shared<Translateable>(op));
+    translateable->addOperand(_colors[i % _colors.size()]);
+    translateable->addOperand(std::make_shared<Translateable>(op, Translateable::NO_TR_POSSIBLE{}));
     ++i;
   }
 

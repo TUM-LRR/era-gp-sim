@@ -19,10 +19,10 @@
 
 #include "core/project.hpp"
 
-#include "arch/common/architecture-formula.hpp"
 #include "arch/common/register-information.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
+#include "core/deserialization-error.hpp"
 
 Project::Project(std::weak_ptr<Scheduler> &&scheduler,
                  const ArchitectureFormula &architectureFormula,
@@ -30,7 +30,10 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
 : Servant(std::move(scheduler))
 , _architecture(Architecture::Brew(architectureFormula))
 , _memory(memorySize, _architecture.getByteSize())
-, _registerSet() {
+, _registerSet()
+, _architectureFormula(architectureFormula)
+, _errorCallback(
+      [](const std::string &s, const std::vector<std::string> &v) {}) {
   _architecture.validate();
 
   for (UnitInformation unitInfo : _architecture.getUnits()) {
@@ -174,6 +177,30 @@ void Project::resetRegisters() {
   }
 }
 
+void Project::loadSnapshot(const Json &snapshotData) {
+  Snapshot snapshot(snapshotData);
+  if (!snapshot.isValid()) {
+    _errorCallback("Snapshot format is not valid.", {});
+    return;
+  }
+  if (snapshot.getArchitectureFormula() != _architectureFormula) {
+    _errorCallback("This snapshot was created with a different architecture.",
+                   {});
+    return;
+  }
+  try {
+    _memory.deserializeJSON(snapshot.getMemoryJson());
+    _registerSet.deserializeJSON(snapshot.getRegisterJson());
+  } catch (const DeserializationError &exception) {
+    _errorCallback(exception.what(), {});
+  }
+}
+
+Project::Json Project::generateSnapshot() const {
+  Snapshot snapshot(_architectureFormula, _memory, _registerSet);
+  return snapshot.getJson();
+}
+
 void Project::_setRegisterToZero(RegisterInformation registerInfo) {
   if (!registerInfo.isConstant() && !registerInfo.hasEnclosing()) {
     // create a empty MemoryValue as long as the register
@@ -213,6 +240,10 @@ void Project::setUpdateRegisterCallback(
 
 void Project::setUpdateMemoryCallback(Callback<size_t, size_t> callback) {
   _memory.setCallback(callback);
+}
+
+void Project::setErrorCallback(ErrorCallback callback) {
+  _errorCallback = callback;
 }
 
 Architecture Project::getArchitecture() const {

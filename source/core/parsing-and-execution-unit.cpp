@@ -43,7 +43,7 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _syntaxInformation(_parser->getSyntaxInformation())
 , _setContextInformation([](const std::vector<ContextInformation> &x) {})
 , _setErrorList([](const std::vector<CompileError> &x) {})
-, _throwRuntimeError(([](const ValidationResult &x) {}))
+, _throwError(([](const std::string &x, const std::vector<std::string> &y) {}))
 , _setMacroList(([](const std::vector<MacroInformation> &x) {}))
 , _setCurrentLine([](size_t x) {}) {
   // find the RegisterInformation object of the program counter
@@ -186,9 +186,9 @@ void ParsingAndExecutionUnit::setSetErrorListCallback(
   _setErrorList = callback;
 }
 
-void ParsingAndExecutionUnit::setThrowRuntimeErrorCallback(
-    Callback<const ValidationResult &> callback) {
-  _throwRuntimeError = callback;
+void ParsingAndExecutionUnit::setThrowErrorCallback(
+    Callback<const std::string &, const std::vector<std::string> &> callback) {
+  _throwError = callback;
 }
 
 void ParsingAndExecutionUnit::setSetMacroListCallback(
@@ -232,7 +232,7 @@ bool ParsingAndExecutionUnit::_executeNode(size_t nodeIndex) {
   auto validationResult = currentCommand.node->validateRuntime(_memoryAccess);
   if (!validationResult.isSuccess()) {
     // notify the ui of a runtime error
-    _throwRuntimeError(validationResult);
+      _throwError(validationResult.getMessage().getBaseString(), {});
     return false;
   }
   // update the current line in the ui (pre-execution)

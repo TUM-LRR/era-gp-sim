@@ -96,15 +96,15 @@ ScrollView {
                   parseTimer.restart();
                 }
 
-                //Connection to react to the parse signal
+                //Connection to react to editor signals
                 Connections {
                   target: editor
                   onExecutionLineChanged: {
                     textArea.line = line;
                   }
-                  onRuntimeError: {
-                    runtimeErrorDialog.text = errorMessage;
-                    runtimeErrorDialog.open();
+                  onSetText: {
+                    textArea.clear();
+                    textArea.insert(0, text);
                   }
                 }
 
@@ -328,16 +328,6 @@ ScrollView {
                         newError.errorMessage = message;
                     }
                 }
-            }
-
-            //Dialog to show runtime errors
-            MessageDialog {
-              id: runtimeErrorDialog
-              title: "Runtime error"
-              standardButtons: StandardButton.Ok
-              onAccepted: {
-                close();
-              }
             }
 
             //input for zoom

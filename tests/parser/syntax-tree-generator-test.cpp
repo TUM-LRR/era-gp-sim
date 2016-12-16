@@ -19,6 +19,8 @@
 #include <memory>
 #include <vector>
 
+#include "gtest/gtest.h"
+
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/immediate-node.hpp"
@@ -26,10 +28,10 @@
 #include "arch/common/register-node.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "core/project-module.hpp"
-#include "gtest/gtest.h"
 #include "parser/compile-state.hpp"
 #include "parser/riscv-parser.hpp"
 #include "parser/syntax-tree-generator.hpp"
+
 
 static SyntaxTreeGenerator buildGenerator() {
   Architecture testArch =
