@@ -16,6 +16,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
+            - gdb
       env: COMPILER=g++-5
     - compiler: clang
       addons:
@@ -25,6 +26,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages:
             - clang-3.7
+            - gdb
       env: COMPILER=clang++-3.7
 
 before_install:
