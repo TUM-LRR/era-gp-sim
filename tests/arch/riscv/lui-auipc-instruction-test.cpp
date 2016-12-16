@@ -112,11 +112,14 @@ struct LuiAuipcInstructionTest : public riscv::BaseFixture {
     ASSERT_TRUE(instr->validate(memoryAccess));
 
     // Execute
-    instr->getValue(memoryAccess);
+    auto pc = instr->getValue(memoryAccess);
 
-    // Check result
-    MemoryValue result = memoryAccess.getRegisterValue(destId).get();
-    ASSERT_EQ(riscv::convert<T>(result), expectedOutput);
+    // Check that the result is (1) placed into the destination register
+    auto destinationAfter = memoryAccess.getRegisterValue(destId).get();
+    ASSERT_EQ(riscv::convert<T>(destinationAfter), expectedOutput);
+
+    // And (2) is added to the program counter
+    ASSERT_EQ(riscv::convert<T>(pc), expectedOutput);
   }
 };
 

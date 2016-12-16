@@ -102,7 +102,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
    *
    * \param memoryAccess The memory access object.
    *
-   * \return An empty memory value.
+   * \return The resulting program counter.
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(validate(memoryAccess).isSuccess());
@@ -276,7 +276,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
     auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
     // Check if the program counter would underflow or overflow
-    if (!riscv::isAddressValid(memoryAccess, programCounter + 2*offset)) {
+    if (!riscv::isAddressValid(memoryAccess, programCounter + 2 * offset)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Branch offset would invalidate program counter"));

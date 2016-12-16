@@ -149,11 +149,11 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
 
     const auto &destination = _children[0]->getIdentifier();
     auto offset = _children[1]->getValue(memoryAccess);
-    auto programCounter = memoryAccess.getRegisterValue("pc").get();
+    auto programCounterMemory = memoryAccess.getRegisterValue("pc").get();
 
     // Convert to the unsigned type of the architecture
     auto offsetConverted = riscv::convert<InternalUnsigned>(offset);
-    auto programCounterConverted = riscv::convert<UnsignedWord>(programCounter);
+    auto programCounter = riscv::convert<UnsignedWord>(programCounterMemory);
 
     // Fill lower 12 bits with 0
     offsetConverted <<= 12;
@@ -178,12 +178,14 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
     }
 
     // Add the offset to the program counter
-    programCounterConverted += result;
-    // Convert the result back into a MemoryValue
-    auto resultMemoryValue = riscv::convert(programCounterConverted);
+    programCounter += result;
 
-    memoryAccess.putRegisterValue(destination, resultMemoryValue);
-    return _incrementProgramCounter<UnsignedWord>(memoryAccess);
+    // Convert the result back into a MemoryValue
+    auto resultMemory = riscv::convert(programCounter);
+
+    memoryAccess.putRegisterValue(destination, resultMemory);
+
+    return resultMemory;
   }
 
  private:
