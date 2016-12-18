@@ -134,12 +134,13 @@ class ParsingAndExecutionUnit : public Servant {
   // editor
 
   /**
-   * Set the callback which is used to set the error list in the gui(editor)
+   * Set the callback which updates the final representation in the ui.
    *
    * \param callback
    *
    */
-  void setSetErrorListCallback(ListCallback<CompileError> callback);
+  void setFinalRepresentationCallback(
+      Callback<const FinalRepresentation &> callback);
 
   /**
    * Set the callback which is used to notify the gui of an error.
@@ -148,13 +149,6 @@ class ParsingAndExecutionUnit : public Servant {
    */
   void setThrowErrorCallback(
       Callback<const std::string &, const std::vector<std::string> &> callback);
-
-  /**
-   * Set the callback to set the macro list in the ui.
-   *
-   * \param callback
-   */
-  void setSetMacroListCallback(ListCallback<MacroInformation> callback);
 
   /**
    * Set the callback which is used to inform the gui about the execution point
@@ -220,14 +214,11 @@ class ParsingAndExecutionUnit : public Servant {
   /** Callback to set memory context information in the ui. */
   ListCallback<ContextInformation> _setContextInformation;
 
-  /** Callback to set the error list in the ui.*/
-  ListCallback<CompileError> _setErrorList;
+  /** Callback to set the final representation in the ui.*/
+  Callback<const FinalRepresentation> _setFinalRepresentation;
 
   /** Callback to throw a runtime error. */
   Callback<const std::string &, const std::vector<std::string> &> _throwError;
-
-  /** Callback to set the macro list in the ui.*/
-  ListCallback<MacroInformation> _setMacroList;
 
   /** Callback to set the line which is executed in the ui.*/
   Callback<size_t> _setCurrentLine;

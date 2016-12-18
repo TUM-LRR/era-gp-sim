@@ -45,11 +45,9 @@ GuiProject::GuiProject(
 , _outputComponent(_projectModule.getMemoryManager(),
                    _projectModule.getMemoryAccess(),
                    context)
-, _inputBM (context, _projectModule.getMemoryAccess())
-, _inputTM (context,
-           _projectModule.getMemoryAccess())
-, _inputCM (context,
-           _projectModule.getMemoryAccess())
+, _inputBM(context, _projectModule.getMemoryAccess())
+, _inputTM(context, _projectModule.getMemoryAccess())
+, _inputCM(context, _projectModule.getMemoryAccess())
 , _memoryModel(_projectModule.getMemoryAccess(),
                _projectModule.getMemoryManager(),
                context)
@@ -78,6 +76,11 @@ GuiProject::GuiProject(
         this->_throwError(message, arguments);
       });
 
+  _projectModule.getParserInterface().setFinalRepresentationCallback(
+      [this](const auto& finalRepresentation) {
+        this->finalRepresentationChanged(finalRepresentation);
+      });
+
   // connect all receiving components to the callback signals
   QObject::connect(this,
                    SIGNAL(registerChanged(const QString&)),
@@ -96,6 +99,13 @@ GuiProject::GuiProject(
                    &_outputComponent,
                    SLOT(updateMemory(std::size_t, std::size_t)),
                    Qt::QueuedConnection);
+
+  QObject::connect(
+      this,
+      SIGNAL(finalRepresentationChanged(const FinalRepresentation&)),
+      &_editorComponent,
+      SLOT(onFinalRepresentationChanged(const FinalRepresentation&)),
+      Qt::QueuedConnection);
 }
 
 GuiProject::~GuiProject() {

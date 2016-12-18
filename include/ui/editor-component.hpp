@@ -114,6 +114,15 @@ class EditorComponent : public QObject {
    */
   QString getText();
 
+ public slots:
+  /**
+   * Is called from the finalRepresentationChanged signal in gui project.
+   *
+   * \param finalRepresentation The new final representation of the core.
+   */
+  void
+  onFinalRepresentationChanged(const FinalRepresentation &finalRepresentation);
+
  private:
   /**
    * Adds the all keywords for a token to the keyword list.
