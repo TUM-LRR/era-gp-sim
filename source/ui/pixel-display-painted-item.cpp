@@ -23,6 +23,7 @@
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-value.hpp"
+#include "ui/output-component.hpp"
 #include "ui/pixel-display-painted-item.hpp"
 
 PixelDisplayPaintedItem::PixelDisplayPaintedItem(QQuickItem *parent)

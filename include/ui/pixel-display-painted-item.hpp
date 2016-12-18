@@ -30,10 +30,11 @@
 #include <utility>
 #include <vector>
 
-#include <iostream>
 #include "common/optional.hpp"
 //#include "core/memory-access.hpp"
-#include "ui/output-component.hpp"
+//#include "ui/output-component.hpp"
+class OutputComponent;
+class MemoryValue;
 
 #define PSIZE 16
 #define CMODE 1
