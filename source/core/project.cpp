@@ -104,13 +104,33 @@ MemoryValue Project::getMemoryValueAt(size_t address, size_t amount) const {
   return _memory.get(address, amount);
 }
 
-void Project::putMemoryValueAt(size_t address, const MemoryValue &value) {
-  _memory.put(address, value);
+MemoryValue
+Project::tryGetMemoryValueAt(std::size_t address, std::size_t amount) const {
+  return _memory.tryGet(address, amount);
 }
 
-MemoryValue
-Project::setMemoryValueAt(size_t address, const MemoryValue &value) {
-  return _memory.set(address, value);
+void Project::putMemoryValueAt(size_t address,
+                               const MemoryValue &value,
+                               bool ignoreProtection) {
+  _memory.put(address, value, ignoreProtection);
+}
+
+void Project::tryPutMemoryValueAt(size_t address,
+                                  const MemoryValue &value,
+                                  bool ignoreProtection) {
+  _memory.tryPut(address, value, ignoreProtection);
+}
+
+MemoryValue Project::setMemoryValueAt(size_t address,
+                                      const MemoryValue &value,
+                                      bool ignoreProtection) {
+  return _memory.set(address, value, ignoreProtection);
+}
+
+MemoryValue Project::trySetMemoryValueAt(size_t address,
+                                         const MemoryValue &value,
+                                         bool ignoreProtection) {
+  return _memory.trySet(address, value, ignoreProtection);
 }
 
 MemoryValue Project::getRegisterValue(const std::string &name) const {
@@ -139,16 +159,12 @@ size_t Project::getMemorySize() const {
   return _memory.getByteCount();
 }
 
-void Project::setMemorySize(size_t size) {
-}
-
 InstructionSet Project::getInstructionSet() const {
   return _architecture.getInstructions();
 }
 
 void Project::resetMemory() {
-  MemoryValue zero(_memory.getByteSize() * _memory.getByteCount());
-  putMemoryValueAt(0, zero);
+  _memory.clear();
 }
 
 void Project::resetRegisters() {

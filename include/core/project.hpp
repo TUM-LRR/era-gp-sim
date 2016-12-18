@@ -75,38 +75,57 @@ class Project : public Servant {
           size_t memorySize);
 
   /**
-   * Calls Memory::get(size_t address, size_t length = 1) const
-   *
+   * \copydoc Memory::get()
    */
   MemoryValue getMemoryValueAt(size_t address, size_t amount = 1) const;
 
   /**
-   * Calls Memory::put(size_t address, const MemoryValue& value)
-   *
+   * \copydoc Memory::tryGet()
    */
-  void putMemoryValueAt(size_t address, const MemoryValue &value);
+  MemoryValue
+  tryGetMemoryValueAt(std::size_t address, std::size_t amount = 1) const;
+
 
   /**
-   * Calls Memory::set(size_t address, const MemoryValue& value)
-   *
+   * \copydoc Memory::put()
    */
-  MemoryValue setMemoryValueAt(size_t address, const MemoryValue &value);
+  void putMemoryValueAt(size_t address,
+                        const MemoryValue &value,
+                        bool ignoreProtection = false);
 
   /**
-   * Calls RegisterSet::get(const std::string& name) const
-   *
+   * \copydoc Memory::tryPut()
+   */
+  void tryPutMemoryValueAt(std::size_t address,
+                           const MemoryValue &value,
+                           bool ignoreProtection = false);
+
+  /**
+   *  \copydoc Memory::set()
+   */
+  MemoryValue setMemoryValueAt(size_t address,
+                               const MemoryValue &value,
+                               bool ignoreProtection = false);
+
+  /**
+   * \copydoc Memory::trySet()
+   */
+  MemoryValue trySetMemoryValueAt(size_t address,
+                                  const MemoryValue &value,
+                                  bool ignoreProtection = false);
+
+  /**
+   * \copydoc RegisterSet::get()
    */
   MemoryValue getRegisterValue(const std::string &name) const;
 
   /**
-   * Calls RegisterSet::put(const std::string& name, const MemoryValue& value)
-   *
+   * \copydoc RegisterSet::put()
    */
   void putRegisterValue(const std::string &name, const MemoryValue &value);
 
   /**
-   * Calls RegisterSet::set(const std::string& name, const MemoryValue &value)
-   *
+   * \copydoc RegisterSet::set()
    */
   MemoryValue
   setRegisterValue(const std::string &name, const MemoryValue &value);
@@ -126,17 +145,10 @@ class Project : public Servant {
   /**
    * Returns the number of memory cells(number of bytes)
    *
-   * TODO should this be supported?
    * Currently not accessible through any proxy.
    *
    */
   size_t getMemorySize() const;
-
-  /**
-   * Sets the number of memory cells, might not be supported later
-   *
-   */
-  void setMemorySize(size_t size);
 
   /**
    * Returns a set of all instructions of the architecture
