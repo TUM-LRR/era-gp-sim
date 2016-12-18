@@ -312,6 +312,10 @@ void Memory::deserializeJSON(const Json& json) {
   if (lineLength <= 0) {
     throw DeserializationError("Could not deserialize Memory: lineLength == 0");
   }
+
+  // clear the current memory to write the zeros in the serialized data
+  clear();
+
   const std::size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
   const char separator = json[_separatorStringIdentifier].get<char>();
   auto data = *dataMapIt;
