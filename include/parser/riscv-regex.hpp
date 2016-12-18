@@ -77,17 +77,20 @@ class RiscvParser::RiscvRegex {
    *
    * \param line  The line to parse.
    * \param state CompileState to record errors.
+   * \return The last read position in the string (if the line does not match, this is the character that caused the error)
    */
-  void matchLine(const std::string &line, CompileState &state);
+  size_t matchLine(const std::string &line, CompileState &state);
 
  private:
-  bool readInstructionOrLabel(const std::string &line,
+  bool _readInstructionOrLabel(const std::string &line,
                               CompileState &state,
                               size_t &pos);
 
-  bool readParameter(const std::string &line, CompileState &state, size_t &pos);
+  bool _readParameter(const std::string &line, CompileState &state, size_t &pos);
 
-  void resetResults();
+  void _resetResults();
+
+  CodePosition _getCharacterPosition(const CompileState &state, size_t pos) const;
 
   bool _isValid;
   std::string _label;
