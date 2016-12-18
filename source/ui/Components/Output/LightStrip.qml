@@ -51,6 +51,7 @@ Item {
     // Called from outside by the output tab view to signal that the settings button for the current
     // output item was pressed.
     onSettingsButtonPressed: {
+        lightstripSettingsWindow.updateSettings();
         lightstripSettingsWindow.show();
     }
 

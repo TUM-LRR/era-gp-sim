@@ -129,7 +129,7 @@ Window {
 
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
-                    var inputValue = !ab.checked;
+                    var inputValue = ab.checked? 0 : 1;
                     outputComponent.setOutputItemProperty(outputItemIndex, "textMode", inputValue);
 
                 }
