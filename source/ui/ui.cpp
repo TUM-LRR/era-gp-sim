@@ -39,6 +39,7 @@ Ui::Ui(int& argc, char** argv)
 
 int Ui::runUi() {
   qRegisterMetaType<std::size_t>("std::size_t");
+  qRegisterMetaType<unsigned int>("length_t");
   _engine.rootContext()->setContextProperty("ui", this);
   _engine.rootContext()->setContextProperty("snapshotComponent",
                                             _snapshots.get());
