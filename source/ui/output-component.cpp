@@ -123,3 +123,7 @@ OutputComponent::getTextFromMemory(int start, QString currentText, int mode) {
   }
   return QString::fromStdString(text);
 }
+
+int OutputComponent::getMemorySize() {
+  return _memoryAccess.getMemorySize().get();
+}
