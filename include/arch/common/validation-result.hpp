@@ -23,6 +23,7 @@
 #include <initializer_list>
 #include <string>
 #include <vector>
+#include "common/translateable.hpp"
 
 /**
  * Represents the result of a validatate operation on the syntax tree.
@@ -37,28 +38,6 @@ class ValidationResult {
 
   /**
    * Creates a new ValidationResult object that indicates, that the
-   * validation failed. A message, describing the problem, must be given.
-   * This method is equivalent to: ValidationResult::fail(message, {})
-   *
-   * \param message The message indicating the problem. Must not be empty.
-   */
-  static const ValidationResult fail(const std::string& message);
-
-  /**
-   * Creates a new ValidationResult object that indicates, that the
-   * validation failed. A message describing the problem, must be given.
-   * For translation purposes, a list of arguments for the message can
-   * be given, to support translatable messages with arguments.
-   *
-   * \param message The message indicating the problem. Must not be empty.
-   * \param arguments A list of arguments for translation purposes
-   */
-  static const ValidationResult
-  fail(const std::string& message,
-       std::initializer_list<std::string> arguments);
-
-  /**
-   * Creates a new ValidationResult object that indicates, that the
    * validation failed. A message describing the problem, must be given.
    * For translation purposes, a variable amount of arguments for the message
    * can be given, to support translatable messages with arguments.
@@ -68,10 +47,8 @@ class ValidationResult {
    */
   template <typename... Args>
   static const ValidationResult
-  fail(const std::string& message, Args&&... arguments) {
-    ValidationResult result{false, message, {}};
-    result.addArguments(std::forward<Args>(arguments)...);
-    return result;
+  fail(const char* message, Args&&... arguments) {
+    return ValidationResult{false, message, arguments...};
   }
 
   /**
@@ -90,31 +67,17 @@ class ValidationResult {
    * Returns the message, that describes the validation result.
    * \return The message of the validation.
    */
-  const std::string& getMessage() const;
-
-  /**
-   * Get the list of arguments, that exist for translation purposes.
-   * \param A const list of arguments
-   */
-  const std::vector<std::string>& getArguments() const;
+  const Translateable& getMessage() const;
 
  private:
-  ValidationResult(bool success,
-                   const std::string& message,
-                   std::initializer_list<std::string> arguments);
+  ValidationResult() = default;
 
-  /* Function to add a single argument to the argument list */
-  void addArguments(const std::string& argument);
-  /* Function to add multiple arguments to the argument list */
-  template <typename... Args>
-  void addArguments(const std::string& firstArgument, Args&&... arguments) {
-    _arguments.push_back(firstArgument);
-    addArguments(std::forward<Args>(arguments)...);
-  }
+  template<typename... Args>
+  ValidationResult(bool success,
+                   const Args&... args) : _success(success), _message(args...) {}
 
   bool _success;
-  std::string _message;
-  std::vector<std::string> _arguments;
+  Translateable _message;
 };
 
 #endif /* ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP_ */

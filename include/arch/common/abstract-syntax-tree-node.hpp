@@ -87,8 +87,7 @@ class AbstractSyntaxTreeNode {
   virtual ValidationResult validateRuntime(MemoryAccess& memoryAccess) const;
 
   /**
-   * Assembles this syntax tree into its binary representation. So, this
-   * simulates the architecture specific assemblage.
+   * Assembles this syntax tree into its binary representation.
    *
    * \return The bit representation of this syntax tree.
    */

@@ -23,9 +23,9 @@
 #include <memory>
 
 #include "arch/common/instruction-information.hpp"
-#include "arch/common/register-node.hpp"
 #include "arch/riscv/abstract-jump-instruction-node.hpp"
 #include "arch/riscv/instruction-node.hpp"
+#include "arch/riscv/register-node.hpp"
 #include "common/utility.hpp"
 
 namespace riscv {
@@ -141,12 +141,11 @@ class JumpAndLinkImmediateInstructionNode
    */
   ValidationResult
   _validateResultingProgramCounter(MemoryAccess& memoryAccess) const override {
-
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
     auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
 
     // Check if the program counter would underflow or overflow
-    if (!riscv::isAddressValid(memoryAccess, programCounter + 2*offset)) {
+    if (!riscv::isAddressValid(memoryAccess, programCounter + 2 * offset)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Branch offset would invalidate program counter"));
@@ -279,10 +278,10 @@ class JumpAndLinkRegisterInstructionNode
    */
   ValidationResult
   _validateResultingProgramCounter(MemoryAccess& memoryAccess) const override {
-
     auto base = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
-    auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 2) + base;
-    if (!riscv::isAddressValid(memoryAccess, base+offset)) {
+    auto offset =
+        super::template _getChildValue<UnsignedWord>(memoryAccess, 2) + base;
+    if (!riscv::isAddressValid(memoryAccess, base + offset)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Jump offset would invalidate program counter"));
@@ -314,8 +313,8 @@ class JumpInstructionNode
   explicit JumpInstructionNode(const InstructionInformation& information)
   : super(information) {
     // Create a register node and insert it a the first operand to `JAL`.
-    auto zero = std::make_unique<RegisterNode>("x0");
-    super::insertChild(0, std::move(zero));
+    // auto zero = std::make_unique<RegisterNode>("x0");
+    // super::insertChild(0, std::move(zero));
   }
 };
 }

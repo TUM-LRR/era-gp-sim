@@ -1,528 +1,528 @@
 {
-    "reset-units": true, 
+    "reset-units": true,
+    "instructions": [
+        {
+            "key": {
+                "funct3": 3,
+                "opcode": 7
+            },
+            "length": 32,
+            "format": "I",
+            "mnemonic": "fld"
+        },
+        {
+            "key": {
+                "funct3": 3,
+                "opcode": 39
+            },
+            "length": 32,
+            "format": "S",
+            "mnemonic": "fsd"
+        },
+        {
+            "key": {
+                "funct2": 1,
+                "opcode": 67
+            },
+            "length": 32,
+            "format": "R4",
+            "mnemonic": "fmadd"
+        },
+        {
+            "key": {
+                "funct2": 1,
+                "opcode": 71
+            },
+            "length": 32,
+            "format": "R4",
+            "mnemonic": "fmsubd"
+        },
+        {
+            "key": {
+                "funct2": 1,
+                "opcode": 75
+            },
+            "length": 32,
+            "format": "R4",
+            "mnemonic": "fnmsubd"
+        },
+        {
+            "key": {
+                "funct7": 1,
+                "opcode": 79
+            },
+            "length": 32,
+            "format": "R4",
+            "mnemonic": "fnmaddd"
+        },
+        {
+            "key": {
+                "funct7": 1,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fadd"
+        },
+        {
+            "key": {
+                "funct7": 5,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fsubd"
+        },
+        {
+            "key": {
+                "funct7": 9,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fmuld"
+        },
+        {
+            "key": {
+                "funct7": 13,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fdivd"
+        },
+        {
+            "key": {
+                "funct7": 45,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fsqrtd"
+        },
+        {
+            "key": {
+                "funct7": 17,
+                "funct3": 0,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fsgnjd"
+        },
+        {
+            "key": {
+                "funct7": 17,
+                "funct3": 1,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fsgnjnd"
+        },
+        {
+            "key": {
+                "funct7": 17,
+                "funct3": 2,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fsgnjxd"
+        },
+        {
+            "key": {
+                "funct7": 21,
+                "funct3": 0,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fmind"
+        },
+        {
+            "key": {
+                "funct7": 32,
+                "rs2": 1,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtsd"
+        },
+        {
+            "key": {
+                "funct7": 33,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtds"
+        },
+        {
+            "key": {
+                "funct7": 81,
+                "funct3": 2,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "feqd"
+        },
+        {
+            "key": {
+                "funct7": 81,
+                "funct3": 1,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fltd"
+        },
+        {
+            "key": {
+                "funct7": 81,
+                "funct3": 0,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fled"
+        },
+        {
+            "key": {
+                "funct7": 113,
+                "funct3": 1,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fclassd"
+        },
+        {
+            "key": {
+                "funct7": 97,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtwd"
+        },
+        {
+            "key": {
+                "funct7": 97,
+                "rs2": 1,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtwud"
+        },
+        {
+            "key": {
+                "funct7": 105,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtdw"
+        },
+        {
+            "key": {
+                "funct7": 105,
+                "rs2": 1,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtdwu"
+        }
+    ],
     "units": [
         {
             "registers": [
                 {
-                    "id": 1, 
-                    "type": "float", 
-                    "name": "f1", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f1",
+                    "id": 1,
+                    "type": "float"
+                },
                 {
-                    "id": 2, 
-                    "type": "float", 
-                    "name": "f2", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f2",
+                    "id": 2,
+                    "type": "float"
+                },
                 {
-                    "id": 3, 
-                    "type": "float", 
-                    "name": "f3", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f3",
+                    "id": 3,
+                    "type": "float"
+                },
                 {
-                    "id": 4, 
-                    "type": "float", 
-                    "name": "f4", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f4",
+                    "id": 4,
+                    "type": "float"
+                },
                 {
-                    "id": 5, 
-                    "type": "float", 
-                    "name": "f5", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f5",
+                    "id": 5,
+                    "type": "float"
+                },
                 {
-                    "id": 6, 
-                    "type": "float", 
-                    "name": "f6", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f6",
+                    "id": 6,
+                    "type": "float"
+                },
                 {
-                    "id": 7, 
-                    "type": "float", 
-                    "name": "f7", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f7",
+                    "id": 7,
+                    "type": "float"
+                },
                 {
-                    "id": 8, 
-                    "type": "float", 
-                    "name": "f8", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f8",
+                    "id": 8,
+                    "type": "float"
+                },
                 {
-                    "id": 9, 
-                    "type": "float", 
-                    "name": "f9", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f9",
+                    "id": 9,
+                    "type": "float"
+                },
                 {
-                    "id": 10, 
-                    "type": "float", 
-                    "name": "f10", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f10",
+                    "id": 10,
+                    "type": "float"
+                },
                 {
-                    "id": 11, 
-                    "type": "float", 
-                    "name": "f11", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f11",
+                    "id": 11,
+                    "type": "float"
+                },
                 {
-                    "id": 12, 
-                    "type": "float", 
-                    "name": "f12", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f12",
+                    "id": 12,
+                    "type": "float"
+                },
                 {
-                    "id": 13, 
-                    "type": "float", 
-                    "name": "f13", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f13",
+                    "id": 13,
+                    "type": "float"
+                },
                 {
-                    "id": 14, 
-                    "type": "float", 
-                    "name": "f14", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f14",
+                    "id": 14,
+                    "type": "float"
+                },
                 {
-                    "id": 15, 
-                    "type": "float", 
-                    "name": "f15", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f15",
+                    "id": 15,
+                    "type": "float"
+                },
                 {
-                    "id": 16, 
-                    "type": "float", 
-                    "name": "f16", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f16",
+                    "id": 16,
+                    "type": "float"
+                },
                 {
-                    "id": 17, 
-                    "type": "float", 
-                    "name": "f17", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f17",
+                    "id": 17,
+                    "type": "float"
+                },
                 {
-                    "id": 18, 
-                    "type": "float", 
-                    "name": "f18", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f18",
+                    "id": 18,
+                    "type": "float"
+                },
                 {
-                    "id": 19, 
-                    "type": "float", 
-                    "name": "f19", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f19",
+                    "id": 19,
+                    "type": "float"
+                },
                 {
-                    "id": 20, 
-                    "type": "float", 
-                    "name": "f20", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f20",
+                    "id": 20,
+                    "type": "float"
+                },
                 {
-                    "id": 21, 
-                    "type": "float", 
-                    "name": "f21", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f21",
+                    "id": 21,
+                    "type": "float"
+                },
                 {
-                    "id": 22, 
-                    "type": "float", 
-                    "name": "f22", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f22",
+                    "id": 22,
+                    "type": "float"
+                },
                 {
-                    "id": 23, 
-                    "type": "float", 
-                    "name": "f23", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f23",
+                    "id": 23,
+                    "type": "float"
+                },
                 {
-                    "id": 24, 
-                    "type": "float", 
-                    "name": "f24", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f24",
+                    "id": 24,
+                    "type": "float"
+                },
                 {
-                    "id": 25, 
-                    "type": "float", 
-                    "name": "f25", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f25",
+                    "id": 25,
+                    "type": "float"
+                },
                 {
-                    "id": 26, 
-                    "type": "float", 
-                    "name": "f26", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f26",
+                    "id": 26,
+                    "type": "float"
+                },
                 {
-                    "id": 27, 
-                    "type": "float", 
-                    "name": "f27", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f27",
+                    "id": 27,
+                    "type": "float"
+                },
                 {
-                    "id": 28, 
-                    "type": "float", 
-                    "name": "f28", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f28",
+                    "id": 28,
+                    "type": "float"
+                },
                 {
-                    "id": 29, 
-                    "type": "float", 
-                    "name": "f29", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f29",
+                    "id": 29,
+                    "type": "float"
+                },
                 {
-                    "id": 30, 
-                    "type": "float", 
-                    "name": "f30", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f30",
+                    "id": 30,
+                    "type": "float"
+                },
                 {
-                    "id": 31, 
-                    "type": "float", 
-                    "name": "f31", 
-                    "size": 64
-                }, 
+                    "size": 64,
+                    "name": "f31",
+                    "id": 31,
+                    "type": "float"
+                },
                 {
-                    "id": 32, 
+                    "size": 64,
                     "constituents": [
                         {
-                            "id": 33, 
-                            "enclosing-index": 5
-                        }, 
+                            "enclosing-index": 5,
+                            "id": 33
+                        },
                         {
-                            "id": 34, 
-                            "enclosing-index": 0
+                            "enclosing-index": 0,
+                            "id": 34
                         }
-                    ], 
-                    "type": "flag", 
-                    "name": "fcsr", 
-                    "size": 64
-                }, 
+                    ],
+                    "id": 32,
+                    "name": "fcsr",
+                    "type": "flag"
+                },
                 {
-                    "id": 33, 
-                    "size": 3, 
-                    "type": "flag", 
-                    "name": "frm", 
+                    "size": 3,
+                    "name": "frm",
+                    "type": "flag",
+                    "id": 33,
                     "enclosing": 32
-                }, 
+                },
                 {
-                    "name": "fflags", 
-                    "enclosing": 32, 
+                    "size": 5,
+                    "enclosing": 32,
+                    "id": 34,
                     "constituents": [
                         {
-                            "id": 35, 
-                            "enclosing-index": 0
-                        }, 
+                            "enclosing-index": 0,
+                            "id": 35
+                        },
                         {
-                            "id": 36, 
-                            "enclosing-index": 1
-                        }, 
+                            "enclosing-index": 1,
+                            "id": 36
+                        },
                         {
-                            "id": 37, 
-                            "enclosing-index": 2
-                        }, 
+                            "enclosing-index": 2,
+                            "id": 37
+                        },
                         {
-                            "id": 38, 
-                            "enclosing-index": 3
-                        }, 
+                            "enclosing-index": 3,
+                            "id": 38
+                        },
                         {
-                            "id": 39, 
-                            "enclosing-index": 4
+                            "enclosing-index": 4,
+                            "id": 39
                         }
-                    ], 
-                    "type": "flag", 
-                    "id": 34, 
-                    "size": 5
-                }, 
+                    ],
+                    "type": "flag",
+                    "name": "fflags"
+                },
                 {
-                    "id": 35, 
-                    "size": 1, 
-                    "type": "flag", 
-                    "name": "nx", 
+                    "size": 1,
+                    "name": "nx",
+                    "type": "flag",
+                    "id": 35,
                     "enclosing": 24
-                }, 
+                },
                 {
-                    "id": 36, 
-                    "size": 1, 
-                    "type": "flag", 
-                    "name": "of", 
+                    "size": 1,
+                    "name": "of",
+                    "type": "flag",
+                    "id": 36,
                     "enclosing": 24
-                }, 
+                },
                 {
-                    "id": 37, 
-                    "size": 1, 
-                    "type": "flag", 
-                    "name": "uf", 
+                    "size": 1,
+                    "name": "uf",
+                    "type": "flag",
+                    "id": 37,
                     "enclosing": 24
-                }, 
+                },
                 {
-                    "id": 38, 
-                    "size": 1, 
-                    "type": "flag", 
-                    "name": "dz", 
+                    "size": 1,
+                    "name": "dz",
+                    "type": "flag",
+                    "id": 38,
                     "enclosing": 24
-                }, 
+                },
                 {
-                    "id": 39, 
-                    "size": 1, 
-                    "type": "flag", 
-                    "name": "nv", 
+                    "size": 1,
+                    "name": "nv",
+                    "type": "flag",
+                    "id": 39,
                     "enclosing": 24
                 }
-            ], 
+            ],
             "name": "cpu"
         }
-    ], 
-    "extends": "rv32f", 
-    "name": "rv32d", 
-    "instructions": [
-        {
-            "mnemonic": "fld", 
-            "length": 32, 
-            "key": {
-                "funct3": 3, 
-                "opcode": 7
-            }, 
-            "format": "I"
-        }, 
-        {
-            "mnemonic": "fsd", 
-            "length": 32, 
-            "key": {
-                "funct3": 3, 
-                "opcode": 39
-            }, 
-            "format": "S"
-        }, 
-        {
-            "mnemonic": "fmadd", 
-            "length": 32, 
-            "key": {
-                "funct2": 1, 
-                "opcode": 67
-            }, 
-            "format": "R4"
-        }, 
-        {
-            "mnemonic": "fmsubd", 
-            "length": 32, 
-            "key": {
-                "funct2": 1, 
-                "opcode": 71
-            }, 
-            "format": "R4"
-        }, 
-        {
-            "mnemonic": "fnmsubd", 
-            "length": 32, 
-            "key": {
-                "funct2": 1, 
-                "opcode": 75
-            }, 
-            "format": "R4"
-        }, 
-        {
-            "mnemonic": "fnmaddd", 
-            "length": 32, 
-            "key": {
-                "opcode": 79, 
-                "funct7": 1
-            }, 
-            "format": "R4"
-        }, 
-        {
-            "mnemonic": "fadd", 
-            "length": 32, 
-            "key": {
-                "opcode": 83, 
-                "funct7": 1
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fsubd", 
-            "length": 32, 
-            "key": {
-                "opcode": 83, 
-                "funct7": 5
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fmuld", 
-            "length": 32, 
-            "key": {
-                "opcode": 83, 
-                "funct7": 9
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fdivd", 
-            "length": 32, 
-            "key": {
-                "opcode": 83, 
-                "funct7": 13
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fsqrtd", 
-            "length": 32, 
-            "key": {
-                "opcode": 83, 
-                "rs2": 0, 
-                "funct7": 45
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fsgnjd", 
-            "length": 32, 
-            "key": {
-                "funct3": 0, 
-                "opcode": 83, 
-                "funct7": 17
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fsgnjnd", 
-            "length": 32, 
-            "key": {
-                "funct3": 1, 
-                "opcode": 83, 
-                "funct7": 17
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fsgnjxd", 
-            "length": 32, 
-            "key": {
-                "funct3": 2, 
-                "opcode": 83, 
-                "funct7": 17
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fmind", 
-            "length": 32, 
-            "key": {
-                "funct3": 0, 
-                "opcode": 83, 
-                "funct7": 21
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fcvtsd", 
-            "length": 32, 
-            "key": {
-                "opcode": 83, 
-                "rs2": 1, 
-                "funct7": 32
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fcvtds", 
-            "length": 32, 
-            "key": {
-                "opcode": 83, 
-                "rs2": 0, 
-                "funct7": 33
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "feqd", 
-            "length": 32, 
-            "key": {
-                "funct3": 2, 
-                "opcode": 83, 
-                "funct7": 81
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fltd", 
-            "length": 32, 
-            "key": {
-                "funct3": 1, 
-                "opcode": 83, 
-                "funct7": 81
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fled", 
-            "length": 32, 
-            "key": {
-                "funct3": 0, 
-                "opcode": 83, 
-                "funct7": 81
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fclassd", 
-            "length": 32, 
-            "key": {
-                "funct3": 1, 
-                "opcode": 83, 
-                "rs2": 0, 
-                "funct7": 113
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fcvtwd", 
-            "length": 32, 
-            "key": {
-                "opcode": 83, 
-                "rs2": 0, 
-                "funct7": 97
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fcvtwud", 
-            "length": 32, 
-            "key": {
-                "opcode": 83, 
-                "rs2": 1, 
-                "funct7": 97
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fcvtdw", 
-            "length": 32, 
-            "key": {
-                "opcode": 83, 
-                "rs2": 0, 
-                "funct7": 105
-            }, 
-            "format": "R"
-        }, 
-        {
-            "mnemonic": "fcvtdwu", 
-            "length": 32, 
-            "key": {
-                "opcode": 83, 
-                "rs2": 1, 
-                "funct7": 105
-            }, 
-            "format": "R"
-        }
-    ]
+    ],
+    "name": "rv32d",
+    "extends": "rv32f"
 }

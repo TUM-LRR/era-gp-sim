@@ -2,6 +2,7 @@ name: no-deps
 
 endianness: little
 alignment-behavior: strict
+signed-representation: sign-bit
 word-size: 32
 byte-size: 8
 

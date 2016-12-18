@@ -21,7 +21,7 @@
 #include <cctype>
 #include <regex>
 
-#include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/abstract-instruction-node.hpp"
 #include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
 #include "parser/compile-state.hpp"
@@ -36,13 +36,13 @@ SyntaxTreeGenerator::transformOperand(const std::string& operand,
   // According to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
-    state.addError("Invalid argument: '" + operand + "'", state.position);
+    state.addErrorHereT("Invalid argument: '%1'", operand);
   }
 
   return std::move(outputNode);
 }
 
-std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
+std::unique_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
     const std::string& command_name,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
@@ -54,7 +54,7 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
 
   if (!outputNode) {
     // The node creation failed!
-    state.addError("Unknown operation: " + command_name, state.position);
+    state.addErrorHereT("Unknown operation: %1", command_name);
     return std::move(outputNode);
   }
 
@@ -71,9 +71,9 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
   // Validate node.
   auto validationResult = outputNode->validate(memoryAccess);
   if (!validationResult) {
-    state.addError("Invalid operation (" + command_name + "): " +
-                       validationResult.getMessage(),
-                   state.position);
+    state.addErrorHereT("Invalid operation (%1): %2",
+                        command_name,
+                        validationResult.getMessage());
   }
 
   // Return.

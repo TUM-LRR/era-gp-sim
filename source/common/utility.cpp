@@ -99,8 +99,7 @@ std::string joinPaths(const std::string& single) {
 std::string loadFromFile(const std::string& filePath) {
   std::string input;
   std::ifstream file(filePath);
-
-  assert::that(static_cast<bool>(file));
+  file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
 
   std::copy(std::istreambuf_iterator<char>{file},
             std::istreambuf_iterator<char>{},

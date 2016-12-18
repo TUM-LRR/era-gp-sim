@@ -41,7 +41,7 @@
 
 
 MemoryValue convert(uint32_t value) {
-    return conversions::convert(value, 32);
+  return conversions::convert(value, 32);
 }
 
 struct ArchCommonTestFixture : ::testing::Test {
@@ -78,8 +78,9 @@ struct ArchCommonTestFixture : ::testing::Test {
         .wordSize(32)
         .byteSize(8)
         .endianness(ArchitectureProperties::Endianness::MIXED)
-        .alignmentBehavior(
-            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
+        .alignmentBehavior(ArchitectureProperties::AlignmentBehavior::STRICT)
+        .signedRepresentation(
+            ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT);
 
     // clang-format off
     auto lr = InstructionInformation("lr")
@@ -142,6 +143,7 @@ TEST(ArchCommonTest, TestRegisterInformation) {
   EXPECT_TRUE(RegisterInformation::isSpecialType(
     registerInformation.getType()
   ));
+  // clang-format on
 }
 
 TEST(ArchCommonTest, TestInstructionKey) {
@@ -281,11 +283,12 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   extension.byteSize(8);
   extension.endianness(ArchitectureProperties::Endianness::MIXED);
   extension.alignmentBehavior(
-      ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
+      ArchitectureProperties::AlignmentBehavior::STRICT);
+  extension.signedRepresentation(
+      ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT);
 
   EXPECT_TRUE(extension.isValid());
   EXPECT_TRUE(extension.isComplete());
-
 
   EXPECT_EQ(extension.getName(), "rvi32");
   EXPECT_EQ(extension.getInstructions(), instructionSet);
@@ -297,7 +300,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   EXPECT_EQ(extension.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(extension.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
+            ArchitectureProperties::AlignmentBehavior::STRICT);
 }
 
 TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
@@ -316,7 +319,9 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
   EXPECT_EQ(extension.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(extension.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
+            ArchitectureProperties::AlignmentBehavior::STRICT);
+  EXPECT_EQ(extension.getSignedRepresentation(),
+            Architecture::SignedRepresentation::TWOS_COMPLEMENT);
 
   // This should now include the new instructions
   instructionSet += specialExtensionInformation.getInstructions();
@@ -345,7 +350,9 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
   EXPECT_EQ(architecture.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT);
+            ArchitectureProperties::AlignmentBehavior::STRICT);
+  EXPECT_EQ(architecture.getSignedRepresentation(),
+            Architecture::SignedRepresentation::TWOS_COMPLEMENT);
 
   instructionSet += specialExtensionInformation.getInstructions();
   EXPECT_EQ(architecture.getInstructions(), instructionSet);

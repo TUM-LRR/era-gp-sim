@@ -1,65 +1,65 @@
 {
-    "name": "rv64d", 
     "instructions": [
         {
-            "mnemonic": "fcvtld", 
-            "length": 32, 
             "key": {
-                "opcode": 83, 
-                "rs2": 2, 
-                "funct7": 97
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 97,
+                "rs2": 2,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtld"
+        },
         {
-            "mnemonic": "fcvtlud", 
-            "length": 32, 
             "key": {
-                "opcode": 83, 
-                "rs2": 3, 
-                "funct7": 97
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 97,
+                "rs2": 3,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtlud"
+        },
         {
-            "mnemonic": "fmvxd", 
-            "length": 32, 
             "key": {
-                "opcode": 83, 
-                "rs2": 0, 
-                "funct7": 113
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 113,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fmvxd"
+        },
         {
-            "mnemonic": "fcvtdl", 
-            "length": 32, 
             "key": {
-                "opcode": 83, 
-                "rs2": 2, 
-                "funct7": 105
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 105,
+                "rs2": 2,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtdl"
+        },
         {
-            "mnemonic": "fcvtslu", 
-            "length": 32, 
             "key": {
-                "opcode": 83, 
-                "rs2": 3, 
-                "funct7": 105
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 105,
+                "rs2": 3,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtslu"
+        },
         {
-            "mnemonic": "fmvdx", 
-            "length": 32, 
             "key": {
-                "opcode": 83, 
-                "rs2": 0, 
-                "funct7": 121
-            }, 
-            "format": "R"
+                "funct7": 121,
+                "rs2": 0,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fmvdx"
         }
-    ]
+    ],
+    "name": "rv64d"
 }

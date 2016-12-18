@@ -1,55 +1,56 @@
 {
-    "name": "rv64m", 
     "instructions": [
         {
-            "mnemonic": "mulw", 
-            "length": 32, 
             "key": {
-                "funct3": 0, 
-                "opcode": 59, 
-                "funct7": 1
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 1,
+                "funct3": 0,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "mulw"
+        },
         {
-            "mnemonic": "divw", 
-            "length": 32, 
             "key": {
-                "funct3": 4, 
-                "opcode": 59, 
-                "funct7": 1
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 1,
+                "funct3": 4,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "divw"
+        },
         {
-            "mnemonic": "divuw", 
-            "length": 32, 
             "key": {
-                "funct3": 5, 
-                "opcode": 59, 
-                "funct7": 1
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 1,
+                "funct3": 5,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "divuw"
+        },
         {
-            "mnemonic": "remw", 
-            "length": 32, 
             "key": {
-                "funct3": 6, 
-                "opcode": 59, 
-                "funct7": 1
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 1,
+                "funct3": 6,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "remw"
+        },
         {
-            "mnemonic": "remuw", 
-            "length": 32, 
             "key": {
-                "funct3": 7, 
-                "opcode": 59, 
-                "funct7": 1
-            }, 
-            "format": "R"
+                "funct7": 1,
+                "funct3": 7,
+                "opcode": 59
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "remuw"
         }
-    ]
+    ],
+    "name": "rv64m",
+    "extends": "rv32m"
 }

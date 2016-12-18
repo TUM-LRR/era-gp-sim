@@ -38,7 +38,10 @@ Memory::Memory() : Memory(64, 8) {
 }
 
 Memory::Memory(std::size_t byteCount, std::size_t byteSize)
-: _byteCount{byteCount}, _byteSize{byteSize}, _data{byteCount * byteSize} {
+: _byteCount{byteCount}
+, _byteSize{byteSize}
+, _data{byteCount * byteSize}
+, _callback{[](const std::size_t, const std::size_t) {}} {
   assert::that(byteCount > 0);
   assert::that(byteSize > 0);
 }
@@ -57,73 +60,102 @@ std::size_t Memory::getByteCount() const {
   return _byteCount;
 }
 
-void Memory::setCallback(
-    const std::function<void(const std::size_t, const std::size_t)>& callback) {
+void Memory::setCallback(const CallbackFunction& callback) {
   _callback = callback;
 }
 
-MemoryValue
-Memory::get(const std::size_t address, const std::size_t amount) const {
-  assert::that(address >= 0);
-  assert::that(amount >= 0);
-  assert::that(address + amount <= _byteCount);
+MemoryValue Memory::_get(std::size_t address, std::size_t amount) const {
   return _data.subSet(address * _byteSize, (address + amount) * _byteSize);
 }
 
-void Memory::put(const std::size_t address,
+MemoryValue Memory::get(std::size_t address, std::size_t amount) const {
+  assert::that(address >= 0);
+  assert::that(amount >= 0);
+  assert::that(address + amount <= _byteCount);
+  return _get(address, amount);
+}
+
+MemoryValue Memory::tryGet(std::size_t address, std::size_t amount) const {
+  MemoryValue result{amount * _byteSize};
+  amount = std::min(_byteCount - address, amount);
+  if (amount > 0) {
+    MemoryValue data = _get(address, amount);
+    result.write(data, 0);
+  }
+  return result;
+}
+
+void Memory::_put(std::size_t address,
+                  const MemoryValue& value,
+                  std::size_t amount,
+                  bool ignoreProtection) {
+  if (!ignoreProtection && isProtected(address, amount)) {
+    // do not write anything
+    return;
+  }
+  _data.write(value, address * _byteSize);
+  _wasUpdated(address, amount);
+}
+
+void Memory::put(std::size_t address,
                  const MemoryValue& value,
                  bool ignoreProtection) {
   assert::that(address >= 0);
   assert::that(value.getSize() % _byteSize == 0);
   const std::size_t amount{value.getSize() / _byteSize};
   assert::that(amount >= 0);
-  // I could possibly implement an optional assertion check
+  assert::that(address + amount <= _byteCount);
+  _put(address, value, amount, ignoreProtection);
+}
+
+void Memory::tryPut(std::size_t address,
+                    const MemoryValue& value,
+                    bool ignoreProtection) {
+  std::size_t amount{value.getSize() / _byteSize};
   if (!ignoreProtection && isProtected(address, amount)) {
     // do not write anything
     return;
   }
-  assert::that(address + amount <= _byteCount);
-  _data.write(value, address * _byteSize);
+  amount = std::min(amount, _byteCount - address);
+  MemoryValue valueInsert = value.subSet(0, amount * _byteSize);
+  _put(address, valueInsert, amount, ignoreProtection);
   _wasUpdated(address, amount);
 }
 
-MemoryValue Memory::set(const std::size_t address,
+MemoryValue Memory::_set(std::size_t address,
+                         const MemoryValue& value,
+                         bool ignoreProtection) {
+  std::size_t amount{value.getSize() / _byteSize};
+  MemoryValue prev{_get(address, amount)};
+  _put(address, value, amount, ignoreProtection);
+  return prev;
+}
+
+MemoryValue Memory::set(std::size_t address,
                         const MemoryValue& value,
                         bool ignoreProtection) {
-  const std::size_t amount{value.getSize() / _byteSize};
+  std::size_t amount{value.getSize() / _byteSize};
   MemoryValue prev{get(address, amount)};
   put(address, value, ignoreProtection);
   return prev;
 }
 
-void Memory::_appendMemoryValue(std::stringstream& strm,
-                                const MemoryValue& value) {
-  static const char hex[] = "0123456789ABCDEF";
-  bool zero = true;
-  // reversely iterate over all the bytes in value (high->low)
-  for (std::size_t l = (value.getSize() + 7) / 8; l-- > 0;) {
-    std::uint8_t byte = value.getByteAt(l * 8);
-    std::uint8_t upperChar = byte / 16;
-    std::uint8_t lowerChar = byte % 16;
-    // do not print if this is the first character && it's 0
-    if (!zero || upperChar != 0) {
-      strm.put(hex[upperChar]);
-      zero = false;
-    }
-    // do not print if this is the first character && it's 0
-    if (!zero || lowerChar != 0) {
-      strm.put(hex[lowerChar]);
-      zero = false;
-    }
-  }
-  // if no characters have been printed print 0
-  if (zero) {
-    strm.put('0');
-  }
+MemoryValue Memory::trySet(std::size_t address,
+                           const MemoryValue& value,
+                           bool ignoreProtection) {
+  std::size_t amount{value.getSize() / _byteSize};
+  MemoryValue prev{tryGet(address, amount)};
+  tryPut(address, value, ignoreProtection);
+  return prev;
 }
 
-std::pair<std::map<std::string, std::size_t>,
-          std::map<std::string, std::string>>
+void Memory::_appendMemoryValue(std::stringstream& strm,
+                                const MemoryValue& value) {
+  std::string s = value.toHexString(false, true);
+  strm << s;
+}
+
+Memory::RawMapPair
 Memory::_serializeRaw(char separator, std::size_t lineLength) const {
   if (lineLength > _byteCount) {
     lineLength = _byteCount;
@@ -140,7 +172,7 @@ Memory::_serializeRaw(char separator, std::size_t lineLength) const {
   // iterate over all lines in memory
   for (std::size_t i = 0; i < lineCount; ++i) {
     // if this line == 0x00 do not do anything at all
-    if (get(i * lineLength, lineLength) != empty) {
+    if (tryGet(i * lineLength, lineLength) != empty) {
       // the key is _lineStringIdentifier and the cell address
       std::stringstream name{};
       name << _lineStringIdentifier;
@@ -148,7 +180,7 @@ Memory::_serializeRaw(char separator, std::size_t lineLength) const {
       // iterate over all the cells in a line to get the value
       std::stringstream value{};
       for (std::size_t j = 0; j < lineLength; ++j) {
-        MemoryValue v{get(i * lineLength + j)};
+        MemoryValue v{tryGet(i * lineLength + j)};
         _appendMemoryValue(value, v);
         value.put(separator);
       }
@@ -298,9 +330,10 @@ void Memory::deserializeJSON(const Json& json) {
       MemoryValue value =
           _deserializeLine(*lineIterator, _byteSize, lineLength, separator);
       // write line
-      put(i * lineLength, value);
+      tryPut(i * lineLength, value);
     }
   }
+  _wasUpdated();
 }
 
 bool Memory::operator==(const Memory& other) const {
@@ -315,10 +348,14 @@ std::ostream& operator<<(std::ostream& stream, const Memory& value) {
 
 void Memory::clear() {
   _data.clear();
+  _wasUpdated();
+}
+
+void Memory::_wasUpdated() const {
   _wasUpdated(0, _byteCount);
 }
 
-void Memory::_wasUpdated(const std::size_t address, const std::size_t amount) {
+void Memory::_wasUpdated(std::size_t address, std::size_t amount) const {
   _callback(address, amount);
 }
 

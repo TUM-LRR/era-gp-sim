@@ -52,6 +52,8 @@
         <file>Components/Output/7-Segment/SevenSegment.qml</file>
         <file>Components/Output/7-Segment/SevenSegment_Segment.qml</file>
         <file>Components/Output/LightstripSettingsWindow.qml</file>
+        <file>Components/Output/Console.qml</file>
+        <file>Components/Output/ConsoleSettingsWindow.qml</file>
         <file>Components/Input/ButtonInput.qml</file>
         <file>Components/Input/ClickInput.qml</file>
         <file>Components/Input/Input.qml</file>
