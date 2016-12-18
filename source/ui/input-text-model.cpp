@@ -29,7 +29,6 @@ InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess memoryAccess)
 , _maximumLength(20)
 , _memoryAccess(memoryAccess) {
   _context->setContextProperty("inputtextMod", this);
-  qRegisterMetaType<length_t>("length_t");
 }
 
 void InputTextModel::newText(QString text) {
