@@ -231,12 +231,18 @@ QString GuiProject::getCommandHelp(std::size_t line) {
   if (iterator != _helpCache.end()) {
     help = iterator->second;
   } else {
+    bool helpFound = false;
     for (const auto& command : _commandList) {
       if (command.position.lineStart == line) {
         auto translateable = command.node->getInstructionDocumentation();
         help = Ui::translate(translateable);
         _helpCache.emplace(line, help);
+        helpFound = true;
+        break;
       }
+    }
+    if (!helpFound) {
+      _helpCache.emplace(line, "");
     }
   }
   return help;

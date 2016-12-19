@@ -65,6 +65,7 @@ ScrollView {
                 property real unscaledWidth: Math.max(scrollView.viewport.width - sidebar.width, contentWidth)
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
                 property int line: 1
+                property var cursorLine: 1
 
                 width: (textArea.unscaledWidth)*scale.zoom;
                 height: (textArea.unscaledHeight)*scale.zoom;
@@ -80,7 +81,14 @@ ScrollView {
                     cursorScroll(textArea.cursorRectangle);
                 }
                 visible: true
-                onCursorRectangleChanged: cursorScroll(cursorRectangle)
+                onCursorRectangleChanged: {
+                    cursorScroll(cursorRectangle);
+                    var newCursorLine = 1 + (cursorRectangle.y/cursorRectangle.height);
+                    if(cursorLine != newCursorLine) {
+                        cursorLine = newCursorLine;
+                        editor.cursorLineChanged(newCursorLine);
+                    }
+                }
 
                 //workaround to get tab working correctly
                 Keys.onPressed: {
