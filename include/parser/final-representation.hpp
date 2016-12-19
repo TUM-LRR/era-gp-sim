@@ -37,7 +37,7 @@ struct FinalCommand {
    * \brief A pointer to the instruction node which carries the data of this
    * instruction.
    */
-  std::unique_ptr<AbstractInstructionNode> node;
+  std::shared_ptr<AbstractInstructionNode> node;
 
   /**
    * \brief Describes the interval of lines where this command occurs in the

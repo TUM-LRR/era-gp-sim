@@ -26,11 +26,11 @@
 #include "core/memory-access.hpp"
 #include "parser/compile-state.hpp"
 
-std::unique_ptr<AbstractSyntaxTreeNode>
+std::shared_ptr<AbstractSyntaxTreeNode>
 SyntaxTreeGenerator::transformOperand(const std::string& operand,
                                       CompileState& state) const {
   // We invoke our node generator to get a node!
-  std::unique_ptr<AbstractSyntaxTreeNode> outputNode =
+  std::shared_ptr<AbstractSyntaxTreeNode> outputNode =
       _argumentGenerator(operand, _nodeFactories, state);
 
   // According to the architecture group, we get a nullptr if the creation
@@ -42,10 +42,10 @@ SyntaxTreeGenerator::transformOperand(const std::string& operand,
   return std::move(outputNode);
 }
 
-std::unique_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
+std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
     const std::string& command_name,
-    std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
-    std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
+    std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& sources,
+    std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& targets,
     CompileState& state,
     MemoryAccess& memoryAccess) const {
   // Just create an instruction node and add all output and input nodes

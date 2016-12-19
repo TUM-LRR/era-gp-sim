@@ -23,9 +23,12 @@
 
 #include "arch/common/architecture-formula.hpp"
 #include "common/assert.hpp"
+#include "common/translateable.hpp"
 #include "common/utility.hpp"
+#include "parser/final-representation.hpp"
 #include "ui/snapshot-component.hpp"
 
+Q_DECLARE_METATYPE(FinalRepresentation)
 
 Ui::Ui(int& argc, char** argv)
 : _architectureMap()
@@ -39,6 +42,7 @@ Ui::Ui(int& argc, char** argv)
 
 int Ui::runUi() {
   qRegisterMetaType<std::size_t>("std::size_t");
+  qRegisterMetaType<FinalRepresentation>();
   _engine.rootContext()->setContextProperty("ui", this);
   _engine.rootContext()->setContextProperty("snapshotComponent",
                                             _snapshots.get());
@@ -217,4 +221,12 @@ void Ui::loadSnapshot(int index, QString name) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
   _projects[index]->loadSnapshot(name);
+}
+
+QString Ui::translate(const Translateable& translateable) {
+  QString translation = QObject::tr(translateable.getBaseString().c_str());
+  for (const auto& operand : translateable.getOperands()) {
+    translation = translation.arg(translate(*operand));
+  }
+  return translation;
 }

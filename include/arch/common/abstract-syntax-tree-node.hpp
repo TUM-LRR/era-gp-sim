@@ -29,7 +29,7 @@ class ValidationResult;
 /** The base class for nodes in the abstract syntax tree */
 class AbstractSyntaxTreeNode {
  public:
-  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using Node = std::shared_ptr<AbstractSyntaxTreeNode>;
   using size_t = std::size_t;
 
   enum class Type {

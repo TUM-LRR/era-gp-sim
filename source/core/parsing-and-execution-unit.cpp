@@ -42,9 +42,8 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _breakpoints()
 , _syntaxInformation(_parser->getSyntaxInformation())
 , _setContextInformation([](const std::vector<ContextInformation> &x) {})
-, _setErrorList([](const std::vector<CompileError> &x) {})
+, _setFinalRepresentation([](const FinalRepresentation &x) {})
 , _throwError(([](const std::string &x, const std::vector<std::string> &y) {}))
-, _setMacroList(([](const std::vector<MacroInformation> &x) {}))
 , _setCurrentLine([](size_t x) {}) {
   // find the RegisterInformation object of the program counter
   for (UnitInformation unitInfo : architecture.getUnits()) {
@@ -149,8 +148,8 @@ void ParsingAndExecutionUnit::parse(std::string code) {
   _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
   _addressCommandMap = _finalRepresentation.createMapping();
   _lineCommandCache.clear();
-  // update the error list of the ui
-  _setErrorList(_finalRepresentation.errorList);
+  // update the final representation of the ui
+  _setFinalRepresentation(_finalRepresentation);
   // assemble commands into memory
   if (!_finalRepresentation.hasErrors()) {
     for (const auto &command : _finalRepresentation.commandList) {
@@ -177,19 +176,14 @@ void ParsingAndExecutionUnit::setSetContextInformationCallback(
   _setContextInformation = callback;
 }
 
-void ParsingAndExecutionUnit::setSetErrorListCallback(
-    ListCallback<CompileError> callback) {
-  _setErrorList = callback;
+void ParsingAndExecutionUnit::setFinalRepresentationCallback(
+    Callback<const FinalRepresentation &> callback) {
+  _setFinalRepresentation = callback;
 }
 
 void ParsingAndExecutionUnit::setThrowErrorCallback(
     Callback<const std::string &, const std::vector<std::string> &> callback) {
   _throwError = callback;
-}
-
-void ParsingAndExecutionUnit::setSetMacroListCallback(
-    ListCallback<MacroInformation> callback) {
-  _setMacroList = callback;
 }
 
 void ParsingAndExecutionUnit::setSetCurrentLineCallback(
@@ -228,7 +222,7 @@ bool ParsingAndExecutionUnit::_executeNode(size_t nodeIndex) {
   auto validationResult = currentCommand.node->validateRuntime(_memoryAccess);
   if (!validationResult.isSuccess()) {
     // notify the ui of a runtime error
-      _throwError(validationResult.getMessage().getBaseString(), {});
+    _throwError(validationResult.getMessage().getBaseString(), {});
     return false;
   }
   // update the current line in the ui (pre-execution)

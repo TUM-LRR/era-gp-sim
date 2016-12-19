@@ -40,8 +40,6 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
   projectContext->setContextProperty("editor", this);
   parserInterface.setSetCurrentLineCallback(
       [this](std::size_t line) { setCurrentLine(line); });
-  parserInterface.setSetErrorListCallback([this](
-      const std::vector<CompileError> &errorList) { setErrorList(errorList); });
 
   // TODO select colors according to a theme/possibility to change colors
 
@@ -132,9 +130,8 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
       case CompileErrorSeverity::INFORMATION: color = QColor(Qt::blue); break;
       default: assert::that(false);
     }
-    emit addError(translate(error.message()),
-                  error.position().first.line(),
-                  color);
+    emit addError(
+        translate(error.message()), error.position().first.line(), color);
   }
 }
 
@@ -144,6 +141,11 @@ void EditorComponent::setCurrentLine(int line) {
 
 QString EditorComponent::getText() {
   return _textDocument->toPlainText();
+}
+
+void EditorComponent::onFinalRepresentationChanged(
+    const FinalRepresentation &finalRepresentation) {
+  setErrorList(finalRepresentation.errorList);
 }
 
 void EditorComponent::_addKeywords(
