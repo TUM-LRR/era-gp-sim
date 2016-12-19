@@ -37,15 +37,15 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
     RiscvParser::argumentGeneratorFunction =
         [](const std::string& operand,
            const NodeFactoryCollection& nodeFactories,
-           CompileState& state) -> std::unique_ptr<AbstractSyntaxTreeNode> {
+           CompileState& state) -> std::shared_ptr<AbstractSyntaxTreeNode> {
   // These checks are performed:
   // * Empty argument? Shouldn't happen, kill the compilation with fire.
   // * First character is a letter? We have replace all constants by now, so it
   // must be a register - or an undefined constant!
   // * If not? Try to compile the expression!
-  std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
+  std::shared_ptr<AbstractSyntaxTreeNode> outputNode;
   if (operand.empty()) {
-    outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
+    outputNode = std::shared_ptr<AbstractSyntaxTreeNode>(nullptr);
   } else if (std::isalpha(operand[0])) {
     outputNode = nodeFactories.createRegisterNode(operand);
   } else if (operand[0] == '\"') {

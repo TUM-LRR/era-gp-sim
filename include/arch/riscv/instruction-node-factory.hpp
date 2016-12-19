@@ -65,7 +65,7 @@ class InstructionNodeFactory : public AbstractInstructionNodeFactory {
   Node createInstructionNode(const std::string &mnemonic) const override;
 
  private:
-  using Factory = std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
+  using Factory = std::function<std::shared_ptr<AbstractSyntaxTreeNode>(
       const InstructionInformation &)>;
 
   /**
