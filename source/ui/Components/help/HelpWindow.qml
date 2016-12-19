@@ -24,7 +24,7 @@ import QtQuick.Controls 1.4
 Item{
     anchors.fill: parent
     property string usualText: "Hier ist leider keine Hilfe vorhanden"
-    property int currentLine: 0
+    property int currentLine: 1
 
     TextArea{
         id: textarea
@@ -40,6 +40,10 @@ Item{
         onFinalRepresentationChanged: {
             console.info("Final Representation Changed");
             textarea.text = guiProject.getCommandHelp(currentLine);
+            console.info( "    currentLine: " + currentLine);
+            if(textarea.text === ""){
+                textarea.text = usualText;
+            }
         }
     }
 
@@ -48,8 +52,11 @@ Item{
         // Send when text changes
         onCursorLineChanged: {
             console.info("Cursor Line Changed");
-            currentLine = newLine;
-            textarea.text = guiProject.getCommandMessage(currentLine);
+            currentLine = line;
+            textarea.text = guiProject.getCommandHelp(currentLine);
+            if(textarea.text === ""){
+                textarea.text = usualText;
+            }
         }
     }
 
