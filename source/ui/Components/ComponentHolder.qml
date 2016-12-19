@@ -24,6 +24,7 @@ import "editor"
 import "Memory"
 import "Register"
 import "Input"
+import "help"
 
 Item {
     id: holder
@@ -67,6 +68,13 @@ Item {
         }
     }
 
+    Component{
+        id: help
+        HelpWindow{
+            anchors.fill: parent
+        }
+    }
+
     function change(comp){
         if(comp === "nothing"){
             //console.info(usual);
@@ -89,6 +97,10 @@ Item {
             actual = object;
         }else if(comp === "input"){
             var object = input.createObject(holder);
+            actual.destroy();
+            actual = object;
+        }else if(comp === "help"){
+            var object = help.createObject(holder);
             actual.destroy();
             actual = object;
         }else{
