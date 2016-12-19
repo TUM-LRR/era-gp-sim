@@ -27,6 +27,7 @@ Item{
     property int currentLine: 0
 
     TextArea{
+        id: textarea
         anchors.fill: parent
         readOnly: true
         text: usualText
@@ -36,17 +37,19 @@ Item{
     Connections {
         target: guiProject
         // Send when text changes
-        onHelpChanged: {//Name will be replaced
-            text = guiProject.getHelpMessage(currentLine);
+        onFinalRepresentationChanged: {
+            console.info("Final Representation Changed");
+            textarea.text = guiProject.getCommandHelp(currentLine);
         }
     }
 
     Connections {
         target: editor
         // Send when text changes
-        onLineChanged: {//Name will be replaced
+        onCursorLineChanged: {
+            console.info("Cursor Line Changed");
             currentLine = newLine;
-            text = guiProject.getHelpMessage(currentLine);
+            textarea.text = guiProject.getCommandMessage(currentLine);
         }
     }
 
