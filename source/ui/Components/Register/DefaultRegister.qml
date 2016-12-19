@@ -41,6 +41,7 @@ TextField {
             if (topLeft <= styleData.index && styleData.index <= bottomRight) {
                 inputMask = registerModel.displayFormatStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
                 text = registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
+                style = styleChanged;
             }
         }
     }
@@ -48,15 +49,10 @@ TextField {
     // Notify the model that the register's content was changed by the user.
     onEditingFinished: {
         registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentIndex);
-        console.info("Changed 1");
-        style = styleChanged;
-
 
     }
     onAccepted: {
         registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentIndex);
-        console.info("Changed 2");
-        //loader.sourceComponent = glowEffect;
     }
 
     style: whiteRectangle
@@ -64,11 +60,11 @@ TextField {
     Component{
         id: styleChanged
         TextFieldStyle{
-        background:  Loader {
+            background:  Loader {
                 id: loader
                 focus: false
                 sourceComponent: glowEffect
-        }
+            }
 
             Component {
                 id: glowEffect
@@ -78,42 +74,35 @@ TextField {
                     width: registerTextField.width; height: registerTextField.height
                     source: registerTextField
                     color: "red"
-                radius: 10
-                samples: 20
-                visible: true
+                    radius: 10
+                    samples: 20
+                    visible: true
 
-                NumberAnimation on spread {
-                    from: 0; to: 0.8; duration: 1000
-                    loops: 5
-                    easing.type: Easing.InOutQuad
-                    onStopped: {
+                    NumberAnimation on spread {
+                        from: 0; to: 0.8; duration: 1000
+                        loops: 5
+                        easing.type: Easing.InOutQuad
+                        onStopped: {
                         registerTextField.style = whiteRectangle;
+                        }
                     }
                 }
             }
         }
-        }
     }
 
 
-        Component {
-            id: whiteRectangle
-            TextFieldStyle{
+    Component {
+        id: whiteRectangle
+        TextFieldStyle{
             background: Rectangle {
                 //anchors.fill: parent
                 x: registerTextField.x; y: registerTextField.y
                 width: registerTextField.width; height: registerTextField.height
                 color: "white"
             }
-            }
         }
-
-
-
-
-
-
-
+    }
 
 }
 
