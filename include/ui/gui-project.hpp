@@ -347,11 +347,18 @@ class GuiProject : QObject {
 
   /**
    * Signal that the final representation of the core changed.
+   * When this signal is emitted, the command list of the gui project might not
+   * have been updated. Use commandListUpdated for this purpose.
    *
    * \param finalRepresentation The new FinalRepresentation.
    */
   void
   finalRepresentationChanged(const FinalRepresentation& finalRepresentation);
+
+  /**
+   * Signal that the command list of the gui project was updated.
+   */
+  void commandListUpdated();
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP

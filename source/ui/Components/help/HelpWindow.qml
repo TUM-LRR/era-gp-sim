@@ -37,7 +37,7 @@ Item{
     Connections {
         target: guiProject
         // Send when text changes
-        onFinalRepresentationChanged: {
+        onCommandListUpdated: {
             console.info("Final Representation Changed");
             textarea.text = guiProject.getCommandHelp(currentLine);
             console.info( "    currentLine: " + currentLine);
