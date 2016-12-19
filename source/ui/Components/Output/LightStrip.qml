@@ -32,7 +32,6 @@ Item {
         target: outputComponent
         // Send when the memory changes (at any address).
         onMemoryChanged: {
-            console.log("onMemoryChanged");
             var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
             // Check if the memory address that was changed (at least partly) belongs to
             // the output item's source space.
@@ -42,7 +41,6 @@ Item {
         }
         // Send when any item's settings where updated.
         onOutputItemSettingsChanged: {
-            console.log("onOutputItemSettingsChanged");
             updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
             lightstripSettingsWindow.updateSettings();
         }
@@ -51,7 +49,6 @@ Item {
     // Called from outside by the output tab view to signal that the settings button for the current
     // output item was pressed.
     onSettingsButtonPressed: {
-        lightstripSettingsWindow.updateSettings();
         lightstripSettingsWindow.show();
     }
 

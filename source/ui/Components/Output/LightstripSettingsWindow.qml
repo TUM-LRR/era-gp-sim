@@ -94,6 +94,8 @@ Window {
                             numberOfStripsTextField.text = maxStrips + "";
                             numberOfStripsTextField.processInput();
                         }
+                    }else{
+                        updateSettings();
                     }
                 }
             }
@@ -117,6 +119,9 @@ Window {
                     var maxStrips = (outputComponent.getMemorySize() - size) * 8;
                     if (inputValue !== undefined && inputValue > 0 && inputValue <= maxStrips) {
                         outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", inputValue);
+                    }
+                    else{
+                        updateSettings();
                     }
                 }
             }

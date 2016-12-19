@@ -92,7 +92,6 @@ Item {
     }
 
     function settingsButtonPressed(){
-        settingsWindowC.updateSettings();
         settingsWindowC.show();
     }
 

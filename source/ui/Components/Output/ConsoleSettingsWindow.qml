@@ -95,6 +95,8 @@ Window {
                     var maxSize = outputComponent.getMemorySize();
                     if (inputValue !== undefined && inputValue >= 0 && inputValue <= maxSize) {
                         outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
+                    }else{
+                        updateSettings();
                     }
                 }
             }
