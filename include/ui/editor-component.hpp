@@ -173,6 +173,13 @@ class EditorComponent : public QObject {
    * \param text The new text.
    */
   void setText(QString text);
+
+  /**
+   * Signals that the cursor moved to another line
+   *
+   * \param line The new line of the cursor.
+   */
+  void cursorLineChanged(std::size_t line);
 };
 
 #endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP_ */
