@@ -18,7 +18,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
-
+import QtGraphicalEffects 1.0
 
 TextField {
     id: registerTextField
@@ -48,8 +48,72 @@ TextField {
     // Notify the model that the register's content was changed by the user.
     onEditingFinished: {
         registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentIndex);
+        console.info("Changed 1");
+        style = styleChanged;
+
+
     }
     onAccepted: {
         registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentIndex);
+        console.info("Changed 2");
+        //loader.sourceComponent = glowEffect;
     }
+
+    style: whiteRectangle
+
+    Component{
+        id: styleChanged
+        TextFieldStyle{
+        background:  Loader {
+                id: loader
+                focus: false
+                sourceComponent: glowEffect
+        }
+
+            Component {
+                id: glowEffect
+                Glow {
+                    //anchors.fill: parent
+                    x: registerTextField.x; y: registerTextField.y
+                    width: registerTextField.width; height: registerTextField.height
+                    source: registerTextField
+                    color: "red"
+                radius: 10
+                samples: 20
+                visible: true
+
+                NumberAnimation on spread {
+                    from: 0; to: 0.8; duration: 1000
+                    loops: 5
+                    easing.type: Easing.InOutQuad
+                    onStopped: {
+                        registerTextField.style = whiteRectangle;
+                    }
+                }
+            }
+        }
+        }
+    }
+
+
+        Component {
+            id: whiteRectangle
+            TextFieldStyle{
+            background: Rectangle {
+                //anchors.fill: parent
+                x: registerTextField.x; y: registerTextField.y
+                width: registerTextField.width; height: registerTextField.height
+                color: "white"
+            }
+            }
+        }
+
+
+
+
+
+
+
+
 }
+
