@@ -23,6 +23,7 @@
 
 #include "arch/common/architecture-formula.hpp"
 #include "common/assert.hpp"
+#include "common/translateable.hpp"
 #include "common/utility.hpp"
 #include "parser/final-representation.hpp"
 #include "ui/snapshot-component.hpp"
@@ -220,4 +221,12 @@ void Ui::loadSnapshot(int index, QString name) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
   _projects[index]->loadSnapshot(name);
+}
+
+QString Ui::translate(const Translateable& translateable) {
+  QString translation = QObject::tr(translateable.getBaseString().c_str());
+  for (const auto& operand : translateable.getOperands()) {
+    translation = translation.arg(translate(*operand));
+  }
+  return translation;
 }

@@ -33,6 +33,7 @@
 #include "arch/common/architecture-formula.hpp"
 #include "core/memory-value.hpp"
 #include "core/project-module.hpp"
+#include "parser/final-representation.hpp"
 #include "third-party/json/json.hpp"
 #include "ui/editor-component.hpp"
 #include "ui/input-button-model.hpp"
@@ -57,6 +58,8 @@ class GuiProject : QObject {
 
  public:
   using Json = nlohmann::json;
+  using CommandList = std::vector<FinalCommand>;
+  using LineHelpMap = std::unordered_map<std::size_t, QString>;
 
   /**
    * The Constructor
@@ -181,10 +184,18 @@ class GuiProject : QObject {
   Q_INVOKABLE void loadSnapshot(const QString& qName);
 
   /**
-   * Returns a list of snapshot names
+   * \returns a list of snapshot names
    *
    */
   Q_INVOKABLE QStringList getSnapshots();
+
+  /**
+   * \returns the translated help string of the command node in the specified
+   * line. Returns an empty string if there is no command in that line.
+   *
+   * \param line line number of the command.
+   */
+  Q_INVOKABLE QString getCommandHelp(std::size_t line);
 
   /**
    * \brief Functions for converting MemoryValues to Strings.
@@ -211,7 +222,6 @@ class GuiProject : QObject {
   std::function<MemoryValue(std::string)> getOctToMemoryValue();
   std::function<MemoryValue(std::string)> getUnsignedToMemoryValue();
   std::function<MemoryValue(std::string)> getFloatToMemoryValue();
-
 
  private:
   /**
@@ -272,6 +282,16 @@ class GuiProject : QObject {
   QString _architectureFormulaString;
 
   /**
+   * List of Final commands to access the documentation.
+   */
+  CommandList _commandList;
+
+  /**
+   * Map of line number to QString, caches the help text of a specific line.
+   */
+  LineHelpMap _helpCache;
+
+  /**
    * \brief The Functions for the conversion
    */
   std::function<std::string(MemoryValue)> hexConversion;
@@ -287,6 +307,14 @@ class GuiProject : QObject {
   std::function<MemoryValue(std::string)> octToMemoryValue;
   std::function<MemoryValue(std::string)> unsignedToMemoryValue;
   std::function<MemoryValue(std::string)> floatToMemoryValue;
+
+ private slots:
+  /**
+   * updates the cached command list.
+   *
+   * \param finalRepresentation A final representation with a new command list.
+   */
+  void _updateCommandList(const FinalRepresentation& finalRepresentation);
 
  signals:
   /**
