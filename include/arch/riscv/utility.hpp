@@ -112,10 +112,14 @@ void storeRegister(MemoryAccess& memoryAccess,
 
 template <typename UnsignedWord>
 std::enable_if_t<std::is_unsigned<UnsignedWord>::value, bool>
-isAddressValid(MemoryAccess& memoryAccess, UnsignedWord absoluteAdress) {
+isAddressValid(MemoryAccess& memoryAccess, UnsignedWord absoluteAdress, UnsignedWord validAdress) {
   UnsignedWord lowerBound = 0;
   UnsignedWord upperBound = memoryAccess.getMemorySize().get();
-  return absoluteAdress >= lowerBound && absoluteAdress < upperBound;
+  //validAddress is used to determine if the the given Adress is correctly aligned in memory
+  //correct alignment is that (absoluteAdress-offset)%4 == 0
+  //problem: we don't know the offset, but we know that (validAdress-offset)%4 = 0
+  bool validAlignement = abs(validAdress-absoluteAdress) % 4 == 0;
+  return absoluteAdress >= lowerBound && absoluteAdress < upperBound && validAlignement;
 }
 
 template <std::size_t numberOfBits, typename T>
