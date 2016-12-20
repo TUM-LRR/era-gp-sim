@@ -120,27 +120,29 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
     return QString("");
   }
 
+  int memory_address = index.row() * (number_of_bits / 8);
+  int memory_length = number_of_bits / 8;
   MemoryValue memory_cell =
-      _memoryAccess
-          .getMemoryValueAt(index.row() * (number_of_bits / 8),
-                            number_of_bits / 8)
-          .get();
-  std::string stringvalue;
-  if (role_string.startsWith("bin"))
-    stringvalue = StringConversions::toBinString(memory_cell);
+      _memoryAccess.getMemoryValueAt(memory_address, memory_length).get();
+
+  std::string stringValue;
+  if (role_string.startsWith("bin")) {
+    stringValue = StringConversions::toBinString(memory_cell);
+  }
   // not yet implemented by conversions
   // else if (role_string.startsWith("oct"))
   //  stringvalue = StringConversions::toOctString(memory_cell);
-  else if (role_string.startsWith("hex"))
-    stringvalue = StringConversions::toHexString(memory_cell);
-  else if (role_string.startsWith("decs"))
-    stringvalue = StringConversions::toSignedDecString(memory_cell);
-  else if (role_string.startsWith("dec"))
-    stringvalue = StringConversions::toUnsignedDecString(memory_cell);
-  else
-    stringvalue = "unknown format";
+  else if (role_string.startsWith("hex")) {
+    stringValue = StringConversions::toHexString(memory_cell);
+  } else if (role_string.startsWith("decs")) {
+    stringValue = StringConversions::toSignedDecString(memory_cell);
+  } else if (role_string.startsWith("dec")) {
+    stringValue = StringConversions::toUnsignedDecString(memory_cell);
+  } else {
+    stringValue = "unknown format";
+  }
 
-  return QString::fromStdString(stringvalue);
+  return QString::fromStdString(stringValue);
 }
 
 
