@@ -40,7 +40,7 @@ class SyntaxTreeGenerator {
       std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
           const std::string&,
           const NodeFactoryCollection&,
-          CompileErrorAnnotator&)>;
+          const CompileErrorAnnotator&)>;
 
   /**
    * \brief Creates a new syntax tree generator with the given node factory
@@ -63,7 +63,7 @@ class SyntaxTreeGenerator {
    */
   std::unique_ptr<AbstractSyntaxTreeNode>
   transformOperand(const std::string& operand,
-                   CompileErrorAnnotator& annotator) const;
+                   const CompileErrorAnnotator& annotator) const;
 
   /**
    * \brief Transforms the given instruction/command into a syntax tree, adds
@@ -76,7 +76,7 @@ class SyntaxTreeGenerator {
    */
   std::unique_ptr<AbstractSyntaxTreeNode> transformCommand(
       const std::string& command_name,
-      CompileErrorAnnotator& annotator,
+      const CompileErrorAnnotator& annotator,
       std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
       std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
       MemoryAccess& memoryAccess) const;

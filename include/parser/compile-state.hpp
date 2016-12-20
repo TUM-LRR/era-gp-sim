@@ -21,7 +21,7 @@
 
 #include <vector>
 
-#include "parser/code-position.hpp"
+#include "parser/code-position-interval.hpp"
 #include "parser/compile-error.hpp"
 #include "parser/macro-directive-table.hpp"
 #include "parser/parser-mode.hpp"

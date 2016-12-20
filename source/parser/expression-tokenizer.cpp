@@ -29,7 +29,7 @@ ExpressionTokenizer::ExpressionTokenizer(
 
 std::vector<ExpressionToken>
 ExpressionTokenizer::tokenize(const std::string& data,
-                              CompileErrorAnnotator& annotator) const {
+                              const CompileErrorAnnotator& annotator) const {
   std::vector<ExpressionToken> output;
   MSMatch match;
   size_t currentPosition = 0;
@@ -58,9 +58,7 @@ ExpressionTokenizer::tokenize(const std::string& data,
     // We are done, but there is an unrecognized token. We return as if the
     // string was empty.
     annotator.add("Unrecognized token at: " + temp.substr(0, 20),
-                  CodePositionInterval(
-                      annotator.position().first >> currentPosition,
-                      annotator.position().first >> (currentPosition + 1)));
+                  CodePosition(0, currentPosition));
     return std::vector<ExpressionToken>();
   }
 }

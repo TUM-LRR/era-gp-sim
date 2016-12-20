@@ -36,7 +36,8 @@ IntermediateRepresentator::IntermediateRepresentator()
 }
 
 void IntermediateRepresentator::insertCommandPtr(
-    IntermediateOperationPointer&& command, CompileErrorAnnotator& annotator) {
+    IntermediateOperationPointer&& command,
+    const CompileErrorAnnotator& annotator) {
   // We got to handle the three target selector cases right here.
   if (command->newTarget() == TargetSelector::THIS) {
     // If we want the current command as new target, we set it like so.
@@ -65,7 +66,8 @@ FinalRepresentation
 IntermediateRepresentator::transform(const TransformationParameters& parameters,
                                      CompileErrorList errorList,
                                      MemoryAccess& memoryAccess) {
-  CompileErrorAnnotator annotator(errorList, CodePositionInterval(0, 0));// TODO
+  CompileErrorAnnotator annotator(
+      errorList, CodePositionInterval(CodePosition(0), CodePosition(0)));// TODO
   if (_currentOutput) {
     annotator.add(
         "Macro not closed. Missing a macro end directive?");// TODO Code

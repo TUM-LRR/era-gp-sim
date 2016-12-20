@@ -54,7 +54,7 @@ class MacroEndDirective : public IntermediateDirective {
    * \param state The CompileState to log possible errors.
    */
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       CompileErrorAnnotator& annotator,
+                       const CompileErrorAnnotator& annotator,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 

@@ -22,7 +22,7 @@
 
 #include <functional>
 #include <vector>
-#include "parser/code-position.hpp"
+#include "parser/code-position-interval.hpp"
 #include "parser/compile-error-severity.hpp"
 #include "parser/compile-error.hpp"
 

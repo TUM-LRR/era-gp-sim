@@ -51,17 +51,17 @@ class IntermediateInstruction : public IntermediateOperation {
                           const std::vector<std::string>& targets);
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       CompileErrorAnnotator& annotator,
+                       const CompileErrorAnnotator& annotator,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
-                     CompileErrorAnnotator& annotator,
+                     const CompileErrorAnnotator& annotator,
                      SymbolGraph& graph);
 
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
-                              CompileErrorAnnotator& annotator,
+                              const CompileErrorAnnotator& annotator,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);
 
@@ -74,7 +74,7 @@ class IntermediateInstruction : public IntermediateOperation {
    * \return The resulting syntax tree of the node.
    */
   FinalCommand compileInstruction(const ExecuteImmutableArguments& immutable,
-                                  CompileErrorAnnotator& annotator,
+                                  const CompileErrorAnnotator& annotator,
                                   MemoryAccess& memoryAccess);
 
   MemoryAddress address() const;
@@ -97,7 +97,7 @@ class IntermediateInstruction : public IntermediateOperation {
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
   compileArgumentVector(const std::vector<std::string>& vector,
                         const ExecuteImmutableArguments& immutable,
-                        CompileErrorAnnotator& annotator,
+                        const CompileErrorAnnotator& annotator,
                         MemoryAccess& memoryAccess);
 
  private:

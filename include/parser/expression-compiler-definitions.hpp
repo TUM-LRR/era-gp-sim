@@ -104,7 +104,8 @@ struct ExpressionBinaryOperator {
   /**
    * \brief Applies the operator on two numbers and records any possible errors.
    */
-  std::function<bool(const T&, const T&, T&, CompileErrorAnnotator&)> handler;
+  std::function<bool(const T&, const T&, T&, const CompileErrorAnnotator&)>
+      handler;
 };
 
 /**
@@ -124,7 +125,7 @@ struct ExpressionUnaryOperator {
   /**
    * \brief Applies the operator on one number and records any possible errors.
    */
-  std::function<bool(const T&, T&, CompileErrorAnnotator&)> handler;
+  std::function<bool(const T&, T&, const CompileErrorAnnotator&)> handler;
 };
 
 /**
@@ -141,7 +142,7 @@ struct ExpressionLiteralDecoder {
   /**
    * \brief Decodes the literal into the number type.
    */
-  std::function<bool(std::string, T&, CompileErrorAnnotator&)> decoder;
+  std::function<bool(std::string, T&, const CompileErrorAnnotator&)> decoder;
 };
 
 /**

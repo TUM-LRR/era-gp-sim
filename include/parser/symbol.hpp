@@ -22,7 +22,7 @@
 
 #include <regex>
 #include <string>
-#include "parser/code-position.hpp"
+#include "parser/code-position-interval.hpp"
 
 enum class SymbolBehavior { STATIC, DYNAMIC };
 

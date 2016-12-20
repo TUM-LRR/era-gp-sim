@@ -34,7 +34,7 @@ ConstantDirective::ConstantDirective(const LineInterval& lines,
 }
 
 void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
-                                CompileErrorAnnotator& annotator,
+                                const CompileErrorAnnotator& annotator,
                                 FinalRepresentation& finalRepresentator,
                                 MemoryAccess& memoryAccess) {
   // Try to parse argument to catch errors early.
@@ -59,7 +59,7 @@ void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
 
 void ConstantDirective::enhanceSymbolTable(
     const EnhanceSymbolTableImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     SymbolGraph& graph) {
   if (_arguments.size() != 2) {
     annotator.add("Malformed constant directive");

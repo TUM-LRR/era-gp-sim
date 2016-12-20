@@ -44,7 +44,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f || s ? IntType(1) : IntType(0);
             return true;
           }},
@@ -55,7 +55,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f && s ? IntType(1) : IntType(0);
             return true;
           }},
@@ -66,7 +66,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f | s;
             return true;
           }},
@@ -77,7 +77,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f ^ s;
             return true;
           }},
@@ -88,7 +88,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f & s;
             return true;
           }},
@@ -99,7 +99,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f == s ? IntType(1) : IntType(0);
             return true;
           }},
@@ -110,7 +110,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f != s ? IntType(1) : IntType(0);
             return true;
           }},
@@ -121,7 +121,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f < s ? IntType(1) : IntType(0);
             return true;
           }},
@@ -132,7 +132,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f <= s ? IntType(1) : IntType(0);
             return true;
           }},
@@ -143,7 +143,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f > s ? IntType(1) : IntType(0);
             return true;
           }},
@@ -154,7 +154,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f >= s ? IntType(1) : IntType(0);
             return true;
           }},
@@ -165,7 +165,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f << s;
             return true;
           }},
@@ -176,7 +176,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f >> s;
             return true;
           }},
@@ -187,7 +187,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f + s;
             return true;
           }},
@@ -198,7 +198,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f - s;
             return true;
           }},
@@ -209,7 +209,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f * s;
             return true;
           }},
@@ -220,7 +220,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f / s;
             return true;
           }},
@@ -231,52 +231,56 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           [](const IntType& f,
              const IntType& s,
              IntType& out,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             out = f % s;
             return true;
           }}};
   auto unaryOperators = std::vector<ExpressionUnaryOperator<IntType>>{
       ExpressionUnaryOperator<IntType>{
           "+",
-          [](const IntType& v, IntType& out, CompileErrorAnnotator& annotator)
-              -> bool {
-                out = +v;
-                return true;
-              }},
+          [](const IntType& v,
+             IntType& out,
+             const CompileErrorAnnotator& annotator) -> bool {
+            out = +v;
+            return true;
+          }},
       ExpressionUnaryOperator<IntType>{
           "-",
-          [](const IntType& v, IntType& out, CompileErrorAnnotator& annotator)
-              -> bool {
+          [](const IntType& v,
+             IntType& out,
+             const CompileErrorAnnotator& annotator) -> bool {
 #if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4146)
 #endif
-                out = -v;
+            out = -v;
 #if defined(_MSC_VER)
 #pragma warning(pop)
 #endif
-                return true;
-              }},
+            return true;
+          }},
       ExpressionUnaryOperator<IntType>{
           "!",
-          [](const IntType& v, IntType& out, CompileErrorAnnotator& annotator)
-              -> bool {
-                out = !v ? IntType(1) : IntType(0);
-                return true;
-              }},
+          [](const IntType& v,
+             IntType& out,
+             const CompileErrorAnnotator& annotator) -> bool {
+            out = !v ? IntType(1) : IntType(0);
+            return true;
+          }},
       ExpressionUnaryOperator<IntType>{
           "~",
-          [](const IntType& v, IntType& out, CompileErrorAnnotator& annotator)
-              -> bool {
-                out = ~v;
-                return true;
-              }}};
+          [](const IntType& v,
+             IntType& out,
+             const CompileErrorAnnotator& annotator) -> bool {
+            out = ~v;
+            return true;
+          }}};
   auto literalDecoders = std::vector<ExpressionLiteralDecoder<IntType>>{
       ExpressionLiteralDecoder<IntType>{
           "0x[0-9a-fA-F]+",
           [](const std::string& number,
              IntType& output,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             output = IntegerParser<IntType>::parse(number, annotator, 2, 16);
             return true;
           }},
@@ -284,7 +288,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           "0b[01]+",
           [](const std::string& number,
              IntType& output,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             output = IntegerParser<IntType>::parse(number, annotator, 2, 2);
             return true;
           }},
@@ -292,7 +296,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           "[0-9]+",
           [](const std::string& number,
              IntType& output,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             output = IntegerParser<IntType>::parse(number, annotator, 0, 10);
             return true;
           }},
@@ -300,7 +304,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           "'.*?'",
           [](const std::string& number,
              IntType& output,
-             CompileErrorAnnotator& annotator) -> bool {
+             const CompileErrorAnnotator& annotator) -> bool {
             std::vector<uint32_t> intermediate;
             if (!StringParser::parseCharacter(
                     number, annotator, intermediate)) {

@@ -20,33 +20,33 @@
 #include "common/assert.hpp"
 
 CodePosition::CodePosition(CodeCoordinate iy, CodeCoordinate ix)
-: x(ix), y(iy) {
+: _x(ix), _y(iy) {
 }
 
 CodeCoordinate CodePosition::line() const noexcept {
-  return y;
+  return _y;
 }
 
 CodeCoordinate CodePosition::row() const noexcept {
-  return y;
+  return _y;
 }
 
 CodeCoordinate CodePosition::character() const noexcept {
-  return x;
+  return _x;
 }
 
 CodeCoordinate CodePosition::column() const noexcept {
-  return x;
+  return _x;
 }
 
 CodePosition CodePosition::operator+(const CodePosition& other) const noexcept {
-  return CodePosition(this->y + other.y, this->x + other.x);
+  return CodePosition(this->_y + other._y, this->_x + other._x);
 }
 
 CodePosition CodePosition::operator-(const CodePosition& other) const {
-  assert::that(this->x >= other.x);
-  assert::that(this->y >= other.y);
-  return CodePosition(this->y - other.y, this->x - other.x);
+  assert::that(this->_x >= other._x);
+  assert::that(this->_y >= other._y);
+  return CodePosition(this->_y - other._y, this->_x - other._x);
 }
 
 CodePosition CodePosition::operator>>(const CodeCoordinate& other) const
@@ -60,23 +60,23 @@ CodePosition CodePosition::operator<<(const CodeCoordinate& other) const
 }
 
 CodePosition CodePosition::moveDown(const CodeCoordinate& c) const noexcept {
-  return CodePosition(y + c, x);
+  return CodePosition(_y + c, _x);
 }
 
 CodePosition CodePosition::moveUp(const CodeCoordinate& c) const {
-  assert::that(y >= c);
-  return CodePosition(y - c, x);
+  assert::that(_y >= c);
+  return CodePosition(_y - c, _x);
 }
 
 CodePosition CodePosition::moveLeft(const CodeCoordinate& c) const {
-  assert::that(x >= c);
-  return CodePosition(y, x - c);
+  assert::that(_x >= c);
+  return CodePosition(_y, _x - c);
 }
 
 CodePosition CodePosition::moveRight(const CodeCoordinate& c) const {
-  return CodePosition(y, x + c);
+  return CodePosition(_y, _x + c);
 }
 
 CodePosition CodePosition::newLine() const {
-  return CodePosition(y + 1, 0);
+  return CodePosition(_y + 1, 0);
 }

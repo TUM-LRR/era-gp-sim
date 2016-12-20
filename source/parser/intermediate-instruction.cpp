@@ -24,6 +24,8 @@
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
+#include "parser/code-position-interval.hpp"
+#include "parser/code-position.hpp"
 #include "parser/compile-error-annotator.hpp"
 #include "parser/final-representation.hpp"
 #include "parser/intermediate-instruction.hpp"
@@ -47,7 +49,7 @@ IntermediateInstruction::IntermediateInstruction(
 
 void IntermediateInstruction::execute(
     const ExecuteImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     FinalRepresentation& finalRepresentator,
     MemoryAccess& memoryAccess) {
   // For a machine instruction, it is easy to "execute" it: just insert it
@@ -60,7 +62,7 @@ std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
 IntermediateInstruction::compileArgumentVector(
     const std::vector<std::string>& vector,
     const ExecuteImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     MemoryAccess& memoryAccess) {
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> output;
   output.reserve(vector.size());
@@ -80,7 +82,7 @@ IntermediateInstruction::compileArgumentVector(
 
 FinalCommand IntermediateInstruction::compileInstruction(
     const ExecuteImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     MemoryAccess& memoryAccess) {
   // We replace all occurenced in target in source (using a copy of them).
   auto srcCompiled =
@@ -102,7 +104,7 @@ MemoryAddress IntermediateInstruction::address() const {
 
 void IntermediateInstruction::enhanceSymbolTable(
     const EnhanceSymbolTableImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     SymbolGraph& graph) {
   if (_relativeAddress.valid()) {
     _address = immutable.allocator().absolutePosition(_relativeAddress);
@@ -122,7 +124,7 @@ void IntermediateInstruction::enhanceSymbolTable(
 
 void IntermediateInstruction::allocateMemory(
     const PreprocessingImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (tracker.section() != "text") {

@@ -42,6 +42,9 @@ set(PARSER_SOURCES
   compile-error-annotator.cpp
   section-tracker.cpp
   intermediate-parameters.cpp
+  code-position-interval.cpp
+  intermediate-output-representation.cpp
+  intermediate-output-command.cpp
 )
 
 ########################################

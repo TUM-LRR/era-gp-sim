@@ -250,7 +250,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
       lastNode = nextNode;
       FinalCommand& nextCommand =
           finalRepresentationValidator.commandList.at(nextNode);
-      // EXPECT_EQ(nextCommand.position.lineStart, proxy.getLine().get());
+      // EXPECT_EQ(nextCommand.position.lineStart(), proxy.getLine().get());
     }
   }
   commandInterface.setExecutionPoint(1);

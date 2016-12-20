@@ -41,20 +41,20 @@ IntermediateOperation::IntermediateOperation(
 
 void IntermediateOperation::enhanceSymbolTable(
     const EnhanceSymbolTableImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     SymbolGraph& graph) {
 }
 
 void IntermediateOperation::allocateMemory(
     const PreprocessingImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
 }
 
 void IntermediateOperation::precompile(
     const PreprocessingImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     MacroDirectiveTable& macroTable) {
 }
 

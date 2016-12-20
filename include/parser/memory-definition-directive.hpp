@@ -51,7 +51,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   using ProcessValuesFunction =
       std::function<size_t(const std::vector<std::string>&,
                            size_t,
-                           CompileErrorAnnotator&,
+                           const CompileErrorAnnotator&,
                            const MemoryStorageFunction&)>;
 
   /**
@@ -101,7 +101,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
    * \param state The CompileState to log possible errors.
    */
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
-                              CompileErrorAnnotator& annotator,
+                              const CompileErrorAnnotator& annotator,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker) {
     if (_values.empty()) {
@@ -134,7 +134,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
    */
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
-                     CompileErrorAnnotator& annotator,
+                     const CompileErrorAnnotator& annotator,
                      SymbolGraph& graph) {
     _absolutePosition =
         immutable.allocator().absolutePosition(_relativePosition);
@@ -156,7 +156,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
    * reserving data.
    */
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       CompileErrorAnnotator& annotator,
+                       const CompileErrorAnnotator& annotator,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess) {
     if (_size > 0) {

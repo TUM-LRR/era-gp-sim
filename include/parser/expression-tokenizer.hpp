@@ -49,7 +49,8 @@ class ExpressionTokenizer {
    * \param state The compile state to note down any errors.
    */
   std::vector<ExpressionToken>
-  tokenize(const std::string& data, CompileErrorAnnotator& annotator) const;
+  tokenize(const std::string& data,
+           const CompileErrorAnnotator& annotator) const;
 
  private:
   // Internal method for constructing the token regexes.

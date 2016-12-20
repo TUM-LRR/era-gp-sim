@@ -20,13 +20,14 @@
 #ifndef ERAGPSIM_PARSER_LINE_INTERVAL_HPP
 #define ERAGPSIM_PARSER_LINE_INTERVAL_HPP
 
-#include "parser/code-position.hpp"
+#include "parser/code-position-interval.hpp"
 
 /**
  * \brief Represents an interval of lines, denoted by an upper and lower line
  * bound.
  */
-struct LineInterval {
+class LineInterval {
+ public:
   /**
    * \brief Creates a new line interval with a given upper and lower bound.
    * \param start The lower bound of the interval.
@@ -45,15 +46,20 @@ struct LineInterval {
    */
   LineInterval();
 
+  const CodeCoordinate& lineStart() const noexcept;
+
+  const CodeCoordinate& lineEnd() const noexcept;
+
+ private:
   /**
    * \brief The upper line bound of the interval.
    */
-  CodeCoordinate lineStart;
+  CodeCoordinate _lineStart;
 
   /**
    * \brief The lower line bound of the interval.
    */
-  CodeCoordinate lineEnd;
+  CodeCoordinate _lineEnd;
 };
 
 #endif /* ERAGPSIM_PARSER_LINE_INTERVAL_HPP */

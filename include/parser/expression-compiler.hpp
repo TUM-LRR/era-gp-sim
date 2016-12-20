@@ -90,7 +90,8 @@ class ExpressionCompiler {
    * \param state The state of the compiler to store any errors.
    * \return The string evaluated into a number or an error value (mostly 0).
    */
-  T compile(const std::string& str, CompileErrorAnnotator& annotator) const {
+  T compile(const std::string& str,
+            const CompileErrorAnnotator& annotator) const {
     // Pretty simple: Just pass the string and the tokens in the tokenizer and
     // parser respectively.
     auto tokens = _tokenizer.tokenize(str, annotator);

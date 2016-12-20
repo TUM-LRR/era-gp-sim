@@ -39,7 +39,7 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
     RiscvParser::argumentGeneratorFunction =
         [](const std::string& operand,
            const NodeFactoryCollection& nodeFactories,
-           CompileErrorAnnotator& annotator)
+           const CompileErrorAnnotator& annotator)
     -> std::unique_ptr<AbstractSyntaxTreeNode> {
       // These checks are performed:
       // * Empty argument? Shouldn't happen, kill the compilation with fire.

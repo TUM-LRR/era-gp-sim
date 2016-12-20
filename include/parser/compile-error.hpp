@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include "parser/code-position.hpp"
+#include "parser/code-position-interval.hpp"
 #include "parser/compile-error-severity.hpp"
 
 /**

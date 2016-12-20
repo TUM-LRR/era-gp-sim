@@ -26,7 +26,7 @@
 #include <unordered_map>
 #include "common/assert.hpp"
 #include "common/multiregex.hpp"
-#include "parser/code-position.hpp"
+#include "parser/code-position-interval.hpp"
 #include "parser/compile-error-annotator.hpp"
 #include "parser/expression-compiler-definitions.hpp"
 
@@ -107,7 +107,7 @@ class ExpressionParser {
    * successful. If now, `T()` will be returned.
    */
   T parse(const std::vector<ExpressionToken>& tokens,
-          CompileErrorAnnotator& annotator) const {
+          const CompileErrorAnnotator& annotator) const {
     // The parse state is only used in this class (it contains references as
     // members).
     ParseState state(tokens, annotator);
@@ -159,7 +159,7 @@ class ExpressionParser {
   // A function definition for internal decoding (the regex is found in a
   // different variable).
   using ILiteralDecoder =
-      std::function<bool(std::string, T&, CompileErrorAnnotator&)>;
+      std::function<bool(std::string, T&, const CompileErrorAnnotator&)>;
 
   // The state to carry all internal data (to prevent long parameter lists).
   struct ParseState {
@@ -173,7 +173,7 @@ class ExpressionParser {
     const std::vector<ExpressionToken>& tokens;
 
     // Reference to the compile error annotator.
-    CompileErrorAnnotator& annotator;
+    const CompileErrorAnnotator& annotator;
 
     // Output stack for temporary numbers.
     std::stack<T> outputStack;
@@ -183,17 +183,14 @@ class ExpressionParser {
 
     // Constructor, for reference assignment mainly.
     ParseState(const std::vector<ExpressionToken>& tokens,
-               CompileErrorAnnotator& annotator)
+               const CompileErrorAnnotator& annotator)
     : tokens(tokens), annotator(annotator) {
     }
   };
 
   // Records an error in the parsing process.
   void recordError(ParseState& state, const std::string& message) const {
-    auto newPosition = state.annotator.position().first >> state.curr.index;
-    CodePositionInterval newInterval(
-        newPosition, newPosition >> 1);// TODO better error ranges
-    state.annotator.add(message, newInterval);
+    state.annotator.add(message, CodePosition(0, state.curr.index));
   }
 
   // Handles the latest token stored in `state.curr`.

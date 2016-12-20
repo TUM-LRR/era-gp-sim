@@ -26,9 +26,8 @@
 #include "core/memory-access.hpp"
 #include "parser/compile-error-annotator.hpp"
 
-std::unique_ptr<AbstractSyntaxTreeNode>
-SyntaxTreeGenerator::transformOperand(const std::string& operand,
-                                      CompileErrorAnnotator& annotator) const {
+std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(
+    const std::string& operand, const CompileErrorAnnotator& annotator) const {
   // We invoke our node generator to get a node!
   std::unique_ptr<AbstractSyntaxTreeNode> outputNode =
       _argumentGenerator(operand, _nodeFactories, annotator);
@@ -44,7 +43,7 @@ SyntaxTreeGenerator::transformOperand(const std::string& operand,
 
 std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformCommand(
     const std::string& command_name,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
     MemoryAccess& memoryAccess) const {

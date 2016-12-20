@@ -18,7 +18,7 @@
 */
 
 #include "parser/compile-error-annotator.hpp"
-#include "parser/code-position.hpp"
+#include "parser/code-position-interval.hpp"
 #include "parser/compile-error-list.hpp"
 #include "parser/compile-error.hpp"
 
@@ -27,7 +27,7 @@ CompileErrorAnnotator::CompileErrorAnnotator(
 : _list(list), _position(position) {
 }
 CompileErrorAnnotator::CompileErrorAnnotator(
-    CompileErrorAnnotator& source, const CodePositionInterval& position)
+    const CompileErrorAnnotator& source, const CodePositionInterval& position)
 : CompileErrorAnnotator(source.errorList(), position) {
 }
 CompileErrorAnnotator::CompileErrorAnnotator(CompileErrorList& list,
@@ -35,26 +35,36 @@ CompileErrorAnnotator::CompileErrorAnnotator(CompileErrorList& list,
                                              const CodePosition& end)
 : CompileErrorAnnotator(list, CodePositionInterval(start, end)) {
 }
-CompileErrorAnnotator::CompileErrorAnnotator(CompileErrorAnnotator& source,
-                                             const CodePosition& start,
-                                             const CodePosition& end)
+CompileErrorAnnotator::CompileErrorAnnotator(
+    const CompileErrorAnnotator& source,
+    const CodePosition& start,
+    const CodePosition& end)
 : CompileErrorAnnotator(source.errorList(), start, end) {
 }
 
-void CompileErrorAnnotator::add(const CompileError& error) {
+void CompileErrorAnnotator::add(const CompileError& error) const {
   _list.add(error);
 }
 void CompileErrorAnnotator::add(const std::string& message,
+                                const CodePosition& deltaFirst,
+                                const CodePosition& deltaSecond,
+                                CompileErrorSeverity severity) const {
+  _list.add(message,
+            CodePositionInterval(_position.codePositionStart() + deltaFirst,
+                                 _position.codePositionEnd() + deltaSecond),
+            severity);
+}
+void CompileErrorAnnotator::add(const std::string& message,
                                 const CodePositionInterval& interval,
-                                CompileErrorSeverity severity) {
+                                CompileErrorSeverity severity) const {
   _list.add(message, interval, severity);
 }
 void CompileErrorAnnotator::add(const std::string& message,
-                                CompileErrorSeverity severity) {
+                                CompileErrorSeverity severity) const {
   _list.add(message, _position, severity);
 }
 
-CompileErrorList& CompileErrorAnnotator::errorList() noexcept {
+CompileErrorList& CompileErrorAnnotator::errorList() const noexcept {
   return _list;
 }
 const CodePositionInterval CompileErrorAnnotator::position() const noexcept {

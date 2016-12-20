@@ -62,12 +62,12 @@ class SectionDirective : public IntermediateDirective {
    * compiler.
    */
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       CompileErrorAnnotator& annotator,
+                       const CompileErrorAnnotator& annotator,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
-                              CompileErrorAnnotator& annotator,
+                              const CompileErrorAnnotator& annotator,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);
 

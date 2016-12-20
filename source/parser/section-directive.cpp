@@ -32,14 +32,14 @@ SectionDirective::SectionDirective(const LineInterval& lines,
 }
 
 void SectionDirective::execute(const ExecuteImmutableArguments& immutable,
-                               CompileErrorAnnotator& annotator,
+                               const CompileErrorAnnotator& annotator,
                                FinalRepresentation& finalRepresentator,
                                MemoryAccess& memoryAccess) {
 }
 
 void SectionDirective::allocateMemory(
     const PreprocessingImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (!_hasName) {

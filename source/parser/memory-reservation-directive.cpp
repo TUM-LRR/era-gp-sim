@@ -43,7 +43,7 @@ MemoryReservationDirective::MemoryReservationDirective(
 
 void MemoryReservationDirective::allocateMemory(
     const PreprocessingImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (_values.empty()) {
@@ -77,7 +77,7 @@ void MemoryReservationDirective::allocateMemory(
 
 void MemoryReservationDirective::enhanceSymbolTable(
     const EnhanceSymbolTableImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     SymbolGraph& graph) {
   // We calculate the absolute memory position and enhance our symbol table.
   _absolutePosition = immutable.allocator().absolutePosition(_relativePosition);
@@ -91,7 +91,7 @@ void MemoryReservationDirective::enhanceSymbolTable(
 
 void MemoryReservationDirective::execute(
     const ExecuteImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     FinalRepresentation& finalRepresentator,
     MemoryAccess& memoryAccess) {
   // Finally, we may put some zeros into memory.

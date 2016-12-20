@@ -50,7 +50,7 @@ class IntegerParser {
    * \return The parsed integer. Undefined if parsing fails.
    */
   static T parse(const std::string &str,
-                 CompileErrorAnnotator &annotator,
+                 const CompileErrorAnnotator &annotator,
                  size_t start = 0,
                  int base = 10) {
     size_t count;

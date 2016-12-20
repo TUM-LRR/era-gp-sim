@@ -26,7 +26,7 @@
 #include <unordered_set>
 #include <vector>
 #include "common/multiregex.hpp"
-#include "parser/code-position.hpp"
+#include "parser/code-position-interval.hpp"
 #include "parser/compile-error-annotator.hpp"
 
 /**

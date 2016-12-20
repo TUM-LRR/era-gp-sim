@@ -23,6 +23,7 @@
 class CompileError;
 class CompileErrorList;
 #include <string>
+#include "parser/code-position-interval.hpp"
 #include "parser/code-position.hpp"
 #include "parser/compile-error-severity.hpp"
 
@@ -30,23 +31,27 @@ class CompileErrorAnnotator {
  public:
   CompileErrorAnnotator(CompileErrorList& list,
                         const CodePositionInterval& position);
-  CompileErrorAnnotator(CompileErrorAnnotator& source,
+  CompileErrorAnnotator(const CompileErrorAnnotator& source,
                         const CodePositionInterval& position);
   CompileErrorAnnotator(CompileErrorList& list,
                         const CodePosition& start,
                         const CodePosition& end);
-  CompileErrorAnnotator(CompileErrorAnnotator& source,
+  CompileErrorAnnotator(const CompileErrorAnnotator& source,
                         const CodePosition& start,
                         const CodePosition& end);
 
-  void add(const CompileError& error);
+  void add(const CompileError& error) const;
   void add(const std::string& message,
            const CodePositionInterval& interval,
-           CompileErrorSeverity severity = CompileErrorSeverity::ERROR);
+           CompileErrorSeverity severity = CompileErrorSeverity::ERROR) const;
   void add(const std::string& message,
-           CompileErrorSeverity severity = CompileErrorSeverity::ERROR);
+           const CodePosition& deltaFirst,
+           const CodePosition& deltaSecond = CodePosition(0, 0),
+           CompileErrorSeverity severity = CompileErrorSeverity::ERROR) const;
+  void add(const std::string& message,
+           CompileErrorSeverity severity = CompileErrorSeverity::ERROR) const;
 
-  CompileErrorList& errorList() noexcept;
+  CompileErrorList& errorList() const noexcept;
   const CodePositionInterval position() const noexcept;
 
  private:

@@ -48,7 +48,7 @@ class IntermediateRepresentator {
    * \tparam T The command type.
    */
   template <typename T>
-  void insertCommand(T&& command, CompileErrorAnnotator& annotator) {
+  void insertCommand(T&& command, const CompileErrorAnnotator& annotator) {
     // First of all, we create our dear pointer.
     IntermediateOperationPointer pointer =
         std::make_shared<T>(std::move(command));
@@ -62,7 +62,7 @@ class IntermediateRepresentator {
    * \param state The compile state to save any possible errors.
    */
   void insertCommandPtr(IntermediateOperationPointer&& command,
-                        CompileErrorAnnotator& annotator);
+                        const CompileErrorAnnotator& annotator);
 
   /**
    * \brief Transforms the commands to a syntax tree list.

@@ -17,29 +17,4 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/line-interval.hpp"
-
-LineInterval::LineInterval(CodeCoordinate start, CodeCoordinate end)
-: _lineStart(start), _lineEnd(end) {
-}
-
-/**
- * \brief Creates a new line interval containing only one line.
- * \param line The upper and lower bound of the interval.
- */
-LineInterval::LineInterval(CodeCoordinate line) : LineInterval(line, line) {
-}
-
-/**
- * \brief Creates a line interval containing only line 0.
- */
-LineInterval::LineInterval() : LineInterval(0, 0) {
-}
-
-const CodeCoordinate& LineInterval::lineStart() const noexcept {
-  return _lineStart;
-}
-
-const CodeCoordinate& LineInterval::lineEnd() const noexcept {
-  return _lineEnd;
-}
+#include "parser/intermediate-output-representation.hpp"

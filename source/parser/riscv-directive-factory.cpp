@@ -45,7 +45,7 @@ static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
     _processMemoryDefinitionValues =
         [](const std::vector<std::string> &values,
            std::size_t cellSize,
-           CompileErrorAnnotator &annotator,
+           const CompileErrorAnnotator &annotator,
            const std::function<void(T, std::size_t)> &handler) -> std::size_t {
   std::size_t currentPosition = 0;
   ExpressionCompiler<T> compiler =
@@ -96,7 +96,7 @@ createMemoryDefinitionDirective(const LineInterval &lines,
 MemoryReservationDirective::ArgumentCompileFunction
     _memoryReservationArgumentCompile =
         [](const std::string &value,
-           CompileErrorAnnotator &annotator) -> std::size_t {
+           const CompileErrorAnnotator &annotator) -> std::size_t {
   return CLikeExpressionCompilers::CLikeCompilerU64.compile(value, annotator);
 };
 
@@ -136,7 +136,7 @@ void RiscVDirectiveFactory::create(const LineInterval &lines,
                                    const std::string &name,
                                    const std::vector<std::string> &arguments,
                                    IntermediateRepresentator &intermediate,
-                                   CompileErrorAnnotator &annotator) {
+                                   const CompileErrorAnnotator &annotator) {
   DirectivePtr ptr;
 
   auto element = mapping.find(name);

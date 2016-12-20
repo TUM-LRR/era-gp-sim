@@ -95,7 +95,7 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
     // check if there is a brekpoint on the next line
     if (nextNode < _finalRepresentation.commandList.size()) {
       auto &nextCommand = _finalRepresentation.commandList[nextNode];
-      size_t nextLine = nextCommand.position.lineStart;
+      size_t nextLine = nextCommand.position.lineStart();
       if (_breakpoints.count(nextLine) > 0) {
         // we reached a breakpoint
         break;
@@ -115,9 +115,9 @@ void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
     foundMatchingLine = true;
   } else {
     for (const auto &command : _finalRepresentation.commandList) {
-      if (command.position.lineStart >= line) {
+      if (command.position.lineStart() >= line) {
         // this command is on the given line, save the address in the cache.
-        displayLine = command.position.lineStart;
+        displayLine = command.position.lineStart();
         auto size = _programCounter.getSize();
         address = conversions::convert(command.address, size);
         _lineCommandCache.emplace(displayLine, address);
@@ -232,7 +232,7 @@ bool ParsingAndExecutionUnit::_executeNode(size_t nodeIndex) {
     return false;
   }
   // update the current line in the ui (pre-execution)
-  _setCurrentLine(currentCommand.position.lineStart);
+  _setCurrentLine(currentCommand.position.lineStart());
 
   MemoryValue programCounterValue =
       currentCommand.node->getValue(_memoryAccess);
@@ -247,11 +247,11 @@ size_t ParsingAndExecutionUnit::_updateLineNumber(size_t currentNode) {
   size_t nextNode = _findNextNode();
   // if there is no command after this, advance the line position by one.
   auto &currentCommand = _finalRepresentation.commandList[currentNode];
-  size_t nextLine = currentCommand.position.lineStart + 1;
+  size_t nextLine = currentCommand.position.lineStart() + 1;
   if (nextNode < _finalRepresentation.commandList.size()) {
     // if there is another command, set the next line to its position
     auto &nextCommand = _finalRepresentation.commandList[nextNode];
-    nextLine = nextCommand.position.lineStart;
+    nextLine = nextCommand.position.lineStart();
   }
   _setCurrentLine(nextLine);
   return nextNode;

@@ -34,20 +34,20 @@ class IntermediateMacroInstruction : public IntermediateOperation {
   IntermediateMacroInstruction(const IntermediateInstruction&,
                                const MacroDirective&,
                                MacroDirectiveTable& macroTable,
-                               CompileErrorAnnotator& annotator);
+                               const CompileErrorAnnotator& annotator);
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       CompileErrorAnnotator& annotator,
+                       const CompileErrorAnnotator& annotator,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
-                     CompileErrorAnnotator& annotator,
+                     const CompileErrorAnnotator& annotator,
                      SymbolGraph& graph);
 
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
-                              CompileErrorAnnotator& annotator,
+                              const CompileErrorAnnotator& annotator,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);
 
@@ -58,7 +58,7 @@ class IntermediateMacroInstruction : public IntermediateOperation {
   static void replaceWithMacros(CommandIterator begin,
                                 CommandIterator end,
                                 MacroDirectiveTable& macroTable,
-                                CompileErrorAnnotator& annotator);
+                                const CompileErrorAnnotator& annotator);
 
  private:
   CommandList _operations;

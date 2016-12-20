@@ -48,7 +48,7 @@ void create(const LineInterval &lines,
             const std::string &name,
             const std::vector<std::string> &arguments,
             IntermediateRepresentator &intermediate,
-            CompileErrorAnnotator &annotator);
+            const CompileErrorAnnotator &annotator);
 
 /**
  * Maps names to directives.

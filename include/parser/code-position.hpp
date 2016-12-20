@@ -29,7 +29,8 @@ using CodeCoordinate = unsigned int;
 /**
  * \brief A position in code.
  */
-struct CodePosition {
+class CodePosition {
+ public:
   /**
    * \brief Creates a new CodePosition with the given values (IMPORTANT: y
    * before x coordinate! Because row is more important than column).
@@ -124,17 +125,16 @@ struct CodePosition {
    */
   CodePosition newLine() const;
 
+ private:
   /**
    * \brief The x position in code (column/character).
    */
-  CodeCoordinate x;
+  CodeCoordinate _x;
 
   /**
    * \brief The y position in code (row/line).
    */
-  CodeCoordinate y;
+  CodeCoordinate _y;
 };
-
-using CodePositionInterval = std::pair<CodePosition, CodePosition>;
 
 #endif

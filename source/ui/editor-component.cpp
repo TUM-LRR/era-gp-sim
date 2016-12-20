@@ -137,7 +137,7 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
       default: assert::that(false);
     }
     emit addError(QString::fromStdString(error.message()),
-                  error.position().first.line(),
+                  error.position().codePositionStart().line(),
                   color);
   }
 }

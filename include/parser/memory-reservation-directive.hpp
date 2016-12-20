@@ -34,8 +34,8 @@ struct FinalRepresentation;
 
 class MemoryReservationDirective : public IntermediateDirective {
  public:
-  using ArgumentCompileFunction =
-      std::function<std::size_t(const std::string&, CompileErrorAnnotator&)>;
+  using ArgumentCompileFunction = std::function<std::size_t(
+      const std::string&, const CompileErrorAnnotator&)>;
   /**
  * \brief Instantiates a new IntermediateDirective with the given arguments.
  * (only for subclass use!)
@@ -60,7 +60,7 @@ class MemoryReservationDirective : public IntermediateDirective {
    * reserving data.
    */
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       CompileErrorAnnotator& annotator,
+                       const CompileErrorAnnotator& annotator,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
@@ -72,7 +72,7 @@ class MemoryReservationDirective : public IntermediateDirective {
    * \param state The CompileState to log possible errors.
    */
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
-                              CompileErrorAnnotator& annotator,
+                              const CompileErrorAnnotator& annotator,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);
 
@@ -84,7 +84,7 @@ class MemoryReservationDirective : public IntermediateDirective {
    */
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
-                     CompileErrorAnnotator& annotator,
+                     const CompileErrorAnnotator& annotator,
                      SymbolGraph& graph);
 
  private:

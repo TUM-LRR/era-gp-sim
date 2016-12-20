@@ -57,7 +57,7 @@ void MacroDirective::insert(IntermediateOperationPointer pointer) {
 
 void MacroDirective::precompile(
     const PreprocessingImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     MacroDirectiveTable& macroTable) {
   if (macroName().empty()) {
     annotator.add("Missing macro name.");
@@ -71,7 +71,7 @@ void MacroDirective::precompile(
 
 
 void MacroDirective::execute(const ExecuteImmutableArguments& immutable,
-                             CompileErrorAnnotator& annotator,
+                             const CompileErrorAnnotator& annotator,
                              FinalRepresentation& finalRepresentator,
                              MemoryAccess& memoryAccess) {
   // Probably nothing here.
@@ -149,7 +149,7 @@ MacroDirective::MacroParameters::MacroParameters(
 }
 
 void MacroDirective::MacroParameters::validate(
-    CompileErrorAnnotator& annotator) const {
+    const CompileErrorAnnotator& annotator) const {
   bool containedDefault = false;
   for (auto param : _params) {
     // Check for empty names or default values

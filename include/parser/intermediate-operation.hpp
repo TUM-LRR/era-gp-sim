@@ -83,22 +83,22 @@ class IntermediateOperation {
                         const std::string& name);
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       CompileErrorAnnotator& annotator,
+                       const CompileErrorAnnotator& annotator,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess) = 0;
 
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
-                     CompileErrorAnnotator& annotator,
+                     const CompileErrorAnnotator& annotator,
                      SymbolGraph& graph);
 
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
-                              CompileErrorAnnotator& annotator,
+                              const CompileErrorAnnotator& annotator,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);
 
   virtual void precompile(const PreprocessingImmutableArguments& immutable,
-                          CompileErrorAnnotator& annotator,
+                          const CompileErrorAnnotator& annotator,
                           MacroDirectiveTable& macroTable);
 
   /**

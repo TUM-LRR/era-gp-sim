@@ -31,7 +31,7 @@ void IntermediateMacroInstruction::replaceWithMacros(
     CommandIterator begin,
     CommandIterator end,
     MacroDirectiveTable& macroTable,
-    CompileErrorAnnotator& annotator) {
+    const CompileErrorAnnotator& annotator) {
   for (auto i = begin; i != end; ++i) {
     // Try casting to IntermediateInstruction, skip instruction if it doesn't
     // work
@@ -59,7 +59,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     const IntermediateInstruction& ins,
     const MacroDirective& macro,
     MacroDirectiveTable& macroTable,
-    CompileErrorAnnotator& annotator)
+    const CompileErrorAnnotator& annotator)
 : IntermediateOperation(ins.lines(), ins.labels(), ins.name()) {
   for (size_t i = 0; i < macro.getOperationCount(); i++) {
     if (i == macro.firstInstructionIndex()) {
@@ -83,7 +83,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
 }
 void IntermediateMacroInstruction::execute(
     const ExecuteImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     FinalRepresentation& finalRepresentator,
     MemoryAccess& memoryAccess) {
   for (const auto& operation : _operations) {
@@ -93,7 +93,7 @@ void IntermediateMacroInstruction::execute(
 
 void IntermediateMacroInstruction::allocateMemory(
     const PreprocessingImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   for (const auto& operation : _operations) {
@@ -103,7 +103,7 @@ void IntermediateMacroInstruction::allocateMemory(
 
 void IntermediateMacroInstruction::enhanceSymbolTable(
     const EnhanceSymbolTableImmutableArguments& immutable,
-    CompileErrorAnnotator& annotator,
+    const CompileErrorAnnotator& annotator,
     SymbolGraph& graph) {
   for (const auto& operation : _operations) {
     operation->enhanceSymbolTable(immutable, annotator, graph);
