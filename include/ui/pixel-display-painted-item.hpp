@@ -252,13 +252,13 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   //                setPixelBaseAddress)
   // Q_PROPERTY(std::size_t colorBaseAddress READ getColorBaseAddress WRITE\
   //                setColorBaseAddress)
-  Q_PROPERTY(std::size_t width READ getWidth WRITE setWidth)
+  // Q_PROPERTY(std::size_t width READ getWidth WRITE setWidth)
   // Q_PROPERTY(std::size_t height READ getHeight WRITE setHeight)
   // Q_PROPERTY(std::size_t colorMode READ getColorMode WRITE setColorMode)
   // Q_PROPERTY(std::size_t rBit READ getRBit WRITE setRBit)
   // Q_PROPERTY(std::size_t gBit READ getGBit WRITE setGBit)
   // Q_PROPERTY(std::size_t bBit READ getBBit WRITE setBBit)
-  // Q_PROPERTY(bool columns_rows READ getColumns_rows WRITE setColumns_rows)
+  Q_PROPERTY(bool columns_rows READ getColumns_rows WRITE setColumns_rows)
   // Q_PROPERTY(bool horizontallyMirrored READ getHorizontallyMirrored WRITE\
   //                setHorizontallyMirrored)
   // Q_PROPERTY(bool verticallyMirrored READ getVerticallyMirrored WRITE\
