@@ -42,8 +42,7 @@ void MemoryReservationDirective::allocateMemory(
     MemoryAllocator& allocator,
     CompileState& state) {
   if (_values.empty()) {
-    state.addWarning("Implicit reservation of 0 bytes, missing arguments?",
-                     CodePosition(_lines.lineStart, _lines.lineEnd));
+    state.addWarningT(CodePosition(_lines.lineStart, _lines.lineEnd), "Implicit reservation of 0 bytes, missing arguments?");
   }
   // So, we simply calculate and sum up our arguments.
   std::size_t sizeInCells = 0;
@@ -54,8 +53,7 @@ void MemoryReservationDirective::allocateMemory(
     if (result > 0) {
       sizeInCells += result;
     } else {
-      state.addWarning("Reserving 0 bytes",
-                       CodePosition(_lines.lineStart, _lines.lineEnd));
+      state.addWarningT(CodePosition(_lines.lineStart, _lines.lineEnd), "Reserving 0 bytes");
     }
   }
 

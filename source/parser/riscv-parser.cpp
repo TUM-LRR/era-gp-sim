@@ -90,10 +90,10 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
 
   for (std::string line; std::getline(stream, line);) {
     _compile_state.position = _compile_state.position.newLine();
-    line_regex.matchLine(line);
+    auto errorPos = line_regex.matchLine(line, _compile_state);
     if (!line_regex.isValid()) {
       // Add syntax error if line regex doesnt match
-      _compile_state.addError("Syntax Error", _compile_state.position);
+      _compile_state.addErrorT(CodePosition{_compile_state.position.line(), errorPos}, "Syntax Error");
     } else {
       // Collect labels until next instruction
       if (line_regex.hasLabel()) {

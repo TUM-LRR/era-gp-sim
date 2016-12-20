@@ -53,5 +53,30 @@
         <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentSettingsWindow.qml</file>
         <file>Components/Output/LightstripSettingsWindow.qml</file>
+        <file>Components/Output/Console.qml</file>
+        <file>Components/Output/ConsoleSettingsWindow.qml</file>
+        <file>Components/Input/ButtonInput.qml</file>
+        <file>Components/Input/ClickInput.qml</file>
+        <file>Components/Input/Input.qml</file>
+        <file>Components/Input/TextInputSelf.qml</file>
+        <file>Components/Input/ButtonInputSW.qml</file>
+        <file>Components/Input/ClickInputSW.qml</file>
+        <file>Components/Input/TextInputSW.qml</file>
+        <file>Components/Input/Buttons/Settings_Icon_Pressed.png</file>
+        <file>Components/Input/Buttons/Text Console Icon Selected.png</file>
+        <file>Components/Input/Buttons/Text Console Icon.png</file>
+        <file>Components/Input/Buttons/Arrow Button Input Icon Selected.png</file>
+        <file>Components/Input/Buttons/Arrow Button Input Icon Selected@2x.png</file>
+        <file>Components/Input/Buttons/Arrow Button Input Icon.png</file>
+        <file>Components/Input/Buttons/Arrow Button Input Icon@2x.png</file>
+        <file>Components/Input/Buttons/Mouse Input Icon Selected.png</file>
+        <file>Components/Input/Buttons/Mouse Input Icon Selected@2x.png</file>
+        <file>Components/Input/Buttons/Mouse Input Icon.png</file>
+        <file>Components/Input/Buttons/Mouse Input Icon@2x.png</file>
+        <file>Components/Input/Buttons/Text Console Icon Selected@2x.png</file>
+        <file>Components/Input/Buttons/Text Console Icon@2x.png</file>
+        <file>Components/Input/Buttons/Settings_Icon@2x.png</file>
+        <file>Components/Input/Buttons/Settings_Icon_Pressed@2x.png</file>
+        <file>Components/Input/Buttons/Settings_Icon.png</file>
     </qresource>
 </RCC>

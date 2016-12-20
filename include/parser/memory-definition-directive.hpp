@@ -99,8 +99,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                               MemoryAllocator& allocator,
                               CompileState& state) {
     if (_values.empty()) {
-      state.addError("Empty data definition",
-                     CodePosition(_lines.lineStart, _lines.lineEnd));
+      state.addErrorT(CodePosition(_lines.lineStart, _lines.lineEnd), "Empty data definition");
     }
 
     // So, we simply calculate and sum up our arguments.
@@ -169,7 +168,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
       // Then, let's do a (probably also here) expensive memory call.
       memoryAccess.putMemoryValueAt(_absolutePosition, data);
     } else {
-      state.addError("Nothing to reserve with memory definition.");
+      state.addErrorHereT("Nothing to reserve with memory definition.");
     }
   }
 

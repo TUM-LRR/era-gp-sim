@@ -27,6 +27,7 @@
 #include "arch/riscv/properties.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
+#include "core/memory-value.hpp"
 
 namespace riscv {
 /**
@@ -68,6 +69,16 @@ convert(const T& value) {
                               riscv::SIGNED_REPRESENTATION);
 }
 
+template <typename T>
+std::enable_if_t<std::is_integral<T>::value, MemoryValue>
+convert(const T& value, std::size_t size) {
+  return conversions::convert(value,
+                              size,
+                              riscv::BITS_PER_BYTE,
+                              riscv::ENDIANNESS,
+                              riscv::SIGNED_REPRESENTATION);
+}
+
 /**
  * Utility function to retrieve a register value for RISC-V.
  *
@@ -102,9 +113,21 @@ void storeRegister(MemoryAccess& memoryAccess,
 template <typename UnsignedWord>
 std::enable_if_t<std::is_unsigned<UnsignedWord>::value, bool>
 isAddressValid(MemoryAccess& memoryAccess, UnsignedWord absoluteAdress) {
-    UnsignedWord lowerBound = 0;//TODO first adress of assembled code
-    UnsignedWord upperBound = memoryAccess.getMemorySize().get();//TODO last adress of assembled code
-    return absoluteAdress >= lowerBound && absoluteAdress < upperBound;
+  UnsignedWord lowerBound = 0;
+  UnsignedWord upperBound = memoryAccess.getMemorySize().get();
+  return absoluteAdress >= lowerBound && absoluteAdress < upperBound;
+}
+
+template <std::size_t numberOfBits, typename T>
+T appendBits(T& original, const MemoryValue& memoryValue) {
+  auto number = convert<T>(memoryValue);
+  return ::Utility::appendBits<numberOfBits>(original, number);
+}
+
+template <std::size_t firstBit, std::size_t lastBit, typename T>
+T appendBitSlice(const T& original, const MemoryValue& memoryValue) {
+  auto number = convert<T>(memoryValue);
+  return ::Utility::appendBitSlice<firstBit, lastBit>(original, number);
 }
 }
 

@@ -25,6 +25,22 @@
 #include "core/memory-value.hpp"
 
 
+const std::map<QByteArray, RegisterModel::MemoryValueToStringConversion>
+    RegisterModel::_memoryValueToStringConversions = {
+        {"BinaryData", StringConversions::toBinString},
+        {"HexData", StringConversions::toHexString},
+        {"SignedDecData", StringConversions::toSignedDecString},
+        {"UnsignedDecData", StringConversions::toUnsignedDecString}};
+
+const std::map<QString, RegisterModel::StringToMemoryValueConversion>
+    RegisterModel::_stringToMemoryValueConversions = {
+        {"Binary", StringConversions::binStringToMemoryValue},
+        {"Hexadecimal", StringConversions::hexStringToMemoryValue},
+        {"Decimal (Signed)", StringConversions::signedDecStringToMemoryValue},
+        {"Decimal (Unsigned)",
+         StringConversions::unsignedDecStringToMemoryValue}};
+
+
 RegisterModel::RegisterModel(ArchitectureAccess &architectureAccess,
                              MemoryManager &memoryManager,
                              MemoryAccess &memoryAccess,
@@ -81,6 +97,12 @@ void RegisterModel::updateContent(const QString &registerTitle) {
 QHash<int, QByteArray> RegisterModel::roleNames() const {
   QHash<int, QByteArray> roles;
   roles[TitleRole] = "Title";
+  roles[TypeRole] = "Type";
+  roles[BinaryDataRole] = "BinaryData";
+  roles[HexDataRole] = "HexData";
+  roles[SignedDecDataRole] = "SignedDecData";
+  roles[UnsignedDecDataRole] = "UnsignedDecData";
+  roles[FlagDataRole] = "FlagData";
   return roles;
 }
 
@@ -91,11 +113,30 @@ QVariant RegisterModel::data(const QModelIndex &index, int role) const {
   }
 
   // Return the row's correponding RegisterItem's information.
-  RegisterInformation *information =
+  RegisterInformation *registerItem =
       static_cast<RegisterInformation *>(index.internalPointer());
 
-  if (role == TitleRole) {
-    return QString::fromStdString(information->getName());
+  switch (role) {
+    case TitleRole: return QString::fromStdString(registerItem->getName());
+    case TypeRole:
+      switch (registerItem->getType()) {
+        case RegisterInformation::Type::INTEGER: return "Integer";
+        case RegisterInformation::Type::FLOAT: return "Float";
+        case RegisterInformation::Type::VECTOR: return "Vector";
+        case RegisterInformation::Type::FLAG: return "Flag";
+        case RegisterInformation::Type::LINK: return "Link";
+        case RegisterInformation::Type::PROGRAM_COUNTER:
+          return "ProgramCounter";
+      }
+    case FlagDataRole:
+      return _memoryAccess.getRegisterValue(registerItem->getName())
+          .get()
+          .get(0);
+    default:
+      auto registerValue =
+          _memoryAccess.getRegisterValue(registerItem->getName()).get();
+      return QString::fromStdString(
+          _memoryValueToStringConversions.at(roleNames()[role])(registerValue));
   }
   return QVariant();
 }
@@ -178,40 +219,18 @@ int RegisterModel::columnCount(const QModelIndex &parent) const {
 }
 
 
-void RegisterModel::registerContentChanged(
-    const QModelIndex &index,
-    const QString &registerContent,
-    unsigned int currentDataFormatIndex) {
+void RegisterModel::registerContentChanged(const QModelIndex &index,
+                                           const QString &registerContent,
+                                           const QString &dataFormat) {
   RegisterInformation *registerItem =
       static_cast<RegisterInformation *>(index.internalPointer());
   // Remove whitespaces.
   QString registerContentCleared = registerContent;
   registerContentCleared.remove(QChar(' '));
   // Convert content string to MemoryValue.
-  Optional<MemoryValue> registerContentMemoryValue;
-  // Look up the register's current data format.
-  Optional<QString> dataFormat =
-      _dataFormatForRegisterItem(*registerItem, currentDataFormatIndex);
-  if (dataFormat) {
-    if (*dataFormat == "Binary") {
-      registerContentMemoryValue = StringConversions::binStringToMemoryValue(
+  Optional<MemoryValue> registerContentMemoryValue =
+      _stringToMemoryValueConversions.at(dataFormat)(
           registerContentCleared.toStdString(), registerItem->getSize());
-    } else if (*dataFormat == "Hexadecimal") {
-      registerContentMemoryValue = StringConversions::hexStringToMemoryValue(
-          registerContentCleared.toStdString(), registerItem->getSize());
-    } else if (*dataFormat == "Decimal (Unsigned)") {
-      registerContentMemoryValue =
-          StringConversions::unsignedDecStringToMemoryValue(
-              registerContentCleared.toStdString(), registerItem->getSize());
-    } else if (*dataFormat == "Decimal (Signed)") {
-      registerContentMemoryValue =
-          StringConversions::signedDecStringToMemoryValue(
-              registerContentCleared.toStdString(), registerItem->getSize());
-    } else if (*dataFormat == "Flag") {
-      registerContentMemoryValue = StringConversions::binStringToMemoryValue(
-          registerContentCleared.toStdString(), registerItem->getSize());
-    }
-  }
   // Notify core about the change.
   if (registerContentMemoryValue) {
     _memoryAccess.setRegisterValue(registerItem->getName(),
@@ -220,114 +239,6 @@ void RegisterModel::registerContentChanged(
     _memoryAccess.setRegisterValue(registerItem->getName(),
                                    MemoryValue(registerItem->getSize()));
   }
-}
-
-
-QStringList
-RegisterModel::dataFormatListForRegister(const QModelIndex &index) const {
-  RegisterInformation *registerItem =
-      static_cast<RegisterInformation *>(index.internalPointer());
-  if (registerItem != nullptr) {
-    return _dataFormatLists.at(registerItem->getType());
-  }
-  return QStringList();
-}
-
-
-QVariant
-RegisterModel::contentStringForRegister(const QModelIndex &index,
-                                        unsigned int currentDataFormatIndex) {
-  if (index.internalPointer() != nullptr) {
-    // Load the register corresponding to the given QModelIndex.
-    RegisterInformation *registerItem =
-        static_cast<RegisterInformation *>(index.internalPointer());
-    // Look up the register's current data format.
-    Optional<QString> dataFormat =
-        _dataFormatForRegisterItem(*registerItem, currentDataFormatIndex);
-    // Fetch memory value from core.
-    MemoryValue registerContentMemoryValue =
-        _memoryAccess.getRegisterValue(registerItem->getName()).get();
-    if (dataFormat) {
-      // Return placeholder values.
-      if (*dataFormat == "Binary") {
-        return QString::fromStdString(
-            StringConversions::toBinString(registerContentMemoryValue));
-      } else if (*dataFormat == "Hexadecimal") {
-        return QString::fromStdString(
-            StringConversions::toHexString(registerContentMemoryValue));
-      } else if (*dataFormat == "Decimal (Unsigned)") {
-        return QString::fromStdString(
-            StringConversions::toUnsignedDecString(registerContentMemoryValue));
-      } else if (*dataFormat == "Decimal (Signed)") {
-        return QString::fromStdString(
-            StringConversions::toSignedDecString(registerContentMemoryValue));
-      } else if (*dataFormat == "Flag") {
-        return registerContentMemoryValue.get(0);
-      }
-    }
-  }
-  return "";
-}
-
-
-QString RegisterModel::displayFormatStringForRegister(
-    const QModelIndex &index, unsigned int currentDataFormatIndex) const {
-  if (index.internalPointer() != nullptr) {
-    // Get the register's current data format.
-    RegisterInformation *registerItem =
-        static_cast<RegisterInformation *>(index.internalPointer());
-    Optional<QString> dataFormat =
-        _dataFormatForRegisterItem(*registerItem, currentDataFormatIndex);
-
-    if (dataFormat) {
-      // Return corresponding display format string.
-      return _computeDisplayFormatString(
-          *dataFormat, registerItem->getSize(), 8);
-    }
-  }
-  return "";
-}
-
-
-Optional<QString> RegisterModel::_dataFormatForRegisterItem(
-    const RegisterInformation &registerItem,
-    unsigned int currentDataFormatIndex) const {
-  QStringList dataFormats = _dataFormatLists.at(registerItem.getType());
-  // Sometimes a view requests data before the dataFormatCombobox was
-  // initialized and therefore sends an invalid value for
-  // currentDataFormatIndex. This has to be handled.
-  if (currentDataFormatIndex < dataFormats.length()) {
-    return dataFormats.at(currentDataFormatIndex);
-  }
-  return Optional<QString>();
-}
-
-
-QString RegisterModel::_computeDisplayFormatString(const QString &dataFormat,
-                                                   size_t size,
-                                                   size_t byteSize) const {
-  // An empty format string means no format constraint is required.
-  QString formatString;
-  QString formatPrefix;
-  size_t byteCharacterWidth = 0;
-  // Compute format string depending on the amount of digits for the current
-  // format.
-  if (dataFormat == "Binary") {
-    formatPrefix = "\\0\\b ";
-    formatString = formatPrefix + QString(size, 'B');
-    byteCharacterWidth = 8;
-  } else if (dataFormat == "Hexadecimal") {
-    formatPrefix = "\\0\\x ";
-    formatString = formatPrefix + QString(size / 4, 'H');
-    byteCharacterWidth = 2;
-  }
-  // Insert spaces after each byte.
-  for (size_t bitIndex = formatPrefix.length() + byteCharacterWidth;
-       bitIndex < formatString.length();
-       bitIndex += (byteCharacterWidth + 1)) {
-    formatString.insert(bitIndex, ' ');
-  }
-  return formatString;
 }
 
 

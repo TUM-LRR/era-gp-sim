@@ -15,26 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
-#define ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP
+#ifndef ERAGPSIM_ARCH_COMMON_ABSTRACT_REGISTER_NODE_HPP
+#define ERAGPSIM_ARCH_COMMON_ABSTRACT_REGISTER_NODE_HPP
 
-#include <QtCore/qglobal.h>
-#include <memory>
 #include <string>
 
 #include "arch/common/abstract-syntax-tree-node.hpp"
+#include "arch/common/architecture-properties.hpp"
+#include "arch/common/validation-result.hpp"
+#include "core/memory-value.hpp"
 
-/** A node that represents a register. */
-class RegisterNode : public AbstractSyntaxTreeNode {
+/**
+ * A node that represents a register.
+ */
+class AbstractRegisterNode : public AbstractSyntaxTreeNode {
  public:
   using super = AbstractSyntaxTreeNode;
 
   /**
    * Constructs a new node that represents a register.
    *
-   * \param value The identifier for the register.
+   * \param identifier The identifier for the register.
    */
-  RegisterNode(const std::string& identifier);
+  explicit AbstractRegisterNode(const std::string& name);
+
+  /**
+   * Destructor.
+   */
+  virtual ~AbstractRegisterNode();
 
   /**
    * \return The content of the register, represented by this node.
@@ -42,22 +50,18 @@ class RegisterNode : public AbstractSyntaxTreeNode {
   MemoryValue getValue(MemoryAccess& memoryAccess) const override;
 
   /**
-   * \return success, if there are no children.
+   * \return succefss, if there are no children.
    */
   ValidationResult validate(MemoryAccess& memoryAccess) const override;
 
+  /**
+   * \return The identifier of the register.
+   */
   const std::string& getIdentifier() const override;
 
-  /**
-   * \return Assembled register identifier
-   */
-  MemoryValue assemble() const override;
-
- private:
-  /**
-   * Identifies a register
-   */
-  std::string _identifier;
+ protected:
+  /** The name of the register (e.g. "x12" or "pc"). */
+  std::string _name;
 };
 
-#endif /* ERAGPSIM_ARCH_COMMON_REGISTER_NODE_HPP */
+#endif /* ERAGPSIM_ARCH_COMMON_ABSTRACT_REGISTER_NODE_HPP */

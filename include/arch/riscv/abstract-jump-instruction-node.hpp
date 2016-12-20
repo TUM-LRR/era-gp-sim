@@ -108,8 +108,7 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    *
    * \param memoryAccess The memory access object.
    *
-   * \return An empty memory value.
-   */
+   * \return The resulting program counter.   */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert(validate(memoryAccess).isSuccess());
     auto destination = _children[0]->getIdentifier();

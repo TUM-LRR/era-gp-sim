@@ -3,28 +3,28 @@
         {
             "registers": [
                 {
-                    "id": 13, 
-                    "alias": "pc", 
-                    "type": "program-counter", 
-                    "name": "f0", 
-                    "size": 64
+                    "size": 64,
+                    "name": "f0",
+                    "id": 13,
+                    "alias": "pc",
+                    "type": "program-counter"
                 }
-            ], 
+            ],
             "name": "fpu"
-        }, 
+        },
         {
             "registers": [
                 {
-                    "id": 13, 
-                    "alias": "pc", 
-                    "type": "program-counter", 
-                    "name": "r5", 
-                    "size": 64
+                    "size": 64,
+                    "name": "r5",
+                    "id": 13,
+                    "alias": "pc",
+                    "type": "program-counter"
                 }
-            ], 
+            ],
             "name": "cpu"
         }
-    ], 
-    "extends": "with-deps-complex", 
-    "name": "base3"
+    ],
+    "name": "base3",
+    "extends": "with-deps-complex"
 }
