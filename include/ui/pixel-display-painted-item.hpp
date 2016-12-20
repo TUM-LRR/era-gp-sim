@@ -259,15 +259,15 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   // Q_PROPERTY(std::size_t gBit READ getGBit WRITE setGBit)
   // Q_PROPERTY(std::size_t bBit READ getBBit WRITE setBBit)
   Q_PROPERTY(bool columns_rows READ getColumns_rows WRITE setColumns_rows)
-  // Q_PROPERTY(bool horizontallyMirrored READ getHorizontallyMirrored WRITE\
-  //                setHorizontallyMirrored)
-  // Q_PROPERTY(bool verticallyMirrored READ getVerticallyMirrored WRITE\
-  //                setVerticallyMirrored)
-  // Q_PROPERTY(bool tight READ getTight WRITE setTight)
-  // Q_PROPERTY(bool pixelBufferPointerLike READ getPixelBufferPointerLike WRITE\
-  //                setPixelBufferPointerLike)
-  // Q_PROPERTY(bool colorTablePointerLike READ getColorTablePointerLike WRITE\
-  //                setColorTablePointerLike)
+  Q_PROPERTY(bool horizontallyMirrored READ getHorizontallyMirrored WRITE\
+                 setHorizontallyMirrored)
+  Q_PROPERTY(bool verticallyMirrored READ getVerticallyMirrored WRITE\
+                 setVerticallyMirrored)
+  Q_PROPERTY(bool tight READ getTight WRITE setTight)
+  Q_PROPERTY(bool pixelBufferPointerLike READ getPixelBufferPointerLike WRITE\
+                 setPixelBufferPointerLike)
+  Q_PROPERTY(bool colorTablePointerLike READ getColorTablePointerLike WRITE\
+                 setColorTablePointerLike)
   // Q_PROPERTY(std::size_t freeBytes READ getFreeBytes WRITE setFreeBytes)
   // Q_PROPERTY(std::size_t freeBits READ getFreeBits WRITE setFreeBits)
 
