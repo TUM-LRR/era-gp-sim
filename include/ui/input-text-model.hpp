@@ -25,8 +25,8 @@
 
 #include "core/memory-access.hpp"
 
-namespace InputText{
-    using length_t = unsigned ;
+namespace InputText {
+using length_t = unsigned;
 }
 
 using length_t = InputText::length_t;
