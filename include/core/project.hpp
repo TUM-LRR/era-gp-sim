@@ -93,6 +93,21 @@ class Project : public Servant {
   MemoryValue setMemoryValueAt(size_t address, const MemoryValue &value);
 
   /**
+   * Calls Memory::isProtected(size_t, size_t)
+   */
+  bool isMemoryProtectedAt(std::size_t address, std::size_t amount = 1) const;
+
+  /**
+   * Calls Memory::makeProtected(...)
+   */
+  void makeMemoryProtected(std::size_t address, std::size_t amount = 1);
+
+  /**
+   * Calls Memory::removeProtection(...)
+   */
+  void removeMemoryProtection(std::size_t address, std::size_t amount = 1);
+
+  /**
    * Calls RegisterSet::get(const std::string& name) const
    *
    */

@@ -113,6 +113,19 @@ Project::setMemoryValueAt(size_t address, const MemoryValue &value) {
   return _memory.set(address, value);
 }
 
+bool Project::isMemoryProtectedAt(std::size_t address,
+                                  std::size_t amount) const {
+  return _memory.isProtected(address, amount);
+}
+
+void Project::makeMemoryProtected(std::size_t address, std::size_t amount) {
+  return _memory.makeProtected(address, amount);
+}
+
+void Project::removeMemoryProtection(std::size_t address, std::size_t amount) {
+  return _memory.removeProtection(address, amount);
+}
+
 MemoryValue Project::getRegisterValue(const std::string &name) const {
   return _registerSet.get(name);
 }
