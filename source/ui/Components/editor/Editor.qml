@@ -268,14 +268,14 @@ ScrollView {
                     for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
                         var macro = macros[macroIndex];
                         // Find the line for the macro expansion.
-                        var linePosition = TextUtilities.getPositionOfOccurence(text, "\n", macro["startLine"]+1);
+                        var linePosition = TextUtilities.getPositionOfOccurence(text, "\n", Number(macro["startLine"])+1);
                         // Create display objects (i.e. sub-editor and triangle)
                         var macroDisplayObject = {};
                         // Add sub-editor to display object
                         var yPos = textArea.positionToRectangle(linePosition).y + textArea.cursorRectangle.height
                         var subeditor = subeditorComponent.createObject(textArea, {
                                                                                  "y": yPos,
-                                                                                 "expandedHeight": cursorRectangle.height*macros[macroIndex]["lineCount"],
+                                                                                 "expandedHeight": cursorRectangle.height*Number(macros[macroIndex]["lineCount"]),
                                                                                  "text": macro["code"]});
                         macroDisplayObject["subeditor"] = subeditor;
                         // Add triangle-button to display object
@@ -314,8 +314,9 @@ ScrollView {
                         var currentLine = TextUtilities.getLineNumberForPosition(textArea.text, textArea.cursorPosition);
                         currentLine = convertRawLineNumberToDisplayLineNumber(textArea.text, currentLine);
                         for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
-                            if (macros[macroIndex]["startLine"] >= (currentLine-1)) {
-                                macros[macroIndex]["startLine"] += lineCountDifference;
+                            if (Number(macros[macroIndex]["startLine"]) >= (currentLine-1)) {
+                                var newStartLine = Number(macros[macroIndex]["startLine"]) + lineCountDifference;
+                                macros[macroIndex]["startLine"] = newStartLine;
                             }
                         }
                         // Remove macros when new text was entered.
@@ -358,7 +359,7 @@ ScrollView {
                     var linePosition = getPositionForMacroExpansion(macroIndex);
 
                     // Insert empty lines to make space for the macro expansion.
-                    var alteredText = [text.slice(0, linePosition), new Array(macros[macroIndex]["lineCount"]+1).join("\n"), text.slice(linePosition)].join('');
+                    var alteredText = [text.slice(0, linePosition), new Array(Number(macros[macroIndex]["lineCount"])+1).join("\n"), text.slice(linePosition)].join('');
                     // Prevent loop.
                     shouldUpdateText = false;
                     text = alteredText;
@@ -367,13 +368,13 @@ ScrollView {
                     // When inserting the blank lines somewhere ahead of the cursor, the cursor position has to be moved
                     // in order to mantain its position relative to the surrounding text.
                     if (cursorPos > linePosition) {
-                        cursorPos += (macros[macroIndex]["lineCount"] * 1);
+                        cursorPos += (Number(macros[macroIndex]["lineCount"]) * 1);
                     }
 
                     // Move down the subeditors and triangle buttons of following macros
                     for (var i = (macroIndex+1); i < macroDisplayObjects.length; i++) {
-                        macroDisplayObjects[i]["subeditor"].y += cursorRectangle.height * macros[macroIndex]["lineCount"];
-                        macroDisplayObjects[i]["triangleButton"].y += cursorRectangle.height * macros[macroIndex]["lineCount"];
+                        macroDisplayObjects[i]["subeditor"].y += cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
+                        macroDisplayObjects[i]["triangleButton"].y += cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
                     }
 
                     // Restore cursor position.
@@ -403,7 +404,7 @@ ScrollView {
                     var linePosition = getPositionForMacroExpansion(macroIndex);
 
                     // Remove the empty lines.
-                    var alteredText = TextUtilities.remove(text, linePosition, linePosition + (macros[macroIndex]["lineCount"]*1));
+                    var alteredText = TextUtilities.remove(text, linePosition, linePosition + (Number(macros[macroIndex]["lineCount"])*1));
                     // Prevent loop.
                     shouldUpdateText = false;
                     text = alteredText;
@@ -412,13 +413,13 @@ ScrollView {
                     // When inserting the blank lines somewhere ahead of the cursor, the cursor position has to be moved
                     // in order to mantain its position relative to the surrounding text.
                     if (cursorPos > linePosition) {
-                        cursorPos -= (macros[macroIndex]["lineCount"] * 1);
+                        cursorPos -= (Number(macros[macroIndex]["lineCount"]) * 1);
                     }
 
                     // Move down the subeditors and triangle buttons of following macros
                     for (var i = (macroIndex+1); i < macroDisplayObjects.length; i++) {
-                        macroDisplayObjects[i]["subeditor"].y -= cursorRectangle.height * macros[macroIndex]["lineCount"];
-                        macroDisplayObjects[i]["triangleButton"].y -= cursorRectangle.height * macros[macroIndex]["lineCount"];
+                        macroDisplayObjects[i]["subeditor"].y -= cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
+                        macroDisplayObjects[i]["triangleButton"].y -= cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
                     }
 
                     // Restore cursor position.
@@ -435,14 +436,14 @@ ScrollView {
                     // to a blank line.
                     for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
                         var clearedLineNumber = lineNumber-blankLineCount;
-                        if (clearedLineNumber > macros[macroIndex]["startLine"]) {
+                        if (clearedLineNumber > Number(macros[macroIndex]["startLine"])) {
                             if (macros[macroIndex]["collapsed"] === false) {
                                 // Given lineNumber lies within an macro expansion's blank lines.
-                                if (clearedLineNumber <= macros[macroIndex]["startLine"]+macros[macroIndex]["lineCount"]) {
+                                if (clearedLineNumber <= Number(macros[macroIndex]["startLine"])+Number(macros[macroIndex]["lineCount"])) {
                                     return true;
                                 }
                                 // Save number of blank lines to filter them out when reading macro-startLine information.
-                                blankLineCount += macros[macroIndex]["lineCount"];
+                                blankLineCount += Number(macros[macroIndex]["lineCount"]);
                             }
                         } else {
                             return false;
@@ -468,8 +469,8 @@ ScrollView {
                     var rawLineNumber = displayLineNumber;
                     for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
                         var macro = macros[macroIndex];
-                        if (macro["startLine"] < displayLineNumber && macro["collapsed"] === false) {
-                            rawLineNumber += macro["lineCount"];
+                        if (Number(macro["startLine"]) < displayLineNumber && macro["collapsed"] === false) {
+                            rawLineNumber += Number(macro["lineCount"]);
                         }
                     }
                     return rawLineNumber;
@@ -482,9 +483,9 @@ ScrollView {
                     var insertedNewLines = 0;
                     // Blank lines added for previous macro expansions have to be considered.
                     for (var i = 0; i < macroIndex; ++i) {
-                        insertedNewLines += (!macros[i]["collapsed"]) ? macros[i]["lineCount"] : 0;
+                        insertedNewLines += (!macros[i]["collapsed"]) ? Number(macros[i]["lineCount"]) : 0;
                     }
-                    return TextUtilities.getPositionOfOccurence(text, "\n", macro["startLine"]+insertedNewLines+1);
+                    return TextUtilities.getPositionOfOccurence(text, "\n", Number(macro["startLine"])+insertedNewLines+1);
                 }
 
 
@@ -550,8 +551,8 @@ ScrollView {
                             var macro = textArea.macros[macroIndex];
                             if (macro["collapsed"] === false) {
                                 // Calculate where the blank lines start and end, and remove the text inbetween.
-                                var blankStart = TextUtilities.getLineStartForLine(alteredText, (macro["startLine"]+1-selectionStartLine));
-                                var blankEnd = TextUtilities.getLineStartForLine(alteredText, (macro["startLine"]+1-selectionStartLine+macro["lineCount"]));
+                                var blankStart = TextUtilities.getLineStartForLine(alteredText, (Number(macro["startLine"])+1-selectionStartLine));
+                                var blankEnd = TextUtilities.getLineStartForLine(alteredText, (Number(macro["startLine"])+1-selectionStartLine+Number(macro["lineCount"])));
                                 alteredText = [alteredText.slice(0, blankStart), alteredText.slice(blankEnd)].join('')
                             }
                         }
