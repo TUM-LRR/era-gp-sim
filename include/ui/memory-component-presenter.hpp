@@ -81,7 +81,7 @@ class MemoryComponentPresenter : public QAbstractListModel {
 
   /**
    * Returns the number of rows in this table
-   * inherited from QAbstractListModel
+   * Inherited from QAbstractListModel
    *
    * /param parent pointer to the logical data parent
    * /return returns the length of the table
@@ -91,17 +91,16 @@ class MemoryComponentPresenter : public QAbstractListModel {
 
   /**
    * Returns the translation between roleNames in QML and the internal index
-   * representation inherited from QAbstractListModel
+   * representation inherited from QAbstractListModel.
    *
    * /return returns a QHash with the connection between the internal index
    * representation and the name of the role in QML
-   *
    */
   QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
 
   /**
    * Returns the number of bytes to be displayed in one memory cell.
-   * the role is an indicator of how many bytes are chosen by the user.
+   * The role is an indicator of how many bytes are chosen by the user.
    *
    * /param role the display role for this cell in the QAbstractListModel
    * /return the number of bytes to be shown in one cell
