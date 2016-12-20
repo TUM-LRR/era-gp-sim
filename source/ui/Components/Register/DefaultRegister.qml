@@ -80,10 +80,10 @@ TextField {
 
                     NumberAnimation on spread {
                         from: 0; to: 0.8; duration: 1000
-                        loops: 5
+                        loops: 3
                         easing.type: Easing.InOutQuad
                         onStopped: {
-                        registerTextField.style = whiteRectangle;
+                            registerTextField.style = whiteRectangle;
                         }
                     }
                 }
