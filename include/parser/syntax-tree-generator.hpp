@@ -26,8 +26,8 @@
 
 #include "arch/common/node-factory-collection.hpp"
 
-class AbstractSyntaxTreeNode;
 class CompileErrorAnnotator;
+class AbstractInstructionNode;
 class MemoryAccess;
 
 /**
@@ -74,7 +74,7 @@ class SyntaxTreeGenerator {
    * \param state The compile state to denote errors.
    * \return The transformed command.
    */
-  std::unique_ptr<AbstractSyntaxTreeNode> transformCommand(
+  std::unique_ptr<AbstractInstructionNode> transformCommand(
       const std::string& command_name,
       const CompileErrorAnnotator& annotator,
       std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,

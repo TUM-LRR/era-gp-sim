@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_PARSER_EXPRESSION_COMPILER_CLIKE_HPP
 #define ERAGPSIM_PARSER_EXPRESSION_COMPILER_CLIKE_HPP
 
+#include "common/translateable.hpp"
 #include "parser/compile-error-annotator.hpp"
 #include "parser/expression-compiler.hpp"
 #include "parser/integer-parser.hpp"

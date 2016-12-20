@@ -90,10 +90,17 @@ void SymbolTable::clearTable() {
 
 void SymbolTable::insertEntry(const std::string& name,
                               const std::string& replacement,
+<<<<<<< HEAD
                               const CodePositionInterval& position,
                               CompileState& state,
                               SymbolBehavior behavior,
                               SymbolType type) {
+=======
+                              CompileState& state,
+                              SymbolType type) {
+  // Note: this method seems to be really slow. I feel like it is the regexes...
+  // We could check them by hand, if it matters.
+>>>>>>> master
   // Expects a trimmed string.
   // To explain the regex: We just look if there are spaces at the beginning OR
   // at the end of the string.
@@ -104,17 +111,25 @@ void SymbolTable::insertEntry(const std::string& name,
 
   if (!std::regex_search(name, VALID_NAME)) {
     // Basically, everything with a leading number is not accepted.
+<<<<<<< HEAD
     state.addError(
         "Symbol '" + name +
         "' does not have a qualified name.");// TODO add position parameter here
+=======
+      state.addErrorHereT("Symbol '%1' does not have a qualified name.", name);
+>>>>>>> master
     return;
   }
 
   if (_table.find(name) != _table.end()) {
     // We also fail, if we define the symbol twice in a commit (which would
     // count as double definition in a file).
+<<<<<<< HEAD
     state.addError("Symbol '" + name +
                    "' defined twice.");// TODO add position parameter here
+=======
+    state.addErrorHereT("Symbol '%1' defined twice.", name);
+>>>>>>> master
     return;
   }
 
@@ -152,6 +167,7 @@ bool SymbolTable::doDfs(std::vector<std::string>& order,
   // The standard stack used for DFS.
   std::stack<std::string> toVisit;
 
+<<<<<<< HEAD
   // The current path, i.e. the virtual and yet not so realistic callstack.
   // (used for finish order determination) But it ensures, that nodes are
   // finished as soon as we drop to their definition level in the stack (that's
@@ -208,6 +224,26 @@ bool SymbolTable::checkCyclic(std::vector<std::string>& order) {
       if (!doDfs(order, visited, i.first)) {
         // Found a cycle, it is not a DAG.
         return false;
+=======
+  // Just make a copy and iterate over all defined symbols. If they match,
+  // replace them.
+  for (int i = 0; i < _maximumRecursionDepth; ++i) {
+    bool cont = false;
+    // Actually, we could store all last results and check, if
+    // one has already occured. Or just for one round... We
+    // just have do differ from infinite recursion where one
+    // pass gets us the same string again...
+    for (const auto& entry : _table) {
+      // Replace all symbol occurrences.
+      // call the replacer function with replacement string & type
+      const auto& replacement =
+          //    the replacement string, the symbol type
+          replacer(entry.second.first, entry.second.second);
+      std::string newResult =
+          std::regex_replace(result, makeRegex(entry.first), replacement);
+      if (!cont && newResult != result) {
+        cont = true;
+>>>>>>> master
       }
     }
   }
@@ -254,6 +290,7 @@ SymbolTable::replaceSymbols(const std::string& source,
                             const ReplacementFunction& replacer) const {
   std::string result = source;
 
+<<<<<<< HEAD
   // Just make a copy and iterate over all defined symbols. If they match,
   // replace them.
   for (const auto& name : _replacementOrder) {
@@ -266,6 +303,11 @@ SymbolTable::replaceSymbols(const std::string& source,
     }
     result = std::regex_replace(result, entry.searchRegex(), replacement);
   }
+=======
+  // If we come here, we have replaced too often and abort, suspecting an
+  // infinite loop.
+  state.addErrorHereT("Exceeded recursion replacement depth.");
+>>>>>>> master
 
   return result;
 }

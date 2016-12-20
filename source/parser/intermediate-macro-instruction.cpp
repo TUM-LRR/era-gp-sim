@@ -44,7 +44,7 @@ void IntermediateMacroInstruction::replaceWithMacros(
     if (!macro.found()) continue;
 
     if (macro.isCyclic()) {
-      annotator.add("Cyclic macro call!");
+      annotator.addErrorHere("Cyclic macro call!");
       continue;
     }
 
@@ -72,8 +72,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     if (ptr != nullptr) {
       _operations.push_back(std::move(ptr));
     } else {
-      annotator.add("Macro contains unsupported instruction '" +
-                    macro.getOperationName(i) + "'.");
+      annotator.addErrorHere("Macro contains unsupported instruction '%1'.", macro.getOperationName(i));
     }
   }
 
@@ -110,7 +109,7 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
   }
 
   if (_labels.size() > 0 && _firstInstruction < 0) {
-    annotator.add("Labels cant point to macros without instructions!");
+    annotator.addErrorHere("Labels cant point to macros without instructions!");
   } else {
     for (const auto& label : _labels) {
       graph.addNode(Symbol(

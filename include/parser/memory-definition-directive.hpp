@@ -105,7 +105,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                               MemoryAllocator& allocator,
                               SectionTracker& tracker) {
     if (_values.empty()) {
-      annotator.add("Empty data definition");
+      annotator.addErrorHere("Empty data definition");
     }
 
     // So, we simply calculate and sum up our arguments.
@@ -181,7 +181,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
       // Then, let's do a (probably also here) expensive memory call.
       memoryAccess.putMemoryValueAt(_absolutePosition, data);
     } else {
-      annotator.add("Nothing to reserve with memory definition.");
+      annotator.addErrorHere("Nothing to reserve with memory definition.");
     }
   }
 

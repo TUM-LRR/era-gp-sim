@@ -170,7 +170,7 @@ class MemoryAllocator {
    * \param name The name to check.
    * \return True if and only if the name if the name of a memory section.
    */
-  bool has(const std::string& name) const;
+  bool has(const std::string& name) const noexcept;
 
  private:
   /**

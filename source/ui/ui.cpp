@@ -19,22 +19,30 @@
 
 #include "ui/ui.hpp"
 
+#include <QUrl>
+
 #include "arch/common/architecture-formula.hpp"
 #include "common/assert.hpp"
 #include "common/utility.hpp"
+#include "ui/snapshot-component.hpp"
 
 
 Ui::Ui(int& argc, char** argv)
-: _architectureMap(), _qmlApplication(argc, argv), _engine(), _projects() {
+: _architectureMap()
+, _qmlApplication(argc, argv)
+, _engine()
+, _projects()
+, _snapshots(std::make_shared<SnapshotComponent>(
+      QString::fromStdString(Utility::joinToRoot("snapshots")))) {
   _loadArchitectures();
 }
 
 int Ui::runUi() {
   qRegisterMetaType<std::size_t>("std::size_t");
   _engine.rootContext()->setContextProperty("ui", this);
-
+  _engine.rootContext()->setContextProperty("snapshotComponent",
+                                            _snapshots.get());
   _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-
   return _qmlApplication.exec();
 }
 
@@ -59,8 +67,12 @@ void Ui::addProject(QQuickItem* tabItem,
 
   // the pointer is not needed anywhere, the object is deleted by qml when
   // tabItem is deleted
-  _projects.push_back(new GuiProject(
-      context, architectureFormula, memorySize, parser.toStdString(), tabItem));
+  _projects.push_back(new GuiProject(context,
+                                     architectureFormula,
+                                     memorySize,
+                                     parser.toStdString(),
+                                     _snapshots,
+                                     tabItem));
 
   // instantiate the qml project item with the prepared context
   QQuickItem* projectItem =
@@ -177,16 +189,22 @@ void Ui::reset(int index) {
   _projects[index]->reset();
 }
 
-void Ui::save(int index) {
+void Ui::saveText(int index) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects[index]->save();
+  _projects[index]->saveText();
 }
 
-void Ui::saveAs(int index, QString name) {
+void Ui::saveTextAs(int index, QUrl path) {
   assert::that(index >= 0);
   assert::that(index < _projects.size());
-  _projects[index]->saveAs(name);
+  _projects[index]->saveTextAs(path);
+}
+
+void Ui::loadText(int index, QUrl path) {
+  assert::that(index >= 0);
+  assert::that(index < _projects.size());
+  _projects[index]->loadText(path);
 }
 
 void Ui::saveSnapshot(int index, QString name) {

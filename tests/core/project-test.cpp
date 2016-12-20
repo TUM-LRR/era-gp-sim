@@ -19,6 +19,7 @@
 
 #include <chrono>
 #include <functional>
+#include <random>
 
 // clang-format off
 #include "gtest/gtest.h"
@@ -85,6 +86,8 @@ class ProjectTestFixture : public ::testing::Test {
     ParserInterface parserInterface = projectModule.getParserInterface();
     parserInterface.setSetCurrentLineCallback(lineNumberCallback);
     parserInterface.setSetErrorListCallback(errorListCallback);
+    MemoryManager memoryManager = projectModule.getMemoryManager();
+    memoryManager.setErrorCallback(errorCallback);
     architectureValidator.validate();
   }
 
@@ -123,6 +126,12 @@ addi x0, x0, 0)";
       [this](const std::vector<CompileError>& errorList) {
         std::vector<CompileError> errors = errorList;
         proxy.setErrorList(errors);
+      };
+  std::function<void(const std::string&, const std::vector<std::string>&)>
+      errorCallback = [this](const std::string& message,
+                             const std::vector<std::string>& arguments) {
+        std::cout << message << std::endl;
+        assert::gtest(false);
       };
 };
 
@@ -308,4 +317,44 @@ TEST_F(ProjectTestFixture, SleepTest) {
   EXPECT_LE(targetedSleep,
             std::chrono::duration_cast<std::chrono::milliseconds>(afterSleep -
                                                                   beforeSleep));
+}
+
+TEST_F(ProjectTestFixture, SerializationTest) {
+  std::mt19937 randomGenerator(std::random_device{}());
+  std::uniform_int_distribution<std::uint32_t> distribution(0, UINT32_MAX);
+  MemoryManager memoryManager = projectModule.getMemoryManager();
+  MemoryAccess memoryAccess = projectModule.getMemoryAccess();
+  std::vector<MemoryValue> registerValues;
+  std::vector<MemoryValue> memoryValues;
+  MemoryValue testValue =
+      conversions::convert(distribution(randomGenerator), 32);
+  for (int i = 0; i < 31; i++) {
+    std::string registerName = std::string("x") + std::to_string(i + 1);
+    testValue = conversions::convert(distribution(randomGenerator), 32);
+    registerValues.push_back(testValue);
+    memoryAccess.putRegisterValue(registerName, testValue);
+  }
+  testValue = conversions::convert(distribution(randomGenerator), 32);
+  registerValues.push_back(testValue);
+  memoryAccess.putRegisterValue("pc", testValue);
+
+  for (std::size_t i = 0; i < memoryAccess.getMemorySize().get(); i += 32) {
+    testValue = conversions::convert(distribution(randomGenerator), 32);
+    memoryValues.push_back(testValue);
+    memoryAccess.putMemoryValueAt(i, testValue);
+  }
+  nlohmann::json snapshot = memoryManager.generateSnapshot().get();
+  EXPECT_NO_THROW(memoryManager.loadSnapshot(snapshot));
+
+  for (int i = 0; i < 31; i++) {
+    std::string registerName = std::string("x") + std::to_string(i + 1);
+    EXPECT_EQ(registerValues[i],
+              memoryAccess.getRegisterValue(registerName).get());
+  }
+  EXPECT_EQ(registerValues.at(31), memoryAccess.getRegisterValue("pc").get());
+
+  for (std::size_t i = 0; i < memoryAccess.getMemorySize().get(); i += 32) {
+    EXPECT_EQ(memoryValues.at(i / 32),
+              memoryAccess.getMemoryValueAt(i, 4).get());
+  }
 }

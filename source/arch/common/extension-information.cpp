@@ -101,6 +101,23 @@ bool ExtensionInformation::hasEndianness() const noexcept {
   return static_cast<bool>(_endianness);
 }
 
+ExtensionInformation& ExtensionInformation::signedRepresentation(
+    SignedRepresentation signedRepresentation) {
+  _signedRepresentation = signedRepresentation;
+  return *this;
+}
+
+ExtensionInformation::SignedRepresentation
+ExtensionInformation::getSignedRepresentation() const {
+  assert(hasSignedRepresentation());
+  return *_signedRepresentation;
+}
+
+
+bool ExtensionInformation::hasSignedRepresentation() const noexcept {
+  return static_cast<bool>(_signedRepresentation);
+}
+
 ExtensionInformation&
 ExtensionInformation::alignmentBehavior(AlignmentBehavior alignmentBehavior) {
   _alignmentBehavior = alignmentBehavior;
@@ -211,6 +228,23 @@ bool ExtensionInformation::hasUnits() const noexcept {
   return !_units.empty();
 }
 
+ExtensionInformation&
+ExtensionInformation::addBuiltinMacro(const std::string& macro) {
+  _builtinMacros.insert(macro);
+
+  // Regenerate the cached concatenation
+  _builtinMacrosCache = "";
+  for (const auto& macro : _builtinMacros) {
+    _builtinMacrosCache += std::string{macro};
+  }
+
+  return *this;
+}
+
+const std::string& ExtensionInformation::getBuiltinMacros() const noexcept {
+  return _builtinMacrosCache;
+}
+
 ExtensionInformation& ExtensionInformation::merge(ExtensionList list) {
   assert(list.size() > 0);
   return merge<ExtensionList>(list);
@@ -220,6 +254,10 @@ ExtensionInformation&
 ExtensionInformation::merge(const ExtensionInformation& other) {
   if (other.hasEndianness()) {
     _endianness = other._endianness;
+  }
+
+  if (other.hasSignedRepresentation()) {
+    _signedRepresentation = other._signedRepresentation;
   }
 
   if (other.hasAlignmentBehavior()) {
@@ -237,6 +275,10 @@ ExtensionInformation::merge(const ExtensionInformation& other) {
   addInstructions(other.getInstructions());
   addUnits(other.getUnits());
 
+  for (auto& macro : other._builtinMacros) {
+    addBuiltinMacro(macro);
+  }
+
   return *this;
 }
 
@@ -251,6 +293,7 @@ bool ExtensionInformation::isValid() const noexcept {
 
 bool ExtensionInformation::isComplete() const noexcept {
   if (!hasEndianness()) return false;
+  if (!hasSignedRepresentation()) return false;
   if (!hasAlignmentBehavior()) return false;
   if (!hasWordSize()) return false;
   if (!hasByteSize()) return false;
@@ -266,6 +309,7 @@ void ExtensionInformation::_deserialize(InformationInterface::Format& data) {
 
   name(data["name"]);
   _parseEndianness(data);
+  _parseSignedRepresentation(data);
   _parseAlignmentBehavior(data);
 
   Utility::doIfThere(data, "word-size", [this](auto& wordSize) {
@@ -285,19 +329,40 @@ void ExtensionInformation::_deserialize(InformationInterface::Format& data) {
   Utility::doIfThere(data, "instructions", [this](auto& instructions) {
     this->addInstructions(static_cast<InstructionSet>(instructions));
   });
+
+  Utility::doIfThere(data, "builtin-macros", [this](auto& macros) {
+    for (auto& macro : macros) {
+      this->addBuiltinMacro(macro);
+    }
+  });
 }
 
 void ExtensionInformation::_parseEndianness(
     InformationInterface::Format& data) {
   Utility::doIfThere(data, "endianness", [this](auto& endianness) {
     if (endianness == "little") {
-      _endianness = ArchitectureProperties::Endianness::LITTLE;
+      _endianness = Endianness::LITTLE;
     } else if (endianness == "big") {
-      _endianness = ArchitectureProperties::Endianness::BIG;
+      _endianness = Endianness::BIG;
     } else if (endianness == "mixed") {
-      _endianness = ArchitectureProperties::Endianness::MIXED;
+      _endianness = Endianness::MIXED;
     } else if (endianness == "bi") {
-      _endianness = ArchitectureProperties::Endianness::BI;
+      _endianness = Endianness::BI;
+    } else {
+      assert(false);
+    }
+  });
+}
+
+void ExtensionInformation::_parseSignedRepresentation(
+    InformationInterface::Format& data) {
+  Utility::doIfThere(data, "signed-representation", [this](auto& behavior) {
+    if (behavior == "twos-complement") {
+      _signedRepresentation = SignedRepresentation::TWOS_COMPLEMENT;
+    } else if (behavior == "ones-complement") {
+      _signedRepresentation = SignedRepresentation::ONES_COMPLEMENT;
+    } else if (behavior == "sign-bit") {
+      _signedRepresentation = SignedRepresentation::SIGN_BIT;
     } else {
       assert(false);
     }
@@ -308,11 +373,9 @@ void ExtensionInformation::_parseAlignmentBehavior(
     InformationInterface::Format& data) {
   Utility::doIfThere(data, "alignment-behavior", [this](auto& behavior) {
     if (behavior == "strict") {
-      _alignmentBehavior =
-          ArchitectureProperties::AlignmentBehavior::ALIGN_STRICT;
+      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::FORCED;
     } else if (behavior == "relaxed") {
-      _alignmentBehavior =
-          ArchitectureProperties::AlignmentBehavior::ALIGN_RELAXED;
+      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::RELAXED;
     } else {
       assert(false);
     }

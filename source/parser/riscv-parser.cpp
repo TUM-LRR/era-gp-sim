@@ -91,11 +91,12 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
 
   for (std::string line; std::getline(stream, line);) {
     position = position.newLine();
-    line_regex.matchLine(line);
+    CompileErrorAnnotator positionErrorAnnotation(
+            errorList, CodePositionInterval(position, position >> 1));
+    line_regex.matchLine(line, positionErrorAnnotation);
     if (!line_regex.isValid()) {
       // Add syntax error if line regex doesnt match
-      errorList.add("Syntax Error",
-                    CodePositionInterval(position, position >> 1));
+      positionErrorAnnotation.addErrorHere("Syntax Error");
     } else {
       // Collect labels until next instruction
       if (line_regex.hasLabel()) {
@@ -112,8 +113,6 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
             sources.push_back(line_regex.getParameter(i));
         }
 
-        CompileErrorAnnotator positionErrorAnnotation(
-            errorList, CodePositionInterval(position, position >> 1));
         if (is_directive) {
           RiscVDirectiveFactory::create(
               LineInterval(position.line()),
@@ -139,10 +138,10 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
     }
   }
 
-  MemoryAllocator allocator(
-      {MemorySectionDefinition("text", 1),
-       MemorySectionDefinition(
-           "data", _architecture.getWordSize() / _architecture.getByteSize())});
+  auto byteAlignment =
+      _architecture.getWordSize() / _architecture.getByteSize();
+  MemoryAllocator allocator({MemorySectionDefinition("text", 1),
+                             MemorySectionDefinition("data", byteAlignment)});
   return intermediate.transform(
       TransformationParameters(
           _architecture,

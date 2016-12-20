@@ -22,10 +22,21 @@
 
 class CompileError;
 class CompileErrorList;
+#include <QtGlobal>
 #include <string>
 #include "parser/code-position-interval.hpp"
 #include "parser/code-position.hpp"
 #include "parser/compile-error-severity.hpp"
+
+#define addError(interval, message, ...) addErrorInternal((interval), QT_TRANSLATE_NOOP("Parser Errors", message), { __VA_ARGS__ })
+#define addErrorHere(message, ...) addErrorHereInternal(QT_TRANSLATE_NOOP("Parser Errors", message), { __VA_ARGS__ })
+#define addErrorDelta(first, second, message, ...) addErrorDeltaInternal((first), (second), QT_TRANSLATE_NOOP("Parser Errors", message), { __VA_ARGS__ })
+#define addWarning(interval, message, ...) addWarningInternal((interval), QT_TRANSLATE_NOOP("Parser Warnings", message), { __VA_ARGS__ })
+#define addWarningHere(message, ...) addWarningHereInternal(QT_TRANSLATE_NOOP("Parser Warnings", message), { __VA_ARGS__ })
+#define addWarningDelta(first, second, message, ...) addWarningDeltaInternal((first), (second), QT_TRANSLATE_NOOP("Parser Warnings", message), { __VA_ARGS__ })
+#define addInformation(interval, message, ...) addInformationInternal((interval), QT_TRANSLATE_NOOP("Parser Information", message), { __VA_ARGS__ })
+#define addInformationHere(message, ...) addInformationHereInternal(QT_TRANSLATE_NOOP("Parser Information", message), { __VA_ARGS__ })
+#define addInformationDelta(first, second, message, ...) addInformationDeltaInternal((first), (second), QT_TRANSLATE_NOOP("Parser Information", message), { __VA_ARGS__ })
 
 class CompileErrorAnnotator {
  public:
@@ -40,16 +51,27 @@ class CompileErrorAnnotator {
                         const CodePosition& start,
                         const CodePosition& end);
 
-  void add(const CompileError& error) const;
-  void add(const std::string& message,
-           const CodePositionInterval& interval,
-           CompileErrorSeverity severity = CompileErrorSeverity::ERROR) const;
-  void add(const std::string& message,
-           const CodePosition& deltaFirst,
-           const CodePosition& deltaSecond = CodePosition(0, 0),
-           CompileErrorSeverity severity = CompileErrorSeverity::ERROR) const;
-  void add(const std::string& message,
-           CompileErrorSeverity severity = CompileErrorSeverity::ERROR) const;
+  void addErrorInternal(const CodePositionInterval& interval, const char* message,
+           const std::initializer_list<std::string>& parameters) const;
+  void addErrorDeltaInternal(const CodePosition& deltaFirst,
+           const CodePosition& deltaSecond,
+           const char* message,
+           const std::initializer_list<std::string>& parameters) const;
+  void addErrorHereInternal(const char* message, const std::initializer_list<std::string>& parameters) const;
+  void addWarningInternal(const CodePositionInterval& interval, const char* message,
+           const std::initializer_list<std::string>& parameters) const;
+  void addWarningDeltaInternal(const CodePosition& deltaFirst,
+           const CodePosition& deltaSecond,
+           const char* message,
+           const std::initializer_list<std::string>& parameters) const;
+  void addWarningHereInternal(const char* message, const std::initializer_list<std::string>& parameters) const;
+  void addInformationInternal(const CodePositionInterval& interval, const char* message,
+           const std::initializer_list<std::string>& parameters) const;
+  void addInformationDeltaInternal(const CodePosition& deltaFirst,
+           const CodePosition& deltaSecond,
+           const char* message,
+           const std::initializer_list<std::string>& parameters) const;
+  void addInformationHereInternal(const char* message, const std::initializer_list<std::string>& parameters) const;
 
   CompileErrorList& errorList() const noexcept;
   const CodePositionInterval position() const noexcept;

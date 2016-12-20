@@ -27,6 +27,7 @@
 class Parser;
 class MemoryAccess;
 class Architecture;
+class MemoryAccess;
 
 using ParserPtr = std::unique_ptr<Parser>;
 

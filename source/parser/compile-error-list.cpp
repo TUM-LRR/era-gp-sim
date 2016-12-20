@@ -20,11 +20,11 @@
 #include "parser/compile-error-list.hpp"
 #include <algorithm>
 
-const std::vector<CompileError> CompileErrorList::errors() const noexcept {
+const CompileErrorVector CompileErrorList::errors() const noexcept {
   return _errors;
 }
 
-static bool existsError(const std::vector<CompileError>& errors,
+static bool existsError(const CompileErrorVector& errors,
                         CompileErrorSeverity severity) {
   return std::any_of(
       errors.begin(), errors.end(), [severity](const CompileError& error) {
@@ -32,7 +32,7 @@ static bool existsError(const std::vector<CompileError>& errors,
       });
 }
 
-static std::size_t countError(const std::vector<CompileError>& errors,
+static std::size_t countError(const CompileErrorVector& errors,
                               CompileErrorSeverity severity) {
   return std::count_if(
       errors.begin(), errors.end(), [severity](const CompileError& error) {
@@ -67,9 +67,4 @@ std::size_t CompileErrorList::size() const {
 
 void CompileErrorList::add(const CompileError& error) {
   _errors.push_back(error);
-}
-void CompileErrorList::add(const std::string& message,
-                           const CodePositionInterval& interval,
-                           CompileErrorSeverity severity) {
-  _errors.push_back(CompileError(message, interval, severity));
 }

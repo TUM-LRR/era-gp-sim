@@ -30,7 +30,7 @@ class CompileErrorList {
  public:
   CompileErrorList() = default;
 
-  const std::vector<CompileError> errors() const noexcept;
+  const CompileErrorVector errors() const noexcept;
   bool hasErrors() const;
   bool hasWarnings() const;
   bool hasInformation() const;
@@ -40,12 +40,8 @@ class CompileErrorList {
   std::size_t informationCount() const;
   std::size_t size() const;
   void add(const CompileError& error);
-  void add(const std::string& message,
-           const CodePositionInterval& interval,
-           CompileErrorSeverity severity = CompileErrorSeverity::ERROR);
-
  private:
-  std::vector<CompileError> _errors;
+  CompileErrorVector _errors;
 };
 
 #endif /* ERAGPSIM_PARSER_COMPILE_ERROR_LIST_HPP */

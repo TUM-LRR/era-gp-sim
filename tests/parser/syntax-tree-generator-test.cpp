@@ -19,15 +19,16 @@
 #include <memory>
 #include <vector>
 
+#include "gtest/gtest.h"
+
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/immediate-node.hpp"
 #include "arch/common/node-factory-collection-maker.hpp"
-#include "arch/common/register-node.hpp"
 #include "arch/riscv/instruction-node.hpp"
+#include "arch/riscv/register-node.hpp"
 #include "core/project-module.hpp"
 #include "gtest/gtest.h"
-#include "parser/compile-error-annotator.hpp"
 #include "parser/compile-error-annotator.hpp"
 #include "parser/compile-error-list.hpp"
 #include "parser/riscv-parser.hpp"
@@ -35,6 +36,7 @@
 #define DEFINE_ANNOTATOR      \
   CompileErrorList errorList; \
   CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
+
 
 static SyntaxTreeGenerator buildGenerator() {
   Architecture testArch =
@@ -68,7 +70,7 @@ TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   DEFINE_ANNOTATOR;
   auto output = generator.transformOperand("x18", annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(output)));
+  ASSERT_TRUE((isInstance<riscv::RegisterNode>(output)));
 }
 
 TEST(SyntaxTreeGenerator, instantiateCommandNode) {
@@ -77,15 +79,15 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
 
   auto arg1 = generator.transformOperand("x1", annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
+  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
 
   auto arg2 = generator.transformOperand("x1", annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
+  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
 
   auto arg3 = generator.transformOperand("x2", annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(arg2)));
+  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg2)));
 
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> sources;
   sources.push_back(std::move(arg1));

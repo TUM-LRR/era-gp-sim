@@ -57,8 +57,7 @@ ExpressionTokenizer::tokenize(const std::string& data,
   } else {
     // We are done, but there is an unrecognized token. We return as if the
     // string was empty.
-    annotator.add("Unrecognized token at: " + temp.substr(0, 20),
-                  CodePosition(0, currentPosition));
+    annotator.addErrorDelta(CodePosition(0, currentPosition), CodePosition(0), "Unrecognized token at: %1", temp.substr(0, 20));
     return std::vector<ExpressionToken>();
   }
 }

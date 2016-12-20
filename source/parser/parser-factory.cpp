@@ -20,6 +20,7 @@
 #include "parser/parser-factory.hpp"
 
 #include "common/assert.hpp"
+#include "core/memory-access.hpp"
 #include "parser/riscv-parser.hpp"
 
 template <typename T>

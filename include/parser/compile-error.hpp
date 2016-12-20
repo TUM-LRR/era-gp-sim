@@ -19,7 +19,12 @@
 #ifndef ERAGPSIM_COMPILE_ERROR_HPP
 #define ERAGPSIM_COMPILE_ERROR_HPP
 
+#include <QtGlobal>
 #include <string>
+#include <vector>
+#include <memory>
+
+class Translateable;
 
 #include "parser/code-position-interval.hpp"
 #include "parser/compile-error-severity.hpp"
@@ -29,6 +34,7 @@
  */
 class CompileError {
  public:
+  using TranslateablePtr = std::shared_ptr<Translateable>;
   /**
    * \brief Instantiates a new compile error with the given arguments. Marks
    * only a positional error.
@@ -36,7 +42,7 @@ class CompileError {
    * \param position The position of the error in the code.
    * \param severity The severity of the error.
    */
-  CompileError(const std::string& message,
+  CompileError(const TranslateablePtr& message,
                const CodePosition& position,
                CompileErrorSeverity severity);
 
@@ -47,7 +53,7 @@ class CompileError {
    * \param endPosition The end position of the error in the code.
    * \param severity The severity of the error.
    */
-  CompileError(const std::string& message,
+  CompileError(const TranslateablePtr& message,
                const CodePosition& startPosition,
                const CodePosition& endPosition,
                CompileErrorSeverity severity);
@@ -58,7 +64,7 @@ class CompileError {
    * \param position The position interval of the error in the code.
    * \param severity The severity of the error.
    */
-  CompileError(const std::string& message,
+  CompileError(const TranslateablePtr& message,
                const CodePositionInterval& position,
                CompileErrorSeverity severity);
 
@@ -66,7 +72,7 @@ class CompileError {
    * \brief Returns the message of this error.
    * \return The message of the error.
    */
-  const std::string& message() const noexcept;
+  const Translateable& message() const noexcept;
 
   /**
    * \brief Returns the position where this error occured.
@@ -84,7 +90,7 @@ class CompileError {
   /**
    * \brief The internal message attribute.
    */
-  std::string _message;
+  TranslateablePtr _message;
 
   /**
    * \brief The internal position attribute.
@@ -96,5 +102,7 @@ class CompileError {
    */
   CompileErrorSeverity _severity;
 };
+
+using CompileErrorVector = std::vector<CompileError>;
 
 #endif

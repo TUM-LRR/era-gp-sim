@@ -21,6 +21,7 @@
 #include "gtest/gtest.h"
 #include "parser/compile-error-annotator.hpp"
 #include "parser/compile-error-list.hpp"
+#include "common/translateable.hpp"
 #define DEFINE_ANNOTATOR      \
   CompileErrorList errorList; \
   CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
@@ -34,7 +35,7 @@ void doTestInternal(const std::basic_string<CharTypeIn>& provided,
   bool result = StringParser::parseString(provided, annotator, output);
   if (succeed) {
     for (const auto& error : annotator.errorList().errors()) {
-      std::cout << error.message() << std::endl;
+      std::cout << error.message().getBaseString() << std::endl;
     }
     ASSERT_EQ(expected,
               std::basic_string<CharTypeOut>(output.begin(), output.end()));
@@ -204,7 +205,7 @@ TEST(StringParser, practicalString) {
   U"occaecat cupidatat non proident, sunt in culpa qui officia deserunt "     \
   U"mollit anim id est laborum."
 
-// Note: this is NO CYRILLIC TRANSLATION. It is just the above text, translated
+// Note: this is NO CYRILLIC TRANSLATION. It is just the above text, transcribed
 // to cyrillic script (should sound the same as the latin version, but I'm not
 // sure), at least if the converter worked.
 #define SAMPLE_CYRILLIC_8                                                                                                                \

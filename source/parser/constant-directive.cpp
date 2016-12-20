@@ -47,10 +47,10 @@ void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
     // 1 argument -> this argument should be the value
     //>1 arguments -> too many
     switch (_arguments.size()) {
-      case 0: annotator.add("Missing constant name"); break;
-      case 1: annotator.add("Missing constant value"); break;
+      case 0: annotator.addErrorHere("Missing constant name"); break;
+      case 1: annotator.addErrorHere("Missing constant value"); break;
       default:
-        annotator.add(
+        annotator.addErrorHere(
             "Malformed constant directive, too many operands provided");
         break;
     }
@@ -62,7 +62,7 @@ void ConstantDirective::enhanceSymbolTable(
     const CompileErrorAnnotator& annotator,
     SymbolGraph& graph) {
   if (_arguments.size() != 2) {
-    annotator.add("Malformed constant directive");
+    annotator.addErrorHere("Malformed constant directive");
     return;
   }
   _expression = "(" + _arguments[1] + ")";

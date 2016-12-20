@@ -60,12 +60,12 @@ void MacroDirective::precompile(
     const CompileErrorAnnotator& annotator,
     MacroDirectiveTable& macroTable) {
   if (macroName().empty()) {
-    annotator.add("Missing macro name.");
+    annotator.addErrorHere("Missing macro name.");
   }
   _macroParameters.validate(annotator);
   auto success = macroTable.insert(*this);
   if (!success) {
-    annotator.add("Macro \"" + macroName() + "\" already exists!");
+    annotator.addErrorHere("Macro \"%1\" already exists!", macroName());
   }
 }
 
@@ -155,14 +155,14 @@ void MacroDirective::MacroParameters::validate(
     // Check for empty names or default values
     if (param.first.size() == 0 ||
         (param.second && param.second->size() == 0)) {
-      annotator.add("Malformed macro argument list!");
+      annotator.addErrorHere("Malformed macro argument list!");
       return;
     }
 
     // Check for missing default values after a default value.
     if (param.second) containedDefault = true;
     if (containedDefault && !param.second) {
-      annotator.add("Default macro argument values have to be placed last!");
+      annotator.addErrorHere("Default macro argument values have to be placed last!");
       return;
     }
   }

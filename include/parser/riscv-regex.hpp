@@ -23,6 +23,8 @@
 
 #include "parser/riscv-parser.hpp"
 
+class CompileErrorAnnotator;
+
 /**
  * Wrapper class for the RegExp used for parsing.
  */
@@ -75,12 +77,27 @@ class RiscvParser::RiscvRegex {
   /**
    * Parses the next line.
    *
-   * \param line The line to parse
+   * \param line  The line to parse.
+   * \param state CompileState to record errors.
+   * \return The last read position in the string (if the line does not match, this is the character that caused the error)
    */
-  void matchLine(const std::string &line);
+  size_t matchLine(const std::string &line, const CompileErrorAnnotator& annotator);
 
  private:
-  std::smatch _matches;
+  bool _readInstructionOrLabel(const std::string &line,
+                              const CompileErrorAnnotator& annotator,
+                              size_t &pos);
+
+  bool _readParameter(const std::string &line, const CompileErrorAnnotator& annotator, size_t &pos);
+
+  void _resetResults();
+
+  CodePositionInterval _getCharacterPosition(const CompileErrorAnnotator& annotator, size_t pos) const;
+
+  bool _isValid;
+  std::string _label;
+  std::string _instruction;
+  std::vector<std::string> _parameters;
 };
 
 #endif

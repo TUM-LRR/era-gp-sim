@@ -32,8 +32,7 @@
 #include "parser/symbol-replacer.hpp"
 
 IntermediateRepresentator::IntermediateRepresentator()
-: _commandList(), _currentOutput(nullptr) {
-}
+    : _commandList(), _currentOutput(nullptr) {}
 
 void IntermediateRepresentator::insertCommandPtr(
     IntermediateOperationPointer&& command,
@@ -43,7 +42,7 @@ void IntermediateRepresentator::insertCommandPtr(
     // If we want the current command as new target, we set it like so.
     if (_currentOutput) {
       // Nested macros are not supported.
-      annotator.add("Error, nested macros are not supported.");
+      annotator.addErrorHere("Error, nested macros are not supported.");
     }
     _currentOutput = std::move(command);
   } else {
@@ -52,7 +51,7 @@ void IntermediateRepresentator::insertCommandPtr(
       // it and its sub commands might be lost).
       if (!_currentOutput) {
         // Classic bracket-forgot-to-close problem.
-        annotator.add("The start directive of the macro is missing.");
+        annotator.addErrorHere("The start directive of the macro is missing.");
       }
       internalInsertCommand(std::move(_currentOutput));
     }
@@ -69,7 +68,7 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
   CompileErrorAnnotator annotator(
       errorList, CodePositionInterval(CodePosition(0), CodePosition(0)));// TODO
   if (_currentOutput) {
-    annotator.add(
+    annotator.addErrorHere(
         "Macro not closed. Missing a macro end directive?");// TODO Code
                                                             // Position
   }
@@ -99,11 +98,9 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
   std::size_t allowedSize = allowedSizeFuture.get();
 
   if (allocatedSize > allowedSize) {
-    annotator.add("Too much memory allocated: " +
-                  std::to_string(allocatedSize) + " requested, maximum is " +
-                  std::to_string(allowedSize) +
+    annotator.addErrorHere("Too much memory allocated: %1 requested, maximum is %2"
                   " (please note: because of aligning memory, the first value "
-                  "might be actually bigger than the memory allocated)");
+                  "might be actually bigger than the memory allocated)", std::to_string(allocatedSize), std::to_string(allowedSize));
     representation.errorList = annotator.errorList().errors();
     return representation;
   }

@@ -18,14 +18,16 @@
 */
 
 #include "parser/compile-error.hpp"
+#include "common/translateable.hpp"
+#include "common/assert.hpp"
 
-CompileError::CompileError(const std::string& message,
+CompileError::CompileError(const CompileError::TranslateablePtr& message,
                            const CodePosition& position,
                            CompileErrorSeverity severity)
 : CompileError(message, position, position >> 1, severity) {
 }
 
-CompileError::CompileError(const std::string& message,
+CompileError::CompileError(const CompileError::TranslateablePtr& message,
                            const CodePosition& startPosition,
                            const CodePosition& endPosition,
                            CompileErrorSeverity severity)
@@ -33,7 +35,7 @@ CompileError::CompileError(const std::string& message,
       message, CodePositionInterval(startPosition, endPosition), severity) {
 }
 
-CompileError::CompileError(const std::string& message,
+CompileError::CompileError(const CompileError::TranslateablePtr& message,
                            const CodePositionInterval& position,
                            CompileErrorSeverity severity)
 : _message(message), _position(position), _severity(severity) {
@@ -43,8 +45,9 @@ CompileError::CompileError(const std::string& message,
 * \brief Returns the message of this error.
 * \return The message of the error.
 */
-const std::string& CompileError::message() const noexcept {
-  return _message;
+const Translateable& CompileError::message() const noexcept {
+  assert::that(_message);
+    return (*_message);
 }
 
 /**

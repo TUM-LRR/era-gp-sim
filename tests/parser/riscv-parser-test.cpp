@@ -125,7 +125,7 @@ TEST_F(RiscParserTest, MultipleDirectives) {
       "add1\n"
       "add2 5 + 7 << 2\n"
       "add2 ZAHL, 3*9\n"
-      "add3\n",
+      "add3 ;kommentar\n",
       ParserMode::COMPILE);
   EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 3 + 3 + 4 + 5 + 5);
@@ -175,8 +175,8 @@ TEST_F(RiscParserTest, WrongMacros) {
       ".macro add6\n"
       "add5\n"
       ".endm\n"
-      "add4\n"
-      "add5\n",
+      "add4   \n"
+      "add5;kommentar\n",
       ParserMode::COMPILE);
   EXPECT_GE(res.errorList.size(), 5);
   EXPECT_LE(res.commandList.size(), 3);
@@ -227,7 +227,7 @@ TEST_F(RiscParserTest, MultipleInstructions) {
   res = parser.parse(
       ".equ ZAHL, 13\n"
       "ADDI x13, x4, ZAHL ;kommentar\n"
-      " label  : SUB x5, x5, x0\n"
+      " label: SUB x5, x5, x0\n"
       "LUI x5, 123;kommentar\n"
       "addition123:\n"
       "\n"
@@ -248,7 +248,7 @@ TEST_F(RiscParserTest, MalformedInstructions) {
 TEST_F(RiscParserTest, BadCharacters) {
   FinalRepresentation res;
   res = parser.parse("ðŸ…±ðŸ…»ðŸ…¾ðŸ†‡ðŸ†‡ x13, x4,7", ParserMode::COMPILE);
-  EXPECT_EQ(res.errorList.size(), 1);
+  EXPECT_EQ(res.errorList.size(), 2);
   EXPECT_EQ(res.commandList.size(), 0);
 }
 
@@ -256,7 +256,7 @@ TEST_F(RiscParserTest, MixedErrors) {
   FinalRepresentation res;
   res = parser.parse(
       "ADD x13, x4, x0 ;kommentar\n"
-      " label  : SUB x5, x5, x0\n"
+      " label: SUB x5, x5, x0\n"
       ";kommentar\n"
       "sub  ;oops missing argument\n"
       "dfklgdjflj\n"
@@ -264,7 +264,7 @@ TEST_F(RiscParserTest, MixedErrors) {
       "\n"
       "_addition456: ADD x0, x0, x0; kommentar",
       ParserMode::COMPILE);
-  EXPECT_EQ(res.errorList.size(), 4);
+  EXPECT_EQ(res.errorList.size(), 2);
   EXPECT_EQ(res.commandList.size(), 5);
 }
 

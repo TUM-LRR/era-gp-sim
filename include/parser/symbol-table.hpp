@@ -75,21 +75,37 @@ class SymbolTable {
       std::function<std::string(const std::string&, SymbolType)>;
 
   /**
+<<<<<<< HEAD
    * \brief Instantiates an empty symbol table.
    *
   SymbolTable() = default;
+=======
+   * \brief Instantiates an empty symbol table with the given recursion depth.
+   * \param maximumRecursionDepth The given recursion depth, defaults to 64.
+   *
+  SymbolTable(int maximumRecursionDepth = 64)
+  : _maximumRecursionDepth(maximumRecursionDepth) {
+  }
+>>>>>>> master
 
   /**
    * \brief Inserts an entry into the SymbolTable and checks for any errors.
    * \param name The symbol name.
    * \param replacement The symbol replacement.
    * \param state The compile state.
+<<<<<<< HEAD
    *
   void insertEntry(const std::string& name,
                    const std::string& replacement,
                    const CodePositionInterval& position,
                    CompileState& state,
                    SymbolBehavior behavior = SymbolBehavior::STATIC,
+=======
+   *
+  void insertEntry(const std::string& name,
+                   const std::string& replacement,
+                   CompileState& state,
+>>>>>>> master
                    SymbolType type = SymbolType::OTHER);
 
   /**
@@ -102,8 +118,15 @@ class SymbolTable {
   /**
    * \brief Returns the internal symbol table.
    * \return The internal symbol table.
+<<<<<<< HEAD
    *
   const Table& table() const noexcept;
+=======
+   *
+  const Table& table() const {
+    return _table;
+  }
+>>>>>>> master
 
   /**
    * \brief Replaces any symbols in the given string and records all occuring
@@ -117,11 +140,19 @@ class SymbolTable {
    * symbol.
    * \return The string with all symbols replaced (if the maximum recursion
    * depth has not been exceeded).
+<<<<<<< HEAD
    *
   std::string
   replaceSymbols(const std::string& source,
                  CompileState& state,
                  const ReplacementFunction& replacer = SIMPLE_REPLACE) const;
+=======
+   *
+  std::string
+  replaceSymbols(const std::string& source,
+                 CompileState& state,
+                 ReplacementFunction replacer = SimpleReplacement{}) const;
+>>>>>>> master
 
   /**
    * \brief Replaces any symbols in the given vector of strings and records all
@@ -133,6 +164,7 @@ class SymbolTable {
    * replaced differently. The replacement function takes the raw replacement
    * string and the symbol type and returns a string that will replace the
    * symbol
+<<<<<<< HEAD
    *
   void
   replaceSymbols(std::vector<std::string>& source,
@@ -140,6 +172,12 @@ class SymbolTable {
                  const ReplacementFunction& replacer = SIMPLE_REPLACE) const;
 
   static const ReplacementFunction SIMPLE_REPLACE;
+=======
+   *
+  void replaceSymbols(std::vector<std::string>& source,
+                      CompileState& state,
+                      ReplacementFunction replacer = SimpleReplacement{}) const;
+>>>>>>> master
 
  private:
   bool checkCyclic(std::vector<std::string>& order);

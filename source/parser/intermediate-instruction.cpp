@@ -37,15 +37,12 @@
 #include "parser/syntax-tree-generator.hpp"
 
 IntermediateInstruction::IntermediateInstruction(
-    const LineInterval& lines,
-    const std::vector<std::string>& labels,
-    const std::string& name,
-    const std::vector<std::string>& sources,
+    const LineInterval& lines, const std::vector<std::string>& labels,
+    const std::string& name, const std::vector<std::string>& sources,
     const std::vector<std::string>& targets)
-: IntermediateOperation(lines, labels, name)
-, _sources(sources)
-, _targets(targets) {
-}
+    : IntermediateOperation(lines, labels, name),
+      _sources(sources),
+      _targets(targets) {}
 
 void IntermediateInstruction::execute(
     const ExecuteImmutableArguments& immutable,
@@ -98,9 +95,7 @@ FinalCommand IntermediateInstruction::compileInstruction(
   return result;
 }
 
-MemoryAddress IntermediateInstruction::address() const {
-  return _address;
-}
+MemoryAddress IntermediateInstruction::address() const { return _address; }
 
 void IntermediateInstruction::enhanceSymbolTable(
     const EnhanceSymbolTableImmutableArguments& immutable,
@@ -128,7 +123,7 @@ void IntermediateInstruction::allocateMemory(
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (tracker.section() != "text") {
-    annotator.add("Tried to define an instruction in not the text section.");
+    annotator.addErrorHere("Tried to define an instruction in not the text section.");
     return;
   }
 
@@ -136,7 +131,7 @@ void IntermediateInstruction::allocateMemory(
 
   // toLower as long as not fixed in instruction set.
   if (!instructionSet.hasInstruction(_name)) {
-    // state.addError("Unknown opcode: " + _name);
+    // If we'd record an error here, we would do that twice in total, so no.
     return;
   }
 
@@ -151,8 +146,7 @@ static bool isWordCharacter(char c) {
 }
 
 static void replaceInVector(std::vector<std::string>& vector,
-                            const std::string& name,
-                            const std::string& value) {
+                            const std::string& name, const std::string& value) {
   std::string search = '\\' + name;
   for (int i = 0; i < vector.size(); i++) {
     std::string& str{vector[i]};

@@ -43,11 +43,11 @@ void SectionDirective::allocateMemory(
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (!_hasName) {
-    annotator.add("Section name missing!");
+    annotator.addErrorHere("Section name missing!");
     return;
   }
   if (!allocator.has(_section)) {
-    annotator.add("Specified section non-existent!");
+    annotator.addErrorHere("Specified section non-existent!");
     return;
   }
   // Just set the section state to the current section. That's it.

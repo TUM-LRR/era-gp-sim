@@ -125,6 +125,6 @@ std::size_t MemoryAllocator::absolutePosition(
       .absoluteAddress(relative.offset);
 }
 
-bool MemoryAllocator::has(const std::string& name) const {
+bool MemoryAllocator::has(const std::string& name) const noexcept {
   return _nameToSection.find(name) != _nameToSection.end();
 }

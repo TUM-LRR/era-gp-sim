@@ -20,6 +20,8 @@
 #ifndef ERAGPSIM_ARCH_ARCHITECTURE_PROPERTIES_HPP
 #define ERAGPSIM_ARCH_ARCHITECTURE_PROPERTIES_HPP
 
+#include <cstdint>
+
 /**
  * Contains some enum and type declarations used for information objects.
  */
@@ -30,6 +32,9 @@ using word_size_t = unsigned short;
 
 /** Type for the architectures byte size, in bits */
 using byte_size_t = unsigned short;
+
+/** The numeric type to identify a register. */
+using register_id_t = unsigned short;
 
 /*
  * The different kinds of endianness an extension may support.
@@ -50,10 +55,11 @@ enum class Endianness { LITTLE, BIG, MIXED, BI };
 /**
  * Describes how the architecture handles misaligned accesses.
  *
- * Strict means the architecture does not allow misaligned memory accesses.
+ * Forced means the architecture does not allow misaligned memory accesses.
  * Relaxed means it does.
  */
-enum class AlignmentBehavior { ALIGN_STRICT, ALIGN_RELAXED };
+enum class AlignmentBehavior { FORCED, RELAXED };
+// (note: please do not call this one plainly just STRICT, it will collide with a Qt macro name and so causing really strang compile errors)
 
 /**
  * Describes how the architecture represents signed values.

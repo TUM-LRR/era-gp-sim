@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
+/*
 #include "parser/compile-state.hpp"
 
 #include "parser/macro-directive.hpp"
@@ -23,7 +23,7 @@
 void CompileState::registerMacro(MacroDirective& macro) {
   bool success = macros.insert(macro);
   if (!success) {
-    addError("Macro \"" + macro.macroName() + "\" already exists!");
+      addErrorHereT("Macro \"%1\" already exists!", macro.macroName())
   }
 }
 
@@ -56,3 +56,4 @@ void CompileState::addInformation(const std::string& message,
   errorList.push_back(
       CompileError(message, position, CompileErrorSeverity::INFORMATION));
 }
+*/

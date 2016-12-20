@@ -24,7 +24,7 @@
 /**
  * \brief The coordinate component type for denoting positions in code.
  */
-using CodeCoordinate = unsigned int;
+using CodeCoordinate = std::size_t;
 
 /**
  * \brief A position in code.

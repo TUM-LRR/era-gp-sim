@@ -17,9 +17,9 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <gtest/gtest.h>
 #include <algorithm>
 #include <vector>
+#include "gtest/gtest.h"
 
 #include "arch/common/architecture-brewery.hpp"
 #include "arch/common/architecture-formula.hpp"
@@ -81,9 +81,11 @@ TEST_F(DeserializationTest, BaseWithoutDependencies) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::ALIGN_STRICT);
+            Architecture::AlignmentBehavior::FORCED);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
+  EXPECT_EQ(architecture.getSignedRepresentation(),
+            Architecture::SignedRepresentation::SIGN_BIT);
 
   EXPECT_EQ(architecture.getInstructions(), instructionSet);
 
@@ -104,9 +106,11 @@ TEST_F(DeserializationTest, BaseWithBasicDependencies) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::ALIGN_RELAXED);
+            Architecture::AlignmentBehavior::RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
+  EXPECT_EQ(architecture.getSignedRepresentation(),
+            Architecture::SignedRepresentation::SIGN_BIT);
 
   // clang-format off
   auto sll = InstructionInformation("sll")
@@ -135,9 +139,11 @@ TEST_F(DeserializationTest, BaseWithComplexDependenciesNoReset) {
   EXPECT_EQ(architecture.getName(), "test");
   EXPECT_EQ(architecture.getEndianness(), Architecture::Endianness::LITTLE);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            Architecture::AlignmentBehavior::ALIGN_RELAXED);
+            Architecture::AlignmentBehavior::RELAXED);
   EXPECT_EQ(architecture.getWordSize(), 32);
   EXPECT_EQ(architecture.getByteSize(), 8);
+  EXPECT_EQ(architecture.getSignedRepresentation(),
+            Architecture::SignedRepresentation::SIGN_BIT);
 
   // clang-format off
   auto sll = InstructionInformation("sll")

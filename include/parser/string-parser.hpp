@@ -27,6 +27,11 @@
 #include <vector>
 #include "common/utility.hpp"
 #include "parser/compile-error-annotator.hpp"
+#include "common/translateable.hpp"
+
+#define invokeError(position, annotator, message, ...)                                \
+  invokeErrorInternal((position), (annotator), QT_TRANSLATE_NOOP("String Parser Errors", message), \
+              { __VA_ARGS__ })
 
 /**
  * \brief Provides help methods for parsing strings.
@@ -69,7 +74,7 @@ class StringParserEngine {
     auto chr = inputString[index];
     if (chr == separator) {
       // No Ansi C-like string concatenation, yet. Sorry!
-      invokeError("Found an unescaped separator in a string", index, annotator);
+      invokeError(index, annotator, "Found an unescaped separator in a string");
       return false;
     } else {
       // If we do not have a separator: we convert the character!
@@ -94,28 +99,27 @@ class StringParserEngine {
                              const CompileErrorAnnotator& annotator) {
     // If the string is too small, it cannot even contain the two brackets.
     if (inputString.size() < 2) {
-      invokeError("The supposed string literal is too small!", 0, annotator);
+      invokeError(0, annotator, "The supposed string literal is too small!");
       return false;
     }
 
     // We check the beginning of the string...
     if (inputString[0] != separator) {
-      invokeError(
-          std::string(
-              "Something supposed to be a string does not begin with ") +
-              separator,
-          0,
-          annotator);
+      invokeError(0,
+          annotator,
+              "Something supposed to be a string does not begin with %1",
+      std::to_string(separator));
       return false;
     }
 
     //...and the end.
     if (inputString[inputString.size() - 1] != separator) {
       invokeError(
-          std::string("Something supposed to be a string does not end with ") +
-              separator,
-          inputString.size() - 1,
-          annotator);
+        inputString.size() - 1,
+          annotator,
+          "Something supposed to be a string does not end with %1",
+              std::to_string(separator)
+          );
       return false;
     }
 
@@ -124,10 +128,11 @@ class StringParserEngine {
 
  private:
   // This method notes down an error in the given compile annotator.
-  static void invokeError(const std::string& message,
-                          size_t position,
-                          const CompileErrorAnnotator& annotator) {
-    annotator.add(message, CodePosition(0, position));
+  static void invokeErrorInternal(size_t position,
+                          const CompileErrorAnnotator& annotator,
+                          const char* message,
+                          const std::initializer_list<std::string>& arguments) {
+    annotator.addErrorDeltaInternal(CodePosition(0, position), CodePosition(0), message, arguments);
   }
 
   // Returns true, if there is still data after the current index in the string
@@ -159,10 +164,10 @@ class StringParserEngine {
       // the number of trailing ones cannot be just one. (i.e. 10<DATA>)
       while ((wchr & 0x40) != 0) {
         if (!requireCharacter(inputString, index)) {
-          // If we cannot find another byte, but we need it, we are screwed.
-          invokeError("Reached end of string with unfinished code point.",
-                      index,
-                      annotator);
+          // If we cannot find another byte, but we need it, we have to quit.
+          invokeError(index,
+                      annotator,
+                      "Reached end of string with unfinished code point.");
           return false;
         }
 
@@ -171,7 +176,7 @@ class StringParserEngine {
         auto nchr = inputString[index];
 
         if ((nchr & 0xc0) != 0x80) {
-          invokeError("Erroneous in-code point character.", index, annotator);
+          invokeError(index, annotator, "Erroneous in-code point character.");
           return false;
         }
 
@@ -189,7 +194,7 @@ class StringParserEngine {
       // size
       // 0 (b/c we check the second most significant byte), we got an error.
       if (size == 0) {
-        invokeError("Invalid-formed code point detected!", index, annotator);
+        invokeError(index, annotator, "Invalid-formed code point detected!");
         return false;
       } else {
         // If not, we need to get the rest of data out of the first character,
@@ -201,9 +206,10 @@ class StringParserEngine {
         if (codePoint > 0x10ffff) {
           // As there can be higher values than specified in Unicode, we need to
           // catch these too.
-          invokeError("The specified code point is outside the Unicode range!",
-                      index,
-                      annotator);
+          invokeError(index,
+                      annotator,
+                      "The specified code point is outside the Unicode range!"
+                      );
           return false;
         }
         return true;
@@ -226,19 +232,19 @@ class StringParserEngine {
         // If we got a two-short sized code point, the first needs to be an
         // upper surrogate point.
         invokeError(
+            index, annotator,
             "Invalid-formed code point detected (one-short-sized code point "
-            "does not begin with a high surrogate character)!",
-            index,
-            annotator);
+            "does not begin with a high surrogate character)!");
         return false;
       }
 
       if (!requireCharacter(inputString, index)) {
         // If there is no second short in the string, throw an error, b/c we
         // still need one.
-        invokeError("End of string detecten while decoding code point!",
-                    index,
-                    annotator);
+        invokeError(index,
+                    annotator,
+                    "End of string detecten while decoding code point!"
+                    );
         return false;
       }
 
@@ -247,10 +253,9 @@ class StringParserEngine {
       if ((lchr & 0xfc00) != 0xdc00) {
         // The second of the two shorts needs to be a lower surrogate.
         invokeError(
+            index, annotator,
             "Invalid-formed code point detected (second short of code point is "
-            "not a low surrogate character)!",
-            index,
-            annotator);
+            "not a low surrogate character)!");
         return false;
       }
 
@@ -272,9 +277,10 @@ class StringParserEngine {
     // specification.
     codePoint = inputString[index];
     if (codePoint > 0x10ffff) {
-      invokeError("The specified code point is outside the Unicode range!",
-                  index,
-                  annotator);
+      invokeError(index,
+                  annotator,
+                  "The specified code point is outside Unicode range!"
+                  );
       return false;
     }
     return true;
@@ -305,16 +311,12 @@ class StringParserEngine {
   }
 
   // Helper method for checking if a character can be treated as an octal value.
-  static bool isOctal(CharType chr) {
-    return chr >= '0' && chr <= '7';
-  }
+  static bool isOctal(CharType chr) { return chr >= '0' && chr <= '7'; }
 
   // This method gets at most maxLength characters which comply to the given
   // rangeCheck. It also increments the index.
-  static int crawlIndex(const String& inputString,
-                        size_t& index,
-                        std::function<bool(char)> rangeCheck,
-                        int maxLength) {
+  static int crawlIndex(const String& inputString, size_t& index,
+                        std::function<bool(char)> rangeCheck, int maxLength) {
     int length = 0;
     for (int i = 0; i < maxLength; ++i) {
       if (!(requireCharacter(inputString, index) &&
@@ -335,14 +337,11 @@ class StringParserEngine {
   // This is a quickly-written replacement for stoi, working on arbitrary
   // strings.
   template <typename T>
-  static T simpleNumberParse(const String& inputString,
-                             size_t start,
-                             size_t length,
-                             int base) {
+  static T simpleNumberParse(const String& inputString, size_t start,
+                             size_t length, int base) {
     T value = 0;
     for (auto i = inputString.begin() + start;
-         i != inputString.begin() + start + length;
-         ++i) {
+         i != inputString.begin() + start + length; ++i) {
       // We increment the base, then we decode the character.
       value *= base;
       auto chr = *i;
@@ -371,8 +370,8 @@ class StringParserEngine {
     // Important: The size of the specified index in the string must equal to
     // the maximum size.
     if (len != size) {
-      invokeError(
-          "Not the right size for the escape sequence", index, annotator);
+      invokeError(index, annotator,
+          "Not the right size for the escape sequence");
       return false;
     }
 
@@ -416,7 +415,7 @@ class StringParserEngine {
                                    const CompileErrorAnnotator& annotator) {
     if (!requireCharacter(inputString, index)) {
       // A \ followed by an end of string is not valid.
-      invokeError("Unfinished escape sequence!", index, annotator);
+      invokeError(index, annotator, "Unfinished escape sequence!");
       return false;
     }
 
@@ -451,16 +450,15 @@ class StringParserEngine {
       int ret = simpleNumberParse<int>(inputString, startIndex, len, 8);
       if (ret > 0xff && sizeof(OutType) == 1) {
         invokeError(
+            index, annotator,
             "The specified octal sequence wants to encode a character out "
-            "of byte size.",
-            index,
-            annotator);
+            "of byte size.");
         return false;
       }
       output.push_back(ret);
     } else {
       // If nothing of the above applies, we got an invalid escape sequence.
-      invokeError("Detected invalid escape sequence!", index, annotator);
+      invokeError(index, annotator, "Detected invalid escape sequence!");
       return false;
     }
     return true;
@@ -560,9 +558,10 @@ class StringParserEngine {
     if (codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
       // First of all, we cross out all out of range and surrogate code points,
       // then we do not need to check in the single methods any more.
-      invokeError("The specified code point is outside the Unicode range!",
-                  index,
-                  annotator);
+      invokeError(index,
+                  annotator,
+                  "The specified code point is outside the Unicode range!"
+                  );
       return false;
     }
 
