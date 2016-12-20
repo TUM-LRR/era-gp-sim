@@ -68,22 +68,30 @@ TextField {
 
             Component {
                 id: glowEffect
-                Glow {
-                    //anchors.fill: parent
-                    x: registerTextField.x; y: registerTextField.y
-                    width: registerTextField.width; height: registerTextField.height
-                    source: registerTextField
-                    color: "red"
-                    radius: 10
-                    samples: 20
-                    visible: true
+                Item{
+                    Rectangle{
+                        id: rect
+                        x: registerTextField.x; y: registerTextField.y
+                        width: registerTextField.width; height: registerTextField.height
+                        color: "white"
 
-                    NumberAnimation on spread {
-                        from: 0; to: 0.8; duration: 1000
-                        loops: 3
-                        easing.type: Easing.InOutQuad
-                        onStopped: {
-                            registerTextField.style = whiteRectangle;
+                    }
+                    Glow {
+                        x: rect.x; y: rect.y
+                        width: rect.width; height: rect.height
+                        source: rect
+                        color: "#0080FF"
+                        radius: 8
+                        samples: 17
+                        visible: true
+
+                        NumberAnimation on spread {
+                            from: 0; to: 0.5; duration: 1000
+                            loops: 3
+                            easing.type: Easing.InOutQuad
+                            onStopped: {
+                                registerTextField.style = whiteRectangle;
+                            }
                         }
                     }
                 }
