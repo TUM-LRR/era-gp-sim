@@ -31,7 +31,7 @@ void IntermediateMacroInstruction::replaceWithMacros(CommandIterator begin,
   for (auto i = begin; i != end; ++i) {
     // Try casting to IntermediateInstruction, skip instruction if it doesn't
     // work
-    if (dynamic_cast<IntermediateInstruction*>(i->get()) == nullptr) continue;
+    if ((*i)->getType() != IntermediateOperation::Type::INSTRUCTION) continue;
 
     IntermediateInstruction& inst = static_cast<IntermediateInstruction&>(**i);
 
@@ -113,4 +113,16 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
                         SymbolTable::SymbolType::LABEL);
     }
   }
+}
+
+std::string IntermediateMacroInstruction::toString() const {
+  std::string str;
+  for (const auto& operation : _operations) {
+    str += operation->toString();
+  }
+  return str;
+}
+
+IntermediateOperation::Type IntermediateMacroInstruction::getType() const {
+  return Type::MACRO_INSTRUCTION;
 }

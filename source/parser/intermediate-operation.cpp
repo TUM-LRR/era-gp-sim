@@ -81,3 +81,11 @@ const std::vector<std::string>& IntermediateOperation::labels() const {
 const std::string& IntermediateOperation::name() const {
   return _name;
 }
+
+std::string IntermediateOperation::toString() const {
+  return _name + "\n";
+}
+
+IntermediateOperation::Type IntermediateOperation::getType() const {
+  return Type::OTHER;
+}

@@ -157,6 +157,7 @@ void ParsingAndExecutionUnit::parse(std::string code) {
   _lineCommandCache.clear();
   // update the error list of the ui
   _setErrorList(_finalRepresentation.errorList);
+  _setMacroList(_finalRepresentation.macroList);
   // assemble commands into memory
   if (!_finalRepresentation.hasErrors()) {
     for (const auto &command : _finalRepresentation.commandList) {
