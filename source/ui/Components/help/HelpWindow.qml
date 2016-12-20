@@ -23,7 +23,7 @@ import QtQuick.Controls 1.4
 
 Item{
     anchors.fill: parent
-    property string usualText: "Hier ist leider keine Hilfe vorhanden"
+    property string usualText: "Sorry, no help aviable"
     property int currentLine: 1
 
     TextArea{
