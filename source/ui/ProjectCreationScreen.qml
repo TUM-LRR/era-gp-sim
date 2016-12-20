@@ -52,7 +52,7 @@ Item {
         text: "create Project"
         onClicked: {
             tab.title = textInputName.text;
-            root.buttonClicked(memorySizeSelector._value,
+            root.buttonClicked(memorySizeSelector.getCurrentValue(),
               architectureSelector.currentText, optionSelector.currentText, parserSelector.currentText);
         }
     }
@@ -107,7 +107,8 @@ Item {
             rightMargin: marginWidth
         }
         _value: 1024
-        _maxValue: 16384
+        _minValue: 4
+        _maxValue: 1048576
         _step: 4
     }
 
