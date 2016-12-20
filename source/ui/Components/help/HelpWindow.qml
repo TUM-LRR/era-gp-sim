@@ -38,9 +38,7 @@ Item{
         target: guiProject
         // Send when text changes
         onCommandListUpdated: {
-            console.info("Final Representation Changed");
             textarea.text = guiProject.getCommandHelp(currentLine);
-            console.info( "    currentLine: " + currentLine);
             if(textarea.text === ""){
                 textarea.text = usualText;
             }
@@ -51,7 +49,6 @@ Item{
         target: editor
         // Send when text changes
         onCursorLineChanged: {
-            console.info("Cursor Line Changed");
             currentLine = line;
             textarea.text = guiProject.getCommandHelp(currentLine);
             if(textarea.text === ""){
