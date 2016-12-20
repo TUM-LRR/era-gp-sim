@@ -59,6 +59,8 @@ class IntermediateMacroInstruction : public IntermediateOperation {
 
   virtual std::string toString() const;
 
+  virtual Type getType() const;
+
  private:
   CommandList _operations;
   int _firstInstruction = -1;

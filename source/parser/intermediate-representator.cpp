@@ -27,13 +27,15 @@
 void IntermediateRepresentator::generateMacroInformation(
     FinalRepresentation& representation) {
   for (const auto& i : _commandList) {
-    if (dynamic_cast<IntermediateMacroInstruction*>(i.get()) == nullptr)
+    if (i->getType() != IntermediateOperation::Type::MACRO_INSTRUCTION)
       continue;
 
-    MacroInformation info(
-        static_cast<IntermediateMacroInstruction&>(*i).toString(),
-        CodePositionInterval(CodePosition(i->lines().lineStart, 0),
-                             CodePosition(i->lines().lineEnd, 0)));
+    std::string macroCode =
+        static_cast<IntermediateMacroInstruction&>(*i).toString();
+    CodePositionInterval macroPos(CodePosition(i->lines().lineStart, 0),
+                                  CodePosition(i->lines().lineEnd, 0));
+
+    MacroInformation info(macroCode, macroPos);
 
     representation.macroList.push_back(std::move(info));
   }
