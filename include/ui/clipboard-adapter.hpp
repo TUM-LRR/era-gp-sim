@@ -14,7 +14,7 @@ class ClipboardAdapter : public QObject {
   data.
   \param text New clipboard text.
   */
-  Q_INVOKABLE void setText(QString text);
+  Q_INVOKABLE void setText(const QString& text);
 
   /**
   \brief text Returns the content of the clipboard.

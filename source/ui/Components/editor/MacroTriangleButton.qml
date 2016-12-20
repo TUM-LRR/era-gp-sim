@@ -28,8 +28,10 @@ Button {
     // is clicked.
     property var macroIndex: undefined
     property var onExpandedChanged: function (currentMacroIndex) {}
+    property var collapsedIndicatorSymbol: "\u25b6"
+    property var expandedIndicatorSymbol: "\u25bc"
 
-    text: "\u25b6"
+    text: collapsedIndicatorSymbol
     style: ButtonStyle {
         label: Text {
             text: control.text
@@ -41,15 +43,15 @@ Button {
         }
     }
     onClicked: {
-        text = (text == "\u25b6") ? "\u25bc" : "\u25b6";
+        text = (text == collapsedIndicatorSymbol) ? expandedIndicatorSymbol : collapsedIndicatorSymbol;
         onExpandedChanged(macroIndex);
     }
 
     function setExpanded() {
-        text = "\u25bc";
+        text = expandedIndicatorSymbol;
     }
 
     function setCollapsed() {
-        text = "\u25b6";
+        text = collapsedIndicatorSymbol;
     }
 }

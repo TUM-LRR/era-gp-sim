@@ -50,18 +50,18 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
   parserInterface.setSetMacroListCallback([this](
       const std::vector<MacroInformation> &macroList) {
     QVariantList updatedMacroList;
-    for (auto it = macroList.begin(); it != macroList.end(); ++it) {
-      QVariantMap macroInformation;
-      macroInformation["code"] = QString::fromStdString(it->macroCode());
-      macroInformation["startLine"] =
-          QVariant::fromValue(it->position().first.line() - 1);
-      macroInformation["endLine"] =
-          QVariant::fromValue(it->position().second.line() - 1);
+    for (const auto& macroInformation : macroList) {
+      QVariantMap macroInformationMap;
+      macroInformationMap["code"] = QString::fromStdString(macroInformation.macroCode());
+      macroInformationMap["startLine"] =
+          QVariant::fromValue(macroInformation.position().first.line() - 1);
+      macroInformationMap["endLine"] =
+          QVariant::fromValue(macroInformation.position().second.line() - 1);
       int lineCount =
-          (int)std::count(it->macroCode().begin(), it->macroCode().end(), '\n');
-      macroInformation["lineCount"] = QVariant::fromValue(lineCount);
-      macroInformation["collapsed"] = QVariant::fromValue(true);
-      updatedMacroList.append(macroInformation);
+          (int)std::count(macroInformation.macroCode().begin(), macroInformation.macroCode().end(), '\n');
+      macroInformationMap["lineCount"] = QVariant::fromValue(lineCount);
+      macroInformationMap["collapsed"] = QVariant::fromValue(true);
+      updatedMacroList.append(macroInformationMap);
     }
     emit updateMacros(updatedMacroList);
   });

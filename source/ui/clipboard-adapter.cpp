@@ -5,7 +5,7 @@ ClipboardAdapter::ClipboardAdapter(QObject *parent) : QObject(parent) {
   QObject::connect(clipboard, SIGNAL(dataChanged()), this, SLOT(setData()));
 }
 
-void ClipboardAdapter::setText(QString text) {
+void ClipboardAdapter::setText(const QString& text) {
   clipboard->setText(text, QClipboard::Clipboard);
 }
 

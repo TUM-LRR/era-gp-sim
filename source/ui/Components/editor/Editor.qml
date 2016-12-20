@@ -120,11 +120,6 @@ ScrollView {
                     macroUpdatesOnTextChanged();
                 }
 
-                onLineCountChanged: {
-                    // Update linenumbering
-                    sidebar.updateLineNumbers();
-                }
-
                 //Connection to react to the parse signal
                 Connections {
                     target: editor
@@ -224,6 +219,18 @@ ScrollView {
                     }
                 }
 
+                Component {
+                    id: subeditorComponent
+                    MacroSubeditor {
+                    }
+                }
+
+                Component {
+                    id: triangleButtonComponent
+                    MacroTriangleButton {
+                    }
+                }
+
 
                 // Iterates over the current macros-arrays and removes the display objects of each macro.
                 function removeCurrentMacros() {
@@ -262,14 +269,12 @@ ScrollView {
                         var macroDisplayObject = {};
                         // Add sub-editor to display object
                         var yPos = textArea.positionToRectangle(linePosition).y + textArea.cursorRectangle.height
-                        var subeditorComponent = Qt.createComponent("MacroSubeditor.qml");
                         var subeditor = subeditorComponent.createObject(textArea, {
-                                                                            "y": yPos,
-                                                                            "expandedHeight": cursorRectangle.height*macros[macroIndex]["lineCount"],
-                                                                            "text": macro["code"]});
+                                                                                 "y": yPos,
+                                                                                 "expandedHeight": cursorRectangle.height*macros[macroIndex]["lineCount"],
+                                                                                 "text": macro["code"]});
                         macroDisplayObject["subeditor"] = subeditor;
                         // Add triangle-button to display object
-                        var triangleButtonComponent = Qt.createComponent("MacroTriangleButton.qml");
                         var triangleButton = triangleButtonComponent.createObject(sidebar._errorBar, {"y": textArea.positionToRectangle(linePosition).y-2, "x": 0});
                         triangleButton.macroIndex = macroIndex;
                         triangleButton.onExpandedChanged = function (currentMacroIndex){toggleExpandCollapse(currentMacroIndex);};
@@ -576,43 +581,22 @@ ScrollView {
                     anchors.leftMargin: 3
                     y: textArea.textMargin/2
 
-                    property var _lineNumberObjects: []
-                    function updateLineNumbers() {
-                        // Delete old line numbers
-                        for (var i = 0; i < _lineNumberObjects.length; ++i) {
-                            _lineNumberObjects[i].destroy();
-                        }
-                        _lineNumberObjects = [];
-
-                        // Add new line numbers.
-                        var lineNumberLabels = getLineNumberLabels();
-                        for (var line = 0; line < textArea.lineCount; ++line) {
-                            var lineNumber = Qt.createQmlObject('import QtQuick 2.6; Text {color: "gray"; font: textArea.font}',
-                                                                lineNumbersBar);
-                            // TODO: Find out why we need that correction factor... So strange;
-                            // Not required before but now even required when using Repeater...
-                            lineNumber.height = 1.05*fontMetrics.height;
-                            lineNumber.text = lineNumberLabels[line];
-                            _lineNumberObjects[line] = lineNumber;
-                        }
-                    }
-
-                    // Calculates the correct label for each line. I.e. blank lines that belong to macros are factored out.
-                    function getLineNumberLabels() {
-                        var lineNumberLabels = [];
-                        var currentLineNumberLabel = 0;
-                        for (var lineIndex = 0; lineIndex < textArea.lineCount; ++lineIndex) {
-                            // If line is a blank line belonging to a macro, return empty label.
-                            if (textArea.isPositionInsideMacroBlankLine(textArea.text, TextUtilities.getLineStartForLine(textArea.text, lineIndex))) {
-                                lineNumberLabels.push(" ");
-                            } else {    // Otherweise, return line number with blank lines factored out.
-                                currentLineNumberLabel++;
-                                lineNumberLabels.push(""+currentLineNumberLabel);
+                    Repeater {
+                        model: textArea.lineCount
+                        delegate: Text {
+                            color: "gray"
+                            font: textArea.font
+                            text: {
+                                // Check if line number belongs to line which was inserted for a macro expansion.
+                                if (textArea.isPositionInsideMacroBlankLine(textArea.text, TextUtilities.getLineStartForLine(textArea.text, index))) {
+                                    return " ";
+                                } else {    // If not, return line number with blank lines factored out.
+                                    return textArea.convertRawLineNumberToDisplayLineNumber(textArea.text, index);
+                                }
                             }
+                            height: textArea.cursorRectangle.height
                         }
-                        return lineNumberLabels;
                     }
-
                 }
 
                 function addBreakpoint(line) {

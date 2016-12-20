@@ -84,7 +84,6 @@ Item {
         anchors.bottom: parent.bottom
 
         readOnly: true
-        text: "mov eax, 0"
         textMargin: 2
         color: "#4A4A4A"
     }

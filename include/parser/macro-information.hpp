@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_PARSER_MACRO_INFORMATION_HPP
 #define ERAGPSIM_PARSER_MACRO_INFORMATION_HPP
 
+#include <string>
 #include "parser/code-position.hpp"
 
 /**
@@ -32,34 +33,29 @@ class MacroInformation {
    * \param position Position of the macro call
    */
   MacroInformation(const std::string& code,
-                   const CodePositionInterval& position)
-  : _code(code), _position(position) {
-  }
+                   const CodePositionInterval& position);
 
   /**
    * Returns the expanded code for this macro.
+   * \return The expanded code for this macro.
    */
-  const std::string& macroCode() const {
-    return _code;
-  }
+  const std::string& macroCode() const noexcept;
 
   /**
-   * \brief Returns the position of this macro.
+   * Returns the position of this macro.
    * \return The position of the macro.
    */
-  const CodePositionInterval& position() const {
-    return _position;
-  }
+  const CodePositionInterval& position() const;
 
 
  private:
   /**
-   * \brief The internal code attribute.
+   * The internal code attribute.
    */
   std::string _code;
 
   /**
-   * \brief The internal position attribute.
+   * The internal position attribute.
    */
   CodePositionInterval _position;
 };

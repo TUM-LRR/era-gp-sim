@@ -194,19 +194,21 @@ std::string IntermediateInstruction::toString() const {
 
     // Append targets
     for (size_t i = 0; i < _targets.size(); i++) {
-      if (i != 0)
+      if (i != 0) {
         str += ", ";
-      else
+      } else {
         str += " ";
+      }
       str += _targets[i];
     }
 
     // Append sources
     for (size_t i = 0; i < _sources.size(); i++) {
-      if (i == 0 && _targets.size() == 0)
+      if (i == 0 && _targets.size() == 0) {
         str += " ";
-      else
+      } else {
         str += ", ";
+      }
       str += _sources[i];
     }
 

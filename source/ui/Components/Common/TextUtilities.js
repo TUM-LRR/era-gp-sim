@@ -24,7 +24,7 @@ function getLineForPosition(text, position) {
 // Returns the position of the start of the line relative to the entire editor text.
 function getLineStartForPosition(text, position) {
     var lineStart = text.slice(0, position).lastIndexOf("\n") + 1;
-    if (lineStart == -1) { lineStart = 0; }
+    if (lineStart === -1) { lineStart = 0; }
     return lineStart;
 }
 
@@ -32,8 +32,7 @@ function getLineStartForPosition(text, position) {
 // relative to the entire editor text.
 function getLineEndForPosition(text, position) {
     var lineEnd = textArea.text.slice(position).indexOf("\n") + position;
-    if (lineEnd == -1) { lineEnd = text.length; }
-    return lineEnd;
+    return (lineEnd === -1) ? text.length : lineEnd;
 }
 
 // Converts a given position relative to the entire text to a position relative to the line of the
@@ -55,16 +54,17 @@ function remove(string, a, b) {
 
 // Returns the number of occurences of a given searchString inside a given text.
 function numberOfOccurences(string, searchString) {
-    string += "";
-    searchString += "";
-    if (searchString.length <= 0) return (string.length + 1);
+    if (typeof string !== "string" || typeof searchString !== "string") {
+        return 0;
+    }
+    if (searchString.length <= 0) return string.length + 1;
 
     var index = -1;
     var offset = 0;
     var count = 0;
-    while ((index = string.indexOf(searchString, offset)) != -1) {
+    while ((index = string.indexOf(searchString, offset)) !== -1) {
         count++;
-        offset = (index + searchString.length);
+        offset = index + searchString.length;
     }
     return count;
 }
