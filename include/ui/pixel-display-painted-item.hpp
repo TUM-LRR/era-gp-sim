@@ -248,6 +248,7 @@ struct ColorMode {
 class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_OBJECT
   Q_PROPERTY(OutputComponent *outputComponentPointer WRITE setOutputComponent)
+  using size_t = std::size_t;
   // Q_PROPERTY(std::size_t pixelBaseAddress READ getPixelBaseAddress WRITE\
   //                setPixelBaseAddress)
   // Q_PROPERTY(std::size_t colorBaseAddress READ getColorBaseAddress WRITE\
@@ -268,8 +269,8 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
                  setPixelBufferPointerLike)
   Q_PROPERTY(bool colorTablePointerLike READ getColorTablePointerLike WRITE\
                  setColorTablePointerLike)
-  Q_PROPERTY(std::size_t freeBytes READ getFreeBytes WRITE setFreeBytes)
-  Q_PROPERTY(std::size_t freeBits READ getFreeBits WRITE setFreeBits)
+  Q_PROPERTY(size_t freeBytes READ getFreeBytes WRITE setFreeBytes)
+  // Q_PROPERTY(std::size_t freeBits READ getFreeBits WRITE setFreeBits)
 
  public:
   /*
