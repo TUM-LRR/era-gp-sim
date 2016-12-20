@@ -58,5 +58,6 @@
         <file>Components/editor/Issue Icons/Information Icon@2x.png</file>
         <file>Components/editor/Issue Icons/Warning Icon.png</file>
         <file>Components/editor/Issue Icons/Warning Icon@2x.png</file>
+        <file>Components/Common/TextUtilities.js</file>
     </qresource>
 </RCC>

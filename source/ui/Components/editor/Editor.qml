@@ -21,6 +21,7 @@ import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Dialogs 1.2
 import "../Common"
+import "../Common/TextUtilities.js" as TextUtilities
 
 //decorates a Flickable with Scrollbars
 ScrollView {
@@ -293,6 +294,8 @@ ScrollView {
                         Item {
                             id: issueMark
 
+                            property var issueItems: []
+
                             height: textArea.cursorRectangle.height
                             width: scrollView.width
 
@@ -306,11 +309,11 @@ ScrollView {
                             property var dominantIssueType: ""
 
                             // Color definitions
-                            property var errorColorSolid: Qt.rgba(1.0, 80.0/255.0, 0.0, 0.4)
+                            property var errorColorSolid: Qt.rgba(1.0, 185.0/255.0, 152.0/255.0, 1.0)
                             property var errorColorLight: Qt.rgba(1.0, 80.0/255.0, 0.0, 0.14)
-                            property var warningColorSolid: Qt.rgba(1.0, 185.0/255.0, 10.0/255.0, 0.4)
+                            property var warningColorSolid: Qt.rgba(1.0, 227.0/255.0, 157.0/255.0, 1.0)
                             property var warningColorLight: Qt.rgba(1.0, 185.0/255.0, 10.0/255.0, 0.14)
-                            property var informationColorSolid: Qt.rgba(0.0, 117.0/255.0, 255.0/255.0, 0.4)
+                            property var informationColorSolid: Qt.rgba(153.0/255.0, 200.0/255.0, 255.0/255.0, 1.0)
                             property var informationColorLight: Qt.rgba(0.0, 117.0/255.0, 255.0/255.0, 0.14)
 
                             // The issue's Icon inside the error bar.
@@ -353,8 +356,6 @@ ScrollView {
 
                                 anchors.fill: parent
 
-                                property var issueItems: []
-
                                 // An issueItem marks an issue (error, warning, information) inside the corresponding line.
                                 Component {
                                     id: issueItemComponent
@@ -382,15 +383,19 @@ ScrollView {
                                             }
                                         }
 
-                                        width: issueText.width + 3 * _textMargin + issueItemIcon.width
+                                        // TextMetrics do not take line breaks into account for their width. Therefore the
+                                        // issueMarkTextBackground should be just as wide as the issueTextMetrics' width but should
+                                        // always fit into the editor (
+                                        width: Math.min(issueTextMetrics.width, issueText.width) + 3 * _textMargin + issueItemIcon.width
+                                        height: Math.max(issueText.height, issueLineHighlight.height)
 
                                         // Each issueItem displays an icon corresponding to its issueType.
                                         Image {
                                             id: issueItemIcon
                                             width: errorBar.width-2
                                             height: errorBar.width-2
-                                            anchors.right: issueText.left
-                                            anchors.rightMargin: _textMargin
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: _textMargin
                                             anchors.verticalCenter: parent.verticalCenter
                                             source: {
                                                 switch (issueType) {
@@ -406,14 +411,25 @@ ScrollView {
                                             }
                                         }
 
+                                        TextMetrics {
+                                            id: issueTextMetrics
+                                            text: issueText.text
+                                            font: issueText.font
+                                        }
+
                                         // Displays the issueMessage (error message, warning message, information message).
                                         Text {
                                             id: issueText
                                             anchors.right: parent.right
                                             anchors.rightMargin: _textMargin
                                             anchors.verticalCenter: parent.verticalCenter
-                                            font.pixelSize: 0.6*parent.height
+                                            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                                            width: scrollView.width - sidebar.width - issueItemIcon.width - 3*_textMargin
+
+                                            font.pixelSize: 10
                                             text: issueMessage
+                                            horizontalAlignment: Text.AlignRight
+
                                         }
 
                                         // Tooltip for showing issueMessage on mouse over.
@@ -436,20 +452,36 @@ ScrollView {
                                 }
 
                                 // Adds a new issue item to the current issueMark.
-                                function addIssueItem(message, issueType) {
+                                function addIssueItem(message, lineNumber, issueType) {
                                     var newIssueItem = issueItemComponent.createObject();
                                     newIssueItem.parent = issueLineHighlight;
-                                    newIssueItem.anchors.right = issueLineHighlight.right;
-                                    newIssueItem.height = issueLineHighlight.height;
-                                    newIssueItem.y = issueLineHighlight.height * (issueItems.length);
                                     newIssueItem.issueMessage = message;
                                     newIssueItem.issueType = issueType;
-                                    issueItems.push(newIssueItem);
+
+                                    newIssueItem.anchors.right = issueLineHighlight.right;
+
+                                    if (issueMark.issueItems.length === 0) {
+                                        // Check if the first issueText would overlap the line text.
+                                        var lineEndX = textArea.positionToRectangle(TextUtilities.getLineEndForLine(textArea.text, lineNumber)).x;
+                                        var errorLeftX = textArea.width - newIssueItem.width;
+                                        var textToErrorDistance = errorLeftX - lineEndX;
+                                        // If it would overlap, offset it by one line.
+                                        if (textToErrorDistance < 10) {
+                                            newIssueItem.y = issueLineHighlight.height;
+                                        } else { // Oterhwise, position it at the issueMark's first line.
+                                            newIssueItem.y = 0;
+                                        }
+                                    } else {
+                                        // Anchor the new item to its neighboring item above.
+                                        newIssueItem.anchors.top = issueMark.issueItems[issueMark.issueItems.length-1].bottom;
+                                    }
+
+                                    issueMark.issueItems.push(newIssueItem);
                                 }
                             }
 
                             // Adds a new issue item to the current issueMark.
-                            function addIssueItem(message, issueType) {
+                            function addIssueItem(message, lineNumber, issueType) {
                                 issueLineHighlight.addIssueItem(message, issueType);
                             }
                         }
@@ -463,19 +495,28 @@ ScrollView {
                         var newIssue;
                         if (issueMarks[lineNumber] === undefined) {
                             newIssue = issueMarkComponent.createObject();
-                            newIssue.y = (lineNumber-1)*fontMetrics.height*1.05;
+                            newIssue.y = (lineNumber-1)*textArea.cursorRectangle.height;
                             newIssue.parent = errorBar;
                             issueMarks[lineNumber] = newIssue;
                         } else {
                             newIssue = issueMarks[lineNumber];
                         }
+
                         // Add a new issueItem to the issueMark.
-                        newIssue.addIssueItem(message, issueType);
+                        newIssue.addIssueItem(message, lineNumber, issueType);
+
                         // Check if the issueMark's dominantIssueType should change.
                         newIssue.dominantIssueType =
                                 (issueTypePriority(issueType) > issueTypePriority(newIssue.dominantIssueType))
                                 ? issueType
                                 : newIssue.dominantIssueType;
+
+                        // Only errors should be expanded by default.
+                        if (newIssue.dominantIssueType === "Error") {
+                            newIssue.expanded = true;
+                        } else {
+                            newIssue.expanded = false;
+                        }
                     }
 
                     // Assigns a priority to each issue type. Required for calculating an issueMark's
