@@ -135,9 +135,14 @@ ApplicationWindow {
                 onButtonClicked: {
                     enabled = false;
                     visible = false;
-                    placeholderItem.projectId = ui.addProject(placeholderItem, projectComponent,
-                        memorySize, architecture, optionName, parser);
-                        window.showMenus();
+                    placeholderItem.projectId = ui.addProject(
+                        placeholderItem,
+                        projectComponent,
+                        memorySize,
+                        architecture,
+                        optionName,
+                        parser);
+                    window.showMenus();
                     projectValid = true;
                     }
                 }

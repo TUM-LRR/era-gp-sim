@@ -109,8 +109,7 @@ ToolBar {
             run.enabled = false;
             runLine.enabled = false;
             runBreakpoint.enabled = false;
-            stop.enabled = true;
-            stop.iconSource = "Icons/StopButtonActive.svg";
+            stop.setActive();
         }
 
         // has to be called after every execution stops to properly set the toolbar state
@@ -118,8 +117,7 @@ ToolBar {
           run.enabled = true;
           runLine.enabled = true;
           runBreakpoint.enabled = true;
-          stop.enabled = false;
-          stop.iconSource = "Icons/StopButtonInactive.svg";
+          stop.setInactive();
         }
 
         ToolButton{
@@ -168,11 +166,8 @@ ToolBar {
             tooltip: "stop"
             iconSource: "Icons/StopButtonInactive.svg"
             onClicked: {
-                console.info("Stop clicked");
                 ui.stop(tabView.getCurrentProjectId());
-                setInactive();
             }
-
 
             function setActive(){
                 enabled=true;
@@ -203,6 +198,8 @@ ToolBar {
         }
 
         /* The Butons should be on the left side*/
-        Item{ Layout.fillWidth: true}
+        Item {
+          Layout.fillWidth: true
+        }
     }
 }
