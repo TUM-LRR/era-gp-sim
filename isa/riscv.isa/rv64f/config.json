@@ -1,46 +1,46 @@
 {
-    "extends": "rv32f", 
-    "name": "rv64f", 
     "instructions": [
         {
-            "mnemonic": "fcvtls", 
-            "length": 32, 
             "key": {
-                "opcode": 83, 
-                "rs2": 2, 
-                "funct7": 96
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 96,
+                "rs2": 2,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtls"
+        },
         {
-            "mnemonic": "fcvtlus", 
-            "length": 32, 
             "key": {
-                "opcode": 83, 
-                "rs2": 3, 
-                "funct7": 96
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 96,
+                "rs2": 3,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtlus"
+        },
         {
-            "mnemonic": "fcvtsl", 
-            "length": 32, 
             "key": {
-                "opcode": 83, 
-                "rs2": 2, 
-                "funct7": 104
-            }, 
-            "format": "R"
-        }, 
+                "funct7": 104,
+                "rs2": 2,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtsl"
+        },
         {
-            "mnemonic": "fcvtslu", 
-            "length": 32, 
             "key": {
-                "opcode": 83, 
-                "rs2": 3, 
-                "funct7": 104
-            }, 
-            "format": "R"
+                "funct7": 104,
+                "rs2": 3,
+                "opcode": 83
+            },
+            "length": 32,
+            "format": "R",
+            "mnemonic": "fcvtslu"
         }
-    ]
+    ],
+    "name": "rv64f",
+    "extends": "rv32f"
 }

@@ -34,7 +34,7 @@ ValidationResult SimulatorSleepInstructionNode::validate(
     return ValidationResult::fail(
         QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                           "%1 must have exaclty one operand"),
-        getInstructionInformation().getMnemonic());
+        _information.getMnemonic());
   }
   auto &operand = _children.at(0);
   auto type = operand->getType();
@@ -43,20 +43,21 @@ ValidationResult SimulatorSleepInstructionNode::validate(
     return ValidationResult::fail(
         QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                           "%1 may only have an immediate or register operand"),
-        getInstructionInformation().getMnemonic());
+        _information.getMnemonic());
   }
 
-  if (Utility::occupiesMoreBitsThan(operand->getValue(memoryAccess), 32)) {
+  auto opValue = operand->getValue(memoryAccess);
+  if (Utility::occupiesMoreBitsThan(opValue, 32)) {
     return ValidationResult::fail(
-        "Syntax-Tree-Validation",
-        "Immediate value of %1 must be representable in 32bit");
+        QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+        "Immediate value of %1 must be representable in 32bit"), opValue.toHexString(true, false));
   }
 
   // if operand is negative
-  if (operand->getValue(memoryAccess).get(31)) {
+  if (opValue.get(31)) {
     return ValidationResult::fail(
-        "Syntax-Tree-Validation",
-        "Would't a negative sleep time speed up the execution?");
+        QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+        "Would't a negative sleep time speed up the execution?"));
   }
   return ValidationResult::success();
 }

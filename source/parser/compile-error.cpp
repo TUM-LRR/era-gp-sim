@@ -13,19 +13,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
+* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP
-#define ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP
+#include "parser/compile-error.hpp"
 
-#include <functional>
-#include <vector>
-
-#include "arch/common/instruction-key.hpp"
-#include "arch/riscv/instruction-node.hpp"
-#include "core/memory-value.hpp"
-
-using AssemblerFunction =
-    std::function<std::vector<bool>(InstructionKey, std::vector<MemoryValue>)>;
-
-#endif /* ERAGPSIM_ARCH_COMMON_INSTRUCTION_ASSEMBLER_HPP */
+const Translateable& CompileError::message() const {
+    assert::that(_message);
+    return (*_message);
+  }

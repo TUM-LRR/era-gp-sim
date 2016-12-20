@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 #include "arch/common/binarydata-node.hpp"
+#include <QtGlobal>
 
 BinaryDataNode::BinaryDataNode() : AbstractSyntaxTreeNode(Type::OTHER) {}
 
@@ -24,7 +25,7 @@ BinaryDataNode::BinaryDataNode(const std::string &data)
 ValidationResult BinaryDataNode::validate(MemoryAccess &memoryAccess) const {
   if (_children.size() != 0) {
     return ValidationResult::fail(
-        "A binary data node may not have any children");
+        QT_TRANSLATE_NOOP("Binary Data Node Validation", "A binary data node may not have any children"));
   }
   return ValidationResult::success();
 }

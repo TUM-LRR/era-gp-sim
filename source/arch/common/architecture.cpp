@@ -79,6 +79,12 @@ Architecture::Endianness Architecture::getEndianness() const {
   return _base.getEndianness();
 }
 
+Architecture::SignedRepresentation
+Architecture::getSignedRepresentation() const {
+  assert(isValidated());
+  return _base.getSignedRepresentation();
+}
+
 Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const {
   assert(isValidated());
   return _base.getAlignmentBehavior();

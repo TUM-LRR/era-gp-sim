@@ -27,17 +27,14 @@ import QtQuick.Controls.Styles 1.4
 
 /*Modul, which should be bound to the container*/
 Item {
-
-        width: 250
-        height: 300
         anchors.fill: parent
 
         /*holds the name of the Module*/
         Rectangle{
-            id: modulName
-            height:35
+            id: moduleName
+            anchors.top: parent.top
+            height: 20
             Text {
-                anchors.fill: parent
                 text: "Snapshots"
                 color: "gray"
                 font.bold: true
@@ -45,147 +42,146 @@ Item {
             }
         }
 
-        /*Shows, how the the entries should be presented*/
-        Component {
-            id: listDelegate
+        /*Add a snapshot */
+        Button {
+          id: addButton
+          anchors.top: moduleName.bottom
+          anchors.horizontalCenter: parent.horizontalCenter
+          height: 30
+          text: "Create Snapshot"
+          onClicked: {
+            window.menubar.actionSnapshot();
+          }
+        }
 
-            /*MouseArea ofer every line for showing buttons*/
-            MouseArea {
-                height: 25
-                width: 250
-                hoverEnabled: true
-                onEntered: {
-                    deleteButton.visible=true;
-                    loadButton.visible=true;
-                    mouseText.width=80;
-
-                }
-                onExited: {
-                    deleteButton.visible=false;
-                    loadButton.visible=false;
-                    mouseText.width=250;
-                }
-
-
-
-                Row {
-                    /*Space before the text*/
-                    Column{
-                        Rectangle{
-                            height: 20
-                            width: 10
-                            visible: false
-                        }
-                    }
-
-                    /*Text, Snapshot Name*/
-                    Column{
-                        MouseArea{
-                            id: mouseText
-                            height: 20
-                            width: 250
-
-                            acceptedButtons: Qt.RightButton | Qt.LeftButton
-                            Text{ text: name
-                                font.bold: true
-                            }
-
-                            /*open and delete by clicks*/
-                            onDoubleClicked: {
-                                if(mouse.button===Qt.LeftButton){
-                                    console.info("Left Double Click, load "+name);
-                                    snapshotModel.deleteClicked(name);
-                                }
-                                else if(mouse.button===Qt.RightButton){
-                                    console.info("Right Double Click, delete "+ name);
-                                    snapshotModel.deleteClicked(name);
-                                }
-                             }
-                        }
-                    }
-                    /*Leaving space to the right end of the window*/
-                    Column{
-                        id: afterText
-                        Rectangle{
-                            height: 20
-                            width: 5
-                            visible: false
-                        }
-                    }
-                    Column{
-                        Button{
-                            id: deleteButton
-                            visible: false
-                            height: 20
-                            width: 40
-                            Text{
-                                text: "Delete"
-                                color: "red"
-                                anchors.centerIn: parent
-                            }
-                            onClicked: {
-                                console.info("Button Delete Clicked, delete "+name);
-                                snapshotModel.deleteClicked(name);
-
-                            }
-                        }
-                    }
-
-                    /*space between the buttons*/
-                    Column{
-                        Rectangle{
-                            height: 20
-                            width: 5
-                            visible: false
-                        }
-                    }
-                    Column{
-                        Button{
-                            id: loadButton
-                            visible: false
-                            height: 20
-                            width: 40
-                            Text{
-                                text: "Load"
-                                color: "green"
-                                anchors.centerIn: parent
-                            }
-                            onClicked: {
-                                console.info("Button Load Clicked, load "+name);
-                                snapshotModel.loadClicked(name);
-                            }
-                        }
-                    }
-
-                }
-
+        /* react to signals from guiProject */
+        Connections {
+            target: snapshotComponent
+            onSnapshotsChanged: {
+              listView.model = guiProject.getSnapshots();
             }
         }
 
+        /* Defines how the the entries should be presented*/
+        Component {
+            id: listDelegate
+            Item {
+                property alias text: textItem.text
+                height: textItem.height
+                width: listView.width
+                /* The name of the snapshot */
+                Text {
+                    id: textItem
+                    anchors.left: parent.left
+                    anchors.leftMargin: 3
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: model.modelData
+                    font.bold: true
+                }
 
+                /* Mouse are to check if the mouse hovers above this list entry */
+                MouseArea {
+                  id: mouseArea
+                  anchors.fill: parent
+                  // has to be above the highlight component.
+                  z: listView.z + 1
+                  hoverEnabled: true
+                  acceptedButtons: Qt.NoButton
+                  propagateComposedEvents: true
+                  onEntered: {
+                     listView.currentIndex = index;
+                     loadButton.visible = true;
+                     deleteButton.visible = true;
+                  }
+                  onExited: {
+                    if(listView.currentIndex==index) {
+                      listView.currentIndex = -1;
+                    }
+                    loadButton.visible = false;
+                    deleteButton.visible = false;
+                  }
 
+                  /*Buttons to load or delete a snapshot
+                    These buttons can't be in the highlight component, as the
+                    text of this snapshot entry would be above them.
+                   */
+                  Button {
+                      id: loadButton
+                      anchors.right: deleteButton.left
+                      anchors.verticalCenter: parent.verticalCenter
+                      height: textLoad.height + 2
+                      width: textLoad.width + 5
+                      visible: false
+                      Text{
+                          id: textLoad
+                          text: "Load"
+                          color: "green"
+                          anchors.centerIn: parent
+                      }
+                      onClicked: {
+                          guiProject.loadSnapshot(model.modelData);
+                      }
+                  }
+                  Button {
+                      id: deleteButton
+                      anchors.right: parent.right
+                      anchors.verticalCenter: parent.verticalCenter
+                      height: textDelete.height + 2
+                      width: textDelete.width + 5
+                      visible: false
+                      Text{
+                          id: textDelete
+                          text: "Delete"
+                          color: "red"
+                          anchors.centerIn: parent
+                      }
+                      onClicked: {
+                          guiProject.removeSnapshot(model.modelData);
+                      }
+                    }
+                }
+            }
+        }
 
+        /* A component to display a highlight on mouse hover. */
+        Component {
+          id: highlightComponent
+          Rectangle {
+            color: Qt.rgba(0.7, 0.7, 0.7, 0.2)
+            radius: 5
+            MouseArea{
+                id: mouseText
+                anchors.fill: parent
+                acceptedButtons: Qt.AllButtons
+                onDoubleClicked: {
+                    if(mouse.button===Qt.LeftButton){
+                      if(listView.currentItem != null) {
+                        guiProject.loadSnapshot(listView.currentItem.text);
+                      }
+                    }
+                    else if(mouse.button===Qt.RightButton){
+                      if(listView.currentItem != null) {
+                        guiProject.removeSnapshot(listView.currentItem.text);
+                      }
+                    }
+                 }
+            }
+          }
+        }
 
-
+        /* The list view to display a list of snapshots. */
         ListView {
               id: listView
-              /*Leavs place for the moduleName*/
-              anchors.top: modulName.bottom
+              /*Leaves place for the moduleName*/
+              anchors.topMargin: 10
+              anchors.top: addButton.bottom
               anchors.left: parent.left
               anchors.bottom: parent.bottom
               anchors.right: parent.right
-              model: snapshotModel //listModel
+              model: guiProject.getSnapshots();
+              highlight: highlightComponent
+              highlightFollowsCurrentItem: true
+              currentIndex: -1
               delegate: listDelegate
-        }
-
-
-        /*Function for adding Data from cpp*/
-        function add(name){
-            listModel.append({name: name});
-        }
-
-        /*Function for deleting data from cpp !The index must be known!*/
-        function remove(index){
-            listModel.remove(index);
         }
 }

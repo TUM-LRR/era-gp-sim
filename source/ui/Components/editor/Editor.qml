@@ -120,15 +120,15 @@ ScrollView {
                     macroUpdatesOnTextChanged();
                 }
 
-                //Connection to react to the parse signal
+                //Connection to react to editor signals
                 Connections {
                     target: editor
                     onExecutionLineChanged: {
                         textArea.line = textArea.convertDisplayLineNumberToRawLineNumber(line);
                     }
-                    onRuntimeError: {
-                        runtimeErrorDialog.text = errorMessage;
-                        runtimeErrorDialog.open();
+                    onSetText: {
+                        textArea.clear();
+                        textArea.insert(0, text);
                     }
                 }
 
@@ -138,7 +138,11 @@ ScrollView {
                     interval: 1000
                     repeat: false
                     onTriggered: {
-                        editor.parse();
+                        // don't parse while executing to avoid parsing multiple
+                        // times on stopping (onStopped triggers parse)
+                        if(!tabView.getCurrentProjectItem().isRunning) {
+                            editor.parse();
+                        }
                     }
                 }
 
@@ -726,16 +730,6 @@ ScrollView {
                         newError.color = errorColor;
                         newError.errorMessage = message;
                     }
-                }
-            }
-
-            //Dialog to show runtime errors
-            MessageDialog {
-                id: runtimeErrorDialog
-                title: "Runtime error"
-                standardButtons: StandardButton.Ok
-                onAccepted: {
-                    close();
                 }
             }
 

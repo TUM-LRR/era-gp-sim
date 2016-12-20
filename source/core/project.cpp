@@ -19,10 +19,10 @@
 
 #include "core/project.hpp"
 
-#include "arch/common/architecture-formula.hpp"
 #include "arch/common/register-information.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
+#include "core/deserialization-error.hpp"
 
 Project::Project(std::weak_ptr<Scheduler> &&scheduler,
                  const ArchitectureFormula &architectureFormula,
@@ -30,7 +30,10 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
 : Servant(std::move(scheduler))
 , _architecture(Architecture::Brew(architectureFormula))
 , _memory(memorySize, _architecture.getByteSize())
-, _registerSet() {
+, _registerSet()
+, _architectureFormula(architectureFormula)
+, _errorCallback(
+      [](const std::string &s, const std::vector<std::string> &v) {}) {
   _architecture.validate();
 
   for (UnitInformation unitInfo : _architecture.getUnits()) {
@@ -48,12 +51,13 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
 void Project::_createRegister(RegisterInformation registerInfo,
                               UnitInformation unitInfo) {
   if (!registerInfo.hasEnclosing()) {
-      MemoryValue startValue{registerInfo.getSize()};
-      //if this register is hardwired to some constant
-      if(registerInfo.isConstant()) {
-          startValue = registerInfo.getConstant();
-      }
-    _registerSet.createRegister(registerInfo.getName(), startValue, registerInfo.isConstant());
+    MemoryValue startValue{registerInfo.getSize()};
+    // if this register is hardwired to some constant
+    if (registerInfo.isConstant()) {
+      startValue = registerInfo.getConstant();
+    }
+    _registerSet.createRegister(
+        registerInfo.getName(), startValue, registerInfo.isConstant());
     _registerSet.aliasRegister(
         registerInfo.getAliases(), registerInfo.getName(), 0, true);
     // create all constituents and their constituents
@@ -100,13 +104,32 @@ MemoryValue Project::getMemoryValueAt(size_t address, size_t amount) const {
   return _memory.get(address, amount);
 }
 
-void Project::putMemoryValueAt(size_t address, const MemoryValue &value) {
-  _memory.put(address, value);
+MemoryValue Project::tryGetMemoryValueAt(size_t address, size_t amount) const {
+  return _memory.tryGet(address, amount);
 }
 
-MemoryValue
-Project::setMemoryValueAt(size_t address, const MemoryValue &value) {
-  return _memory.set(address, value);
+void Project::putMemoryValueAt(size_t address,
+                               const MemoryValue &value,
+                               bool ignoreProtection) {
+  _memory.put(address, value, ignoreProtection);
+}
+
+void Project::tryPutMemoryValueAt(size_t address,
+                                  const MemoryValue &value,
+                                  bool ignoreProtection) {
+  _memory.tryPut(address, value, ignoreProtection);
+}
+
+MemoryValue Project::setMemoryValueAt(size_t address,
+                                      const MemoryValue &value,
+                                      bool ignoreProtection) {
+  return _memory.set(address, value, ignoreProtection);
+}
+
+MemoryValue Project::trySetMemoryValueAt(size_t address,
+                                         const MemoryValue &value,
+                                         bool ignoreProtection) {
+  return _memory.trySet(address, value, ignoreProtection);
 }
 
 MemoryValue Project::getRegisterValue(const std::string &name) const {
@@ -135,16 +158,12 @@ size_t Project::getMemorySize() const {
   return _memory.getByteCount();
 }
 
-void Project::setMemorySize(size_t size) {
-}
-
 InstructionSet Project::getInstructionSet() const {
   return _architecture.getInstructions();
 }
 
 void Project::resetMemory() {
-  MemoryValue zero(_memory.getByteSize() * _memory.getByteCount());
-  putMemoryValueAt(0, zero);
+  _memory.clear();
 }
 
 void Project::resetRegisters() {
@@ -158,6 +177,30 @@ void Project::resetRegisters() {
       _setRegisterToZero(registerPair.second);
     }
   }
+}
+
+void Project::loadSnapshot(const Json &snapshotData) {
+  Snapshot snapshot(snapshotData);
+  if (!snapshot.isValid()) {
+    _errorCallback("Snapshot format is not valid.", {});
+    return;
+  }
+  if (snapshot.getArchitectureFormula() != _architectureFormula) {
+    _errorCallback("This snapshot was created with a different architecture.",
+                   {});
+    return;
+  }
+  try {
+    _memory.deserializeJSON(snapshot.getMemoryJson());
+    _registerSet.deserializeJSON(snapshot.getRegisterJson());
+  } catch (const DeserializationError &exception) {
+    _errorCallback(exception.what(), {});
+  }
+}
+
+Project::Json Project::generateSnapshot() const {
+  Snapshot snapshot(_architectureFormula, _memory, _registerSet);
+  return snapshot.getJson();
 }
 
 void Project::_setRegisterToZero(RegisterInformation registerInfo) {
@@ -199,6 +242,10 @@ void Project::setUpdateRegisterCallback(
 
 void Project::setUpdateMemoryCallback(Callback<size_t, size_t> callback) {
   _memory.setCallback(callback);
+}
+
+void Project::setErrorCallback(ErrorCallback callback) {
+  _errorCallback = callback;
 }
 
 Architecture Project::getArchitecture() const {

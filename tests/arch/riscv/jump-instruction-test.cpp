@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#include <cassert>
 #include <memory>
 
 #include "gtest/gtest.h"
@@ -25,49 +24,49 @@
 #include "arch/common/immediate-node.hpp"
 #include "arch/riscv/abstract-jump-instruction-node.hpp"
 #include "arch/riscv/control-flow-instructions.hpp"
+#include "common/assert.hpp"
 
-#include "tests/arch/riscv/test-utils.hpp"
+#include "tests/arch/riscv/base-fixture.hpp"
 
+// Need to put into namespace so that `FRIEND_TEST` works
 namespace riscv {
 
-struct JumpInstructionTest : public RiscvBaseTest {
+struct JumpInstructionTest : public riscv::BaseFixture {
   using address_t = std::uint32_t;
   using offset_t = std::int32_t;
+  using super = riscv::BaseFixture;
 
-  JumpInstructionTest() : RiscvBaseTest(), progress(0) {
-    load({"rv32i"}, 1024);
-    factory = getFactories();
-
+  JumpInstructionTest() : progress(0) {
     setInitialAddress(666);
   }
 
   void setInitialAddress(address_t address) {
-      MemoryAccess memoryAccess = getMemoryAccess();
     initialAddress = address;
-    riscv::storeRegister(memoryAccess, "pc", initialAddress);
+    riscv::storeRegister(getMemoryAccess(), "pc", initialAddress);
   }
 
   void jal(const std::string& linkRegisterName, offset_t jumpOffsetValue) {
-    MemoryAccess memoryAccess = getMemoryAccess();
-    auto instruction = factory.createInstructionNode("JAL");
-    auto linkRegister = factory.createRegisterNode(linkRegisterName);
+    auto instruction = factories.createInstructionNode("JAL");
+    auto linkRegister = factories.createRegisterNode(linkRegisterName);
 
     auto memoryValue = riscv::convert(jumpOffsetValue);
-    auto jumpOffset = factory.createImmediateNode(memoryValue);
+    auto jumpOffset = factories.createImmediateNode(memoryValue);
 
     instruction->addChild(std::move(linkRegister));
     instruction->addChild(std::move(jumpOffset));
 
-    // assert::test
-    assert(instruction->validate(memoryAccess).isSuccess());
+    auto& memoryAccess = getMemoryAccess();
+
+    assert::gtest(instruction->validate(memoryAccess).isSuccess());
 
     MemoryValue newPc = instruction->getValue(memoryAccess);
     memoryAccess.putRegisterValue("pc", newPc);
   }
 
   void testJAL(const std::string& linkRegisterName, offset_t offset) {
-    MemoryAccess memoryAccess = getMemoryAccess();
     jal(linkRegisterName, offset);
+
+    auto& memoryAccess = getMemoryAccess();
 
     auto resultingLinkRegister =
         riscv::loadRegister<std::uint32_t>(memoryAccess, linkRegisterName);
@@ -83,27 +82,30 @@ struct JumpInstructionTest : public RiscvBaseTest {
   }
 
   void jalr(const std::string& linkRegisterName,
-            const std::string& baseRegisterName, offset_t jumpOffsetValue) {
-    MemoryAccess memoryAccess = getMemoryAccess();
-    auto instruction = factory.createInstructionNode("JALR");
-    auto linkRegister = factory.createRegisterNode(linkRegisterName);
-    auto baseRegister = factory.createRegisterNode(baseRegisterName);
+            const std::string& baseRegisterName,
+            offset_t jumpOffsetValue) {
+    auto instruction = factories.createInstructionNode("JALR");
+    auto linkRegister = factories.createRegisterNode(linkRegisterName);
+    auto baseRegister = factories.createRegisterNode(baseRegisterName);
 
     auto memoryValue = riscv::convert(jumpOffsetValue);
-    auto jumpOffset = factory.createImmediateNode(memoryValue);
+    auto jumpOffset = factories.createImmediateNode(memoryValue);
 
     instruction->addChild(std::move(linkRegister));
     instruction->addChild(std::move(baseRegister));
     instruction->addChild(std::move(jumpOffset));
+
+    auto& memoryAccess = getMemoryAccess();
 
     MemoryValue newPc = instruction->getValue(memoryAccess);
     memoryAccess.putRegisterValue("pc", newPc);
   }
 
   void testJALR(const std::string& linkRegisterName,
-                const std::string& baseRegisterName, address_t baseAddress,
+                const std::string& baseRegisterName,
+                address_t baseAddress,
                 offset_t offset) {
-    MemoryAccess memoryAccess = getMemoryAccess();
+    auto& memoryAccess = getMemoryAccess();
     riscv::storeRegister(memoryAccess, baseRegisterName, baseAddress);
 
     jalr(linkRegisterName, baseRegisterName, offset);
@@ -125,7 +127,6 @@ struct JumpInstructionTest : public RiscvBaseTest {
     initialAddress = target;
   }
 
-  NodeFactoryCollection factory;
   address_t initialAddress;
   address_t progress;
 };
@@ -137,19 +138,21 @@ TEST_F(JumpInstructionTest, JALValidation) {
 
   // Typical instruction: JAL r1, -123 ; <link>, <20 bit offset>
 
-  auto instruction = factory.createInstructionNode("JAL");
-  auto linkRegister = factory.createRegisterNode("x1");
-  auto invalidRegister = factory.createRegisterNode("x3");
-  MemoryAccess memoryAccess = getMemoryAccess();
+  auto instruction = factories.createInstructionNode("JAL");
+  auto linkRegister = factories.createRegisterNode("x1");
+  auto invalidRegister = factories.createRegisterNode("x3");
+
 
   // For internal tests
   auto internal = dynamic_cast<JumpAndLinkNode*>(instruction.get());
-  // assert::test
-  assert(internal != nullptr);
+
+  assert::gtest(internal != nullptr);
 
   // First create an invalid target (i.e. greater than 19 bit)
   MemoryValue target = riscv::convert(0xFFFFF);
-  auto targetImmediate = factory.createImmediateNode(target);
+  auto targetImmediate = factories.createImmediateNode(target);
+
+  auto& memoryAccess = getMemoryAccess();
 
   EXPECT_FALSE(instruction->validate(memoryAccess).isSuccess());
 
@@ -173,7 +176,7 @@ TEST_F(JumpInstructionTest, JALValidation) {
   EXPECT_FALSE(instruction->validate(memoryAccess).isSuccess());
 
   // This should work now
-  targetImmediate = factory.createImmediateNode(riscv::convert(-0x80000));
+  targetImmediate = factories.createImmediateNode(riscv::convert(-0x80000));
   instruction->setChild(1, std::move(targetImmediate));
   EXPECT_TRUE(internal->_validateNumberOfChildren().isSuccess());
   EXPECT_TRUE(internal->_validateOperandTypes().isSuccess());
@@ -210,19 +213,21 @@ TEST_F(JumpInstructionTest, JALRValidation) {
                                          riscv::signed32_t>;
 
   // Typical instruction: JALR r1, r2, -123 ; <link> <base> <12s bit offset>
-  auto instruction = factory.createInstructionNode("JALR");
-  auto linkRegister = factory.createRegisterNode("x1");
-  auto baseRegister = factory.createRegisterNode("x2");
-  auto invalidRegister = factory.createRegisterNode("x3");
-MemoryAccess memoryAccess = getMemoryAccess();
+  auto instruction = factories.createInstructionNode("JALR");
+  auto linkRegister = factories.createRegisterNode("x1");
+  auto baseRegister = factories.createRegisterNode("x2");
+  auto invalidRegister = factories.createRegisterNode("x3");
+
   // For internal tests
   auto internal = dynamic_cast<JumpAndLinkNode*>(instruction.get());
-  // assert::test
-  assert(internal != nullptr);
+
+  assert::gtest(internal != nullptr);
 
   // First create an invalid target (i.e. greater than 11 bit)
   MemoryValue target = riscv::convert(0xFFF);
-  auto targetImmediate = factory.createImmediateNode(target);
+  auto targetImmediate = factories.createImmediateNode(target);
+
+  auto& memoryAccess = getMemoryAccess();
 
   EXPECT_FALSE(instruction->validate(memoryAccess).isSuccess());
 
@@ -247,7 +252,7 @@ MemoryAccess memoryAccess = getMemoryAccess();
   EXPECT_FALSE(instruction->validate(memoryAccess).isSuccess());
 
   // This should work now
-  targetImmediate = factory.createImmediateNode(riscv::convert(0x7FF));
+  targetImmediate = factories.createImmediateNode(riscv::convert(0x7FF));
   instruction->setChild(2, std::move(targetImmediate));
   EXPECT_TRUE(internal->_validateNumberOfChildren().isSuccess());
   EXPECT_TRUE(internal->_validateOperandTypes().isSuccess());
