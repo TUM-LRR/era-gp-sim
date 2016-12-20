@@ -250,14 +250,14 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_PROPERTY(OutputComponent *outputComponentPointer WRITE setOutputComponent)
   Q_PROPERTY(std::size_t pixelBaseAddress READ getPixelBaseAddress WRITE\
                  setPixelBaseAddress)
-  Q_PROPERTY(std::size_t colorBaseAddress READ getColorBaseAddress WRITE\
-                 setColorBaseAddress)
-  Q_PROPERTY(std::size_t width READ getWidth WRITE setWidth)
-  Q_PROPERTY(std::size_t height READ getHeight WRITE setHeight)
-  Q_PROPERTY(std::size_t colorMode READ getColorMode WRITE setColorMode)
-  Q_PROPERTY(std::size_t rBit READ getRBit WRITE setRBit)
-  Q_PROPERTY(std::size_t gBit READ getGBit WRITE setGBit)
-  Q_PROPERTY(std::size_t bBit READ getBBit WRITE setBBit)
+  // Q_PROPERTY(std::size_t colorBaseAddress READ getColorBaseAddress WRITE\
+  //                setColorBaseAddress)
+  // Q_PROPERTY(std::size_t width READ getWidth WRITE setWidth)
+  // Q_PROPERTY(std::size_t height READ getHeight WRITE setHeight)
+  // Q_PROPERTY(std::size_t colorMode READ getColorMode WRITE setColorMode)
+  // Q_PROPERTY(std::size_t rBit READ getRBit WRITE setRBit)
+  // Q_PROPERTY(std::size_t gBit READ getGBit WRITE setGBit)
+  // Q_PROPERTY(std::size_t bBit READ getBBit WRITE setBBit)
   // Q_PROPERTY(bool columns_rows READ getColumns_rows WRITE setColumns_rows)
   // Q_PROPERTY(bool horizontallyMirrored READ getHorizontallyMirrored WRITE\
   //                setHorizontallyMirrored)
@@ -268,8 +268,8 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   //                setPixelBufferPointerLike)
   // Q_PROPERTY(bool colorTablePointerLike READ getColorTablePointerLike WRITE\
   //                setColorTablePointerLike)
-  Q_PROPERTY(std::size_t freeBytes READ getFreeBytes WRITE setFreeBytes)
-  Q_PROPERTY(std::size_t freeBits READ getFreeBits WRITE setFreeBits)
+  // Q_PROPERTY(std::size_t freeBytes READ getFreeBytes WRITE setFreeBytes)
+  // Q_PROPERTY(std::size_t freeBits READ getFreeBits WRITE setFreeBits)
 
  public:
   /*
