@@ -249,28 +249,28 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_OBJECT
   Q_PROPERTY(OutputComponent *outputComponentPointer WRITE setOutputComponent)
   using size_t = std::size_t;
-  // Q_PROPERTY(std::size_t pixelBaseAddress READ getPixelBaseAddress WRITE\
-  //                setPixelBaseAddress)
-  // Q_PROPERTY(std::size_t colorBaseAddress READ getColorBaseAddress WRITE\
-  //                setColorBaseAddress)
-  // Q_PROPERTY(std::size_t width READ getWidth WRITE setWidth)
-  // Q_PROPERTY(std::size_t height READ getHeight WRITE setHeight)
-  // Q_PROPERTY(std::size_t colorMode READ getColorMode WRITE setColorMode)
-  // Q_PROPERTY(std::size_t rBit READ getRBit WRITE setRBit)
-  // Q_PROPERTY(std::size_t gBit READ getGBit WRITE setGBit)
-  // Q_PROPERTY(std::size_t bBit READ getBBit WRITE setBBit)
+  Q_PROPERTY(size_t pixelBaseAddress READ getPixelBaseAddress WRITE
+                 setPixelBaseAddress)
+  Q_PROPERTY(size_t colorBaseAddress READ getColorBaseAddress WRITE
+                 setColorBaseAddress)
+  Q_PROPERTY(size_t width READ getWidth WRITE setWidth)
+  Q_PROPERTY(size_t height READ getHeight WRITE setHeight)
+  Q_PROPERTY(size_t colorMode READ getColorMode WRITE setColorMode)
+  Q_PROPERTY(size_t rBit READ getRBit WRITE setRBit)
+  Q_PROPERTY(size_t gBit READ getGBit WRITE setGBit)
+  Q_PROPERTY(size_t bBit READ getBBit WRITE setBBit)
   Q_PROPERTY(bool columns_rows READ getColumns_rows WRITE setColumns_rows)
-  Q_PROPERTY(bool horizontallyMirrored READ getHorizontallyMirrored WRITE\
+  Q_PROPERTY(bool horizontallyMirrored READ getHorizontallyMirrored WRITE
                  setHorizontallyMirrored)
-  Q_PROPERTY(bool verticallyMirrored READ getVerticallyMirrored WRITE\
+  Q_PROPERTY(bool verticallyMirrored READ getVerticallyMirrored WRITE
                  setVerticallyMirrored)
   Q_PROPERTY(bool tight READ getTight WRITE setTight)
-  Q_PROPERTY(bool pixelBufferPointerLike READ getPixelBufferPointerLike WRITE\
+  Q_PROPERTY(bool pixelBufferPointerLike READ getPixelBufferPointerLike WRITE
                  setPixelBufferPointerLike)
-  Q_PROPERTY(bool colorTablePointerLike READ getColorTablePointerLike WRITE\
+  Q_PROPERTY(bool colorTablePointerLike READ getColorTablePointerLike WRITE
                  setColorTablePointerLike)
   Q_PROPERTY(size_t freeBytes READ getFreeBytes WRITE setFreeBytes)
-  // Q_PROPERTY(std::size_t freeBits READ getFreeBits WRITE setFreeBits)
+  Q_PROPERTY(size_t freeBits READ getFreeBits WRITE setFreeBits)
 
  public:
   /*
