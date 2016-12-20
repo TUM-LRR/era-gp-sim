@@ -82,8 +82,7 @@ class Project : public Servant {
   /**
    * \copydoc Memory::tryGet()
    */
-  MemoryValue
-  tryGetMemoryValueAt(std::size_t address, std::size_t amount = 1) const;
+  MemoryValue tryGetMemoryValueAt(size_t address, size_t amount = 1) const;
 
 
   /**
@@ -96,7 +95,7 @@ class Project : public Servant {
   /**
    * \copydoc Memory::tryPut()
    */
-  void tryPutMemoryValueAt(std::size_t address,
+  void tryPutMemoryValueAt(size_t address,
                            const MemoryValue &value,
                            bool ignoreProtection = false);
 

@@ -104,8 +104,7 @@ MemoryValue Project::getMemoryValueAt(size_t address, size_t amount) const {
   return _memory.get(address, amount);
 }
 
-MemoryValue
-Project::tryGetMemoryValueAt(std::size_t address, std::size_t amount) const {
+MemoryValue Project::tryGetMemoryValueAt(size_t address, size_t amount) const {
   return _memory.tryGet(address, amount);
 }
 
