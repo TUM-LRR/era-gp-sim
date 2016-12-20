@@ -98,6 +98,7 @@ QHash<int, QByteArray> RegisterModel::roleNames() const {
   QHash<int, QByteArray> roles;
   roles[TitleRole] = "Title";
   roles[TypeRole] = "Type";
+  roles[IsConstantRole] = "IsConstant";
   roles[BinaryDataRole] = "BinaryData";
   roles[HexDataRole] = "HexData";
   roles[SignedDecDataRole] = "SignedDecData";
@@ -128,6 +129,8 @@ QVariant RegisterModel::data(const QModelIndex &index, int role) const {
         case RegisterInformation::Type::PROGRAM_COUNTER:
           return "ProgramCounter";
       }
+    case IsConstantRole:
+      return registerItem->isConstant();
     case FlagDataRole:
       return _memoryAccess.getRegisterValue(registerItem->getName())
           .get()
