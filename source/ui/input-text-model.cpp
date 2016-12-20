@@ -20,6 +20,8 @@
 #include "ui/input-text-model.hpp"
 #include "core/conversions.hpp"
 
+using length_t = InputText::length_t;
+
 
 InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess memoryAccess)
 : QObject()
@@ -54,11 +56,11 @@ QString InputTextModel::getStart() {
   return QString::number(_start);
 }
 
-void InputTextModel::setMaximumLength(InputText::length_t maximumLength) {
+void InputTextModel::setMaximumLength(length_t maximumLength) {
   _maximumLength = maximumLength;
   emit maximumLengthChanged();
 }
 
-InputText::length_t InputTextModel::getMaximumLength() {
+length_t InputTextModel::getMaximumLength() {
   return _maximumLength;
 }

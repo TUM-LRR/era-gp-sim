@@ -29,6 +29,8 @@ namespace InputText{
     using length_t = unsigned ;
 }
 
+using length_t = InputText::length_t;
+
 class InputTextModel : QObject {
   Q_OBJECT
  public:
@@ -50,13 +52,13 @@ class InputTextModel : QObject {
    * \brief sets the new Maximum Length
    * \param text the new length
    */
-  Q_INVOKABLE void setMaximumLength(InputText::length_t maximumLength);
+  Q_INVOKABLE void setMaximumLength(length_t maximumLength);
 
   /**
    * \brief Gets the lenght
    * \return the length
    */
-  Q_INVOKABLE InputText::length_t getMaximumLength();
+  Q_INVOKABLE length_t getMaximumLength();
 
   /**
    * \brief Gets the start index
@@ -67,7 +69,7 @@ class InputTextModel : QObject {
  private:
   QQmlContext* _context;
   int _start;
-  InputText::length_t _maximumLength;
+  length_t _maximumLength;
   MemoryAccess _memoryAccess;
 
  signals:
