@@ -95,7 +95,7 @@ Window {
                     var maxSize = outputComponent.getMemorySize();
                     if (inputValue !== undefined && inputValue >= 0 && inputValue <= maxSize) {
                         outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
-                    }else{
+                    } else {
                         updateSettings();
                     }
                 }
@@ -131,7 +131,7 @@ Window {
 
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
-                    var inputValue = ab.checked? 0 : 1;
+                    var inputValue = ab.checked ? 0 : 1;
                     outputComponent.setOutputItemProperty(outputItemIndex, "textMode", inputValue);
 
                 }

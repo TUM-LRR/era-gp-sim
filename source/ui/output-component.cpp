@@ -125,6 +125,5 @@ OutputComponent::getTextFromMemory(int start, QString currentText, int mode) {
 }
 
 int OutputComponent::getMemorySize() {
-  int size = _memoryAccess.getMemorySize().get();
-  return size;
+  return _memoryAccess.getMemorySize().get();
 }
