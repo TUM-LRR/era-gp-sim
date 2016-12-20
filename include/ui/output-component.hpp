@@ -62,9 +62,9 @@ class OutputComponent : public QObject {
 
  public:
   OutputComponent(MemoryManager &memoryManager,
-                           MemoryAccess &memoryAccess,
-                           QQmlContext *projectContext,
-                           QObject *parent = 0);
+                  MemoryAccess &memoryAccess,
+                  QQmlContext *projectContext,
+                  QObject *parent = 0);
 
   /**
    \brief putMemoryValue Allows a QML output item instance to change the
@@ -106,8 +106,14 @@ class OutputComponent : public QObject {
                                          QString property,
                                          QVariant newValue);
 
+  /**
+   \brief return the current memory size
+   \return the size
+   */
+  Q_INVOKABLE int getMemorySize();
+
  private:
-  /// Interface for access memory content.
+  /// Interface for accessing memory content.
   MemoryAccess _memoryAccess;
 
   /// The underlying model of each output item. Mostly used for savings output

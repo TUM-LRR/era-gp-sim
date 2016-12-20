@@ -96,8 +96,21 @@ Window {
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
                     var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
-                    if (inputValue !== undefined && inputValue >= 0) {
+                    var maxSize = outputComponent.getMemorySize();
+                    if (inputValue !== undefined && inputValue >= 0 && inputValue < maxSize) {
+                        // Check if there are too many digits to fit into memory for the
+                        // currently set number of digits. Adjust number of digits if necessary.
+                        var maxDigits = (maxSize - inputValue);
+                        var digits = controlsColumn.integerFromInputString(String(numberOfDigitsTextField.text));
+                        if (digits > maxDigits) {
+                            numberOfDigitsTextField.text = maxDigits + "";
+                            numberOfDigitsTextField.processInput();
+                        }
+                        // Update to new value.
                         outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
+                    } else {
+                        // If incorrect value was entered, reset to previous value.
+                        updateSettings();
                     }
                 }
             }
@@ -118,8 +131,19 @@ Window {
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
                     var inputValue = controlsColumn.integerFromInputString(String(numberOfDigitsTextField.text));
-                    if (inputValue !== undefined && inputValue >= 0) {
+                    if (inputValue !== undefined && inputValue > 0) {
+                        // Check if the new number of digits would be too high to fit into memoryModel
+                        // and adjust number to maximum value if necessary.
+                        var maxSize = outputComponent.getMemorySize();
+                        var maxDigits = maxSize - controlsColumn.integerFromInputString(String(baseAddressTextField.text));
+                        if (inputValue > maxDigits) {
+                            inputValue = maxDigits;
+                        }
+                        // Update to new value.
                         outputComponent.setOutputItemProperty(outputItemIndex, "numberOfDigits", inputValue);
+                    } else {
+                        // If incorrect value was entered, reset to previous value.
+                        updateSettings();
                     }
                 }
             }
