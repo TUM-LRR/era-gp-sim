@@ -268,8 +268,8 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
                  setPixelBufferPointerLike)
   Q_PROPERTY(bool colorTablePointerLike READ getColorTablePointerLike WRITE\
                  setColorTablePointerLike)
-  // Q_PROPERTY(std::size_t freeBytes READ getFreeBytes WRITE setFreeBytes)
-  // Q_PROPERTY(std::size_t freeBits READ getFreeBits WRITE setFreeBits)
+  Q_PROPERTY(std::size_t freeBytes READ getFreeBytes WRITE setFreeBytes)
+  Q_PROPERTY(std::size_t freeBits READ getFreeBits WRITE setFreeBits)
 
  public:
   /*
