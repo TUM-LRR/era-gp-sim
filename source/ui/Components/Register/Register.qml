@@ -102,28 +102,25 @@ Item {
                 width: 18
                 height: registerContentItem.height
                 property bool completed: false
-
-                function loadModel() {
-                        var type = registerModel.data(styleData.index, 1);
-                        switch (type) {
-                        case "Integer":
-                            return formatListInteger;
-                        case "Float":
-                            return formatListFloat;
-                        case "Vector":
-                            return formatListVector;
-                        case "Flag":
-                            return formatListFlag;
-                        case "Link":
-                            return formatListLink;
-                        case "ProgramCounter":
-                            return formatListProgramCounter;
-                        }
+                model: {
+                    var type = registerModel.data(styleData.index, 1);
+                    switch (type) {
+                    case "Integer":
+                        return formatListInteger;
+                    case "Float":
+                        return formatListFloat;
+                    case "Vector":
+                        return formatListVector;
+                    case "Flag":
+                        return formatListFlag;
+                    case "Link":
+                        return formatListLink;
+                    case "ProgramCounter":
+                        return formatListProgramCounter;
+                    }
                 }
 
                 Component.onCompleted: {
-                    // Set the model here, not through a binding(that will cause it to reload and reset)
-                    model = loadModel(); 
                     // Try to restore a cached selected data type format.
                     if (attachedTreeView.dataTypeFormatCache[styleData.index] !== undefined) {
                         dataTypeFormatComboBox.currentIndex = attachedTreeView.dataTypeFormatCache[styleData.index];
