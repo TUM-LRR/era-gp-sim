@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_PARSER_CODE_POSITION_INTERVAL_HPP
 #define ERAGPSIM_PARSER_CODE_POSITION_INTERVAL_HPP
 
+#include <vector>
 #include "parser/code-position.hpp"
 
 /**
@@ -45,13 +46,27 @@ class CodePositionInterval {
   explicit CodePositionInterval(CodePosition codePosition);
 
   /**
-   * \brief Creates a codePosition interval containing only codePosition 0.
+   * \brief Creates an empty interval.
    */
   CodePositionInterval();
 
-  const CodePosition& codePositionStart() const noexcept;
+  const CodePosition& start() const noexcept;
 
-  const CodePosition& codePositionEnd() const noexcept;
+  const CodePosition& end() const noexcept;
+
+  bool empty() const noexcept;
+
+  CodePositionInterval unite(const CodePositionInterval& other) const;
+
+  CodePositionInterval cut(const CodePositionInterval& other) const;
+
+  static CodePositionInterval
+  unite(const std::vector<CodePositionInterval>::const_iterator& start,
+        const std::vector<CodePositionInterval>::const_iterator& end);
+
+  static CodePositionInterval
+  cut(const std::vector<CodePositionInterval>::const_iterator& start,
+      const std::vector<CodePositionInterval>::const_iterator& end);
 
  private:
   /**

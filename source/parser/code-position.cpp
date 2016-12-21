@@ -17,6 +17,7 @@
  */
 
 #include "parser/code-position.hpp"
+#include <cmath>
 #include "common/assert.hpp"
 
 CodePosition::CodePosition(CodeCoordinate iy, CodeCoordinate ix)
@@ -79,4 +80,20 @@ CodePosition CodePosition::moveRight(const CodeCoordinate& c) const {
 
 CodePosition CodePosition::newLine() const {
   return CodePosition(_y + 1, 0);
+}
+
+CodePosition CodePosition::max(const CodePosition& c) const {
+  return CodePosition(std::max(y(), c.y()), std::max(x(), c.x()));
+}
+
+CodePosition CodePosition::min(const CodePosition& c) const {
+  return CodePosition(std::min(y(), c.y()), std::min(x(), c.x()));
+}
+
+CodeCoordinate CodePosition::y() const noexcept {
+  return _y;
+}
+
+CodeCoordinate CodePosition::x() const noexcept {
+  return _x;
 }

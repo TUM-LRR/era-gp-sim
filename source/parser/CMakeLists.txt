@@ -45,6 +45,7 @@ set(PARSER_SOURCES
   code-position-interval.cpp
   intermediate-output-representation.cpp
   intermediate-output-command.cpp
+  positioned-string.cpp
 )
 
 ########################################

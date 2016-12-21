@@ -133,7 +133,7 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
       default: assert::that(false);
     }
     emit addError(translate(error.message()),
-                  error.position().codePositionStart().line(),
+                  error.position().start().line(),
                   color);
   }
 }

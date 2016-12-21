@@ -65,11 +65,10 @@ void CompileErrorAnnotator::addErrorDeltaInternal(
     const CodePosition& deltaSecond,
     const char* message,
     const std::initializer_list<std::string>& parameters) const {
-  addErrorInternal(
-      CodePositionInterval(_position.codePositionStart() + deltaFirst,
-                           _position.codePositionEnd() + deltaSecond),
-      message,
-      parameters);
+  addErrorInternal(CodePositionInterval(_position.start() + deltaFirst,
+                                        _position.end() + deltaSecond),
+                   message,
+                   parameters);
 }
 void CompileErrorAnnotator::addErrorHereInternal(
     const char* message,
@@ -89,11 +88,10 @@ void CompileErrorAnnotator::addWarningDeltaInternal(
     const CodePosition& deltaSecond,
     const char* message,
     const std::initializer_list<std::string>& parameters) const {
-  addWarningInternal(
-      CodePositionInterval(_position.codePositionStart() + deltaFirst,
-                           _position.codePositionEnd() + deltaSecond),
-      message,
-      parameters);
+  addWarningInternal(CodePositionInterval(_position.start() + deltaFirst,
+                                          _position.end() + deltaSecond),
+                     message,
+                     parameters);
 }
 void CompileErrorAnnotator::addWarningHereInternal(
     const char* message,
@@ -113,11 +111,10 @@ void CompileErrorAnnotator::addInformationDeltaInternal(
     const CodePosition& deltaSecond,
     const char* message,
     const std::initializer_list<std::string>& parameters) const {
-  addInformationInternal(
-      CodePositionInterval(_position.codePositionStart() + deltaFirst,
-                           _position.codePositionEnd() + deltaSecond),
-      message,
-      parameters);
+  addInformationInternal(CodePositionInterval(_position.start() + deltaFirst,
+                                              _position.end() + deltaSecond),
+                         message,
+                         parameters);
 }
 void CompileErrorAnnotator::addInformationHereInternal(
     const char* message,

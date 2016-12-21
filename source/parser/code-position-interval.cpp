@@ -35,13 +35,64 @@ CodePositionInterval::CodePositionInterval(CodePosition codePosition)
  * \brief Creates a codePosition interval containing only codePosition 0.
  */
 CodePositionInterval::CodePositionInterval()
-: CodePositionInterval(CodePosition(0)) {
+: CodePositionInterval(CodePosition(1), CodePosition(0)) {
 }
 
-const CodePosition& CodePositionInterval::codePositionStart() const noexcept {
+const CodePosition& CodePositionInterval::start() const noexcept {
   return _codePositionStart;
 }
 
-const CodePosition& CodePositionInterval::codePositionEnd() const noexcept {
+const CodePosition& CodePositionInterval::end() const noexcept {
   return _codePositionEnd;
+}
+
+bool CodePositionInterval::empty() const noexcept {
+  return _codePositionStart.x() > _codePositionEnd.x() ||
+         _codePositionStart.y() > _codePositionEnd.y();
+}
+
+CodePositionInterval
+CodePositionInterval::unite(const CodePositionInterval& other) const {
+  if (empty()) {
+    return other;
+  } else if (other.empty()) {
+    return *this;
+  } else {
+    auto nstart = start().max(other.start());
+    auto nend = end().max(other.end());
+    return CodePositionInterval(nstart, nend);
+  }
+}
+
+CodePositionInterval
+CodePositionInterval::cut(const CodePositionInterval& other) const {
+  if (empty()) {
+    return other;
+  } else if (other.empty()) {
+    return *this;
+  } else {
+    auto nstart = start().min(other.start());
+    auto nend = end().min(other.end());
+    return CodePositionInterval(nstart, nend);
+  }
+}
+
+CodePositionInterval CodePositionInterval::unite(
+    const std::vector<CodePositionInterval>::const_iterator& start,
+    const std::vector<CodePositionInterval>::const_iterator& end) {
+  CodePositionInterval acc;
+  for (auto it = start; it != end; ++it) {
+    acc = acc.unite(*it);
+  }
+  return acc;
+}
+
+CodePositionInterval CodePositionInterval::cut(
+    const std::vector<CodePositionInterval>::const_iterator& start,
+    const std::vector<CodePositionInterval>::const_iterator& end) {
+  CodePositionInterval acc;
+  for (auto it = start; it != end; ++it) {
+    acc = acc.cut(*it);
+  }
+  return acc;
 }

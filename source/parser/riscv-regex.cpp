@@ -179,6 +179,6 @@ int RiscvParser::RiscvRegex::getParameterCount() const noexcept {
 
 CodePositionInterval RiscvParser::RiscvRegex::_getCharacterPosition(
     const CompileErrorAnnotator &annotator, size_t pos) const {
-  CodePosition position(annotator.position().codePositionStart().line(), pos);
+  CodePosition position(annotator.position().start().line(), pos);
   return CodePositionInterval(position, position >> 1);
 }

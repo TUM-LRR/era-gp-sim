@@ -64,6 +64,18 @@ class CodePosition {
   CodeCoordinate column() const noexcept;
 
   /**
+   * \brief Alias for the y position.
+   * \return The y position.
+   */
+  CodeCoordinate y() const noexcept;
+
+  /**
+   * \brief Alias for the x position.
+   * \return The x position.
+   */
+  CodeCoordinate x() const noexcept;
+
+  /**
    * \brief Adds a code position to this one.
    * \param other The code position summand.
    * \return The sum of the two code positions.
@@ -124,6 +136,10 @@ class CodePosition {
    * \return The transformed code position.
    */
   CodePosition newLine() const;
+
+  CodePosition max(const CodePosition& c) const;
+
+  CodePosition min(const CodePosition& c) const;
 
  private:
   /**
