@@ -60,12 +60,20 @@ class ParserInterface : public Proxy<ParsingAndExecutionUnit> {
   POST(setSetErrorListCallback)
 
   /**
+   * Set the callback which is used to update the macro list in the gui
+   *
+   * \param callback std::function<void(const std::vector<MacroInformation> &)>
+   *
+   */
+  POST(setSetMacroListCallback)
+
+  /**
    * Set the callback which is used to notify the gui of a runtime error.
    *
    * \param callback std::function<void(const std::string&)> callback
    *
    */
-  POST(setThrowRuntimeErrorCallback)
+  POST(setThrowErrorCallback)
 
   /**
    * Set the callback which is used to inform the gui about the execution point

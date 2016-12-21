@@ -1,5 +1,7 @@
 name: base2-basic
 word-size: 69
+signed-representation: sign-bit
+
 instructions:
   - mnemonic: sll
     length: 69

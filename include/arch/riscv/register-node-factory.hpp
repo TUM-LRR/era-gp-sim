@@ -18,9 +18,12 @@
 #ifndef ERAGPSIM_ARCH_RISCV_REGISTER_NODE_FACTORY_HPP
 #define ERAGPSIM_ARCH_RISCV_REGISTER_NODE_FACTORY_HPP
 
-#include <unordered_map>
+#include <string>
 
 #include "arch/common/abstract-register-node-factory.hpp"
+#include "arch/common/architecture-properties.hpp"
+
+class Architecture;
 
 namespace riscv {
 
@@ -29,23 +32,30 @@ namespace riscv {
  * of AbstractRegisterNodeFactory for the RISC-V architecture.
  */
 class RegisterNodeFactory : public AbstractRegisterNodeFactory {
-public:
-
-   explicit RegisterNodeFactory(const Architecture& arch);
+ public:
+  using super = AbstractRegisterNodeFactory;
 
   /**
-   * \brief createRegisterNode
-   * Creates and returns a new AbstractSyntaxTreeNode that handles register
-   * access, or nullptr if the given id is invalid
-   * \param id register-id that identifies 1 register of the RISC-V architecture
-   * \return std::unique_ptr pointing to the newly created register access node,
-   * or nullptr if the given id cannot be mapped to a valid RISC-V register
+   * Constructs a new `RegisterNodeFactory`.
+   * \param  architecture The architecture object to give
+   *                      information to the factory.
    */
-  virtual std::unique_ptr<AbstractSyntaxTreeNode>
-  createRegisterNode(const std::string &id) const override;
+  explicit RegisterNodeFactory(const Architecture& architecture);
 
-private:
-    std::unordered_set<std::string> _availableRegisters;
+  /**
+   * Creates a register node.
+   *
+   * \param id Register-id that identifies 1 register of the RISC-V architecture
+   * \return A pointer pointing to the newly created register access node,
+   * or `nullptr` if the given id cannot be mapped to a valid RISC-V register
+   */
+  Node createRegisterNode(const std::string& id) const override;
+
+ private:
+  using id_t = ArchitectureProperties::register_id_t;
+
+  /** A map from register identifiers to their numeric IDs. */
+  std::unordered_map<std::string, id_t> _registerIdentifiers;
 };
 }
 

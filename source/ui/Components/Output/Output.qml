@@ -23,6 +23,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import "./SevenSegment/"
 
 /*
  Container for output items (e.g. lightstrip, seven-segment, text console).
@@ -57,21 +58,23 @@ Rectangle {
         */
         Tab {
             title: "Buttons/Lightstrip Icon"
+
             LightStrip {
                 outputItemIndex: 0
             }
         }
 
         Tab {
-            title: "Buttons/Sevensegment Icon"
-            BlueRectangle {
+            title: "Buttons/Sevensegment Icon";
+
+            SevenSegment {
                 outputItemIndex: 1
             }
         }
 
         Tab {
             title: "Buttons/Text Console Icon"
-            RedRectangle {
+            Console{
                 outputItemIndex: 2
             }
         }

@@ -426,7 +426,7 @@ void InstructionContextInformation::_arithmeticInstruction(
       .operandDescription(op2, isImmediate
                                    ? specialImmediateOperandDesc
                                    : RISCV_TR("The second operand register"));
-  auto detailDesc = std::make_shared<Translateable>(description);
+  auto detailDesc = std::make_shared<Translateable>(description, Translateable::NO_TR_POSSIBLE{});
   detailDesc->addOperand(op1);
   detailDesc->addOperand(op2);
   builder.detailDescription(detailDesc);

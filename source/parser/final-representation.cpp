@@ -17,6 +17,7 @@
  */
 
 #include "parser/final-representation.hpp"
+#include "arch/common/abstract-instruction-node.hpp"
 
 bool FinalRepresentation::hasErrors() const noexcept {
   return errorList.size() > 0;

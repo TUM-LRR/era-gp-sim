@@ -18,8 +18,8 @@
 #ifndef ERAGPSIM_TESTS_ARCH_RISCV_ARITHMETIC_TEST_UTILS_HPP_
 #define ERAGPSIM_TESTS_ARCH_RISCV_ARITHMETIC_TEST_UTILS_HPP_
 
-#include <cassert>
 #include <cstdint>
+#include <string>
 #include <unordered_map>
 
 #include "gtest/gtest.h"
@@ -30,14 +30,15 @@
 using namespace riscv;
 
 void testIntegerInstructionValidation(MemoryAccess& memAccess,
-                                      const NodeFactoryCollection &instrF,
+                                      const NodeFactoryCollection& factories,
                                       ImmediateNodeFactory& immF,
-                                      std::string instructionToken,
+                                      const std::string& instructionToken,
                                       bool isImmediateInstr);
 
-void test12BitImmediateBounds(const NodeFactoryCollection& instrF,
-                              std::string instructionToken,
-                              ImmediateNodeFactory& immF, MemoryAccess& access);
+void test12BitImmediateBounds(const NodeFactoryCollection& factories,
+                              const std::string& instructionToken,
+                              ImmediateNodeFactory& immF,
+                              MemoryAccess& access);
 
 /**
   * This macro performs a register-register test for the given instruction,
@@ -60,32 +61,32 @@ void test12BitImmediateBounds(const NodeFactoryCollection& instrF,
  * \param operand2 second operand value (as literal)
  * \param result expected result of the operation (as literal)
   */
-#define TEST_RR(contextNbr, memoryValueConverter, instruction, operand1,      \
-                operand2, result)                                             \
-  /* Put operand values into register */                                      \
-  memoryAccess.putRegisterValue(op1, memoryValueConverter(operand1));         \
-  memoryAccess.putRegisterValue(op2, memoryValueConverter(operand2));         \
-  auto cmd_##contextNbr = getFactories().createInstructionNode(instruction);  \
-  ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess());         \
-  /*Assemble instruction with destination & operands*/                        \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(dest));           \
-  ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess());         \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(op1));            \
-  ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess());         \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(op2));            \
-  ASSERT_TRUE(cmd_##contextNbr->validate(memoryAccess).isSuccess());          \
-  /* Save values of operand registers to determine change*/                   \
-  MemoryValue preOp1_##contextNbr = memoryAccess.getRegisterValue(op1).get(); \
-  MemoryValue preOp2_##contextNbr = memoryAccess.getRegisterValue(op2).get(); \
-  /* Perform instruction*/                                                    \
-  MemoryValue returnValue_##contextNbr =                                      \
-      cmd_##contextNbr->getValue(memoryAccess);                               \
-  /* Check that operand registers stayed the same*/                           \
-  ASSERT_EQ(preOp1_##contextNbr, memoryAccess.getRegisterValue(op1).get());   \
-  ASSERT_EQ(preOp2_##contextNbr, memoryAccess.getRegisterValue(op2).get());   \
-  /* Read result from destination register*/                                  \
-  MemoryValue actualResult_##contextNbr =                                     \
-      memoryAccess.getRegisterValue(dest).get();                              \
+#define TEST_RR(                                                               \
+    contextNbr, memoryValueConverter, instruction, operand1, operand2, result) \
+  /* Put operand values into register */                                       \
+  memoryAccess.putRegisterValue(op1, memoryValueConverter(operand1));          \
+  memoryAccess.putRegisterValue(op2, memoryValueConverter(operand2));          \
+  auto cmd_##contextNbr = factories.createInstructionNode(instruction);        \
+  ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess());          \
+  /*Assemble instruction with destination & operands*/                         \
+  cmd_##contextNbr->addChild(factories.createRegisterNode(dest));              \
+  ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess());          \
+  cmd_##contextNbr->addChild(factories.createRegisterNode(op1));               \
+  ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess());          \
+  cmd_##contextNbr->addChild(factories.createRegisterNode(op2));               \
+  ASSERT_TRUE(cmd_##contextNbr->validate(memoryAccess).isSuccess());           \
+  /* Save values of operand registers to determine change*/                    \
+  MemoryValue preOp1_##contextNbr = memoryAccess.getRegisterValue(op1).get();  \
+  MemoryValue preOp2_##contextNbr = memoryAccess.getRegisterValue(op2).get();  \
+  /* Perform instruction*/                                                     \
+  MemoryValue returnValue_##contextNbr =                                       \
+      cmd_##contextNbr->getValue(memoryAccess);                                \
+  /* Check that operand registers stayed the same*/                            \
+  ASSERT_EQ(preOp1_##contextNbr, memoryAccess.getRegisterValue(op1).get());    \
+  ASSERT_EQ(preOp2_##contextNbr, memoryAccess.getRegisterValue(op2).get());    \
+  /* Read result from destination register*/                                   \
+  MemoryValue actualResult_##contextNbr =                                      \
+      memoryAccess.getRegisterValue(dest).get();                               \
   ASSERT_EQ(memoryValueConverter(result), actualResult_##contextNbr);
 
 /**
@@ -109,22 +110,22 @@ void test12BitImmediateBounds(const NodeFactoryCollection& instrF,
  * \param operand2 second operand value (as literal)
  * \param result expected result of the operation (as literal)
   */
-#define TEST_RI(contextNbr, memoryValueConverter, instruction, operand1,       \
-                operand2, result)                                              \
+#define TEST_RI(                                                               \
+    contextNbr, memoryValueConverter, instruction, operand1, operand2, result) \
   memoryAccess.putRegisterValue(reg, memoryValueConverter(operand1));          \
   /* Assemble instruction node with destination, operand & immediate node*/    \
-  auto cmd_##contextNbr = getFactories().createInstructionNode(instruction);   \
-  ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess())                       \
+  auto cmd_##contextNbr = factories.createInstructionNode(instruction);        \
+  ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess())           \
       << "empty instruction node validation failed";                           \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(dest));            \
-  ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess())                       \
+  cmd_##contextNbr->addChild(factories.createRegisterNode(dest));              \
+  ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess())           \
       << "instruction node + destination register node validation failed";     \
-  cmd_##contextNbr->addChild(std::make_unique<RegisterNode>(reg));             \
-  ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess())                       \
+  cmd_##contextNbr->addChild(factories.createRegisterNode(reg));               \
+  ASSERT_FALSE(cmd_##contextNbr->validate(memoryAccess).isSuccess())           \
       << "instruction node + 2 register nodes validation failed";              \
   cmd_##contextNbr->addChild(                                                  \
       immediateFactory.createImmediateNode(memoryValueConverter(operand2)));   \
-  ASSERT_TRUE(cmd_##contextNbr->validate(memoryAccess).isSuccess())                        \
+  ASSERT_TRUE(cmd_##contextNbr->validate(memoryAccess).isSuccess())            \
       << "instruction node + 2 register + immediate node validation failed";   \
   /* Save value of operand register to determine change */                     \
   MemoryValue preRegisterOp_##contextNbr =                                     \

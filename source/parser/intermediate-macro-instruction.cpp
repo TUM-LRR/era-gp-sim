@@ -31,7 +31,7 @@ void IntermediateMacroInstruction::replaceWithMacros(CommandIterator begin,
   for (auto i = begin; i != end; ++i) {
     // Try casting to IntermediateInstruction, skip instruction if it doesn't
     // work
-    if (dynamic_cast<IntermediateInstruction*>(i->get()) == nullptr) continue;
+    if ((*i)->getType() != IntermediateOperation::Type::INSTRUCTION) continue;
 
     IntermediateInstruction& inst = static_cast<IntermediateInstruction&>(**i);
 
@@ -40,7 +40,7 @@ void IntermediateMacroInstruction::replaceWithMacros(CommandIterator begin,
     if (!macro.found()) continue;
 
     if (macro.isCyclic()) {
-      state.addError("Cyclic macro call!");
+      state.addErrorHereT("Cyclic macro call!");
       continue;
     }
 
@@ -67,8 +67,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     if (ptr != nullptr)
       _operations.push_back(std::move(ptr));
     else
-      state.addError("Macro contains unsupported instruction '" +
-                     macro.getOperationName(i) + "'.");
+      state.addErrorHereT("Macro contains unsupported instruction '%1'.", macro.getOperationName(i));
   }
 
   // Recursively replace macro instructions to support recursive macro calls
@@ -103,7 +102,7 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
   }
 
   if (_labels.size() > 0 && _firstInstruction < 0) {
-    state.addError("Labels cant point to macros without instructions!");
+    state.addErrorHereT("Labels cant point to macros without instructions!");
   } else {
     for (const auto& i : _labels) {
       table.insertEntry(i,
@@ -114,4 +113,16 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
                         SymbolTable::SymbolType::LABEL);
     }
   }
+}
+
+std::string IntermediateMacroInstruction::toString() const {
+  std::string str;
+  for (const auto& operation : _operations) {
+    str += operation->toString();
+  }
+  return str;
+}
+
+IntermediateOperation::Type IntermediateMacroInstruction::getType() const {
+  return Type::MACRO_INSTRUCTION;
 }

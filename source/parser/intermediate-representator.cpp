@@ -19,13 +19,30 @@
 #include "parser/intermediate-representator.hpp"
 
 #include "arch/common/architecture.hpp"
+#include "core/memory-access.hpp"
 #include "parser/intermediate-macro-instruction.hpp"
 #include "parser/memory-allocator.hpp"
 #include "parser/symbol-table.hpp"
 
-IntermediateRepresentator::IntermediateRepresentator()
-: _commandList(), _currentOutput(nullptr) {
+void IntermediateRepresentator::generateMacroInformation(
+    FinalRepresentation& representation) {
+  for (const auto& i : _commandList) {
+    if (i->getType() != IntermediateOperation::Type::MACRO_INSTRUCTION)
+      continue;
+
+    std::string macroCode =
+        static_cast<IntermediateMacroInstruction&>(*i).toString();
+    CodePositionInterval macroPos(CodePosition(i->lines().lineStart, 0),
+                                  CodePosition(i->lines().lineEnd, 0));
+
+    MacroInformation info(macroCode, macroPos);
+
+    representation.macroList.push_back(std::move(info));
+  }
 }
+
+IntermediateRepresentator::IntermediateRepresentator()
+    : _commandList(), _currentOutput(nullptr) {}
 
 void IntermediateRepresentator::insertCommandPtr(
     IntermediateOperationPointer&& command, CompileState& state) {
@@ -34,7 +51,7 @@ void IntermediateRepresentator::insertCommandPtr(
     // If we want the current command as new target, we set it like so.
     if (_currentOutput) {
       // Nested macros are not supported.
-      state.addError("Error, nested macros are not supported.");
+      state.addErrorHereT("Error, nested macros are not supported.");
     }
     _currentOutput = std::move(command);
   } else {
@@ -43,7 +60,7 @@ void IntermediateRepresentator::insertCommandPtr(
       // it and its sub commands might be lost).
       if (!_currentOutput) {
         // Classic bracket forgot to close problem.
-        state.addError("The start directive of the macro is missing.");
+        state.addErrorHereT("The start directive of the macro is missing.");
       }
       internalInsertCommand(std::move(_currentOutput));
     }
@@ -53,15 +70,13 @@ void IntermediateRepresentator::insertCommandPtr(
   }
 }
 
-FinalRepresentation
-IntermediateRepresentator::transform(const Architecture& architecture,
-                                     const SyntaxTreeGenerator& generator,
-                                     MemoryAllocator& allocator,
-                                     CompileState& state,
-                                     MemoryAccess& memoryAccess) {
+FinalRepresentation IntermediateRepresentator::transform(
+    const Architecture& architecture, const SyntaxTreeGenerator& generator,
+    MemoryAllocator& allocator, CompileState& state,
+    MemoryAccess& memoryAccess) {
   // Before everything begins, we got to check if we are still in a macro.
   if (_currentOutput) {
-    state.addError("Macro not closed. Missing a macro end directive?");
+    state.addErrorHereT("Macro not closed. Missing a macro end directive?");
   }
 
   FinalRepresentation representation;
@@ -69,31 +84,46 @@ IntermediateRepresentator::transform(const Architecture& architecture,
 
   // Some directives need to be executed before memory allocation.
   for (const auto& i : _commandList) {
-    if (i->executionTime() == IntermediateExecutionTime::BEFORE_ALLOCATION)
+    if (i->executionTime() == IntermediateExecutionTime::BEFORE_ALLOCATION) {
       i->execute(representation, table, generator, state, memoryAccess);
+    }
   }
 
-  IntermediateMacroInstruction::replaceWithMacros(
-      _commandList.begin(), _commandList.end(), state);
+  IntermediateMacroInstruction::replaceWithMacros(_commandList.begin(),
+                                                  _commandList.end(), state);
+
+  generateMacroInformation(representation);
 
   allocator.clear();
 
   // We reserve our memory.
-  for (const auto& i : _commandList) {
-    i->allocateMemory(architecture, allocator, state);
+  for (const auto& command : _commandList) {
+    command->allocateMemory(architecture, allocator, state);
   }
 
-  allocator.calculatePositions();
+  std::size_t allocatedSize = allocator.calculatePositions();
+  auto allowedSizeFuture = memoryAccess.getMemorySize();
+  std::size_t allowedSize = allowedSizeFuture.get();
+
+  if (allocatedSize > allowedSize) {
+    state.addErrorHereT(
+        "Too much memory allocated: %1 requested, maximum is %2 (please note: "
+        "because of aligning memory, the first value "
+        "might be actually bigger than the memory allocated)",
+        std::to_string(allocatedSize), std::to_string(allowedSize));
+  }
 
   // Next, we insert all our labels/constants into the SymbolTable.
   for (const auto& i : _commandList) {
     i->enhanceSymbolTable(table, allocator, state);
   }
 
-  // Then, we execute their values.
-  for (const auto& i : _commandList) {
-    if (i->executionTime() == IntermediateExecutionTime::AFTER_ALLOCATION) {
-      i->execute(representation, table, generator, state, memoryAccess);
+  if (allocatedSize <= allowedSize) {
+    // Then, we execute their values.
+    for (const auto& i : _commandList) {
+      if (i->executionTime() == IntermediateExecutionTime::AFTER_ALLOCATION) {
+        i->execute(representation, table, generator, state, memoryAccess);
+      }
     }
   }
 

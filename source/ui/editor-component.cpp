@@ -30,6 +30,7 @@
 #include "common/assert.hpp"
 #include "core/parser-interface.hpp"
 #include "parser/compile-error.hpp"
+#include "ui/translateable-processing.hpp"
 
 EditorComponent::EditorComponent(QQmlContext *projectContext,
                                  ParserInterface parserInterface,
@@ -42,10 +43,24 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
   parserInterface.setSetErrorListCallback([this](
       const std::vector<CompileError> &errorList) { setErrorList(errorList); });
 
-  parserInterface.setThrowRuntimeErrorCallback(
-      [this](const ValidationResult &validationResult) {
-        throwRuntimeError(validationResult);
-      });
+  parserInterface.setSetMacroListCallback([this](
+      const std::vector<MacroInformation> &macroList) {
+    QVariantList updatedMacroList;
+    for (const auto& macroInformation : macroList) {
+      QVariantMap macroInformationMap;
+      macroInformationMap["code"] = QString::fromStdString(macroInformation.macroCode());
+      macroInformationMap["startLine"] =
+          QVariant::fromValue(macroInformation.position().first.line() - 1);
+      macroInformationMap["endLine"] =
+          QVariant::fromValue(macroInformation.position().second.line() - 1);
+      int lineCount =
+          (int)std::count(macroInformation.macroCode().begin(), macroInformation.macroCode().end(), '\n');
+      macroInformationMap["lineCount"] = QVariant::fromValue(lineCount);
+      macroInformationMap["collapsed"] = QVariant::fromValue(true);
+      updatedMacroList.append(macroInformationMap);
+    }
+    emit updateMacros(updatedMacroList);
+  });
 
   // TODO select colors according to a theme/possibility to change colors
 
@@ -107,8 +122,8 @@ void EditorComponent::init(QQuickTextDocument *qDocument) {
                                                       _textDocument));
 }
 
-void EditorComponent::parse() {
-  if (_textChanged) {
+void EditorComponent::parse(bool force) {
+  if (_textChanged || force) {
     _commandInterface.parse(_textDocument->toPlainText().toStdString());
     _textChanged = false;
   }
@@ -137,7 +152,7 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
       case CompileErrorSeverity::INFORMATION: issueType = "Information"; break;
       default: assert::that(false);
     }
-    emit addIssue(QString::fromStdString(error.message()),
+    emit addIssue(translate(error.message()),
                   error.position().first.line(),
                   issueType);
   }
@@ -147,10 +162,8 @@ void EditorComponent::setCurrentLine(int line) {
   emit executionLineChanged(line);
 }
 
-void EditorComponent::throwRuntimeError(
-    const ValidationResult &validationResult) {
-  QString errorMessage = QString::fromStdString(validationResult.getMessage());
-  emit runtimeError(errorMessage);
+QString EditorComponent::getText() {
+  return _textDocument->toPlainText();
 }
 
 void EditorComponent::_addKeywords(

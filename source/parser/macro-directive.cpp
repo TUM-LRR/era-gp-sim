@@ -17,9 +17,9 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/macro-directive.hpp"
 #include "parser/compile-state.hpp"
 #include "parser/intermediate-instruction.hpp"
+#include "parser/macro-directive.hpp"
 
 MacroDirective::MacroDirective(const LineInterval& lines,
                                const std::vector<std::string>& labels,
@@ -48,7 +48,7 @@ void MacroDirective::insert(IntermediateOperationPointer pointer) {
   // Remember index of the first instruction so we can use its address for
   // labels.
   if (_firstInstruction < 0 &&
-      dynamic_cast<IntermediateInstruction*>(pointer.get()) != nullptr) {
+      pointer->getType() == IntermediateOperation::Type::INSTRUCTION) {
     _firstInstruction = _operations.size();
   }
   _operations.push_back(std::move(pointer));
@@ -60,7 +60,7 @@ void MacroDirective::execute(FinalRepresentation& finalRepresentator,
                              CompileState& state,
                              MemoryAccess& memoryAccess) {
   if (macroName().length() == 0) {
-    state.addError("Missing macro name.");
+    state.addErrorHereT("Missing macro name.");
   }
   _macroParameters.validate(state);
   state.registerMacro(*this);
@@ -148,14 +148,14 @@ void MacroDirective::MacroParameters::validate(CompileState& state) const {
     // Check for empty names or default values
     if (param.first.size() == 0 ||
         (param.second && param.second->size() == 0)) {
-      state.addError("Malformed macro argument list!");
+      state.addErrorHereT("Malformed macro argument list!");
       return;
     }
 
     // Check for missing default values after a default value.
     if (param.second) containedDefault = true;
     if (containedDefault && !param.second) {
-      state.addError("Default macro argument values have to be placed last!");
+      state.addErrorHereT("Default macro argument values have to be placed last!");
       return;
     }
   }
