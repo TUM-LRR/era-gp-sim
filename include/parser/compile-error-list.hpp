@@ -40,6 +40,7 @@ class CompileErrorList {
   std::size_t informationCount() const;
   std::size_t size() const;
   void add(const CompileError& error);
+
  private:
   CompileErrorVector _errors;
 };

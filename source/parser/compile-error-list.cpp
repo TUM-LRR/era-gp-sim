@@ -24,16 +24,16 @@ const CompileErrorVector CompileErrorList::errors() const noexcept {
   return _errors;
 }
 
-static bool existsError(const CompileErrorVector& errors,
-                        CompileErrorSeverity severity) {
+static bool
+existsError(const CompileErrorVector& errors, CompileErrorSeverity severity) {
   return std::any_of(
       errors.begin(), errors.end(), [severity](const CompileError& error) {
         return error.severity() == severity;
       });
 }
 
-static std::size_t countError(const CompileErrorVector& errors,
-                              CompileErrorSeverity severity) {
+static std::size_t
+countError(const CompileErrorVector& errors, CompileErrorSeverity severity) {
   return std::count_if(
       errors.begin(), errors.end(), [severity](const CompileError& error) {
         return error.severity() == severity;

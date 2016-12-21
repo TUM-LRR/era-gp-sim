@@ -32,7 +32,8 @@
 #include "parser/symbol-replacer.hpp"
 
 IntermediateRepresentator::IntermediateRepresentator()
-    : _commandList(), _currentOutput(nullptr) {}
+: _commandList(), _currentOutput(nullptr) {
+}
 
 void IntermediateRepresentator::insertCommandPtr(
     IntermediateOperationPointer&& command,
@@ -98,9 +99,12 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
   std::size_t allowedSize = allowedSizeFuture.get();
 
   if (allocatedSize > allowedSize) {
-    annotator.addErrorHere("Too much memory allocated: %1 requested, maximum is %2"
-                  " (please note: because of aligning memory, the first value "
-                  "might be actually bigger than the memory allocated)", std::to_string(allocatedSize), std::to_string(allowedSize));
+    annotator.addErrorHere(
+        "Too much memory allocated: %1 requested, maximum is %2"
+        " (please note: because of aligning memory, the first value "
+        "might be actually bigger than the memory allocated)",
+        std::to_string(allocatedSize),
+        std::to_string(allowedSize));
     representation.errorList = annotator.errorList().errors();
     return representation;
   }

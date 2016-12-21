@@ -162,7 +162,8 @@ void MacroDirective::MacroParameters::validate(
     // Check for missing default values after a default value.
     if (param.second) containedDefault = true;
     if (containedDefault && !param.second) {
-      annotator.addErrorHere("Default macro argument values have to be placed last!");
+      annotator.addErrorHere(
+          "Default macro argument values have to be placed last!");
       return;
     }
   }

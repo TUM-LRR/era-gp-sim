@@ -18,10 +18,10 @@
 
 #include "parser/string-parser.hpp"
 #include <iostream>
+#include "common/translateable.hpp"
 #include "gtest/gtest.h"
 #include "parser/compile-error-annotator.hpp"
 #include "parser/compile-error-list.hpp"
-#include "common/translateable.hpp"
 #define DEFINE_ANNOTATOR      \
   CompileErrorList errorList; \
   CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));

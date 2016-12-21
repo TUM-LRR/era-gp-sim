@@ -35,64 +35,70 @@ class RiscvParser::RiscvRegex {
   /**
    * Returns if the line is a valid Risc-V instruction.
    */
-  bool isValid();
+  bool isValid() const noexcept;
 
   /**
    * Returns if the line contains a label.
    */
-  bool hasLabel();
+  bool hasLabel() const noexcept;
 
   /**
    * Returns if the line contains an instruction.
    */
-  bool hasInstruction();
+  bool hasInstruction() const noexcept;
 
   /**
    * Returns if the instruction is a parser directive.
    */
-  bool isDirective();
+  bool isDirective() const;
 
   /**
    * Returns the parsed label.
    */
-  std::string getLabel();
+  std::string getLabel() const noexcept;
 
   /**
    * Returns the parsed instruction.
    */
-  std::string getInstruction();
+  std::string getInstruction() const;
 
   /**
    * Returns the n-th parameter of the parsed instruction.
    *
    * \param n Zero-based index of the parameter
    */
-  std::string getParameter(int n);
+  std::string getParameter(int n) const;
 
   /**
    * Returns the number of parameters found.
    */
-  int getParameterCount();
+  int getParameterCount() const noexcept;
 
   /**
    * Parses the next line.
    *
    * \param line  The line to parse.
    * \param state CompileState to record errors.
-   * \return The last read position in the string (if the line does not match, this is the character that caused the error)
+   * \return The last read position in the string (if the line does not match,
+   * this is the character that caused the error)
    */
-  size_t matchLine(const std::string &line, const CompileErrorAnnotator& annotator);
+  size_t
+  matchLine(const std::string &line, const CompileErrorAnnotator &annotator);
 
  private:
   bool _readInstructionOrLabel(const std::string &line,
-                              const CompileErrorAnnotator& annotator,
-                              size_t &pos);
+                               const CompileErrorAnnotator &annotator,
+                               size_t &pos);
 
-  bool _readParameter(const std::string &line, const CompileErrorAnnotator& annotator, size_t &pos);
+  bool _readParameter(const std::string &line,
+                      const CompileErrorAnnotator &annotator,
+                      size_t &pos);
 
   void _resetResults();
 
-  CodePositionInterval _getCharacterPosition(const CompileErrorAnnotator& annotator, size_t pos) const;
+  CodePositionInterval
+  _getCharacterPosition(const CompileErrorAnnotator &annotator,
+                        size_t pos) const;
 
   bool _isValid;
   std::string _label;

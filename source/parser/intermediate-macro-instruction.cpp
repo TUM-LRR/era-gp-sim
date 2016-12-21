@@ -72,7 +72,8 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     if (ptr != nullptr) {
       _operations.push_back(std::move(ptr));
     } else {
-      annotator.addErrorHere("Macro contains unsupported instruction '%1'.", macro.getOperationName(i));
+      annotator.addErrorHere("Macro contains unsupported instruction '%1'.",
+                             macro.getOperationName(i));
     }
   }
 

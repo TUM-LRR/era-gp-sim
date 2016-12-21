@@ -20,9 +20,9 @@
 #define ERAGPSIM_COMPILE_ERROR_HPP
 
 #include <QtGlobal>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 class Translateable;
 

@@ -18,10 +18,10 @@
 */
 
 #include "parser/compile-error-annotator.hpp"
+#include "common/translateable.hpp"
 #include "parser/code-position-interval.hpp"
 #include "parser/compile-error-list.hpp"
 #include "parser/compile-error.hpp"
-#include "common/translateable.hpp"
 
 CompileErrorAnnotator::CompileErrorAnnotator(
     CompileErrorList& list, const CodePositionInterval& position)
@@ -43,56 +43,87 @@ CompileErrorAnnotator::CompileErrorAnnotator(
 : CompileErrorAnnotator(source.errorList(), start, end) {
 }
 
-static void enhanceList(CompileErrorList& list, const char* message, const std::initializer_list<std::string>& parameters, const CodePositionInterval& interval, CompileErrorSeverity severity)
-{
-  auto error = CompileError(std::make_shared<Translateable>(message, parameters), interval, severity);
+static void enhanceList(CompileErrorList& list,
+                        const char* message,
+                        const std::initializer_list<std::string>& parameters,
+                        const CodePositionInterval& interval,
+                        CompileErrorSeverity severity) {
+  auto error = CompileError(
+      std::make_shared<Translateable>(message, parameters), interval, severity);
   list.add(error);
 }
 
-void CompileErrorAnnotator::addErrorInternal(const CodePositionInterval& interval, const char* message,
-           const std::initializer_list<std::string>& parameters) const{
-             enhanceList(_list, message, parameters, interval, CompileErrorSeverity::ERROR);
-           }
-  void CompileErrorAnnotator::addErrorDeltaInternal(const CodePosition& deltaFirst,
-           const CodePosition& deltaSecond,
-           const char* message,
-           const std::initializer_list<std::string>& parameters) const{
-             addErrorInternal(CodePositionInterval(_position.codePositionStart() + deltaFirst,
-                                 _position.codePositionEnd() + deltaSecond), message, parameters);
-           }
-  void CompileErrorAnnotator::addErrorHereInternal(const char* message, const std::initializer_list<std::string>& parameters) const {
-    addErrorInternal(_position, message, parameters);
-  }
+void CompileErrorAnnotator::addErrorInternal(
+    const CodePositionInterval& interval,
+    const char* message,
+    const std::initializer_list<std::string>& parameters) const {
+  enhanceList(
+      _list, message, parameters, interval, CompileErrorSeverity::ERROR);
+}
+void CompileErrorAnnotator::addErrorDeltaInternal(
+    const CodePosition& deltaFirst,
+    const CodePosition& deltaSecond,
+    const char* message,
+    const std::initializer_list<std::string>& parameters) const {
+  addErrorInternal(
+      CodePositionInterval(_position.codePositionStart() + deltaFirst,
+                           _position.codePositionEnd() + deltaSecond),
+      message,
+      parameters);
+}
+void CompileErrorAnnotator::addErrorHereInternal(
+    const char* message,
+    const std::initializer_list<std::string>& parameters) const {
+  addErrorInternal(_position, message, parameters);
+}
 
-  void CompileErrorAnnotator::addWarningInternal(const CodePositionInterval& interval, const char* message,
-           const std::initializer_list<std::string>& parameters) const{
-             enhanceList(_list, message, parameters, interval, CompileErrorSeverity::WARNING);
-           }
-  void CompileErrorAnnotator::addWarningDeltaInternal(const CodePosition& deltaFirst,
-           const CodePosition& deltaSecond,
-           const char* message,
-           const std::initializer_list<std::string>& parameters) const{
-             addWarningInternal(CodePositionInterval(_position.codePositionStart() + deltaFirst,
-                                 _position.codePositionEnd() + deltaSecond), message, parameters);
-           }
-  void CompileErrorAnnotator::addWarningHereInternal(const char* message, const std::initializer_list<std::string>& parameters) const{
-    addWarningInternal(_position, message, parameters);
-  }
+void CompileErrorAnnotator::addWarningInternal(
+    const CodePositionInterval& interval,
+    const char* message,
+    const std::initializer_list<std::string>& parameters) const {
+  enhanceList(
+      _list, message, parameters, interval, CompileErrorSeverity::WARNING);
+}
+void CompileErrorAnnotator::addWarningDeltaInternal(
+    const CodePosition& deltaFirst,
+    const CodePosition& deltaSecond,
+    const char* message,
+    const std::initializer_list<std::string>& parameters) const {
+  addWarningInternal(
+      CodePositionInterval(_position.codePositionStart() + deltaFirst,
+                           _position.codePositionEnd() + deltaSecond),
+      message,
+      parameters);
+}
+void CompileErrorAnnotator::addWarningHereInternal(
+    const char* message,
+    const std::initializer_list<std::string>& parameters) const {
+  addWarningInternal(_position, message, parameters);
+}
 
-  void CompileErrorAnnotator::addInformationInternal(const CodePositionInterval& interval, const char* message,
-           const std::initializer_list<std::string>& parameters) const{
-             enhanceList(_list, message, parameters, interval, CompileErrorSeverity::INFORMATION);
-           }
-  void CompileErrorAnnotator::addInformationDeltaInternal(const CodePosition& deltaFirst,
-           const CodePosition& deltaSecond,
-           const char* message,
-           const std::initializer_list<std::string>& parameters) const{
-             addInformationInternal(CodePositionInterval(_position.codePositionStart() + deltaFirst,
-                                 _position.codePositionEnd() + deltaSecond), message, parameters);
-           }
-  void CompileErrorAnnotator::addInformationHereInternal(const char* message, const std::initializer_list<std::string>& parameters) const{
-    addInformationInternal(_position, message, parameters);
-  }
+void CompileErrorAnnotator::addInformationInternal(
+    const CodePositionInterval& interval,
+    const char* message,
+    const std::initializer_list<std::string>& parameters) const {
+  enhanceList(
+      _list, message, parameters, interval, CompileErrorSeverity::INFORMATION);
+}
+void CompileErrorAnnotator::addInformationDeltaInternal(
+    const CodePosition& deltaFirst,
+    const CodePosition& deltaSecond,
+    const char* message,
+    const std::initializer_list<std::string>& parameters) const {
+  addInformationInternal(
+      CodePositionInterval(_position.codePositionStart() + deltaFirst,
+                           _position.codePositionEnd() + deltaSecond),
+      message,
+      parameters);
+}
+void CompileErrorAnnotator::addInformationHereInternal(
+    const char* message,
+    const std::initializer_list<std::string>& parameters) const {
+  addInformationInternal(_position, message, parameters);
+}
 
 CompileErrorList& CompileErrorAnnotator::errorList() const noexcept {
   return _list;

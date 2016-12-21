@@ -70,9 +70,10 @@ std::unique_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
   // Validate node.
   auto validationResult = outputNode->validate(memoryAccess);
   if (!validationResult) {
-    annotator.addErrorHere("Invalid operation (%1): %2",
-                        command_name,
-                        validationResult.getMessage().getBaseString()); /*TODO*/
+    annotator.addErrorHere(
+        "Invalid operation (%1): %2",
+        command_name,
+        validationResult.getMessage().getBaseString()); /*TODO*/
   }
 
   // Return.

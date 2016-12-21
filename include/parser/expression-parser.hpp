@@ -26,12 +26,15 @@
 #include <unordered_map>
 #include "common/assert.hpp"
 #include "common/multiregex.hpp"
+#include "common/translateable.hpp"
 #include "parser/code-position-interval.hpp"
 #include "parser/compile-error-annotator.hpp"
 #include "parser/expression-compiler-definitions.hpp"
-#include "common/translateable.hpp"
 
-#define recordError(parserState, msg, ...) recordErrorInternal(parserState, QT_TRANSLATE_NOOP("Expression Parser Error", msg), { __VA_ARGS__ })
+#define recordError(parserState, msg, ...)                               \
+  recordErrorInternal(parserState,                                       \
+                      QT_TRANSLATE_NOOP("Expression Parser Error", msg), \
+                      {__VA_ARGS__})
 
 /**
  * \brief Parses a given token stream and evaluates it.
@@ -192,8 +195,14 @@ class ExpressionParser {
   };
 
   // Records an error in the parsing process.
-  void recordErrorInternal(ParseState& state, const char* message, const std::initializer_list<std::string>& parameters) const {
-    state.annotator.addErrorDeltaInternal(CodePosition(0, state.curr.index), CodePosition(0), message, parameters);
+  void recordErrorInternal(
+      ParseState& state,
+      const char* message,
+      const std::initializer_list<std::string>& parameters) const {
+    state.annotator.addErrorDeltaInternal(CodePosition(0, state.curr.index),
+                                          CodePosition(0),
+                                          message,
+                                          parameters);
   }
 
   // Handles the latest token stored in `state.curr`.
@@ -233,7 +242,7 @@ class ExpressionParser {
       // For the right error message, we got to determine the arity of our
       // operator.
       if (token.type == ITokenType::UNARY_OPERATOR) {
-          recordError(state, "'%1' is not a valid unary operator", token.data);
+        recordError(state, "'%1' is not a valid unary operator", token.data);
       } else if (token.type == ITokenType::BINARY_OPERATOR) {
         recordError(state, "'%1' is not a valid binary operator", token.data);
       } else {
@@ -312,10 +321,11 @@ class ExpressionParser {
       if (state.outputStack.empty()) {
         // There were not enough operands on the stack.
         size_t left = count - i;
-        if(left == 1) {
-            recordError(state, "There is an operand missing.");
-        }else{
-            recordError(state, "There are %1 operands missing.", std::to_string(left));
+        if (left == 1) {
+          recordError(state, "There is an operand missing.");
+        } else {
+          recordError(
+              state, "There are %1 operands missing.", std::to_string(left));
         }
         return false;
       }

@@ -54,7 +54,7 @@ class RiscvParser : public Parser {
   /**
    * The NodeFactoryCollection used to create the syntax tree nodes
    */
-  NodeFactoryCollection _factory_collection;
+  NodeFactoryCollection _factoryCollection;
 
   /**
    * Reference to the Architecture this parser compiles for

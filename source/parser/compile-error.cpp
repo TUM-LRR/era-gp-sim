@@ -18,8 +18,8 @@
 */
 
 #include "parser/compile-error.hpp"
-#include "common/translateable.hpp"
 #include "common/assert.hpp"
+#include "common/translateable.hpp"
 
 CompileError::CompileError(const CompileError::TranslateablePtr& message,
                            const CodePosition& position,
@@ -47,7 +47,7 @@ CompileError::CompileError(const CompileError::TranslateablePtr& message,
 */
 const Translateable& CompileError::message() const noexcept {
   assert::that(_message);
-    return (*_message);
+  return (*_message);
 }
 
 /**

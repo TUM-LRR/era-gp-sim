@@ -25,13 +25,15 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "common/translateable.hpp"
 #include "common/utility.hpp"
 #include "parser/compile-error-annotator.hpp"
-#include "common/translateable.hpp"
 
-#define invokeError(position, annotator, message, ...)                                \
-  invokeErrorInternal((position), (annotator), QT_TRANSLATE_NOOP("String Parser Errors", message), \
-              { __VA_ARGS__ })
+#define invokeError(position, annotator, message, ...)                    \
+  invokeErrorInternal((position),                                         \
+                      (annotator),                                        \
+                      QT_TRANSLATE_NOOP("String Parser Errors", message), \
+                      {__VA_ARGS__})
 
 /**
  * \brief Provides help methods for parsing strings.
@@ -106,20 +108,18 @@ class StringParserEngine {
     // We check the beginning of the string...
     if (inputString[0] != separator) {
       invokeError(0,
-          annotator,
-              "Something supposed to be a string does not begin with %1",
-      std::to_string(separator));
+                  annotator,
+                  "Something supposed to be a string does not begin with %1",
+                  std::to_string(separator));
       return false;
     }
 
     //...and the end.
     if (inputString[inputString.size() - 1] != separator) {
-      invokeError(
-        inputString.size() - 1,
-          annotator,
-          "Something supposed to be a string does not end with %1",
-              std::to_string(separator)
-          );
+      invokeError(inputString.size() - 1,
+                  annotator,
+                  "Something supposed to be a string does not end with %1",
+                  std::to_string(separator));
       return false;
     }
 
@@ -128,11 +128,13 @@ class StringParserEngine {
 
  private:
   // This method notes down an error in the given compile annotator.
-  static void invokeErrorInternal(size_t position,
-                          const CompileErrorAnnotator& annotator,
-                          const char* message,
-                          const std::initializer_list<std::string>& arguments) {
-    annotator.addErrorDeltaInternal(CodePosition(0, position), CodePosition(0), message, arguments);
+  static void
+  invokeErrorInternal(size_t position,
+                      const CompileErrorAnnotator& annotator,
+                      const char* message,
+                      const std::initializer_list<std::string>& arguments) {
+    annotator.addErrorDeltaInternal(
+        CodePosition(0, position), CodePosition(0), message, arguments);
   }
 
   // Returns true, if there is still data after the current index in the string
@@ -208,8 +210,7 @@ class StringParserEngine {
           // catch these too.
           invokeError(index,
                       annotator,
-                      "The specified code point is outside the Unicode range!"
-                      );
+                      "The specified code point is outside the Unicode range!");
           return false;
         }
         return true;
@@ -232,7 +233,8 @@ class StringParserEngine {
         // If we got a two-short sized code point, the first needs to be an
         // upper surrogate point.
         invokeError(
-            index, annotator,
+            index,
+            annotator,
             "Invalid-formed code point detected (one-short-sized code point "
             "does not begin with a high surrogate character)!");
         return false;
@@ -243,8 +245,7 @@ class StringParserEngine {
         // still need one.
         invokeError(index,
                     annotator,
-                    "End of string detecten while decoding code point!"
-                    );
+                    "End of string detecten while decoding code point!");
         return false;
       }
 
@@ -253,7 +254,8 @@ class StringParserEngine {
       if ((lchr & 0xfc00) != 0xdc00) {
         // The second of the two shorts needs to be a lower surrogate.
         invokeError(
-            index, annotator,
+            index,
+            annotator,
             "Invalid-formed code point detected (second short of code point is "
             "not a low surrogate character)!");
         return false;
@@ -279,8 +281,7 @@ class StringParserEngine {
     if (codePoint > 0x10ffff) {
       invokeError(index,
                   annotator,
-                  "The specified code point is outside Unicode range!"
-                  );
+                  "The specified code point is outside Unicode range!");
       return false;
     }
     return true;
@@ -311,12 +312,16 @@ class StringParserEngine {
   }
 
   // Helper method for checking if a character can be treated as an octal value.
-  static bool isOctal(CharType chr) { return chr >= '0' && chr <= '7'; }
+  static bool isOctal(CharType chr) {
+    return chr >= '0' && chr <= '7';
+  }
 
   // This method gets at most maxLength characters which comply to the given
   // rangeCheck. It also increments the index.
-  static int crawlIndex(const String& inputString, size_t& index,
-                        std::function<bool(char)> rangeCheck, int maxLength) {
+  static int crawlIndex(const String& inputString,
+                        size_t& index,
+                        std::function<bool(char)> rangeCheck,
+                        int maxLength) {
     int length = 0;
     for (int i = 0; i < maxLength; ++i) {
       if (!(requireCharacter(inputString, index) &&
@@ -337,11 +342,14 @@ class StringParserEngine {
   // This is a quickly-written replacement for stoi, working on arbitrary
   // strings.
   template <typename T>
-  static T simpleNumberParse(const String& inputString, size_t start,
-                             size_t length, int base) {
+  static T simpleNumberParse(const String& inputString,
+                             size_t start,
+                             size_t length,
+                             int base) {
     T value = 0;
     for (auto i = inputString.begin() + start;
-         i != inputString.begin() + start + length; ++i) {
+         i != inputString.begin() + start + length;
+         ++i) {
       // We increment the base, then we decode the character.
       value *= base;
       auto chr = *i;
@@ -370,8 +378,8 @@ class StringParserEngine {
     // Important: The size of the specified index in the string must equal to
     // the maximum size.
     if (len != size) {
-      invokeError(index, annotator,
-          "Not the right size for the escape sequence");
+      invokeError(
+          index, annotator, "Not the right size for the escape sequence");
       return false;
     }
 
@@ -450,7 +458,8 @@ class StringParserEngine {
       int ret = simpleNumberParse<int>(inputString, startIndex, len, 8);
       if (ret > 0xff && sizeof(OutType) == 1) {
         invokeError(
-            index, annotator,
+            index,
+            annotator,
             "The specified octal sequence wants to encode a character out "
             "of byte size.");
         return false;
@@ -560,8 +569,7 @@ class StringParserEngine {
       // then we do not need to check in the single methods any more.
       invokeError(index,
                   annotator,
-                  "The specified code point is outside the Unicode range!"
-                  );
+                  "The specified code point is outside the Unicode range!");
       return false;
     }
 

@@ -22,7 +22,8 @@
 #include "common/assert.hpp"
 #include "parser/compile-error-annotator.hpp"
 
-RiscvParser::RiscvRegex::RiscvRegex() {}
+RiscvParser::RiscvRegex::RiscvRegex() {
+}
 
 static void trimRight(std::string &str) {
   int pos = str.size() - 1;
@@ -35,9 +36,10 @@ static void trimRight(std::string &str) {
 }
 
 // Returns true if successful
-bool RiscvParser::RiscvRegex::_readInstructionOrLabel(const std::string &line,
-                                                      const CompileErrorAnnotator& annotator,
-                                                      size_t &pos) {
+bool RiscvParser::RiscvRegex::_readInstructionOrLabel(
+    const std::string &line,
+    const CompileErrorAnnotator &annotator,
+    size_t &pos) {
   // Skip spaces
   for (; pos < line.size() && std::isspace(line[pos]); pos++)
     ;
@@ -56,7 +58,7 @@ bool RiscvParser::RiscvRegex::_readInstructionOrLabel(const std::string &line,
     // If a label is already defined, add an error
     if (_label.size() > 0) {
       annotator.addError(_getCharacterPosition(annotator, pos),
-                      "Multiple labels per line aren't allowed!");
+                         "Multiple labels per line aren't allowed!");
       return false;
     }
 
@@ -71,13 +73,15 @@ bool RiscvParser::RiscvRegex::_readInstructionOrLabel(const std::string &line,
 
   // Otherwise we hit an invalid character
   annotator.addError(_getCharacterPosition(annotator, pos),
-                  "Invalid character in instruction name!");
+                     "Invalid character in instruction name!");
   return false;
 }
 
 // Returns true if successful
-bool RiscvParser::RiscvRegex::_readParameter(const std::string &line,
-                                             const CompileErrorAnnotator& annotator, size_t &pos) {
+bool RiscvParser::RiscvRegex::_readParameter(
+    const std::string &line,
+    const CompileErrorAnnotator &annotator,
+    size_t &pos) {
   // Saves if we're inside a string
   bool quoted = false;
   std::string parameter;
@@ -115,8 +119,9 @@ void RiscvParser::RiscvRegex::_resetResults() {
   _isValid = false;
 }
 
-size_t RiscvParser::RiscvRegex::matchLine(const std::string &line,
-                                        const CompileErrorAnnotator& annotator) {
+size_t
+RiscvParser::RiscvRegex::matchLine(const std::string &line,
+                                   const CompileErrorAnnotator &annotator) {
   size_t pos = 0;
 
   _resetResults();
@@ -133,21 +138,27 @@ size_t RiscvParser::RiscvRegex::matchLine(const std::string &line,
   return pos;
 }
 
-bool RiscvParser::RiscvRegex::isValid() { return _isValid; }
-
-bool RiscvParser::RiscvRegex::hasLabel() { return _label.size() > 0; }
-
-bool RiscvParser::RiscvRegex::hasInstruction() {
-  return _instruction.size() > 0;
+bool RiscvParser::RiscvRegex::isValid() const noexcept {
+  return _isValid;
 }
 
-bool RiscvParser::RiscvRegex::isDirective() {
+bool RiscvParser::RiscvRegex::hasLabel() const noexcept {
+  return !_label.empty();
+}
+
+bool RiscvParser::RiscvRegex::hasInstruction() const noexcept {
+  return !_instruction.empty();
+}
+
+bool RiscvParser::RiscvRegex::isDirective() const {
   return hasInstruction() && _instruction[0] == '.';
 }
 
-std::string RiscvParser::RiscvRegex::getLabel() { return _label; }
+std::string RiscvParser::RiscvRegex::getLabel() const noexcept {
+  return _label;
+}
 
-std::string RiscvParser::RiscvRegex::getInstruction() {
+std::string RiscvParser::RiscvRegex::getInstruction() const {
   std::string instruction = _instruction;
 
   if (instruction[0] == '.') {
@@ -157,15 +168,17 @@ std::string RiscvParser::RiscvRegex::getInstruction() {
   return instruction;
 }
 
-std::string RiscvParser::RiscvRegex::getParameter(int n) {
+std::string RiscvParser::RiscvRegex::getParameter(int n) const {
   assert::that(n >= 0 && n < getParameterCount());
   return _parameters[n];
 }
 
-int RiscvParser::RiscvRegex::getParameterCount() { return _parameters.size(); }
+int RiscvParser::RiscvRegex::getParameterCount() const noexcept {
+  return _parameters.size();
+}
 
 CodePositionInterval RiscvParser::RiscvRegex::_getCharacterPosition(
-    const CompileErrorAnnotator& annotator, size_t pos) const {
-      CodePosition position (annotator.position().codePositionStart().line(), pos);
+    const CompileErrorAnnotator &annotator, size_t pos) const {
+  CodePosition position(annotator.position().codePositionStart().line(), pos);
   return CodePositionInterval(position, position >> 1);
 }

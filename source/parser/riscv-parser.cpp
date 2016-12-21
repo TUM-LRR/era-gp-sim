@@ -74,81 +74,97 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
 RiscvParser::RiscvParser(const Architecture& architecture,
                          const MemoryAccess& memoryAccess)
 : _architecture(architecture), _memoryAccess(memoryAccess) {
-  _factory_collection = NodeFactoryCollectionMaker::CreateFor(architecture);
+  _factoryCollection = NodeFactoryCollectionMaker::CreateFor(architecture);
+}
+
+static void
+readInstruction(const CompileErrorAnnotator& positionErrorAnnotation,
+                const CodePosition& position,
+                const std::vector<std::string>& labels,
+                const RiscvParser::RiscvRegex& lineRegex,
+                IntermediateRepresentator& intermediate) {
+  std::vector<std::string> sources, targets;
+  bool is_directive = lineRegex.isDirective();
+  // Collect source and target parameters
+  for (int i = 0; i < lineRegex.getParameterCount(); i++) {
+    if (i == 0 && !is_directive)
+      targets.push_back(lineRegex.getParameter(i));
+    else
+      sources.push_back(lineRegex.getParameter(i));
+  }
+
+  if (is_directive) {
+    RiscVDirectiveFactory::create(
+        LineInterval(position.line()),
+        labels,
+        lineRegex.getInstruction(),
+        sources,
+        intermediate,
+        positionErrorAnnotation /*TODO better positions*/);
+  } else {
+    intermediate.insertCommand(
+        IntermediateInstruction(LineInterval(position.line()),
+                                labels,
+                                lineRegex.getInstruction(),
+                                sources,
+                                targets),
+        positionErrorAnnotation /*TODO better positions*/);
+  }
+}
+
+static void readText(const std::string& text,
+                     CompileErrorList& errorList,
+                     IntermediateRepresentator& intermediate) {
+  std::istringstream stream(text);
+  CodePosition position;
+  RiscvParser::RiscvRegex lineRegex;
+  std::vector<std::string> labels;
+
+  for (std::string line; std::getline(stream, line);) {
+    position = position.newLine();
+    CompileErrorAnnotator positionErrorAnnotation(
+        errorList, CodePositionInterval(position, position >> 1));
+    lineRegex.matchLine(line, positionErrorAnnotation);
+    if (!lineRegex.isValid()) {
+      // Add syntax error if line regex doesnt match
+      positionErrorAnnotation.addErrorHere("Syntax Error");
+    } else {
+      // Collect labels until next instruction
+      if (lineRegex.hasLabel()) {
+        labels.push_back(lineRegex.getLabel());
+      }
+
+      if (lineRegex.hasInstruction()) {
+        readInstruction(
+            positionErrorAnnotation, position, labels, lineRegex, intermediate);
+
+        labels.clear();
+      }
+    }
+  }
 }
 
 FinalRepresentation
 RiscvParser::parse(const std::string& text, ParserMode parserMode) {
   IntermediateRepresentator intermediate;
-  std::istringstream stream{text};
-
-  // Initialize compile state
   CompileErrorList errorList;
-  CodePosition position;
 
-  RiscvRegex line_regex;
-  std::vector<std::string> labels, sources, targets;
-
-  for (std::string line; std::getline(stream, line);) {
-    position = position.newLine();
-    CompileErrorAnnotator positionErrorAnnotation(
-            errorList, CodePositionInterval(position, position >> 1));
-    line_regex.matchLine(line, positionErrorAnnotation);
-    if (!line_regex.isValid()) {
-      // Add syntax error if line regex doesnt match
-      positionErrorAnnotation.addErrorHere("Syntax Error");
-    } else {
-      // Collect labels until next instruction
-      if (line_regex.hasLabel()) {
-        labels.push_back(line_regex.getLabel());
-      }
-
-      if (line_regex.hasInstruction()) {
-        bool is_directive = line_regex.isDirective();
-        // Collect source and target parameters
-        for (int i = 0; i < line_regex.getParameterCount(); i++) {
-          if (i == 0 && !is_directive)
-            targets.push_back(line_regex.getParameter(i));
-          else
-            sources.push_back(line_regex.getParameter(i));
-        }
-
-        if (is_directive) {
-          RiscVDirectiveFactory::create(
-              LineInterval(position.line()),
-              labels,
-              line_regex.getInstruction(),
-              sources,
-              intermediate,
-              positionErrorAnnotation /*TODO better positions*/);
-        } else {
-          intermediate.insertCommand(
-              IntermediateInstruction(LineInterval(position.line()),
-                                      labels,
-                                      line_regex.getInstruction(),
-                                      sources,
-                                      targets),
-              positionErrorAnnotation /*TODO better positions*/);
-        }
-
-        labels.clear();
-        targets.clear();
-        sources.clear();
-      }
-    }
-  }
+  readText(text, errorList, intermediate);
 
   auto byteAlignment =
       _architecture.getWordSize() / _architecture.getByteSize();
   MemoryAllocator allocator({MemorySectionDefinition("text", 1),
                              MemorySectionDefinition("data", byteAlignment)});
-  return intermediate.transform(
-      TransformationParameters(
-          _architecture,
-          allocator,
-          SyntaxTreeGenerator(_factory_collection, argumentGeneratorFunction)),
-      errorList,
-      _memoryAccess);
+
+  TransformationParameters parameters(
+      _architecture,
+      allocator,
+      SyntaxTreeGenerator(_factoryCollection, argumentGeneratorFunction));
+
+  auto intermediateOutput =
+      intermediate.transform(parameters, errorList, _memoryAccess);
+
+  return intermediateOutput;
 }
 
 const SyntaxInformation RiscvParser::getSyntaxInformation() {
@@ -192,11 +208,13 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
 
   // Add register regexes
   for (UnitInformation unit : _architecture.getUnits()) {
-    for (auto reg : unit)
-      if (reg.second.hasName())
+    for (auto reg : unit) {
+      if (reg.second.hasName()) {
         // Matches all register names not followed by a ':'
         info.addSyntaxRegex("\\b" + reg.second.getName() + "\\b(?!:)",
                             SyntaxInformation::Token::Register);
+      }
+    }
   }
 
   return info;
