@@ -17,23 +17,17 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_UI_KEYWORD_RULE_HPP_
-#define ERAGPSIM_UI_KEYWORD_RULE_HPP_
+#include "parser/macro-information.hpp"
 
-#include <QRegularExpression>
-#include <QTextCharFormat>
+MacroInformation::MacroInformation(const std::string& code,
+                                   const CodePositionInterval& position)
+: _code(code), _position(position) {
+}
 
-/**
- * \brief KeywordRule
- *
- * struct for a keyword, consisting of:
- *  - the QRegularExpression, can be created from a string
- *  - the format for the keyword (color, bold,...) in a QTextCharFormat object
- *
- */
-struct KeywordRule {
-  QRegularExpression rulePattern;
-  QTextCharFormat ruleTextFormat;
-};
+const std::string& MacroInformation::macroCode() const noexcept {
+  return _code;
+}
 
-#endif /* ERAGPSIM_UI_KEYWORD_RULE_HPP_ */
+const CodePositionInterval& MacroInformation::position() const {
+  return _position;
+}

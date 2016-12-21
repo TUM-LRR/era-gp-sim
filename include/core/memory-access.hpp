@@ -20,7 +20,6 @@
 #ifndef ERAGPSIM_CORE_MEMORY_ACCESS_HPP
 #define ERAGPSIM_CORE_MEMORY_ACCESS_HPP
 
-#include <chrono>
 #include <memory>
 
 #include "core/condition-timer.hpp"
@@ -63,6 +62,12 @@ class MemoryAccess : public Proxy<Project> {
   POST_FUTURE_CONST(getMemoryValueAt)
 
   /**
+   * Calls Memory::tryGet
+   * \returns std::future<MemoryValue>
+   */
+  POST_FUTURE_CONST(tryGetMemoryValueAt);
+
+  /**
    * Returns a number of memory cells at a given address as
    * MemoryValue through a callback.
    *
@@ -83,12 +88,23 @@ class MemoryAccess : public Proxy<Project> {
   POST(putMemoryValueAt)
 
   /**
+   * \copydoc Memory::tryPut()
+   */
+  POST(tryPutMemoryValueAt)
+
+  /**
    * Sets a memory cell to a value and returns the old value.
    *
    * \param address The value is written to this address.
    * \param value The MemoryValue to write.
    */
   POST_FUTURE(setMemoryValueAt)
+
+  /**
+   *  Calls Memory::trySet()
+   * \returns `std::future<MemoryValue>`
+   */
+  POST_FUTURE(trySetMemoryValueAt)
 
   /**
    * Set a memory cell to a value and return the old value through a callback.

@@ -75,7 +75,7 @@ void OutputComponent::putMemoryValue(int address,
 
   // Create new MemoryValue.
   MemoryValue memoryContent(memoryValueSize);
-  // Insert the bit values of the altered content into the newly create
+  // Insert the bit values of the altered content into the newly created
   // MemoryValue.
   for (size_t index = 0; index < memoryContentBitList.size(); ++index) {
     memoryContent.put(index, memoryContentBitList.at(index));
@@ -122,4 +122,8 @@ OutputComponent::getTextFromMemory(int start, QString currentText, int mode) {
     }
   }
   return QString::fromStdString(text);
+}
+
+int OutputComponent::getMemorySize() {
+  return _memoryAccess.getMemorySize().get();
 }

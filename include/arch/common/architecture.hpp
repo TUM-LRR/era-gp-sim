@@ -49,6 +49,7 @@ class Architecture : public BuilderInterface {
  public:
   using Endianness = ArchitectureProperties::Endianness;
   using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
+  using SignedRepresentation = ArchitectureProperties::SignedRepresentation;
   using word_size_t = ArchitectureProperties::word_size_t;
   using byte_size_t = ArchitectureProperties::byte_size_t;
 
@@ -152,6 +153,14 @@ class Architecture : public BuilderInterface {
    * an extension and validated by calling `validate()`. This is asserted!
    */
   Endianness getEndianness() const;
+
+  /**
+   * Returns the signed representation of the architecture.
+   *
+   * This property must have already been set by extending the architecture with
+   * an extension and validated by calling `validate()`. This is asserted!
+   */
+  SignedRepresentation getSignedRepresentation() const;
 
   /**
    * Returns the alignment behavior of the architecture.

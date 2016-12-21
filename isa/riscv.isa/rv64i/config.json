@@ -1,318 +1,311 @@
 {
-    "extends": "rv32i",
+    "reset-units": true,
     "units": [
         {
-            "name": "cpu",
             "registers": [
                 {
+                    "size": 64,
                     "name": "x0",
-                    "alias": "zero",
-                    "constant": "0x0",
                     "id": 0,
-                    "size": 64
+                    "alias": "zero",
+                    "constant": "0x0"
                 },
                 {
+                    "size": 64,
                     "name": "x1",
-                    "id": 1,
-                    "size": 64
+                    "id": 1
                 },
                 {
+                    "size": 64,
                     "name": "x2",
-                    "id": 2,
-                    "size": 64
+                    "id": 2
                 },
                 {
+                    "size": 64,
                     "name": "x3",
-                    "id": 3,
-                    "size": 64
+                    "id": 3
                 },
                 {
+                    "size": 64,
                     "name": "x4",
-                    "id": 4,
-                    "size": 64
+                    "id": 4
                 },
                 {
+                    "size": 64,
                     "name": "x5",
-                    "id": 5,
-                    "size": 64
+                    "id": 5
                 },
                 {
+                    "size": 64,
                     "name": "x6",
-                    "id": 6,
-                    "size": 64
+                    "id": 6
                 },
                 {
+                    "size": 64,
                     "name": "x7",
-                    "id": 7,
-                    "size": 64
+                    "id": 7
                 },
                 {
+                    "size": 64,
                     "name": "x8",
-                    "id": 8,
-                    "size": 64
+                    "id": 8
                 },
                 {
+                    "size": 64,
                     "name": "x9",
-                    "id": 9,
-                    "size": 64
+                    "id": 9
                 },
                 {
+                    "size": 64,
                     "name": "x10",
-                    "id": 10,
-                    "size": 64
+                    "id": 10
                 },
                 {
+                    "size": 64,
                     "name": "x11",
-                    "id": 11,
-                    "size": 64
+                    "id": 11
                 },
                 {
+                    "size": 64,
                     "name": "x12",
-                    "id": 12,
-                    "size": 64
+                    "id": 12
                 },
                 {
+                    "size": 64,
                     "name": "x13",
-                    "id": 13,
-                    "size": 64
+                    "id": 13
                 },
                 {
+                    "size": 64,
                     "name": "x14",
-                    "id": 14,
-                    "size": 64
+                    "id": 14
                 },
                 {
+                    "size": 64,
                     "name": "x15",
-                    "id": 15,
-                    "size": 64
+                    "id": 15
                 },
                 {
+                    "size": 64,
                     "name": "x16",
-                    "id": 16,
-                    "size": 64
+                    "id": 16
                 },
                 {
+                    "size": 64,
                     "name": "x17",
-                    "id": 17,
-                    "size": 64
+                    "id": 17
                 },
                 {
+                    "size": 64,
                     "name": "x18",
-                    "id": 18,
-                    "size": 64
+                    "id": 18
                 },
                 {
+                    "size": 64,
                     "name": "x19",
-                    "id": 19,
-                    "size": 64
+                    "id": 19
                 },
                 {
+                    "size": 64,
                     "name": "x20",
-                    "id": 20,
-                    "size": 64
+                    "id": 20
                 },
                 {
+                    "size": 64,
                     "name": "x21",
-                    "id": 21,
-                    "size": 64
+                    "id": 21
                 },
                 {
+                    "size": 64,
                     "name": "x22",
-                    "id": 22,
-                    "size": 64
+                    "id": 22
                 },
                 {
+                    "size": 64,
                     "name": "x23",
-                    "id": 23,
-                    "size": 64
+                    "id": 23
                 },
                 {
+                    "size": 64,
                     "name": "x24",
-                    "id": 24,
-                    "size": 64
+                    "id": 24
                 },
                 {
+                    "size": 64,
                     "name": "x25",
-                    "id": 25,
-                    "size": 64
+                    "id": 25
                 },
                 {
+                    "size": 64,
                     "name": "x26",
-                    "id": 26,
-                    "size": 64
+                    "id": 26
                 },
                 {
+                    "size": 64,
                     "name": "x27",
-                    "id": 27,
-                    "size": 64
+                    "id": 27
                 },
                 {
+                    "size": 64,
                     "name": "x28",
-                    "id": 28,
-                    "size": 64
+                    "id": 28
                 },
                 {
+                    "size": 64,
                     "name": "x29",
-                    "id": 29,
-                    "size": 64
+                    "id": 29
                 },
                 {
+                    "size": 64,
                     "name": "x30",
-                    "id": 30,
-                    "size": 64
+                    "id": 30
                 },
                 {
+                    "size": 64,
                     "name": "x31",
-                    "id": 31,
-                    "size": 64
+                    "id": 31
                 },
                 {
-                    "id": 32,
+                    "size": 64,
                     "name": "pc",
-                    "type": "program-counter",
-                    "size": 64
+                    "id": 32,
+                    "type": "program-counter"
                 }
-            ]
+            ],
+            "name": "cpu"
         }
     ],
-    "builtin-macros": [
-        ".macro ldg, rd, symbol\nauipc \\rd, ((\\symbol >> 12) & 0xfffff)\nld \\rd, \\rd, (\\symbol & 0xfff)\n.endm\n",
-        ".macro negw, rd, rs\nsubw \\rd, x0, \\rs\n.endm\n",
-        ".macro sext.w, rd, rs\naddiw \\rd, \\rs, 0\n.endm\n"
-    ],
-    "word-size": 64,
-    "reset-units": true,
-    "name": "rv64i",
+    "extends": "rv32i",
     "instructions": [
         {
+            "operand length": [
+                0,
+                0,
+                12
+            ],
             "key": {
                 "funct3": 6,
                 "opcode": 3
             },
-            "format": "I",
             "length": 32,
+            "format": "I",
+            "mnemonic": "lwu"
+        },
+        {
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "mnemonic": "lwu"
-        },
-        {
             "key": {
                 "funct3": 3,
                 "opcode": 3
             },
-            "format": "I",
             "length": 32,
+            "format": "I",
+            "mnemonic": "ld"
+        },
+        {
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "mnemonic": "ld"
-        },
-        {
             "key": {
                 "funct3": 3,
                 "opcode": 35
             },
-            "format": "S",
             "length": 32,
+            "format": "S",
+            "mnemonic": "sd"
+        },
+        {
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "mnemonic": "sd"
-        },
-        {
             "key": {
                 "funct7": 0,
                 "funct3": 1,
                 "opcode": 19
             },
-            "format": "R",
             "length": 32,
+            "format": "R",
+            "mnemonic": "slli"
+        },
+        {
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "mnemonic": "slli"
-        },
-        {
             "key": {
                 "funct7": 1,
                 "funct3": 5,
                 "opcode": 19
             },
-            "format": "R",
             "length": 32,
+            "format": "R",
+            "mnemonic": "srai"
+        },
+        {
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "mnemonic": "srai"
-        },
-        {
             "key": {
                 "funct3": 0,
                 "opcode": 27
             },
-            "format": "I",
             "length": 32,
+            "format": "I",
+            "mnemonic": "addiw"
+        },
+        {
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "mnemonic": "addiw"
-        },
-        {
             "key": {
                 "funct7": 0,
                 "funct3": 1,
                 "opcode": 27
             },
-            "format": "R",
             "length": 32,
+            "format": "R",
+            "mnemonic": "slliw"
+        },
+        {
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "mnemonic": "slliw"
-        },
-        {
             "key": {
                 "funct7": 0,
                 "funct3": 5,
                 "opcode": 27
             },
-            "format": "R",
             "length": 32,
+            "format": "R",
+            "mnemonic": "srliw"
+        },
+        {
             "operand length": [
                 0,
                 0,
                 12
             ],
-            "mnemonic": "srliw"
-        },
-        {
             "key": {
                 "funct7": 32,
                 "funct3": 5,
                 "opcode": 27
             },
-            "format": "R",
             "length": 32,
-            "operand length": [
-                0,
-                0,
-                12
-            ],
+            "format": "R",
             "mnemonic": "sraiw"
         },
         {
@@ -365,5 +358,12 @@
             "format": "R",
             "mnemonic": "sraw"
         }
+    ],
+    "word-size": 64,
+    "name": "rv64i",
+    "builtin-macros": [
+        ".macro ldg, rd, symbol\nauipc \\rd, ((\\symbol >> 12) & 0xfffff)\nld \\rd, \\rd, (\\symbol & 0xfff)\n.endm\n",
+        ".macro negw, rd, rs\nsubw \\rd, x0, \\rs\n.endm\n",
+        ".macro sext.w, rd, rs\naddiw \\rd, \\rs, 0\n.endm\n"
     ]
 }
