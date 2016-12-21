@@ -38,8 +38,8 @@ PixelDisplayPaintedItem::PixelDisplayPaintedItem(QQuickItem *parent)
 
 void PixelDisplayPaintedItem::paint(QPainter *painter) {
   std::cout << "paint!" << std::endl;
-  _options.updateAllPixels(_outputComponentPointer, _image);
-  _options.updateAllColors(_outputComponentPointer, _image);
+  // _options.updateAllPixels(_outputComponentPointer, _image);
+  // _options.updateAllColors(_outputComponentPointer, _image);
   painter->drawImage(painter->window(), *_image);
   std::cout << "I did do the paint!" << std::endl;
 }
@@ -47,39 +47,37 @@ void PixelDisplayPaintedItem::paint(QPainter *painter) {
 void PixelDisplayPaintedItem::memoryChanged(std::size_t address,
                                             std::size_t amount) {
   std::cout << "PixelDisplayPaintedItem memory changed" << std::endl;
-  //_options.updateAllPixels(_outputComponentPointer, _image);
-  //_options.updateAllColors(_outputComponentPointer, _image);
+  // _options.updateAllPixels(_outputComponentPointer, _image);
+  // _options.updateAllColors(_outputComponentPointer, _image);
   _options.updateMemory(_outputComponentPointer, _image, address, amount);
   update();
 }
 
-void PixelDisplayPaintedItem::setPixelBaseAddress(
-    std::size_t pixelBaseAddress) {
+void PixelDisplayPaintedItem::setPixelBaseAddress(size_t pixelBaseAddress) {
   if (_options.pixelBaseAddress != pixelBaseAddress) {
     _options.pixelBaseAddress = pixelBaseAddress;
     _options.updateAllPixels(_outputComponentPointer, _image);
     update();
   }
 }
-void PixelDisplayPaintedItem::setColorBaseAddress(
-    std::size_t colorBaseAddress) {
+void PixelDisplayPaintedItem::setColorBaseAddress(size_t colorBaseAddress) {
   if (_options.colorBaseAddress != colorBaseAddress) {
     _options.colorBaseAddress = colorBaseAddress;
     _options.updateAllColors(_outputComponentPointer, _image);
     update();
   }
 }
-void PixelDisplayPaintedItem::setWidth(std::size_t width) {
+void PixelDisplayPaintedItem::setWidth(size_t width) {
   if (_options.width != width) {
     resize(width, _options.height);
   }
 }
-void PixelDisplayPaintedItem::setHeight(std::size_t height) {
+void PixelDisplayPaintedItem::setHeight(size_t height) {
   if (_options.height != height) {
     resize(_options.width, height);
   }
 }
-void PixelDisplayPaintedItem::setColorMode(std::size_t colorMode) {
+void PixelDisplayPaintedItem::setColorMode(size_t colorMode) {
   if (_options.colorMode != colorMode) {
     _options.colorMode = colorMode;
     _image = _options.makeImage();
@@ -88,21 +86,21 @@ void PixelDisplayPaintedItem::setColorMode(std::size_t colorMode) {
     update();
   }
 }
-void PixelDisplayPaintedItem::setRBit(std::size_t rBit) {
+void PixelDisplayPaintedItem::setRBit(size_t rBit) {
   if (_options.rBit != rBit) {
     _options.rBit = rBit;
     _options.updateAllPixels(_outputComponentPointer, _image);
     update();
   }
 }
-void PixelDisplayPaintedItem::setGBit(std::size_t gBit) {
+void PixelDisplayPaintedItem::setGBit(size_t gBit) {
   if (_options.gBit != gBit) {
     _options.gBit = gBit;
     _options.updateAllPixels(_outputComponentPointer, _image);
     update();
   }
 }
-void PixelDisplayPaintedItem::setBBit(std::size_t bBit) {
+void PixelDisplayPaintedItem::setBBit(size_t bBit) {
   if (_options.bBit != bBit) {
     _options.bBit = bBit;
     _options.updateAllPixels(_outputComponentPointer, _image);
@@ -146,14 +144,14 @@ void PixelDisplayPaintedItem::setColorTablePointerLike(
     update();
   }
 }
-void PixelDisplayPaintedItem::setFreeBytes(std::size_t freeBytes) {
+void PixelDisplayPaintedItem::setFreeBytes(size_t freeBytes) {
   if (_options.freeBytes != freeBytes) {
     _options.freeBytes = freeBytes;
     _options.updateAllPixels(_outputComponentPointer, _image);
     update();
   }
 }
-void PixelDisplayPaintedItem::setFreeBits(std::size_t freeBits) {
+void PixelDisplayPaintedItem::setFreeBits(size_t freeBits) {
   if (_options.freeBits != freeBits) {
     _options.freeBits = freeBits;
     _options.updateAllPixels(_outputComponentPointer, _image);
@@ -161,28 +159,28 @@ void PixelDisplayPaintedItem::setFreeBits(std::size_t freeBits) {
   }
 }
 
-std::size_t PixelDisplayPaintedItem::getPixelBaseAddress() {
+size_t PixelDisplayPaintedItem::getPixelBaseAddress() {
   return _options.pixelBaseAddress;
 }
-std::size_t PixelDisplayPaintedItem::getColorBaseAddress() {
+size_t PixelDisplayPaintedItem::getColorBaseAddress() {
   return _options.colorBaseAddress;
 }
-std::size_t PixelDisplayPaintedItem::getWidth() {
+size_t PixelDisplayPaintedItem::getWidth() {
   return _options.width;
 }
-std::size_t PixelDisplayPaintedItem::getHeight() {
+size_t PixelDisplayPaintedItem::getHeight() {
   return _options.height;
 }
-std::size_t PixelDisplayPaintedItem::getColorMode() {
+size_t PixelDisplayPaintedItem::getColorMode() {
   return _options.colorMode;
 }
-std::size_t PixelDisplayPaintedItem::getRBit() {
+size_t PixelDisplayPaintedItem::getRBit() {
   return _options.rBit;
 }
-std::size_t PixelDisplayPaintedItem::getGBit() {
+size_t PixelDisplayPaintedItem::getGBit() {
   return _options.gBit;
 }
-std::size_t PixelDisplayPaintedItem::getBBit() {
+size_t PixelDisplayPaintedItem::getBBit() {
   return _options.bBit;
 }
 bool PixelDisplayPaintedItem::getColumns_rows() {
@@ -203,14 +201,14 @@ bool PixelDisplayPaintedItem::getPixelBufferPointerLike() {
 bool PixelDisplayPaintedItem::getColorTablePointerLike() {
   return _options.colorTablePointerLike;
 }
-std::size_t PixelDisplayPaintedItem::getFreeBytes() {
+size_t PixelDisplayPaintedItem::getFreeBytes() {
   return _options.freeBytes;
 }
-std::size_t PixelDisplayPaintedItem::getFreeBits() {
+size_t PixelDisplayPaintedItem::getFreeBits() {
   return _options.freeBits;
 }
 
-void PixelDisplayPaintedItem::resize(std::size_t width, std::size_t height) {
+void PixelDisplayPaintedItem::resize(size_t width, size_t height) {
   if (_options.width != width || _options.height != height) {
     _options.width = width;
     _options.height = height;

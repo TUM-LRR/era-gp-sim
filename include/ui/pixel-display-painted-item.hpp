@@ -290,14 +290,14 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
    * \param address first byte that was modified
    * \param amount length of the area of modified bytes
    */
-  Q_INVOKABLE void memoryChanged(std::size_t address, std::size_t amount);
+  Q_INVOKABLE void memoryChanged(size_t address, size_t amount);
 
   /*
    * \brief sets the size of the image
    * \param width new width of the image
    * \param width new height of the image
    */
-  void resize(std::size_t width, std::size_t height);
+  void resize(size_t width, size_t height);
 
   /*
    * \brief sets the OutputComponent
@@ -305,44 +305,44 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
    */
   void setOutputComponent(OutputComponent *o);
 
-  void setPixelBaseAddress(std::size_t pixelBaseAddress);
-  void setColorBaseAddress(std::size_t colorBaseAddress);
-  void setWidth(std::size_t width);
-  void setHeight(std::size_t height);
+  void setPixelBaseAddress(size_t pixelBaseAddress);
+  void setColorBaseAddress(size_t colorBaseAddress);
+  void setWidth(size_t width);
+  void setHeight(size_t height);
   /*
    * \brief sets the colorMode
    * \param colorMode The colorMode to be set active
    * \Note I maybe should use enums but enums in qt are annoying
    */
-  void setColorMode(std::size_t colorMode);
-  void setRBit(std::size_t rBit);
-  void setGBit(std::size_t gBit);
-  void setBBit(std::size_t bBit);
+  void setColorMode(size_t colorMode);
+  void setRBit(size_t rBit);
+  void setGBit(size_t gBit);
+  void setBBit(size_t bBit);
   void setColumns_rows(bool columns_rows);
   void setHorizontallyMirrored(bool horizontallyMirrored);
   void setVerticallyMirrored(bool verticallyMirrored);
   void setTight(bool tight);
   void setPixelBufferPointerLike(bool pixelBufferPointerLike);
   void setColorTablePointerLike(bool colorTablePointerLike);
-  void setFreeBytes(std::size_t freeBytes);
-  void setFreeBits(std::size_t freeBits);
+  void setFreeBytes(size_t freeBytes);
+  void setFreeBits(size_t freeBits);
 
-  std::size_t getPixelBaseAddress();
-  std::size_t getColorBaseAddress();
-  std::size_t getWidth();
-  std::size_t getHeight();
-  std::size_t getColorMode();
-  std::size_t getRBit();
-  std::size_t getGBit();
-  std::size_t getBBit();
+  size_t getPixelBaseAddress();
+  size_t getColorBaseAddress();
+  size_t getWidth();
+  size_t getHeight();
+  size_t getColorMode();
+  size_t getRBit();
+  size_t getGBit();
+  size_t getBBit();
   bool getColumns_rows();
   bool getHorizontallyMirrored();
   bool getVerticallyMirrored();
   bool getTight();
   bool getPixelBufferPointerLike();
   bool getColorTablePointerLike();
-  std::size_t getFreeBytes();
-  std::size_t getFreeBits();
+  size_t getFreeBytes();
+  size_t getFreeBits();
 
  private:
   /// shared pointer to the image

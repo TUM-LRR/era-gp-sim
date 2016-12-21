@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Window 2.0
+import QtQuick.Controls 1.4
 import eragpsim.pixeldisplaypainteditem 1.0
 
 Item {
@@ -79,11 +80,63 @@ Item {
         title: "Pixel Display Settings"
 
         function updateSettings() {
+          // textField.text = property
         }
 
         onVisibleChanged: {
             if (visible) {
                 updateSettings();
+            }
+        }
+        Row {
+            anchors.fill: parent
+            anchors.leftMargin: 15
+            anchors.topMargin: 15
+            anchors.rightMargin: 15
+            anchors.bottomMargin: 15
+
+            spacing: 15
+
+            // Title of each settings control.
+            Column {
+                spacing: 16
+                Text {
+                    text: "Memory Source:"
+                }
+                Text {
+                    text: "Number of Strips:"
+                }
+            }
+            Column {
+                id: controlsColumn
+                spacing: 8
+
+                function integerFromInputString(input) {
+                    var base = 10;
+                    if (input.indexOf("0x") == 0) {
+                        base = 16;
+                        input = input.slice(2);
+                    } else if (input.indexOf("0b") == 0) {
+                        input = input.slice(2);
+                        base = 2;
+                    }
+                    return parseInt(input, base);
+                }
+
+                // Text field for setting the output item's source address in memory.
+                TextField {
+                    id: pixelBaseAddressTextField
+
+                    onAccepted: { processInput(); }
+                    onEditingFinished: { processInput(); }
+
+                    function processInput() {
+                        var inputValue = controlsColumn.integerFromInputString(String(pixelBaseAddressTextField.text))
+                        if (inputValue && inputValue > 0) {
+                            pixeldisplaypainteditemid.pixelBaseAddress = inputValue
+                        }
+                    }
+                }
             }
         }
     }

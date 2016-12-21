@@ -34,6 +34,7 @@ Ui::Ui(int& argc, char** argv)
 
 int Ui::runUi() {
   qRegisterMetaType<std::size_t>("std::size_t");
+  qRegisterMetaType<std::size_t>("size_t");
   qRegisterMetaType<OutputComponent*>("OutputComponentP");
   qmlRegisterType<PixelDisplayPaintedItem>(
       "eragpsim.pixeldisplaypainteditem", 1, 0, "PixelDisplayPaintedItem");
