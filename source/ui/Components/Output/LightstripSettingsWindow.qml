@@ -86,7 +86,7 @@ Window {
                 function processInput() {
                     var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
                     var maxSize = outputComponent.getMemorySize();
-                    if (inputValue !== undefined && inputValue >= 0 && inputValue <= maxSize) {
+                    if (inputValue !== undefined && inputValue >= 0 && inputValue < maxSize) {
                         outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
                         var maxStrips = (outputComponent.getMemorySize() - (inputValue)) * 8;
                         var strips = controlsColumn.integerFromInputString(String(numberOfStripsTextField.text));
@@ -115,10 +115,14 @@ Window {
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
                     var inputValue = controlsColumn.integerFromInputString(String(numberOfStripsTextField.text));
-                    var size = outputComponent.getMemorySize();
+                    var size = controlsColumn.integerFromInputString(String(baseAddressTextField.text)) ;
                     var maxStrips = (outputComponent.getMemorySize() - size) * 8;
-                    if (inputValue !== undefined && inputValue > 0 && inputValue <= maxStrips) {
-                        outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", inputValue);
+                    if (inputValue !== undefined && inputValue > 0) {
+                        if(inputValue <= maxStrips){
+                            outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", inputValue);
+                        } else {
+                            outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", maxStrips);
+                        }
                     } else {
                         updateSettings();
                     }
