@@ -139,6 +139,9 @@ ScrollView {
                         textArea.clear();
                         textArea.insert(0, text);
                     }
+                    onForceCursorUpdate: {
+                        editor.cursorLineChanged(textArea.cursorLine);
+                    }
                 }
 
                 //timer for parsing

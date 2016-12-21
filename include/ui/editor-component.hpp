@@ -190,6 +190,12 @@ class EditorComponent : public QObject {
    * \param line The new line of the cursor.
    */
   void cursorLineChanged(std::size_t line);
+
+  /**
+   * Forces the editor to send a cursorLineChanged signal, even if there was no
+   * change.
+   */
+  void forceCursorUpdate();
 };
 
 #endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP_ */

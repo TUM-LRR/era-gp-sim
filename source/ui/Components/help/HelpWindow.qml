@@ -23,7 +23,7 @@ import QtQuick.Controls 1.4
 
 Item{
     anchors.fill: parent
-    property string usualText: "Sorry, no help aviable"
+    property string usualText: "Sorry, no help available"
     property int currentLine: 1
 
     TextArea{
@@ -32,6 +32,10 @@ Item{
         readOnly: true
         text: usualText
         textFormat: TextEdit.AutoText
+
+        Component.onCompleted: {
+            editor.forceCursorUpdate();
+        }
     }
 
     Connections {
