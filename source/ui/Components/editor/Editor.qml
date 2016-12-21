@@ -294,8 +294,13 @@ ScrollView {
                         Item {
                             id: issueMark
 
+                            // The issueItems this issueMark contains. See issueMarkComponent for more information on this.
                             property var issueItems: []
 
+                            // The linenumber this issue mark belongs to.
+                            property var lineNumber: 0
+
+                            // Issue line highlight should span whole editor width and the line the issue belongs to.
                             height: textArea.cursorRectangle.height
                             width: scrollView.width
 
@@ -411,6 +416,7 @@ ScrollView {
                                             }
                                         }
 
+                                        // Required for finding out whether issue text overlaps line text.
                                         TextMetrics {
                                             id: issueTextMetrics
                                             text: issueText.text
@@ -431,19 +437,11 @@ ScrollView {
                                             horizontalAlignment: Text.AlignRight
 
                                         }
-
-                                        // Tooltip for showing issueMessage on mouse over.
-                                        ToolTip {
-                                            id: toolTip
-                                            width: issueLineHighlight.width
-                                            height: issueLineHighlight.height
-                                            fontPixelSize: textArea.font.pixelSize
-                                            text: issueMessage
-                                        }
                                     }
 
                                 }
 
+                                // Destroy issues when signal is sent.
                                 Connections {
                                     target: editor
                                     onDeleteErrors: {
@@ -461,22 +459,37 @@ ScrollView {
                                     newIssueItem.anchors.right = issueLineHighlight.right;
 
                                     if (issueMark.issueItems.length === 0) {
-                                        // Check if the first issueText would overlap the line text.
-                                        var lineEndX = textArea.positionToRectangle(TextUtilities.getLineEndForLine(textArea.text, lineNumber)).x;
-                                        var errorLeftX = textArea.width - newIssueItem.width;
-                                        var textToErrorDistance = errorLeftX - lineEndX;
-                                        // If it would overlap, offset it by one line.
-                                        if (textToErrorDistance < 10) {
-                                            newIssueItem.y = issueLineHighlight.height;
-                                        } else { // Oterhwise, position it at the issueMark's first line.
-                                            newIssueItem.y = 0;
-                                        }
+                                        // Position first item.
+                                        issueMark.issueItems.push(newIssueItem);
+                                        _offsetFirstIssueItemIfNecessary()
                                     } else {
                                         // Anchor the new item to its neighboring item above.
                                         newIssueItem.anchors.top = issueMark.issueItems[issueMark.issueItems.length-1].bottom;
+                                        issueMark.issueItems.push(newIssueItem);
                                     }
 
-                                    issueMark.issueItems.push(newIssueItem);
+                                }
+
+                                // Check if the first issueItem needs to be offset by one line if it would
+                                // otherwise ovrlap with the line text after the editor's width has changed.
+                                onWidthChanged: {
+                                    _offsetFirstIssueItemIfNecessary();
+                                }
+
+                                // Checks if the first issueText would overlap the line text and offsets it by one line
+                                // if necessary.
+                                function _offsetFirstIssueItemIfNecessary() {
+                                    if (issueMark.issueItems.length == 0 ) return;
+                                    // Check if the first issueText would overlap the line text.
+                                    var lineEndX = textArea.positionToRectangle(TextUtilities.getLineEndForLine(textArea.text, lineNumber)).x;
+                                    var errorLeftX = textArea.width - issueMark.issueItems[0].width;
+                                    var textToErrorDistance = errorLeftX - lineEndX;
+                                    // If it would overlap, offset it by one line.
+                                    if (textToErrorDistance < 10) {
+                                        issueItems[0].y = issueLineHighlight.height;
+                                    } else { // Oterhwise, position it at the issueMark's first line.
+                                        issueItems[0].y = 0;
+                                    }
                                 }
                             }
 
@@ -497,6 +510,7 @@ ScrollView {
                             newIssue = issueMarkComponent.createObject();
                             newIssue.y = (lineNumber-1)*textArea.cursorRectangle.height;
                             newIssue.parent = errorBar;
+                            newIssue.lineNumber = lineNumber;
                             issueMarks[lineNumber] = newIssue;
                         } else {
                             newIssue = issueMarks[lineNumber];
