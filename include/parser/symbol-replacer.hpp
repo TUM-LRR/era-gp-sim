@@ -23,8 +23,10 @@
 #include <functional>
 #include <vector>
 #include "common/multiregex.hpp"
+#include "parser/positioned-string.hpp"
 #include "parser/symbol.hpp"
 class SymbolGraphEvaluation;
+class CompileErrorAnnotator;
 
 class SymbolReplacer {
  public:
@@ -39,7 +41,8 @@ class SymbolReplacer {
                  const DynamicReplacer& replacer = IDENTITY_REPLACE,
                  size_t maximumReplaceCount = 64);
 
-  std::string replace(const std::string& data) const;
+  PositionedString replace(const PositionedString& data,
+                           const CompileErrorAnnotator& annotator) const;
 
  private:
   std::vector<Symbol> _symbols;

@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include "common/assert.hpp"
 #include "common/utility.hpp"
+#include "parser/positioned-string.hpp"
 #include "parser/symbol-graph-evaluation.hpp"
 
 using size_t = std::size_t;
@@ -138,7 +139,7 @@ prepareSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes,
                const std::vector<size_t>& topologicOrder) {
   std::vector<std::string> values;
   for (const auto& node : nodes) {
-    values.push_back(node.symbol().value());
+    values.push_back(node.symbol().value().string());
   }
   for (const auto& nodeIndex : Utility::revertIterable(topologicOrder)) {
     const auto& node = nodes[nodeIndex];
@@ -153,8 +154,10 @@ prepareSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes,
   for (size_t nodeIndex = 0; nodeIndex < nodes.size(); ++nodeIndex) {
     const auto& symbol = nodes[nodeIndex].symbol();
     const auto& nodeValue = values[nodeIndex];
+    auto positionedValue =
+        PositionedString(nodeValue, symbol.value().positionInterval());
     symbols.push_back(
-        Symbol(symbol.name(), nodeValue, symbol.position(), symbol.behavior()));
+        Symbol(symbol.name(), positionedValue, symbol.behavior()));
   }
   return symbols;
 }
@@ -163,7 +166,7 @@ static std::vector<std::vector<size_t>>
 checkDoubleSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes) {
   std::unordered_map<std::string, std::vector<size_t>> nameTest;
   for (const auto& node : nodes) {
-    nameTest[node.symbol().name()].push_back(node.index());
+    nameTest[node.symbol().name().string()].push_back(node.index());
   }
 
   std::vector<std::vector<size_t>> duplicates;
@@ -219,7 +222,7 @@ const std::vector<size_t>& SymbolGraph::SymbolNode::adjacent() const noexcept {
 
 void SymbolGraph::SymbolNode::checkAdjacency(const SymbolNode& other) {
   if (symbol().behavior() == SymbolBehavior::STATIC &&
-      std::regex_search(other.symbol().value(), symbol().regex())) {
+      std::regex_search(other.symbol().value().string(), symbol().regex())) {
     _adjacent.push_back(other.index());
   }
 }

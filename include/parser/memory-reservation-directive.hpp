@@ -35,7 +35,7 @@ struct FinalRepresentation;
 class MemoryReservationDirective : public IntermediateDirective {
  public:
   using ArgumentCompileFunction = std::function<std::size_t(
-      const std::string&, const CompileErrorAnnotator&)>;
+      const PositionedString&, const CompileErrorAnnotator&)>;
   /**
  * \brief Instantiates a new IntermediateDirective with the given arguments.
  * (only for subclass use!)
@@ -44,10 +44,10 @@ class MemoryReservationDirective : public IntermediateDirective {
  * \param name The name of the operation.
  */
   MemoryReservationDirective(const LineInterval& lines,
-                             const std::vector<std::string>& labels,
-                             const std::string& name,
+                             const std::vector<PositionedString>& labels,
+                             const PositionedString& name,
                              std::size_t cellSize,
-                             const std::vector<std::string>& values,
+                             const std::vector<PositionedString>& values,
                              const ArgumentCompileFunction& argumentCompile);
 
   /**
@@ -93,7 +93,7 @@ class MemoryReservationDirective : public IntermediateDirective {
   RelativeMemoryPosition _relativePosition;
   std::size_t _size;
   std::size_t _cellSize;
-  std::vector<std::string> _values;
+  std::vector<PositionedString> _values;
 };
 
 #endif /* ERAGPSIM_PARSER_MEMORY_RESERVATION_DIRECTIVE_HPP */

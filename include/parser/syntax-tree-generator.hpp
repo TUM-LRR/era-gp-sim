@@ -29,6 +29,7 @@
 class CompileErrorAnnotator;
 class AbstractInstructionNode;
 class MemoryAccess;
+class PositionedString;
 
 /**
  * \brief A connector class for turning arguments and commands into syntax tree
@@ -38,7 +39,7 @@ class SyntaxTreeGenerator {
  public:
   using ArgumentNodeGenerator =
       std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
-          const std::string&,
+          const PositionedString&,
           const NodeFactoryCollection&,
           const CompileErrorAnnotator&)>;
 
@@ -62,7 +63,7 @@ class SyntaxTreeGenerator {
    * \return The transformed operand.
    */
   std::unique_ptr<AbstractSyntaxTreeNode>
-  transformOperand(const std::string& operand,
+  transformOperand(const PositionedString& operand,
                    const CompileErrorAnnotator& annotator) const;
 
   /**
@@ -75,7 +76,7 @@ class SyntaxTreeGenerator {
    * \return The transformed command.
    */
   std::unique_ptr<AbstractInstructionNode> transformCommand(
-      const std::string& command_name,
+      const PositionedString& commandName,
       const CompileErrorAnnotator& annotator,
       std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
       std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,

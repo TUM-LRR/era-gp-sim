@@ -47,9 +47,9 @@ class SectionDirective : public IntermediateDirective {
    * \param arguments Arguments of the directive. First should be section name.
    */
   SectionDirective(const LineInterval& lines,
-                   const std::vector<std::string>& labels,
-                   const std::string& name,
-                   const std::vector<std::string>& arguments);
+                   const std::vector<PositionedString>& labels,
+                   const PositionedString& name,
+                   const std::vector<PositionedString>& arguments);
 
   /**
    * \brief Executes the section directive and sets the compiler section to the
@@ -77,7 +77,7 @@ class SectionDirective : public IntermediateDirective {
   /**
    * \brief The section to change to.
    */
-  std::string _section;
+  PositionedString _section;
 };
 
 #endif /* ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP_ */

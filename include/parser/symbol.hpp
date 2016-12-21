@@ -22,28 +22,25 @@
 
 #include <regex>
 #include <string>
-#include "parser/code-position-interval.hpp"
+#include "parser/positioned-string.hpp"
 
 enum class SymbolBehavior { STATIC, DYNAMIC };
 
 class Symbol {
  public:
-  Symbol(const std::string& name,
-         const std::string& value,
-         const CodePositionInterval position,
+  Symbol(const PositionedString& name,
+         const PositionedString& value,
          SymbolBehavior behavior = SymbolBehavior::STATIC);
 
-  const std::string& name() const noexcept;
-  const std::string& value() const noexcept;
-  const CodePositionInterval& position() const noexcept;
+  const PositionedString& name() const noexcept;
+  const PositionedString& value() const noexcept;
   SymbolBehavior behavior() const noexcept;
   const std::regex regex() const noexcept;
   bool nameValid() const;
 
  private:
-  std::string _name;
-  std::string _value;
-  CodePositionInterval _position;
+  PositionedString _name;
+  PositionedString _value;
   SymbolBehavior _behavior;
   std::regex _regex;
 };

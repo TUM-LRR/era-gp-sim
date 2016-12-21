@@ -39,7 +39,7 @@ void IntermediateMacroInstruction::replaceWithMacros(
 
     IntermediateInstruction& inst = static_cast<IntermediateInstruction&>(**i);
 
-    auto macro = macroTable.find(inst._name,
+    auto macro = macroTable.find(inst._name.string(),
                                  inst._sources.size() + inst._targets.size());
     if (!macro.found()) continue;
 
@@ -73,7 +73,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
       _operations.push_back(std::move(ptr));
     } else {
       annotator.addErrorHere("Macro contains unsupported instruction '%1'.",
-                             macro.getOperationName(i));
+                             macro.getOperationName(i).string());
     }
   }
 
@@ -110,16 +110,18 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
   }
 
   if (_labels.size() > 0 && _firstInstruction < 0) {
-    annotator.addErrorHere("Labels cant point to macros without instructions!");
+    annotator.addErrorHere(
+        "Labels cannot point to macros without instructions!");
   } else {
     for (const auto& label : _labels) {
-      graph.addNode(Symbol(
-          label,
-          std::to_string(static_cast<IntermediateInstruction*>(
-                             _operations[_firstInstruction].get())
-                             ->address()),
-          CodePositionInterval(CodePosition(0), CodePosition(0)) /*TODO*/,
-          SymbolBehavior::DYNAMIC));
+      graph.addNode(
+          Symbol(label,
+                 PositionedString(
+                     std::to_string(static_cast<IntermediateInstruction*>(
+                                        _operations[_firstInstruction].get())
+                                        ->address()),
+                     label.positionInterval() /*TODO?*/),
+                 SymbolBehavior::DYNAMIC));
     }
   }
 }

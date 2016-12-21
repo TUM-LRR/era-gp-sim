@@ -38,8 +38,8 @@ class IntermediateDirective : public IntermediateOperation {
    * \param name The name of the operation.
    */
   IntermediateDirective(const LineInterval& lines,
-                        const std::vector<std::string>& labels,
-                        const std::string& name);
+                        const std::vector<PositionedString>& labels,
+                        const PositionedString& name);
 
  protected:
   virtual void determineMemoryPosition();

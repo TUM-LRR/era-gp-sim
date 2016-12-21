@@ -26,10 +26,11 @@
 #include "parser/symbol-replacer.hpp"
 #include "parser/syntax-tree-generator.hpp"
 
-ConstantDirective::ConstantDirective(const LineInterval& lines,
-                                     const std::vector<std::string>& labels,
-                                     const std::string& name,
-                                     const std::vector<std::string>& arguments)
+ConstantDirective::ConstantDirective(
+    const LineInterval& lines,
+    const std::vector<PositionedString>& labels,
+    const PositionedString& name,
+    const std::vector<PositionedString>& arguments)
 : IntermediateDirective(lines, labels, name), _arguments{arguments} {
 }
 
@@ -38,8 +39,8 @@ void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
                                 FinalRepresentation& finalRepresentator,
                                 MemoryAccess& memoryAccess) {
   // Try to parse argument to catch errors early.
-  std::string fullExpression = immutable.replacer().replace(_expression);
-  if (!fullExpression.empty()) {
+  auto fullExpression = immutable.replacer().replace(_expression, annotator);
+  if (!fullExpression.string().empty()) {
     immutable.generator().transformOperand(fullExpression, annotator);
   } else {
     // better error messages:
@@ -65,9 +66,7 @@ void ConstantDirective::enhanceSymbolTable(
     annotator.addErrorHere("Malformed constant directive");
     return;
   }
-  _expression = "(" + _arguments[1] + ")";
-  graph.addNode(
-      Symbol(_arguments[0],
-             _expression,
-             /*TODO*/ CodePositionInterval(CodePosition(0), CodePosition(0))));
+  _expression = PositionedString("(" + _arguments[1].string() + ")",
+                                 _arguments[1].positionInterval());
+  graph.addNode(Symbol(_arguments[0], _expression));
 }

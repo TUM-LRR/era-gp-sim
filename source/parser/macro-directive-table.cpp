@@ -27,7 +27,7 @@ bool MacroDirectiveTable::insert(const MacroDirective &macro) {
   auto paramCount = macro.getParameterCount();
   // Insert macro for every possible amount of arguments
   for (auto count = paramCount.first; count <= paramCount.second; count++) {
-    MacroInstance instance(macro.macroName(), count);
+    MacroInstance instance(macro.macroName().string(), count);
     auto result = _macros.emplace(instance, macro);
     if (!result.second) {
       return false;

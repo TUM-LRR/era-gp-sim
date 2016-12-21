@@ -26,17 +26,30 @@
 #include "parser/syntax-information.hpp"
 
 // This is just for internal testing during development
-//#define PARSER_TEST_PRINT
+// #define PARSER_TEST_PRINT
 #ifdef PARSER_TEST_PRINT
 #include <iostream>
 
-static void printIfDefined(std::string str) {
+static void printIfDefined(const std::string& str) {
   std::cout << str << '\n';
+}
+
+static void printErrors(const std::vector<CompileError>& errorList) {
+  for (const auto& error : errorList) {
+    std::cout << error.message().getBaseString() << ";; with arguments [";
+    for (const auto& operand : error.message().getOperands()) {
+      std::cout << operand->getBaseString() << "; ";
+    }
+    std::cout << "]" << std::endl;
+  }
 }
 
 #else
 
-static void printIfDefined(std::string str) {
+static void printIfDefined(const std::string& str) {
+}
+
+static void printErrors(const std::vector<CompileError>& errorList) {
 }
 
 #endif
@@ -64,6 +77,7 @@ class RiscParserTest : public ::testing::Test {
 TEST_F(RiscParserTest, EmptyString) {
   FinalRepresentation res;
   res = parser.parse("", ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 0);
 }
@@ -71,6 +85,7 @@ TEST_F(RiscParserTest, EmptyString) {
 TEST_F(RiscParserTest, EmptyMultilineString) {
   FinalRepresentation res;
   res = parser.parse("\n\n", ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 0);
 }
@@ -78,6 +93,7 @@ TEST_F(RiscParserTest, EmptyMultilineString) {
 TEST_F(RiscParserTest, SingleInstruction) {
   FinalRepresentation res;
   res = parser.parse("ADD x13, x4,x0", ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 1);
 }
@@ -85,6 +101,7 @@ TEST_F(RiscParserTest, SingleInstruction) {
 TEST_F(RiscParserTest, SingleDirective) {
   FinalRepresentation res;
   res = parser.parse(".section data", ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 0);
 }
@@ -92,6 +109,7 @@ TEST_F(RiscParserTest, SingleDirective) {
 TEST_F(RiscParserTest, SingleBadDirective) {
   FinalRepresentation res;
   res = parser.parse(".idontexist lala, la", ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_EQ(res.errorList.size(), 1);
   EXPECT_EQ(res.commandList.size(), 0);
 }
@@ -127,6 +145,7 @@ TEST_F(RiscParserTest, MultipleDirectives) {
       "add2 ZAHL, 3*9\n"
       "add3 ;kommentar\n",
       ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 3 + 3 + 4 + 5 + 5);
 }
@@ -178,6 +197,7 @@ TEST_F(RiscParserTest, WrongMacros) {
       "add4   \n"
       "add5;kommentar\n",
       ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_GE(res.errorList.size(), 5);
   EXPECT_LE(res.commandList.size(), 3);
 }
@@ -191,6 +211,7 @@ TEST_F(RiscParserTest, WrongMacroUnclosed) {
       "addi x0, x0, \\x\n"
       "addi x0, x0, \\x\n",
       ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_GE(res.errorList.size(), 1);
   EXPECT_EQ(res.commandList.size(), 0);
 }
@@ -208,6 +229,7 @@ TEST_F(RiscParserTest, MemoryDirectives) {
       ".resw 4\n"
       ".resd 1\n",
       ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 0);
 }
@@ -218,6 +240,7 @@ TEST_F(RiscParserTest, WrongSection) {
       ".section data\n"
       "add x0, x0, x0\n",
       ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_GE(res.errorList.size(), 1);
   EXPECT_EQ(res.commandList.size(), 1);
 }
@@ -233,6 +256,7 @@ TEST_F(RiscParserTest, MultipleInstructions) {
       "\n"
       "ADD x0, x0, x0; kommentar",
       ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_EQ(res.errorList.size(), 0);
   EXPECT_EQ(res.commandList.size(), 4);
 }
@@ -241,6 +265,7 @@ TEST_F(RiscParserTest, MalformedInstructions) {
   FinalRepresentation res;
   res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7, 9\nble  ",
                      ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_EQ(res.errorList.size(), 5);
   EXPECT_EQ(res.commandList.size(), 3);
 }
@@ -248,6 +273,7 @@ TEST_F(RiscParserTest, MalformedInstructions) {
 TEST_F(RiscParserTest, BadCharacters) {
   FinalRepresentation res;
   res = parser.parse("ðŸ…±ðŸ…»ðŸ…¾ðŸ†‡ðŸ†‡ x13, x4,7", ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_EQ(res.errorList.size(), 2);
   EXPECT_EQ(res.commandList.size(), 0);
 }
@@ -264,6 +290,7 @@ TEST_F(RiscParserTest, MixedErrors) {
       "\n"
       "_addition456: ADD x0, x0, x0; kommentar",
       ParserMode::COMPILE);
+  printErrors(res.errorList);
   EXPECT_EQ(res.errorList.size(), 2);
   EXPECT_EQ(res.commandList.size(), 5);
 }

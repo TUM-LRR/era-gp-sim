@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "parser/line-interval.hpp"
+#include "parser/positioned-string.hpp"
 
 class Architecture;
 class SymbolReplacer;
@@ -79,8 +80,8 @@ class IntermediateOperation {
    * \param name The name of the operation.
    */
   IntermediateOperation(const LineInterval& lines,
-                        const std::vector<std::string>& labels,
-                        const std::string& name);
+                        const std::vector<PositionedString>& labels,
+                        const PositionedString& name);
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        const CompileErrorAnnotator& annotator,
@@ -124,8 +125,8 @@ class IntermediateOperation {
    * \param name  Name of the parameter.
    * \param value Value of the parameter.
    */
-  virtual void
-  insertIntoArguments(const std::string& name, const std::string& value);
+  virtual void insertIntoArguments(const PositionedString& name,
+                                   const PositionedString& value);
 
   /**
    * Clones the operation if supported.
@@ -135,9 +136,9 @@ class IntermediateOperation {
 
   const LineInterval& lines() const noexcept;
 
-  const std::vector<std::string>& labels() const noexcept;
+  const std::vector<PositionedString>& labels() const noexcept;
 
-  const std::string& name() const noexcept;
+  const PositionedString& name() const noexcept;
 
  protected:
   /**
@@ -148,12 +149,12 @@ class IntermediateOperation {
   /**
    * \brief The internal label list.
    */
-  std::vector<std::string> _labels;
+  std::vector<PositionedString> _labels;
 
   /**
    * \brief The internal operation name.
    */
-  std::string _name;
+  PositionedString _name;
 };
 
 using CommandList = std::vector<IntermediateOperationPointer>;

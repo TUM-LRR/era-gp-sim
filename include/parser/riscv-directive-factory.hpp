@@ -44,9 +44,9 @@ namespace RiscVDirectiveFactory {
  * \param state        The current compile state to record errors.
  */
 void create(const LineInterval &lines,
-            const std::vector<std::string> &labels,
-            const std::string &name,
-            const std::vector<std::string> &arguments,
+            const std::vector<PositionedString> &labels,
+            const PositionedString &name,
+            const std::vector<PositionedString> &arguments,
             IntermediateRepresentator &intermediate,
             const CompileErrorAnnotator &annotator);
 
@@ -57,9 +57,9 @@ extern const std::unordered_map<
     std::string,
     std::function<std::unique_ptr<IntermediateDirective>(
         const LineInterval &,
-        const std::vector<std::string> &,
-        const std::string &,
-        const std::vector<std::string> &)>>
+        const std::vector<PositionedString> &,
+        const PositionedString &,
+        const std::vector<PositionedString> &)>>
     mapping;
 }
 

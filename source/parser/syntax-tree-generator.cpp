@@ -25,9 +25,11 @@
 #include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
 #include "parser/compile-error-annotator.hpp"
+#include "parser/positioned-string.hpp"
 
 std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(
-    const std::string& operand, const CompileErrorAnnotator& annotator) const {
+    const PositionedString& operand,
+    const CompileErrorAnnotator& annotator) const {
   // We invoke our node generator to get a node!
   std::unique_ptr<AbstractSyntaxTreeNode> outputNode =
       _argumentGenerator(operand, _nodeFactories, annotator);
@@ -35,25 +37,25 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(
   // According to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
-    annotator.addErrorHere("Invalid argument: '%1'", operand);
+    annotator.addErrorHere("Invalid argument: '%1'", operand.string());
   }
 
   return std::move(outputNode);
 }
 
 std::unique_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
-    const std::string& command_name,
+    const PositionedString& commandName,
     const CompileErrorAnnotator& annotator,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
     std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
     MemoryAccess& memoryAccess) const {
   // Just create an instruction node and add all output and input nodes
   // (operands).
-  auto outputNode = _nodeFactories.createInstructionNode(command_name);
+  auto outputNode = _nodeFactories.createInstructionNode(commandName.string());
 
   if (!outputNode) {
     // The node creation failed!
-    annotator.addErrorHere("Unknown operation: %1", command_name);
+    annotator.addErrorHere("Unknown operation: %1", commandName.string());
     return std::move(outputNode);
   }
 
@@ -72,7 +74,7 @@ std::unique_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
   if (!validationResult) {
     annotator.addErrorHere(
         "Invalid operation (%1): %2",
-        command_name,
+        commandName.string(),
         validationResult.getMessage().getBaseString()); /*TODO*/
   }
 

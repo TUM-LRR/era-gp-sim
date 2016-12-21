@@ -27,6 +27,7 @@
 #include "common/hash.hpp"
 #include "common/optional.hpp"
 #include "parser/macro-directive.hpp"
+#include "parser/positioned-string.hpp"
 
 class MacroDirectiveTable {
  public:

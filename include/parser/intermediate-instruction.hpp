@@ -45,10 +45,10 @@ class IntermediateInstruction : public IntermediateOperation {
    * \param targets The target operands of the instruction.
    */
   IntermediateInstruction(const LineInterval& lines,
-                          const std::vector<std::string>& labels,
-                          const std::string& name,
-                          const std::vector<std::string>& sources,
-                          const std::vector<std::string>& targets);
+                          const std::vector<PositionedString>& labels,
+                          const PositionedString& name,
+                          const std::vector<PositionedString>& sources,
+                          const std::vector<PositionedString>& targets);
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        const CompileErrorAnnotator& annotator,
@@ -79,8 +79,8 @@ class IntermediateInstruction : public IntermediateOperation {
 
   MemoryAddress address() const;
 
-  virtual void
-  insertIntoArguments(const std::string& name, const std::string& value);
+  virtual void insertIntoArguments(const PositionedString& name,
+                                   const PositionedString& value);
 
   virtual IntermediateOperationPointer clone();
 
@@ -95,7 +95,7 @@ class IntermediateInstruction : public IntermediateOperation {
    * \return The compiled vector of arguments.
    */
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
-  compileArgumentVector(const std::vector<std::string>& vector,
+  compileArgumentVector(const std::vector<PositionedString>& vector,
                         const ExecuteImmutableArguments& immutable,
                         const CompileErrorAnnotator& annotator,
                         MemoryAccess& memoryAccess);
@@ -106,12 +106,12 @@ class IntermediateInstruction : public IntermediateOperation {
   /**
    * \brief The internal source arguments.
    */
-  std::vector<std::string> _sources;
+  std::vector<PositionedString> _sources;
 
   /**
    * \brief The internal target arguments.
    */
-  std::vector<std::string> _targets;
+  std::vector<PositionedString> _targets;
 
   /**
    * \brief The internal memory address.
@@ -127,7 +127,7 @@ class IntermediateInstruction : public IntermediateOperation {
    * Constructs an argument vector from the sources and targets vectors.
    * \return New vector containing all instruction arguments.
    */
-  std::vector<std::string> getArgsVector() const;
+  std::vector<PositionedString> getArgsVector() const;
 };
 
 #endif

@@ -28,9 +28,9 @@
 class ConstantDirective : public IntermediateDirective {
  public:
   ConstantDirective(const LineInterval& lines,
-                    const std::vector<std::string>& labels,
-                    const std::string& name,
-                    const std::vector<std::string>& arguments);
+                    const std::vector<PositionedString>& labels,
+                    const PositionedString& name,
+                    const std::vector<PositionedString>& arguments);
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        const CompileErrorAnnotator& annotator,
@@ -43,8 +43,8 @@ class ConstantDirective : public IntermediateDirective {
                      SymbolGraph& graph) override;
 
  private:
-  std::vector<std::string> _arguments;
-  std::string _expression;
+  std::vector<PositionedString> _arguments;
+  PositionedString _expression;
 };
 
 #endif /* ERAGPSIM_PARSER_CONSTANT_DIRECTIVE_HPP_ */

@@ -28,11 +28,24 @@ RiscvParser::RiscvRegex::RiscvRegex() {
 static void trimRight(std::string &str) {
   int pos = str.size() - 1;
 
-  while (pos >= 0 && std::isspace(str[pos])) pos--;
+  while (pos >= 0 && std::isspace(str[pos])) {
+    --pos;
+  }
 
-  pos++;
+  ++pos;
 
-  if (pos < str.size() && pos >= 0) str.erase(pos);
+  if (pos < str.size() && pos >= 0) {
+    str.erase(pos);
+  }
+}
+
+static size_t trimRight(const std::string &line, size_t pos) {
+  --pos;
+  while (pos > 0 && std::isspace(line[pos])) {
+    --pos;
+  }
+  ++pos;
+  return pos;
 }
 
 // Returns true if successful
@@ -41,35 +54,41 @@ bool RiscvParser::RiscvRegex::_readInstructionOrLabel(
     const CompileErrorAnnotator &annotator,
     size_t &pos) {
   // Skip spaces
-  for (; pos < line.size() && std::isspace(line[pos]); pos++)
-    ;
+  for (; pos < line.size() && std::isspace(line[pos]); pos++) {
+  }
 
+  size_t startPos = pos;
   // Add valid characters to _instruction
   for (; pos < line.size() &&
          (std::isalnum(line[pos]) || line[pos] == '_' || line[pos] == '.');
-       pos++)
-    _instruction.push_back(line[pos]);
+       ++pos) {
+  }
 
   // If we read through the whole string, the instruction is finished
-  if (pos >= line.size()) return true;
+  if (pos >= line.size()) {
+    _instruction = _getPositionedString(line, annotator, startPos, line.size());
+    return true;
+  }
 
   // If we hit a colon, its a label
   if (line[pos] == ':') {
     // If a label is already defined, add an error
-    if (_label.size() > 0) {
+    if (!_label.string().empty()) {
       annotator.addError(_getCharacterPosition(annotator, pos),
                          "Multiple labels per line aren't allowed!");
       return false;
     }
 
-    _label = _instruction;
-    _instruction.clear();
-    pos++;
+    _label = _getPositionedString(line, annotator, startPos, pos);
+    ++pos;
     return _readInstructionOrLabel(line, annotator, pos);
   }
 
   // If we hit a space or a comment start, the instruction is finished
-  if (std::isspace(line[pos]) || line[pos] == ';') return true;
+  if (std::isspace(line[pos]) || line[pos] == ';') {
+    _instruction = _getPositionedString(line, annotator, startPos, pos);
+    return true;
+  }
 
   // Otherwise we hit an invalid character
   annotator.addError(_getCharacterPosition(annotator, pos),
@@ -84,37 +103,39 @@ bool RiscvParser::RiscvRegex::_readParameter(
     size_t &pos) {
   // Saves if we're inside a string
   bool quoted = false;
-  std::string parameter;
 
   // Skip spaces
-  for (; pos < line.size() && std::isspace(line[pos]); pos++)
-    ;
+  for (; pos < line.size() && std::isspace(line[pos]); pos++) {
+  }
 
+  size_t startPos = pos;
+  size_t endPos = pos;
   // Add characters to parameter until we hit a ',' outside of quotes
-  for (; pos < line.size(); pos++) {
+  for (; pos < line.size(); ++pos, ++endPos) {
     if (line[pos] == '"' && line[pos - 1] != '\\') {
       quoted = !quoted;
     }
     if (line[pos] == ',' && !quoted) {
-      pos++;
+      ++pos;
       break;
     } else if (line[pos] == ';' && !quoted) {
       break;
-    } else {
-      parameter.push_back(line[pos]);
     }
   }
 
-  trimRight(parameter);
+  size_t trimmedPos = trimRight(line, endPos);
 
-  if (parameter.size() > 0) _parameters.push_back(parameter);
+  if (startPos < trimmedPos) {
+    _parameters.push_back(
+        _getPositionedString(line, annotator, startPos, trimmedPos));
+  }
 
   return true;
 }
 
 void RiscvParser::RiscvRegex::_resetResults() {
-  _label.clear();
-  _instruction.clear();
+  _label = PositionedString();
+  _instruction = PositionedString();
   _parameters.clear();
   _isValid = false;
 }
@@ -127,12 +148,17 @@ RiscvParser::RiscvRegex::matchLine(const std::string &line,
   _resetResults();
 
   // Read instruction and label
-  if (!_readInstructionOrLabel(line, annotator, pos)) return pos;
+  if (!_readInstructionOrLabel(line, annotator, pos)) {
+    return pos;
+  }
 
   // Read parameters until it fails or we reached the end of the line or a
   // comment
-  while (pos < line.size() && line[pos] != ';')
-    if (!_readParameter(line, annotator, pos)) return pos;
+  while (pos < line.size() && line[pos] != ';') {
+    if (!_readParameter(line, annotator, pos)) {
+      return pos;
+    }
+  }
 
   _isValid = true;
   return pos;
@@ -143,32 +169,33 @@ bool RiscvParser::RiscvRegex::isValid() const noexcept {
 }
 
 bool RiscvParser::RiscvRegex::hasLabel() const noexcept {
-  return !_label.empty();
+  return !_label.string().empty();
 }
 
 bool RiscvParser::RiscvRegex::hasInstruction() const noexcept {
-  return !_instruction.empty();
+  return !_instruction.string().empty();
 }
 
 bool RiscvParser::RiscvRegex::isDirective() const {
-  return hasInstruction() && _instruction[0] == '.';
+  return hasInstruction() && _instruction.string()[0] == '.';
 }
 
-std::string RiscvParser::RiscvRegex::getLabel() const noexcept {
+const PositionedString &RiscvParser::RiscvRegex::getLabel() const noexcept {
   return _label;
 }
 
-std::string RiscvParser::RiscvRegex::getInstruction() const {
-  std::string instruction = _instruction;
+PositionedString RiscvParser::RiscvRegex::getInstruction() const {
+  auto instruction = _instruction;
 
-  if (instruction[0] == '.') {
-    instruction.erase(0, 1);
+  if (isDirective()) {
+    instruction = PositionedString(instruction.string().substr(1),
+                                   instruction.positionInterval());
   }
 
   return instruction;
 }
 
-std::string RiscvParser::RiscvRegex::getParameter(int n) const {
+const PositionedString &RiscvParser::RiscvRegex::getParameter(int n) const {
   assert::that(n >= 0 && n < getParameterCount());
   return _parameters[n];
 }
@@ -181,4 +208,20 @@ CodePositionInterval RiscvParser::RiscvRegex::_getCharacterPosition(
     const CompileErrorAnnotator &annotator, size_t pos) const {
   CodePosition position(annotator.position().start().line(), pos);
   return CodePositionInterval(position, position >> 1);
+}
+
+CodePositionInterval RiscvParser::RiscvRegex::_getCharacterInterval(
+    const CompileErrorAnnotator &annotator, size_t start, size_t end) const {
+  CodePosition nstart(annotator.position().start().line(), start);
+  CodePosition nend(annotator.position().start().line(), end);
+  return CodePositionInterval(nstart, nend);
+}
+
+PositionedString RiscvParser::RiscvRegex::_getPositionedString(
+    const std::string &line,
+    const CompileErrorAnnotator &annotator,
+    size_t start,
+    size_t end) const {
+  return PositionedString(line.substr(start, end - start),
+                          _getCharacterInterval(annotator, start, end));
 }

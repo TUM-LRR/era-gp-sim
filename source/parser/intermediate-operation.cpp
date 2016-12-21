@@ -34,8 +34,8 @@
 
 IntermediateOperation::IntermediateOperation(
     const LineInterval& lines,
-    const std::vector<std::string>& labels,
-    const std::string& name)
+    const std::vector<PositionedString>& labels,
+    const PositionedString& name)
 : _lines(lines), _labels(labels), _name(name) {
 }
 
@@ -71,8 +71,8 @@ void IntermediateOperation::insert(IntermediateOperationPointer pointer) {
   assert::that(false);
 }
 
-void IntermediateOperation::insertIntoArguments(const std::string& name,
-                                                const std::string& value) {
+void IntermediateOperation::insertIntoArguments(const PositionedString& name,
+                                                const PositionedString& value) {
   // Nothing to do here.
 }
 
@@ -84,10 +84,11 @@ const LineInterval& IntermediateOperation::lines() const noexcept {
   return _lines;
 }
 
-const std::vector<std::string>& IntermediateOperation::labels() const noexcept {
+const std::vector<PositionedString>& IntermediateOperation::labels() const
+    noexcept {
   return _labels;
 }
 
-const std::string& IntermediateOperation::name() const noexcept {
+const PositionedString& IntermediateOperation::name() const noexcept {
   return _name;
 }

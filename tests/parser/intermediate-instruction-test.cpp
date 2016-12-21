@@ -18,11 +18,14 @@
 
 #include "parser/intermediate-instruction.hpp"
 #include "gtest/gtest.h"
+#include "parser/positioned-string.hpp"
 
 // Hehe...
-#define SAMPLE_COMMAND                                                  \
-  LineInterval(0, 1), {"label1", "label2", "label3"}, "mov", {"eax"}, { \
-    "eax"                                                               \
+#define ZP(x) PositionedString(x, CodePositionInterval())
+#define SAMPLE_COMMAND                                                       \
+  LineInterval(0, 1), {ZP("label1"), ZP("label2"), ZP("label3")}, ZP("mov"), \
+      {ZP("eax")}, {                                                         \
+    ZP("eax")                                                                \
   }
 
 TEST(IntermediateInstruction, initSimple) {

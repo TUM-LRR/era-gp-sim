@@ -32,9 +32,9 @@ class MacroEndDirective : public IntermediateDirective {
    * \param arguments Arguments of the directive. Should be none.
    */
   MacroEndDirective(const LineInterval& lines,
-                    const std::vector<std::string>& labels,
-                    const std::string& name,
-                    const std::vector<std::string>& arguments);
+                    const std::vector<PositionedString>& labels,
+                    const PositionedString& name,
+                    const std::vector<PositionedString>& arguments);
 
   /**
   * \brief Instantiates a new MacroEndDirective with the given arguments.
@@ -43,8 +43,8 @@ class MacroEndDirective : public IntermediateDirective {
   * \param name The name of the operation.
   */
   MacroEndDirective(const LineInterval& lines,
-                    const std::vector<std::string>& labels,
-                    const std::string& name);
+                    const std::vector<PositionedString>& labels,
+                    const PositionedString& name);
 
   /**
    * \brief Does probably nothing.

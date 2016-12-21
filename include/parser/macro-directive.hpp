@@ -41,9 +41,9 @@ class MacroDirective : public IntermediateDirective {
    *                  of the macro.
    */
   MacroDirective(const LineInterval& lines,
-                 const std::vector<std::string>& labels,
-                 const std::string& name,
-                 const std::vector<std::string>& arguments);
+                 const std::vector<PositionedString>& labels,
+                 const PositionedString& name,
+                 const std::vector<PositionedString>& arguments);
 
   /**
    * \brief Instantiates a new MacroDirective with the given arguments.
@@ -54,10 +54,10 @@ class MacroDirective : public IntermediateDirective {
    * \param macroParameters The parameter names of the macro, if any.
    */
   MacroDirective(const LineInterval& lines,
-                 const std::vector<std::string>& labels,
-                 const std::string& name,
-                 const std::string& macroName,
-                 const std::vector<std::string>& macroParameters);
+                 const std::vector<PositionedString>& labels,
+                 const PositionedString& name,
+                 const PositionedString& macroName,
+                 const std::vector<PositionedString>& macroParameters);
 
   /**
    * \brief Executes the given macro (somehow).
@@ -92,7 +92,7 @@ class MacroDirective : public IntermediateDirective {
    * \brief Returns the macro name.
    * \return The macro name.
    */
-  const std::string& macroName() const;
+  const PositionedString& macroName() const;
 
   /**
    * Returns number of operations.
@@ -116,11 +116,12 @@ class MacroDirective : public IntermediateDirective {
    * arguments.
    */
   IntermediateOperationPointer
-  getOperation(size_t index, const std::vector<std::string>& arguments) const;
+  getOperation(size_t index,
+               const std::vector<PositionedString>& arguments) const;
 
   int firstInstructionIndex() const;
 
-  const std::string& getOperationName(size_t index) const;
+  const PositionedString& getOperationName(size_t index) const;
 
   /**
    * Calls a function on an operation in this macro after given arguments have
@@ -132,7 +133,7 @@ class MacroDirective : public IntermediateDirective {
    */
   /*template <typename T, typename... U>
   void callOperationFunction(size_t index,
-                             const std::vector<std::string>& arguments,
+                             const std::vector<PositionedString>& arguments,
                              T func,
                              U&... args) {
     // Try to clone the operation and insert macro parameters.
@@ -155,10 +156,10 @@ class MacroDirective : public IntermediateDirective {
    */
   class MacroParameters {
    public:
-    MacroParameters(std::vector<std::string>::const_iterator begin,
-                    std::vector<std::string>::const_iterator end);
+    MacroParameters(std::vector<PositionedString>::const_iterator begin,
+                    std::vector<PositionedString>::const_iterator end);
 
-    MacroParameters(const std::vector<std::string>& arguments)
+    MacroParameters(const std::vector<PositionedString>& arguments)
     : MacroParameters(arguments.begin(), arguments.end()) {
     }
 
@@ -174,7 +175,7 @@ class MacroDirective : public IntermediateDirective {
      * \param values Values to insert for the parameters.
      */
     void insertParameters(IntermediateOperationPointer& operation,
-                          const std::vector<std::string>& values) const;
+                          const std::vector<PositionedString>& values) const;
 
     /**
      * Returns a pair with the minimum and maximum amount of parameters for this
@@ -188,7 +189,8 @@ class MacroDirective : public IntermediateDirective {
     /**
      * Vector of all the parameters as `{name, optional default value}` pairs.
      */
-    std::vector<std::pair<std::string, Optional<std::string>>> _params;
+    std::vector<std::pair<PositionedString, Optional<PositionedString>>>
+        _params;
 
     /**
      * Minumum amount of parameters this operation needs.
@@ -201,7 +203,7 @@ class MacroDirective : public IntermediateDirective {
   /**
    * \brief The name of the macro.
    */
-  std::string _macroName;
+  PositionedString _macroName;
 
   /**
    * \brief The parameters of the macro.

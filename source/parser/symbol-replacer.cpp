@@ -20,13 +20,14 @@
 #include "parser/symbol-replacer.hpp"
 #include "common/assert.hpp"
 #include "common/utility.hpp"
+#include "parser/compile-error-annotator.hpp"
 #include "parser/symbol-graph-evaluation.hpp"
 
 static MSRegex constructSymbolRegex(std::vector<Symbol> symbols) {
   std::vector<std::string> names;
-  for (const auto& i : symbols) {
-    assert::that(i.nameValid());
-    names.push_back(i.name());
+  for (const auto& symbol : symbols) {
+    assert::that(symbol.nameValid());
+    names.push_back(symbol.name().string());
   }
   if (names.empty()) {
     names.push_back("none^");
@@ -49,22 +50,26 @@ SymbolReplacer::SymbolReplacer(const SymbolGraphEvaluation& evaluation,
 : SymbolReplacer(evaluation.symbols(), replacer, maximumReplaceCount) {
 }
 
-std::string SymbolReplacer::replace(const std::string& data) const {
-  auto result = data;
+PositionedString
+SymbolReplacer::replace(const PositionedString& data,
+                        const CompileErrorAnnotator& annotator) const {
+  auto result = data.string();
   auto multireplace = [&](std::size_t index) -> std::string {
     return _replacer(_symbols[index]);
   };
-  for (const auto& i : Utility::range<std::size_t>(0, _maximumReplaceCount)) {
+  for (const auto& round :
+       Utility::range<std::size_t>(0, _maximumReplaceCount)) {
     auto previous = result;
     result = _matchRegex.replace(result, multireplace);
     if (result == previous) {
-      return result;
+      return PositionedString(result, data.positionInterval());
     }
   }
 
-  // ERROR! TODO
-  return result;
+  annotator.addErrorHere("Exceeded maximum number of replace runs.");
+
+  return PositionedString(result, data.positionInterval());
 }
 
 const SymbolReplacer::DynamicReplacer SymbolReplacer::IDENTITY_REPLACE =
-    [](const Symbol& symbol) { return symbol.value(); };
+    [](const Symbol& symbol) { return symbol.value().string(); };

@@ -18,44 +18,54 @@
 
 #include "parser/symbol.hpp"
 #include "gtest/gtest.h"
+#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
+#include "parser/positioned-string.hpp"
 #include "parser/symbol-graph-evaluation.hpp"
 #include "parser/symbol-graph.hpp"
 #include "parser/symbol-replacer.hpp"
-
-auto POSITION_ZERO = CodePositionInterval(CodePosition(0), CodePosition(0));
+#define DEFINE_ANNOTATOR      \
+  CompileErrorList errorList; \
+  CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
+#define ZP(x) PositionedString(x, CodePositionInterval())
 
 TEST(SymbolTable, empty) {
+  DEFINE_ANNOTATOR;
   SymbolGraph graph;
   auto eval = graph.evaluate();
   ASSERT_TRUE(eval.valid());
 }
 
 TEST(SymbolTable, evaluateSimple) {
+  DEFINE_ANNOTATOR;
   SymbolGraph graph;
-  graph.addNode(Symbol(std::string("Hi"), std::string("Bye"), POSITION_ZERO));
+  graph.addNode(Symbol(ZP("Hi"), ZP("Bye")));
   auto eval = graph.evaluate();
   ASSERT_TRUE(eval.valid());
 }
 
 TEST(SymbolTable, replaceSimple) {
+  DEFINE_ANNOTATOR;
   SymbolGraph graph;
-  graph.addNode(Symbol("A", "B", POSITION_ZERO));
-  graph.addNode(Symbol("B", "C", POSITION_ZERO));
-  graph.addNode(Symbol("C", "D", POSITION_ZERO));
-  graph.addNode(Symbol("E", "C", POSITION_ZERO));
+  graph.addNode(Symbol(ZP("A"), ZP("B")));
+  graph.addNode(Symbol(ZP("B"), ZP("C")));
+  graph.addNode(Symbol(ZP("C"), ZP("D")));
+  graph.addNode(Symbol(ZP("E"), ZP("C")));
   auto eval = graph.evaluate();
   ASSERT_TRUE(eval.valid());
   SymbolReplacer replacer(eval);
-  auto result = replacer.replace("A+B+C+c=E-D+X-ABCDEFG-124*12B32#E");
-  ASSERT_EQ(result, "D+D+D+c=D-D+X-ABCDEFG-124*12B32#D");
+  auto result =
+      replacer.replace(ZP("A+B+C+c=E-D+X-ABCDEFG-124*12B32#E"), annotator);
+  ASSERT_EQ(result.string(), "D+D+D+c=D-D+X-ABCDEFG-124*12B32#D");
 }
 
 TEST(SymbolTable, simpleCycle) {
+  DEFINE_ANNOTATOR;
   SymbolGraph graph;
-  graph.addNode(Symbol("A", "B", POSITION_ZERO));
-  graph.addNode(Symbol("B", "C", POSITION_ZERO));
-  graph.addNode(Symbol("C", "D", POSITION_ZERO));
-  graph.addNode(Symbol("D", "A", POSITION_ZERO));
+  graph.addNode(Symbol(ZP("A"), ZP("B")));
+  graph.addNode(Symbol(ZP("B"), ZP("C")));
+  graph.addNode(Symbol(ZP("C"), ZP("D")));
+  graph.addNode(Symbol(ZP("D"), ZP("A")));
   auto eval = graph.evaluate();
   ASSERT_FALSE(eval.valid());
   ASSERT_FALSE(eval.sampleCycle().empty());
@@ -63,13 +73,14 @@ TEST(SymbolTable, simpleCycle) {
 }
 
 TEST(SymbolTable, doubleInsertion) {
+  DEFINE_ANNOTATOR;
   SymbolGraph graph;
-  graph.addNode(Symbol("A", "B", POSITION_ZERO));
-  graph.addNode(Symbol("A", "C", POSITION_ZERO));
-  graph.addNode(Symbol("C", "D", POSITION_ZERO));
-  graph.addNode(Symbol("C", "D", POSITION_ZERO));
-  graph.addNode(Symbol("C", "D", POSITION_ZERO));
-  graph.addNode(Symbol("D", "A", POSITION_ZERO));
+  graph.addNode(Symbol(ZP("A"), ZP("B")));
+  graph.addNode(Symbol(ZP("A"), ZP("C")));
+  graph.addNode(Symbol(ZP("C"), ZP("D")));
+  graph.addNode(Symbol(ZP("C"), ZP("D")));
+  graph.addNode(Symbol(ZP("C"), ZP("D")));
+  graph.addNode(Symbol(ZP("D"), ZP("A")));
   auto eval = graph.evaluate();
   ASSERT_FALSE(eval.valid());
   ASSERT_FALSE(eval.duplicates().empty());
@@ -77,45 +88,48 @@ TEST(SymbolTable, doubleInsertion) {
 }
 
 TEST(SymbolTable, correctName) {
+  DEFINE_ANNOTATOR;
   SymbolGraph graph;
-  graph.addNode(Symbol("a", "", POSITION_ZERO));
-  graph.addNode(Symbol("_", "", POSITION_ZERO));
-  graph.addNode(Symbol("hai", "", POSITION_ZERO));
-  graph.addNode(Symbol("_someVariable", "", POSITION_ZERO));
-  graph.addNode(Symbol("LONG", "", POSITION_ZERO));
-  graph.addNode(Symbol("VERY_LONG", "", POSITION_ZERO));
-  graph.addNode(Symbol("capslock", "", POSITION_ZERO));
+  graph.addNode(Symbol(ZP("a"), ZP("")));
+  graph.addNode(Symbol(ZP("_"), ZP("")));
+  graph.addNode(Symbol(ZP("hai"), ZP("")));
+  graph.addNode(Symbol(ZP("_someVariable"), ZP("")));
+  graph.addNode(Symbol(ZP("LONG"), ZP("")));
+  graph.addNode(Symbol(ZP("VERY_LONG"), ZP("")));
+  graph.addNode(Symbol(ZP("capslock"), ZP("")));
   auto eval = graph.evaluate();
   ASSERT_TRUE(eval.valid());
 }
 
 TEST(SymbolTable, invalidName) {
+  DEFINE_ANNOTATOR;
   SymbolGraph graph;
-  graph.addNode(Symbol("1A", "", POSITION_ZERO));
-  graph.addNode(Symbol("1_2", "", POSITION_ZERO));
-  graph.addNode(Symbol("#", "", POSITION_ZERO));
-  graph.addNode(Symbol("_---_", "", POSITION_ZERO));
-  graph.addNode(Symbol("-.-", "", POSITION_ZERO));
-  graph.addNode(Symbol("🅱🅻🅾🆇🆇", "", POSITION_ZERO));
-  graph.addNode(Symbol("", "", POSITION_ZERO));
+  graph.addNode(Symbol(ZP("1A"), ZP("")));
+  graph.addNode(Symbol(ZP("1_2"), ZP("")));
+  graph.addNode(Symbol(ZP("#"), ZP("")));
+  graph.addNode(Symbol(ZP("_---_"), ZP("")));
+  graph.addNode(Symbol(ZP("-.-"), ZP("")));
+  graph.addNode(Symbol(ZP("🅱🅻🅾🆇🆇"), ZP("")));
+  graph.addNode(Symbol(ZP(""), ZP("")));
   auto eval = graph.evaluate();
   ASSERT_FALSE(eval.valid());
   ASSERT_EQ(eval.invalidNames().size(), 7);
 }
 
 TEST(SymbolTable, recursiveReplace) {
+  DEFINE_ANNOTATOR;
   SymbolGraph graph;
-  graph.addNode(Symbol("A", "(B C D 0)", POSITION_ZERO));
-  graph.addNode(Symbol("B", "(C C 1)", POSITION_ZERO));
-  graph.addNode(Symbol("C", "(D D D 2)", POSITION_ZERO));
-  graph.addNode(Symbol("D", "(E 3)", POSITION_ZERO));
-  graph.addNode(Symbol("E", "(X 4)", POSITION_ZERO));
-  graph.addNode(Symbol("F", "(A B C D E X 5)", POSITION_ZERO));
+  graph.addNode(Symbol(ZP("A"), ZP("(B C D 0)")));
+  graph.addNode(Symbol(ZP("B"), ZP("(C C 1)")));
+  graph.addNode(Symbol(ZP("C"), ZP("(D D D 2)")));
+  graph.addNode(Symbol(ZP("D"), ZP("(E 3)")));
+  graph.addNode(Symbol(ZP("E"), ZP("(X 4)")));
+  graph.addNode(Symbol(ZP("F"), ZP("(A B C D E X 5)")));
   auto eval = graph.evaluate();
   ASSERT_TRUE(eval.valid());
   SymbolReplacer replacer(eval);
-  auto result = replacer.replace("F ABCDEFG HIJKLMNOP A B F");
-  ASSERT_EQ(result,
+  auto result = replacer.replace(ZP("F ABCDEFG HIJKLMNOP A B F"), annotator);
+  ASSERT_EQ(result.string(),
             "((((((X 4) 3) ((X 4) 3) ((X 4) 3) 2) (((X 4) 3) ((X 4) 3) ((X 4) "
             "3) 2) 1) (((X 4) 3) ((X 4) 3) ((X 4) 3) 2) ((X 4) 3) 0) ((((X 4) "
             "3) ((X 4) 3) ((X 4) 3) 2) (((X 4) 3) ((X 4) 3) ((X 4) 3) 2) 1) "
@@ -130,18 +144,19 @@ TEST(SymbolTable, recursiveReplace) {
 }
 
 TEST(SymbolTable, lessSimpleCycle) {
+  DEFINE_ANNOTATOR;
   SymbolGraph graph;
-  graph.addNode(Symbol("A", "A B C D E F G H I J K", POSITION_ZERO));
-  graph.addNode(Symbol("B", "B C D E F", POSITION_ZERO));
-  graph.addNode(Symbol("C", "D", POSITION_ZERO));
-  graph.addNode(Symbol("D", "E F G H J K", POSITION_ZERO));
-  graph.addNode(Symbol("E", "F G", POSITION_ZERO));
-  graph.addNode(Symbol("F", "G", POSITION_ZERO));
-  graph.addNode(Symbol("G", "B H J K", POSITION_ZERO));
-  graph.addNode(Symbol("H", "", POSITION_ZERO));
-  graph.addNode(Symbol("I", "J K", POSITION_ZERO));
-  graph.addNode(Symbol("J", "", POSITION_ZERO));
-  graph.addNode(Symbol("K", "A", POSITION_ZERO));
+  graph.addNode(Symbol(ZP("A"), ZP("A B C D E F G H I J K")));
+  graph.addNode(Symbol(ZP("B"), ZP("B C D E F")));
+  graph.addNode(Symbol(ZP("C"), ZP("D")));
+  graph.addNode(Symbol(ZP("D"), ZP("E F G H J K")));
+  graph.addNode(Symbol(ZP("E"), ZP("F G")));
+  graph.addNode(Symbol(ZP("F"), ZP("G")));
+  graph.addNode(Symbol(ZP("G"), ZP("B H J K")));
+  graph.addNode(Symbol(ZP("H"), ZP("")));
+  graph.addNode(Symbol(ZP("I"), ZP("J K")));
+  graph.addNode(Symbol(ZP("J"), ZP("")));
+  graph.addNode(Symbol(ZP("K"), ZP("A")));
   auto eval = graph.evaluate();
   ASSERT_FALSE(eval.valid());
   ASSERT_FALSE(eval.sampleCycle().empty());

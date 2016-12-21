@@ -25,6 +25,7 @@
 
 class PositionedString {
  public:
+  PositionedString() = default;
   PositionedString(const std::string& string,
                    const CodePositionInterval& positionInterval);
 

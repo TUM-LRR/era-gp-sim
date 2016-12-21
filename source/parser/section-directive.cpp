@@ -22,13 +22,16 @@
 #include "parser/memory-allocator.hpp"
 #include "parser/section-tracker.hpp"
 
-SectionDirective::SectionDirective(const LineInterval& lines,
-                                   const std::vector<std::string>& labels,
-                                   const std::string& name,
-                                   const std::vector<std::string>& arguments)
+SectionDirective::SectionDirective(
+    const LineInterval& lines,
+    const std::vector<PositionedString>& labels,
+    const PositionedString& name,
+    const std::vector<PositionedString>& arguments)
 : IntermediateDirective(lines, labels, name) {
-  _hasName = arguments.size() > 0;
-  if (_hasName) _section = arguments[0];
+  _hasName = !arguments.empty();
+  if (_hasName) {
+    _section = arguments[0];
+  }
 }
 
 void SectionDirective::execute(const ExecuteImmutableArguments& immutable,
@@ -43,13 +46,14 @@ void SectionDirective::allocateMemory(
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (!_hasName) {
-    annotator.addErrorHere("Section name missing!");
+    annotator.addError(name().positionInterval(), "Section name missing!");
     return;
   }
-  if (!allocator.has(_section)) {
-    annotator.addErrorHere("Specified section non-existent!");
+  if (!allocator.has(_section.string())) {
+    annotator.addError(_section.positionInterval(),
+                       "Specified section non-existent!");
     return;
   }
   // Just set the section state to the current section. That's it.
-  tracker.section(_section);
+  tracker.section(_section.string());
 }

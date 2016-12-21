@@ -23,32 +23,39 @@
 #include "parser/intermediate-instruction.hpp"
 #include "parser/macro-directive.hpp"
 #include "parser/macro-end-directive.hpp"
+#include "parser/positioned-string.hpp"
 #define DEFINE_ANNOTATOR      \
   CompileErrorList errorList; \
   CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
+#define ZP(x) PositionedString(x, CodePositionInterval())
 
 TEST(IntermediateRepresentator, insertSimple) {
   DEFINE_ANNOTATOR;
   IntermediateRepresentator ir;
-  ir.insertCommand(IntermediateInstruction(LineInterval(0, 1),
-                                           {"label1", "label2", "label3"},
-                                           "mov",
-                                           {"eax"},
-                                           {"eax"}),
-                   annotator);
+  ir.insertCommand(
+      IntermediateInstruction(LineInterval(0, 1),
+                              {ZP("label1"), ZP("label2"), ZP("label3")},
+                              ZP("mov"),
+                              {ZP("eax")},
+                              {ZP("eax")}),
+      annotator);
 }
 
 TEST(IntermediateRepresentator, transformSimple) {
   DEFINE_ANNOTATOR;
   IntermediateRepresentator ir;
-  ir.insertCommand(IntermediateInstruction(LineInterval(0, 1),
-                                           {"label1", "label2", "label3"},
-                                           "mov",
-                                           {"eax"},
-                                           {"eax"}),
-                   annotator);
-  ir.insertCommand(IntermediateInstruction(
-                       LineInterval(2, 5), {"label4"}, "add", {"eax"}, {"ebx"}),
+  ir.insertCommand(
+      IntermediateInstruction(LineInterval(0, 1),
+                              {ZP("label1"), ZP("label2"), ZP("label3")},
+                              ZP("mov"),
+                              {ZP("eax")},
+                              {ZP("eax")}),
+      annotator);
+  ir.insertCommand(IntermediateInstruction(LineInterval(2, 5),
+                                           {ZP("label4")},
+                                           ZP("add"),
+                                           {ZP("eax")},
+                                           {ZP("ebx")}),
                    annotator);
   // Test disabled for now.
   // FinalRepresentation fr = ir.transform(state);
@@ -58,18 +65,23 @@ TEST(IntermediateRepresentator, transformSimple) {
 TEST(IntermediateRepresentator, macroDefinition) {
   DEFINE_ANNOTATOR;
   IntermediateRepresentator ir;
-  ir.insertCommand(IntermediateInstruction(LineInterval(0, 1),
-                                           {"label1", "label2", "label3"},
-                                           "mov",
-                                           {"eax"},
-                                           {"eax"}),
+  ir.insertCommand(
+      IntermediateInstruction(LineInterval(0, 1),
+                              {ZP("label1"), ZP("label2"), ZP("label3")},
+                              ZP("mov"),
+                              {ZP("eax")},
+                              {ZP("eax")}),
+      annotator);
+  ir.insertCommand(
+      MacroDirective(LineInterval(2, 2), {}, ZP(".macro"), ZP("test"), {}),
+      annotator);
+  ir.insertCommand(IntermediateInstruction(LineInterval(3, 3),
+                                           {ZP("label1")},
+                                           ZP("add"),
+                                           {ZP("eax")},
+                                           {ZP("eax")}),
                    annotator);
-  ir.insertCommand(MacroDirective(LineInterval(2, 2), {}, ".macro", "test", {}),
-                   annotator);
-  ir.insertCommand(IntermediateInstruction(
-                       LineInterval(3, 3), {"label1"}, "add", {"eax"}, {"eax"}),
-                   annotator);
-  ir.insertCommand(MacroEndDirective(LineInterval(4, 4), {}, ".endmacro"),
+  ir.insertCommand(MacroEndDirective(LineInterval(4, 4), {}, ZP(".endmacro")),
                    annotator);
   // To be extended in a later branch.
 }

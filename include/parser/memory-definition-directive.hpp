@@ -49,7 +49,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   using size_t = std::size_t;
   using MemoryStorageFunction = std::function<void(T, size_t)>;
   using ProcessValuesFunction =
-      std::function<size_t(const std::vector<std::string>&,
+      std::function<size_t(const std::vector<PositionedString>&,
                            size_t,
                            const CompileErrorAnnotator&,
                            const MemoryStorageFunction&)>;
@@ -65,10 +65,10 @@ class MemoryDefinitionDirective : public IntermediateDirective {
  * \param processValues A function to parse the arguments.
  */
   MemoryDefinitionDirective(const LineInterval& lines,
-                            const std::vector<std::string>& labels,
-                            const std::string& name,
+                            const std::vector<PositionedString>& labels,
+                            const PositionedString& name,
                             size_t cellSize,
-                            const std::vector<std::string>& values,
+                            const std::vector<PositionedString>& values,
                             const ProcessValuesFunction& processValues)
   : IntermediateDirective(lines, labels, name)
   , _cellSize(cellSize)
@@ -85,9 +85,9 @@ class MemoryDefinitionDirective : public IntermediateDirective {
  * \param processValues A function to parse the arguments.
  */
   MemoryDefinitionDirective(const LineInterval& lines,
-                            const std::vector<std::string>& labels,
-                            const std::string& name,
-                            const std::vector<std::string>& values,
+                            const std::vector<PositionedString>& labels,
+                            const PositionedString& name,
+                            const std::vector<PositionedString>& values,
                             const ProcessValuesFunction& processValues)
   : MemoryDefinitionDirective(
         lines, labels, name, sizeof(T), values, processValues) {
@@ -139,10 +139,9 @@ class MemoryDefinitionDirective : public IntermediateDirective {
     _absolutePosition =
         immutable.allocator().absolutePosition(_relativePosition);
     for (const auto& label : _labels) {
-      graph.addNode(Symbol(
-          label,
-          std::to_string(_absolutePosition),
-          CodePositionInterval(CodePosition(0), CodePosition(0)) /*TODO*/));
+      graph.addNode(Symbol(label,
+                           PositionedString(std::to_string(_absolutePosition),
+                                            CodePositionInterval())));
     }
   }
 
@@ -191,7 +190,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   RelativeMemoryPosition _relativePosition;
   size_t _size;
   size_t _cellSize;
-  std::vector<std::string> _values;
+  std::vector<PositionedString> _values;
   ProcessValuesFunction _processValues;
 };
 

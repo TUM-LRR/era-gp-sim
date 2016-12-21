@@ -31,11 +31,13 @@
 #include "gtest/gtest.h"
 #include "parser/compile-error-annotator.hpp"
 #include "parser/compile-error-list.hpp"
+#include "parser/positioned-string.hpp"
 #include "parser/riscv-parser.hpp"
 #include "parser/syntax-tree-generator.hpp"
 #define DEFINE_ANNOTATOR      \
   CompileErrorList errorList; \
   CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
+#define ZP(x) PositionedString(x, CodePositionInterval())
 
 
 static SyntaxTreeGenerator buildGenerator() {
@@ -60,7 +62,7 @@ TEST(SyntaxTreeGenerator, init) {
 TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
   auto generator = buildGenerator();
   DEFINE_ANNOTATOR;
-  auto output = generator.transformOperand("1234", annotator);
+  auto output = generator.transformOperand(ZP("1234"), annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
   ASSERT_TRUE((isInstance<ImmediateNode>(output)));
 }
@@ -68,7 +70,7 @@ TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
 TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   auto generator = buildGenerator();
   DEFINE_ANNOTATOR;
-  auto output = generator.transformOperand("x18", annotator);
+  auto output = generator.transformOperand(ZP("x18"), annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(output)));
 }
@@ -77,15 +79,15 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   auto generator = buildGenerator();
   DEFINE_ANNOTATOR;
 
-  auto arg1 = generator.transformOperand("x1", annotator);
+  auto arg1 = generator.transformOperand(ZP("x1"), annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
 
-  auto arg2 = generator.transformOperand("x1", annotator);
+  auto arg2 = generator.transformOperand(ZP("x1"), annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
 
-  auto arg3 = generator.transformOperand("x2", annotator);
+  auto arg3 = generator.transformOperand(ZP("x2"), annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg2)));
 
@@ -101,7 +103,7 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   auto memoryAccess = projectModule.getMemoryAccess();
 
   auto output = generator.transformCommand(
-      "add", annotator, sources, targets, memoryAccess);
+      ZP("add"), annotator, sources, targets, memoryAccess);
 
   ASSERT_EQ(annotator.errorList().size(), 0);
   ASSERT_TRUE((isInstance<riscv::InstructionNode>(output)));

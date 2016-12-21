@@ -24,6 +24,7 @@
 #include "parser/riscv-parser.hpp"
 
 class CompileErrorAnnotator;
+#include "parser/positioned-string.hpp"
 
 /**
  * Wrapper class for the RegExp used for parsing.
@@ -55,19 +56,19 @@ class RiscvParser::RiscvRegex {
   /**
    * Returns the parsed label.
    */
-  std::string getLabel() const noexcept;
+  const PositionedString &getLabel() const noexcept;
 
   /**
    * Returns the parsed instruction.
    */
-  std::string getInstruction() const;
+  PositionedString getInstruction() const;
 
   /**
    * Returns the n-th parameter of the parsed instruction.
    *
    * \param n Zero-based index of the parameter
    */
-  std::string getParameter(int n) const;
+  const PositionedString &getParameter(int n) const;
 
   /**
    * Returns the number of parameters found.
@@ -100,10 +101,20 @@ class RiscvParser::RiscvRegex {
   _getCharacterPosition(const CompileErrorAnnotator &annotator,
                         size_t pos) const;
 
+  CodePositionInterval
+  _getCharacterInterval(const CompileErrorAnnotator &annotator,
+                        size_t start,
+                        size_t end) const;
+
+  PositionedString _getPositionedString(const std::string &line,
+                                        const CompileErrorAnnotator &annotator,
+                                        size_t start,
+                                        size_t end) const;
+
   bool _isValid;
-  std::string _label;
-  std::string _instruction;
-  std::vector<std::string> _parameters;
+  PositionedString _label;
+  PositionedString _instruction;
+  std::vector<PositionedString> _parameters;
 };
 
 #endif

@@ -23,22 +23,23 @@
 #include "parser/macro-directive-table.hpp"
 
 MacroDirective::MacroDirective(const LineInterval& lines,
-                               const std::vector<std::string>& labels,
-                               const std::string& name,
-                               const std::vector<std::string>& arguments)
+                               const std::vector<PositionedString>& labels,
+                               const PositionedString& name,
+                               const std::vector<PositionedString>& arguments)
 : IntermediateDirective(lines, labels, name)
-, _macroName(arguments.size() > 0 ? arguments[0] : "")
+, _macroName(arguments.empty() ? PositionedString() : arguments[0])
 , _macroParameters(arguments.size() > 0 ? arguments.begin() + 1
                                         : arguments.end(),
                    arguments.end())
 , _operations() {
 }
 
-MacroDirective::MacroDirective(const LineInterval& lines,
-                               const std::vector<std::string>& labels,
-                               const std::string& name,
-                               const std::string& macroName,
-                               const std::vector<std::string>& macroParameters)
+MacroDirective::MacroDirective(
+    const LineInterval& lines,
+    const std::vector<PositionedString>& labels,
+    const PositionedString& name,
+    const PositionedString& macroName,
+    const std::vector<PositionedString>& macroParameters)
 : IntermediateDirective(lines, labels, name)
 , _macroName(macroName)
 , _macroParameters(macroParameters)
@@ -59,13 +60,14 @@ void MacroDirective::precompile(
     const PreprocessingImmutableArguments& immutable,
     const CompileErrorAnnotator& annotator,
     MacroDirectiveTable& macroTable) {
-  if (macroName().empty()) {
+  if (macroName().string().empty()) {
     annotator.addErrorHere("Missing macro name.");
   }
   _macroParameters.validate(annotator);
   auto success = macroTable.insert(*this);
   if (!success) {
-    annotator.addErrorHere("Macro \"%1\" already exists!", macroName());
+    annotator.addErrorHere("Macro \"%1\" already exists!",
+                           macroName().string());
   }
 }
 
@@ -80,7 +82,7 @@ TargetSelector MacroDirective::newTarget() const {
   return TargetSelector::THIS;
 }
 
-const std::string& MacroDirective::macroName() const {
+const PositionedString& MacroDirective::macroName() const {
   return _macroName;
 }
 
@@ -103,9 +105,8 @@ bool MacroDirective::isCompiling() {
   return _isCompiling;
 }
 
-IntermediateOperationPointer
-MacroDirective::getOperation(size_t index,
-                             const std::vector<std::string>& arguments) const {
+IntermediateOperationPointer MacroDirective::getOperation(
+    size_t index, const std::vector<PositionedString>& arguments) const {
   IntermediateOperationPointer ptr = _operations[index]->clone();
 
   if (ptr == nullptr) return ptr;
@@ -118,29 +119,33 @@ int MacroDirective::firstInstructionIndex() const {
   return _firstInstruction;
 }
 
-const std::string& MacroDirective::getOperationName(size_t index) const {
+const PositionedString& MacroDirective::getOperationName(size_t index) const {
   return _operations[index]->name();
 }
 
 MacroDirective::MacroParameters::MacroParameters(
-    std::vector<std::string>::const_iterator begin,
-    std::vector<std::string>::const_iterator end)
+    std::vector<PositionedString>::const_iterator begin,
+    std::vector<PositionedString>::const_iterator end)
 : _minParams(0) {
   for (auto i = begin; i != end; ++i) {
-    Optional<std::string> defaultVal;
-    std::string name;
+    Optional<PositionedString> defaultVal;
+    PositionedString name;
+
+    const auto& parameterString = i->string();
 
     // Search for default argument by finding the '=' character.
-    auto equalPos = i->find('=');
+    auto equalPos = parameterString.find('=');
 
     if (equalPos != std::string::npos) {
       // If default value is supplied, split argument into name and value.
-      defaultVal = i->substr(equalPos + 1);
-      name = i->substr(0, equalPos);
+      defaultVal = PositionedString(parameterString.substr(equalPos + 1),
+                                    i->positionInterval());
+      name = PositionedString(parameterString.substr(0, equalPos),
+                              i->positionInterval());
     } else {
       // Otherwise use whole string as value and increase the minimum amount of
       // parameters.
-      name = *i;
+      name = PositionedString(parameterString, i->positionInterval());
       _minParams++;
     }
 
@@ -153,8 +158,8 @@ void MacroDirective::MacroParameters::validate(
   bool containedDefault = false;
   for (auto param : _params) {
     // Check for empty names or default values
-    if (param.first.size() == 0 ||
-        (param.second && param.second->size() == 0)) {
+    if (param.first.string().empty() ||
+        (param.second && param.second->string().empty())) {
       annotator.addErrorHere("Malformed macro argument list!");
       return;
     }
@@ -171,15 +176,14 @@ void MacroDirective::MacroParameters::validate(
 
 void MacroDirective::MacroParameters::insertParameters(
     IntermediateOperationPointer& operation,
-    const std::vector<std::string>& values) const {
+    const std::vector<PositionedString>& values) const {
   // Since macros are identified by name and argument count, this function
   // should always be called with a valid size of `values`.
   assert::that(values.size() >= _minParams && values.size() <= _params.size());
 
   for (int i = 0; i < _params.size(); i++) {
-    const std::string& name{_params[i].first};
-    const std::string& value{i >= values.size() ? *_params[i].second
-                                                : values[i]};
+    const auto& name = _params[i].first;
+    const auto& value = i >= values.size() ? *_params[i].second : values[i];
     operation->insertIntoArguments(name, value);
   }
 }

@@ -24,8 +24,8 @@
 
 IntermediateDirective::IntermediateDirective(
     const LineInterval& lines,
-    const std::vector<std::string>& labels,
-    const std::string& name)
+    const std::vector<PositionedString>& labels,
+    const PositionedString& name)
 : IntermediateOperation(lines, labels, name) {
 }
 

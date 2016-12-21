@@ -32,10 +32,11 @@
 using DirectivePtr = std::unique_ptr<IntermediateDirective>;
 
 template <typename T>
-static DirectivePtr createInternal(const LineInterval &lines,
-                                   const std::vector<std::string> &labels,
-                                   const std::string &name,
-                                   const std::vector<std::string> &arguments) {
+static DirectivePtr
+createInternal(const LineInterval &lines,
+               const std::vector<PositionedString> &labels,
+               const PositionedString &name,
+               const std::vector<PositionedString> &arguments) {
   return std::make_unique<T>(lines, labels, name, arguments);
 }
 
@@ -43,7 +44,7 @@ static DirectivePtr createInternal(const LineInterval &lines,
 template <typename T>
 static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
     _processMemoryDefinitionValues =
-        [](const std::vector<std::string> &values,
+        [](const std::vector<PositionedString> &values,
            std::size_t cellSize,
            const CompileErrorAnnotator &annotator,
            const std::function<void(T, std::size_t)> &handler) -> std::size_t {
@@ -51,14 +52,15 @@ static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
   ExpressionCompiler<T> compiler =
       CLikeExpressionCompilers::createCLikeCompiler<T>();
 
-  for (const auto &i : values) {
-    if (i.empty()) {
+  for (const auto &value : values) {
+    if (value.string().empty()) {
       // Empty arguments are not allowed.
       annotator.addErrorHere("Argument is empty.");
-    } else if (i.at(0) == '\"') {
+    } else if (value.string().at(0) == '\"') {
       // It is a string if it begins with a "
       std::vector<T> temporaryData;
-      if (StringParser::parseString(i, annotator, temporaryData)) {
+      if (StringParser::parseString(
+              value.string() /*TODO*/, annotator, temporaryData)) {
         // We add each character of the string to our output.
         for (const auto &j : temporaryData) {
           handler(j, currentPosition);
@@ -71,7 +73,7 @@ static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
       }
     } else {
       // If it is no a string, we regularly parse it.
-      T returnData = compiler.compile(i, annotator);
+      T returnData = compiler.compile(value.string() /*TODO*/, annotator);
       handler(returnData, currentPosition);
       currentPosition += cellSize;
     }
@@ -84,9 +86,9 @@ static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
 template <typename T>
 static DirectivePtr
 createMemoryDefinitionDirective(const LineInterval &lines,
-                                const std::vector<std::string> &labels,
-                                const std::string &name,
-                                const std::vector<std::string> &values) {
+                                const std::vector<PositionedString> &labels,
+                                const PositionedString &name,
+                                const std::vector<PositionedString> &values) {
   return std::make_unique<MemoryDefinitionDirective<T>>(
       lines, labels, name, values, _processMemoryDefinitionValues<T>);
 }
@@ -95,17 +97,18 @@ createMemoryDefinitionDirective(const LineInterval &lines,
 // Function for `createMemoryReservationDirective`
 MemoryReservationDirective::ArgumentCompileFunction
     _memoryReservationArgumentCompile =
-        [](const std::string &value,
+        [](const PositionedString &value,
            const CompileErrorAnnotator &annotator) -> std::size_t {
-  return CLikeExpressionCompilers::CLikeCompilerU64.compile(value, annotator);
+  return CLikeExpressionCompilers::CLikeCompilerU64.compile(
+      value.string() /*TODO*/, annotator);
 };
 
 template <std::size_t cellSize>
 static DirectivePtr
 createMemoryReservationDirective(const LineInterval &lines,
-                                 const std::vector<std::string> &labels,
-                                 const std::string &name,
-                                 const std::vector<std::string> &values) {
+                                 const std::vector<PositionedString> &labels,
+                                 const PositionedString &name,
+                                 const std::vector<PositionedString> &values) {
   return std::make_unique<MemoryReservationDirective>(
       lines, labels, name, cellSize, values, _memoryReservationArgumentCompile);
 }
@@ -114,9 +117,9 @@ createMemoryReservationDirective(const LineInterval &lines,
 const std::unordered_map<
     std::string,
     std::function<DirectivePtr(const LineInterval &,
-                               const std::vector<std::string> &,
-                               const std::string &,
-                               const std::vector<std::string> &)>>
+                               const std::vector<PositionedString> &,
+                               const PositionedString &,
+                               const std::vector<PositionedString> &)>>
     RiscVDirectiveFactory::mapping{
         {"section", createInternal<SectionDirective>},
         {"macro", createInternal<MacroDirective>},
@@ -131,15 +134,16 @@ const std::unordered_map<
         {"resw", createMemoryReservationDirective<4>},
         {"resd", createMemoryReservationDirective<8>}};
 
-void RiscVDirectiveFactory::create(const LineInterval &lines,
-                                   const std::vector<std::string> &labels,
-                                   const std::string &name,
-                                   const std::vector<std::string> &arguments,
-                                   IntermediateRepresentator &intermediate,
-                                   const CompileErrorAnnotator &annotator) {
+void RiscVDirectiveFactory::create(
+    const LineInterval &lines,
+    const std::vector<PositionedString> &labels,
+    const PositionedString &name,
+    const std::vector<PositionedString> &arguments,
+    IntermediateRepresentator &intermediate,
+    const CompileErrorAnnotator &annotator) {
   DirectivePtr ptr;
 
-  auto element = mapping.find(name);
+  auto element = mapping.find(name.string());
 
   if (element == mapping.end()) {
     ptr = nullptr;

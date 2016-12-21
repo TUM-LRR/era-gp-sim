@@ -31,6 +31,7 @@
 #include "parser/intermediate-instruction.hpp"
 #include "parser/intermediate-parameters.hpp"
 #include "parser/macro-directive.hpp"
+#include "parser/positioned-string.hpp"
 #include "parser/section-tracker.hpp"
 #include "parser/symbol-graph.hpp"
 #include "parser/symbol-replacer.hpp"
@@ -38,10 +39,10 @@
 
 IntermediateInstruction::IntermediateInstruction(
     const LineInterval& lines,
-    const std::vector<std::string>& labels,
-    const std::string& name,
-    const std::vector<std::string>& sources,
-    const std::vector<std::string>& targets)
+    const std::vector<PositionedString>& labels,
+    const PositionedString& name,
+    const std::vector<PositionedString>& sources,
+    const std::vector<PositionedString>& targets)
 : IntermediateOperation(lines, labels, name)
 , _sources(sources)
 , _targets(targets) {
@@ -60,16 +61,18 @@ void IntermediateInstruction::execute(
 
 std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
 IntermediateInstruction::compileArgumentVector(
-    const std::vector<std::string>& vector,
+    const std::vector<PositionedString>& vector,
     const ExecuteImmutableArguments& immutable,
     const CompileErrorAnnotator& annotator,
     MemoryAccess& memoryAccess) {
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> output;
   output.reserve(vector.size());
   for (const auto& operand : vector) {
-    auto replaced = immutable.replacer().replace(operand);
+    CompileErrorAnnotator localAnnotator(annotator,
+                                         operand.positionInterval());// TODO
+    auto replaced = immutable.replacer().replace(operand, localAnnotator);
     auto transformed =
-        immutable.generator().transformOperand(replaced, annotator);
+        immutable.generator().transformOperand(replaced, localAnnotator);
 
     // Only add argument node if creation was successful.
     // Otherwise AbstractSyntaxTreeNode::validate() segfaults.
@@ -114,11 +117,10 @@ void IntermediateInstruction::enhanceSymbolTable(
 
   // We insert all our labels.
   for (const auto& label : _labels) {
-    graph.addNode(
-        Symbol(label,
-               std::to_string(_address),
-               CodePositionInterval(CodePosition(0), CodePosition(0)) /*TODO*/,
-               SymbolBehavior::DYNAMIC));
+    graph.addNode(Symbol(
+        label,
+        PositionedString(std::to_string(_address), CodePositionInterval()),
+        SymbolBehavior::DYNAMIC));
   }
 }
 
@@ -136,13 +138,13 @@ void IntermediateInstruction::allocateMemory(
   const auto& instructionSet = immutable.architecture().getInstructions();
 
   // toLower as long as not fixed in instruction set.
-  if (!instructionSet.hasInstruction(_name)) {
+  if (!instructionSet.hasInstruction(_name.string())) {
     // If we'd record an error here, we would do that twice in total, so no.
     return;
   }
 
   // For now. Later to be reworked with a bit-level memory allocation?
-  auto instructionLength = instructionSet[_name].getLength() /
+  auto instructionLength = instructionSet[_name.string()].getLength() /
                            immutable.architecture().getByteSize();
   _relativeAddress = allocator["text"].allocateRelative(instructionLength);
 }
@@ -151,12 +153,12 @@ static bool isWordCharacter(char c) {
   return (c == '_' || std::isalpha(c) || std::isdigit(c));
 }
 
-static void replaceInVector(std::vector<std::string>& vector,
-                            const std::string& name,
-                            const std::string& value) {
-  std::string search = '\\' + name;
+static void replaceInVector(std::vector<PositionedString>& vector,
+                            const PositionedString& name,
+                            const PositionedString& value) {
+  std::string search = '\\' + name.string();
   for (int i = 0; i < vector.size(); i++) {
-    std::string& str{vector[i]};
+    std::string str = vector[i].string();
     // Replace all occurences of '\\name' that are followed by a non-word char.
     std::string::size_type pos = 0;
     while ((pos = str.find(search, pos)) != std::string::npos) {
@@ -168,14 +170,15 @@ static void replaceInVector(std::vector<std::string>& vector,
       }
 
       // Insert value at position and skip it
-      str.replace(pos, search.length(), value);
-      pos += value.length();
+      str.replace(pos, search.length(), value.string());
+      pos += value.string().length();
     }
+    vector[i] = PositionedString(str, vector[i].positionInterval());
   }
 }
 
-void IntermediateInstruction::insertIntoArguments(const std::string& name,
-                                                  const std::string& value) {
+void IntermediateInstruction::insertIntoArguments(
+    const PositionedString& name, const PositionedString& value) {
   replaceInVector(_sources, name, value);
   replaceInVector(_targets, name, value);
 }
@@ -184,8 +187,8 @@ IntermediateOperationPointer IntermediateInstruction::clone() {
   return IntermediateOperationPointer{new IntermediateInstruction{*this}};
 }
 
-std::vector<std::string> IntermediateInstruction::getArgsVector() const {
-  std::vector<std::string> args;
+std::vector<PositionedString> IntermediateInstruction::getArgsVector() const {
+  std::vector<PositionedString> args;
   args.reserve(_sources.size() + _targets.size());
   args.insert(args.end(), _targets.begin(), _targets.end());
   args.insert(args.end(), _sources.begin(), _sources.end());

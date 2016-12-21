@@ -37,7 +37,7 @@
 
 const SyntaxTreeGenerator::ArgumentNodeGenerator
     RiscvParser::argumentGeneratorFunction =
-        [](const std::string& operand,
+        [](const PositionedString& operandPositional,
            const NodeFactoryCollection& nodeFactories,
            const CompileErrorAnnotator& annotator)
     -> std::unique_ptr<AbstractSyntaxTreeNode> {
@@ -48,6 +48,8 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
       // must be a register - or an undefined constant!
       // * If not? Try to compile the expression!
       std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
+      const std::string& operand =
+          operandPositional.string();// TODO will not be necessary soon^TM
       if (operand.empty()) {
         outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
       } else if (std::isalpha(operand[0])) {
@@ -80,10 +82,10 @@ RiscvParser::RiscvParser(const Architecture& architecture,
 static void
 readInstruction(const CompileErrorAnnotator& positionErrorAnnotation,
                 const CodePosition& position,
-                const std::vector<std::string>& labels,
+                const std::vector<PositionedString>& labels,
                 const RiscvParser::RiscvRegex& lineRegex,
                 IntermediateRepresentator& intermediate) {
-  std::vector<std::string> sources, targets;
+  std::vector<PositionedString> sources, targets;
   bool is_directive = lineRegex.isDirective();
   // Collect source and target parameters
   for (int i = 0; i < lineRegex.getParameterCount(); i++) {
@@ -118,7 +120,7 @@ static void readText(const std::string& text,
   std::istringstream stream(text);
   CodePosition position;
   RiscvParser::RiscvRegex lineRegex;
-  std::vector<std::string> labels;
+  std::vector<PositionedString> labels;
 
   for (std::string line; std::getline(stream, line);) {
     position = position.newLine();

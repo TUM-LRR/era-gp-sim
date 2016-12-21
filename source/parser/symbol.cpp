@@ -25,31 +25,26 @@ static const std::regex TRIMMED =
 static const std::regex VALID_NAME =
     std::regex("^[A-Za-z_][A-Za-z0-9_]*$", std::regex_constants::optimize);
 
-static bool symbolNameValid(const std::string& name) {
-  return std::regex_search(name, VALID_NAME);
+static bool symbolNameValid(const PositionedString& name) {
+  return std::regex_search(name.string(), VALID_NAME);
 }
 
-Symbol::Symbol(const std::string& name,
-               const std::string& value,
-               const CodePositionInterval position,
+Symbol::Symbol(const PositionedString& name,
+               const PositionedString& value,
                SymbolBehavior behavior)
 : _name(name)
 , _value(value)
-, _position(position)
 , _behavior(behavior)
-, _regex((symbolNameValid(name) ? ("\\b" + name + "\\b") : ("no^")),
+, _regex((symbolNameValid(name) ? ("\\b" + name.string() + "\\b") : ("no^")),
          std::regex::optimize) {
-  assert::that(!std::regex_search(name, TRIMMED));
+  assert::that(!std::regex_search(name.string(), TRIMMED));
 }
 
-const std::string& Symbol::name() const noexcept {
+const PositionedString& Symbol::name() const noexcept {
   return _name;
 }
-const std::string& Symbol::value() const noexcept {
+const PositionedString& Symbol::value() const noexcept {
   return _value;
-}
-const CodePositionInterval& Symbol::position() const noexcept {
-  return _position;
 }
 SymbolBehavior Symbol::behavior() const noexcept {
   return _behavior;
