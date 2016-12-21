@@ -50,7 +50,7 @@ void MacroDirective::insert(IntermediateOperationPointer pointer) {
   // Remember index of the first instruction so we can use its address for
   // labels.
   if (_firstInstruction < 0 &&
-      dynamic_cast<IntermediateInstruction*>(pointer.get()) != nullptr) {
+      pointer->getType() == IntermediateOperation::Type::INSTRUCTION) {
     _firstInstruction = _operations.size();
   }
   _operations.push_back(std::move(pointer));

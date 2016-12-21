@@ -23,9 +23,9 @@ import QtQuick.Controls.Styles 1.4
 CheckBox {
     id: registerCheckBox
 
-    Component.onCompleted: {
-        checked = registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
-    }
+    checked: (model !== null) ? model.FlagData : false
+
+    enabled: (model !== null) ? !model.IsConstant : true
 
     // As some values need to be set manually (i.e. not using the model's data-method and the corresponding
     // roles), they also have to be updated manually whenever the model's data changed for the current index.
@@ -36,7 +36,7 @@ CheckBox {
         onDataChanged: {
             // Check if the current item's index is affected by the data change.
             if (topLeft <= styleData.index && styleData.index <= bottomRight) {
-                checked = registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
+                checked = Qt.binding(function() {return model.FlagData});
             }
         }
     }
@@ -44,6 +44,6 @@ CheckBox {
     // Notify the model that the register's content was changed by the user.
     onCheckedChanged: {
         var registerContentString = (checked == true) ? "1" : "0";
-        registerModel.registerContentChanged(styleData.index, registerContentString, dataTypeFormatComboBox.currentIndex);
+        registerModel.registerContentChanged(styleData.index, registerContentString, dataTypeFormatComboBox.currentText);
     }
 }

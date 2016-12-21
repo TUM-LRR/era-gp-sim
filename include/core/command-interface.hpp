@@ -83,6 +83,13 @@ class CommandInterface : public Proxy<ParsingAndExecutionUnit> {
    *
    */
   POST(deleteBreakpoint)
+
+  /**
+   * Set the callback which is called when the execution is stopped.
+   *
+   * \param callback The callback function.
+   */
+  POST(setExecutionStoppedCallback)
 };
 
 #endif /* ERAGPSIM_CORE_COMMAND_INTERFACE_HPP */

@@ -60,6 +60,10 @@ class IntermediateMacroInstruction : public IntermediateOperation {
                                 MacroDirectiveTable& macroTable,
                                 const CompileErrorAnnotator& annotator);
 
+  virtual std::string toString() const;
+
+  virtual Type getType() const;
+
  private:
   CommandList _operations;
   int _firstInstruction = -1;

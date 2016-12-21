@@ -117,8 +117,14 @@ class OutputComponent : public QObject {
                                         QString currentText,
                                         int mode);
 
+  /**
+   \brief returns the current memory size
+   \return the size
+   */
+  Q_INVOKABLE int getMemorySize();
+
  private:
-  /// Interface for access memory content.
+  /// Interface for accessing memory content.
   MemoryAccess _memoryAccess;
 
   /// The underlying model of each output item. Mostly used for savings output

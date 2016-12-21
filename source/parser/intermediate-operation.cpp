@@ -92,3 +92,11 @@ const std::vector<PositionedString>& IntermediateOperation::labels() const
 const PositionedString& IntermediateOperation::name() const noexcept {
   return _name;
 }
+
+std::string IntermediateOperation::toString() const {
+  return _name + "\n";
+}
+
+IntermediateOperation::Type IntermediateOperation::getType() const {
+  return Type::OTHER;
+}

@@ -34,6 +34,11 @@ Item {
     signal valueChanged(int value)
     signal valueBoundariesChanged(int minValue, int maxValue)
 
+    function getCurrentValue() {
+        textField.parseText();
+        return _value;
+    }
+
     SystemPalette {
         id: systemColorPalette
         colorGroup: SystemPalette.Active
@@ -67,11 +72,17 @@ Item {
         text: "0"
 
         onAccepted: {
+            parseText();
+        }
+        onEditingFinished: {
+            parseText();
+        }
+
+        function parseText() {
             var tmp = parseInt(text)
 
             //check for valid number
-            if(!isNaN(tmp))
-            {
+            if(!isNaN(tmp)) {
                 //check for range
                 if(tmp < _minValue)
                     _value = _minValue
@@ -79,10 +90,10 @@ Item {
                     _value = _maxValue
                 else
                     _value = tmp
-            }else //invalid input: change to previous state
+            } else {
+                 //invalid input: change to previous state
                 textField.text = _value.toString()
-
-            console.log("memory size input by user: " + _value)
+            }
         }
 
         //enable changing numbers with arrow keys

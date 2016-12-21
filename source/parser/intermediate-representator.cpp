@@ -31,6 +31,23 @@
 #include "parser/symbol-graph.hpp"
 #include "parser/symbol-replacer.hpp"
 
+void IntermediateRepresentator::generateMacroInformation(
+    FinalRepresentation& representation) {
+  for (const auto& command : _commandList) {
+    if (command->getType() != IntermediateOperation::Type::MACRO_INSTRUCTION)
+      continue;
+
+    std::string macroCode =
+        static_cast<IntermediateMacroInstruction&>(*i).toString();
+    CodePositionInterval macroPos(CodePosition(i->lines().lineStart, 0),
+                                  CodePosition(i->lines().lineEnd, 0));
+
+    MacroInformation info(macroCode, macroPos);
+
+    representation.macroList.push_back(std::move(info));
+  }
+}
+
 IntermediateRepresentator::IntermediateRepresentator()
 : _commandList(), _currentOutput(nullptr) {
 }
@@ -90,6 +107,8 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
 
   IntermediateMacroInstruction::replaceWithMacros(
       _commandList.begin(), _commandList.end(), macroTable, annotator);
+
+  generateMacroInformation(representation);
 
   MemoryAllocator allocator(parameters.allocator());
   SectionTracker tracker;

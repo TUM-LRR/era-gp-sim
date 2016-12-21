@@ -316,6 +316,11 @@ class GuiProject : QObject {
    * \param errorMessage The error message.
    */
   void error(const QString& errorMessage);
+
+  /**
+   * This signal is emitted when the execution has stopped.
+   */
+  void executionStopped();
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP
