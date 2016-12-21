@@ -26,12 +26,13 @@ Item{
     property string usualText: "Sorry, no help available"
     property int currentLine: 1
 
-    TextArea{
+    TextArea {
         id: textarea
         anchors.fill: parent
         readOnly: true
         text: usualText
         textFormat: TextEdit.AutoText
+        backgroundVisible: false
 
         Component.onCompleted: {
             editor.forceCursorUpdate();
