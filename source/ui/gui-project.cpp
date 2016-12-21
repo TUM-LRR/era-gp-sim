@@ -84,6 +84,8 @@ GuiProject::GuiProject(
       [this](const auto& finalRepresentation) {
         this->finalRepresentationChanged(finalRepresentation);
       });
+  _projectModule.getCommandInterface().setExecutionStoppedCallback(
+      [this]() { emit this->executionStopped(); });
 
   // connect all receiving components to the callback signals
   QObject::connect(this,

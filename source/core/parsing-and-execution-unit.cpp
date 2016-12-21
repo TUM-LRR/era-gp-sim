@@ -45,6 +45,9 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _setFinalRepresentation([](const FinalRepresentation &x) {})
 , _throwError(([](const std::string &x, const std::vector<std::string> &y) {}))
 , _setCurrentLine([](size_t x) {}) {
+, _setMacroList(([](const std::vector<MacroInformation> &x) {}))
+, _setCurrentLine([](size_t x) {})
+, _executionStopped([]() {}) {
   // find the RegisterInformation object of the program counter
   for (UnitInformation unitInfo : architecture.getUnits()) {
     if (unitInfo.hasSpecialRegister(
@@ -57,6 +60,7 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 
 void ParsingAndExecutionUnit::execute() {
   if (_finalRepresentation.hasErrors()) {
+    _executionStopped();
     return;
   }
   _stopCondition->reset();
@@ -67,6 +71,7 @@ void ParsingAndExecutionUnit::execute() {
     if (!_executeNode(nextNode)) break;
     nextNode = _updateLineNumber(nextNode);
   }
+  _executionStopped();
 }
 
 void ParsingAndExecutionUnit::executeNextLine() {
@@ -75,11 +80,13 @@ void ParsingAndExecutionUnit::executeNextLine() {
   if (_executeNode(nextNode)) {
     _updateLineNumber(nextNode);
   }
+  _executionStopped();
 }
 
 void ParsingAndExecutionUnit::executeToBreakpoint() {
   // check if there are parser errors
   if (_finalRepresentation.hasErrors()) {
+    _executionStopped();
     return;
   }
   // reset stop flag
@@ -101,6 +108,7 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
       }
     }
   }
+  _executionStopped();
 }
 
 void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
@@ -150,6 +158,9 @@ void ParsingAndExecutionUnit::parse(std::string code) {
   _lineCommandCache.clear();
   // update the final representation of the ui
   _setFinalRepresentation(_finalRepresentation);
+  // update the error list of the ui
+  _setErrorList(_finalRepresentation.errorList);
+  _setMacroList(_finalRepresentation.macroList);
   // assemble commands into memory
   if (!_finalRepresentation.hasErrors()) {
     for (const auto &command : _finalRepresentation.commandList) {
@@ -189,6 +200,10 @@ void ParsingAndExecutionUnit::setThrowErrorCallback(
 void ParsingAndExecutionUnit::setSetCurrentLineCallback(
     Callback<size_t> callback) {
   _setCurrentLine = callback;
+}
+
+void ParsingAndExecutionUnit::setExecutionStoppedCallback(Callback<> callback) {
+  _executionStopped = callback;
 }
 
 size_t ParsingAndExecutionUnit::_findNextNode() {

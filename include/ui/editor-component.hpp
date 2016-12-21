@@ -167,6 +167,9 @@ class EditorComponent : public QObject {
   /** Change the highlighted line which indicates the execution point. */
   void executionLineChanged(int line);
 
+  /** Update macros in editor. */
+  void updateMacros(const QVariantList &macroList);
+
   /**
    * Sets the text of this editor (replaces all current text)
    *

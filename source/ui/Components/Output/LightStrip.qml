@@ -32,7 +32,6 @@ Item {
         target: outputComponent
         // Send when the memory changes (at any address).
         onMemoryChanged: {
-            console.log("onMemoryChanged");
             var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
             // Check if the memory address that was changed (at least partly) belongs to
             // the output item's source space.
