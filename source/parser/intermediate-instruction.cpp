@@ -37,6 +37,7 @@ IntermediateInstruction::IntermediateInstruction(
       _sources(sources),
       _targets(targets) {}
 
+
 void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
                                       const SymbolTable& table,
                                       const SyntaxTreeGenerator& generator,
@@ -177,6 +178,33 @@ void IntermediateInstruction::insertIntoArguments(const std::string& name,
   replaceInVector(_targets, name, value);
 }
 
+std::string IntermediateInstruction::toString() const {
+  std::string str = _name;
+
+  // Append targets
+  for (size_t i = 0; i < _targets.size(); i++) {
+    if (i != 0) {
+      str += ", ";
+    } else {
+      str += " ";
+    }
+    str += _targets[i];
+  }
+
+  // Append sources
+  for (size_t i = 0; i < _sources.size(); i++) {
+    if (i == 0 && _targets.size() == 0) {
+      str += " ";
+    } else {
+      str += ", ";
+    }
+    str += _sources[i];
+  }
+
+  str += "\n";
+  return str;
+}
+
 IntermediateOperationPointer IntermediateInstruction::clone() {
   return IntermediateOperationPointer{new IntermediateInstruction{*this}};
 }
@@ -187,4 +215,8 @@ std::vector<std::string> IntermediateInstruction::getArgsVector() const {
   args.insert(args.end(), _targets.begin(), _targets.end());
   args.insert(args.end(), _sources.begin(), _sources.end());
   return args;
+}
+
+IntermediateOperation::Type IntermediateInstruction::getType() const {
+  return Type::INSTRUCTION;
 }

@@ -57,6 +57,10 @@ class IntermediateMacroInstruction : public IntermediateOperation {
                                 CommandIterator end,
                                 CompileState& state);
 
+  virtual std::string toString() const;
+
+  virtual Type getType() const;
+
  private:
   CommandList _operations;
   int _firstInstruction = -1;

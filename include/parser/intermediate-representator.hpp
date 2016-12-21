@@ -87,6 +87,8 @@ class IntermediateRepresentator {
    */
   void internalInsertCommand(IntermediateOperationPointer pointer);
 
+  void generateMacroInformation(FinalRepresentation& representation);
+
   /**
    * \brief The internal command list.
    */
