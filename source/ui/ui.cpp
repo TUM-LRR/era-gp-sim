@@ -25,6 +25,7 @@
 #include "arch/common/architecture-formula.hpp"
 #include "common/assert.hpp"
 #include "common/utility.hpp"
+#include "ui/input-text-model.hpp"
 #include "ui/snapshot-component.hpp"
 
 Ui::id_t Ui::_rollingProjectId = 0;
@@ -43,6 +44,7 @@ int Ui::runUi() {
   qmlRegisterType<ClipboardAdapter>(
       "ClipboardAdapter", 1, 0, "ClipboardAdapter");
   qRegisterMetaType<std::size_t>("std::size_t");
+  qRegisterMetaType<InputText::length_t>("length_t");
   qRegisterMetaType<id_t>("id_t");
   _engine.rootContext()->setContextProperty("ui", this);
   _engine.rootContext()->setContextProperty("snapshotComponent",
