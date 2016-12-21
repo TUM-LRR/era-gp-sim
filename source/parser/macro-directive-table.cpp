@@ -107,3 +107,8 @@ bool MacroDirectiveTable::MacroWrapper::isCyclic() const noexcept {
 bool MacroDirectiveTable::MacroWrapper::found() const noexcept {
   return _iterator != _end;
 }
+
+const PositionedString &MacroDirectiveTable::MacroWrapper::name() const {
+  assert::that(_iterator != _end);
+  return _iterator->second.name();
+}

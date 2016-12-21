@@ -43,7 +43,8 @@ void IntermediateRepresentator::insertCommandPtr(
     // If we want the current command as new target, we set it like so.
     if (_currentOutput) {
       // Nested macros are not supported.
-      annotator.addErrorHere("Error, nested macros are not supported.");
+      annotator.addError(command->name().positionInterval(),
+                         "Error, nested macros are not supported.");
     }
     _currentOutput = std::move(command);
   } else {
@@ -52,7 +53,8 @@ void IntermediateRepresentator::insertCommandPtr(
       // it and its sub commands might be lost).
       if (!_currentOutput) {
         // Classic bracket-forgot-to-close problem.
-        annotator.addErrorHere("The start directive of the macro is missing.");
+        annotator.addError(command->name().positionInterval(),
+                           "The start directive of the macro is missing.");
       }
       internalInsertCommand(std::move(_currentOutput));
     }
@@ -67,9 +69,11 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
                                      CompileErrorList errorList,
                                      MemoryAccess& memoryAccess) {
   CompileErrorAnnotator annotator(
-      errorList, CodePositionInterval(CodePosition(0), CodePosition(0)));// TODO
+      errorList,
+      CodePositionInterval(CodePosition(0), CodePosition(0, 2)));// TODO
   if (_currentOutput) {
-    annotator.addErrorHere(
+    annotator.addError(
+        _currentOutput->name().positionInterval(),
         "Macro not closed. Missing a macro end directive?");// TODO Code
                                                             // Position
   }
@@ -98,6 +102,53 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
   auto allowedSizeFuture = memoryAccess.getMemorySize();
   std::size_t allowedSize = allowedSizeFuture.get();
 
+  SymbolGraph graph;
+  EnhanceSymbolTableImmutableArguments symbolTableArguments(
+      preprocessingArguments, allocator);
+  for (const auto& command : _commandList) {
+    command->enhanceSymbolTable(symbolTableArguments, annotator, graph);
+  }
+
+  auto graphEvaluation = graph.evaluate();// TODO refactor out.
+  if (!graphEvaluation.valid()) {
+    if (!graphEvaluation.invalidNames().empty()) {
+      for (auto index : graphEvaluation.invalidNames()) {
+        const auto& symbol = graphEvaluation.symbols()[index];
+        annotator.addError(
+            symbol.name().positionInterval(),
+            "The name '%1' is not a valid name for a constant, label etc.",
+            symbol.name().string());
+      }
+    }
+    if (!graphEvaluation.duplicates().empty()) {
+      for (const auto& indexGroup : graphEvaluation.duplicates()) {
+        for (auto index : indexGroup) {
+          const auto& symbol = graphEvaluation.symbols()[index];
+          annotator.addError(
+              symbol.name().positionInterval(),
+              "The name '%1' exists more than once in the program",
+              symbol.name().string());
+        }
+      }
+    }
+    if (!graphEvaluation.sampleCycle().empty()) {
+      std::string displayString;
+      for (auto index : graphEvaluation.sampleCycle()) {
+        const auto& symbol = graphEvaluation.symbols()[index];
+        displayString += "'" + symbol.name().string() + "' -> ";
+      }
+      displayString += "...";
+      for (auto index : graphEvaluation.sampleCycle()) {
+        const auto& symbol = graphEvaluation.symbols()[index];
+        annotator.addError(
+            symbol.name().positionInterval(),
+            "Symbol '%1' is part of an infinite reference cycle, going like %2",
+            symbol.name().string(),
+            displayString);
+      }
+    }
+  }
+
   if (allocatedSize > allowedSize) {
     annotator.addErrorHere(
         "Too much memory allocated: %1 requested, maximum is %2"
@@ -109,14 +160,6 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
     return representation;
   }
 
-  SymbolGraph graph;
-  EnhanceSymbolTableImmutableArguments symbolTableArguments(
-      preprocessingArguments, allocator);
-  for (const auto& command : _commandList) {
-    command->enhanceSymbolTable(symbolTableArguments, annotator, graph);
-  }
-
-  auto graphEvaluation = graph.evaluate();// TODO more graph evaluation!
   SymbolReplacer replacer(graphEvaluation);
   ExecuteImmutableArguments executeArguments(symbolTableArguments, replacer);
   for (const auto& command : _commandList) {

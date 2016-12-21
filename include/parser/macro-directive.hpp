@@ -156,6 +156,9 @@ class MacroDirective : public IntermediateDirective {
    */
   class MacroParameters {
    public:
+    using MacroParameter =
+        std::pair<PositionedString, Optional<PositionedString>>;
+
     MacroParameters(std::vector<PositionedString>::const_iterator begin,
                     std::vector<PositionedString>::const_iterator end);
 
@@ -189,8 +192,7 @@ class MacroDirective : public IntermediateDirective {
     /**
      * Vector of all the parameters as `{name, optional default value}` pairs.
      */
-    std::vector<std::pair<PositionedString, Optional<PositionedString>>>
-        _params;
+    std::vector<MacroParameter> _params;
 
     /**
      * Minumum amount of parameters this operation needs.

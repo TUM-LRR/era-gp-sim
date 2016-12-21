@@ -41,15 +41,18 @@ void IntermediateMacroInstruction::replaceWithMacros(
 
     auto macro = macroTable.find(inst._name.string(),
                                  inst._sources.size() + inst._targets.size());
-    if (!macro.found()) continue;
+    if (!macro.found()) {
+      continue;
+    }
 
     if (macro.isCyclic()) {
-      annotator.addErrorHere("Cyclic macro call!");
+      annotator.addError(macro.name().positionInterval(),
+                         "Cyclic macro call detected.");
       continue;
     }
 
     IntermediateOperationPointer newPtr =
-        std::make_unique<IntermediateMacroInstruction>(
+        std::make_shared<IntermediateMacroInstruction>(
             inst, macro->second, macroTable, annotator);
     *i = std::move(newPtr);
   }
@@ -72,8 +75,9 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     if (ptr != nullptr) {
       _operations.push_back(std::move(ptr));
     } else {
-      annotator.addErrorHere("Macro contains unsupported instruction '%1'.",
-                             macro.getOperationName(i).string());
+      annotator.addError(macro.getOperationName(i).positionInterval(),
+                         "Macro contains unsupported instruction '%1'.",
+                         macro.getOperationName(i).string());
     }
   }
 
@@ -110,7 +114,12 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
   }
 
   if (_labels.size() > 0 && _firstInstruction < 0) {
-    annotator.addErrorHere(
+    std::vector<CodePositionInterval> wholeRegion;// TODO
+    for (const auto& label : _labels) {
+      wholeRegion.push_back(label.positionInterval());
+    }
+    annotator.addError(
+        CodePositionInterval().unite(wholeRegion.begin(), wholeRegion.end()),
         "Labels cannot point to macros without instructions!");
   } else {
     for (const auto& label : _labels) {

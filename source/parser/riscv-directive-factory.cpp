@@ -55,7 +55,7 @@ static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
   for (const auto &value : values) {
     if (value.string().empty()) {
       // Empty arguments are not allowed.
-      annotator.addErrorHere("Argument is empty.");
+      annotator.addError(value.positionInterval(), "Argument is empty.");
     } else if (value.string().at(0) == '\"') {
       // It is a string if it begins with a "
       std::vector<T> temporaryData;
@@ -147,7 +147,7 @@ void RiscVDirectiveFactory::create(
 
   if (element == mapping.end()) {
     ptr = nullptr;
-    annotator.addErrorHere("Unknown directive");
+    annotator.addError(name.positionInterval(), "Unknown directive");
   } else {
     ptr = (element->second)(lines, labels, name, arguments);
     intermediate.insertCommandPtr(std::move(ptr), annotator);

@@ -130,7 +130,8 @@ void IntermediateInstruction::allocateMemory(
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (tracker.section() != "text") {
-    annotator.addErrorHere(
+    annotator.addError(
+        name().positionInterval(),
         "Tried to define an instruction in not the text section.");
     return;
   }

@@ -66,6 +66,8 @@ class MacroDirectiveTable {
     bool isCyclic() const noexcept;
     bool found() const noexcept;
 
+    const PositionedString &name() const;
+
    private:
     MacroIterator _iterator;
     const MacroIterator _end;
