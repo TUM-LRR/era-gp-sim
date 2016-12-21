@@ -94,7 +94,7 @@ const PositionedString& IntermediateOperation::name() const noexcept {
 }
 
 std::string IntermediateOperation::toString() const {
-  return _name + "\n";
+  return _name.string() + "\n";
 }
 
 IntermediateOperation::Type IntermediateOperation::getType() const {

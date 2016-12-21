@@ -185,7 +185,7 @@ void IntermediateInstruction::insertIntoArguments(
 }
 
 std::string IntermediateInstruction::toString() const {
-  std::string str = _name;
+  std::string str = _name.string();
 
   // Append targets
   for (size_t i = 0; i < _targets.size(); i++) {
@@ -194,7 +194,7 @@ std::string IntermediateInstruction::toString() const {
     } else {
       str += " ";
     }
-    str += _targets[i];
+    str += _targets[i].string();
   }
 
   // Append sources
@@ -204,7 +204,7 @@ std::string IntermediateInstruction::toString() const {
     } else {
       str += ", ";
     }
-    str += _sources[i];
+    str += _sources[i].string();
   }
 
   str += "\n";

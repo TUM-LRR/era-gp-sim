@@ -21,6 +21,7 @@
 #define ERAGPSIM_PARSER_MACRO_INFORMATION_HPP
 
 #include <string>
+#include "parser/code-position-interval.hpp"
 #include "parser/code-position.hpp"
 
 /**

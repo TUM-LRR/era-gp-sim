@@ -38,9 +38,9 @@ void IntermediateRepresentator::generateMacroInformation(
       continue;
 
     std::string macroCode =
-        static_cast<IntermediateMacroInstruction&>(*i).toString();
-    CodePositionInterval macroPos(CodePosition(i->lines().lineStart, 0),
-                                  CodePosition(i->lines().lineEnd, 0));
+        static_cast<IntermediateMacroInstruction&>(*command).toString();
+    CodePositionInterval macroPos(CodePosition(command->lines().lineStart(), 0),
+                                  CodePosition(command->lines().lineEnd(), 0));
 
     MacroInformation info(macroCode, macroPos);
 
