@@ -95,17 +95,17 @@ class Project : public Servant {
   /**
    * Calls Memory::isProtected(size_t, size_t)
    */
-  bool isMemoryProtectedAt(std::size_t address, std::size_t amount = 1) const;
+  bool isMemoryProtectedAt(size_t address, size_t amount = 1) const;
 
   /**
    * Calls Memory::makeProtected(...)
    */
-  void makeMemoryProtected(std::size_t address, std::size_t amount = 1);
+  void makeMemoryProtected(size_t address, size_t amount = 1);
 
   /**
    * Calls Memory::removeProtection(...)
    */
-  void removeMemoryProtection(std::size_t address, std::size_t amount = 1);
+  void removeMemoryProtection(size_t address, size_t amount = 1);
 
   /**
    * Calls RegisterSet::get(const std::string& name) const
