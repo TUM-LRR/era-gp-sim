@@ -101,10 +101,10 @@ Item {
             Column {
                 spacing: 16
                 Text {
-                    text: "Memory Source:"
+                    text: "Pixel Base Address:"
                 }
                 Text {
-                    text: "Number of Strips:"
+                    text: "Color Base Address:"
                 }
             }
             Column {
@@ -123,7 +123,6 @@ Item {
                     return parseInt(input, base);
                 }
 
-                // Text field for setting the output item's source address in memory.
                 TextField {
                     id: pixelBaseAddressTextField
 
@@ -134,6 +133,20 @@ Item {
                         var inputValue = controlsColumn.integerFromInputString(String(pixelBaseAddressTextField.text))
                         if (inputValue && inputValue > 0) {
                             pixeldisplaypainteditemid.pixelBaseAddress = inputValue
+                        }
+                    }
+                }
+
+                TextField {
+                    id: colorBaseAddressTextField
+
+                    onAccepted: { processInput(); }
+                    onEditingFinished: { processInput(); }
+
+                    function processInput() {
+                        var inputValue = controlsColumn.integerFromInputString(String(colorBaseAddressTextField.text))
+                        if (inputValue && inputValue > 0) {
+                            pixeldisplaypainteditemid.colorBaseAddress = inputValue
                         }
                     }
                 }

@@ -55,6 +55,7 @@ void PixelDisplayPaintedItem::memoryChanged(std::size_t address,
 
 void PixelDisplayPaintedItem::setPixelBaseAddress(size_t pixelBaseAddress) {
   if (_options.pixelBaseAddress != pixelBaseAddress) {
+    std::cout << "pixelBaseAddress changed: " << pixelBaseAddress << std::endl;
     _options.pixelBaseAddress = pixelBaseAddress;
     _options.updateAllPixels(_outputComponentPointer, _image);
     update();
@@ -62,6 +63,7 @@ void PixelDisplayPaintedItem::setPixelBaseAddress(size_t pixelBaseAddress) {
 }
 void PixelDisplayPaintedItem::setColorBaseAddress(size_t colorBaseAddress) {
   if (_options.colorBaseAddress != colorBaseAddress) {
+    std::cout << "colorBaseAddress changed: " << colorBaseAddress << std::endl;
     _options.colorBaseAddress = colorBaseAddress;
     _options.updateAllColors(_outputComponentPointer, _image);
     update();
