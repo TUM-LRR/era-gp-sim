@@ -4,7 +4,6 @@
         <file>Splitview.qml</file>
         <file>Components/ComponentHolder.qml</file>
         <file>Components/Snapshots/SnapshotList.qml</file>
-        <file>Components/Output/BlueRectangle.qml</file>
         <file>Components/Output/GreenRectangle.qml</file>
         <file>Components/Output/Output.qml</file>
         <file>Components/Output/RedRectangle.qml</file>
@@ -30,6 +29,9 @@
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
+        <file>Components/editor/MacroTriangleButton.qml</file>
+        <file>Components/editor/MacroSubeditor.qml</file>
+        <file>Components/Common/TextUtilities.js</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected@2x.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon.png</file>
@@ -49,8 +51,10 @@
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
-        <file>Components/Output/7-Segment/SevenSegment.qml</file>
-        <file>Components/Output/7-Segment/SevenSegment_Segment.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegment.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegmentEdge.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegmentSettingsWindow.qml</file>
         <file>Components/Output/LightstripSettingsWindow.qml</file>
         <file>Components/Output/Console.qml</file>
         <file>Components/Output/ConsoleSettingsWindow.qml</file>

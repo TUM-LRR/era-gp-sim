@@ -25,11 +25,15 @@
 
 #include "core/memory-access.hpp"
 
-using length_t = unsigned ;
+namespace InputText {
+using length_t = unsigned;
+}
 
 class InputTextModel : QObject {
   Q_OBJECT
  public:
+  using length_t = InputText::length_t;
+
   InputTextModel(QQmlContext* context, MemoryAccess memoryAccess);
 
   /**
