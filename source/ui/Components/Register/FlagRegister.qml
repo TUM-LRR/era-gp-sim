@@ -23,7 +23,9 @@ import QtQuick.Controls.Styles 1.4
 CheckBox {
     id: registerCheckBox
 
-    checked: model.FlagData
+    checked: (model !== null) ? model.FlagData : false
+
+    enabled: (model !== null) ? !model.IsConstant : true
 
     // As some values need to be set manually (i.e. not using the model's data-method and the corresponding
     // roles), they also have to be updated manually whenever the model's data changed for the current index.

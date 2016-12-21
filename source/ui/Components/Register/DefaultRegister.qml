@@ -27,6 +27,8 @@ TextField {
 
     text: registerContent();
 
+    enabled: (model !== null) ? !model.IsConstant : true
+
     // Fetches the register's content with the appropiate format from the model.
     function registerContent() {
         if (model === null) { return ""; }
