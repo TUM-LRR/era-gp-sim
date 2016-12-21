@@ -57,6 +57,7 @@ TextField {
 
     style: whiteRectangle
 
+    //used for highlighting
     Component{
         id: styleChanged
         TextFieldStyle{
@@ -100,6 +101,7 @@ TextField {
     }
 
 
+    //normal background
     Component {
         id: whiteRectangle
         TextFieldStyle{
