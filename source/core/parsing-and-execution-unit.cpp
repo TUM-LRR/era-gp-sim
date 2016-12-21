@@ -44,8 +44,6 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _setContextInformation([](const std::vector<ContextInformation> &x) {})
 , _setFinalRepresentation([](const FinalRepresentation &x) {})
 , _throwError(([](const std::string &x, const std::vector<std::string> &y) {}))
-, _setCurrentLine([](size_t x) {}) {
-, _setMacroList(([](const std::vector<MacroInformation> &x) {}))
 , _setCurrentLine([](size_t x) {})
 , _executionStopped([]() {}) {
   // find the RegisterInformation object of the program counter
@@ -158,9 +156,6 @@ void ParsingAndExecutionUnit::parse(std::string code) {
   _lineCommandCache.clear();
   // update the final representation of the ui
   _setFinalRepresentation(_finalRepresentation);
-  // update the error list of the ui
-  _setErrorList(_finalRepresentation.errorList);
-  _setMacroList(_finalRepresentation.macroList);
   // assemble commands into memory
   if (!_finalRepresentation.hasErrors()) {
     for (const auto &command : _finalRepresentation.commandList) {

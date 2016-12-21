@@ -97,6 +97,13 @@ class EditorComponent : public QObject {
   void setErrorList(const std::vector<CompileError> &errorList);
 
   /**
+   * Set a new macro list.
+   *
+   * \param macroList the new macro list.
+   */
+  void setMacroList(const std::vector<MacroInformation> &macroList);
+
+  /**
    * Set the current line of execution, in order to correctly display it in the
    * editor.
    *

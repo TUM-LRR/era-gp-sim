@@ -29,7 +29,6 @@
 #include "core/memory-access.hpp"
 #include "core/servant.hpp"
 #include "parser/final-representation.hpp"
-#include "parser/macro-information.hpp"
 #include "parser/parser.hpp"
 #include "parser/syntax-information.hpp"
 

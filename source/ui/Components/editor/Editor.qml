@@ -85,7 +85,8 @@ ScrollView {
                 visible: true
                 onCursorRectangleChanged: {
                     cursorScroll(cursorRectangle);
-                    var newCursorLine = 1 + (cursorRectangle.y/cursorRectangle.height);
+                    var newCursorLine = (cursorRectangle.y/cursorRectangle.height);
+                    newCursorLine = convertRawLineNumberToDisplayLineNumber(textArea.text, newCursorLine);
                     if(cursorLine != newCursorLine) {
                         cursorLine = newCursorLine;
                         editor.cursorLineChanged(newCursorLine);

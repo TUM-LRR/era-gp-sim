@@ -41,25 +41,6 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
   parserInterface.setSetCurrentLineCallback(
       [this](std::size_t line) { setCurrentLine(line); });
 
-  parserInterface.setSetMacroListCallback([this](
-      const std::vector<MacroInformation> &macroList) {
-    QVariantList updatedMacroList;
-    for (const auto& macroInformation : macroList) {
-      QVariantMap macroInformationMap;
-      macroInformationMap["code"] = QString::fromStdString(macroInformation.macroCode());
-      macroInformationMap["startLine"] =
-          QVariant::fromValue(macroInformation.position().first.line() - 1);
-      macroInformationMap["endLine"] =
-          QVariant::fromValue(macroInformation.position().second.line() - 1);
-      int lineCount =
-          (int)std::count(macroInformation.macroCode().begin(), macroInformation.macroCode().end(), '\n');
-      macroInformationMap["lineCount"] = QVariant::fromValue(lineCount);
-      macroInformationMap["collapsed"] = QVariant::fromValue(true);
-      updatedMacroList.append(macroInformationMap);
-    }
-    emit updateMacros(updatedMacroList);
-  });
-
   // TODO select colors according to a theme/possibility to change colors
 
   // Add all instruction keywords to the syntax highlighter
@@ -154,6 +135,28 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
   }
 }
 
+void EditorComponent::setMacroList(
+    const std::vector<MacroInformation> &macroList) {
+  QVariantList updatedMacroList;
+  for (const auto &macroInformation : macroList) {
+    QVariantMap macroInformationMap;
+    macroInformationMap["code"] =
+        QString::fromStdString(macroInformation.macroCode());
+    macroInformationMap["startLine"] =
+        QVariant::fromValue(macroInformation.position().first.line() - 1);
+    macroInformationMap["endLine"] =
+        QVariant::fromValue(macroInformation.position().second.line() - 1);
+    int lineCount =
+        static_cast<int>(std::count(macroInformation.macroCode().begin(),
+                                    macroInformation.macroCode().end(),
+                                    '\n'));
+    macroInformationMap["lineCount"] = QVariant::fromValue(lineCount);
+    macroInformationMap["collapsed"] = QVariant::fromValue(true);
+    updatedMacroList.append(macroInformationMap);
+  }
+  emit updateMacros(updatedMacroList);
+}
+
 void EditorComponent::setCurrentLine(int line) {
   emit executionLineChanged(line);
 }
@@ -165,6 +168,7 @@ QString EditorComponent::getText() {
 void EditorComponent::onFinalRepresentationChanged(
     const FinalRepresentation &finalRepresentation) {
   setErrorList(finalRepresentation.errorList);
+  setMacroList(finalRepresentation.macroList);
 }
 
 void EditorComponent::_addKeywords(
