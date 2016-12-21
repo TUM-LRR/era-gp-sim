@@ -101,8 +101,19 @@ Item {
                 anchors.right: parent.right
                 width: 18
                 height: registerContentItem.height
-                property bool completed: false
+                property bool shouldCacheFormatIndex: false
                 model: {
+                    // Property bindings are magic; dark, dark magic. So how often this
+                    // function is called depends on your version of Qt. The problem is, whenever
+                    // the model is changed, the currentIndex of the ComboBox is reset to 0 (=Binary)
+                    // Depending on what your version of Qt is, this might happen when you edit the register
+                    // or just scroll through. So the current format needs to be cached and restored.
+                    // We only want to cache a current index if it was changed by the user rather than automatically
+                    // (e.g. through reset). In order to prevent us from caching index 0 after the model was changed,
+                    // we set dataTypeFormatComboBox.shouldCacheFormatIndex to false which prevents caches until it's
+                    // set to true again in the onModelChanged-signal.
+                    dataTypeFormatComboBox.shouldCacheFormatIndex = false;
+                    // Note: model.Type does not work...
                     var type = registerModel.data(styleData.index, 1);
                     switch (type) {
                     case "Integer":
@@ -120,19 +131,16 @@ Item {
                     }
                 }
 
+                onModelChanged: {
+                    // Refer to property-binding to dataTypeFormatComboBox.model for further information.
+                    _tryToRestoreCachedFormatIndex();
+                    dataTypeFormatComboBox.shouldCacheFormatIndex = true;
+                }
+
                 Component.onCompleted: {
-                    // Try to restore a cached selected data type format.
-                    if (attachedTreeView.dataTypeFormatCache[styleData.index] !== undefined) {
-                        dataTypeFormatComboBox.currentIndex = attachedTreeView.dataTypeFormatCache[styleData.index];
-                    } else {    // If no cached format could be restored, load the default format.
-                        var defaultFormatIndex = indexOfFormat(attachedTreeView.defaultFormat);
-                        // If the default format is not available for this register's type (e.g. decimal for program counter),
-                        // load the format at index 0.
-                        if (defaultFormatIndex !== -1) {
-                            dataTypeFormatComboBox.currentIndex = defaultFormatIndex;
-                        }
-                    }
-                    dataTypeFormatComboBox.completed = true;
+                    // Refer to property-binding to dataTypeFormatComboBox.model for further information.
+                    _tryToRestoreCachedFormatIndex();
+                    dataTypeFormatComboBox.shouldCacheFormatIndex = true;
                 }
 
                 onCurrentIndexChanged: {
@@ -148,11 +156,27 @@ Item {
                     }
                     // Cache the new currently selected data type format, but only if the
                     // index change was not triggered upon the creation of the combo box
-                    // (defaults to 0 at creation time).
-                    if (completed) {
+                    // (defaults to 0 at creation time) and only if the index is valid
+                    // (i.e. row and column are positive).
+                    if (dataTypeFormatComboBox.shouldCacheFormatIndex && styleData.index.row >= 0 && styleData.index.column >= 0) {
                         attachedTreeView.dataTypeFormatCache[styleData.index] = currentIndex;
                     }
                 }
+
+                function _tryToRestoreCachedFormatIndex() {
+                    // Try to restore a cached selected data type format.
+                    if (attachedTreeView.dataTypeFormatCache[styleData.index] !== undefined) {
+                        dataTypeFormatComboBox.currentIndex = attachedTreeView.dataTypeFormatCache[styleData.index];
+                    } else {    // If no cached format could be restored, load the default format.
+                        var defaultFormatIndex = indexOfFormat(attachedTreeView.defaultFormat);
+                        // If the default format is not available for this register's type (e.g. decimal for program counter),
+                        // load the format at index 0.
+                        if (defaultFormatIndex !== -1 && defaultFormatIndex !== undefined) {
+                            dataTypeFormatComboBox.currentIndex = defaultFormatIndex;
+                        }
+                    }
+                }
+
                 style: ComboBoxStyle {
                     // Selection Indicator
                     label: Item {
