@@ -43,7 +43,7 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _syntaxInformation(_parser->getSyntaxInformation())
 , _setContextInformation([](const std::vector<ContextInformation> &x) {})
 , _setErrorList([](const std::vector<CompileError> &x) {})
-, _throwError(([](const std::string &x, const std::vector<std::string> &y) {}))
+, _throwError(([](const Translateable& t) {}))
 , _setMacroList(([](const std::vector<MacroInformation> &x) {}))
 , _setCurrentLine([](size_t x) {}) {
   // find the RegisterInformation object of the program counter
@@ -187,7 +187,7 @@ void ParsingAndExecutionUnit::setSetErrorListCallback(
 }
 
 void ParsingAndExecutionUnit::setThrowErrorCallback(
-    Callback<const std::string &, const std::vector<std::string> &> callback) {
+    Callback<const Translateable &> callback) {
   _throwError = callback;
 }
 
@@ -232,7 +232,7 @@ bool ParsingAndExecutionUnit::_executeNode(size_t nodeIndex) {
   auto validationResult = currentCommand.node->validateRuntime(_memoryAccess);
   if (!validationResult.isSuccess()) {
     // notify the ui of a runtime error
-      _throwError(validationResult.getMessage().getBaseString(), {});
+      _throwError(validationResult.getMessage());
     return false;
   }
   // update the current line in the ui (pre-execution)

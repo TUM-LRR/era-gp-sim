@@ -109,17 +109,20 @@ std::enable_if_t<std::is_unsigned<UnsignedWord>::value, bool> isAddressValid(
   UnsignedWord lowerBound = 0;
   UnsignedWord upperBound = memoryAccess.getMemorySize().get();
   // validAddress is used to determine if the the given Adress is correctly
-  // aligned in memory
+  // aligned in memory.
   // correct alignment is that (absoluteAdress-offset)%4 == 0
-  // problem: we don't know the offset, but we know that (validAdress-offset)%4
-  // = 0
+  // problem: we don't know the offset,
+  // but we know that (validAdress-offset)%4 = 0
+  if (absoluteAdress < lowerBound ||
+      absoluteAdress + riscv::INSTRUCTION_LENGTH_BYTE >= upperBound) {
+    return false;
+  }
   bool validAlignement = abs(validAdress - absoluteAdress) % 4 == 0;
   bool insideOfProgram =
       memoryAccess
           .isMemoryProtectedAt(absoluteAdress, riscv::INSTRUCTION_LENGTH_BYTE)
           .get();
-  return absoluteAdress >= lowerBound && absoluteAdress < upperBound &&
-         validAlignement && insideOfProgram;
+  return validAlignement && insideOfProgram;
 }
 
 template <std::size_t numberOfBits, typename T>

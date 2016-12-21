@@ -284,12 +284,12 @@ class AbstractBranchInstructionNode : public InstructionNode {
   ValidationResult
   _validateResultingProgramCounter(MemoryAccess& memoryAccess) const {
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
-    auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
+    auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 2);
     // Check if the program counter would underflow or overflow
     if (!riscv::isAddressValid(memoryAccess, programCounter + 2 * offset, programCounter)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                            "Branch offset would invalidate program counter"));
+                            "Branch offset would invalidate program counter to %1"), std::to_string(programCounter+2*offset));
     }
 
     return ValidationResult::success();

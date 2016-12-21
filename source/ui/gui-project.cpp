@@ -25,6 +25,7 @@
 
 #include "common/utility.hpp"
 #include "ui/snapshot-component.hpp"
+#include "ui/translateable-processing.hpp"
 
 GuiProject::GuiProject(
     QQmlContext* context,
@@ -69,8 +70,8 @@ GuiProject::GuiProject(
       });
 
   _projectModule.getParserInterface().setThrowErrorCallback(
-      [this](const auto& message, const auto& arguments) {
-        this->_throwError(message, arguments);
+      [this](const Translateable& message) {
+        this->_throwError(message);
       });
 
   _projectModule.getMemoryManager().setErrorCallback(
@@ -258,4 +259,9 @@ void GuiProject::_throwError(const std::string& message,
                              const std::vector<std::string>& arguments) {
   auto errorMessage = QString::fromStdString(message);
   emit error(errorMessage);
+}
+
+void GuiProject::_throwError(const Translateable &message) {
+    auto errorMessage = translate(message);
+    emit error(errorMessage);
 }
