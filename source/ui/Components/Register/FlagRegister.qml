@@ -18,6 +18,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
+import QtGraphicalEffects 1.0
 
 
 CheckBox {
@@ -37,6 +38,8 @@ CheckBox {
             // Check if the current item's index is affected by the data change.
             if (topLeft <= styleData.index && styleData.index <= bottomRight) {
                 checked = Qt.binding(function() {return model.FlagData});
+                //starts the highlighting
+                registerCheckBox.style = styleChanged;
             }
         }
     }
@@ -45,5 +48,67 @@ CheckBox {
     onCheckedChanged: {
         var registerContentString = (checked == true) ? "1" : "0";
         registerModel.registerContentChanged(styleData.index, registerContentString, dataTypeFormatComboBox.currentText);
+    }
+
+    style: whiteRectangle
+
+    Component{
+        id: styleChanged
+        CheckBoxStyle{
+            background:  Loader {
+                id: loader
+                focus: false
+                sourceComponent: glowEffect
+            }
+
+            Component {
+                id: glowEffect
+                Item{
+                    Rectangle{
+                        id: rect
+                        x: registerCheckBox.x
+                        y: registerCheckBox.y
+                        width: registerCheckBox.width
+                        height: registerCheckBox.height
+                        color: "white"
+
+                    }
+                    Glow {
+                        x: rect.x
+                        y: rect.y
+                        width: rect.width
+                        height: rect.height
+                        source: rect
+                        color: "#0080FF"
+                        radius: 8
+                        samples: 17
+                        visible: true
+
+                        NumberAnimation on spread {
+                            from: 0; to: 0.5; duration: 1000
+                            loops: 3
+                            easing.type: Easing.InOutQuad
+                            onStopped: {
+                                registerCheckBox.style = whiteRectangle;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    Component {
+        id: whiteRectangle
+        CheckBoxStyle{
+            background: Rectangle {
+                x: registerCheckBox.x
+                y: registerCheckBox.y
+                width: registerCheckBox.width
+                height: registerCheckBox.height
+                color: "white"
+            }
+        }
     }
 }

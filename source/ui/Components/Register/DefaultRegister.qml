@@ -18,7 +18,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
-
+import QtGraphicalEffects 1.0
 
 TextField {
     id: registerTextField
@@ -64,6 +64,8 @@ TextField {
             // Check if the current item's index is affected by the data change.
             if (topLeft <= styleData.index && styleData.index <= bottomRight) {
                 text = Qt.binding(registerContent);
+                //starts the highlighting
+                style = styleChanged;
             }
         }
     }
@@ -95,4 +97,79 @@ TextField {
         return registerContentString;
     }
 
+    style: whiteRectangle
+
+    //used for highlighting
+    Component{
+        id: styleChanged
+        TextFieldStyle{
+            background:  Loader {
+                id: loader
+                focus: false
+                sourceComponent: glowEffect
+            }
+
+            Component {
+                id: glowEffect
+                Item{
+                    Rectangle {
+                        id: rect
+                        x: registerTextField.x
+                        y: registerTextField.y
+                        width: registerTextField.width
+                        height: registerTextField.height
+                        color: "white"
+                        radius: 2
+                        border.color: "lightgray"
+                        border.width: 1
+
+                    }
+
+                    Glow {
+                        x: rect.x
+                        y: rect.y
+                        width: rect.width
+                        height: rect.height
+                        source: rect
+                        color: "#0080FF"
+                        radius: 8
+                        samples: 17
+                        visible: true
+
+                        NumberAnimation on spread {
+                            from: 0
+                            to: 0.5
+                            duration: 1000
+                            loops: 3
+                            easing.type: Easing.InOutQuad
+                            onStopped: {
+                                registerTextField.style = whiteRectangle;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    //normal background
+    Component {
+        id: whiteRectangle
+        TextFieldStyle{
+            background: Rectangle {
+                id: rect
+                x: registerTextField.x
+                y: registerTextField.y
+                width: registerTextField.width
+                height: registerTextField.height
+                color: "white"
+                radius: 2
+                border.color: "lightgray"
+                border.width: 1
+
+            }
+        }
+    }
 }
+
