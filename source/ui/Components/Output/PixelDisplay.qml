@@ -106,6 +106,15 @@ Item {
                 Text {
                     text: "Color Base Address:"
                 }
+                Text {
+                    text: "Color Mode:"
+                }
+                Text {
+                    text: "width:"
+                }
+                Text {
+                    text: "height:"
+                }
             }
             Column {
                 id: controlsColumn
@@ -131,7 +140,7 @@ Item {
 
                     function processInput() {
                         var inputValue = controlsColumn.integerFromInputString(String(pixelBaseAddressTextField.text))
-                        if (inputValue && inputValue > 0) {
+                        if (inputValue >= 0) {
                             pixeldisplaypainteditemid.pixelBaseAddress = inputValue
                         }
                     }
@@ -145,11 +154,67 @@ Item {
 
                     function processInput() {
                         var inputValue = controlsColumn.integerFromInputString(String(colorBaseAddressTextField.text))
-                        if (inputValue && inputValue > 0) {
+                        if (inputValue >= 0) {
                             pixeldisplaypainteditemid.colorBaseAddress = inputValue
                         }
                     }
                 }
+
+                ComboBox {
+                    id: colorModeComboBox
+                    //width: 200
+                    model: [ "Monochrome", "RGB" ]
+                    onAccepted: {
+                        pixeldisplaypainteditemid.colorMode = colorModeComboBox.currentIndex
+                    }
+                    onActivated: {
+                        pixeldisplaypainteditemid.colorMode = colorModeComboBox.currentIndex
+                    }
+                }
+
+                // TextField {
+                //     id: colorModeTextField
+                //
+                //     onAccepted: { processInput(); }
+                //     onEditingFinished: { processInput(); }
+                //
+                //     function processInput() {
+                //         var inputValue = controlsColumn.integerFromInputString(String(colorModeTextField.text))
+                //         if (inputValue && inputValue >= 0) {
+                //             pixeldisplaypainteditemid.colorMode = inputValue
+                //         }
+                //     }
+                // }
+
+                TextField {
+                    id: widthTextField
+
+                    onAccepted: { processInput(); }
+                    onEditingFinished: { processInput(); }
+
+                    function processInput() {
+                        var inputValue = controlsColumn.integerFromInputString(String(widthTextField.text))
+                        if (inputValue && inputValue > 0) {
+                            console.log("width changed")
+                            pixeldisplaypainteditemid.width = inputValue
+                        }
+                    }
+                }
+
+                TextField {
+                    id: heightTextField
+
+                    onAccepted: { processInput(); }
+                    onEditingFinished: { processInput(); }
+
+                    function processInput() {
+                        var inputValue = controlsColumn.integerFromInputString(String(heightTextField.text))
+                        if (inputValue && inputValue > 0) {
+                            pixeldisplaypainteditemid.height = inputValue
+                        }
+                    }
+                }
+
             }
         }
     }

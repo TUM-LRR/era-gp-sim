@@ -71,16 +71,19 @@ void PixelDisplayPaintedItem::setColorBaseAddress(size_t colorBaseAddress) {
 }
 void PixelDisplayPaintedItem::setWidth(size_t width) {
   if (_options.width != width) {
+    std::cout << "width changed: " << width << std::endl;
     resize(width, _options.height);
   }
 }
 void PixelDisplayPaintedItem::setHeight(size_t height) {
   if (_options.height != height) {
+    std::cout << "height changed: " << height << std::endl;
     resize(_options.width, height);
   }
 }
 void PixelDisplayPaintedItem::setColorMode(size_t colorMode) {
   if (_options.colorMode != colorMode) {
+    std::cout << "ColorMode changed: " << colorMode << std::endl;
     _options.colorMode = colorMode;
     _image = _options.makeImage();
     _options.updateAllPixels(_outputComponentPointer, _image);
