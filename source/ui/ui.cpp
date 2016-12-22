@@ -17,18 +17,23 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui/ui.hpp"
 #include "ui/clipboard-adapter.hpp"
+#include "ui/ui.hpp"
 
 #include <QUrl>
 
 #include "arch/common/architecture-formula.hpp"
 #include "common/assert.hpp"
+#include "common/translateable.hpp"
 #include "common/utility.hpp"
-#include "ui/pixel-display-painted-item.hpp"
-#include "ui/output-component.hpp"
+#include "parser/final-representation.hpp"
 #include "ui/input-text-model.hpp"
+#include "ui/output-component.hpp"
+#include "ui/pixel-display-painted-item.hpp"
 #include "ui/snapshot-component.hpp"
+#include "ui/snapshot-component.hpp"
+
+Q_DECLARE_METATYPE(FinalRepresentation)
 
 Ui::id_t Ui::_rollingProjectId = 0;
 
@@ -60,11 +65,11 @@ int Ui::runUi() {
 }
 
 Ui::id_t Ui::addProject(QQuickItem* tabItem,
-                    QQmlComponent* projectComponent,
-                    const QVariant& memorySizeQVariant,
-                    const QString& architecture,
-                    const QString& optionName,
-                    const QString& parser) {
+                        QQmlComponent* projectComponent,
+                        const QVariant& memorySizeQVariant,
+                        const QString& architecture,
+                        const QString& optionName,
+                        const QString& parser) {
   // create ArchitectureFormula
   ArchitectureFormula architectureFormula(architecture.toStdString());
 
@@ -233,4 +238,12 @@ void Ui::loadSnapshot(int id, QString name) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->loadSnapshot(name);
+}
+
+QString Ui::translate(const Translateable& translateable) {
+  QString translation = QObject::tr(translateable.getBaseString().c_str());
+  for (const auto& operand : translateable.getOperands()) {
+    translation = translation.arg(translate(*operand));
+  }
+  return translation;
 }

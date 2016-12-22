@@ -81,5 +81,6 @@
         <file>Components/Input/Buttons/Settings_Icon@2x.png</file>
         <file>Components/Input/Buttons/Settings_Icon_Pressed@2x.png</file>
         <file>Components/Input/Buttons/Settings_Icon.png</file>
+	<file>Components/help/HelpWindow.qml</file>
     </qresource>
 </RCC>

@@ -29,7 +29,7 @@ class MemoryValue;
  */
 class AbstractImmediateNodeFactory {
  public:
-  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using Node = std::shared_ptr<AbstractSyntaxTreeNode>;
 
   virtual ~AbstractImmediateNodeFactory() = default;
 
@@ -41,7 +41,7 @@ class AbstractImmediateNodeFactory {
    * given numericalValue, a nullptr is returned
    *
    * \param numericalValue representation of a number to create the immediate
-   * \return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
+   * \return std::shared_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the architecture-specific implementation cannot create an
    * immediate from the given numericalValue
    */
