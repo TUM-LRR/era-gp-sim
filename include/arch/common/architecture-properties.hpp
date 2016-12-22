@@ -58,7 +58,7 @@ enum class Endianness { LITTLE, BIG, MIXED, BI };
  * Strict means the architecture does not allow misaligned memory accesses.
  * Relaxed means it does.
  */
-enum class AlignmentBehavior { STRICT, RELAXED };
+enum class AlignmentBehavior { STRICTLY_ALIGNED, RELAXEDLY_ALIGNED };
 
 /**
  * Describes how the architecture represents signed values.
