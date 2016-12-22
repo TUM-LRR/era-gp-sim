@@ -305,9 +305,25 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
    */
   void setOutputComponent(OutputComponent *o);
 
+  /*
+   * \brief sets the pixelBaseAddress
+   * \param pixelBaseAddress The pixelBaseAddress to be set
+   */
   void setPixelBaseAddress(size_t pixelBaseAddress);
+  /*
+   * \brief sets the colorBaseAddress
+   * \param colorBaseAddress The colorBaseAddress to be set
+   */
   void setColorBaseAddress(size_t colorBaseAddress);
+  /*
+   * \brief sets the width
+   * \param width The width to be set
+   */
   void setWidth(size_t width);
+  /*
+   * \brief sets the height
+   * \param height The height to be set
+   */
   void setHeight(size_t height);
   /*
    * \brief sets the colorMode
@@ -315,33 +331,141 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
    * \Note I maybe should use enums but enums in qt are annoying
    */
   void setColorMode(size_t colorMode);
+  /*
+   * \brief sets the rBit
+   * \param rBit The rBit to be set
+   */
   void setRBit(size_t rBit);
+  /*
+   * \brief sets the bBit
+   * \param bBit The bBit to be set
+   */
   void setGBit(size_t gBit);
+  /*
+   * \brief sets the gBit
+   * \param gBit The gBit to be set
+   */
   void setBBit(size_t bBit);
+  /*
+   * \brief sets the columns_rows
+   * \param columns_rows The columns_rows to be set
+   */
   void setColumns_rows(bool columns_rows);
+  /*
+   * \brief sets the horizontallyMirrored
+   * \param horizontallyMirrored The horizontallyMirrored to be set
+   */
   void setHorizontallyMirrored(bool horizontallyMirrored);
+  /*
+   * \brief sets the verticallyMirrored
+   * \param verticallyMirrored The verticallyMirrored to be set
+   */
   void setVerticallyMirrored(bool verticallyMirrored);
+  /*
+   * \brief sets the tight
+   * \param tight The tight to be set
+   */
   void setTight(bool tight);
+  /*
+   * \brief sets the pixelBufferPointerLike
+   * \param pixelBufferPointerLike The pixelBufferPointerLike to be set
+   */
   void setPixelBufferPointerLike(bool pixelBufferPointerLike);
+  /*
+   * \brief sets the colorTablePointerLike
+   * \param colorTablePointerLike The colorTablePointerLike to be set
+   */
   void setColorTablePointerLike(bool colorTablePointerLike);
+  /*
+   * \brief sets the freeBytes
+   * \param freeBytes The freeBytes to be set
+   */
   void setFreeBytes(size_t freeBytes);
+  /*
+   * \brief sets the freeBits
+   * \param freeBits The freeBits to be set
+   */
   void setFreeBits(size_t freeBits);
 
+  /*
+   * \brief returns pixelBaseAddress
+   * \returns pixelBaseAddress
+   */
   size_t getPixelBaseAddress();
+  /*
+   * \brief returns colorBaseAddress
+   * \returns colorBaseAddress
+   */
   size_t getColorBaseAddress();
+  /*
+   * \brief returns width
+   * \returns width
+   */
   size_t getWidth();
+  /*
+   * \brief returns height
+   * \returns height
+   */
   size_t getHeight();
+  /*
+   * \brief returns ColorMode
+   * \returns ColorMode
+   */
   size_t getColorMode();
+  /*
+   * \brief returns rBit
+   * \returns rBit
+   */
   size_t getRBit();
+  /*
+   * \brief returns gBit
+   * \returns gBit
+   */
   size_t getGBit();
+  /*
+   * \brief returns bBit
+   * \returns bBit
+   */
   size_t getBBit();
+  /*
+   * \brief returns columns_rows
+   * \returns columns_rows
+   */
   bool getColumns_rows();
+  /*
+   * \brief returns horizontallyMirrored
+   * \returns horizontallyMirrored
+   */
   bool getHorizontallyMirrored();
+  /*
+   * \brief returns verticallyMirrored
+   * \returns verticallyMirrored
+   */
   bool getVerticallyMirrored();
+  /*
+   * \brief returns tight
+   * \returns tight
+   */
   bool getTight();
+  /*
+   * \brief returns pixelBufferPointerLike
+   * \returns pixelBufferPointerLike
+   */
   bool getPixelBufferPointerLike();
+  /*
+   * \brief returns colorTablePointerLike
+   * \returns colorTablePointerLike
+   */
   bool getColorTablePointerLike();
+  /*
+   * \brief returns freeBytes
+   * \returns freeBytes
+   */
   size_t getFreeBytes();
+  /*
+   * \brief returns freeBits
+   * \returns freeBits
+   */
   size_t getFreeBits();
 
  private:
