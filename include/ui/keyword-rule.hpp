@@ -32,8 +32,8 @@
  *
  */
 struct KeywordRule {
-    QRegularExpression rulePattern;
-    QTextCharFormat ruleTextFormat;
+  QRegularExpression rulePattern;
+  QTextCharFormat ruleTextFormat;
 };
 
 #endif /* ERAGPSIM_UI_KEYWORD_RULE_HPP_ */

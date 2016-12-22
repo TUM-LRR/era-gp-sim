@@ -22,11 +22,11 @@ import QtQuick 2.0
 import QtQuick.Dialogs 1.0
 
 /*
-Represent one segment for a 7-segment display:
+Represents one generic segment for a 7-segment display:
 
   /\
   ||
-  ||
+  ||    <=========>
   ||
   \/
 
@@ -36,10 +36,9 @@ Item {
     id: segment
     property color color: "yellow"
 
-    height: 100
-    width: 10
-    x: 0
-    y: 0
+
+    height: 50
+    width: 0.1 * height
 
     Rectangle {
         id: ending1
@@ -54,6 +53,7 @@ Item {
         x: 0.5 * (segment.width - ending1.width)
         y: 0.5 * (segment.width - ending1.width)
     }
+
     Rectangle {
         id: ending2
         transform: Rotation {
@@ -67,6 +67,7 @@ Item {
         x: 0.5 * (segment.width - ending1.width)
         y: segment.height - segment.width + 0.5 * (segment.width - ending1.width)
     }
+
     Rectangle {
         id: middle
         width: segment.width

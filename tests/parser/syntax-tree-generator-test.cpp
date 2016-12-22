@@ -25,8 +25,8 @@
 #include "arch/common/architecture.hpp"
 #include "arch/common/immediate-node.hpp"
 #include "arch/common/node-factory-collection-maker.hpp"
-#include "arch/common/register-node.hpp"
 #include "arch/riscv/instruction-node.hpp"
+#include "arch/riscv/register-node.hpp"
 #include "core/project-module.hpp"
 #include "parser/compile-state.hpp"
 #include "parser/riscv-parser.hpp"
@@ -65,7 +65,7 @@ TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   CompileState state;
   auto output = generator.transformOperand("x18", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(output)));
+  ASSERT_TRUE((isInstance<riscv::RegisterNode>(output)));
 }
 
 TEST(SyntaxTreeGenerator, instantiateCommandNode) {
@@ -74,15 +74,15 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
 
   auto arg1 = generator.transformOperand("x1", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
+  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
 
   auto arg2 = generator.transformOperand("x1", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(arg1)));
+  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
 
   auto arg3 = generator.transformOperand("x2", state);
   ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<RegisterNode>(arg2)));
+  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg2)));
 
   std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> sources;
   sources.push_back(std::move(arg1));

@@ -65,6 +65,7 @@ class ExtensionInformation : public InformationInterface {
   using ExtensionList = std::initializer_list<ExtensionInformation>;
   using Endianness = ArchitectureProperties::Endianness;
   using AlignmentBehavior = ArchitectureProperties::AlignmentBehavior;
+  using SignedRepresentation = ArchitectureProperties::SignedRepresentation;
   using word_size_t = ArchitectureProperties::word_size_t;
   using byte_size_t = ArchitectureProperties::byte_size_t;
   using MacroContainer = std::unordered_set<std::string>;
@@ -187,6 +188,27 @@ class ExtensionInformation : public InformationInterface {
    * Returns whether any endianness is set.
    */
   bool hasEndianness() const noexcept;
+
+  /**
+   * Sets the signed representation for the extension.
+   *
+   * \param signed representation The `Signed Representation` member to assign
+   * to the extension.
+   *
+   * \return The current `ExtensionInformation` object.
+   */
+  ExtensionInformation&
+  signedRepresentation(SignedRepresentation signedRepresentation);
+
+  /**
+   * Returns the signed representation of the extension.
+   */
+  SignedRepresentation getSignedRepresentation() const;
+
+  /**
+   * Returns whether any signed representation is set.
+   */
+  bool hasSignedRepresentation() const noexcept;
 
   /**
    * Sets the alignment behavior for the extension.
@@ -423,9 +445,16 @@ class ExtensionInformation : public InformationInterface {
   void _parseEndianness(InformationInterface::Format& data);
 
   /**
+   * Parses the signed representation property from serialized data.
+   *
+   * \param data The data to deserialize the signed representation from.
+   */
+  void _parseSignedRepresentation(InformationInterface::Format& data);
+
+  /**
    * Parses the alignment behavior property from serialized data.
    *
-   * \param data The data to deserialize the alignment behavior  from.
+   * \param data The data to deserialize the alignment behavior from.
    */
   void _parseAlignmentBehavior(InformationInterface::Format& data);
 
@@ -434,6 +463,9 @@ class ExtensionInformation : public InformationInterface {
 
   /** The endianness of the extension, if any. */
   Optional<Endianness> _endianness;
+
+  /** The signed representation of the extension, if any. */
+  Optional<SignedRepresentation> _signedRepresentation;
 
   /** The alignment behavior of the extension, if any. */
   Optional<AlignmentBehavior> _alignmentBehavior;
@@ -452,6 +484,7 @@ class ExtensionInformation : public InformationInterface {
 
   /** A set of macro definitions, supplied by the extension, if any */
   MacroContainer _builtinMacros;
+
   /** A cache for the concatenated macros */
   std::string _builtinMacrosCache;
 };

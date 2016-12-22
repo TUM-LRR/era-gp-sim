@@ -18,6 +18,7 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <string>
 #include <unordered_map>
 
 #include "gtest/gtest.h"
@@ -28,6 +29,7 @@
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "arch/riscv/instruction-node.hpp"
+#include "arch/riscv/register-node.hpp"
 #include "core/conversions.hpp"
 
 #include "tests/arch/riscv/arithmetic-test-utils.hpp"
@@ -73,6 +75,7 @@ TEST_F(IntegerInstructionTest, ADDI_32) {
   // test immediate boundary
   test12BitImmediateBounds(factories, "addi", immediateFactory, memoryAccess);
 }
+
 TEST_F(IntegerInstructionTest, ADDI_64) {
   loadArchitecture({"rv32i", "rv64i"});
   auto& memoryAccess = getMemoryAccess();

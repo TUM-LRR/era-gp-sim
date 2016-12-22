@@ -45,6 +45,11 @@ GuiProject::GuiProject(
 , _outputComponent(_projectModule.getMemoryManager(),
                    _projectModule.getMemoryAccess(),
                    context)
+, _inputBM (context, _projectModule.getMemoryAccess())
+, _inputTM (context,
+           _projectModule.getMemoryAccess())
+, _inputCM (context,
+           _projectModule.getMemoryAccess())
 , _memoryModel(_projectModule.getMemoryAccess(),
                _projectModule.getMemoryManager(),
                context)
@@ -72,6 +77,9 @@ GuiProject::GuiProject(
       [this](const auto& message, const auto& arguments) {
         this->_throwError(message, arguments);
       });
+
+  _projectModule.getCommandInterface().setExecutionStoppedCallback(
+      [this]() { emit this->executionStopped(); });
 
   // connect all receiving components to the callback signals
   QObject::connect(this,

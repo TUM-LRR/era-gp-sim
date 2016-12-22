@@ -72,6 +72,8 @@ using IntermediateOperationPointer = std::shared_ptr<IntermediateOperation>;
  */
 class IntermediateOperation {
  public:
+  enum class Type { OTHER, INSTRUCTION, MACRO_INSTRUCTION };
+
   /**
    * \brief Instantiates a new IntermediateOperation with the given arguments.
    * (only for subclass use!)
@@ -161,6 +163,10 @@ class IntermediateOperation {
   const std::vector<std::string>& labels() const;
 
   const std::string& name() const;
+
+  virtual std::string toString() const;
+
+  virtual Type getType() const;
 
  protected:
   /**

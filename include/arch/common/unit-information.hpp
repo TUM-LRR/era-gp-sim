@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_ARCH_UNIT_INFORMATION_HPP
 #define ERAGPSIM_ARCH_UNIT_INFORMATION_HPP
 
+#include <algorithm>
 #include <functional>
 #include <initializer_list>
 #include <string>
@@ -53,7 +54,8 @@ class UnitInformation : public UnderlyingRegisterContainer,
   using SpecialMap = std::unordered_map<Type, RegisterInformation>;
   using Compare = std::function<bool(const RegisterInformation&,
                                      const RegisterInformation&)>;
-  using SortedResult = std::vector<std::reference_wrapper<const RegisterInformation>>;
+  using SortedResult =
+      std::vector<std::reference_wrapper<const RegisterInformation>>;
 
   /**
   * Convenience comparator for sorting RegisterInformation in ascending
@@ -86,6 +88,7 @@ class UnitInformation : public UnderlyingRegisterContainer,
    */
   struct TypeOrder {
     using TypeList = std::initializer_list<Type>;
+
     /**
      * Creates a new Type Comparator
      * \param types List of types that define the sorting order. {A, B, C} means
@@ -97,21 +100,21 @@ class UnitInformation : public UnderlyingRegisterContainer,
      */
     TypeOrder(TypeList types = TypeList(),
               Compare compareWhenEqual = AlphabeticOrder())
-        : _typeOrder(types), _equalCompare(compareWhenEqual) {}
+    : _typeOrder(types), _equalCompare(compareWhenEqual) {
+    }
 
     bool operator()(const RegisterInformation& first,
                     const RegisterInformation& second) const {
       auto indexFirst =
-          std::find(_typeOrder.begin(), _typeOrder.end(), first.getType());
+          std::find(_typeOrder.cbegin(), _typeOrder.cend(), first.getType());
       auto indexSecond =
-          std::find(_typeOrder.begin(), _typeOrder.end(), second.getType());
+          std::find(_typeOrder.cbegin(), _typeOrder.cend(), second.getType());
       if (indexFirst == indexSecond) {
         // same type
         return _equalCompare(first, second);
-      } else {
-        // different type
-        return indexFirst < indexSecond;
       }
+      // different type
+      return indexFirst < indexSecond;
     }
 
    private:
@@ -360,11 +363,14 @@ class UnitInformation : public UnderlyingRegisterContainer,
    */
   template <class Range>
   SortedResult _getSorted(Range& range, const Compare& comparator) const {
-    SortedResult result{};
-    for (auto& element : range) {
-      result.push_back(std::reference_wrapper<const RegisterInformation>(element.second));
+    SortedResult result;
+    for (const auto& element : range) {
+      result.emplace_back(
+          std::reference_wrapper<const RegisterInformation>(element.second));
     }
+
     std::sort(result.begin(), result.end(), comparator);
+
     return result;
   }
 

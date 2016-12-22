@@ -7,11 +7,15 @@ set(UI_SOURCES
     register-model.cpp
     syntaxhighlighter.cpp
     editor-component.cpp
+    clipboard-adapter.cpp
     memory-component-presenter.cpp
     ui.cpp
     gui-project.cpp
     snapshot-component.cpp
     output-component.cpp
+    input-button-model.cpp
+    input-text-model.cpp
+    input-click-model.cpp
     translateable-processing.cpp
 )
 
@@ -20,10 +24,14 @@ set(UI_HEADERS
     ../../include/ui/gui-project.hpp
     ../../include/ui/syntaxhighlighter.hpp
     ../../include/ui/editor-component.hpp
+    ../../include/ui/clipboard-adapter.hpp
     ../../include/ui/memory-component-presenter.hpp
     ../../include/ui/ui.hpp
     ../../include/ui/snapshot-component.hpp
     ../../include/ui/output-component.hpp
+    ../../include/ui/input-button-model.hpp
+    ../../include/ui/input-click-model.hpp
+    ../../include/ui/input-text-model.hpp
 )
 
 

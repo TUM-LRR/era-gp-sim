@@ -16,8 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
 #include "arch/common/binarydata-node.hpp"
-#include "arch/common/register-node.hpp"
 #include "arch/riscv/properties.hpp"
+#include "arch/riscv/register-node.hpp"
 #include "arch/riscv/utility.hpp"
 
 #include "tests/arch/riscv/base-fixture.hpp"
@@ -61,7 +61,7 @@ TEST_F(SimulatorInstructionTest, SIMUCRASH_validation) {
   ASSERT_FALSE(twoOpInstruction->validate(memoryAccess).isSuccess());
 
   auto instrReg = factories.createInstructionNode("simucrash");
-  instrReg->addChild(std::make_unique<RegisterNode>("x0"));
+  instrReg->addChild(factories.createRegisterNode("x0"));
   ASSERT_FALSE(instrReg->validate(memoryAccess).isSuccess());
   auto instrImm = factories.createInstructionNode("simucrash");
   instrImm->addChild(factories.createImmediateNode(MemoryValue(64)));

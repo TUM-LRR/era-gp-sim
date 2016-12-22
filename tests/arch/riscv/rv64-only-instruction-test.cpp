@@ -24,7 +24,6 @@
 
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
-#include "arch/common/register-node.hpp"
 #include "arch/riscv/immediate-node-factory.hpp"
 #include "arch/riscv/instruction-node-factory.hpp"
 #include "tests/arch/riscv/base-fixture.hpp"
@@ -47,16 +46,15 @@ struct RV64OnlyInstructionTest : public riscv::BaseFixture {
     memoryAccess.putRegisterValue(srcId, riscv::convert<uint64_t>(op1));
 
     // Set up instruction
-    auto instrFactory = factories;
     auto immediateFactory = ImmediateNodeFactory{};
-    auto instr = instrFactory.createInstructionNode(instructionName);
+    auto instr = factories.createInstructionNode(instructionName);
 
     // Fill instruction with arguments
     ASSERT_TRUE(instr);
     ASSERT_FALSE(instr->validate(memoryAccess));
-    instr->addChild(std::make_unique<RegisterNode>(destId));
+    instr->addChild(factories.createRegisterNode(destId));
     ASSERT_FALSE(instr->validate(memoryAccess));
-    instr->addChild(std::make_unique<RegisterNode>(srcId));
+    instr->addChild(factories.createRegisterNode(srcId));
     ASSERT_FALSE(instr->validate(memoryAccess));
     instr->addChild(
         immediateFactory.createImmediateNode(riscv::convert<uint64_t>(op2)));
@@ -84,18 +82,17 @@ struct RV64OnlyInstructionTest : public riscv::BaseFixture {
     memoryAccess.putRegisterValue(src2Id, riscv::convert<uint64_t>(op2));
 
     // Set up instruction
-    auto instrFactory = factories;
     auto immediateFactory = ImmediateNodeFactory{};
-    auto instr = instrFactory.createInstructionNode(instructionName);
+    auto instr = factories.createInstructionNode(instructionName);
 
     // Fill instruction with arguments
     ASSERT_TRUE(instr);
     ASSERT_FALSE(instr->validate(memoryAccess));
-    instr->addChild(std::make_unique<RegisterNode>(destId));
+    instr->addChild(factories.createRegisterNode(destId));
     ASSERT_FALSE(instr->validate(memoryAccess));
-    instr->addChild(std::make_unique<RegisterNode>(src1Id));
+    instr->addChild(factories.createRegisterNode(src1Id));
     ASSERT_FALSE(instr->validate(memoryAccess));
-    instr->addChild(std::make_unique<RegisterNode>(src2Id));
+    instr->addChild(factories.createRegisterNode(src2Id));
     ASSERT_TRUE(instr->validate(memoryAccess));
 
     // Execute
@@ -123,20 +120,19 @@ struct RV64OnlyInstructionTest : public riscv::BaseFixture {
 TEST_F(RV64OnlyInstructionTest, Validation) {
   loadArchitecture({"rv32i", "rv64i"});
   auto& memoryAccess = getMemoryAccess();
+
   auto ri = {"addiw", "slliw", "srliw", "sraiw"};
   auto rr = {"addw", "subw", "sllw", "srlw", "sraw"};
 
   std::string registerId = "x1";// Not relevant
-  auto instrFactory = factories;
   auto immediateFactory = ImmediateNodeFactory{};
-
 
   for (auto& name : ri) {
     // Check if register-immediate command does not allow register-register
-    auto instr = instrFactory.createInstructionNode(name);
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
+    auto instr = factories.createInstructionNode(name);
+    instr->addChild(factories.createRegisterNode(registerId));
+    instr->addChild(factories.createRegisterNode(registerId));
+    instr->addChild(factories.createRegisterNode(registerId));
     ASSERT_FALSE(instr->validate(memoryAccess));
 
     // Boundaries for 12 bit signed integers
@@ -145,30 +141,30 @@ TEST_F(RV64OnlyInstructionTest, Validation) {
     constexpr uint64_t negativeBoundary = -2048;
     constexpr uint64_t negativeOverflow = negativeBoundary - 1;
 
-    instr = instrFactory.createInstructionNode(name);
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
+    instr = factories.createInstructionNode(name);
+    instr->addChild(factories.createRegisterNode(registerId));
+    instr->addChild(factories.createRegisterNode(registerId));
     instr->addChild(immediateFactory.createImmediateNode(
         riscv::convert<uint64_t>(boundary)));
     ASSERT_TRUE(instr->validate(memoryAccess));
 
-    instr = instrFactory.createInstructionNode(name);
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
+    instr = factories.createInstructionNode(name);
+    instr->addChild(factories.createRegisterNode(registerId));
+    instr->addChild(factories.createRegisterNode(registerId));
     instr->addChild(immediateFactory.createImmediateNode(
         riscv::convert<uint64_t>(overflow)));
     ASSERT_FALSE(instr->validate(memoryAccess));
 
-    instr = instrFactory.createInstructionNode(name);
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
+    instr = factories.createInstructionNode(name);
+    instr->addChild(factories.createRegisterNode(registerId));
+    instr->addChild(factories.createRegisterNode(registerId));
     instr->addChild(immediateFactory.createImmediateNode(
         riscv::convert<int64_t>(negativeBoundary)));
     ASSERT_TRUE(instr->validate(memoryAccess));
 
-    instr = instrFactory.createInstructionNode(name);
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
+    instr = factories.createInstructionNode(name);
+    instr->addChild(factories.createRegisterNode(registerId));
+    instr->addChild(factories.createRegisterNode(registerId));
     instr->addChild(immediateFactory.createImmediateNode(
         riscv::convert<int64_t>(negativeOverflow)));
     ASSERT_FALSE(instr->validate(memoryAccess));
@@ -176,9 +172,9 @@ TEST_F(RV64OnlyInstructionTest, Validation) {
 
   for (auto& name : rr) {
     // Check if register-register command does not allow register-immediate
-    auto instr = instrFactory.createInstructionNode(name);
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
-    instr->addChild(std::make_unique<RegisterNode>(registerId));
+    auto instr = factories.createInstructionNode(name);
+    instr->addChild(factories.createRegisterNode(registerId));
+    instr->addChild(factories.createRegisterNode(registerId));
     instr->addChild(
         immediateFactory.createImmediateNode(riscv::convert<uint64_t>(0)));
     ASSERT_FALSE(instr->validate(memoryAccess));

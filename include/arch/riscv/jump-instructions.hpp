@@ -23,9 +23,9 @@
 #include <memory>
 
 #include "arch/common/instruction-information.hpp"
-#include "arch/common/register-node.hpp"
 #include "arch/riscv/abstract-jump-instruction-node.hpp"
 #include "arch/riscv/instruction-node.hpp"
+#include "arch/riscv/register-node.hpp"
 #include "common/utility.hpp"
 
 namespace riscv {
@@ -313,8 +313,8 @@ class JumpInstructionNode
   explicit JumpInstructionNode(const InstructionInformation& information)
   : super(information) {
     // Create a register node and insert it a the first operand to `JAL`.
-    auto zero = std::make_unique<RegisterNode>("x0");
-    super::insertChild(0, std::move(zero));
+    // auto zero = std::make_unique<RegisterNode>("x0");
+    // super::insertChild(0, std::move(zero));
   }
 };
 }

@@ -17,9 +17,9 @@
 
 #include <string>
 
-#include "arch/riscv/instruction-context-information.hpp"
 #include "gtest/gtest.h"
 
+#include "arch/riscv/instruction-context-information.hpp"
 #include "tests/arch/riscv/base-fixture.hpp"
 
 struct ContextInformationTest : public riscv::BaseFixture {

@@ -17,8 +17,8 @@
 #ifndef ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
 #define ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
 
-#include <unordered_map>
 #include <QtGlobal>
+#include <unordered_map>
 
 #include "arch/common/architecture.hpp"
 #include "common/translateable.hpp"
@@ -28,43 +28,51 @@
   QT_TRANSLATE_NOOP("RISCV instruction help text", textToTranslate)
 
 /**
- * This class is a collection of translateable help texts/documentation for RISCV instructions
+ * This class is a collection of translateable help texts/documentation for
+ * RISCV instructions
  */
 class InstructionContextInformation {
  public:
-    /**
-   * Constructs the documentation collection with the given architecture.
-   * As the Translateable text parts are freshly made, requiring many string operations,
-   * this may be slow
-   * \param architecture
-   */
+  /**
+ * Constructs the documentation collection with the given architecture.
+ * As the Translateable text parts are freshly made, requiring many string
+ * operations,
+ * this may be slow
+ * \param architecture
+ */
   InstructionContextInformation(const Architecture& architecture);
 
   /**
-   * Retrieves and returns the documentation/context information for the given mnemonic
+   * Retrieves and returns the documentation/context information for the given
+   * mnemonic
    * \param mnemonic The mnemonic identifying the instruction
    * \return A reference to a Translateable containing the context information
    */
   const Translateable& getContextInformation(const std::string& mnemonic) const;
 
   /**
-   * Retrieves and returns the documentation/context information for the given instruction information
-   * \param instructionInfo The instruction information object identifying the instruction
+   * Retrieves and returns the documentation/context information for the given
+   * instruction information
+   * \param instructionInfo The instruction information object identifying the
+   * instruction
    * \return A reference to a Translateable containing the context information
    */
-  const Translateable& getContextInformation(
-      const InstructionInformation& instructionInfo) const;
+  const Translateable&
+  getContextInformation(const InstructionInformation& instructionInfo) const;
 
   /**
-   * Checks if a documentation/context information is present for the given mnemonic
+   * Checks if a documentation/context information is present for the given
+   * mnemonic
    * \param mnemonic The mnemonic identifying the instruction
    * \return true, if an entry is available, otherwise false
    */
   bool isContextInformationAvailable(const std::string& mnemonic) const;
 
   /**
-   * Checks if a documentation/context information is present for the given instruction information
-   * \param instructionInfo The instruction information object identifying the instruction
+   * Checks if a documentation/context information is present for the given
+   * instruction information
+   * \param instructionInfo The instruction information object identifying the
+   * instruction
    * \return true, if an entry is available, otherwise false
    */
   bool isContextInformationAvailable(
@@ -75,7 +83,8 @@ class InstructionContextInformation {
 
   /**
    * Fills (creates and puts the Translateables into) the map.
-   * Only the information for instructions present in the given architecture is generated
+   * Only the information for instructions present in the given architecture is
+   * generated
    * \param architecture The architecture that defines the instructions
    */
   void _fill(const Architecture& architecture);
@@ -92,7 +101,8 @@ class InstructionContextInformation {
    * \param mnemonic The instruction mnemonic
    * \param operationSign The operator used in the pseudo-code description
    * \param description A description of the behaviour of the instruction
-   * \param specialImmediateOperandDesc (optional) A description for the last operand (the immediate operand). Defaults to "A 12bit signed immediate2
+   * \param specialImmediateOperandDesc (optional) A description for the last
+   * operand (the immediate operand). Defaults to "A 12bit signed immediate2
    */
   void _arithmeticInstruction(const std::string& mnemonic,
                               const std::string& operationSign,
@@ -102,11 +112,13 @@ class InstructionContextInformation {
 
   /**
    * A convenience function for a defining an arithmetic instruction.
-   * This call defines a arithmetic instruction documentation for the register and the immediate version of the instruction
+   * This call defines a arithmetic instruction documentation for the register
+   * and the immediate version of the instruction
    * \param mnemonic The instruction mnemonic
    * \param operationSign The operator used in the pseudo-code description
    * \param description A description of the behaviour of the instruction
-   * \param specialImmediateOperandDesc (optional) A description for the last operand (the immediate operand). Defaults to "A 12bit signed immediate2
+   * \param specialImmediateOperandDesc (optional) A description for the last
+   * operand (the immediate operand). Defaults to "A 12bit signed immediate2
    */
   void _arithmeticInstructionI(const std::string& mnemonic,
                                const std::string& operationSign,
@@ -119,7 +131,8 @@ class InstructionContextInformation {
    * \param mnemonic The instruction mnemonic
    * \param operationSign The operator used in the pseudo-code description
    * \param description A description of the behaviour of the instruction
-   * \param specialImmediateOperandDesc (optional) A description for the last operand (the immediate operand). Defaults to "A 12bit signed immediate2
+   * \param specialImmediateOperandDesc (optional) A description for the last
+   * operand (the immediate operand). Defaults to "A 12bit signed immediate2
    */
   void _arithmeticInstructionW(const std::string& mnemonic,
                                const std::string& operationSign,
@@ -129,11 +142,13 @@ class InstructionContextInformation {
 
   /**
    * A convenience function for a defining a word arithmetic instruction.
-   * This call defines a word instruction documentation for the register and the immediate version of the word instruction
+   * This call defines a word instruction documentation for the register and the
+   * immediate version of the word instruction
    * \param mnemonic The instruction mnemonic
    * \param operationSign The operator used in the pseudo-code description
    * \param description A description of the behaviour of the instruction
-   * \param specialImmediateOperandDesc (optional) A description for the last operand (the immediate operand). Defaults to "A 12bit signed immediate2
+   * \param specialImmediateOperandDesc (optional) A description for the last
+   * operand (the immediate operand). Defaults to "A 12bit signed immediate2
    */
   void _arithmeticInstructionIW(const std::string& mnemonic,
                                 const std::string& operationSign,
@@ -144,27 +159,33 @@ class InstructionContextInformation {
   /**
    * A convenience function for defining a load instruction documentation
    * \param mnemonic The instruction mnemonic
-   * \param sizeDesc A string description of the load size (like byte, word, double-word, etc.)
+   * \param sizeDesc A string description of the load size (like byte, word,
+   * double-word, etc.)
    * \param size The load size in bits
    */
   void _loadInstruction(const std::string& mnemonic,
-                        const std::string& sizeDesc, int size);
+                        const std::string& sizeDesc,
+                        int size);
 
   /**
    * A convenience function for defining a store instruction documentation
    * \param mnemonic The instruction mnemonic
-   * \param sizeDesc A string description of the stored size (like byte, word, double-word, etc.)
+   * \param sizeDesc A string description of the stored size (like byte, word,
+   * double-word, etc.)
    * \param size The stored size in bits
    */
   void _storeInstruction(const std::string& mnemonic,
-                         const std::string& sizeDesc, int size);
+                         const std::string& sizeDesc,
+                         int size);
 
   /**
    * A convenience function for defining a branch instruction documentation
    * \param mnemonic The instruction mnemonic
-   * \param condition A string description of the condition when the branch is taken
+   * \param condition A string description of the condition when the branch is
+   * taken
    * \param operation The pseudo-code operator describing the comparison
-   * \param compareType An optional description of the signedness of the comparison
+   * \param compareType An optional description of the signedness of the
+   * comparison
    */
   void _branchInstruction(const std::string& mnemonic,
                           const std::string& condition,
@@ -193,4 +214,4 @@ class InstructionContextInformation {
   bool _is64BitArchitecture;
 };
 
-#endif  // ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
+#endif// ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
