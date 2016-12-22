@@ -88,6 +88,8 @@ ScrollView {
                         cursorLine = newCursorLine;
                         editor.cursorLineChanged(newCursorLine);
                     }
+                    // do updates that rely on the new cursor line
+                    updateHelpTooltip();
                 }
 
                 //workaround to get tab working correctly
@@ -98,103 +100,38 @@ ScrollView {
                     }
                 }
 
-                // Tool tips: The desired behavior is that when the cursor is inside a keyword, the
-                // keyword is underlined. Moving the mouse over this keyword makes a small help tool tip
-                // appear to its right. Clicking the help tool tip opens up the help text overlay.
-                // The tool tip is only created when the cursor is placed inside a keyword, saving us
-                // from placing a tool tip over each keyword in advance.
-
-                // MouseArea detecting presses inside the editor to place help tool tips. Similar behavior
-                // could be achieved by using the ``cursorPositionChanged``-signal handler, however this
-                // would not enable the user to close the help overlay by clicking anywhere in the editor
-                // when the cursor does not thereby change its position.
-                MouseArea {
-                    id: toolTipTriggerArea
-                    anchors.fill: parent
-                    // Pass through un-handled mouse events.
-                    onClicked: mouse.accepted = false;
-                    onReleased: mouse.accepted = false;
-                    onDoubleClicked: mouse.accepted = false;
-                    onPressAndHold: mouse.accepted = false;
-                    onEntered: mouse.accepted = false;
-
-                    onPressed: {
-                        parent.updateCurrentToolTip(parent.positionAt(mouseX, mouseY));
-                        mouse.accepted = false;
-                    }
+                HelpToolTip {
+                    id: _toolTip
+                    maxWidth: textArea.unscaledWidth/2
+                    maxHeight: textArea.unscaledHeight/2
+                    relativeX: Math.min(textArea.unscaledWidth - maxWidth - x, 0)
+                    relativeY: Math.min(textArea.unscaledHeight - maxHeight - y - textArea.cursorRectangle.height
+                        , textArea.cursorRectangle.height)
+                    z: parent.z + 1
                 }
 
-
-                // Currently visible tool tip. Undefined when no tool tip is visible.
-                property QtObject _toolTip;
-                // Checks whether a tool tip is necessary (i.e. available) for the keyword at the
-                // given position and possibly creates one.
-                function updateCurrentToolTip(position) {
-                    // Delete old tool tip
-                    _destroyCurrentToolTip();
-
-                    // TODO: Fetch actual help-dictionary
-                    var toolTipDictionary = {"mov": "mov reg1, reg2<br/>Copies the value of reg1 to reg2.",
-                        "eax": "32-bit general-purpose register."};
-                    // Extract the current line
-                    var nextNewLine = text.substring(position).search("\n");
-                    nextNewLine = (nextNewLine < 0) ? text.length : nextNewLine+position;
-                    var previousNewLine = text.substring(0, position).lastIndexOf("\n");
-                    previousNewLine = (previousNewLine < 0) ? 0 : previousNewLine+1;
-                    var currentLine = text.substring(previousNewLine, nextNewLine);
-                    // Check if any of the available keywords applies.
-                    for (var searchString in toolTipDictionary) {
-                        var currentPosition;            // Position of the last occurence of the current searchString.
-                        var currentOffset = 0;          // In order to not always find the first occurence, the text that is being search
-                        // is truncated at the beginning. The resulting offset is saved for later calculations.
-                        var currentText = currentLine;  // The possibly truncated text that is being searched.
-                        // Search the current line. Is truncated if multiple occurences are found.
-                        while ((currentPosition = currentText.search(searchString)) != -1) {
-                            // Start position of the keyword relative to the entire editor text.
-                            var start = currentPosition+previousNewLine + currentOffset;
-                            // End position of the keyword relative to the entire editor text.
-                            var end = currentPosition+previousNewLine+currentOffset+searchString.length;
-                            // Check if the cursor position lies within the keyword.
-                            if (position >= start && position <= end) {
-                                // Calculate the rect surrounding the keyword.
-                                var startRect = positionToRectangle(start);
-                                var endRect = positionToRectangle(end);
-                                // Create help tool tip component.
-                                var component = Qt.createComponent("HelpToolTip.qml");
-                                _toolTip = component.createObject(textArea, {"helpText": toolTipDictionary[searchString],
-                                                                      "x": startRect.x,
-                                                                      "y": startRect.y,
-                                                                      "width": (endRect.x - startRect.x),
-                                                                      "height": startRect.height,
-                                                                      "relativeX": (endRect.x-startRect.x+1),
-                                                                      "explicitWidth": startRect.height,
-                                                                      "explicitHeight": startRect.height});
-                                if (_toolTip === null) {
-                                    // Error Handling
-                                    console.log("Error creating object");
-                                }
-                            }
-                            // Truncate the text that is being searched for next search of the same searchString.
-                            currentOffset += (currentPosition + searchString.length);
-                            currentText = currentText.substring(currentPosition + searchString.length);
-                        }
+                /* Tooltips: A small '?' Symbol is placed under the cursor, if there is help available.
+                * By hovering over it, the help text can be overlayed.
+                */
+                function updateHelpTooltip() {
+                    var help = guiProject.getCommandHelp(cursorLine);
+                    if (help  === "") {
+                        _toolTip.hideIcon();
+                        return;
                     }
-                }
-
-                function _destroyCurrentToolTip() {
-                    if (_toolTip != undefined) {
-                        _toolTip.destroy();
-                        _toolTip = undefined;
-                    }
+                    _toolTip.x = cursorRectangle.x;
+                    //_toolTip.relativeX = cursorRectangle.x;
+                    _toolTip.y = cursorRectangle.y + cursorRectangle.height-1
+                    _toolTip.width = cursorRectangle.height;
+                    _toolTip.height = cursorRectangle.height;
+                    _toolTip.helpText = help;
+                    _toolTip.showIcon();
                 }
 
                 //(re)start the parse timer, if an edit is made
                 onTextChanged: {
                   editor.setTextChanged(true);
                   parseTimer.restart();
-                    // Remove the tooltip when the editor text is altered to prevent the situation where a help
-                    // tooltip is stil visible even though the corresponding keyword has already been altered.
-                    _destroyCurrentToolTip();
                 }
 
                 //Connection to react to editor signals
@@ -207,6 +144,14 @@ ScrollView {
                     textArea.clear();
                     textArea.insert(0, text);
                   }
+                }
+
+                Connections {
+                    target: guiProject
+                    // Send when text changes
+                    onCommandListUpdated: {
+                        textArea.updateHelpTooltip();
+                    }
                 }
 
                 //timer for parsing

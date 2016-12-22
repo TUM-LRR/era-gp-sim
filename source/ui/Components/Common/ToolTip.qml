@@ -1,4 +1,6 @@
 import QtQuick 2.6
+import QtQuick.Controls 1.5
+import QtQuick.Controls.Styles 1.4
 
 // The size of this item is the size of the tooltip trigger area
 Item {
@@ -6,32 +8,35 @@ Item {
 
     // Text properties
     property alias text: _toolTipText.text
-    property alias textColor: _toolTipText.color
     property alias font: _toolTipText.font
     property alias fontPointSize: _toolTipText.font.pointSize
     property alias fontPixelSize: _toolTipText.font.pixelSize
     property alias textFormat: _toolTipText.textFormat
     property alias horizontalTextAlign: _toolTipText.horizontalAlignment
     property alias wrapMode: _toolTipText.wrapMode
-    property var leftPadding: _toolTipText.font.pixelSize/4
-    property var rightPadding: _toolTipText.font.pixelSize/4
-    property var topPadding: 0
-    property var bottomPadding: 0
+    property var leftPadding: _toolTipText.font.pixelSize/3
+    property var rightPadding: _toolTipText.font.pixelSize/3
+    property var topPadding: _toolTipText.font.pixelSize/3
+    property var bottomPadding: _toolTipText.font.pixelSize/3
 
     // Background properties
-    property color backgroundColor: Qt.rgba(239.0/255.0, 239.0/255.0, 239.0/255.0, 1.0);
-    property color backgroundColorOnFocus: backgroundColor
-    property color borderColor: "#666666"
-    property color borderColorOnFocus: "#444444"
+    property color backgroundColor: Qt.rgba(239.0/255.0, 239.0/255.0, 239.0/255.0, 0.8)
+    property color backgroundColorOnFocus: Qt.rgba(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.0)
+    property color borderColor: "#DDDDDD"
+    property color borderColorOnFocus: "#DDDDDD"
     property color backgroundColorOnHovered: backgroundColor
     property color borderColorOnHovered: borderColor
     property real cornerRadius: 0
 
     // Positioning properties
-    property var relativeX: undefined           // Position of the tool tip relative to its hit area. Defaults to a position relative to mouse position.
-    property var relativeY: toolTipItem.height  // Position of the tool tip relative to its hit area. Defaults to a position just below the hit area.
+    // Position of the tool tip relative to its hit area. Defaults to a position relative to mouse position.
+    property var relativeX: undefined
+    // Position of the tool tip relative to its hit area. Defaults to a position just below the hit area.
+    property var relativeY: toolTipItem.height
     property var explicitHeight: undefined
     property var explicitWidth: undefined
+    property var maxHeight: undefined
+    property var maxWidth: undefined
 
     // Delay for triggering the animations
     property real showDelay: 200
@@ -50,8 +55,14 @@ Item {
     property bool moveTooltipWithMouse: false;
 
     // Functions
-    function showToolTip() { _toolTipHitArea.triggerShow(); }
-    property var toolTipClickHandler: function (){_toolTipArea.focus = true;}   // Default implementation activates toolTipArea focus, making the tool tip stay visible.
+    function showToolTip() {
+      _toolTipHitArea.triggerShow();
+    }
+
+    // Default implementation activates toolTipArea focus, making the tool tip stay visible.
+    property var toolTipClickHandler: function (){
+        _scrollView.focus = true;
+    }
 
     // MouseArea for showing the tooltip, includes the area of the parent object/specified height and length of the tooltip trigger and the tooltip itself
     MouseArea{
@@ -87,7 +98,7 @@ Item {
         }
 
         onExited: {
-            if(!_toolTipArea.focus){
+            if(!_scrollView.focus){
                 _toolTipRect.hide();
             }
         }
@@ -101,8 +112,22 @@ Item {
         }
 
         // Rectangle around the tooltip text
-        Rectangle{
+        Rectangle {
             id: _toolTipRect
+
+            function calcSize(implicitSize, explicitSize, maxSize) {
+                var size = undefined;
+                if (explicitSize !== undefined) {
+                    size = explicitSize;
+                } else {
+                    size = implicitSize;
+                }
+                if (maxSize !== undefined) {
+                    return Math.min(size, maxSize);
+                } else {
+                    return size;
+                }
+            }
 
             // The implicit dimensions of the tool tip's background are determined by the text's
             // content dimensions and the custom padding.
@@ -112,8 +137,8 @@ Item {
             y: relativeY
             // If an explicit width/ height is specified use it, otherwise use implicitly calculated
             // dimensions.
-            width: (explicitWidth == undefined) ? _implicitWidth : explicitWidth
-            height: (explicitHeight == undefined) ? _implicitHeight : explicitHeight
+            width: calcSize(_implicitWidth, explicitWidth, maxWidth);
+            height: calcSize(_implicitHeight, explicitHeight, maxHeight);
 
             color: backgroundColor
             border.color: borderColor
@@ -122,16 +147,45 @@ Item {
             radius: cornerRadius
 
             // Text of the tooltip
-            TextEdit {
-                id: _toolTipText
-                width: (explicitWidth == undefined) ? contentWidth : explicitWidth
-                height: (explicitHeight == undefined) ? contentHeight : explicitHeight
-                anchors.centerIn: parent
-                clip: true
-                wrapMode: TextEdit.NoWrap
-                textFormat: Text.StyledText
-            }
+            ScrollView {
+                id: _scrollView
+                anchors.fill: parent
+                verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
+                horizontalScrollBarPolicy: Qt.ScrollBarAsNeeded
 
+                onFocusChanged: {
+                    if(focus) {
+                        _toolTipRect.color = backgroundColorOnFocus;
+                        _toolTipRect.border.color = borderColorOnFocus;
+                    }
+                    if(!focus) {
+                        _toolTipRect.color = backgroundColor;
+                        _toolTipRect.border.color = borderColor;
+                        if(!_toolTipHitArea.containsMouse) {
+                            _toolTipRect.hide();
+                        }
+                    }
+                }
+
+                Flickable {
+                    id: _flickable
+                    contentWidth: _toolTipText.contentWidth
+                    contentHeight: _toolTipText.contentHeight
+
+                    TextEdit {
+                        id: _toolTipText
+                        anchors.fill: parent
+                        clip: true
+                        readOnly: true
+                        textFormat: Text.RichText
+                        wrapMode: TextEdit.NoWrap
+                        leftPadding: toolTipItem.leftPadding
+                        rightPadding: toolTipItem.rightPadding
+                        topPadding: toolTipItem.topPadding
+                        bottomPadding: toolTipItem.bottomPadding
+                    }
+                }
+            }
             // Showing the tooltip
             function show() {
                 // Makes sure the property which is about to be animated is set to
@@ -239,27 +293,19 @@ Item {
             height: _toolTipRect.height
             visible: _toolTipRect.visible
             hoverEnabled: true
-            onFocusChanged: {
-                if(focus) {
-                    _toolTipRect.color = backgroundColorOnFocus;
-                    _toolTipRect.border.color = borderColorOnFocus;
-                }
-                if(!focus) {
-                    _toolTipRect.color = backgroundColor;
-                    _toolTipRect.border.color = borderColor;
-                    if(!_toolTipHitArea.containsMouse) {
-                        _toolTipRect.hide();
-                    }
-                }
-            }
             onClicked: {
                 toolTipClickHandler();
+                mouse.accepted = false;
             }
             onHoveredChanged: {
                 _toolTipRect.color = (containsMouse) ? backgroundColorOnHovered : backgroundColor
                 _toolTipRect.border.color = (containsMouse) ? borderColorOnHovered : borderColor
             }
-
+            // Pass through un-handled mouse events.
+            onPressed: mouse.accepted = false;
+            onReleased: mouse.accepted = false;
+            onDoubleClicked: mouse.accepted = false;
+            onPressAndHold: mouse.accepted = false;
         }
     }
 }
