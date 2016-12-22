@@ -41,8 +41,8 @@ class AbstractRegisterNodeFactory;
  */
 class NodeFactoryCollection {
  public:
-  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
-    using InstrNode = std::unique_ptr<AbstractInstructionNode>;
+  using Node = std::shared_ptr<AbstractSyntaxTreeNode>;
+  using InstrNode = std::shared_ptr<AbstractInstructionNode>;
 
   /**
    * Default-constructs a NodeFactoryCollection.

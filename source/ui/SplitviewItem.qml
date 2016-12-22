@@ -29,21 +29,21 @@ Item {
     property bool isExpanded: false
 
     onIsExpandedChanged: {
-        if(isExpanded==true){
+        if (isExpanded == true) {
             headerFadeOut.stop()
             headerFadeIn.start()
-        }else{
+        } else {
             headerFadeIn.stop()
             headerFadeOut.start()
         }
     }
-    SequentialAnimation{
+    SequentialAnimation {
         id: headerFadeIn
         PauseAnimation { duration: 100 }
         PropertyAnimation { target: header; properties: "height"; to: "24"; duration: 100}
         PropertyAnimation { target: componentSelector; properties: "visible"; to: true; duration: 0}
     }
-    SequentialAnimation{
+    SequentialAnimation {
         id: headerFadeOut
         PauseAnimation { duration: 100 }
         PropertyAnimation { target: componentSelector; properties: "visible"; to: false; duration: 0}
@@ -69,7 +69,7 @@ Item {
             onHoveredChanged: {
                 if(containsMouse || componentSelector.hovered || componentSelector.pressed){
                     isExpanded=true
-                }else{
+                } else {
                     isExpanded=false
                 }
             }
@@ -85,43 +85,45 @@ Item {
             height: 20
             y: 2
             x: 2
-            model: ["Choose Component","Snapshots", "Output", /*"Editor",*/ "Register", "Memory", "Input" ]
+            model: ["Choose Component","Snapshots", "Output", /*"Editor",*/ "Register", "Memory", "Input", "Help" ]
 
             onCurrentIndexChanged:{
-                if(currentIndex === 0){
+                if (currentIndex === 0) {
                     holder.change("nothing");
-                }else if(currentIndex === 1){
+                } else if (currentIndex === 1) {
                     holder.change("snapshots");
-                }else if(currentIndex === 2){
+                } else if (currentIndex === 2) {
                     holder.change("output");
-                }
-                else if(currentIndex === 3){
+                } else if (currentIndex === 3) {
                     holder.change("register");
-                }
-                else if (currentIndex === 4){
+                } else if  (currentIndex === 4) {
                     holder.change("memory");
-                }
-                else{
+                } else if ( currentIndex === 5) {
                     holder.change("input");
+                } else {
+                    holder.change("help");
                 }
             }
             onPressedChanged: {
-                if(pressed)
+                if (pressed) {
                     isExpanded=true
-                else if(!hovered)
+                } else if(!hovered) {
                     isExpanded=false
+                }
             }
             onHoveredChanged: {
-                if(hovered)
+                if (hovered) {
                     isExpanded=true
-                else if(!pressed)
+                }
+                else if (!pressed) {
                     isExpanded=false
+                }
             }
         }
     }
 
     /*holds the actual component*/
-    ComponentHolder{
+    ComponentHolder {
         id: holder
         anchors.top: header.bottom
         anchors.left: parent.left
