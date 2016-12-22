@@ -50,9 +50,9 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
       QVariantMap macroInformationMap;
       macroInformationMap["code"] = QString::fromStdString(macroInformation.macroCode());
       macroInformationMap["startLine"] =
-          QVariant::fromValue(macroInformation.position().first.line() - 1);
+          QVariant::fromValue(macroInformation.position().start().line() - 1);
       macroInformationMap["endLine"] =
-          QVariant::fromValue(macroInformation.position().second.line() - 1);
+          QVariant::fromValue(macroInformation.position().end().line() - 1);
       int lineCount =
           (int)std::count(macroInformation.macroCode().begin(), macroInformation.macroCode().end(), '\n');
       macroInformationMap["lineCount"] = QVariant::fromValue(lineCount);
