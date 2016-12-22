@@ -20,38 +20,16 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
+import QtGraphicalEffects 1.0
 
 Item {
-    property int memory_size: menuBar.memory_value
-    onMemory_sizeChanged: {
-        if (memory_size < 0) {
-            memory_size = 0
-        }
+    // number_bits: holds the number of bits shown in each memory cell,
+    // it is used for calculating the address and for fetching the right amount of bits from the core
+    property int number_bits: 8
 
-        while (memoryModel.count < memory_size) {
-            memoryModel.append({
-                                    address: "0x" + pad(
-                                                 memoryModel.count.toString(
-                                                     16).toUpperCase(), 5),
-                                    info: "info"
-                                })
-        }
-        while (memoryModel.count > memory_size) {
-            memoryModel.remove(memoryModel.count - 1, 1)
-        }
-    }
-
-    function pad(n, width, z) {
-        z = z || '0'
-        n = n + ''
-        return n.length >= width ? n : new Array(width - n.length + 1).join(
-                                       z) + n
-    }
 
     TableView {
         id: tableView
-        // alternatingRowColors: false
-        //anchors.fill: parent
         anchors.top: menuBar.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -59,75 +37,220 @@ Item {
         selectionMode: SelectionMode.NoSelection
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
 
+        // we have a completly custom header (due to a bug in qml)
+        headerVisible: false
+
+        // the default MemoryView consists of three columns:
+        // 1. address                               (fixed)
+        // 2. content of each memory cell           (dynamic)
+        // 3. additional information on each cell   (fixed)
         TableViewColumn {
-            role: "address"
-            title: "Adresse"
+            role: "address" + number_bits
+            title: "Address"
             movable: false
-            resizable: false
+            resizable: true
             width: 70
-        }
-        TableViewColumn {
-            role: "value"
-            title: "Inhalt"
-            movable: false
-            resizable: false
-            width: 80
-            delegate: editableContent
         }
         TableViewColumn {
             role: "info"
             title: "Info"
             movable: false
-            resizable: false
-            width: parent.width - 200
+            resizable: true
+            width: 100
         }
+
         model: memoryModel
+
+        // add a column with the content for each cell at startup
+        Component.onCompleted: {
+            tableView.insertColumn(tableView.columnCount - 1, column);
+        }
     }
 
     Component {
-        id: editableContent
-        TextField {
-            id: textFieldMemoryValue
-            style: TextFieldStyle {
-                background: Rectangle {
-                    id: styleRec
-                    color: "transparent"
-                }
-            }
-            font.bold: true
-            inputMask: "\\0\\xHH"
-            onActiveFocusChanged: {
-                cursorPosition = 2
-            }
-            onHoveredChanged: {
-                //styleRec.border.width=2
-            }
-            onCursorPositionChanged: {
-                //jump to TextField in following memory segment
-                if(cursorPosition >= inputMask.length - 4)
-                    nextItemInFocusChain(true).forceActiveFocus()
-                //jump to TextField in preceeding memory segment
-                if(cursorPosition <= 1 && selectedText == "")
-                    nextItemInFocusChain(false).forceActiveFocus()
-            }
-
-            Keys.onDeletePressed: {
-
-            }
-            onEditingFinished: {
-                    memoryModel.setValue(styleData.row, textFieldMemoryValue.text);
-            }
-
-            placeholderText: "0x00"
-            text: model.value
-
+        // component for a column with the contents of the memory
+        // default settings: Binary number representation
+        id: column
+        TableViewColumn {
+            role: "bin" + number_bits
+            title: "Content"
+            movable: false
+            resizable: true
+            width: 80
+            delegate: inputBox
         }
     }
 
-    MemoryComponent_MenuBar{
-        id:menuBar
-        height: 35
+    Component {
+        // makes each memory cell editable by using a textbox
+        // when editing is finished the new value is passed to the memory in the core
+        id: inputBox
+        TextField {
+            id: textFieldMemoryValue
+            text: styleData.value
+
+            onEditingFinished: {
+                // update internal memory; use right number representation and byte size
+                memoryModel.setValue(styleData.row * (number_bits / 8), textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
+            }
+        }
     }
 
 
+
+    Rectangle {
+        // the menu bar above the memory table for adding new columns and changing the representation
+        // due to a bug in the qml table header (mouse interaction) it wasn't possible to just override
+        // the existing table header.
+        // It is build upon a list of interactive ComboBoxes
+        id: menuBar
+        height: 25
+        width: parent.width
+
+        Flickable {
+            ListView {
+                id: header
+                height: parent.height
+                width:  tableView.flickableItem.contentWidth
+                // move header left and right as the tableView is moved by the horizontal scroll bars
+                x: -tableView.flickableItem.contentX
+
+                orientation: Qt.Horizontal
+
+                Connections {
+                    target: tableView
+                    onColumnCountChanged: {
+                        // dynamically add columns that were added by the user
+                        while(headerDropdownList.count < tableView.columnCount - 1) {
+                            headerDropdownList.append(ListElement);
+                        }
+                    }
+                }
+
+
+                model: ListModel {
+                    id: headerDropdownList
+                }
+
+
+                delegate: Rectangle {
+                    // part of the header for every single column
+                    // consists of a ComboBox and a rectangle for resizing the column width
+
+                    width: bitChooser.width + resizer.width
+                    height: 25
+
+                    property alias text: bitChooser.currentText
+
+                    ComboBox {
+                        // the ComboBox above each row
+                        // the user can either choose the number of bits or the numberical representation of a memory cell depending on the column
+
+                        id: bitChooser
+                        height: 25
+
+                        // bin width to the position of resizer
+                        width: resizer.x - bitChooser.x
+                        onWidthChanged: {
+                            tableView.getColumn(index).width = bitChooser.width + resizer.width;
+                        }
+
+                        // choose the right underlaying model depending on the column it is responsible for
+                        model: (tableView.getColumn(index).role === "address" + number_bits)? modelBits : modelNumeric;
+
+                        ListModel {
+                            id: modelBits
+                            ListElement { text: "8 Bit"; bits: 8 }
+                            ListElement { text: "16 Bit"; bits: 16 }
+                            ListElement { text: "32 Bit"; bits: 32 }
+                        }
+                        ListModel {
+                            id: modelNumeric
+                            ListElement { text: "Binary"; role: "bin" }
+                            ListElement { text: "Octal"; role: "oct" }
+                            ListElement { text: "Hexadecimal"; role: "hex" }
+                            ListElement { text: "Decimal"; role: "dec" }
+                            ListElement { text: "Decimal (signed)"; role: "decs" }
+
+                            ListElement { text : "remove..." }
+                        }
+
+                        onCurrentIndexChanged: {
+                            // depending on the usage there are 3 different actions
+                            // 1. update the number of bits in each memory cell
+                            if(model === modelBits) {
+                                number_bits = model.get(bitChooser.currentIndex).bits;
+                            }
+                            else {
+                                // 2. dynamically remove the column
+                                if(bitChooser.currentText === "remove...") {
+                                    tableView.removeColumn(index);
+                                    headerDropdownList.remove(index);
+                                }
+                                // 3. update the numeric representation of the memory values
+                                else {
+                                    // explicitly create a property binding for number_bits so the role gets updated correctly
+                                    tableView.getColumn(index).role = Qt.binding(function() {
+                                        return model.get(bitChooser.currentIndex).role + number_bits })
+                                }
+                            }
+                        }
+                    }
+                    Rectangle {
+                        // this rectangle is a resizer located next to each ComboBox in the header of the memory.
+                        // by dragging this rectangle to the left or right someone could resize the width of each column
+                        id: resizer
+                        height: 25
+                        width: 5
+                        x: bitChooser.x + 70 // default width of a column
+                        MouseArea {
+                            drag.axis: Drag.XAxis
+                            drag.target: resizer
+                            anchors.fill: parent
+                            cursorShape: Qt.SizeHorCursor
+                            //give a minimum size for column width
+                            drag.minimumX: bitChooser.x + 40
+                        }
+                    }
+                }
+            }
+        }
+        Rectangle {
+            // this rectancle is only used for styling
+            // it provides a fadeout effect on the right side of the header
+            // when there are too many columns the ComboBoxes slightly disappear with a fadeout effect on the right
+            id: buttonFadeOut
+            width: 50
+            height: 25
+            anchors.right: parent.right
+            color: "transparent"
+            LinearGradient{
+                anchors.fill: parent
+                        start: Qt.point(0, 0)
+                        end: Qt.point(parent.width, 0)
+
+            gradient: Gradient {
+                    GradientStop { position: 0.0; color: "#00000000" }
+                    GradientStop { position: 0.4; color: "white" }
+                }
+            }
+
+            Button {
+                // this button is used for creating new columns for the memory
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.rightMargin: 1
+                anchors.topMargin: 1
+                anchors.bottomMargin: 1
+                width: 25
+
+                text: "+"
+
+                onClicked: {
+                    tableView.insertColumn( tableView.columnCount - 1, column);
+                }
+            }
+        }
+    }
 }
