@@ -38,7 +38,7 @@ class PositionedString;
 class SyntaxTreeGenerator {
  public:
   using ArgumentNodeGenerator =
-      std::function<std::unique_ptr<AbstractSyntaxTreeNode>(
+      std::function<std::shared_ptr<AbstractSyntaxTreeNode>(
           const PositionedString&,
           const NodeFactoryCollection&,
           const CompileErrorAnnotator&)>;
@@ -62,7 +62,7 @@ class SyntaxTreeGenerator {
    * \param state The compile state to denote errors and other stuff.
    * \return The transformed operand.
    */
-  std::unique_ptr<AbstractSyntaxTreeNode>
+  std::shared_ptr<AbstractSyntaxTreeNode>
   transformOperand(const PositionedString& operand,
                    const CompileErrorAnnotator& annotator) const;
 
@@ -75,11 +75,11 @@ class SyntaxTreeGenerator {
    * \param state The compile state to denote errors.
    * \return The transformed command.
    */
-  std::unique_ptr<AbstractInstructionNode> transformCommand(
+  std::shared_ptr<AbstractInstructionNode> transformCommand(
       const PositionedString& commandName,
       const CompileErrorAnnotator& annotator,
-      std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
-      std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
+      std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& sources,
+      std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& targets,
       MemoryAccess& memoryAccess) const;
 
   /**

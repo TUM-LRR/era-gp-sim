@@ -40,18 +40,18 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
         [](const PositionedString& operandPositional,
            const NodeFactoryCollection& nodeFactories,
            const CompileErrorAnnotator& annotator)
-    -> std::unique_ptr<AbstractSyntaxTreeNode> {
+    -> std::shared_ptr<AbstractSyntaxTreeNode> {
       // These checks are performed:
       // * Empty argument? Shouldn't happen, kill the compilation with fire.
       // * First character is a letter? We have replace all constants by now, so
       // it
       // must be a register - or an undefined constant!
       // * If not? Try to compile the expression!
-      std::unique_ptr<AbstractSyntaxTreeNode> outputNode;
+      std::shared_ptr<AbstractSyntaxTreeNode> outputNode;
       const std::string& operand =
           operandPositional.string();// TODO will not be necessary soon^TM
       if (operand.empty()) {
-        outputNode = std::unique_ptr<AbstractSyntaxTreeNode>(nullptr);
+        outputNode = std::shared_ptr<AbstractSyntaxTreeNode>(nullptr);
       } else if (std::isalpha(operand[0])) {
         outputNode = nodeFactories.createRegisterNode(operand);
       } else if (operand[0] == '\"') {

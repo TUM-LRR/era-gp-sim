@@ -27,12 +27,11 @@
 #include "parser/compile-error-annotator.hpp"
 #include "parser/positioned-string.hpp"
 
-std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(
+std::shared_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(
     const PositionedString& operand,
     const CompileErrorAnnotator& annotator) const {
   // We invoke our node generator to get a node!
-  std::unique_ptr<AbstractSyntaxTreeNode> outputNode =
-      _argumentGenerator(operand, _nodeFactories, annotator);
+  auto outputNode = _argumentGenerator(operand, _nodeFactories, annotator);
 
   // According to the architecture group, we get a nullptr if the creation
   // failed.
@@ -44,11 +43,11 @@ std::unique_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(
   return std::move(outputNode);
 }
 
-std::unique_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
+std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
     const PositionedString& commandName,
     const CompileErrorAnnotator& annotator,
-    std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& sources,
-    std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>& targets,
+    std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& sources,
+    std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& targets,
     MemoryAccess& memoryAccess) const {
   // Just create an instruction node and add all output and input nodes
   // (operands).

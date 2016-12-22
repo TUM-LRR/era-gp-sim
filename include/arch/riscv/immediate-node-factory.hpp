@@ -51,7 +51,7 @@ class ImmediateNodeFactory : public AbstractImmediateNodeFactory {
    * given input is invalid, a nullptr is returned
    * \param v MemoryValue, which contains the numerical value of the immediate
    * to be created
-   * \return std::unique_ptr pointing to the newly created immediate node, or
+   * \return std::shared_ptr pointing to the newly created immediate node, or
    * nullptr if the given MemoryValue is invalid
    */
   virtual Node createImmediateNode(const MemoryValue &value) const override;

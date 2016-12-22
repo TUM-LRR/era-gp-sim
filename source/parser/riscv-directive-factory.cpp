@@ -29,7 +29,7 @@
 #include "parser/memory-reservation-directive.hpp"
 #include "parser/section-directive.hpp"
 
-using DirectivePtr = std::unique_ptr<IntermediateDirective>;
+using DirectivePtr = std::shared_ptr<IntermediateDirective>;
 
 template <typename T>
 static DirectivePtr

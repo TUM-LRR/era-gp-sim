@@ -151,10 +151,31 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
       case CompileErrorSeverity::INFORMATION: color = QColor(Qt::blue); break;
       default: assert::that(false);
     }
-    emit addError(translate(error.message()),
-                  error.position().start().line(),
-                  color);
+    emit addError(
+        translate(error.message()), error.position().first.line(), color);
   }
+}
+
+void EditorComponent::setMacroList(
+    const std::vector<MacroInformation> &macroList) {
+  QVariantList updatedMacroList;
+  for (const auto &macroInformation : macroList) {
+    QVariantMap macroInformationMap;
+    macroInformationMap["code"] =
+        QString::fromStdString(macroInformation.macroCode());
+    macroInformationMap["startLine"] =
+        QVariant::fromValue(macroInformation.position().first.line() - 1);
+    macroInformationMap["endLine"] =
+        QVariant::fromValue(macroInformation.position().second.line() - 1);
+    int lineCount =
+        static_cast<int>(std::count(macroInformation.macroCode().begin(),
+                                    macroInformation.macroCode().end(),
+                                    '\n'));
+    macroInformationMap["lineCount"] = QVariant::fromValue(lineCount);
+    macroInformationMap["collapsed"] = QVariant::fromValue(true);
+    updatedMacroList.append(macroInformationMap);
+  }
+  emit updateMacros(updatedMacroList);
 }
 
 void EditorComponent::setCurrentLine(int line) {
@@ -163,6 +184,12 @@ void EditorComponent::setCurrentLine(int line) {
 
 QString EditorComponent::getText() {
   return _textDocument->toPlainText();
+}
+
+void EditorComponent::onFinalRepresentationChanged(
+    const FinalRepresentation &finalRepresentation) {
+  setErrorList(finalRepresentation.errorList);
+  setMacroList(finalRepresentation.macroList);
 }
 
 void EditorComponent::_addKeywords(

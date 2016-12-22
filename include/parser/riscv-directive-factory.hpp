@@ -55,7 +55,7 @@ void create(const LineInterval &lines,
  */
 extern const std::unordered_map<
     std::string,
-    std::function<std::unique_ptr<IntermediateDirective>(
+    std::function<std::shared_ptr<IntermediateDirective>(
         const LineInterval &,
         const std::vector<PositionedString> &,
         const PositionedString &,

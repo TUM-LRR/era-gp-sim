@@ -59,13 +59,13 @@ void IntermediateInstruction::execute(
       compileInstruction(immutable, annotator, memoryAccess));
 }
 
-std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
+std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>
 IntermediateInstruction::compileArgumentVector(
     const std::vector<PositionedString>& vector,
     const ExecuteImmutableArguments& immutable,
     const CompileErrorAnnotator& annotator,
     MemoryAccess& memoryAccess) {
-  std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> output;
+  std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> output;
   output.reserve(vector.size());
   for (const auto& operand : vector) {
     CompileErrorAnnotator localAnnotator(annotator,

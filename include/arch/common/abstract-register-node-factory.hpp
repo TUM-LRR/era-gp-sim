@@ -29,7 +29,7 @@
  */
 class AbstractRegisterNodeFactory {
  public:
-  using Node = std::unique_ptr<AbstractRegisterNode>;
+  using Node = std::shared_ptr<AbstractRegisterNode>;
 
   /**
    * Destructor.

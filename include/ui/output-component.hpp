@@ -116,11 +116,10 @@ class OutputComponent : public QObject {
   Q_INVOKABLE QString getTextFromMemory(int start,
                                         QString currentText,
                                         int mode);
-
   /**
-   \brief returns the current memory size
-   \return the size
-   */
+    \brief returns the current memory size
+    \return The size
+    */
   Q_INVOKABLE int getMemorySize();
 
  private:

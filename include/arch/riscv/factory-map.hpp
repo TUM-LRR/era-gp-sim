@@ -42,9 +42,9 @@ class FactoryMap {
  public:
   using InstructionDocumentation =
       std::shared_ptr<InstructionContextInformation>;
-  using Factory = std::function<std::unique_ptr<AbstractInstructionNode>(
+  using Factory = std::function<std::shared_ptr<AbstractInstructionNode>(
       const InstructionInformation &, const InstructionDocumentation &)>;
-  using Node = std::unique_ptr<AbstractInstructionNode>;
+  using Node = std::shared_ptr<AbstractInstructionNode>;
 
   /**
    * An abstract base class for facades.

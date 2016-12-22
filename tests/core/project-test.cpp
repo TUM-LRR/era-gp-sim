@@ -85,7 +85,7 @@ class ProjectTestFixture : public ::testing::Test {
   , proxy(std::move(scheduler)) {
     ParserInterface parserInterface = projectModule.getParserInterface();
     parserInterface.setSetCurrentLineCallback(lineNumberCallback);
-    parserInterface.setSetErrorListCallback(errorListCallback);
+    parserInterface.setFinalRepresentationCallback(errorListCallback);
     MemoryManager memoryManager = projectModule.getMemoryManager();
     memoryManager.setErrorCallback(errorCallback);
     architectureValidator.validate();
@@ -122,9 +122,9 @@ addi x0, x0, 0)";
   std::function<void(int)> lineNumberCallback = [this](int line) {
     proxy.setLine(line);
   };
-  std::function<void(const std::vector<CompileError>&)> errorListCallback =
-      [this](const std::vector<CompileError>& errorList) {
-        std::vector<CompileError> errors = errorList;
+  std::function<void(const FinalRepresentation&)> errorListCallback =
+      [this](const FinalRepresentation& finalRepresentation) {
+        std::vector<CompileError> errors = finalRepresentation.errorList;
         proxy.setErrorList(errors);
       };
   std::function<void(const std::string&, const std::vector<std::string>&)>

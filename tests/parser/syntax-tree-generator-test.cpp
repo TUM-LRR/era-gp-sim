@@ -51,7 +51,7 @@ static SyntaxTreeGenerator buildGenerator() {
 }
 
 template <typename SubType, typename BaseType>
-bool isInstance(const std::unique_ptr<BaseType>& ptr) {
+bool isInstance(const std::shared_ptr<BaseType>& ptr) {
   return static_cast<SubType*>(ptr.get()) != nullptr;
 }
 
@@ -91,11 +91,11 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   ASSERT_EQ(annotator.errorList().size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg2)));
 
-  std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> sources;
+  std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> sources;
   sources.push_back(std::move(arg1));
   sources.push_back(std::move(arg2));
 
-  std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> targets;
+  std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> targets;
   targets.push_back(std::move(arg3));
 
   ProjectModule projectModule(
