@@ -18,8 +18,38 @@
 
 #include "parser/intermediate-macro-instruction.hpp"
 
+#include "parser/compile-state.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/macro-directive.hpp"
+#include "parser/memory-allocator.hpp"
+#include "parser/symbol-table.hpp"
+
+
+void IntermediateMacroInstruction::replaceWithMacros(CommandIterator begin,
+                                                     CommandIterator end,
+                                                     CompileState& state) {
+  for (auto i = begin; i != end; ++i) {
+    // Try casting to IntermediateInstruction, skip instruction if it doesn't
+    // work
+    if ((*i)->getType() != IntermediateOperation::Type::INSTRUCTION) continue;
+
+    IntermediateInstruction& inst = static_cast<IntermediateInstruction&>(**i);
+
+    auto macro = state.macros.find(inst._name,
+                                   inst._sources.size() + inst._targets.size());
+    if (!macro.found()) continue;
+
+    if (macro.isCyclic()) {
+      state.addErrorHereT("Cyclic macro call!");
+      continue;
+    }
+
+    IntermediateOperationPointer newPtr =
+        std::make_unique<IntermediateMacroInstruction>(
+            inst, macro->second, state);
+    *i = std::move(newPtr);
+  }
+}
 
 IntermediateMacroInstruction::IntermediateMacroInstruction(
     const IntermediateInstruction& ins,
@@ -37,8 +67,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     if (ptr != nullptr)
       _operations.push_back(std::move(ptr));
     else
-      state.addError("Macro contains unsupported instruction '" +
-                     macro.getOperationName(i) + "'.");
+      state.addErrorHereT("Macro contains unsupported instruction '%1'.", macro.getOperationName(i));
   }
 
   // Recursively replace macro instructions to support recursive macro calls
@@ -73,7 +102,7 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
   }
 
   if (_labels.size() > 0 && _firstInstruction < 0) {
-    state.addError("Labels cant point to macros without instructions!");
+    state.addErrorHereT("Labels cant point to macros without instructions!");
   } else {
     for (const auto& i : _labels) {
       table.insertEntry(i,
@@ -84,4 +113,16 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
                         SymbolTable::SymbolType::LABEL);
     }
   }
+}
+
+std::string IntermediateMacroInstruction::toString() const {
+  std::string str;
+  for (const auto& operation : _operations) {
+    str += operation->toString();
+  }
+  return str;
+}
+
+IntermediateOperation::Type IntermediateMacroInstruction::getType() const {
+  return Type::MACRO_INSTRUCTION;
 }

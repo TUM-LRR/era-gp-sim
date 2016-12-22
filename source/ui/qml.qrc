@@ -4,7 +4,6 @@
         <file>Splitview.qml</file>
         <file>Components/ComponentHolder.qml</file>
         <file>Components/Snapshots/SnapshotList.qml</file>
-        <file>Components/Output/BlueRectangle.qml</file>
         <file>Components/Output/GreenRectangle.qml</file>
         <file>Components/Output/Output.qml</file>
         <file>Components/Output/RedRectangle.qml</file>
@@ -12,7 +11,6 @@
         <file>InnerSplitviews.qml</file>
         <file>Components/editor/Editor.qml</file>
         <file>Components/Memory/MemoryComponent.qml</file>
-        <file>Components/Memory/MemoryComponent_MenuBar.qml</file>
         <file>Components/Common/NumericUpDown.qml</file>
         <file>Components/Register/Register.qml</file>
         <file>InnerSplitviewsEditor.qml</file>
@@ -31,6 +29,9 @@
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Output/PixelDisplay.qml</file>
         <file>Components/Common/ToolTip.qml</file>
+        <file>Components/editor/MacroTriangleButton.qml</file>
+        <file>Components/editor/MacroSubeditor.qml</file>
+        <file>Components/Common/TextUtilities.js</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected@2x.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon.png</file>
@@ -47,9 +48,38 @@
         <file>Components/Output/Buttons/Settings Icon Pressed@2x.png</file>
         <file>Components/Output/Buttons/Settings Icon.png</file>
         <file>Components/Output/Buttons/Settings Icon@2x.png</file>
-        <file>Components/Output/OutputSettingsWindow.qml</file>
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegment.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegmentEdge.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
+        <file>Components/Output/SevenSegment/SevenSegmentSettingsWindow.qml</file>
+        <file>Components/Output/LightstripSettingsWindow.qml</file>
+        <file>Components/Output/Console.qml</file>
+        <file>Components/Output/ConsoleSettingsWindow.qml</file>
+        <file>Components/Input/ButtonInput.qml</file>
+        <file>Components/Input/ClickInput.qml</file>
+        <file>Components/Input/Input.qml</file>
+        <file>Components/Input/TextInputSelf.qml</file>
+        <file>Components/Input/ButtonInputSW.qml</file>
+        <file>Components/Input/ClickInputSW.qml</file>
+        <file>Components/Input/TextInputSW.qml</file>
+        <file>Components/Input/Buttons/Settings_Icon_Pressed.png</file>
+        <file>Components/Input/Buttons/Text Console Icon Selected.png</file>
+        <file>Components/Input/Buttons/Text Console Icon.png</file>
+        <file>Components/Input/Buttons/Arrow Button Input Icon Selected.png</file>
+        <file>Components/Input/Buttons/Arrow Button Input Icon Selected@2x.png</file>
+        <file>Components/Input/Buttons/Arrow Button Input Icon.png</file>
+        <file>Components/Input/Buttons/Arrow Button Input Icon@2x.png</file>
+        <file>Components/Input/Buttons/Mouse Input Icon Selected.png</file>
+        <file>Components/Input/Buttons/Mouse Input Icon Selected@2x.png</file>
+        <file>Components/Input/Buttons/Mouse Input Icon.png</file>
+        <file>Components/Input/Buttons/Mouse Input Icon@2x.png</file>
+        <file>Components/Input/Buttons/Text Console Icon Selected@2x.png</file>
+        <file>Components/Input/Buttons/Text Console Icon@2x.png</file>
+        <file>Components/Input/Buttons/Settings_Icon@2x.png</file>
+        <file>Components/Input/Buttons/Settings_Icon_Pressed@2x.png</file>
+        <file>Components/Input/Buttons/Settings_Icon.png</file>
     </qresource>
 </RCC>

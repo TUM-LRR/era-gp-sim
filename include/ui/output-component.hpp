@@ -28,41 +28,116 @@
 
 class MemoryManager;
 
+/**
+ * \brief The OutputComponent class Manages the model for all output items (i.e.
+ * lighstrip, sevensegment etc.) and provides an easy interface for QML
+ * components to access data inside the Core (i.e. memory content).
+ */
 class OutputComponent : public QObject {
   Q_OBJECT
 
+  using size_t = std::size_t;
+
  public slots:
+  /**
+   * \brief updateMemory Slot connected to the signal emitted by the Core every
+   * time some value inside the memory changes.
+   * \param address The address at which the change occured.
+   * \param length The length of the area in memory that changed in bytes.
+   */
   void updateMemory(std::size_t address, std::size_t length);
 
  signals:
+  /**
+   * \brief memoryChanged Signal that the output component calls to signal its
+   * QML output item instances that the memory content has changed.
+   * \param address The address at which the change occured.
+   * \param length The legnth of the area in memory that changed in bytes.
+   */
   void memoryChanged(QVariant address, QVariant length);
+
+  /**
+   * \brief outputItemSettingsChanged Signal the the output component calls to
+   * signal its QML output item instances that the settings of some output
+   * item have changed.
+   */
   void outputItemSettingsChanged();
   void newImage(QImage image);
 
  public:
-  explicit OutputComponent(MemoryManager &memoryManager,
-                           MemoryAccess &memoryAccess,
-                           QQmlContext *projectContext,
-                           QObject *parent = 0);
+  OutputComponent(MemoryManager &memoryManager,
+                  MemoryAccess &memoryAccess,
+                  QQmlContext *projectContext,
+                  QObject *parent = 0);
 
+  /**
+   \brief putMemoryValue Allows a QML output item instance to change the
+   memory's
+   content at a given address.
+   \param address The address at which to put the updated content.
+   \param memoryContentBitList The new content in bits.
+   */
   Q_INVOKABLE void
-  putMemoryValue(int address, QList<bool> memoryContentBitVector);
+  putMemoryValue(int address, QList<bool> memoryContentBitList);
 
+  /**
+   \brief getMemoryContent Allows a QML output item instance to fetch the
+   memory's
+   content at a given address.
+   \param address The address at which the requested data lies in memory.
+   \param length The length of the requested area in memory.
+   \return Bit-Array with the requested memory content.
+   */
   Q_INVOKABLE QList<bool> getMemoryContent(int address, int length) const;
 
-  Q_INVOKABLE QVariantList getOutputItems() const;
+  /**
+   \brief getOutputItem Returns the model data of the output item with the given
+   index.
+   \param index The index of the output item whose data is requested.
+   \return A map of QVariant-objects containing the output item's output data.
+   */
+  Q_INVOKABLE QVariant getOutputItem(int index) const;
+
+  /**
+   \brief setOutputItemProperty Changes a given property of the model data of a
+   given output item.
+   \param outputItemIndex The index of the output item whose property should be
+   altered.
+   \param property Identifier of the property to change.
+   \param newValue New value of the given property.
+   */
   Q_INVOKABLE void setOutputItemProperty(int outputItemIndex,
                                          QString property,
                                          QVariant newValue);
-  Q_INVOKABLE void addOutputItem(QString outputItemType);
+
+  /**
+    \brief gets the Text from the Memory until a Nullbyte
+    or end of Memory is reached
+    \param start base Address to get from the memory
+    \param currentText The text, which is actuall at the textarea
+    \param mode the textMode
+    */
+  Q_INVOKABLE QString getTextFromMemory(int start,
+                                        QString currentText,
+                                        int mode);
+  /**
+    \brief returns the current memory size
+    \return The size
+    */
+  Q_INVOKABLE int getMemorySize();
 
   MemoryAccess &getMemoryAccess() {
     return _memoryAccess;
   }
 
  private:
+  /// Interface for accessing memory content.
   MemoryAccess _memoryAccess;
-  QVariantList _outputItems;
+
+  /// The underlying model of each output item. Mostly used for savings output
+  /// item settings (e.g. baseAddress in memory) as actual data is fetched
+  /// dynamically.
+  QVariantList _outputItemsInformation;
 };
 
 #endif// ERAGPSIM_UI_OUTPUTCOMPONENT_HPP

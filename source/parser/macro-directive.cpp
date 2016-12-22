@@ -17,14 +17,38 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "parser/compile-state.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/macro-directive.hpp"
+
+MacroDirective::MacroDirective(const LineInterval& lines,
+                               const std::vector<std::string>& labels,
+                               const std::string& name,
+                               const std::vector<std::string>& arguments)
+: IntermediateDirective(lines, labels, name)
+, _macroName(arguments.size() > 0 ? arguments[0] : "")
+, _macroParameters(arguments.size() > 0 ? arguments.begin() + 1
+                                        : arguments.end(),
+                   arguments.end())
+, _operations() {
+}
+
+MacroDirective::MacroDirective(const LineInterval& lines,
+                               const std::vector<std::string>& labels,
+                               const std::string& name,
+                               const std::string& macroName,
+                               const std::vector<std::string>& macroParameters)
+: IntermediateDirective(lines, labels, name)
+, _macroName(macroName)
+, _macroParameters(macroParameters)
+, _operations() {
+}
 
 void MacroDirective::insert(IntermediateOperationPointer pointer) {
   // Remember index of the first instruction so we can use its address for
   // labels.
   if (_firstInstruction < 0 &&
-      dynamic_cast<IntermediateInstruction*>(pointer.get()) != nullptr) {
+      pointer->getType() == IntermediateOperation::Type::INSTRUCTION) {
     _firstInstruction = _operations.size();
   }
   _operations.push_back(std::move(pointer));
@@ -36,10 +60,41 @@ void MacroDirective::execute(FinalRepresentation& finalRepresentator,
                              CompileState& state,
                              MemoryAccess& memoryAccess) {
   if (macroName().length() == 0) {
-    state.addError("Missing macro name.");
+    state.addErrorHereT("Missing macro name.");
   }
   _macroParameters.validate(state);
   state.registerMacro(*this);
+}
+
+TargetSelector MacroDirective::newTarget() const {
+  return TargetSelector::THIS;
+}
+
+IntermediateExecutionTime MacroDirective::executionTime() const {
+  return IntermediateExecutionTime::BEFORE_ALLOCATION;
+}
+
+const std::string& MacroDirective::macroName() const {
+  return _macroName;
+}
+
+/**
+ * Returns number of operations.
+ */
+size_t MacroDirective::getOperationCount() const {
+  return _operations.size();
+}
+
+std::pair<size_t, size_t> MacroDirective::getParameterCount() const {
+  return _macroParameters.getParameterCount();
+}
+
+/**
+ * Returns if an instance of the macro is currently compiling. Used to detect
+ * cyclic macro calls.
+ */
+bool MacroDirective::isCompiling() {
+  return _isCompiling;
 }
 
 IntermediateOperationPointer
@@ -51,6 +106,14 @@ MacroDirective::getOperation(size_t index,
 
   _macroParameters.insertParameters(ptr, arguments);
   return std::move(ptr);
+}
+
+int MacroDirective::firstInstructionIndex() const {
+  return _firstInstruction;
+}
+
+const std::string& MacroDirective::getOperationName(size_t index) const {
+  return _operations[index]->name();
 }
 
 MacroDirective::MacroParameters::MacroParameters(
@@ -85,14 +148,14 @@ void MacroDirective::MacroParameters::validate(CompileState& state) const {
     // Check for empty names or default values
     if (param.first.size() == 0 ||
         (param.second && param.second->size() == 0)) {
-      state.addError("Malformed macro argument list!");
+      state.addErrorHereT("Malformed macro argument list!");
       return;
     }
 
     // Check for missing default values after a default value.
     if (param.second) containedDefault = true;
     if (containedDefault && !param.second) {
-      state.addError("Default macro argument values have to be placed last!");
+      state.addErrorHereT("Default macro argument values have to be placed last!");
       return;
     }
   }

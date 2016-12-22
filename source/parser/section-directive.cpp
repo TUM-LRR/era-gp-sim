@@ -18,6 +18,17 @@
 */
 
 #include "parser/section-directive.hpp"
+#include "parser/compile-state.hpp"
+#include "parser/memory-allocator.hpp"
+
+SectionDirective::SectionDirective(const LineInterval& lines,
+                                   const std::vector<std::string>& labels,
+                                   const std::string& name,
+                                   const std::vector<std::string>& arguments)
+: IntermediateDirective(lines, labels, name) {
+  _hasName = arguments.size() > 0;
+  if (_hasName) _section = arguments[0];
+}
 
 void SectionDirective::execute(FinalRepresentation& finalRepresentator,
                                const SymbolTable& table,
@@ -30,7 +41,11 @@ void SectionDirective::allocateMemory(const Architecture& architecture,
                                       MemoryAllocator& allocator,
                                       CompileState& state) {
   if (!_hasName) {
-    state.addError("Section name missing!");
+    state.addErrorHereT("Section name missing!");
+    return;
+  }
+  if (!allocator.has(_section)) {
+    state.addErrorHereT("Specified section non-existent!");
     return;
   }
   // Just set the section state to the current section. That's it.

@@ -18,34 +18,48 @@
 */
 
 #include "ui/ui.hpp"
+#include "ui/clipboard-adapter.hpp"
+
+#include <QUrl>
 
 #include "arch/common/architecture-formula.hpp"
 #include "common/assert.hpp"
 #include "common/utility.hpp"
 #include "ui/pixel-display-painted-item.hpp"
-#include "ui/pixel-display-provider.hpp"
 #include "ui/output-component.hpp"
+#include "ui/input-text-model.hpp"
+#include "ui/snapshot-component.hpp"
 
+Ui::id_t Ui::_rollingProjectId = 0;
 
 Ui::Ui(int& argc, char** argv)
-: _architectureMap(), _qmlApplication(argc, argv), _engine(), _projects() {
+: _architectureMap()
+, _qmlApplication(argc, argv)
+, _engine()
+, _projects()
+, _snapshots(std::make_shared<SnapshotComponent>(
+      QString::fromStdString(Utility::joinToRoot("snapshots")))) {
   _loadArchitectures();
 }
 
 int Ui::runUi() {
+  qmlRegisterType<ClipboardAdapter>(
+      "ClipboardAdapter", 1, 0, "ClipboardAdapter");
   qRegisterMetaType<std::size_t>("std::size_t");
   qRegisterMetaType<std::size_t>("size_t");
   qRegisterMetaType<OutputComponent*>("OutputComponentP");
   qmlRegisterType<PixelDisplayPaintedItem>(
       "eragpsim.pixeldisplaypainteditem", 1, 0, "PixelDisplayPaintedItem");
+  qRegisterMetaType<InputText::length_t>("length_t");
+  qRegisterMetaType<id_t>("id_t");
   _engine.rootContext()->setContextProperty("ui", this);
-
+  _engine.rootContext()->setContextProperty("snapshotComponent",
+                                            _snapshots.get());
   _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-
   return _qmlApplication.exec();
 }
 
-void Ui::addProject(QQuickItem* tabItem,
+id_t Ui::addProject(QQuickItem* tabItem,
                     QQmlComponent* projectComponent,
                     const QVariant& memorySizeQVariant,
                     const QString& architecture,
@@ -65,10 +79,16 @@ void Ui::addProject(QQuickItem* tabItem,
   QQmlContext* context = new QQmlContext(qmlContext(tabItem), tabItem);
   //_engine.addImageProvider("pixeldisplayprovider", new PixelDisplayProvider);
 
-  // the pointer is not needed anywhere, the object is deleted by qml when
+  // save the project pointer in a vector, the object is deleted by qml when
   // tabItem is deleted
-  _projects.push_back(new GuiProject(
-      context, architectureFormula, memorySize, parser.toStdString(), tabItem));
+  unsigned int projectId = _rollingProjectId;
+  auto project = new GuiProject(context,
+                                architectureFormula,
+                                memorySize,
+                                parser.toStdString(),
+                                _snapshots,
+                                tabItem);
+  _projects.emplace(_rollingProjectId++, project);
 
   // instantiate the qml project item with the prepared context
   QQuickItem* projectItem =
@@ -80,7 +100,7 @@ void Ui::addProject(QQuickItem* tabItem,
   // set visual parent of the projectItem
   projectItem->setParentItem(tabItem);
 
-  //add memoryAccess as context property?
+  return projectId;
 }
 
 QStringList Ui::getArchitectures() const {
@@ -139,74 +159,78 @@ void Ui::_loadArchitectures() {
   }
 }
 
-void Ui::removeProject(int index) {
-  assert::that(index >= 0);
-  assert::that(index < _projects.size());
-  _projects.erase(_projects.begin() + index);
+void Ui::removeProject(int id) {
+  _projects.erase(id);
 }
 
-void Ui::changeSystem(int index, QString base) {
-  assert::that(index >= 0);
-  assert::that(index < _projects.size());
-  _projects[index]->changeSystem(base.toStdString());
+void Ui::changeSystem(int id, QString base) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->changeSystem(base.toStdString());
 }
 
-void Ui::parse(int index) {
-  assert::that(index >= 0);
-  assert::that(index < _projects.size());
-  _projects[index]->parse();
+void Ui::parse(int id) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->parse();
 }
 
-void Ui::run(int index) {
-  assert::that(index >= 0);
-  assert::that(index < _projects.size());
-  _projects[index]->run();
+void Ui::run(int id) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->run();
 }
 
-void Ui::runLine(int index) {
-  assert::that(index >= 0);
-  assert::that(index < _projects.size());
-  _projects[index]->runLine();
+void Ui::runLine(int id) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->runLine();
 }
 
-void Ui::runBreakpoint(int index) {
-  assert::that(index >= 0);
-  assert::that(index < _projects.size());
-  _projects[index]->runBreakpoint();
+void Ui::runBreakpoint(int id) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->runBreakpoint();
 }
 
-void Ui::stop(int index) {
-  assert::that(index >= 0);
-  assert::that(index < _projects.size());
-  _projects[index]->stop();
+void Ui::stop(int id) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->stop();
 }
 
-void Ui::reset(int index) {
-  assert::that(index >= 0);
-  assert::that(index < _projects.size());
-  _projects[index]->reset();
+void Ui::reset(int id) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->reset();
 }
 
-void Ui::save(int index) {
-  assert::that(index >= 0);
-  assert::that(index < _projects.size());
-  _projects[index]->save();
+void Ui::saveText(int id) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->saveText();
 }
 
-void Ui::saveAs(int index, QString name) {
-  assert::that(index >= 0);
-  assert::that(index < _projects.size());
-  _projects[index]->saveAs(name);
+void Ui::saveTextAs(int id, QUrl path) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->saveTextAs(path);
 }
 
-void Ui::saveSnapshot(int index, QString name) {
-  assert::that(index >= 0);
-  assert::that(index < _projects.size());
-  _projects[index]->saveSnapshot(name);
+void Ui::loadText(int id, QUrl path) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->loadText(path);
 }
 
-void Ui::loadSnapshot(int index, QString name) {
-  assert::that(index >= 0);
-  assert::that(index < _projects.size());
-  _projects[index]->loadSnapshot(name);
+void Ui::saveSnapshot(int id, QString name) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->saveSnapshot(name);
+}
+
+void Ui::loadSnapshot(int id, QString name) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->loadSnapshot(name);
 }

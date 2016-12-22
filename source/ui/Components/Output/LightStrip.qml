@@ -3,7 +3,6 @@ import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.0
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import QtQuick.Window 2.0
 
 import "../Common"
 
@@ -17,13 +16,15 @@ Item {
     // the model.
     property var outputItemIndex: 0
 
+    signal settingsButtonPressed()
+
     ListModel {
         id: lightstripModel
     }
 
     // Update the output item's content (there may already be some initial values in memory).
     Component.onCompleted: {
-        updateContent(outputComponent.getOutputItems()[outputItemIndex]["baseAddress"]);
+        updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
     }
 
     // Connect the output item to signals that the model might send.
@@ -31,8 +32,7 @@ Item {
         target: outputComponent
         // Send when the memory changes (at any address).
         onMemoryChanged: {
-            console.log("onMemoryChanged");
-            var _baseAddress = outputComponent.getOutputItems()[outputItemIndex]["baseAddress"];
+            var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
             // Check if the memory address that was changed (at least partly) belongs to
             // the output item's source space.
             if ((address+length) >= _baseAddress && (address <= (_baseAddress+(lightstripModel.count+7)/8))) {
@@ -41,16 +41,15 @@ Item {
         }
         // Send when any item's settings where updated.
         onOutputItemSettingsChanged: {
-            console.log("onOutputItemSettingsChanged");
-            updateContent(outputComponent.getOutputItems()[outputItemIndex]["baseAddress"]);
-            settingsWindow.updateSettings();
+            updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
+            lightstripSettingsWindow.updateSettings();
         }
     }
 
     // Called from outside by the output tab view to signal that the settings button for the current
     // output item was pressed.
-    function settingsButtonPressed() {
-        settingsWindow.show();
+    onSettingsButtonPressed: {
+        lightstripSettingsWindow.show();
     }
 
     // Updates the content of the output model depending on the value in memory.
@@ -65,7 +64,7 @@ Item {
 
     // Updates the lightstripModel to correspond to the output item's settings values.
     function _updatelightstripModel() {
-        var numberOfStrips = outputComponent.getOutputItems()[outputItemIndex]["numberOfStrips"];
+        var numberOfStrips = outputComponent.getOutputItem(outputItemIndex)["numberOfStrips"];
         if (numberOfStrips < 0) {
             numberOfStrips = 0
         }
@@ -163,7 +162,7 @@ Item {
                         for (var index = 0; index < lightstripModel.count; ++index) {
                             memoryContent.push(lightstripModel.get(index).active);
                         }
-                        var _baseAddress = outputComponent.getOutputItems()[outputItemIndex]["baseAddress"];
+                        var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
                         outputComponent.putMemoryValue(_baseAddress, memoryContent);
                     }
                 }
@@ -177,97 +176,8 @@ Item {
         }
     }
 
-    // Window for lightstrip settings.
-    Window {
-        id: settingsWindow
-        width: 400
-        height: 200
-
-        title: "Lightstrip Settings"
-
-        function updateSettings() {
-            numberOfStripsTextField.text = outputComponent.getOutputItems()[outputItemIndex]["numberOfStrips"];
-            baseAddressTextField.text = outputComponent.getOutputItems()[outputItemIndex]["baseAddress"];
-        }
-
-        onVisibleChanged: {
-            if (visible) {
-                updateSettings();
-            }
-        }
-
-        Row {
-            anchors.fill: parent
-            anchors.leftMargin: 15
-            anchors.topMargin: 15
-            anchors.rightMargin: 15
-            anchors.bottomMargin: 15
-
-            spacing: 15
-
-            // Title of each settings control.
-            Column {
-                spacing: 16
-                Text {
-                    text: "Memory Source:"
-                }
-                Text {
-                    text: "Number of Strips:"
-                }
-            }
-
-            // Settings controls itself.
-            Column {
-                id: controlsColumn
-                spacing: 8
-
-                function integerFromInputString(input) {
-                    var base = 10;
-                    if (input.indexOf("0x") == 0) {
-                        base = 16;
-                        input = input.slice(2);
-                    } else if (input.indexOf("0b") == 0) {
-                        input = input.slice(2);
-                        base = 2;
-                    }
-                    return parseInt(input, base);
-                }
-
-                // Text field for setting the output item's source address in memory.
-                TextField {
-                    id: baseAddressTextField
-
-                    onAccepted: { processInput(); }
-                    onEditingFinished: { processInput(); }
-
-                    function processInput() {
-                        var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
-                        if (inputValue && inputValue > 0) {
-                            outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
-                        }
-                    }
-                }
-
-                TextField {
-                    id: numberOfStripsTextField
-                    height: baseAddressTextField.height
-
-                    onAccepted: { processInput(); }
-                    onEditingFinished: { processInput(); }
-
-                    Component.onCompleted: {
-                        settingsWindow.updateSettings();
-                    }
-
-                    function processInput() {
-                        var inputValue = controlsColumn.integerFromInputString(String(numberOfStripsTextField.text));
-                        if (inputValue && inputValue > 0) {
-                            outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", inputValue);
-                        }
-                    }
-                }
-
-            }
-        }
+    LightstripSettingsWindow {
+        id: lightstripSettingsWindow
     }
+
 }

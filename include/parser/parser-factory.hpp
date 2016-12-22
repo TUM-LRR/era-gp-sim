@@ -26,6 +26,7 @@
 #include "parser/parser.hpp"
 
 class Architecture;
+class MemoryAccess;
 
 using ParserPtr = std::unique_ptr<Parser>;
 

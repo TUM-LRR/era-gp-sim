@@ -25,10 +25,34 @@ TextField {
 
     font.pointSize: 13
 
-    Component.onCompleted: {
-        inputMask = registerModel.displayFormatStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
-        text = registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
+    text: registerContent();
+
+    enabled: (model !== null) ? !model.IsConstant : true
+
+    // Fetches the register's content with the appropiate format from the model.
+    function registerContent() {
+        if (model === null) { return ""; }
+        var registerContentString;
+        switch (dataTypeFormatComboBox.currentText) {
+        case "Binary":
+            registerContentString = model.BinaryData;
+            break;
+        case "Hexadecimal":
+            registerContentString = model.HexData;
+            break;
+        case "Decimal (Unsigned)":
+            registerContentString = model.UnsignedDecData;
+            break;
+        case "Decimal (Signed)":
+            registerContentString = model.SignedDecData;
+            break;
+        default:
+            registerContentString = model.BinaryData;
+            break;
+        }
+        return format(registerContentString);
     }
+
 
     // As some values need to be set manually (i.e. not using the model's data-method and the corresponding
     // roles), they also have to be updated manually whenever the model's data changed for the current index.
@@ -39,17 +63,36 @@ TextField {
         onDataChanged: {
             // Check if the current item's index is affected by the data change.
             if (topLeft <= styleData.index && styleData.index <= bottomRight) {
-                inputMask = registerModel.displayFormatStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
-                text = registerModel.contentStringForRegister(styleData.index, dataTypeFormatComboBox.currentIndex)
+                text = Qt.binding(registerContent);
             }
         }
     }
 
     // Notify the model that the register's content was changed by the user.
     onEditingFinished: {
-        registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentIndex);
+        registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentText);
     }
     onAccepted: {
-        registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentIndex);
+        registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentText);
     }
+
+    Keys.onPressed: {
+        if (event.key === Qt.Key_Tab) {
+            event.accepted = true;
+            registerTextField.focus = false;
+        }
+    }
+
+    function format(registerContentString) {
+        registerContentString = registerContentString.replace(/ /g, '');
+        if (dataTypeFormatComboBox.currentText === "Binary" || dataTypeFormatComboBox.currentText === "Hexadecimal") {
+            var characterPerByte = (dataTypeFormatComboBox.currentText === "Hexadecimal") ? 2 : 8;
+            // Insert new spaces
+            for (var characterIndex = 2; characterIndex < registerContentString.length; characterIndex+=(characterPerByte+1)) {
+                registerContentString = [registerContentString.slice(0, characterIndex), ' ', registerContentString.slice(characterIndex)].join('')
+            }
+        }
+        return registerContentString;
+    }
+
 }

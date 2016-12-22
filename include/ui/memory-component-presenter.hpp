@@ -41,18 +41,19 @@ class MemoryComponentPresenter : public QAbstractListModel {
   ~MemoryComponentPresenter();
 
   /**
-   * converts a hexademcimal representation of a string into a memory value
-   * and saves it to the internal memory object
+   * Converts a hexademcimal representation of a string into a memory value
+   * and saves it to the internal memory object.
    *
    * /param address the address of the cell to be updated
-   * /param newvalue the new value for the memory cell in hexadecimal
-   * representation
+   * /param newvalue the new value for the memory cell
+   * /param length_bit the number of bits shown in the string
+   * /param presentation which numeric representation is used (eg. hex, oct, bin)
    *
    */
-  Q_INVOKABLE void setValue(int address, QString newvalue);
+  Q_INVOKABLE void setValue(int address, QString newvalue, int length_bit, QString presentation);
 
   /**
-   * sets the context information for memory cells (NOT IMPLEMENTED YET)
+   * Sets the context information for memory cells (NOT IMPLEMENTED YET)
    *
    * /param addressStart the starting address of the memory cell the context
    * information is related to
@@ -79,8 +80,8 @@ class MemoryComponentPresenter : public QAbstractListModel {
                 int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
   /**
-   * returns the number of rows in this table
-   * inherited from QAbstractListModel
+   * Returns the number of rows in this table
+   * Inherited from QAbstractListModel
    *
    * /param parent pointer to the logical data parent
    * /return returns the length of the table
@@ -89,50 +90,62 @@ class MemoryComponentPresenter : public QAbstractListModel {
   int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
   /**
-   * returns the translation between roleNames in QML and the internal index
-   * representation inherited from QAbstractListModel
+   * Returns the translation between roleNames in QML and the internal index
+   * representation inherited from QAbstractListModel.
    *
    * /return returns a QHash with the connection between the internal index
    * representation and the name of the role in QML
-   *
    */
   QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
 
   /**
-   * returns the number of bytes to be displayed in one memory cell.
-   * the role is an indicator of how many bytes are chosen by the user.
+   * Returns the number of bytes to be displayed in one memory cell.
+   * The role is an indicator of how many bytes are chosen by the user.
    *
    * /param role the display role for this cell in the QAbstractListModel
    * /return the number of bytes to be shown in one cell
    */
   int numberOfBytes(int role) const;
 
-  /** holds a MemoryAccess for accessing the memory */
+  /** Holds a MemoryAccess for accessing the memory */
   MemoryAccess _memoryAccess;
 
-  /** holds a MemoryManager that handles the registration for callback functions
+  /** Holds a MemoryManager that handles the registration for callback functions
    */
   MemoryManager _memoryManager;
 
 
-  /** saves the size of the memory, as calling MemoryAccess::getMemorySize() in
+  /** Saves the size of the memory, as calling MemoryAccess::getMemorySize() in
    * rowCount causes a deadlock. */
   std::size_t _memorySize;
 
   /** enumeration of all roles of the columns */
   enum ColumnRoles {
-    AddressRole8 = Qt::UserRole,// avoid collisions with predefined roles
-    AddressRole16,
-    AddressRole32,
-    ValueRole,
-    InfoRole
+      AddressRole8 = Qt::UserRole,// avoid collisions with predefined roles
+      AddressRole16,
+      AddressRole32,
+      ValueRoleBin8,
+      ValueRoleBin16,
+      ValueRoleBin32,
+      ValueRoleOct8,
+      ValueRoleOct16,
+      ValueRoleOct32,
+      ValueRoleHex8,
+      ValueRoleHex16,
+      ValueRoleHex32,
+      ValueRoleDec8,
+      ValueRoleDec16,
+      ValueRoleDec32,
+      ValueRoleDecS8,
+      ValueRoleDecS16,
+      ValueRoleDecS32,
+      InfoRole
   };
 
  public slots:
   /**
-   * callback function for the core memory. Is beeing called when something in
-   * the
-   * memory changes
+   * Callback function for the core memory. Is beeing called when something in
+   * the memory changes.
    *
    * /param address the address of the first cell with a new value
    * /param length the number of cells that were changed

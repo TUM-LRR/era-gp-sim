@@ -1,16 +1,17 @@
 {
-    "word-size": 69, 
-    "name": "base2-basic", 
     "instructions": [
         {
-            "mnemonic": "sll", 
-            "length": 69, 
             "key": {
-                "function": 6, 
-                "width": 6, 
+                "function": 6,
+                "width": 6,
                 "opcode": 6
-            }, 
-            "format": "R"
+            },
+            "length": 69,
+            "format": "R",
+            "mnemonic": "sll"
         }
-    ]
+    ],
+    "name": "base2-basic",
+    "word-size": 69,
+    "signed-representation": "sign-bit"
 }

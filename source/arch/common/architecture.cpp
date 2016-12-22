@@ -79,6 +79,12 @@ Architecture::Endianness Architecture::getEndianness() const {
   return _base.getEndianness();
 }
 
+Architecture::SignedRepresentation
+Architecture::getSignedRepresentation() const {
+  assert(isValidated());
+  return _base.getSignedRepresentation();
+}
+
 Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const {
   assert(isValidated());
   return _base.getAlignmentBehavior();
@@ -102,6 +108,11 @@ const UnitContainer& Architecture::getUnits() const {
 const InstructionSet& Architecture::getInstructions() const {
   assert(isValidated());
   return _base.getInstructions();
+}
+
+const std::string& Architecture::getBuiltinMacros() const {
+  assert(isValidated());
+  return _base.getBuiltinMacros();
 }
 
 const NodeFactoryCollection& Architecture::getNodeFactories() const {

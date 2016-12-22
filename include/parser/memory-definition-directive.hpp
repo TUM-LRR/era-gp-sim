@@ -20,14 +20,19 @@
 #ifndef ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP
 #define ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP
 
+#include <cstddef>
 #include <functional>
+
 #include "arch/common/architecture.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
-#include "intermediate-directive.hpp"
 #include "parser/expression-compiler-clike.hpp"
+#include "parser/intermediate-directive.hpp"
+#include "parser/memory-allocator.hpp"
+#include "parser/relative-memory-position.hpp"
 #include "parser/string-parser.hpp"
+#include "parser/symbol-table.hpp"
 
 /**
  * \brief A directive to reserve memory and writes specified data to it.
@@ -36,12 +41,13 @@
 template <typename T>
 class MemoryDefinitionDirective : public IntermediateDirective {
  public:
-  using MemoryStorageFunction = std::function<void(T, std::size_t)>;
+  using size_t = std::size_t;
+  using MemoryStorageFunction = std::function<void(T, size_t)>;
   using ProcessValuesFunction =
-      std::function<std::size_t(const std::vector<std::string>&,
-                                std::size_t,
-                                CompileState&,
-                                const MemoryStorageFunction&)>;
+      std::function<size_t(const std::vector<std::string>&,
+                           size_t,
+                           CompileState&,
+                           const MemoryStorageFunction&)>;
 
   /**
  * \brief Instantiates a new MemoryDefinitionDirective with the given arguments.
@@ -56,7 +62,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   MemoryDefinitionDirective(const LineInterval& lines,
                             const std::vector<std::string>& labels,
                             const std::string& name,
-                            std::size_t cellSize,
+                            size_t cellSize,
                             const std::vector<std::string>& values,
                             const ProcessValuesFunction& processValues)
   : IntermediateDirective(lines, labels, name)
@@ -93,15 +99,14 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                               MemoryAllocator& allocator,
                               CompileState& state) {
     if (_values.empty()) {
-      state.addError("Arguments missing here.");
+      state.addErrorT(CodePosition(_lines.lineStart, _lines.lineEnd), "Empty data definition");
     }
 
     // So, we simply calculate and sum up our arguments.
     // Let's hope, the compiler optimizes this...
     CompileState temporaryState;
-    std::size_t sizeInBytes = _processValues(
-        _values, _cellSize, temporaryState, [](T value, std::size_t position) {
-        });
+    size_t sizeInBytes = _processValues(
+        _values, _cellSize, temporaryState, [](T value, size_t position) {});
 
     // Next, we got to allocate our memory.
     _relativePosition = allocator[state.section].allocateRelative(sizeInBytes);
@@ -163,18 +168,18 @@ class MemoryDefinitionDirective : public IntermediateDirective {
       // Then, let's do a (probably also here) expensive memory call.
       memoryAccess.putMemoryValueAt(_absolutePosition, data);
     } else {
-      state.addError("Nothing to reserve with memory definition.");
+      state.addErrorHereT("Nothing to reserve with memory definition.");
     }
   }
 
  private:
-  ProcessValuesFunction _processValues;
   std::size_t _byteSize;
   std::size_t _absolutePosition;
   RelativeMemoryPosition _relativePosition;
-  std::size_t _size;
-  std::size_t _cellSize;
+  size_t _size;
+  size_t _cellSize;
   std::vector<std::string> _values;
+  ProcessValuesFunction _processValues;
 };
 
 #endif /* ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP */

@@ -22,9 +22,10 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
-#include "arch/common/abstract-syntax-tree-node.hpp"
+class AbstractInstructionNode;
 #include "parser/compile-error.hpp"
 #include "parser/line-interval.hpp"
+#include "parser/macro-information.hpp"
 
 using MemoryAddress = std::size_t;
 
@@ -34,10 +35,10 @@ using MemoryAddress = std::size_t;
  */
 struct FinalCommand {
   /**
-   * \brief A pointer to the syntax tree node which carries the data of this
+   * \brief A pointer to the instruction node which carries the data of this
    * instruction.
    */
-  std::unique_ptr<AbstractSyntaxTreeNode> node;
+  std::unique_ptr<AbstractInstructionNode> node;
 
   /**
    * \brief Describes the interval of lines where this command occurs in the
@@ -73,6 +74,11 @@ struct FinalRepresentation {
    * \brief The list of errors which occurred during the assemblation process.
    */
   std::vector<CompileError> errorList;
+
+  /**
+   * List of information about all used macros.
+   */
+  std::vector<MacroInformation> macroList;
 
   /**
    * \brief Creates a mapping from memory address to instruction index.

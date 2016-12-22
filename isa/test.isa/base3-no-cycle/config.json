@@ -3,15 +3,15 @@
         {
             "registers": [
                 {
-                    "id": 13, 
-                    "alias": "pc", 
-                    "type": "program-counter", 
-                    "name": "f0", 
-                    "size": 64
+                    "size": 64,
+                    "name": "f0",
+                    "id": 13,
+                    "alias": "pc",
+                    "type": "program-counter"
                 }
-            ], 
+            ],
             "name": "fpu"
         }
-    ], 
+    ],
     "name": "base3"
 }

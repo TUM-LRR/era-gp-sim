@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
-#ifndef ERA_GP_SIM_ARCH_COMMON_CRASH_INSTRUCTION_NODE_HPP
-#define ERA_GP_SIM_ARCH_COMMON_CRASH_INSTRUCTION_NODE_HPP
+#ifndef ERA_SIM_ARCH_COMMON_CRASH_INSTRUCTION_NODE_HPP
+#define ERA_SIM_ARCH_COMMON_CRASH_INSTRUCTION_NODE_HPP
 
 #include "arch/common/abstract-instruction-node.hpp"
 #include "arch/common/validation-result.hpp"
@@ -61,4 +61,4 @@ class SimulatorCrashInstructionNode : public AbstractInstructionNode {
   MemoryValue getValue(MemoryAccess &memoryAccess) const override;
 };
 
-#endif  // ERA_GP_SIM_ARCH_COMMON_CRASH_INSTRUCTION_NODE_HPP
+#endif  // ERA_SIM_ARCH_COMMON_CRASH_INSTRUCTION_NODE_HPP

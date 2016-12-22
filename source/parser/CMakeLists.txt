@@ -15,6 +15,7 @@ set(PARSER_SOURCES
   syntax-tree-generator.cpp
   memory-reservation-directive.cpp
   macro-directive.cpp
+  macro-information.cpp
   macro-end-directive.cpp
   expression-compiler-clike.cpp
   parser-factory.cpp
@@ -27,12 +28,19 @@ set(PARSER_SOURCES
   macro-directive-table.cpp
   memory-definition-directive.cpp
   intermediate-macro-instruction.cpp
+  intermediate-directive.cpp
+  relative-memory-position.cpp
+  memory-section-definition.cpp
+  code-position.cpp
+  line-interval.cpp
+  compile-error.cpp
 )
 
 ########################################
 # TARGET
 ########################################
 
-add_library(era-sim-parser STATIC ${PARSER_SOURCES})
-
-target_link_libraries(era-sim-parser era-sim-common era-sim-arch-common)
+if (ERA_SIM_BUILD_PARSER)
+  add_library(era-sim-parser STATIC ${PARSER_SOURCES})
+  target_link_libraries(era-sim-parser era-sim-common era-sim-arch-common)
+endif()
