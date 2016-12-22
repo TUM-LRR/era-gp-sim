@@ -36,21 +36,30 @@
 class OutputComponent;
 class MemoryValue;
 
+// just for testing reasons
 #define PSIZE 16
 #define CMODE 1
 
 namespace colorMode {
 struct ColorMode;
 struct Options {
+  // address of of the pixelBuffer(pointer)
   std::size_t pixelBaseAddress = 0;
+  // address of of the colorBuffer(pointer)
   std::size_t colorBaseAddress = 4;
+  // width of the image
   std::size_t width = PSIZE;
+  // height of the image
   std::size_t height = PSIZE;
+  // colorMode RGB:Monochrome
   std::size_t colorMode = CMODE;
+  // number of bits the red part of a color in RGB mode has
   std::size_t rBit = 8;
+  // number of bits the green part of a color in RGB mode has
   std::size_t gBit = 8;
+  // number of bits the blue part of a color in RGB mode has
   std::size_t bBit = 8;
-  // TODO::use enums, maybe
+  // TODO::use enums, maybe? probably not, cause qml is annoying
   // false->row_major, true->columns->major
   bool columns_rows = false;
   // mirrors the image horizontally
@@ -63,7 +72,9 @@ struct Options {
   bool pixelBufferPointerLike = true;
   // interpret ColorBaseAddress as pointer to the colorTable
   bool colorTablePointerLike = true;
+  // ignore n bytes after each pixel (in RGB mode)
   std::size_t freeBytes = 1;
+  // waste n bits in each byte (in Monochrome mode)
   std::size_t freeBits = 0;
 
   /*
@@ -217,11 +228,28 @@ struct ColorMode {
    */
   UpdateAllColorsFunction updateAllColors;
 
+  /*
+   * \brief loads a pointer from memory
+   * \param memoryAccess The access to the memory
+   * \param address Address of the pointer
+   * \param indirect ponter is at address : pointer is address
+   * \param cellSize size of a cell in memory
+   * \param pointerSize size of a pointer in Bits
+   * \returns the pointer
+   */
   static std::size_t loadPointer(Optional<OutputComponent *> memoryAccess,
                                  std::size_t address,
                                  bool indirect,
                                  std::size_t cellSize,
-                                 std::size_t pointerSize);
+                                 std::size_t pointerSize);#
+  /*
+   * \brief returns the memoryValue from memory at address
+   * \param memoryAccess The access to the memory
+   * \param address address of the value
+   * \param length length of the value in byte
+   * \param defaultLength length of the output if there is no memoryAccess
+   * \returns the memoryValue from memory at address
+   */
   static MemoryValue getMemoryValueAt(Optional<OutputComponent *> memoryAccess,
                                       std::size_t address,
                                       std::size_t length,
