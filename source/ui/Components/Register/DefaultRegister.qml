@@ -64,6 +64,7 @@ TextField {
             // Check if the current item's index is affected by the data change.
             if (topLeft <= styleData.index && styleData.index <= bottomRight) {
                 text = Qt.binding(registerContent);
+                //starts the highlighting
                 style = styleChanged;
             }
         }
@@ -111,16 +112,24 @@ TextField {
             Component {
                 id: glowEffect
                 Item{
-                    Rectangle{
+                    Rectangle {
                         id: rect
-                        x: registerTextField.x; y: registerTextField.y
-                        width: registerTextField.width; height: registerTextField.height
+                        x: registerTextField.x
+                        y: registerTextField.y
+                        width: registerTextField.width
+                        height: registerTextField.height
                         color: "white"
+                        radius: 2
+                        border.color: "lightgray"
+                        border.width: 1
 
                     }
+
                     Glow {
-                        x: rect.x; y: rect.y
-                        width: rect.width; height: rect.height
+                        x: rect.x
+                        y: rect.y
+                        width: rect.width
+                        height: rect.height
                         source: rect
                         color: "#0080FF"
                         radius: 8
@@ -128,7 +137,9 @@ TextField {
                         visible: true
 
                         NumberAnimation on spread {
-                            from: 0; to: 0.5; duration: 1000
+                            from: 0
+                            to: 0.5
+                            duration: 1000
                             loops: 3
                             easing.type: Easing.InOutQuad
                             onStopped: {
@@ -147,10 +158,16 @@ TextField {
         id: whiteRectangle
         TextFieldStyle{
             background: Rectangle {
-                //anchors.fill: parent
-                x: registerTextField.x; y: registerTextField.y
-                width: registerTextField.width; height: registerTextField.height
+                id: rect
+                x: registerTextField.x
+                y: registerTextField.y
+                width: registerTextField.width
+                height: registerTextField.height
                 color: "white"
+                radius: 2
+                border.color: "lightgray"
+                border.width: 1
+
             }
         }
     }

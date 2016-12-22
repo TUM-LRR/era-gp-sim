@@ -38,6 +38,7 @@ CheckBox {
             // Check if the current item's index is affected by the data change.
             if (topLeft <= styleData.index && styleData.index <= bottomRight) {
                 checked = Qt.binding(function() {return model.FlagData});
+                //starts the highlighting
                 registerCheckBox.style = styleChanged;
             }
         }
@@ -65,14 +66,18 @@ CheckBox {
                 Item{
                     Rectangle{
                         id: rect
-                        x: registerCheckBox.x; y: registerCheckBox.y
-                        width: registerCheckBox.width; height: registerCheckBox.height
+                        x: registerCheckBox.x
+                        y: registerCheckBox.y
+                        width: registerCheckBox.width
+                        height: registerCheckBox.height
                         color: "white"
 
                     }
                     Glow {
-                        x: rect.x; y: rect.y
-                        width: rect.width; height: rect.height
+                        x: rect.x
+                        y: rect.y
+                        width: rect.width
+                        height: rect.height
                         source: rect
                         color: "#0080FF"
                         radius: 8
@@ -98,8 +103,10 @@ CheckBox {
         id: whiteRectangle
         CheckBoxStyle{
             background: Rectangle {
-                x: registerCheckBox.x; y: registerCheckBox.y
-                width: registerCheckBox.width; height: registerCheckBox.height
+                x: registerCheckBox.x
+                y: registerCheckBox.y
+                width: registerCheckBox.width
+                height: registerCheckBox.height
                 color: "white"
             }
         }
