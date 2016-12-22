@@ -52,6 +52,7 @@ class Ui : public QObject {
   using ArchitectureMap =
       QMap<QString, std::tuple<QMap<QString, QStringList>, QStringList>>;
   using id_t = unsigned int;
+  using size_t = std::size_t;
   using ProjectMap = std::unordered_map<id_t, GuiProject*>;
 
   /**

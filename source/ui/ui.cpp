@@ -46,12 +46,12 @@ int Ui::runUi() {
   qmlRegisterType<ClipboardAdapter>(
       "ClipboardAdapter", 1, 0, "ClipboardAdapter");
   qRegisterMetaType<std::size_t>("std::size_t");
-  qRegisterMetaType<std::size_t>("size_t");
+  qRegisterMetaType<size_t>("size_t");
   qRegisterMetaType<OutputComponent*>("OutputComponentP");
   qmlRegisterType<PixelDisplayPaintedItem>(
       "eragpsim.pixeldisplaypainteditem", 1, 0, "PixelDisplayPaintedItem");
   qRegisterMetaType<InputText::length_t>("length_t");
-  qRegisterMetaType<id_t>("id_t");
+  qRegisterMetaType<Ui::id_t>("id_t");
   _engine.rootContext()->setContextProperty("ui", this);
   _engine.rootContext()->setContextProperty("snapshotComponent",
                                             _snapshots.get());
@@ -59,7 +59,7 @@ int Ui::runUi() {
   return _qmlApplication.exec();
 }
 
-id_t Ui::addProject(QQuickItem* tabItem,
+Ui::id_t Ui::addProject(QQuickItem* tabItem,
                     QQmlComponent* projectComponent,
                     const QVariant& memorySizeQVariant,
                     const QString& architecture,
