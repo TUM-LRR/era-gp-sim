@@ -241,7 +241,7 @@ struct ColorMode {
                                  std::size_t address,
                                  bool indirect,
                                  std::size_t cellSize,
-                                 std::size_t pointerSize);#
+                                 std::size_t pointerSize);
   /*
    * \brief returns the memoryValue from memory at address
    * \param memoryAccess The access to the memory
