@@ -254,6 +254,7 @@ struct ColorMode {
                                       std::size_t address,
                                       std::size_t length,
                                       std::size_t defaultLength = 1);
+
   // RGB:
   const static GetPixelFunction RGBGetPixel;
   const static GetColorFunction RGBGetColor;
