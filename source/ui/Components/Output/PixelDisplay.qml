@@ -4,7 +4,7 @@ import QtQuick.Controls 1.4
 import eragpsim.pixeldisplaypainteditem 1.0
 
 Item {
-    property var outputItemIndex: 0
+    property var outputItemIndex: 3
 
     /*Rectangle {//Dummy-Module, will be replaced
         id: greenBackground
@@ -25,7 +25,6 @@ Item {
     // Update the output item's content (there may already be some initial
     // values in memory).
     Component.onCompleted: {
-        updateContent(outputComponent.getOutputItems()[outputItemIndex]["baseAddress"]);
     }
     PixelDisplayPaintedItem{
         id: pixeldisplaypainteditemid
@@ -40,18 +39,17 @@ Item {
         // Send when the memory changes (at any address).
         onMemoryChanged: {
             console.log("onMemoryChanged");
-            var _baseAddress = outputComponent.getOutputItems()[outputItemIndex]["baseAddress"];
             pixeldisplaypainteditemid.memoryChanged(address, length);
-            // Check if the memory address that was changed (at least partly)
-            // belongs to the output item's source space.
-            if ((address+length) >= _baseAddress && (address <= (_baseAddress+1))) {
-                updateContent(_baseAddress);
-            }
+            // // Check if the memory address that was changed (at least partly)
+            // // belongs to the output item's source space.
+            // if ((address+length) >= _baseAddress && (address <= (_baseAddress+1))) {
+            //     updateContent(_baseAddress);
+            // }
         }
         // Send when any item's settings where updated.
         onOutputItemSettingsChanged: {
             console.log("onOutputItemSettingsChanged");
-            updateContent(outputComponent.getOutputItems()[outputItemIndex]["baseAddress"]);
+            // updateContent(outputComponent.getOutputItems()[outputItemIndex]["baseAddress"]);
             settingsWindow.updateSettings();
         }
     }
@@ -64,8 +62,8 @@ Item {
     // Updates the content of the output model depending on the value in memory.
     function updateContent(_baseAddress) {
         //_updatelightstripModel();
-        var content = outputComponent.getMemoryContent(_baseAddress, 1);
-        console.log(content);
+        // var content = outputComponent.getMemoryContent(_baseAddress, 1);
+        // console.log(content);
 
         //for (var bitIndex = 0; bitIndex < content.length && bitIndex < lightstripModel.count; ++bitIndex) {
         //    lightstripModel.setProperty(bitIndex, "active", content[bitIndex]);

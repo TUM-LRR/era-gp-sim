@@ -80,7 +80,7 @@ Rectangle {
         }
         Tab {
             title: "Buttons/Lightstrip Icon"
-            Console{
+            PixelDisplay{
                 outputItemIndex: 3
             }
         }
