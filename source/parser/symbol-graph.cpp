@@ -194,11 +194,7 @@ SymbolGraphEvaluation SymbolGraph::evaluate() const {
   auto doubleSymbols = checkDoubleSymbols(_nodes);
   auto invalidNames = checkSymbolNames(_nodes);
   auto result = disconnectedDfs(_nodes);
-  std::vector<Symbol> symbols;
-  if (result.sampleCycle().empty() && doubleSymbols.empty() &&
-      invalidNames.empty()) {
-    symbols = prepareSymbols(_nodes, result.topologicOrder());
-  }
+  auto symbols = prepareSymbols(_nodes, result.topologicOrder());
   return SymbolGraphEvaluation(invalidNames,
                                doubleSymbols,
                                result.sampleCycle(),

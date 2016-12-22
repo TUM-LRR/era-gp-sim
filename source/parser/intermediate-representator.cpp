@@ -166,6 +166,8 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
             displayString);
       }
     }
+    representation.errorList = annotator.errorList().errors();
+    return representation;
   }
 
   if (allocatedSize > allowedSize) {
