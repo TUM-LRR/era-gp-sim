@@ -63,7 +63,7 @@ Item {
 
         // add a column with the content for each cell at startup
         Component.onCompleted: {
-            tableView.insertColumn( tableView.columnCount - 1, column);
+            tableView.insertColumn(tableView.columnCount - 1, column);
         }
     }
 
@@ -121,8 +121,9 @@ Item {
                     target: tableView
                     onColumnCountChanged: {
                         // dynamically add columns that were added by the user
-                        while(headerDropdownList.count < tableView.columnCount - 1)
+                        while(headerDropdownList.count < tableView.columnCount - 1) {
                             headerDropdownList.append(ListElement);
+                        }
                     }
                 }
 
@@ -182,7 +183,7 @@ Item {
                             }
                             else {
                                 // 2. dynamically remove the column
-                                if(bitChooser.currentText == "remove...") {
+                                if(bitChooser.currentText === "remove...") {
                                     tableView.removeColumn(index);
                                     headerDropdownList.remove(index);
                                 }
