@@ -52,20 +52,12 @@ class ParserInterface : public Proxy<ParsingAndExecutionUnit> {
   POST(setSetContextInformationCallback)
 
   /**
-   * Set the callback which is used to set the error list in the gui(editor)
+   * Set the callback which is used to set the final representation in the ui.
    *
-   * \param callback std::function<void(const std::vector<CompileError> &)>
-   *
-   */
-  POST(setSetErrorListCallback)
-
-  /**
-   * Set the callback which is used to update the macro list in the gui
-   *
-   * \param callback std::function<void(const std::vector<MacroInformation> &)>
+   * \param callback std::function<void(const FinalRepresentation &)>
    *
    */
-  POST(setSetMacroListCallback)
+  POST(setFinalRepresentationCallback)
 
   /**
    * Set the callback which is used to notify the gui of a runtime error.

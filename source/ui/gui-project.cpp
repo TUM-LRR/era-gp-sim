@@ -23,8 +23,10 @@
 #include <cstdio>
 #include <functional>
 
+#include "common/translateable.hpp"
 #include "common/utility.hpp"
 #include "ui/snapshot-component.hpp"
+#include "ui/ui.hpp"
 
 GuiProject::GuiProject(
     QQmlContext* context,
@@ -45,17 +47,17 @@ GuiProject::GuiProject(
 , _outputComponent(_projectModule.getMemoryManager(),
                    _projectModule.getMemoryAccess(),
                    context)
-, _inputBM (context, _projectModule.getMemoryAccess())
-, _inputTM (context,
-           _projectModule.getMemoryAccess())
-, _inputCM (context,
-           _projectModule.getMemoryAccess())
+, _inputBM(context, _projectModule.getMemoryAccess())
+, _inputTM(context, _projectModule.getMemoryAccess())
+, _inputCM(context, _projectModule.getMemoryAccess())
 , _memoryModel(_projectModule.getMemoryAccess(),
                _projectModule.getMemoryManager(),
                context)
 , _defaultTextFileSavePath()
 , _snapshotComponent(snapshotComponent)
-, _architectureFormulaString(SnapshotComponent::architectureToString(formula)) {
+, _architectureFormulaString(SnapshotComponent::architectureToString(formula))
+, _commandList()
+, _helpCache() {
   context->setContextProperty("guiProject", this);
   // set the callback for memory and register
   _projectModule.getMemoryManager().setUpdateRegisterCallback(
@@ -78,6 +80,10 @@ GuiProject::GuiProject(
         this->_throwError(message, arguments);
       });
 
+  _projectModule.getParserInterface().setFinalRepresentationCallback(
+      [this](const auto& finalRepresentation) {
+        this->finalRepresentationChanged(finalRepresentation);
+      });
   _projectModule.getCommandInterface().setExecutionStoppedCallback(
       [this]() { emit this->executionStopped(); });
 
@@ -99,6 +105,20 @@ GuiProject::GuiProject(
                    &_outputComponent,
                    SLOT(updateMemory(std::size_t, std::size_t)),
                    Qt::QueuedConnection);
+
+  QObject::connect(
+      this,
+      SIGNAL(finalRepresentationChanged(const FinalRepresentation&)),
+      &_editorComponent,
+      SLOT(onFinalRepresentationChanged(const FinalRepresentation&)),
+      Qt::QueuedConnection);
+
+  QObject::connect(
+      this,
+      SIGNAL(finalRepresentationChanged(const FinalRepresentation&)),
+      this,
+      SLOT(_updateCommandList(const FinalRepresentation&)),
+      Qt::QueuedConnection);
 }
 
 GuiProject::~GuiProject() {
@@ -206,6 +226,30 @@ QStringList GuiProject::getSnapshots() {
   return _snapshotComponent->getSnapshotList(_architectureFormulaString);
 }
 
+QString GuiProject::getCommandHelp(std::size_t line) {
+  QString help = "";
+  // try to find the helptext in the cache
+  auto iterator = _helpCache.find(line);
+  if (iterator != _helpCache.end()) {
+    help = iterator->second;
+  } else {
+    bool helpFound = false;
+    for (const auto& command : _commandList) {
+      if (command.node && command.position.lineStart == line) {
+        auto translateable = command.node->getInstructionDocumentation();
+        help = Ui::translate(translateable);
+        _helpCache.emplace(line, help);
+        helpFound = true;
+        break;
+      }
+    }
+    if (!helpFound) {
+      _helpCache.emplace(line, "");
+    }
+  }
+  return help;
+}
+
 std::function<std::string(MemoryValue)> GuiProject::getHexConversion() {
   return hexConversion;
 }
@@ -261,4 +305,11 @@ void GuiProject::_throwError(const std::string& message,
                              const std::vector<std::string>& arguments) {
   auto errorMessage = QString::fromStdString(message);
   emit error(errorMessage);
+}
+
+void GuiProject::_updateCommandList(
+    const FinalRepresentation& finalRepresentation) {
+  _commandList = finalRepresentation.commandList;
+  _helpCache.clear();
+  emit commandListUpdated();
 }

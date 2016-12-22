@@ -28,7 +28,7 @@ class AbstractSyntaxTreeNode;
  */
 class AbstractMemoryAccessNodeFactory {
  public:
-  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using Node = std::shared_ptr<AbstractSyntaxTreeNode>;
 
   virtual ~AbstractMemoryAccessNodeFactory() = default;
 
@@ -37,7 +37,7 @@ class AbstractMemoryAccessNodeFactory {
    * Creates and returns an architecture-specific implementation of a
    * SyntaxTreeNode of type memory access.
    *
-   * \return std::unique_ptr pointing to the newly created SyntaxTreeNode
+   * \return std::shared_ptr pointing to the newly created SyntaxTreeNode
    */
   virtual Node createMemoryAccessNode() const = 0;
 };
