@@ -8,7 +8,6 @@ set(PARSER_SOURCES
   intermediate-representator.cpp
   parser.cpp
   riscv-parser.cpp
-  symbol-table.cpp
   section-directive.cpp
   riscv-regex.cpp
   syntax-information.cpp
@@ -22,7 +21,6 @@ set(PARSER_SOURCES
   riscv-directive-factory.cpp
   integer-parser.cpp
   constant-directive.cpp
-  compile-state.cpp
   final-representation.cpp
   memory-allocator.cpp
   macro-directive-table.cpp
