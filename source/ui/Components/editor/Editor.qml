@@ -58,6 +58,16 @@ ScrollView {
                 yScale: zoom;
             }
 
+            HelpToolTip {
+                id: _toolTip
+                maxWidth: scrollView.viewport.width/2
+                maxHeight: scrollView.viewport.height/2
+                relativeX: Math.min(scrollView.viewport.width - realWidth - x + container.contentX, 0)
+                relativeY: Math.min(scrollView.viewport.height - realHeight - y + container.contentY
+                    , textArea.cursorRectangle.height)
+                z: parent.z + 1
+            }
+
             //text field component
             TextEdit {
                 id: textArea
@@ -100,16 +110,6 @@ ScrollView {
                     }
                 }
 
-                HelpToolTip {
-                    id: _toolTip
-                    maxWidth: textArea.unscaledWidth/2
-                    maxHeight: textArea.unscaledHeight/2
-                    relativeX: Math.min(textArea.unscaledWidth - maxWidth - x, 0)
-                    relativeY: Math.min(textArea.unscaledHeight - maxHeight - y - textArea.cursorRectangle.height
-                        , textArea.cursorRectangle.height)
-                    z: parent.z + 1
-                }
-
                 /* Tooltips: A small '?' Symbol is placed under the cursor, if there is help available.
                 * By hovering over it, the help text can be overlayed.
                 */
@@ -119,7 +119,7 @@ ScrollView {
                         _toolTip.hideIcon();
                         return;
                     }
-                    _toolTip.x = cursorRectangle.x;
+                    _toolTip.x = cursorRectangle.x + x;
                     //_toolTip.relativeX = cursorRectangle.x;
                     _toolTip.y = cursorRectangle.y + cursorRectangle.height-1
                     _toolTip.width = cursorRectangle.height;

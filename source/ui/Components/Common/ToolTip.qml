@@ -37,6 +37,8 @@ Item {
     property var explicitWidth: undefined
     property var maxHeight: undefined
     property var maxWidth: undefined
+    readonly property alias realWidth: _toolTipRect.width
+    readonly property alias realHeight: _toolTipRect.height
 
     // Delay for triggering the animations
     property real showDelay: 200
@@ -50,7 +52,6 @@ Item {
     property alias toolTipHitArea: _toolTipHitArea
     property alias toolTipRect: _toolTipRect
     property alias toolTipText: _toolTipText
-    property alias toolTipArea: _toolTipArea
 
     property bool moveTooltipWithMouse: false;
 
@@ -73,7 +74,6 @@ Item {
         acceptedButtons: Qt.LeftButton
 
         // Pass through un-handled mouse events.
-        onClicked: mouse.accepted = false;
         onPressed: mouse.accepted = false;
         onReleased: mouse.accepted = false;
         onDoubleClicked: mouse.accepted = false;
@@ -81,6 +81,16 @@ Item {
 
         onEntered: {
             triggerShow();
+        }
+
+        onClicked: {
+            toolTipClickHandler();
+            mouse.accepted = false;
+        }
+
+        onHoveredChanged: {
+            _toolTipRect.color = (containsMouse) ? backgroundColorOnHovered : backgroundColor
+            _toolTipRect.border.color = (containsMouse) ? borderColorOnHovered : borderColor
         }
 
         function triggerShow() {
@@ -131,7 +141,8 @@ Item {
 
             // The implicit dimensions of the tool tip's background are determined by the text's
             // content dimensions and the custom padding.
-            property real _implicitWidth: _toolTipText.contentWidth + leftPadding + rightPadding
+            property var _textMaxWidth: maxWidth
+            property real _implicitWidth: _textMaxWidth + leftPadding + rightPadding
             property real _implicitHeight: _toolTipText.contentHeight + topPadding + bottomPadding
 
             y: relativeY
@@ -150,8 +161,11 @@ Item {
             ScrollView {
                 id: _scrollView
                 anchors.fill: parent
-                verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
-                horizontalScrollBarPolicy: Qt.ScrollBarAsNeeded
+                horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
+                style: ScrollViewStyle {
+                    transientScrollBars: true
+                }
+
 
                 onFocusChanged: {
                     if(focus) {
@@ -169,8 +183,9 @@ Item {
 
                 Flickable {
                     id: _flickable
-                    contentWidth: _toolTipText.contentWidth
-                    contentHeight: _toolTipText.contentHeight
+                    anchors.fill: parent
+                    contentWidth: _toolTipRect.width
+                    contentHeight: _toolTipText.contentHeight + topPadding + bottomPadding
 
                     TextEdit {
                         id: _toolTipText
@@ -183,6 +198,13 @@ Item {
                         rightPadding: toolTipItem.rightPadding
                         topPadding: toolTipItem.topPadding
                         bottomPadding: toolTipItem.bottomPadding
+                        onContentWidthChanged: {
+                            if(contentWidth > 0 && wrapMode === TextEdit.NoWrap) {
+                                var maxTextWidth = contentWidth;
+                                _toolTipRect._textMaxWidth = maxTextWidth;
+                                wrapMode = TextEdit.WordWrap;
+                            }
+                        }
                     }
                 }
             }
@@ -281,31 +303,6 @@ Item {
                     _toolTipRect.visible = false;
                 }
             }
-        }
-
-
-        // MouseArea the same size as the tooltip itself, for focusing on the tooltip.
-        MouseArea {
-            id: _toolTipArea
-            x: _toolTipRect.x
-            y: _toolTipRect.y
-            width: _toolTipRect.width
-            height: _toolTipRect.height
-            visible: _toolTipRect.visible
-            hoverEnabled: true
-            onClicked: {
-                toolTipClickHandler();
-                mouse.accepted = false;
-            }
-            onHoveredChanged: {
-                _toolTipRect.color = (containsMouse) ? backgroundColorOnHovered : backgroundColor
-                _toolTipRect.border.color = (containsMouse) ? borderColorOnHovered : borderColor
-            }
-            // Pass through un-handled mouse events.
-            onPressed: mouse.accepted = false;
-            onReleased: mouse.accepted = false;
-            onDoubleClicked: mouse.accepted = false;
-            onPressAndHold: mouse.accepted = false;
         }
     }
 }

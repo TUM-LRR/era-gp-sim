@@ -9,6 +9,8 @@ Rectangle {
     property alias maxHeight: helpOverlay.maxHeight
     property alias relativeX: helpOverlay.relativeX
     property alias relativeY: helpOverlay.relativeY
+    property alias realWidth: helpOverlay.realWidth
+    property alias realHeight: helpOverlay.realHeight
 
     radius: 3
     color: Qt.rgba(32.0/255.0, 57.0/255.0, 77.0/255.0, 0.85)
