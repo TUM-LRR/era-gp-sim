@@ -88,11 +88,6 @@ Item {
             mouse.accepted = false;
         }
 
-        onHoveredChanged: {
-            _toolTipRect.color = (containsMouse) ? backgroundColorOnHovered : backgroundColor
-            _toolTipRect.border.color = (containsMouse) ? borderColorOnHovered : borderColor
-        }
-
         function triggerShow() {
             if(!_toolTipRect.visible) {
                 _toolTipRect.show();
