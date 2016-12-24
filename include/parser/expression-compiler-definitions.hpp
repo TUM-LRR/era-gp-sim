@@ -23,6 +23,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include "parser/positioned-string.hpp"
 class CompileErrorAnnotator;
 
 /**
@@ -142,7 +143,7 @@ struct ExpressionLiteralDecoder {
   /**
    * \brief Decodes the literal into the number type.
    */
-  std::function<bool(std::string, T&, const CompileErrorAnnotator&)> decoder;
+  std::function<bool(const PositionedString&, T&, const CompileErrorAnnotator&)> decoder;
 };
 
 /**
@@ -222,7 +223,7 @@ struct ExpressionToken {
   /**
    * \brief The string representation of the token.
    */
-  std::string data;
+  PositionedString data;
 
   /**
    * \brief The type of the token.

@@ -49,7 +49,7 @@ class ExpressionTokenizer {
    * \param state The compile state to note down any errors.
    */
   std::vector<ExpressionToken>
-  tokenize(const std::string& data,
+  tokenize(const PositionedString& data,
            const CompileErrorAnnotator& annotator) const;
 
  private:

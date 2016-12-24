@@ -85,14 +85,10 @@ FinalRepresentation
 IntermediateRepresentator::transform(const TransformationParameters& parameters,
                                      CompileErrorList errorList,
                                      MemoryAccess& memoryAccess) {
-  CompileErrorAnnotator annotator(
-      errorList,
-      CodePositionInterval(CodePosition(0), CodePosition(0, 2)));// TODO
   if (_currentOutput) {
     annotator.addError(
         _currentOutput->name().positionInterval(),
-        "Macro not closed. Missing a macro end directive?");// TODO Code
-                                                            // Position
+        "Macro not closed. Missing a macro end directive?");
   }
 
   FinalRepresentation representation;
@@ -112,14 +108,21 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
 
   MemoryAllocator allocator(parameters.allocator());
   SectionTracker tracker;
+
+  auto allowedSizeFuture = memoryAccess.getMemorySize();
+  std::size_t allowedSize = allowedSizeFuture.get();
+  IntermediateOperationPointer firstMemoryExceedingOperation(nullptr);
+
   for (const auto& command : _commandList) {
     command->allocateMemory(
         preprocessingArguments, annotator, allocator, tracker);
+    if (allocator.estimatedSize() > allowedSize && !firstMemoryExceedingOperation)
+    {
+      firstMemoryExceedingOperation = command;
+    }
   }
 
   std::size_t allocatedSize = allocator.calculatePositions();
-  auto allowedSizeFuture = memoryAccess.getMemorySize();
-  std::size_t allowedSize = allowedSizeFuture.get();
 
   SymbolGraph graph;
   EnhanceSymbolTableImmutableArguments symbolTableArguments(
@@ -171,12 +174,24 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
   }
 
   if (allocatedSize > allowedSize) {
-    annotator.addErrorHere(
-        "Too much memory allocated: %1 requested, maximum is %2"
-        " (please note: because of aligning memory, the first value "
-        "might be actually bigger than the memory allocated)",
-        std::to_string(allocatedSize),
-        std::to_string(allowedSize));
+    if (firstMemoryExceedingOperation)
+    {
+         annotator.addError(CodePositionInterval(CodePosition(0), CodePosition(0, 2)),
+          "From this operation on, including it, there is too much memory allocated in total: %1 requested, maximum is %2"
+          " (please note: because of aligning memory, the first value "
+          "might be actually bigger than the memory allocated)",
+          std::to_string(allocatedSize),
+          std::to_string(allowedSize));
+    }
+    else
+    {
+      annotator.addError(CodePositionInterval(CodePosition(0), CodePosition(0, 2)),
+          "Too much memory allocated: %1 requested, maximum is %2"
+          " (please note: because of aligning memory, the first value "
+          "might be actually bigger than the memory allocated)",
+          std::to_string(allocatedSize),
+          std::to_string(allowedSize));
+    }
     representation.errorList = annotator.errorList().errors();
     return representation;
   }

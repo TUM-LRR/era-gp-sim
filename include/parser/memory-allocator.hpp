@@ -72,13 +72,13 @@ class MemoryAllocator {
      * \brief The current size of the section.
      * \return The current size of the section.
      */
-    size_t currentSize() const;
+    size_t currentSize() const noexcept;
 
     /**
      * \brief The absolute position of this section in memory.
      * \return The absolute position of this section in memory.
      */
-    size_t currentPosition() const;
+    size_t currentPosition() const noexcept;
 
     /**
      * \brief Converts the given relative address into an absolute one.
@@ -123,6 +123,8 @@ class MemoryAllocator {
    * \brief Clears all sections (i.e. un-reserves all memory).
    */
   void clear();
+
+  size_t estimateSize();
 
   /**
    * \brief Calculates the absolute positions of the memory sections.
@@ -173,6 +175,8 @@ class MemoryAllocator {
   bool has(const std::string& name) const noexcept;
 
  private:
+  size_t calculateSize(bool finalize);
+
   /**
    * \brief The vector of stored memory section objects.
    */

@@ -126,10 +126,10 @@ static void readText(const std::string& text,
     position = position.newLine();
     CompileErrorAnnotator positionErrorAnnotation(
         errorList, CodePositionInterval(position, position >> 1));
-    lineRegex.matchLine(line, positionErrorAnnotation);
+    lineRegex.matchLine(line, position.line(), positionErrorAnnotation);
     if (!lineRegex.isValid()) {
       // Add syntax error if line regex doesnt match
-      positionErrorAnnotation.addErrorHere("Syntax Error");
+      positionErrorAnnotation.addError(CodePositionInterval(position, position >> 1), "Syntax Error");
     } else {
       // Collect labels until next instruction
       if (lineRegex.hasLabel()) {

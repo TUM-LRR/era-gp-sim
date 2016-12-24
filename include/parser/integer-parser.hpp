@@ -49,19 +49,19 @@ class IntegerParser {
    *
    * \return The parsed integer. Undefined if parsing fails.
    */
-  static T parse(const std::string &str,
+  static T parse(const PositionedString &string,
                  const CompileErrorAnnotator &annotator,
                  size_t start = 0,
                  int base = 10) {
     size_t count;
     T result{};
     try {
-      result = parseInternal(str, start, base, count);
-      if (count < str.length() - start) throw std::invalid_argument("");
+      result = parseInternal(string.string(), start, base, count);
+      if (count < string.string().length() - start) {throw std::invalid_argument("");}
     } catch (std::out_of_range &) {
-      annotator.addErrorHere("Integer out of range.");
+      annotator.addError(string.positionInterval(), "Integer out of range.");
     } catch (std::invalid_argument &) {
-      annotator.addErrorHere("Integer syntax error.");
+      annotator.addError(string.positionInterval(), "Integer syntax error.");
     }
     return result;
   }
@@ -109,7 +109,7 @@ class IntegerParser {
       }
     }
 
-    if (base == 0) base = 10;
+    if (base == 0) {base = 10;}
 
     // `max_value` is the maximum value `value` can have without overflowing
     // when the next digit is added. If `value == max_value` there can still be
@@ -121,8 +121,8 @@ class IntegerParser {
                     : std::numeric_limits<T>::max()};
     int max_last_digit{static_cast<int>(max_value % base)};
     max_value /= base;
-    if (max_value < 0) max_value = -max_value;
-    if (max_last_digit < 0) max_last_digit = -max_last_digit;
+    if (max_value < 0) {max_value = -max_value;}
+    if (max_last_digit < 0) {max_last_digit = -max_last_digit;}
 
     for (; position != str.end(); ++position) {
       T oldValue = value;
@@ -159,7 +159,7 @@ class IntegerParser {
     // Return amount of processed characters
     count = (position - begin);
 
-    if (negative) value = -value;
+    if (negative) {value = -value;}
 
     return value;
   }

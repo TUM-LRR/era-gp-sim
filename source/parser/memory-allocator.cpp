@@ -37,11 +37,11 @@ MemoryAllocator::MemorySection::allocateRelative(std::size_t size) {
 }
 
 // Getters...
-std::size_t MemoryAllocator::MemorySection::currentSize() const {
+std::size_t MemoryAllocator::MemorySection::currentSize() const noexcept {
   return _currentSize;
 }
 
-std::size_t MemoryAllocator::MemorySection::currentPosition() const {
+std::size_t MemoryAllocator::MemorySection::currentPosition() const noexcept {
   return _currentPosition;
 }
 
@@ -78,7 +78,7 @@ void MemoryAllocator::clear() {
   }
 }
 
-std::size_t MemoryAllocator::calculatePositions() {
+std::size_t MemoryAllocator::calculateSize(bool finalize) {
   std::size_t position = 0;
 
   // As we have befriended the MemorySection, we may do this. Again, we use
@@ -86,10 +86,18 @@ std::size_t MemoryAllocator::calculatePositions() {
   for (auto& i : _sections) {
     auto sectionAlign = i._definition.sectionAlignment;
     auto aligned = Utility::discreteCeiling(position, sectionAlign);
-    i._currentPosition = aligned;
+    if (finalize) {i._currentPosition = aligned;}
     position = aligned + i._currentSize;
   }
   return position;
+}
+
+std::size_t MemoryAllocator::calculatePositions() {
+  return calculateSize(true);
+}
+
+std::size_t MemoryAllocator::estimateSize() {
+  return calculateSize(false);
 }
 
 // Accessor functions...

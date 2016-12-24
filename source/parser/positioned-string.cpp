@@ -18,16 +18,3 @@
 */
 
 #include "parser/positioned-string.hpp"
-
-PositionedString::PositionedString(const std::string& string,
-                                   const CodePositionInterval& positionInterval)
-: _string(string), _positionInterval(positionInterval) {
-}
-
-const std::string& PositionedString::string() const noexcept {
-  return _string;
-}
-const CodePositionInterval& PositionedString::positionInterval() const
-    noexcept {
-  return _positionInterval;
-}

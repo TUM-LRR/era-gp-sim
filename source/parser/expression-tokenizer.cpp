@@ -28,7 +28,7 @@ ExpressionTokenizer::ExpressionTokenizer(
 }
 
 std::vector<ExpressionToken>
-ExpressionTokenizer::tokenize(const std::string& data,
+ExpressionTokenizer::tokenize(const PositionedString& data,
                               const CompileErrorAnnotator& annotator) const {
   std::vector<ExpressionToken> output;
   MSMatch match;
@@ -40,7 +40,8 @@ ExpressionTokenizer::tokenize(const std::string& data,
     // if match.choice==0 we got some whitespace which we simply ignore.
     if (match.choice > 0) {
       // If not, we got another token.
-      output.push_back(ExpressionToken{match.source,
+      auto positionedSource = data.slice(currentPosition + match.position, match.length);
+      output.push_back(ExpressionToken{positionedSource,
                                        _typeMapping.at(match.choice - 1),
                                        currentPosition + match.position});
     }

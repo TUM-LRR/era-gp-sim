@@ -162,21 +162,21 @@ class ExpressionParser {
   // for the name)
   struct IToken {
     ITokenType type;
-    std::string data;
+    PositionedString data;
   };
 
   // A function definition for internal decoding (the regex is found in a
   // different variable).
   using ILiteralDecoder =
-      std::function<bool(std::string, T&, const CompileErrorAnnotator&)>;
+      std::function<bool(const PositionedString&, T&, const CompileErrorAnnotator&)>;
 
   // The state to carry all internal data (to prevent long parameter lists).
   struct ParseState {
     // Current token.
-    ExpressionToken last = ExpressionToken{"", ExpressionTokenType::INVALID};
+    ExpressionToken last = ExpressionToken{PositionedString(), ExpressionTokenType::INVALID};
 
     // Last token.
-    ExpressionToken curr = ExpressionToken{"", ExpressionTokenType::INVALID};
+    ExpressionToken curr = ExpressionToken{PositionedString(), ExpressionTokenType::INVALID};
 
     // Reference on the token vector.
     const std::vector<ExpressionToken>& tokens;
@@ -202,10 +202,7 @@ class ExpressionParser {
       ParseState& state,
       const char* message,
       const std::initializer_list<std::string>& parameters) const {
-    state.annotator.addErrorDeltaInternal(CodePosition(0, state.curr.index),
-                                          CodePosition(0),
-                                          message,
-                                          parameters);
+    annotator.addErrorInternal(state.curr, message, arguments);
   }
 
   // Handles the latest token stored in `state.curr`.
@@ -221,14 +218,14 @@ class ExpressionParser {
       }
       case ExpressionTokenType::LEFT_BRACKET:
         // Just push it onto the stack.
-        state.operatorStack.push(IToken{ITokenType::BRACKET, ""});
+        state.operatorStack.push(IToken{ITokenType::BRACKET, PositionedString()});
         return true;
       case ExpressionTokenType::LITERAL:
         // Just parse the literal and push it onto the stack.
         return parseLiteral(state);
       case ExpressionTokenType::RIGHT_BRACKET:
         // We remove everything until a bracket occurs.
-        return handleBorder(state, IToken{ITokenType::BRACKET, ""});
+        return handleBorder(state, IToken{ITokenType::BRACKET, PositionedString()});
       case ExpressionTokenType::INVALID:
         // For you, dear clang, so you don't complain. We fall through.
         break;
@@ -245,9 +242,9 @@ class ExpressionParser {
       // For the right error message, we got to determine the arity of our
       // operator.
       if (token.type == ITokenType::UNARY_OPERATOR) {
-        recordError(state, "'%1' is not a valid unary operator", token.data);
+        recordError(state, "'%1' is not a valid unary operator", token.data.string());
       } else if (token.type == ITokenType::BINARY_OPERATOR) {
-        recordError(state, "'%1' is not a valid binary operator", token.data);
+        recordError(state, "'%1' is not a valid binary operator", token.data.string());
       } else {
         // Undefined arity.
         assert::that(false);
@@ -296,7 +293,7 @@ class ExpressionParser {
   bool parseLiteral(ParseState& state) const {
     // This is the second use case for the Multiregex class.
     MSMatch match;
-    if (_literalDecodeRegex.search(state.curr.data, match)) {
+    if (_literalDecodeRegex.search(state.curr.data.string(), match)) {
       // We need to 'tokenize' the literal again, as our previous tokenizer does
       // only give us the plain strings. So here we got to determine which
       // literal decoder we should use.
@@ -352,7 +349,7 @@ class ExpressionParser {
 
     // We try to apply it to the stack.
     T outputValue;
-    if (!_unaryOperators.at(token.data)
+    if (!_unaryOperators.at(token.data.string())
              .handler(args[0], outputValue, state.annotator)) {
       return false;
     }
@@ -373,7 +370,7 @@ class ExpressionParser {
 
     // We try to apply it to the stack.
     T outputValue;
-    if (!_binaryOperators.at(token.data)
+    if (!_binaryOperators.at(token.data.string())
              .handler(args[0], args[1], outputValue, state.annotator)) {
       return false;
     }
@@ -396,7 +393,7 @@ class ExpressionParser {
       case ITokenType::BRACKET:
         // We should never apply a bracket token (then, some closing brackets
         // are missing).
-        recordError(state, "There are some closing brackets missing!");
+        recordError(state, "There are some closing brackets missing.");
         return false;
       case ITokenType::UNARY_OPERATOR:
         // Handles the unary operator on the stack.
@@ -439,9 +436,9 @@ class ExpressionParser {
     // Anything other than an operator is always valid. For operators, we look
     // if there is an operator defined like this and with this specific arity.
     if (token.type == ITokenType::UNARY_OPERATOR) {
-      return _unaryOperators.find(token.data) != _unaryOperators.end();
+      return _unaryOperators.find(token.data.string()) != _unaryOperators.end();
     } else if (token.type == ITokenType::BINARY_OPERATOR) {
-      return _binaryOperators.find(token.data) != _binaryOperators.end();
+      return _binaryOperators.find(token.data.string()) != _binaryOperators.end();
     } else {
       return true;
     }
@@ -457,7 +454,7 @@ class ExpressionParser {
       case ITokenType::BRACKET:
       case ITokenType::EXPRESSION: return false;
       case ITokenType::BINARY_OPERATOR:
-        return _binaryOperators.at(token.data).associativity ==
+        return _binaryOperators.at(token.data.string()).associativity ==
                ExpressionOperatorAssociativity::LEFT;
     }
 
@@ -483,7 +480,7 @@ class ExpressionParser {
         return 0x1ffff;
       case ITokenType::BINARY_OPERATOR:
         // If we got a binary operator, we may simply take its precedence.
-        return _binaryOperators.at(token.data).precedence;
+        return _binaryOperators.at(token.data.string()).precedence;
     }
 
     // Should never happen, only if the implementation is broken.
