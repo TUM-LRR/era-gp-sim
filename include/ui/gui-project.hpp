@@ -359,6 +359,11 @@ class GuiProject : QObject {
    * Signal that the command list of the gui project was updated.
    */
   void commandListUpdated();
+
+  /**
+   * This signal is emitted when the execution has stopped.
+   */
+  void executionStopped();
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP

@@ -34,7 +34,6 @@
 
 class Architecture;
 class ContextInformation;
-class MacroInformation;
 
 /**
  * This servant parses the code and executes the program.
@@ -159,6 +158,13 @@ class ParsingAndExecutionUnit : public Servant {
    */
   void setSetCurrentLineCallback(Callback<size_t> callback);
 
+  /**
+   * Set the callback which signals the ui that the execution was stopped.
+   *
+   * \param callback
+   */
+  void setExecutionStoppedCallback(Callback<> callback);
+
 
  private:
   /**
@@ -222,6 +228,9 @@ class ParsingAndExecutionUnit : public Servant {
 
   /** Callback to set the line which is executed in the ui.*/
   Callback<size_t> _setCurrentLine;
+
+  /** Callback to tell the gui that the execution stopped. */
+  Callback<> _executionStopped;
 };
 
 #endif /* ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP */

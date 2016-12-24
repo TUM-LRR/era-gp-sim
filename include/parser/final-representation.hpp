@@ -25,6 +25,7 @@
 class AbstractInstructionNode;
 #include "parser/compile-error.hpp"
 #include "parser/line-interval.hpp"
+#include "parser/macro-information.hpp"
 
 using MemoryAddress = std::size_t;
 
@@ -73,6 +74,11 @@ struct FinalRepresentation {
    * \brief The list of errors which occurred during the assemblation process.
    */
   std::vector<CompileError> errorList;
+
+  /**
+   * List of information about all used macros.
+   */
+  std::vector<MacroInformation> macroList;
 
   /**
    * \brief Creates a mapping from memory address to instruction index.

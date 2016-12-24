@@ -106,6 +106,10 @@ class IntermediateInstruction : public IntermediateOperation {
 
   virtual IntermediateOperationPointer clone();
 
+  virtual std::string toString() const;
+
+  virtual Type getType() const;
+
  protected:
   /**
    * \brief Compiles a vector of arguments (i.e. inserts symbols and converts to

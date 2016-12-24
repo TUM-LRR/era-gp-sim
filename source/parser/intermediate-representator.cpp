@@ -24,6 +24,23 @@
 #include "parser/memory-allocator.hpp"
 #include "parser/symbol-table.hpp"
 
+void IntermediateRepresentator::generateMacroInformation(
+    FinalRepresentation& representation) {
+  for (const auto& i : _commandList) {
+    if (i->getType() != IntermediateOperation::Type::MACRO_INSTRUCTION)
+      continue;
+
+    std::string macroCode =
+        static_cast<IntermediateMacroInstruction&>(*i).toString();
+    CodePositionInterval macroPos(CodePosition(i->lines().lineStart, 0),
+                                  CodePosition(i->lines().lineEnd, 0));
+
+    MacroInformation info(macroCode, macroPos);
+
+    representation.macroList.push_back(std::move(info));
+  }
+}
+
 IntermediateRepresentator::IntermediateRepresentator()
     : _commandList(), _currentOutput(nullptr) {}
 
@@ -74,6 +91,8 @@ FinalRepresentation IntermediateRepresentator::transform(
 
   IntermediateMacroInstruction::replaceWithMacros(_commandList.begin(),
                                                   _commandList.end(), state);
+
+  generateMacroInformation(representation);
 
   allocator.clear();
 

@@ -20,8 +20,6 @@
 #include "ui/input-text-model.hpp"
 #include "core/conversions.hpp"
 
-using length_t = unsigned;
-
 InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess memoryAccess)
 : QObject()
 , _context(context)
@@ -38,7 +36,8 @@ void InputTextModel::newText(QString text) {
       break;
     }
     QChar qchar = text.at(i);
-    if (qchar.isPrint()) {// else do nothing, was not an printable sign
+    if (qchar.isPrint()) {
+      // else do nothing, was not an printable sign
       MemoryValue m = conversions::convert(qchar.unicode(), 32);
       _memoryAccess.putMemoryValueAt(_start + i, m);
     }
@@ -60,6 +59,6 @@ void InputTextModel::setMaximumLength(length_t maximumLength) {
   emit maximumLengthChanged();
 }
 
-length_t InputTextModel::getMaximumLength() {
+InputTextModel::length_t InputTextModel::getMaximumLength() {
   return _maximumLength;
 }

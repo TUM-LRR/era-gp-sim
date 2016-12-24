@@ -44,7 +44,8 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _setContextInformation([](const std::vector<ContextInformation> &x) {})
 , _setFinalRepresentation([](const FinalRepresentation &x) {})
 , _throwError(([](const std::string &x, const std::vector<std::string> &y) {}))
-, _setCurrentLine([](size_t x) {}) {
+, _setCurrentLine([](size_t x) {})
+, _executionStopped([]() {}) {
   // find the RegisterInformation object of the program counter
   for (UnitInformation unitInfo : architecture.getUnits()) {
     if (unitInfo.hasSpecialRegister(
@@ -57,6 +58,7 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 
 void ParsingAndExecutionUnit::execute() {
   if (_finalRepresentation.hasErrors()) {
+    _executionStopped();
     return;
   }
   _stopCondition->reset();
@@ -67,6 +69,7 @@ void ParsingAndExecutionUnit::execute() {
     if (!_executeNode(nextNode)) break;
     nextNode = _updateLineNumber(nextNode);
   }
+  _executionStopped();
 }
 
 void ParsingAndExecutionUnit::executeNextLine() {
@@ -75,11 +78,13 @@ void ParsingAndExecutionUnit::executeNextLine() {
   if (_executeNode(nextNode)) {
     _updateLineNumber(nextNode);
   }
+  _executionStopped();
 }
 
 void ParsingAndExecutionUnit::executeToBreakpoint() {
   // check if there are parser errors
   if (_finalRepresentation.hasErrors()) {
+    _executionStopped();
     return;
   }
   // reset stop flag
@@ -101,6 +106,7 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
       }
     }
   }
+  _executionStopped();
 }
 
 void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
@@ -142,6 +148,7 @@ void ParsingAndExecutionUnit::parse(std::string code) {
       // create a empty MemoryValue as long as the command
       MemoryValue zero(command.node->assemble().getSize());
       _memoryAccess.putMemoryValueAt(command.address, zero);
+//      _memoryAccess.removeMemoryProtection(command.address, zero.getSize() / 8);
     }
   }
   // parse the new code and save the final representation
@@ -153,7 +160,10 @@ void ParsingAndExecutionUnit::parse(std::string code) {
   // assemble commands into memory
   if (!_finalRepresentation.hasErrors()) {
     for (const auto &command : _finalRepresentation.commandList) {
-      _memoryAccess.putMemoryValueAt(command.address, command.node->assemble());
+      auto assemble = command.node->assemble();
+      _memoryAccess.putMemoryValueAt(command.address, assemble);
+//      _memoryAccess.makeMemoryProtected(command.address,
+//                                        assemble.getSize() / 8);
     }
   }
 }
@@ -189,6 +199,10 @@ void ParsingAndExecutionUnit::setThrowErrorCallback(
 void ParsingAndExecutionUnit::setSetCurrentLineCallback(
     Callback<size_t> callback) {
   _setCurrentLine = callback;
+}
+
+void ParsingAndExecutionUnit::setExecutionStoppedCallback(Callback<> callback) {
+  _executionStopped = callback;
 }
 
 size_t ParsingAndExecutionUnit::_findNextNode() {
