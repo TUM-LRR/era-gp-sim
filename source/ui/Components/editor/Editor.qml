@@ -136,8 +136,10 @@ ScrollView {
                         textArea.line = textArea.convertDisplayLineNumberToRawLineNumber(line);
                     }
                     onSetText: {
-                        textArea.clear();
-                        textArea.insert(0, text);
+                        /* some text modifications methods of TextEdit are not available in qt 5.6,
+                        *  so the text property has to be set directly.
+                        */
+                        textArea.text = text;
                     }
                     onForceCursorUpdate: {
                         editor.cursorLineChanged(textArea.cursorLine);
