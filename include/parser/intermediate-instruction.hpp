@@ -38,13 +38,13 @@ class IntermediateInstruction : public IntermediateOperation {
  public:
   /**
    * \brief Instantiates a new compile error with the given arguments.
-   * \param lines The line interval the operation occupies.
+   * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation.
    * \param sources The source operands of the instruction.
    * \param targets The target operands of the instruction.
    */
-  IntermediateInstruction(const LineInterval& lines,
+  IntermediateInstruction(const CodePositionInterval& positionInterval,
                           const std::vector<PositionedString>& labels,
                           const PositionedString& name,
                           const std::vector<PositionedString>& sources,
@@ -52,7 +52,7 @@ class IntermediateInstruction : public IntermediateOperation {
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
-                       FinalRepresentation& finalRepresentator,
+                       FinalCommandVector& commandOutput,
                        MemoryAccess& memoryAccess);
 
   virtual void

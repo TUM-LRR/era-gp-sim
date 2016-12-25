@@ -80,4 +80,6 @@ class PositionedBasicString {
 
 using PositionedString = PositionedBasicString<char>;
 
+using PositionedStringVector = std::vector<PositionedString>;
+
 #endif /* ERAGPSIM_PARSER_POSITIONED_STRING_HPP */

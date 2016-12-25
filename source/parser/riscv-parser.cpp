@@ -80,35 +80,55 @@ RiscvParser::RiscvParser(const Architecture& architecture,
   _factoryCollection = NodeFactoryCollectionMaker::CreateFor(architecture);
 }
 
+static CodePositionInterval
+uniteStringVector(const PositionedStringVector& positionVector) {
+  auto accumulator = CodePositionInterval();
+  for (const auto& position : positionVector) {
+    accumulator = accumulator.unite(position.positionInterval());
+  }
+  return accumulator;
+}
+
+static CodePositionInterval
+getCommandInterval(const PositionedString& instruction,
+                   const PositionedStringVector& labels,
+                   const PositionedStringVector& sources,
+                   const PositionedStringVector& targets) {
+  auto labelsUnited = uniteStringVector(labels);
+  auto sourcesUnited = uniteStringVector(sources);
+  auto targetsUnited = uniteStringVector(targets);
+  return instruction.positionInterval()
+      .unite(targetsUnited)
+      .unite(sourcesUnited)
+      .unite(targetsUnited);
+}
+
 static void readInstruction(const CodePosition& position,
-                            const std::vector<PositionedString>& labels,
+                            const PositionedStringVector& labels,
                             const RiscvParser::RiscvRegex& lineRegex,
                             CompileErrorList& errors,
                             IntermediateRepresentator& intermediate) {
-  std::vector<PositionedString> sources, targets;
-  bool is_directive = lineRegex.isDirective();
+  PositionedStringVector sources, targets;
+
+  auto isDirective = lineRegex.isDirective();
   // Collect source and target parameters
   for (int i = 0; i < lineRegex.getParameterCount(); i++) {
-    if (i == 0 && !is_directive)
+    if (i == 0 && !isDirective)
       targets.push_back(lineRegex.getParameter(i));
     else
       sources.push_back(lineRegex.getParameter(i));
   }
 
-  if (is_directive) {
-    RiscVDirectiveFactory::create(LineInterval(position.line()),
-                                  labels,
-                                  lineRegex.getInstruction(),
-                                  sources,
-                                  intermediate,
-                                  errors);
+  auto instruction = lineRegex.getInstruction();
+
+  auto interval = getCommandInterval(instruction, labels, sources, targets);
+  if (isDirective) {
+    RiscVDirectiveFactory::create(
+        interval, labels, instruction, sources, intermediate, errors);
   } else {
     intermediate.insertCommand(
-        IntermediateInstruction(LineInterval(position.line()),
-                                labels,
-                                lineRegex.getInstruction(),
-                                sources,
-                                targets),
+        IntermediateInstruction(
+            interval, labels, instruction, sources, targets),
         errors);
   }
 }
@@ -119,7 +139,7 @@ static void readText(const std::string& text,
   std::istringstream stream(text);
   CodePosition position;
   RiscvParser::RiscvRegex lineRegex;
-  std::vector<PositionedString> labels;
+  PositionedStringVector labels;
 
   for (std::string line; std::getline(stream, line);) {
     position = position.newLine();

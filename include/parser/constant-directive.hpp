@@ -27,14 +27,14 @@
  */
 class ConstantDirective : public IntermediateDirective {
  public:
-  ConstantDirective(const LineInterval& lines,
+  ConstantDirective(const CodePositionInterval& positionInterval,
                     const std::vector<PositionedString>& labels,
                     const PositionedString& name,
                     const std::vector<PositionedString>& arguments);
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
-                       FinalRepresentation& finalRepresentator,
+                       FinalCommandVector& commandOutput,
                        MemoryAccess& memoryAccess) override;
 
   virtual void

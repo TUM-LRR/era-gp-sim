@@ -26,36 +26,36 @@ class MacroEndDirective : public IntermediateDirective {
  public:
   /**
    * \brief Instantiates a new MacroEndDirective with the given arguments.
-   * \param lines The line interval the operation occupies.
+   * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation.
    * \param arguments Arguments of the directive. Should be none.
    */
-  MacroEndDirective(const LineInterval& lines,
+  MacroEndDirective(const CodePositionInterval& positionInterval,
                     const std::vector<PositionedString>& labels,
                     const PositionedString& name,
                     const std::vector<PositionedString>& arguments);
 
   /**
   * \brief Instantiates a new MacroEndDirective with the given arguments.
-  * \param lines The line interval the operation occupies.
+  * \param positionInterval The line interval the operation occupies.
   * \param labels The vector of labels assigned to the operation.
   * \param name The name of the operation.
   */
-  MacroEndDirective(const LineInterval& lines,
+  MacroEndDirective(const CodePositionInterval& positionInterval,
                     const std::vector<PositionedString>& labels,
                     const PositionedString& name);
 
   /**
    * \brief Does probably nothing.
-   * \param finalRepresentator The FinalRepresentation for possible output.
+   * \param commandOutput The FinalRepresentation for possible output.
    * \param table The SymbolTable for possible replacements.
    * \param generator The generator to transform the instructions.
    * \param state The CompileState to log possible errors.
    */
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
-                       FinalRepresentation& finalRepresentator,
+                       FinalCommandVector& commandOutput,
                        MemoryAccess& memoryAccess);
 
   /**

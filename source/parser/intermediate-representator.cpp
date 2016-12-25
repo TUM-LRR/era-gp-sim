@@ -21,31 +21,31 @@
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
 #include "parser/compile-error-list.hpp"
-#include "parser/compile-error-list.hpp"
+#include "parser/final-command.hpp"
+#include "parser/final-representation.hpp"
 #include "parser/intermediate-macro-instruction.hpp"
 #include "parser/intermediate-parameters.hpp"
 #include "parser/macro-directive-table.hpp"
+#include "parser/macro-information.hpp"
 #include "parser/memory-allocator.hpp"
 #include "parser/section-tracker.hpp"
 #include "parser/symbol-graph-evaluation.hpp"
 #include "parser/symbol-graph.hpp"
 #include "parser/symbol-replacer.hpp"
 
-void IntermediateRepresentator::generateMacroInformation(
-    FinalRepresentation& representation) {
+MacroInformationVector IntermediateRepresentator::generateMacroInformation() {
+  MacroInformationVector output;
   for (const auto& command : _commandList) {
-    if (command->getType() != IntermediateOperation::Type::MACRO_INSTRUCTION)
-      continue;
+    if (command->getType() == IntermediateOperation::Type::MACRO_INSTRUCTION) {
+      auto macroCode =
+          static_cast<IntermediateMacroInstruction&>(*command).toString();
 
-    std::string macroCode =
-        static_cast<IntermediateMacroInstruction&>(*command).toString();
-    CodePositionInterval macroPos(CodePosition(command->lines().lineStart(), 0),
-                                  CodePosition(command->lines().lineEnd(), 0));
+      auto info = MacroInformation(macroCode, command->positionInterval());
 
-    MacroInformation info(macroCode, macroPos);
-
-    representation.macroList.push_back(std::move(info));
+      output.push_back(info);
+    }
   }
+  return output;
 }
 
 IntermediateRepresentator::IntermediateRepresentator()
@@ -80,55 +80,8 @@ void IntermediateRepresentator::insertCommandPtr(
   }
 }
 
-FinalRepresentation
-IntermediateRepresentator::transform(const TransformationParameters& parameters,
-                                     CompileErrorList errors,
-                                     MemoryAccess& memoryAccess) {
-  if (_currentOutput) {
-    errors.addError(_currentOutput->name().positionInterval(),
-                    "Macro not closed. Missing a macro end directive?");
-  }
-
-  FinalRepresentation representation;
-
-  PreprocessingImmutableArguments preprocessingArguments(
-      parameters.architecture(), parameters.generator());
-
-  MacroDirectiveTable macroTable;
-  for (const auto& command : _commandList) {
-    command->precompile(preprocessingArguments, errors, macroTable);
-  }
-
-  IntermediateMacroInstruction::replaceWithMacros(
-      _commandList.begin(), _commandList.end(), macroTable, errors);
-
-  generateMacroInformation(representation);
-
-  MemoryAllocator allocator(parameters.allocator());
-  SectionTracker tracker;
-
-  auto allowedSizeFuture = memoryAccess.getMemorySize();
-  std::size_t allowedSize = allowedSizeFuture.get();
-  IntermediateOperationPointer firstMemoryExceedingOperation(nullptr);
-
-  for (const auto& command : _commandList) {
-    command->allocateMemory(preprocessingArguments, errors, allocator, tracker);
-    if (allocator.estimateSize() > allowedSize &&
-        !firstMemoryExceedingOperation) {
-      firstMemoryExceedingOperation = command;
-    }
-  }
-
-  std::size_t allocatedSize = allocator.calculatePositions();
-
-  SymbolGraph graph;
-  EnhanceSymbolTableImmutableArguments symbolTableArguments(
-      preprocessingArguments, allocator);
-  for (const auto& command : _commandList) {
-    command->enhanceSymbolTable(symbolTableArguments, errors, graph);
-  }
-
-  auto graphEvaluation = graph.evaluate();// TODO refactor out.
+static bool evaluateGraph(const SymbolGraphEvaluation& graphEvaluation,
+                          CompileErrorList& errors) {
   if (!graphEvaluation.valid()) {
     if (!graphEvaluation.invalidNames().empty()) {
       for (auto index : graphEvaluation.invalidNames()) {
@@ -165,14 +118,69 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
             displayString);
       }
     }
-    representation.errorList = errors.errors();
-    return representation;
+    return false;
+  } else {
+    return true;
+  }
+}
+
+FinalRepresentation
+IntermediateRepresentator::transform(const TransformationParameters& parameters,
+                                     const CompileErrorList& parsingErrors,
+                                     MemoryAccess& memoryAccess) {
+  auto errors = parsingErrors;
+  if (_currentOutput) {
+    errors.addError(_currentOutput->positionInterval(),
+                    "Macro not closed. Missing a macro end directive?");
+  }
+
+  auto preprocessingArguments = PreprocessingImmutableArguments(
+      parameters.architecture(), parameters.generator());
+
+  auto macroTable = MacroDirectiveTable();
+  for (const auto& command : _commandList) {
+    command->precompile(preprocessingArguments, errors, macroTable);
+  }
+
+  IntermediateMacroInstruction::replaceWithMacros(
+      _commandList.begin(), _commandList.end(), macroTable, errors);
+
+  auto macroList = generateMacroInformation();
+
+  auto allocator = MemoryAllocator(parameters.allocator());
+  auto tracker = SectionTracker();
+
+  auto allowedSizeFuture = memoryAccess.getMemorySize();
+  auto allowedSize = allowedSizeFuture.get();
+  auto firstMemoryExceedingOperation = IntermediateOperationPointer(nullptr);
+
+  for (const auto& command : _commandList) {
+    command->allocateMemory(preprocessingArguments, errors, allocator, tracker);
+    if (allocator.estimateSize() > allowedSize &&
+        !firstMemoryExceedingOperation) {
+      firstMemoryExceedingOperation = command;
+    }
+  }
+
+  auto allocatedSize = allocator.calculatePositions();
+
+  auto graph = SymbolGraph();
+  auto symbolTableArguments =
+      EnhanceSymbolTableImmutableArguments(preprocessingArguments, allocator);
+  for (const auto& command : _commandList) {
+    command->enhanceSymbolTable(symbolTableArguments, errors, graph);
+  }
+
+  auto graphEvaluation = graph.evaluate();
+  if (!evaluateGraph(graphEvaluation, errors)) {
+    return FinalRepresentation({}, errors, macroList);
   }
 
   if (allocatedSize > allowedSize) {
     if (firstMemoryExceedingOperation) {
       errors.addError(
-          CodePositionInterval(CodePosition(0), CodePosition(0, 2)),
+          CodePositionInterval(
+              firstMemoryExceedingOperation->positionInterval()),
           "From this operation on, including it, there is too much memory "
           "allocated in total: %1 requested, maximum is %2"
           " (please note: because of aligning memory, the first value "
@@ -188,20 +196,18 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
           std::to_string(allocatedSize),
           std::to_string(allowedSize));
     }
-    representation.errorList = errors.errors();
-    return representation;
+    return FinalRepresentation({}, errors, macroList);
   }
 
-  SymbolReplacer replacer(graphEvaluation);
-  ExecuteImmutableArguments executeArguments(symbolTableArguments, replacer);
+  auto replacer = SymbolReplacer(graphEvaluation);
+  auto executeArguments =
+      ExecuteImmutableArguments(symbolTableArguments, replacer);
+  auto commandOutput = FinalCommandVector();
   for (const auto& command : _commandList) {
-    command->execute(executeArguments, errors, representation, memoryAccess);
+    command->execute(executeArguments, errors, commandOutput, memoryAccess);
   }
 
-  representation.errorList =
-      errors.errors();// TODO beautify by making FinalRepresentation a class.
-
-  return representation;
+  return FinalRepresentation(commandOutput, errors, macroList);
 }
 
 void IntermediateRepresentator::internalInsertCommand(

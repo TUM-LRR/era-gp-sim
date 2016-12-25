@@ -30,7 +30,7 @@ TEST(IntermediateRepresentator, insertSimple) {
   CompileErrorList errors;
   IntermediateRepresentator ir;
   ir.insertCommand(
-      IntermediateInstruction(LineInterval(0, 1),
+      IntermediateInstruction(CodePositionInterval(),
                               {ZP("label1"), ZP("label2"), ZP("label3")},
                               ZP("mov"),
                               {ZP("eax")},
@@ -42,13 +42,13 @@ TEST(IntermediateRepresentator, transformSimple) {
   CompileErrorList errors;
   IntermediateRepresentator ir;
   ir.insertCommand(
-      IntermediateInstruction(LineInterval(0, 1),
+      IntermediateInstruction(CodePositionInterval(),
                               {ZP("label1"), ZP("label2"), ZP("label3")},
                               ZP("mov"),
                               {ZP("eax")},
                               {ZP("eax")}),
       errors);
-  ir.insertCommand(IntermediateInstruction(LineInterval(2, 5),
+  ir.insertCommand(IntermediateInstruction(CodePositionInterval(),
                                            {ZP("label4")},
                                            ZP("add"),
                                            {ZP("eax")},
@@ -63,22 +63,22 @@ TEST(IntermediateRepresentator, macroDefinition) {
   CompileErrorList errors;
   IntermediateRepresentator ir;
   ir.insertCommand(
-      IntermediateInstruction(LineInterval(0, 1),
+      IntermediateInstruction(CodePositionInterval(),
                               {ZP("label1"), ZP("label2"), ZP("label3")},
                               ZP("mov"),
                               {ZP("eax")},
                               {ZP("eax")}),
       errors);
   ir.insertCommand(
-      MacroDirective(LineInterval(2, 2), {}, ZP(".macro"), ZP("test"), {}),
+      MacroDirective(CodePositionInterval(), {}, ZP(".macro"), ZP("test"), {}),
       errors);
-  ir.insertCommand(IntermediateInstruction(LineInterval(3, 3),
+  ir.insertCommand(IntermediateInstruction(CodePositionInterval(),
                                            {ZP("label1")},
                                            ZP("add"),
                                            {ZP("eax")},
                                            {ZP("eax")}),
                    errors);
-  ir.insertCommand(MacroEndDirective(LineInterval(4, 4), {}, ZP(".endmacro")),
-                   errors);
+  ir.insertCommand(
+      MacroEndDirective(CodePositionInterval(), {}, ZP(".endmacro")), errors);
   // To be extended in a later branch.
 }

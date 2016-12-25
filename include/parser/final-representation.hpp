@@ -22,69 +22,32 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
-class AbstractInstructionNode;
+#include "parser/compile-error-list.hpp"
 #include "parser/compile-error.hpp"
-#include "parser/line-interval.hpp"
+#include "parser/final-command.hpp"
 #include "parser/macro-information.hpp"
 
-using MemoryAddress = std::size_t;
-
 /**
  * \brief Denotes the temporary output of an IntermediateRepresentator ready to
  * be used by the architecture.
  */
-struct FinalCommand {
-  /**
-   * \brief A pointer to the instruction node which carries the data of this
-   * instruction.
-   */
-  std::shared_ptr<AbstractInstructionNode> node;
-
-  /**
-   * \brief Describes the interval of lines where this command occurs in the
-   * plaintext.
-   */
-  LineInterval position;
-
-  /**
-   * \brief Describes the address of the command in memory.
-   */
-  MemoryAddress address;
-};
-
-
-/**
- * \brief Denotes the temporary output of an IntermediateRepresentator ready to
- * be used by the architecture.
- */
-struct FinalRepresentation {
+class FinalRepresentation {
+ public:
   using AddressMapping = std::unordered_map<MemoryAddress, std::size_t>;
 
-  /**
-   * @return True if the error list is non-empty, else false.
-   */
-  bool hasErrors() const noexcept;
-
-  /**
-   * \brief The list of commands which have been assembled.
-   */
-  std::vector<FinalCommand> commandList;
-
-  /**
-   * \brief The list of errors which occurred during the assemblation process.
-   */
-  std::vector<CompileError> errorList;
-
-  /**
-   * List of information about all used macros.
-   */
-  std::vector<MacroInformation> macroList;
-
-  /**
-   * \brief Creates a mapping from memory address to instruction index.
-   * \return The mapping.
-   */
+  FinalRepresentation() = default;
+  FinalRepresentation(const FinalCommandVector& commandList,
+                      const CompileErrorList& errorList,
+                      const MacroInformationVector& macroList);
+  const FinalCommandVector& commandList() const noexcept;
+  const CompileErrorList& errorList() const noexcept;
+  const MacroInformationVector& macroList() const noexcept;
   AddressMapping createMapping() const;
+
+ private:
+  FinalCommandVector _commandList;
+  CompileErrorList _errorList;
+  MacroInformationVector _macroList;
 };
 
 #endif

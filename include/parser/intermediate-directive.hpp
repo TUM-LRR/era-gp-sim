@@ -22,8 +22,8 @@
 #include <string>
 #include <vector>
 
+#include "parser/code-position-interval.hpp"
 #include "parser/intermediate-operation.hpp"
-#include "parser/line-interval.hpp"
 
 /**
  * \brief Represents a directive in the parser-internal intermediate form.
@@ -33,11 +33,11 @@ class IntermediateDirective : public IntermediateOperation {
   /**
    * \brief Instantiates a new IntermediateDirective with the given arguments.
    * (only for subclass use!)
-   * \param lines The line interval the operation occupies.
+   * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation.
    */
-  IntermediateDirective(const LineInterval& lines,
+  IntermediateDirective(const CodePositionInterval& positionInterval,
                         const std::vector<PositionedString>& labels,
                         const PositionedString& name);
 

@@ -34,26 +34,26 @@ class MacroDirective : public IntermediateDirective {
 
   /**
    * \brief Instantiates a new MacroDirective with the given arguments.
-   * \param lines     The line interval the operation occupies.
+   * \param positionInterval     The line interval the operation occupies.
    * \param labels    The vector of labels assigned to the operation.
    * \param name      The name of the operation. (e.g. '.macro')
    * \param arguments Arguments of the directive. First one should be the name
    *                  of the macro.
    */
-  MacroDirective(const LineInterval& lines,
+  MacroDirective(const CodePositionInterval& positionInterval,
                  const std::vector<PositionedString>& labels,
                  const PositionedString& name,
                  const std::vector<PositionedString>& arguments);
 
   /**
    * \brief Instantiates a new MacroDirective with the given arguments.
-   * \param lines The line interval the operation occupies.
+   * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation. (e.g. '.macro')
    * \param macroName The name of the macro.
    * \param macroParameters The parameter names of the macro, if any.
    */
-  MacroDirective(const LineInterval& lines,
+  MacroDirective(const CodePositionInterval& positionInterval,
                  const std::vector<PositionedString>& labels,
                  const PositionedString& name,
                  const PositionedString& macroName,
@@ -61,7 +61,7 @@ class MacroDirective : public IntermediateDirective {
 
   /**
    * \brief Executes the given macro (somehow).
-   * \param finalRepresentator The FinalRepresentation for possible output.
+   * \param commandOutput The FinalRepresentation for possible output.
    * \param table The SymbolTable for possible replacements.
    * \param generator The generator to transform the instructions.
    * \param state The CompileState to log possible errors.
@@ -72,7 +72,7 @@ class MacroDirective : public IntermediateDirective {
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
-                       FinalRepresentation& finalRepresentator,
+                       FinalCommandVector& commandOutput,
                        MemoryAccess& memoryAccess);
 
 

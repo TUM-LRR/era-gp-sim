@@ -22,11 +22,11 @@
 #include "parser/intermediate-instruction.hpp"
 #include "parser/macro-directive-table.hpp"
 
-MacroDirective::MacroDirective(const LineInterval& lines,
+MacroDirective::MacroDirective(const CodePositionInterval& positionInterval,
                                const std::vector<PositionedString>& labels,
                                const PositionedString& name,
                                const std::vector<PositionedString>& arguments)
-: IntermediateDirective(lines, labels, name)
+: IntermediateDirective(positionInterval, labels, name)
 , _macroName(arguments.empty() ? PositionedString() : arguments[0])
 , _macroParameters(arguments.size() > 0 ? arguments.begin() + 1
                                         : arguments.end(),
@@ -35,12 +35,12 @@ MacroDirective::MacroDirective(const LineInterval& lines,
 }
 
 MacroDirective::MacroDirective(
-    const LineInterval& lines,
+    const CodePositionInterval& positionInterval,
     const std::vector<PositionedString>& labels,
     const PositionedString& name,
     const PositionedString& macroName,
     const std::vector<PositionedString>& macroParameters)
-: IntermediateDirective(lines, labels, name)
+: IntermediateDirective(positionInterval, labels, name)
 , _macroName(macroName)
 , _macroParameters(macroParameters)
 , _operations() {
@@ -75,7 +75,7 @@ void MacroDirective::precompile(
 
 void MacroDirective::execute(const ExecuteImmutableArguments& immutable,
                              CompileErrorList& errors,
-                             FinalRepresentation& finalRepresentator,
+                             FinalCommandVector& commandOutput,
                              MemoryAccess& memoryAccess) {
   // Probably nothing here.
 }

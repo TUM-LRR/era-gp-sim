@@ -23,11 +23,11 @@
 #include "parser/section-tracker.hpp"
 
 SectionDirective::SectionDirective(
-    const LineInterval& lines,
+    const CodePositionInterval& positionInterval,
     const std::vector<PositionedString>& labels,
     const PositionedString& name,
     const std::vector<PositionedString>& arguments)
-: IntermediateDirective(lines, labels, name) {
+: IntermediateDirective(positionInterval, labels, name) {
   _hasName = !arguments.empty();
   if (_hasName) {
     _section = arguments[0];
@@ -36,7 +36,7 @@ SectionDirective::SectionDirective(
 
 void SectionDirective::execute(const ExecuteImmutableArguments& immutable,
                                CompileErrorList& errors,
-                               FinalRepresentation& finalRepresentator,
+                               FinalCommandVector& commandOutput,
                                MemoryAccess& memoryAccess) {
 }
 

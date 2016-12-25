@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-#include "parser/line-interval.hpp"
+#include "parser/code-position-interval.hpp"
 #include "parser/positioned-string.hpp"
 
 class Architecture;
@@ -32,7 +32,7 @@ class SymbolReplacer;
 class MemoryAllocator;
 
 class MemoryValue;
-class FinalRepresentation;
+#include "parser/final-command.hpp"
 class FinalCommand;
 class MemoryAccess;
 class CompileErrorList;
@@ -77,17 +77,17 @@ class IntermediateOperation {
   /**
    * \brief Instantiates a new IntermediateOperation with the given arguments.
    * (only for subclass use!)
-   * \param lines The line interval the operation occupies.
+   * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation.
    */
-  IntermediateOperation(const LineInterval& lines,
+  IntermediateOperation(const CodePositionInterval& positionInterval,
                         const std::vector<PositionedString>& labels,
                         const PositionedString& name);
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
-                       FinalRepresentation& finalRepresentator,
+                       FinalCommandVector& commandOutput,
                        MemoryAccess& memoryAccess) = 0;
 
   virtual void
@@ -136,7 +136,7 @@ class IntermediateOperation {
    */
   virtual IntermediateOperationPointer clone();
 
-  const LineInterval& lines() const noexcept;
+  const CodePositionInterval& positionInterval() const noexcept;
 
   const std::vector<PositionedString>& labels() const noexcept;
 
@@ -150,7 +150,7 @@ class IntermediateOperation {
   /**
    * \brief The internal line interval.
    */
-  LineInterval _lines;
+  CodePositionInterval _positionInterval;
 
   /**
    * \brief The internal label list.

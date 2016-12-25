@@ -38,7 +38,7 @@ class IntermediateMacroInstruction : public IntermediateOperation {
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
-                       FinalRepresentation& finalRepresentator,
+                       FinalCommandVector& commandOutput,
                        MemoryAccess& memoryAccess);
 
   virtual void

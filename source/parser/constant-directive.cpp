@@ -27,16 +27,16 @@
 #include "parser/syntax-tree-generator.hpp"
 
 ConstantDirective::ConstantDirective(
-    const LineInterval& lines,
+    const CodePositionInterval& positionInterval,
     const std::vector<PositionedString>& labels,
     const PositionedString& name,
     const std::vector<PositionedString>& arguments)
-: IntermediateDirective(lines, labels, name), _arguments{arguments} {
+: IntermediateDirective(positionInterval, labels, name), _arguments{arguments} {
 }
 
 void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
                                 CompileErrorList& errors,
-                                FinalRepresentation& finalRepresentator,
+                                FinalCommandVector& commandOutput,
                                 MemoryAccess& memoryAccess) {
   // Try to parse argument to catch errors early.
   auto fullExpression = immutable.replacer().replace(_expression, errors);

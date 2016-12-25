@@ -63,7 +63,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     const MacroDirective& macro,
     MacroDirectiveTable& macroTable,
     CompileErrorList& errors)
-: IntermediateOperation(ins.lines(), ins.labels(), ins.name()) {
+: IntermediateOperation(ins.positionInterval(), ins.labels(), ins.name()) {
   for (size_t i = 0; i < macro.getOperationCount(); i++) {
     if (i == macro.firstInstructionIndex()) {
       _firstInstruction = _operations.size();
@@ -87,10 +87,10 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
 void IntermediateMacroInstruction::execute(
     const ExecuteImmutableArguments& immutable,
     CompileErrorList& errors,
-    FinalRepresentation& finalRepresentator,
+    FinalCommandVector& commandOutput,
     MemoryAccess& memoryAccess) {
   for (const auto& operation : _operations) {
-    operation->execute(immutable, errors, finalRepresentator, memoryAccess);
+    operation->execute(immutable, errors, commandOutput, memoryAccess);
   }
 }
 

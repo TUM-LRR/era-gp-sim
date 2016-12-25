@@ -17,29 +17,19 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/line-interval.hpp"
+#include "parser/final-command.hpp"
 
-LineInterval::LineInterval(CodeCoordinate start, CodeCoordinate end)
-: _lineStart(start), _lineEnd(end) {
+FinalCommand::FinalCommand(const FinalCommandNodePointer& node,
+                           const CodePositionInterval& position,
+                           const MemoryAddress& address)
+: _node(node), _position(position), _address(address) {
 }
-
-/**
- * \brief Creates a new line interval containing only one line.
- * \param line The upper and lower bound of the interval.
- */
-LineInterval::LineInterval(CodeCoordinate line) : LineInterval(line, line) {
+const FinalCommandNodePointer& FinalCommand::node() const noexcept {
+  return _node;
 }
-
-/**
- * \brief Creates a line interval containing only line 0.
- */
-LineInterval::LineInterval() : LineInterval(0, 0) {
+const CodePositionInterval& FinalCommand::position() const noexcept {
+  return _position;
 }
-
-const CodeCoordinate& LineInterval::lineStart() const noexcept {
-  return _lineStart;
-}
-
-const CodeCoordinate& LineInterval::lineEnd() const noexcept {
-  return _lineEnd;
+const MemoryAddress& FinalCommand::address() const noexcept {
+  return _address;
 }

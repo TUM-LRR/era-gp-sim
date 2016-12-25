@@ -19,16 +19,28 @@
 #include "parser/final-representation.hpp"
 #include "arch/common/abstract-instruction-node.hpp"
 
-bool FinalRepresentation::hasErrors() const noexcept {
-  return errorList.size() > 0;
-}
-
 FinalRepresentation::AddressMapping FinalRepresentation::createMapping() const {
   AddressMapping mapping;
 
-  for (std::size_t i = 0; i < commandList.size(); ++i) {
-    mapping[commandList[i].address] = i;
+  for (std::size_t i = 0; i < _commandList.size(); ++i) {
+    mapping[_commandList[i].address()] = i;
   }
 
   return mapping;
+}
+
+FinalRepresentation::FinalRepresentation(
+    const FinalCommandVector& commandList,
+    const CompileErrorList& errorList,
+    const MacroInformationVector& macroList)
+: _commandList(commandList), _errorList(errorList), _macroList(macroList) {
+}
+const FinalCommandVector& FinalRepresentation::commandList() const noexcept {
+  return _commandList;
+}
+const CompileErrorList& FinalRepresentation::errorList() const noexcept {
+  return _errorList;
+}
+const MacroInformationVector& FinalRepresentation::macroList() const noexcept {
+  return _macroList;
 }

@@ -21,6 +21,7 @@
 #define ERAGPSIM_PARSER_MACRO_INFORMATION_HPP
 
 #include <string>
+#include <vector>
 #include "parser/code-position-interval.hpp"
 #include "parser/code-position.hpp"
 
@@ -60,5 +61,7 @@ class MacroInformation {
    */
   CodePositionInterval _position;
 };
+
+using MacroInformationVector = std::vector<MacroInformation>;
 
 #endif /* ERAGPSIM_PARSER_MACRO_INFORMATION_HPP */

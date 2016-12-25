@@ -167,8 +167,8 @@ QString EditorComponent::getText() {
 
 void EditorComponent::onFinalRepresentationChanged(
     const FinalRepresentation &finalRepresentation) {
-  setErrorList(finalRepresentation.errorList);
-  setMacroList(finalRepresentation.macroList);
+  setErrorList(finalRepresentation.errorList().errors());
+  setMacroList(finalRepresentation.macroList());
 }
 
 void EditorComponent::_addKeywords(

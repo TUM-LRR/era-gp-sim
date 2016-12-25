@@ -26,7 +26,7 @@
 #include "parser/relative-memory-position.hpp"
 class MemoryAllocator;
 class CompileErrorList;
-class LineInterval;
+class CodePositionInterval;
 class SymbolTable;
 class SyntaxTreeGenerator;
 class Architecture;
@@ -40,11 +40,11 @@ class MemoryReservationDirective : public IntermediateDirective {
   /**
  * \brief Instantiates a new IntermediateDirective with the given arguments.
  * (only for subclass use!)
- * \param lines The line interval the operation occupies.
+ * \param positionInterval The line interval the operation occupies.
  * \param labels The vector of labels assigned to the operation.
  * \param name The name of the operation.
  */
-  MemoryReservationDirective(const LineInterval& lines,
+  MemoryReservationDirective(const CodePositionInterval& positionInterval,
                              const std::vector<PositionedString>& labels,
                              const PositionedString& name,
                              std::size_t cellSize,
@@ -53,7 +53,7 @@ class MemoryReservationDirective : public IntermediateDirective {
 
   /**
    * \brief Executes the given operation (somehow).
-   * \param finalRepresentator The FinalRepresentation for possible output.
+   * \param commandOutput The FinalRepresentation for possible output.
    * \param table The SymbolTable for possible replacements.
    * \param generator The generator to transform the instructions.
    * \param state The CompileState to log possible errors.
@@ -62,7 +62,7 @@ class MemoryReservationDirective : public IntermediateDirective {
    */
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
-                       FinalRepresentation& finalRepresentator,
+                       FinalCommandVector& commandOutput,
                        MemoryAccess& memoryAccess);
 
   /**

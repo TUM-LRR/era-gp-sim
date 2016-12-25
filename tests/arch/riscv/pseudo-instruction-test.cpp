@@ -40,8 +40,8 @@ class PseudoInstructionTest : public riscv::BaseFixture {
    */
   void
   execute(FinalRepresentation& representation, MemoryAccess& memoryAccess) {
-    for (auto& command : representation.commandList) {
-      auto newProgramCounter = command.node->getValue(memoryAccess);
+    for (auto& command : representation.commandList()) {
+      auto newProgramCounter = command.node()->getValue(memoryAccess);
       memoryAccess.setRegisterValue("pc", newProgramCounter);
     }
   }
@@ -64,13 +64,13 @@ class PseudoInstructionTest : public riscv::BaseFixture {
                      ParserMode::COMPILE);
 
     // Assert that no compile error occurred
-    for (auto& compileError : rep.errorList) {
+    for (auto& compileError : rep.errorList().errors()) {
       ASSERT_TRUE(false) << compileError.message().getBaseString();
     }
 
     // Assert that the amount of parsed instructions is equal to the expected
     // amount of instructions
-    ASSERT_EQ(rep.commandList.size(), expectedInstructionAmount);
+    ASSERT_EQ(rep.commandList().size(), expectedInstructionAmount);
 
     // Execute the instructions
     execute(rep, memoryAccess);

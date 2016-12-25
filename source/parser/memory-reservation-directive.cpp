@@ -29,13 +29,13 @@
 #include "parser/symbol-replacer.hpp"
 
 MemoryReservationDirective::MemoryReservationDirective(
-    const LineInterval& lines,
+    const CodePositionInterval& positionInterval,
     const std::vector<PositionedString>& labels,
     const PositionedString& name,
     std::size_t cellSize,
     const std::vector<PositionedString>& values,
     const ArgumentCompileFunction& argumentCompile)
-: IntermediateDirective(lines, labels, name)
+: IntermediateDirective(positionInterval, labels, name)
 , _cellSize(cellSize)
 , _values(values)
 , _argumentCompile(argumentCompile) {
@@ -91,7 +91,7 @@ void MemoryReservationDirective::enhanceSymbolTable(
 void MemoryReservationDirective::execute(
     const ExecuteImmutableArguments& immutable,
     CompileErrorList& errors,
-    FinalRepresentation& finalRepresentator,
+    FinalCommandVector& commandOutput,
     MemoryAccess& memoryAccess) {
   // Finally, we may put some zeros into memory.
   if (_size > 0) {

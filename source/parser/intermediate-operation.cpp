@@ -22,9 +22,9 @@
 #include "parser/intermediate-operation.hpp"
 
 #include "common/assert.hpp"
+#include "parser/code-position-interval.hpp"
 #include "parser/final-representation.hpp"
 #include "parser/intermediate-parameters.hpp"
-#include "parser/line-interval.hpp"
 #include "parser/memory-allocator.hpp"
 #include "parser/memory-section-definition.hpp"
 #include "parser/relative-memory-position.hpp"
@@ -33,10 +33,10 @@
 #include "parser/syntax-tree-generator.hpp"
 
 IntermediateOperation::IntermediateOperation(
-    const LineInterval& lines,
+    const CodePositionInterval& positionInterval,
     const std::vector<PositionedString>& labels,
     const PositionedString& name)
-: _lines(lines), _labels(labels), _name(name) {
+: _positionInterval(positionInterval), _labels(labels), _name(name) {
 }
 
 void IntermediateOperation::enhanceSymbolTable(
@@ -80,8 +80,9 @@ IntermediateOperationPointer IntermediateOperation::clone() {
   return nullptr;
 }
 
-const LineInterval& IntermediateOperation::lines() const noexcept {
-  return _lines;
+const CodePositionInterval& IntermediateOperation::positionInterval() const
+    noexcept {
+  return _positionInterval;
 }
 
 const std::vector<PositionedString>& IntermediateOperation::labels() const

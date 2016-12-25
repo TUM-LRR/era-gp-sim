@@ -38,12 +38,12 @@
 #include "parser/syntax-tree-generator.hpp"
 
 IntermediateInstruction::IntermediateInstruction(
-    const LineInterval& lines,
+    const CodePositionInterval& positionInterval,
     const std::vector<PositionedString>& labels,
     const PositionedString& name,
     const std::vector<PositionedString>& sources,
     const std::vector<PositionedString>& targets)
-: IntermediateOperation(lines, labels, name)
+: IntermediateOperation(positionInterval, labels, name)
 , _sources(sources)
 , _targets(targets) {
 }
@@ -51,12 +51,14 @@ IntermediateInstruction::IntermediateInstruction(
 void IntermediateInstruction::execute(
     const ExecuteImmutableArguments& immutable,
     CompileErrorList& errors,
-    FinalRepresentation& finalRepresentator,
+    FinalCommandVector& commandOutput,
     MemoryAccess& memoryAccess) {
   // For a machine instruction, it is easy to "execute" it: just insert it
   // into the final form.
-  finalRepresentator.commandList.push_back(
-      compileInstruction(immutable, errors, memoryAccess));
+  auto compiled = compileInstruction(immutable, errors, memoryAccess);
+  if (compiled.node()) {
+    commandOutput.push_back(compiled);
+  }
 }
 
 std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>
@@ -89,12 +91,10 @@ FinalCommand IntermediateInstruction::compileInstruction(
       compileArgumentVector(_sources, immutable, errors, memoryAccess);
   auto trgCompiled =
       compileArgumentVector(_targets, immutable, errors, memoryAccess);
-  // TODO: Rework FinalCommand
-  FinalCommand result;
-  result.node = std::move(immutable.generator().transformCommand(
-      _name, errors, srcCompiled, trgCompiled, memoryAccess));
-  result.position = _lines;
-  result.address = _address;
+
+  auto node = immutable.generator().transformCommand(
+      _name, errors, srcCompiled, trgCompiled, memoryAccess);
+  auto result = FinalCommand(node, _positionInterval, _address);
   return result;
 }
 
@@ -132,17 +132,19 @@ void IntermediateInstruction::allocateMemory(
     return;
   }
 
+  const auto& architecture = immutable.architecture();
+  const auto& nameString = _name.string();
   const auto& instructionSet = immutable.architecture().getInstructions();
 
   // toLower as long as not fixed in instruction set.
-  if (!instructionSet.hasInstruction(_name.string())) {
+  if (!instructionSet.hasInstruction(nameString)) {
     // If we'd record an error here, we would do that twice in total, so no.
     return;
   }
 
   // For now. Later to be reworked with a bit-level memory allocation?
-  auto instructionLength = instructionSet[_name.string()].getLength() /
-                           immutable.architecture().getByteSize();
+  auto instructionLength =
+      instructionSet[nameString].getLength() / architecture.getByteSize();
   _relativeAddress = allocator["text"].allocateRelative(instructionLength);
 }
 
@@ -153,9 +155,9 @@ static bool isWordCharacter(char c) {
 static void replaceInVector(std::vector<PositionedString>& vector,
                             const PositionedString& name,
                             const PositionedString& value) {
-  std::string search = '\\' + name.string();
+  auto search = '\\' + name.string();
   for (int i = 0; i < vector.size(); i++) {
-    std::string str = vector[i].string();
+    auto str = vector[i].string();
     // Replace all occurences of '\\name' that are followed by a non-word char.
     std::string::size_type pos = 0;
     while ((pos = str.find(search, pos)) != std::string::npos) {
@@ -181,7 +183,7 @@ void IntermediateInstruction::insertIntoArguments(
 }
 
 std::string IntermediateInstruction::toString() const {
-  std::string str = _name.string();
+  auto str = _name.string();
 
   // Append targets
   for (size_t i = 0; i < _targets.size(); i++) {

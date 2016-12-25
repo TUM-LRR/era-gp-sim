@@ -20,24 +20,24 @@
 #include "parser/macro-end-directive.hpp"
 
 MacroEndDirective::MacroEndDirective(
-    const LineInterval& lines,
+    const CodePositionInterval& positionInterval,
     const std::vector<PositionedString>& labels,
     const PositionedString& name,
     const std::vector<PositionedString>& arguments)
-: IntermediateDirective(lines, labels, name) {
+: IntermediateDirective(positionInterval, labels, name) {
 }
 
 MacroEndDirective::MacroEndDirective(
-    const LineInterval& lines,
+    const CodePositionInterval& positionInterval,
     const std::vector<PositionedString>& labels,
     const PositionedString& name)
-: IntermediateDirective(lines, labels, name) {
+: IntermediateDirective(positionInterval, labels, name) {
 }
 
 
 void MacroEndDirective::execute(const ExecuteImmutableArguments& immutable,
                                 CompileErrorList& errors,
-                                FinalRepresentation& finalRepresentator,
+                                FinalCommandVector& commandOutput,
                                 MemoryAccess& memoryAccess) {
   // Probably nothing here.
 }

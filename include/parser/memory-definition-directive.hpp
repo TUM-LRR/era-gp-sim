@@ -57,7 +57,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
 
   /**
  * \brief Instantiates a new MemoryDefinitionDirective with the given arguments.
- * \param lines The line interval the operation occupies.
+ * \param positionInterval The line interval the operation occupies.
  * \param labels The vector of labels assigned to the operation.
  * \param name The name of the operation.
  * \param cellSize The size of the unit how much each argument should occupy at
@@ -65,13 +65,13 @@ class MemoryDefinitionDirective : public IntermediateDirective {
  * \param values The argument vector.
  * \param processValues A function to parse the arguments.
  */
-  MemoryDefinitionDirective(const LineInterval& lines,
+  MemoryDefinitionDirective(const CodePositionInterval& positionInterval,
                             const std::vector<PositionedString>& labels,
                             const PositionedString& name,
                             size_t cellSize,
                             const std::vector<PositionedString>& values,
                             const ProcessValuesFunction& processValues)
-  : IntermediateDirective(lines, labels, name)
+  : IntermediateDirective(positionInterval, labels, name)
   , _cellSize(cellSize)
   , _values(values)
   , _processValues(processValues) {
@@ -79,19 +79,19 @@ class MemoryDefinitionDirective : public IntermediateDirective {
 
   /**
  * \brief Instantiates a new MemoryDefinitionDirective with the given arguments.
- * \param lines The line interval the operation occupies.
+ * \param positionInterval The line interval the operation occupies.
  * \param labels The vector of labels assigned to the operation.
  * \param name The name of the operation.
  * \param values The argument vector.
  * \param processValues A function to parse the arguments.
  */
-  MemoryDefinitionDirective(const LineInterval& lines,
+  MemoryDefinitionDirective(const CodePositionInterval& positionInterval,
                             const std::vector<PositionedString>& labels,
                             const PositionedString& name,
                             const std::vector<PositionedString>& values,
                             const ProcessValuesFunction& processValues)
   : MemoryDefinitionDirective(
-        lines, labels, name, sizeof(T), values, processValues) {
+        positionInterval, labels, name, sizeof(T), values, processValues) {
   }
 
   /**
@@ -149,7 +149,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
 
   /**
    * \brief Executes the given operation (somehow).
-   * \param finalRepresentator The FinalRepresentation for possible output.
+   * \param commandOutput The FinalRepresentation for possible output.
    * \param table The SymbolTable for possible replacements.
    * \param generator The generator to transform the instructions.
    * \param state The CompileState to log possible errors.
@@ -158,7 +158,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
    */
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
-                       FinalRepresentation& finalRepresentator,
+                       FinalCommandVector& commandOutput,
                        MemoryAccess& memoryAccess) {
     if (_size > 0) {
       // We first of all create our memory value locally.

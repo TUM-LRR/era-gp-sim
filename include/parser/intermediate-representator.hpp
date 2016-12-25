@@ -23,8 +23,11 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "parser/final-command.hpp"
+#include "parser/final-command.hpp"
 #include "parser/final-representation.hpp"
 #include "parser/intermediate-operation.hpp"
+#include "parser/macro-information.hpp"
 
 class SyntaxTreeGenerator;
 class Architecture;
@@ -76,7 +79,7 @@ class IntermediateRepresentator {
    * \return The list of syntax trees to be interpreted by the architecture.
    */
   FinalRepresentation transform(const TransformationParameters& parameters,
-                                CompileErrorList errors,
+                                const CompileErrorList& parsingErrors,
                                 MemoryAccess& memoryAccess);
 
  private:
@@ -86,7 +89,7 @@ class IntermediateRepresentator {
    */
   void internalInsertCommand(IntermediateOperationPointer pointer);
 
-  void generateMacroInformation(FinalRepresentation& representation);
+  MacroInformationVector generateMacroInformation();
 
   /**
    * \brief The internal command list.

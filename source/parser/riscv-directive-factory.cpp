@@ -33,11 +33,11 @@ using DirectivePtr = std::shared_ptr<IntermediateDirective>;
 
 template <typename T>
 static DirectivePtr
-createInternal(const LineInterval &lines,
+createInternal(const CodePositionInterval &positionInterval,
                const std::vector<PositionedString> &labels,
                const PositionedString &name,
                const std::vector<PositionedString> &arguments) {
-  return std::make_unique<T>(lines, labels, name, arguments);
+  return std::make_unique<T>(positionInterval, labels, name, arguments);
 }
 
 // Function for `createMemoryDefinitionDirective`
@@ -85,12 +85,16 @@ static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
 
 template <typename T>
 static DirectivePtr
-createMemoryDefinitionDirective(const LineInterval &lines,
+createMemoryDefinitionDirective(const CodePositionInterval &positionInterval,
                                 const std::vector<PositionedString> &labels,
                                 const PositionedString &name,
                                 const std::vector<PositionedString> &values) {
   return std::make_unique<MemoryDefinitionDirective<T>>(
-      lines, labels, name, values, _processMemoryDefinitionValues<T>);
+      positionInterval,
+      labels,
+      name,
+      values,
+      _processMemoryDefinitionValues<T>);
 }
 
 
@@ -106,18 +110,23 @@ MemoryReservationDirective::ArgumentCompileFunction
 
 template <std::size_t cellSize>
 static DirectivePtr
-createMemoryReservationDirective(const LineInterval &lines,
+createMemoryReservationDirective(const CodePositionInterval &positionInterval,
                                  const std::vector<PositionedString> &labels,
                                  const PositionedString &name,
                                  const std::vector<PositionedString> &values) {
   return std::make_unique<MemoryReservationDirective>(
-      lines, labels, name, cellSize, values, _memoryReservationArgumentCompile);
+      positionInterval,
+      labels,
+      name,
+      cellSize,
+      values,
+      _memoryReservationArgumentCompile);
 }
 
 
 const std::unordered_map<
     std::string,
-    std::function<DirectivePtr(const LineInterval &,
+    std::function<DirectivePtr(const CodePositionInterval &,
                                const std::vector<PositionedString> &,
                                const PositionedString &,
                                const std::vector<PositionedString> &)>>
@@ -136,7 +145,7 @@ const std::unordered_map<
         {"resd", createMemoryReservationDirective<8>}};
 
 void RiscVDirectiveFactory::create(
-    const LineInterval &lines,
+    const CodePositionInterval &positionInterval,
     const std::vector<PositionedString> &labels,
     const PositionedString &name,
     const std::vector<PositionedString> &arguments,
@@ -150,7 +159,7 @@ void RiscVDirectiveFactory::create(
     ptr = nullptr;
     errors.addError(name.positionInterval(), "Unknown directive");
   } else {
-    ptr = (element->second)(lines, labels, name, arguments);
+    ptr = (element->second)(positionInterval, labels, name, arguments);
     intermediate.insertCommandPtr(std::move(ptr), errors);
   }
 }

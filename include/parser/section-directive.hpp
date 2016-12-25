@@ -26,7 +26,7 @@
 #include "parser/intermediate-directive.hpp"
 
 class MemoryAllocator;
-class FinalRepresentation;
+#include "parser/final-command.hpp"
 class SymbolTable;
 class SyntaxTreeGenerator;
 class CompileErrorList;
@@ -39,14 +39,14 @@ class SectionDirective : public IntermediateDirective {
  public:
   /**
    * \brief Creates a new section directive with the given section.
-   * \param lines The interval of the command.
+   * \param positionInterval The interval of the command.
    * \param labels The associated labels with the command (doesn't make sense
    * with this one!?).
    * \param name The name of the command, might not be equal to the section. It
    * has no meaning for the directive.
    * \param arguments Arguments of the directive. First should be section name.
    */
-  SectionDirective(const LineInterval& lines,
+  SectionDirective(const CodePositionInterval& positionInterval,
                    const std::vector<PositionedString>& labels,
                    const PositionedString& name,
                    const std::vector<PositionedString>& arguments);
@@ -54,7 +54,7 @@ class SectionDirective : public IntermediateDirective {
   /**
    * \brief Executes the section directive and sets the compiler section to the
    * corresponding value.
-   * \param finalRepresentator The representation to output commands to
+   * \param commandOutput The representation to output commands to
    * (unused).
    * \param table The symbol table for symbol storage (unused).
    * \param generator The syntax tree generator, unused here.
@@ -63,7 +63,7 @@ class SectionDirective : public IntermediateDirective {
    */
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
-                       FinalRepresentation& finalRepresentator,
+                       FinalCommandVector& commandOutput,
                        MemoryAccess& memoryAccess);
 
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,

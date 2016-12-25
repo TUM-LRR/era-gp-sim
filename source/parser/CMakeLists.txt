@@ -30,7 +30,6 @@ set(PARSER_SOURCES
   relative-memory-position.cpp
   memory-section-definition.cpp
   code-position.cpp
-  line-interval.cpp
   compile-error.cpp
   expression-tokenizer.cpp
   symbol-graph.cpp
@@ -41,9 +40,8 @@ set(PARSER_SOURCES
   section-tracker.cpp
   intermediate-parameters.cpp
   code-position-interval.cpp
-  intermediate-output-representation.cpp
-  intermediate-output-command.cpp
   positioned-string.cpp
+  final-command.cpp
 )
 
 ########################################

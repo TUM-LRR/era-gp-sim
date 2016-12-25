@@ -23,10 +23,10 @@
 #include "parser/intermediate-directive.hpp"
 
 IntermediateDirective::IntermediateDirective(
-    const LineInterval& lines,
+    const CodePositionInterval& positionInterval,
     const std::vector<PositionedString>& labels,
     const PositionedString& name)
-: IntermediateOperation(lines, labels, name) {
+: IntermediateOperation(positionInterval, labels, name) {
 }
 
 void IntermediateDirective::determineMemoryPosition() {

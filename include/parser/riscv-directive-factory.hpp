@@ -35,7 +35,7 @@ namespace RiscVDirectiveFactory {
  * Instantiates a Directive by name and inserts it into an
  * IntermediateRepresentator if valid.
  *
- * \param lines        The line interval the directive occupies.
+ * \param positionInterval        The line interval the directive occupies.
  * \param labels       The labels assigned to this directive.
  * \param name         The name of the directive.
  * \param arguments    The arguments of the directive.
@@ -43,7 +43,7 @@ namespace RiscVDirectiveFactory {
  *                     into.
  * \param state        The current compile state to record errors.
  */
-void create(const LineInterval &lines,
+void create(const CodePositionInterval &positionInterval,
             const std::vector<PositionedString> &labels,
             const PositionedString &name,
             const std::vector<PositionedString> &arguments,
@@ -56,7 +56,7 @@ void create(const LineInterval &lines,
 extern const std::unordered_map<
     std::string,
     std::function<std::shared_ptr<IntermediateDirective>(
-        const LineInterval &,
+        const CodePositionInterval &,
         const std::vector<PositionedString> &,
         const PositionedString &,
         const std::vector<PositionedString> &)>>
