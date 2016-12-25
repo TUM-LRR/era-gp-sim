@@ -43,6 +43,12 @@ class InputTextModel : QObject {
   Q_INVOKABLE void newText(QString text);
 
   /**
+   * \brief Sets a number in the memory, used for left/up/etc.
+   * \param number the number
+   */
+  Q_INVOKABLE void newNumber(int number);
+
+  /**
    * \brief Sets the new startindex
    * \param text the index
    */
@@ -66,17 +72,35 @@ class InputTextModel : QObject {
    */
   Q_INVOKABLE QString getStart();
 
+  /**
+   * \brief sets the new Mode
+   * \param text the new mode
+   */
+  Q_INVOKABLE void setMode(int mode);
+
+  /**
+   * \brief Gets the mode
+   * \return the length
+   */
+  Q_INVOKABLE int getMode();
+
  private:
   QQmlContext* _context;
   int _start;
   length_t _maximumLength;
   MemoryAccess _memoryAccess;
+  int _mode;
 
  signals:
   /**
-   * \brief called when maximum Length is changed
+   * \brief called when maximum Length has changed
    */
   void maximumLengthChanged();
+
+  /**
+   * \brief called when mode has changed
+   */
+  void modeChanged();
 };
 
 #endif// INPUTTEXTMODEL_HPP

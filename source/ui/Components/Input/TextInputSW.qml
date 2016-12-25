@@ -21,6 +21,7 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.0
+import QtQuick.Layouts 1.3
 
 // Window for input per Text settings.
 Window {
@@ -54,6 +55,9 @@ Window {
             }
             Text {
                 text: "Maximum Length (int):"
+            }
+            Text {
+                text: "Mode :"
             }
         }
 
@@ -106,7 +110,37 @@ Window {
                 }
             }
 
+            RowLayout {
+                id: mode
+                ExclusiveGroup { id: modeGroup }
+
+                RadioButton{
+                    id: ab
+                    text: "ArrayBased"
+                    checked: true
+                    exclusiveGroup: modeGroup
+                    onClicked: {
+                        mode.processInput();
+                    }
+                }
+                RadioButton {
+                    id: pl
+                    text: "PipeLike"
+                    exclusiveGroup: modeGroup
+                    onClicked: {
+                        mode.processInput();
+                    }
+                }
+
+                // Reads the current input and passes the new value to the model.
+                function processInput() {
+                    var inputValue = ab.checked ? 0 : 1;
+                    inputtextMod.setMode(inputValue);
+                }
+            }
+
         }
+
     }
 
     Component.onCompleted: {
@@ -127,6 +161,7 @@ Window {
         onClicked: {
             baseAddressTextField.processInput();
             maxLength.processInput();
+            mode.processInput();
             close();
         }
     }

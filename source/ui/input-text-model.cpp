@@ -25,7 +25,8 @@ InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess memoryAccess)
 , _context(context)
 , _start(0)
 , _maximumLength(20)
-, _memoryAccess(memoryAccess) {
+, _memoryAccess(memoryAccess)
+, _mode(0) {
   _context->setContextProperty("inputtextMod", this);
 }
 
@@ -42,6 +43,11 @@ void InputTextModel::newText(QString text) {
       _memoryAccess.putMemoryValueAt(_start + i, m);
     }
   }
+}
+
+void InputTextModel::newNumber(int number) {
+  auto memoryValue = conversions::convert(number, 32);
+  _memoryAccess.putMemoryValueAt(_start, memoryValue);
 }
 
 void InputTextModel::setStart(unsigned int start) {
@@ -61,4 +67,13 @@ void InputTextModel::setMaximumLength(length_t maximumLength) {
 
 InputTextModel::length_t InputTextModel::getMaximumLength() {
   return _maximumLength;
+}
+
+void InputTextModel::setMode(int mode) {
+  _mode = mode;
+  emit modeChanged();
+}
+
+int InputTextModel::getMode() {
+  return _mode;
 }
