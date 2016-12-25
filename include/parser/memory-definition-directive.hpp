@@ -50,6 +50,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   using MemoryStorageFunction = std::function<void(T, size_t)>;
   using ProcessValuesFunction =
       std::function<size_t(const std::vector<PositionedString>&,
+                           const SymbolReplacer&,
                            size_t,
                            const CompileErrorAnnotator&,
                            const MemoryStorageFunction&)>;
@@ -113,8 +114,11 @@ class MemoryDefinitionDirective : public IntermediateDirective {
     CompileErrorList temporaryVector;
     CompileErrorAnnotator temporary(
         temporaryVector, CodePosition(0), CodePosition(0));
-    size_t sizeInBytes = _processValues(
-        _values, _cellSize, temporary, [](T value, size_t position) {});
+    size_t sizeInBytes = _processValues(_values,
+                                        SymbolReplacer(),
+                                        _cellSize,
+                                        temporary,
+                                        [](T value, size_t position) {});
 
     // Next, we got to allocate our memory.
     _relativePosition =
@@ -163,24 +167,28 @@ class MemoryDefinitionDirective : public IntermediateDirective {
       MemoryValue data(_size);
 
       // Then we write to it.
-      _processValues(
-          _values, _cellSize, annotator, [&](T value, std::size_t position) {
-            // For now. Later to be replaced by the real enum of the arch,
-            // maybe...
-            auto memoryValue =
-                conversions::convert(value,
-                                     conversions::standardConversions::helper::
-                                         twosComplement::toMemoryValueFunction,
-                                     _byteSize * _cellSize);
+      _processValues(_values,
+                     SymbolReplacer(),
+                     _cellSize,
+                     annotator,
+                     [&](T value, std::size_t position) {
+                       // For now. Later to be replaced by the real enum of the
+                       // arch,
+                       // maybe...
+                       auto memoryValue = conversions::convert(
+                           value,
+                           conversions::standardConversions::helper::
+                               twosComplement::toMemoryValueFunction,
+                           _byteSize * _cellSize);
 
-            // Once converted, we take down the value.
-            data.write(memoryValue, position * _byteSize);
-          });
+                       // Once converted, we take down the value.
+                       data.write(memoryValue, position * _byteSize);
+                     });
 
       // Then, let's do a (probably also here) expensive memory call.
       memoryAccess.putMemoryValueAt(_absolutePosition, data);
     } else {
-      annotator.addError(name().positionInterval() /*TODO?*/,
+      annotator.addError(name().positionInterval(),
                          "Nothing to reserve with memory definition.");
     }
   }

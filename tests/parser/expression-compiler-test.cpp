@@ -21,6 +21,8 @@
 #include "parser/compile-error-annotator.hpp"
 #include "parser/compile-error-list.hpp"
 #include "parser/expression-compiler-clike.hpp"
+#include "parser/positioned-string.hpp"
+#define ZP(x) PositionedString(x)
 #define DEFINE_ANNOTATOR      \
   CompileErrorList errorList; \
   CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
@@ -30,19 +32,19 @@
   {                                                                  \
     DEFINE_ANNOTATOR                                                 \
     int output = CLikeExpressionCompilers::CLikeCompilerI32.compile( \
-        STRINGIFY(expr), annotator);                                 \
+        ZP(STRINGIFY(expr)), SymbolReplacer(), annotator);           \
     int expected = (expr);                                           \
     ASSERT_EQ(output, expected);                                     \
     ASSERT_TRUE(annotator.errorList().empty());                      \
   }
 
 // Failing test case.
-#define TEST_CASE_E(expr)                                                    \
-  {                                                                          \
-    DEFINE_ANNOTATOR                                                         \
-    int output =                                                             \
-        CLikeExpressionCompilers::CLikeCompilerI32.compile(expr, annotator); \
-    ASSERT_TRUE(!annotator.errorList().empty());                             \
+#define TEST_CASE_E(expr)                                            \
+  {                                                                  \
+    DEFINE_ANNOTATOR                                                 \
+    int output = CLikeExpressionCompilers::CLikeCompilerI32.compile( \
+        ZP(expr), SymbolReplacer(), annotator);                      \
+    ASSERT_TRUE(!annotator.errorList().empty());                     \
   }
 
 // We need to surpass some warnings, b/c we intentionally want to use

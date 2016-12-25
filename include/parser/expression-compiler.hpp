@@ -23,6 +23,8 @@
 #include "parser/expression-compiler-definitions.hpp"
 #include "parser/expression-parser.hpp"
 #include "parser/expression-tokenizer.hpp"
+#include "parser/positioned-string.hpp"
+#include "parser/symbol-replacer.hpp"
 
 #include <set>
 #include <vector>
@@ -91,14 +93,35 @@ class ExpressionCompiler {
    * \return The string evaluated into a number or an error value (mostly 0).
    */
   T compile(const PositionedString& string,
+            const SymbolReplacer& replacer,
             const CompileErrorAnnotator& annotator) const {
     // Pretty simple: Just pass the string and the tokens in the tokenizer and
     // parser respectively.
     auto tokens = _tokenizer.tokenize(string, annotator);
-    return _parser.parse(tokens, annotator);
+    auto tokensReplaced = replaceSymbols(tokens, replacer, annotator);
+    return _parser.parse(tokensReplaced, annotator);
   }
 
  private:
+  std::vector<ExpressionToken>
+  replaceSymbols(const std::vector<ExpressionToken>& source,
+                 const SymbolReplacer& replacer,
+                 const CompileErrorAnnotator& annotator) const {
+    std::vector<ExpressionToken> replacedSymbols;
+    for (const auto& token : source) {
+      if (token.type == ExpressionTokenType::CONSTANT) {
+        auto replaced = replacer.replace(token.data, annotator);
+        auto tokenizedAgain = _tokenizer.tokenize(replaced, annotator);
+        replacedSymbols.insert(replacedSymbols.end(),
+                               tokenizedAgain.begin(),
+                               tokenizedAgain.end());
+      } else {
+        replacedSymbols.push_back(token);
+      }
+    }
+    return replacedSymbols;
+  }
+
   // This method generates a token definition list out of a compiler definition.
   std::vector<ExpressionTokenDefinition>
   getTokenDefinitions(const ExpressionCompilerDefinition<T>& definition) {
@@ -147,6 +170,9 @@ class ExpressionCompiler {
         definition.helpers.leftBracket, ExpressionTokenType::LEFT_BRACKET});
     tokens.push_back(ExpressionTokenDefinition{
         definition.helpers.rightBracket, ExpressionTokenType::RIGHT_BRACKET});
+
+    tokens.push_back(ExpressionTokenDefinition{definition.helpers.constant,
+                                               ExpressionTokenType::CONSTANT});
 
     // And that's it!
     return tokens;

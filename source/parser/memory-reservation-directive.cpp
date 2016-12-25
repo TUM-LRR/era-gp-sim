@@ -55,7 +55,7 @@ void MemoryReservationDirective::allocateMemory(
   for (const auto& value : _values) {
     // b/c of the definition of argumentCompile and the C standard, the result
     // is non-negative.
-    auto result = _argumentCompile(value, annotator);
+    auto result = _argumentCompile(value, SymbolReplacer(), annotator);
     if (result > 0) {
       sizeInCells += result;
     } else {

@@ -25,11 +25,12 @@
 #include <vector>
 
 #include "arch/common/node-factory-collection.hpp"
+#include "parser/positioned-string.hpp"
 
 class CompileErrorAnnotator;
 class AbstractInstructionNode;
 class MemoryAccess;
-class PositionedString;
+class SymbolReplacer;
 
 /**
  * \brief A connector class for turning arguments and commands into syntax tree
@@ -40,6 +41,7 @@ class SyntaxTreeGenerator {
   using ArgumentNodeGenerator =
       std::function<std::shared_ptr<AbstractSyntaxTreeNode>(
           const PositionedString&,
+          const SymbolReplacer&,
           const NodeFactoryCollection&,
           const CompileErrorAnnotator&)>;
 
@@ -64,6 +66,7 @@ class SyntaxTreeGenerator {
    */
   std::shared_ptr<AbstractSyntaxTreeNode>
   transformOperand(const PositionedString& operand,
+                   const SymbolReplacer& replacer,
                    const CompileErrorAnnotator& annotator) const;
 
   /**

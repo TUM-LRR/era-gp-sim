@@ -34,6 +34,13 @@ static void printIfDefined(const std::string& str) {
   std::cout << str << '\n';
 }
 
+#else
+
+static void printIfDefined(const std::string& str) {
+}
+
+#endif
+
 static void printErrors(const std::vector<CompileError>& errorList) {
   for (const auto& error : errorList) {
     std::cout << error.message().getBaseString() << ";; with arguments [";
@@ -43,16 +50,6 @@ static void printErrors(const std::vector<CompileError>& errorList) {
     std::cout << "]" << std::endl;
   }
 }
-
-#else
-
-static void printIfDefined(const std::string& str) {
-}
-
-static void printErrors(const std::vector<CompileError>& errorList) {
-}
-
-#endif
 
 // Tests will be refined, once arch classes are ready.
 

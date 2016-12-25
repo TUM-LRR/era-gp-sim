@@ -66,7 +66,8 @@ SymbolReplacer::replace(const PositionedString& data,
     }
   }
 
-  annotator.addError(data.positionInterval(), "Exceeded maximum number of replace runs.");
+  annotator.addError(data.positionInterval(),
+                     "Exceeded maximum number of replace runs.");
 
   return PositionedString(result, data.positionInterval());
 }

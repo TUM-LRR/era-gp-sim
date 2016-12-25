@@ -85,10 +85,10 @@ FinalRepresentation
 IntermediateRepresentator::transform(const TransformationParameters& parameters,
                                      CompileErrorList errorList,
                                      MemoryAccess& memoryAccess) {
+  CompileErrorAnnotator annotator(errorList, CodePositionInterval());
   if (_currentOutput) {
-    annotator.addError(
-        _currentOutput->name().positionInterval(),
-        "Macro not closed. Missing a macro end directive?");
+    annotator.addError(_currentOutput->name().positionInterval(),
+                       "Macro not closed. Missing a macro end directive?");
   }
 
   FinalRepresentation representation;
@@ -116,8 +116,8 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
   for (const auto& command : _commandList) {
     command->allocateMemory(
         preprocessingArguments, annotator, allocator, tracker);
-    if (allocator.estimatedSize() > allowedSize && !firstMemoryExceedingOperation)
-    {
+    if (allocator.estimateSize() > allowedSize &&
+        !firstMemoryExceedingOperation) {
       firstMemoryExceedingOperation = command;
     }
   }
@@ -174,18 +174,18 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
   }
 
   if (allocatedSize > allowedSize) {
-    if (firstMemoryExceedingOperation)
-    {
-         annotator.addError(CodePositionInterval(CodePosition(0), CodePosition(0, 2)),
-          "From this operation on, including it, there is too much memory allocated in total: %1 requested, maximum is %2"
+    if (firstMemoryExceedingOperation) {
+      annotator.addError(
+          CodePositionInterval(CodePosition(0), CodePosition(0, 2)),
+          "From this operation on, including it, there is too much memory "
+          "allocated in total: %1 requested, maximum is %2"
           " (please note: because of aligning memory, the first value "
           "might be actually bigger than the memory allocated)",
           std::to_string(allocatedSize),
           std::to_string(allowedSize));
-    }
-    else
-    {
-      annotator.addError(CodePositionInterval(CodePosition(0), CodePosition(0, 2)),
+    } else {
+      annotator.addError(
+          CodePositionInterval(CodePosition(0), CodePosition(0, 2)),
           "Too much memory allocated: %1 requested, maximum is %2"
           " (please note: because of aligning memory, the first value "
           "might be actually bigger than the memory allocated)",

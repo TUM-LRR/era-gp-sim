@@ -38,6 +38,7 @@
 const SyntaxTreeGenerator::ArgumentNodeGenerator
     RiscvParser::argumentGeneratorFunction =
         [](const PositionedString& operandPositional,
+           const SymbolReplacer& replacer,
            const NodeFactoryCollection& nodeFactories,
            const CompileErrorAnnotator& annotator)
     -> std::shared_ptr<AbstractSyntaxTreeNode> {
@@ -48,8 +49,9 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
       // must be a register - or an undefined constant!
       // * If not? Try to compile the expression!
       std::shared_ptr<AbstractSyntaxTreeNode> outputNode;
-      const std::string& operand =
-          operandPositional.string();// TODO will not be necessary soon^TM
+      PositionedString operandReplaced =
+          replacer.replace(operandPositional, annotator);
+      const auto& operand = operandReplaced.string();
       if (operand.empty()) {
         outputNode = std::shared_ptr<AbstractSyntaxTreeNode>(nullptr);
       } else if (std::isalpha(operand[0])) {
@@ -57,13 +59,13 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
       } else if (operand[0] == '\"') {
         // Data nodes are mainly for meta instructions.
         std::vector<char> outString;
-        StringParser::parseString(operand, annotator, outString);
+        StringParser::parseString(operandPositional, annotator, outString);
         std::string asString(outString.begin(), outString.end());
         outputNode = nodeFactories.createDataNode(asString);
       } else {
         // using i32
         int32_t result = CLikeExpressionCompilers::CLikeCompilerI32.compile(
-            operand, annotator);
+            operandPositional, replacer, annotator);
         outputNode = nodeFactories.createImmediateNode(
             conversions::convert(result,
                                  conversions::standardConversions::helper::
@@ -129,7 +131,8 @@ static void readText(const std::string& text,
     lineRegex.matchLine(line, position.line(), positionErrorAnnotation);
     if (!lineRegex.isValid()) {
       // Add syntax error if line regex doesnt match
-      positionErrorAnnotation.addError(CodePositionInterval(position, position >> 1), "Syntax Error");
+      positionErrorAnnotation.addError(
+          CodePositionInterval(position, position >> 1), "Syntax Error");
     } else {
       // Collect labels until next instruction
       if (lineRegex.hasLabel()) {

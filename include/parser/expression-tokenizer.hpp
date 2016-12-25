@@ -25,6 +25,8 @@
 #include <regex>
 #include <unordered_map>
 #include "common/multiregex.hpp"
+#include "parser/positioned-string.hpp"
+class CompileErrorAnnotator;
 
 /**
  * \brief Transforms a string into a list of tokens.

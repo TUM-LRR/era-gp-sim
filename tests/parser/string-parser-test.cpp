@@ -22,6 +22,7 @@
 #include "gtest/gtest.h"
 #include "parser/compile-error-annotator.hpp"
 #include "parser/compile-error-list.hpp"
+#include "parser/positioned-string.hpp"
 #define DEFINE_ANNOTATOR      \
   CompileErrorList errorList; \
   CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
@@ -32,7 +33,8 @@ void doTestInternal(const std::basic_string<CharTypeIn>& provided,
                     bool succeed) {
   DEFINE_ANNOTATOR;
   std::vector<CharTypeOut> output;
-  bool result = StringParser::parseString(provided, annotator, output);
+  PositionedBasicString<CharTypeIn> input(provided);
+  bool result = StringParser::parseString(input, annotator, output);
   if (succeed) {
     for (const auto& error : annotator.errorList().errors()) {
       std::cout << error.message().getBaseString() << std::endl;

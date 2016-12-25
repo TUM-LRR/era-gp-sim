@@ -33,6 +33,7 @@
 #include "parser/compile-error-list.hpp"
 #include "parser/positioned-string.hpp"
 #include "parser/riscv-parser.hpp"
+#include "parser/symbol-replacer.hpp"
 #include "parser/syntax-tree-generator.hpp"
 #define DEFINE_ANNOTATOR      \
   CompileErrorList errorList; \
@@ -62,7 +63,8 @@ TEST(SyntaxTreeGenerator, init) {
 TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
   auto generator = buildGenerator();
   DEFINE_ANNOTATOR;
-  auto output = generator.transformOperand(ZP("1234"), annotator);
+  auto output =
+      generator.transformOperand(ZP("1234"), SymbolReplacer(), annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
   ASSERT_TRUE((isInstance<ImmediateNode>(output)));
 }
@@ -70,7 +72,8 @@ TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
 TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   auto generator = buildGenerator();
   DEFINE_ANNOTATOR;
-  auto output = generator.transformOperand(ZP("x18"), annotator);
+  auto output =
+      generator.transformOperand(ZP("x18"), SymbolReplacer(), annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(output)));
 }
@@ -79,15 +82,15 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   auto generator = buildGenerator();
   DEFINE_ANNOTATOR;
 
-  auto arg1 = generator.transformOperand(ZP("x1"), annotator);
+  auto arg1 = generator.transformOperand(ZP("x1"), SymbolReplacer(), annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
 
-  auto arg2 = generator.transformOperand(ZP("x1"), annotator);
+  auto arg2 = generator.transformOperand(ZP("x1"), SymbolReplacer(), annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
 
-  auto arg3 = generator.transformOperand(ZP("x2"), annotator);
+  auto arg3 = generator.transformOperand(ZP("x2"), SymbolReplacer(), annotator);
   ASSERT_EQ(annotator.errorList().size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg2)));
 

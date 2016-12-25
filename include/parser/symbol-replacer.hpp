@@ -37,7 +37,7 @@ class SymbolReplacer {
   SymbolReplacer(const SymbolGraphEvaluation& evaluation,
                  const DynamicReplacer& replacer = IDENTITY_REPLACE,
                  size_t maximumReplaceCount = 64);
-  SymbolReplacer(const std::vector<Symbol>& symbols,
+  SymbolReplacer(const std::vector<Symbol>& symbols = {},
                  const DynamicReplacer& replacer = IDENTITY_REPLACE,
                  size_t maximumReplaceCount = 64);
 

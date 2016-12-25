@@ -21,6 +21,8 @@
 #include "gtest/gtest.h"
 #include "parser/compile-error-annotator.hpp"
 #include "parser/compile-error-list.hpp"
+#include "parser/positioned-string.hpp"
+#define ZP(x) PositionedString(x)
 #define DEFINE_ANNOTATOR      \
   CompileErrorList errorList; \
   CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
@@ -29,7 +31,7 @@ template <typename T>
 static void
 testPass(T expected, const std::string &str, size_t start = 0, int base = 10) {
   DEFINE_ANNOTATOR;
-  EXPECT_EQ(IntegerParser<T>::parse(str, annotator, start, base), expected)
+  EXPECT_EQ(IntegerParser<T>::parse(ZP(str), annotator, start, base), expected)
       << '"' << str << "\" not equal to " << expected;
   EXPECT_EQ(annotator.errorList().size(), 0) << "Error while parsing \"" << str
                                              << '"';
@@ -38,7 +40,7 @@ testPass(T expected, const std::string &str, size_t start = 0, int base = 10) {
 template <typename T>
 static void testFail(const std::string &str, size_t start = 0, int base = 10) {
   DEFINE_ANNOTATOR;
-  IntegerParser<T>::parse(str, annotator, start, base);
+  IntegerParser<T>::parse(ZP(str), annotator, start, base);
   EXPECT_EQ(annotator.errorList().size(), 1)
       << "No exptected errors while parsing \"" << str << '"';
 }

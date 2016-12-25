@@ -20,6 +20,7 @@
 #include "parser/expression-tokenizer.hpp"
 #include "common/multiregex.hpp"
 #include "parser/compile-error-annotator.hpp"
+#include "parser/symbol-replacer.hpp"
 
 ExpressionTokenizer::ExpressionTokenizer(
     const std::vector<ExpressionTokenDefinition>& definitions)
@@ -33,14 +34,15 @@ ExpressionTokenizer::tokenize(const PositionedString& data,
   std::vector<ExpressionToken> output;
   MSMatch match;
   size_t currentPosition = 0;
-  std::string temp = data;
+  std::string temp = data.string();
 
   // We loop until we cannot match anything any more.
   while (_tokenizeRegex.search(temp, match)) {
     // if match.choice==0 we got some whitespace which we simply ignore.
     if (match.choice > 0) {
       // If not, we got another token.
-      auto positionedSource = data.slice(currentPosition + match.position, match.length);
+      auto positionedSource =
+          data.slice(currentPosition + match.position, match.length);
       output.push_back(ExpressionToken{positionedSource,
                                        _typeMapping.at(match.choice - 1),
                                        currentPosition + match.position});

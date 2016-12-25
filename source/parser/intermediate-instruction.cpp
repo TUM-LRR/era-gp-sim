@@ -68,11 +68,8 @@ IntermediateInstruction::compileArgumentVector(
   std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> output;
   output.reserve(vector.size());
   for (const auto& operand : vector) {
-    CompileErrorAnnotator localAnnotator(annotator,
-                                         operand.positionInterval());// TODO
-    auto replaced = immutable.replacer().replace(operand, localAnnotator);
-    auto transformed =
-        immutable.generator().transformOperand(replaced, localAnnotator);
+    auto transformed = immutable.generator().transformOperand(
+        operand, immutable.replacer(), annotator);
 
     // Only add argument node if creation was successful.
     // Otherwise AbstractSyntaxTreeNode::validate() segfaults.
@@ -119,7 +116,7 @@ void IntermediateInstruction::enhanceSymbolTable(
   for (const auto& label : _labels) {
     graph.addNode(Symbol(
         label,
-        PositionedString(std::to_string(_address), CodePositionInterval()),
+        PositionedString(std::to_string(_address), _name.positionInterval()),
         SymbolBehavior::DYNAMIC));
   }
 }

@@ -83,30 +83,36 @@ class RiscvParser::RiscvRegex {
    * \return The last read position in the string (if the line does not match,
    * this is the character that caused the error)
    */
-  size_t
-  matchLine(const std::string &line, const CompileErrorAnnotator &annotator);
+  size_t matchLine(const std::string &line,
+                   CodeCoordinate lineCoordinate,
+                   const CompileErrorAnnotator &annotator);
 
  private:
   bool _readInstructionOrLabel(const std::string &line,
+                               CodeCoordinate lineCoordinate,
                                const CompileErrorAnnotator &annotator,
                                size_t &pos);
 
   bool _readParameter(const std::string &line,
+                      CodeCoordinate lineCoordinate,
                       const CompileErrorAnnotator &annotator,
                       size_t &pos);
 
   void _resetResults();
 
   CodePositionInterval
-  _getCharacterPosition(const CompileErrorAnnotator &annotator,
+  _getCharacterPosition(CodeCoordinate lineCoordinate,
+                        const CompileErrorAnnotator &annotator,
                         size_t pos) const;
 
   CodePositionInterval
-  _getCharacterInterval(const CompileErrorAnnotator &annotator,
+  _getCharacterInterval(CodeCoordinate lineCoordinate,
+                        const CompileErrorAnnotator &annotator,
                         size_t start,
                         size_t end) const;
 
   PositionedString _getPositionedString(const std::string &line,
+                                        CodeCoordinate lineCoordinate,
                                         const CompileErrorAnnotator &annotator,
                                         size_t start,
                                         size_t end) const;

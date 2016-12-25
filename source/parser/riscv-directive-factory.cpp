@@ -45,6 +45,7 @@ template <typename T>
 static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
     _processMemoryDefinitionValues =
         [](const std::vector<PositionedString> &values,
+           const SymbolReplacer &replacer,
            std::size_t cellSize,
            const CompileErrorAnnotator &annotator,
            const std::function<void(T, std::size_t)> &handler) -> std::size_t {
@@ -59,8 +60,7 @@ static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
     } else if (value.string().at(0) == '\"') {
       // It is a string if it begins with a "
       std::vector<T> temporaryData;
-      if (StringParser::parseString(
-              value.string() /*TODO*/, annotator, temporaryData)) {
+      if (StringParser::parseString(value, annotator, temporaryData)) {
         // We add each character of the string to our output.
         for (const auto &j : temporaryData) {
           handler(j, currentPosition);
@@ -73,7 +73,7 @@ static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
       }
     } else {
       // If it is no a string, we regularly parse it.
-      T returnData = compiler.compile(value.string() /*TODO*/, annotator);
+      T returnData = compiler.compile(value, replacer, annotator);
       handler(returnData, currentPosition);
       currentPosition += cellSize;
     }
@@ -98,9 +98,10 @@ createMemoryDefinitionDirective(const LineInterval &lines,
 MemoryReservationDirective::ArgumentCompileFunction
     _memoryReservationArgumentCompile =
         [](const PositionedString &value,
+           const SymbolReplacer &replacer,
            const CompileErrorAnnotator &annotator) -> std::size_t {
   return CLikeExpressionCompilers::CLikeCompilerU64.compile(
-      value.string() /*TODO*/, annotator);
+      value, replacer, annotator);
 };
 
 template <std::size_t cellSize>

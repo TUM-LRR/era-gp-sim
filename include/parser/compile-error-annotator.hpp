@@ -23,8 +23,8 @@
 class CompileError;
 class CompileErrorList;
 #include <QtGlobal>
-#include <string>
 #include <functional>
+#include <string>
 #include "parser/code-position-interval.hpp"
 #include "parser/code-position.hpp"
 #include "parser/compile-error-severity.hpp"

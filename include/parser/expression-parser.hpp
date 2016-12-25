@@ -134,7 +134,8 @@ class ExpressionParser {
     }
 
     // We handle the rest of the operators.
-    if (!decreaseStack(state, IToken{ITokenType::EXPRESSION, ""})) {
+    if (!decreaseStack(state,
+                       IToken{ITokenType::EXPRESSION, PositionedString()})) {
       return T();
     }
 
@@ -167,16 +168,18 @@ class ExpressionParser {
 
   // A function definition for internal decoding (the regex is found in a
   // different variable).
-  using ILiteralDecoder =
-      std::function<bool(const PositionedString&, T&, const CompileErrorAnnotator&)>;
+  using ILiteralDecoder = std::function<bool(
+      const PositionedString&, T&, const CompileErrorAnnotator&)>;
 
   // The state to carry all internal data (to prevent long parameter lists).
   struct ParseState {
     // Current token.
-    ExpressionToken last = ExpressionToken{PositionedString(), ExpressionTokenType::INVALID};
+    ExpressionToken last =
+        ExpressionToken{PositionedString(), ExpressionTokenType::INVALID};
 
     // Last token.
-    ExpressionToken curr = ExpressionToken{PositionedString(), ExpressionTokenType::INVALID};
+    ExpressionToken curr =
+        ExpressionToken{PositionedString(), ExpressionTokenType::INVALID};
 
     // Reference on the token vector.
     const std::vector<ExpressionToken>& tokens;
@@ -202,7 +205,8 @@ class ExpressionParser {
       ParseState& state,
       const char* message,
       const std::initializer_list<std::string>& parameters) const {
-    annotator.addErrorInternal(state.curr, message, arguments);
+    state.annotator.addErrorInternal(
+        state.curr.data.positionInterval(), message, parameters);
   }
 
   // Handles the latest token stored in `state.curr`.
@@ -218,14 +222,23 @@ class ExpressionParser {
       }
       case ExpressionTokenType::LEFT_BRACKET:
         // Just push it onto the stack.
-        state.operatorStack.push(IToken{ITokenType::BRACKET, PositionedString()});
+        state.operatorStack.push(
+            IToken{ITokenType::BRACKET, PositionedString()});
         return true;
       case ExpressionTokenType::LITERAL:
         // Just parse the literal and push it onto the stack.
         return parseLiteral(state);
       case ExpressionTokenType::RIGHT_BRACKET:
         // We remove everything until a bracket occurs.
-        return handleBorder(state, IToken{ITokenType::BRACKET, PositionedString()});
+        return handleBorder(state,
+                            IToken{ITokenType::BRACKET, PositionedString()});
+      case ExpressionTokenType::CONSTANT:
+        // Must not happen, because constants should be replaced by now. (sorry,
+        // no syntax tree replacement yet!)
+        recordError(state,
+                    "Unrecognized constant/label: '%1'",
+                    state.curr.data.string());
+        return false;
       case ExpressionTokenType::INVALID:
         // For you, dear clang, so you don't complain. We fall through.
         break;
@@ -242,9 +255,11 @@ class ExpressionParser {
       // For the right error message, we got to determine the arity of our
       // operator.
       if (token.type == ITokenType::UNARY_OPERATOR) {
-        recordError(state, "'%1' is not a valid unary operator", token.data.string());
+        recordError(
+            state, "'%1' is not a valid unary operator", token.data.string());
       } else if (token.type == ITokenType::BINARY_OPERATOR) {
-        recordError(state, "'%1' is not a valid binary operator", token.data.string());
+        recordError(
+            state, "'%1' is not a valid binary operator", token.data.string());
       } else {
         // Undefined arity.
         assert::that(false);
@@ -438,7 +453,8 @@ class ExpressionParser {
     if (token.type == ITokenType::UNARY_OPERATOR) {
       return _unaryOperators.find(token.data.string()) != _unaryOperators.end();
     } else if (token.type == ITokenType::BINARY_OPERATOR) {
-      return _binaryOperators.find(token.data.string()) != _binaryOperators.end();
+      return _binaryOperators.find(token.data.string()) !=
+             _binaryOperators.end();
     } else {
       return true;
     }

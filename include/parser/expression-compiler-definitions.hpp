@@ -56,7 +56,9 @@ enum class ExpressionTokenType {
   /**
    * \brief The right bracket.
    */
-  RIGHT_BRACKET
+  RIGHT_BRACKET,
+
+  CONSTANT
 };
 
 /**
@@ -143,7 +145,8 @@ struct ExpressionLiteralDecoder {
   /**
    * \brief Decodes the literal into the number type.
    */
-  std::function<bool(const PositionedString&, T&, const CompileErrorAnnotator&)> decoder;
+  std::function<bool(const PositionedString&, T&, const CompileErrorAnnotator&)>
+      decoder;
 };
 
 /**
@@ -159,6 +162,8 @@ struct ExpressionHelpRegexes {
    * \brief The regex used for parsing closing brackets.
    */
   std::string rightBracket;
+
+  std::string constant;
 };
 
 /**

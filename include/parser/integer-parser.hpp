@@ -26,6 +26,7 @@
 #include <string>
 #include "common/assert.hpp"
 #include "parser/compile-error-annotator.hpp"
+#include "parser/positioned-string.hpp"
 
 /**
  * Provides methods for integer parsing.
@@ -57,7 +58,9 @@ class IntegerParser {
     T result{};
     try {
       result = parseInternal(string.string(), start, base, count);
-      if (count < string.string().length() - start) {throw std::invalid_argument("");}
+      if (count < string.string().length() - start) {
+        throw std::invalid_argument("");
+      }
     } catch (std::out_of_range &) {
       annotator.addError(string.positionInterval(), "Integer out of range.");
     } catch (std::invalid_argument &) {
@@ -109,7 +112,9 @@ class IntegerParser {
       }
     }
 
-    if (base == 0) {base = 10;}
+    if (base == 0) {
+      base = 10;
+    }
 
     // `max_value` is the maximum value `value` can have without overflowing
     // when the next digit is added. If `value == max_value` there can still be
@@ -121,8 +126,12 @@ class IntegerParser {
                     : std::numeric_limits<T>::max()};
     int max_last_digit{static_cast<int>(max_value % base)};
     max_value /= base;
-    if (max_value < 0) {max_value = -max_value;}
-    if (max_last_digit < 0) {max_last_digit = -max_last_digit;}
+    if (max_value < 0) {
+      max_value = -max_value;
+    }
+    if (max_last_digit < 0) {
+      max_last_digit = -max_last_digit;
+    }
 
     for (; position != str.end(); ++position) {
       T oldValue = value;
@@ -159,7 +168,9 @@ class IntegerParser {
     // Return amount of processed characters
     count = (position - begin);
 
-    if (negative) {value = -value;}
+    if (negative) {
+      value = -value;
+    }
 
     return value;
   }

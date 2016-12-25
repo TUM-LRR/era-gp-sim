@@ -26,16 +26,19 @@
 #include "parser/relative-memory-position.hpp"
 class MemoryAllocator;
 class CompileErrorAnnotator;
-struct LineInterval;
+class LineInterval;
 class SymbolTable;
 class SyntaxTreeGenerator;
 class Architecture;
+class SymbolReplacer;
 struct FinalRepresentation;
 
 class MemoryReservationDirective : public IntermediateDirective {
  public:
-  using ArgumentCompileFunction = std::function<std::size_t(
-      const PositionedString&, const CompileErrorAnnotator&)>;
+  using ArgumentCompileFunction =
+      std::function<std::size_t(const PositionedString&,
+                                const SymbolReplacer&,
+                                const CompileErrorAnnotator&)>;
   /**
  * \brief Instantiates a new IntermediateDirective with the given arguments.
  * (only for subclass use!)

@@ -20,89 +20,62 @@
 #ifndef ERAGPSIM_PARSER_POSITIONED_STRING_HPP
 #define ERAGPSIM_PARSER_POSITIONED_STRING_HPP
 
+#include <algorithm>
 #include <string>
 #include <vector>
-#include "parser/code-position-interval.hpp"
 #include "common/assert.hpp"
+#include "parser/code-position-interval.hpp"
 
-template<typename CharT>
+template <typename CharT>
 class PositionedBasicString {
  public:
   using CharType = CharT;
   using String = std::basic_string<CharType>;
-  PositionedString() = default;
-  PositionedString(const String& string,
-                   const CodePositionInterval& positionInterval)
-                   : PositionedString(string, positionInterval, {positionInterval}) {
-}
-PositionedString(const String& string,
-                   const CodePositionInterval& positionInterval,
-                   const std::vector<CodePositionInterval>& intervals)
-                   : PositionedString(string, positionInterval, fromIntervals(string, intervals)) {
-                     assert::that(!intervals.empty());
-}
+  PositionedBasicString(
+      const String& string = "",
+      const CodePositionInterval& positionInterval = CodePositionInterval())
+  : _string(string), _positionInterval(positionInterval) {
+  }
 
-PositionedString(const String& string, const CodePositionInterval& positionInterval, const std::vector<CodePosition>& positions)
-: _string(string), _positionInterval(positionInterval), _positions(positions)
-{assert::that(positions.size() == string.size());}
-
-  const String& string() const noexcept
-  {
+  const String& string() const noexcept {
     return _string;
   }
-  const CodePositionInterval& positionInterval() const noexcept{
+  const CodePositionInterval& positionInterval() const noexcept {
     return _positionInterval;
   }
-  const std::vector<CodePosition> positions() const noexcept{
-    return _positions;
+
+  PositionedBasicString<CharType>
+  slice(std::size_t start, std::size_t length) const {
+    assert::that((start + length) <= _string.size());
+    assert::that(length <= _string.size());
+    assert::that(start < _string.size());
+    auto startPosition = nthCharacterPosition(start);
+    auto endPosition = nthCharacterPosition(length + start - 1);
+    auto newInterval = CodePositionInterval(startPosition, endPosition);
+    auto stringSlice = _string.substr(start, length);
+    return PositionedBasicString(stringSlice, newInterval);
   }
 
-  PositionedBasicString<CharType> slice(std::size_t start, std::size_t length) {
-    
+  CodePosition nthCharacterPosition(std::size_t n) const {
+    assert::that(n < _string.size());
+    CodePosition position = _positionInterval.start();
+    for (std::size_t i = 0; i < n; ++i) {
+      if (_string[i] == '\n') {
+        position = position.newLine();
+      } else {
+        position = position >> 1;
+      }
+    }
+    return position;
+  }
+
+  bool empty() const {
+    return _string.empty();
   }
 
  private:
-  static CodePosition nextIntervalPosition(const std::vector<CodePositionInterval>& intervals, std::size_t& currentInterval)
-  {
-      assert::that(intervals.size() > currentInterval);
-        while (intervals[currentInterval].empty())
-        {
-          ++currentInterval;
-          assert::that(intervals.size() > currentInterval);
-        }
-        assert::that(intervals.size() > currentInterval);
-        return intervals[currentInterval].start();
-  }
-
-  static std::vector<CodePosition> fromIntervals(const std::string& string, const std::vector<CodePositionInterval>& intervals) const
-  {
-    assert::that(!intervals.empty());
-    std::vector<CodePosition> positions;
-    std::size_t currentInterval = ~0;
-    auto current = CodePosition(1);
-    for (std::size_t i = 0; i < string.size(); ++i)
-    {
-      const auto& compare = currentInterval == ~0 ? CodePosition(0) : intervals[currentInterval];
-      if (current.y() > compare.y() || (current.y() == compare.y() && current.x() > compare.x()))
-      {
-        ++currentInterval;
-        current = nextIntervalPosition(intervals, currentInterval);
-      }
-      positions.push_back(current);
-      if (string[i] == '\n')
-      {
-        current = current.newLine();
-      }
-      else {
-        current = current >> 1;
-      }
-    }
-    return positions;
-  }
-
   String _string;
   CodePositionInterval _positionInterval;
-  std::vector<CodePosition> _positions;
 };
 
 using PositionedString = PositionedBasicString<char>;

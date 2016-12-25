@@ -86,7 +86,9 @@ std::size_t MemoryAllocator::calculateSize(bool finalize) {
   for (auto& i : _sections) {
     auto sectionAlign = i._definition.sectionAlignment;
     auto aligned = Utility::discreteCeiling(position, sectionAlign);
-    if (finalize) {i._currentPosition = aligned;}
+    if (finalize) {
+      i._currentPosition = aligned;
+    }
     position = aligned + i._currentSize;
   }
   return position;

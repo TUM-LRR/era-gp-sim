@@ -26,12 +26,15 @@
 #include "core/memory-access.hpp"
 #include "parser/compile-error-annotator.hpp"
 #include "parser/positioned-string.hpp"
+#include "parser/symbol-replacer.hpp"
 
 std::shared_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(
     const PositionedString& operand,
+    const SymbolReplacer& replacer,
     const CompileErrorAnnotator& annotator) const {
   // We invoke our node generator to get a node!
-  auto outputNode = _argumentGenerator(operand, _nodeFactories, annotator);
+  auto outputNode =
+      _argumentGenerator(operand, replacer, _nodeFactories, annotator);
 
   // According to the architecture group, we get a nullptr if the creation
   // failed.

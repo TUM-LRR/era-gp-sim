@@ -152,7 +152,7 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
       default: assert::that(false);
     }
     emit addError(
-        translate(error.message()), error.position().first.line(), color);
+        translate(error.message()), error.position().start().line(), color);
   }
 }
 
@@ -164,9 +164,9 @@ void EditorComponent::setMacroList(
     macroInformationMap["code"] =
         QString::fromStdString(macroInformation.macroCode());
     macroInformationMap["startLine"] =
-        QVariant::fromValue(macroInformation.position().first.line() - 1);
+        QVariant::fromValue(macroInformation.position().start().line() - 1);
     macroInformationMap["endLine"] =
-        QVariant::fromValue(macroInformation.position().second.line() - 1);
+        QVariant::fromValue(macroInformation.position().end().line() - 1);
     int lineCount =
         static_cast<int>(std::count(macroInformation.macroCode().begin(),
                                     macroInformation.macroCode().end(),

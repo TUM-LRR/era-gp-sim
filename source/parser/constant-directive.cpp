@@ -41,7 +41,8 @@ void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
   // Try to parse argument to catch errors early.
   auto fullExpression = immutable.replacer().replace(_expression, annotator);
   if (!fullExpression.string().empty()) {
-    immutable.generator().transformOperand(fullExpression, annotator);
+    immutable.generator().transformOperand(
+        _expression, immutable.replacer(), annotator);
   } else {
     // better error messages:
     // 0 arguments -> this argument should be the name

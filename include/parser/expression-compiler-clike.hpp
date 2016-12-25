@@ -279,7 +279,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
   auto literalDecoders = std::vector<ExpressionLiteralDecoder<IntType>>{
       ExpressionLiteralDecoder<IntType>{
           "0x[0-9a-fA-F]+",
-          [](const std::string& number,
+          [](const PositionedString& number,
              IntType& output,
              const CompileErrorAnnotator& annotator) -> bool {
             output = IntegerParser<IntType>::parse(number, annotator, 2, 16);
@@ -287,7 +287,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           }},
       ExpressionLiteralDecoder<IntType>{
           "0b[01]+",
-          [](const std::string& number,
+          [](const PositionedString& number,
              IntType& output,
              const CompileErrorAnnotator& annotator) -> bool {
             output = IntegerParser<IntType>::parse(number, annotator, 2, 2);
@@ -295,7 +295,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           }},
       ExpressionLiteralDecoder<IntType>{
           "[0-9]+",
-          [](const std::string& number,
+          [](const PositionedString& number,
              IntType& output,
              const CompileErrorAnnotator& annotator) -> bool {
             output = IntegerParser<IntType>::parse(number, annotator, 0, 10);
@@ -303,7 +303,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           }},
       ExpressionLiteralDecoder<IntType>{
           "'.*?'",
-          [](const std::string& number,
+          [](const PositionedString& number,
              IntType& output,
              const CompileErrorAnnotator& annotator) -> bool {
             std::vector<uint32_t> intermediate;
@@ -316,7 +316,8 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           }}};
   auto parserDefinition = ExpressionParserDefinition<IntType>{
       binaryOperators, unaryOperators, literalDecoders};
-  auto helpRegexes = ExpressionHelpRegexes{"\\(", "\\)"};
+  auto helpRegexes =
+      ExpressionHelpRegexes{"\\(", "\\)", "[_A-Za-z][_A-Za-z0-9]*"};
   auto compilerDefinition =
       ExpressionCompilerDefinition<IntType>{parserDefinition, helpRegexes};
   return compilerDefinition;
