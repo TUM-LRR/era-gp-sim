@@ -41,7 +41,6 @@ Item {
         }
         // Send when any item's settings where updated.
         onOutputItemSettingsChanged: {
-            console.log("onOutputItemSettingsChanged");
             updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
             lightstripSettingsWindow.updateSettings();
         }

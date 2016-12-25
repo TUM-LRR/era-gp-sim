@@ -132,6 +132,19 @@ MemoryValue Project::trySetMemoryValueAt(size_t address,
   return _memory.trySet(address, value, ignoreProtection);
 }
 
+bool Project::isMemoryProtectedAt(size_t address,
+                                  size_t amount) const {
+  return _memory.isProtected(address, amount);
+}
+
+void Project::makeMemoryProtected(size_t address, size_t amount) {
+  return _memory.makeProtected(address, amount);
+}
+
+void Project::removeMemoryProtection(size_t address, size_t amount) {
+  return _memory.removeProtection(address, amount);
+}
+
 MemoryValue Project::getRegisterValue(const std::string &name) const {
   return _registerSet.get(name);
 }

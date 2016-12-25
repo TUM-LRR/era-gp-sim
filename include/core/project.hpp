@@ -93,6 +93,26 @@ class Project : public Servant {
                         bool ignoreProtection = false);
 
   /**
+   * \copydoc Memory::isProtected()
+   */
+  bool isMemoryProtectedAt(size_t address, size_t amount = 1) const;
+
+  /**
+   * \copydoc Memory::makeProtected()
+   */
+  void makeMemoryProtected(size_t address, size_t amount = 1);
+
+  /**
+   * \copydoc Memory::removeProtection()
+   */
+  void removeMemoryProtection(size_t address, size_t amount = 1);
+
+  /**
+   * \copydoc Memory::get()
+   */
+  MemoryValue getRegisterValue(const std::string &name) const;
+
+  /*
    * \copydoc Memory::tryPut()
    */
   void tryPutMemoryValueAt(size_t address,
@@ -112,11 +132,6 @@ class Project : public Servant {
   MemoryValue trySetMemoryValueAt(size_t address,
                                   const MemoryValue &value,
                                   bool ignoreProtection = false);
-
-  /**
-   * \copydoc RegisterSet::get()
-   */
-  MemoryValue getRegisterValue(const std::string &name) const;
 
   /**
    * \copydoc RegisterSet::put()
@@ -253,6 +268,7 @@ class Project : public Servant {
    *
    */
   Architecture getArchitecture() const;
+    
 
  private:
   /**

@@ -91,9 +91,12 @@ Window {
 
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
-                    var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
-                    if (inputValue !== undefined && inputValue >= 0) {
+                    var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text));
+                    var maxSize = outputComponent.getMemorySize();
+                    if (inputValue !== undefined && inputValue >= 0 && inputValue < maxSize) {
                         outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
+                    } else {
+                        updateSettings();
                     }
                 }
             }
@@ -128,7 +131,7 @@ Window {
 
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
-                    var inputValue = !ab.checked;
+                    var inputValue = ab.checked ? 0 : 1;
                     outputComponent.setOutputItemProperty(outputItemIndex, "textMode", inputValue);
 
                 }
