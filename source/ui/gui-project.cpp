@@ -154,7 +154,7 @@ void GuiProject::stop() {
 
 void GuiProject::reset() {
   _projectModule.reset();
-  _projectModule.getCommandInterface().setExecutionPoint(1);
+  _projectModule.getCommandInterface().setExecutionPoint(0);
   _editorComponent.parse(true);
 }
 
