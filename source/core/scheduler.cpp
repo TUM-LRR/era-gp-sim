@@ -19,9 +19,11 @@
 
 #include "core/scheduler.hpp"
 
-Scheduler::Scheduler(int sleepMillis)
-: _interrupt(false)
-, _sleepMilliseconds(sleepMillis)
+Scheduler::Scheduler()
+: _taskQueue()
+, _mutex()
+, _conditionVariable()
+, _interrupt(false)
 , _schedulerThread(&Scheduler::_run, this) {
 }
 
@@ -31,7 +33,13 @@ Scheduler::~Scheduler() {
 }
 
 void Scheduler::push(Scheduler::Task&& task) {
-  _taskQueue.push(std::move(task));
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    _taskQueue.emplace(std::move(task));
+  }
+  // the lock is destroyed before this to avoid waking the scheduler up and
+  // blocking again immediately
+  _conditionVariable.notify_one();
 }
 
 std::thread::id Scheduler::getThreadId() {
@@ -42,15 +50,19 @@ void Scheduler::_run() {
   _interrupt = false;
 
   while (!_interrupt) {
-    Task task;
-    if (_taskQueue.pop(task)) {
-      // there was something in the queue, ececute the task
-      task();
-
-    } else {
-      // the queue is empty, sleep for a bit
-      std::this_thread::sleep_for(_sleepMilliseconds);
+    std::unique_lock<std::mutex> lock(_mutex);
+    while (_taskQueue.empty()) {
+      // wait while there is nothing in the queue, guards for spurious wakeups.
+      _conditionVariable.wait(lock);
     }
+    // make sure the mutex is locked and pop an element from the queue (which is
+    // guaranteed to not be empty)
+    if (!lock) lock.lock();
+    Task task = _taskQueue.front();
+    _taskQueue.pop();
+    lock.unlock();
+    // there was something in the queue, execute the task
+    task();
   }
 }
 

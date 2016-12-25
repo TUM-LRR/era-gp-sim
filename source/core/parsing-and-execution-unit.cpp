@@ -19,6 +19,9 @@
 
 #include "core/parsing-and-execution-unit.hpp"
 
+#include <chrono>
+#include <thread>
+
 #include "arch/common/architecture.hpp"
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
@@ -68,6 +71,7 @@ void ParsingAndExecutionUnit::execute() {
     if (nextNode >= _finalRepresentation.commandList.size()) break;
     if (!_executeNode(nextNode)) break;
     nextNode = _updateLineNumber(nextNode);
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
   _executionStopped();
 }
@@ -148,7 +152,8 @@ void ParsingAndExecutionUnit::parse(std::string code) {
       // create a empty MemoryValue as long as the command
       MemoryValue zero(command.node->assemble().getSize());
       _memoryAccess.putMemoryValueAt(command.address, zero);
-//      _memoryAccess.removeMemoryProtection(command.address, zero.getSize() / 8);
+      //      _memoryAccess.removeMemoryProtection(command.address,
+      //      zero.getSize() / 8);
     }
   }
   // parse the new code and save the final representation
@@ -162,8 +167,8 @@ void ParsingAndExecutionUnit::parse(std::string code) {
     for (const auto &command : _finalRepresentation.commandList) {
       auto assemble = command.node->assemble();
       _memoryAccess.putMemoryValueAt(command.address, assemble);
-//      _memoryAccess.makeMemoryProtected(command.address,
-//                                        assemble.getSize() / 8);
+      //      _memoryAccess.makeMemoryProtected(command.address,
+      //                                        assemble.getSize() / 8);
     }
   }
 }

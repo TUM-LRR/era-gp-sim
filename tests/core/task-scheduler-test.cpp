@@ -20,6 +20,7 @@
 #include <exception>
 #include <functional>
 #include <memory>
+#include <random>
 #include <thread>
 
 // clang-format off
@@ -270,6 +271,42 @@ class ThreadingTestFixture : public ::testing::Test {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+class SchedulerQueueFixture : public ::testing::Test {
+ public:
+  SchedulerQueueFixture() : testCounter(0), verifyCounter(0) {
+  }
+
+  static constexpr std::size_t producerThreads = 10;
+  static constexpr std::size_t testLength = 100000;
+  std::atomic<std::size_t> testCounter;
+  std::atomic<std::size_t> verifyCounter;
+  std::shared_ptr<Scheduler> scheduler = std::make_shared<Scheduler>();
+  std::vector<std::thread> threads;
+  std::function<void()> threadFunction = [this]() {
+    std::mt19937 randomGenerator(std::random_device{}());
+    std::uniform_int_distribution<std::uint16_t> distribution(1, 100);
+    std::size_t threadRandomSum = 0;
+    for (std::size_t i = 0; i < SchedulerQueueFixture::testLength; i++) {
+      auto random = distribution(randomGenerator);
+      scheduler->push(
+          [random, this]() { this->testCounter.fetch_add(random); });
+      threadRandomSum += random;
+    }
+    this->verifyCounter.fetch_add(threadRandomSum);
+  };
+};
+
+TEST_F(SchedulerQueueFixture, schedulerQueueTest) {
+  for (std::size_t i = 0; i < SchedulerQueueFixture::producerThreads; ++i) {
+    threads.emplace_back(threadFunction);
+  }
+  for (auto& thread : threads) {
+    thread.join();
+  }
+  // delete the scheduler to make sure every task gets executed.
+  scheduler.reset();
+  ASSERT_EQ(verifyCounter, testCounter);
+}
 
 // Tests if constructor and destructor are running in the scheduler thread
 TEST(ThreadingTestProxy, constructorTest) {
