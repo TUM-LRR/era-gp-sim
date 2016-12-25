@@ -24,7 +24,7 @@
 
 #include "arch/riscv/properties.hpp"
 #include "arch/riscv/utility.hpp"
-#include "parser/riscv-parser.hpp"
+#include "parser/riscv/riscv-parser.hpp"
 #include "tests/arch/riscv/base-fixture.hpp"
 
 using namespace riscv;

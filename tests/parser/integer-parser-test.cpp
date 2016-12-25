@@ -17,11 +17,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/integer-parser.hpp"
+#include "parser/independent/integer-parser.hpp"
 #include "gtest/gtest.h"
-#include "parser/compile-error-list.hpp"
-#include "parser/compile-error-list.hpp"
-#include "parser/positioned-string.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/independent/positioned-string.hpp"
 #define ZP(x) PositionedString(x)
 
 template <typename T>

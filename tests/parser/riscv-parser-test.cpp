@@ -16,14 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/riscv-parser.hpp"
+#include "parser/riscv/riscv-parser.hpp"
 
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
 #include "core/project-module.hpp"
 #include "gtest/gtest.h"
-#include "parser/syntax-information.hpp"
+#include "parser/common/syntax-information.hpp"
 
 // This is just for internal testing during development
 // #define PARSER_TEST_PRINT

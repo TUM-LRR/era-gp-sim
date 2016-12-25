@@ -18,10 +18,10 @@
 
 #include "common/utility.hpp"
 #include "gtest/gtest.h"
-#include "parser/compile-error-list.hpp"
-#include "parser/compile-error-list.hpp"
-#include "parser/expression-compiler-clike.hpp"
-#include "parser/positioned-string.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/independent/expression-compiler-clike.hpp"
+#include "parser/independent/positioned-string.hpp"
 #define ZP(x) PositionedString(x)
 
 // Passing test case.

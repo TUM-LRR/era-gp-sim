@@ -29,12 +29,12 @@
 #include "arch/riscv/register-node.hpp"
 #include "core/project-module.hpp"
 #include "gtest/gtest.h"
-#include "parser/compile-error-list.hpp"
-#include "parser/compile-error-list.hpp"
-#include "parser/positioned-string.hpp"
-#include "parser/riscv-parser.hpp"
-#include "parser/symbol-replacer.hpp"
-#include "parser/syntax-tree-generator.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/independent/positioned-string.hpp"
+#include "parser/riscv/riscv-parser.hpp"
+#include "parser/independent/symbol-replacer.hpp"
+#include "parser/independent/syntax-tree-generator.hpp"
 #define ZP(x) PositionedString(x, CodePositionInterval())
 
 

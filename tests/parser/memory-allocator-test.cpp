@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/memory-allocator.hpp"
+#include "parser/independent/memory-allocator.hpp"
 #include "gtest/gtest.h"
 
 TEST(MemoryAllocator, init) {

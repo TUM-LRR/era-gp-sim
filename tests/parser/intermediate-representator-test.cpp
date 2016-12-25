@@ -16,14 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/intermediate-representator.hpp"
+#include "parser/independent/intermediate-representator.hpp"
 #include "gtest/gtest.h"
-#include "parser/compile-error-list.hpp"
-#include "parser/compile-error-list.hpp"
-#include "parser/intermediate-instruction.hpp"
-#include "parser/macro-directive.hpp"
-#include "parser/macro-end-directive.hpp"
-#include "parser/positioned-string.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/independent/intermediate-instruction.hpp"
+#include "parser/independent/macro-directive.hpp"
+#include "parser/independent/macro-end-directive.hpp"
+#include "parser/independent/positioned-string.hpp"
 #define ZP(x) PositionedString(x)
 
 TEST(IntermediateRepresentator, insertSimple) {

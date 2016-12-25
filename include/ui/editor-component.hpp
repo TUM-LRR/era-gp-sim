@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "core/command-interface.hpp"
-#include "parser/syntax-information.hpp"
+#include "parser/common/syntax-information.hpp"
 #include "ui/syntaxhighlighter.hpp"
 
 class ParserInterface;

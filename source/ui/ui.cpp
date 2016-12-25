@@ -26,7 +26,7 @@
 #include "common/assert.hpp"
 #include "common/translateable.hpp"
 #include "common/utility.hpp"
-#include "parser/final-representation.hpp"
+#include "parser/common/final-representation.hpp"
 #include "ui/snapshot-component.hpp"
 #include "ui/input-text-model.hpp"
 #include "ui/snapshot-component.hpp"

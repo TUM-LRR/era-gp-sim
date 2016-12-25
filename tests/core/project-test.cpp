@@ -29,9 +29,9 @@
 #include "core/servant.hpp"
 #include "core/proxy.hpp"
 #include "arch/common/architecture-formula.hpp"
-#include "parser/final-representation.hpp"
-#include "parser/parser-factory.hpp"
-#include "parser/syntax-information.hpp"
+#include "parser/common/final-representation.hpp"
+#include "parser/common/parser-factory.hpp"
+#include "parser/common/syntax-information.hpp"
 // clang-format on
 
 class Testservant : public Servant {

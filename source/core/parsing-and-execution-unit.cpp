@@ -23,8 +23,8 @@
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
-#include "parser/parser-factory.hpp"
-#include "parser/parser-mode.hpp"
+#include "parser/common/parser-factory.hpp"
+#include "parser/common/parser-mode.hpp"
 
 ParsingAndExecutionUnit::ParsingAndExecutionUnit(
     std::weak_ptr<Scheduler> &&scheduler,

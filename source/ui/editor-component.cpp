@@ -29,7 +29,7 @@
 #include "arch/common/validation-result.hpp"
 #include "common/assert.hpp"
 #include "core/parser-interface.hpp"
-#include "parser/compile-error.hpp"
+#include "parser/common/compile-error.hpp"
 #include "ui/translateable-processing.hpp"
 
 EditorComponent::EditorComponent(QQmlContext *projectContext,

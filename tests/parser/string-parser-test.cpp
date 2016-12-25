@@ -16,13 +16,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/string-parser.hpp"
+#include "parser/independent/string-parser.hpp"
 #include <iostream>
 #include "common/translateable.hpp"
 #include "gtest/gtest.h"
-#include "parser/compile-error-list.hpp"
-#include "parser/compile-error-list.hpp"
-#include "parser/positioned-string.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/independent/positioned-string.hpp"
 
 template <typename CharTypeIn, typename CharTypeOut>
 void doTestInternal(const std::basic_string<CharTypeIn>& provided,

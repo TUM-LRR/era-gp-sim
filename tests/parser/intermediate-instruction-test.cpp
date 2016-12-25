@@ -16,10 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/intermediate-instruction.hpp"
+#include "parser/independent/intermediate-instruction.hpp"
 #include "gtest/gtest.h"
-#include "parser/code-position-interval.hpp"
-#include "parser/positioned-string.hpp"
+#include "parser/common/code-position-interval.hpp"
+#include "parser/independent/positioned-string.hpp"
 
 // Hehe...
 #define ZP(x) PositionedString(x)
