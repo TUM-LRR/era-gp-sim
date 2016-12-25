@@ -20,7 +20,7 @@
 
 #include <cctype>
 #include "common/assert.hpp"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 
 RiscvParser::RiscvRegex::RiscvRegex() {
 }
@@ -52,7 +52,7 @@ static size_t trimRight(const std::string &line, size_t pos) {
 bool RiscvParser::RiscvRegex::_readInstructionOrLabel(
     const std::string &line,
     CodeCoordinate lineCoordinate,
-    const CompileErrorAnnotator &annotator,
+    CompileErrorList &errors,
     size_t &pos) {
   // Skip spaces
   for (; pos < line.size() && std::isspace(line[pos]); pos++) {
@@ -68,7 +68,7 @@ bool RiscvParser::RiscvRegex::_readInstructionOrLabel(
   // If we read through the whole string, the instruction is finished
   if (pos >= line.size()) {
     _instruction = _getPositionedString(
-        line, lineCoordinate, annotator, startPos, line.size());
+        line, lineCoordinate, errors, startPos, line.size());
     return true;
   }
 
@@ -76,36 +76,34 @@ bool RiscvParser::RiscvRegex::_readInstructionOrLabel(
   if (line[pos] == ':') {
     // If a label is already defined, add an error
     if (!_label.string().empty()) {
-      annotator.addError(_getCharacterPosition(lineCoordinate, annotator, pos),
-                         "Multiple labels per line aren't allowed!");
+      errors.addError(_getCharacterPosition(lineCoordinate, errors, pos),
+                      "Multiple labels per line aren't allowed!");
       return false;
     }
 
-    _label =
-        _getPositionedString(line, lineCoordinate, annotator, startPos, pos);
+    _label = _getPositionedString(line, lineCoordinate, errors, startPos, pos);
     ++pos;
-    return _readInstructionOrLabel(line, lineCoordinate, annotator, pos);
+    return _readInstructionOrLabel(line, lineCoordinate, errors, pos);
   }
 
   // If we hit a space or a comment start, the instruction is finished
   if (std::isspace(line[pos]) || line[pos] == ';') {
     _instruction =
-        _getPositionedString(line, lineCoordinate, annotator, startPos, pos);
+        _getPositionedString(line, lineCoordinate, errors, startPos, pos);
     return true;
   }
 
   // Otherwise we hit an invalid character
-  annotator.addError(_getCharacterPosition(lineCoordinate, annotator, pos),
-                     "Invalid character in instruction name!");
+  errors.addError(_getCharacterPosition(lineCoordinate, errors, pos),
+                  "Invalid character in instruction name!");
   return false;
 }
 
 // Returns true if successful
-bool RiscvParser::RiscvRegex::_readParameter(
-    const std::string &line,
-    CodeCoordinate lineCoordinate,
-    const CompileErrorAnnotator &annotator,
-    size_t &pos) {
+bool RiscvParser::RiscvRegex::_readParameter(const std::string &line,
+                                             CodeCoordinate lineCoordinate,
+                                             CompileErrorList &errors,
+                                             size_t &pos) {
   // Saves if we're inside a string
   bool quoted = false;
 
@@ -132,7 +130,7 @@ bool RiscvParser::RiscvRegex::_readParameter(
 
   if (startPos < trimmedPos) {
     _parameters.push_back(_getPositionedString(
-        line, lineCoordinate, annotator, startPos, trimmedPos));
+        line, lineCoordinate, errors, startPos, trimmedPos));
   }
 
   return true;
@@ -145,23 +143,22 @@ void RiscvParser::RiscvRegex::_resetResults() {
   _isValid = false;
 }
 
-size_t
-RiscvParser::RiscvRegex::matchLine(const std::string &line,
-                                   CodeCoordinate lineCoordinate,
-                                   const CompileErrorAnnotator &annotator) {
+size_t RiscvParser::RiscvRegex::matchLine(const std::string &line,
+                                          CodeCoordinate lineCoordinate,
+                                          CompileErrorList &errors) {
   size_t pos = 0;
 
   _resetResults();
 
   // Read instruction and label
-  if (!_readInstructionOrLabel(line, lineCoordinate, annotator, pos)) {
+  if (!_readInstructionOrLabel(line, lineCoordinate, errors, pos)) {
     return pos;
   }
 
   // Read parameters until it fails or we reached the end of the line or a
   // comment
   while (pos < line.size() && line[pos] != ';') {
-    if (!_readParameter(line, lineCoordinate, annotator, pos)) {
+    if (!_readParameter(line, lineCoordinate, errors, pos)) {
       return pos;
     }
   }
@@ -210,31 +207,31 @@ int RiscvParser::RiscvRegex::getParameterCount() const noexcept {
   return _parameters.size();
 }
 
-CodePositionInterval RiscvParser::RiscvRegex::_getCharacterPosition(
-    CodeCoordinate lineCoordinate,
-    const CompileErrorAnnotator &annotator,
-    size_t pos) const {
+CodePositionInterval
+RiscvParser::RiscvRegex::_getCharacterPosition(CodeCoordinate lineCoordinate,
+                                               CompileErrorList &errors,
+                                               size_t pos) const {
   CodePosition position(lineCoordinate, pos);
   return CodePositionInterval(position, position >> 1);
 }
 
-CodePositionInterval RiscvParser::RiscvRegex::_getCharacterInterval(
-    CodeCoordinate lineCoordinate,
-    const CompileErrorAnnotator &annotator,
-    size_t start,
-    size_t end) const {
-  CodePosition nstart(annotator.position().start().line(), start);
-  CodePosition nend(annotator.position().start().line(), end);
+CodePositionInterval
+RiscvParser::RiscvRegex::_getCharacterInterval(CodeCoordinate lineCoordinate,
+                                               CompileErrorList &errors,
+                                               size_t start,
+                                               size_t end) const {
+  CodePosition nstart(lineCoordinate, start);
+  CodePosition nend(lineCoordinate, end);
   return CodePositionInterval(nstart, nend);
 }
 
-PositionedString RiscvParser::RiscvRegex::_getPositionedString(
-    const std::string &line,
-    CodeCoordinate lineCoordinate,
-    const CompileErrorAnnotator &annotator,
-    size_t start,
-    size_t end) const {
+PositionedString
+RiscvParser::RiscvRegex::_getPositionedString(const std::string &line,
+                                              CodeCoordinate lineCoordinate,
+                                              CompileErrorList &errors,
+                                              size_t start,
+                                              size_t end) const {
   return PositionedString(
       line.substr(start, end - start),
-      _getCharacterInterval(lineCoordinate, annotator, start, end));
+      _getCharacterInterval(lineCoordinate, errors, start, end));
 }

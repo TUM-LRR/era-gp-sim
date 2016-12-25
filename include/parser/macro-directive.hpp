@@ -67,11 +67,11 @@ class MacroDirective : public IntermediateDirective {
    * \param state The CompileState to log possible errors.
    */
   virtual void precompile(const PreprocessingImmutableArguments& immutable,
-                          const CompileErrorAnnotator& annotator,
+                          CompileErrorList& errors,
                           MacroDirectiveTable& macroTable);
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       const CompileErrorAnnotator& annotator,
+                       CompileErrorList& errors,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
@@ -170,7 +170,7 @@ class MacroDirective : public IntermediateDirective {
      * Validates the macro parameters.
      * \param state Compile state to record errors.
      */
-    void validate(const CompileErrorAnnotator& annotator) const;
+    void validate(CompileErrorList& errors) const;
 
     /**
      * Inserts all parameters into the operation.

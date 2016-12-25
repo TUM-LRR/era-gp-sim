@@ -19,6 +19,7 @@
 
 #include "parser/compile-error-list.hpp"
 #include <algorithm>
+#include "common/translateable.hpp"
 
 const CompileErrorVector CompileErrorList::errors() const noexcept {
   return _errors;
@@ -65,6 +66,35 @@ std::size_t CompileErrorList::size() const {
   return _errors.size();
 }
 
-void CompileErrorList::add(const CompileError& error) {
+void CompileErrorList::addRaw(const CompileError& error) {
   _errors.push_back(error);
+}
+
+void CompileErrorList::addCompileErrorInternal(
+    CompileErrorSeverity severity,
+    const CodePositionInterval& interval,
+    const char* message,
+    const std::initializer_list<std::string>& parameters) {
+  auto error = CompileError(
+      std::make_shared<Translateable>(message, parameters), interval, severity);
+  addRaw(error);
+}
+void CompileErrorList::addErrorInternal(
+    const CodePositionInterval& interval,
+    const char* message,
+    const std::initializer_list<std::string>& parameters) {
+  addCompileError(CompileErrorSeverity::ERROR, interval, message, parameters);
+}
+void CompileErrorList::addWarningInternal(
+    const CodePositionInterval& interval,
+    const char* message,
+    const std::initializer_list<std::string>& parameters) {
+  addCompileError(CompileErrorSeverity::WARNING, interval, message, parameters);
+}
+void CompileErrorList::addInformationInternal(
+    const CodePositionInterval& interval,
+    const char* message,
+    const std::initializer_list<std::string>& parameters) {
+  addCompileError(
+      CompileErrorSeverity::INFORMATION, interval, message, parameters);
 }

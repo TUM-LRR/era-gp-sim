@@ -18,7 +18,7 @@
 */
 
 #include "parser/macro-directive.hpp"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/macro-directive-table.hpp"
 
@@ -58,23 +58,23 @@ void MacroDirective::insert(IntermediateOperationPointer pointer) {
 
 void MacroDirective::precompile(
     const PreprocessingImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     MacroDirectiveTable& macroTable) {
   if (macroName().string().empty()) {
-    annotator.addError(name().positionInterval(), "Missing macro name.");
+    errors.addError(name().positionInterval(), "Missing macro name.");
   }
-  _macroParameters.validate(annotator);
+  _macroParameters.validate(errors);
   auto success = macroTable.insert(*this);
   if (!success) {
-    annotator.addError(macroName().positionInterval(),
-                       "Macro '%1' already exists.",
-                       macroName().string());
+    errors.addError(macroName().positionInterval(),
+                    "Macro '%1' already exists.",
+                    macroName().string());
   }
 }
 
 
 void MacroDirective::execute(const ExecuteImmutableArguments& immutable,
-                             const CompileErrorAnnotator& annotator,
+                             CompileErrorList& errors,
                              FinalRepresentation& finalRepresentator,
                              MemoryAccess& memoryAccess) {
   // Probably nothing here.
@@ -154,16 +154,15 @@ MacroDirective::MacroParameters::MacroParameters(
   }
 }
 
-void MacroDirective::MacroParameters::validate(
-    const CompileErrorAnnotator& annotator) const {
+void MacroDirective::MacroParameters::validate(CompileErrorList& errors) const {
   bool containedDefault = false;
   MacroParameter last;
   for (auto param : _params) {
     // Check for empty names or default values
     if (param.first.string().empty() ||
         (param.second && param.second->string().empty())) {
-      annotator.addError(param.first.positionInterval(),
-                         "Malformed macro argument list.");
+      errors.addError(param.first.positionInterval(),
+                      "Malformed macro argument list.");
       return;
     }
 
@@ -172,9 +171,8 @@ void MacroDirective::MacroParameters::validate(
       containedDefault = true;
     }
     if (containedDefault && !param.second) {
-      annotator.addError(
-          last.second->positionInterval(),
-          "Default macro argument values have to be placed last.");
+      errors.addError(last.second->positionInterval(),
+                      "Default macro argument values have to be placed last.");
       return;
     }
 

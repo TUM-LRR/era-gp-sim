@@ -48,12 +48,12 @@ class IntermediateRepresentator {
    * \tparam T The command type.
    */
   template <typename T>
-  void insertCommand(T&& command, const CompileErrorAnnotator& annotator) {
+  void insertCommand(T&& command, CompileErrorList& errors) {
     // First of all, we create our dear pointer.
     IntermediateOperationPointer pointer =
         std::make_shared<T>(std::move(command));
 
-    insertCommandPtr(std::move(pointer), annotator);
+    insertCommandPtr(std::move(pointer), errors);
   }
 
   /**
@@ -62,7 +62,7 @@ class IntermediateRepresentator {
    * \param state The compile state to save any possible errors.
    */
   void insertCommandPtr(IntermediateOperationPointer&& command,
-                        const CompileErrorAnnotator& annotator);
+                        CompileErrorList& errors);
 
   /**
    * \brief Transforms the commands to a syntax tree list.
@@ -76,7 +76,7 @@ class IntermediateRepresentator {
    * \return The list of syntax trees to be interpreted by the architecture.
    */
   FinalRepresentation transform(const TransformationParameters& parameters,
-                                CompileErrorList errorList,
+                                CompileErrorList errors,
                                 MemoryAccess& memoryAccess);
 
  private:

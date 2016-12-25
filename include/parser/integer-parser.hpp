@@ -25,7 +25,7 @@
 #include <stdexcept>
 #include <string>
 #include "common/assert.hpp"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/positioned-string.hpp"
 
 /**
@@ -51,7 +51,7 @@ class IntegerParser {
    * \return The parsed integer. Undefined if parsing fails.
    */
   static T parse(const PositionedString &string,
-                 const CompileErrorAnnotator &annotator,
+                 CompileErrorList &errors,
                  size_t start = 0,
                  int base = 10) {
     size_t count;
@@ -62,9 +62,9 @@ class IntegerParser {
         throw std::invalid_argument("");
       }
     } catch (std::out_of_range &) {
-      annotator.addError(string.positionInterval(), "Integer out of range.");
+      errors.addError(string.positionInterval(), "Integer out of range.");
     } catch (std::invalid_argument &) {
-      annotator.addError(string.positionInterval(), "Integer syntax error.");
+      errors.addError(string.positionInterval(), "Integer syntax error.");
     }
     return result;
   }

@@ -25,7 +25,7 @@
 #include "parser/intermediate-directive.hpp"
 #include "parser/relative-memory-position.hpp"
 class MemoryAllocator;
-class CompileErrorAnnotator;
+class CompileErrorList;
 class LineInterval;
 class SymbolTable;
 class SyntaxTreeGenerator;
@@ -35,10 +35,8 @@ struct FinalRepresentation;
 
 class MemoryReservationDirective : public IntermediateDirective {
  public:
-  using ArgumentCompileFunction =
-      std::function<std::size_t(const PositionedString&,
-                                const SymbolReplacer&,
-                                const CompileErrorAnnotator&)>;
+  using ArgumentCompileFunction = std::function<std::size_t(
+      const PositionedString&, const SymbolReplacer&, CompileErrorList&)>;
   /**
  * \brief Instantiates a new IntermediateDirective with the given arguments.
  * (only for subclass use!)
@@ -63,7 +61,7 @@ class MemoryReservationDirective : public IntermediateDirective {
    * reserving data.
    */
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       const CompileErrorAnnotator& annotator,
+                       CompileErrorList& errors,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
@@ -75,7 +73,7 @@ class MemoryReservationDirective : public IntermediateDirective {
    * \param state The CompileState to log possible errors.
    */
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
-                              const CompileErrorAnnotator& annotator,
+                              CompileErrorList& errors,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);
 
@@ -87,7 +85,7 @@ class MemoryReservationDirective : public IntermediateDirective {
    */
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
-                     const CompileErrorAnnotator& annotator,
+                     CompileErrorList& errors,
                      SymbolGraph& graph);
 
  private:

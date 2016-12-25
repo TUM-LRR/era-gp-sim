@@ -18,26 +18,23 @@
 
 #include "parser/symbol.hpp"
 #include "gtest/gtest.h"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/compile-error-list.hpp"
 #include "parser/positioned-string.hpp"
 #include "parser/symbol-graph-evaluation.hpp"
 #include "parser/symbol-graph.hpp"
 #include "parser/symbol-replacer.hpp"
-#define DEFINE_ANNOTATOR      \
-  CompileErrorList errorList; \
-  CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
 #define ZP(x) PositionedString(x, CodePositionInterval())
 
 TEST(SymbolTable, empty) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   SymbolGraph graph;
   auto eval = graph.evaluate();
   ASSERT_TRUE(eval.valid());
 }
 
 TEST(SymbolTable, evaluateSimple) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   SymbolGraph graph;
   graph.addNode(Symbol(ZP("Hi"), ZP("Bye")));
   auto eval = graph.evaluate();
@@ -45,7 +42,7 @@ TEST(SymbolTable, evaluateSimple) {
 }
 
 TEST(SymbolTable, replaceSimple) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   SymbolGraph graph;
   graph.addNode(Symbol(ZP("A"), ZP("B")));
   graph.addNode(Symbol(ZP("B"), ZP("C")));
@@ -55,12 +52,12 @@ TEST(SymbolTable, replaceSimple) {
   ASSERT_TRUE(eval.valid());
   SymbolReplacer replacer(eval);
   auto result =
-      replacer.replace(ZP("A+B+C+c=E-D+X-ABCDEFG-124*12B32#E"), annotator);
+      replacer.replace(ZP("A+B+C+c=E-D+X-ABCDEFG-124*12B32#E"), errors);
   ASSERT_EQ(result.string(), "D+D+D+c=D-D+X-ABCDEFG-124*12B32#D");
 }
 
 TEST(SymbolTable, simpleCycle) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   SymbolGraph graph;
   graph.addNode(Symbol(ZP("A"), ZP("B")));
   graph.addNode(Symbol(ZP("B"), ZP("C")));
@@ -73,7 +70,7 @@ TEST(SymbolTable, simpleCycle) {
 }
 
 TEST(SymbolTable, doubleInsertion) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   SymbolGraph graph;
   graph.addNode(Symbol(ZP("A"), ZP("B")));
   graph.addNode(Symbol(ZP("A"), ZP("C")));
@@ -88,7 +85,7 @@ TEST(SymbolTable, doubleInsertion) {
 }
 
 TEST(SymbolTable, correctName) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   SymbolGraph graph;
   graph.addNode(Symbol(ZP("a"), ZP("")));
   graph.addNode(Symbol(ZP("_"), ZP("")));
@@ -102,7 +99,7 @@ TEST(SymbolTable, correctName) {
 }
 
 TEST(SymbolTable, invalidName) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   SymbolGraph graph;
   graph.addNode(Symbol(ZP("1A"), ZP("")));
   graph.addNode(Symbol(ZP("1_2"), ZP("")));
@@ -117,7 +114,7 @@ TEST(SymbolTable, invalidName) {
 }
 
 TEST(SymbolTable, recursiveReplace) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   SymbolGraph graph;
   graph.addNode(Symbol(ZP("A"), ZP("(B C D 0)")));
   graph.addNode(Symbol(ZP("B"), ZP("(C C 1)")));
@@ -128,7 +125,7 @@ TEST(SymbolTable, recursiveReplace) {
   auto eval = graph.evaluate();
   ASSERT_TRUE(eval.valid());
   SymbolReplacer replacer(eval);
-  auto result = replacer.replace(ZP("F ABCDEFG HIJKLMNOP A B F"), annotator);
+  auto result = replacer.replace(ZP("F ABCDEFG HIJKLMNOP A B F"), errors);
   ASSERT_EQ(result.string(),
             "((((((X 4) 3) ((X 4) 3) ((X 4) 3) 2) (((X 4) 3) ((X 4) 3) ((X 4) "
             "3) 2) 1) (((X 4) 3) ((X 4) 3) ((X 4) 3) 2) ((X 4) 3) 0) ((((X 4) "
@@ -144,7 +141,7 @@ TEST(SymbolTable, recursiveReplace) {
 }
 
 TEST(SymbolTable, lessSimpleCycle) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   SymbolGraph graph;
   graph.addNode(Symbol(ZP("A"), ZP("A B C D E F G H I J K")));
   graph.addNode(Symbol(ZP("B"), ZP("B C D E F")));

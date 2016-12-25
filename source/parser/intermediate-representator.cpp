@@ -20,7 +20,7 @@
 
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/compile-error-list.hpp"
 #include "parser/intermediate-macro-instruction.hpp"
 #include "parser/intermediate-parameters.hpp"
@@ -53,15 +53,14 @@ IntermediateRepresentator::IntermediateRepresentator()
 }
 
 void IntermediateRepresentator::insertCommandPtr(
-    IntermediateOperationPointer&& command,
-    const CompileErrorAnnotator& annotator) {
+    IntermediateOperationPointer&& command, CompileErrorList& errors) {
   // We got to handle the three target selector cases right here.
   if (command->newTarget() == TargetSelector::THIS) {
     // If we want the current command as new target, we set it like so.
     if (_currentOutput) {
       // Nested macros are not supported.
-      annotator.addError(command->name().positionInterval(),
-                         "Error, nested macros are not supported.");
+      errors.addError(command->name().positionInterval(),
+                      "Error, nested macros are not supported.");
     }
     _currentOutput = std::move(command);
   } else {
@@ -70,8 +69,8 @@ void IntermediateRepresentator::insertCommandPtr(
       // it and its sub commands might be lost).
       if (!_currentOutput) {
         // Classic bracket-forgot-to-close problem.
-        annotator.addError(command->name().positionInterval(),
-                           "The start directive of the macro is missing.");
+        errors.addError(command->name().positionInterval(),
+                        "The start directive of the macro is missing.");
       }
       internalInsertCommand(std::move(_currentOutput));
     }
@@ -83,12 +82,11 @@ void IntermediateRepresentator::insertCommandPtr(
 
 FinalRepresentation
 IntermediateRepresentator::transform(const TransformationParameters& parameters,
-                                     CompileErrorList errorList,
+                                     CompileErrorList errors,
                                      MemoryAccess& memoryAccess) {
-  CompileErrorAnnotator annotator(errorList, CodePositionInterval());
   if (_currentOutput) {
-    annotator.addError(_currentOutput->name().positionInterval(),
-                       "Macro not closed. Missing a macro end directive?");
+    errors.addError(_currentOutput->name().positionInterval(),
+                    "Macro not closed. Missing a macro end directive?");
   }
 
   FinalRepresentation representation;
@@ -98,11 +96,11 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
 
   MacroDirectiveTable macroTable;
   for (const auto& command : _commandList) {
-    command->precompile(preprocessingArguments, annotator, macroTable);
+    command->precompile(preprocessingArguments, errors, macroTable);
   }
 
   IntermediateMacroInstruction::replaceWithMacros(
-      _commandList.begin(), _commandList.end(), macroTable, annotator);
+      _commandList.begin(), _commandList.end(), macroTable, errors);
 
   generateMacroInformation(representation);
 
@@ -114,8 +112,7 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
   IntermediateOperationPointer firstMemoryExceedingOperation(nullptr);
 
   for (const auto& command : _commandList) {
-    command->allocateMemory(
-        preprocessingArguments, annotator, allocator, tracker);
+    command->allocateMemory(preprocessingArguments, errors, allocator, tracker);
     if (allocator.estimateSize() > allowedSize &&
         !firstMemoryExceedingOperation) {
       firstMemoryExceedingOperation = command;
@@ -128,7 +125,7 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
   EnhanceSymbolTableImmutableArguments symbolTableArguments(
       preprocessingArguments, allocator);
   for (const auto& command : _commandList) {
-    command->enhanceSymbolTable(symbolTableArguments, annotator, graph);
+    command->enhanceSymbolTable(symbolTableArguments, errors, graph);
   }
 
   auto graphEvaluation = graph.evaluate();// TODO refactor out.
@@ -136,7 +133,7 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
     if (!graphEvaluation.invalidNames().empty()) {
       for (auto index : graphEvaluation.invalidNames()) {
         const auto& symbol = graphEvaluation.symbols()[index];
-        annotator.addError(
+        errors.addError(
             symbol.name().positionInterval(),
             "The name '%1' is not a valid name for a constant, label etc.",
             symbol.name().string());
@@ -146,10 +143,9 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
       for (const auto& indexGroup : graphEvaluation.duplicates()) {
         for (auto index : indexGroup) {
           const auto& symbol = graphEvaluation.symbols()[index];
-          annotator.addError(
-              symbol.name().positionInterval(),
-              "The name '%1' exists more than once in the program",
-              symbol.name().string());
+          errors.addError(symbol.name().positionInterval(),
+                          "The name '%1' exists more than once in the program",
+                          symbol.name().string());
         }
       }
     }
@@ -162,20 +158,20 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
       displayString += "...";
       for (auto index : graphEvaluation.sampleCycle()) {
         const auto& symbol = graphEvaluation.symbols()[index];
-        annotator.addError(
+        errors.addError(
             symbol.name().positionInterval(),
             "Symbol '%1' is part of an infinite reference cycle, going like %2",
             symbol.name().string(),
             displayString);
       }
     }
-    representation.errorList = annotator.errorList().errors();
+    representation.errorList = errors.errors();
     return representation;
   }
 
   if (allocatedSize > allowedSize) {
     if (firstMemoryExceedingOperation) {
-      annotator.addError(
+      errors.addError(
           CodePositionInterval(CodePosition(0), CodePosition(0, 2)),
           "From this operation on, including it, there is too much memory "
           "allocated in total: %1 requested, maximum is %2"
@@ -184,7 +180,7 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
           std::to_string(allocatedSize),
           std::to_string(allowedSize));
     } else {
-      annotator.addError(
+      errors.addError(
           CodePositionInterval(CodePosition(0), CodePosition(0, 2)),
           "Too much memory allocated: %1 requested, maximum is %2"
           " (please note: because of aligning memory, the first value "
@@ -192,19 +188,18 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
           std::to_string(allocatedSize),
           std::to_string(allowedSize));
     }
-    representation.errorList = annotator.errorList().errors();
+    representation.errorList = errors.errors();
     return representation;
   }
 
   SymbolReplacer replacer(graphEvaluation);
   ExecuteImmutableArguments executeArguments(symbolTableArguments, replacer);
   for (const auto& command : _commandList) {
-    command->execute(executeArguments, annotator, representation, memoryAccess);
+    command->execute(executeArguments, errors, representation, memoryAccess);
   }
 
   representation.errorList =
-      annotator.errorList()
-          .errors();// TODO beautify by making FinalRepresentation a class.
+      errors.errors();// TODO beautify by making FinalRepresentation a class.
 
   return representation;
 }

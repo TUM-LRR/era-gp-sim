@@ -36,44 +36,43 @@
 #include "parser/intermediate-parameters.hpp"
 
 const SyntaxTreeGenerator::ArgumentNodeGenerator
-    RiscvParser::argumentGeneratorFunction =
-        [](const PositionedString& operandPositional,
-           const SymbolReplacer& replacer,
-           const NodeFactoryCollection& nodeFactories,
-           const CompileErrorAnnotator& annotator)
-    -> std::shared_ptr<AbstractSyntaxTreeNode> {
-      // These checks are performed:
-      // * Empty argument? Shouldn't happen, kill the compilation with fire.
-      // * First character is a letter? We have replace all constants by now, so
-      // it
-      // must be a register - or an undefined constant!
-      // * If not? Try to compile the expression!
-      std::shared_ptr<AbstractSyntaxTreeNode> outputNode;
-      PositionedString operandReplaced =
-          replacer.replace(operandPositional, annotator);
-      const auto& operand = operandReplaced.string();
-      if (operand.empty()) {
-        outputNode = std::shared_ptr<AbstractSyntaxTreeNode>(nullptr);
-      } else if (std::isalpha(operand[0])) {
-        outputNode = nodeFactories.createRegisterNode(operand);
-      } else if (operand[0] == '\"') {
-        // Data nodes are mainly for meta instructions.
-        std::vector<char> outString;
-        StringParser::parseString(operandPositional, annotator, outString);
-        std::string asString(outString.begin(), outString.end());
-        outputNode = nodeFactories.createDataNode(asString);
-      } else {
-        // using i32
-        int32_t result = CLikeExpressionCompilers::CLikeCompilerI32.compile(
-            operandPositional, replacer, annotator);
-        outputNode = nodeFactories.createImmediateNode(
-            conversions::convert(result,
-                                 conversions::standardConversions::helper::
-                                     twosComplement::toMemoryValueFunction,
-                                 32));
-      }
-      return std::move(outputNode);
-    };
+    RiscvParser::argumentGeneratorFunction = [](
+        const PositionedString& operandPositional,
+        const SymbolReplacer& replacer,
+        const NodeFactoryCollection& nodeFactories,
+        CompileErrorList& errors) -> std::shared_ptr<AbstractSyntaxTreeNode> {
+  // These checks are performed:
+  // * Empty argument? Shouldn't happen, kill the compilation with fire.
+  // * First character is a letter? We have replace all constants by now, so
+  // it
+  // must be a register - or an undefined constant!
+  // * If not? Try to compile the expression!
+  std::shared_ptr<AbstractSyntaxTreeNode> outputNode;
+  PositionedString operandReplaced =
+      replacer.replace(operandPositional, errors);
+  const auto& operand = operandReplaced.string();
+  if (operand.empty()) {
+    outputNode = std::shared_ptr<AbstractSyntaxTreeNode>(nullptr);
+  } else if (std::isalpha(operand[0])) {
+    outputNode = nodeFactories.createRegisterNode(operand);
+  } else if (operand[0] == '\"') {
+    // Data nodes are mainly for meta instructions.
+    std::vector<char> outString;
+    StringParser::parseString(operandPositional, errors, outString);
+    std::string asString(outString.begin(), outString.end());
+    outputNode = nodeFactories.createDataNode(asString);
+  } else {
+    // using i32
+    int32_t result = CLikeExpressionCompilers::CLikeCompilerI32.compile(
+        operandPositional, replacer, errors);
+    outputNode = nodeFactories.createImmediateNode(
+        conversions::convert(result,
+                             conversions::standardConversions::helper::
+                                 twosComplement::toMemoryValueFunction,
+                             32));
+  }
+  return std::move(outputNode);
+};
 
 RiscvParser::RiscvParser(const Architecture& architecture,
                          const MemoryAccess& memoryAccess)
@@ -81,12 +80,11 @@ RiscvParser::RiscvParser(const Architecture& architecture,
   _factoryCollection = NodeFactoryCollectionMaker::CreateFor(architecture);
 }
 
-static void
-readInstruction(const CompileErrorAnnotator& positionErrorAnnotation,
-                const CodePosition& position,
-                const std::vector<PositionedString>& labels,
-                const RiscvParser::RiscvRegex& lineRegex,
-                IntermediateRepresentator& intermediate) {
+static void readInstruction(const CodePosition& position,
+                            const std::vector<PositionedString>& labels,
+                            const RiscvParser::RiscvRegex& lineRegex,
+                            CompileErrorList& errors,
+                            IntermediateRepresentator& intermediate) {
   std::vector<PositionedString> sources, targets;
   bool is_directive = lineRegex.isDirective();
   // Collect source and target parameters
@@ -98,13 +96,12 @@ readInstruction(const CompileErrorAnnotator& positionErrorAnnotation,
   }
 
   if (is_directive) {
-    RiscVDirectiveFactory::create(
-        LineInterval(position.line()),
-        labels,
-        lineRegex.getInstruction(),
-        sources,
-        intermediate,
-        positionErrorAnnotation /*TODO better positions*/);
+    RiscVDirectiveFactory::create(LineInterval(position.line()),
+                                  labels,
+                                  lineRegex.getInstruction(),
+                                  sources,
+                                  intermediate,
+                                  errors);
   } else {
     intermediate.insertCommand(
         IntermediateInstruction(LineInterval(position.line()),
@@ -112,12 +109,12 @@ readInstruction(const CompileErrorAnnotator& positionErrorAnnotation,
                                 lineRegex.getInstruction(),
                                 sources,
                                 targets),
-        positionErrorAnnotation /*TODO better positions*/);
+        errors);
   }
 }
 
 static void readText(const std::string& text,
-                     CompileErrorList& errorList,
+                     CompileErrorList& errors,
                      IntermediateRepresentator& intermediate) {
   std::istringstream stream(text);
   CodePosition position;
@@ -126,13 +123,11 @@ static void readText(const std::string& text,
 
   for (std::string line; std::getline(stream, line);) {
     position = position.newLine();
-    CompileErrorAnnotator positionErrorAnnotation(
-        errorList, CodePositionInterval(position, position >> 1));
-    lineRegex.matchLine(line, position.line(), positionErrorAnnotation);
+    lineRegex.matchLine(line, position.line(), errors);
     if (!lineRegex.isValid()) {
       // Add syntax error if line regex doesnt match
-      positionErrorAnnotation.addError(
-          CodePositionInterval(position, position >> 1), "Syntax Error");
+      errors.addError(CodePositionInterval(position, position >> 1),
+                      "Syntax Error");
     } else {
       // Collect labels until next instruction
       if (lineRegex.hasLabel()) {
@@ -140,8 +135,7 @@ static void readText(const std::string& text,
       }
 
       if (lineRegex.hasInstruction()) {
-        readInstruction(
-            positionErrorAnnotation, position, labels, lineRegex, intermediate);
+        readInstruction(position, labels, lineRegex, errors, intermediate);
 
         labels.clear();
       }
@@ -152,9 +146,9 @@ static void readText(const std::string& text,
 FinalRepresentation
 RiscvParser::parse(const std::string& text, ParserMode parserMode) {
   IntermediateRepresentator intermediate;
-  CompileErrorList errorList;
+  CompileErrorList errors;
 
-  readText(text, errorList, intermediate);
+  readText(text, errors, intermediate);
 
   auto byteAlignment =
       _architecture.getWordSize() / _architecture.getByteSize();
@@ -167,7 +161,7 @@ RiscvParser::parse(const std::string& text, ParserMode parserMode) {
       SyntaxTreeGenerator(_factoryCollection, argumentGeneratorFunction));
 
   auto intermediateOutput =
-      intermediate.transform(parameters, errorList, _memoryAccess);
+      intermediate.transform(parameters, errors, _memoryAccess);
 
   return intermediateOutput;
 }

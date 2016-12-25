@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 #include "parser/positioned-string.hpp"
-class CompileErrorAnnotator;
+class CompileErrorList;
 
 /**
  * \brief Denotes the type of an expression token in which a text is broken down
@@ -107,8 +107,7 @@ struct ExpressionBinaryOperator {
   /**
    * \brief Applies the operator on two numbers and records any possible errors.
    */
-  std::function<bool(const T&, const T&, T&, const CompileErrorAnnotator&)>
-      handler;
+  std::function<bool(const T&, const T&, T&, CompileErrorList&)> handler;
 };
 
 /**
@@ -128,7 +127,7 @@ struct ExpressionUnaryOperator {
   /**
    * \brief Applies the operator on one number and records any possible errors.
    */
-  std::function<bool(const T&, T&, const CompileErrorAnnotator&)> handler;
+  std::function<bool(const T&, T&, CompileErrorList&)> handler;
 };
 
 /**
@@ -145,8 +144,7 @@ struct ExpressionLiteralDecoder {
   /**
    * \brief Decodes the literal into the number type.
    */
-  std::function<bool(const PositionedString&, T&, const CompileErrorAnnotator&)>
-      decoder;
+  std::function<bool(const PositionedString&, T&, CompileErrorList&)> decoder;
 };
 
 /**

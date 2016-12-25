@@ -38,7 +38,6 @@ set(PARSER_SOURCES
   symbol.cpp
   symbol-graph-evaluation.cpp
   compile-error-list.cpp
-  compile-error-annotator.cpp
   section-tracker.cpp
   intermediate-parameters.cpp
   code-position-interval.cpp

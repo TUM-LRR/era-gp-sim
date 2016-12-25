@@ -35,7 +35,7 @@ class MemoryValue;
 class FinalRepresentation;
 class FinalCommand;
 class MemoryAccess;
-class CompileErrorAnnotator;
+class CompileErrorList;
 class SectionTracker;
 class MacroDirectiveTable;
 class SymbolGraph;
@@ -86,22 +86,22 @@ class IntermediateOperation {
                         const PositionedString& name);
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       const CompileErrorAnnotator& annotator,
+                       CompileErrorList& errors,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess) = 0;
 
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
-                     const CompileErrorAnnotator& annotator,
+                     CompileErrorList& errors,
                      SymbolGraph& graph);
 
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
-                              const CompileErrorAnnotator& annotator,
+                              CompileErrorList& errors,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);
 
   virtual void precompile(const PreprocessingImmutableArguments& immutable,
-                          const CompileErrorAnnotator& annotator,
+                          CompileErrorList& errors,
                           MacroDirectiveTable& macroTable);
 
   /**

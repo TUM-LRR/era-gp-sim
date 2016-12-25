@@ -18,33 +18,30 @@
 
 #include "common/utility.hpp"
 #include "gtest/gtest.h"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/compile-error-list.hpp"
 #include "parser/expression-compiler-clike.hpp"
 #include "parser/positioned-string.hpp"
 #define ZP(x) PositionedString(x)
-#define DEFINE_ANNOTATOR      \
-  CompileErrorList errorList; \
-  CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
 
 // Passing test case.
 #define TEST_CASE_P(expr)                                            \
   {                                                                  \
-    DEFINE_ANNOTATOR                                                 \
+    CompileErrorList errors;                                         \
     int output = CLikeExpressionCompilers::CLikeCompilerI32.compile( \
-        ZP(STRINGIFY(expr)), SymbolReplacer(), annotator);           \
+        ZP(STRINGIFY(expr)), SymbolReplacer(), errors);              \
     int expected = (expr);                                           \
     ASSERT_EQ(output, expected);                                     \
-    ASSERT_TRUE(annotator.errorList().empty());                      \
+    ASSERT_TRUE(errors.empty());                                     \
   }
 
 // Failing test case.
 #define TEST_CASE_E(expr)                                            \
   {                                                                  \
-    DEFINE_ANNOTATOR                                                 \
+    CompileErrorList errors;                                         \
     int output = CLikeExpressionCompilers::CLikeCompilerI32.compile( \
-        ZP(expr), SymbolReplacer(), annotator);                      \
-    ASSERT_TRUE(!annotator.errorList().empty());                     \
+        ZP(expr), SymbolReplacer(), errors);                         \
+    ASSERT_TRUE(!errors.empty());                                    \
   }
 
 // We need to surpass some warnings, b/c we intentionally want to use

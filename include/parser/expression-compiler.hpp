@@ -94,24 +94,24 @@ class ExpressionCompiler {
    */
   T compile(const PositionedString& string,
             const SymbolReplacer& replacer,
-            const CompileErrorAnnotator& annotator) const {
+            CompileErrorList& errors) const {
     // Pretty simple: Just pass the string and the tokens in the tokenizer and
     // parser respectively.
-    auto tokens = _tokenizer.tokenize(string, annotator);
-    auto tokensReplaced = replaceSymbols(tokens, replacer, annotator);
-    return _parser.parse(tokensReplaced, annotator);
+    auto tokens = _tokenizer.tokenize(string, errors);
+    auto tokensReplaced = replaceSymbols(tokens, replacer, errors);
+    return _parser.parse(tokensReplaced, errors);
   }
 
  private:
   std::vector<ExpressionToken>
   replaceSymbols(const std::vector<ExpressionToken>& source,
                  const SymbolReplacer& replacer,
-                 const CompileErrorAnnotator& annotator) const {
+                 CompileErrorList& errors) const {
     std::vector<ExpressionToken> replacedSymbols;
     for (const auto& token : source) {
       if (token.type == ExpressionTokenType::CONSTANT) {
-        auto replaced = replacer.replace(token.data, annotator);
-        auto tokenizedAgain = _tokenizer.tokenize(replaced, annotator);
+        auto replaced = replacer.replace(token.data, errors);
+        auto tokenizedAgain = _tokenizer.tokenize(replaced, errors);
         replacedSymbols.insert(replacedSymbols.end(),
                                tokenizedAgain.begin(),
                                tokenizedAgain.end());

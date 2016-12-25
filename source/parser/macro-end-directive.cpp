@@ -36,7 +36,7 @@ MacroEndDirective::MacroEndDirective(
 
 
 void MacroEndDirective::execute(const ExecuteImmutableArguments& immutable,
-                                const CompileErrorAnnotator& annotator,
+                                CompileErrorList& errors,
                                 FinalRepresentation& finalRepresentator,
                                 MemoryAccess& memoryAccess) {
   // Probably nothing here.

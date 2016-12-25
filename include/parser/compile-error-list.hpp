@@ -26,6 +26,23 @@
 #include "parser/compile-error-severity.hpp"
 #include "parser/compile-error.hpp"
 
+#define addError(interval, message, ...) \
+  addErrorInternal(                      \
+      (interval), QT_TRANSLATE_NOOP("Parser Errors", message), {__VA_ARGS__})
+#define addWarning(interval, message, ...)                          \
+  addWarningInternal((interval),                                    \
+                     QT_TRANSLATE_NOOP("Parser Warnings", message), \
+                     {__VA_ARGS__})
+#define addInformation(interval, message, ...)                             \
+  addInformationInternal((interval),                                       \
+                         QT_TRANSLATE_NOOP("Parser Information", message), \
+                         {__VA_ARGS__})
+#define addCompileError(severity, interval, message, ...)                   \
+  addCompileErrorInternal((severity),                                       \
+                          (interval),                                       \
+                          QT_TRANSLATE_NOOP("Parser Information", message), \
+                          {__VA_ARGS__})
+
 class CompileErrorList {
  public:
   CompileErrorList() = default;
@@ -39,7 +56,22 @@ class CompileErrorList {
   std::size_t warningCount() const;
   std::size_t informationCount() const;
   std::size_t size() const;
-  void add(const CompileError& error);
+  void addRaw(const CompileError& error);
+  void
+  addCompileErrorInternal(CompileErrorSeverity severity,
+                          const CodePositionInterval& interval,
+                          const char* message,
+                          const std::initializer_list<std::string>& parameters);
+  void addErrorInternal(const CodePositionInterval& interval,
+                        const char* message,
+                        const std::initializer_list<std::string>& parameters);
+  void addWarningInternal(const CodePositionInterval& interval,
+                          const char* message,
+                          const std::initializer_list<std::string>& parameters);
+  void
+  addInformationInternal(const CodePositionInterval& interval,
+                         const char* message,
+                         const std::initializer_list<std::string>& parameters);
 
  private:
   CompileErrorVector _errors;

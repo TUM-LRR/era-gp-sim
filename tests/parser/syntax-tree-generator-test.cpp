@@ -29,15 +29,12 @@
 #include "arch/riscv/register-node.hpp"
 #include "core/project-module.hpp"
 #include "gtest/gtest.h"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/compile-error-list.hpp"
 #include "parser/positioned-string.hpp"
 #include "parser/riscv-parser.hpp"
 #include "parser/symbol-replacer.hpp"
 #include "parser/syntax-tree-generator.hpp"
-#define DEFINE_ANNOTATOR      \
-  CompileErrorList errorList; \
-  CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
 #define ZP(x) PositionedString(x, CodePositionInterval())
 
 
@@ -62,36 +59,35 @@ TEST(SyntaxTreeGenerator, init) {
 
 TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
   auto generator = buildGenerator();
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   auto output =
-      generator.transformOperand(ZP("1234"), SymbolReplacer(), annotator);
-  ASSERT_EQ(annotator.errorList().size(), 0);
+      generator.transformOperand(ZP("1234"), SymbolReplacer(), errors);
+  ASSERT_EQ(errors.size(), 0);
   ASSERT_TRUE((isInstance<ImmediateNode>(output)));
 }
 
 TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   auto generator = buildGenerator();
-  DEFINE_ANNOTATOR;
-  auto output =
-      generator.transformOperand(ZP("x18"), SymbolReplacer(), annotator);
-  ASSERT_EQ(annotator.errorList().size(), 0);
+  CompileErrorList errors;
+  auto output = generator.transformOperand(ZP("x18"), SymbolReplacer(), errors);
+  ASSERT_EQ(errors.size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(output)));
 }
 
 TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   auto generator = buildGenerator();
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
 
-  auto arg1 = generator.transformOperand(ZP("x1"), SymbolReplacer(), annotator);
-  ASSERT_EQ(annotator.errorList().size(), 0);
+  auto arg1 = generator.transformOperand(ZP("x1"), SymbolReplacer(), errors);
+  ASSERT_EQ(errors.size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
 
-  auto arg2 = generator.transformOperand(ZP("x1"), SymbolReplacer(), annotator);
-  ASSERT_EQ(annotator.errorList().size(), 0);
+  auto arg2 = generator.transformOperand(ZP("x1"), SymbolReplacer(), errors);
+  ASSERT_EQ(errors.size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
 
-  auto arg3 = generator.transformOperand(ZP("x2"), SymbolReplacer(), annotator);
-  ASSERT_EQ(annotator.errorList().size(), 0);
+  auto arg3 = generator.transformOperand(ZP("x2"), SymbolReplacer(), errors);
+  ASSERT_EQ(errors.size(), 0);
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg2)));
 
   std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> sources;
@@ -106,8 +102,8 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   auto memoryAccess = projectModule.getMemoryAccess();
 
   auto output = generator.transformCommand(
-      ZP("add"), annotator, sources, targets, memoryAccess);
+      ZP("add"), errors, sources, targets, memoryAccess);
 
-  ASSERT_EQ(annotator.errorList().size(), 0);
+  ASSERT_EQ(errors.size(), 0);
   ASSERT_TRUE((isInstance<riscv::InstructionNode>(output)));
 }

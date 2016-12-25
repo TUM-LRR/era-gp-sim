@@ -27,7 +27,7 @@
 #include "arch/common/node-factory-collection.hpp"
 #include "parser/positioned-string.hpp"
 
-class CompileErrorAnnotator;
+class CompileErrorList;
 class AbstractInstructionNode;
 class MemoryAccess;
 class SymbolReplacer;
@@ -43,7 +43,7 @@ class SyntaxTreeGenerator {
           const PositionedString&,
           const SymbolReplacer&,
           const NodeFactoryCollection&,
-          const CompileErrorAnnotator&)>;
+          CompileErrorList&)>;
 
   /**
    * \brief Creates a new syntax tree generator with the given node factory
@@ -67,7 +67,7 @@ class SyntaxTreeGenerator {
   std::shared_ptr<AbstractSyntaxTreeNode>
   transformOperand(const PositionedString& operand,
                    const SymbolReplacer& replacer,
-                   const CompileErrorAnnotator& annotator) const;
+                   CompileErrorList& errors) const;
 
   /**
    * \brief Transforms the given instruction/command into a syntax tree, adds
@@ -80,7 +80,7 @@ class SyntaxTreeGenerator {
    */
   std::shared_ptr<AbstractInstructionNode> transformCommand(
       const PositionedString& commandName,
-      const CompileErrorAnnotator& annotator,
+      CompileErrorList& errors,
       std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& sources,
       std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& targets,
       MemoryAccess& memoryAccess) const;

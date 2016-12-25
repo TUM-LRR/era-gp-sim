@@ -20,28 +20,25 @@
 #include <iostream>
 #include "common/translateable.hpp"
 #include "gtest/gtest.h"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/compile-error-list.hpp"
 #include "parser/positioned-string.hpp"
-#define DEFINE_ANNOTATOR      \
-  CompileErrorList errorList; \
-  CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
 
 template <typename CharTypeIn, typename CharTypeOut>
 void doTestInternal(const std::basic_string<CharTypeIn>& provided,
                     const std::basic_string<CharTypeOut>& expected,
                     bool succeed) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   std::vector<CharTypeOut> output;
   PositionedBasicString<CharTypeIn> input(provided);
-  bool result = StringParser::parseString(input, annotator, output);
+  bool result = StringParser::parseString(input, errors, output);
   if (succeed) {
-    for (const auto& error : annotator.errorList().errors()) {
+    for (const auto& error : errors.errors()) {
       std::cout << error.message().getBaseString() << std::endl;
     }
     ASSERT_EQ(expected,
               std::basic_string<CharTypeOut>(output.begin(), output.end()));
-    ASSERT_EQ(0, annotator.errorList().size());
+    ASSERT_EQ(0, errors.size());
   }
   ASSERT_EQ(succeed, result);
 }

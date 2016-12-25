@@ -26,7 +26,7 @@
 #include "core/memory-access.hpp"
 #include "parser/code-position-interval.hpp"
 #include "parser/code-position.hpp"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/final-representation.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/intermediate-parameters.hpp"
@@ -50,26 +50,26 @@ IntermediateInstruction::IntermediateInstruction(
 
 void IntermediateInstruction::execute(
     const ExecuteImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     FinalRepresentation& finalRepresentator,
     MemoryAccess& memoryAccess) {
   // For a machine instruction, it is easy to "execute" it: just insert it
   // into the final form.
   finalRepresentator.commandList.push_back(
-      compileInstruction(immutable, annotator, memoryAccess));
+      compileInstruction(immutable, errors, memoryAccess));
 }
 
 std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>
 IntermediateInstruction::compileArgumentVector(
     const std::vector<PositionedString>& vector,
     const ExecuteImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     MemoryAccess& memoryAccess) {
   std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> output;
   output.reserve(vector.size());
   for (const auto& operand : vector) {
     auto transformed = immutable.generator().transformOperand(
-        operand, immutable.replacer(), annotator);
+        operand, immutable.replacer(), errors);
 
     // Only add argument node if creation was successful.
     // Otherwise AbstractSyntaxTreeNode::validate() segfaults.
@@ -82,17 +82,17 @@ IntermediateInstruction::compileArgumentVector(
 
 FinalCommand IntermediateInstruction::compileInstruction(
     const ExecuteImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     MemoryAccess& memoryAccess) {
   // We replace all occurenced in target in source (using a copy of them).
   auto srcCompiled =
-      compileArgumentVector(_sources, immutable, annotator, memoryAccess);
+      compileArgumentVector(_sources, immutable, errors, memoryAccess);
   auto trgCompiled =
-      compileArgumentVector(_targets, immutable, annotator, memoryAccess);
+      compileArgumentVector(_targets, immutable, errors, memoryAccess);
   // TODO: Rework FinalCommand
   FinalCommand result;
   result.node = std::move(immutable.generator().transformCommand(
-      _name, annotator, srcCompiled, trgCompiled, memoryAccess));
+      _name, errors, srcCompiled, trgCompiled, memoryAccess));
   result.position = _lines;
   result.address = _address;
   return result;
@@ -104,7 +104,7 @@ MemoryAddress IntermediateInstruction::address() const {
 
 void IntermediateInstruction::enhanceSymbolTable(
     const EnhanceSymbolTableImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     SymbolGraph& graph) {
   if (_relativeAddress.valid()) {
     _address = immutable.allocator().absolutePosition(_relativeAddress);
@@ -123,13 +123,12 @@ void IntermediateInstruction::enhanceSymbolTable(
 
 void IntermediateInstruction::allocateMemory(
     const PreprocessingImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (tracker.section() != "text") {
-    annotator.addError(
-        name().positionInterval(),
-        "Tried to define an instruction in not the text section.");
+    errors.addError(name().positionInterval(),
+                    "Tried to define an instruction in not the text section.");
     return;
   }
 

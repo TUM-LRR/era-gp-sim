@@ -26,7 +26,7 @@
 #include "parser/positioned-string.hpp"
 #include "parser/symbol.hpp"
 class SymbolGraphEvaluation;
-class CompileErrorAnnotator;
+class CompileErrorList;
 
 class SymbolReplacer {
  public:
@@ -41,8 +41,8 @@ class SymbolReplacer {
                  const DynamicReplacer& replacer = IDENTITY_REPLACE,
                  size_t maximumReplaceCount = 64);
 
-  PositionedString replace(const PositionedString& data,
-                           const CompileErrorAnnotator& annotator) const;
+  PositionedString
+  replace(const PositionedString& data, CompileErrorList& errors) const;
 
  private:
   std::vector<Symbol> _symbols;

@@ -20,7 +20,7 @@
 #include "parser/symbol-replacer.hpp"
 #include "common/assert.hpp"
 #include "common/utility.hpp"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/symbol-graph-evaluation.hpp"
 
 static MSRegex constructSymbolRegex(std::vector<Symbol> symbols) {
@@ -50,9 +50,8 @@ SymbolReplacer::SymbolReplacer(const SymbolGraphEvaluation& evaluation,
 : SymbolReplacer(evaluation.symbols(), replacer, maximumReplaceCount) {
 }
 
-PositionedString
-SymbolReplacer::replace(const PositionedString& data,
-                        const CompileErrorAnnotator& annotator) const {
+PositionedString SymbolReplacer::replace(const PositionedString& data,
+                                         CompileErrorList& errors) const {
   auto result = data.string();
   auto multireplace = [&](std::size_t index) -> std::string {
     return _replacer(_symbols[index]);
@@ -66,8 +65,8 @@ SymbolReplacer::replace(const PositionedString& data,
     }
   }
 
-  annotator.addError(data.positionInterval(),
-                     "Exceeded maximum number of replace runs.");
+  errors.addError(data.positionInterval(),
+                  "Exceeded maximum number of replace runs.");
 
   return PositionedString(result, data.positionInterval());
 }

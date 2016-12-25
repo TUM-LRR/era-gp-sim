@@ -23,7 +23,7 @@
 
 #include "parser/riscv-parser.hpp"
 
-class CompileErrorAnnotator;
+class CompileErrorList;
 #include "parser/positioned-string.hpp"
 
 /**
@@ -85,35 +85,33 @@ class RiscvParser::RiscvRegex {
    */
   size_t matchLine(const std::string &line,
                    CodeCoordinate lineCoordinate,
-                   const CompileErrorAnnotator &annotator);
+                   CompileErrorList &errors);
 
  private:
   bool _readInstructionOrLabel(const std::string &line,
                                CodeCoordinate lineCoordinate,
-                               const CompileErrorAnnotator &annotator,
+                               CompileErrorList &errors,
                                size_t &pos);
 
   bool _readParameter(const std::string &line,
                       CodeCoordinate lineCoordinate,
-                      const CompileErrorAnnotator &annotator,
+                      CompileErrorList &errors,
                       size_t &pos);
 
   void _resetResults();
 
-  CodePositionInterval
-  _getCharacterPosition(CodeCoordinate lineCoordinate,
-                        const CompileErrorAnnotator &annotator,
-                        size_t pos) const;
+  CodePositionInterval _getCharacterPosition(CodeCoordinate lineCoordinate,
+                                             CompileErrorList &errors,
+                                             size_t pos) const;
 
-  CodePositionInterval
-  _getCharacterInterval(CodeCoordinate lineCoordinate,
-                        const CompileErrorAnnotator &annotator,
-                        size_t start,
-                        size_t end) const;
+  CodePositionInterval _getCharacterInterval(CodeCoordinate lineCoordinate,
+                                             CompileErrorList &errors,
+                                             size_t start,
+                                             size_t end) const;
 
   PositionedString _getPositionedString(const std::string &line,
                                         CodeCoordinate lineCoordinate,
-                                        const CompileErrorAnnotator &annotator,
+                                        CompileErrorList &errors,
                                         size_t start,
                                         size_t end) const;
 

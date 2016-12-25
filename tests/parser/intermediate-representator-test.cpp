@@ -18,19 +18,16 @@
 
 #include "parser/intermediate-representator.hpp"
 #include "gtest/gtest.h"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/compile-error-list.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/macro-directive.hpp"
 #include "parser/macro-end-directive.hpp"
 #include "parser/positioned-string.hpp"
-#define DEFINE_ANNOTATOR      \
-  CompileErrorList errorList; \
-  CompileErrorAnnotator annotator(errorList, CodePosition(0), CodePosition(0));
-#define ZP(x) PositionedString(x, CodePositionInterval())
+#define ZP(x) PositionedString(x)
 
 TEST(IntermediateRepresentator, insertSimple) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   IntermediateRepresentator ir;
   ir.insertCommand(
       IntermediateInstruction(LineInterval(0, 1),
@@ -38,11 +35,11 @@ TEST(IntermediateRepresentator, insertSimple) {
                               ZP("mov"),
                               {ZP("eax")},
                               {ZP("eax")}),
-      annotator);
+      errors);
 }
 
 TEST(IntermediateRepresentator, transformSimple) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   IntermediateRepresentator ir;
   ir.insertCommand(
       IntermediateInstruction(LineInterval(0, 1),
@@ -50,20 +47,20 @@ TEST(IntermediateRepresentator, transformSimple) {
                               ZP("mov"),
                               {ZP("eax")},
                               {ZP("eax")}),
-      annotator);
+      errors);
   ir.insertCommand(IntermediateInstruction(LineInterval(2, 5),
                                            {ZP("label4")},
                                            ZP("add"),
                                            {ZP("eax")},
                                            {ZP("ebx")}),
-                   annotator);
+                   errors);
   // Test disabled for now.
   // FinalRepresentation fr = ir.transform(state);
   // ASSERT_EQ(fr.commandList.size(), 2);
 }
 
 TEST(IntermediateRepresentator, macroDefinition) {
-  DEFINE_ANNOTATOR;
+  CompileErrorList errors;
   IntermediateRepresentator ir;
   ir.insertCommand(
       IntermediateInstruction(LineInterval(0, 1),
@@ -71,17 +68,17 @@ TEST(IntermediateRepresentator, macroDefinition) {
                               ZP("mov"),
                               {ZP("eax")},
                               {ZP("eax")}),
-      annotator);
+      errors);
   ir.insertCommand(
       MacroDirective(LineInterval(2, 2), {}, ZP(".macro"), ZP("test"), {}),
-      annotator);
+      errors);
   ir.insertCommand(IntermediateInstruction(LineInterval(3, 3),
                                            {ZP("label1")},
                                            ZP("add"),
                                            {ZP("eax")},
                                            {ZP("eax")}),
-                   annotator);
+                   errors);
   ir.insertCommand(MacroEndDirective(LineInterval(4, 4), {}, ZP(".endmacro")),
-                   annotator);
+                   errors);
   // To be extended in a later branch.
 }

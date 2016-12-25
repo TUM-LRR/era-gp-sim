@@ -29,7 +29,7 @@ class MemoryAllocator;
 class FinalRepresentation;
 class SymbolTable;
 class SyntaxTreeGenerator;
-class CompileErrorAnnotator;
+class CompileErrorList;
 class MemoryAccess;
 
 /**
@@ -62,12 +62,12 @@ class SectionDirective : public IntermediateDirective {
    * compiler.
    */
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       const CompileErrorAnnotator& annotator,
+                       CompileErrorList& errors,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
-                              const CompileErrorAnnotator& annotator,
+                              CompileErrorList& errors,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);
 

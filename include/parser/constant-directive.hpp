@@ -33,13 +33,13 @@ class ConstantDirective : public IntermediateDirective {
                     const std::vector<PositionedString>& arguments);
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       const CompileErrorAnnotator& annotator,
+                       CompileErrorList& errors,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess) override;
 
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
-                     const CompileErrorAnnotator& annotator,
+                     CompileErrorList& errors,
                      SymbolGraph& graph) override;
 
  private:

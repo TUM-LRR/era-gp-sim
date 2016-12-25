@@ -27,7 +27,7 @@
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/compile-error-list.hpp"
 #include "parser/expression-compiler-clike.hpp"
 #include "parser/intermediate-directive.hpp"
@@ -52,7 +52,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
       std::function<size_t(const std::vector<PositionedString>&,
                            const SymbolReplacer&,
                            size_t,
-                           const CompileErrorAnnotator&,
+                           CompileErrorList&,
                            const MemoryStorageFunction&)>;
 
   /**
@@ -102,18 +102,16 @@ class MemoryDefinitionDirective : public IntermediateDirective {
    * \param state The CompileState to log possible errors.
    */
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
-                              const CompileErrorAnnotator& annotator,
+                              CompileErrorList& errors,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker) {
     if (_values.empty()) {
-      annotator.addError(name().positionInterval(), "Empty data definition");
+      errors.addError(name().positionInterval(), "Empty data definition");
     }
 
     // So, we simply calculate and sum up our arguments.
     // Let's hope, the compiler optimizes this...
-    CompileErrorList temporaryVector;
-    CompileErrorAnnotator temporary(
-        temporaryVector, CodePosition(0), CodePosition(0));
+    auto temporary = CompileErrorList();
     size_t sizeInBytes = _processValues(_values,
                                         SymbolReplacer(),
                                         _cellSize,
@@ -138,7 +136,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
    */
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
-                     const CompileErrorAnnotator& annotator,
+                     CompileErrorList& errors,
                      SymbolGraph& graph) {
     _absolutePosition =
         immutable.allocator().absolutePosition(_relativePosition);
@@ -159,7 +157,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
    * reserving data.
    */
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       const CompileErrorAnnotator& annotator,
+                       CompileErrorList& errors,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess) {
     if (_size > 0) {
@@ -170,7 +168,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
       _processValues(_values,
                      SymbolReplacer(),
                      _cellSize,
-                     annotator,
+                     errors,
                      [&](T value, std::size_t position) {
                        // For now. Later to be replaced by the real enum of the
                        // arch,
@@ -188,8 +186,8 @@ class MemoryDefinitionDirective : public IntermediateDirective {
       // Then, let's do a (probably also here) expensive memory call.
       memoryAccess.putMemoryValueAt(_absolutePosition, data);
     } else {
-      annotator.addError(name().positionInterval(),
-                         "Nothing to reserve with memory definition.");
+      errors.addError(name().positionInterval(),
+                      "Nothing to reserve with memory definition.");
     }
   }
 

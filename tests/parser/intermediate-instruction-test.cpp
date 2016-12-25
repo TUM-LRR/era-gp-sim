@@ -21,7 +21,7 @@
 #include "parser/positioned-string.hpp"
 
 // Hehe...
-#define ZP(x) PositionedString(x, CodePositionInterval())
+#define ZP(x) PositionedString(x)
 #define SAMPLE_COMMAND                                                       \
   LineInterval(0, 1), {ZP("label1"), ZP("label2"), ZP("label3")}, ZP("mov"), \
       {ZP("eax")}, {                                                         \

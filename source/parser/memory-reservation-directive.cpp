@@ -43,23 +43,23 @@ MemoryReservationDirective::MemoryReservationDirective(
 
 void MemoryReservationDirective::allocateMemory(
     const PreprocessingImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (_values.empty()) {
-    annotator.addWarningHere(
-        "Implicit reservation of 0 bytes, missing arguments?");
+    errors.addWarning(_name.positionInterval(),
+                      "Implicit reservation of 0 bytes, missing arguments?");
   }
   // So, we simply calculate and sum up our arguments.
   std::size_t sizeInCells = 0;
   for (const auto& value : _values) {
     // b/c of the definition of argumentCompile and the C standard, the result
     // is non-negative.
-    auto result = _argumentCompile(value, SymbolReplacer(), annotator);
+    auto result = _argumentCompile(value, SymbolReplacer(), errors);
     if (result > 0) {
       sizeInCells += result;
     } else {
-      annotator.addWarningHere("Reserving 0 bytes");
+      errors.addWarning(_name.positionInterval(), "Reserving 0 bytes");
     }
   }
 
@@ -77,7 +77,7 @@ void MemoryReservationDirective::allocateMemory(
 
 void MemoryReservationDirective::enhanceSymbolTable(
     const EnhanceSymbolTableImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     SymbolGraph& graph) {
   // We calculate the absolute memory position and enhance our symbol table.
   _absolutePosition = immutable.allocator().absolutePosition(_relativePosition);
@@ -90,7 +90,7 @@ void MemoryReservationDirective::enhanceSymbolTable(
 
 void MemoryReservationDirective::execute(
     const ExecuteImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     FinalRepresentation& finalRepresentator,
     MemoryAccess& memoryAccess) {
   // Finally, we may put some zeros into memory.

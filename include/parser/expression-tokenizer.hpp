@@ -26,7 +26,7 @@
 #include <unordered_map>
 #include "common/multiregex.hpp"
 #include "parser/positioned-string.hpp"
-class CompileErrorAnnotator;
+class CompileErrorList;
 
 /**
  * \brief Transforms a string into a list of tokens.
@@ -51,8 +51,7 @@ class ExpressionTokenizer {
    * \param state The compile state to note down any errors.
    */
   std::vector<ExpressionToken>
-  tokenize(const PositionedString& data,
-           const CompileErrorAnnotator& annotator) const;
+  tokenize(const PositionedString& data, CompileErrorList& errors) const;
 
  private:
   // Internal method for constructing the token regexes.

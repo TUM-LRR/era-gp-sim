@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/constant-directive.hpp"
 #include "parser/intermediate-parameters.hpp"
 #include "parser/symbol-graph.hpp"
@@ -35,14 +35,14 @@ ConstantDirective::ConstantDirective(
 }
 
 void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
-                                const CompileErrorAnnotator& annotator,
+                                CompileErrorList& errors,
                                 FinalRepresentation& finalRepresentator,
                                 MemoryAccess& memoryAccess) {
   // Try to parse argument to catch errors early.
-  auto fullExpression = immutable.replacer().replace(_expression, annotator);
+  auto fullExpression = immutable.replacer().replace(_expression, errors);
   if (!fullExpression.string().empty()) {
     immutable.generator().transformOperand(
-        _expression, immutable.replacer(), annotator);
+        _expression, immutable.replacer(), errors);
   } else {
     // better error messages:
     // 0 arguments -> this argument should be the name
@@ -50,15 +50,15 @@ void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
     //>1 arguments -> too many
     switch (_arguments.size()) {
       case 0:
-        annotator.addError(name().positionInterval(), "Missing constant name.");
+        errors.addError(name().positionInterval(), "Missing constant name.");
         break;
       case 1:
-        annotator.addError(
+        errors.addError(
             name().positionInterval().unite(_arguments[0].positionInterval()),
             "Missing constant value.");
         break;
       default:
-        annotator.addError(
+        errors.addError(
             name().positionInterval(),
             "Malformed constant directive, too many operands provided.");
         break;
@@ -68,11 +68,10 @@ void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
 
 void ConstantDirective::enhanceSymbolTable(
     const EnhanceSymbolTableImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     SymbolGraph& graph) {
   if (_arguments.size() != 2) {
-    annotator.addError(name().positionInterval(),
-                       "Malformed constant directive");
+    errors.addError(name().positionInterval(), "Malformed constant directive");
     return;
   }
   _expression = PositionedString("(" + _arguments[1].string() + ")",

@@ -24,22 +24,22 @@
 #include "arch/common/abstract-instruction-node.hpp"
 #include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/positioned-string.hpp"
 #include "parser/symbol-replacer.hpp"
 
-std::shared_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(
-    const PositionedString& operand,
-    const SymbolReplacer& replacer,
-    const CompileErrorAnnotator& annotator) const {
+std::shared_ptr<AbstractSyntaxTreeNode>
+SyntaxTreeGenerator::transformOperand(const PositionedString& operand,
+                                      const SymbolReplacer& replacer,
+                                      CompileErrorList& errors) const {
   // We invoke our node generator to get a node!
   auto outputNode =
-      _argumentGenerator(operand, replacer, _nodeFactories, annotator);
+      _argumentGenerator(operand, replacer, _nodeFactories, errors);
 
   // According to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
-    annotator.addError(
+    errors.addError(
         operand.positionInterval(), "Invalid argument: '%1'", operand.string());
   }
 
@@ -48,7 +48,7 @@ std::shared_ptr<AbstractSyntaxTreeNode> SyntaxTreeGenerator::transformOperand(
 
 std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
     const PositionedString& commandName,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& sources,
     std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& targets,
     MemoryAccess& memoryAccess) const {
@@ -58,9 +58,9 @@ std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
 
   if (!outputNode) {
     // The node creation failed!
-    annotator.addError(commandName.positionInterval(),
-                       "Unknown operation: %1",
-                       commandName.string());
+    errors.addError(commandName.positionInterval(),
+                    "Unknown operation: %1",
+                    commandName.string());
     return std::move(outputNode);
   }
 
@@ -77,10 +77,10 @@ std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
   // Validate node.
   auto validationResult = outputNode->validate(memoryAccess);
   if (!validationResult) {
-    annotator.addError(commandName.positionInterval(),
-                       "Invalid operation ('%1'): %2",
-                       commandName.string(),
-                       validationResult.getMessage().getBaseString()); /*TODO*/
+    errors.addError(commandName.positionInterval(),
+                    "Invalid operation ('%1'): %2",
+                    commandName.string(),
+                    validationResult.getMessage().getBaseString()); /*TODO*/
   }
 
   // Return.

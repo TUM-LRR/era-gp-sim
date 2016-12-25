@@ -18,7 +18,7 @@
 */
 
 #include "parser/section-directive.hpp"
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/memory-allocator.hpp"
 #include "parser/section-tracker.hpp"
 
@@ -35,23 +35,23 @@ SectionDirective::SectionDirective(
 }
 
 void SectionDirective::execute(const ExecuteImmutableArguments& immutable,
-                               const CompileErrorAnnotator& annotator,
+                               CompileErrorList& errors,
                                FinalRepresentation& finalRepresentator,
                                MemoryAccess& memoryAccess) {
 }
 
 void SectionDirective::allocateMemory(
     const PreprocessingImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (!_hasName) {
-    annotator.addError(name().positionInterval(), "Section name missing!");
+    errors.addError(name().positionInterval(), "Section name missing!");
     return;
   }
   if (!allocator.has(_section.string())) {
-    annotator.addError(_section.positionInterval(),
-                       "Specified section non-existent!");
+    errors.addError(_section.positionInterval(),
+                    "Specified section non-existent!");
     return;
   }
   // Just set the section state to the current section. That's it.

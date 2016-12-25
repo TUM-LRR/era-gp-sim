@@ -21,7 +21,7 @@
 
 #include "parser/intermediate-representator.hpp"
 
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/constant-directive.hpp"
 #include "parser/macro-directive.hpp"
 #include "parser/macro-end-directive.hpp"
@@ -47,7 +47,7 @@ static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
         [](const std::vector<PositionedString> &values,
            const SymbolReplacer &replacer,
            std::size_t cellSize,
-           const CompileErrorAnnotator &annotator,
+           CompileErrorList &errors,
            const std::function<void(T, std::size_t)> &handler) -> std::size_t {
   std::size_t currentPosition = 0;
   ExpressionCompiler<T> compiler =
@@ -56,11 +56,11 @@ static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
   for (const auto &value : values) {
     if (value.string().empty()) {
       // Empty arguments are not allowed.
-      annotator.addError(value.positionInterval(), "Argument is empty.");
+      errors.addError(value.positionInterval(), "Argument is empty.");
     } else if (value.string().at(0) == '\"') {
       // It is a string if it begins with a "
       std::vector<T> temporaryData;
-      if (StringParser::parseString(value, annotator, temporaryData)) {
+      if (StringParser::parseString(value, errors, temporaryData)) {
         // We add each character of the string to our output.
         for (const auto &j : temporaryData) {
           handler(j, currentPosition);
@@ -73,7 +73,7 @@ static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
       }
     } else {
       // If it is no a string, we regularly parse it.
-      T returnData = compiler.compile(value, replacer, annotator);
+      T returnData = compiler.compile(value, replacer, errors);
       handler(returnData, currentPosition);
       currentPosition += cellSize;
     }
@@ -99,9 +99,9 @@ MemoryReservationDirective::ArgumentCompileFunction
     _memoryReservationArgumentCompile =
         [](const PositionedString &value,
            const SymbolReplacer &replacer,
-           const CompileErrorAnnotator &annotator) -> std::size_t {
+           CompileErrorList &errors) -> std::size_t {
   return CLikeExpressionCompilers::CLikeCompilerU64.compile(
-      value, replacer, annotator);
+      value, replacer, errors);
 };
 
 template <std::size_t cellSize>
@@ -141,16 +141,16 @@ void RiscVDirectiveFactory::create(
     const PositionedString &name,
     const std::vector<PositionedString> &arguments,
     IntermediateRepresentator &intermediate,
-    const CompileErrorAnnotator &annotator) {
+    CompileErrorList &errors) {
   DirectivePtr ptr;
 
   auto element = mapping.find(name.string());
 
   if (element == mapping.end()) {
     ptr = nullptr;
-    annotator.addError(name.positionInterval(), "Unknown directive");
+    errors.addError(name.positionInterval(), "Unknown directive");
   } else {
     ptr = (element->second)(lines, labels, name, arguments);
-    intermediate.insertCommandPtr(std::move(ptr), annotator);
+    intermediate.insertCommandPtr(std::move(ptr), errors);
   }
 }

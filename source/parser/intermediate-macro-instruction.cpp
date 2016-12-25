@@ -18,7 +18,7 @@
 
 #include "parser/intermediate-macro-instruction.hpp"
 
-#include "parser/compile-error-annotator.hpp"
+#include "parser/compile-error-list.hpp"
 #include "parser/intermediate-instruction.hpp"
 #include "parser/macro-directive-table.hpp"
 #include "parser/macro-directive.hpp"
@@ -31,7 +31,7 @@ void IntermediateMacroInstruction::replaceWithMacros(
     CommandIterator begin,
     CommandIterator end,
     MacroDirectiveTable& macroTable,
-    const CompileErrorAnnotator& annotator) {
+    CompileErrorList& errors) {
   for (auto i = begin; i != end; ++i) {
     // Try casting to IntermediateInstruction, skip instruction if it doesn't
     // work
@@ -46,14 +46,14 @@ void IntermediateMacroInstruction::replaceWithMacros(
     }
 
     if (macro.isCyclic()) {
-      annotator.addError(macro.name().positionInterval(),
-                         "Cyclic macro call detected.");
+      errors.addError(macro.name().positionInterval(),
+                      "Cyclic macro call detected.");
       continue;
     }
 
     IntermediateOperationPointer newPtr =
         std::make_shared<IntermediateMacroInstruction>(
-            inst, macro->second, macroTable, annotator);
+            inst, macro->second, macroTable, errors);
     *i = std::move(newPtr);
   }
 }
@@ -62,7 +62,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     const IntermediateInstruction& ins,
     const MacroDirective& macro,
     MacroDirectiveTable& macroTable,
-    const CompileErrorAnnotator& annotator)
+    CompileErrorList& errors)
 : IntermediateOperation(ins.lines(), ins.labels(), ins.name()) {
   for (size_t i = 0; i < macro.getOperationCount(); i++) {
     if (i == macro.firstInstructionIndex()) {
@@ -75,42 +75,41 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     if (ptr != nullptr) {
       _operations.push_back(std::move(ptr));
     } else {
-      annotator.addError(macro.getOperationName(i).positionInterval(),
-                         "Macro contains unsupported instruction '%1'.",
-                         macro.getOperationName(i).string());
+      errors.addError(macro.getOperationName(i).positionInterval(),
+                      "Macro contains unsupported instruction '%1'.",
+                      macro.getOperationName(i).string());
     }
   }
 
   // Recursively replace macro instructions to support recursive macro calls
-  replaceWithMacros(
-      _operations.begin(), _operations.end(), macroTable, annotator);
+  replaceWithMacros(_operations.begin(), _operations.end(), macroTable, errors);
 }
 void IntermediateMacroInstruction::execute(
     const ExecuteImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     FinalRepresentation& finalRepresentator,
     MemoryAccess& memoryAccess) {
   for (const auto& operation : _operations) {
-    operation->execute(immutable, annotator, finalRepresentator, memoryAccess);
+    operation->execute(immutable, errors, finalRepresentator, memoryAccess);
   }
 }
 
 void IntermediateMacroInstruction::allocateMemory(
     const PreprocessingImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   for (const auto& operation : _operations) {
-    operation->allocateMemory(immutable, annotator, allocator, tracker);
+    operation->allocateMemory(immutable, errors, allocator, tracker);
   }
 }
 
 void IntermediateMacroInstruction::enhanceSymbolTable(
     const EnhanceSymbolTableImmutableArguments& immutable,
-    const CompileErrorAnnotator& annotator,
+    CompileErrorList& errors,
     SymbolGraph& graph) {
   for (const auto& operation : _operations) {
-    operation->enhanceSymbolTable(immutable, annotator, graph);
+    operation->enhanceSymbolTable(immutable, errors, graph);
   }
 
   if (_labels.size() > 0 && _firstInstruction < 0) {
@@ -118,7 +117,7 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
     for (const auto& label : _labels) {
       wholeRegion.push_back(label.positionInterval());
     }
-    annotator.addError(
+    errors.addError(
         CodePositionInterval().unite(wholeRegion.begin(), wholeRegion.end()),
         "Labels cannot point to macros without instructions!");
   } else {

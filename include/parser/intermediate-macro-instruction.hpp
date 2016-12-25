@@ -21,7 +21,7 @@
 
 #include "parser/intermediate-operation.hpp"
 
-class CompileErrorAnnotator;
+class CompileErrorList;
 class IntermediateInstruction;
 class MacroDirective;
 class MemoryAllocator;
@@ -34,20 +34,20 @@ class IntermediateMacroInstruction : public IntermediateOperation {
   IntermediateMacroInstruction(const IntermediateInstruction&,
                                const MacroDirective&,
                                MacroDirectiveTable& macroTable,
-                               const CompileErrorAnnotator& annotator);
+                               CompileErrorList& errors);
 
   virtual void execute(const ExecuteImmutableArguments& immutable,
-                       const CompileErrorAnnotator& annotator,
+                       CompileErrorList& errors,
                        FinalRepresentation& finalRepresentator,
                        MemoryAccess& memoryAccess);
 
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
-                     const CompileErrorAnnotator& annotator,
+                     CompileErrorList& errors,
                      SymbolGraph& graph);
 
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
-                              const CompileErrorAnnotator& annotator,
+                              CompileErrorList& errors,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);
 
@@ -58,7 +58,7 @@ class IntermediateMacroInstruction : public IntermediateOperation {
   static void replaceWithMacros(CommandIterator begin,
                                 CommandIterator end,
                                 MacroDirectiveTable& macroTable,
-                                const CompileErrorAnnotator& annotator);
+                                CompileErrorList& errors);
 
   virtual std::string toString() const;
 
