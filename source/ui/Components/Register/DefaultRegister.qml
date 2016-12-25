@@ -23,6 +23,10 @@ import QtGraphicalEffects 1.0
 TextField {
     id: registerTextField
 
+    property bool singleStep: false
+    property bool isHighlighted: false
+    property color backgroundColor: isHighlighted ? "lightblue" : "white"
+
     font.pointSize: 13
 
     text: registerContent();
@@ -65,8 +69,20 @@ TextField {
             if (topLeft <= styleData.index && styleData.index <= bottomRight) {
                 text = Qt.binding(registerContent);
                 //starts the highlighting
-                style = styleChanged;
+                if(singleStep){
+                    isHighlighted = true;
+                }
             }
+        }
+    }
+
+    //The Registers must know, wether they should be highlighted.
+    //They only should change color if execution only works with one line
+    Connections {
+        target: guiProject
+        onRunClicked: {
+            registerTextField.singleStep = isSingleStep;
+            isHighlighted = false;
         }
     }
 
@@ -97,10 +113,23 @@ TextField {
         return registerContentString;
     }
 
-    style: whiteRectangle
 
-    //used for highlighting
-    Component{
+    style: TextFieldStyle{
+        background: Rectangle {
+            id: rect
+            x: registerTextField.x
+            y: registerTextField.y
+            width: registerTextField.width
+            height: registerTextField.height
+            color: registerTextField.backgroundColor
+            radius: 2
+            border.color: "lightgray"
+            border.width: 1
+        }
+    }
+
+    //can be used for blinking
+    /*Component{
         id: styleChanged
         TextFieldStyle{
             background:  Loader {
@@ -150,26 +179,8 @@ TextField {
                 }
             }
         }
-    }
+    }*/
 
 
-    //normal background
-    Component {
-        id: whiteRectangle
-        TextFieldStyle{
-            background: Rectangle {
-                id: rect
-                x: registerTextField.x
-                y: registerTextField.y
-                width: registerTextField.width
-                height: registerTextField.height
-                color: "white"
-                radius: 2
-                border.color: "lightgray"
-                border.width: 1
-
-            }
-        }
-    }
 }
 

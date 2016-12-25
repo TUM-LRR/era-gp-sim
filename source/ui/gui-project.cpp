@@ -45,11 +45,9 @@ GuiProject::GuiProject(
 , _outputComponent(_projectModule.getMemoryManager(),
                    _projectModule.getMemoryAccess(),
                    context)
-, _inputBM (context, _projectModule.getMemoryAccess())
-, _inputTM (context,
-           _projectModule.getMemoryAccess())
-, _inputCM (context,
-           _projectModule.getMemoryAccess())
+, _inputBM(context, _projectModule.getMemoryAccess())
+, _inputTM(context, _projectModule.getMemoryAccess())
+, _inputCM(context, _projectModule.getMemoryAccess())
 , _memoryModel(_projectModule.getMemoryAccess(),
                _projectModule.getMemoryManager(),
                context)
@@ -114,16 +112,19 @@ void GuiProject::parse() {
 }
 
 void GuiProject::run() {
+  emit runClicked(false);
   _editorComponent.parse();
   _projectModule.getCommandInterface().execute();
 }
 
 void GuiProject::runLine() {
+  emit runClicked(true);
   _editorComponent.parse();
   _projectModule.getCommandInterface().executeNextLine();
 }
 
 void GuiProject::runBreakpoint() {
+  emit runClicked(false);
   _editorComponent.parse();
   _projectModule.getCommandInterface().executeToBreakpoint();
 }
@@ -133,6 +134,7 @@ void GuiProject::stop() {
 }
 
 void GuiProject::reset() {
+  emit runClicked(false);
   _projectModule.reset();
   _projectModule.getCommandInterface().setExecutionPoint(1);
   _editorComponent.parse(true);

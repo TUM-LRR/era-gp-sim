@@ -35,11 +35,11 @@
 #include "core/project-module.hpp"
 #include "third-party/json/json.hpp"
 #include "ui/editor-component.hpp"
+#include "ui/input-button-model.hpp"
+#include "ui/input-click-model.hpp"
+#include "ui/input-text-model.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/output-component.hpp"
-#include "ui/input-button-model.hpp"
-#include "ui/input-text-model.hpp"
-#include "ui/input-click-model.hpp"
 #include "ui/register-model.hpp"
 #include "ui/snapshot-component.hpp"
 
@@ -321,6 +321,13 @@ class GuiProject : QObject {
    * This signal is emitted when the execution has stopped.
    */
   void executionStopped();
+
+  /**
+   * This signal is emmited when execution starts
+   *
+   * \param singleStep wether the button was runLine
+   */
+  void runClicked(bool isSingleStep);
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP
