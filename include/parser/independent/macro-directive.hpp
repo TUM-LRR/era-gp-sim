@@ -74,13 +74,13 @@ class MacroDirective : public IntermediateDirective {
    * \brief Specifies the new target for operations after this command.
    * \return Set ourselves as target.
    */
-  virtual TargetSelector newTarget() const;
+  virtual TargetSelector newTarget() const override;
 
   /**
    * \brief Inserts an operation into the internal command list.
    * \param pointer The operation to insert.
    */
-  virtual void insert(IntermediateOperationPointer pointer);
+  virtual void insert(IntermediateOperationPointer pointer) override;
 
   /**
    * \brief Returns the macro name.

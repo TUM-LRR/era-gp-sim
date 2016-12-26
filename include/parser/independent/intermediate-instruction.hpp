@@ -51,7 +51,8 @@ class IntermediateInstruction : public IntermediateOperation {
                           const std::vector<PositionedString>& targets);
 
   /**
-* \brief Executes the operation (i.e. it is inserted into the commandOutput list).
+* \brief Executes the operation (i.e. it is inserted into the commandOutput
+* list).
 * \param immutable Some constant arguments which might be helpful.
 * \param errors The compile error list to note down any errors.
 * \param commandOutput The final command output vector to record all finalized

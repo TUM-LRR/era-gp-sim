@@ -84,9 +84,9 @@ class IntermediateMacroInstruction : public IntermediateOperation {
                                 MacroDirectiveTable& macroTable,
                                 CompileErrorList& errors);
 
-  virtual std::string toString() const;
+  virtual std::string toString() const override;
 
-  virtual Type getType() const;
+  virtual Type getType() const override;
 
   /**
    * \brief Finalizes an intermediate macro instruction.

@@ -189,7 +189,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   }
 
   MemoryAddress absolutePosition() const noexcept {
-    _absolutePosition;
+    return _absolutePosition;
   }
   const std::vector<PositionedString>& values() const noexcept {
     return _values;
