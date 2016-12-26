@@ -29,22 +29,27 @@
  */
 class ConstantDirective : public IntermediateDirective {
  public:
-  ConstantDirective(const CodePositionInterval& positionInterval,
+  ConstantDirective(
+    const CodePositionInterval& positionInterval,
                     const std::vector<PositionedString>& labels,
                     const PositionedString& name,
                     const std::vector<PositionedString>& arguments);
 
-  virtual void execute(const ExecuteImmutableArguments& immutable,
+  virtual void execute(
+    const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
                        FinalCommandVector& commandOutput,
                        MemoryAccess& memoryAccess) override;
 
-  virtual void
-  enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
+  virtual void enhanceSymbolTable(
+    const EnhanceSymbolTableImmutableArguments& immutable,
                      CompileErrorList& errors,
                      SymbolGraph& graph) override;
 
  private:
+  /**
+   * \brief The argument list received by this constant directive.
+   */
   std::vector<PositionedString> _arguments;
   PositionedString _expression;
 };

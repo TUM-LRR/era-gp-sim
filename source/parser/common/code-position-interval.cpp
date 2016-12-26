@@ -63,7 +63,7 @@ CodeCoordinate CodePositionInterval::endCharacter() const noexcept {
 }
 
 bool CodePositionInterval::empty() const noexcept {
-  return _codePositionStart.x() > _codePositionEnd.x() ||
+  return (_codePositionStart.x() > _codePositionEnd.x() && _codePositionStart.y() == _codePositionEnd.y()) ||
          _codePositionStart.y() > _codePositionEnd.y();
 }
 

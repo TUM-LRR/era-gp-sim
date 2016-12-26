@@ -24,7 +24,6 @@
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
 #include "parser/factory/parser-factory.hpp"
-#include "parser/common/parser-mode.hpp"
 
 ParsingAndExecutionUnit::ParsingAndExecutionUnit(
     std::weak_ptr<Scheduler> &&scheduler,
@@ -152,7 +151,7 @@ void ParsingAndExecutionUnit::parse(std::string code) {
     }
   }
   // parse the new code and save the final representation
-  _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
+  _finalRepresentation = _parser->parse(code);
   _addressCommandMap = _finalRepresentation.createMapping();
   _lineCommandCache.clear();
   // update the final representation of the ui

@@ -23,7 +23,6 @@
 #include <string>
 #include <vector>
 #include "parser/common/final-representation.hpp"
-#include "parser/common/parser-mode.hpp"
 
 class SyntaxInformation;
 
@@ -38,10 +37,9 @@ class Parser {
    * Parses text into syntax tree.
    *
    * \param text Text to parse
-   * \param parserMode Parser Mode
    */
   virtual FinalRepresentation
-  parse(const std::string &text, ParserMode parserMode) = 0;
+  parse(const std::string &text) = 0;
 
   /**
    * Retrieves information for syntax highlighting.

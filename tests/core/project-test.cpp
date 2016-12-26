@@ -216,7 +216,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
   MemoryAccess memoryAccess = projectModule.getMemoryAccess();
 
   FinalRepresentation finalRepresentationValidator =
-      parserValidator->parse(testProgram, ParserMode::COMPILE);
+      parserValidator->parse(testProgram);
   auto addressCommandMapValidator =
       finalRepresentationValidator.createMapping();
 

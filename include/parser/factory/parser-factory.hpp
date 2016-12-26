@@ -41,11 +41,12 @@ using ParserBuildFunction =
 /**
  * Instantiates a Parser for an Architecture by name.
  *
- * \param arch The architecture this parser is created for
+ * \param architecture The architecture this parser is created for
+ * \param memoryAccess The access to the memory to store data and validate instructions.
  * \param name The name of the parser (see #mapping)
  * \return A unique pointer to the new parser.
  */
-ParserPtr createParser(const Architecture &arch,
+ParserPtr createParser(const Architecture &architecture,
                        const MemoryAccess &memoryAccess,
                        const std::string &name);
 

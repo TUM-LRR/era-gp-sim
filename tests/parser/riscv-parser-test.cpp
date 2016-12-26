@@ -73,7 +73,7 @@ class RiscParserTest : public ::testing::Test {
 
 TEST_F(RiscParserTest, EmptyString) {
   FinalRepresentation res;
-  res = parser.parse("", ParserMode::COMPILE);
+  res = parser.parse("");
   printErrors(res.errorList());
   EXPECT_EQ(res.errorList().size(), 0);
   EXPECT_EQ(res.commandList().size(), 0);
@@ -81,7 +81,7 @@ TEST_F(RiscParserTest, EmptyString) {
 
 TEST_F(RiscParserTest, EmptyMultilineString) {
   FinalRepresentation res;
-  res = parser.parse("\n\n", ParserMode::COMPILE);
+  res = parser.parse("\n\n");
   printErrors(res.errorList());
   EXPECT_EQ(res.errorList().size(), 0);
   EXPECT_EQ(res.commandList().size(), 0);
@@ -89,7 +89,7 @@ TEST_F(RiscParserTest, EmptyMultilineString) {
 
 TEST_F(RiscParserTest, SingleInstruction) {
   FinalRepresentation res;
-  res = parser.parse("ADD x13, x4,x0", ParserMode::COMPILE);
+  res = parser.parse("ADD x13, x4,x0");
   printErrors(res.errorList());
   EXPECT_EQ(res.errorList().size(), 0);
   EXPECT_EQ(res.commandList().size(), 1);
@@ -97,7 +97,7 @@ TEST_F(RiscParserTest, SingleInstruction) {
 
 TEST_F(RiscParserTest, SingleDirective) {
   FinalRepresentation res;
-  res = parser.parse(".section data", ParserMode::COMPILE);
+  res = parser.parse(".section data");
   printErrors(res.errorList());
   EXPECT_EQ(res.errorList().size(), 0);
   EXPECT_EQ(res.commandList().size(), 0);
@@ -105,7 +105,7 @@ TEST_F(RiscParserTest, SingleDirective) {
 
 TEST_F(RiscParserTest, SingleBadDirective) {
   FinalRepresentation res;
-  res = parser.parse(".idontexist lala, la", ParserMode::COMPILE);
+  res = parser.parse(".idontexist lala, la");
   printErrors(res.errorList());
   EXPECT_EQ(res.errorList().size(), 1);
   EXPECT_EQ(res.commandList().size(), 0);
@@ -140,8 +140,7 @@ TEST_F(RiscParserTest, MultipleDirectives) {
       "add1\n"
       "add2 5 + 7 << 2\n"
       "add2 ZAHL, 3*9\n"
-      "add3 ;kommentar\n",
-      ParserMode::COMPILE);
+      "add3 ;kommentar\n");
   printErrors(res.errorList());
   EXPECT_EQ(res.errorList().size(), 0);
   EXPECT_EQ(res.commandList().size(), 3 + 3 + 4 + 5 + 5);
@@ -192,8 +191,7 @@ TEST_F(RiscParserTest, WrongMacros) {
       "add5\n"
       ".endm\n"
       "add4   \n"
-      "add5;kommentar\n",
-      ParserMode::COMPILE);
+      "add5;kommentar\n");
   printErrors(res.errorList());
   EXPECT_GE(res.errorList().size(), 5);
   EXPECT_LE(res.commandList().size(), 3);
@@ -206,8 +204,7 @@ TEST_F(RiscParserTest, WrongMacroUnclosed) {
       ".macro add1, x=0\n"
       "addi x0, x0, \\x\n"
       "addi x0, x0, \\x\n"
-      "addi x0, x0, \\x\n",
-      ParserMode::COMPILE);
+      "addi x0, x0, \\x\n");
   printErrors(res.errorList());
   EXPECT_GE(res.errorList().size(), 1);
   EXPECT_EQ(res.commandList().size(), 0);
@@ -224,8 +221,7 @@ TEST_F(RiscParserTest, MemoryDirectives) {
       ".resb 2\n"
       ".resh 3\n"
       ".resw 4\n"
-      ".resd 1\n",
-      ParserMode::COMPILE);
+      ".resd 1\n");
   printErrors(res.errorList());
   EXPECT_EQ(res.errorList().size(), 0);
   EXPECT_EQ(res.commandList().size(), 0);
@@ -235,8 +231,7 @@ TEST_F(RiscParserTest, WrongSection) {
   FinalRepresentation res;
   res = parser.parse(
       ".section data\n"
-      "add x0, x0, x0\n",
-      ParserMode::COMPILE);
+      "add x0, x0, x0\n");
   printErrors(res.errorList());
   EXPECT_GE(res.errorList().size(), 1);
   EXPECT_EQ(res.commandList().size(), 1);
@@ -251,8 +246,7 @@ TEST_F(RiscParserTest, MultipleInstructions) {
       "LUI x5, 123;kommentar\n"
       "addition123:\n"
       "\n"
-      "ADD x0, x0, x0; kommentar",
-      ParserMode::COMPILE);
+      "ADD x0, x0, x0; kommentar");
   printErrors(res.errorList());
   EXPECT_EQ(res.errorList().size(), 0);
   EXPECT_EQ(res.commandList().size(), 4);
@@ -260,8 +254,7 @@ TEST_F(RiscParserTest, MultipleInstructions) {
 
 TEST_F(RiscParserTest, MalformedInstructions) {
   FinalRepresentation res;
-  res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7, 9\nble  ",
-                     ParserMode::COMPILE);
+  res = parser.parse("label ADD x13, x4,7\nadd x13 x4 ,7, 9\nble  ");
   printErrors(res.errorList());
   EXPECT_EQ(res.errorList().size(), 5);
   EXPECT_EQ(res.commandList().size(), 1);
@@ -269,7 +262,7 @@ TEST_F(RiscParserTest, MalformedInstructions) {
 
 TEST_F(RiscParserTest, BadCharacters) {
   FinalRepresentation res;
-  res = parser.parse("ðŸ…±ðŸ…»ðŸ…¾ðŸ†‡ðŸ†‡ x13, x4,7", ParserMode::COMPILE);
+  res = parser.parse("ðŸ…±ðŸ…»ðŸ…¾ðŸ†‡ðŸ†‡ x13, x4,7");
   printErrors(res.errorList());
   EXPECT_EQ(res.errorList().size(), 2);
   EXPECT_EQ(res.commandList().size(), 0);
@@ -285,8 +278,7 @@ TEST_F(RiscParserTest, MixedErrors) {
       "dfklgdjflj\n"
       "addition123:\n"
       "\n"
-      "_addition456: ADD x0, x0, x0; kommentar",
-      ParserMode::COMPILE);
+      "_addition456: ADD x0, x0, x0; kommentar");
   printErrors(res.errorList());
   EXPECT_EQ(res.errorList().size(), 2);
   EXPECT_EQ(res.commandList().size(), 4);

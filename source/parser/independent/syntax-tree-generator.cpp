@@ -80,7 +80,7 @@ std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
     errors.pushError(commandName.positionInterval(),
                      "Invalid operation ('%1'): %2",
                      commandName.string(),
-                     validationResult.getMessage().getBaseString()); /*TODO*/
+                     validationResult.getMessage());
   }
 
   // Return.

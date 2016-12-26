@@ -79,7 +79,8 @@ class RiscvParser::RiscvRegex {
    * Parses the next line.
    *
    * \param line  The line to parse.
-   * \param state CompileState to record errors.
+   * \param lineCoordinate
+   * \param errors CompileErrorList to record errors.
    * \return The last read position in the string (if the line does not match,
    * this is the character that caused the error)
    */

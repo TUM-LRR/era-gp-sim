@@ -103,6 +103,9 @@ class CompileError {
   CompileErrorSeverity _severity;
 };
 
+/**
+ * \brief A vector of compile errors.
+ */
 using CompileErrorVector = std::vector<CompileError>;
 
 #endif

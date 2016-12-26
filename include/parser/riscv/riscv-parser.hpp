@@ -25,7 +25,6 @@
 #include "arch/common/architecture.hpp"
 #include "arch/common/node-factory-collection.hpp"
 #include "core/memory-access.hpp"
-#include "parser/common/parser-mode.hpp"
 #include "parser/common/parser.hpp"
 
 #include "parser/independent/syntax-tree-generator.hpp"
@@ -43,9 +42,9 @@ class RiscvParser : public Parser {
               const MemoryAccess &memoryAccess);
 
   virtual FinalRepresentation
-  parse(const std::string &text, ParserMode parserMode);
+  parse(const std::string &text) override;
 
-  virtual const SyntaxInformation getSyntaxInformation();
+  virtual const SyntaxInformation getSyntaxInformation() override;
 
   static const SyntaxTreeGenerator::ArgumentNodeGenerator
       argumentGeneratorFunction;

@@ -114,7 +114,7 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
   }
 
   if (_labels.size() > 0 && _firstInstruction < 0) {
-    std::vector<CodePositionInterval> wholeRegion;// TODO
+    std::vector<CodePositionInterval> wholeRegion;
     for (const auto& label : _labels) {
       wholeRegion.push_back(label.positionInterval());
     }

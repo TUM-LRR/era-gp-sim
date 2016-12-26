@@ -116,7 +116,7 @@ struct LazyRange {
   LazyRange(const T &start, const T &end, const T &step)
   : _start(start), _end(end), _step(step) {
     // Check that we wouldn't iterate forever
-    assert::that(((end - start) / step) > 0);
+    assert::that(((end - start) / step) >= 0);
 
     // Round up to the next multiple of the step
     _end = (end + step - 1) - ((end + step - 1) % step);

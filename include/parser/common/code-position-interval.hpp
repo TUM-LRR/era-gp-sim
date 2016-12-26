@@ -50,28 +50,78 @@ class CodePositionInterval {
    */
   CodePositionInterval();
 
+  /**
+   * \brief The start code position of the interval.
+   * \return The start code position of the interval.
+   */
   const CodePosition& start() const noexcept;
 
+  /**
+   * \brief The end code position of the interval.
+   * \return The end code position of the interval.
+   */
   const CodePosition& end() const noexcept;
 
+  /**
+   * \brief The start line of the interval.
+   * \return The start line of the interval.
+   */
   CodeCoordinate startLine() const noexcept;
 
+  /**
+   * \brief The start character/row index of the interval.
+   * \return The start character/row index of the interval.
+   */
   CodeCoordinate startCharacter() const noexcept;
 
+  /**
+   * \brief The last line of the interval.
+   * \return The last line of the interval.
+   */
   CodeCoordinate endLine() const noexcept;
 
+  /**
+   * \brief The last character/row index of the interval.
+   * \return The last character/row index of the interval.
+   */
   CodeCoordinate endCharacter() const noexcept;
 
+  /**
+   * \brief Determines, if the code position interval is empty.
+   * \return True, if either the line index of the last position is smaller than the index of the first line or the start and last line are the same and the x-indices are reversed.
+   */
   bool empty() const noexcept;
 
+  /**
+   * \brief Builds the smallest interval containing two code position intervals.
+   * \param other The code position interval to unite with.
+   * \return The resulting interval.
+   */
   CodePositionInterval unite(const CodePositionInterval& other) const;
 
+  /**
+   * \brief Builds the biggest interval containing an area contained within two code position intervals.
+   * \param other The code position interval to cut with.
+   * \return The resulting interval.
+   */
   CodePositionInterval cut(const CodePositionInterval& other) const;
 
+  /**
+   * \brief Builds the smallest interval containg all code position intervals in the given iterator.
+   * \param start The iterator start position.
+   * \param end The iterator end position.
+   * \return The resulting interval.
+   */
   static CodePositionInterval
   unite(const std::vector<CodePositionInterval>::const_iterator& start,
         const std::vector<CodePositionInterval>::const_iterator& end);
 
+  /**
+   * \brief Builds the biggest interval containing an area contained within all code position intervals in the given iterator.
+   * \param start The iterator start position.
+   * \param end The iterator end position.
+   * \return The resulting interval.
+   */
   static CodePositionInterval
   cut(const std::vector<CodePositionInterval>::const_iterator& start,
       const std::vector<CodePositionInterval>::const_iterator& end);

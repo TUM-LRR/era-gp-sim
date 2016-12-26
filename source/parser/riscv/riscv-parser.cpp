@@ -164,7 +164,7 @@ static void readText(const std::string& text,
 }
 
 FinalRepresentation
-RiscvParser::parse(const std::string& text, ParserMode parserMode) {
+RiscvParser::parse(const std::string& text) {
   IntermediateRepresentator intermediate;
   CompileErrorList errors;
 
