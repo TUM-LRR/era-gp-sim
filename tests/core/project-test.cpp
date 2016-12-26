@@ -89,6 +89,9 @@ class ProjectTestFixture : public ::testing::Test {
     MemoryManager memoryManager = projectModule.getMemoryManager();
     memoryManager.setErrorCallback(errorCallback);
     architectureValidator.validate();
+    CommandInterface commandInterface = projectModule.getCommandInterface();
+    commandInterface.setSyncCallback(
+        [this]() { this->projectModule.guiReady(); });
   }
 
   std::size_t findNextNode(

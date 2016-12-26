@@ -50,12 +50,22 @@ class ConditionTimer {
   bool getFlag();
 
   /**
-   * Blocks current thread until notify is called by any thread.
+   * Blocks current thread until notify is called by any thread, does not reset
+   * the internal thread (reset has to be called before wait will have any
+   * effect again).
    */
   void wait();
 
   /**
+   * Blocks the current thread until notify is called by any thread, resets the
+   * internal flag.
+   */
+  void waitAndReset();
+
+  /**
    * Blocks current thread until notify is called or the wait timed out.
+   * Does not reset the internal thread (reset has to be called before wait will
+   * have any effect again).
    *
    * \param duration Default timeout in case notify is not called.
    */

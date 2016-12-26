@@ -24,14 +24,18 @@ ConditionTimer::ConditionTimer()
 }
 
 void ConditionTimer::notifyAll() {
-  std::lock_guard<std::mutex> lock(_mutex);
-  _flag = true;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    _flag = true;
+  }
   _conditionVariable.notify_all();
 }
 
 void ConditionTimer::notifyOne() {
-  std::lock_guard<std::mutex> lock(_mutex);
-  _flag = true;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    _flag = true;
+  }
   _conditionVariable.notify_one();
 }
 
@@ -49,4 +53,13 @@ void ConditionTimer::wait() {
   while (!_flag) {
     _conditionVariable.wait(lock);
   }
+}
+
+void ConditionTimer::waitAndReset() {
+  std::unique_lock<std::mutex> lock(_mutex);
+  while (!_flag) {
+    _conditionVariable.wait(lock);
+  }
+  if (!lock) lock.lock();
+  _flag = false;
 }

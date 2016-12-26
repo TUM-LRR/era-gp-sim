@@ -316,6 +316,11 @@ class GuiProject : QObject {
    */
   void _updateCommandList(const FinalRepresentation& finalRepresentation);
 
+  /**
+   * Slot to notify the core, part of the ui synchronization during execution.
+   */
+  void _notifyCore();
+
  signals:
   /**
    * \brief A signal to notify components that a register changed.
@@ -364,6 +369,9 @@ class GuiProject : QObject {
    * This signal is emitted when the execution has stopped.
    */
   void executionStopped();
+
+  /** Signal for ui synchronization during execution. */
+  void guiSync();
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP

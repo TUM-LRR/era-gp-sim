@@ -87,6 +87,9 @@ GuiProject::GuiProject(
   _projectModule.getCommandInterface().setExecutionStoppedCallback(
       [this]() { emit this->executionStopped(); });
 
+  _projectModule.getCommandInterface().setSyncCallback(
+      [this]() { emit this->guiSync(); });
+
   // connect all receiving components to the callback signals
   QObject::connect(this,
                    SIGNAL(registerChanged(const QString&)),
@@ -119,6 +122,9 @@ GuiProject::GuiProject(
       this,
       SLOT(_updateCommandList(const FinalRepresentation&)),
       Qt::QueuedConnection);
+
+  QObject::connect(
+      this, SIGNAL(guiSync()), this, SLOT(_notifyCore()), Qt::QueuedConnection);
 }
 
 GuiProject::~GuiProject() {
@@ -312,4 +318,8 @@ void GuiProject::_updateCommandList(
   _commandList = finalRepresentation.commandList;
   _helpCache.clear();
   emit commandListUpdated();
+}
+
+void GuiProject::_notifyCore() {
+  _projectModule.guiReady();
 }
