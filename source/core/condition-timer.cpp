@@ -45,7 +45,8 @@ void ConditionTimer::reset() {
 }
 
 bool ConditionTimer::getFlag() {
-  return _flag.load();
+  std::lock_guard<std::mutex> lock(_mutex);
+  return _flag;
 }
 
 void ConditionTimer::wait() {

@@ -109,6 +109,8 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
         // we reached a breakpoint
         break;
       }
+      _syncCallback();
+      _syncCondition->waitAndReset();
     }
   }
   _executionStopped();

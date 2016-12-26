@@ -20,7 +20,6 @@
 #ifndef ERAGPSIM_CORE_CONDITION_TIMER_HPP
 #define ERAGPSIM_CORE_CONDITION_TIMER_HPP
 
-#include <atomic>
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
@@ -92,7 +91,7 @@ class ConditionTimer {
   std::mutex _mutex;
 
   /** Flag to avoid race conditions with the condition variable. */
-  std::atomic_bool _flag;
+  bool _flag;
 
   /** A condition variable for sleeping until a condition is met. */
   std::condition_variable _conditionVariable;
