@@ -59,7 +59,8 @@ enum class Endianness { LITTLE, BIG, MIXED, BI };
  * Relaxed means it does.
  */
 enum class AlignmentBehavior { FORCED, RELAXED };
-// (note: please do not call this one plainly just STRICT, it will collide with a Qt macro name and so causing really strang compile errors)
+// (note: please do not call this one plainly just STRICT, it will collide with
+// a Qt macro name and so causing really strang compile errors)
 
 /**
  * Describes how the architecture represents signed values.
