@@ -17,7 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/independent\transformation-parameters.hpp"
+#include "parser/independent/transformation-parameters.hpp"
 
 TransformationParameters::TransformationParameters(
     const Architecture& architecture,
