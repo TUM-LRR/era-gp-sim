@@ -129,6 +129,7 @@ GuiProject::GuiProject(
 
 GuiProject::~GuiProject() {
   stop();
+  _notifyCore();
 }
 
 void GuiProject::changeSystem(std::string base) {
