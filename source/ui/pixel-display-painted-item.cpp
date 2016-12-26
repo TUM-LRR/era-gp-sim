@@ -18,6 +18,7 @@
 */
 
 #include <algorithm>
+#include <ctime>
 #include <iostream>
 
 #include "common/assert.hpp"
@@ -32,25 +33,20 @@ PixelDisplayPaintedItem::PixelDisplayPaintedItem(QQuickItem *parent)
   _options.width = PSIZE;
   _options.height = PSIZE;
   _image = _options.makeImage();
-  //_image->fill(QColor("#00FFFF").rgb());
-  //_image->setPixel(20, 20, 0xFF0000u);
 }
 
 void PixelDisplayPaintedItem::paint(QPainter *painter) {
-  std::cout << "paint!" << std::endl;
-  // _options.updateAllPixels(_outputComponentPointer, _image);
-  // _options.updateAllColors(_outputComponentPointer, _image);
   painter->drawImage(painter->window(), *_image);
-  std::cout << "I did do the paint!" << std::endl;
 }
 
 void PixelDisplayPaintedItem::memoryChanged(std::size_t address,
                                             std::size_t amount) {
-  std::cout << "PixelDisplayPaintedItem memory changed" << std::endl;
-  // _options.updateAllPixels(_outputComponentPointer, _image);
-  // _options.updateAllColors(_outputComponentPointer, _image);
+  std::clock_t timeElapsed = std::clock();
   _options.updateMemory(_outputComponentPointer, _image, address, amount);
   update();
+  timeElapsed -= std::clock();
+  std::cout << "Memory Updated in " << (1000 * timeElapsed / CLOCKS_PER_SECOND)
+            << "ms" << std::endl;
 }
 
 void PixelDisplayPaintedItem::setPixelBaseAddress(size_t pixelBaseAddress) {
@@ -323,7 +319,7 @@ ColorMode::getMemoryValueAt(Optional<OutputComponent *> memoryAccess,
         address + length) {
       return (*memoryAccess)
           ->getMemoryAccess()
-          .getMemoryValueAt(address, length)
+          .tryGetMemoryValueAt(address, length)
           .get();
     }
   }
