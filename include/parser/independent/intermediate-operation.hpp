@@ -77,7 +77,7 @@ class IntermediateOperation {
   /**
    * \brief Instantiates a new IntermediateOperation with the given arguments.
    * (only for subclass use!)
-   * \param positionInterval The line interval the operation occupies.
+   * \param positionInterval The code position interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation.
    */
@@ -85,21 +85,52 @@ class IntermediateOperation {
                         const std::vector<PositionedString>& labels,
                         const PositionedString& name);
 
+  /**
+   * \brief Executes the operation (e.g. it is inserted into the commandOutput
+   * list).
+   * \param immutable Some constant arguments which might be helpful.
+   * \param errors The compile error list to note down any errors.
+   * \param commandOutput The final command output vector to record all
+   * finalized commands.
+   * \param memoryAccess The memory access used to reserve memory and validate
+   * instructions.
+   */
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
                        FinalCommandVector& commandOutput,
-                       MemoryAccess& memoryAccess) = 0;
+                       MemoryAccess& memoryAccess);
 
+  /**
+   * \brief Reserves entries for this operation in the symbol table.
+   * \param immutable Some constant arguments which might be helpful.
+   * \param errors The compile error list to note down any errors.
+   * \param graph The symbol graph for taking care of symbols (to check their
+   * dependencies).
+   */
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
                      CompileErrorList& errors,
                      SymbolGraph& graph);
 
+  /**
+* \brief Reserves memory for this operation.
+* \param immutable Some constant arguments which might be helpful.
+* \param errors The compile error list to note down any errors.
+* \param allocator The allocator to reserve memory.
+* \param tracker The section tracker so we know in which section to reserve our
+* data.
+*/
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
                               CompileErrorList& errors,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);
 
+  /**
+* \brief Preprocesses some operations, mostly used for macros.
+* \param immutable Some constant arguments which might be helpful.
+* \param errors The compile error list to note down any errors.
+* \param macroTable A table to record occured macros.
+*/
   virtual void precompile(const PreprocessingImmutableArguments& immutable,
                           CompileErrorList& errors,
                           MacroDirectiveTable& macroTable);
@@ -136,19 +167,46 @@ class IntermediateOperation {
    */
   virtual IntermediateOperationPointer clone();
 
+  /**
+   * \brief Returns the internal code position interval.
+   * \return The internal code position interval.
+   */
   const CodePositionInterval& positionInterval() const noexcept;
 
+  /**
+   * \brief Returns the internal label list.
+   * \return The internal label list.
+   */
   const std::vector<PositionedString>& labels() const noexcept;
 
+  /**
+   * \brief Returns the internal operation name.
+   * \return The internal operation name.
+   */
   const PositionedString& name() const noexcept;
 
+  /**
+   * \brief Converts the operation with all its arguments into a readable
+   * representation.
+   * \return A readable representation of this operation.
+   */
   virtual std::string toString() const;
 
+  /**
+   * \brief Returns the type of this operation.
+   * \return The type of this operation (instruction, macro instruction, other,
+   * etc.).
+   */
   virtual Type getType() const;
 
- protected:
   /**
-   * \brief The internal line interval.
+   * \brief Finalizes an intermediate operation.
+   */
+  virtual ~IntermediateOperation() = default;
+
+ private:
+  /**
+   * \brief The internal code position interval.
    */
   CodePositionInterval _positionInterval;
 
@@ -163,7 +221,8 @@ class IntermediateOperation {
   PositionedString _name;
 };
 
-using CommandList = std::vector<IntermediateOperationPointer>;
-using CommandIterator = typename CommandList::iterator;
+using IntermediateOperationVector = std::vector<IntermediateOperationPointer>;
+using IntermediateOperationVectorIterator =
+    typename IntermediateOperationVector::iterator;
 
 #endif

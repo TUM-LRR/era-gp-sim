@@ -18,15 +18,12 @@ set(PARSER_INDEPENDENT_SOURCES
   macro-directive-table.cpp
   macro-end-directive.cpp
   memory-allocator.cpp
-  memory-definition-directive.cpp
   memory-reservation-directive.cpp
   memory-section-definition.cpp
-  positioned-string.cpp
   preprocessing-immutable-arguments.cpp
   relative-memory-position.cpp
   section-directive.cpp
   section-tracker.cpp
-  string-parser.cpp
   symbol.cpp
   symbol-graph.cpp
   symbol-graph-evaluation.cpp

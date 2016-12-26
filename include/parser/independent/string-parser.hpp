@@ -61,12 +61,12 @@ class StringParserEngine {
   /**
    * \brief Decodes and re-encodes a code point at the given position in the
    * input string.
-   * \param string The input string to take the data from.
+   * \param inputString The input string to take the data from.
    * \param index The index at which the to-be-encoded data begins.
    * \param separator The separator (e.g. " or ') to indicate the end or begin
    * of a string.
    * \param output The data output to append data to.
-   * \param errors The compile errors to write errors to.
+   * \param errors The compile error list to note down any errors.
    * \return True, if the conversion has been successful. If not, it returns
    * false.
    */
@@ -97,9 +97,9 @@ class StringParserEngine {
 
   /**
    * \brief Checks, if a string is wrapped by two separators.
-   * \param string The string to check.
+   * \param inputString The string to check.
    * \param separator The separator which should wrap the string.
-   * \param errors The compile errors to note down any errors.
+   * \param errors The compile error list to note down any errors.
    * \return True, if the string is wrapped. Else, it returns false.
    */
   static bool checkIfWrapped(const String& inputString,
@@ -626,9 +626,9 @@ namespace StringParser {
 * \brief Parses a trimmed C-like string literal in UTF format.
 * \tparam CharT The input character type.
 * \tparam OutT The output integer type.
-* \param string The input data.
+* \param inputString The input data.
+* \param errors The compile error list to note errors down.
 * \param output The output vector to append to.
-* \param errors The compile errors to note errors down.
 * \return True, if the conversion has been successful, else false.
 */
 template <typename CharT, typename OutT>
@@ -659,9 +659,9 @@ static bool parseString(const PositionedBasicString<CharT>& inputString,
 * \brief Parses a trimmed C-like character literal in UTF format.
 * \tparam CharT The input character type.
 * \tparam OutT The output integer type.
-* \param string The input data.
+* \param inputString The input data.
+* \param errors The compile error list to note errors down.
 * \param output The output vector to append to.
-* \param errors The compile errors to note errors down.
 * \return True, if the conversion has been successful, else false.
 */
 template <typename CharT, typename OutT>

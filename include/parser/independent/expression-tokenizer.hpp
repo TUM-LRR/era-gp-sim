@@ -46,9 +46,10 @@ class ExpressionTokenizer {
       const std::vector<ExpressionTokenDefinition>& definitions);
 
   /**
-     * \brief Tokenizes a given string and records any errors.
+   * \brief Tokenizes a given string and records any errors.
    * \param data The string to tokenize.
-   * \param state The compile state to note down any errors.
+   * \param errors The compile error list to note down any errors.
+   * \return A vector of tokens created from the input string.
    */
   std::vector<ExpressionToken>
   tokenize(const PositionedString& data, CompileErrorList& errors) const;

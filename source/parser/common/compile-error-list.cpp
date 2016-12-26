@@ -21,9 +21,13 @@
 #include <algorithm>
 #include "common/translateable.hpp"
 
+// Getter.
+
 const CompileErrorVector CompileErrorList::errors() const noexcept {
   return _errors;
 }
+
+// Some internal helper methods.
 
 static bool
 existsError(const CompileErrorVector& errors, CompileErrorSeverity severity) {
@@ -41,6 +45,7 @@ countError(const CompileErrorVector& errors, CompileErrorSeverity severity) {
       });
 }
 
+// Some meta info methods about the compile error vector.
 bool CompileErrorList::hasErrors() const {
   return existsError(_errors, CompileErrorSeverity::ERROR);
 }
@@ -65,6 +70,8 @@ std::size_t CompileErrorList::informationCount() const {
 std::size_t CompileErrorList::size() const {
   return _errors.size();
 }
+
+// Enhancement methods.
 
 void CompileErrorList::addRaw(const CompileError& error) {
   _errors.push_back(error);

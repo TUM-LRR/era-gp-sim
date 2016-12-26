@@ -51,10 +51,22 @@ struct MemorySectionDefinition {
   explicit MemorySectionDefinition(const std::string& name,
                                    size_t alignment = 1);
 
+  /**
+   * \brief Returns the name of the section.
+   * \return The name of the section.
+   */
   const std::string& name() const noexcept;
 
+  /**
+   * \brief Returns the alignment of the whole section in memory.
+   * \return The alignment of the whole section in memory.
+   */
   size_t sectionAlignment() const noexcept;
 
+  /**
+   * \brief Returns the alignment of each new data block in memory.
+   * \return The alignment of each new data block in memory.
+   */
   size_t dataAlignment() const noexcept;
 
  private:

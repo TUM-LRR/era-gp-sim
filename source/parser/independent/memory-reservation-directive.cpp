@@ -34,9 +34,9 @@ MemoryReservationDirective::MemoryReservationDirective(
     const CodePositionInterval& positionInterval,
     const std::vector<PositionedString>& labels,
     const PositionedString& name,
-    std::size_t cellSize,
     const std::vector<PositionedString>& values,
-    const ArgumentCompileFunction& argumentCompile)
+    const ArgumentCompileFunction& argumentCompile,
+    std::size_t cellSize)
 : IntermediateDirective(positionInterval, labels, name)
 , _cellSize(cellSize)
 , _values(values)
@@ -57,7 +57,7 @@ void MemoryReservationDirective::allocateMemory(
   }
 
   if (_values.empty()) {
-    errors.pushWarning(_name.positionInterval(),
+    errors.pushWarning(name().positionInterval(),
                        "Implicit reservation of 0 bytes, missing arguments?");
   }
   // So, we simply calculate and sum up our arguments.
@@ -69,7 +69,7 @@ void MemoryReservationDirective::allocateMemory(
     if (result > 0) {
       sizeInCells += result;
     } else {
-      errors.pushWarning(_name.positionInterval(), "Reserving 0 bytes");
+      errors.pushWarning(name().positionInterval(), "Reserving 0 bytes");
     }
   }
 
@@ -91,7 +91,7 @@ void MemoryReservationDirective::enhanceSymbolTable(
     SymbolGraph& graph) {
   // We calculate the absolute memory position and enhance our symbol table.
   _absolutePosition = immutable.allocator().absolutePosition(_relativePosition);
-  for (const auto& label : _labels) {
+  for (const auto& label : labels()) {
     graph.addNode(
         Symbol(label, PositionedString(std::to_string(_absolutePosition))));
   }
@@ -106,4 +106,12 @@ void MemoryReservationDirective::execute(
   if (_size > 0) {
     memoryAccess.putMemoryValueAt(_absolutePosition, MemoryValue(_size));
   }
+}
+
+MemoryAddress MemoryReservationDirective::absolutePosition() const noexcept {
+  return _absolutePosition;
+}
+const std::vector<PositionedString>& MemoryReservationDirective::values() const
+    noexcept {
+  return _values;
 }

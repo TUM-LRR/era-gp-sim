@@ -27,7 +27,9 @@
 #include "parser/common/compile-error-severity.hpp"
 #include "parser/common/compile-error.hpp"
 
-// These macros simplify adding compile errors to the compile error list. The macros embed the QT_TRANSLATE macro, so it is not needed to enclose the message when using the macros.
+// These macros simplify adding compile errors to the compile error list. The
+// macros embed the QT_TRANSLATE macro, so it is not needed to enclose the
+// message when using the macros.
 #define pushError(interval, message, ...) \
   pushErrorInternal(                      \
       (interval), QT_TRANSLATE_NOOP("Parser Errors", message), ##__VA_ARGS__)
@@ -61,49 +63,57 @@ class CompileErrorList {
   const CompileErrorVector errors() const noexcept;
 
   /**
-   * \brief A helper method to determine if the list has any errors (not including warnings, information).
+   * \brief A helper method to determine if the list has any errors (not
+   * including warnings, information).
    * \return True, if errors exist, else false.
    */
   bool hasErrors() const;
 
   /**
-   * \brief A helper method to determine if the list has any warning (not including error, information).
+   * \brief A helper method to determine if the list has any warning (not
+   * including error, information).
    * \return True, if warnings exist, else false.
    */
   bool hasWarnings() const;
 
   /**
-   * \brief A helper method to determine if the list has any information entries (not including warnings, information).
+   * \brief A helper method to determine if the list has any information entries
+   * (not including warnings, information).
    * \return True, if information entires exist, else false.
    */
   bool hasInformation() const;
 
   /**
-   * \brief Forwarded method from the internal vector. Determines, if there are any compile errors (errors, warnings, information) in the list.
+   * \brief Forwarded method from the internal vector. Determines, if there are
+   * any compile errors (errors, warnings, information) in the list.
    * \return True, if the vector is empty, else false.
    */
   bool empty() const;
-  
+
   /**
-   * \brief A helper method to determine if the number of errors (not including warnings, information).
+   * \brief A helper method to determine if the number of errors (not including
+   * warnings, information).
    * \return The number of errors.
    */
   std::size_t errorCount() const;
 
   /**
-   * \brief A helper method to determine if the number of warnings (not including errors, information).
+   * \brief A helper method to determine if the number of warnings (not
+   * including errors, information).
    * \return The number of warnings.
    */
   std::size_t warningCount() const;
 
   /**
-   * \brief A helper method to determine if the number of information entries (not including warnings, information).
+   * \brief A helper method to determine if the number of information entries
+   * (not including warnings, information).
    * \return The number of information entries.
    */
   std::size_t informationCount() const;
 
   /**
-   * \brief Forwarded method from the internal vector. Determines, the number of compile errors (errors, warnings, information) in the list.
+   * \brief Forwarded method from the internal vector. Determines, the number of
+   * compile errors (errors, warnings, information) in the list.
    * \return The number of all compile errors in the list.
    */
   std::size_t size() const;
@@ -118,7 +128,9 @@ class CompileErrorList {
    * \brief Adds a compile error created from the arguments to the list.
    * \param severity The given severity of the compile error.
    * \param interval The given code position interval where to error occured.
-   * \param message The message to record. (do not change to std::string as input parameter! We want to force that people insert a string literal here, for translation using the QT_TRANSLATE_NOOP macro).
+   * \param message The message to record. (do not change to std::string as
+   * input parameter! We want to force that people insert a string literal here,
+   * for translation using the QT_TRANSLATE_NOOP macro).
    * \param parameters The parameters for the message.
    */
   template <typename... Args>
@@ -134,9 +146,12 @@ class CompileErrorList {
   }
 
   /**
-   * \brief Adds a compile error created from the arguments to the list, pre-specified of severity 'error'.
+   * \brief Adds a compile error created from the arguments to the list,
+   * pre-specified of severity 'error'.
    * \param interval The given code position interval where to error occured.
-   * \param message The message to record. (do not change to std::string as input parameter! We want to force that people insert a string literal here, for translation using the QT_TRANSLATE_NOOP macro).
+   * \param message The message to record. (do not change to std::string as
+   * input parameter! We want to force that people insert a string literal here,
+   * for translation using the QT_TRANSLATE_NOOP macro).
    * \param parameters The parameters for the message.
    */
   template <typename... Args>
@@ -148,9 +163,12 @@ class CompileErrorList {
   }
 
   /**
-   * \brief Adds a compile error created from the arguments to the list, pre-specified of severity 'warning'.
+   * \brief Adds a compile error created from the arguments to the list,
+   * pre-specified of severity 'warning'.
    * \param interval The given code position interval where to error occured.
-   * \param message The message to record. (do not change to std::string as input parameter! We want to force that people insert a string literal here, for translation using the QT_TRANSLATE_NOOP macro).
+   * \param message The message to record. (do not change to std::string as
+   * input parameter! We want to force that people insert a string literal here,
+   * for translation using the QT_TRANSLATE_NOOP macro).
    * \param parameters The parameters for the message.
    */
   template <typename... Args>
@@ -162,9 +180,12 @@ class CompileErrorList {
   }
 
   /**
-   * \brief Adds a compile error created from the arguments to the list, pre-specified of severity 'information'.
+   * \brief Adds a compile error created from the arguments to the list,
+   * pre-specified of severity 'information'.
    * \param interval The given code position interval where to error occured.
-   * \param message The message to record. (do not change to std::string as input parameter! We want to force that people insert a string literal here, for translation using the QT_TRANSLATE_NOOP macro).
+   * \param message The message to record. (do not change to std::string as
+   * input parameter! We want to force that people insert a string literal here,
+   * for translation using the QT_TRANSLATE_NOOP macro).
    * \param parameters The parameters for the message.
    */
   template <typename... Args>

@@ -124,7 +124,11 @@ class MemoryAllocator {
    */
   void clear();
 
-  size_t estimateSize();
+  /**
+   * \brief Calculates the complete memory size.
+   * \return The complete occupied size of the memory.
+   */
+  size_t estimateSize() const;
 
   /**
    * \brief Calculates the absolute positions of the memory sections.
@@ -175,8 +179,6 @@ class MemoryAllocator {
   bool has(const std::string& name) const noexcept;
 
  private:
-  size_t calculateSize(bool finalize);
-
   /**
    * \brief The vector of stored memory section objects.
    */

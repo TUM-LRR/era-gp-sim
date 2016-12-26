@@ -78,7 +78,7 @@ void MemoryAllocator::clear() {
   }
 }
 
-std::size_t MemoryAllocator::calculateSize(bool finalize) {
+std::size_t MemoryAllocator::calculatePositions() {
   std::size_t position = 0;
 
   // As we have befriended the MemorySection, we may do this. Again, we use
@@ -86,20 +86,23 @@ std::size_t MemoryAllocator::calculateSize(bool finalize) {
   for (auto& i : _sections) {
     auto sectionAlign = i._definition.sectionAlignment();
     auto aligned = Utility::discreteCeiling(position, sectionAlign);
-    if (finalize) {
-      i._currentPosition = aligned;
-    }
+    i._currentPosition = aligned;
     position = aligned + i._currentSize;
   }
   return position;
 }
 
-std::size_t MemoryAllocator::calculatePositions() {
-  return calculateSize(true);
-}
+std::size_t MemoryAllocator::estimateSize() const {
+  std::size_t position = 0;
 
-std::size_t MemoryAllocator::estimateSize() {
-  return calculateSize(false);
+  // As we have befriended the MemorySection, we may do this. Again, we use
+  // rounding up to align.
+  for (auto& i : _sections) {
+    auto sectionAlign = i._definition.sectionAlignment();
+    auto aligned = Utility::discreteCeiling(position, sectionAlign);
+    position = aligned + i._currentSize;
+  }
+  return position;
 }
 
 // Accessor functions...

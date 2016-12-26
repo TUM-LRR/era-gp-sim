@@ -89,33 +89,47 @@ class ExpressionCompiler {
   /**
    * \brief Compiles a given string into a number.
    * \param string The given string.
-   * \param state The state of the compiler to store any errors.
-   * \return The string evaluated into a number or an error value (mostly 0).
+   * \param replacer The symbol replacer for replacing constants – if they
+   * exist.
+   * \param errors The compile error list to store any errors.
+   * \return The string evaluated into a number or an error value (in this case
+   * mostly 0).
    */
   T compile(const PositionedString& string,
             const SymbolReplacer& replacer,
             CompileErrorList& errors) const {
     // Pretty simple: Just pass the string and the tokens in the tokenizer and
-    // parser respectively.
+    // parser respectively. In between, we replace any occurring constants, so
+    // that we can accurately annotate our errors.
     auto tokens = _tokenizer.tokenize(string, errors);
     auto tokensReplaced = replaceSymbols(tokens, replacer, errors);
     return _parser.parse(tokensReplaced, errors);
   }
 
  private:
+  // Method to replace all constants with their equivalents.
   std::vector<ExpressionToken>
   replaceSymbols(const std::vector<ExpressionToken>& source,
                  const SymbolReplacer& replacer,
                  CompileErrorList& errors) const {
     std::vector<ExpressionToken> replacedSymbols;
+    replacedSymbols.reserve(source.size());
+
+    // Just rebuild the vector.
     for (const auto& token : source) {
       if (token.type == ExpressionTokenType::CONSTANT) {
+        // Only replacing constants is interesting for us.
         auto replaced = replacer.replace(token.data, errors);
+
+        // After replacing, tokenize again...
         auto tokenizedAgain = _tokenizer.tokenize(replaced, errors);
+
+        // ...then insert.
         replacedSymbols.insert(replacedSymbols.end(),
                                tokenizedAgain.begin(),
                                tokenizedAgain.end());
       } else {
+        // Otherwise, copy.
         replacedSymbols.push_back(token);
       }
     }

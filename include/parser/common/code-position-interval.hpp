@@ -88,7 +88,9 @@ class CodePositionInterval {
 
   /**
    * \brief Determines, if the code position interval is empty.
-   * \return True, if either the line index of the last position is smaller than the index of the first line or the start and last line are the same and the x-indices are reversed.
+   * \return True, if either the line index of the last position is smaller than
+   * the index of the first line or the start and last line are the same and the
+   * x-indices are reversed.
    */
   bool empty() const noexcept;
 
@@ -100,14 +102,16 @@ class CodePositionInterval {
   CodePositionInterval unite(const CodePositionInterval& other) const;
 
   /**
-   * \brief Builds the biggest interval containing an area contained within two code position intervals.
+   * \brief Builds the biggest interval containing an area contained within two
+   * code position intervals.
    * \param other The code position interval to cut with.
    * \return The resulting interval.
    */
   CodePositionInterval cut(const CodePositionInterval& other) const;
 
   /**
-   * \brief Builds the smallest interval containg all code position intervals in the given iterator.
+   * \brief Builds the smallest interval containg all code position intervals in
+   * the given iterator.
    * \param start The iterator start position.
    * \param end The iterator end position.
    * \return The resulting interval.
@@ -117,7 +121,8 @@ class CodePositionInterval {
         const std::vector<CodePositionInterval>::const_iterator& end);
 
   /**
-   * \brief Builds the biggest interval containing an area contained within all code position intervals in the given iterator.
+   * \brief Builds the biggest interval containing an area contained within all
+   * code position intervals in the given iterator.
    * \param start The iterator start position.
    * \param end The iterator end position.
    * \return The resulting interval.

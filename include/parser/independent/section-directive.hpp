@@ -41,7 +41,7 @@ class SectionDirective : public IntermediateDirective {
    * \brief Creates a new section directive with the given section.
    * \param positionInterval The interval of the command.
    * \param labels The associated labels with the command (doesn't make sense
-   * with this one!?).
+   * for this one!?).
    * \param name The name of the command, might not be equal to the section. It
    * has no meaning for the directive.
    * \param arguments Arguments of the directive. First should be section name.
@@ -52,26 +52,30 @@ class SectionDirective : public IntermediateDirective {
                    const std::vector<PositionedString>& arguments);
 
   /**
-   * \brief Executes the section directive and sets the compiler section to the
-   * corresponding value.
-   * \param commandOutput The representation to output commands to
-   * (unused).
-   * \param table The symbol table for symbol storage (unused).
-   * \param generator The syntax tree generator, unused here.
-   * \param state The compile state which denotes the current section of the
-   * compiler.
-   */
-  virtual void execute(const ExecuteImmutableArguments& immutable,
-                       CompileErrorList& errors,
-                       FinalCommandVector& commandOutput,
-                       MemoryAccess& memoryAccess);
-
+     * \brief Sets the section to the specified value.
+     * \param immutable Some constant arguments which might be helpful.
+     * \param errors The compile error list to note down any errors.
+     * \param allocator The allocator to reserve memory.
+     * \param tracker The section tracker so we know in which section to reserve
+   * our data.
+     */
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
                               CompileErrorList& errors,
                               MemoryAllocator& allocator,
-                              SectionTracker& tracker);
+                              SectionTracker& tracker) override;
+
+  /**
+* \brief Finalizes a section directive.
+*/
+  virtual ~SectionDirective() = default;
+
+  const PositionedString& section() const noexcept;
+  bool hasName() const noexcept;
 
  private:
+  /**
+   * \brief True, if the section name is specified, else false.
+   */
   bool _hasName;
 
   /**

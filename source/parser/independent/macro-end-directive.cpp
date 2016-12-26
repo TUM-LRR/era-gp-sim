@@ -27,17 +27,10 @@ MacroEndDirective::MacroEndDirective(
 : IntermediateDirective(positionInterval, labels, name) {
 }
 
-MacroEndDirective::MacroEndDirective(
-    const CodePositionInterval& positionInterval,
-    const std::vector<PositionedString>& labels,
-    const PositionedString& name)
-: IntermediateDirective(positionInterval, labels, name) {
+bool MacroEndDirective::shouldInsert() const {
+  return false;
 }
 
-
-void MacroEndDirective::execute(const ExecuteImmutableArguments& immutable,
-                                CompileErrorList& errors,
-                                FinalCommandVector& commandOutput,
-                                MemoryAccess& memoryAccess) {
-  // Probably nothing here.
+TargetSelector MacroEndDirective::newTarget() const {
+  return TargetSelector::MAIN;
 }

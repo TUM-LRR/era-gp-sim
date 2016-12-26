@@ -19,6 +19,8 @@
 
 #include "parser/independent/preprocessing-immutable-arguments.hpp"
 
+// Just constructors and getters.
+
 PreprocessingImmutableArguments::PreprocessingImmutableArguments(
     const Architecture& architecture, const SyntaxTreeGenerator& generator)
 : _architecture(architecture), _generator(generator) {

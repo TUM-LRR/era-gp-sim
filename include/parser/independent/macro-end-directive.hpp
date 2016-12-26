@@ -22,6 +22,9 @@
 
 #include "parser/independent/intermediate-directive.hpp"
 
+/**
+ * \brief A direction which indicates the end of a macro in the code.
+ */
 class MacroEndDirective : public IntermediateDirective {
  public:
   /**
@@ -34,46 +37,25 @@ class MacroEndDirective : public IntermediateDirective {
   MacroEndDirective(const CodePositionInterval& positionInterval,
                     const std::vector<PositionedString>& labels,
                     const PositionedString& name,
-                    const std::vector<PositionedString>& arguments);
-
-  /**
-  * \brief Instantiates a new MacroEndDirective with the given arguments.
-  * \param positionInterval The line interval the operation occupies.
-  * \param labels The vector of labels assigned to the operation.
-  * \param name The name of the operation.
-  */
-  MacroEndDirective(const CodePositionInterval& positionInterval,
-                    const std::vector<PositionedString>& labels,
-                    const PositionedString& name);
-
-  /**
-   * \brief Does probably nothing.
-   * \param commandOutput The FinalRepresentation for possible output.
-   * \param table The SymbolTable for possible replacements.
-   * \param generator The generator to transform the instructions.
-   * \param state The CompileState to log possible errors.
-   */
-  virtual void execute(const ExecuteImmutableArguments& immutable,
-                       CompileErrorList& errors,
-                       FinalCommandVector& commandOutput,
-                       MemoryAccess& memoryAccess);
+                    const std::vector<PositionedString>& arguments = {});
 
   /**
    * \brief Specifies if the this operation should be processed. In this case:
    * never!
    * \return Always false.
    */
-  virtual bool shouldInsert() const {
-    return false;
-  }
+  virtual bool shouldInsert() const override;
 
   /**
    * \brief Specifies the new target for operations after this command.
    * \return Switch back to the main target.
    */
-  virtual TargetSelector newTarget() const {
-    return TargetSelector::MAIN;
-  }
+  virtual TargetSelector newTarget() const override;
+
+  /**
+   * \brief Finalizes a macro end directive.
+   */
+  virtual ~MacroEndDirective() = default;
 };
 
 #endif /* ERAGPSIM_PARSER_MACRO_END_DIRECTIVE_HPP */

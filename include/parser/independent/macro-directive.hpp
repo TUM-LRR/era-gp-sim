@@ -57,23 +57,17 @@ class MacroDirective : public IntermediateDirective {
                  const std::vector<PositionedString>& labels,
                  const PositionedString& name,
                  const PositionedString& macroName,
-                 const std::vector<PositionedString>& macroParameters);
+                 const std::vector<PositionedString>& macroParameters = {});
 
   /**
-   * \brief Executes the given macro (somehow).
-   * \param commandOutput The FinalRepresentation for possible output.
-   * \param table The SymbolTable for possible replacements.
-   * \param generator The generator to transform the instructions.
-   * \param state The CompileState to log possible errors.
+   * \brief Preprocesses the macro.
+   * \param immutable Some constant arguments which might be helpful.
+   * \param errors The compile error list to note down any errors.
+   * \param macroTable A table to record occured macros.
    */
   virtual void precompile(const PreprocessingImmutableArguments& immutable,
                           CompileErrorList& errors,
-                          MacroDirectiveTable& macroTable);
-
-  virtual void execute(const ExecuteImmutableArguments& immutable,
-                       CompileErrorList& errors,
-                       FinalCommandVector& commandOutput,
-                       MemoryAccess& memoryAccess);
+                          MacroDirectiveTable& macroTable) override;
 
 
   /**
@@ -92,7 +86,7 @@ class MacroDirective : public IntermediateDirective {
    * \brief Returns the macro name.
    * \return The macro name.
    */
-  const PositionedString& macroName() const;
+  const PositionedString& macroName() const noexcept;
 
   /**
    * Returns number of operations.
@@ -149,6 +143,11 @@ class MacroDirective : public IntermediateDirective {
     IntermediateOperation& op{ptr == nullptr ? *_operations[index] : *ptr};
     (op.*func)(args...);
   }*/
+
+  /**
+   * \brief Finalizes a macro directive.
+   */
+  virtual ~MacroDirective() = default;
 
  protected:
   /**

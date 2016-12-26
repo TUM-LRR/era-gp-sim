@@ -86,7 +86,7 @@ IntermediateInstruction::compileArgumentVector(
         conversions::convert<size_t>(_relativeAddress.offset(), byteBitSize);
     auto relativeAdress =
         immutable.generator().getNodeFactories().labelToImmediate(
-            labelValue, _name.string(), instructionAdress);
+            labelValue, name().string(), instructionAdress);
     return relativeAdress.toHexString(true, true);
   };
 
@@ -117,12 +117,12 @@ FinalCommand IntermediateInstruction::compileInstruction(
       compileArgumentVector(_targets, immutable, errors, memoryAccess);
 
   auto node = immutable.generator().transformCommand(
-      _name, errors, srcCompiled, trgCompiled, memoryAccess);
-  auto result = FinalCommand(node, _positionInterval, _address);
+      name(), errors, srcCompiled, trgCompiled, memoryAccess);
+  auto result = FinalCommand(node, positionInterval(), _address);
   return result;
 }
 
-MemoryAddress IntermediateInstruction::address() const {
+MemoryAddress IntermediateInstruction::address() const noexcept {
   return _address;
 }
 
@@ -137,10 +137,10 @@ void IntermediateInstruction::enhanceSymbolTable(
   }
 
   // We insert all our labels.
-  for (const auto& label : _labels) {
+  for (const auto& label : labels()) {
     graph.addNode(Symbol(
         label,
-        PositionedString(std::to_string(_address), _name.positionInterval()),
+        PositionedString(std::to_string(_address), name().positionInterval()),
         SymbolBehavior::DYNAMIC));
   }
 }
@@ -157,7 +157,7 @@ void IntermediateInstruction::allocateMemory(
   }
 
   const auto& architecture = immutable.architecture();
-  const auto& nameString = _name.string();
+  const auto& nameString = name().string();
   const auto& instructionSet = immutable.architecture().getInstructions();
 
   // toLower as long as not fixed in instruction set.
@@ -207,7 +207,7 @@ void IntermediateInstruction::insertIntoArguments(
 }
 
 std::string IntermediateInstruction::toString() const {
-  auto str = _name.string();
+  auto str = name().string();
 
   // Append targets
   for (auto i : Utility::range<size_t>(0, _targets.size())) {
@@ -247,4 +247,13 @@ std::vector<PositionedString> IntermediateInstruction::getArgsVector() const {
 
 IntermediateOperation::Type IntermediateInstruction::getType() const {
   return Type::INSTRUCTION;
+}
+
+const std::vector<PositionedString>& IntermediateInstruction::sources() const
+    noexcept {
+  return _sources;
+}
+const std::vector<PositionedString>& IntermediateInstruction::targets() const
+    noexcept {
+  return _targets;
 }

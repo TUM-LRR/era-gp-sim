@@ -34,17 +34,13 @@ SectionDirective::SectionDirective(
   }
 }
 
-void SectionDirective::execute(const ExecuteImmutableArguments& immutable,
-                               CompileErrorList& errors,
-                               FinalCommandVector& commandOutput,
-                               MemoryAccess& memoryAccess) {
-}
-
 void SectionDirective::allocateMemory(
     const PreprocessingImmutableArguments& immutable,
     CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
+  // First of all, we check for errors: we may miss a section name or the
+  // specified section does not exist.
   if (!_hasName) {
     errors.pushError(name().positionInterval(), "Section name missing!");
     return;
@@ -56,4 +52,11 @@ void SectionDirective::allocateMemory(
   }
   // Just set the section state to the current section. That's it.
   tracker.section(_section.string());
+}
+
+const PositionedString& SectionDirective::section() const noexcept {
+  return _section;
+}
+bool SectionDirective::hasName() const noexcept {
+  return _hasName;
 }

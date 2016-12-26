@@ -19,6 +19,8 @@
 
 #include "parser/common/final-command.hpp"
 
+// Just constructors and getters.
+
 FinalCommand::FinalCommand(const FinalCommandNodePointer& node,
                            const CodePositionInterval& position,
                            const MemoryAddress& address)

@@ -72,18 +72,11 @@ void MacroDirective::precompile(
   }
 }
 
-
-void MacroDirective::execute(const ExecuteImmutableArguments& immutable,
-                             CompileErrorList& errors,
-                             FinalCommandVector& commandOutput,
-                             MemoryAccess& memoryAccess) {
-  // Probably nothing here.
-}
 TargetSelector MacroDirective::newTarget() const {
   return TargetSelector::THIS;
 }
 
-const PositionedString& MacroDirective::macroName() const {
+const PositionedString& MacroDirective::macroName() const noexcept {
   return _macroName;
 }
 

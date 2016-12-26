@@ -27,8 +27,8 @@
 #include "common/translateable.hpp"
 #include "common/utility.hpp"
 #include "parser/common/final-representation.hpp"
-#include "ui/snapshot-component.hpp"
 #include "ui/input-text-model.hpp"
+#include "ui/snapshot-component.hpp"
 #include "ui/snapshot-component.hpp"
 
 Q_DECLARE_METATYPE(FinalRepresentation)
@@ -52,7 +52,7 @@ int Ui::runUi() {
   qRegisterMetaType<FinalRepresentation>();
   qRegisterMetaType<InputText::length_t>("length_t");
   qRegisterMetaType<id_t>("id_t");
-  
+
   _engine.rootContext()->setContextProperty("ui", this);
   _engine.rootContext()->setContextProperty("snapshotComponent",
                                             _snapshots.get());

@@ -50,20 +50,45 @@ class IntermediateInstruction : public IntermediateOperation {
                           const std::vector<PositionedString>& sources,
                           const std::vector<PositionedString>& targets);
 
+  /**
+* \brief Executes the operation (i.e. it is inserted into the commandOutput list).
+* \param immutable Some constant arguments which might be helpful.
+* \param errors The compile error list to note down any errors.
+* \param commandOutput The final command output vector to record all finalized
+* commands.
+* \param memoryAccess The memory access used to reserve memory and validate
+* instructions.
+*/
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
                        FinalCommandVector& commandOutput,
-                       MemoryAccess& memoryAccess);
+                       MemoryAccess& memoryAccess) override;
 
+  /**
+     * \brief Reserves entries for this operation in the symbol table, inserts
+   * all labels.
+     * \param immutable Some constant arguments which might be helpful.
+     * \param errors The compile error list to note down any errors.
+     * \param graph The symbol graph for taking care of symbols (to check their
+   * dependencies).
+     */
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
                      CompileErrorList& errors,
-                     SymbolGraph& graph);
+                     SymbolGraph& graph) override;
 
+  /**
+     * \brief Reserves memory for this operation.
+     * \param immutable Some constant arguments which might be helpful.
+     * \param errors The compile error list to note down any errors.
+     * \param allocator The allocator to reserve memory.
+     * \param tracker The section tracker so we know in which section to reserve
+   * our data.
+     */
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
                               CompileErrorList& errors,
                               MemoryAllocator& allocator,
-                              SectionTracker& tracker);
+                              SectionTracker& tracker) override;
 
 
   /**
@@ -77,16 +102,28 @@ class IntermediateInstruction : public IntermediateOperation {
                                   CompileErrorList& errors,
                                   MemoryAccess& memoryAccess);
 
-  MemoryAddress address() const;
+  /**
+   * \brief Returns the memory address of this operation.
+   * \return The memory address of this operation.
+   */
+  MemoryAddress address() const noexcept;
 
   virtual void insertIntoArguments(const PositionedString& name,
-                                   const PositionedString& value);
+                                   const PositionedString& value) override;
 
-  virtual IntermediateOperationPointer clone();
+  virtual IntermediateOperationPointer clone() override;
 
-  virtual std::string toString() const;
+  virtual std::string toString() const override;
 
-  virtual Type getType() const;
+  virtual Type getType() const override;
+
+  /**
+   * \brief Finalizes an intermediate instruction.
+   */
+  virtual ~IntermediateInstruction() = default;
+
+  const std::vector<PositionedString>& sources() const noexcept;
+  const std::vector<PositionedString>& targets() const noexcept;
 
  protected:
   /**

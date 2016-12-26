@@ -24,6 +24,8 @@ CodePosition::CodePosition(CodeCoordinate iy, CodeCoordinate ix)
 : _x(ix), _y(iy) {
 }
 
+// Getters.
+
 CodeCoordinate CodePosition::line() const noexcept {
   return _y;
 }
@@ -39,6 +41,16 @@ CodeCoordinate CodePosition::character() const noexcept {
 CodeCoordinate CodePosition::column() const noexcept {
   return _x;
 }
+
+CodeCoordinate CodePosition::y() const noexcept {
+  return _y;
+}
+
+CodeCoordinate CodePosition::x() const noexcept {
+  return _x;
+}
+
+// Operators.
 
 CodePosition CodePosition::operator+(const CodePosition& other) const noexcept {
   return CodePosition(this->_y + other._y, this->_x + other._x);
@@ -59,6 +71,8 @@ CodePosition CodePosition::operator<<(const CodeCoordinate& other) const
     noexcept {
   return moveLeft(other);
 }
+
+// Other operations/functions.
 
 CodePosition CodePosition::moveDown(const CodeCoordinate& c) const noexcept {
   return CodePosition(_y + c, _x);
@@ -88,12 +102,4 @@ CodePosition CodePosition::max(const CodePosition& c) const {
 
 CodePosition CodePosition::min(const CodePosition& c) const {
   return CodePosition(std::min(y(), c.y()), std::min(x(), c.x()));
-}
-
-CodeCoordinate CodePosition::y() const noexcept {
-  return _y;
-}
-
-CodeCoordinate CodePosition::x() const noexcept {
-  return _x;
 }

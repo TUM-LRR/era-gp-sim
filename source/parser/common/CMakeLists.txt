@@ -10,7 +10,6 @@ set(PARSER_COMMON_SOURCES
   final-command.cpp
   final-representation.cpp
   macro-information.cpp
-  parser.cpp
   syntax-information.cpp
 )
 

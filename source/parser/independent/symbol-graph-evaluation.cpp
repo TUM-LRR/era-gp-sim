@@ -20,6 +20,8 @@
 #include "parser/independent/symbol-graph-evaluation.hpp"
 #include "common/assert.hpp"
 
+// Parametrized constructor.
+
 SymbolGraphEvaluation::SymbolGraphEvaluation(
     const std::vector<std::size_t>& invalidNames,
     const std::vector<std::vector<std::size_t>>& duplicates,
@@ -34,8 +36,12 @@ SymbolGraphEvaluation::SymbolGraphEvaluation(
 }
 
 bool SymbolGraphEvaluation::valid() const noexcept {
+  // For the graph to be valid, there must not be a cyclic reference, duplicates
+  // or invalid names.
   return _sampleCycle.empty() && _duplicates.empty() && _invalidNames.empty();
 }
+
+// Getters.
 
 const std::vector<std::size_t>& SymbolGraphEvaluation::invalidNames() const
     noexcept {

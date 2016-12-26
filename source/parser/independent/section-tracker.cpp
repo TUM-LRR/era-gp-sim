@@ -19,6 +19,8 @@
 
 #include "parser/independent/section-tracker.hpp"
 
+// Just some constructors and getters.
+
 SectionTracker::SectionTracker() : SectionTracker("text") {
 }
 SectionTracker::SectionTracker(const std::string& startSection)

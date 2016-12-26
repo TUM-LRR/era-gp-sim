@@ -38,6 +38,9 @@ class SymbolReplacer;
  */
 class SyntaxTreeGenerator {
  public:
+  /**
+   * \brief A function type for transforming a string into a syntax tree node.
+   */
   using ArgumentNodeGenerator =
       std::function<std::shared_ptr<AbstractSyntaxTreeNode>(
           const PositionedString&,
@@ -61,7 +64,9 @@ class SyntaxTreeGenerator {
    * \brief Transforms the given operand as string into a syntax tree node and
    * writes down any occuring errors.
    * \param operand The operand in pure-string form.
-   * \param state The compile state to denote errors and other stuff.
+   * \param The symbol replacer to replace any occuring symbols in the operand
+   * strings.
+   * \param errors The compile error list to denote errors.
    * \return The transformed operand.
    */
   std::shared_ptr<AbstractSyntaxTreeNode>
@@ -72,10 +77,11 @@ class SyntaxTreeGenerator {
   /**
    * \brief Transforms the given instruction/command into a syntax tree, adds
    * any source and target nodes and denotes any occuring errors.
-   * \param command_name The opcode of the instruction.
+   * \param commandName The opcode of the instruction.
+   * \param errors The compile error list to denote errors.
    * \param sources The source arguments.
    * \param targets The target arguments.
-   * \param state The compile state to denote errors.
+   * \param memoryAccess The memory access to check the validity of the nodes.
    * \return The transformed command.
    */
   std::shared_ptr<AbstractInstructionNode> transformCommand(
@@ -97,6 +103,13 @@ class SyntaxTreeGenerator {
    */
   NodeFactoryCollection _nodeFactories;
 
+  /**
+   * \brief The internal (architecture-dependent) function to generate the
+   * argument nodes.
+   *
+   * (can be easily switched at generation of this class so that this class is
+   * independent from the architecture)
+   */
   ArgumentNodeGenerator _argumentGenerator;
 };
 

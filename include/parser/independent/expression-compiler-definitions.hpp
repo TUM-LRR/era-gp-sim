@@ -161,6 +161,9 @@ struct ExpressionHelpRegexes {
    */
   std::string rightBracket;
 
+  /**
+   * \brief The regex used for parsing constants.
+   */
   std::string constant;
 };
 

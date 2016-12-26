@@ -42,7 +42,8 @@ class FinalCommand {
  public:
   /**
    * \brief Creates a final command with the given parameters.
-   * \param node The pointer to the syntax tree node containing the instruction data.
+   * \param node The pointer to the syntax tree node containing the instruction
+   * data.
    * \param position The position in code where the interval is located.
    * \param address The address of the command in memory.
    */
@@ -51,8 +52,10 @@ class FinalCommand {
                const MemoryAddress& address);
 
   /**
-   * \brief Returns the pointer to the syntax tree node containing the instruction data.
-   * \return The pointer to the syntax tree node containing the instruction data.
+   * \brief Returns the pointer to the syntax tree node containing the
+   * instruction data.
+   * \return The pointer to the syntax tree node containing the instruction
+   * data.
    */
   const FinalCommandNodePointer& node() const noexcept;
 
@@ -70,7 +73,8 @@ class FinalCommand {
 
  private:
   /**
-   * \brief Returns the pointer to the syntax tree node containing the instruction data.
+   * \brief Returns the pointer to the syntax tree node containing the
+   * instruction data.
    */
   FinalCommandNodePointer _node;
 

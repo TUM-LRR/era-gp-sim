@@ -23,17 +23,24 @@
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/symbol-graph-evaluation.hpp"
 
-static MSRegex constructSymbolRegex(std::vector<Symbol> symbols) {
+// Helper method to create multiregex out of symbol names (which have been
+// checked for valid names before, hopefully... Otherwise, we might have a regex
+// injection).
+static MSRegex constructSymbolRegex(const std::vector<Symbol>& symbols) {
   std::vector<std::string> names;
   for (const auto& symbol : symbols) {
+    // Only if the names are valid, they are allowed to be inserted.
     assert::that(symbol.nameValid());
     names.push_back(symbol.name().string());
   }
   if (names.empty()) {
+    // If there is no symbol inserted, we insert an invalid one.
     names.push_back("none^");
   }
   return MSRegex("\\b", "\\b", names, std::regex::optimize);
 }
+
+// Some constructors.
 
 SymbolReplacer::SymbolReplacer(const std::vector<Symbol>& symbols,
                                const DynamicReplacer& replacer,
@@ -60,6 +67,9 @@ SymbolReplacer::SymbolReplacer(const SymbolReplacer& source,
 
 PositionedString SymbolReplacer::replace(const PositionedString& data,
                                          CompileErrorList& errors) const {
+  // Main function here. We define our replace function like that we replace all
+  // dynamic occurences with our replace function. Everything else stays the
+  // same.
   auto result = data.string();
   auto multireplace = [&](std::size_t index) -> std::string {
     const auto& symbol = _symbols[index];
@@ -69,24 +79,39 @@ PositionedString SymbolReplacer::replace(const PositionedString& data,
       return symbol.value().string();
     }
   };
+
+  // Then iterate at max 'maximumReplaceCount' round.
   for (const auto& round :
        Utility::range<std::size_t>(0, _maximumReplaceCount)) {
     (void)round;// (to prevent unused variable warnings)
+
     auto previous = result;
+
+    // We replace another time.
     result = _matchRegex.replace(result, multireplace);
     if (result == previous) {
+      // If nothing changes, everything has been replaced, return it!
       return PositionedString(result, data.positionInterval());
     }
   }
 
+  // If we get here, we have exceeded the maximum number of replacement runs.
+  // The reason why we need to do multiple runs at all is that we got symbols
+  // with dynamic behavior which might change all the time and even produce a
+  // cycle spontaneously. It is very unlikely, but in theory that possibility
+  // remains.
   errors.pushError(data.positionInterval(),
                    "Exceeded maximum number of replace runs.");
 
+  // The position interval is still the same as for the original string though
+  // (even if replacement succeeded).
   return PositionedString(result, data.positionInterval());
 }
 
 const SymbolReplacer::DynamicReplacer SymbolReplacer::IDENTITY_REPLACE =
     [](const Symbol& symbol) { return symbol.value().string(); };
+
+// Getters.
 
 const std::vector<Symbol>& SymbolReplacer::symbols() const noexcept {
   return _symbols;

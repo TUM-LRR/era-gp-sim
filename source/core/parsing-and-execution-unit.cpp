@@ -147,7 +147,8 @@ void ParsingAndExecutionUnit::parse(std::string code) {
       // create a empty MemoryValue as long as the command
       MemoryValue zero(command.node()->assemble().getSize());
       _memoryAccess.putMemoryValueAt(command.address(), zero);
-//      _memoryAccess.removeMemoryProtection(command.address(), zero.getSize() / 8);
+      //      _memoryAccess.removeMemoryProtection(command.address(),
+      //      zero.getSize() / 8);
     }
   }
   // parse the new code and save the final representation
@@ -161,8 +162,8 @@ void ParsingAndExecutionUnit::parse(std::string code) {
     for (const auto &command : _finalRepresentation.commandList()) {
       auto assemble = command.node()->assemble();
       _memoryAccess.putMemoryValueAt(command.address(), assemble);
-//      _memoryAccess.makeMemoryProtected(command.address(),
-//                                        assemble.getSize() / 8);
+      //      _memoryAccess.makeMemoryProtected(command.address(),
+      //                                        assemble.getSize() / 8);
     }
   }
 }

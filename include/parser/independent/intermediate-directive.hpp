@@ -41,7 +41,15 @@ class IntermediateDirective : public IntermediateOperation {
                         const std::vector<PositionedString>& labels,
                         const PositionedString& name);
 
+  /**
+* \brief Finalizes an intermediate directive.
+*/
+  virtual ~IntermediateDirective() = default;
+
  protected:
+  /**
+   * \brief Calculates the memory position of the intermediate directive.
+   */
   virtual void determineMemoryPosition();
 };
 

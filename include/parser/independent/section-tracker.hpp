@@ -22,15 +22,38 @@
 
 #include <string>
 
+/**
+ * \brief A small helper class to keep track of the current section while
+ * parsing.
+ */
 class SectionTracker {
  public:
+  /**
+   * \brief Creates a new section tracker which starts with the 'text' section.
+   */
   SectionTracker();
+
+  /**
+   * \brief Creates a new section tracker with the specified start section.
+   */
   SectionTracker(const std::string& startSection);
 
+  /**
+   * \brief Sets the section of this section tracker.
+   * \param section The section to set.
+   */
   void section(const std::string& section) noexcept;
+
+  /**
+   * \brief Get the section of this section tracker.
+   * \return The current section.
+   */
   const std::string& section() const noexcept;
 
  private:
+  /**
+   * \brief The currently tracked section.
+   */
   std::string _section;
 };
 

@@ -41,8 +41,7 @@ class RiscvParser : public Parser {
   RiscvParser(const Architecture &architecture,
               const MemoryAccess &memoryAccess);
 
-  virtual FinalRepresentation
-  parse(const std::string &text) override;
+  virtual FinalRepresentation parse(const std::string &text) override;
 
   virtual const SyntaxInformation getSyntaxInformation() override;
 

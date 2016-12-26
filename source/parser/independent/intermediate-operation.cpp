@@ -41,6 +41,12 @@ IntermediateOperation::IntermediateOperation(
 : _positionInterval(positionInterval), _labels(labels), _name(name) {
 }
 
+void IntermediateOperation::execute(const ExecuteImmutableArguments& immutable,
+                                    CompileErrorList& errors,
+                                    FinalCommandVector& commandOutput,
+                                    MemoryAccess& memoryAccess) {
+}
+
 void IntermediateOperation::enhanceSymbolTable(
     const EnhanceSymbolTableImmutableArguments& immutable,
     CompileErrorList& errors,

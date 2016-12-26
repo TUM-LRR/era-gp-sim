@@ -20,6 +20,7 @@
 #include "parser/independent/symbol.hpp"
 #include "common/assert.hpp"
 
+// Some testing regexes.
 static const std::regex TRIMMED =
     std::regex("(^\\s+|\\s+$)", std::regex_constants::optimize);
 static const std::regex VALID_NAME =
@@ -29,6 +30,7 @@ static bool symbolNameValid(const PositionedString& name) {
   return std::regex_search(name.string(), VALID_NAME);
 }
 
+
 Symbol::Symbol(const PositionedString& name,
                const PositionedString& value,
                SymbolBehavior behavior)
@@ -37,8 +39,11 @@ Symbol::Symbol(const PositionedString& name,
 , _behavior(behavior)
 , _regex((symbolNameValid(name) ? ("\\b" + name.string() + "\\b") : ("no^")),
          std::regex::optimize) {
+  // We only accept trimmed macros.
   assert::that(!std::regex_search(name.string(), TRIMMED));
 }
+
+// Some getters.
 
 const PositionedString& Symbol::name() const noexcept {
   return _name;
@@ -49,9 +54,11 @@ const PositionedString& Symbol::value() const noexcept {
 SymbolBehavior Symbol::behavior() const noexcept {
   return _behavior;
 }
-const std::regex Symbol::regex() const noexcept {
+const std::regex& Symbol::regex() const noexcept {
   return _regex;
 }
+
+// Helper methods.
 
 bool Symbol::nameValid() const {
   return symbolNameValid(_name);

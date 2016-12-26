@@ -28,8 +28,8 @@
 
 
 void IntermediateMacroInstruction::replaceWithMacros(
-    CommandIterator begin,
-    CommandIterator end,
+    IntermediateOperationVectorIterator begin,
+    IntermediateOperationVectorIterator end,
     MacroDirectiveTable& macroTable,
     CompileErrorList& errors) {
   for (auto i = begin; i != end; ++i) {
@@ -39,7 +39,7 @@ void IntermediateMacroInstruction::replaceWithMacros(
 
     IntermediateInstruction& inst = static_cast<IntermediateInstruction&>(**i);
 
-    auto macro = macroTable.find(inst._name.string(),
+    auto macro = macroTable.find(inst.name().string(),
                                  inst._sources.size() + inst._targets.size());
     if (!macro.found()) {
       continue;
@@ -113,16 +113,16 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
     operation->enhanceSymbolTable(immutable, errors, graph);
   }
 
-  if (_labels.size() > 0 && _firstInstruction < 0) {
+  if (labels().size() > 0 && _firstInstruction < 0) {
     std::vector<CodePositionInterval> wholeRegion;
-    for (const auto& label : _labels) {
+    for (const auto& label : labels()) {
       wholeRegion.push_back(label.positionInterval());
     }
     errors.pushError(
         CodePositionInterval().unite(wholeRegion.begin(), wholeRegion.end()),
         "Labels cannot point to macros without instructions!");
   } else {
-    for (const auto& label : _labels) {
+    for (const auto& label : labels()) {
       graph.addNode(
           Symbol(label,
                  PositionedString(

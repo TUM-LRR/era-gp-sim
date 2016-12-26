@@ -76,7 +76,18 @@ void ConstantDirective::enhanceSymbolTable(
     errors.pushError(name().positionInterval(), "Malformed constant directive");
     return;
   }
+
+  // We embrace the expression with brackets, so it causes no conflicts when we
+  // insert it into the token stream/string.
   _expression = PositionedString("(" + _arguments[1].string() + ")",
                                  _arguments[1].positionInterval());
   graph.addNode(Symbol(_arguments[0], _expression));
+}
+
+const std::vector<PositionedString>& ConstantDirective::arguments() const
+    noexcept {
+  return _arguments;
+}
+const PositionedString& ConstantDirective::expression() const noexcept {
+  return _expression;
 }

@@ -70,9 +70,9 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   MemoryDefinitionDirective(const CodePositionInterval& positionInterval,
                             const std::vector<PositionedString>& labels,
                             const PositionedString& name,
-                            size_t cellSize,
                             const std::vector<PositionedString>& values,
-                            const ProcessValuesFunction& processValues)
+                            const ProcessValuesFunction& processValues,
+                            size_t cellSize = sizeof(T))
   : IntermediateDirective(positionInterval, labels, name)
   , _cellSize(cellSize)
   , _values(values)
@@ -80,28 +80,12 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   }
 
   /**
- * \brief Instantiates a new MemoryDefinitionDirective with the given arguments.
- * \param positionInterval The line interval the operation occupies.
- * \param labels The vector of labels assigned to the operation.
- * \param name The name of the operation.
- * \param values The argument vector.
- * \param processValues A function to parse the arguments.
- */
-  MemoryDefinitionDirective(const CodePositionInterval& positionInterval,
-                            const std::vector<PositionedString>& labels,
-                            const PositionedString& name,
-                            const std::vector<PositionedString>& values,
-                            const ProcessValuesFunction& processValues)
-  : MemoryDefinitionDirective(
-        positionInterval, labels, name, sizeof(T), values, processValues) {
-  }
-
-  /**
-   * \brief Reserves (not writes!) memory for the operation (if needed).
-   * \param architecture The architecture for information about the memory
-   * format.
+   * \brief Reserves memory for this operation (but does not write it).
+   * \param immutable Some constant arguments which might be helpful.
+   * \param errors The compile error list to note down any errors.
    * \param allocator The allocator to reserve memory.
-   * \param state The CompileState to log possible errors.
+   * \param tracker The section tracker so we know in which section to reserve
+   * our data.
    */
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
                               CompileErrorList& errors,
@@ -140,10 +124,12 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   }
 
   /**
-   * \brief Enhances the symbol table by the labels of the operation.
-   * \param table The SymbolTable to insert into.
-   * \param allocator The MemoryAllocator to get the memory positions from.
-   * \param state The CompileState to log possible errors.
+   * \brief Reserves entries for this operation in the symbol table, also for
+   * the labels for this operation.
+   * \param immutable Some constant arguments which might be helpful.
+   * \param errors The compile error list to note down any errors.
+   * \param graph The symbol graph for taking care of symbols (to check their
+   * dependencies).
    */
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
@@ -151,20 +137,21 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                      SymbolGraph& graph) {
     _absolutePosition =
         immutable.allocator().absolutePosition(_relativePosition);
-    for (const auto& label : _labels) {
+    for (const auto& label : labels()) {
       graph.addNode(
           Symbol(label, PositionedString(std::to_string(_absolutePosition))));
     }
   }
 
   /**
-   * \brief Executes the given operation (somehow).
-   * \param commandOutput The FinalRepresentation for possible output.
-   * \param table The SymbolTable for possible replacements.
-   * \param generator The generator to transform the instructions.
-   * \param state The CompileState to log possible errors.
-   * \param memoryAccess The MemoryAccess for verifying instructions or
-   * reserving data.
+   * \brief Executes the operation (e.g. it is inserted into the commandOutput
+   * list).
+   * \param immutable Some constant arguments which might be helpful.
+   * \param errors The compile error list to note down any errors.
+   * \param commandOutput The final command output vector to record all
+   * finalized commands.
+   * \param memoryAccess The memory access used to reserve memory and validate
+   * instructions.
    */
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
@@ -201,9 +188,21 @@ class MemoryDefinitionDirective : public IntermediateDirective {
     }
   }
 
+  MemoryAddress absolutePosition() const noexcept {
+    _absolutePosition;
+  }
+  const std::vector<PositionedString>& values() const noexcept {
+    return _values;
+  }
+
+  /**
+   * \brief Finalizes a memory definition directive.
+   */
+  virtual ~MemoryDefinitionDirective() = default;
+
  private:
   std::size_t _byteSize;
-  std::size_t _absolutePosition;
+  MemoryAddress _absolutePosition;
   RelativeMemoryPosition _relativePosition;
   size_t _size;
   size_t _cellSize;

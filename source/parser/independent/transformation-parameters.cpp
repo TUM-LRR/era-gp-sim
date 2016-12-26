@@ -19,6 +19,8 @@
 
 #include "parser/independent/transformation-parameters.hpp"
 
+// Just constructors and getters.
+
 TransformationParameters::TransformationParameters(
     const Architecture& architecture,
     const MemoryAllocator& allocator,

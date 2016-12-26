@@ -29,6 +29,9 @@ class MemoryAccess;
 class Architecture;
 class MemoryAccess;
 
+/**
+ * \brief Abbreviation for a pointer to a parsing unit.
+ */
 using ParserPtr = std::unique_ptr<Parser>;
 
 /**
@@ -42,7 +45,8 @@ using ParserBuildFunction =
  * Instantiates a Parser for an Architecture by name.
  *
  * \param architecture The architecture this parser is created for
- * \param memoryAccess The access to the memory to store data and validate instructions.
+ * \param memoryAccess The access to the memory to store data and validate
+ * instructions.
  * \param name The name of the parser (see #mapping)
  * \return A unique pointer to the new parser.
  */

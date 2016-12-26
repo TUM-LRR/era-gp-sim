@@ -118,9 +118,9 @@ createMemoryReservationDirective(const CodePositionInterval &positionInterval,
       positionInterval,
       labels,
       name,
-      cellSize,
       values,
-      _memoryReservationArgumentCompile);
+      _memoryReservationArgumentCompile,
+      cellSize);
 }
 
 

@@ -138,14 +138,16 @@ class CodePosition {
   CodePosition newLine() const;
 
   /**
-   * \brief Creates a code position which takes the maximum of two code positions for each argument.
+   * \brief Creates a code position which takes the maximum of two code
+   * positions for each argument.
    * \param c The other code position.
    * \return The maximized code position.
    */
   CodePosition max(const CodePosition& c) const;
 
   /**
-   * \brief Creates a code position which takes the minimum of two code positions for each argument.
+   * \brief Creates a code position which takes the minimum of two code
+   * positions for each argument.
    * \param c The other code position.
    * \return The minimized code position.
    */

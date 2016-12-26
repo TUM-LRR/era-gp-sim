@@ -222,17 +222,33 @@ class Multiregex {
     return search(data, multimatch);
   }
 
-  String replace(const String& data, const MultiReplaceFunction& replacement) const {
+  /**
+   * \brief Replaced any match in the multi-regex by something, using a replace
+   * function for the choice.
+   * \param data The string which should be treated.
+   * \param replacement The selector for the replacement.
+   * \return The string with everything replaced.
+   */
+  String
+  replace(const String& data, const MultiReplaceFunction& replacement) const {
+    // This implementation here might be rather inefficient... But it works!
     MultiregexMatch<CharType> multimatch;
     String substring = data;
     String result;
-    while (search(substring, multimatch))
-    {
+
+    // We create substrings and search for the next occurence until there is no
+    // more.
+    while (search(substring, multimatch)) {
+      // Then replace.
       auto end = multimatch.position + multimatch.length;
       result += substring.substr(0, multimatch.position);
       result += replacement(multimatch.choice);
+
+      // Continue with the next substring.
       substring = substring.substr(end);
     }
+
+    // Adding up the rest.
     result += substring;
     return result;
   }

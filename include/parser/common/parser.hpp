@@ -38,8 +38,7 @@ class Parser {
    *
    * \param text Text to parse
    */
-  virtual FinalRepresentation
-  parse(const std::string &text) = 0;
+  virtual FinalRepresentation parse(const std::string &text) = 0;
 
   /**
    * Retrieves information for syntax highlighting.

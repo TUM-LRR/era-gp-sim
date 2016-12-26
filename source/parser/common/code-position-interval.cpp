@@ -38,6 +38,8 @@ CodePositionInterval::CodePositionInterval()
 : CodePositionInterval(CodePosition(1), CodePosition(0)) {
 }
 
+// Some more getters.
+
 const CodePosition& CodePositionInterval::start() const noexcept {
   return _codePositionStart;
 }
@@ -62,18 +64,25 @@ CodeCoordinate CodePositionInterval::endCharacter() const noexcept {
   return _codePositionEnd.character();
 }
 
+// Helper for determining, if this code position interval is empty.
+
 bool CodePositionInterval::empty() const noexcept {
-  return (_codePositionStart.x() > _codePositionEnd.x() && _codePositionStart.y() == _codePositionEnd.y()) ||
+  // Either we got same y coordinates and the x coordinates are inversed, or
+  // just the y coordinates are inversed and the x coordinates are irrelevant.
+  return (_codePositionStart.x() > _codePositionEnd.x() &&
+          _codePositionStart.y() == _codePositionEnd.y()) ||
          _codePositionStart.y() > _codePositionEnd.y();
 }
 
 CodePositionInterval
 CodePositionInterval::unite(const CodePositionInterval& other) const {
+  // If one of the intervals we want to with is empty, we take the other one.
   if (empty()) {
     return other;
   } else if (other.empty()) {
     return *this;
   } else {
+    // If not, take the maximum of both code positions each.
     auto nstart = start().max(other.start());
     auto nend = end().max(other.end());
     return CodePositionInterval(nstart, nend);
@@ -82,11 +91,12 @@ CodePositionInterval::unite(const CodePositionInterval& other) const {
 
 CodePositionInterval
 CodePositionInterval::cut(const CodePositionInterval& other) const {
-  if (empty()) {
-    return other;
-  } else if (other.empty()) {
-    return *this;
+  if (empty() || other.empty()) {
+    // If one interval is empty, there is nothing that overlaps, i.e. the cut is
+    // empty.
+    return CodePositionInterval();
   } else {
+    // If not, take the minimum of both code positions each.
     auto nstart = start().min(other.start());
     auto nend = end().min(other.end());
     return CodePositionInterval(nstart, nend);
@@ -96,6 +106,7 @@ CodePositionInterval::cut(const CodePositionInterval& other) const {
 CodePositionInterval CodePositionInterval::unite(
     const std::vector<CodePositionInterval>::const_iterator& start,
     const std::vector<CodePositionInterval>::const_iterator& end) {
+  // Just iterate over the vector.
   CodePositionInterval acc;
   for (auto it = start; it != end; ++it) {
     acc = acc.unite(*it);
@@ -106,6 +117,7 @@ CodePositionInterval CodePositionInterval::unite(
 CodePositionInterval CodePositionInterval::cut(
     const std::vector<CodePositionInterval>::const_iterator& start,
     const std::vector<CodePositionInterval>::const_iterator& end) {
+  // Just iterate over the vector.
   CodePositionInterval acc;
   for (auto it = start; it != end; ++it) {
     acc = acc.cut(*it);

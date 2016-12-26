@@ -42,11 +42,11 @@ class IntegerParser {
    * Tries to parse the whole string. Adds an error to \p state if the parsing
    * fails.
    *
-   * \param str   String to parse
-   * \param state The current CompileState
-   * \param start Start position in the string
-   * \param base  Integer based used for parsing. Autodetects base 8, 16 and 10
-   *              based on prefix if set to 0
+   * \param str    String to parse
+   * \param errors The current CompileErrorList
+   * \param start  Start position in the string
+   * \param base   Integer based used for parsing. Autodetects base 8, 16 and 10
+   *               based on prefix if set to 0
    *
    * \return The parsed integer. Undefined if parsing fails.
    */

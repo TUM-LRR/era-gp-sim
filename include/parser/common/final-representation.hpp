@@ -34,7 +34,8 @@
 class FinalRepresentation {
  public:
   /**
-   * \brief Helper type for address mapping from memory address to instruction index in the command vector.
+   * \brief Helper type for address mapping from memory address to instruction
+   * index in the command vector.
    */
   using AddressMapping = std::unordered_map<MemoryAddress, std::size_t>;
 
@@ -45,34 +46,42 @@ class FinalRepresentation {
 
   /**
    * \brief Creates a final representation with the given arguments.
-   * \param commandList The list with the assembled instructions and their location in code.
-   * \param errorList The list with errors that occurred during the compilation process.
-   * \param macroList A helper list containing all macros which have been assembled.
+   * \param commandList The list with the assembled instructions and their
+   * location in code.
+   * \param errorList The list with errors that occurred during the compilation
+   * process.
+   * \param macroList A helper list containing all macros which have been
+   * assembled.
    */
   FinalRepresentation(const FinalCommandVector& commandList,
                       const CompileErrorList& errorList,
                       const MacroInformationVector& macroList);
 
   /**
-   * \brief Returns the list with the assembled instructions and their location in code.
-   * \return The list with the assembled instructions and their location in code.
+   * \brief Returns the list with the assembled instructions and their location
+   * in code.
+   * \return The list with the assembled instructions and their location in
+   * code.
    */
   const FinalCommandVector& commandList() const noexcept;
 
   /**
-   * \brief Returns the list with errors that occurred during the compilation process.
+   * \brief Returns the list with errors that occurred during the compilation
+   * process.
    * \return The list with errors that occurred during the compilation process.
    */
   const CompileErrorList& errorList() const noexcept;
 
   /**
-   * \brief Returns a helper list containing all macros which have been assembled.
+   * \brief Returns a helper list containing all macros which have been
+   * assembled.
    * \return A helper list containing all macros which have been assembled.
    */
   const MacroInformationVector& macroList() const noexcept;
 
   /**
-   * \brief Create a mapping between index in memory and index in command vector of this FinalRepresentation.
+   * \brief Create a mapping between index in memory and index in command vector
+   * of this FinalRepresentation.
    * \return The created mapping.
    */
   AddressMapping createMapping() const;

@@ -44,12 +44,20 @@ struct RelativeMemoryPosition {
 
   /**
    * \brief Checks if the relative memory position is not in an empty section.
-   * \return True, if section != "".
+   * \return True, if the section name is not an empty string.
    */
   bool valid() const;
 
+  /**
+   * \brief Returns the section which contains this memory piece.
+   * \return The section which contains this memory piece.
+   */
   const std::string& section() const noexcept;
 
+  /**
+   * \brief Returns the offset to the beginning of this section.
+   * \return The offset to the beginning of this section.
+   */
   size_t offset() const noexcept;
 
  private:

@@ -112,7 +112,7 @@ class ExpressionParser {
   /**
    * \brief Parses the given token stream into a single number.
    * \param tokens The input token stream.
-   * \param externalState The compile state to note down any errors.
+   * \param errors The compile error list to note down any errors.
    * \return The result of the expression if the compilation has been
    * successful. If now, `T()` will be returned.
    */
@@ -185,7 +185,7 @@ class ExpressionParser {
     // Reference on the token vector.
     const std::vector<ExpressionToken>& tokens;
 
-    // Reference to the compile error errors.
+    // Reference to the compile error list.
     CompileErrorList& errors;
 
     // Output stack for temporary numbers.
@@ -517,7 +517,7 @@ class ExpressionParser {
       literalRegexDecode.push_back(i.regex);
     }
 
-    // They we create our multiregex.
+    // Then we create our multiregex.
     return MSRegex("^", "$", literalRegexDecode, std::regex::optimize);
   }
 
