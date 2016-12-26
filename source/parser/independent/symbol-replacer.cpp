@@ -78,7 +78,7 @@ PositionedString SymbolReplacer::replace(const PositionedString& data,
     }
   }
 
-  errors.addError(data.positionInterval(),
+  errors.pushError(data.positionInterval(),
                   "Exceeded maximum number of replace runs.");
 
   return PositionedString(result, data.positionInterval());

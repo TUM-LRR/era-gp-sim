@@ -149,7 +149,7 @@ class StringParserEngine {
                             : inputString.nthCharacterPosition(position);
     auto codePositionInterval =
         CodePositionInterval(codePosition, codePosition >> 1);
-    errors.addErrorInternal(codePositionInterval, message, arguments...);
+    errors.pushErrorInternal(codePositionInterval, message, arguments...);
   }
 
   // Returns true, if there is still data after the current index in the string

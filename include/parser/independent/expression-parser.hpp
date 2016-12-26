@@ -205,7 +205,7 @@ class ExpressionParser {
   void recordErrorInternal(ParseState& state,
                            const char* message,
                            const Args&... parameters) const {
-    state.errors.addErrorInternal(
+    state.errors.pushErrorInternal(
         state.curr.data.positionInterval(), message, parameters...);
   }
 

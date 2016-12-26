@@ -46,11 +46,11 @@ void SectionDirective::allocateMemory(
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (!_hasName) {
-    errors.addError(name().positionInterval(), "Section name missing!");
+    errors.pushError(name().positionInterval(), "Section name missing!");
     return;
   }
   if (!allocator.has(_section.string())) {
-    errors.addError(_section.positionInterval(),
+    errors.pushError(_section.positionInterval(),
                     "Specified section non-existent!");
     return;
   }

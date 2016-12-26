@@ -46,7 +46,7 @@ void IntermediateMacroInstruction::replaceWithMacros(
     }
 
     if (macro.isCyclic()) {
-      errors.addError(macro.name().positionInterval(),
+      errors.pushError(macro.name().positionInterval(),
                       "Cyclic macro call detected.");
       continue;
     }
@@ -75,7 +75,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     if (ptr != nullptr) {
       _operations.push_back(std::move(ptr));
     } else {
-      errors.addError(macro.getOperationName(i).positionInterval(),
+      errors.pushError(macro.getOperationName(i).positionInterval(),
                       "Macro contains unsupported instruction '%1'.",
                       macro.getOperationName(i).string());
     }
@@ -117,7 +117,7 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
     for (const auto& label : _labels) {
       wholeRegion.push_back(label.positionInterval());
     }
-    errors.addError(
+    errors.pushError(
         CodePositionInterval().unite(wholeRegion.begin(), wholeRegion.end()),
         "Labels cannot point to macros without instructions!");
   } else {

@@ -59,7 +59,7 @@ void IntermediateRepresentator::insertCommandPtr(
     // If we want the current command as new target, we set it like so.
     if (_currentOutput) {
       // Nested macros are not supported.
-      errors.addError(command->name().positionInterval(),
+      errors.pushError(command->name().positionInterval(),
                       "Error, nested macros are not supported.");
     }
     _currentOutput = std::move(command);
@@ -69,7 +69,7 @@ void IntermediateRepresentator::insertCommandPtr(
       // it and its sub commands might be lost).
       if (!_currentOutput) {
         // Classic bracket-forgot-to-close problem.
-        errors.addError(command->name().positionInterval(),
+        errors.pushError(command->name().positionInterval(),
                         "The start directive of the macro is missing.");
       }
       internalInsertCommand(std::move(_currentOutput));
@@ -86,7 +86,7 @@ static bool evaluateGraph(const SymbolGraphEvaluation& graphEvaluation,
     if (!graphEvaluation.invalidNames().empty()) {
       for (auto index : graphEvaluation.invalidNames()) {
         const auto& symbol = graphEvaluation.symbols()[index];
-        errors.addError(
+        errors.pushError(
             symbol.name().positionInterval(),
             "The name '%1' is not a valid name for a constant, label etc.",
             symbol.name().string());
@@ -96,7 +96,7 @@ static bool evaluateGraph(const SymbolGraphEvaluation& graphEvaluation,
       for (const auto& indexGroup : graphEvaluation.duplicates()) {
         for (auto index : indexGroup) {
           const auto& symbol = graphEvaluation.symbols()[index];
-          errors.addError(symbol.name().positionInterval(),
+          errors.pushError(symbol.name().positionInterval(),
                           "The name '%1' exists more than once in the program",
                           symbol.name().string());
         }
@@ -111,7 +111,7 @@ static bool evaluateGraph(const SymbolGraphEvaluation& graphEvaluation,
       displayString += "...";
       for (auto index : graphEvaluation.sampleCycle()) {
         const auto& symbol = graphEvaluation.symbols()[index];
-        errors.addError(
+        errors.pushError(
             symbol.name().positionInterval(),
             "Symbol '%1' is part of an infinite reference cycle, going like %2",
             symbol.name().string(),
@@ -130,7 +130,7 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
                                      MemoryAccess& memoryAccess) {
   auto errors = parsingErrors;
   if (_currentOutput) {
-    errors.addError(_currentOutput->positionInterval(),
+    errors.pushError(_currentOutput->positionInterval(),
                     "Macro not closed. Missing a macro end directive?");
   }
 
@@ -178,7 +178,7 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
 
   if (allocatedSize > allowedSize) {
     if (firstMemoryExceedingOperation) {
-      errors.addError(
+      errors.pushError(
           CodePositionInterval(
               firstMemoryExceedingOperation->positionInterval()),
           "From this operation on, including it, there is too much memory "
@@ -188,7 +188,7 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
           std::to_string(allocatedSize),
           std::to_string(allowedSize));
     } else {
-      errors.addError(
+      errors.pushError(
           CodePositionInterval(CodePosition(0), CodePosition(0, 2)),
           "Too much memory allocated: %1 requested, maximum is %2"
           " (please note: because of aligning memory, the first value "

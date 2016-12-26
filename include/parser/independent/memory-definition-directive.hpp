@@ -106,7 +106,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                               MemoryAllocator& allocator,
                               SectionTracker& tracker) {
     if (tracker.section() == "text") {
-      errors.addWarning(name().positionInterval(),
+      errors.pushWarning(name().positionInterval(),
                         "Careful, you are trying to reserve memory in the text "
                         "section where the program instructions are stored. "
                         "This might cause unexpected behavior. Use a '.section "
@@ -114,7 +114,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                         "issue.");
     }
     if (_values.empty()) {
-      errors.addWarning(name().positionInterval(), "Empty data definition.");
+      errors.pushWarning(name().positionInterval(), "Empty data definition.");
     }
 
     // So, we simply calculate and sum up our arguments.
@@ -193,7 +193,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
       // Then, let's do a (probably also here) expensive memory call.
       memoryAccess.putMemoryValueAt(_absolutePosition, data);
     } else {
-      errors.addError(name().positionInterval(),
+      errors.pushError(name().positionInterval(),
                       "Nothing to reserve with memory definition.");
     }
   }

@@ -146,7 +146,7 @@ static void readText(const std::string& text,
     lineRegex.matchLine(line, position.line(), errors);
     if (!lineRegex.isValid()) {
       // Add syntax error if line regex doesnt match
-      errors.addError(CodePositionInterval(position, position >> 1),
+      errors.pushError(CodePositionInterval(position, position >> 1),
                       "Syntax Error");
     } else {
       // Collect labels until next instruction

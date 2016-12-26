@@ -47,14 +47,14 @@ void MemoryReservationDirective::allocateMemory(
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (tracker.section() == "text") {
-    errors.addWarning(name().positionInterval(),
+    errors.pushWarning(name().positionInterval(),
                       "Careful, you are trying to reserve memory in the text "
                       "section where the program instructions are stored. This "
                       "might cause unexpected behavior.");
   }
 
   if (_values.empty()) {
-    errors.addWarning(_name.positionInterval(),
+    errors.pushWarning(_name.positionInterval(),
                       "Implicit reservation of 0 bytes, missing arguments?");
   }
   // So, we simply calculate and sum up our arguments.
@@ -66,7 +66,7 @@ void MemoryReservationDirective::allocateMemory(
     if (result > 0) {
       sizeInCells += result;
     } else {
-      errors.addWarning(_name.positionInterval(), "Reserving 0 bytes");
+      errors.pushWarning(_name.positionInterval(), "Reserving 0 bytes");
     }
   }
 

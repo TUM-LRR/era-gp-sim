@@ -27,19 +27,19 @@
 #include "parser/common/compile-error-severity.hpp"
 #include "parser/common/compile-error.hpp"
 
-#define addError(interval, message, ...) \
-  addErrorInternal(                      \
+#define pushError(interval, message, ...) \
+  pushErrorInternal(                      \
       (interval), QT_TRANSLATE_NOOP("Parser Errors", message), ##__VA_ARGS__)
-#define addWarning(interval, message, ...)                          \
-  addWarningInternal((interval),                                    \
+#define pushWarning(interval, message, ...)                          \
+  pushWarningInternal((interval),                                    \
                      QT_TRANSLATE_NOOP("Parser Warnings", message), \
                      ##__VA_ARGS__)
-#define addInformation(interval, message, ...)                             \
-  addInformationInternal((interval),                                       \
+#define pushInformation(interval, message, ...)                             \
+  pushInformationInternal((interval),                                       \
                          QT_TRANSLATE_NOOP("Parser Information", message), \
                          ##__VA_ARGS__)
-#define addCompileError(severity, interval, message, ...)                   \
-  addCompileErrorInternal((severity),                                       \
+#define pushCompileError(severity, interval, message, ...)                   \
+  pushCompileErrorInternal((severity),                                       \
                           (interval),                                       \
                           QT_TRANSLATE_NOOP("Parser Information", message), \
                           ##__VA_ARGS__)
@@ -60,7 +60,7 @@ class CompileErrorList {
   void addRaw(const CompileError& error);
 
   template <typename... Args>
-  void addCompileErrorInternal(CompileErrorSeverity severity,
+  void pushCompileErrorInternal(CompileErrorSeverity severity,
                                const CodePositionInterval& interval,
                                const char* message,
                                const Args&... parameters) {
@@ -72,24 +72,24 @@ class CompileErrorList {
   }
 
   template <typename... Args>
-  void addErrorInternal(const CodePositionInterval& interval,
+  void pushErrorInternal(const CodePositionInterval& interval,
                         const char* message,
                         const Args&... parameters) {
-    addCompileError(
+    pushCompileError(
         CompileErrorSeverity::ERROR, interval, message, parameters...);
   }
   template <typename... Args>
-  void addWarningInternal(const CodePositionInterval& interval,
+  void pushWarningInternal(const CodePositionInterval& interval,
                           const char* message,
                           const Args&... parameters) {
-    addCompileError(
+    pushCompileError(
         CompileErrorSeverity::WARNING, interval, message, parameters...);
   }
   template <typename... Args>
-  void addInformationInternal(const CodePositionInterval& interval,
+  void pushInformationInternal(const CodePositionInterval& interval,
                               const char* message,
                               const Args&... parameters) {
-    addCompileError(
+    pushCompileError(
         CompileErrorSeverity::INFORMATION, interval, message, parameters...);
   }
 

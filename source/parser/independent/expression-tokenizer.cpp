@@ -60,7 +60,7 @@ ExpressionTokenizer::tokenize(const PositionedString& data,
   } else {
     // We are done, but there is an unrecognized token. We return as if the
     // string was empty.
-    errors.addError(
+    errors.pushError(
         data.slice(currentPosition, data.string().size() - currentPosition)
             .positionInterval(),
         "Unrecognized token at '%1'",

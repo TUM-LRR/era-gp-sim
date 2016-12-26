@@ -76,7 +76,7 @@ bool RiscvParser::RiscvRegex::_readInstructionOrLabel(
   if (line[pos] == ':') {
     // If a label is already defined, add an error
     if (!_label.string().empty()) {
-      errors.addError(_getCharacterPosition(lineCoordinate, errors, pos),
+      errors.pushError(_getCharacterPosition(lineCoordinate, errors, pos),
                       "Multiple labels per line aren't allowed!");
       return false;
     }
@@ -94,7 +94,7 @@ bool RiscvParser::RiscvRegex::_readInstructionOrLabel(
   }
 
   // Otherwise we hit an invalid character
-  errors.addError(_getCharacterPosition(lineCoordinate, errors, pos),
+  errors.pushError(_getCharacterPosition(lineCoordinate, errors, pos),
                   "Invalid character in instruction name!");
   return false;
 }

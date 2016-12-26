@@ -62,9 +62,9 @@ class IntegerParser {
         throw std::invalid_argument("");
       }
     } catch (std::out_of_range &) {
-      errors.addError(string.positionInterval(), "Integer out of range.");
+      errors.pushError(string.positionInterval(), "Integer out of range.");
     } catch (std::invalid_argument &) {
-      errors.addError(string.positionInterval(), "Integer syntax error.");
+      errors.pushError(string.positionInterval(), "Integer syntax error.");
     }
     return result;
   }

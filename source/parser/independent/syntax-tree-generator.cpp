@@ -39,7 +39,7 @@ SyntaxTreeGenerator::transformOperand(const PositionedString& operand,
   // According to the architecture group, we get a nullptr if the creation
   // failed.
   if (!outputNode) {
-    errors.addError(
+    errors.pushError(
         operand.positionInterval(), "Invalid argument: '%1'", operand.string());
   }
 
@@ -58,7 +58,7 @@ std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
 
   if (!outputNode) {
     // The node creation failed!
-    errors.addError(commandName.positionInterval(),
+    errors.pushError(commandName.positionInterval(),
                     "Unknown operation: %1",
                     commandName.string());
     return std::move(outputNode);
@@ -77,7 +77,7 @@ std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
   // Validate node.
   auto validationResult = outputNode->validate(memoryAccess);
   if (!validationResult) {
-    errors.addError(commandName.positionInterval(),
+    errors.pushError(commandName.positionInterval(),
                     "Invalid operation ('%1'): %2",
                     commandName.string(),
                     validationResult.getMessage().getBaseString()); /*TODO*/
