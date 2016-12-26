@@ -20,6 +20,8 @@
 #ifndef ERAGPSIM_PARSER_CONSTANT_DIRECTIVE_HPP_
 #define ERAGPSIM_PARSER_CONSTANT_DIRECTIVE_HPP_
 
+#include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
+#include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/intermediate-directive.hpp"
 
 /**

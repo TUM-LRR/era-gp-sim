@@ -134,8 +134,6 @@ class IntegerParser {
     }
 
     for (; position != str.end(); ++position) {
-      T oldValue = value;
-
       char c = *position;
       int digit = -1;
       if (c >= '0' && c <= '9') {

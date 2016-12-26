@@ -89,12 +89,12 @@ class MemoryReservationDirective : public IntermediateDirective {
                      SymbolGraph& graph);
 
  private:
-  ArgumentCompileFunction _argumentCompile;
   std::size_t _absolutePosition;
   RelativeMemoryPosition _relativePosition;
   std::size_t _size;
   std::size_t _cellSize;
   std::vector<PositionedString> _values;
+  ArgumentCompileFunction _argumentCompile;
 };
 
 #endif /* ERAGPSIM_PARSER_MEMORY_RESERVATION_DIRECTIVE_HPP */

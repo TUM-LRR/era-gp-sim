@@ -21,9 +21,11 @@
 #include <cstdint>
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
+#include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
+#include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/expression-compiler-clike.hpp"
-#include "parser/independent/intermediate-parameters.hpp"
 #include "parser/independent/memory-allocator.hpp"
+#include "parser/independent/preprocessing-immutable-arguments.hpp"
 #include "parser/independent/section-tracker.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
@@ -47,15 +49,16 @@ void MemoryReservationDirective::allocateMemory(
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
   if (tracker.section() == "text") {
-    errors.pushWarning(name().positionInterval(),
-                      "Careful, you are trying to reserve memory in the text "
-                      "section where the program instructions are stored. This "
-                      "might cause unexpected behavior.");
+    errors.pushWarning(
+        name().positionInterval(),
+        "Careful, you are trying to reserve memory in the text "
+        "section where the program instructions are stored. This "
+        "might cause unexpected behavior.");
   }
 
   if (_values.empty()) {
     errors.pushWarning(_name.positionInterval(),
-                      "Implicit reservation of 0 bytes, missing arguments?");
+                       "Implicit reservation of 0 bytes, missing arguments?");
   }
   // So, we simply calculate and sum up our arguments.
   std::size_t sizeInCells = 0;

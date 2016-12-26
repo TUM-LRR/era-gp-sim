@@ -25,20 +25,6 @@
 RiscvParser::RiscvRegex::RiscvRegex() {
 }
 
-static void trimRight(std::string &str) {
-  int pos = str.size() - 1;
-
-  while (pos >= 0 && std::isspace(str[pos])) {
-    --pos;
-  }
-
-  ++pos;
-
-  if (pos < str.size() && pos >= 0) {
-    str.erase(pos);
-  }
-}
-
 static size_t trimRight(const std::string &line, size_t pos) {
   --pos;
   while (pos > 0 && std::isspace(line[pos])) {
@@ -77,7 +63,7 @@ bool RiscvParser::RiscvRegex::_readInstructionOrLabel(
     // If a label is already defined, add an error
     if (!_label.string().empty()) {
       errors.pushError(_getCharacterPosition(lineCoordinate, errors, pos),
-                      "Multiple labels per line aren't allowed!");
+                       "Multiple labels per line aren't allowed!");
       return false;
     }
 
@@ -95,7 +81,7 @@ bool RiscvParser::RiscvRegex::_readInstructionOrLabel(
 
   // Otherwise we hit an invalid character
   errors.pushError(_getCharacterPosition(lineCoordinate, errors, pos),
-                  "Invalid character in instruction name!");
+                   "Invalid character in instruction name!");
   return false;
 }
 
@@ -108,7 +94,7 @@ bool RiscvParser::RiscvRegex::_readParameter(const std::string &line,
   bool quoted = false;
 
   // Skip spaces
-  for (; pos < line.size() && std::isspace(line[pos]); pos++) {
+  for (; pos < (size_t)line.size() && std::isspace(line[pos]); pos++) {
   }
 
   size_t startPos = pos;

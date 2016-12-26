@@ -22,6 +22,6 @@ set(CORE_SOURCES
 if (ERA_SIM_BUILD_CORE)
   add_library(era-sim-core STATIC ${CORE_SOURCES})
 
-  target_link_libraries(era-sim-core era-sim-common era-sim-parser-common era-sim-arch-common)
+  target_link_libraries(era-sim-core era-sim-common era-sim-parser-common era-sim-parser-factory era-sim-arch-common)
   target_link_libraries(era-sim-core pthread)
 endif()

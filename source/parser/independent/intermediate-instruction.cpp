@@ -22,20 +22,25 @@
 #include "arch/common/architecture.hpp"
 #include "arch/common/architecture.hpp"
 #include "common/assert.hpp"
+#include "common/utility.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
 #include "parser/common/code-position-interval.hpp"
 #include "parser/common/code-position.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/common/final-representation.hpp"
+#include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
+#include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/intermediate-instruction.hpp"
-#include "parser/independent/intermediate-parameters.hpp"
 #include "parser/independent/macro-directive.hpp"
 #include "parser/independent/positioned-string.hpp"
+#include "parser/independent/preprocessing-immutable-arguments.hpp"
 #include "parser/independent/section-tracker.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
 #include "parser/independent/syntax-tree-generator.hpp"
+
+using size_t = std::size_t;
 
 IntermediateInstruction::IntermediateInstruction(
     const CodePositionInterval& positionInterval,
@@ -69,21 +74,21 @@ IntermediateInstruction::compileArgumentVector(
     MemoryAccess& memoryAccess) {
   std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> output;
 
-  SymbolReplacer::DynamicReplacer labelReplacerFunction =
-      [&](const Symbol& symbol) {
-        // This might not be the biggest type, but we got to consider that the
-        // memory also works on size_t.
-        size_t byteBitSize =
-            sizeof(size_t) * immutable.architecture().getByteSize();
-        auto labelValue = conversions::convert<size_t>(
-            std::stoul(symbol.value().string()), byteBitSize);
-        auto instructionAdress =
-            conversions::convert<size_t>(_relativeAddress.offset, byteBitSize);
-        auto relativeAdress =
-            immutable.generator().getNodeFactories().labelToImmediate(
-                labelValue, _name.string(), instructionAdress);
-        return relativeAdress.toHexString(true, true);
-      };
+  SymbolReplacer::DynamicReplacer labelReplacerFunction = [&](
+      const Symbol& symbol) {
+    // This might not be the biggest type, but we got to consider that the
+    // memory also works on size_t.
+    size_t byteBitSize =
+        sizeof(size_t) * immutable.architecture().getByteSize();
+    auto labelValue = conversions::convert<size_t>(
+        std::stoul(symbol.value().string()), byteBitSize);
+    auto instructionAdress =
+        conversions::convert<size_t>(_relativeAddress.offset(), byteBitSize);
+    auto relativeAdress =
+        immutable.generator().getNodeFactories().labelToImmediate(
+            labelValue, _name.string(), instructionAdress);
+    return relativeAdress.toHexString(true, true);
+  };
 
   auto replacer = SymbolReplacer(immutable.replacer(), labelReplacerFunction);
 
@@ -147,7 +152,7 @@ void IntermediateInstruction::allocateMemory(
     SectionTracker& tracker) {
   if (tracker.section() != "text") {
     errors.pushError(name().positionInterval(),
-                    "Tried to define an instruction in not the text section.");
+                     "Tried to define an instruction in not the text section.");
     return;
   }
 
@@ -175,7 +180,7 @@ static void replaceInVector(std::vector<PositionedString>& vector,
                             const PositionedString& name,
                             const PositionedString& value) {
   auto search = '\\' + name.string();
-  for (int i = 0; i < vector.size(); i++) {
+  for (auto i : Utility::range<size_t>(0, vector.size())) {
     auto str = vector[i].string();
     // Replace all occurences of '\\name' that are followed by a non-word char.
     std::string::size_type pos = 0;
@@ -205,7 +210,7 @@ std::string IntermediateInstruction::toString() const {
   auto str = _name.string();
 
   // Append targets
-  for (size_t i = 0; i < _targets.size(); i++) {
+  for (auto i : Utility::range<size_t>(0, _targets.size())) {
     if (i != 0) {
       str += ", ";
     } else {
@@ -215,7 +220,7 @@ std::string IntermediateInstruction::toString() const {
   }
 
   // Append sources
-  for (size_t i = 0; i < _sources.size(); i++) {
+  for (auto i : Utility::range<size_t>(0, _sources.size())) {
     if (i == 0 && _targets.size() == 0) {
       str += " ";
     } else {

@@ -28,12 +28,12 @@ RelativeMemoryPosition
 MemoryAllocator::MemorySection::allocateRelative(std::size_t size) {
   // We got to round up and so on...
   auto aligned =
-      Utility::discreteCeiling(_currentSize, _definition.dataAlignment);
+      Utility::discreteCeiling(_currentSize, _definition.dataAlignment());
 
   // Now that we got the beginning of our memory section, we can add the size to
   // it.
   _currentSize = aligned + size;
-  return RelativeMemoryPosition(_definition.name, aligned);
+  return RelativeMemoryPosition(_definition.name(), aligned);
 }
 
 // Getters...
@@ -48,7 +48,7 @@ std::size_t MemoryAllocator::MemorySection::currentPosition() const noexcept {
 // Transforming functions...
 std::size_t MemoryAllocator::MemorySection::absoluteAddress(
     const RelativeMemoryPosition& relative) const {
-  return absoluteAddress(relative.offset);
+  return absoluteAddress(relative.offset());
 }
 
 std::size_t
@@ -64,10 +64,10 @@ MemoryAllocator::MemorySection::MemorySection(
 MemoryAllocator::MemoryAllocator(
     const std::vector<MemorySectionDefinition>& sectionDefinitions) {
   _sections.reserve(sectionDefinitions.size());
-  for (const auto& i : sectionDefinitions) {
-    auto section = MemorySection(i);
+  for (const auto& sectionDefinition : sectionDefinitions) {
+    auto section = MemorySection(sectionDefinition);
 
-    _nameToSection[i.name] = _sections.size();
+    _nameToSection[sectionDefinition.name()] = _sections.size();
     _sections.push_back(section);
   }
 }
@@ -84,7 +84,7 @@ std::size_t MemoryAllocator::calculateSize(bool finalize) {
   // As we have befriended the MemorySection, we may do this. Again, we use
   // rounding up to align.
   for (auto& i : _sections) {
-    auto sectionAlign = i._definition.sectionAlignment;
+    auto sectionAlign = i._definition.sectionAlignment();
     auto aligned = Utility::discreteCeiling(position, sectionAlign);
     if (finalize) {
       i._currentPosition = aligned;
@@ -130,9 +130,9 @@ MemoryAllocator::at(std::size_t index) const {
 
 std::size_t MemoryAllocator::absolutePosition(
     const RelativeMemoryPosition& relative) const {
-  assert::that(has(relative.section));
-  return _sections.at(_nameToSection.at(relative.section))
-      .absoluteAddress(relative.offset);
+  assert::that(has(relative.section()));
+  return _sections.at(_nameToSection.at(relative.section()))
+      .absoluteAddress(relative.offset());
 }
 
 bool MemoryAllocator::has(const std::string& name) const noexcept {

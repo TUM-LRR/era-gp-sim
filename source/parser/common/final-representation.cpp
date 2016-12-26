@@ -22,7 +22,7 @@
 FinalRepresentation::AddressMapping FinalRepresentation::createMapping() const {
   AddressMapping mapping;
 
-  for (std::size_t i = 0; i < _commandList.size(); ++i) {
+  for (auto i : Utility::range<size_t>(0, _commandList.size())) {
     mapping[_commandList[i].address()] = i;
   }
 

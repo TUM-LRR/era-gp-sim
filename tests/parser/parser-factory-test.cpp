@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "parser/common/parser-factory.hpp"
+#include "parser/factory/parser-factory.hpp"
 
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture-formula.hpp"

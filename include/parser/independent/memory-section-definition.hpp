@@ -30,6 +30,7 @@
  * memory can be reserved.
  */
 struct MemorySectionDefinition {
+ public:
   using size_t = std::size_t;
 
   /**
@@ -50,20 +51,27 @@ struct MemorySectionDefinition {
   explicit MemorySectionDefinition(const std::string& name,
                                    size_t alignment = 1);
 
+  const std::string& name() const noexcept;
+
+  size_t sectionAlignment() const noexcept;
+
+  size_t dataAlignment() const noexcept;
+
+ private:
   /**
    * \brief The name of the section.
    */
-  std::string name;
+  std::string _name;
 
   /**
    * \brief The alignment of the whole section in memory.
    */
-  std::size_t sectionAlignment;
+  size_t _sectionAlignment;
 
   /**
    * \brief The alignment of each new data block in memory.
    */
-  std::size_t dataAlignment;
+  size_t _dataAlignment;
 };
 
 

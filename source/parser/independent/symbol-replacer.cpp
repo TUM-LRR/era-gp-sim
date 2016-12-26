@@ -38,9 +38,9 @@ static MSRegex constructSymbolRegex(std::vector<Symbol> symbols) {
 SymbolReplacer::SymbolReplacer(const std::vector<Symbol>& symbols,
                                const DynamicReplacer& replacer,
                                std::size_t maximumReplaceCount)
-: _replacer(replacer)
-, _symbols(symbols)
+: _symbols(symbols)
 , _maximumReplaceCount(maximumReplaceCount)
+, _replacer(replacer)
 , _matchRegex(constructSymbolRegex(symbols)) {
 }
 
@@ -52,10 +52,10 @@ SymbolReplacer::SymbolReplacer(const SymbolGraphEvaluation& evaluation,
 
 SymbolReplacer::SymbolReplacer(const SymbolReplacer& source,
                                const DynamicReplacer& replacer)
-: _matchRegex(source._matchRegex)
-, _symbols(source._symbols)
+: _symbols(source._symbols)
 , _maximumReplaceCount(source._maximumReplaceCount)
-, _replacer(replacer) {
+, _replacer(replacer)
+, _matchRegex(source._matchRegex) {
 }
 
 PositionedString SymbolReplacer::replace(const PositionedString& data,
@@ -71,6 +71,7 @@ PositionedString SymbolReplacer::replace(const PositionedString& data,
   };
   for (const auto& round :
        Utility::range<std::size_t>(0, _maximumReplaceCount)) {
+    (void)round;// (to prevent unused variable warnings)
     auto previous = result;
     result = _matchRegex.replace(result, multireplace);
     if (result == previous) {
@@ -79,7 +80,7 @@ PositionedString SymbolReplacer::replace(const PositionedString& data,
   }
 
   errors.pushError(data.positionInterval(),
-                  "Exceeded maximum number of replace runs.");
+                   "Exceeded maximum number of replace runs.");
 
   return PositionedString(result, data.positionInterval());
 }

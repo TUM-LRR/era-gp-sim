@@ -33,7 +33,7 @@
 #include "core/conversions.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/expression-compiler-clike.hpp"
-#include "parser/independent/intermediate-parameters.hpp"
+#include "parser/independent/transformation-parameters.hpp"
 
 const SyntaxTreeGenerator::ArgumentNodeGenerator
     RiscvParser::argumentGeneratorFunction = [](
@@ -98,7 +98,7 @@ getCommandInterval(const PositionedString& instruction,
   auto sourcesUnited = uniteStringVector(sources);
   auto targetsUnited = uniteStringVector(targets);
   return instruction.positionInterval()
-      .unite(targetsUnited)
+      .unite(labelsUnited)
       .unite(sourcesUnited)
       .unite(targetsUnited);
 }
@@ -147,7 +147,7 @@ static void readText(const std::string& text,
     if (!lineRegex.isValid()) {
       // Add syntax error if line regex doesnt match
       errors.pushError(CodePositionInterval(position, position >> 1),
-                      "Syntax Error");
+                       "Syntax Error");
     } else {
       // Collect labels until next instruction
       if (lineRegex.hasLabel()) {

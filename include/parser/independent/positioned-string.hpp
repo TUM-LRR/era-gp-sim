@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 #include "common/assert.hpp"
+#include "common/utility.hpp"
 #include "parser/common/code-position-interval.hpp"
 
 template <typename CharT>
@@ -31,6 +32,7 @@ class PositionedBasicString {
  public:
   using CharType = CharT;
   using String = std::basic_string<CharType>;
+  using size_t = std::size_t;
   explicit PositionedBasicString(
       const String& string = "",
       const CodePositionInterval& positionInterval = CodePositionInterval())
@@ -44,8 +46,7 @@ class PositionedBasicString {
     return _positionInterval;
   }
 
-  PositionedBasicString<CharType>
-  slice(std::size_t start, std::size_t length) const {
+  PositionedBasicString<CharType> slice(size_t start, size_t length) const {
     assert::that((start + length) <= _string.size());
     assert::that(length <= _string.size());
     assert::that(start < _string.size());
@@ -56,10 +57,10 @@ class PositionedBasicString {
     return PositionedBasicString(stringSlice, newInterval);
   }
 
-  CodePosition nthCharacterPosition(std::size_t n) const {
+  CodePosition nthCharacterPosition(size_t n) const {
     assert::that(n < _string.size());
     CodePosition position = _positionInterval.start();
-    for (std::size_t i = 0; i < n; ++i) {
+    for (auto i : Utility::range<size_t>(0, n)) {
       if (_string[i] == '\n') {
         position = position.newLine();
       } else {

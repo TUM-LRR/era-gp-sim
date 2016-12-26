@@ -47,7 +47,7 @@ void IntermediateMacroInstruction::replaceWithMacros(
 
     if (macro.isCyclic()) {
       errors.pushError(macro.name().positionInterval(),
-                      "Cyclic macro call detected.");
+                       "Cyclic macro call detected.");
       continue;
     }
 
@@ -64,8 +64,9 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     MacroDirectiveTable& macroTable,
     CompileErrorList& errors)
 : IntermediateOperation(ins.positionInterval(), ins.labels(), ins.name()) {
-  for (size_t i = 0; i < macro.getOperationCount(); i++) {
-    if (i == macro.firstInstructionIndex()) {
+  for (auto i : Utility::range<size_t>(0, macro.getOperationCount())) {
+    if (i == (size_t)macro.firstInstructionIndex() &&
+        macro.firstInstructionIndex() >= 0) {
       _firstInstruction = _operations.size();
     }
 
@@ -76,8 +77,8 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
       _operations.push_back(std::move(ptr));
     } else {
       errors.pushError(macro.getOperationName(i).positionInterval(),
-                      "Macro contains unsupported instruction '%1'.",
-                      macro.getOperationName(i).string());
+                       "Macro contains unsupported instruction '%1'.",
+                       macro.getOperationName(i).string());
     }
   }
 

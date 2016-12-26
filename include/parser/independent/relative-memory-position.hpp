@@ -27,6 +27,7 @@
  * \brief A relative memory position in one specific section.
  */
 struct RelativeMemoryPosition {
+ public:
   using size_t = std::size_t;
 
   /**
@@ -45,17 +46,22 @@ struct RelativeMemoryPosition {
    * \brief Checks if the relative memory position is not in an empty section.
    * \return True, if section != "".
    */
-  bool valid();
+  bool valid() const;
 
+  const std::string& section() const noexcept;
+
+  size_t offset() const noexcept;
+
+ private:
   /**
    * \brief The section which contains this memory piece.
    */
-  std::string section;
+  std::string _section;
 
   /**
    * \brief The offset to the beginning of this section.
    */
-  size_t offset;
+  size_t _offset;
 };
 
 #endif /* ERAGPSIM_PARSER_RELATIVE_MEMORY_POSITION_HPP */

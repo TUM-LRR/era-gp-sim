@@ -17,45 +17,9 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/independent/intermediate-parameters.hpp"
-
-PreprocessingImmutableArguments::PreprocessingImmutableArguments(
-    const Architecture& architecture, const SyntaxTreeGenerator& generator)
-: _architecture(architecture), _generator(generator) {
-}
-const Architecture& PreprocessingImmutableArguments::architecture() const
-    noexcept {
-  return _architecture;
-}
-const SyntaxTreeGenerator& PreprocessingImmutableArguments::generator() const
-    noexcept {
-  return _generator;
-}
-
-EnhanceSymbolTableImmutableArguments::EnhanceSymbolTableImmutableArguments(
-    const Architecture& architecture,
-    const SyntaxTreeGenerator& generator,
-    const MemoryAllocator& allocator)
-: _architecture(architecture), _generator(generator), _allocator(allocator) {
-}
-EnhanceSymbolTableImmutableArguments::EnhanceSymbolTableImmutableArguments(
-    const PreprocessingImmutableArguments& beforePass,
-    const MemoryAllocator& allocator)
-: EnhanceSymbolTableImmutableArguments(
-      beforePass.architecture(), beforePass.generator(), allocator) {
-}
-const Architecture& EnhanceSymbolTableImmutableArguments::architecture() const
-    noexcept {
-  return _architecture;
-}
-const SyntaxTreeGenerator&
-EnhanceSymbolTableImmutableArguments::generator() const noexcept {
-  return _generator;
-}
-const MemoryAllocator& EnhanceSymbolTableImmutableArguments::allocator() const
-    noexcept {
-  return _allocator;
-}
+#include "parser/independent/execute-immutable-arguments.hpp"
+#include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
+#include "parser/independent/preprocessing-immutable-arguments.hpp"
 
 ExecuteImmutableArguments::ExecuteImmutableArguments(
     const Architecture& architecture,
@@ -96,21 +60,4 @@ const SyntaxTreeGenerator& ExecuteImmutableArguments::generator() const
 }
 const MemoryAllocator& ExecuteImmutableArguments::allocator() const noexcept {
   return _allocator;
-}
-
-TransformationParameters::TransformationParameters(
-    const Architecture& architecture,
-    const MemoryAllocator& allocator,
-    const SyntaxTreeGenerator& generator)
-: _architecture(architecture), _allocator(allocator), _generator(generator) {
-}
-const Architecture& TransformationParameters::architecture() const noexcept {
-  return _architecture;
-}
-const MemoryAllocator& TransformationParameters::allocator() const noexcept {
-  return _allocator;
-}
-const SyntaxTreeGenerator& TransformationParameters::generator() const
-    noexcept {
-  return _generator;
 }

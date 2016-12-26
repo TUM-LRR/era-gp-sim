@@ -54,6 +54,14 @@ class CodePositionInterval {
 
   const CodePosition& end() const noexcept;
 
+  CodeCoordinate startLine() const noexcept;
+
+  CodeCoordinate startCharacter() const noexcept;
+
+  CodeCoordinate endLine() const noexcept;
+
+  CodeCoordinate endCharacter() const noexcept;
+
   bool empty() const noexcept;
 
   CodePositionInterval unite(const CodePositionInterval& other) const;

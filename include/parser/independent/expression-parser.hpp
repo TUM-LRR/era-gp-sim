@@ -27,6 +27,7 @@
 #include "common/assert.hpp"
 #include "common/multiregex.hpp"
 #include "common/translateable.hpp"
+#include "common/utility.hpp"
 #include "parser/common/code-position-interval.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/expression-compiler-definitions.hpp"
@@ -332,7 +333,7 @@ class ExpressionParser {
   // Tries to get as many operands as needed.
   bool
   getValues(ParseState& state, size_t count, std::vector<T>& output) const {
-    for (size_t i = 0; i < count; ++i) {
+    for (auto i : Utility::range<size_t>(0, count)) {
       if (state.outputStack.empty()) {
         // There were not enough operands on the stack.
         size_t left = count - i;

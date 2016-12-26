@@ -155,8 +155,8 @@ class Multiregex {
              const String& suffix,
              const std::vector<String>& choice,
              std::regex::flag_type flags = std::regex_constants::ECMAScript)
-  : _choice()
-  , _baseGroup(countBrackets(prefix) + 1)
+  : _baseGroup(countBrackets(prefix) + 1)
+  , _choice()
   , _regex(buildMultiregex(prefix, suffix, choice, flags), flags) {
   }
 
@@ -192,8 +192,8 @@ class Multiregex {
       // have been another group as big before. So we get always the first
       // matching group.
       size_t targetLength = match.length(_baseGroup);
-      for (size_t i = _baseGroup + 1; i < match.size(); ++i) {
-        if (match.length(i) == targetLength) {
+      for (auto i : Utility::range<size_t>(_baseGroup + 1, match.size())) {
+        if ((size_t)match.length(i) == targetLength) {
           // Found one. We set our multimatch and return it.
           assert::that(_choice.find(i) != _choice.end());//(this should actually
                                                          // never fail, only if
@@ -240,22 +240,22 @@ class Multiregex {
  private:
   // Counts the number of opening brackets in the string which denote the start
   // of a regex group.
-  size_t countBrackets(const String& str) const {
+  size_t countBrackets(const String& string) const {
     // A regex did not work here, b/c negative lookbehind is not implemented.
     size_t count = 0;
 
     // One time iterate over the complete string.
-    for (size_t i = 0; i < str.size(); ++i) {
+    for (auto i : Utility::range<size_t>(0, string.size())) {
       // clang-format off
-            char prev = i     >= 1         ? str[i - 1] : '\0';
-            char next = i + 1 < str.size() ? str[i + 1] : '\0';
+            char prev = i     >= 1         ? string[i - 1] : '\0';
+            char next = i + 1 < string.size() ? string[i + 1] : '\0';
       // clang-format on
 
       // Conditions that need to be fulfilled:
       //* The bracket must not be escaped.
       //* The bracket must not denote the start of a not-captured
       // group/lookahead.
-      if (prev != '\\' && next != '?' && str[i] == '(') {
+      if (prev != '\\' && next != '?' && string[i] == '(') {
         ++count;
       }
     }
@@ -272,7 +272,7 @@ class Multiregex {
 
     // We start with our base group.
     size_t id = _baseGroup;
-    for (size_t i = 0; i < choice.size(); ++i) {
+    for (auto i : Utility::range<size_t>(0, choice.size())) {
       // Each regex choice opens a new group.
       ++id;
       _choice[id] = i;

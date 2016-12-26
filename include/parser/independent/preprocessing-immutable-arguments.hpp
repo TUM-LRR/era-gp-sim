@@ -17,17 +17,22 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/common/macro-information.hpp"
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_PREPROCESSING_IMMUTABLE_ARGUMENTS_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_PREPROCESSING_IMMUTABLE_ARGUMENTS_HPP
 
-MacroInformation::MacroInformation(const std::string& code,
-                                   const CodePositionInterval& position)
-: _code(code), _position(position) {
-}
+#include "arch/common/architecture.hpp"
+#include "parser/independent/syntax-tree-generator.hpp"
 
-const std::string& MacroInformation::macroCode() const noexcept {
-  return _code;
-}
+class PreprocessingImmutableArguments {
+ public:
+  PreprocessingImmutableArguments(const Architecture& architecture,
+                                  const SyntaxTreeGenerator& generator);
+  const Architecture& architecture() const noexcept;
+  const SyntaxTreeGenerator& generator() const noexcept;
 
-const CodePositionInterval& MacroInformation::position() const noexcept {
-  return _position;
-}
+ private:
+  Architecture _architecture;
+  SyntaxTreeGenerator _generator;
+};
+
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_PREPROCESSING_IMMUTABLE_ARGUMENTS_HPP */

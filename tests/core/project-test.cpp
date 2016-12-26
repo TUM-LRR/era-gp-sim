@@ -30,7 +30,7 @@
 #include "core/proxy.hpp"
 #include "arch/common/architecture-formula.hpp"
 #include "parser/common/final-representation.hpp"
-#include "parser/common/parser-factory.hpp"
+#include "parser/factory/parser-factory.hpp"
 #include "parser/common/syntax-information.hpp"
 // clang-format on
 

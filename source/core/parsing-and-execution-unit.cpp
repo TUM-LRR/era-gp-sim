@@ -23,7 +23,7 @@
 #include "arch/common/unit-information.hpp"
 #include "common/assert.hpp"
 #include "core/conversions.hpp"
-#include "parser/common/parser-factory.hpp"
+#include "parser/factory/parser-factory.hpp"
 #include "parser/common/parser-mode.hpp"
 
 ParsingAndExecutionUnit::ParsingAndExecutionUnit(

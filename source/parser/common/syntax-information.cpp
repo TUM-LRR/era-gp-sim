@@ -47,13 +47,13 @@ SyntaxInformation::TokenIterator SyntaxInformation::TokenIterable::end() const {
 SyntaxInformation::TokenIterator::TokenIterator(VectorIterator baseIterator,
                                                 VectorIterator baseEnd,
                                                 const Token token)
-: _base_iterator(baseIterator), _base_end(baseEnd), _token(token) {
+: _baseIterator(baseIterator), _baseEnd(baseEnd), _token(token) {
   findNext();
 }
 
 SyntaxInformation::TokenIterator &SyntaxInformation::TokenIterator::
 operator++() {
-  _base_iterator++;
+  _baseIterator++;
   findNext();
   return *this;
 }
@@ -67,7 +67,7 @@ operator++(int) {
 
 bool operator==(const SyntaxInformation::TokenIterator &lhs,
                 const SyntaxInformation::TokenIterator &rhs) {
-  return lhs._base_iterator == rhs._base_iterator;
+  return lhs._baseIterator == rhs._baseIterator;
 }
 
 bool operator!=(const SyntaxInformation::TokenIterator &lhs,
@@ -76,14 +76,14 @@ bool operator!=(const SyntaxInformation::TokenIterator &lhs,
 }
 
 std::string SyntaxInformation::TokenIterator::operator*() const {
-  return _base_iterator->first;
+  return _baseIterator->first;
 }
 
 const std::string *SyntaxInformation::TokenIterator::operator->() const {
-  return &(_base_iterator->first);
+  return &(_baseIterator->first);
 }
 
 void SyntaxInformation::TokenIterator::findNext() {
-  while (_base_iterator != _base_end && _base_iterator->second != _token)
-    ++_base_iterator;
+  while (_baseIterator != _baseEnd && _baseIterator->second != _token)
+    ++_baseIterator;
 }

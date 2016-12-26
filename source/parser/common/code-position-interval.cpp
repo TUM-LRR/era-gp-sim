@@ -46,6 +46,22 @@ const CodePosition& CodePositionInterval::end() const noexcept {
   return _codePositionEnd;
 }
 
+CodeCoordinate CodePositionInterval::startLine() const noexcept {
+  return _codePositionStart.line();
+}
+
+CodeCoordinate CodePositionInterval::startCharacter() const noexcept {
+  return _codePositionStart.character();
+}
+
+CodeCoordinate CodePositionInterval::endLine() const noexcept {
+  return _codePositionEnd.line();
+}
+
+CodeCoordinate CodePositionInterval::endCharacter() const noexcept {
+  return _codePositionEnd.character();
+}
+
 bool CodePositionInterval::empty() const noexcept {
   return _codePositionStart.x() > _codePositionEnd.x() ||
          _codePositionStart.y() > _codePositionEnd.y();

@@ -50,9 +50,9 @@ class SymbolReplacer {
 
  private:
   std::vector<Symbol> _symbols;
-  MSRegex _matchRegex;
-  DynamicReplacer _replacer;
   size_t _maximumReplaceCount;
+  DynamicReplacer _replacer;
+  MSRegex _matchRegex;
 };
 
 #endif /* ERAGPSIM_PARSER_SYMBOL_REPLACER_HPP */

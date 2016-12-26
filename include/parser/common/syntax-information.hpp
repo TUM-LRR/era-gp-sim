@@ -66,14 +66,14 @@ class SyntaxInformation {
     void findNext();
 
     /**
+     * The current and the end iterators of the underlying vector.
+     */
+    VectorIterator _baseIterator, _baseEnd;
+
+    /**
      * Saves the token of this iterator.
      */
     Token _token;
-
-    /**
-     * The current and the end iterators of the underlying vector.
-     */
-    VectorIterator _base_iterator, _base_end;
   };
 
   /**

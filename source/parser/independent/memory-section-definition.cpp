@@ -23,16 +23,30 @@
 MemorySectionDefinition::MemorySectionDefinition(const std::string& name,
                                                  size_t sectionAlignment,
                                                  size_t dataAlignment)
-: name(name), sectionAlignment(sectionAlignment), dataAlignment(dataAlignment) {
-  assert::that(sectionAlignment > 0);
-  assert::that(dataAlignment > 0);
+: _name(name)
+, _sectionAlignment(sectionAlignment)
+, _dataAlignment(dataAlignment) {
+  assert::that(_sectionAlignment > 0);
+  assert::that(_dataAlignment > 0);
 
   // Important: the section alignment (if this even makes sense) must be a
   // multiple of the data alignment.
-  assert::that(sectionAlignment % dataAlignment == 0);
+  assert::that(_sectionAlignment % _dataAlignment == 0);
 }
 
 MemorySectionDefinition::MemorySectionDefinition(const std::string& name,
                                                  size_t alignment)
 : MemorySectionDefinition(name, alignment, alignment) {
+}
+
+const std::string& MemorySectionDefinition::name() const noexcept {
+  return _name;
+}
+
+size_t MemorySectionDefinition::sectionAlignment() const noexcept {
+  return _sectionAlignment;
+}
+
+size_t MemorySectionDefinition::dataAlignment() const noexcept {
+  return _dataAlignment;
 }

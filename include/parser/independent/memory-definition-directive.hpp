@@ -29,10 +29,12 @@
 #include "core/memory-value.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/common/compile-error-list.hpp"
+#include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
+#include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/expression-compiler-clike.hpp"
 #include "parser/independent/intermediate-directive.hpp"
-#include "parser/independent/intermediate-parameters.hpp"
 #include "parser/independent/memory-allocator.hpp"
+#include "parser/independent/preprocessing-immutable-arguments.hpp"
 #include "parser/independent/relative-memory-position.hpp"
 #include "parser/independent/section-tracker.hpp"
 #include "parser/independent/string-parser.hpp"
@@ -106,12 +108,13 @@ class MemoryDefinitionDirective : public IntermediateDirective {
                               MemoryAllocator& allocator,
                               SectionTracker& tracker) {
     if (tracker.section() == "text") {
-      errors.pushWarning(name().positionInterval(),
-                        "Careful, you are trying to reserve memory in the text "
-                        "section where the program instructions are stored. "
-                        "This might cause unexpected behavior. Use a '.section "
-                        "data' directive in front of this to resolve the "
-                        "issue.");
+      errors.pushWarning(
+          name().positionInterval(),
+          "Careful, you are trying to reserve memory in the text "
+          "section where the program instructions are stored. "
+          "This might cause unexpected behavior. Use a '.section "
+          "data' directive in front of this to resolve the "
+          "issue.");
     }
     if (_values.empty()) {
       errors.pushWarning(name().positionInterval(), "Empty data definition.");
@@ -194,7 +197,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
       memoryAccess.putMemoryValueAt(_absolutePosition, data);
     } else {
       errors.pushError(name().positionInterval(),
-                      "Nothing to reserve with memory definition.");
+                       "Nothing to reserve with memory definition.");
     }
   }
 

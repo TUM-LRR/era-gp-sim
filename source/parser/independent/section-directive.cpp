@@ -51,7 +51,7 @@ void SectionDirective::allocateMemory(
   }
   if (!allocator.has(_section.string())) {
     errors.pushError(_section.positionInterval(),
-                    "Specified section non-existent!");
+                     "Specified section non-existent!");
     return;
   }
   // Just set the section state to the current section. That's it.

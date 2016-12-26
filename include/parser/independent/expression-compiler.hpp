@@ -71,8 +71,8 @@ class ExpressionCompiler {
    * \param definition The given compiler definition.
    */
   ExpressionCompiler(const ExpressionCompilerDefinition<T>& definition)
-  : _parser(definition.parserDefinition)
-  , _tokenizer(getTokenDefinitions(definition)) {
+  : _tokenizer(getTokenDefinitions(definition))
+  , _parser(definition.parserDefinition) {
   }
 
   /**

@@ -32,17 +32,17 @@
       (interval), QT_TRANSLATE_NOOP("Parser Errors", message), ##__VA_ARGS__)
 #define pushWarning(interval, message, ...)                          \
   pushWarningInternal((interval),                                    \
-                     QT_TRANSLATE_NOOP("Parser Warnings", message), \
-                     ##__VA_ARGS__)
+                      QT_TRANSLATE_NOOP("Parser Warnings", message), \
+                      ##__VA_ARGS__)
 #define pushInformation(interval, message, ...)                             \
   pushInformationInternal((interval),                                       \
-                         QT_TRANSLATE_NOOP("Parser Information", message), \
-                         ##__VA_ARGS__)
-#define pushCompileError(severity, interval, message, ...)                   \
-  pushCompileErrorInternal((severity),                                       \
-                          (interval),                                       \
                           QT_TRANSLATE_NOOP("Parser Information", message), \
                           ##__VA_ARGS__)
+#define pushCompileError(severity, interval, message, ...)                   \
+  pushCompileErrorInternal((severity),                                       \
+                           (interval),                                       \
+                           QT_TRANSLATE_NOOP("Parser Information", message), \
+                           ##__VA_ARGS__)
 
 class CompileErrorList {
  public:
@@ -61,9 +61,9 @@ class CompileErrorList {
 
   template <typename... Args>
   void pushCompileErrorInternal(CompileErrorSeverity severity,
-                               const CodePositionInterval& interval,
-                               const char* message,
-                               const Args&... parameters) {
+                                const CodePositionInterval& interval,
+                                const char* message,
+                                const Args&... parameters) {
     auto error =
         CompileError(std::make_shared<Translateable>(message, parameters...),
                      interval,
@@ -73,22 +73,22 @@ class CompileErrorList {
 
   template <typename... Args>
   void pushErrorInternal(const CodePositionInterval& interval,
-                        const char* message,
-                        const Args&... parameters) {
+                         const char* message,
+                         const Args&... parameters) {
     pushCompileError(
         CompileErrorSeverity::ERROR, interval, message, parameters...);
   }
   template <typename... Args>
   void pushWarningInternal(const CodePositionInterval& interval,
-                          const char* message,
-                          const Args&... parameters) {
+                           const char* message,
+                           const Args&... parameters) {
     pushCompileError(
         CompileErrorSeverity::WARNING, interval, message, parameters...);
   }
   template <typename... Args>
   void pushInformationInternal(const CodePositionInterval& interval,
-                              const char* message,
-                              const Args&... parameters) {
+                               const char* message,
+                               const Args&... parameters) {
     pushCompileError(
         CompileErrorSeverity::INFORMATION, interval, message, parameters...);
   }

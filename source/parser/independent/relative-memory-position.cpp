@@ -21,13 +21,21 @@
 
 RelativeMemoryPosition::RelativeMemoryPosition(const std::string& section,
                                                size_t offset)
-: section(section), offset(offset) {
+: _section(section), _offset(offset) {
 }
 
 RelativeMemoryPosition::RelativeMemoryPosition()
 : RelativeMemoryPosition("", 0) {
 }
 
-bool RelativeMemoryPosition::valid() {
-  return section != "";
+bool RelativeMemoryPosition::valid() const {
+  return _section != "";
+}
+
+const std::string& RelativeMemoryPosition::section() const noexcept {
+  return _section;
+}
+
+size_t RelativeMemoryPosition::offset() const noexcept {
+  return _offset;
 }

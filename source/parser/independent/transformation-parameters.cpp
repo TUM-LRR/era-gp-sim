@@ -17,17 +17,21 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/common/macro-information.hpp"
+#include "parser/independent\transformation-parameters.hpp"
 
-MacroInformation::MacroInformation(const std::string& code,
-                                   const CodePositionInterval& position)
-: _code(code), _position(position) {
+TransformationParameters::TransformationParameters(
+    const Architecture& architecture,
+    const MemoryAllocator& allocator,
+    const SyntaxTreeGenerator& generator)
+: _architecture(architecture), _allocator(allocator), _generator(generator) {
 }
-
-const std::string& MacroInformation::macroCode() const noexcept {
-  return _code;
+const Architecture& TransformationParameters::architecture() const noexcept {
+  return _architecture;
 }
-
-const CodePositionInterval& MacroInformation::position() const noexcept {
-  return _position;
+const MemoryAllocator& TransformationParameters::allocator() const noexcept {
+  return _allocator;
+}
+const SyntaxTreeGenerator& TransformationParameters::generator() const
+    noexcept {
+  return _generator;
 }

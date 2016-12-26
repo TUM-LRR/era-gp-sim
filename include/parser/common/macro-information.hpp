@@ -47,7 +47,7 @@ class MacroInformation {
    * Returns the position of this macro.
    * \return The position of the macro.
    */
-  const CodePositionInterval& position() const;
+  const CodePositionInterval& position() const noexcept;
 
 
  private:

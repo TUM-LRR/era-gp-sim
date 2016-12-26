@@ -24,14 +24,17 @@
 #include "parser/common/final-command.hpp"
 #include "parser/common/final-representation.hpp"
 #include "parser/common/macro-information.hpp"
+#include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
+#include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/intermediate-macro-instruction.hpp"
-#include "parser/independent/intermediate-parameters.hpp"
 #include "parser/independent/macro-directive-table.hpp"
 #include "parser/independent/memory-allocator.hpp"
+#include "parser/independent/preprocessing-immutable-arguments.hpp"
 #include "parser/independent/section-tracker.hpp"
 #include "parser/independent/symbol-graph-evaluation.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
+#include "parser/independent/transformation-parameters.hpp"
 
 MacroInformationVector IntermediateRepresentator::generateMacroInformation() {
   MacroInformationVector output;
@@ -60,7 +63,7 @@ void IntermediateRepresentator::insertCommandPtr(
     if (_currentOutput) {
       // Nested macros are not supported.
       errors.pushError(command->name().positionInterval(),
-                      "Error, nested macros are not supported.");
+                       "Error, nested macros are not supported.");
     }
     _currentOutput = std::move(command);
   } else {
@@ -70,7 +73,7 @@ void IntermediateRepresentator::insertCommandPtr(
       if (!_currentOutput) {
         // Classic bracket-forgot-to-close problem.
         errors.pushError(command->name().positionInterval(),
-                        "The start directive of the macro is missing.");
+                         "The start directive of the macro is missing.");
       }
       internalInsertCommand(std::move(_currentOutput));
     }
@@ -97,8 +100,8 @@ static bool evaluateGraph(const SymbolGraphEvaluation& graphEvaluation,
         for (auto index : indexGroup) {
           const auto& symbol = graphEvaluation.symbols()[index];
           errors.pushError(symbol.name().positionInterval(),
-                          "The name '%1' exists more than once in the program",
-                          symbol.name().string());
+                           "The name '%1' exists more than once in the program",
+                           symbol.name().string());
         }
       }
     }
@@ -124,58 +127,11 @@ static bool evaluateGraph(const SymbolGraphEvaluation& graphEvaluation,
   }
 }
 
-FinalRepresentation
-IntermediateRepresentator::transform(const TransformationParameters& parameters,
-                                     const CompileErrorList& parsingErrors,
-                                     MemoryAccess& memoryAccess) {
-  auto errors = parsingErrors;
-  if (_currentOutput) {
-    errors.pushError(_currentOutput->positionInterval(),
-                    "Macro not closed. Missing a macro end directive?");
-  }
-
-  auto preprocessingArguments = PreprocessingImmutableArguments(
-      parameters.architecture(), parameters.generator());
-
-  auto macroTable = MacroDirectiveTable();
-  for (const auto& command : _commandList) {
-    command->precompile(preprocessingArguments, errors, macroTable);
-  }
-
-  IntermediateMacroInstruction::replaceWithMacros(
-      _commandList.begin(), _commandList.end(), macroTable, errors);
-
-  auto macroList = generateMacroInformation();
-
-  auto allocator = MemoryAllocator(parameters.allocator());
-  auto tracker = SectionTracker();
-
-  auto allowedSizeFuture = memoryAccess.getMemorySize();
-  auto allowedSize = allowedSizeFuture.get();
-  auto firstMemoryExceedingOperation = IntermediateOperationPointer(nullptr);
-
-  for (const auto& command : _commandList) {
-    command->allocateMemory(preprocessingArguments, errors, allocator, tracker);
-    if (allocator.estimateSize() > allowedSize &&
-        !firstMemoryExceedingOperation) {
-      firstMemoryExceedingOperation = command;
-    }
-  }
-
-  auto allocatedSize = allocator.calculatePositions();
-
-  auto graph = SymbolGraph();
-  auto symbolTableArguments =
-      EnhanceSymbolTableImmutableArguments(preprocessingArguments, allocator);
-  for (const auto& command : _commandList) {
-    command->enhanceSymbolTable(symbolTableArguments, errors, graph);
-  }
-
-  auto graphEvaluation = graph.evaluate();
-  if (!evaluateGraph(graphEvaluation, errors)) {
-    return FinalRepresentation({}, errors, macroList);
-  }
-
+static bool checkMemorySize(
+    std::size_t allocatedSize,
+    std::size_t allowedSize,
+    const IntermediateOperationPointer& firstMemoryExceedingOperation,
+    CompileErrorList& errors) {
   if (allocatedSize > allowedSize) {
     if (firstMemoryExceedingOperation) {
       errors.pushError(
@@ -196,6 +152,62 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
           std::to_string(allocatedSize),
           std::to_string(allowedSize));
     }
+    return false;
+  }
+  return true;
+}
+
+FinalRepresentation
+IntermediateRepresentator::transform(const TransformationParameters& parameters,
+                                     const CompileErrorList& parsingErrors,
+                                     MemoryAccess& memoryAccess) {
+  auto errors = parsingErrors;
+  if (_currentOutput) {
+    errors.pushError(_currentOutput->positionInterval(),
+                     "Macro not closed. Missing a macro end directive?");
+  }
+
+  auto preprocessingArguments = PreprocessingImmutableArguments(
+      parameters.architecture(), parameters.generator());
+
+  auto macroTable = MacroDirectiveTable();
+  for (const auto& command : _commandList) {
+    command->precompile(preprocessingArguments, errors, macroTable);
+  }
+
+  IntermediateMacroInstruction::replaceWithMacros(
+      _commandList.begin(), _commandList.end(), macroTable, errors);
+
+  auto macroList = generateMacroInformation();
+
+  auto allocator = MemoryAllocator(parameters.allocator());
+  auto tracker = SectionTracker();
+
+  auto allowedSize = memoryAccess.getMemorySize().get();
+  auto firstMemoryExceedingOperation = IntermediateOperationPointer(nullptr);
+
+  for (const auto& command : _commandList) {
+    command->allocateMemory(preprocessingArguments, errors, allocator, tracker);
+    if (allocator.estimateSize() > allowedSize &&
+        !firstMemoryExceedingOperation) {
+      firstMemoryExceedingOperation = command;
+    }
+  }
+
+  auto allocatedSize = allocator.calculatePositions();
+
+  auto graph = SymbolGraph();
+  auto symbolTableArguments =
+      EnhanceSymbolTableImmutableArguments(preprocessingArguments, allocator);
+  for (const auto& command : _commandList) {
+    command->enhanceSymbolTable(symbolTableArguments, errors, graph);
+  }
+
+  auto graphEvaluation = graph.evaluate();
+  auto graphValid = evaluateGraph(graphEvaluation, errors);
+  auto memoryValid = checkMemorySize(
+      allocatedSize, allowedSize, firstMemoryExceedingOperation, errors);
+  if (!(graphValid || memoryValid)) {
     return FinalRepresentation({}, errors, macroList);
   }
 

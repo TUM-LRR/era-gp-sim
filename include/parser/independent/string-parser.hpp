@@ -319,7 +319,6 @@ class StringParserEngine {
                               size_t& index,
                               uint32_t& codePoint,
                               CompileErrorList& errors) {
-    const auto& string = inputString.string();
     // We got a sizeof-decision tree or so here...
     if (sizeof(CharType) >= 4) {
       return decodeUTF32CodePoint(inputString, index, codePoint, errors);
@@ -399,7 +398,6 @@ class StringParserEngine {
                                          Output& output,
                                          int size,
                                          CompileErrorList& errors) {
-    const auto& string = inputString.string();
     size_t startIndex = index;
 
     auto len = crawlIndex(inputString, index, isHex, size);
@@ -536,15 +534,14 @@ class StringParserEngine {
                                   uint32_t codePoint,
                                   Output& output,
                                   CompileErrorList& errors) {
-    const auto& string = inputString.string();
     if (codePoint <= 0x7f) {
       // If we are in ascii range, there is no need to encode more.
       output.push_back(codePoint);
     } else {
       // If not, we encode the bytes are required.
-      int bytes = 1;
-      int restSize = 6;
-      while (codePoint >= (1 << restSize)) {
+      unsigned int bytes = 1;
+      unsigned int restSize = 6;
+      while (codePoint >= (1u << restSize)) {
         // As long as we got not enough space in the final byte, we got to add
         // another one.
         output.push_back(0x80 | (codePoint & 0x3f));
@@ -555,7 +552,7 @@ class StringParserEngine {
       // Then, we add the rest byte with the mask as needed, then we still need
       // to reverse the whole sequence as the 'rest' byte has to be the first in
       // the stream.
-      int mask = ~((1 << (restSize + 1)) - 1);
+      int mask = ~((1u << (restSize + 1)) - 1u);
       output.push_back(mask | codePoint);
       std::reverse(output.end() - bytes, output.end());
     }
@@ -567,7 +564,6 @@ class StringParserEngine {
                                    uint32_t codePoint,
                                    Output& output,
                                    CompileErrorList& errors) {
-    const auto& string = inputString.string();
     if (codePoint <= 0xffff) {
       // We got a one-short code point.
       output.push_back((uint16_t)codePoint);
@@ -588,7 +584,6 @@ class StringParserEngine {
                                    uint32_t codePoint,
                                    Output& output,
                                    CompileErrorList& errors) {
-    const auto& string = inputString.string();
     // Trivial. ;)
     output.push_back(codePoint);
     return true;
@@ -600,7 +595,6 @@ class StringParserEngine {
                               size_t& index,
                               Output& output,
                               CompileErrorList& errors) {
-    const auto& string = inputString.string();
     if (codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
       // First of all, we cross out all out of range and surrogate code points,
       // then we do not need to check in the single methods any more.

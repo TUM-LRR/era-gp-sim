@@ -17,42 +17,16 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_PARAMETERS_HPP
-#define ERAGPSIM_PARSER_INTERMEDIATE_PARAMETERS_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_EXECUTE_IMMUTABLE_ARGUMENTS_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_EXECUTE_IMMUTABLE_ARGUMENTS_HPP
 
 #include "arch/common/architecture.hpp"
 #include "parser/independent/memory-allocator.hpp"
 #include "parser/independent/symbol-replacer.hpp"
 #include "parser/independent/syntax-tree-generator.hpp"
+class PreprocessingImmutableArguments;
+class EnhanceSymbolTableImmutableArguments;
 
-class PreprocessingImmutableArguments {
- public:
-  PreprocessingImmutableArguments(const Architecture& architecture,
-                                  const SyntaxTreeGenerator& generator);
-  const Architecture& architecture() const noexcept;
-  const SyntaxTreeGenerator& generator() const noexcept;
-
- private:
-  Architecture _architecture;
-  SyntaxTreeGenerator _generator;
-};
-class EnhanceSymbolTableImmutableArguments {
- public:
-  EnhanceSymbolTableImmutableArguments(const Architecture& architecture,
-                                       const SyntaxTreeGenerator& generator,
-                                       const MemoryAllocator& allocator);
-  EnhanceSymbolTableImmutableArguments(
-      const PreprocessingImmutableArguments& beforePass,
-      const MemoryAllocator& allocator);
-  const Architecture& architecture() const noexcept;
-  const SyntaxTreeGenerator& generator() const noexcept;
-  const MemoryAllocator& allocator() const noexcept;
-
- private:
-  Architecture _architecture;
-  SyntaxTreeGenerator _generator;
-  MemoryAllocator _allocator;
-};
 class ExecuteImmutableArguments {
  public:
   ExecuteImmutableArguments(const Architecture& architecture,
@@ -73,24 +47,9 @@ class ExecuteImmutableArguments {
 
  private:
   Architecture _architecture;
+  SyntaxTreeGenerator _generator;
+  MemoryAllocator _allocator;
   SymbolReplacer _replacer;
-  SyntaxTreeGenerator _generator;
-  MemoryAllocator _allocator;
 };
 
-class TransformationParameters {
- public:
-  TransformationParameters(const Architecture& architecture,
-                           const MemoryAllocator& allocator,
-                           const SyntaxTreeGenerator& generator);
-  const Architecture& architecture() const noexcept;
-  const MemoryAllocator& allocator() const noexcept;
-  const SyntaxTreeGenerator& generator() const noexcept;
-
- private:
-  Architecture _architecture;
-  MemoryAllocator _allocator;
-  SyntaxTreeGenerator _generator;
-};
-
-#endif /* ERAGPSIM_PARSER_INTERMEDIATE_PARAMETERS_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_EXECUTE_IMMUTABLE_ARGUMENTS_HPP */

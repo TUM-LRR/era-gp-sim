@@ -67,8 +67,8 @@ void MacroDirective::precompile(
   auto success = macroTable.insert(*this);
   if (!success) {
     errors.pushError(macroName().positionInterval(),
-                    "Macro '%1' already exists.",
-                    macroName().string());
+                     "Macro '%1' already exists.",
+                     macroName().string());
   }
 }
 
@@ -162,7 +162,7 @@ void MacroDirective::MacroParameters::validate(CompileErrorList& errors) const {
     if (param.first.string().empty() ||
         (param.second && param.second->string().empty())) {
       errors.pushError(param.first.positionInterval(),
-                      "Malformed macro argument list.");
+                       "Malformed macro argument list.");
       return;
     }
 
@@ -172,7 +172,7 @@ void MacroDirective::MacroParameters::validate(CompileErrorList& errors) const {
     }
     if (containedDefault && !param.second) {
       errors.pushError(last.second->positionInterval(),
-                      "Default macro argument values have to be placed last.");
+                       "Default macro argument values have to be placed last.");
       return;
     }
 
@@ -187,7 +187,7 @@ void MacroDirective::MacroParameters::insertParameters(
   // should always be called with a valid size of `values`.
   assert::that(values.size() >= _minParams && values.size() <= _params.size());
 
-  for (int i = 0; i < _params.size(); i++) {
+  for (auto i : Utility::range<size_t>(0, _params.size())) {
     const auto& name = _params[i].first;
     const auto& value = i >= values.size() ? *_params[i].second : values[i];
     operation->insertIntoArguments(name, value);

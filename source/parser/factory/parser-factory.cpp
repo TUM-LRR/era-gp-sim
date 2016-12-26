@@ -17,7 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/common/parser-factory.hpp"
+#include "parser/factory/parser-factory.hpp"
 
 #include "common/assert.hpp"
 #include "core/memory-access.hpp"

@@ -59,8 +59,8 @@ std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
   if (!outputNode) {
     // The node creation failed!
     errors.pushError(commandName.positionInterval(),
-                    "Unknown operation: %1",
-                    commandName.string());
+                     "Unknown operation: %1",
+                     commandName.string());
     return std::move(outputNode);
   }
 
@@ -78,9 +78,9 @@ std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
   auto validationResult = outputNode->validate(memoryAccess);
   if (!validationResult) {
     errors.pushError(commandName.positionInterval(),
-                    "Invalid operation ('%1'): %2",
-                    commandName.string(),
-                    validationResult.getMessage().getBaseString()); /*TODO*/
+                     "Invalid operation ('%1'): %2",
+                     commandName.string(),
+                     validationResult.getMessage().getBaseString()); /*TODO*/
   }
 
   // Return.
