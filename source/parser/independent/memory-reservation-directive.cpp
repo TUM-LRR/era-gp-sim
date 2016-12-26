@@ -46,6 +46,13 @@ void MemoryReservationDirective::allocateMemory(
     CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
+  if (tracker.section() == "text") {
+    errors.addWarning(name().positionInterval(),
+                      "Careful, you are trying to reserve memory in the text "
+                      "section where the program instructions are stored. This "
+                      "might cause unexpected behavior.");
+  }
+
   if (_values.empty()) {
     errors.addWarning(_name.positionInterval(),
                       "Implicit reservation of 0 bytes, missing arguments?");
@@ -82,9 +89,8 @@ void MemoryReservationDirective::enhanceSymbolTable(
   // We calculate the absolute memory position and enhance our symbol table.
   _absolutePosition = immutable.allocator().absolutePosition(_relativePosition);
   for (const auto& label : _labels) {
-    graph.addNode(Symbol(label,
-                         PositionedString(std::to_string(_absolutePosition),
-                                          CodePositionInterval())));
+    graph.addNode(
+        Symbol(label, PositionedString(std::to_string(_absolutePosition))));
   }
 }
 

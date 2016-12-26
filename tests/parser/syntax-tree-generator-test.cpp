@@ -32,9 +32,9 @@
 #include "parser/common/compile-error-list.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/positioned-string.hpp"
-#include "parser/riscv/riscv-parser.hpp"
 #include "parser/independent/symbol-replacer.hpp"
 #include "parser/independent/syntax-tree-generator.hpp"
+#include "parser/riscv/riscv-parser.hpp"
 #define ZP(x) PositionedString(x, CodePositionInterval())
 
 

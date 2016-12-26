@@ -31,7 +31,7 @@ class PositionedBasicString {
  public:
   using CharType = CharT;
   using String = std::basic_string<CharType>;
-  PositionedBasicString(
+  explicit PositionedBasicString(
       const String& string = "",
       const CodePositionInterval& positionInterval = CodePositionInterval())
   : _string(string), _positionInterval(positionInterval) {

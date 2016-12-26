@@ -50,11 +50,24 @@ SymbolReplacer::SymbolReplacer(const SymbolGraphEvaluation& evaluation,
 : SymbolReplacer(evaluation.symbols(), replacer, maximumReplaceCount) {
 }
 
+SymbolReplacer::SymbolReplacer(const SymbolReplacer& source,
+                               const DynamicReplacer& replacer)
+: _matchRegex(source._matchRegex)
+, _symbols(source._symbols)
+, _maximumReplaceCount(source._maximumReplaceCount)
+, _replacer(replacer) {
+}
+
 PositionedString SymbolReplacer::replace(const PositionedString& data,
                                          CompileErrorList& errors) const {
   auto result = data.string();
   auto multireplace = [&](std::size_t index) -> std::string {
-    return _replacer(_symbols[index]);
+    const auto& symbol = _symbols[index];
+    if (symbol.behavior() == SymbolBehavior::DYNAMIC) {
+      return _replacer(symbol);
+    } else {
+      return symbol.value().string();
+    }
   };
   for (const auto& round :
        Utility::range<std::size_t>(0, _maximumReplaceCount)) {
@@ -73,3 +86,10 @@ PositionedString SymbolReplacer::replace(const PositionedString& data,
 
 const SymbolReplacer::DynamicReplacer SymbolReplacer::IDENTITY_REPLACE =
     [](const Symbol& symbol) { return symbol.value().string(); };
+
+const std::vector<Symbol>& SymbolReplacer::symbols() const noexcept {
+  return _symbols;
+}
+size_t SymbolReplacer::maximumReplaceCount() const noexcept {
+  return _maximumReplaceCount;
+}

@@ -68,10 +68,29 @@ IntermediateInstruction::compileArgumentVector(
     CompileErrorList& errors,
     MemoryAccess& memoryAccess) {
   std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> output;
+
+  SymbolReplacer::DynamicReplacer labelReplacerFunction =
+      [&](const Symbol& symbol) {
+        // This might not be the biggest type, but we got to consider that the
+        // memory also works on size_t.
+        size_t byteBitSize =
+            sizeof(size_t) * immutable.architecture().getByteSize();
+        auto labelValue = conversions::convert<size_t>(
+            std::stoul(symbol.value().string()), byteBitSize);
+        auto instructionAdress =
+            conversions::convert<size_t>(_relativeAddress.offset, byteBitSize);
+        auto relativeAdress =
+            immutable.generator().getNodeFactories().labelToImmediate(
+                labelValue, _name.string(), instructionAdress);
+        return relativeAdress.toHexString(true, true);
+      };
+
+  auto replacer = SymbolReplacer(immutable.replacer(), labelReplacerFunction);
+
   output.reserve(vector.size());
   for (const auto& operand : vector) {
-    auto transformed = immutable.generator().transformOperand(
-        operand, immutable.replacer(), errors);
+    auto transformed =
+        immutable.generator().transformOperand(operand, replacer, errors);
 
     // Only add argument node if creation was successful.
     // Otherwise AbstractSyntaxTreeNode::validate() segfaults.

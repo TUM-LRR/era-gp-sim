@@ -22,26 +22,27 @@
 
 #include <functional>
 #include <vector>
+#include "common/translateable.hpp"
 #include "parser/common/code-position-interval.hpp"
 #include "parser/common/compile-error-severity.hpp"
 #include "parser/common/compile-error.hpp"
 
 #define addError(interval, message, ...) \
   addErrorInternal(                      \
-      (interval), QT_TRANSLATE_NOOP("Parser Errors", message), {__VA_ARGS__})
+      (interval), QT_TRANSLATE_NOOP("Parser Errors", message), ##__VA_ARGS__)
 #define addWarning(interval, message, ...)                          \
   addWarningInternal((interval),                                    \
                      QT_TRANSLATE_NOOP("Parser Warnings", message), \
-                     {__VA_ARGS__})
+                     ##__VA_ARGS__)
 #define addInformation(interval, message, ...)                             \
   addInformationInternal((interval),                                       \
                          QT_TRANSLATE_NOOP("Parser Information", message), \
-                         {__VA_ARGS__})
+                         ##__VA_ARGS__)
 #define addCompileError(severity, interval, message, ...)                   \
   addCompileErrorInternal((severity),                                       \
                           (interval),                                       \
                           QT_TRANSLATE_NOOP("Parser Information", message), \
-                          {__VA_ARGS__})
+                          ##__VA_ARGS__)
 
 class CompileErrorList {
  public:
@@ -57,21 +58,40 @@ class CompileErrorList {
   std::size_t informationCount() const;
   std::size_t size() const;
   void addRaw(const CompileError& error);
-  void
-  addCompileErrorInternal(CompileErrorSeverity severity,
-                          const CodePositionInterval& interval,
-                          const char* message,
-                          const std::initializer_list<std::string>& parameters);
+
+  template <typename... Args>
+  void addCompileErrorInternal(CompileErrorSeverity severity,
+                               const CodePositionInterval& interval,
+                               const char* message,
+                               const Args&... parameters) {
+    auto error =
+        CompileError(std::make_shared<Translateable>(message, parameters...),
+                     interval,
+                     severity);
+    addRaw(error);
+  }
+
+  template <typename... Args>
   void addErrorInternal(const CodePositionInterval& interval,
                         const char* message,
-                        const std::initializer_list<std::string>& parameters);
+                        const Args&... parameters) {
+    addCompileError(
+        CompileErrorSeverity::ERROR, interval, message, parameters...);
+  }
+  template <typename... Args>
   void addWarningInternal(const CodePositionInterval& interval,
                           const char* message,
-                          const std::initializer_list<std::string>& parameters);
-  void
-  addInformationInternal(const CodePositionInterval& interval,
-                         const char* message,
-                         const std::initializer_list<std::string>& parameters);
+                          const Args&... parameters) {
+    addCompileError(
+        CompileErrorSeverity::WARNING, interval, message, parameters...);
+  }
+  template <typename... Args>
+  void addInformationInternal(const CodePositionInterval& interval,
+                              const char* message,
+                              const Args&... parameters) {
+    addCompileError(
+        CompileErrorSeverity::INFORMATION, interval, message, parameters...);
+  }
 
  private:
   CompileErrorVector _errors;

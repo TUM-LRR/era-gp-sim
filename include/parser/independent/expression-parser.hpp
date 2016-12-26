@@ -34,7 +34,7 @@
 #define recordError(parserState, msg, ...)                               \
   recordErrorInternal(parserState,                                       \
                       QT_TRANSLATE_NOOP("Expression Parser Error", msg), \
-                      {__VA_ARGS__})
+                      ##__VA_ARGS__)
 
 #define FIX_SOME_SYNTAX_HIGHLIGHTING// Yes, that's the only reason this macro
                                     // exists.
@@ -201,12 +201,12 @@ class ExpressionParser {
   };
 
   // Records an error in the parsing process.
-  void recordErrorInternal(
-      ParseState& state,
-      const char* message,
-      const std::initializer_list<std::string>& parameters) const {
+  template <typename... Args>
+  void recordErrorInternal(ParseState& state,
+                           const char* message,
+                           const Args&... parameters) const {
     state.errors.addErrorInternal(
-        state.curr.data.positionInterval(), message, parameters);
+        state.curr.data.positionInterval(), message, parameters...);
   }
 
   // Handles the latest token stored in `state.curr`.

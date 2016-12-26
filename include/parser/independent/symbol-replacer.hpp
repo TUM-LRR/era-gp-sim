@@ -34,15 +34,19 @@ class SymbolReplacer {
   using DynamicReplacer = std::function<std::string(const Symbol&)>;
   static const DynamicReplacer IDENTITY_REPLACE;
 
-  SymbolReplacer(const SymbolGraphEvaluation& evaluation,
-                 const DynamicReplacer& replacer = IDENTITY_REPLACE,
-                 size_t maximumReplaceCount = 64);
-  SymbolReplacer(const std::vector<Symbol>& symbols = {},
-                 const DynamicReplacer& replacer = IDENTITY_REPLACE,
-                 size_t maximumReplaceCount = 64);
+  explicit SymbolReplacer(const SymbolGraphEvaluation& evaluation,
+                          const DynamicReplacer& replacer = IDENTITY_REPLACE,
+                          size_t maximumReplaceCount = 64);
+  explicit SymbolReplacer(const std::vector<Symbol>& symbols = {},
+                          const DynamicReplacer& replacer = IDENTITY_REPLACE,
+                          size_t maximumReplaceCount = 64);
+  SymbolReplacer(const SymbolReplacer& source, const DynamicReplacer& replacer);
 
   PositionedString
   replace(const PositionedString& data, CompileErrorList& errors) const;
+
+  const std::vector<Symbol>& symbols() const noexcept;
+  size_t maximumReplaceCount() const noexcept;
 
  private:
   std::vector<Symbol> _symbols;

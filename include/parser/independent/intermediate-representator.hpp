@@ -26,8 +26,8 @@
 #include "parser/common/final-command.hpp"
 #include "parser/common/final-command.hpp"
 #include "parser/common/final-representation.hpp"
-#include "parser/independent/intermediate-operation.hpp"
 #include "parser/common/macro-information.hpp"
+#include "parser/independent/intermediate-operation.hpp"
 
 class SyntaxTreeGenerator;
 class Architecture;

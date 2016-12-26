@@ -35,7 +35,7 @@
                       (inputString),                                      \
                       (errors),                                           \
                       QT_TRANSLATE_NOOP("String Parser Errors", message), \
-                      {__VA_ARGS__})
+                      ##__VA_ARGS__)
 
 /**
  * \brief Provides help methods for parsing strings.
@@ -138,18 +138,18 @@ class StringParserEngine {
 
  private:
   // This method notes down an error in the given compile errors.
-  static void
-  invokeErrorInternal(size_t position,
-                      const String& inputString,
-                      CompileErrorList& errors,
-                      const char* message,
-                      const std::initializer_list<std::string>& arguments) {
+  template <typename... Args>
+  static void invokeErrorInternal(size_t position,
+                                  const String& inputString,
+                                  CompileErrorList& errors,
+                                  const char* message,
+                                  const Args&... arguments) {
     auto codePosition = inputString.empty()
                             ? inputString.positionInterval().start()
                             : inputString.nthCharacterPosition(position);
     auto codePositionInterval =
         CodePositionInterval(codePosition, codePosition >> 1);
-    errors.addErrorInternal(codePositionInterval, message, arguments);
+    errors.addErrorInternal(codePositionInterval, message, arguments...);
   }
 
   // Returns true, if there is still data after the current index in the string
@@ -182,7 +182,7 @@ class StringParserEngine {
       // equals the number of bytes the code point is encoded in. For this case,
       // the number of trailing ones cannot be just one. (i.e. 10<DATA>)
       while ((wchr & 0x40) != 0) {
-        if (!requireCharacter(string, index)) {
+        if (!requireCharacter(inputString, index)) {
           // If we cannot find another byte, but we need it, we have to quit.
           invokeError(index,
                       inputString,
@@ -263,7 +263,7 @@ class StringParserEngine {
         return false;
       }
 
-      if (!requireCharacter(string, index)) {
+      if (!requireCharacter(inputString, index)) {
         // If there is no second short in the string, throw an error, b/c we
         // still need one.
         invokeError(index,
@@ -353,7 +353,8 @@ class StringParserEngine {
     const auto& string = inputString.string();
     int length = 0;
     for (int i = 0; i < maxLength; ++i) {
-      if (!(requireCharacter(string, index) && rangeCheck(string[index]))) {
+      if (!(requireCharacter(inputString, index) &&
+            rangeCheck(string[index]))) {
         // If there is no more character or the character is not as expected,
         // abort.
         break;
@@ -452,7 +453,7 @@ class StringParserEngine {
                                    Output& output,
                                    CompileErrorList& errors) {
     const auto& string = inputString.string();
-    if (!requireCharacter(string, index)) {
+    if (!requireCharacter(inputString, index)) {
       // A \ followed by an end of string is not valid.
       invokeError(index, inputString, errors, "Unfinished escape sequence!");
       return false;
@@ -476,7 +477,7 @@ class StringParserEngine {
       return parseUnicodeEscapeSequence(inputString, index, output, 8, errors);
     } else if (chr == 'x') {
       // Decoding a unit-sized character, ignoring all UTF alignments.
-      auto len = crawlIndex(string, index, isHex, sizeof(OutType) * 2);
+      auto len = crawlIndex(inputString, index, isHex, sizeof(OutType) * 2);
       OutType value =
           simpleNumberParse<OutType>(inputString, startIndex + 1, len, 16);
       output.push_back(value);

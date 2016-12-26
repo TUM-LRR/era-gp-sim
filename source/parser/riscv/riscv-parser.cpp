@@ -24,11 +24,11 @@
 #include "arch/common/architecture.hpp"
 #include "arch/common/node-factory-collection-maker.hpp"
 #include "arch/common/unit-information.hpp"
+#include "parser/common/syntax-information.hpp"
 #include "parser/independent/intermediate-instruction.hpp"
 #include "parser/independent/intermediate-representator.hpp"
 #include "parser/riscv/riscv-directive-factory.hpp"
 #include "parser/riscv/riscv-regex.hpp"
-#include "parser/common/syntax-information.hpp"
 
 #include "core/conversions.hpp"
 #include "parser/common/compile-error-list.hpp"
@@ -71,7 +71,7 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
                                  twosComplement::toMemoryValueFunction,
                              32));
   }
-  return std::move(outputNode);
+  return outputNode;
 };
 
 RiscvParser::RiscvParser(const Architecture& architecture,
