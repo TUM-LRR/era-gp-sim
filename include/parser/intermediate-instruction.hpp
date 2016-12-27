@@ -120,7 +120,7 @@ class IntermediateInstruction : public IntermediateOperation {
    * \param state The CompileState logging all errors occuring.
    * \return The compiled vector of arguments.
    */
-  std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
+  std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>
   compileArgumentVector(const std::vector<std::string>& vector,
                         const SymbolTable& table,
                         const SyntaxTreeGenerator& generator,

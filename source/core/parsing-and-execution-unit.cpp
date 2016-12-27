@@ -42,9 +42,8 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _breakpoints()
 , _syntaxInformation(_parser->getSyntaxInformation())
 , _setContextInformation([](const std::vector<ContextInformation> &x) {})
-, _setErrorList([](const std::vector<CompileError> &x) {})
+, _setFinalRepresentation([](const FinalRepresentation &x) {})
 , _throwError(([](const std::string &x, const std::vector<std::string> &y) {}))
-, _setMacroList(([](const std::vector<MacroInformation> &x) {}))
 , _setCurrentLine([](size_t x) {})
 , _executionStopped([]() {}) {
   // find the RegisterInformation object of the program counter
@@ -149,19 +148,22 @@ void ParsingAndExecutionUnit::parse(std::string code) {
       // create a empty MemoryValue as long as the command
       MemoryValue zero(command.node->assemble().getSize());
       _memoryAccess.putMemoryValueAt(command.address, zero);
+//      _memoryAccess.removeMemoryProtection(command.address, zero.getSize() / 8);
     }
   }
   // parse the new code and save the final representation
   _finalRepresentation = _parser->parse(code, ParserMode::COMPILE);
   _addressCommandMap = _finalRepresentation.createMapping();
   _lineCommandCache.clear();
-  // update the error list of the ui
-  _setErrorList(_finalRepresentation.errorList);
-  _setMacroList(_finalRepresentation.macroList);
+  // update the final representation of the ui
+  _setFinalRepresentation(_finalRepresentation);
   // assemble commands into memory
   if (!_finalRepresentation.hasErrors()) {
     for (const auto &command : _finalRepresentation.commandList) {
-      _memoryAccess.putMemoryValueAt(command.address, command.node->assemble());
+      auto assemble = command.node->assemble();
+      _memoryAccess.putMemoryValueAt(command.address, assemble);
+//      _memoryAccess.makeMemoryProtected(command.address,
+//                                        assemble.getSize() / 8);
     }
   }
 }
@@ -184,19 +186,14 @@ void ParsingAndExecutionUnit::setSetContextInformationCallback(
   _setContextInformation = callback;
 }
 
-void ParsingAndExecutionUnit::setSetErrorListCallback(
-    ListCallback<CompileError> callback) {
-  _setErrorList = callback;
+void ParsingAndExecutionUnit::setFinalRepresentationCallback(
+    Callback<const FinalRepresentation &> callback) {
+  _setFinalRepresentation = callback;
 }
 
 void ParsingAndExecutionUnit::setThrowErrorCallback(
     Callback<const std::string &, const std::vector<std::string> &> callback) {
   _throwError = callback;
-}
-
-void ParsingAndExecutionUnit::setSetMacroListCallback(
-    ListCallback<MacroInformation> callback) {
-  _setMacroList = callback;
 }
 
 void ParsingAndExecutionUnit::setSetCurrentLineCallback(

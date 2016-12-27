@@ -77,6 +77,7 @@ class RegisterModel : public QAbstractItemModel {
   enum RegisterModelRole {
     TitleRole,
     TypeRole,
+    IsConstantRole,
     BinaryDataRole,
     HexDataRole,
     SignedDecDataRole,

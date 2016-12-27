@@ -21,20 +21,22 @@
 #include "arch/common/binarydata-node.hpp"
 
 /**
- * A abstract factory class defining a factory for nodes containing (arbitrary) data, like strings.
+ * A abstract factory class defining a factory for nodes containing (arbitrary)
+ * data, like strings.
  */
 class AbstractDataNodeFactory {
-public:
-    using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+ public:
+  using Node = std::shared_ptr<AbstractSyntaxTreeNode>;
 
-    virtual ~AbstractDataNodeFactory() = default;
+  virtual ~AbstractDataNodeFactory() = default;
 
-    /**
-     * Creates and returns a AbstractSyntaxTreeNode implementation that stores the given data
-     * \param data The data as string that will be copied into the node
-     * \return A AbstractSyntaxTreeNode that stores the given data
-     */
-    virtual Node createDataNode(const std::string& data) const = 0;
+  /**
+   * Creates and returns a AbstractSyntaxTreeNode implementation that stores the
+   * given data
+   * \param data The data as string that will be copied into the node
+   * \return A AbstractSyntaxTreeNode that stores the given data
+   */
+  virtual Node createDataNode(const std::string& data) const = 0;
 };
 
-#endif // ERAGPSIM_ARCH_COMMON_ABSTRACT_DATA_NODE_FACTORY_HPP
+#endif// ERAGPSIM_ARCH_COMMON_ABSTRACT_DATA_NODE_FACTORY_HPP
