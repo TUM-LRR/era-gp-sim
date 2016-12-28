@@ -43,16 +43,12 @@ MemoryComponentPresenter::~MemoryComponentPresenter() {
 
 void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
                                                std::size_t length) {
-  qDebug() << "update: " << address;
-  emit dataChanged(
-      this->index(address / 1, 0),
-      this->index(address + length - 1, this->columnCount()));//  8bit
-  emit dataChanged(
-      this->index(address / 2, 0),
-      this->index(address + length - 1, this->columnCount()));// 16bit
-  emit dataChanged(
-      this->index(address / 4, 0),
-      this->index(address + length - 1, this->columnCount()));// 32bit
+  emit dataChanged(this->index(address / 1, 0),
+                   this->index(address + length - 1, 0));//  8bit
+  emit dataChanged(this->index(address / 2, 0),
+                   this->index(address + length - 1, 0));// 16bit
+  emit dataChanged(this->index(address / 4, 0),
+                   this->index(address + length - 1, 0));// 32bit
 }
 
 
@@ -111,7 +107,6 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   // check boundaries
   qDebug() << index.row() << index.column();
   assert::that(index.isValid());
-  qDebug() << "valid";
 
   // get role as a string because there is more information in it
   QString role_string = MemoryComponentPresenter::roleNames().value(role);
