@@ -117,7 +117,7 @@ std::enable_if_t<std::is_unsigned<UnsignedWord>::value, bool> isAddressValid(
       absoluteAdress + riscv::INSTRUCTION_LENGTH_BYTE >= upperBound) {
     return false;
   }
-  bool validAlignement = abs(validAdress - absoluteAdress) % 4 == 0;
+  bool validAlignement = (validAdress - absoluteAdress) % 4 == 0;
   bool insideOfProgram =
       memoryAccess
           .isMemoryProtectedAt(absoluteAdress, riscv::INSTRUCTION_LENGTH_BYTE)
