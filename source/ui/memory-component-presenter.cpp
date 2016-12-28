@@ -20,7 +20,6 @@
 #include "ui/memory-component-presenter.hpp"
 #include <iostream>
 
-#include <QDebug>
 #include "common/assert.hpp"
 #include "common/string-conversions.hpp"
 #include "core/memory-value.hpp"
@@ -98,6 +97,7 @@ int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
 
 int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
   Q_UNUSED(parent)
+  // dynamic number of columns in every single view -> default value
   return 1;
 }
 
@@ -105,7 +105,6 @@ int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
 QVariant
 MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   // check boundaries
-  qDebug() << index.row() << index.column();
   assert::that(index.isValid());
 
   // get role as a string because there is more information in it
