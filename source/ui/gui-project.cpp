@@ -76,8 +76,8 @@ GuiProject::GuiProject(
       });
 
   _projectModule.getMemoryManager().setErrorCallback(
-      [this](const auto& message, const auto& arguments) {
-        this->_throwError(message, arguments);
+      [this](const Translateable& message) {
+        this->_throwError(message);
       });
 
   _projectModule.getParserInterface().setFinalRepresentationCallback(
