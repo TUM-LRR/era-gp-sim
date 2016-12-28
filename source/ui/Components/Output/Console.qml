@@ -70,6 +70,7 @@ Item {
             }
         }
     }
+
     function updateContent(_baseAddress) {
         var mode = outputComponent.getOutputItem(outputItemIndex)["textMode"];
         if(oldMode !== mode){
@@ -84,6 +85,10 @@ Item {
 
         var currentText = textarea.text;
         textarea.text = outputComponent.getTextFromMemory(_baseAddress, currentText, mode);
+    }
+
+    Component.onCompleted: {
+        it.updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
     }
 
 
