@@ -42,6 +42,13 @@ MemoryComponentPresenter::~MemoryComponentPresenter() {
 
 void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
                                                std::size_t length) {
+  // put updated memory in cache
+  _memoryCacheBaseAddress = address;
+  _memoryCacheSize = length;
+  _memoryCache =
+      _memoryAccess.getMemoryValueAt(_memoryCacheBaseAddress, _memoryCacheSize)
+          .get();
+
   emit dataChanged(this->index(address / 1, 0),
                    this->index(address + length - 1, 0));//  8bit
   emit dataChanged(this->index(address / 2, 0),
@@ -129,8 +136,21 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
 
   int memory_address = index.row() * (number_of_bits / 8);
   int memory_length = number_of_bits / 8;
-  MemoryValue memory_cell =
-      _memoryAccess.getMemoryValueAt(memory_address, memory_length).get();
+
+  MemoryValue memory_cell;
+  // check for cache
+  if (memory_address >= _memoryCacheBaseAddress &&
+      memory_address + number_of_bits <=
+          _memoryCacheBaseAddress + _memoryCacheSize) {
+    // cache hit
+    memory_cell = _memoryCache.subSet(
+        memory_address - _memoryCacheBaseAddress,
+        memory_address - _memoryCacheBaseAddress + number_of_bits);
+  } else {
+    // cache miss -> fetch from core
+    memory_cell =
+        _memoryAccess.getMemoryValueAt(memory_address, memory_length).get();
+  }
 
   std::string stringValue;
   if (role_string.startsWith("bin")) {

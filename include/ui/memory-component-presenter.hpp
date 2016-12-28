@@ -128,6 +128,24 @@ class MemoryComponentPresenter : public QAbstractTableModel {
    * rowCount causes a deadlock. */
   std::size_t _memorySize;
 
+  /**
+   * Cache for core memory on updates. When the memory is updates every view
+   * has to fetch values multiple times. In order to decrease the number of
+   * calls to the core this cache has been introduced.
+   */
+  MemoryValue _memoryCache;
+
+  /**
+   * Size of core memory that is hold in cache.
+   */
+  std::size_t _memoryCacheSize;
+
+  /**
+   * Starting address of the memory hold in cache.
+   * Just one block of memory will be kept in the cache.
+   */
+  std::size_t _memoryCacheBaseAddress;
+
   /** enumeration of all roles of the columns */
   enum ColumnRoles {
       AddressRole8 = Qt::UserRole,// avoid collisions with predefined roles
