@@ -75,53 +75,71 @@ class Project : public Servant {
           size_t memorySize);
 
   /**
-   * Calls Memory::get(size_t address, size_t length = 1) const
-   *
+   * \copydoc Memory::get()
    */
   MemoryValue getMemoryValueAt(size_t address, size_t amount = 1) const;
 
   /**
-   * Calls Memory::put(size_t address, const MemoryValue& value)
-   *
+   * \copydoc Memory::tryGet()
    */
-  void putMemoryValueAt(size_t address, const MemoryValue &value);
+  MemoryValue tryGetMemoryValueAt(size_t address, size_t amount = 1) const;
+
 
   /**
-   * Calls Memory::set(size_t address, const MemoryValue& value)
-   *
+   * \copydoc Memory::put()
    */
-  MemoryValue setMemoryValueAt(size_t address, const MemoryValue &value);
+  void putMemoryValueAt(size_t address,
+                        const MemoryValue &value,
+                        bool ignoreProtection = false);
 
   /**
-   * Calls Memory::isProtected(size_t, size_t)
+   * \copydoc Memory::isProtected()
    */
-  bool isMemoryProtectedAt(std::size_t address, std::size_t amount = 1) const;
+  bool isMemoryProtectedAt(size_t address, size_t amount = 1) const;
 
   /**
-   * Calls Memory::makeProtected(...)
+   * \copydoc Memory::makeProtected()
    */
-  void makeMemoryProtected(std::size_t address, std::size_t amount = 1);
+  void makeMemoryProtected(size_t address, size_t amount = 1);
 
   /**
-   * Calls Memory::removeProtection(...)
+   * \copydoc Memory::removeProtection()
    */
-  void removeMemoryProtection(std::size_t address, std::size_t amount = 1);
+  void removeMemoryProtection(size_t address, size_t amount = 1);
 
   /**
-   * Calls RegisterSet::get(const std::string& name) const
-   *
+   * \copydoc Memory::get()
    */
   MemoryValue getRegisterValue(const std::string &name) const;
 
+  /*
+   * \copydoc Memory::tryPut()
+   */
+  void tryPutMemoryValueAt(size_t address,
+                           const MemoryValue &value,
+                           bool ignoreProtection = false);
+
   /**
-   * Calls RegisterSet::put(const std::string& name, const MemoryValue& value)
-   *
+   *  \copydoc Memory::set()
+   */
+  MemoryValue setMemoryValueAt(size_t address,
+                               const MemoryValue &value,
+                               bool ignoreProtection = false);
+
+  /**
+   * \copydoc Memory::trySet()
+   */
+  MemoryValue trySetMemoryValueAt(size_t address,
+                                  const MemoryValue &value,
+                                  bool ignoreProtection = false);
+
+  /**
+   * \copydoc RegisterSet::put()
    */
   void putRegisterValue(const std::string &name, const MemoryValue &value);
 
   /**
-   * Calls RegisterSet::set(const std::string& name, const MemoryValue &value)
-   *
+   * \copydoc RegisterSet::set()
    */
   MemoryValue
   setRegisterValue(const std::string &name, const MemoryValue &value);
@@ -141,17 +159,10 @@ class Project : public Servant {
   /**
    * Returns the number of memory cells(number of bytes)
    *
-   * TODO should this be supported?
    * Currently not accessible through any proxy.
    *
    */
   size_t getMemorySize() const;
-
-  /**
-   * Sets the number of memory cells, might not be supported later
-   *
-   */
-  void setMemorySize(size_t size);
 
   /**
    * Returns a set of all instructions of the architecture
@@ -257,6 +268,7 @@ class Project : public Servant {
    *
    */
   Architecture getArchitecture() const;
+    
 
  private:
   /**

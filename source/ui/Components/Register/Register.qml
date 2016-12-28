@@ -38,6 +38,19 @@ Item {
         headerVisible: false
         selectionMode: SelectionMode.NoSelection
 
+        // Signal to format all registres at once.
+        signal formatAllRegisters(string format)
+        // When loading, each register uses the default format if no other
+        // cached format is available.
+        property var defaultFormat: "Binary"
+
+        onFormatAllRegisters: {
+            // Set default format to make newly loaded registers use this format.
+            defaultFormat = format;
+            // Clear cache to prevent default format from being overwritten.
+            dataTypeFormatCache = ({});
+        }
+
         // Map for associating the currently selected data type format (e.g. bin, hex etc.)
         // with the QModelIndex of the corresponding register. This is required in order to be
         // able to restore the last currently selected format after a delegate item has been
@@ -47,6 +60,7 @@ Item {
 
         // Uses the RegisterModel to populate the registers.
         model: registerModel
+
 
         itemDelegate: Item {
             id: treeViewItemDelegate
@@ -66,7 +80,7 @@ Item {
                 anchors.left: registerContentItem.left
                 anchors.top: parent.top
                 height: 18
-                text: model.Title
+                text: (model !== null) ? model.Title : ""
                 font.pointSize: 15
                 font.weight: Font.Bold
                 color: "#585858"
@@ -87,27 +101,46 @@ Item {
                 anchors.right: parent.right
                 width: 18
                 height: registerContentItem.height
-                property bool completed: false
-                model: ListModel {
-                    id: dataTypeFormatModel
-                    Component.onCompleted: {
-                        // Creates a ListModel from the list of data formats provided by the RegisterModel.
-                        // The corresponding list of data formats has to be fetched manually instead of
-                        // being exposed through a data role (such as model.Title) as the TreeView-model gets
-                        // released automatically at some point (i.e. when expanding, collapsing and expanding
-                        // an item). Likely a QML-bug.
-                        var list = registerModel.dataFormatListForRegister(styleData.index);
-                        list.forEach(function(entry) {
-                            append({"text": entry});
-                        });
+                property bool shouldCacheFormatIndex: false
+                model: {
+                    // Property bindings are magic; dark, dark magic. So how often this
+                    // function is called depends on your version of Qt. The problem is, whenever
+                    // the model is changed, the currentIndex of the ComboBox is reset to 0 (=Binary)
+                    // Depending on what your version of Qt is, this might happen when you edit the register
+                    // or just scroll through. So the current format needs to be cached and restored.
+                    // We only want to cache a current index if it was changed by the user rather than automatically
+                    // (e.g. through reset). In order to prevent us from caching index 0 after the model was changed,
+                    // we set dataTypeFormatComboBox.shouldCacheFormatIndex to false which prevents caches until it's
+                    // set to true again in the onModelChanged-signal.
+                    dataTypeFormatComboBox.shouldCacheFormatIndex = false;
+                    // Note: model.Type does not work...
+                    var type = registerModel.data(styleData.index, 1);
+                    switch (type) {
+                    case "Integer":
+                        return formatListInteger;
+                    case "Float":
+                        return formatListFloat;
+                    case "Vector":
+                        return formatListVector;
+                    case "Flag":
+                        return formatListFlag;
+                    case "Link":
+                        return formatListLink;
+                    case "ProgramCounter":
+                        return formatListProgramCounter;
                     }
                 }
+
+                onModelChanged: {
+                    // Refer to property-binding to dataTypeFormatComboBox.model for further information.
+                    _tryToRestoreCachedFormatIndex();
+                    dataTypeFormatComboBox.shouldCacheFormatIndex = true;
+                }
+
                 Component.onCompleted: {
-                    // Try to restore a cached selected data type format.
-                    if (attachedTreeView.dataTypeFormatCache[styleData.index] !== undefined) {
-                        dataTypeFormatComboBox.currentIndex = attachedTreeView.dataTypeFormatCache[styleData.index];
-                    }
-                    dataTypeFormatComboBox.completed = true;
+                    // Refer to property-binding to dataTypeFormatComboBox.model for further information.
+                    _tryToRestoreCachedFormatIndex();
+                    dataTypeFormatComboBox.shouldCacheFormatIndex = true;
                 }
 
                 onCurrentIndexChanged: {
@@ -122,12 +155,28 @@ Item {
                         registerContentItem.source = "DefaultRegister.qml"
                     }
                     // Cache the new currently selected data type format, but only if the
-                    // index changed was not triggered upon the creation of the combo box
-                    // (defaults to 0 at creation time).
-                    if (completed) {
+                    // index change was not triggered upon the creation of the combo box
+                    // (defaults to 0 at creation time) and only if the index is valid
+                    // (i.e. row and column are positive).
+                    if (dataTypeFormatComboBox.shouldCacheFormatIndex && styleData.index.row >= 0 && styleData.index.column >= 0) {
                         attachedTreeView.dataTypeFormatCache[styleData.index] = currentIndex;
                     }
                 }
+
+                function _tryToRestoreCachedFormatIndex() {
+                    // Try to restore a cached selected data type format.
+                    if (attachedTreeView.dataTypeFormatCache[styleData.index] !== undefined) {
+                        dataTypeFormatComboBox.currentIndex = attachedTreeView.dataTypeFormatCache[styleData.index];
+                    } else {    // If no cached format could be restored, load the default format.
+                        var defaultFormatIndex = indexOfFormat(attachedTreeView.defaultFormat);
+                        // If the default format is not available for this register's type (e.g. decimal for program counter),
+                        // load the format at index 0.
+                        if (defaultFormatIndex !== -1 && defaultFormatIndex !== undefined) {
+                            dataTypeFormatComboBox.currentIndex = defaultFormatIndex;
+                        }
+                    }
+                }
+
                 style: ComboBoxStyle {
                     // Selection Indicator
                     label: Item {
@@ -157,6 +206,45 @@ Item {
                     }
                 }
             }
+
+            Connections {
+                target: registerTreeView
+                // When all registers should be formatted, change the format of all registers currently
+                // visible (and therefore loaded).
+                onFormatAllRegisters: {
+                    var defaultFormatIndex = indexOfFormat(attachedTreeView.defaultFormat);
+                    if (defaultFormatIndex !== -1) {
+                        dataTypeFormatComboBox.currentIndex = defaultFormatIndex;
+                    }
+                }
+            }
+
+            // Available data formats for each type of register.
+            property var formatListInteger: ["Binary", "Hexadecimal", "Decimal (Unsigned)", "Decimal (Signed)"]
+            property var formatListFloat: ["Binary", "Hexadecimal"]
+            property var formatListVector: ["Binary", "Hexadecimal"]
+            property var formatListFlag: ["Flag", "Binary"]
+            property var formatListLink: ["Binary", "Hexadecimal"]
+            property var formatListProgramCounter: ["Binary", "Hexadecimal"]
+
+            // Searches for a given data format string and returns the corresponding index inside the
+            // register's associated type's format list.
+            function indexOfFormat(format) {
+                switch (registerModel.data(styleData.index, 1)) {
+                case "Integer":
+                    return formatListInteger.indexOf(format);
+                case "Float":
+                    return formatListFloat.indexOf(format);
+                case "Vector":
+                    return formatListVector.indexOf(format);
+                case "Flag":
+                    return formatListFlag.indexOf(format);
+                case "Link":
+                    return formatListLink.indexOf(format);
+                case "ProgramCounter":
+                    return formatListProgramCounter.indexOf(format);
+                }
+            }
         }
 
         rowDelegate: Item {
@@ -165,6 +253,52 @@ Item {
 
         TableViewColumn {
             title: "Register"
+        }
+    }
+
+    // Context menu for formatting all registers at once.
+    Menu {
+        id: contextMenu
+
+        MenuItem {
+            text: "All registers to Binary"
+            onTriggered: {
+                registerTreeView.formatAllRegisters("Binary");
+            }
+        }
+        MenuItem {
+            text: "All registers to Hexadecimal"
+            onTriggered: {
+                registerTreeView.formatAllRegisters("Hexadecimal");
+            }
+        }
+        MenuItem {
+            text: "All registers to Decimal (Unsigned)"
+            onTriggered: {
+                registerTreeView.formatAllRegisters("Decimal (Unsigned)");
+            }
+        }
+        MenuItem {
+            text: "All registers to Decimal (Signed)"
+            onTriggered: {
+                registerTreeView.formatAllRegisters("Decimal (Signed)");
+            }
+        }
+        MenuItem {
+            text: "All registers to Flag"
+            onTriggered: {
+                registerTreeView.formatAllRegisters("Flag");
+            }
+        }
+    }
+
+    // MouseArea that provides a context menu on right-click.
+    MouseArea {
+        anchors.fill: parent
+
+        acceptedButtons: Qt.RightButton
+        onClicked: {
+            contextMenu.popup();
         }
     }
 }
