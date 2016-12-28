@@ -20,7 +20,7 @@
 #ifndef ERAGPSIM_UI_MEMORY_COMPONENT_PRESENTER_HPP
 #define ERAGPSIM_UI_MEMORY_COMPONENT_PRESENTER_HPP
 
-#include <QAbstractListModel>
+#include <QAbstractTableModel>
 #include <QHash>
 #include <QModelIndex>
 #include <QObject>
@@ -30,7 +30,7 @@
 #include "core/memory-access.hpp"
 #include "core/memory-manager.hpp"
 
-class MemoryComponentPresenter : public QAbstractListModel {
+class MemoryComponentPresenter : public QAbstractTableModel {
   Q_OBJECT
 
  public:
@@ -81,13 +81,22 @@ class MemoryComponentPresenter : public QAbstractListModel {
 
   /**
    * Returns the number of rows in this table
-   * Inherited from QAbstractListModel
+   * Inherited from QAbstractTableModel
    *
    * /param parent pointer to the logical data parent
    * /return returns the length of the table
    *
    */
   int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+
+  /**
+   * Returns the number of columns in this table
+   * Inherited from QAbstractTableModel
+   *
+   * /param parent pointer to the logical data parent
+   * /return returns the width of the table
+   */
+  int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
   /**
    * Returns the translation between roleNames in QML and the internal index

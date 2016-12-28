@@ -20,6 +20,7 @@
 #include "ui/memory-component-presenter.hpp"
 #include <iostream>
 
+#include <QDebug>
 #include "common/assert.hpp"
 #include "common/string-conversions.hpp"
 #include "core/memory-value.hpp"
@@ -28,7 +29,7 @@ MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access,
                                                    MemoryManager manager,
                                                    QQmlContext *projectContext,
                                                    QObject *parent)
-: QAbstractListModel(parent)
+: QAbstractTableModel(parent)
 , _memoryAccess(access)
 , _memoryManager(manager)
 , _memorySize(access.getMemorySize().get()) {
@@ -42,12 +43,16 @@ MemoryComponentPresenter::~MemoryComponentPresenter() {
 
 void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
                                                std::size_t length) {
-  emit dataChanged(this->index(address / 1),
-                   this->index(address + length - 1));//  8bit
-  emit dataChanged(this->index(address / 2),
-                   this->index(address + length - 1));// 16bit
-  emit dataChanged(this->index(address / 4),
-                   this->index(address + length - 1));// 32bit
+  qDebug() << "update: " << address;
+  emit dataChanged(
+      this->index(address / 1, 0),
+      this->index(address + length - 1, this->columnCount()));//  8bit
+  emit dataChanged(
+      this->index(address / 2, 0),
+      this->index(address + length - 1, this->columnCount()));// 16bit
+  emit dataChanged(
+      this->index(address / 4, 0),
+      this->index(address + length - 1, this->columnCount()));// 32bit
 }
 
 
@@ -95,10 +100,18 @@ int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
 }
 
 
+int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
+  Q_UNUSED(parent)
+  return 1;
+}
+
+
 QVariant
 MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   // check boundaries
+  qDebug() << index.row() << index.column();
   assert::that(index.isValid());
+  qDebug() << "valid";
 
   // get role as a string because there is more information in it
   QString role_string = MemoryComponentPresenter::roleNames().value(role);
