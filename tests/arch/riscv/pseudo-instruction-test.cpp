@@ -59,8 +59,11 @@ class PseudoInstructionTest : public riscv::BaseFixture {
     auto architecture = getArchitecture();
 
     RiscvParser parser{architecture, memoryAccess};
+
+    // We crossed this out, already added by the parser:
+    // architecture.getBuiltinMacros() + "\n" + 
     auto rep =
-        parser.parse(architecture.getBuiltinMacros() + "\n" + instruction);
+        parser.parse(instruction);
 
     // Assert that no compile error occurred
     for (auto& compileError : rep.errorList().errors()) {
