@@ -60,10 +60,27 @@ Item {
         }
 
         model: memoryModel
+        rowDelegate: rowdelegate
+        itemDelegate: itemdelegate
 
         // add a column with the content for each cell at startup
         Component.onCompleted: {
             tableView.insertColumn(tableView.columnCount - 1, column);
+        }
+    }
+
+    Component {
+        id: rowdelegate
+        Rectangle{
+            height: (styleData.row % (number_bits / 8) == 0) ? 25 : 0
+        }
+    }
+
+    Component {
+        id: itemdelegate
+        Text {
+            visible: (styleData.row % (number_bits / 8) == 0) ? true : false
+            text: styleData.value
         }
     }
 
@@ -85,13 +102,14 @@ Item {
         // makes each memory cell editable by using a textbox
         // when editing is finished the new value is passed to the memory in the core
         id: inputBox
+
         TextField {
             id: textFieldMemoryValue
-            text: styleData.value
+            text: (styleData.row % (number_bits / 8) == 0) ? styleData.value : ""
 
             onEditingFinished: {
                 // update internal memory; use right number representation and byte size
-                memoryModel.setValue(styleData.row * (number_bits / 8), textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
+                memoryModel.setValue(styleData.row /** (number_bits / 8)*/, textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
             }
         }
     }

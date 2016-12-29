@@ -50,8 +50,8 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
       _memoryAccess.getMemoryValueAt(_memoryCacheBaseAddress, _memoryCacheSize)
           .get();
 
-  emit dataChanged(this->index(address / 1, 0),
-                   this->index(address / 1 + length - 1, 0));//  8bit
+  emit dataChanged(this->index(address, 0),
+                   this->index(address + length - 1, 0));//  8bit
   emit dataChanged(this->index(address / 2, 0),
                    this->index(address / 2 + length - 1, 0));// 16bit
   emit dataChanged(this->index(address / 4, 0),
@@ -98,7 +98,7 @@ void MemoryComponentPresenter::setContextInformation(int addressStart,
 
 
 int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
-  Q_UNUSED(parent)
+  // Q_UNUSED(parent)
   return _memorySize;
 }
 
@@ -126,7 +126,7 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   if (role_string.startsWith("address")) {
     // format index as hex value and return it
     return QString("%1")
-        .arg(index.row() * number_of_bits / 8, 4, 16, QLatin1Char('0'))
+        .arg(index.row(), 4, 16, QLatin1Char('0'))
         .toUpper()
         .prepend("0x");
   }
@@ -136,7 +136,7 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
     return QString("");
   }
 
-  int memory_address = index.row() * (number_of_bits / 8);
+  int memory_address = index.row();//* (number_of_bits / 8);
   int memory_length = number_of_bits / 8;
 
   MemoryValue memory_cell;
@@ -156,7 +156,7 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
       qDebug() << "der große moment";
     }
     memory_cell =
-        _memoryAccess.getMemoryValueAt(memory_address, memory_length).get();
+        _memoryAccess.tryGetMemoryValueAt(memory_address, memory_length).get();
   }
 
   std::string stringValue;
