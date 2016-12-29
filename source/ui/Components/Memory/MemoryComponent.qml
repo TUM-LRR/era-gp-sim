@@ -69,20 +69,6 @@ Item {
         }
     }
 
-    Component {
-        id: rowdelegate
-        Rectangle{
-            height: (styleData.row % (number_bits / 8) == 0) ? 25 : 0
-        }
-    }
-
-    Component {
-        id: itemdelegate
-        Text {
-            visible: (styleData.row % (number_bits / 8) == 0) ? true : false
-            text: styleData.value
-        }
-    }
 
     Component {
         // component for a column with the contents of the memory
@@ -98,6 +84,23 @@ Item {
         }
     }
 
+
+    Component {
+        id: rowdelegate
+        Rectangle{
+            height: (styleData.row % (number_bits / 8) == 0) ? 25 : 0
+        }
+    }
+
+    Component {
+        id: itemdelegate
+        Text {
+            visible: (styleData.row % (number_bits / 8) == 0) ? true : false
+            enabled: (styleData.row % (number_bits / 8) == 0) ? true : false
+            text: styleData.value
+        }
+    }
+
     Component {
         // makes each memory cell editable by using a textbox
         // when editing is finished the new value is passed to the memory in the core
@@ -106,6 +109,8 @@ Item {
         TextField {
             id: textFieldMemoryValue
             text: (styleData.row % (number_bits / 8) == 0) ? styleData.value : ""
+            visible: (styleData.row % (number_bits / 8) == 0) ? true : false
+            enabled: (styleData.row % (number_bits / 8) == 0) ? true : false
 
             onEditingFinished: {
                 // update internal memory; use right number representation and byte size
