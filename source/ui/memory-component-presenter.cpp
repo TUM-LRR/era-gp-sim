@@ -144,20 +144,17 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
 
   MemoryValue memory_cell;
   // check for cache
-  if (memory_address >= _memoryCacheBaseAddress &&
-      memory_address + number_of_bits <=
+  if (false && memory_address >= _memoryCacheBaseAddress &&
+      memory_address + memory_length <=
           _memoryCacheBaseAddress + _memoryCacheSize) {
     // cache hit
-    qDebug() << "hit";
+    qDebug() << "hit" << memory_address;
     memory_cell = _memoryCache.subSet(
         memory_address - _memoryCacheBaseAddress,
         memory_address - _memoryCacheBaseAddress + number_of_bits);
   } else {
     // cache miss -> fetch from core
-    qDebug() << "miss";
-    if (memory_address == 1024) {
-      qDebug() << "der große moment";
-    }
+    qDebug() << "miss" << memory_address;
     memory_cell =
         _memoryAccess.tryGetMemoryValueAt(memory_address, memory_length).get();
   }
