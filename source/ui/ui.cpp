@@ -52,7 +52,8 @@ int Ui::runUi() {
       "ClipboardAdapter", 1, 0, "ClipboardAdapter");
   qRegisterMetaType<std::size_t>("std::size_t");
   qRegisterMetaType<size_t>("size_t");
-  qRegisterMetaType<OutputComponent*>("OutputComponentP");
+  qRegisterMetaType<FinalRepresentation>();
+  qRegisterMetaType<OutputComponent*>("OutputComponentPointer");
   qmlRegisterType<PixelDisplayPaintedItem>(
       "eragpsim.pixeldisplaypainteditem", 1, 0, "PixelDisplayPaintedItem");
   qRegisterMetaType<InputText::length_t>("length_t");

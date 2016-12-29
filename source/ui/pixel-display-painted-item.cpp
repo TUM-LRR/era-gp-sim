@@ -42,6 +42,10 @@ void PixelDisplayPaintedItem::paint(QPainter *painter) {
 void PixelDisplayPaintedItem::memoryChanged(std::size_t address,
                                             std::size_t amount) {
   std::clock_t timeElapsed = std::clock();
+  if (amount == 0 && _outputComponentPointer) {
+    amount =
+        (*_outputComponentPointer)->getMemoryAccess().getMemorySize().get();
+  }
   _options.updateMemory(_outputComponentPointer, _image, address, amount);
   update();
   timeElapsed -= std::clock();

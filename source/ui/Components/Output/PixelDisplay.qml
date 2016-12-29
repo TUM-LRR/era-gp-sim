@@ -6,26 +6,12 @@ import eragpsim.pixeldisplaypainteditem 1.0
 Item {
     property var outputItemIndex: 3
 
-    /*Rectangle {//Dummy-Module, will be replaced
-        id: greenBackground
-        width: 360
-        height: 360
-        // color: "green"
-        anchors.fill: parent
-    }*/
-    /*Image {
-        //width: 100
-        //height: 50
-        smooth: false
-        id: pixelDisplayImage
-        source: "image://pixeldisplayprovider/red"
-        anchors.fill: parent
-    }*/
-
     // Update the output item's content (there may already be some initial
     // values in memory).
     Component.onCompleted: {
+        pixeldisplaypainteditemid.memoryChanged(0, 0);
     }
+
     PixelDisplayPaintedItem{
         id: pixeldisplaypainteditemid
         anchors.fill: parent
@@ -35,21 +21,12 @@ Item {
     // Connect the output item to signals that the model might send.
     Connections {
         target: outputComponent
-        onNewImage: pixeldisplaypainteditemid.setImage(image)
         // Send when the memory changes (at any address).
         onMemoryChanged: {
-            console.log("onMemoryChanged");
             pixeldisplaypainteditemid.memoryChanged(address, length);
-            // // Check if the memory address that was changed (at least partly)
-            // // belongs to the output item's source space.
-            // if ((address+length) >= _baseAddress && (address <= (_baseAddress+1))) {
-            //     updateContent(_baseAddress);
-            // }
         }
         // Send when any item's settings where updated.
         onOutputItemSettingsChanged: {
-            console.log("onOutputItemSettingsChanged");
-            // updateContent(outputComponent.getOutputItems()[outputItemIndex]["baseAddress"]);
             settingsWindow.updateSettings();
         }
     }
@@ -57,17 +34,6 @@ Item {
     // Called from outside by the output tab view to signal that the settings // button for the current output item was pressed.
     function settingsButtonPressed() {
         settingsWindow.show();
-    }
-
-    // Updates the content of the output model depending on the value in memory.
-    function updateContent(_baseAddress) {
-        //_updatelightstripModel();
-        // var content = outputComponent.getMemoryContent(_baseAddress, 1);
-        // console.log(content);
-
-        //for (var bitIndex = 0; bitIndex < content.length && bitIndex < lightstripModel.count; ++bitIndex) {
-        //    lightstripModel.setProperty(bitIndex, "active", content[bitIndex]);
-        //}
     }
 
     // Window for lightstrip settings.
@@ -78,7 +44,7 @@ Item {
         title: "Pixel Display Settings"
 
         function updateSettings() {
-          // textField.text = property
+            // TODO?
         }
 
         onVisibleChanged: {
@@ -160,7 +126,6 @@ Item {
 
                 ComboBox {
                     id: colorModeComboBox
-                    //width: 200
                     model: [ "Monochrome", "RGB" ]
                     onAccepted: {
                         pixeldisplaypainteditemid.colorMode = colorModeComboBox.currentIndex
@@ -169,20 +134,6 @@ Item {
                         pixeldisplaypainteditemid.colorMode = colorModeComboBox.currentIndex
                     }
                 }
-
-                // TextField {
-                //     id: colorModeTextField
-                //
-                //     onAccepted: { processInput(); }
-                //     onEditingFinished: { processInput(); }
-                //
-                //     function processInput() {
-                //         var inputValue = controlsColumn.integerFromInputString(String(colorModeTextField.text))
-                //         if (inputValue && inputValue >= 0) {
-                //             pixeldisplaypainteditemid.colorMode = inputValue
-                //         }
-                //     }
-                // }
 
                 TextField {
                     id: widthTextField
@@ -212,10 +163,7 @@ Item {
                         }
                     }
                 }
-
             }
         }
     }
-
-
 }

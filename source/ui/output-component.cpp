@@ -129,3 +129,7 @@ OutputComponent::getTextFromMemory(int start, QString currentText, int mode) {
 int OutputComponent::getMemorySize() {
   return _memoryAccess.getMemorySize().get();
 }
+
+MemoryAccess &OutputComponent::getMemoryAccess() {
+  return _memoryAccess;
+}

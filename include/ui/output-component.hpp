@@ -20,11 +20,8 @@
 #define ERAGPSIM_UI_OUTPUTCOMPONENT_HPP
 
 #include <QDebug>
-#include <QImage>
 #include <QQmlContext>
 #include "core/memory-access.hpp"
-
-// class QImage;
 
 class MemoryManager;
 
@@ -62,7 +59,6 @@ class OutputComponent : public QObject {
    * item have changed.
    */
   void outputItemSettingsChanged();
-  void newImage(QImage image);
 
  public:
   OutputComponent(MemoryManager &memoryManager,
@@ -126,9 +122,7 @@ class OutputComponent : public QObject {
     */
   Q_INVOKABLE int getMemorySize();
 
-  MemoryAccess &getMemoryAccess() {
-    return _memoryAccess;
-  }
+  MemoryAccess &getMemoryAccess();
 
  private:
   /// Interface for accessing memory content.
