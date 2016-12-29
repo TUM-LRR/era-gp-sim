@@ -279,7 +279,7 @@ ScrollView {
                                                                                  "text": macro["code"]});
                         macroDisplayObject["subeditor"] = subeditor;
                         // Add triangle-button to display object
-                        var triangleButton = triangleButtonComponent.createObject(sidebar._macroBar, {"y": textArea.positionToRectangle(linePosition).y-3});
+                        var triangleButton = triangleButtonComponent.createObject(sidebar._macroBar, {"y": textArea.positionToRectangle(linePosition).y-(textArea.cursorRectangle.height/5)});
                         triangleButton.anchors.right = sidebar._macroBar.right;
                         triangleButton.anchors.rightMargin = -1;
                         triangleButton.macroIndex = macroIndex;
@@ -574,7 +574,7 @@ ScrollView {
                 x: container.contentX/scale.zoom
                 y: 0
                 height: Math.max(container.height, textArea.contentHeight)
-                width: lineNumbersBar.width + macroBar.width
+                width: errorBar.width + lineNumbersBar.width + macroBar.width
                 color: "#eeeeeb"
 
                 property alias _macroBar: macroBar
@@ -594,49 +594,14 @@ ScrollView {
                   }
                 }
 
-                // Displays line numbers.
-                Rectangle {
-                    id: lineNumbersBar
 
-                    anchors.left: parent.left
-                    y: textArea.textMargin/2
-                    width: fontMetrics.averageCharacterWidth * textArea.lineCount.toString().length
-                    anchors.leftMargin: 2
-
-                    Column {
-                        id: lineNumbers
-                        anchors.fill: parent
-
-                        Repeater {
-                            model: textArea.lineCount
-                            delegate: Text {
-                                color: "gray"
-                                font: textArea.font
-                                text: {
-                                    // Check if line number belongs to line which was inserted for a macro expansion.
-                                    if (textArea.isPositionInsideMacroBlankLine(textArea.text, TextUtilities.getLineStartForLine(textArea.text, index))) {
-                                        return " ";
-                                    } else {    // If not, return line number with blank lines factored out.
-                                        return textArea.convertRawLineNumberToDisplayLineNumber(textArea.text, index);
-                                    }
-                                }
-                                height: textArea.cursorRectangle.height
-
-                                horizontalAlignment: Text.AlignRight
-                                anchors.right: parent.right
-                            }
-                        }
-                    }
-                }
-
-                // Display errors, warnings and notes. Overlays lineNumberBar.
+                // Display errors, warnings, notes and breakpoints.
                 Rectangle {
                     id: errorBar
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
-                    anchors.right: macroBar.left
-                    anchors.rightMargin: -4
+                    width: 0.75 * textArea.cursorRectangle.height
                     color: "#00000000"
 
                     property var issueMarks: [{}]
@@ -706,12 +671,48 @@ ScrollView {
                     }
                 }
 
+
+                // Displays line numbers.
+                Rectangle {
+                    id: lineNumbersBar
+
+                    anchors.left: errorBar.right
+                    y: textArea.textMargin/2
+                    width: fontMetrics.averageCharacterWidth * textArea.convertRawLineNumberToDisplayLineNumber(textArea.lineCount).toString().length
+
+                    Column {
+                        id: lineNumbers
+                        anchors.fill: parent
+
+                        Repeater {
+                            model: textArea.lineCount
+                            delegate: Text {
+                                color: "gray"
+                                font: textArea.font
+                                text: {
+                                    // Check if line number belongs to line which was inserted for a macro expansion.
+                                    if (textArea.isPositionInsideMacroBlankLine(textArea.text, TextUtilities.getLineStartForLine(textArea.text, index))) {
+                                        return " ";
+                                    } else {    // If not, return line number with blank lines factored out.
+                                        return textArea.convertRawLineNumberToDisplayLineNumber(textArea.text, index);
+                                    }
+                                }
+                                height: textArea.cursorRectangle.height
+
+                                horizontalAlignment: Text.AlignRight
+                                anchors.right: parent.right
+                            }
+                        }
+                    }
+                }
+
+
                 // Displays buttons for expanding/collapsing macros.
                 Rectangle {
                     id: macroBar
-                    anchors.left: lineNumbersBar.right
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
+                    anchors.left: lineNumbersBar.right
                     width: 14
                     color: "#00000000"
                 }
@@ -739,8 +740,10 @@ ScrollView {
 
                         Rectangle {
                             id: breakpointIcon
-                            height: textArea.cursorRectangle.height -1
+                            height: Math.min(parent.height, errorBar.width) * 0.8
                             width: height
+                            anchors.left: parent.left
+                            anchors.leftMargin: height*0.15
                             anchors.verticalCenter: parent.verticalCenter
                             x: (errorBar.width - width) / 2
                             radius: width*0.5

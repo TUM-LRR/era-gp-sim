@@ -59,9 +59,9 @@ Item {
     Image {
         id: issueIcon
 
-        width: parent.height-3
-        height: parent.height-3
-        x: (errorBar - width) / 2
+        width: 0.95*errorBar.width
+        height: width
+        x: (errorBar.width - width)/2
         anchors.verticalCenter: issueLineHighlight.verticalCenter
         source: {
             switch (dominantIssueType) {
@@ -164,9 +164,9 @@ Item {
                     anchors.rightMargin: _textMargin
                     anchors.verticalCenter: parent.verticalCenter
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                    width: scrollView.width - sidebar.width - issueItemIcon.width - 3*_textMargin
+                    width: Math.max(scrollView.width, textArea.contentWidth) - sidebar.width - issueItemIcon.width - 3*_textMargin
 
-                    font.pixelSize: 10
+                    font.pixelSize: Math.floor(0.85*textArea.font.pixelSize)
                     text: issueMessage
                     horizontalAlignment: Text.AlignRight
 
