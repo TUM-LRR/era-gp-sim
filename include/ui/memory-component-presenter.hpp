@@ -138,13 +138,13 @@ class MemoryComponentPresenter : public QAbstractTableModel {
   /**
    * Size of core memory that is hold in cache.
    */
-  std::size_t _memoryCacheSize;
+  std::size_t _memoryCacheSize = 0;
 
   /**
    * Starting address of the memory hold in cache.
    * Just one block of memory will be kept in the cache.
    */
-  std::size_t _memoryCacheBaseAddress;
+  std::size_t _memoryCacheBaseAddress = 0;
 
   /** enumeration of all roles of the columns */
   enum ColumnRoles {

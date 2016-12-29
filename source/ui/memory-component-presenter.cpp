@@ -20,6 +20,7 @@
 #include "ui/memory-component-presenter.hpp"
 #include <iostream>
 
+#include <QDebug>
 #include "common/assert.hpp"
 #include "common/string-conversions.hpp"
 #include "core/memory-value.hpp"
@@ -50,11 +51,11 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
           .get();
 
   emit dataChanged(this->index(address / 1, 0),
-                   this->index(address + length - 1, 0));//  8bit
+                   this->index(address / 1 + length - 1, 0));//  8bit
   emit dataChanged(this->index(address / 2, 0),
-                   this->index(address + length - 1, 0));// 16bit
+                   this->index(address / 2 + length - 1, 0));// 16bit
   emit dataChanged(this->index(address / 4, 0),
-                   this->index(address + length - 1, 0));// 32bit
+                   this->index(address / 4 + length - 1, 0));// 32bit
 }
 
 
@@ -112,6 +113,7 @@ int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
 QVariant
 MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   // check boundaries
+  qDebug() << index.row() << index.column();
   assert::that(index.isValid());
 
   // get role as a string because there is more information in it
@@ -143,11 +145,16 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
       memory_address + number_of_bits <=
           _memoryCacheBaseAddress + _memoryCacheSize) {
     // cache hit
+    qDebug() << "hit";
     memory_cell = _memoryCache.subSet(
         memory_address - _memoryCacheBaseAddress,
         memory_address - _memoryCacheBaseAddress + number_of_bits);
   } else {
     // cache miss -> fetch from core
+    qDebug() << "miss";
+    if (memory_address == 1024) {
+      qDebug() << "der große moment";
+    }
     memory_cell =
         _memoryAccess.getMemoryValueAt(memory_address, memory_length).get();
   }
