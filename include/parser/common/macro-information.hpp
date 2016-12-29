@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_MACRO_INFORMATION_HPP
-#define ERAGPSIM_PARSER_MACRO_INFORMATION_HPP
+#ifndef ERAGPSIM_PARSER_COMMON_MACRO_INFORMATION_HPP
+#define ERAGPSIM_PARSER_COMMON_MACRO_INFORMATION_HPP
 
 #include <string>
 #include <vector>
@@ -64,4 +64,4 @@ class MacroInformation {
 
 using MacroInformationVector = std::vector<MacroInformation>;
 
-#endif /* ERAGPSIM_PARSER_MACRO_INFORMATION_HPP */
+#endif /* ERAGPSIM_PARSER_COMMON_MACRO_INFORMATION_HPP */

@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP
-#define ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_MEMORY_DEFINITION_DIRECTIVE_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_MEMORY_DEFINITION_DIRECTIVE_HPP
 
 #include <cstddef>
 #include <functional>
@@ -210,4 +210,4 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   ProcessValuesFunction _processValues;
 };
 
-#endif /* ERAGPSIM_PARSER_MEMORY_DEFINITION_DIRECTIVE_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_MEMORY_DEFINITION_DIRECTIVE_HPP */

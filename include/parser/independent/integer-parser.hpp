@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_INT_PARSER_HPP
-#define ERAGPSIM_PARSER_INT_PARSER_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_INTEGER_PARSER_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_INTEGER_PARSER_HPP
 
 #include <cctype>
 #include <limits>
@@ -201,4 +201,4 @@ template <>
 unsigned long long IntegerParser<unsigned long long>::parseInternal(
     const std::string &str, size_t start, int base, size_t &count);
 
-#endif /* ERAGPSIM_PARSER_INT_PARSER_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_INTEGER_PARSER_HPP */

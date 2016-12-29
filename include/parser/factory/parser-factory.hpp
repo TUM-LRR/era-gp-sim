@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_PARSER_FACTORY_HPP_
-#define ERAGPSIM_PARSER_PARSER_FACTORY_HPP_
+#ifndef ERAGPSIM_PARSER_FACTORY_PARSER_FACTORY_HPP
+#define ERAGPSIM_PARSER_FACTORY_PARSER_FACTORY_HPP
 
 #include <functional>
 #include <memory>
@@ -63,4 +63,4 @@ ParserPtr createParser(const Architecture &architecture,
 extern const std::unordered_map<std::string, ParserBuildFunction> mapping;
 }
 
-#endif /* ERAGPSIM_PARSER_PARSER_FACTORY_HPP */
+#endif /* ERAGPSIM_PARSER_FACTORY_PARSER_FACTORY_HPP */

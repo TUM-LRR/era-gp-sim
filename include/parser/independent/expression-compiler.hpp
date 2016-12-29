@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_EXPRESSION_COMPILER_HPP
-#define ERAGPSIM_PARSER_EXPRESSION_COMPILER_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_HPP
 
 #include "parser/independent/expression-compiler-definitions.hpp"
 #include "parser/independent/expression-parser.hpp"
@@ -197,4 +197,4 @@ class ExpressionCompiler {
   ExpressionParser<T> _parser;
 };
 
-#endif /* ERAGPSIM_PARSER_EXPRESSION_COMPILER_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_HPP */

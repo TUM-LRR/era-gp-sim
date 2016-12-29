@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP
-#define ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_SECTION_DIRECTIVE_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_SECTION_DIRECTIVE_HPP
 
 #include <string>
 #include <vector>
@@ -84,4 +84,4 @@ class SectionDirective : public IntermediateDirective {
   PositionedString _section;
 };
 
-#endif /* ERAGPSIM_PARSER_SECTION_DIRECTIVE_HPP_ */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_SECTION_DIRECTIVE_HPP */

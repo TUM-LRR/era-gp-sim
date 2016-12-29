@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_EXPRESSION_COMPILER_CLIKE_HPP
-#define ERAGPSIM_PARSER_EXPRESSION_COMPILER_CLIKE_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_CLIKE_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_CLIKE_HPP
 
 #include "common/translateable.hpp"
 #include "parser/common/compile-error-list.hpp"
@@ -343,4 +343,4 @@ extern ExpressionCompiler<int64_t> CLikeCompilerI64;
 extern ExpressionCompiler<uint64_t> CLikeCompilerU64;
 }
 
-#endif /* ERAGPSIM_PARSER_EXPRESSION_COMPILER_CLIKE_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_CLIKE_HPP */

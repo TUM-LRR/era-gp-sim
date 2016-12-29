@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_SYMBOL_HPP
-#define ERAGPSIM_PARSER_SYMBOL_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_HPP
 
 #include <regex>
 #include <string>
@@ -122,4 +122,4 @@ class Symbol {
   std::regex _regex;
 };
 
-#endif /* ERAGPSIM_PARSER_SYMBOL_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_HPP */

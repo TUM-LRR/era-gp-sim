@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_SYMBOL_REPLACER_HPP
-#define ERAGPSIM_PARSER_SYMBOL_REPLACER_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_REPLACER_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_REPLACER_HPP
 
 #include <functional>
 #include <vector>
@@ -55,4 +55,4 @@ class SymbolReplacer {
   MSRegex _matchRegex;
 };
 
-#endif /* ERAGPSIM_PARSER_SYMBOL_REPLACER_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_REPLACER_HPP */

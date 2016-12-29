@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_COMPILE_ERROR_LIST_HPP
-#define ERAGPSIM_PARSER_COMPILE_ERROR_LIST_HPP
+#ifndef ERAGPSIM_PARSER_COMMON_COMPILE_ERROR_LIST_HPP
+#define ERAGPSIM_PARSER_COMMON_COMPILE_ERROR_LIST_HPP
 
 #include <functional>
 #include <vector>
@@ -203,4 +203,4 @@ class CompileErrorList {
   CompileErrorVector _errors;
 };
 
-#endif /* ERAGPSIM_PARSER_COMPILE_ERROR_LIST_HPP */
+#endif /* ERAGPSIM_PARSER_COMMON_COMPILE_ERROR_LIST_HPP */

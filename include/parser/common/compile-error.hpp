@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_COMPILE_ERROR_HPP
-#define ERAGPSIM_COMPILE_ERROR_HPP
+#ifndef ERAGPSIM_PARSER_COMMON_COMPILE_ERROR_HPP
+#define ERAGPSIM_PARSER_COMMON_COMPILE_ERROR_HPP
 
 #include <QtGlobal>
 #include <memory>

@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_STRING_PARSER_HPP_
-#define ERAGPSIM_PARSER_STRING_PARSER_HPP_
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_STRING_PARSER_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_STRING_PARSER_HPP
 
 #include <algorithm>
 #include <functional>
@@ -687,4 +687,4 @@ static bool parseCharacter(const PositionedBasicString<CharT>& inputString,
 }
 };
 
-#endif /* ERAGPSIM_PARSER_STRING_PARSER_HPP_ */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_STRING_PARSER_HPP */

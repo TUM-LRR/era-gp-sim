@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_COMPILE_ERROR_SEVERITY_HPP
-#define ERAGPSIM_PARSER_COMPILE_ERROR_SEVERITY_HPP
+#ifndef ERAGPSIM_PARSER_COMMON_COMPILE_ERROR_SEVERITY_HPP
+#define ERAGPSIM_PARSER_COMMON_COMPILE_ERROR_SEVERITY_HPP
 
 /**
  * \brief Denotes the severity of a compiler error.
@@ -40,4 +40,4 @@ enum class CompileErrorSeverity {
   INFORMATION
 };
 
-#endif /* ERAGPSIM_PARSER_COMPILE_ERROR_SEVERITY_HPP */
+#endif /* ERAGPSIM_PARSER_COMMON_COMPILE_ERROR_SEVERITY_HPP */

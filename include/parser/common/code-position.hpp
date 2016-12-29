@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_CODE_POSITION_HPP
-#define ERAGPSIM_PARSER_CODE_POSITION_HPP
+#ifndef ERAGPSIM_PARSER_COMMON_CODE_POSITION_HPP
+#define ERAGPSIM_PARSER_COMMON_CODE_POSITION_HPP
 
 #include <utility>
 

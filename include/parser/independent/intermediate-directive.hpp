@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_DIRECTIVE_HPP
-#define ERAGPSIM_PARSER_INTERMEDIATE_DIRECTIVE_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_INTERMEDIATE_DIRECTIVE_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_INTERMEDIATE_DIRECTIVE_HPP
 
 #include <string>
 #include <vector>

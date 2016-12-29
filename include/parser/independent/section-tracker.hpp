@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_SECTION_TRACKER_HPP
-#define ERAGPSIM_PARSER_SECTION_TRACKER_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_SECTION_TRACKER_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_SECTION_TRACKER_HPP
 
 #include <string>
 
@@ -57,4 +57,4 @@ class SectionTracker {
   std::string _section;
 };
 
-#endif /* ERAGPSIM_PARSER_SECTION_TRACKER_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_SECTION_TRACKER_HPP */

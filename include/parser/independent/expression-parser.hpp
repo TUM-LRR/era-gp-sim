@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_EXPRESSION_PARSER_HPP
-#define ERAGPSIM_PARSER_EXPRESSION_PARSER_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_PARSER_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_PARSER_HPP
 
 #include <algorithm>
 #include <regex>
@@ -530,4 +530,4 @@ class ExpressionParser {
   MSRegex _literalDecodeRegex;
 };
 
-#endif /* ERAGPSIM_PARSER_EXPRESSION_PARSER_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_PARSER_HPP */

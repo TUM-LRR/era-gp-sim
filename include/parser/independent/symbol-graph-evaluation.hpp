@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_SYMBOL_GRAPH_EVALUATION_HPP
-#define ERAGPSIM_PARSER_SYMBOL_GRAPH_EVALUATION_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_GRAPH_EVALUATION_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_GRAPH_EVALUATION_HPP
 
 #include <vector>
 #include "parser/independent/symbol.hpp"
@@ -47,4 +47,4 @@ class SymbolGraphEvaluation {
   std::vector<Symbol> _symbols;
 };
 
-#endif /* ERAGPSIM_PARSER_SYMBOL_GRAPH_EVALUATION_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_GRAPH_EVALUATION_HPP */

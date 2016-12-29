@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_MACRO_DIRECTIVE_TABLE_HPP
-#define ERAGPSIM_PARSER_MACRO_DIRECTIVE_TABLE_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_MACRO_DIRECTIVE_TABLE_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_MACRO_DIRECTIVE_TABLE_HPP
 
 #include <string>
 #include <unordered_map>
@@ -110,4 +110,4 @@ class MacroDirectiveTable {
   MacroMap _macros;
 };
 
-#endif /* ERAGPSIM_PARSER_MACRO_DIRECTIVE_TABLE_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_MACRO_DIRECTIVE_TABLE_HPP */

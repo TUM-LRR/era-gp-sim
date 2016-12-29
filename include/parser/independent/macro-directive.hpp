@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_MACRO_DIRECTIVE_HPP
-#define ERAGPSIM_PARSER_MACRO_DIRECTIVE_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_MACRO_DIRECTIVE_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_MACRO_DIRECTIVE_HPP
 
 #include <string>
 #include <vector>
@@ -221,4 +221,4 @@ class MacroDirective : public IntermediateDirective {
   int _firstInstruction = -1;
 };
 
-#endif /* ERAGPSIM_PARSER_MACRO_DIRECTIVE_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_MACRO_DIRECTIVE_HPP */

@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_MEMORY_ALLOCATOR_HPP
-#define ERAGPSIM_PARSER_MEMORY_ALLOCATOR_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_MEMORY_ALLOCATOR_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_MEMORY_ALLOCATOR_HPP
 
 #include <cstddef>
 #include <string>
@@ -190,4 +190,4 @@ class MemoryAllocator {
   std::unordered_map<std::string, size_t> _nameToSection;
 };
 
-#endif /* ERAGPSIM_PARSER_MEMORY_ALLOCATOR_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_MEMORY_ALLOCATOR_HPP */

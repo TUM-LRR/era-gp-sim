@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_RELATIVE_MEMORY_POSITION_HPP
-#define ERAGPSIM_PARSER_RELATIVE_MEMORY_POSITION_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_RELATIVE_MEMORY_POSITION_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_RELATIVE_MEMORY_POSITION_HPP
 
 #include <cstddef>
 #include <string>
@@ -72,4 +72,4 @@ struct RelativeMemoryPosition {
   size_t _offset;
 };
 
-#endif /* ERAGPSIM_PARSER_RELATIVE_MEMORY_POSITION_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_RELATIVE_MEMORY_POSITION_HPP */

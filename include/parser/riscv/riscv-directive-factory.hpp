@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_DIRECTIVE_FACTORY_HPP_
-#define ERAGPSIM_PARSER_INTERMEDIATE_DIRECTIVE_FACTORY_HPP_
+#ifndef ERAGPSIM_PARSER_RISCV_RISCV_DIRECTIVE_FACTORY_HPP
+#define ERAGPSIM_PARSER_RISCV_RISCV_DIRECTIVE_FACTORY_HPP
 
 #include <memory>
 #include <unordered_map>

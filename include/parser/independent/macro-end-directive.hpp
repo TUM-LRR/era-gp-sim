@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_MACRO_END_DIRECTIVE_HPP
-#define ERAGPSIM_PARSER_MACRO_END_DIRECTIVE_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_MACRO_END_DIRECTIVE_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_MACRO_END_DIRECTIVE_HPP
 
 #include "parser/independent/intermediate-directive.hpp"
 
@@ -58,4 +58,4 @@ class MacroEndDirective : public IntermediateDirective {
   virtual ~MacroEndDirective() = default;
 };
 
-#endif /* ERAGPSIM_PARSER_MACRO_END_DIRECTIVE_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_MACRO_END_DIRECTIVE_HPP */

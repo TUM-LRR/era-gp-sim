@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_SYMBOL_GRAPH_HPP
-#define ERAGPSIM_PARSER_SYMBOL_GRAPH_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_GRAPH_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_GRAPH_HPP
 
 #include <string>
 #include <vector>
@@ -54,4 +54,4 @@ class SymbolGraph {
   std::vector<SymbolNode> _nodes;
 };
 
-#endif /* ERAGPSIM_PARSER_SYMBOL_GRAPH_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_GRAPH_HPP */

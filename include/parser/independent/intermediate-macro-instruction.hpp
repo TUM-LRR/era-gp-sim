@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_PARSER_INTERMEDIATE_MACRO_INSTRUCTION_HPP
-#define ERAGPSIM_PARSER_INTERMEDIATE_MACRO_INSTRUCTION_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_INTERMEDIATE_MACRO_INSTRUCTION_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_INTERMEDIATE_MACRO_INSTRUCTION_HPP
 
 #include "parser/independent/intermediate-operation.hpp"
 

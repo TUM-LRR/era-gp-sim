@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_MEMORY_RESERVATION_DIRECTIVE_HPP
-#define ERAGPSIM_PARSER_MEMORY_RESERVATION_DIRECTIVE_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_MEMORY_RESERVATION_DIRECTIVE_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_MEMORY_RESERVATION_DIRECTIVE_HPP
 
 
 #include <functional>
@@ -110,4 +110,4 @@ class MemoryReservationDirective : public IntermediateDirective {
   ArgumentCompileFunction _argumentCompile;
 };
 
-#endif /* ERAGPSIM_PARSER_MEMORY_RESERVATION_DIRECTIVE_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_MEMORY_RESERVATION_DIRECTIVE_HPP */

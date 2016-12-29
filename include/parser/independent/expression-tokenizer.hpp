@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_EXPRESSION_TOKENIZER_HPP
-#define ERAGPSIM_PARSER_EXPRESSION_TOKENIZER_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_TOKENIZER_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_TOKENIZER_HPP
 
 #include "parser/independent/expression-compiler-definitions.hpp"
 
@@ -66,4 +66,4 @@ class ExpressionTokenizer {
   MSRegex _tokenizeRegex;
 };
 
-#endif /* ERAGPSIM_PARSER_EXPRESSION_TOKENIZER_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_TOKENIZER_HPP */

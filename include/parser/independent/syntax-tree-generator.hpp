@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_SYNTAX_TREE_GENERATOR_HPP_
-#define ERAGPSIM_PARSER_SYNTAX_TREE_GENERATOR_HPP_
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_SYNTAX_TREE_GENERATOR_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_SYNTAX_TREE_GENERATOR_HPP
 
 #include <functional>
 #include <memory>
@@ -113,4 +113,4 @@ class SyntaxTreeGenerator {
   ArgumentNodeGenerator _argumentGenerator;
 };
 
-#endif /* ERAGPSIM_PARSER_SYNTAX_TREE_GENERATOR_HPP_ */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_SYNTAX_TREE_GENERATOR_HPP */

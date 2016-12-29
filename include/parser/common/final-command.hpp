@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_FINAL_COMMAND_HPP
-#define ERAGPSIM_PARSER_FINAL_COMMAND_HPP
+#ifndef ERAGPSIM_PARSER_COMMON_FINAL_COMMAND_HPP
+#define ERAGPSIM_PARSER_COMMON_FINAL_COMMAND_HPP
 
 #include <memory>
 #include <vector>
@@ -94,4 +94,4 @@ class FinalCommand {
  */
 using FinalCommandVector = std::vector<FinalCommand>;
 
-#endif /* ERAGPSIM_PARSER_FINAL_COMMAND_HPP */
+#endif /* ERAGPSIM_PARSER_COMMON_FINAL_COMMAND_HPP */
