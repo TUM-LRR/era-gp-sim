@@ -167,7 +167,10 @@ FinalRepresentation RiscvParser::parse(const std::string& text) {
   IntermediateRepresentator intermediate;
   CompileErrorList errors;
 
-  readText(text, errors, intermediate);
+  // We append all built-in macros to our text.
+  auto extendedText = text + "\n" + _architecture.getBuiltinMacros();
+
+  readText(extendedText, errors, intermediate);
 
   auto byteAlignment =
       _architecture.getWordSize() / _architecture.getByteSize();

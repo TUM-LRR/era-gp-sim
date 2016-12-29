@@ -91,8 +91,6 @@ class EnhanceSymbolTableImmutableArguments {
    */
   MemoryAllocator _allocator;
 };
-
-#endif /* ERAGPSIM_PARSER_INDEPENDENT_ENHANCE_SYMBOL_TABLE_IMMUTABLE_ARGUMENTS_HPP \
-        * \                                                                        \
-        * \ \                                                                                 \
-          */
+// clang-format off
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_ENHANCE_SYMBOL_TABLE_IMMUTABLE_ARGUMENTS_HPP */
+// clang-format on

@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "parser/common/code-position-interval.hpp"
+#include "parser/common/final-command.hpp"
 #include "parser/independent/positioned-string.hpp"
 
 class Architecture;
@@ -32,8 +33,6 @@ class SymbolReplacer;
 class MemoryAllocator;
 
 class MemoryValue;
-#include "parser/common/final-command.hpp"
-class FinalCommand;
 class MemoryAccess;
 class CompileErrorList;
 class SectionTracker;
