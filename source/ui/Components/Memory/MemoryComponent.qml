@@ -87,12 +87,14 @@ Item {
 
     Component {
         id: rowdelegate
+        // collapse row if cell is not needed
         Rectangle{
             height: (styleData.row % (number_bits / 8) == 0) ? 25 : 0
         }
     }
 
     Component {
+        // disable row when cell is not needed
         id: itemdelegate
         Text {
             visible: (styleData.row % (number_bits / 8) == 0) ? true : false
@@ -109,11 +111,13 @@ Item {
         TextField {
             id: textFieldMemoryValue
             text: (styleData.row % (number_bits / 8) == 0) ? styleData.value : ""
+            // hide input if cell is not needed
             visible: (styleData.row % (number_bits / 8) == 0) ? true : false
             enabled: (styleData.row % (number_bits / 8) == 0) ? true : false
 
             onEditingFinished: {
                 // update internal memory; use right number representation and byte size
+                // if cell is not needed we can save an update
                 if(styleData.row % (number_bits / 8) == 0) {
                     memoryModel.setValue(styleData.row, textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
                 }
