@@ -20,7 +20,6 @@
 #include "ui/memory-component-presenter.hpp"
 #include <iostream>
 
-#include <QDebug>
 #include "common/assert.hpp"
 #include "common/string-conversions.hpp"
 #include "core/memory-value.hpp"
@@ -43,30 +42,23 @@ MemoryComponentPresenter::~MemoryComponentPresenter() {
 
 void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
                                                std::size_t length) {
+  // calculate region for (max) 64bit memory cells
   int start = address - (address % (64 / 8));
   int end = start + (length - (length % (64 / 8)) + (64 / 8));
+
   // put updated memory in cache
   _memoryCacheBaseAddress = start;
   _memoryCacheSize = end - start;
 
+  // size should not exceed real memory size
   if (_memoryCacheSize > _memorySize) _memoryCacheSize = _memorySize;
 
   _memoryCache =
       _memoryAccess.getMemoryValueAt(_memoryCacheBaseAddress, _memoryCacheSize)
           .get();
 
-  qDebug() << "changed " << address << length;
+  // update calculated region
   emit dataChanged(this->index(start, 0), this->index(end, 0));
-
-  /*emit dataChanged(this->index(address - (address % (8 / 8)), 0),
-                   this->index(address - (address % (8 / 8)) + length - 1,
-                               0));//  8bit
-  emit dataChanged(this->index(address - (address % (16 / 8)), 1),
-                   this->index(address - (address % (16 / 8)) + length - 1,
-                               1));// 16bit
-  emit dataChanged(this->index(address - (address % (32 / 8)), 2),
-                   this->index(address - (address % (32 / 8)) + length - 1,
-                               2));// 32bit*/
 }
 
 
@@ -124,7 +116,6 @@ int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
 QVariant
 MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   // check boundaries
-  qDebug() << index.row() << index.column();
   assert::that(index.isValid());
 
   // get role as a string because there is more information in it
@@ -156,13 +147,11 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
       memory_address + memory_length <=
           _memoryCacheBaseAddress + _memoryCacheSize) {
     // cache hit
-    // qDebug() << "hit" << memory_address;
     memory_cell = _memoryCache.subSet(
         memory_address - _memoryCacheBaseAddress,
         memory_address - _memoryCacheBaseAddress + number_of_bits);
   } else {
     // cache miss -> fetch from core
-    // qDebug() << "miss" << memory_address;
     memory_cell =
         _memoryAccess.tryGetMemoryValueAt(memory_address, memory_length).get();
   }
