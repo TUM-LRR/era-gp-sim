@@ -43,22 +43,30 @@ MemoryComponentPresenter::~MemoryComponentPresenter() {
 
 void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
                                                std::size_t length) {
+  int start = address - (address % (64 / 8));
+  int end = start + (length - (length % (64 / 8)) + (64 / 8));
   // put updated memory in cache
-  _memoryCacheBaseAddress = address;
-  _memoryCacheSize = length;
+  _memoryCacheBaseAddress = start;
+  _memoryCacheSize = end - start;
+
+  if (_memoryCacheSize > _memorySize) _memoryCacheSize = _memorySize;
+
   _memoryCache =
       _memoryAccess.getMemoryValueAt(_memoryCacheBaseAddress, _memoryCacheSize)
           .get();
 
-  emit dataChanged(this->index(address - (address % (8 / 8)), 0),
+  qDebug() << "changed " << address << length;
+  emit dataChanged(this->index(start, 0), this->index(end, 0));
+
+  /*emit dataChanged(this->index(address - (address % (8 / 8)), 0),
                    this->index(address - (address % (8 / 8)) + length - 1,
                                0));//  8bit
-  emit dataChanged(this->index(address - (address % (16 / 8)), 0),
+  emit dataChanged(this->index(address - (address % (16 / 8)), 1),
                    this->index(address - (address % (16 / 8)) + length - 1,
-                               0));// 16bit
-  emit dataChanged(this->index(address - (address % (32 / 8)), 0),
+                               1));// 16bit
+  emit dataChanged(this->index(address - (address % (32 / 8)), 2),
                    this->index(address - (address % (32 / 8)) + length - 1,
-                               0));// 32bit
+                               2));// 32bit*/
 }
 
 
@@ -109,7 +117,7 @@ int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
 int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
   Q_UNUSED(parent)
   // dynamic number of columns in every single view -> default value
-  return 1;
+  return 3;
 }
 
 
@@ -148,13 +156,13 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
       memory_address + memory_length <=
           _memoryCacheBaseAddress + _memoryCacheSize) {
     // cache hit
-    qDebug() << "hit" << memory_address;
+    // qDebug() << "hit" << memory_address;
     memory_cell = _memoryCache.subSet(
         memory_address - _memoryCacheBaseAddress,
         memory_address - _memoryCacheBaseAddress + number_of_bits);
   } else {
     // cache miss -> fetch from core
-    qDebug() << "miss" << memory_address;
+    // qDebug() << "miss" << memory_address;
     memory_cell =
         _memoryAccess.tryGetMemoryValueAt(memory_address, memory_length).get();
   }
