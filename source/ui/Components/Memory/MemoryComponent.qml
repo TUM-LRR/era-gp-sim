@@ -100,6 +100,7 @@ Item {
             visible: (styleData.row % (number_bits / 8) == 0) ? true : false
             enabled: (styleData.row % (number_bits / 8) == 0) ? true : false
             text: styleData.value
+            verticalAlignment: Text.AlignVCenter
         }
     }
 
