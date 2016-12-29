@@ -114,7 +114,9 @@ Item {
 
             onEditingFinished: {
                 // update internal memory; use right number representation and byte size
-                memoryModel.setValue(styleData.row /** (number_bits / 8)*/, textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
+                if(styleData.row % (number_bits / 8) == 0) {
+                    memoryModel.setValue(styleData.row, textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
+                }
             }
         }
     }

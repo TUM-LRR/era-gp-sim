@@ -50,15 +50,15 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
       _memoryAccess.getMemoryValueAt(_memoryCacheBaseAddress, _memoryCacheSize)
           .get();
 
-  emit dataChanged(
-      this->index(address - (address % (8 / 8)), 0),
-      this->index(address - (address % (8 / 8)) + length - 1, 0));//  8bit
-  emit dataChanged(
-      this->index(address - (address % (16 / 8)), 0),
-      this->index(address - (address % (16 / 8)) + length - 1, 0));// 16bit
-  emit dataChanged(
-      this->index(address - (address % (32 / 8)), 0),
-      this->index(address - (address % (32 / 8)) + length - 1, 0));// 32bit
+  emit dataChanged(this->index(address - (address % (8 / 8)), 0),
+                   this->index(address - (address % (8 / 8)) + length - 1,
+                               0));//  8bit
+  emit dataChanged(this->index(address - (address % (16 / 8)), 0),
+                   this->index(address - (address % (16 / 8)) + length - 1,
+                               0));// 16bit
+  emit dataChanged(this->index(address - (address % (32 / 8)), 0),
+                   this->index(address - (address % (32 / 8)) + length - 1,
+                               0));// 32bit
 }
 
 
