@@ -20,6 +20,7 @@
 #include "ui/memory-component-presenter.hpp"
 #include <iostream>
 
+#include <QDebug>
 #include "common/assert.hpp"
 #include "common/string-conversions.hpp"
 #include "core/memory-value.hpp"
@@ -46,8 +47,13 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
   int start = address - (address % (64 / 8));
   int end = start + (length - (length % (64 / 8)) + (64 / 8)) - 1;
 
+  // some offset around
+  start -= 10;
+  end += 10;
+
   // size should not exceed real memory size
   if (end >= _memorySize) end = _memorySize - 1;
+  if (start <= 0) start = 0;
 
   // put updated memory in cache
   _memoryCacheBaseAddress = start;
@@ -109,14 +115,15 @@ int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
 
 int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
   Q_UNUSED(parent)
-  // dynamic number of columns in every single view -> default value
-  return 1;
+  // 8, 16, 32 bit
+  return 3;
 }
 
 
 QVariant
 MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   // check boundaries
+  qDebug() << index.row() << index.column();
   assert::that(index.isValid());
 
   // get role as a string because there is more information in it
