@@ -27,7 +27,7 @@ class ClipboardAdapter : public QObject {
    * \brief setData Slot for reacting to a dataChanged-signal
    * of the QClipboard-instance.
    */
-  void setData();
+  void setData(QClipboard::Mode mode);
 
  signals:
   /**

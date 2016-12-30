@@ -2,7 +2,7 @@
 
 ClipboardAdapter::ClipboardAdapter(QObject *parent) : QObject(parent) {
   clipboard = QApplication::clipboard();
-  QObject::connect(clipboard, SIGNAL(dataChanged()), this, SLOT(setData()));
+  QObject::connect(clipboard, SIGNAL(changed(QClipboard::Mode)), this, SLOT(setData(QClipboard::Mode)));
 }
 
 void ClipboardAdapter::setText(const QString& text) {
@@ -10,8 +10,10 @@ void ClipboardAdapter::setText(const QString& text) {
 }
 
 
-void ClipboardAdapter::setData() {
-  emit dataChanged();
+void ClipboardAdapter::setData(QClipboard::Mode mode) {
+  if (mode == QClipboard::Mode::Clipboard) {
+    emit dataChanged();
+  }
 }
 
 

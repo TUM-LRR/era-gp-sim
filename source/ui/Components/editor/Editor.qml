@@ -566,7 +566,7 @@ ScrollView {
                 // Edit copied text when clipboard data changed.
                 onDataChanged: {
                     // Prevent loop.
-                    if (shouldUpdateClipboardText) {
+                    if (shouldUpdateClipboardText && clipboard.text() === textArea.selectedText) {
                         shouldUpdateClipboardText = false;
                         // Remove any blank lines of macro expansions.
                         var alteredText = clipboard.text();
