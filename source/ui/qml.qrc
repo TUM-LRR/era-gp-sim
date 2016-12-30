@@ -55,6 +55,12 @@
         <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentSettingsWindow.qml</file>
         <file>Components/Output/LightstripSettingsWindow.qml</file>
+        <file>Components/editor/Issue Icons/Error Icon.png</file>
+        <file>Components/editor/Issue Icons/Error Icon@2x.png</file>
+        <file>Components/editor/Issue Icons/Information Icon.png</file>
+        <file>Components/editor/Issue Icons/Information Icon@2x.png</file>
+        <file>Components/editor/Issue Icons/Warning Icon.png</file>
+        <file>Components/editor/Issue Icons/Warning Icon@2x.png</file>
         <file>Components/Output/Console.qml</file>
         <file>Components/Output/ConsoleSettingsWindow.qml</file>
         <file>Components/Input/ButtonInput.qml</file>
@@ -80,6 +86,7 @@
         <file>Components/Input/Buttons/Settings_Icon@2x.png</file>
         <file>Components/Input/Buttons/Settings_Icon_Pressed@2x.png</file>
         <file>Components/Input/Buttons/Settings_Icon.png</file>
+        <file>Components/editor/IssueMark.qml</file>
 	<file>Components/help/HelpWindow.qml</file>
     </qresource>
 </RCC>

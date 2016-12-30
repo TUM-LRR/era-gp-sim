@@ -6,6 +6,8 @@ function getLineStartForLine(text, lineNumber) {
 
 function getLineEndForLine(text, lineNumber) {
     var position = getPositionOfOccurence(text, "\n", lineNumber+1);
+    // Is last line.
+    if (position === 0) position = text.length;
     return getLineEndForPosition(text, position);
 }
 
@@ -29,9 +31,9 @@ function getLineStartForPosition(text, position) {
 }
 
 // Returns the position of the end of the line (i.e. the next character would be the newline character)
-// relative to the entire editor text.
+// relative to the entire  text.
 function getLineEndForPosition(text, position) {
-    var lineEnd = textArea.text.slice(position).indexOf("\n") + position;
+    var lineEnd = text.slice(position).indexOf("\n") + position;
     return (lineEnd === -1) ? text.length : lineEnd;
 }
 

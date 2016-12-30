@@ -18,10 +18,16 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
+import QtGraphicalEffects 1.0
 
 
 CheckBox {
     id: registerCheckBox
+
+    property bool singleStep: false
+    property bool isHighlighted: false
+    property color backgroundColor: isHighlighted ? "lightblue" : "white"
+
 
     checked: (model !== null) ? model.FlagData : false
 
@@ -37,7 +43,21 @@ CheckBox {
             // Check if the current item's index is affected by the data change.
             if (topLeft <= styleData.index && styleData.index <= bottomRight) {
                 checked = Qt.binding(function() {return model.FlagData});
+                //starts the highlighting
+                if(singleStep){
+                    isHighlighted = true;
+                }
             }
+        }
+    }
+
+    //The Registers must know, wether they should be highlighted.
+    //They only should change color if execution only works with one line
+    Connections {
+        target: guiProject
+        onRunClicked: {
+            registerTextField.singleStep = isSingleStep;
+            isHighlighted = false;
         }
     }
 
@@ -45,5 +65,16 @@ CheckBox {
     onCheckedChanged: {
         var registerContentString = (checked == true) ? "1" : "0";
         registerModel.registerContentChanged(styleData.index, registerContentString, dataTypeFormatComboBox.currentText);
+    }
+
+    style: TextFieldStyle{
+        background: Rectangle {
+            id: rect
+            x: registerCheckBox.x
+            y: registerCheckBox.y
+            width: registerCheckBox.width
+            height: registerCheckBox.height
+            color: registerCheckBox.backgroundColor
+        }
     }
 }
