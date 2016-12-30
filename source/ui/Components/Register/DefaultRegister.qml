@@ -95,4 +95,20 @@ TextField {
         return registerContentString;
     }
 
+
+
+    style: TextFieldStyle{
+        background: Rectangle {
+            id: rect
+            x: registerTextField.x
+            y: registerTextField.y
+            width: registerTextField.width
+            height: registerTextField.height
+            color: registerTextField.backgroundColor
+            radius: 2
+            border.color: "lightgray"
+            border.width: 1
+        }
+    }
+
 }
