@@ -20,7 +20,6 @@
 #include "ui/memory-component-presenter.hpp"
 #include <iostream>
 
-#include <QDebug>
 #include "common/assert.hpp"
 #include "common/string-conversions.hpp"
 #include "core/memory-value.hpp"
@@ -59,7 +58,6 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
       address >= _memoryCacheBaseAddress &&
           address + length <= _memoryCacheBaseAddress + _memoryCacheSize) {
     _memoryCacheValid = false;
-    qDebug() << "cache invalidated";
   }
 
   // update calculated region
@@ -121,7 +119,6 @@ int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
 QVariant
 MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   // check boundaries
-  qDebug() << index.row() << index.column();
   assert::that(index.isValid());
 
   // get role as a string because there is more information in it
@@ -177,8 +174,6 @@ MemoryValue MemoryComponentPresenter::getMemoryValueCached(
       memory_address + memory_length <=
           _memoryCacheBaseAddress + _memoryCacheSize) {
     // cache hit -> get memory value from cache
-    qDebug() << "cache hit" << memory_address;
-    qDebug() << "provided: " << _memoryCacheBaseAddress << _memoryCacheSize;
 
     // fetch data from cache
     return _memoryCache.subSet(
@@ -186,8 +181,6 @@ MemoryValue MemoryComponentPresenter::getMemoryValueCached(
         (memory_address - _memoryCacheBaseAddress + memory_length) * 8);
   } else {
     // cache miss -> update cache from core
-    qDebug() << "cache miss" << memory_address;
-    qDebug() << "provided: " << _memoryCacheBaseAddress << _memoryCacheSize;
 
     // calculate new cache region
     _memoryCacheBaseAddress = memory_address;
