@@ -67,6 +67,7 @@ ScrollView {
                 property real unscaledWidth: Math.max(scrollView.viewport.width - sidebar.width, contentWidth)
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
                 property int line: 1
+                property var cursorLine: 1
 
                 width: (textArea.unscaledWidth)*scale.zoom;
                 height: (textArea.unscaledHeight)*scale.zoom;
@@ -82,7 +83,15 @@ ScrollView {
                     cursorScroll(textArea.cursorRectangle);
                 }
                 visible: true
-                onCursorRectangleChanged: cursorScroll(cursorRectangle)
+                onCursorRectangleChanged: {
+                    cursorScroll(cursorRectangle);
+                    var newCursorLine = (cursorRectangle.y/cursorRectangle.height);
+                    newCursorLine = convertRawLineNumberToDisplayLineNumber(textArea.text, newCursorLine);
+                    if (cursorLine !== newCursorLine) {
+                        cursorLine = newCursorLine;
+                        editor.cursorLineChanged(newCursorLine);
+                    }
+                }
 
                 //workaround to get tab working correctly
                 Keys.onPressed: {
@@ -127,8 +136,13 @@ ScrollView {
                         textArea.line = textArea.convertDisplayLineNumberToRawLineNumber(line);
                     }
                     onSetText: {
-                        textArea.clear();
-                        textArea.insert(0, text);
+                        /* some text modifications methods of TextEdit are not available in qt 5.6,
+                        *  so the text property has to be set directly.
+                        */
+                        textArea.text = text;
+                    }
+                    onForceCursorUpdate: {
+                        editor.cursorLineChanged(textArea.cursorLine);
                     }
                 }
 

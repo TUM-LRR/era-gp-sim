@@ -37,6 +37,7 @@
 
 class QUrl;
 class SnapshotComponent;
+class Translateable;
 
 /**
  * This class creates the QmlEngine and starts the qml application.
@@ -203,6 +204,13 @@ class Ui : public QObject {
    * \param name The name of the snapshot.
    */
   Q_INVOKABLE void loadSnapshot(int id, QString name);
+
+  /**
+   * Translate a Translateable
+   *
+   * \param translateable The translateable which should be translated.
+   */
+  static QString translate(const Translateable& translateable);
 
  private:
   /** loads the architectures and extensions from a json file. */

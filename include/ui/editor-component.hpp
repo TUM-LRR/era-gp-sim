@@ -97,6 +97,13 @@ class EditorComponent : public QObject {
   void setErrorList(const std::vector<CompileError> &errorList);
 
   /**
+   * Set a new macro list.
+   *
+   * \param macroList the new macro list.
+   */
+  void setMacroList(const std::vector<MacroInformation> &macroList);
+
+  /**
    * Set the current line of execution, in order to correctly display it in the
    * editor.
    *
@@ -113,6 +120,15 @@ class EditorComponent : public QObject {
    * \returns The text of this editor as a QString.
    */
   QString getText();
+
+ public slots:
+  /**
+   * Is called from the finalRepresentationChanged signal in gui project.
+   *
+   * \param finalRepresentation The new final representation of the core.
+   */
+  void
+  onFinalRepresentationChanged(const FinalRepresentation &finalRepresentation);
 
  private:
   /**
@@ -167,6 +183,19 @@ class EditorComponent : public QObject {
    * \param text The new text.
    */
   void setText(QString text);
+
+  /**
+   * Signals that the cursor moved to another line
+   *
+   * \param line The new line of the cursor.
+   */
+  void cursorLineChanged(std::size_t line);
+
+  /**
+   * Forces the editor to send a cursorLineChanged signal, even if there was no
+   * change.
+   */
+  void forceCursorUpdate();
 };
 
 #endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP_ */

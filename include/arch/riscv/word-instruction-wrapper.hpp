@@ -117,7 +117,7 @@ protected:
   /**
    * The wrapped type instance that will be used for the arithmetic calculations
    */
-  std::unique_ptr<WordInstruction> _wrapped;
+  std::shared_ptr<WordInstruction> _wrapped;
 
   /**
    * Describes how the result is treated in terms of signedness.
