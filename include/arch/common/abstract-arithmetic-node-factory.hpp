@@ -27,7 +27,7 @@ class AbstractSyntaxTreeNode;
  */
 class AbstractArithmeticNodeFactory {
  public:
-  using Node = std::unique_ptr<AbstractSyntaxTreeNode>;
+  using Node = std::shared_ptr<AbstractSyntaxTreeNode>;
 
   enum class Operation { ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION };
 
@@ -45,7 +45,7 @@ class AbstractArithmeticNodeFactory {
    *
    * @param opType constant, defined in this class, describing the type of the
    * arithmetical operation
-   * \return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
+   * \return std::shared_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given opType is invalid
    */
   virtual Node createArithmeticNode(Operation operation) const = 0;

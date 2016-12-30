@@ -1,4 +1,4 @@
-/*
+ /*
  * C++ Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
@@ -24,74 +24,86 @@ import "editor"
 import "Memory"
 import "Register"
 import "Input"
+import "help"
 
 Item {
     id: holder
     /*usual component of the holder*/
     property var usual
-    property QtObject actual: Rectangle{}
+    property QtObject actual: Rectangle {}
 
 
     /*All possible Components*/
-    Component{
+    Component {
         id: snapshots
-        SnapshotList{
+        SnapshotList {
         }
     }
 
-    Component{
+    Component {
         id: output
-        Output{
+        Output {
             anchors.fill: parent
         }
     }
 
-    Component{
+    Component {
         id: register
-        Register{
+        Register {
             anchors.fill: parent
         }
     }
 
-    Component{
+    Component {
         id: memory
-        MemoryComponent{
+        MemoryComponent {
             anchors.fill: parent
         }
     }
 
-    Component{
+    Component {
         id: input
-        Input{
+        Input {
             anchors.fill: parent
         }
     }
 
-    function change(comp){
-        if(comp === "nothing"){
+    Component {
+        id: help
+        HelpWindow {
+            anchors.fill: parent
+        }
+    }
+
+    function change(comp) {
+        if (comp === "nothing") {
             //console.info(usual);
             change(usual);
-        } else if(comp === "snapshots"){
+        } else if (comp === "snapshots") {
             var object=snapshots.createObject(holder);
             actual.destroy();
             actual=object;
-        }else if(comp === "output"){
+        } else if (comp === "output") {
             var object = output.createObject(holder);
             actual.destroy();
             actual = object;
-        }else if(comp === "register"){
+        } else if (comp === "register") {
             var object = register.createObject(holder);
             actual.destroy();
             actual=  object;
-        }else if(comp === "memory"){
+        } else if (comp === "memory") {
             var object = memory.createObject(holder);
             actual.destroy();
             actual = object;
-        }else if(comp === "input"){
+        } else if (comp === "input") {
             var object = input.createObject(holder);
             actual.destroy();
             actual = object;
-        }else{
+        } else if (comp === "help") {
+            var object = help.createObject(holder);
+            actual.destroy();
+            actual = object;
+        } else {
             console.info("Unknown component");
         }
     }

@@ -24,9 +24,14 @@
 
 #include "arch/common/architecture-formula.hpp"
 #include "common/assert.hpp"
+#include "common/translateable.hpp"
 #include "common/utility.hpp"
+#include "parser/final-representation.hpp"
+#include "ui/snapshot-component.hpp"
 #include "ui/input-text-model.hpp"
 #include "ui/snapshot-component.hpp"
+
+Q_DECLARE_METATYPE(FinalRepresentation)
 
 Ui::id_t Ui::_rollingProjectId = 0;
 
@@ -44,8 +49,10 @@ int Ui::runUi() {
   qmlRegisterType<ClipboardAdapter>(
       "ClipboardAdapter", 1, 0, "ClipboardAdapter");
   qRegisterMetaType<std::size_t>("std::size_t");
+  qRegisterMetaType<FinalRepresentation>();
   qRegisterMetaType<InputText::length_t>("length_t");
   qRegisterMetaType<id_t>("id_t");
+  
   _engine.rootContext()->setContextProperty("ui", this);
   _engine.rootContext()->setContextProperty("snapshotComponent",
                                             _snapshots.get());
@@ -226,4 +233,12 @@ void Ui::loadSnapshot(int id, QString name) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->loadSnapshot(name);
+}
+
+QString Ui::translate(const Translateable& translateable) {
+  QString translation = QObject::tr(translateable.getBaseString().c_str());
+  for (const auto& operand : translateable.getOperands()) {
+    translation = translation.arg(translate(*operand));
+  }
+  return translation;
 }

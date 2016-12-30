@@ -29,7 +29,7 @@
  */
 class AbstractInstructionNodeFactory {
  public:
-  using Node = std::unique_ptr<AbstractInstructionNode>;
+  using Node = std::shared_ptr<AbstractInstructionNode>;
 
   virtual ~AbstractInstructionNodeFactory() = default;
 
@@ -42,7 +42,7 @@ class AbstractInstructionNodeFactory {
    *
    * \param token std::string, that contains the identifer of a instruction
    * (e.g. "ADD" for Add-Instruction) in upper-case
-   * \return std::unique_ptr pointing to the newly created SyntaxTreeNode, or
+   * \return std::shared_ptr pointing to the newly created SyntaxTreeNode, or
    * nullptr if the given token cannot be mapped to a architecture-specific
    * instruction
    */

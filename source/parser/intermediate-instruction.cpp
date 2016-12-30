@@ -49,7 +49,7 @@ void IntermediateInstruction::execute(FinalRepresentation& finalRepresentator,
       compileInstruction(table, generator, state, memoryAccess));
 }
 
-std::vector<std::unique_ptr<AbstractSyntaxTreeNode>>
+std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>
 IntermediateInstruction::compileArgumentVector(
     const std::vector<std::string>& vector, const SymbolTable& table,
     const SyntaxTreeGenerator& generator, CompileState& state) {
@@ -76,10 +76,10 @@ IntermediateInstruction::compileArgumentVector(
           return relativeAdress.toHexString(true, true);
         }
       });
-  std::vector<std::unique_ptr<AbstractSyntaxTreeNode>> output;
+  std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> output;
   output.reserve(cpy.size());
   for (const auto& i : cpy) {
-    std::unique_ptr<AbstractSyntaxTreeNode> argument{
+    std::shared_ptr<AbstractSyntaxTreeNode> argument{
         generator.transformOperand(i, state)};
 
     // Only add argument node if creation was successfull.
