@@ -293,7 +293,9 @@ ScrollView {
                                                                                  "text": macro["code"]});
                         macroDisplayObject["subeditor"] = subeditor;
                         // Add triangle-button to display object
-                        var triangleButton = triangleButtonComponent.createObject(sidebar._errorBar, {"y": textArea.positionToRectangle(linePosition).y-2, "x": 0});
+                        var triangleButton = triangleButtonComponent.createObject(sidebar._macroBar, {"y": textArea.positionToRectangle(linePosition).y-(textArea.cursorRectangle.height/5)});
+                        triangleButton.anchors.right = sidebar._macroBar.right;
+                        triangleButton.anchors.rightMargin = -1;
                         triangleButton.macroIndex = macroIndex;
                         triangleButton.onExpandedChanged = function (currentMacroIndex){toggleExpandCollapse(currentMacroIndex);};
                         macroDisplayObject["triangleButton"] = triangleButton;
@@ -577,46 +579,158 @@ ScrollView {
             }
 
 
-            //area left of the TextEdit, contains lineNumbers, errorMessages, Breakpoints,...
+
+            // Sidebar
+
             Rectangle {
                 id: sidebar
                 focus: false
                 x: container.contentX/scale.zoom
                 y: 0
                 height: Math.max(container.height, textArea.contentHeight)
-                width: errorBar.width + fontMetrics.averageCharacterWidth + (fontMetrics.averageCharacterWidth * textArea.lineCount.toString().length);
+                width: errorBar.width + lineNumbersBar.width + macroBar.width
                 color: "#eeeeeb"
 
-                property alias _errorBar: errorBar
+                property alias _macroBar: macroBar
 
-                function updateLineNumbers() {
-                    lineNumbersBar.updateLineNumbers();
+                // Mouse area to add Breakpoints
+                MouseArea {
+                  id: breakpointTrigger
+                  width: parent.width
+                  height: parent.height
+                  x: 0
+                  y: 0
+                  propagateComposedEvents: false
+                  preventStealing: true
+                  hoverEnabled: true
+                  onClicked: {
+                      sidebar.addBreakpoint(Math.floor(mouse.y/textArea.cursorRectangle.height));
+                  }
                 }
 
-                //linenumbers
-                Column {
-                    id: lineNumbersBar
-                    anchors.left: parent.left
-                    anchors.leftMargin: 3
-                    y: textArea.textMargin/2
 
-                    Repeater {
-                        model: textArea.lineCount
-                        delegate: Text {
-                            color: "gray"
-                            font: textArea.font
-                            text: {
-                                // Check if line number belongs to line which was inserted for a macro expansion.
-                                if (textArea.isPositionInsideMacroBlankLine(textArea.text, TextUtilities.getLineStartForLine(textArea.text, index))) {
-                                    return " ";
-                                } else {    // If not, return line number with blank lines factored out.
-                                    return textArea.convertRawLineNumberToDisplayLineNumber(textArea.text, index);
-                                }
-                            }
-                            height: textArea.cursorRectangle.height
+                // Display errors, warnings, notes and breakpoints.
+                Rectangle {
+                    id: errorBar
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    width: 0.75 * textArea.cursorRectangle.height
+                    color: "#00000000"
+
+                    property var issueMarks: [{}]
+
+                    Connections {
+                        target: editor
+                        onAddIssue: {
+                            errorBar.addIssue(message, line, color);
+                        }
+
+                        onDeleteErrors: {
+                            errorBar.issueMarks = ({});
+                        }
+
+                        Component.onCompleted: {
+                            editor.init(textArea.textDocument);
+                        }
+                    }
+
+
+                    // Adds a new issue of given type (error, warning, information) to the given line.
+                    function addIssue(message, lineNumber, issueType) {
+                        // If no issueMark exist, create a new one (issueMarks contain the actual issues
+                        // for each line).
+                        var newIssue;
+                        if (issueMarks[lineNumber] === undefined) {
+                            var issueMarkComponent = Qt.createComponent("IssueMark.qml");
+                            newIssue = issueMarkComponent.createObject();
+                            newIssue.y = (lineNumber-1)*textArea.cursorRectangle.height+textArea.topPadding;
+                            newIssue.parent = errorBar;
+                            newIssue.lineNumber = lineNumber;
+                            issueMarks[lineNumber] = newIssue;
+                        } else {
+                            newIssue = issueMarks[lineNumber];
+                        }
+
+                        // Add a new issueItem to the issueMark.
+                        newIssue.addIssueItem(message, lineNumber, issueType);
+
+                        // Check if the issueMark's dominantIssueType should change.
+                        newIssue.dominantIssueType =
+                                (issueTypePriority(issueType) > issueTypePriority(newIssue.dominantIssueType))
+                                ? issueType
+                                : newIssue.dominantIssueType;
+
+                        // Only errors should be expanded by default.
+                        if (newIssue.dominantIssueType === "Error") {
+                            newIssue.expanded = true;
+                        } else {
+                            newIssue.expanded = false;
+                        }
+                    }
+
+                    // Assigns a priority to each issue type. Required for calculating an issueMark's
+                    // dominantIssueType.
+                    function issueTypePriority(issueType) {
+                        switch (issueType) {
+                        case "Error":
+                            return 3;
+                        case "Warning":
+                            return 2;
+                        case "Information":
+                            return 1;
+                        default:
+                            return 0;
                         }
                     }
                 }
+
+
+                // Displays line numbers.
+                Rectangle {
+                    id: lineNumbersBar
+
+                    anchors.left: errorBar.right
+                    y: textArea.textMargin/2
+                    width: fontMetrics.averageCharacterWidth * textArea.convertRawLineNumberToDisplayLineNumber(textArea.lineCount).toString().length
+
+                    Column {
+                        id: lineNumbers
+                        anchors.fill: parent
+
+                        Repeater {
+                            model: textArea.lineCount
+                            delegate: Text {
+                                color: "gray"
+                                font: textArea.font
+                                text: {
+                                    // Check if line number belongs to line which was inserted for a macro expansion.
+                                    if (textArea.isPositionInsideMacroBlankLine(textArea.text, TextUtilities.getLineStartForLine(textArea.text, index))) {
+                                        return " ";
+                                    } else {    // If not, return line number with blank lines factored out.
+                                        return textArea.convertRawLineNumberToDisplayLineNumber(textArea.text, index);
+                                    }
+                                }
+                                height: textArea.cursorRectangle.height
+
+                                horizontalAlignment: Text.AlignRight
+                                anchors.right: parent.right
+                            }
+                        }
+                    }
+                }
+
+
+                // Displays buttons for expanding/collapsing macros.
+                Rectangle {
+                    id: macroBar
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.left: lineNumbersBar.right
+                    width: 14
+                    color: "#00000000"
+                }
+
 
                 function addBreakpoint(line) {
                     var newBreakpoint =
@@ -624,23 +738,7 @@ ScrollView {
                                                              {"y": line*textArea.cursorRectangle.height, "line": line});
                 }
 
-                //mouse area to add Breakpoints
-                MouseArea {
-                    id: breakpointTrigger
-                    width: errorBar.width
-                    height: parent.height
-                    x: 0
-                    y: 0
-                    z: 1
-                    propagateComposedEvents: false
-                    preventStealing: true
-                    hoverEnabled: true
-                    onClicked: {
-                        sidebar.addBreakpoint(Math.floor(mouse.y/textArea.cursorRectangle.height));
-                    }
-                }
-
-                Component{
+                Component {
                     id: breakpointComponent
                     Item {
                         z: breakpointTrigger.z + 1
@@ -649,6 +747,7 @@ ScrollView {
                         property alias color: breakpointIcon.color
                         width: breakpointTrigger.width
                         height: textArea.cursorRectangle.height;
+
                         Component.onCompleted: {
                             editor.setBreakpoint(line + 1);
                         }
@@ -657,11 +756,12 @@ ScrollView {
                             id: breakpointIcon
                             height: Math.min(parent.height, errorBar.width) * 0.8
                             width: height
-                            anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
                             anchors.leftMargin: height*0.15
+                            anchors.verticalCenter: parent.verticalCenter
+                            x: (errorBar.width - width) / 2
                             radius: width*0.5
-                            color: "red"
+                            color: "#0080FF"
                         }
 
                         MouseArea {
@@ -678,77 +778,9 @@ ScrollView {
                         }
                     }
                 }
-
-                //errors and warnings
-                Rectangle {
-                    id: errorBar
-                    anchors.left: lineNumbersBar.right
-                    anchors.leftMargin: 1
-                    y: textArea.textMargin/2
-                    width: textArea.cursorRectangle.height*0.8
-
-                    Connections {
-                        target: editor
-                        onAddError: {
-                            errorBar.addError(message, line, color);
-                        }
-
-                        Component.onCompleted: {
-                            editor.init(textArea.textDocument);
-                        }
-                    }
-
-                    Component {
-                        id: errorComponent
-                        Item {
-                            id: errorItem
-                            property color color : "red";
-                            property alias errorMessage: toolTip.text;
-                            //TODO use a symbol instead of a red rectangle
-                            Rectangle {
-                                width: errorBar.width
-                                height: fontMetrics.height
-                                color: parent.color
-                            }
-
-                            //highlight the line
-                            Rectangle {
-                                id: lineHighlight
-                                height: textArea.cursorRectangle.height
-                                width: scrollView.width
-                                //color: "#33ff0019"
-                                color: Qt.rgba(parent.color.r, parent.color.g, parent.color.b, 0.3)
-                                border.color: Qt.tint(parent.color, "#33ff3300")
-                            }
-
-                            //tooltip
-                            ToolTip {
-                                id: toolTip
-                                width: lineHighlight.width
-                                height: lineHighlight.height
-                                fontPixelSize: textArea.font.pixelSize
-                            }
-
-                            Connections {
-                                target: editor
-                                onDeleteErrors: {
-                                    errorItem.destroy();
-                                }
-                            }
-                        }
-                    }
-
-                    function addError(message, lineNumber, errorColor) {
-                        var newError = errorComponent.createObject();
-                        newError.y = (lineNumber-1)*fontMetrics.height;
-                        newError.parent = errorBar;
-                        newError.color = errorColor;
-                        newError.errorMessage = message;
-                    }
-                }
             }
 
-            //input for zoom
+            // Input for zoom
             MouseArea {
                 id: mouseInput
                 width: textArea.width
