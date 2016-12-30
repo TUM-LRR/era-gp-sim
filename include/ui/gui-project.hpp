@@ -364,13 +364,6 @@ class GuiProject : QObject {
    * This signal is emitted when the execution has stopped.
    */
   void executionStopped();
-
-  /**
-   * This signal is emmited when execution starts
-   *
-   * \param singleStep wether the button was runLine
-   */
-  void runClicked(bool isSingleStep);
 };
 
 #endif// ERAGPSIM_UI_GUIPROJECT_HPP
