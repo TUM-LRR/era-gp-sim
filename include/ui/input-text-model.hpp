@@ -25,17 +25,13 @@
 
 #include "core/memory-access.hpp"
 
-namespace InputText {
-using length_t = unsigned;
-}
-
 class InputTextModel : public QObject {
   Q_OBJECT
 
  public:
-  using length_t = InputText::length_t;
+  using size_t = size_t;
 
-  enum EnumMode { ArrayBased, PipeLike };
+  enum class Mode { ARRAY_BASED, PIPELIKE };
 
   InputTextModel(QQmlContext* context, MemoryAccess memoryAccess);
 
@@ -49,25 +45,25 @@ class InputTextModel : public QObject {
    * \brief Sets a number in the memory, used for left/up/etc.
    * \param number the number
    */
-  Q_INVOKABLE void newNumber(std::size_t number);
+  Q_INVOKABLE void newNumber(size_t number);
 
   /**
    * \brief Sets the new startindex
    * \param text the index
    */
-  Q_INVOKABLE void setStart(std::size_t start);
+  Q_INVOKABLE void setStart(size_t start);
 
   /**
    * \brief sets the new Maximum Length
    * \param text the new length
    */
-  Q_INVOKABLE void setMaximumLength(length_t maximumLength);
+  Q_INVOKABLE void setMaximumLength(size_t maximumLength);
 
   /**
    * \brief Gets the lenght
    * \return the length
    */
-  Q_INVOKABLE length_t getMaximumLength();
+  Q_INVOKABLE size_t getMaximumLength();
 
   /**
    * \brief Gets the start index
@@ -96,12 +92,12 @@ class InputTextModel : public QObject {
   /**
    * \brief the start address in memory
    */
-  std::size_t _start;
+  size_t _start;
 
   /**
    * \brief the maximum length of the input
    */
-  length_t _maximumLength;
+  size_t _maximumLength;
 
   /**
    * \brief the component for accessing the memory
@@ -111,7 +107,7 @@ class InputTextModel : public QObject {
   /**
    * \brief the current mode
    */
-  EnumMode _mode;
+  Mode _mode;
 
  signals:
   /**
@@ -125,4 +121,4 @@ class InputTextModel : public QObject {
   void modeChanged();
 };
 
-#endif// INPUTTEXTMODEL_HPP
+#endif  // INPUTTEXTMODEL_HPP
