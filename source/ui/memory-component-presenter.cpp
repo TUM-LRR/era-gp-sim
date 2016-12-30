@@ -47,22 +47,20 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
   int start = address - (address % (64 / 8));
   int end = start + (length - (length % (64 / 8)) + (64 / 8)) - 1;
 
-  // some offset around
-  start -= 10;
-  end += 10;
-
-  // size should not exceed real memory size
+  // region should not exceed real memory size
   if (end >= _memorySize) end = _memorySize - 1;
   if (start <= 0) start = 0;
 
-  // put updated memory in cache
-  _memoryCacheBaseAddress = start;
-  _memoryCacheSize = end - start + 1;
-
-
-  _memoryCache =
-      _memoryAccess.getMemoryValueAt(_memoryCacheBaseAddress, _memoryCacheSize)
-          .get();
+  // if the memory that is hold in cache is changed, invalidate cache
+  if (address <= _memoryCacheBaseAddress + _memoryCacheSize &&
+          address + length >= _memoryCacheBaseAddress + _memoryCacheSize ||
+      address <= _memoryCacheBaseAddress &&
+          address + length >= _memoryCacheBaseAddress ||
+      address >= _memoryCacheBaseAddress &&
+          address + length <= _memoryCacheBaseAddress + _memoryCacheSize) {
+    _memoryCacheValid = false;
+    qDebug() << "cache invalidated";
+  }
 
   // update calculated region
   emit dataChanged(this->index(start, 0), this->index(end, 0));
@@ -149,20 +147,8 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   int memory_address = index.row();//* (number_of_bits / 8);
   int memory_length = number_of_bits / 8;
 
-  MemoryValue memory_cell;
-  // check for cache
-  if (memory_address >= _memoryCacheBaseAddress &&
-      memory_address + memory_length <=
-          _memoryCacheBaseAddress + _memoryCacheSize) {
-    // cache hit
-    memory_cell = _memoryCache.subSet(
-        (memory_address - _memoryCacheBaseAddress) * 8,
-        (memory_address - _memoryCacheBaseAddress) * 8 + number_of_bits);
-  } else {
-    // cache miss -> fetch from core
-    memory_cell =
-        _memoryAccess.tryGetMemoryValueAt(memory_address, memory_length).get();
-  }
+  MemoryValue memory_cell = getMemoryValueCached(memory_address, memory_length);
+
 
   std::string stringValue;
   if (role_string.startsWith("bin")) {
@@ -184,6 +170,55 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   return QString::fromStdString(stringValue);
 }
 
+MemoryValue MemoryComponentPresenter::getMemoryValueCached(
+    const std::size_t memory_address, const std::size_t memory_length) const {
+  // check for cache
+  if (_memoryCacheValid && memory_address >= _memoryCacheBaseAddress &&
+      memory_address + memory_length <=
+          _memoryCacheBaseAddress + _memoryCacheSize) {
+    // cache hit -> get memory value from cache
+    qDebug() << "cache hit" << memory_address;
+    qDebug() << "provided: " << _memoryCacheBaseAddress << _memoryCacheSize;
+
+    // fetch data from cache
+    return _memoryCache.subSet(
+        (memory_address - _memoryCacheBaseAddress) * 8,
+        (memory_address - _memoryCacheBaseAddress + memory_length) * 8);
+  } else {
+    // cache miss -> update cache from core
+    qDebug() << "cache miss" << memory_address;
+    qDebug() << "provided: " << _memoryCacheBaseAddress << _memoryCacheSize;
+
+    // calculate new cache region
+    _memoryCacheBaseAddress = memory_address;
+    _memoryCacheSize = memory_length;
+
+    // add some offset around but
+    // cache size should not exceed real memory boundaries
+    // (done this way to prevent overflows)
+    const int offset = 10;
+    if (_memoryCacheBaseAddress < offset)
+      _memoryCacheBaseAddress = 0;
+    else
+      _memoryCacheBaseAddress -= offset;
+    if (_memoryCacheBaseAddress + _memoryCacheSize >= _memorySize - offset * 2)
+      _memoryCacheSize = _memorySize - _memoryCacheBaseAddress;
+    else
+      _memoryCacheSize += offset * 2;
+
+    // fetch cache from core
+    _memoryCache =
+        _memoryAccess
+            .getMemoryValueAt(_memoryCacheBaseAddress, _memoryCacheSize)
+            .get();
+    // set cache status to valid
+    _memoryCacheValid = true;
+
+    return _memoryCache.subSet(
+        (memory_address - _memoryCacheBaseAddress) * 8,
+        (memory_address - _memoryCacheBaseAddress + memory_length) * 8);
+  }
+}
 
 QHash<int, QByteArray> MemoryComponentPresenter::roleNames() const {
   // connect TableColumns in View with columns in this model

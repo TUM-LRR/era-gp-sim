@@ -80,6 +80,14 @@ class MemoryComponentPresenter : public QAbstractTableModel {
                 int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
   /**
+   * Gets a MemoryValue at the given position either from the core or by using a cache.
+   * /param address Address of the MemoryValue
+   * /param length Size of the MemoryValue
+   * /return The requested MemoryValue
+   */
+  MemoryValue getMemoryValueCached(const std::size_t address, const std::size_t length) const;
+
+  /**
    * Returns the number of rows in this table
    * Inherited from QAbstractTableModel
    *
@@ -133,18 +141,23 @@ class MemoryComponentPresenter : public QAbstractTableModel {
    * has to fetch values multiple times. In order to decrease the number of
    * calls to the core this cache has been introduced.
    */
-  MemoryValue _memoryCache;
+  mutable MemoryValue _memoryCache;
 
   /**
    * Size of core memory that is hold in cache.
    */
-  std::size_t _memoryCacheSize = 0;
+  mutable std::size_t _memoryCacheSize = 0;
 
   /**
    * Starting address of the memory hold in cache.
    * Just one block of memory will be kept in the cache.
    */
-  std::size_t _memoryCacheBaseAddress = 0;
+  mutable std::size_t _memoryCacheBaseAddress = 0;
+
+  /**
+   * Determines whether the current cache is valid or outdated.
+   */
+  mutable bool _memoryCacheValid = false;
 
   /** enumeration of all roles of the columns */
   enum ColumnRoles {
