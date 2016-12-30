@@ -31,7 +31,7 @@ class InputTextModel : public QObject {
  public:
   using size_t = size_t;
 
-  enum class Mode { ARRAY_BASED, PIPELIKE };
+  enum Mode { ARRAY_BASED, PIPELIKE };
 
   InputTextModel(QQmlContext* context, MemoryAccess memoryAccess);
 
