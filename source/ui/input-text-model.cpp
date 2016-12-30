@@ -20,15 +20,19 @@
 #include "ui/input-text-model.hpp"
 #include "core/conversions.hpp"
 
+using EnumMode = InputTextModel::EnumMode;
+
 InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess memoryAccess)
 : QObject()
 , _context(context)
 , _start(0)
 , _maximumLength(20)
 , _memoryAccess(memoryAccess)
-, _mode(0) {
-  _context->setContextProperty("inputtextMod", this);
+, _mode(EnumMode::ArrayBased) {
+  _context->setContextProperty("inputTextModel", this);
 }
+
+
 
 void InputTextModel::newText(QString text) {
   for (size_t i = 0; i < text.length(); i++) {
@@ -45,12 +49,12 @@ void InputTextModel::newText(QString text) {
   }
 }
 
-void InputTextModel::newNumber(int number) {
+void InputTextModel::newNumber(std::size_t number) {
   auto memoryValue = conversions::convert(number, 32);
   _memoryAccess.putMemoryValueAt(_start, memoryValue);
 }
 
-void InputTextModel::setStart(unsigned int start) {
+void InputTextModel::setStart(std::size_t start) {
   if (_memoryAccess.getMemorySize().get() >= start + _maximumLength) {
     _start = start;
   }
@@ -70,7 +74,7 @@ InputTextModel::length_t InputTextModel::getMaximumLength() {
 }
 
 void InputTextModel::setMode(int mode) {
-  _mode = mode;
+  _mode = static_cast<EnumMode>(mode);
   emit modeChanged();
 }
 

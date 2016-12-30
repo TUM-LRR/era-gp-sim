@@ -23,7 +23,7 @@ import QtQuick.Controls.Styles 1.4
 
 Item {
     property int mode: 0  //array based
-    property int oldMode: 0
+    property int oldMode: 1 //pipelike
     Rectangle{
         color: "black"
         anchors.left: parent.left
@@ -60,7 +60,7 @@ Item {
             }
 
             onAccepted: {
-                inputtextMod.newText(text.text);
+                inputTextModel.newText(text.text);
                 text.text = "";
             }
 
@@ -70,18 +70,18 @@ Item {
     }
 
     Component.onCompleted: {
-        text.maximumLength = inputtextMod.getMaximumLength();
+        text.maximumLength = inputTextModel.getMaximumLength();
     }
 
     //update Maximum Length and mode
     Connections {
-        target: inputtextMod
+        target: inputTextModel
         // Send when maximum Length was changed
         onMaximumLengthChanged: {
-            text.maximumLength = inputtextMod.getMaximumLength();
+            text.maximumLength = inputTextModel.getMaximumLength();
         }
         onModeChanged: {
-            mode = inputtextMod.getMode();
+            mode = inputTextModel.getMode();
             if(oldMode !== mode){
                 text.text = "";
             }
@@ -102,7 +102,7 @@ Item {
                     inputValue = 4;
                 }
 
-                inputtextMod.newNumber(inputValue);
+                inputTextModel.newNumber(inputValue);
             }
         }
 

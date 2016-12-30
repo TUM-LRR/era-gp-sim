@@ -33,8 +33,8 @@ Window {
 
     // Refreshes the window's control contentItem.
     function updateSettings() {
-        baseAddressTextField.text = inputtextMod.getStart();
-        maxLength.text=inputtextMod.getMaximumLength();
+        baseAddressTextField.text = inputTextModel.getStart();
+        maxLength.text=inputTextModel.getMaximumLength();
     }
 
     // The controls for editing input settings.
@@ -90,7 +90,7 @@ Window {
                 function processInput() {
                     var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
                     if (inputValue !== undefined && inputValue >= 0) {
-                        inputtextMod.setStart(inputValue);
+                        inputTextModel.setStart(inputValue);
                     }
                 }
             }
@@ -105,7 +105,7 @@ Window {
                 function processInput() {
                     var inputValue = controlsColumn.integerFromInputString(String(maxLength.text));
                     if (inputValue !== undefined && inputValue > 0) {
-                        inputtextMod.setMaximumLength(inputValue);
+                        inputTextModel.setMaximumLength(inputValue);
                     }
                 }
             }
@@ -135,7 +135,7 @@ Window {
                 // Reads the current input and passes the new value to the model.
                 function processInput() {
                     var inputValue = ab.checked ? 0 : 1;
-                    inputtextMod.setMode(inputValue);
+                    inputTextModel.setMode(inputValue);
                 }
             }
 

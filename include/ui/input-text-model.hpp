@@ -29,10 +29,13 @@ namespace InputText {
 using length_t = unsigned;
 }
 
-class InputTextModel : QObject {
+class InputTextModel : public QObject {
   Q_OBJECT
+
  public:
   using length_t = InputText::length_t;
+
+  enum EnumMode { ArrayBased, PipeLike };
 
   InputTextModel(QQmlContext* context, MemoryAccess memoryAccess);
 
@@ -46,13 +49,13 @@ class InputTextModel : QObject {
    * \brief Sets a number in the memory, used for left/up/etc.
    * \param number the number
    */
-  Q_INVOKABLE void newNumber(int number);
+  Q_INVOKABLE void newNumber(std::size_t number);
 
   /**
    * \brief Sets the new startindex
    * \param text the index
    */
-  Q_INVOKABLE void setStart(unsigned int start);
+  Q_INVOKABLE void setStart(std::size_t start);
 
   /**
    * \brief sets the new Maximum Length
@@ -85,11 +88,30 @@ class InputTextModel : QObject {
   Q_INVOKABLE int getMode();
 
  private:
+  /**
+   * \brief the context property
+   */
   QQmlContext* _context;
-  int _start;
+
+  /**
+   * \brief the start address in memory
+   */
+  std::size_t _start;
+
+  /**
+   * \brief the maximum length of the input
+   */
   length_t _maximumLength;
+
+  /**
+   * \brief the component for accessing the memory
+   */
   MemoryAccess _memoryAccess;
-  int _mode;
+
+  /**
+   * \brief the current mode
+   */
+  EnumMode _mode;
 
  signals:
   /**
