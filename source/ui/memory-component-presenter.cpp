@@ -51,12 +51,12 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
   if (start <= 0) start = 0;
 
   // if the memory that is hold in cache is changed, invalidate cache
-  if (address <= _memoryCacheBaseAddress + _memoryCacheSize &&
-          address + length >= _memoryCacheBaseAddress + _memoryCacheSize ||
-      address <= _memoryCacheBaseAddress &&
-          address + length >= _memoryCacheBaseAddress ||
-      address >= _memoryCacheBaseAddress &&
-          address + length <= _memoryCacheBaseAddress + _memoryCacheSize) {
+  if ((address <= _memoryCacheBaseAddress + _memoryCacheSize &&
+       address + length >= _memoryCacheBaseAddress + _memoryCacheSize) ||
+      (address <= _memoryCacheBaseAddress &&
+       address + length >= _memoryCacheBaseAddress) ||
+      (address >= _memoryCacheBaseAddress &&
+       address + length <= _memoryCacheBaseAddress + _memoryCacheSize)) {
     _memoryCacheValid = false;
   }
 
