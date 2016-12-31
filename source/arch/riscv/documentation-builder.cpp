@@ -30,7 +30,7 @@ Translateable DocumentationBuilder::build() {
   assert::that(_hasKey(Key::INSTRUCTION));
   assert::that(_hasKey(Key::SHORT_SYNTAX));
   return Translateable(
-      "<b>%1</b>: <code>%2</code><p style=\"margin-left:5%\">%3</p>%4<br>%5",
+      "<b>%1</b>: <code>%2</code><p style=\"margin-left:5%\">%3</p><br>%4<br>%5",
       _components[Key::INSTRUCTION], _components[Key::SHORT_SYNTAX],
        _optional(Key::OPERAND_DESCRIPTION), _optional(Key::SHORT_DESCRIPTION),
        _optional(Key::DETAIL_DESCRIPTION));
@@ -74,7 +74,7 @@ DocumentationBuilder &DocumentationBuilder::operandDescription(
 
 DocumentationBuilder &DocumentationBuilder::shortDescription(
     const std::string &s) {
-    _add(Key::SHORT_DESCRIPTION, std::make_shared<Translateable>(s, Translateable::NO_TR_POSSIBLE{}));
+    _add(Key::SHORT_DESCRIPTION, std::make_shared<Translateable>("<span style=\"background-color: #cccccc\"><b>"+s+"</b></span>", Translateable::NO_TR_POSSIBLE{}));
   return *this;
 }
 

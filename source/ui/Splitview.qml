@@ -65,7 +65,7 @@ SplitView{
         faktor: 1
         quotient: 2
         usual1: "memory"
-        usual2: "memory"
+        usual2: "help"
     }
 
 

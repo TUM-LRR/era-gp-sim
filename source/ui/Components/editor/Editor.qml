@@ -60,6 +60,16 @@ ScrollView {
                 yScale: zoom;
             }
 
+            HelpToolTip {
+                id: _toolTip
+                maxWidth: scrollView.viewport.width/2
+                maxHeight: scrollView.viewport.height/2
+                relativeX: Math.min(scrollView.viewport.width - realWidth - x + container.contentX, 0)
+                relativeY: Math.min(scrollView.viewport.height - realHeight - y + container.contentY
+                    , textArea.cursorRectangle.height)
+                z: parent.z + 1
+            }
+
             //text field component
             TextEdit {
                 id: textArea
@@ -91,6 +101,8 @@ ScrollView {
                         cursorLine = newCursorLine;
                         editor.cursorLineChanged(newCursorLine);
                     }
+                    // do updates that rely on the new cursor line
+                    updateHelpTooltip();
                 }
 
                 //workaround to get tab working correctly
@@ -117,7 +129,25 @@ ScrollView {
                     }
                 }
 
+                /* Tooltips: A small '?' Symbol is placed under the cursor, if there is help available.
+                * By hovering over it, the help text can be overlayed.
+                */
+                function updateHelpTooltip() {
+                    var help = guiProject.getCommandHelp(cursorLine);
+                    if (help  === "") {
+                        _toolTip.hideIcon();
+                        return;
+                    }
+                    _toolTip.x = cursorRectangle.x + x;
+                    //_toolTip.relativeX = cursorRectangle.x;
+                    _toolTip.y = cursorRectangle.y + cursorRectangle.height-1
+                    _toolTip.width = cursorRectangle.height;
+                    _toolTip.height = cursorRectangle.height;
+                    _toolTip.helpText = help;
+                    _toolTip.showIcon();
+                }
 
+                //(re)start the parse timer, if an edit is made
                 onTextChanged: {
                     //(re)start the parse timer, if an edit is made
                     if (shouldUpdateText) { // Prevent restart if change was made for macro expansion.
@@ -143,6 +173,14 @@ ScrollView {
                     }
                     onForceCursorUpdate: {
                         editor.cursorLineChanged(textArea.cursorLine);
+                    }
+                }
+
+                Connections {
+                    target: guiProject
+                    // Send when text changes
+                    onCommandListUpdated: {
+                        textArea.updateHelpTooltip();
                     }
                 }
 
