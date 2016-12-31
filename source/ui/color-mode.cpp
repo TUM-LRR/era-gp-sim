@@ -25,7 +25,7 @@
 #include "ui/output-component.hpp"
 #include "ui/pixel-display-options.hpp"
 
-namespace colorMode {
+namespace colormode {
 size_t ColorMode::loadPointer(Optional<OutputComponent *> memoryAccess,
                               size_t address,
                               bool indirect,

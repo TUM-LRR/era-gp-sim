@@ -85,13 +85,15 @@ Item {
                 spacing: 8
 
                 function integerFromInputString(input) {
-                    var base = 10;
+                    var base;
                     if (input.indexOf("0x") == 0) {
                         base = 16;
                         input = input.slice(2);
                     } else if (input.indexOf("0b") == 0) {
                         input = input.slice(2);
                         base = 2;
+                    } else {
+                      base = 10;
                     }
                     return parseInt(input, base);
                 }

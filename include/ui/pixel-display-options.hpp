@@ -28,7 +28,7 @@ class OutputComponent;
 class QImage;
 class MemoryValue;
 
-namespace colorMode {
+namespace colormode {
 struct ColorMode;
 struct Options {
   using size_t = std::size_t;

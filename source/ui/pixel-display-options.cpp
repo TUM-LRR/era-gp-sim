@@ -22,7 +22,7 @@
 #include "ui/color-mode.hpp"
 #include "ui/pixel-display-options.hpp"
 
-namespace colorMode {
+namespace colormode {
 
 ColorMode Options::getColorMode() const {
   switch (colorMode) {

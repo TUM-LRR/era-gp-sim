@@ -258,7 +258,7 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   /// shared pointer to the image
   std::shared_ptr<QImage> _image;
   /// struct storing the options used to draw the image
-  colorMode::Options _options;
+  colormode::Options _options;
   /// pointer to the OutputComponent used to get the memoryAccess
   Optional<OutputComponent *> _outputComponentPointer;
 };

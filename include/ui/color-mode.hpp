@@ -29,7 +29,7 @@ class OutputComponent;
 class QImage;
 class MemoryValue;
 
-namespace colorMode {
+namespace colormode {
 class Options;
 struct ColorMode {
   using size_t = std::size_t;
@@ -90,7 +90,7 @@ struct ColorMode {
    * \param indirect ponter is at address : pointer is address
    * \param cellSize size of a cell in memory
    * \param pointerSize size of a pointer in Bits
-   * \returns the pointer
+   * \return the pointer
    */
   static size_t loadPointer(Optional<OutputComponent *> memoryAccess,
                             size_t address,
@@ -103,7 +103,7 @@ struct ColorMode {
    * \param address address of the value
    * \param length length of the value in byte
    * \param defaultLength length of the output if there is no memoryAccess
-   * \returns the memoryValue from memory at address
+   * \return the memoryValue from memory at address
    */
   static MemoryValue getMemoryValueAt(Optional<OutputComponent *> memoryAccess,
                                       size_t address,

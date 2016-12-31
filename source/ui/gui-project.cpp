@@ -18,8 +18,6 @@
 */
 
 #include "ui/gui-project.hpp"
-// #include "ui/pixel-display-provider.hpp"
-
 
 #include <QUrl>
 #include <cstdio>
