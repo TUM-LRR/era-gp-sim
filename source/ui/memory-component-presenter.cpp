@@ -51,12 +51,19 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
   if (start <= 0) start = 0;
 
   // if the memory that is hold in cache is changed, invalidate cache
-  if ((address <= _memoryCacheBaseAddress + _memoryCacheSize &&
-       address + length >= _memoryCacheBaseAddress + _memoryCacheSize) ||
-      (address <= _memoryCacheBaseAddress &&
-       address + length >= _memoryCacheBaseAddress) ||
+  // new value intersects with the beginning of the cached region
+  bool overlap_beginning =
+      (address <= _memoryCacheBaseAddress + _memoryCacheSize &&
+       address + length >= _memoryCacheBaseAddress + _memoryCacheSize);
+  // new value intersects with the ending of the cached region
+  bool overlap_ending = (address <= _memoryCacheBaseAddress &&
+                         address + length >= _memoryCacheBaseAddress);
+  // new value is completly inside cached region
+  bool overlap_middle =
       (address >= _memoryCacheBaseAddress &&
-       address + length <= _memoryCacheBaseAddress + _memoryCacheSize)) {
+       address + length <= _memoryCacheBaseAddress + _memoryCacheSize);
+
+  if (overlap_beginning || overlap_middle || overlap_ending) {
     _memoryCacheValid = false;
   }
 
