@@ -29,7 +29,7 @@ class InputTextModel : public QObject {
   Q_OBJECT
 
  public:
-  using size_t = size_t;
+  using size_t = std::size_t;
 
   enum Mode { ARRAY_BASED, PIPELIKE };
 
