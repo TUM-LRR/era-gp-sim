@@ -144,27 +144,33 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   int memory_address = index.row();//* (number_of_bits / 8);
   int memory_length = number_of_bits / 8;
 
-  MemoryValue memory_cell = getMemoryValueCached(memory_address, memory_length);
 
+  if (memory_address + memory_length <= _memorySize) {
+    MemoryValue memory_cell =
+        getMemoryValueCached(memory_address, memory_length);
 
-  std::string stringValue;
-  if (role_string.startsWith("bin")) {
-    stringValue = StringConversions::toBinString(memory_cell);
+    std::string memoryStringValue;
+    if (role_string.startsWith("bin")) {
+      memoryStringValue = StringConversions::toBinString(memory_cell);
+    }
+    // not yet implemented by conversions
+    // else if (role_string.startsWith("oct"))
+    //  stringvalue = StringConversions::toOctString(memory_cell);
+    else if (role_string.startsWith("hex")) {
+      memoryStringValue = StringConversions::toHexString(memory_cell);
+    } else if (role_string.startsWith("decs")) {
+      memoryStringValue = StringConversions::toSignedDecString(memory_cell);
+    } else if (role_string.startsWith("dec")) {
+      memoryStringValue = StringConversions::toUnsignedDecString(memory_cell);
+    } else {
+      memoryStringValue = "unknown format";
+    }
+
+    return QString::fromStdString(memoryStringValue);
   }
-  // not yet implemented by conversions
-  // else if (role_string.startsWith("oct"))
-  //  stringvalue = StringConversions::toOctString(memory_cell);
-  else if (role_string.startsWith("hex")) {
-    stringValue = StringConversions::toHexString(memory_cell);
-  } else if (role_string.startsWith("decs")) {
-    stringValue = StringConversions::toSignedDecString(memory_cell);
-  } else if (role_string.startsWith("dec")) {
-    stringValue = StringConversions::toUnsignedDecString(memory_cell);
-  } else {
-    stringValue = "unknown format";
-  }
 
-  return QString::fromStdString(stringValue);
+  // error
+  return QString("");
 }
 
 MemoryValue MemoryComponentPresenter::getMemoryValueCached(
@@ -207,9 +213,10 @@ MemoryValue MemoryComponentPresenter::getMemoryValueCached(
     // set cache status to valid
     _memoryCacheValid = true;
 
-    return _memoryCache.subSet(
-        (memory_address - _memoryCacheBaseAddress) * 8,
-        (memory_address - _memoryCacheBaseAddress + memory_length) * 8);
+    int subset_start = (memory_address - _memoryCacheBaseAddress) * 8;
+    int subset_end =
+        (memory_address - _memoryCacheBaseAddress + memory_length) * 8;
+    return _memoryCache.subSet(subset_start, subset_end);
   }
 }
 
