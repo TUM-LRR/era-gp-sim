@@ -66,7 +66,7 @@ ScrollView {
                 textMargin: 2
                 property real unscaledWidth: Math.max(scrollView.viewport.width - sidebar.width, contentWidth)
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
-                property int line: 1
+                property int line: 0
                 property var cursorLine: 1
 
                 width: (textArea.unscaledWidth)*scale.zoom;
