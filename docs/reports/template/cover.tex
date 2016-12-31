@@ -1,5 +1,6 @@
 % ERA-Großpraktikum Titelseite
 
+\newcommand{\cover}[1]{
 \begin{titlepage}
 
 \centering
@@ -7,7 +8,7 @@
 \vspace*{3.5cm}
 {\Huge\scshape Assembler-Simulator}\\
 \vspace{0.8cm}
-{\LARGE\scshape Spezifikation 1.0}
+{\LARGE\scshape #1}
 
 \vspace{1cm}
 
@@ -17,9 +18,7 @@
 {
 
 \begin{tabular}{ll}
-Yuriy Arabskyy & \email{yuriy}{arabskyy} \\
 Peter Goldsborough & \email{peter}{goldsborough} \\
-Tobias Holl & \email{tobias}{holl} \\
 Erik Pohle & \email{erik}{pohle}\\
 Lukas Karnowski & \email{lukas}{karnowski} \\
 Dominik Kreutzer & \email{dominik}{kreutzer} \\
@@ -45,8 +44,4 @@ Andreas Zimmerer & \email{andreas}{zimmerer}
 $\varheart$
 
 \end{titlepage}
-
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: "document"
-%%% End:
+}
