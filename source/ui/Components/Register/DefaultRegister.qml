@@ -18,10 +18,14 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
-
+import QtGraphicalEffects 1.0
 
 TextField {
     id: registerTextField
+
+    property bool singleStep: false
+    property bool isHighlighted: false
+    property color backgroundColor: isHighlighted ? "lightblue" : "white"
 
     font.pointSize: 13
 
@@ -64,7 +68,21 @@ TextField {
             // Check if the current item's index is affected by the data change.
             if (topLeft <= styleData.index && styleData.index <= bottomRight) {
                 text = Qt.binding(registerContent);
+                //starts the highlighting
+                if(singleStep){
+                    isHighlighted = true;
+                }
             }
+        }
+    }
+
+    //The Registers must know, wether they should be highlighted.
+    //They only should change color if execution only works with one line
+    Connections {
+        target: guiProject
+        onRunClicked: {
+            registerTextField.singleStep = isSingleStep;
+            isHighlighted = false;
         }
     }
 
@@ -95,4 +113,20 @@ TextField {
         return registerContentString;
     }
 
+
+    style: TextFieldStyle{
+        background: Rectangle {
+            id: rect
+            x: registerTextField.x
+            y: registerTextField.y
+            width: registerTextField.width
+            height: registerTextField.height
+            color: registerTextField.backgroundColor
+            radius: 2
+            border.color: "lightgray"
+            border.width: 1
+        }
+    }
+
 }
+

@@ -139,7 +139,9 @@ void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
     }
   }
   if (!foundMatchingLine) {
-    // no command found on this line
+    // no command found on this line, set gui indicator to specified line
+    // anyways (for resets)
+    _setCurrentLine(line);
     return;
   }
   // a command on this line was found, set the program counter and the line in
@@ -172,6 +174,16 @@ void ParsingAndExecutionUnit::parse(std::string code) {
       _memoryAccess.putMemoryValueAt(command.address, assemble);
       //      _memoryAccess.makeMemoryProtected(command.address,
       //                                        assemble.getSize() / 8);
+    }
+    // update the execution marker if a node is found
+    auto nextNode = _findNextNode();
+    if (nextNode < _finalRepresentation.commandList.size()) {
+      auto nextCommand = _finalRepresentation.commandList[nextNode];
+      _setCurrentLine(nextCommand.position.lineStart);
+    } else {
+      // account for cases where the pc is not valid while parsing, but there
+      // are valid instructions. Handle this situation like a reset.
+      setExecutionPoint(0);
     }
   }
 }
@@ -224,10 +236,6 @@ size_t ParsingAndExecutionUnit::_findNextNode() {
       _memoryAccess.getRegisterValue(programCounterName).get();
   size_t nextInstructionAddress =
       conversions::convert<size_t>(programCounterValue);
-  if (nextInstructionAddress == 0) {
-    // if the program counter is 0, execute the first instruction
-    return 0;
-  }
   // find the instruction address from the program counter value
   auto iterator = _addressCommandMap.find(nextInstructionAddress);
   if (iterator == _addressCommandMap.end()) {

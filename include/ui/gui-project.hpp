@@ -370,8 +370,17 @@ class GuiProject : QObject {
    */
   void executionStopped();
 
-  /** Signal for ui synchronization during execution. */
+  /**
+   * This signal is emmited when execution starts
+   *
+   * \param singleStep wether the button was runLine
+   */
+  void runClicked(bool isSingleStep);
+
+  /**
+   * Signal for ui synchronization during execution.
+   */
   void guiSync();
 };
 
-#endif// ERAGPSIM_UI_GUIPROJECT_HPP
+#endif  // ERAGPSIM_UI_GUIPROJECT_HPP

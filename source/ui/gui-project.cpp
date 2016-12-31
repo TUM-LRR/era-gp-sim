@@ -141,16 +141,19 @@ void GuiProject::parse() {
 }
 
 void GuiProject::run() {
+  emit runClicked(false);
   _editorComponent.parse();
   _projectModule.getCommandInterface().execute();
 }
 
 void GuiProject::runLine() {
+  emit runClicked(true);
   _editorComponent.parse();
   _projectModule.getCommandInterface().executeNextLine();
 }
 
 void GuiProject::runBreakpoint() {
+  emit runClicked(false);
   _editorComponent.parse();
   _projectModule.getCommandInterface().executeToBreakpoint();
 }
@@ -160,8 +163,9 @@ void GuiProject::stop() {
 }
 
 void GuiProject::reset() {
+  emit runClicked(false);
   _projectModule.reset();
-  _projectModule.getCommandInterface().setExecutionPoint(1);
+  _projectModule.getCommandInterface().setExecutionPoint(0);
   _editorComponent.parse(true);
 }
 

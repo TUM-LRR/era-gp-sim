@@ -123,15 +123,17 @@ void EditorComponent::deleteBreakpoint(int line) {
 void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
   emit deleteErrors();
   for (const CompileError &error : errorList) {
+    QString issueType;
     QColor color;
     switch (error.severity()) {
-      case CompileErrorSeverity::ERROR: color = QColor(Qt::red); break;
-      case CompileErrorSeverity::WARNING: color = QColor(Qt::yellow); break;
-      case CompileErrorSeverity::INFORMATION: color = QColor(Qt::blue); break;
+      case CompileErrorSeverity::ERROR: issueType = "Error"; break;
+      case CompileErrorSeverity::WARNING: issueType = "Warning"; break;
+      case CompileErrorSeverity::INFORMATION: issueType = "Information"; break;
       default: assert::that(false);
     }
-    emit addError(
-        translate(error.message()), error.position().first.line(), color);
+    emit addIssue(translate(error.message()),
+                  error.position().first.line(),
+                  issueType);
   }
 }
 
