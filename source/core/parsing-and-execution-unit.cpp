@@ -47,8 +47,8 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _setFinalRepresentation([](const FinalRepresentation &x) {})
 , _throwError(([](const std::string &x, const std::vector<std::string> &y) {}))
 , _setCurrentLine([](size_t x) {})
-, _executionStopped([]() {})
-, _syncCallback([]() { assert::that(false); }) {
+, _executionStopped([] {})
+, _syncCallback([] { assert::that(false); }) {
   // find the RegisterInformation object of the program counter
   for (UnitInformation unitInfo : architecture.getUnits()) {
     if (unitInfo.hasSpecialRegister(

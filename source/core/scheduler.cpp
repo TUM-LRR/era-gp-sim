@@ -51,13 +51,10 @@ void Scheduler::_run() {
 
   while (!_interrupt) {
     std::unique_lock<std::mutex> lock(_mutex);
-    while (_taskQueue.empty()) {
-      // wait while there is nothing in the queue, guards for spurious wakeups.
-      _conditionVariable.wait(lock);
-    }
-    // make sure the mutex is locked and pop an element from the queue (which is
-    // guaranteed to not be empty)
-    if (!lock) lock.lock();
+    // wait while there is nothing in the queue, guards for spurious wakeups.
+    _conditionVariable.wait(lock, [this] { return !_taskQueue.empty(); });
+    // The mutex is reacquired after wait() ends. Now pop an element from the
+    // queue (which is guaranteed to not be empty)
     Task task = _taskQueue.front();
     _taskQueue.pop();
     lock.unlock();
@@ -67,5 +64,5 @@ void Scheduler::_run() {
 }
 
 void Scheduler::_shutdown() {
-  this->push([this]() { _interrupt = true; });
+  this->push([this] { _interrupt = true; });
 }

@@ -85,10 +85,10 @@ GuiProject::GuiProject(
         this->finalRepresentationChanged(finalRepresentation);
       });
   _projectModule.getCommandInterface().setExecutionStoppedCallback(
-      [this]() { emit this->executionStopped(); });
+      [this] { emit this->executionStopped(); });
 
   _projectModule.getCommandInterface().setSyncCallback(
-      [this]() { emit this->guiSync(); });
+      [this] { emit this->guiSync(); });
 
   // connect all receiving components to the callback signals
   QObject::connect(this,

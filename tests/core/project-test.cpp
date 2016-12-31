@@ -91,7 +91,7 @@ class ProjectTestFixture : public ::testing::Test {
     architectureValidator.validate();
     CommandInterface commandInterface = projectModule.getCommandInterface();
     commandInterface.setSyncCallback(
-        [this]() { this->projectModule.guiReady(); });
+        [this] { this->projectModule.guiReady(); });
   }
 
   std::size_t findNextNode(

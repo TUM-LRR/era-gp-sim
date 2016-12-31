@@ -282,14 +282,13 @@ class SchedulerQueueFixture : public ::testing::Test {
   std::atomic<std::size_t> verifyCounter;
   std::shared_ptr<Scheduler> scheduler = std::make_shared<Scheduler>();
   std::vector<std::thread> threads;
-  std::function<void()> threadFunction = [this]() {
+  std::function<void()> threadFunction = [this] {
     std::mt19937 randomGenerator(std::random_device{}());
     std::uniform_int_distribution<std::uint16_t> distribution(1, 100);
     std::size_t threadRandomSum = 0;
     for (std::size_t i = 0; i < SchedulerQueueFixture::testLength; i++) {
       auto random = distribution(randomGenerator);
-      scheduler->push(
-          [random, this]() { this->testCounter.fetch_add(random); });
+      scheduler->push([random, this] { this->testCounter.fetch_add(random); });
       threadRandomSum += random;
     }
     this->verifyCounter.fetch_add(threadRandomSum);

@@ -51,16 +51,13 @@ bool ConditionTimer::getFlag() {
 
 void ConditionTimer::wait() {
   std::unique_lock<std::mutex> lock(_mutex);
-  while (!_flag) {
-    _conditionVariable.wait(lock);
-  }
+  // wait while flag is not set.
+  _conditionVariable.wait(lock, [this] { return _flag; });
 }
 
 void ConditionTimer::waitAndReset() {
   std::unique_lock<std::mutex> lock(_mutex);
-  while (!_flag) {
-    _conditionVariable.wait(lock);
-  }
-  if (!lock) lock.lock();
+  // wait while flag is not set.
+  _conditionVariable.wait(lock, [this] { return _flag; });
   _flag = false;
 }
