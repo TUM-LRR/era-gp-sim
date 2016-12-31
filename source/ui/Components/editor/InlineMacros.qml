@@ -42,6 +42,16 @@ Item {
         }
     }
 
+    // Iterates over the current macros-array and collapses every macro.
+    function collapseAllMacros() {
+        for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
+            collapseMacroSubeditor(macroIndex);
+        }
+        if (macros.length > 0) {
+            textArea.lineNumberStructureChanged();
+        }
+    }
+
 
     // Iterates over the current macros-arrays and removes the display objects of each macro.
     function removeCurrentMacros() {
@@ -121,7 +131,7 @@ Item {
     function macroUpdatesOnTextChanged() {
         // Only update when text was changed by user but not by the program (e.g. when expanding macro).
         if (shouldUpdateText) {
-            // When lines where inserted or removed above any macro, its startLine has to be offset
+            /*// When lines where inserted or removed above any macro, its startLine has to be offset
             // in order to guarantee its blank lines are removed correctly when collapsing.
             // Calculate the number of lines inserted/deleted.
             var lineCountDifference = textArea.lineCount - oldLineCount;
@@ -133,7 +143,7 @@ Item {
                     var newStartLine = Number(macros[macroIndex]["startLine"]) + lineCountDifference;
                     macros[macroIndex]["startLine"] = newStartLine;
                 }
-            }
+            }*/
             // Remove macros when new text was entered.
             removeCurrentMacros();
         }
@@ -177,10 +187,11 @@ Item {
         var linePosition = getPositionForMacroExpansion(macroIndex);
 
         // Insert empty lines to make space for the macro expansion.
-        var alteredText = [textArea.text.slice(0, linePosition), new Array(Number(macros[macroIndex]["lineCount"])+1).join("\n"), textArea.text.slice(linePosition)].join('');
+
+        var insertText = new Array(Number(macros[macroIndex]["lineCount"])+1).join("\n");
         // Prevent loop.
         shouldUpdateText = false;
-        textArea.text = alteredText;
+        textArea.insert(linePosition, insertText);
         shouldUpdateText = true;
 
         // When inserting the blank lines somewhere ahead of the cursor, the cursor position has to be moved
@@ -222,10 +233,9 @@ Item {
         var linePosition = getPositionForMacroExpansion(macroIndex);
 
         // Remove the empty lines.
-        var alteredText = TextUtilities.remove(textArea.text, linePosition, linePosition + (Number(macros[macroIndex]["lineCount"])*1));
         // Prevent loop.
         shouldUpdateText = false;
-        textArea.text = alteredText;
+        textArea.remove(linePosition, linePosition+(Number(macros[macroIndex]["lineCount"])*1));
         shouldUpdateText = true;
 
         // When inserting the blank lines somewhere ahead of the cursor, the cursor position has to be moved

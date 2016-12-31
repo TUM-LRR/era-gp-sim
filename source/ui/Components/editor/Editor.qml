@@ -98,6 +98,15 @@ ScrollView {
 
                 //workaround to get tab working correctly
                 Keys.onPressed: {
+                    // If the user presses a key which potentially changes textArea's text, collapse all
+                    // macros to prevent the text change interfering with macro expansions.
+                    if (event.key < 0x01000010 || event.key > 0x01000060) {
+                        console.log("Altering key event");
+                        if (inlineMacros !== undefined) {
+                            inlineMacros.collapseAllMacros();
+                        }
+                    }
+
                     if(event.key === Qt.Key_Tab) {
                         textArea.insert(cursorPosition, "\t");
                         event.accepted = true;
@@ -106,14 +115,6 @@ ScrollView {
                     else if (event.key === Qt.Key_Left || event.key === Qt.Key_Up || event.key === Qt.Key_Right || event.key === Qt.Key_Down) {
                         textArea.setTriggeringKeyEvent(event.key);
                         event.accepted = false;
-                    } else if (event.key === Qt.Key_Backspace) {
-                        // Prevents deleting a blank line as it would mess up the proper deletion of any
-                        // macro expansion.
-                        if (inlineMacros !== undefined && inlineMacros.isPositionInsideMacroBlankLine(textArea.text, textArea.cursorPosition-1)) {
-                            event.accepted = true;
-                        } else {
-                            event.accepted = false;
-                        }
                     } else {
                         textArea.setTriggeringKeyEvent(undefined);
                         event.accepted = false;
