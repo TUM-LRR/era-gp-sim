@@ -13,6 +13,8 @@ set(UI_SOURCES
     gui-project.cpp
     snapshot-component.cpp
     output-component.cpp
+    color-mode.cpp
+    pixel-display-options.cpp
     pixel-display-painted-item.cpp
     input-button-model.cpp
     input-text-model.cpp
@@ -30,6 +32,8 @@ set(UI_HEADERS
     ../../include/ui/ui.hpp
     ../../include/ui/snapshot-component.hpp
     ../../include/ui/output-component.hpp
+    ../../include/ui/color-mode.hpp
+    ../../include/ui/pixel-display-options.hpp
     ../../include/ui/pixel-display-painted-item.hpp
     ../../include/ui/input-button-model.hpp
     ../../include/ui/input-click-model.hpp

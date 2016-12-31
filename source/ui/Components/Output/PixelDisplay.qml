@@ -144,7 +144,6 @@ Item {
                     function processInput() {
                         var inputValue = controlsColumn.integerFromInputString(String(widthTextField.text))
                         if (inputValue && inputValue > 0) {
-                            console.log("width changed")
                             pixeldisplaypainteditemid.width = inputValue
                         }
                     }
