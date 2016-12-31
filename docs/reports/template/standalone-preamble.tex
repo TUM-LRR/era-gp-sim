@@ -2,6 +2,9 @@
 
 % Elevate the levels by one, since these documents are
 % standalone but chapters in the combined document.
+\let\originalsection\section
+\let\originalsubsection\subsection
+
 \renewcommand{\section}{\chapter}
-\renewcommand{\subsection}{\section}
-\renewcommand{\subsubsection}{\subsection}
+\renewcommand{\subsection}{\originalsection}
+\renewcommand{\subsubsection}{\originalsubsection}
