@@ -31,6 +31,10 @@ class InputTextModel : public QObject {
  public:
   using size_t = std::size_t;
 
+
+  /**
+   * \brief The Modes which are possible
+   */
   enum Mode { ARRAY_BASED, PIPELIKE };
 
   InputTextModel(QQmlContext* context, MemoryAccess memoryAccess);
@@ -121,4 +125,4 @@ class InputTextModel : public QObject {
   void modeChanged();
 };
 
-#endif  // INPUTTEXTMODEL_HPP
+#endif// INPUTTEXTMODEL_HPP
