@@ -193,11 +193,12 @@ Item {
                             ListElement { text: "8 Bit"; bits: 8 }
                             ListElement { text: "16 Bit"; bits: 16 }
                             ListElement { text: "32 Bit"; bits: 32 }
+                            ListElement { text: "64 Bit"; bits: 64 }
                         }
                         ListModel {
                             id: modelNumeric
                             ListElement { text: "Binary"; role: "bin" }
-                            ListElement { text: "Octal"; role: "oct" }
+                            // ListElement { text: "Octal"; role: "oct" } // not supported
                             ListElement { text: "Hexadecimal"; role: "hex" }
                             ListElement { text: "Decimal"; role: "dec" }
                             ListElement { text: "Decimal (signed)"; role: "decs" }
