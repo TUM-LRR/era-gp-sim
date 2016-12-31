@@ -28,7 +28,7 @@ MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access,
                                                    MemoryManager manager,
                                                    QQmlContext *projectContext,
                                                    QObject *parent)
-: QAbstractTableModel(parent)
+: QAbstractListModel(parent)
 , _memoryAccess(access)
 , _memoryManager(manager)
 , _memorySize(access.getMemorySize().get()) {
@@ -68,7 +68,7 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
   }
 
   // update calculated region
-  emit dataChanged(this->index(start, 0), this->index(end, 0));
+  emit dataChanged(this->index(start), this->index(end));
 }
 
 
@@ -113,13 +113,6 @@ void MemoryComponentPresenter::setContextInformation(int addressStart,
 int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
   // Q_UNUSED(parent)
   return _memorySize;
-}
-
-
-int MemoryComponentPresenter::columnCount(const QModelIndex &parent) const {
-  Q_UNUSED(parent)
-  // 8, 16, 32 bit
-  return 3;
 }
 
 

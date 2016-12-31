@@ -30,7 +30,7 @@
 #include "core/memory-access.hpp"
 #include "core/memory-manager.hpp"
 
-class MemoryComponentPresenter : public QAbstractTableModel {
+class MemoryComponentPresenter : public QAbstractListModel {
   Q_OBJECT
 
  public:
@@ -96,15 +96,6 @@ class MemoryComponentPresenter : public QAbstractTableModel {
    *
    */
   int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
-
-  /**
-   * Returns the number of columns in this table
-   * Inherited from QAbstractTableModel
-   *
-   * /param parent pointer to the logical data parent
-   * /return returns the width of the table
-   */
-  int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
   /**
    * Returns the translation between roleNames in QML and the internal index
