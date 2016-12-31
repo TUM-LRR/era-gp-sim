@@ -101,7 +101,6 @@ ScrollView {
                     // If the user presses a key which potentially changes textArea's text, collapse all
                     // macros to prevent the text change interfering with macro expansions.
                     if (event.key < 0x01000010 || event.key > 0x01000060) {
-                        console.log("Altering key event");
                         if (inlineMacros !== undefined) {
                             inlineMacros.collapseAllMacros();
                         }

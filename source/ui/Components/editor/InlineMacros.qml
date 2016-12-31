@@ -168,9 +168,10 @@ Item {
     function expandMacroSubeditor(macroIndex) {
         if (macros[macroIndex]["collapsed"] === false) { return; }
 
-        // When the editor's text is altered, its cursor position is reset to 0. Therefore, the cursor position
-        // is saved to be able to restore it later.
-        var cursorPos = textArea.cursorPosition;
+        // When the editor's text is altered, its cursor position is reset to 0 and selections are removed. Therefore, selectionStart
+        // (= cursorPosition) and selectionEnd are saved to be able to restore them later.
+        var previousSelectionStart = textArea.selectionStart;
+        var previousSelectionEnd = textArea.selectionEnd;
 
         macros[macroIndex]["collapsed"] = false;
 
@@ -186,19 +187,22 @@ Item {
         // Find the line for the macro expansion.
         var linePosition = getPositionForMacroExpansion(macroIndex);
 
-        // Insert empty lines to make space for the macro expansion.
+        // When inserting the blank lines somewhere ahead of the cursor, the cursor position has to be moved
+        // in order to mantain its position relative to the surrounding text.
+        if (previousSelectionStart > linePosition) {
+            var diff = (Number(macros[macroIndex]["lineCount"]) * 1);
+            previousSelectionStart += diff;
+            previousSelectionEnd += diff;
+        }
 
+        // Insert empty lines to make space for the macro expansion.
         var insertText = new Array(Number(macros[macroIndex]["lineCount"])+1).join("\n");
         // Prevent loop.
         shouldUpdateText = false;
         textArea.insert(linePosition, insertText);
+        // Restore cursor position and selection.
+        textArea.select(previousSelectionStart, previousSelectionEnd);
         shouldUpdateText = true;
-
-        // When inserting the blank lines somewhere ahead of the cursor, the cursor position has to be moved
-        // in order to mantain its position relative to the surrounding text.
-        if (cursorPos > linePosition) {
-            cursorPos += (Number(macros[macroIndex]["lineCount"]) * 1);
-        }
 
         // Move down the subeditors and triangle buttons of following macros
         for (var i = (macroIndex+1); i < macroDisplayObjects.length; i++) {
@@ -206,17 +210,16 @@ Item {
             macroDisplayObjects[i]["triangleButton"].y += textArea.cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
         }
 
-        // Restore cursor position.
-        textArea.cursorPosition = cursorPos;
     }
 
     // Collapses the subeditor of the macro of given index by hiding subeditor component and removing blank lines.
     function collapseMacroSubeditor(macroIndex) {
         if (macros[macroIndex]["collapsed"] === true) { return; }
 
-        // When the editor's text is altered, its cursor position is reset to 0. Therefore, the cursor position
-        // is saved to be able to restore it later.
-        var cursorPos = textArea.cursorPosition;
+        // When the editor's text is altered, its cursor position is reset to 0 and selections are removed. Therefore, selectionStart
+        // (= cursorPosition) and selectionEnd are saved to be able to restore them later.
+        var previousSelectionStart = textArea.selectionStart;
+        var previousSelectionEnd = textArea.selectionEnd;
 
         macros[macroIndex]["collapsed"] = true;
 
@@ -232,26 +235,27 @@ Item {
         // Find the line of the macro expansion.
         var linePosition = getPositionForMacroExpansion(macroIndex);
 
+        // When inserting the blank lines somewhere ahead of the cursor, the cursor position has to be moved
+        // in order to mantain its position relative to the surrounding text.
+        if (previousSelectionStart > linePosition) {
+            var diff = (Number(macros[macroIndex]["lineCount"]) * 1)
+            previousSelectionStart -= diff;
+            previousSelectionEnd -= diff;
+        }
+
         // Remove the empty lines.
         // Prevent loop.
         shouldUpdateText = false;
         textArea.remove(linePosition, linePosition+(Number(macros[macroIndex]["lineCount"])*1));
+        // Restore cursor position and selection.
+        textArea.select(previousSelectionStart, previousSelectionEnd);
         shouldUpdateText = true;
-
-        // When inserting the blank lines somewhere ahead of the cursor, the cursor position has to be moved
-        // in order to mantain its position relative to the surrounding text.
-        if (cursorPos > linePosition) {
-            cursorPos -= (Number(macros[macroIndex]["lineCount"]) * 1);
-        }
 
         // Move down the subeditors and triangle buttons of following macros
         for (var i = (macroIndex+1); i < macroDisplayObjects.length; i++) {
             macroDisplayObjects[i]["subeditor"].y -= textArea.cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
             macroDisplayObjects[i]["triangleButton"].y -= textArea.cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
         }
-
-        // Restore cursor position.
-        textArea.cursorPosition = cursorPos;
     }
 
     // Returns true, if the given position is inside a blank line that was soley inserted for a macro expansion.
