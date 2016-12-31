@@ -45,7 +45,7 @@ Item {
         // 2. content of each memory cell           (dynamic)
         // 3. additional information on each cell   (fixed)
         TableViewColumn {
-            role: "address" + number_bits
+            role: "address"
             title: "Address"
             movable: false
             resizable: true
@@ -186,7 +186,7 @@ Item {
                         }
 
                         // choose the right underlaying model depending on the column it is responsible for
-                        model: (tableView.getColumn(index).role === "address" + number_bits)? modelBits : modelNumeric;
+                        model: (tableView.getColumn(index).role === "address")? modelBits : modelNumeric;
 
                         ListModel {
                             id: modelBits

@@ -80,6 +80,36 @@ class MemoryComponentPresenter : public QAbstractListModel {
                 int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
   /**
+   * helper method: returns address data for data method
+   *
+   * /param index the index where the data should be written to
+   * /param role one of several DisplayRoles for this column
+   * /return returns the QVariant that is displayed as address
+   */
+  QVariant dataAdress(const QModelIndex &index,
+                      int role = Qt::DisplayRole) const;
+
+  /**
+   * helper method: returns memory data for data method
+   *
+   * /param index the index where the data should be written to
+   * /param role one of several DisplayRoles for this column
+   * /return returns the QVariant that is displayed as memory
+   */
+  QVariant dataMemory(const QModelIndex &index,
+                      int role = Qt::DisplayRole) const;
+
+  /**
+   * helper method: returns info data for data method
+   *
+   * /param index the index where the data should be written to
+   * /param role one of several DisplayRoles for this column
+   * /return returns the QVariant that is displayed as info
+   */
+  QVariant dataInfo(const QModelIndex &index,
+                      int role = Qt::DisplayRole) const;
+
+  /**
    * Gets a MemoryValue at the given position either from the core or by using a cache.
    * /param address Address of the MemoryValue
    * /param length Size of the MemoryValue
@@ -106,22 +136,12 @@ class MemoryComponentPresenter : public QAbstractListModel {
    */
   QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
 
-  /**
-   * Returns the number of bytes to be displayed in one memory cell.
-   * The role is an indicator of how many bytes are chosen by the user.
-   *
-   * /param role the display role for this cell in the QAbstractListModel
-   * /return the number of bytes to be shown in one cell
-   */
-  int numberOfBytes(int role) const;
-
   /** Holds a MemoryAccess for accessing the memory */
   MemoryAccess _memoryAccess;
 
   /** Holds a MemoryManager that handles the registration for callback functions
    */
   MemoryManager _memoryManager;
-
 
   /** Saves the size of the memory, as calling MemoryAccess::getMemorySize() in
    * rowCount causes a deadlock. */
@@ -152,9 +172,7 @@ class MemoryComponentPresenter : public QAbstractListModel {
 
   /** enumeration of all roles of the columns */
   enum ColumnRoles {
-      AddressRole8 = Qt::UserRole,// avoid collisions with predefined roles
-      AddressRole16,
-      AddressRole32,
+      AddressRole = Qt::UserRole,// avoid collisions with predefined roles
       ValueRoleBin8,
       ValueRoleBin16,
       ValueRoleBin32,

@@ -111,7 +111,7 @@ void MemoryComponentPresenter::setContextInformation(int addressStart,
 
 
 int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
-  // Q_UNUSED(parent)
+  Q_UNUSED(parent)
   return _memorySize;
 }
 
@@ -121,6 +121,26 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   // check boundaries
   assert::that(index.isValid());
 
+  switch (role) {
+    case AddressRole: return dataAdress(index, role);
+    case InfoRole: return dataInfo(index, role);
+    default: return dataMemory(index, role);
+  }
+}
+
+
+QVariant
+MemoryComponentPresenter::dataAdress(const QModelIndex &index, int role) const {
+  // format address as hex value and return it
+  return QString("%1")
+      .arg(index.row(), 4, 16, QLatin1Char('0'))
+      .toUpper()
+      .prepend("0x");
+}
+
+
+QVariant
+MemoryComponentPresenter::dataMemory(const QModelIndex &index, int role) const {
   // get role as a string because there is more information in it
   QString role_string = MemoryComponentPresenter::roleNames().value(role);
 
@@ -128,18 +148,6 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
   if (role_string.endsWith("16")) number_of_bits = 16;
   if (role_string.endsWith("32")) number_of_bits = 32;
 
-  if (role_string.startsWith("address")) {
-    // format index as hex value and return it
-    return QString("%1")
-        .arg(index.row(), 4, 16, QLatin1Char('0'))
-        .toUpper()
-        .prepend("0x");
-  }
-
-  if (role == InfoRole) {
-    // TODO fetch value from core
-    return QString("");
-  }
 
   int memory_address = index.row();//* (number_of_bits / 8);
   int memory_length = number_of_bits / 8;
@@ -167,11 +175,19 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
     }
 
     return QString::fromStdString(memoryStringValue);
+  } else {
+    // wrong address
+    return QString("");
   }
+}
 
-  // error
+
+QVariant
+MemoryComponentPresenter::dataInfo(const QModelIndex &index, int role) const {
+  // TODO fetch value from core
   return QString("");
 }
+
 
 MemoryValue MemoryComponentPresenter::getMemoryValueCached(
     const std::size_t memory_address, const std::size_t memory_length) const {
@@ -220,12 +236,11 @@ MemoryValue MemoryComponentPresenter::getMemoryValueCached(
   }
 }
 
+
 QHash<int, QByteArray> MemoryComponentPresenter::roleNames() const {
   // connect TableColumns in View with columns in this model
   QHash<int, QByteArray> roles;
-  roles[AddressRole8] = "address8";
-  roles[AddressRole16] = "address16";
-  roles[AddressRole32] = "address32";
+  roles[AddressRole] = "address";
   roles[ValueRoleBin8] = "bin8";
   roles[ValueRoleBin16] = "bin16";
   roles[ValueRoleBin32] = "bin32";
