@@ -87,6 +87,7 @@
         <file>Components/Input/Buttons/Settings_Icon_Pressed@2x.png</file>
         <file>Components/Input/Buttons/Settings_Icon.png</file>
         <file>Components/editor/IssueMark.qml</file>
-	<file>Components/help/HelpWindow.qml</file>
+        <file>Components/help/HelpWindow.qml</file>
+        <file>Components/editor/InlineMacros.qml</file>
     </qresource>
 </RCC>
