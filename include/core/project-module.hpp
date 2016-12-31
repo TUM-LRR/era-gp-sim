@@ -43,6 +43,8 @@ class ArchitectureFormula;
 class ProjectModule {
  public:
   using SharedCondition = MemoryAccess::SharedCondition;
+  template <typename... T>
+  using Callback = ParsingAndExecutionUnit::Callback<T...>;
 
   ProjectModule(const ArchitectureFormula& architectureFormula,
                 std::size_t memorySize,
@@ -90,11 +92,20 @@ class ProjectModule {
    */
   void stopExecution();
 
+  /**
+   * Notify the core that the ui has displayed the current state of the
+   * execution.
+   */
+  void guiReady();
 
  private:
   /** This object encapsulates a condition variable with a stop flag and a
    * mutex. It is used to stop the execution on a user request.*/
   SharedCondition _stopCondition;
+
+  /** This object is used to synchronize the core with the ui, because the ui is
+   * often slower. */
+  SharedCondition _syncCondition;
 
   /** Scheduler for the project servant (active-object). */
   std::shared_ptr<Scheduler> _schedulerProject;

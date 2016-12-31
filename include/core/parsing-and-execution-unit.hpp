@@ -55,8 +55,9 @@ class ParsingAndExecutionUnit : public Servant {
   ParsingAndExecutionUnit(std::weak_ptr<Scheduler> &&scheduler,
                           MemoryAccess memoryAccess,
                           Architecture architecture,
+                          std::string parserName,
                           SharedCondition stopCondition,
-                          std::string parserName);
+                          SharedCondition syncCondition);
 
   /**
    * Execute the whole assembler program
@@ -165,6 +166,13 @@ class ParsingAndExecutionUnit : public Servant {
    */
   void setExecutionStoppedCallback(Callback<> callback);
 
+  /**
+   * Set the callback which is used to synchronize the ui.
+   * Has to be set if execute() is called.
+   *
+   * \param callback The sync callback.
+   */
+  void setSyncCallback(const Callback<> &callback);
 
  private:
   /**
@@ -194,6 +202,10 @@ class ParsingAndExecutionUnit : public Servant {
 
   /** Shared pointer to a ConditionTimer to stop the execution. */
   SharedCondition _stopCondition;
+
+  /** Shared pointer to a ConditionTimer used to synchronize the ui during
+   * execution. */
+  SharedCondition _syncCondition;
 
   /** A FinalRepresentation created by the parser. */
   FinalRepresentation _finalRepresentation;
@@ -231,6 +243,9 @@ class ParsingAndExecutionUnit : public Servant {
 
   /** Callback to tell the gui that the execution stopped. */
   Callback<> _executionStopped;
+
+  /** This callback is used to synchronize the ui during execution. */
+  Callback<> _syncCallback;
 };
 
 #endif /* ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP */

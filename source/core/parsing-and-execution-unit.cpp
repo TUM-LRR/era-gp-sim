@@ -30,11 +30,13 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
     std::weak_ptr<Scheduler> &&scheduler,
     MemoryAccess memoryAccess,
     Architecture architecture,
+    std::string parserName,
     SharedCondition stopCondition,
-    std::string parserName)
+    SharedCondition syncCondition)
 : Servant(std::move(scheduler))
 , _parser(ParserFactory::createParser(architecture, memoryAccess, parserName))
 , _stopCondition(stopCondition)
+, _syncCondition(syncCondition)
 , _finalRepresentation()
 , _addressCommandMap()
 , _lineCommandCache()
@@ -45,7 +47,8 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _setFinalRepresentation([](const FinalRepresentation &x) {})
 , _throwError(([](const std::string &x, const std::vector<std::string> &y) {}))
 , _setCurrentLine([](size_t x) {})
-, _executionStopped([]() {}) {
+, _executionStopped([] {})
+, _syncCallback([] { assert::that(false); }) {
   // find the RegisterInformation object of the program counter
   for (UnitInformation unitInfo : architecture.getUnits()) {
     if (unitInfo.hasSpecialRegister(
@@ -68,6 +71,8 @@ void ParsingAndExecutionUnit::execute() {
     if (nextNode >= _finalRepresentation.commandList.size()) break;
     if (!_executeNode(nextNode)) break;
     nextNode = _updateLineNumber(nextNode);
+    _syncCallback();
+    _syncCondition->waitAndReset();
   }
   _executionStopped();
 }
@@ -104,6 +109,8 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
         // we reached a breakpoint
         break;
       }
+      _syncCallback();
+      _syncCondition->waitAndReset();
     }
   }
   _executionStopped();
@@ -216,6 +223,10 @@ void ParsingAndExecutionUnit::setSetCurrentLineCallback(
 
 void ParsingAndExecutionUnit::setExecutionStoppedCallback(Callback<> callback) {
   _executionStopped = callback;
+}
+
+void ParsingAndExecutionUnit::setSyncCallback(const Callback<> &callback) {
+  _syncCallback = callback;
 }
 
 size_t ParsingAndExecutionUnit::_findNextNode() {
