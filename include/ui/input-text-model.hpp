@@ -40,87 +40,86 @@ class InputTextModel : public QObject {
   InputTextModel(QQmlContext* context, MemoryAccess memoryAccess);
 
   /**
-   * \brief Sets the new text which should be stored in the memory
+   * Sets the new text which should be stored in the memory.
+   *
    * \param text the new Text
    */
   Q_INVOKABLE void newText(QString text);
 
   /**
-   * \brief Sets a number in the memory, used for left/up/etc.
+   * Sets a number in the memory, used for left/up/etc.
+   *
    * \param number the number
    */
   Q_INVOKABLE void newNumber(size_t number);
 
   /**
-   * \brief Sets the new startindex
+   * Sets the new startindex.
+   *
    * \param text the index
    */
   Q_INVOKABLE void setStart(size_t start);
 
   /**
-   * \brief sets the new Maximum Length
+   * Sets the new Maximum Length.
+   *
    * \param text the new length
    */
   Q_INVOKABLE void setMaximumLength(size_t maximumLength);
 
   /**
-   * \brief Gets the lenght
+   * Gets the lenght.
+   *
    * \return the length
    */
   Q_INVOKABLE size_t getMaximumLength();
 
   /**
-   * \brief Gets the start index
+   * Gets the start index.
+   *
    * \return the length
    */
   Q_INVOKABLE QString getStart();
 
   /**
-   * \brief sets the new Mode
+   * Sets the new Mode.
+   *
    * \param text the new mode
    */
   Q_INVOKABLE void setMode(int mode);
 
   /**
-   * \brief Gets the mode
+   * Gets the current mode.
+   *
    * \return the length
    */
   Q_INVOKABLE int getMode();
 
  private:
-  /**
-   * \brief the context property
-   */
+  /** The context property. */
   QQmlContext* _context;
 
-  /**
-   * \brief the start address in memory
-   */
+  /** The start address in memory. */
   size_t _start;
 
-  /**
-   * \brief the maximum length of the input
-   */
+  /** The maximum length of the input. */
   size_t _maximumLength;
 
-  /**
-   * \brief the component for accessing the memory
-   */
+  /** The component for accessing the memory. */
   MemoryAccess _memoryAccess;
 
-  /**
-   * \brief the current mode
-   */
+  /** The current mode. */
   Mode _mode;
 
  signals:
+
   /**
-   * \brief called when maximum Length has changed
+   * Called when maximum Length has changed.
    */
   void maximumLengthChanged();
 
   /**
-   * \brief called when mode has changed
+   * Called when mode has changed.
    */
   void modeChanged();
 };
