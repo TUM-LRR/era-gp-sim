@@ -155,7 +155,7 @@ class JumpAndLinkImmediateInstructionNode
     auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
 
     // Check if the program counter would underflow or overflow
-    if (!riscv::isAddressValid(memoryAccess, programCounter + 2 * offset,
+    if (!riscv::addressIsValid(memoryAccess, programCounter + 2 * offset,
                                programCounter)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
@@ -293,7 +293,7 @@ class JumpAndLinkRegisterInstructionNode
     auto offset =
         super::template _getChildValue<UnsignedWord>(memoryAccess, 2) + base;
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
-    if (!riscv::isAddressValid(memoryAccess, base + offset, programCounter)) {
+    if (!riscv::addressIsValid(memoryAccess, base + offset, programCounter)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Jump offset would invalidate program counter"));

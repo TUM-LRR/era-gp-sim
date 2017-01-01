@@ -128,7 +128,7 @@ addi x0, x0, 0)";
         proxy.setErrorList(errors);
       };
   std::function<void(const Translateable&)>
-      errorCallback = [this](const Translateable& message) {
+      errorCallback = [](const Translateable& message) {
         std::cout << message.getBaseString() << std::endl;
         assert::gtest(false);
       };

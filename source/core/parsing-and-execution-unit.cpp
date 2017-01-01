@@ -41,10 +41,10 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _memoryAccess(memoryAccess)
 , _breakpoints()
 , _syntaxInformation(_parser->getSyntaxInformation())
-, _setContextInformation([](const std::vector<ContextInformation> &x) {})
-, _setFinalRepresentation([](const FinalRepresentation &x) {})
-, _throwError(([](const Translateable& t) {}))
-, _setCurrentLine([](size_t x) {})
+, _setContextInformation([](const std::vector<ContextInformation> &) {})
+, _setFinalRepresentation([](const FinalRepresentation &) {})
+, _throwError(([](const Translateable&) {}))
+, _setCurrentLine([](size_t ) {})
 , _executionStopped([]() {}) {
   // find the RegisterInformation object of the program counter
   for (UnitInformation unitInfo : architecture.getUnits()) {

@@ -58,24 +58,18 @@ T convert(const MemoryValue& memoryValue) {
  * \return The converted memory value.
  */
 template <typename T>
-std::enable_if_t<std::is_integral<T>::value, MemoryValue>
-convert(const T& value) {
+std::enable_if_t<std::is_integral<T>::value, MemoryValue> convert(
+    const T& value) {
   static const auto digits = sizeof(T) * CHAR_BIT;
-  return conversions::convert(value,
-                              digits,
-                              riscv::BITS_PER_BYTE,
-                              riscv::ENDIANNESS,
-                              riscv::SIGNED_REPRESENTATION);
+  return conversions::convert(value, digits, riscv::BITS_PER_BYTE,
+                              riscv::ENDIANNESS, riscv::SIGNED_REPRESENTATION);
 }
 
 template <typename T>
-std::enable_if_t<std::is_integral<T>::value, MemoryValue>
-convert( const T& value, std::size_t size) {
-  return conversions::convert(value,
-                              size,
-                              riscv::BITS_PER_BYTE,
-                              riscv::ENDIANNESS,
-                              riscv::SIGNED_REPRESENTATION);
+std::enable_if_t<std::is_integral<T>::value, MemoryValue> convert(
+    const T& value, std::size_t size) {
+  return conversions::convert(value, size, riscv::BITS_PER_BYTE,
+                              riscv::ENDIANNESS, riscv::SIGNED_REPRESENTATION);
 }
 
 /**
@@ -109,7 +103,7 @@ void storeRegister(MemoryAccess& memoryAccess, const std::string& registerName,
 }
 
 template <typename UnsignedWord>
-std::enable_if_t<std::is_unsigned<UnsignedWord>::value, bool> isAddressValid(
+std::enable_if_t<std::is_unsigned<UnsignedWord>::value, bool> addressIsValid(
     MemoryAccess& memoryAccess, UnsignedWord absoluteAdress,
     UnsignedWord validAdress) {
   UnsignedWord lowerBound = 0;
