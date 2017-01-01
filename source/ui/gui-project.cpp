@@ -23,41 +23,36 @@
 #include <cstdio>
 #include <functional>
 
-#include "common/translateable.hpp"
 #include "common/utility.hpp"
 #include "ui/snapshot-component.hpp"
+#include "ui/translateable-processing.hpp"
 #include "ui/ui.hpp"
 
 GuiProject::GuiProject(
-    QQmlContext* context,
-    const ArchitectureFormula& formula,
-    std::size_t memorySize,
-    const std::string& parserName,
+    QQmlContext* context, const ArchitectureFormula& formula,
+    std::size_t memorySize, const std::string& parserName,
     const std::shared_ptr<SnapshotComponent>& snapshotComponent,
     QObject* parent)
-: QObject(parent)
-, _projectModule(formula, memorySize, parserName)
-, _registerModel(_projectModule.getArchitectureAccess(),
-                 _projectModule.getMemoryManager(),
-                 _projectModule.getMemoryAccess(),
-                 context)
-, _editorComponent(context,
-                   _projectModule.getParserInterface(),
-                   _projectModule.getCommandInterface())
-, _outputComponent(_projectModule.getMemoryManager(),
-                   _projectModule.getMemoryAccess(),
-                   context)
-, _inputBM(context, _projectModule.getMemoryAccess())
-, _inputTM(context, _projectModule.getMemoryAccess())
-, _inputCM(context, _projectModule.getMemoryAccess())
-, _memoryModel(_projectModule.getMemoryAccess(),
-               _projectModule.getMemoryManager(),
-               context)
-, _defaultTextFileSavePath()
-, _snapshotComponent(snapshotComponent)
-, _architectureFormulaString(SnapshotComponent::architectureToString(formula))
-, _commandList()
-, _helpCache() {
+    : QObject(parent),
+      _projectModule(formula, memorySize, parserName),
+      _registerModel(_projectModule.getArchitectureAccess(),
+                     _projectModule.getMemoryManager(),
+                     _projectModule.getMemoryAccess(), context),
+      _editorComponent(context, _projectModule.getParserInterface(),
+                       _projectModule.getCommandInterface()),
+      _outputComponent(_projectModule.getMemoryManager(),
+                       _projectModule.getMemoryAccess(), context),
+      _inputBM(context, _projectModule.getMemoryAccess()),
+      _inputTM(context, _projectModule.getMemoryAccess()),
+      _inputCM(context, _projectModule.getMemoryAccess()),
+      _memoryModel(_projectModule.getMemoryAccess(),
+                   _projectModule.getMemoryManager(), context),
+      _defaultTextFileSavePath(),
+      _snapshotComponent(snapshotComponent),
+      _architectureFormulaString(
+          SnapshotComponent::architectureToString(formula)),
+      _commandList(),
+      _helpCache() {
   context->setContextProperty("guiProject", this);
   // set the callback for memory and register
   _projectModule.getMemoryManager().setUpdateRegisterCallback(
@@ -71,14 +66,10 @@ GuiProject::GuiProject(
       });
 
   _projectModule.getParserInterface().setThrowErrorCallback(
-      [this](const auto& message, const auto& arguments) {
-        this->_throwError(message, arguments);
-      });
+      [this](const Translateable& message) { this->_throwError(message); });
 
   _projectModule.getMemoryManager().setErrorCallback(
-      [this](const auto& message, const auto& arguments) {
-        this->_throwError(message, arguments);
-      });
+      [this](const Translateable& message) { this->_throwError(message); });
 
   _projectModule.getParserInterface().setFinalRepresentationCallback(
       [this](const auto& finalRepresentation) {
@@ -136,9 +127,7 @@ void GuiProject::changeSystem(std::string base) {
   // Alle Komponenten informieren
 }
 
-void GuiProject::parse() {
-  _editorComponent.parse();
-}
+void GuiProject::parse() { _editorComponent.parse(); }
 
 void GuiProject::run() {
   emit runClicked(false);
@@ -158,9 +147,7 @@ void GuiProject::runBreakpoint() {
   _projectModule.getCommandInterface().executeToBreakpoint();
 }
 
-void GuiProject::stop() {
-  _projectModule.stopExecution();
-}
+void GuiProject::stop() { _projectModule.stopExecution(); }
 
 void GuiProject::reset() {
   emit runClicked(false);
@@ -185,7 +172,9 @@ void GuiProject::saveTextAs(const QUrl& path) {
   try {
     Utility::storeToFile(name, text);
   } catch (const std::exception& exception) {
-    _throwError(std::string("Could not save file! ") + exception.what(), {});
+    _throwError(Translateable(
+        QT_TRANSLATE_NOOP("GUI error messages", "Could not save file!\n%1"),
+        exception.what()));
   }
 }
 
@@ -198,7 +187,9 @@ void GuiProject::loadText(const QUrl& path) {
     auto qText = QString::fromStdString(text);
     _editorComponent.setText(qText);
   } catch (const std::exception& exception) {
-    _throwError(std::string("Could not load file!") + exception.what(), {});
+    _throwError(Translateable(
+        QT_TRANSLATE_NOOP("GUI error messages", "Could not load file!\n%1"),
+        exception.what()));
   }
 }
 
@@ -209,9 +200,10 @@ void GuiProject::saveSnapshot(const QString& qName) {
     _snapshotComponent->addSnapshot(
         _architectureFormulaString, qName, snapshotString);
   } catch (const std::exception& exception) {
-    _throwError(
-        std::string("Could not write snapshot to disk! ") + exception.what(),
-        {});
+    _throwError(Translateable(
+        QT_TRANSLATE_NOOP("GUI error messages",
+                          "Could not write snapshot to disk!\n%1"),
+        exception.what()));
   }
 }
 
@@ -227,9 +219,10 @@ void GuiProject::loadSnapshot(const QString& qName) {
     _projectModule.getMemoryManager().loadSnapshot(snapshot);
     _editorComponent.parse(true);
   } catch (const std::exception& exception) {
-    _throwError(
-        std::string("Could not load snapshot from file! ") + exception.what(),
-        {});
+    _throwError(Translateable(
+        QT_TRANSLATE_NOOP("GUI error messages",
+                          "Could not load snapshot from file!\n%1"),
+        exception.what()));
   }
 }
 
@@ -312,9 +305,8 @@ std::function<MemoryValue(std::string)> GuiProject::getFloatToMemoryValue() {
   return floatToMemoryValue;
 }
 
-void GuiProject::_throwError(const std::string& message,
-                             const std::vector<std::string>& arguments) {
-  auto errorMessage = QString::fromStdString(message);
+void GuiProject::_throwError(const Translateable& message) {
+  auto errorMessage = translate(message);
   emit error(errorMessage);
 }
 

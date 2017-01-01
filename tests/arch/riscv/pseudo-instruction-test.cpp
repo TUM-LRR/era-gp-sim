@@ -25,6 +25,8 @@
 #include "arch/riscv/properties.hpp"
 #include "arch/riscv/utility.hpp"
 #include "parser/riscv-parser.hpp"
+#include "common/translateable.hpp"
+#include "ui/translateable-processing.hpp"
 #include "tests/arch/riscv/base-fixture.hpp"
 
 using namespace riscv;
@@ -259,16 +261,16 @@ TEST_F(PseudoInstructionTest, BEQZ_32) {
   auto testValue = 1;
   memoryAccess.setRegisterValue("x1", convert<std::uint32_t>(testValue));
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-  testPseudoInstruction(memoryAccess, "beqz x1,21", 1);
+  testPseudoInstruction(memoryAccess, "beqz x1,22", 1);
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
             convert<std::uint32_t>(4));
 
   testValue = 0;
   memoryAccess.setRegisterValue("x1", convert<std::uint32_t>(testValue));
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-  testPseudoInstruction(memoryAccess, "beqz x1,21", 1);
+  testPseudoInstruction(memoryAccess, "beqz x1,22", 1);
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
-            convert<std::uint32_t>(42));
+            convert<std::uint32_t>(44));
 }
 
 TEST_F(PseudoInstructionTest, BNEZ_32) {
@@ -279,14 +281,14 @@ TEST_F(PseudoInstructionTest, BNEZ_32) {
   auto testValue = 1;
   memoryAccess.setRegisterValue("x1", convert<std::uint32_t>(testValue));
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-  testPseudoInstruction(memoryAccess, "bnez x1,21", 1);
+  testPseudoInstruction(memoryAccess, "bnez x1,22", 1);
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
-            convert<std::uint32_t>(42));
+            convert<std::uint32_t>(44));
 
   testValue = 0;
   memoryAccess.setRegisterValue("x1", convert<std::uint32_t>(testValue));
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-  testPseudoInstruction(memoryAccess, "bnez x1,21", 1);
+  testPseudoInstruction(memoryAccess, "bnez x1,22", 1);
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
             convert<std::uint32_t>(4));
 }
@@ -299,16 +301,16 @@ TEST_F(PseudoInstructionTest, BLEZ_32) {
   auto testValue = 1;
   memoryAccess.setRegisterValue("x1", convert<std::uint32_t>(testValue));
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-  testPseudoInstruction(memoryAccess, "blez x1,21", 1);
+  testPseudoInstruction(memoryAccess, "blez x1,22", 1);
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
             convert<std::uint32_t>(4));
 
   testValue = 0;
   memoryAccess.setRegisterValue("x1", convert<std::uint32_t>(testValue));
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-  testPseudoInstruction(memoryAccess, "blez x1,21", 1);
+  testPseudoInstruction(memoryAccess, "blez x1,22", 1);
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
-            convert<std::uint32_t>(42));
+            convert<std::uint32_t>(44));
 }
 
 TEST_F(PseudoInstructionTest, BGEZ_32) {
@@ -319,14 +321,14 @@ TEST_F(PseudoInstructionTest, BGEZ_32) {
   auto testValue = 0;
   memoryAccess.setRegisterValue("x1", convert<std::uint32_t>(testValue));
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-  testPseudoInstruction(memoryAccess, "bgez x1,21", 1);
+  testPseudoInstruction(memoryAccess, "bgez x1,22", 1);
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
-            convert<std::uint32_t>(42));
+            convert<std::uint32_t>(44));
 
   testValue = -1;
   memoryAccess.setRegisterValue("x1", convert<std::uint32_t>(testValue));
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-  testPseudoInstruction(memoryAccess, "bgez x1,21", 1);
+  testPseudoInstruction(memoryAccess, "bgez x1,22", 1);
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
             convert<std::uint32_t>(4));
 }
@@ -339,16 +341,16 @@ TEST_F(PseudoInstructionTest, BLTZ_32) {
   auto testValue = 1;
   memoryAccess.setRegisterValue("x1", convert<std::uint32_t>(testValue));
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-  testPseudoInstruction(memoryAccess, "bltz x1,21", 1);
+  testPseudoInstruction(memoryAccess, "bltz x1,22", 1);
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
             convert<std::uint32_t>(4));
 
   testValue = -1;
   memoryAccess.setRegisterValue("x1", convert<std::uint32_t>(testValue));
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-  testPseudoInstruction(memoryAccess, "bltz x1,21", 1);
+  testPseudoInstruction(memoryAccess, "bltz x1,22", 1);
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
-            convert<std::uint32_t>(42));
+            convert<std::uint32_t>(44));
 }
 
 TEST_F(PseudoInstructionTest, BGTZ_32) {
@@ -359,14 +361,14 @@ TEST_F(PseudoInstructionTest, BGTZ_32) {
   auto testValue = 1;
   memoryAccess.setRegisterValue("x1", convert<std::uint32_t>(testValue));
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-  testPseudoInstruction(memoryAccess, "bgtz x1,21", 1);
+  testPseudoInstruction(memoryAccess, "bgtz x1,22", 1);
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
-            convert<std::uint32_t>(42));
+            convert<std::uint32_t>(44));
 
   testValue = -1;
   memoryAccess.setRegisterValue("x1", convert<std::uint32_t>(testValue));
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(0));
-  testPseudoInstruction(memoryAccess, "bgtz x1,21", 1);
+  testPseudoInstruction(memoryAccess, "bgtz x1,22", 1);
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
             convert<std::uint32_t>(4));
 }
@@ -377,10 +379,10 @@ TEST_F(PseudoInstructionTest, J_32) {
   auto& memoryAccess = getMemoryAccess();
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(8));
 
-  testPseudoInstruction(memoryAccess, "j 17", 1);
+  testPseudoInstruction(memoryAccess, "j 18", 1);
 
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
-            convert<std::uint32_t>(42));
+            convert<std::uint32_t>(44));
 }
 
 TEST_F(PseudoInstructionTest, JAL_32) {
@@ -389,10 +391,10 @@ TEST_F(PseudoInstructionTest, JAL_32) {
   auto& memoryAccess = getMemoryAccess();
   memoryAccess.setRegisterValue("pc", convert<std::uint32_t>(8));
 
-  testPseudoInstruction(memoryAccess, "jal 17", 1);
+  testPseudoInstruction(memoryAccess, "jal 18", 1);
 
   ASSERT_EQ(memoryAccess.getRegisterValue("pc").get(),
-            convert<std::uint32_t>(42));
+            convert<std::uint32_t>(44));
   ASSERT_EQ(memoryAccess.getRegisterValue("x1").get(),
             convert<std::uint32_t>(12));
 }

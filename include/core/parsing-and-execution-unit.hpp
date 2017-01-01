@@ -147,8 +147,7 @@ class ParsingAndExecutionUnit : public Servant {
    *
    * \param callback
    */
-  void setThrowErrorCallback(
-      Callback<const std::string &, const std::vector<std::string> &> callback);
+  void setThrowErrorCallback(Callback<const Translateable &> callback);
 
   /**
    * Set the callback which is used to inform the gui about the execution point
@@ -236,7 +235,7 @@ class ParsingAndExecutionUnit : public Servant {
   Callback<const FinalRepresentation> _setFinalRepresentation;
 
   /** Callback to throw a runtime error. */
-  Callback<const std::string &, const std::vector<std::string> &> _throwError;
+  Callback<const Translateable &> _throwError;
 
   /** Callback to set the line which is executed in the ui.*/
   Callback<size_t> _setCurrentLine;

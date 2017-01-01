@@ -225,12 +225,10 @@ class GuiProject : QObject {
 
  private:
   /**
-   * Shows a runtime error in the ui.
-   *
-   * \param validationResult The validation result which indicated the error.
+   * Shows a runtime error in the ui
+   * \param message The translateable that contains the message
    */
-  void _throwError(const std::string& message,
-                   const std::vector<std::string>& arguments);
+  void _throwError(const Translateable& message);
 
   /**
    * \brief the module in the core

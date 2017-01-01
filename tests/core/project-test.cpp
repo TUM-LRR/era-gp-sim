@@ -130,10 +130,9 @@ addi x0, x0, 0)";
         std::vector<CompileError> errors = finalRepresentation.errorList;
         proxy.setErrorList(errors);
       };
-  std::function<void(const std::string&, const std::vector<std::string>&)>
-      errorCallback = [this](const std::string& message,
-                             const std::vector<std::string>& arguments) {
-        std::cout << message << std::endl;
+  std::function<void(const Translateable&)>
+      errorCallback = [](const Translateable& message) {
+        std::cout << message.getBaseString() << std::endl;
         assert::gtest(false);
       };
 };
