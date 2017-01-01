@@ -18,7 +18,6 @@
 */
 
 #include "ui/ui.hpp"
-#include "ui/clipboard-adapter.hpp"
 
 #include <QUrl>
 
@@ -30,6 +29,7 @@
 #include "ui/snapshot-component.hpp"
 #include "ui/input-text-model.hpp"
 #include "ui/snapshot-component.hpp"
+#include "ui/clipboard-adapter.hpp"
 
 Q_DECLARE_METATYPE(FinalRepresentation)
 

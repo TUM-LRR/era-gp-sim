@@ -28,7 +28,6 @@
 
 #include "arch/common/validation-result.hpp"
 #include "common/assert.hpp"
-#include "core/parser-interface.hpp"
 #include "parser/compile-error.hpp"
 #include "ui/translateable-processing.hpp"
 
@@ -36,56 +35,14 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
                                  ParserInterface parserInterface,
                                  CommandInterface commandInterface,
                                  QObject *parent)
-: _commandInterface(commandInterface), QObject(parent) {
+: _commandInterface(commandInterface)
+, _parserInterface(parserInterface)
+, QObject(parent) {
   projectContext->setContextProperty("editor", this);
   parserInterface.setSetCurrentLineCallback(
       [this](std::size_t line) { setCurrentLine(line); });
 
   // TODO select colors according to a theme/possibility to change colors
-
-  // Add all instruction keywords to the syntax highlighter
-  QTextCharFormat instructionFormat;
-  instructionFormat.setForeground(Qt::darkBlue);
-  instructionFormat.setFontWeight(QFont::Bold);
-  _addKeywords(SyntaxInformation::Token::Instruction,
-               instructionFormat,
-               QRegularExpression::CaseInsensitiveOption,
-               parserInterface);
-
-  // Add the immediate regex to the syntax highlighter
-  QTextCharFormat immediateFormat;
-  immediateFormat.setForeground(Qt::red);
-  immediateFormat.setFontWeight(QFont::Bold);
-  _addKeywords(SyntaxInformation::Token::Immediate,
-               immediateFormat,
-               QRegularExpression::CaseInsensitiveOption,
-               parserInterface);
-
-  // Add the comment regex to the syntax highlighter
-  QTextCharFormat commentFormat;
-  commentFormat.setForeground(Qt::darkGreen);
-  _addKeywords(SyntaxInformation::Token::Comment,
-               commentFormat,
-               QRegularExpression::NoPatternOption,
-               parserInterface);
-
-  // Add the register regex to the syntax highlighter
-  QTextCharFormat registerFormat;
-  registerFormat.setForeground(QColor::fromRgb(177, 137, 4));
-  registerFormat.setFontWeight(QFont::Bold);
-  _addKeywords(SyntaxInformation::Token::Register,
-               registerFormat,
-               QRegularExpression::NoPatternOption,
-               parserInterface);
-
-  // Add the label regex to the syntax highlighter
-  QTextCharFormat labelFormat;
-  labelFormat.setForeground(Qt::red);
-  labelFormat.setFontWeight(QFont::Bold);
-  _addKeywords(SyntaxInformation::Token::Label,
-               labelFormat,
-               QRegularExpression::CaseInsensitiveOption,
-               parserInterface);
 }
 
 void EditorComponent::init(QQuickTextDocument *qDocument) {
@@ -97,8 +54,8 @@ void EditorComponent::init(QQuickTextDocument *qDocument) {
   textOptions.setTabStop(4 * fontMetrics.width(' '));
   _textDocument->setDefaultTextOption(textOptions);
 
-  _highlighter = (std::make_unique<SyntaxHighlighter>(std::move(_keywords),
-                                                      _textDocument));
+  _highlighter =
+      (std::make_unique<SyntaxHighlighter>(_parserInterface, _textDocument));
 }
 
 void EditorComponent::parse(bool force) {
@@ -131,9 +88,8 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
       case CompileErrorSeverity::INFORMATION: issueType = "Information"; break;
       default: assert::that(false);
     }
-    emit addIssue(translate(error.message()),
-                  error.position().first.line(),
-                  issueType);
+    emit addIssue(
+        translate(error.message()), error.position().first.line(), issueType);
   }
 }
 
@@ -171,17 +127,4 @@ void EditorComponent::onFinalRepresentationChanged(
     const FinalRepresentation &finalRepresentation) {
   setErrorList(finalRepresentation.errorList);
   setMacroList(finalRepresentation.macroList);
-}
-
-void EditorComponent::_addKeywords(
-    SyntaxInformation::Token token,
-    QTextCharFormat format,
-    QRegularExpression::PatternOption patternOption,
-    ParserInterface parserInterface) {
-  for (const auto &regexString : parserInterface.getSyntaxRegex(token).get()) {
-    QRegularExpression regex(QString::fromStdString(regexString),
-                             patternOption);
-    KeywordRule keyword{regex, format};
-    _keywords.push_back(keyword);
-  }
 }

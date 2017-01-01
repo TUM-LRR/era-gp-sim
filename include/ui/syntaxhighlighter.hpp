@@ -23,7 +23,12 @@
 #include <QSyntaxHighlighter>
 #include <vector>
 
+#include "parser/syntax-information.hpp"
 #include "ui/keyword-rule.hpp"
+
+class ParserInterface;
+class QQuickTextDocument;
+class QTextCharFormat;
 
 /**
  * An implementation of a syntax highlighter for qml.
@@ -36,8 +41,7 @@ class SyntaxHighlighter : QSyntaxHighlighter {
    * \param ruleList List of keywords for the syntax highlighter.
    * \param document A pointer to the QTextDocument for this highlighter.
    */
-  SyntaxHighlighter(std::vector<KeywordRule> &&ruleList,
-                    QTextDocument *document);
+  SyntaxHighlighter(ParserInterface parserInterface, QTextDocument *document);
 
  protected:
   /**
@@ -49,6 +53,11 @@ class SyntaxHighlighter : QSyntaxHighlighter {
   void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
 
  private:
+  void _addKeywords(SyntaxInformation::Token token,
+                    QTextCharFormat format,
+                    QRegularExpression::PatternOption patternOption,
+                    ParserInterface parserInterface);
+
   /** A list of all keywords to highlight. */
   std::vector<KeywordRule> _keywords;
 };

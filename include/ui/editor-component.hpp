@@ -26,10 +26,10 @@
 #include <vector>
 
 #include "core/command-interface.hpp"
+#include "core/parser-interface.hpp"
 #include "parser/syntax-information.hpp"
 #include "ui/syntaxhighlighter.hpp"
 
-class ParserInterface;
 class ValidationResult;
 class QQmlContext;
 class QQuickTextDocument;
@@ -131,30 +131,15 @@ class EditorComponent : public QObject {
   onFinalRepresentationChanged(const FinalRepresentation &finalRepresentation);
 
  private:
-  /**
-   * Adds the all keywords for a token to the keyword list.
-   *
-   * \param token Token to select which type of keywords to add.
-   * \format The format for the keywords.
-   * \param patternOption Option for the regex, for example
-   *QRegularExpression::CaseInsensitiveOption.
-   * \param parserInterface ParserInterface to access the SyntaxInformation
-   *object.
-   */
-  void _addKeywords(SyntaxInformation::Token token,
-                    QTextCharFormat format,
-                    QRegularExpression::PatternOption patternOption,
-                    ParserInterface parserInterface);
-
   /** The syntax Highlighter of this editor. Is initialized in the init()
    * method. */
   std::unique_ptr<SyntaxHighlighter> _highlighter;
 
-  /** A list of keywords to initialize the syntax highlighter. */
-  std::vector<KeywordRule> _keywords;
-
   /** The command interface of the core */
   CommandInterface _commandInterface;
+
+  /** The parser interface */
+  ParserInterface _parserInterface;
 
   /** A pointer to the QTextDocument used by the editor. */
   QTextDocument *_textDocument;
