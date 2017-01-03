@@ -42,8 +42,7 @@ namespace riscv {
  */
 template <typename T>
 T convert(const MemoryValue& memoryValue) {
-  return conversions::convert<T>(memoryValue,
-                                 riscv::BITS_PER_BYTE,
+  return conversions::convert<T>(memoryValue, riscv::BITS_PER_BYTE,
                                  riscv::ENDIANNESS,
                                  riscv::SIGNED_REPRESENTATION);
 }
@@ -59,24 +58,18 @@ T convert(const MemoryValue& memoryValue) {
  * \return The converted memory value.
  */
 template <typename T>
-std::enable_if_t<std::is_integral<T>::value, MemoryValue>
-convert(const T& value) {
+std::enable_if_t<std::is_integral<T>::value, MemoryValue> convert(
+    const T& value) {
   static const auto digits = sizeof(T) * CHAR_BIT;
-  return conversions::convert(value,
-                              digits,
-                              riscv::BITS_PER_BYTE,
-                              riscv::ENDIANNESS,
-                              riscv::SIGNED_REPRESENTATION);
+  return conversions::convert(value, digits, riscv::BITS_PER_BYTE,
+                              riscv::ENDIANNESS, riscv::SIGNED_REPRESENTATION);
 }
 
 template <typename T>
-std::enable_if_t<std::is_integral<T>::value, MemoryValue>
-convert(const T& value, std::size_t size) {
-  return conversions::convert(value,
-                              size,
-                              riscv::BITS_PER_BYTE,
-                              riscv::ENDIANNESS,
-                              riscv::SIGNED_REPRESENTATION);
+std::enable_if_t<std::is_integral<T>::value, MemoryValue> convert(
+    const T& value, std::size_t size) {
+  return conversions::convert(value, size, riscv::BITS_PER_BYTE,
+                              riscv::ENDIANNESS, riscv::SIGNED_REPRESENTATION);
 }
 
 /**
@@ -103,19 +96,33 @@ T loadRegister(MemoryAccess& memoryAccess, const std::string& registerName) {
  * \param value The value to convert and store.
  */
 template <typename T>
-void storeRegister(MemoryAccess& memoryAccess,
-                   const std::string& registerName,
+void storeRegister(MemoryAccess& memoryAccess, const std::string& registerName,
                    const T& value) {
   auto memory = convert(value);
   memoryAccess.putRegisterValue(registerName, memory);
 }
 
 template <typename UnsignedWord>
-std::enable_if_t<std::is_unsigned<UnsignedWord>::value, bool>
-isAddressValid(MemoryAccess& memoryAccess, UnsignedWord absoluteAdress) {
+std::enable_if_t<std::is_unsigned<UnsignedWord>::value, bool> addressIsValid(
+    MemoryAccess& memoryAccess, UnsignedWord absoluteAdress,
+    UnsignedWord validAdress) {
   UnsignedWord lowerBound = 0;
   UnsignedWord upperBound = memoryAccess.getMemorySize().get();
-  return absoluteAdress >= lowerBound && absoluteAdress < upperBound;
+  // validAddress is used to determine if the the given Adress is correctly
+  // aligned in memory.
+  // correct alignment is that (absoluteAdress-offset)%4 == 0
+  // problem: we don't know the offset,
+  // but we know that (validAdress-offset)%4 = 0
+  if (absoluteAdress < lowerBound ||
+      absoluteAdress + riscv::INSTRUCTION_LENGTH_BYTE >= upperBound) {
+    return false;
+  }
+  bool validAlignement = (validAdress - absoluteAdress) % 4 == 0;
+  bool insideOfProgram =
+      memoryAccess
+          .isMemoryProtectedAt(absoluteAdress, riscv::INSTRUCTION_LENGTH_BYTE)
+          .get();
+  return validAlignement && insideOfProgram;
 }
 
 template <std::size_t numberOfBits, typename T>

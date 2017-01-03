@@ -1,102 +1,228 @@
 import QtQuick 2.6
+import QtQuick.Controls 1.5
+import QtQuick.Controls.Styles 1.4
 
-//the size of this item is the size of the tooltip trigger area
+// The size of this item is the size of the tooltip trigger area
 Item {
     id: toolTipItem
 
-    property alias text: toolTipText.text
-    property alias textColor: toolTipText.color
-    property alias font: toolTipText.font
-    property alias fontPointSize: toolTipText.font.pointSize
-    property alias fontPixelSize: toolTipText.font.pixelSize
-    property alias textFormat: toolTipText.textFormat
+    // Text properties
+    property alias text: _toolTipText.text
+    property alias font: _toolTipText.font
+    property alias fontPointSize: _toolTipText.font.pointSize
+    property alias fontPixelSize: _toolTipText.font.pixelSize
+    property alias textFormat: _toolTipText.textFormat
+    property alias horizontalTextAlign: _toolTipText.horizontalAlignment
+    property alias wrapMode: _toolTipText.wrapMode
+    property var leftPadding: _toolTipText.font.pixelSize/3
+    property var rightPadding: _toolTipText.font.pixelSize/3
+    property var topPadding: _toolTipText.font.pixelSize/3
+    property var bottomPadding: _toolTipText.font.pixelSize/3
 
-    //delay for triggering the animations
+    // Background properties
+    property color backgroundColor: Qt.rgba(239.0/255.0, 239.0/255.0, 239.0/255.0, 0.8)
+    property color backgroundColorOnFocus: Qt.rgba(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.0)
+    property color borderColor: "#DDDDDD"
+    property color borderColorOnFocus: "#DDDDDD"
+    property color backgroundColorOnHovered: backgroundColor
+    property color borderColorOnHovered: borderColor
+    property real cornerRadius: 0
+
+    // Positioning properties
+    // Position of the tool tip relative to its hit area. Defaults to a position relative to mouse position.
+    property var relativeX: undefined
+    // Position of the tool tip relative to its hit area. Defaults to a position just below the hit area.
+    property var relativeY: toolTipItem.height
+    property var explicitHeight: undefined
+    property var explicitWidth: undefined
+    property var maxHeight: undefined
+    property var maxWidth: undefined
+    readonly property alias realWidth: _toolTipRect.width
+    readonly property alias realHeight: _toolTipRect.height
+
+    // Delay for triggering the animations
     property real showDelay: 200
     property real hideDelay: 500
 
-    //duration of the animations
+    // Duration of the animations
     property real showDuration: 250
     property real hideDuration: 200
 
-    property color color: "lightgray"
-    property color borderColor: "steelblue"
+    // Expose components for further customization
+    property alias toolTipHitArea: _toolTipHitArea
+    property alias toolTipRect: _toolTipRect
+    property alias toolTipText: _toolTipText
 
     property bool moveTooltipWithMouse: false;
 
-    //MouseArea for showing the tooltip, includes the area of the parent object/specified height and length of the tooltip trigger and the tooltip itself
+    // Functions
+    function showToolTip() {
+      _toolTipHitArea.triggerShow();
+    }
+
+    // Default implementation activates toolTipArea focus, making the tool tip stay visible.
+    property var toolTipClickHandler: function (){
+        _scrollView.focus = true;
+    }
+
+    // MouseArea for showing the tooltip, includes the area of the parent object/specified height and length of the tooltip trigger and the tooltip itself
     MouseArea{
-        id: errorArea
+        id: _toolTipHitArea
         anchors.fill: parent
         hoverEnabled: true
         propagateComposedEvents: true
         acceptedButtons: Qt.LeftButton
 
-        onEntered: {
-            if(!toolTipRect.visible) {
-                toolTipRect.show();
-                toolTipRect.x = mouseX + 10;
-            }
-            else if(toolTipRect.visible && (hideAnimation.running || hideWithoutPause.running)){
-                toolTipRect.show();
-            }
-        }
-
-        onClicked: {
-            mouse.accepted = false;
-        }
-
-        onPressed: {
-            mouse.accepted = false;
-        }
-
+        // Pass through un-handled mouse events.
+        onPressed: mouse.accepted = false;
         onReleased: mouse.accepted = false;
         onDoubleClicked: mouse.accepted = false;
         onPressAndHold: mouse.accepted = false;
 
+        onEntered: {
+            triggerShow();
+        }
+
+        onClicked: {
+            toolTipClickHandler();
+            mouse.accepted = false;
+        }
+
+        function triggerShow() {
+            if(!_toolTipRect.visible) {
+                _toolTipRect.show();
+                if (relativeX == undefined) {
+                    _toolTipRect.x = mouseX + 10;
+                } else {
+                    _toolTipRect.x = relativeX;
+                }
+            }
+            else if(_toolTipRect.visible && (hideAnimation.running || hideWithoutPause.running)){
+                _toolTipRect.show();
+            }
+        }
+
         onExited: {
-            if(!toolTipArea.focus){
-                toolTipRect.hide();
+            if(!_scrollView.focus){
+                _toolTipRect.hide();
             }
         }
 
         onPositionChanged: {
             if(moveTooltipWithMouse){
-                toolTipRect.x = mouseX + 10
-                toolTipRect.y = mouseY - 10
+                _toolTipRect.x = mouseX + 10
+                _toolTipRect.y = mouseY - 10
             }
             mouse.accepted = false;
         }
 
-        //rectangle around the tooltip text
-        Rectangle{
-            id: toolTipRect
-            y: toolTipItem.height
-            property color transparentColor: Qt.rgba(toolTipItem.color.r, toolTipItem.color.g, toolTipItem.color.b, 0.2)
-            property color activeColor: toolTipItem.color
-            property real widthMax: toolTipText.contentWidth + toolTipText.leftPadding*2
-            property real heightMax: toolTipText.contentHeight + toolTipText.topPadding*2
-            width: widthMax
-            height: heightMax
-            color: transparentColor
-            border.color: Qt.rgba(toolTipItem.borderColor.r, toolTipItem.borderColor.g, toolTipItem.borderColor.b, 0.2)
-            visible: false
+        // Rectangle around the tooltip text
+        Rectangle {
+            id: _toolTipRect
 
-
-            //show
-            function show() {
-                if(!hideAnimation.running && !hideWithoutPause.running) {
-                    toolTipRect.height = 0;
-                    toolTipText.height = 0;
+            function calcSize(implicitSize, explicitSize, maxSize) {
+                var size = undefined;
+                if (explicitSize !== undefined) {
+                    size = explicitSize;
+                } else {
+                    size = implicitSize;
                 }
+                if (maxSize !== undefined) {
+                    return Math.min(size, maxSize);
+                } else {
+                    return size;
+                }
+            }
+
+            // The implicit dimensions of the tool tip's background are determined by the text's
+            // content dimensions and the custom padding.
+            property var _textMaxWidth: maxWidth
+            property real _implicitWidth: _textMaxWidth + leftPadding + rightPadding
+            property real _implicitHeight: _toolTipText.contentHeight + topPadding + bottomPadding
+
+            y: relativeY
+            // If an explicit width/ height is specified use it, otherwise use implicitly calculated
+            // dimensions.
+            width: calcSize(_implicitWidth, explicitWidth, maxWidth);
+            height: calcSize(_implicitHeight, explicitHeight, maxHeight);
+
+            color: backgroundColor
+            border.color: borderColor
+            visible: false
+            opacity: 0.0
+            radius: cornerRadius
+
+            // Text of the tooltip
+            ScrollView {
+                id: _scrollView
+                anchors.fill: parent
+                horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
+                style: ScrollViewStyle {
+                    transientScrollBars: true
+                }
+
+
+                onFocusChanged: {
+                    if(focus) {
+                        _toolTipRect.color = backgroundColorOnFocus;
+                        _toolTipRect.border.color = borderColorOnFocus;
+                    }
+                    if(!focus) {
+                        _toolTipRect.color = backgroundColor;
+                        _toolTipRect.border.color = borderColor;
+                        if(!_toolTipHitArea.containsMouse) {
+                            _toolTipRect.hide();
+                        }
+                    }
+                }
+
+                Flickable {
+                    id: _flickable
+                    anchors.fill: parent
+                    contentWidth: _toolTipRect.width
+                    contentHeight: _toolTipText.contentHeight + topPadding + bottomPadding
+
+                    TextEdit {
+                        id: _toolTipText
+                        anchors.fill: parent
+                        clip: true
+                        readOnly: true
+                        textFormat: Text.RichText
+                        wrapMode: TextEdit.NoWrap
+                        leftPadding: toolTipItem.leftPadding
+                        rightPadding: toolTipItem.rightPadding
+                        topPadding: toolTipItem.topPadding
+                        bottomPadding: toolTipItem.bottomPadding
+                        onContentWidthChanged: {
+                            if(contentWidth > 0 && wrapMode === TextEdit.NoWrap) {
+                                var maxTextWidth = contentWidth;
+                                _toolTipRect._textMaxWidth = maxTextWidth;
+                                wrapMode = TextEdit.WordWrap;
+                            }
+                        }
+                    }
+                }
+            }
+            // Showing the tooltip
+            function show() {
+                // Makes sure the property which is about to be animated is set to
+                // a proper initial value, if it's not currently in the process of
+                // showing an animation.
+                if(!hideAnimation.running && !hideWithoutPause.running) {
+                    _toolTipRect.opacity = 0.0;
+                }
+
+                // If the tooltip is in the process of hiding and is hovered again, it's
+                // supposed to show instantly.
                 if(hideAnimation.running || hideWithoutPause.running) {
                     hideAnimation.stop();
                     hideWithoutPause.stop();
-                    toolTipRect.visible = true;
+                    _toolTipRect.visible = true;
                     showWithoutPause.start();
                 }
+                // Otherwise, animate.
                 else{
-                    toolTipRect.visible = true;
+                    _toolTipRect.visible = true;
                     showAnimation.start();
                 }
             }
@@ -110,16 +236,9 @@ Item {
 
                 ParallelAnimation {
                     NumberAnimation {
-                        target: toolTipRect
-                        property: "height"
-                        duration: showDuration
-                        to: toolTipRect.heightMax
-                    }
-
-                    NumberAnimation {
-                        target: toolTipText
-                        property: "height"
-                        to: toolTipText.contentHeight + toolTipText.topPadding
+                        target: _toolTipRect
+                        property: "opacity"
+                        to: 1.0
                         duration: showDuration
                     }
                 }
@@ -128,21 +247,14 @@ Item {
             ParallelAnimation {
                 id: showWithoutPause
                 NumberAnimation {
-                    target: toolTipRect
-                    property: "height"
-                    duration: showDuration
-                    to: toolTipRect.heightMax
-                }
-
-                NumberAnimation {
-                    target: toolTipText
-                    property: "height"
-                    to: toolTipText.contentHeight + toolTipText.topPadding
+                    target: _toolTipRect
+                    property: "opacity"
+                    to: 1.0
                     duration: showDuration
                 }
             }
 
-            //hide
+            // Hiding the tooltip
             function hide() {
                 if(showAnimation.running || showWithoutPause.running){
                     showAnimation.stop();
@@ -163,78 +275,28 @@ Item {
 
                 ParallelAnimation {
                     NumberAnimation {
-                        target: toolTipRect
-                        property: "height"
-                        to: 0.0
-                        duration: hideDuration
-                    }
-
-                    NumberAnimation {
-                        target: toolTipText
-                        property: "height"
+                        target: _toolTipRect
+                        property: "opacity"
                         to: 0.0
                         duration: hideDuration
                     }
                 }
                 onStopped: {
-                    toolTipRect.visible = false;
+                    _toolTipRect.visible = false;
                 }
             }
 
             ParallelAnimation {
                 id: hideWithoutPause
                 NumberAnimation {
-                    target: toolTipRect
-                    property: "height"
-                    to: 0.0
-                    duration: hideDuration
-                }
-
-                NumberAnimation {
-                    target: toolTipText
-                    property: "height"
+                    target: _toolTipRect
+                    property: "opacity"
                     to: 0.0
                     duration: hideDuration
                 }
                 onStopped: {
-                    toolTipRect.visible = false;
+                    _toolTipRect.visible = false;
                 }
-            }
-
-            //text of the tooltip
-            Text {
-                id: toolTipText
-                width: toolTipItem.width/2
-                clip: true
-                wrapMode: Text.WrapAnywhere
-                textFormat: Text.StyledText
-                leftPadding: font.pixelSize/4
-                topPadding: font.pixelSize/4
-            }
-        }
-
-        //MouseArea the same size as the tooltip itself, for focusing on the tooltip
-        MouseArea {
-            id: toolTipArea
-            x: toolTipRect.x
-            y: toolTipRect.y
-            width: toolTipRect.width
-            height: toolTipRect.height
-            visible: toolTipRect.visible
-            hoverEnabled: true
-            onFocusChanged: {
-                if(focus) {
-                    toolTipRect.color = toolTipRect.activeColor;
-                }
-                if(!focus) {
-                    toolTipRect.color = toolTipRect.transparentColor;
-                    if(!errorArea.containsMouse) {
-                        toolTipRect.hide();
-                    }
-                }
-            }
-            onClicked: {
-                focus = true;
             }
         }
     }

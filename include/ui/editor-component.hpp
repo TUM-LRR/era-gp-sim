@@ -169,7 +169,7 @@ class EditorComponent : public QObject {
   void deleteErrors();
 
   /** A signal to add an error in the editor. */
-  void addError(QString message, int line, QColor color);
+  void addIssue(const QString &message, int line, const QString &color);
 
   /** Change the highlighted line which indicates the execution point. */
   void executionLineChanged(int line);
