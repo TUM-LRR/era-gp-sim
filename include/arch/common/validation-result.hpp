@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP_
-#define ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP_
+#ifndef ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP
+#define ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP
 
 #include <initializer_list>
 #include <string>
@@ -80,4 +80,4 @@ class ValidationResult {
   Translateable _message;
 };
 
-#endif /* ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP_ */
+#endif /* ERAGPSIM_ARCH_COMMON_VALIDATION_RESULT_HPP */
