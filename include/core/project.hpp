@@ -51,7 +51,7 @@ class Project : public Servant {
   template <typename... T>
   using Callback = std::function<void(T...)>;
   using ErrorCallback =
-      Callback<const std::string &, const std::vector<std::string> &>;
+      Callback<const Translateable &>;
 
   using size_t = std::size_t;
   using MemoryValueToString = std::function<std::string(MemoryValue)>;

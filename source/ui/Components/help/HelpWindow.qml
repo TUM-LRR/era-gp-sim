@@ -20,6 +20,7 @@
 
 import QtQuick 2.0
 import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 
 Item{
     anchors.fill: parent
@@ -33,6 +34,9 @@ Item{
         text: usualText
         textFormat: TextEdit.AutoText
         backgroundVisible: false
+        style: TextAreaStyle {
+            renderType: Text.QtRendering
+        }
 
         Component.onCompleted: {
             editor.forceCursorUpdate();

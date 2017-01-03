@@ -33,8 +33,8 @@ const ImmediateNodeFactory::MnemonicSet ImmediateNodeFactory::_addressRelativeIn
 
 MemoryValue ImmediateNodeFactory::labelToImmediate(const MemoryValue &labelValue, const std::string &instructionMnemonic, const MemoryValue &instructionAddress) const {
     if(_addressRelativeInstructions.count(instructionMnemonic) > 0) {
-        auto abs = riscv::convert<riscv::unsigned64_t>(labelValue);
-        auto pc = riscv::convert<riscv::unsigned64_t>(instructionAddress);
+        auto abs = riscv::convert<riscv::signed64_t>(labelValue);
+        auto pc = riscv::convert<riscv::signed64_t>(instructionAddress);
         return riscv::convert((abs-pc)/2);
     }
     return labelValue;

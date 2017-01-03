@@ -30,22 +30,25 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
     std::weak_ptr<Scheduler> &&scheduler,
     MemoryAccess memoryAccess,
     Architecture architecture,
+    std::string parserName,
     SharedCondition stopCondition,
-    std::string parserName)
+    SharedCondition syncCondition)
 : Servant(std::move(scheduler))
 , _parser(ParserFactory::createParser(architecture, memoryAccess, parserName))
 , _stopCondition(stopCondition)
+, _syncCondition(syncCondition)
 , _finalRepresentation()
 , _addressCommandMap()
 , _lineCommandCache()
 , _memoryAccess(memoryAccess)
 , _breakpoints()
 , _syntaxInformation(_parser->getSyntaxInformation())
-, _setContextInformation([](const std::vector<ContextInformation> &x) {})
-, _setFinalRepresentation([](const FinalRepresentation &x) {})
-, _throwError(([](const std::string &x, const std::vector<std::string> &y) {}))
-, _setCurrentLine([](size_t x) {})
-, _executionStopped([]() {}) {
+, _setContextInformation([](const std::vector<ContextInformation> &) {})
+, _setFinalRepresentation([](const FinalRepresentation &) {})
+, _throwError(([](const Translateable&) {}))
+, _setCurrentLine([](size_t ) {})
+, _executionStopped([] {})
+, _syncCallback([] { assert::that(false); }) {
   // find the RegisterInformation object of the program counter
   for (UnitInformation unitInfo : architecture.getUnits()) {
     if (unitInfo.hasSpecialRegister(
@@ -68,6 +71,8 @@ void ParsingAndExecutionUnit::execute() {
     if (nextNode >= _finalRepresentation.commandList.size()) break;
     if (!_executeNode(nextNode)) break;
     nextNode = _updateLineNumber(nextNode);
+    _syncCallback();
+    _syncCondition->waitAndReset();
   }
   _executionStopped();
 }
@@ -104,6 +109,8 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
         // we reached a breakpoint
         break;
       }
+      _syncCallback();
+      _syncCondition->waitAndReset();
     }
   }
   _executionStopped();
@@ -132,7 +139,9 @@ void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
     }
   }
   if (!foundMatchingLine) {
-    // no command found on this line
+    // no command found on this line, set gui indicator to specified line
+    // anyways (for resets)
+    _setCurrentLine(line);
     return;
   }
   // a command on this line was found, set the program counter and the line in
@@ -148,7 +157,7 @@ void ParsingAndExecutionUnit::parse(std::string code) {
       // create a empty MemoryValue as long as the command
       MemoryValue zero(command.node->assemble().getSize());
       _memoryAccess.putMemoryValueAt(command.address, zero);
-//      _memoryAccess.removeMemoryProtection(command.address, zero.getSize() / 8);
+      _memoryAccess.removeMemoryProtection(command.address, zero.getSize() / 8);
     }
   }
   // parse the new code and save the final representation
@@ -162,8 +171,18 @@ void ParsingAndExecutionUnit::parse(std::string code) {
     for (const auto &command : _finalRepresentation.commandList) {
       auto assemble = command.node->assemble();
       _memoryAccess.putMemoryValueAt(command.address, assemble);
-//      _memoryAccess.makeMemoryProtected(command.address,
-//                                        assemble.getSize() / 8);
+      _memoryAccess.makeMemoryProtected(command.address,
+                                        assemble.getSize() / 8);
+    }
+    // update the execution marker if a node is found
+    auto nextNode = _findNextNode();
+    if (nextNode < _finalRepresentation.commandList.size()) {
+      auto nextCommand = _finalRepresentation.commandList[nextNode];
+      _setCurrentLine(nextCommand.position.lineStart);
+    } else {
+      // account for cases where the pc is not valid while parsing, but there
+      // are valid instructions. Handle this situation like a reset.
+      setExecutionPoint(0);
     }
   }
 }
@@ -192,7 +211,7 @@ void ParsingAndExecutionUnit::setFinalRepresentationCallback(
 }
 
 void ParsingAndExecutionUnit::setThrowErrorCallback(
-    Callback<const std::string &, const std::vector<std::string> &> callback) {
+    Callback<const Translateable &> callback) {
   _throwError = callback;
 }
 
@@ -205,6 +224,10 @@ void ParsingAndExecutionUnit::setExecutionStoppedCallback(Callback<> callback) {
   _executionStopped = callback;
 }
 
+void ParsingAndExecutionUnit::setSyncCallback(const Callback<> &callback) {
+  _syncCallback = callback;
+}
+
 size_t ParsingAndExecutionUnit::_findNextNode() {
   // get the value of the program counter and convert it to a std::size_t
   std::string programCounterName = _programCounter.getName();
@@ -212,10 +235,6 @@ size_t ParsingAndExecutionUnit::_findNextNode() {
       _memoryAccess.getRegisterValue(programCounterName).get();
   size_t nextInstructionAddress =
       conversions::convert<size_t>(programCounterValue);
-  if (nextInstructionAddress == 0) {
-    // if the program counter is 0, execute the first instruction
-    return 0;
-  }
   // find the instruction address from the program counter value
   auto iterator = _addressCommandMap.find(nextInstructionAddress);
   if (iterator == _addressCommandMap.end()) {
@@ -236,7 +255,7 @@ bool ParsingAndExecutionUnit::_executeNode(size_t nodeIndex) {
   auto validationResult = currentCommand.node->validateRuntime(_memoryAccess);
   if (!validationResult.isSuccess()) {
     // notify the ui of a runtime error
-    _throwError(validationResult.getMessage().getBaseString(), {});
+      _throwError(validationResult.getMessage());
     return false;
   }
   // update the current line in the ui (pre-execution)
