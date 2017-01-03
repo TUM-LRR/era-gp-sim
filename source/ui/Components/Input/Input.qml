@@ -40,6 +40,8 @@
      property color titleColor: "#4A4A4A"
      property color titleColorHighlighted: "#111111"
 
+     // Tell SplitViewItem (i.e. component wrapper) that settings are available to make it display settings icon.
+     property var hasComponentSettings: true
 
      // Allows to select the available input items
      TabView {
@@ -91,28 +93,6 @@
                      anchors.right: parent.right
                      color: innerBorderColor
                  }
-
-                 // Display input settings button in the rightmost corner of the tab bar.
-                 Button {
-                    id: settingsButton
-                     anchors.right: parent.right
-                     anchors.rightMargin: 4
-                     anchors.verticalCenter: parent.verticalCenter
-                     height: 18
-                     width: 18
-                     style: ButtonStyle {
-                         background: Rectangle {
-                             color: "#00000000"
-                             Image {
-                                source: (control.pressed) ? "Buttons/Settings_Icon_Pressed.png" : "Buttons/Settings_Icon.png"
-                             }
-                        }
-                     }
-                     // Clicking the settings button opens the input settings window in the currently active input item..
-                     onClicked: {
-                         inputTabView.getTab(inputTabView.currentIndex).item.settingsButtonPressed();
-                     }
-                 }
              }
 
              tab: Rectangle {
@@ -126,9 +106,11 @@
                      source: (styleData.selected) ? styleData.title + " Selected.png" : styleData.title + ".png"
                  }
              }
-
-
-
          }
+     }
+
+     // Called by SplitViewItem.qml (i.e. component wrapper) when component settings icon was pressed.
+     function settingsButtonPressed() {
+         inputTabView.getTab(inputTabView.currentIndex).item.settingsButtonPressed();
      }
  }
