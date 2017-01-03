@@ -47,16 +47,8 @@ class PartialEvaluation {
   std::vector<size_t> _sampleCycle;
 };
 
-struct StackEntry {
-  size_t index;
-  size_t position;
-
-  StackEntry(size_t index, size_t position) : index(index), position(position) {
-  }
-};
-
 std::vector<size_t>
-decomposeCycle(size_t startNode, std::stack<StackEntry>& stack) {
+decomposeCycle(size_t startNode, std::stack<size_t>& stack) {
   assert::that(!stack.empty());
 
   // Here, we decompose the stack to find a cycle.
@@ -66,8 +58,8 @@ decomposeCycle(size_t startNode, std::stack<StackEntry>& stack) {
   // We know, (at least: when called in this one place in the function below)
   // that 'startNode' exists again in the stack, so we go down, until we find
   // it.
-  while (stack.top().index != startNode) {
-    cycle.emplace_back(stack.top().index);
+  while (stack.top() != startNode) {
+    cycle.emplace_back(stack.top());
     stack.pop();
     assert::that(!stack.empty());
   }
@@ -79,72 +71,58 @@ std::vector<size_t>
 connectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes,
              std::vector<size_t>& topologicOrder,
              std::vector<bool>& visited,
-             size_t start) {
-  // Now here comes the fun part (almost as fun as implementing the Hierholzer
-  // algorithm for Euler cycles iteratively, it's horrible), we do iterative DFS
-  // but with checking for a DAG and generating of finishing numbers for each
-  // node (we need it for the topologic sort). Sounds fun? So it is. Much fun.
-  // (why iterative? Well, the main reason was that if some day some maniac came
-  // and did some crazy constant stuff, the whole system would not crash because
-  // of out of stack... But this might also be thought a bit too far... But hey,
-  // now we've already got it coded!)
+             std::stack<size_t>& currentPath,
+             std::vector<bool> fastPathLookup,
+             size_t node) {
+  // This is a recursively performed DFS on a connected graph. We also check if
+  // there are any cycles and record the reverse topologic order (a.k.a. finish
+  // numbers of the nodes). In case this leads to a stack overflow, here is also
+  // an iterative implementation, e.g.:
+  // https://github.com/TUM-LRR/era-gp-sim/blob/125a5d17378b7628608e0dc6977e36ee0b28da2a/source/parser/independent/symbol-graph.cpp
 
-  // The stack for iterative DFS (works like described on Wikipedia).
-  std::stack<size_t> toVisit;
+  if (!visited[node]) {
+    // If we have not visited this node at all, then we do it now.
+    visited[node] = true;
 
-  // Some means to emulate the call stack.
-  std::stack<StackEntry> currentPath;
-  std::vector<bool> fastLookup(nodes.size());
+    // This we need for tracking down cycles.
+    currentPath.push(node);
+    fastPathLookup[node] = true;
 
-  // We start as usual with one vertex pushed.
-  toVisit.push(start);
-  while (!toVisit.empty()) {
-    // We take the next vertex on the stack.
-    auto node = toVisit.top();
-    toVisit.pop();
-    if (!visited[node]) {
-      // If we have not visited this node yet (there can be one node more than
-      // once on the toVisit stack, but otherwise we would not visit them like a
-      // DFS, always the oldest node would be considered, but we need the latest
-      // occurence found), we visit it now.
-      visited[node] = true;
+    // Just for assertions.
+    size_t controlLength = currentPath.size();
 
-      // Here comes the special part: we emulate the callstack and the nodes in
-      // the current path to the root.
-      fastLookup[node] = true;
-      currentPath.push(StackEntry(node, toVisit.size()));
-
-      for (const auto& neighbor : nodes[node].adjacent()) {
-        // Then, we push each neighbor, regardless if already visited or not
-        // (for reason why, see above; the algorithm is still bound by the
-        // number of edges in the graph b/c a node might be as much put on the
-        // stack as there are edges to it).
-        toVisit.push(neighbor);
+    // Now we check every neighbor and visit it. In case we got a cycle here, we
+    // pass it down.
+    for (const auto& neighbor : nodes[node].adjacent()) {
+      auto result = connectedDfs(nodes,
+                                 topologicOrder,
+                                 visited,
+                                 currentPath,
+                                 fastPathLookup,
+                                 neighbor);
+      if (!result.empty()) {
+        return result;
       }
-    } else if (fastLookup[node]) {
-      // If we have already visited the node, but it is also in our current path
-      // to root, we are now in a cycle.
-      return decomposeCycle(node, currentPath);
     }
 
-    // In the end, we need to emulate the recursive backtracking on our virtual
-    // stack. For this, we save the number of items on our toVisit stack when we
-    // put our node on the stack. If we are back down, it means that we are back
-    // at the old junction again and our node is not visited any more.
-    while (!currentPath.empty() &&
-           currentPath.top().position == toVisit.size()) {
-      // If so, we have finished a node, so we put it to the (reverse) topologic
-      // order.
-      auto index = currentPath.top().index;
-      currentPath.pop();
-      fastLookup[index] = false;
-      topologicOrder.emplace_back(index);
-    }
+    // Assertion that the path is tracked properly.
+    assert::that(controlLength == currentPath.size());
 
-    // And all of that, we do over and over again.
+    // Of course, we have to remove our node now from the path.
+    currentPath.pop();
+    fastPathLookup[node] = false;
+
+    // Also, we are done with this node now, so we can add it to the finished
+    // ones.
+    topologicOrder.push_back(node);
+
+  } else if (fastPathLookup[node]) {
+    // If we have already visited the node, but it is also in our current path
+    // to root, we are now in a cycle.
+    return decomposeCycle(node, currentPath);
   }
 
-  // If we have finished without problems, there has not been a cycle.
+  // In case we get here, there has nothing been gone wrong.
   return std::vector<size_t>();
 }
 
@@ -154,13 +132,16 @@ disconnectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes) {
   // connected...
   std::vector<bool> visited(nodes.size());
   std::vector<size_t> topologicOrder;
+  std::stack<size_t> currentPath;
+  std::vector<bool> fastPathLookup(nodes.size());
 
   // So we have to go over all the nodes until everyone is visited.
   for (const auto& node : Utility::range<size_t>(0, nodes.size())) {
     if (visited[node]) continue;
     // If we found a non-visited node, we have found a new component of the
     // graph.
-    auto result = connectedDfs(nodes, topologicOrder, visited, node);
+    auto result = connectedDfs(
+        nodes, topologicOrder, visited, currentPath, fastPathLookup, node);
 
     if (!result.empty()) {
       // 'result' is a sample cycle. If we got one, there is one in the whole
