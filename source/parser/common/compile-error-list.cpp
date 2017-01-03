@@ -17,9 +17,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/common/compile-error-list.hpp"
 #include <algorithm>
+
 #include "common/translateable.hpp"
+#include "common/utility.hpp"
+#include "parser/common/compile-error-list.hpp"
 
 using size_t = std::size_t;
 
@@ -33,10 +35,9 @@ const CompileErrorVector& CompileErrorList::errors() const noexcept {
 namespace {
 bool existsError(const CompileErrorVector& errors,
                  CompileErrorSeverity severity) noexcept {
-  return std::any_of(
-      errors.begin(), errors.end(), [severity](const CompileError& error) {
-        return error.severity() == severity;
-      });
+  return Utility::anyOf(errors, [severity](const CompileError& error) {
+    return error.severity() == severity;
+  });
 }
 
 size_t countError(const CompileErrorVector& errors,
@@ -46,7 +47,8 @@ size_t countError(const CompileErrorVector& errors,
         return error.severity() == severity;
       });
 }
-};
+}  // namespace
+
 // Some meta info methods about the compile error vector.
 bool CompileErrorList::hasErrors() const noexcept {
   return existsError(_errors, CompileErrorSeverity::ERROR);
