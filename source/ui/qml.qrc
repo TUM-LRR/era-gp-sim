@@ -47,10 +47,6 @@
         <file>Components/Output/Buttons/Sevensegment Icon Selected@2x.png</file>
         <file>Components/Output/Buttons/Sevensegment Icon.png</file>
         <file>Components/Output/Buttons/Sevensegment Icon@2x.png</file>
-        <file>Components/Output/Buttons/Settings Icon Pressed.png</file>
-        <file>Components/Output/Buttons/Settings Icon Pressed@2x.png</file>
-        <file>Components/Output/Buttons/Settings Icon.png</file>
-        <file>Components/Output/Buttons/Settings Icon@2x.png</file>
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
