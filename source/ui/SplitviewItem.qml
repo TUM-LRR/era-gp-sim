@@ -130,9 +130,9 @@ Item {
                             }
                         }
                     }
-                    // Clicking the settings button opens the output settings window in the currently active output item..
+                    // Clicking the settings button opens the current components settings menu.
                     onClicked: {
-                        outputTabView.getTab(outputTabView.currentIndex).item.settingsButtonPressed();
+                        componentLoader.item.settingsButtonPressed();
                     }
 
                     Connections {
