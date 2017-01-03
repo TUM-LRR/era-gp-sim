@@ -31,20 +31,20 @@
 
 using DirectivePtr = std::shared_ptr<IntermediateDirective>;
 
+namespace {
 template <typename T>
-static DirectivePtr
-createInternal(const CodePositionInterval &positionInterval,
-               const std::vector<PositionedString> &labels,
-               const PositionedString &name,
-               const std::vector<PositionedString> &arguments) {
-  return std::make_unique<T>(positionInterval, labels, name, arguments);
+DirectivePtr createInternal(const CodePositionInterval &positionInterval,
+                            const PositionedStringVector &labels,
+                            const PositionedString &name,
+                            const PositionedStringVector &arguments) {
+  return std::make_shared<T>(positionInterval, labels, name, arguments);
 }
 
 // Function for `createMemoryDefinitionDirective`
 template <typename T>
-static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
+const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
     _processMemoryDefinitionValues =
-        [](const std::vector<PositionedString> &values,
+        [](const PositionedStringVector &values,
            const SymbolReplacer &replacer,
            std::size_t cellSize,
            CompileErrorList &errors,
@@ -84,19 +84,18 @@ static const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
 };
 
 template <typename T>
-static DirectivePtr
+DirectivePtr
 createMemoryDefinitionDirective(const CodePositionInterval &positionInterval,
-                                const std::vector<PositionedString> &labels,
+                                const PositionedStringVector &labels,
                                 const PositionedString &name,
-                                const std::vector<PositionedString> &values) {
-  return std::make_unique<MemoryDefinitionDirective<T>>(
+                                const PositionedStringVector &values) {
+  return std::make_shared<MemoryDefinitionDirective<T>>(
       positionInterval,
       labels,
       name,
       values,
       _processMemoryDefinitionValues<T>);
 }
-
 
 // Function for `createMemoryReservationDirective`
 MemoryReservationDirective::ArgumentCompileFunction
@@ -108,13 +107,14 @@ MemoryReservationDirective::ArgumentCompileFunction
       value, replacer, errors);
 };
 
+
 template <std::size_t cellSize>
-static DirectivePtr
+DirectivePtr
 createMemoryReservationDirective(const CodePositionInterval &positionInterval,
-                                 const std::vector<PositionedString> &labels,
+                                 const PositionedStringVector &labels,
                                  const PositionedString &name,
-                                 const std::vector<PositionedString> &values) {
-  return std::make_unique<MemoryReservationDirective>(
+                                 const PositionedStringVector &values) {
+  return std::make_shared<MemoryReservationDirective>(
       positionInterval,
       labels,
       name,
@@ -122,14 +122,14 @@ createMemoryReservationDirective(const CodePositionInterval &positionInterval,
       _memoryReservationArgumentCompile,
       cellSize);
 }
-
+};
 
 const std::unordered_map<
     std::string,
     std::function<DirectivePtr(const CodePositionInterval &,
-                               const std::vector<PositionedString> &,
+                               const PositionedStringVector &,
                                const PositionedString &,
-                               const std::vector<PositionedString> &)>>
+                               const PositionedStringVector &)>>
     RiscVDirectiveFactory::mapping{
         {"section", createInternal<SectionDirective>},
         {"macro", createInternal<MacroDirective>},
@@ -144,13 +144,12 @@ const std::unordered_map<
         {"resw", createMemoryReservationDirective<4>},
         {"resd", createMemoryReservationDirective<8>}};
 
-void RiscVDirectiveFactory::create(
-    const CodePositionInterval &positionInterval,
-    const std::vector<PositionedString> &labels,
-    const PositionedString &name,
-    const std::vector<PositionedString> &arguments,
-    IntermediateRepresentator &intermediate,
-    CompileErrorList &errors) {
+void RiscVDirectiveFactory::create(const CodePositionInterval &positionInterval,
+                                   const PositionedStringVector &labels,
+                                   const PositionedString &name,
+                                   const PositionedStringVector &arguments,
+                                   IntermediateRepresentator &intermediate,
+                                   CompileErrorList &errors) {
   DirectivePtr ptr;
 
   auto element = mapping.find(name.string());
@@ -160,6 +159,6 @@ void RiscVDirectiveFactory::create(
     errors.pushError(name.positionInterval(), "Unknown directive");
   } else {
     ptr = (element->second)(positionInterval, labels, name, arguments);
-    intermediate.insertCommandPtr(std::move(ptr), errors);
+    intermediate.insertCommandPointer(ptr, errors);
   }
 }

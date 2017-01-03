@@ -21,58 +21,60 @@
 #include <algorithm>
 #include "common/translateable.hpp"
 
+using size_t = std::size_t;
+
 // Getter.
 
-const CompileErrorVector CompileErrorList::errors() const noexcept {
+const CompileErrorVector& CompileErrorList::errors() const noexcept {
   return _errors;
 }
 
 // Some internal helper methods.
-
-static bool
-existsError(const CompileErrorVector& errors, CompileErrorSeverity severity) {
+namespace {
+bool existsError(const CompileErrorVector& errors,
+                 CompileErrorSeverity severity) noexcept {
   return std::any_of(
       errors.begin(), errors.end(), [severity](const CompileError& error) {
         return error.severity() == severity;
       });
 }
 
-static std::size_t
-countError(const CompileErrorVector& errors, CompileErrorSeverity severity) {
+size_t countError(const CompileErrorVector& errors,
+                  CompileErrorSeverity severity) noexcept {
   return std::count_if(
       errors.begin(), errors.end(), [severity](const CompileError& error) {
         return error.severity() == severity;
       });
 }
-
+};
 // Some meta info methods about the compile error vector.
-bool CompileErrorList::hasErrors() const {
+bool CompileErrorList::hasErrors() const noexcept {
   return existsError(_errors, CompileErrorSeverity::ERROR);
 }
-bool CompileErrorList::hasWarnings() const {
+bool CompileErrorList::hasWarnings() const noexcept {
   return existsError(_errors, CompileErrorSeverity::WARNING);
 }
-bool CompileErrorList::hasInformation() const {
+bool CompileErrorList::hasInformation() const noexcept {
   return existsError(_errors, CompileErrorSeverity::INFORMATION);
 }
-bool CompileErrorList::empty() const {
+bool CompileErrorList::empty() const noexcept {
   return _errors.empty();
 }
-std::size_t CompileErrorList::errorCount() const {
+size_t CompileErrorList::errorCount() const noexcept {
   return countError(_errors, CompileErrorSeverity::ERROR);
 }
-std::size_t CompileErrorList::warningCount() const {
+size_t CompileErrorList::warningCount() const noexcept {
   return countError(_errors, CompileErrorSeverity::WARNING);
 }
-std::size_t CompileErrorList::informationCount() const {
+size_t CompileErrorList::informationCount() const noexcept {
   return countError(_errors, CompileErrorSeverity::INFORMATION);
 }
-std::size_t CompileErrorList::size() const {
+size_t CompileErrorList::size() const noexcept {
   return _errors.size();
 }
 
 // Enhancement methods.
 
 void CompileErrorList::addRaw(const CompileError& error) {
-  _errors.push_back(error);
+  _errors.emplace_back(error);
 }

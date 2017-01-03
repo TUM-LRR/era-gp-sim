@@ -25,14 +25,15 @@
 RiscvParser::RiscvRegex::RiscvRegex() {
 }
 
-static size_t trimRight(const std::string &line, size_t pos) {
+namespace {
+size_t trimRight(const std::string &line, size_t pos) {
   --pos;
   while (pos > 0 && std::isspace(line[pos])) {
     --pos;
   }
-  ++pos;
-  return pos;
+  return ++pos;
 }
+};
 
 // Returns true if successful
 bool RiscvParser::RiscvRegex::_readInstructionOrLabel(
@@ -41,14 +42,15 @@ bool RiscvParser::RiscvRegex::_readInstructionOrLabel(
     CompileErrorList &errors,
     size_t &pos) {
   // Skip spaces
-  for (; pos < line.size() && std::isspace(line[pos]); pos++) {
+  while (pos < line.size() && std::isspace(line[pos])) {
+    ++pos;
   }
 
   size_t startPos = pos;
   // Add valid characters to _instruction
-  for (; pos < line.size() &&
-         (std::isalnum(line[pos]) || line[pos] == '_' || line[pos] == '.');
-       ++pos) {
+  while (pos < line.size() &&
+         (std::isalnum(line[pos]) || line[pos] == '_' || line[pos] == '.')) {
+    ++pos;
   }
 
   // If we read through the whole string, the instruction is finished
@@ -94,13 +96,14 @@ bool RiscvParser::RiscvRegex::_readParameter(const std::string &line,
   bool quoted = false;
 
   // Skip spaces
-  for (; pos < (size_t)line.size() && std::isspace(line[pos]); pos++) {
+  while (pos < (size_t)line.size() && std::isspace(line[pos])) {
+    ++pos;
   }
 
   size_t startPos = pos;
   size_t endPos = pos;
   // Add characters to parameter until we hit a ',' outside of quotes
-  for (; pos < line.size(); ++pos, ++endPos) {
+  while (pos < line.size()) {
     if (line[pos] == '"' && line[pos - 1] != '\\') {
       quoted = !quoted;
     }
@@ -110,12 +113,15 @@ bool RiscvParser::RiscvRegex::_readParameter(const std::string &line,
     } else if (line[pos] == ';' && !quoted) {
       break;
     }
+
+    ++pos;
+    ++endPos;
   }
 
   size_t trimmedPos = trimRight(line, endPos);
 
   if (startPos < trimmedPos) {
-    _parameters.push_back(_getPositionedString(
+    _parameters.emplace_back(_getPositionedString(
         line, lineCoordinate, errors, startPos, trimmedPos));
   }
 

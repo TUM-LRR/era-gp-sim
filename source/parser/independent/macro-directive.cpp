@@ -23,9 +23,9 @@
 #include "parser/independent/macro-directive-table.hpp"
 
 MacroDirective::MacroDirective(const CodePositionInterval& positionInterval,
-                               const std::vector<PositionedString>& labels,
+                               const PositionedStringVector& labels,
                                const PositionedString& name,
-                               const std::vector<PositionedString>& arguments)
+                               const PositionedStringVector& arguments)
 : IntermediateDirective(positionInterval, labels, name)
 , _macroName(arguments.empty() ? PositionedString() : arguments[0])
 , _macroParameters(arguments.size() > 0 ? arguments.begin() + 1
@@ -34,26 +34,25 @@ MacroDirective::MacroDirective(const CodePositionInterval& positionInterval,
 , _operations() {
 }
 
-MacroDirective::MacroDirective(
-    const CodePositionInterval& positionInterval,
-    const std::vector<PositionedString>& labels,
-    const PositionedString& name,
-    const PositionedString& macroName,
-    const std::vector<PositionedString>& macroParameters)
+MacroDirective::MacroDirective(const CodePositionInterval& positionInterval,
+                               const PositionedStringVector& labels,
+                               const PositionedString& name,
+                               const PositionedString& macroName,
+                               const PositionedStringVector& macroParameters)
 : IntermediateDirective(positionInterval, labels, name)
 , _macroName(macroName)
 , _macroParameters(macroParameters)
 , _operations() {
 }
 
-void MacroDirective::insert(IntermediateOperationPointer pointer) {
+void MacroDirective::insert(const IntermediateOperationPointer& pointer) {
   // Remember index of the first instruction so we can use its address for
   // labels.
   if (_firstInstruction < 0 &&
       pointer->getType() == IntermediateOperation::Type::INSTRUCTION) {
     _firstInstruction = _operations.size();
   }
-  _operations.push_back(std::move(pointer));
+  _operations.emplace_back(pointer);
 }
 
 void MacroDirective::precompile(
@@ -62,6 +61,7 @@ void MacroDirective::precompile(
     MacroDirectiveTable& macroTable) {
   if (macroName().string().empty()) {
     errors.pushError(name().positionInterval(), "Missing macro name.");
+    return;
   }
   _macroParameters.validate(errors);
   auto success = macroTable.insert(*this);
@@ -99,14 +99,17 @@ bool MacroDirective::isCompiling() {
   return _isCompiling;
 }
 
-IntermediateOperationPointer MacroDirective::getOperation(
-    size_t index, const std::vector<PositionedString>& arguments) const {
+IntermediateOperationPointer
+MacroDirective::getOperation(size_t index,
+                             const PositionedStringVector& arguments) const {
   IntermediateOperationPointer ptr = _operations[index]->clone();
 
-  if (ptr == nullptr) return ptr;
+  if (!ptr) {
+    return ptr;
+  }
 
   _macroParameters.insertParameters(ptr, arguments);
-  return std::move(ptr);
+  return ptr;
 }
 
 int MacroDirective::firstInstructionIndex() const {
@@ -118,8 +121,8 @@ const PositionedString& MacroDirective::getOperationName(size_t index) const {
 }
 
 MacroDirective::MacroParameters::MacroParameters(
-    std::vector<PositionedString>::const_iterator begin,
-    std::vector<PositionedString>::const_iterator end)
+    PositionedStringVector::const_iterator begin,
+    PositionedStringVector::const_iterator end)
 : _minParams(0) {
   for (auto i = begin; i != end; ++i) {
     Optional<PositionedString> defaultVal;
@@ -143,7 +146,7 @@ MacroDirective::MacroParameters::MacroParameters(
       _minParams++;
     }
 
-    _params.emplace_back(std::move(name), std::move(defaultVal));
+    _params.emplace_back(name, defaultVal);
   }
 }
 
@@ -175,7 +178,7 @@ void MacroDirective::MacroParameters::validate(CompileErrorList& errors) const {
 
 void MacroDirective::MacroParameters::insertParameters(
     IntermediateOperationPointer& operation,
-    const std::vector<PositionedString>& values) const {
+    const PositionedStringVector& values) const {
   // Since macros are identified by name and argument count, this function
   // should always be called with a valid size of `values`.
   assert::that(values.size() >= _minParams && values.size() <= _params.size());

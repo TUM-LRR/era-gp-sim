@@ -22,11 +22,10 @@
 #include "parser/independent/memory-allocator.hpp"
 #include "parser/independent/section-tracker.hpp"
 
-SectionDirective::SectionDirective(
-    const CodePositionInterval& positionInterval,
-    const std::vector<PositionedString>& labels,
-    const PositionedString& name,
-    const std::vector<PositionedString>& arguments)
+SectionDirective::SectionDirective(const CodePositionInterval& positionInterval,
+                                   const PositionedStringVector& labels,
+                                   const PositionedString& name,
+                                   const PositionedStringVector& arguments)
 : IntermediateDirective(positionInterval, labels, name) {
   _hasName = !arguments.empty();
   if (_hasName) {

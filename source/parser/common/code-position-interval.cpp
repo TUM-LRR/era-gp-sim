@@ -66,7 +66,7 @@ CodeCoordinate CodePositionInterval::endCharacter() const noexcept {
 
 // Helper for determining, if this code position interval is empty.
 
-bool CodePositionInterval::empty() const noexcept {
+bool CodePositionInterval::isEmpty() const noexcept {
   // Either we got same y coordinates and the x coordinates are inversed, or
   // just the y coordinates are inversed and the x coordinates are irrelevant.
   return (_codePositionStart.x() > _codePositionEnd.x() &&
@@ -77,9 +77,9 @@ bool CodePositionInterval::empty() const noexcept {
 CodePositionInterval
 CodePositionInterval::unite(const CodePositionInterval& other) const {
   // If one of the intervals we want to with is empty, we take the other one.
-  if (empty()) {
+  if (isEmpty()) {
     return other;
-  } else if (other.empty()) {
+  } else if (other.isEmpty()) {
     return *this;
   } else {
     // If not, take the maximum of both code positions each.
@@ -90,8 +90,8 @@ CodePositionInterval::unite(const CodePositionInterval& other) const {
 }
 
 CodePositionInterval
-CodePositionInterval::cut(const CodePositionInterval& other) const {
-  if (empty() || other.empty()) {
+CodePositionInterval::intersect(const CodePositionInterval& other) const {
+  if (isEmpty() || other.isEmpty()) {
     // If one interval is empty, there is nothing that overlaps, i.e. the cut is
     // empty.
     return CodePositionInterval();
@@ -114,13 +114,13 @@ CodePositionInterval CodePositionInterval::unite(
   return acc;
 }
 
-CodePositionInterval CodePositionInterval::cut(
+CodePositionInterval CodePositionInterval::intersect(
     const std::vector<CodePositionInterval>::const_iterator& start,
     const std::vector<CodePositionInterval>::const_iterator& end) {
   // Just iterate over the vector.
   CodePositionInterval acc;
   for (auto it = start; it != end; ++it) {
-    acc = acc.cut(*it);
+    acc = acc.intersect(*it);
   }
   return acc;
 }

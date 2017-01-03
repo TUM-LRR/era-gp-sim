@@ -26,22 +26,22 @@
 class AbstractInstructionNode;
 
 /**
- * \brief Helper definition for memory address integer sizes.
+ * Helper definition for memory address integer sizes.
  */
 using MemoryAddress = std::size_t;
 
 /**
- * \brief A pointer on a final instruction node sent to the code and the gui.
+ * A pointer on a final instruction node sent to the code and the gui.
  */
 using FinalCommandNodePointer = std::shared_ptr<AbstractInstructionNode>;
 
 /**
- * \brief A finalized command with display information ready to be executed.
+ * A finalized command with display information ready to be executed.
  */
 class FinalCommand {
  public:
   /**
-   * \brief Creates a final command with the given parameters.
+   * Creates a final command with the given parameters.
    * \param node The pointer to the syntax tree node containing the instruction
    * data.
    * \param position The position in code where the interval is located.
@@ -52,7 +52,7 @@ class FinalCommand {
                const MemoryAddress& address);
 
   /**
-   * \brief Returns the pointer to the syntax tree node containing the
+   * Returns the pointer to the syntax tree node containing the
    * instruction data.
    * \return The pointer to the syntax tree node containing the instruction
    * data.
@@ -60,37 +60,37 @@ class FinalCommand {
   const FinalCommandNodePointer& node() const noexcept;
 
   /**
-   * \brief Returns the position in code where the interval is located.
+   * Returns the position in code where the interval is located.
    * \return The position in code where the interval is located.
    */
   const CodePositionInterval& position() const noexcept;
 
   /**
-   * \brief Returns the address of the command in memory.
+   * Returns the address of the command in memory.
    * \return The address of the command in memory.
    */
   const MemoryAddress& address() const noexcept;
 
  private:
   /**
-   * \brief Returns the pointer to the syntax tree node containing the
+   * Returns the pointer to the syntax tree node containing the
    * instruction data.
    */
   FinalCommandNodePointer _node;
 
   /**
-   * \brief The position in code where the interval is located.
+   * The position in code where the interval is located.
    */
   CodePositionInterval _position;
 
   /**
-   * \brief The address of the command in memory.
+   * The address of the command in memory.
    */
   MemoryAddress _address;
 };
 
 /**
- * \brief A vector of final commands.
+ * A vector of final commands.
  */
 using FinalCommandVector = std::vector<FinalCommand>;
 

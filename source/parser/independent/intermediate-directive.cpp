@@ -24,7 +24,7 @@
 
 IntermediateDirective::IntermediateDirective(
     const CodePositionInterval& positionInterval,
-    const std::vector<PositionedString>& labels,
+    const PositionedStringVector& labels,
     const PositionedString& name)
 : IntermediateOperation(positionInterval, labels, name) {
 }

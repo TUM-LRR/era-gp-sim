@@ -30,9 +30,9 @@
 
 ConstantDirective::ConstantDirective(
     const CodePositionInterval& positionInterval,
-    const std::vector<PositionedString>& labels,
+    const PositionedStringVector& labels,
     const PositionedString& name,
-    const std::vector<PositionedString>& arguments)
+    const PositionedStringVector& arguments)
 : IntermediateDirective(positionInterval, labels, name), _arguments{arguments} {
 }
 
@@ -84,8 +84,7 @@ void ConstantDirective::enhanceSymbolTable(
   graph.addNode(Symbol(_arguments[0], _expression));
 }
 
-const std::vector<PositionedString>& ConstantDirective::arguments() const
-    noexcept {
+const PositionedStringVector& ConstantDirective::arguments() const noexcept {
   return _arguments;
 }
 const PositionedString& ConstantDirective::expression() const noexcept {

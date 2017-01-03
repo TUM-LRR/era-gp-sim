@@ -24,13 +24,13 @@
 #include "parser/independent/syntax-tree-generator.hpp"
 
 /**
- * \brief A collection of some constant parameters which can be used during the
+ * A collection of some constant parameters which can be used during the
  * 'allocateMemory' and 'preprocess' operation of the intermediate operation.
  */
 class PreprocessingImmutableArguments {
  public:
   /**
-   * \brief Creates a new PreprocessingImmutableArguments with the given
+   * Creates a new PreprocessingImmutableArguments with the given
    * parameters.
    * \param architecture The architecture with which the operation was called.
    * \param generator The generator for syntax tree nodes.
@@ -39,25 +39,25 @@ class PreprocessingImmutableArguments {
                                   const SyntaxTreeGenerator& generator);
 
   /**
-    * \brief Returns the architecture with which the operation was called.
+    * Returns the architecture with which the operation was called.
     * \return The architecture with which the operation was called.
     */
   const Architecture& architecture() const noexcept;
 
   /**
-   * \brief Returns the generator for syntax tree nodes.
+   * Returns the generator for syntax tree nodes.
    * \return The generator for syntax tree nodes.
    */
   const SyntaxTreeGenerator& generator() const noexcept;
 
  private:
   /**
-    * \brief The architecture with which the operation was called.
+    * The architecture with which the operation was called.
     */
   Architecture _architecture;
 
   /**
-   * \brief The memory allocator used to convert relative to absolute positions
+   * The memory allocator used to convert relative to absolute positions
    * and also for different section management.
    */
   SyntaxTreeGenerator _generator;

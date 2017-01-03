@@ -26,29 +26,29 @@
 #include "parser/independent/intermediate-operation.hpp"
 
 /**
- * \brief Represents a directive in the parser-internal intermediate form.
+ * Represents a directive in the parser-internal intermediate form.
  */
 class IntermediateDirective : public IntermediateOperation {
  public:
   /**
-   * \brief Instantiates a new IntermediateDirective with the given arguments.
+   * Instantiates a new IntermediateDirective with the given arguments.
    * (only for subclass use!)
    * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation.
    */
   IntermediateDirective(const CodePositionInterval& positionInterval,
-                        const std::vector<PositionedString>& labels,
+                        const PositionedStringVector& labels,
                         const PositionedString& name);
 
   /**
-* \brief Finalizes an intermediate directive.
+* Finalizes an intermediate directive.
 */
   virtual ~IntermediateDirective() = default;
 
  protected:
   /**
-   * \brief Calculates the memory position of the intermediate directive.
+   * Calculates the memory position of the intermediate directive.
    */
   virtual void determineMemoryPosition();
 };

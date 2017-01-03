@@ -21,21 +21,21 @@
 #define ERAGPSIM_PARSER_COMMON_COMPILE_ERROR_SEVERITY_HPP
 
 /**
- * \brief Denotes the severity of a compiler error.
+ * Denotes the severity of a compiler error.
  */
 enum class CompileErrorSeverity {
   /**
-   * \brief The severity is an error, i.e. the program will not compile
+   * The severity is an error, i.e. the program will not compile
    * properly.
    */
   ERROR,
   /**
-   * \brief The severity is a warning, i.e. the program will compile, but might
+   * The severity is a warning, i.e. the program will compile, but might
    * show unexpected behavior.
    */
   WARNING,
   /**
-   * \brief The severity is just an information, e.g. a hint for the user.
+   * The severity is just an information, e.g. a hint for the user.
    */
   INFORMATION
 };

@@ -38,21 +38,21 @@ class MemoryReservationDirective : public IntermediateDirective {
   using ArgumentCompileFunction = std::function<std::size_t(
       const PositionedString&, const SymbolReplacer&, CompileErrorList&)>;
   /**
- * \brief Instantiates a new IntermediateDirective with the given arguments.
+ * Instantiates a new IntermediateDirective with the given arguments.
  * (only for subclass use!)
  * \param positionInterval The line interval the operation occupies.
  * \param labels The vector of labels assigned to the operation.
  * \param name The name of the operation.
  */
   MemoryReservationDirective(const CodePositionInterval& positionInterval,
-                             const std::vector<PositionedString>& labels,
+                             const PositionedStringVector& labels,
                              const PositionedString& name,
-                             const std::vector<PositionedString>& values,
+                             const PositionedStringVector& values,
                              const ArgumentCompileFunction& argumentCompile,
                              std::size_t cellSize);
 
   /**
-   * \brief Executes the reservation directive by inserting the data into
+   * Executes the reservation directive by inserting the data into
    * memory.
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
@@ -64,10 +64,10 @@ class MemoryReservationDirective : public IntermediateDirective {
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
                        FinalCommandVector& commandOutput,
-                       MemoryAccess& memoryAccess) override;
+                       MemoryAccess& memoryAccess);
 
   /**
-   * \brief Reserves memory for this operation (but does not write it yet!) (if
+   * Reserves memory for this operation (but does not write it yet!) (if
    * needed).
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
@@ -78,10 +78,10 @@ class MemoryReservationDirective : public IntermediateDirective {
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
                               CompileErrorList& errors,
                               MemoryAllocator& allocator,
-                              SectionTracker& tracker) override;
+                              SectionTracker& tracker);
 
   /**
-   * \brief Reserves entries for this operation in the symbol table, inserts
+   * Reserves entries for this operation in the symbol table, inserts
    * labels.
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
@@ -91,13 +91,13 @@ class MemoryReservationDirective : public IntermediateDirective {
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
                      CompileErrorList& errors,
-                     SymbolGraph& graph) override;
+                     SymbolGraph& graph);
 
   MemoryAddress absolutePosition() const noexcept;
-  const std::vector<PositionedString>& values() const noexcept;
+  const PositionedStringVector& values() const noexcept;
 
   /**
-     * \brief Finalizes a memory reservation directive.
+     * Finalizes a memory reservation directive.
      */
   virtual ~MemoryReservationDirective() = default;
 
@@ -106,7 +106,7 @@ class MemoryReservationDirective : public IntermediateDirective {
   RelativeMemoryPosition _relativePosition;
   std::size_t _size;
   std::size_t _cellSize;
-  std::vector<PositionedString> _values;
+  PositionedStringVector _values;
   ArgumentCompileFunction _argumentCompile;
 };
 

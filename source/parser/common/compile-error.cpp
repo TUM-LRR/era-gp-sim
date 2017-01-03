@@ -62,6 +62,6 @@ const CodePositionInterval& CompileError::position() const noexcept {
  * \brief Returns the severity of the error.
  * \return The severity of the error.
  */
-const CompileErrorSeverity CompileError::severity() const noexcept {
+CompileErrorSeverity CompileError::severity() const noexcept {
   return _severity;
 }

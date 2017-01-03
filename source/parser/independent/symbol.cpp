@@ -21,14 +21,16 @@
 #include "common/assert.hpp"
 
 // Some testing regexes.
-static const std::regex TRIMMED =
-    std::regex("(^\\s+|\\s+$)", std::regex_constants::optimize);
-static const std::regex VALID_NAME =
+namespace {
+const std::regex TRIMMED =
+    std::regex("^\\s+|\\s+$", std::regex_constants::optimize);
+const std::regex VALID_NAME =
     std::regex("^[A-Za-z_][A-Za-z0-9_]*$", std::regex_constants::optimize);
 
-static bool symbolNameValid(const PositionedString& name) {
+bool symbolNameValid(const PositionedString& name) {
   return std::regex_search(name.string(), VALID_NAME);
 }
+};
 
 
 Symbol::Symbol(const PositionedString& name,

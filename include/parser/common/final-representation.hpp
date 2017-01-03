@@ -28,24 +28,24 @@
 #include "parser/common/macro-information.hpp"
 
 /**
- * \brief Denotes the temporary output of an IntermediateRepresentator ready to
+ * Denotes the temporary output of an IntermediateRepresentator ready to
  * be used by the architecture.
  */
 class FinalRepresentation {
  public:
   /**
-   * \brief Helper type for address mapping from memory address to instruction
+   * Helper type for address mapping from memory address to instruction
    * index in the command vector.
    */
   using AddressMapping = std::unordered_map<MemoryAddress, std::size_t>;
 
   /**
-   * \brief Creates an empty final representation.
+   * Creates an empty final representation.
    */
   FinalRepresentation() = default;
 
   /**
-   * \brief Creates a final representation with the given arguments.
+   * Creates a final representation with the given arguments.
    * \param commandList The list with the assembled instructions and their
    * location in code.
    * \param errorList The list with errors that occurred during the compilation
@@ -58,7 +58,7 @@ class FinalRepresentation {
                       const MacroInformationVector& macroList);
 
   /**
-   * \brief Returns the list with the assembled instructions and their location
+   * Returns the list with the assembled instructions and their location
    * in code.
    * \return The list with the assembled instructions and their location in
    * code.
@@ -66,21 +66,21 @@ class FinalRepresentation {
   const FinalCommandVector& commandList() const noexcept;
 
   /**
-   * \brief Returns the list with errors that occurred during the compilation
+   * Returns the list with errors that occurred during the compilation
    * process.
    * \return The list with errors that occurred during the compilation process.
    */
   const CompileErrorList& errorList() const noexcept;
 
   /**
-   * \brief Returns a helper list containing all macros which have been
+   * Returns a helper list containing all macros which have been
    * assembled.
    * \return A helper list containing all macros which have been assembled.
    */
   const MacroInformationVector& macroList() const noexcept;
 
   /**
-   * \brief Create a mapping between index in memory and index in command vector
+   * Create a mapping between index in memory and index in command vector
    * of this FinalRepresentation.
    * \return The created mapping.
    */
@@ -88,17 +88,17 @@ class FinalRepresentation {
 
  private:
   /**
-   * \brief The list with the assembled instructions and their location in code.
+   * The list with the assembled instructions and their location in code.
    */
   FinalCommandVector _commandList;
 
   /**
-   * \brief The list with errors that occurred during the compilation process.
+   * The list with errors that occurred during the compilation process.
    */
   CompileErrorList _errorList;
 
   /**
-   * \brief A helper list containing all macros which have been assembled.
+   * A helper list containing all macros which have been assembled.
    */
   MacroInformationVector _macroList;
 };

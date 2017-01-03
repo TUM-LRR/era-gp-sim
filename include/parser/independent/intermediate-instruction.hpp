@@ -27,17 +27,18 @@
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "parser/independent/intermediate-operation.hpp"
 #include "parser/independent/memory-allocator.hpp"
+#include "parser/independent/syntax-tree-generator.hpp"
 
 class Architecture;
 
 /**
- * \brief Represents a machine instruction in the parser-internal intermediate
+ * Represents a machine instruction in the parser-internal intermediate
  * form.
  */
 class IntermediateInstruction : public IntermediateOperation {
  public:
   /**
-   * \brief Instantiates a new compile error with the given arguments.
+   * Instantiates a new compile error with the given arguments.
    * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation.
@@ -45,13 +46,13 @@ class IntermediateInstruction : public IntermediateOperation {
    * \param targets The target operands of the instruction.
    */
   IntermediateInstruction(const CodePositionInterval& positionInterval,
-                          const std::vector<PositionedString>& labels,
+                          const PositionedStringVector& labels,
                           const PositionedString& name,
-                          const std::vector<PositionedString>& sources,
-                          const std::vector<PositionedString>& targets);
+                          const PositionedStringVector& sources,
+                          const PositionedStringVector& targets);
 
   /**
-* \brief Executes the operation (i.e. it is inserted into the commandOutput
+* Executes the operation (i.e. it is inserted into the commandOutput
 * list).
 * \param immutable Some constant arguments which might be helpful.
 * \param errors The compile error list to note down any errors.
@@ -63,10 +64,10 @@ class IntermediateInstruction : public IntermediateOperation {
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
                        FinalCommandVector& commandOutput,
-                       MemoryAccess& memoryAccess) override;
+                       MemoryAccess& memoryAccess);
 
   /**
-     * \brief Reserves entries for this operation in the symbol table, inserts
+     * Reserves entries for this operation in the symbol table, inserts
    * all labels.
      * \param immutable Some constant arguments which might be helpful.
      * \param errors The compile error list to note down any errors.
@@ -76,10 +77,10 @@ class IntermediateInstruction : public IntermediateOperation {
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
                      CompileErrorList& errors,
-                     SymbolGraph& graph) override;
+                     SymbolGraph& graph);
 
   /**
-     * \brief Reserves memory for this operation.
+     * Reserves memory for this operation.
      * \param immutable Some constant arguments which might be helpful.
      * \param errors The compile error list to note down any errors.
      * \param allocator The allocator to reserve memory.
@@ -89,11 +90,11 @@ class IntermediateInstruction : public IntermediateOperation {
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
                               CompileErrorList& errors,
                               MemoryAllocator& allocator,
-                              SectionTracker& tracker) override;
+                              SectionTracker& tracker);
 
 
   /**
-   * \brief Converts this instruction into a syntax tree.
+   * Converts this instruction into a syntax tree.
    * \param table The SymbolTable required for replacing the arguments.
    * \param generator The generator to transform the instructions.
    * \param state The CompileState logging all errors occuring.
@@ -104,31 +105,31 @@ class IntermediateInstruction : public IntermediateOperation {
                                   MemoryAccess& memoryAccess);
 
   /**
-   * \brief Returns the memory address of this operation.
+   * Returns the memory address of this operation.
    * \return The memory address of this operation.
    */
   MemoryAddress address() const noexcept;
 
   virtual void insertIntoArguments(const PositionedString& name,
-                                   const PositionedString& value) override;
+                                   const PositionedString& value);
 
-  virtual IntermediateOperationPointer clone() override;
+  virtual IntermediateOperationPointer clone();
 
-  virtual std::string toString() const override;
+  virtual std::string toString() const;
 
-  virtual Type getType() const override;
+  virtual Type getType() const;
 
   /**
-   * \brief Finalizes an intermediate instruction.
+   * Finalizes an intermediate instruction.
    */
   virtual ~IntermediateInstruction() = default;
 
-  const std::vector<PositionedString>& sources() const noexcept;
-  const std::vector<PositionedString>& targets() const noexcept;
+  const PositionedStringVector& sources() const noexcept;
+  const PositionedStringVector& targets() const noexcept;
 
  protected:
   /**
-   * \brief Compiles a vector of arguments (i.e. inserts symbols and converts to
+   * Compiles a vector of arguments (i.e. inserts symbols and converts to
    * syntax tree nodes).
    * \param vector The vector to compile.
    * \param table The SymbolTable required for replacing the arguments.
@@ -136,8 +137,8 @@ class IntermediateInstruction : public IntermediateOperation {
    * \param state The CompileState logging all errors occuring.
    * \return The compiled vector of arguments.
    */
-  std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>
-  compileArgumentVector(const std::vector<PositionedString>& vector,
+  AbstractSyntaxTreeNodePointerVector
+  compileArgumentVector(const PositionedStringVector& vector,
                         const ExecuteImmutableArguments& immutable,
                         CompileErrorList& errors,
                         MemoryAccess& memoryAccess);
@@ -146,22 +147,22 @@ class IntermediateInstruction : public IntermediateOperation {
   friend class IntermediateMacroInstruction;
 
   /**
-   * \brief The internal source arguments.
+   * The internal source arguments.
    */
-  std::vector<PositionedString> _sources;
+  PositionedStringVector _sources;
 
   /**
-   * \brief The internal target arguments.
+   * The internal target arguments.
    */
-  std::vector<PositionedString> _targets;
+  PositionedStringVector _targets;
 
   /**
-   * \brief The internal memory address.
+   * The internal memory address.
    */
   MemoryAddress _address;
 
   /**
-   * \brief The memory address inside the code section.
+   * The memory address inside the code section.
    */
   RelativeMemoryPosition _relativeAddress;
 
@@ -169,7 +170,7 @@ class IntermediateInstruction : public IntermediateOperation {
    * Constructs an argument vector from the sources and targets vectors.
    * \return New vector containing all instruction arguments.
    */
-  std::vector<PositionedString> getArgsVector() const;
+  PositionedStringVector getArgsVector() const;
 };
 
 #endif

@@ -26,20 +26,7 @@
 
 using size_t = std::size_t;
 
-void SymbolGraph::addNode(const Symbol& symbol) {
-  // Adding a node means checking all adjencencies to it and from it away – and
-  // also to itself.
-  auto newNode = SymbolNode(symbol, _nodes.size());
-  for (auto& node : _nodes) {
-    node.checkAdjacency(newNode);
-    newNode.checkAdjacency(node);
-  }
-
-  newNode.checkAdjacency(newNode);
-
-  _nodes.push_back(newNode);
-}
-
+namespace {
 // Some small helper classes.
 class PartialEvaluation {
  public:
@@ -68,26 +55,27 @@ struct StackEntry {
   }
 };
 
-static std::vector<size_t>
+std::vector<size_t>
 decomposeCycle(size_t startNode, std::stack<StackEntry>& stack) {
+  assert::that(!stack.empty());
+
   // Here, we decompose the stack to find a cycle.
   std::vector<size_t> cycle;
-  cycle.push_back(startNode);
+  cycle.emplace_back(startNode);
 
   // We know, (at least: when called in this one place in the function below)
   // that 'startNode' exists again in the stack, so we go down, until we find
   // it.
-  assert::that(!stack.empty());
   while (stack.top().index != startNode) {
-    cycle.push_back(stack.top().index);
+    cycle.emplace_back(stack.top().index);
     stack.pop();
     assert::that(!stack.empty());
   }
-  cycle.push_back(startNode);
+  cycle.emplace_back(startNode);
   return cycle;
 }
 
-static std::vector<size_t>
+std::vector<size_t>
 connectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes,
              std::vector<size_t>& topologicOrder,
              std::vector<bool>& visited,
@@ -105,7 +93,7 @@ connectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes,
   std::stack<size_t> toVisit;
 
   // Some means to emulate the call stack.
-  std::stack<StackEntry> emulatedStack;
+  std::stack<StackEntry> currentPath;
   std::vector<bool> fastLookup(nodes.size());
 
   // We start as usual with one vertex pushed.
@@ -124,7 +112,7 @@ connectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes,
       // Here comes the special part: we emulate the callstack and the nodes in
       // the current path to the root.
       fastLookup[node] = true;
-      emulatedStack.push(StackEntry(node, toVisit.size()));
+      currentPath.push(StackEntry(node, toVisit.size()));
 
       for (const auto& neighbor : nodes[node].adjacent()) {
         // Then, we push each neighbor, regardless if already visited or not
@@ -136,21 +124,21 @@ connectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes,
     } else if (fastLookup[node]) {
       // If we have already visited the node, but it is also in our current path
       // to root, we are now in a cycle.
-      return decomposeCycle(node, emulatedStack);
+      return decomposeCycle(node, currentPath);
     }
 
     // In the end, we need to emulate the recursive backtracking on our virtual
     // stack. For this, we save the number of items on our toVisit stack when we
     // put our node on the stack. If we are back down, it means that we are back
     // at the old junction again and our node is not visited any more.
-    while (!emulatedStack.empty() &&
-           emulatedStack.top().position == toVisit.size()) {
-      // If so, we have finished a node, so we put it to the (inverse) topologic
+    while (!currentPath.empty() &&
+           currentPath.top().position == toVisit.size()) {
+      // If so, we have finished a node, so we put it to the (reverse) topologic
       // order.
-      auto index = emulatedStack.top().index;
-      emulatedStack.pop();
+      auto index = currentPath.top().index;
+      currentPath.pop();
       fastLookup[index] = false;
-      topologicOrder.push_back(index);
+      topologicOrder.emplace_back(index);
     }
 
     // And all of that, we do over and over again.
@@ -160,25 +148,24 @@ connectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes,
   return std::vector<size_t>();
 }
 
-static PartialEvaluation
+PartialEvaluation
 disconnectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes) {
-  // To check for cycles, we to a DFS over the graph which might not be
+  // To check for cycles, we do a DFS over the graph which might not be
   // connected...
   std::vector<bool> visited(nodes.size());
   std::vector<size_t> topologicOrder;
 
   // So we have to go over all the nodes until everyone is visited.
   for (const auto& node : Utility::range<size_t>(0, nodes.size())) {
-    if (!visited[node]) {
-      // If we found a non-visited node, we have found a new component of the
-      // graph.
-      auto result = connectedDfs(nodes, topologicOrder, visited, node);
+    if (visited[node]) continue;
+    // If we found a non-visited node, we have found a new component of the
+    // graph.
+    auto result = connectedDfs(nodes, topologicOrder, visited, node);
 
-      if (!result.empty()) {
-        // 'result' is a sample cycle. If we got one, there is one in the whole
-        // graph, i.e. we fail.
-        return PartialEvaluation({}, result);
-      }
+    if (!result.empty()) {
+      // 'result' is a sample cycle. If we got one, there is one in the whole
+      // graph, i.e. we fail.
+      return PartialEvaluation({}, result);
     }
   }
 
@@ -186,7 +173,7 @@ disconnectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes) {
   return PartialEvaluation(topologicOrder, {});
 }
 
-static std::vector<Symbol>
+std::vector<Symbol>
 prepareSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes,
                const std::vector<size_t>& topologicOrder) {
   // Here, we use the topologic order (if the graph is correct) to replace
@@ -194,7 +181,7 @@ prepareSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes,
   // But first of all, we need to get all values separated.
   std::vector<std::string> values;
   for (const auto& node : nodes) {
-    values.push_back(node.symbol().value().string());
+    values.emplace_back(node.symbol().value().string());
   }
 
   // Then we traverse the nodes again and replace every adjacent neighbor of the
@@ -218,20 +205,20 @@ prepareSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes,
     const auto& nodeValue = values[nodeIndex];
     auto positionedValue =
         PositionedString(nodeValue, symbol.value().positionInterval());
-    symbols.push_back(
+    symbols.emplace_back(
         Symbol(symbol.name(), positionedValue, symbol.behavior()));
   }
   return symbols;
 }
 
-static std::vector<std::vector<size_t>>
+std::vector<std::vector<size_t>>
 checkDoubleSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes) {
   // To record all duplicate symbols, we divide our symbol nodes into
   // equivalence classes by name.
   std::unordered_map<std::string, std::vector<size_t>> nameTest;
   for (const auto& node : nodes) {
     // Using a map for this.
-    nameTest[node.symbol().name().string()].push_back(node.index());
+    nameTest[node.symbol().name().string()].emplace_back(node.index());
   }
 
   // Then we take all equivalence classes which have size 2 or greater.
@@ -241,24 +228,25 @@ checkDoubleSymbols(const std::vector<SymbolGraph::SymbolNode>& nodes) {
 
     // Now we check for it.
     if (sameIdentifier.size() > 1) {
-      duplicates.push_back(sameIdentifier);
+      duplicates.emplace_back(sameIdentifier);
     }
   }
   return duplicates;
 }
 
-static std::vector<size_t>
+std::vector<size_t>
 checkSymbolNames(const std::vector<SymbolGraph::SymbolNode>& nodes) {
   // For invalid names, we just collect all nodes which do not follow our name
   // guidelines.
   std::vector<size_t> invalidNames;
   for (const auto& node : nodes) {
     if (!node.symbol().nameValid()) {
-      invalidNames.push_back(node.index());
+      invalidNames.emplace_back(node.index());
     }
   }
   return invalidNames;
 }
+};
 
 SymbolGraphEvaluation SymbolGraph::evaluate() const {
   // For evaluation, just check everything (invalid names, duplicates, cycles).
@@ -291,13 +279,29 @@ const std::vector<size_t>& SymbolGraph::SymbolNode::adjacent() const noexcept {
   return _adjacent;
 }
 
-void SymbolGraph::SymbolNode::checkAdjacency(const SymbolNode& other) {
+void SymbolGraph::SymbolNode::connectIfContained(const SymbolNode& other) {
   // We only create an edge between two nodes, if: we have static node behavior
   // (so we do not change our value randomly, with this we cannot check for
   // circles), and we are contained in the replacement value of the other
   // symbol.
   if (symbol().behavior() == SymbolBehavior::STATIC &&
       std::regex_search(other.symbol().value().string(), symbol().regex())) {
-    _adjacent.push_back(other.index());
+    _adjacent.emplace_back(other.index());
   }
+}
+
+void SymbolGraph::addNode(const Symbol& symbol) {
+  // Adding a node means checking all adjencencies to it and from it away – and
+  // also to itself.
+  auto newNode = SymbolNode(symbol, _nodes.size());
+
+  // Note: we might actually modify the nodes here.
+  for (auto& node : _nodes) {
+    node.connectIfContained(newNode);
+    newNode.connectIfContained(node);
+  }
+
+  newNode.connectIfContained(newNode);
+
+  _nodes.emplace_back(newNode);
 }

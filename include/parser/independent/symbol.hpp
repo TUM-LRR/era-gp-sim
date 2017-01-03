@@ -25,29 +25,31 @@
 #include "parser/independent/positioned-string.hpp"
 
 /**
- * \brief Denotes the behavior of a symbol.
+ * Denotes the behavior of a symbol.
  */
 enum class SymbolBehavior {
 
   /**
-   * \brief The symbol value never changes, i.e. we can optimize with it.
+   * The symbol value never changes, i.e. we can optimize with it.
    */
   STATIC,
 
   /**
-   * \brief The symbol value might change, so we got to dynamically replace it
+   * The symbol value might change, so we got to dynamically replace it
    * each time we call.
    */
   DYNAMIC
 };
 
 /**
- * \brief Represents
+ * Basically this means some name which points to some value (i.e. it will be
+ * replaced with it). It is a very basic class which is used to represent
+ * labels, constants etc.
  */
 class Symbol {
  public:
   /**
-   * \brief Constructs a new symbol with the given parameters.
+   * Constructs a new symbol with the given parameters.
    * \param name The name of the symbol.
    * \param value The value of the symbol, i.e. the string with which the name
    * will be replaced in given expressions.
@@ -59,13 +61,13 @@ class Symbol {
          SymbolBehavior behavior = SymbolBehavior::STATIC);
 
   /**
-   * \brief Returns the name of the symbol.
+   * Returns the name of the symbol.
    * \return The name of the symbol.
    */
   const PositionedString& name() const noexcept;
 
   /**
-   * \brief Returns the value of the symbol, i.e. the string with which the name
+   * Returns the value of the symbol, i.e. the string with which the name
    * will be replaced in given expressions.
    * \return The value of the symbol, i.e. the string with which the name will
    * be replaced in given expressions.
@@ -73,7 +75,7 @@ class Symbol {
   const PositionedString& value() const noexcept;
 
   /**
-   * \brief Returns the behavior of the symbol, i.e. if it might change some
+   * Returns the behavior of the symbol, i.e. if it might change some
    * time. Needed for optimizing the symbols.
    * \return The behavior of the symbol, i.e. if it might change some time.
    * Needed for optimizing the symbols.
@@ -81,7 +83,7 @@ class Symbol {
   SymbolBehavior behavior() const noexcept;
 
   /**
-   * \brief Returns a regex which matched all occurences of the symbol name
+   * Returns a regex which matched all occurences of the symbol name
    * (when surrounded by non-word characters (a word character is part of
    * [_0-9A-Za-z])).
    * \return A regex which matched all occurences of the symbol name (when
@@ -91,31 +93,31 @@ class Symbol {
   const std::regex& regex() const noexcept;
 
   /**
-   * \brief Checks if the name of this symbol is valid.
+   * Checks if the name of this symbol is valid.
    * \return True, if the name is valid, else false.
    */
   bool nameValid() const;
 
  private:
   /**
-   * \brief The name of the symbol.
+   * The name of the symbol.
    */
   PositionedString _name;
 
   /**
-   * \brief The value of the symbol, i.e. the string with which the name will be
+   * The value of the symbol, i.e. the string with which the name will be
    * replaced in given expressions.
    */
   PositionedString _value;
 
   /**
-   * \brief The behavior of the symbol, i.e. if it might change some time.
+   * The behavior of the symbol, i.e. if it might change some time.
    * Needed for optimizing the symbols.
    */
   SymbolBehavior _behavior;
 
   /**
-   * \brief A regex which matched all occurences of the symbol name (when
+   * A regex which matched all occurences of the symbol name (when
    * surrounded by non-word characters (a word character is part of
    * [_0-9A-Za-z])).
    */

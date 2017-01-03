@@ -38,7 +38,7 @@
                       ##__VA_ARGS__)
 
 /**
- * \brief Provides help methods for parsing strings.
+ * Provides help methods for parsing strings.
  *
  * This class is actually concepted only for internal use, but it can decode and
  * re-encode code-points written in a C-like string, if only provided with the
@@ -59,7 +59,7 @@ class StringParserEngine {
   using Output = std::vector<OutType>;
 
   /**
-   * \brief Decodes and re-encodes a code point at the given position in the
+   * Decodes and re-encodes a code point at the given position in the
    * input string.
    * \param inputString The input string to take the data from.
    * \param index The index at which the to-be-encoded data begins.
@@ -96,7 +96,7 @@ class StringParserEngine {
   }
 
   /**
-   * \brief Checks, if a string is wrapped by two separators.
+   * Checks, if a string is wrapped by two separators.
    * \param inputString The string to check.
    * \param separator The separator which should wrap the string.
    * \param errors The compile error list to note down any errors.
@@ -464,7 +464,7 @@ class StringParserEngine {
     int match = parseOneByteEscapeSequence(cchr);
     if (match != -1) {
       // One-byte escape sequence.
-      output.push_back(match);
+      output.emplace_back(match);
       ++index;
       return true;
     } else if (chr == 'u') {
@@ -478,7 +478,7 @@ class StringParserEngine {
       auto len = crawlIndex(inputString, index, isHex, sizeof(OutType) * 2);
       OutType value =
           simpleNumberParse<OutType>(inputString, startIndex + 1, len, 16);
-      output.push_back(value);
+      output.emplace_back(value);
     } else if (isOctal(chr)) {
       // Decoding an octal character sequence. (e.g. special case is: \0, but
       // can also be \000)
@@ -493,7 +493,7 @@ class StringParserEngine {
             "of byte size.");
         return false;
       }
-      output.push_back(ret);
+      output.emplace_back(ret);
     } else {
       // If nothing of the above applies, we got an invalid escape sequence.
       invokeError(
@@ -536,7 +536,7 @@ class StringParserEngine {
                                   CompileErrorList& errors) {
     if (codePoint <= 0x7f) {
       // If we are in ascii range, there is no need to encode more.
-      output.push_back(codePoint);
+      output.emplace_back(codePoint);
     } else {
       // If not, we encode the bytes are required.
       unsigned int bytes = 1;
@@ -544,7 +544,7 @@ class StringParserEngine {
       while (codePoint >= (1u << restSize)) {
         // As long as we got not enough space in the final byte, we got to add
         // another one.
-        output.push_back(0x80 | (codePoint & 0x3f));
+        output.emplace_back(0x80 | (codePoint & 0x3f));
         codePoint >>= 6;
         --restSize;
         ++bytes;
@@ -553,7 +553,7 @@ class StringParserEngine {
       // to reverse the whole sequence as the 'rest' byte has to be the first in
       // the stream.
       int mask = ~((1u << (restSize + 1)) - 1u);
-      output.push_back(mask | codePoint);
+      output.emplace_back(mask | codePoint);
       std::reverse(output.end() - bytes, output.end());
     }
     return true;
@@ -566,15 +566,15 @@ class StringParserEngine {
                                    CompileErrorList& errors) {
     if (codePoint <= 0xffff) {
       // We got a one-short code point.
-      output.push_back((uint16_t)codePoint);
+      output.emplace_back((uint16_t)codePoint);
     } else {
       // If not, we need two. Just subtract 65536, then split into two 10-bit
       // large values, then add the surrogate patterns and add to the stream.
       codePoint -= 0x10000;
       uint16_t upper = (uint32_t)(0xd800 | ((codePoint >> 10) & 0x3ff));
       uint16_t lower = (uint32_t)(0xdc00 | (codePoint & 0x3ff));
-      output.push_back(upper);
-      output.push_back(lower);
+      output.emplace_back(upper);
+      output.emplace_back(lower);
     }
     return true;
   }
@@ -585,7 +585,7 @@ class StringParserEngine {
                                    Output& output,
                                    CompileErrorList& errors) {
     // Trivial. ;)
-    output.push_back(codePoint);
+    output.emplace_back(codePoint);
     return true;
   }
 
@@ -619,11 +619,11 @@ class StringParserEngine {
 };
 
 /**
- * \brief Provides some basic methods for string parsing.
+ * Provides some basic methods for string parsing.
  */
 namespace StringParser {
 /**
-* \brief Parses a trimmed C-like string literal in UTF format.
+* Parses a trimmed C-like string literal in UTF format.
 * \tparam CharT The input character type.
 * \tparam OutT The output integer type.
 * \param inputString The input data.
@@ -656,7 +656,7 @@ static bool parseString(const PositionedBasicString<CharT>& inputString,
 }
 
 /**
-* \brief Parses a trimmed C-like character literal in UTF format.
+* Parses a trimmed C-like character literal in UTF format.
 * \tparam CharT The input character type.
 * \tparam OutT The output integer type.
 * \param inputString The input data.

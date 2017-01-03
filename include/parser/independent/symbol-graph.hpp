@@ -28,11 +28,6 @@ class SymbolGraphEvaluation;
 class SymbolGraph {
  public:
   using size_t = std::size_t;
-  SymbolGraph() = default;
-
-  void addNode(const Symbol& symbol);
-
-  SymbolGraphEvaluation evaluate() const;
 
   class SymbolNode {
    public:
@@ -42,13 +37,17 @@ class SymbolGraph {
     size_t index() const noexcept;
     const std::vector<size_t>& adjacent() const noexcept;
 
-    void checkAdjacency(const SymbolNode& other);
+    void connectIfContained(const SymbolNode& other);
 
    private:
     Symbol _symbol;
     size_t _index;
     std::vector<size_t> _adjacent;
   };
+
+  void addNode(const Symbol& symbol);
+
+  SymbolGraphEvaluation evaluate() const;
 
  private:
   std::vector<SymbolNode> _nodes;

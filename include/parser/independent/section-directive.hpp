@@ -33,12 +33,12 @@ class CompileErrorList;
 class MemoryAccess;
 
 /**
- * \brief Represents a section directive in code.
+ * Represents a section directive in code.
  */
 class SectionDirective : public IntermediateDirective {
  public:
   /**
-   * \brief Creates a new section directive with the given section.
+   * Creates a new section directive with the given section.
    * \param positionInterval The interval of the command.
    * \param labels The associated labels with the command (doesn't make sense
    * for this one!?).
@@ -47,12 +47,12 @@ class SectionDirective : public IntermediateDirective {
    * \param arguments Arguments of the directive. First should be section name.
    */
   SectionDirective(const CodePositionInterval& positionInterval,
-                   const std::vector<PositionedString>& labels,
+                   const PositionedStringVector& labels,
                    const PositionedString& name,
-                   const std::vector<PositionedString>& arguments);
+                   const PositionedStringVector& arguments);
 
   /**
-     * \brief Sets the section to the specified value.
+     * Sets the section to the specified value.
      * \param immutable Some constant arguments which might be helpful.
      * \param errors The compile error list to note down any errors.
      * \param allocator The allocator to reserve memory.
@@ -62,10 +62,10 @@ class SectionDirective : public IntermediateDirective {
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
                               CompileErrorList& errors,
                               MemoryAllocator& allocator,
-                              SectionTracker& tracker) override;
+                              SectionTracker& tracker);
 
   /**
-* \brief Finalizes a section directive.
+* Finalizes a section directive.
 */
   virtual ~SectionDirective() = default;
 
@@ -74,12 +74,12 @@ class SectionDirective : public IntermediateDirective {
 
  private:
   /**
-   * \brief True, if the section name is specified, else false.
+   * True, if the section name is specified, else false.
    */
   bool _hasName;
 
   /**
-   * \brief The section to change to.
+   * The section to change to.
    */
   PositionedString _section;
 };

@@ -28,13 +28,13 @@ class PreprocessingImmutableArguments;
 class EnhanceSymbolTableImmutableArguments;
 
 /**
- * \brief A collection of some constant parameters which can be used during the
+ * A collection of some constant parameters which can be used during the
  * 'execute' operation of the intermediate operation.
  */
 class ExecuteImmutableArguments {
  public:
   /**
-   * \brief Creates a new ExecuteImmutableArguments with the given parameters.
+   * Creates a new ExecuteImmutableArguments with the given parameters.
    * \param architecture The architecture with which the operation was called.
    * \param generator The generator for syntax tree nodes.
    * \param allocator The memory allocator used to convert relative to absolute
@@ -47,7 +47,7 @@ class ExecuteImmutableArguments {
                             const SymbolReplacer& replacer);
 
   /**
-   * \brief Creates a new ExecuteImmutableArguments with the given parameters
+   * Creates a new ExecuteImmutableArguments with the given parameters
    * out of some PreprocessingImmutableArguments.
    * \param beforeBeforePass The PreprocessingImmutableArguments these arguments
    * are based on.
@@ -61,7 +61,7 @@ class ExecuteImmutableArguments {
       const SymbolReplacer& replacer);
 
   /**
-   * \brief Creates a new ExecuteImmutableArguments with the given parameters
+   * Creates a new ExecuteImmutableArguments with the given parameters
    * out of some EnhanceSymbolTableImmutableArguments.
    * \param beforePass The EnhanceSymbolTableImmutableArguments these arguments
    * are based on.
@@ -72,19 +72,19 @@ class ExecuteImmutableArguments {
       const SymbolReplacer& replacer);
 
   /**
-   * \brief Returns the architecture with which the operation was called.
+   * Returns the architecture with which the operation was called.
    * \return The architecture with which the operation was called.
    */
   const Architecture& architecture() const noexcept;
 
   /**
-   * \brief Returns the generator for syntax tree nodes.
+   * Returns the generator for syntax tree nodes.
    * \return The generator for syntax tree nodes.
    */
   const SyntaxTreeGenerator& generator() const noexcept;
 
   /**
-   * \brief Returns the memory allocator used to convert relative to absolute
+   * Returns the memory allocator used to convert relative to absolute
    * positions and also for different section management.
    * \return The memory allocator used to convert relative to absolute positions
    * and also for different section management.
@@ -92,30 +92,30 @@ class ExecuteImmutableArguments {
   const MemoryAllocator& allocator() const noexcept;
 
   /**
-   * \brief Returns the replacer for constants, labels etc.
+   * Returns the replacer for constants, labels etc.
    * \return The replacer for constants, labels etc.
    */
   const SymbolReplacer& replacer() const noexcept;
 
  private:
   /**
-   * \brief The architecture with which the operation was called.
+   * The architecture with which the operation was called.
    */
   Architecture _architecture;
 
   /**
-   * \brief Returns the generator for syntax tree nodes.
+   * Returns the generator for syntax tree nodes.
    */
   SyntaxTreeGenerator _generator;
 
   /**
-   * \brief The memory allocator used to convert relative to absolute positions
+   * The memory allocator used to convert relative to absolute positions
    * and also for different section management.
    */
   MemoryAllocator _allocator;
 
   /**
-   * \brief The replacer for constants, labels etc.
+   * The replacer for constants, labels etc.
    */
   SymbolReplacer _replacer;
 };

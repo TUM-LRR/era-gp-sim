@@ -27,11 +27,11 @@
 #include "parser/independent/string-parser.hpp"
 
 /**
- * \brief Provides some basic expression compilers.
+ * Provides some basic expression compilers.
  */
 namespace CLikeExpressionCompilers {
 /**
- * \brief Creates a default expression compiler, oriented at the C language.
+ * Creates a default expression compiler, oriented at the C language.
  * \tparam IntType The given integer type.
  * \return A C-like compiler for the given integer type.
  */
@@ -303,42 +303,42 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
 }
 
 /**
- * \brief A default compiler for 8-bit wide signed integers.
+ * A default compiler for 8-bit wide signed integers.
  */
 extern ExpressionCompiler<int8_t> CLikeCompilerI8;
 
 /**
- * \brief A default compiler for 8-bit wide unsigned integers.
+ * A default compiler for 8-bit wide unsigned integers.
  */
 extern ExpressionCompiler<uint8_t> CLikeCompilerU8;
 
 /**
- * \brief A default compiler for 16-bit wide signed integers.
+ * A default compiler for 16-bit wide signed integers.
  */
 extern ExpressionCompiler<int16_t> CLikeCompilerI16;
 
 /**
- * \brief A default compiler for 16-bit wide unsigned integers.
+ * A default compiler for 16-bit wide unsigned integers.
  */
 extern ExpressionCompiler<uint16_t> CLikeCompilerU16;
 
 /**
- * \brief A default compiler for 32-bit wide signed integers.
+ * A default compiler for 32-bit wide signed integers.
  */
 extern ExpressionCompiler<int32_t> CLikeCompilerI32;
 
 /**
- * \brief A default compiler for 32-bit wide unsigned integers.
+ * A default compiler for 32-bit wide unsigned integers.
  */
 extern ExpressionCompiler<uint32_t> CLikeCompilerU32;
 
 /**
- * \brief A default compiler for 64-bit wide signed integers.
+ * A default compiler for 64-bit wide signed integers.
  */
 extern ExpressionCompiler<int64_t> CLikeCompilerI64;
 
 /**
- * \brief A default compiler for 64-bit wide unsigned integers.
+ * A default compiler for 64-bit wide unsigned integers.
  */
 extern ExpressionCompiler<uint64_t> CLikeCompilerU64;
 }

@@ -21,9 +21,9 @@
 
 MacroEndDirective::MacroEndDirective(
     const CodePositionInterval& positionInterval,
-    const std::vector<PositionedString>& labels,
+    const PositionedStringVector& labels,
     const PositionedString& name,
-    const std::vector<PositionedString>& arguments)
+    const PositionedStringVector& arguments)
 : IntermediateDirective(positionInterval, labels, name) {
 }
 

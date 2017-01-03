@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "arch/common/node-factory-collection.hpp"
+#include "parser/common/final-command.hpp"
 #include "parser/independent/positioned-string.hpp"
 
 class CompileErrorList;
@@ -32,24 +33,28 @@ class AbstractInstructionNode;
 class MemoryAccess;
 class SymbolReplacer;
 
+
+using AbstractSyntaxTreeNodePointer = std::shared_ptr<AbstractSyntaxTreeNode>;
+using AbstractSyntaxTreeNodePointerVector =
+    std::vector<AbstractSyntaxTreeNodePointer>;
+
 /**
- * \brief A connector class for turning arguments and commands into syntax tree
+ * A connector class for turning arguments and commands into syntax tree
  * nodes.
  */
 class SyntaxTreeGenerator {
  public:
   /**
-   * \brief A function type for transforming a string into a syntax tree node.
+   * A function type for transforming a string into a syntax tree node.
    */
   using ArgumentNodeGenerator =
-      std::function<std::shared_ptr<AbstractSyntaxTreeNode>(
-          const PositionedString&,
-          const SymbolReplacer&,
-          const NodeFactoryCollection&,
-          CompileErrorList&)>;
+      std::function<AbstractSyntaxTreeNodePointer(const PositionedString&,
+                                                  const SymbolReplacer&,
+                                                  const NodeFactoryCollection&,
+                                                  CompileErrorList&)>;
 
   /**
-   * \brief Creates a new syntax tree generator with the given node factory
+   * Creates a new syntax tree generator with the given node factory
    * collection.
    * \param nodeFactories The node factory collection to instantiate the nodes
    * from.
@@ -61,7 +66,7 @@ class SyntaxTreeGenerator {
   }
 
   /**
-   * \brief Transforms the given operand as string into a syntax tree node and
+   * Transforms the given operand as string into a syntax tree node and
    * writes down any occuring errors.
    * \param operand The operand in pure-string form.
    * \param The symbol replacer to replace any occuring symbols in the operand
@@ -69,13 +74,13 @@ class SyntaxTreeGenerator {
    * \param errors The compile error list to denote errors.
    * \return The transformed operand.
    */
-  std::shared_ptr<AbstractSyntaxTreeNode>
+  AbstractSyntaxTreeNodePointer
   transformOperand(const PositionedString& operand,
                    const SymbolReplacer& replacer,
                    CompileErrorList& errors) const;
 
   /**
-   * \brief Transforms the given instruction/command into a syntax tree, adds
+   * Transforms the given instruction/command into a syntax tree, adds
    * any source and target nodes and denotes any occuring errors.
    * \param commandName The opcode of the instruction.
    * \param errors The compile error list to denote errors.
@@ -84,12 +89,12 @@ class SyntaxTreeGenerator {
    * \param memoryAccess The memory access to check the validity of the nodes.
    * \return The transformed command.
    */
-  std::shared_ptr<AbstractInstructionNode> transformCommand(
-      const PositionedString& commandName,
-      CompileErrorList& errors,
-      std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& sources,
-      std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& targets,
-      MemoryAccess& memoryAccess) const;
+  FinalCommandNodePointer
+  transformCommand(const PositionedString& commandName,
+                   const AbstractSyntaxTreeNodePointerVector& sources,
+                   const AbstractSyntaxTreeNodePointerVector& targets,
+                   CompileErrorList& errors,
+                   MemoryAccess& memoryAccess) const;
 
   /**
    * Returns a reference to the NodeFactoryCollection used by this
@@ -99,12 +104,12 @@ class SyntaxTreeGenerator {
 
  private:
   /**
-   * \brief The internal storage of the node factory collection.
+   * The internal storage of the node factory collection.
    */
   NodeFactoryCollection _nodeFactories;
 
   /**
-   * \brief The internal (architecture-dependent) function to generate the
+   * The internal (architecture-dependent) function to generate the
    * argument nodes.
    *
    * (can be easily switched at generation of this class so that this class is

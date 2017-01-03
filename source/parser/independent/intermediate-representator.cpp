@@ -45,7 +45,7 @@ MacroInformationVector IntermediateRepresentator::generateMacroInformation() {
 
       auto info = MacroInformation(macroCode, command->positionInterval());
 
-      output.push_back(info);
+      output.emplace_back(info);
     }
   }
   return output;
@@ -55,8 +55,8 @@ IntermediateRepresentator::IntermediateRepresentator()
 : _commandList(), _currentOutput(nullptr) {
 }
 
-void IntermediateRepresentator::insertCommandPtr(
-    IntermediateOperationPointer&& command, CompileErrorList& errors) {
+void IntermediateRepresentator::insertCommandPointer(
+    const IntermediateOperationPointer& command, CompileErrorList& errors) {
   // We got to handle the three target selector cases right here.
   if (command->newTarget() == TargetSelector::THIS) {
     // If we want the current command as new target, we set it like so.
@@ -65,7 +65,7 @@ void IntermediateRepresentator::insertCommandPtr(
       errors.pushError(command->name().positionInterval(),
                        "Error, nested macros are not supported.");
     }
-    _currentOutput = std::move(command);
+    _currentOutput = command;
   } else {
     if (command->newTarget() == TargetSelector::MAIN) {
       // For the main selector, we may also insert the old command (otherwise
@@ -75,16 +75,21 @@ void IntermediateRepresentator::insertCommandPtr(
         errors.pushError(command->name().positionInterval(),
                          "The start directive of the macro is missing.");
       }
-      internalInsertCommand(std::move(_currentOutput));
+
+      auto oldOutput = _currentOutput;
+      _currentOutput = nullptr;
+
+      internalInsertCommand(oldOutput);
     }
 
     // Finally, we may insert our handed-over command.
-    internalInsertCommand(std::move(command));
+    internalInsertCommand(command);
   }
 }
 
-static bool evaluateGraph(const SymbolGraphEvaluation& graphEvaluation,
-                          CompileErrorList& errors) {
+namespace {
+bool evaluateGraph(const SymbolGraphEvaluation& graphEvaluation,
+                   CompileErrorList& errors) {
   if (!graphEvaluation.valid()) {
     if (!graphEvaluation.invalidNames().empty()) {
       for (auto index : graphEvaluation.invalidNames()) {
@@ -127,7 +132,7 @@ static bool evaluateGraph(const SymbolGraphEvaluation& graphEvaluation,
   }
 }
 
-static bool checkMemorySize(
+bool checkMemorySize(
     std::size_t allocatedSize,
     std::size_t allowedSize,
     const IntermediateOperationPointer& firstMemoryExceedingOperation,
@@ -156,6 +161,7 @@ static bool checkMemorySize(
   }
   return true;
 }
+};
 
 FinalRepresentation
 IntermediateRepresentator::transform(const TransformationParameters& parameters,
@@ -223,14 +229,14 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
 }
 
 void IntermediateRepresentator::internalInsertCommand(
-    IntermediateOperationPointer pointer) {
+    const IntermediateOperationPointer& pointer) {
   // Of course, it should be valid and is allowed to be inserted.
   if (pointer && pointer->shouldInsert()) {
     // We got to decide if there is an alternative output.
     if (_currentOutput) {
-      _currentOutput->insert(std::move(pointer));
+      _currentOutput->insert(pointer);
     } else {
-      _commandList.push_back(std::move(pointer));
+      _commandList.emplace_back(pointer);
     }
   }
 }

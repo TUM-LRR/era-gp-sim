@@ -20,7 +20,7 @@
 #include "parser/common/syntax-information.hpp"
 
 void SyntaxInformation::addSyntaxRegex(const std::string &regex, Token token) {
-  _entries.push_back(std::make_pair(regex, token));
+  _entries.emplace_back(std::make_pair(regex, token));
 }
 
 const SyntaxInformation::TokenIterable

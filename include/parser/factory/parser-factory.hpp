@@ -30,7 +30,7 @@ class Architecture;
 class MemoryAccess;
 
 /**
- * \brief Abbreviation for a pointer to a parsing unit.
+ * Abbreviation for a pointer to a parsing unit.
  */
 using ParserPtr = std::unique_ptr<Parser>;
 

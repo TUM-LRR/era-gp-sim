@@ -30,13 +30,13 @@ class Translateable;
 #include "parser/common/compile-error-severity.hpp"
 
 /**
- * \brief Represents a mistake the compiler noticed.
+ * Represents a mistake the compiler noticed.
  */
 class CompileError {
  public:
   using TranslateablePtr = std::shared_ptr<Translateable>;
   /**
-   * \brief Instantiates a new compile error with the given arguments. Marks
+   * Instantiates a new compile error with the given arguments. Marks
    * only a positional error.
    * \param message The error message.
    * \param position The position of the error in the code.
@@ -47,7 +47,7 @@ class CompileError {
                CompileErrorSeverity severity);
 
   /**
-   * \brief Instantiates a new compile error with the given arguments.
+   * Instantiates a new compile error with the given arguments.
    * \param message The error message.
    * \param startPosition The start position of the error in the code.
    * \param endPosition The end position of the error in the code.
@@ -59,7 +59,7 @@ class CompileError {
                CompileErrorSeverity severity);
 
   /**
-   * \brief Instantiates a new compile error with the given arguments.
+   * Instantiates a new compile error with the given arguments.
    * \param message The error message.
    * \param position The position interval of the error in the code.
    * \param severity The severity of the error.
@@ -69,42 +69,42 @@ class CompileError {
                CompileErrorSeverity severity);
 
   /**
-   * \brief Returns the message of this error.
+   * Returns the message of this error.
    * \return The message of the error.
    */
   const Translateable& message() const noexcept;
 
   /**
-   * \brief Returns the position where this error occured.
+   * Returns the position where this error occured.
    * \return The position of the error.
    */
   const CodePositionInterval& position() const noexcept;
 
   /**
-   * \brief Returns the severity of the error.
+   * Returns the severity of the error.
    * \return The severity of the error.
    */
-  const CompileErrorSeverity severity() const noexcept;
+  CompileErrorSeverity severity() const noexcept;
 
  private:
   /**
-   * \brief The internal message attribute.
+   * The internal message attribute.
    */
   TranslateablePtr _message;
 
   /**
-   * \brief The internal position attribute.
+   * The internal position attribute.
    */
   CodePositionInterval _position;
 
   /**
-   * \brief The internal severity attribute.
+   * The internal severity attribute.
    */
   CompileErrorSeverity _severity;
 };
 
 /**
- * \brief A vector of compile errors.
+ * A vector of compile errors.
  */
 using CompileErrorVector = std::vector<CompileError>;
 

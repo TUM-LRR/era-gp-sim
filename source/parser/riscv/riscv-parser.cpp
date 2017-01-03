@@ -24,16 +24,18 @@
 #include "arch/common/architecture.hpp"
 #include "arch/common/node-factory-collection-maker.hpp"
 #include "arch/common/unit-information.hpp"
-#include "parser/common/syntax-information.hpp"
-#include "parser/independent/intermediate-instruction.hpp"
-#include "parser/independent/intermediate-representator.hpp"
-#include "parser/riscv/riscv-directive-factory.hpp"
-#include "parser/riscv/riscv-regex.hpp"
-
+#include "common/string-conversions.hpp"
 #include "core/conversions.hpp"
 #include "parser/common/compile-error-list.hpp"
+#include "parser/common/syntax-information.hpp"
+#include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/expression-compiler-clike.hpp"
+#include "parser/independent/intermediate-instruction.hpp"
+#include "parser/independent/intermediate-representator.hpp"
+#include "parser/independent/relative-memory-position.hpp"
 #include "parser/independent/transformation-parameters.hpp"
+#include "parser/riscv/riscv-directive-factory.hpp"
+#include "parser/riscv/riscv-regex.hpp"
 
 const SyntaxTreeGenerator::ArgumentNodeGenerator
     RiscvParser::argumentGeneratorFunction = [](
@@ -44,8 +46,7 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
   // These checks are performed:
   // * Empty argument? Shouldn't happen, kill the compilation with fire.
   // * First character is a letter? We have replace all constants by now, so
-  // it
-  // must be a register - or an undefined constant!
+  // it must be a register - or an undefined constant!
   // * If not? Try to compile the expression!
   std::shared_ptr<AbstractSyntaxTreeNode> outputNode;
   PositionedString operandReplaced =
@@ -62,8 +63,8 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
     std::string asString(outString.begin(), outString.end());
     outputNode = nodeFactories.createDataNode(asString);
   } else {
-    // using i32
-    int32_t result = CLikeExpressionCompilers::CLikeCompilerI32.compile(
+    // using i64
+    int64_t result = CLikeExpressionCompilers::CLikeCompilerI64.compile(
         operandPositional, replacer, errors);
     outputNode = nodeFactories.createImmediateNode(
         conversions::convert(result,
@@ -79,8 +80,8 @@ RiscvParser::RiscvParser(const Architecture& architecture,
 : _architecture(architecture), _memoryAccess(memoryAccess) {
   _factoryCollection = NodeFactoryCollectionMaker::CreateFor(architecture);
 }
-
-static CodePositionInterval
+namespace {
+CodePositionInterval
 uniteStringVector(const PositionedStringVector& positionVector) {
   auto accumulator = CodePositionInterval();
   for (const auto& position : positionVector) {
@@ -89,11 +90,10 @@ uniteStringVector(const PositionedStringVector& positionVector) {
   return accumulator;
 }
 
-static CodePositionInterval
-getCommandInterval(const PositionedString& instruction,
-                   const PositionedStringVector& labels,
-                   const PositionedStringVector& sources,
-                   const PositionedStringVector& targets) {
+CodePositionInterval getCommandInterval(const PositionedString& instruction,
+                                        const PositionedStringVector& labels,
+                                        const PositionedStringVector& sources,
+                                        const PositionedStringVector& targets) {
   auto labelsUnited = uniteStringVector(labels);
   auto sourcesUnited = uniteStringVector(sources);
   auto targetsUnited = uniteStringVector(targets);
@@ -103,20 +103,20 @@ getCommandInterval(const PositionedString& instruction,
       .unite(targetsUnited);
 }
 
-static void readInstruction(const CodePosition& position,
-                            const PositionedStringVector& labels,
-                            const RiscvParser::RiscvRegex& lineRegex,
-                            CompileErrorList& errors,
-                            IntermediateRepresentator& intermediate) {
+void readInstruction(const CodePosition& position,
+                     const PositionedStringVector& labels,
+                     const RiscvParser::RiscvRegex& lineRegex,
+                     CompileErrorList& errors,
+                     IntermediateRepresentator& intermediate) {
   PositionedStringVector sources, targets;
 
   auto isDirective = lineRegex.isDirective();
   // Collect source and target parameters
   for (int i = 0; i < lineRegex.getParameterCount(); i++) {
     if (i == 0 && !isDirective)
-      targets.push_back(lineRegex.getParameter(i));
+      targets.emplace_back(lineRegex.getParameter(i));
     else
-      sources.push_back(lineRegex.getParameter(i));
+      sources.emplace_back(lineRegex.getParameter(i));
   }
 
   auto instruction = lineRegex.getInstruction();
@@ -133,9 +133,9 @@ static void readInstruction(const CodePosition& position,
   }
 }
 
-static void readText(const std::string& text,
-                     CompileErrorList& errors,
-                     IntermediateRepresentator& intermediate) {
+void readText(const std::string& text,
+              CompileErrorList& errors,
+              IntermediateRepresentator& intermediate) {
   std::istringstream stream(text);
   CodePosition position;
   RiscvParser::RiscvRegex lineRegex;
@@ -151,7 +151,7 @@ static void readText(const std::string& text,
     } else {
       // Collect labels until next instruction
       if (lineRegex.hasLabel()) {
-        labels.push_back(lineRegex.getLabel());
+        labels.emplace_back(lineRegex.getLabel());
       }
 
       if (lineRegex.hasInstruction()) {
@@ -162,7 +162,7 @@ static void readText(const std::string& text,
     }
   }
 }
-
+};
 FinalRepresentation RiscvParser::parse(const std::string& text) {
   IntermediateRepresentator intermediate;
   CompileErrorList errors;

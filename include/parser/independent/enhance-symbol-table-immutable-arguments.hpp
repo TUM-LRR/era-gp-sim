@@ -26,13 +26,13 @@
 class PreprocessingImmutableArguments;
 
 /**
- * \brief A collection of some constant parameters which can be used during the
+ * A collection of some constant parameters which can be used during the
  * 'enhanceSymbolTable' operation of the intermediate operation.
  */
 class EnhanceSymbolTableImmutableArguments {
  public:
   /**
-   * \brief Creates a new EnhanceSymbolTableImmutableArguments with the given
+   * Creates a new EnhanceSymbolTableImmutableArguments with the given
    * parameters.
    * \param architecture The architecture with which the operation was called.
    * \param generator The generator for syntax tree nodes.
@@ -43,7 +43,7 @@ class EnhanceSymbolTableImmutableArguments {
                                        const SyntaxTreeGenerator& generator,
                                        const MemoryAllocator& allocator);
   /**
-   * \brief Creates a new ExecuteImmutableArguments with the given parameters
+   * Creates a new ExecuteImmutableArguments with the given parameters
    * out of some PreprocessingImmutableArguments.
    * \param beforeBeforePass The PreprocessingImmutableArguments these arguments
    * are based on.
@@ -55,19 +55,19 @@ class EnhanceSymbolTableImmutableArguments {
       const MemoryAllocator& allocator);
 
   /**
-   * \brief Returns the architecture with which the operation was called.
+   * Returns the architecture with which the operation was called.
    * \return The architecture with which the operation was called.
    */
   const Architecture& architecture() const noexcept;
 
   /**
-   * \brief Returns the generator for syntax tree nodes.
+   * Returns the generator for syntax tree nodes.
    * \return The generator for syntax tree nodes.
    */
   const SyntaxTreeGenerator& generator() const noexcept;
 
   /**
-   * \brief Returns the memory allocator used to convert relative to absolute
+   * Returns the memory allocator used to convert relative to absolute
    * positions and also for different section management.
    * \return The memory allocator used to convert relative to absolute positions
    * and also for different section management.
@@ -76,17 +76,17 @@ class EnhanceSymbolTableImmutableArguments {
 
  private:
   /**
-   * \brief The architecture with which the operation was called.
+   * The architecture with which the operation was called.
    */
   Architecture _architecture;
 
   /**
-   * \brief Returns the generator for syntax tree nodes.
+   * Returns the generator for syntax tree nodes.
    */
   SyntaxTreeGenerator _generator;
 
   /**
-   * \brief The memory allocator used to convert relative to absolute positions
+   * The memory allocator used to convert relative to absolute positions
    * and also for different section management.
    */
   MemoryAllocator _allocator;

@@ -23,11 +23,13 @@
 #include "core/memory-access.hpp"
 #include "parser/riscv/riscv-parser.hpp"
 
+namespace {
 template <typename T>
-static ParserPtr createParserInternal(const Architecture &architecture,
-                                      const MemoryAccess &memoryAccess) {
+ParserPtr createParserInternal(const Architecture &architecture,
+                               const MemoryAccess &memoryAccess) {
   return ParserPtr{new T{architecture, memoryAccess}};
 }
+};
 
 const std::unordered_map<std::string, ParserFactory::ParserBuildFunction>
     ParserFactory::mapping{{"riscv", createParserInternal<RiscvParser>}};

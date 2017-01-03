@@ -41,7 +41,7 @@
                                     // exists.
 
 /**
- * \brief Parses a given token stream and evaluates it.
+ * Parses a given token stream and evaluates it.
  * \tparam T The number output type.
  *
  * So, this class applies the Shunting Yard algorithm (oriented at
@@ -94,7 +94,7 @@ template <typename T>
 class ExpressionParser {
  public:
   /**
-   * \brief Creates a new expression parser based on a parser definition.
+   * Creates a new expression parser based on a parser definition.
    * \param definition The supplied parser definition.
    */
   ExpressionParser(const ExpressionParserDefinition<T>& definition)
@@ -110,7 +110,7 @@ class ExpressionParser {
   }
 
   /**
-   * \brief Parses the given token stream into a single number.
+   * Parses the given token stream into a single number.
    * \param tokens The input token stream.
    * \param errors The compile error list to note down any errors.
    * \return The result of the expression if the compilation has been
@@ -345,7 +345,7 @@ class ExpressionParser {
         }
         return false;
       }
-      output.push_back(state.outputStack.top());
+      output.emplace_back(state.outputStack.top());
       state.outputStack.pop();
     }
 
@@ -513,8 +513,8 @@ class ExpressionParser {
     literalRegexDecode.reserve(definition.literalDecoders.size());
     for (const auto& i : definition.literalDecoders) {
       // We separate decoder functions from their regexes.
-      _literalDecoders.push_back(i.decoder);
-      literalRegexDecode.push_back(i.regex);
+      _literalDecoders.emplace_back(i.decoder);
+      literalRegexDecode.emplace_back(i.regex);
     }
 
     // Then we create our multiregex.

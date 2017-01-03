@@ -42,7 +42,7 @@
 #include "parser/independent/symbol-replacer.hpp"
 
 /**
- * \brief A directive to reserve memory and writes specified data to it.
+ * A directive to reserve memory and writes specified data to it.
  * \tparam T The number type used for parsing.
  */
 template <typename T>
@@ -51,14 +51,14 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   using size_t = std::size_t;
   using MemoryStorageFunction = std::function<void(T, size_t)>;
   using ProcessValuesFunction =
-      std::function<size_t(const std::vector<PositionedString>&,
+      std::function<size_t(const PositionedStringVector&,
                            const SymbolReplacer&,
                            size_t,
                            CompileErrorList&,
                            const MemoryStorageFunction&)>;
 
   /**
- * \brief Instantiates a new MemoryDefinitionDirective with the given arguments.
+ * Instantiates a new MemoryDefinitionDirective with the given arguments.
  * \param positionInterval The line interval the operation occupies.
  * \param labels The vector of labels assigned to the operation.
  * \param name The name of the operation.
@@ -68,9 +68,9 @@ class MemoryDefinitionDirective : public IntermediateDirective {
  * \param processValues A function to parse the arguments.
  */
   MemoryDefinitionDirective(const CodePositionInterval& positionInterval,
-                            const std::vector<PositionedString>& labels,
+                            const PositionedStringVector& labels,
                             const PositionedString& name,
-                            const std::vector<PositionedString>& values,
+                            const PositionedStringVector& values,
                             const ProcessValuesFunction& processValues,
                             size_t cellSize = sizeof(T))
   : IntermediateDirective(positionInterval, labels, name)
@@ -80,7 +80,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   }
 
   /**
-   * \brief Reserves memory for this operation (but does not write it).
+   * Reserves memory for this operation (but does not write it).
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param allocator The allocator to reserve memory.
@@ -94,7 +94,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
     if (tracker.section() == "text") {
       errors.pushWarning(
           name().positionInterval(),
-          "Careful, you are trying to reserve memory in the text "
+          "Careful, you are trying to define static memory in the text "
           "section where the program instructions are stored. "
           "This might cause unexpected behavior. Use a '.section "
           "data' directive in front of this to resolve the "
@@ -124,7 +124,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   }
 
   /**
-   * \brief Reserves entries for this operation in the symbol table, also for
+   * Reserves entries for this operation in the symbol table, also for
    * the labels for this operation.
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
@@ -144,7 +144,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   }
 
   /**
-   * \brief Executes the operation (e.g. it is inserted into the commandOutput
+   * Executes the operation (e.g. it is inserted into the commandOutput
    * list).
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
@@ -191,12 +191,12 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   MemoryAddress absolutePosition() const noexcept {
     return _absolutePosition;
   }
-  const std::vector<PositionedString>& values() const noexcept {
+  const PositionedStringVector& values() const noexcept {
     return _values;
   }
 
   /**
-   * \brief Finalizes a memory definition directive.
+   * Finalizes a memory definition directive.
    */
   virtual ~MemoryDefinitionDirective() = default;
 
@@ -206,7 +206,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   RelativeMemoryPosition _relativePosition;
   size_t _size;
   size_t _cellSize;
-  std::vector<PositionedString> _values;
+  PositionedStringVector _values;
   ProcessValuesFunction _processValues;
 };
 

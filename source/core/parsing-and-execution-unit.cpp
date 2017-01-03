@@ -98,7 +98,7 @@ void ParsingAndExecutionUnit::executeToBreakpoint() {
     // check if there is a brekpoint on the next line
     if (nextNode < _finalRepresentation.commandList().size()) {
       const auto &nextCommand = _finalRepresentation.commandList()[nextNode];
-      size_t nextLine = nextCommand.position().start().line();
+      size_t nextLine = nextCommand.position().startLine();
       if (_breakpoints.count(nextLine) > 0) {
         // we reached a breakpoint
         break;
@@ -119,9 +119,9 @@ void ParsingAndExecutionUnit::setExecutionPoint(size_t line) {
     foundMatchingLine = true;
   } else {
     for (const auto &command : _finalRepresentation.commandList()) {
-      if (command.position().start().line() >= line) {
+      if (command.position().startLine() >= line) {
         // this command is on the given line, save the address in the cache.
-        displayLine = command.position().start().line();
+        displayLine = command.position().startLine();
         auto size = _programCounter.getSize();
         address = conversions::convert(command.address(), size);
         _lineCommandCache.emplace(displayLine, address);
@@ -240,7 +240,7 @@ bool ParsingAndExecutionUnit::_executeNode(size_t nodeIndex) {
     return false;
   }
   // update the current line in the ui (pre-execution)
-  _setCurrentLine(currentCommand.position().start().line());
+  _setCurrentLine(currentCommand.position().startLine());
 
   MemoryValue programCounterValue =
       currentCommand.node()->getValue(_memoryAccess);
@@ -255,11 +255,11 @@ size_t ParsingAndExecutionUnit::_updateLineNumber(size_t currentNode) {
   size_t nextNode = _findNextNode();
   // if there is no command after this, advance the line position by one.
   auto &currentCommand = _finalRepresentation.commandList()[currentNode];
-  size_t nextLine = currentCommand.position().start().line() + 1;
+  size_t nextLine = currentCommand.position().startLine() + 1;
   if (nextNode < _finalRepresentation.commandList().size()) {
     // if there is another command, set the next line to its position
     auto &nextCommand = _finalRepresentation.commandList()[nextNode];
-    nextLine = nextCommand.position().start().line();
+    nextLine = nextCommand.position().startLine();
   }
   _setCurrentLine(nextLine);
   return nextNode;

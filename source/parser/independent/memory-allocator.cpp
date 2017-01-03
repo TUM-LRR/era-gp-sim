@@ -68,7 +68,7 @@ MemoryAllocator::MemoryAllocator(
     auto section = MemorySection(sectionDefinition);
 
     _nameToSection[sectionDefinition.name()] = _sections.size();
-    _sections.push_back(section);
+    _sections.emplace_back(section);
   }
 }
 

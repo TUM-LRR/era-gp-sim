@@ -24,7 +24,7 @@
 #include <string>
 
 /**
- * \brief The definition of a section in memory.
+ * The definition of a section in memory.
  *
  * Basically, we got to define a name and the alignment properties so that
  * memory can be reserved.
@@ -34,7 +34,7 @@ struct MemorySectionDefinition {
   using size_t = std::size_t;
 
   /**
-   * \brief Creates a new memory section definition with the given parameters.
+   * Creates a new memory section definition with the given parameters.
    * \param name The name of the section.
    * \param sectionAlignment The alignment of the section.
    * \param dataAlignment The alignment of the data.
@@ -44,7 +44,7 @@ struct MemorySectionDefinition {
                           size_t dataAlignment);
 
   /**
-   * \brief Creates a new memory section definition with the given parameters.
+   * Creates a new memory section definition with the given parameters.
    * \param name The name of the section.
    * \param alignment The alignment of the section and the data.
    */
@@ -52,36 +52,36 @@ struct MemorySectionDefinition {
                                    size_t alignment = 1);
 
   /**
-   * \brief Returns the name of the section.
+   * Returns the name of the section.
    * \return The name of the section.
    */
   const std::string& name() const noexcept;
 
   /**
-   * \brief Returns the alignment of the whole section in memory.
+   * Returns the alignment of the whole section in memory.
    * \return The alignment of the whole section in memory.
    */
   size_t sectionAlignment() const noexcept;
 
   /**
-   * \brief Returns the alignment of each new data block in memory.
+   * Returns the alignment of each new data block in memory.
    * \return The alignment of each new data block in memory.
    */
   size_t dataAlignment() const noexcept;
 
  private:
   /**
-   * \brief The name of the section.
+   * The name of the section.
    */
   std::string _name;
 
   /**
-   * \brief The alignment of the whole section in memory.
+   * The alignment of the whole section in memory.
    */
   size_t _sectionAlignment;
 
   /**
-   * \brief The alignment of each new data block in memory.
+   * The alignment of each new data block in memory.
    */
   size_t _dataAlignment;
 };

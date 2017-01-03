@@ -37,7 +37,7 @@ void IntermediateMacroInstruction::replaceWithMacros(
     // work
     if ((*i)->getType() != IntermediateOperation::Type::INSTRUCTION) continue;
 
-    IntermediateInstruction& inst = static_cast<IntermediateInstruction&>(**i);
+    auto& inst = static_cast<IntermediateInstruction&>(**i);
 
     auto macro = macroTable.find(inst.name().string(),
                                  inst._sources.size() + inst._targets.size());
@@ -51,10 +51,9 @@ void IntermediateMacroInstruction::replaceWithMacros(
       continue;
     }
 
-    IntermediateOperationPointer newPtr =
-        std::make_shared<IntermediateMacroInstruction>(
-            inst, macro->second, macroTable, errors);
-    *i = std::move(newPtr);
+    auto newPtr = std::make_shared<IntermediateMacroInstruction>(
+        inst, macro->second, macroTable, errors);
+    *i = newPtr;
   }
 }
 
@@ -73,8 +72,8 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     IntermediateOperationPointer ptr =
         macro.getOperation(i, ins.getArgsVector());
 
-    if (ptr != nullptr) {
-      _operations.push_back(std::move(ptr));
+    if (ptr) {
+      _operations.emplace_back(ptr);
     } else {
       errors.pushError(macro.getOperationName(i).positionInterval(),
                        "Macro contains unsupported instruction '%1'.",
@@ -85,6 +84,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
   // Recursively replace macro instructions to support recursive macro calls
   replaceWithMacros(_operations.begin(), _operations.end(), macroTable, errors);
 }
+
 void IntermediateMacroInstruction::execute(
     const ExecuteImmutableArguments& immutable,
     CompileErrorList& errors,
@@ -116,21 +116,20 @@ void IntermediateMacroInstruction::enhanceSymbolTable(
   if (labels().size() > 0 && _firstInstruction < 0) {
     std::vector<CodePositionInterval> wholeRegion;
     for (const auto& label : labels()) {
-      wholeRegion.push_back(label.positionInterval());
+      wholeRegion.emplace_back(label.positionInterval());
     }
     errors.pushError(
         CodePositionInterval().unite(wholeRegion.begin(), wholeRegion.end()),
         "Labels cannot point to macros without instructions!");
   } else {
     for (const auto& label : labels()) {
+      auto labelValue = std::to_string(static_cast<IntermediateInstruction*>(
+                                           _operations[_firstInstruction].get())
+                                           ->address());
+      auto labelValuePositioned =
+          PositionedString(labelValue, label.positionInterval());
       graph.addNode(
-          Symbol(label,
-                 PositionedString(
-                     std::to_string(static_cast<IntermediateInstruction*>(
-                                        _operations[_firstInstruction].get())
-                                        ->address()),
-                     label.positionInterval() /*TODO?*/),
-                 SymbolBehavior::DYNAMIC));
+          Symbol(label, labelValuePositioned, SymbolBehavior::DYNAMIC));
     }
   }
 }

@@ -22,17 +22,17 @@
 #include <utility>
 
 /**
- * \brief The coordinate component type for denoting positions in code.
+ * The coordinate component type for denoting positions in code.
  */
 using CodeCoordinate = std::size_t;
 
 /**
- * \brief A position in code.
+ * A position in code.
  */
 class CodePosition {
  public:
   /**
-   * \brief Creates a new CodePosition with the given values (IMPORTANT: y
+   * Creates a new CodePosition with the given values (IMPORTANT: y
    * before x coordinate! Because row is more important than column).
    * \param iy The given y position.
    * \param ix The given x position.
@@ -40,105 +40,105 @@ class CodePosition {
   explicit CodePosition(CodeCoordinate iy = 0, CodeCoordinate ix = 0);
 
   /**
-   * \brief Alias for the y position.
+   * Alias for the y position.
    * \return The y position.
    */
   CodeCoordinate line() const noexcept;
 
   /**
-   * \brief Alias for the y position.
+   * Alias for the y position.
    * \return The y position.
    */
   CodeCoordinate row() const noexcept;
 
   /**
-   * \brief Alias for the x position.
+   * Alias for the x position.
    * \return The x position.
    */
   CodeCoordinate character() const noexcept;
 
   /**
-   * \brief Alias for the x position.
+   * Alias for the x position.
    * \return The x position.
    */
   CodeCoordinate column() const noexcept;
 
   /**
-   * \brief Alias for the y position.
+   * Alias for the y position.
    * \return The y position.
    */
   CodeCoordinate y() const noexcept;
 
   /**
-   * \brief Alias for the x position.
+   * Alias for the x position.
    * \return The x position.
    */
   CodeCoordinate x() const noexcept;
 
   /**
-   * \brief Adds a code position to this one.
+   * Adds a code position to this one.
    * \param other The code position summand.
    * \return The sum of the two code positions.
    */
   CodePosition operator+(const CodePosition& other) const noexcept;
 
   /**
-   * \brief Subtracts one code position from another.
+   * Subtracts one code position from another.
    * \param other The code position denoting the value to subtract.
    * \return The difference between the first and the second code position.
    */
   CodePosition operator-(const CodePosition& other) const;
 
   /**
-   * \brief Moves a code position to the right by the given coordinate.
+   * Moves a code position to the right by the given coordinate.
    * \param other The given coordinate.
    * \return The transformed code position.
    */
   CodePosition operator>>(const CodeCoordinate& other) const noexcept;
 
   /**
-   * \brief Moves a code position to the left by the given coordinate.
+   * Moves a code position to the left by the given coordinate.
    * \param other The given coordinate.
    * \return The transformed code position.
    */
   CodePosition operator<<(const CodeCoordinate& other) const noexcept;
 
   /**
-   * \brief Moves a code position down by the given coordinate.
+   * Moves a code position down by the given coordinate.
    * \param c The given coordinate.
    * \return The transformed code position.
    */
   CodePosition moveDown(const CodeCoordinate& c) const noexcept;
 
   /**
-   * \brief Moves a code position up by the given coordinate.
+   * Moves a code position up by the given coordinate.
    * \param c The given coordinate.
    * \return The transformed code position.
    */
   CodePosition moveUp(const CodeCoordinate& c) const;
 
   /**
-   * \brief Moves a code position to the left by the given coordinate.
+   * Moves a code position to the left by the given coordinate.
    * \param c The given coordinate.
    * \return The transformed code position.
    */
   CodePosition moveLeft(const CodeCoordinate& c) const;
 
   /**
-   * \brief Moves a code position to the right by the given coordinate.
+   * Moves a code position to the right by the given coordinate.
    * \param c The given coordinate.
    * \return The transformed code position.
    */
   CodePosition moveRight(const CodeCoordinate& c) const;
 
   /**
-   * \brief Increments the line position, but sets the x coordinate to 0 again.
+   * Increments the line position, but sets the x coordinate to 0 again.
    * \return The transformed code position.
    */
   CodePosition newLine() const;
 
   /**
-   * \brief Creates a code position which takes the maximum of two code
+   * Creates a code position which takes the maximum of two code
    * positions for each argument.
    * \param c The other code position.
    * \return The maximized code position.
@@ -146,7 +146,7 @@ class CodePosition {
   CodePosition max(const CodePosition& c) const;
 
   /**
-   * \brief Creates a code position which takes the minimum of two code
+   * Creates a code position which takes the minimum of two code
    * positions for each argument.
    * \param c The other code position.
    * \return The minimized code position.
@@ -155,12 +155,12 @@ class CodePosition {
 
  private:
   /**
-   * \brief The x position in code (column/character).
+   * The x position in code (column/character).
    */
   CodeCoordinate _x;
 
   /**
-   * \brief The y position in code (row/line).
+   * The y position in code (row/line).
    */
   CodeCoordinate _y;
 };

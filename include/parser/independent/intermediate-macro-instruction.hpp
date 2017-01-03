@@ -37,7 +37,7 @@ class IntermediateMacroInstruction : public IntermediateOperation {
                                CompileErrorList& errors);
 
   /**
-     * \brief Executes each of the sub-operations.
+     * Executes each of the sub-operations.
      * \param immutable Some constant arguments which might be helpful.
      * \param errors The compile error list to note down any errors.
      * \param commandOutput The final command output vector to record all
@@ -48,10 +48,10 @@ class IntermediateMacroInstruction : public IntermediateOperation {
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
                        FinalCommandVector& commandOutput,
-                       MemoryAccess& memoryAccess) override;
+                       MemoryAccess& memoryAccess);
 
   /**
-     * \brief Reserves entries for this macro instruction in the symbol table.
+     * Reserves entries for this macro instruction in the symbol table.
      * \param immutable Some constant arguments which might be helpful.
      * \param errors The compile error list to note down any errors.
      * \param graph The symbol graph for taking care of symbols (to check their
@@ -60,10 +60,10 @@ class IntermediateMacroInstruction : public IntermediateOperation {
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
                      CompileErrorList& errors,
-                     SymbolGraph& graph) override;
+                     SymbolGraph& graph);
 
   /**
-     * \brief Reserves memory for this macro instruction.
+     * Reserves memory for this macro instruction.
      * \param immutable Some constant arguments which might be helpful.
      * \param errors The compile error list to note down any errors.
      * \param allocator The allocator to reserve memory.
@@ -73,7 +73,7 @@ class IntermediateMacroInstruction : public IntermediateOperation {
   virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
                               CompileErrorList& errors,
                               MemoryAllocator& allocator,
-                              SectionTracker& tracker) override;
+                              SectionTracker& tracker);
 
   /**
    * Replaces `IntermediateInstruction`s with `IntermediateMacroInstructions` in
@@ -84,12 +84,12 @@ class IntermediateMacroInstruction : public IntermediateOperation {
                                 MacroDirectiveTable& macroTable,
                                 CompileErrorList& errors);
 
-  virtual std::string toString() const override;
+  virtual std::string toString() const;
 
-  virtual Type getType() const override;
+  virtual Type getType() const;
 
   /**
-   * \brief Finalizes an intermediate macro instruction.
+   * Finalizes an intermediate macro instruction.
    */
   virtual ~IntermediateMacroInstruction() = default;
 

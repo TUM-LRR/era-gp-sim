@@ -30,7 +30,7 @@
 class ConstantDirective : public IntermediateDirective {
  public:
   /**
-   * \brief Creates a new constant directive with the given parameters.
+   * Creates a new constant directive with the given parameters.
    * \param positionInterval The position in code where the constant directive
    * is located.
    * \param labels The labels associated with this directive.
@@ -38,12 +38,12 @@ class ConstantDirective : public IntermediateDirective {
    * \param arguments The given arguments of this constant directive.
    */
   ConstantDirective(const CodePositionInterval& positionInterval,
-                    const std::vector<PositionedString>& labels,
+                    const PositionedStringVector& labels,
                     const PositionedString& name,
-                    const std::vector<PositionedString>& arguments);
+                    const PositionedStringVector& arguments);
 
   /**
-   * \brief Executes the constant directive, i.e. checks its validity.
+   * Executes the constant directive, i.e. checks its validity.
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param commandOutput The final command output vector to record all
@@ -54,10 +54,10 @@ class ConstantDirective : public IntermediateDirective {
   virtual void execute(const ExecuteImmutableArguments& immutable,
                        CompileErrorList& errors,
                        FinalCommandVector& commandOutput,
-                       MemoryAccess& memoryAccess) override;
+                       MemoryAccess& memoryAccess);
 
   /**
-   * \brief Inserts the constant into the symbol table.
+   * Inserts the constant into the symbol table.
    * \param immutable Some helpful parameters provided in one helper class.
    * \param errors The compile error list to record errors, warnings and
    * information entries.
@@ -66,19 +66,19 @@ class ConstantDirective : public IntermediateDirective {
   virtual void
   enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
                      CompileErrorList& errors,
-                     SymbolGraph& graph) override;
+                     SymbolGraph& graph);
 
-  const std::vector<PositionedString>& arguments() const noexcept;
+  const PositionedStringVector& arguments() const noexcept;
   const PositionedString& expression() const noexcept;
 
  private:
   /**
-   * \brief The argument list received by this constant directive.
+   * The argument list received by this constant directive.
    */
-  std::vector<PositionedString> _arguments;
+  PositionedStringVector _arguments;
 
   /**
-   * \brief A positioned string representing the expression the constant will be
+   * A positioned string representing the expression the constant will be
    * replaced with.
    */
   PositionedString _expression;

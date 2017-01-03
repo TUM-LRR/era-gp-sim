@@ -119,7 +119,7 @@ class RiscvParser::RiscvRegex {
   bool _isValid;
   PositionedString _label;
   PositionedString _instruction;
-  std::vector<PositionedString> _parameters;
+  PositionedStringVector _parameters;
 };
 
 #endif

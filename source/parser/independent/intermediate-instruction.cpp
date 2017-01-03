@@ -22,6 +22,7 @@
 #include "arch/common/architecture.hpp"
 #include "arch/common/architecture.hpp"
 #include "common/assert.hpp"
+#include "common/string-conversions.hpp"
 #include "common/utility.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-access.hpp"
@@ -44,10 +45,10 @@ using size_t = std::size_t;
 
 IntermediateInstruction::IntermediateInstruction(
     const CodePositionInterval& positionInterval,
-    const std::vector<PositionedString>& labels,
+    const PositionedStringVector& labels,
     const PositionedString& name,
-    const std::vector<PositionedString>& sources,
-    const std::vector<PositionedString>& targets)
+    const PositionedStringVector& sources,
+    const PositionedStringVector& targets)
 : IntermediateOperation(positionInterval, labels, name)
 , _sources(sources)
 , _targets(targets) {
@@ -62,13 +63,13 @@ void IntermediateInstruction::execute(
   // into the final form.
   auto compiled = compileInstruction(immutable, errors, memoryAccess);
   if (compiled.node()) {
-    commandOutput.push_back(compiled);
+    commandOutput.emplace_back(compiled);
   }
 }
 
 std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>
 IntermediateInstruction::compileArgumentVector(
-    const std::vector<PositionedString>& vector,
+    const PositionedStringVector& vector,
     const ExecuteImmutableArguments& immutable,
     CompileErrorList& errors,
     MemoryAccess& memoryAccess) {
@@ -76,18 +77,16 @@ IntermediateInstruction::compileArgumentVector(
 
   SymbolReplacer::DynamicReplacer labelReplacerFunction = [&](
       const Symbol& symbol) {
-    // This might not be the biggest type, but we got to consider that the
-    // memory also works on size_t.
     size_t byteBitSize =
         sizeof(size_t) * immutable.architecture().getByteSize();
     auto labelValue = conversions::convert<size_t>(
         std::stoul(symbol.value().string()), byteBitSize);
     auto instructionAdress =
         conversions::convert<size_t>(_relativeAddress.offset(), byteBitSize);
-    auto relativeAdress =
+    auto relativeAddress =
         immutable.generator().getNodeFactories().labelToImmediate(
             labelValue, name().string(), instructionAdress);
-    return relativeAdress.toHexString(true, true);
+    return StringConversions::toSignedDecString(relativeAddress);
   };
 
   auto replacer = SymbolReplacer(immutable.replacer(), labelReplacerFunction);
@@ -100,7 +99,7 @@ IntermediateInstruction::compileArgumentVector(
     // Only add argument node if creation was successful.
     // Otherwise AbstractSyntaxTreeNode::validate() segfaults.
     if (transformed) {
-      output.emplace_back(std::move(transformed));
+      output.emplace_back(transformed);
     }
   }
   return output;
@@ -111,13 +110,13 @@ FinalCommand IntermediateInstruction::compileInstruction(
     CompileErrorList& errors,
     MemoryAccess& memoryAccess) {
   // We replace all occurenced in target in source (using a copy of them).
-  auto srcCompiled =
+  auto sourceCompiled =
       compileArgumentVector(_sources, immutable, errors, memoryAccess);
-  auto trgCompiled =
+  auto targetCompiled =
       compileArgumentVector(_targets, immutable, errors, memoryAccess);
 
   auto node = immutable.generator().transformCommand(
-      name(), errors, srcCompiled, trgCompiled, memoryAccess);
+      name(), sourceCompiled, targetCompiled, errors, memoryAccess);
   auto result = FinalCommand(node, positionInterval(), _address);
   return result;
 }
@@ -172,13 +171,14 @@ void IntermediateInstruction::allocateMemory(
   _relativeAddress = allocator["text"].allocateRelative(instructionLength);
 }
 
-static bool isWordCharacter(char c) {
-  return (c == '_' || std::isalpha(c) || std::isdigit(c));
+namespace {
+bool isWordCharacter(char c) {
+  return (c == '_' || std::isalnum(c));
 }
 
-static void replaceInVector(std::vector<PositionedString>& vector,
-                            const PositionedString& name,
-                            const PositionedString& value) {
+void replaceInVector(PositionedStringVector& vector,
+                     const PositionedString& name,
+                     const PositionedString& value) {
   auto search = '\\' + name.string();
   for (auto i : Utility::range<size_t>(0, vector.size())) {
     auto str = vector[i].string();
@@ -199,7 +199,7 @@ static void replaceInVector(std::vector<PositionedString>& vector,
     vector[i] = PositionedString(str, vector[i].positionInterval());
   }
 }
-
+};
 void IntermediateInstruction::insertIntoArguments(
     const PositionedString& name, const PositionedString& value) {
   replaceInVector(_sources, name, value);
@@ -211,10 +211,10 @@ std::string IntermediateInstruction::toString() const {
 
   // Append targets
   for (auto i : Utility::range<size_t>(0, _targets.size())) {
-    if (i != 0) {
-      str += ", ";
-    } else {
+    if (i == 0) {
       str += " ";
+    } else {
+      str += ", ";
     }
     str += _targets[i].string();
   }
@@ -234,11 +234,11 @@ std::string IntermediateInstruction::toString() const {
 }
 
 IntermediateOperationPointer IntermediateInstruction::clone() {
-  return IntermediateOperationPointer{new IntermediateInstruction{*this}};
+  return std::make_shared<IntermediateInstruction>(*this);
 }
 
-std::vector<PositionedString> IntermediateInstruction::getArgsVector() const {
-  std::vector<PositionedString> args;
+PositionedStringVector IntermediateInstruction::getArgsVector() const {
+  PositionedStringVector args;
   args.reserve(_sources.size() + _targets.size());
   args.insert(args.end(), _targets.begin(), _targets.end());
   args.insert(args.end(), _sources.begin(), _sources.end());
@@ -249,11 +249,11 @@ IntermediateOperation::Type IntermediateInstruction::getType() const {
   return Type::INSTRUCTION;
 }
 
-const std::vector<PositionedString>& IntermediateInstruction::sources() const
+const PositionedStringVector& IntermediateInstruction::sources() const
     noexcept {
   return _sources;
 }
-const std::vector<PositionedString>& IntermediateInstruction::targets() const
+const PositionedStringVector& IntermediateInstruction::targets() const
     noexcept {
   return _targets;
 }

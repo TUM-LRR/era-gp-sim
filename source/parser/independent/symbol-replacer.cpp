@@ -26,19 +26,21 @@
 // Helper method to create multiregex out of symbol names (which have been
 // checked for valid names before, hopefully... Otherwise, we might have a regex
 // injection).
-static MSRegex constructSymbolRegex(const std::vector<Symbol>& symbols) {
+namespace {
+MSRegex constructSymbolRegex(const std::vector<Symbol>& symbols) {
   std::vector<std::string> names;
   for (const auto& symbol : symbols) {
     // Only if the names are valid, they are allowed to be inserted.
     assert::that(symbol.nameValid());
-    names.push_back(symbol.name().string());
+    names.emplace_back(symbol.name().string());
   }
   if (names.empty()) {
     // If there is no symbol inserted, we insert an invalid one.
-    names.push_back("none^");
+    names.emplace_back("none^");
   }
   return MSRegex("\\b", "\\b", names, std::regex::optimize);
 }
+};
 
 // Some constructors.
 
@@ -81,9 +83,8 @@ PositionedString SymbolReplacer::replace(const PositionedString& data,
   };
 
   // Then iterate at max 'maximumReplaceCount' round.
-  for (const auto& round :
-       Utility::range<std::size_t>(0, _maximumReplaceCount)) {
-    (void)round;// (to prevent unused variable warnings)
+  for (const auto& _ : Utility::range<std::size_t>(0, _maximumReplaceCount)) {
+    (void)_;// (to prevent unused variable warnings)
 
     auto previous = result;
 

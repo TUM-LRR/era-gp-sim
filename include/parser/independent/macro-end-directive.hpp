@@ -23,37 +23,37 @@
 #include "parser/independent/intermediate-directive.hpp"
 
 /**
- * \brief A direction which indicates the end of a macro in the code.
+ * A direction which indicates the end of a macro in the code.
  */
 class MacroEndDirective : public IntermediateDirective {
  public:
   /**
-   * \brief Instantiates a new MacroEndDirective with the given arguments.
+   * Instantiates a new MacroEndDirective with the given arguments.
    * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation.
    * \param arguments Arguments of the directive. Should be none.
    */
   MacroEndDirective(const CodePositionInterval& positionInterval,
-                    const std::vector<PositionedString>& labels,
+                    const PositionedStringVector& labels,
                     const PositionedString& name,
-                    const std::vector<PositionedString>& arguments = {});
+                    const PositionedStringVector& arguments = {});
 
   /**
-   * \brief Specifies if the this operation should be processed. In this case:
+   * Specifies if the this operation should be processed. In this case:
    * never!
    * \return Always false.
    */
-  virtual bool shouldInsert() const override;
+  virtual bool shouldInsert() const;
 
   /**
-   * \brief Specifies the new target for operations after this command.
+   * Specifies the new target for operations after this command.
    * \return Switch back to the main target.
    */
-  virtual TargetSelector newTarget() const override;
+  virtual TargetSelector newTarget() const;
 
   /**
-   * \brief Finalizes a macro end directive.
+   * Finalizes a macro end directive.
    */
   virtual ~MacroEndDirective() = default;
 };

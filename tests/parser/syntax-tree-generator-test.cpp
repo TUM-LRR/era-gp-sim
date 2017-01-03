@@ -91,18 +91,18 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg2)));
 
   std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> sources;
-  sources.push_back(std::move(arg1));
-  sources.push_back(std::move(arg2));
+  sources.emplace_back(arg1);
+  sources.emplace_back(arg2);
 
   std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> targets;
-  targets.push_back(std::move(arg3));
+  targets.emplace_back(arg3);
 
   ProjectModule projectModule(
       ArchitectureFormula{"riscv", {"rv32i"}}, 4096, "riscv");
   auto memoryAccess = projectModule.getMemoryAccess();
 
   auto output = generator.transformCommand(
-      ZP("add"), errors, sources, targets, memoryAccess);
+      ZP("add"), sources, targets, errors, memoryAccess);
 
   ASSERT_EQ(errors.size(), 0);
   ASSERT_TRUE((isInstance<riscv::InstructionNode>(output)));

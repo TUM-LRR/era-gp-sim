@@ -33,7 +33,7 @@ class MacroDirective : public IntermediateDirective {
   friend class MacroDirectiveTable;
 
   /**
-   * \brief Instantiates a new MacroDirective with the given arguments.
+   * Instantiates a new MacroDirective with the given arguments.
    * \param positionInterval     The line interval the operation occupies.
    * \param labels    The vector of labels assigned to the operation.
    * \param name      The name of the operation. (e.g. '.macro')
@@ -41,12 +41,12 @@ class MacroDirective : public IntermediateDirective {
    *                  of the macro.
    */
   MacroDirective(const CodePositionInterval& positionInterval,
-                 const std::vector<PositionedString>& labels,
+                 const PositionedStringVector& labels,
                  const PositionedString& name,
-                 const std::vector<PositionedString>& arguments);
+                 const PositionedStringVector& arguments);
 
   /**
-   * \brief Instantiates a new MacroDirective with the given arguments.
+   * Instantiates a new MacroDirective with the given arguments.
    * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation. (e.g. '.macro')
@@ -54,36 +54,36 @@ class MacroDirective : public IntermediateDirective {
    * \param macroParameters The parameter names of the macro, if any.
    */
   MacroDirective(const CodePositionInterval& positionInterval,
-                 const std::vector<PositionedString>& labels,
+                 const PositionedStringVector& labels,
                  const PositionedString& name,
                  const PositionedString& macroName,
-                 const std::vector<PositionedString>& macroParameters = {});
+                 const PositionedStringVector& macroParameters = {});
 
   /**
-   * \brief Preprocesses the macro.
+   * Preprocesses the macro.
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param macroTable A table to record occured macros.
    */
   virtual void precompile(const PreprocessingImmutableArguments& immutable,
                           CompileErrorList& errors,
-                          MacroDirectiveTable& macroTable) override;
+                          MacroDirectiveTable& macroTable);
 
 
   /**
-   * \brief Specifies the new target for operations after this command.
+   * Specifies the new target for operations after this command.
    * \return Set ourselves as target.
    */
-  virtual TargetSelector newTarget() const override;
+  virtual TargetSelector newTarget() const;
 
   /**
-   * \brief Inserts an operation into the internal command list.
+   * Inserts an operation into the internal command list.
    * \param pointer The operation to insert.
    */
-  virtual void insert(IntermediateOperationPointer pointer) override;
+  virtual void insert(const IntermediateOperationPointer& pointer);
 
   /**
-   * \brief Returns the macro name.
+   * Returns the macro name.
    * \return The macro name.
    */
   const PositionedString& macroName() const noexcept;
@@ -110,42 +110,14 @@ class MacroDirective : public IntermediateDirective {
    * arguments.
    */
   IntermediateOperationPointer
-  getOperation(size_t index,
-               const std::vector<PositionedString>& arguments) const;
+  getOperation(size_t index, const PositionedStringVector& arguments) const;
 
   int firstInstructionIndex() const;
 
   const PositionedString& getOperationName(size_t index) const;
 
   /**
-   * Calls a function on an operation in this macro after given arguments have
-   * been inserted.
-   * \param index Index of the operation.
-   * \param arguments Arguments to be inserted into this macro.
-   * \param func Function to call. Has to be a member of IntermediateOperation.
-   * \param args Arguments for `func`.
-   */
-  /*template <typename T, typename... U>
-  void callOperationFunction(size_t index,
-                             const std::vector<PositionedString>& arguments,
-                             T func,
-                             U&... args) {
-    // Try to clone the operation and insert macro parameters.
-    // If that doesnt work, call func directly on operation.
-    IntermediateOperationPointer ptr;
-
-    ptr = _operations[index]->clone();
-    if (ptr != nullptr) {
-      _macroParameters.insertParameters(ptr, arguments);
-    }
-
-
-    IntermediateOperation& op{ptr == nullptr ? *_operations[index] : *ptr};
-    (op.*func)(args...);
-  }*/
-
-  /**
-   * \brief Finalizes a macro directive.
+   * Finalizes a macro directive.
    */
   virtual ~MacroDirective() = default;
 
@@ -158,10 +130,10 @@ class MacroDirective : public IntermediateDirective {
     using MacroParameter =
         std::pair<PositionedString, Optional<PositionedString>>;
 
-    MacroParameters(std::vector<PositionedString>::const_iterator begin,
-                    std::vector<PositionedString>::const_iterator end);
+    MacroParameters(PositionedStringVector::const_iterator begin,
+                    PositionedStringVector::const_iterator end);
 
-    MacroParameters(const std::vector<PositionedString>& arguments)
+    MacroParameters(const PositionedStringVector& arguments)
     : MacroParameters(arguments.begin(), arguments.end()) {
     }
 
@@ -177,7 +149,7 @@ class MacroDirective : public IntermediateDirective {
      * \param values Values to insert for the parameters.
      */
     void insertParameters(IntermediateOperationPointer& operation,
-                          const std::vector<PositionedString>& values) const;
+                          const PositionedStringVector& values) const;
 
     /**
      * Returns a pair with the minimum and maximum amount of parameters for this
@@ -202,17 +174,17 @@ class MacroDirective : public IntermediateDirective {
 
  private:
   /**
-   * \brief The name of the macro.
+   * The name of the macro.
    */
   PositionedString _macroName;
 
   /**
-   * \brief The parameters of the macro.
+   * The parameters of the macro.
    */
   MacroParameters _macroParameters;
 
   /**
-   * \brief The operation list of the macro.
+   * The operation list of the macro.
    */
   std::vector<IntermediateOperationPointer> _operations;
 

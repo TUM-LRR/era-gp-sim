@@ -32,9 +32,9 @@
 
 MemoryReservationDirective::MemoryReservationDirective(
     const CodePositionInterval& positionInterval,
-    const std::vector<PositionedString>& labels,
+    const PositionedStringVector& labels,
     const PositionedString& name,
-    const std::vector<PositionedString>& values,
+    const PositionedStringVector& values,
     const ArgumentCompileFunction& argumentCompile,
     std::size_t cellSize)
 : IntermediateDirective(positionInterval, labels, name)
@@ -91,9 +91,9 @@ void MemoryReservationDirective::enhanceSymbolTable(
     SymbolGraph& graph) {
   // We calculate the absolute memory position and enhance our symbol table.
   _absolutePosition = immutable.allocator().absolutePosition(_relativePosition);
+  auto absolutePositioned = PositionedString(std::to_string(_absolutePosition));
   for (const auto& label : labels()) {
-    graph.addNode(
-        Symbol(label, PositionedString(std::to_string(_absolutePosition))));
+    graph.addNode(Symbol(label, absolutePositioned));
   }
 }
 
@@ -111,7 +111,7 @@ void MemoryReservationDirective::execute(
 MemoryAddress MemoryReservationDirective::absolutePosition() const noexcept {
   return _absolutePosition;
 }
-const std::vector<PositionedString>& MemoryReservationDirective::values() const
+const PositionedStringVector& MemoryReservationDirective::values() const
     noexcept {
   return _values;
 }

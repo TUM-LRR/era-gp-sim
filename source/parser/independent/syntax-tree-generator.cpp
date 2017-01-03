@@ -25,10 +25,10 @@
 #include "arch/common/validation-result.hpp"
 #include "core/memory-access.hpp"
 #include "parser/common/compile-error-list.hpp"
+#include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/positioned-string.hpp"
-#include "parser/independent/symbol-replacer.hpp"
 
-std::shared_ptr<AbstractSyntaxTreeNode>
+AbstractSyntaxTreeNodePointer
 SyntaxTreeGenerator::transformOperand(const PositionedString& operand,
                                       const SymbolReplacer& replacer,
                                       CompileErrorList& errors) const {
@@ -43,14 +43,14 @@ SyntaxTreeGenerator::transformOperand(const PositionedString& operand,
         operand.positionInterval(), "Invalid argument: '%1'", operand.string());
   }
 
-  return std::move(outputNode);
+  return outputNode;
 }
 
 std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
     const PositionedString& commandName,
+    const AbstractSyntaxTreeNodePointerVector& sources,
+    const AbstractSyntaxTreeNodePointerVector& targets,
     CompileErrorList& errors,
-    std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& sources,
-    std::vector<std::shared_ptr<AbstractSyntaxTreeNode>>& targets,
     MemoryAccess& memoryAccess) const {
   // Just create an instruction node and add all output and input nodes
   // (operands).
@@ -61,17 +61,17 @@ std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
     errors.pushError(commandName.positionInterval(),
                      "Unknown operation: %1",
                      commandName.string());
-    return std::move(outputNode);
+    return outputNode;
   }
 
   // Targets.
-  for (auto& i : targets) {
-    outputNode->addChild(std::move(i));
+  for (auto& target : targets) {
+    outputNode->addChild(target);
   }
 
   // Sources.
-  for (auto& i : sources) {
-    outputNode->addChild(std::move(i));
+  for (auto& source : sources) {
+    outputNode->addChild(source);
   }
 
   // Validate node.
@@ -84,7 +84,7 @@ std::shared_ptr<AbstractInstructionNode> SyntaxTreeGenerator::transformCommand(
   }
 
   // Return.
-  return std::move(outputNode);
+  return outputNode;
 }
 
 const NodeFactoryCollection& SyntaxTreeGenerator::getNodeFactories() const {

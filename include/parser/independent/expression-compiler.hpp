@@ -30,7 +30,7 @@
 #include <vector>
 
 /**
- * \brief A compiler for arithmetic expressions.
+ * A compiler for arithmetic expressions.
  * \tparam T The number type for the compiler to operate on.
  *
  * This expression compiler uses the Shunting Yard algorithm as described here:
@@ -67,7 +67,7 @@ template <typename T>
 class ExpressionCompiler {
  public:
   /**
-   * \brief Creates a new expression compiler based on the definition given.
+   * Creates a new expression compiler based on the definition given.
    * \param definition The given compiler definition.
    */
   ExpressionCompiler(const ExpressionCompilerDefinition<T>& definition)
@@ -76,7 +76,7 @@ class ExpressionCompiler {
   }
 
   /**
-   * \brief Creates a new expression compiler with the given tokenizer and
+   * Creates a new expression compiler with the given tokenizer and
    * parser.
    * \param tokenizer The tokenizer to use.
    * \param parser The parser to use.
@@ -87,7 +87,7 @@ class ExpressionCompiler {
   }
 
   /**
-   * \brief Compiles a given string into a number.
+   * Compiles a given string into a number.
    * \param string The given string.
    * \param replacer The symbol replacer for replacing constants – if they
    * exist.
@@ -130,7 +130,7 @@ class ExpressionCompiler {
                                tokenizedAgain.end());
       } else {
         // Otherwise, copy.
-        replacedSymbols.push_back(token);
+        replacedSymbols.emplace_back(token);
       }
     }
     return replacedSymbols;
@@ -165,8 +165,8 @@ class ExpressionCompiler {
     }
 
     // Then, we have the operator token done.
-    tokens.push_back(ExpressionTokenDefinition{operatorRegex.substr(1),
-                                               ExpressionTokenType::OPERATOR});
+    tokens.emplace_back(ExpressionTokenDefinition{
+        operatorRegex.substr(1), ExpressionTokenType::OPERATOR});
 
     // For the literal decoder tokens, it is simpler, as they are already
     // regexes.
@@ -176,17 +176,17 @@ class ExpressionCompiler {
     }
 
     // Just concat them and we are done.
-    tokens.push_back(ExpressionTokenDefinition{literalRegex.substr(1),
-                                               ExpressionTokenType::LITERAL});
+    tokens.emplace_back(ExpressionTokenDefinition{
+        literalRegex.substr(1), ExpressionTokenType::LITERAL});
 
     // The helper regexes we simply add to our token definition list.
-    tokens.push_back(ExpressionTokenDefinition{
+    tokens.emplace_back(ExpressionTokenDefinition{
         definition.helpers.leftBracket, ExpressionTokenType::LEFT_BRACKET});
-    tokens.push_back(ExpressionTokenDefinition{
+    tokens.emplace_back(ExpressionTokenDefinition{
         definition.helpers.rightBracket, ExpressionTokenType::RIGHT_BRACKET});
 
-    tokens.push_back(ExpressionTokenDefinition{definition.helpers.constant,
-                                               ExpressionTokenType::CONSTANT});
+    tokens.emplace_back(ExpressionTokenDefinition{
+        definition.helpers.constant, ExpressionTokenType::CONSTANT});
 
     // And that's it!
     return tokens;

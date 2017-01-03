@@ -29,7 +29,7 @@
 class CompileErrorList;
 
 /**
- * \brief Transforms a string into a list of tokens.
+ * Transforms a string into a list of tokens.
  *
  * This system uses a single regex which contains code to match all possible
  * tokens (this way, we may emulate parsing using a finite automaton). If we
@@ -39,14 +39,14 @@ class CompileErrorList;
 class ExpressionTokenizer {
  public:
   /**
-   * \brief Creates a new expression tokenizer out of a token list.
+   * Creates a new expression tokenizer out of a token list.
    * \param definitions The token list.
    */
   ExpressionTokenizer(
       const std::vector<ExpressionTokenDefinition>& definitions);
 
   /**
-   * \brief Tokenizes a given string and records any errors.
+   * Tokenizes a given string and records any errors.
    * \param data The string to tokenize.
    * \param errors The compile error list to note down any errors.
    * \return A vector of tokens created from the input string.

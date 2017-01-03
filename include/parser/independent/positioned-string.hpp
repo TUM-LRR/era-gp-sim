@@ -28,7 +28,7 @@
 #include "parser/common/code-position-interval.hpp"
 
 /**
- * \brief A string enhanced with a position interval which denotes where it is
+ * A string enhanced with a position interval which denotes where it is
  * located in code.
  * \tparam CharT The char type on which the string is based on.
  */
@@ -36,22 +36,22 @@ template <typename CharT>
 class PositionedBasicString {
  public:
   /**
-   * \brief The same character type as above, just ensured to be numeric.
+   * The same character type as above, just ensured to be numeric.
    */
   using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
 
   /**
-   * \brief The string type we will use in the following.
+   * The string type we will use in the following.
    */
   using String = std::basic_string<CharType>;
 
   /**
-   * \brief Alias for std::size_t .
+   * Alias for std::size_t .
    */
   using size_t = std::size_t;
 
   /**
-   * \brief Creates a new positioned basic string with the given parameters.
+   * Creates a new positioned basic string with the given parameters.
    * \param string The string which is represented by this positioned basic
    * string (defaults to an empty string).
    * \param positionInterval The code position interval where the string is
@@ -64,7 +64,7 @@ class PositionedBasicString {
   }
 
   /**
-   * \brief Returns the string which is represented by this positioned basic
+   * Returns the string which is represented by this positioned basic
    * string
    * \return The string which is represented by this positioned basic string
    */
@@ -73,7 +73,7 @@ class PositionedBasicString {
   }
 
   /**
-   * \brief  Returns the code position interval where the string is located in
+   *  Returns the code position interval where the string is located in
    * code (defaults to an empty interval).
    * \return The code position interval where the string is located in code
    * (defaults to an empty interval).
@@ -83,7 +83,7 @@ class PositionedBasicString {
   }
 
   /**
-   * \brief Gets a part of the string, with reduced position interval in code.
+   * Gets a part of the string, with reduced position interval in code.
    * \param start The start of the slice.
    * \param length The length of the slice. $$start+length$$ must be at most as
    * large as the whole string.
@@ -105,7 +105,7 @@ class PositionedBasicString {
   }
 
   /**
-   * \brief Gets the estimated position of the nth character of this positioned
+   * Gets the estimated position of the nth character of this positioned
    * string.
    * \param n The character to get (0-based!).
    * \return The estimated code position where this character could be.
@@ -130,41 +130,41 @@ class PositionedBasicString {
   }
 
   /**
-   * \brief Forwarded method from the string, denotes if it is empty.
+   * Forwarded method from the string, denotes if it is empty.
    * \return True, if the contained string is empty, else false.
    */
-  bool empty() const {
+  bool empty() const noexcept {
     return _string.empty();
   }
 
   /**
-   * \brief Forwarded method from the string, denotes if its size.
+   * Forwarded method from the string, denotes if its size.
    * \return The size of the string.
    */
-  size_t size() const {
+  size_t size() const noexcept {
     return _string.size();
   }
 
  private:
   /**
-   * \brief The string which is represented by this positioned basic string.
+   * The string which is represented by this positioned basic string.
    */
   String _string;
 
   /**
-   * \brief The code position interval where the string is located in code
+   * The code position interval where the string is located in code
    * (defaults to an empty interval).
    */
   CodePositionInterval _positionInterval;
 };
 
 /**
- * \brief A positioned basic string with the default 'char' type.
+ * A positioned basic string with the default 'char' type.
  */
 using PositionedString = PositionedBasicString<char>;
 
 /**
- * \brief A vector of positioned strings.
+ * A vector of positioned strings.
  */
 using PositionedStringVector = std::vector<PositionedString>;
 

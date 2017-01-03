@@ -36,7 +36,7 @@
 
 IntermediateOperation::IntermediateOperation(
     const CodePositionInterval& positionInterval,
-    const std::vector<PositionedString>& labels,
+    const PositionedStringVector& labels,
     const PositionedString& name)
 : _positionInterval(positionInterval), _labels(labels), _name(name) {
 }
@@ -74,7 +74,8 @@ TargetSelector IntermediateOperation::newTarget() const {
   return TargetSelector::KEEP;
 }
 
-void IntermediateOperation::insert(IntermediateOperationPointer pointer) {
+void IntermediateOperation::insert(
+    const IntermediateOperationPointer& pointer) {
   // If this happens, something has gone wrong in our programming.
   assert::that(false);
 }
@@ -93,8 +94,7 @@ const CodePositionInterval& IntermediateOperation::positionInterval() const
   return _positionInterval;
 }
 
-const std::vector<PositionedString>& IntermediateOperation::labels() const
-    noexcept {
+const PositionedStringVector& IntermediateOperation::labels() const noexcept {
   return _labels;
 }
 

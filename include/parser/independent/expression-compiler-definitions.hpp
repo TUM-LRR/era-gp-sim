@@ -27,42 +27,46 @@
 class CompileErrorList;
 
 /**
- * \brief Denotes the type of an expression token in which a text is broken down
+ * Denotes the type of an expression token in which a text is broken down
  * to.
  */
 enum class ExpressionTokenType {
   /**
-   * \brief An auxiliary type denoting a wrongly-encoded token (or a non
+   * An auxiliary type denoting a wrongly-encoded token (or a non
    * existing one when nothing has been read so far).
    */
   INVALID,
 
   /**
-   * \brief An operator token. We do not differ between unary and binary
+   * An operator token. We do not differ between unary and binary
    * operator here, yet.
    */
   OPERATOR,
 
   /**
-   * \brief A literal token which is transformed by operators.
+   * A literal token which is transformed by operators.
    */
   LITERAL,
 
   /**
-   * \brief The left bracket.
+   * The left bracket.
    */
   LEFT_BRACKET,
 
   /**
-   * \brief The right bracket.
+   * The right bracket.
    */
   RIGHT_BRACKET,
 
+  /**
+   * A constant. A constant behaves like a literal except that it is replaced in
+   * the token stream and tokenized again.
+   */
   CONSTANT
 };
 
 /**
- * \brief Denotes the associativity of an operator.
+ * Denotes the associativity of an operator.
  *
  * If an operator is left-associative, we evaluate our expression from left to
  * right.
@@ -71,47 +75,47 @@ enum class ExpressionTokenType {
  */
 enum class ExpressionOperatorAssociativity {
   /**
-   * \brief The operator is left-associative.
+   * The operator is left-associative.
    */
   LEFT,
 
   /**
-   * \brief The operator is right-associative.
+   * The operator is right-associative.
    */
   RIGHT
 };
 
 /**
- * \brief Represents a binary operator of an arithmetic expression.
+ * Represents a binary operator of an arithmetic expression.
  * \tparam T The number type we operate on.
  */
 template <typename T>
 struct ExpressionBinaryOperator {
   /**
-   * \brief The associativity of the operator.
+   * The associativity of the operator.
    */
   ExpressionOperatorAssociativity associativity;
 
   /**
-   * \brief The string representation of the operator.
+   * The string representation of the operator.
    */
   std::string identifier;
 
   /**
-   * \brief The precedence of the operator.
+   * The precedence of the operator.
    *
    * The lower, the earlier it is evaluated.
    */
   unsigned short precedence;
 
   /**
-   * \brief Applies the operator on two numbers and records any possible errors.
+   * Applies the operator on two numbers and records any possible errors.
    */
   std::function<bool(const T&, const T&, T&, CompileErrorList&)> handler;
 };
 
 /**
- * \brief Represents a unary operator of an arithmetic expression.
+ * Represents a unary operator of an arithmetic expression.
  * \tparam T The number type we operate on.
  *
  * For this specific algorithm, unary operators always have the same low
@@ -120,124 +124,124 @@ struct ExpressionBinaryOperator {
 template <typename T>
 struct ExpressionUnaryOperator {
   /**
-   * \brief The string representation of the operator.
+   * The string representation of the operator.
    */
   std::string identifier;
 
   /**
-   * \brief Applies the operator on one number and records any possible errors.
+   * Applies the operator on one number and records any possible errors.
    */
   std::function<bool(const T&, T&, CompileErrorList&)> handler;
 };
 
 /**
- * \brief Provides information about how to decode a specific literal.
+ * Provides information about how to decode a specific literal.
  * \tparam T The number type we operate on.
  */
 template <typename T>
 struct ExpressionLiteralDecoder {
   /**
-   * \brief The regex representation of the literal.
+   * The regex representation of the literal.
    */
   std::string regex;
 
   /**
-   * \brief Decodes the literal into the number type.
+   * Decodes the literal into the number type.
    */
   std::function<bool(const PositionedString&, T&, CompileErrorList&)> decoder;
 };
 
 /**
- * \brief Provides some help regexes for tokenizing expressions.
+ * Provides some help regexes for tokenizing expressions.
  */
 struct ExpressionHelpRegexes {
   /**
-   * \brief The regex used for parsing opening brackets.
+   * The regex used for parsing opening brackets.
    */
   std::string leftBracket;
 
   /**
-   * \brief The regex used for parsing closing brackets.
+   * The regex used for parsing closing brackets.
    */
   std::string rightBracket;
 
   /**
-   * \brief The regex used for parsing constants.
+   * The regex used for parsing constants.
    */
   std::string constant;
 };
 
 /**
- * \brief Provides information about how to parse specific symbols.
+ * Provides information about how to parse specific symbols.
  * \tparam T The number type we operate on.
  */
 template <typename T>
 struct ExpressionParserDefinition {
   /**
-   * \brief The list of supported binary operators.
+   * The list of supported binary operators.
    */
   std::vector<ExpressionBinaryOperator<T>> binaryOperators;
 
   /**
-   * \brief The list of supported unary operators.
+   * The list of supported unary operators.
    */
   std::vector<ExpressionUnaryOperator<T>> unaryOperators;
 
   /**
-   * \brief The list of supported literals.
+   * The list of supported literals.
    */
   std::vector<ExpressionLiteralDecoder<T>> literalDecoders;
 };
 
 
 /**
- * \brief Provides information about how to compile specific expressions.
+ * Provides information about how to compile specific expressions.
  * \tparam T The number type we operate on.
  */
 template <typename T>
 struct ExpressionCompilerDefinition {
   /**
-   * \brief Provides information about how to parse the expressions.
+   * Provides information about how to parse the expressions.
    */
   ExpressionParserDefinition<T> parserDefinition;
 
   /**
-   * \brief Additional helper regexes for tokenizing.
+   * Additional helper regexes for tokenizing.
    */
   ExpressionHelpRegexes helpers;
 };
 
 /**
- * \brief The definition of a token for the tokenizer.
+ * The definition of a token for the tokenizer.
  */
 struct ExpressionTokenDefinition {
   /**
-   * \brief The regex how to recognize the token.
+   * The regex how to recognize the token.
    */
   std::string regex;
 
   /**
-   * \brief The type the token has.
+   * The type the token has.
    */
   ExpressionTokenType type;
 };
 
 /**
- * \brief A token, taken from a string.
+ * A token, taken from a string.
  */
 struct ExpressionToken {
   /**
-   * \brief The string representation of the token.
+   * The string representation of the token.
    */
   PositionedString data;
 
   /**
-   * \brief The type of the token.
+   * The type of the token.
    */
   ExpressionTokenType type;
 
   /**
-   * \brief The index where the token is placed in the string.
+   * The index where the token is placed in the string.
    */
   size_t index;
 };

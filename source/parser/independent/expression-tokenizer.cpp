@@ -43,9 +43,9 @@ ExpressionTokenizer::tokenize(const PositionedString& data,
       // If not, we got another token.
       auto positionedSource =
           data.slice(currentPosition + match.position, match.length);
-      output.push_back(ExpressionToken{positionedSource,
-                                       _typeMapping.at(match.choice - 1),
-                                       currentPosition + match.position});
+      output.emplace_back(ExpressionToken{positionedSource,
+                                          _typeMapping.at(match.choice - 1),
+                                          currentPosition + match.position});
     }
 
     // Now we update our position and the rest string and continue.
@@ -76,12 +76,12 @@ std::vector<std::string> ExpressionTokenizer::buildRegexVector(
 
   // We copy the regexes from our definitions and also include a whitespace
   // finder.
-  output.push_back("\\s+");
+  output.emplace_back("\\s+");
   _typeMapping.reserve(definitions.size());
-  for (const ExpressionTokenDefinition& i : definitions) {
+  for (const auto& tokenDefinition : definitions) {
     // And while doing that, we are setting the regex to token type mapping.
-    _typeMapping.push_back(i.type);
-    output.push_back(i.regex);
+    _typeMapping.emplace_back(tokenDefinition.type);
+    output.emplace_back(tokenDefinition.regex);
   }
   return output;
 }

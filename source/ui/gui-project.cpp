@@ -235,7 +235,7 @@ QString GuiProject::getCommandHelp(std::size_t line) {
   } else {
     bool helpFound = false;
     for (const auto& command : _commandList) {
-      if (command.node() && command.position().start().line() == line) {
+      if (command.node() && command.position().startLine() == line) {
         auto translateable = command.node()->getInstructionDocumentation();
         help = Ui::translate(translateable);
         _helpCache.emplace(line, help);

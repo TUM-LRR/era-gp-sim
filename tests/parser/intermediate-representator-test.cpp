@@ -80,5 +80,4 @@ TEST(IntermediateRepresentator, macroDefinition) {
                    errors);
   ir.insertCommand(
       MacroEndDirective(CodePositionInterval(), {}, ZP(".endmacro")), errors);
-  // To be extended in a later branch.
 }
