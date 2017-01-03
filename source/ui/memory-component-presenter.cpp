@@ -43,12 +43,10 @@ MemoryComponentPresenter::~MemoryComponentPresenter() {
 void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
                                                std::size_t length) {
   // calculate region for (max) 64bit memory cells
-  int start = address - (address % (64 / 8));
-  int end = start + (length - (length % (64 / 8)) + (64 / 8)) - 1;
-
   // region should not exceed real memory size
-  if (end >= _memorySize) end = _memorySize - 1;
-  if (start <= 0) start = 0;
+  std::size_t start = address - (address % (64 / 8));
+  std::size_t end = std::max(
+      start + (length - (length % (64 / 8)) + (64 / 8)) - 1, _memorySize - 1);
 
   // if the memory that is hold in cache is changed, invalidate cache
   // new value intersects with the beginning of the cached region
@@ -149,8 +147,11 @@ MemoryComponentPresenter::dataMemory(const QModelIndex &index, int role) const {
   if (role_string.endsWith("32")) number_of_bits = 32;
 
 
-  int memory_address = index.row();//* (number_of_bits / 8);
+  int memory_address = index.row();
   int memory_length = number_of_bits / 8;
+
+  // return empty string if cell is not displayed
+  if (memory_address % memory_length != 0) return QString("");
 
 
   if (memory_address + memory_length <= _memorySize) {
@@ -211,15 +212,18 @@ MemoryValue MemoryComponentPresenter::getMemoryValueCached(
     // add some offset around but
     // cache size should not exceed real memory boundaries
     // (done this way to prevent overflows)
-    const int offset = 10;
-    if (_memoryCacheBaseAddress < offset)
+    const std::size_t offset = 10;
+    if (_memoryCacheBaseAddress < offset) {
       _memoryCacheBaseAddress = 0;
-    else
+    } else {
       _memoryCacheBaseAddress -= offset;
-    if (_memoryCacheBaseAddress + _memoryCacheSize >= _memorySize - offset * 2)
+    }
+    if (_memoryCacheBaseAddress + _memoryCacheSize >=
+        _memorySize - offset * 2) {
       _memoryCacheSize = _memorySize - _memoryCacheBaseAddress;
-    else
+    } else {
       _memoryCacheSize += offset * 2;
+    }
 
     // fetch cache from core
     _memoryCache =
@@ -229,8 +233,8 @@ MemoryValue MemoryComponentPresenter::getMemoryValueCached(
     // set cache status to valid
     _memoryCacheValid = true;
 
-    int subset_start = (memory_address - _memoryCacheBaseAddress) * 8;
-    int subset_end =
+    std::size_t subset_start = (memory_address - _memoryCacheBaseAddress) * 8;
+    std::size_t subset_end =
         (memory_address - _memoryCacheBaseAddress + memory_length) * 8;
     return _memoryCache.subSet(subset_start, subset_end);
   }

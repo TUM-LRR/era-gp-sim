@@ -20,7 +20,7 @@
 #ifndef ERAGPSIM_UI_MEMORY_COMPONENT_PRESENTER_HPP
 #define ERAGPSIM_UI_MEMORY_COMPONENT_PRESENTER_HPP
 
-#include <QAbstractTableModel>
+#include <QAbstractListModel>
 #include <QHash>
 #include <QModelIndex>
 #include <QObject>
@@ -119,7 +119,7 @@ class MemoryComponentPresenter : public QAbstractListModel {
 
   /**
    * Returns the number of rows in this table
-   * Inherited from QAbstractTableModel
+   * Inherited from QAbstractListModel
    *
    * /param parent pointer to the logical data parent
    * /return returns the length of the table
