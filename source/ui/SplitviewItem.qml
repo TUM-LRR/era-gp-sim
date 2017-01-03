@@ -91,32 +91,25 @@ Item {
                     anchors.topMargin: 4
                     anchors.left: parent.left
                     anchors.leftMargin: 4
-                    anchors.right: settingsButton.left
+                    anchors.right: (settingsButton.visible === true) ? settingsButton.left : parent.right
                     anchors.rightMargin: 4
-                    model: ["Choose Component","Snapshots", "Output", /*"Editor",*/ "Register", "Memory", "Input", "Help" ]
+                    model: ["Snapshots", "Output", /*"Editor",*/ "Register", "Memory", "Input", "Help" ]
 
-                    onCurrentIndexChanged:{
-                        if (currentIndex === 0) {
-                            holder.change("nothing");
-                        } else if (currentIndex === 1) {
-                            holder.change("snapshots");
-                        } else if (currentIndex === 2) {
-                            holder.change("output");
-                        } else if (currentIndex === 3) {
-                            holder.change("register");
-                        } else if  (currentIndex === 4) {
-                            holder.change("memory");
-                        } else if ( currentIndex === 5) {
-                            holder.change("input");
-                        } else {
-                            holder.change("help");
-                        }
-                    }
                     onPressedChanged: {
                         if (pressed) {
                             isExpanded=true
                         } else if(!hovered) {
                             isExpanded=false
+                        }
+                    }
+
+                    property var usualList: ["snapshots", "output", "register", "memory", "input", "help"]
+                    onModelChanged: {
+                        var usualIndex = usualList.indexOf(usual);
+                        if (usualIndex !== -1) {
+                            componentSelector.currentIndex = usualList.indexOf(usual);
+                        } else {
+                            componentSelector.currentIndex = 0;
                         }
                     }
                 }
@@ -141,6 +134,14 @@ Item {
                     onClicked: {
                         outputTabView.getTab(outputTabView.currentIndex).item.settingsButtonPressed();
                     }
+
+                    Connections {
+                        target: componentLoader
+
+                        onLoaded: {
+                            settingsButton.visible = (componentLoader.item.hasComponentSettings !== undefined) ? componentLoader.item.hasComponentSettings : false
+                        }
+                    }
                 }
             }
         }
@@ -156,13 +157,15 @@ Item {
 
     }
 
-    /*holds the actual component*/
-    ComponentHolder {
-        id: holder
+    Loader {
+        id: componentLoader
+
         anchors.top: header.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        usual: parent.usual
+
+        property var sourceComponents: ["Snapshots/SnapshotList.qml", "Output/Output.qml", "Register/Register.qml", "Memory/MemoryComponent.qml", "Input/Input.qml", "help/HelpWindow.qml"]
+        source: (sourceComponents[componentSelector.currentIndex] !== undefined) ? ("Components/" + sourceComponents[componentSelector.currentIndex]) : ("BlankComponent.qml")
     }
 }
