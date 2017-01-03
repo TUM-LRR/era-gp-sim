@@ -40,7 +40,7 @@ Item {
     Window {
         id: settingsWindow
         width: 400
-        height: 200
+        height: 250
         title: "Pixel Display Settings"
 
         function updateSettings() {
@@ -84,6 +84,11 @@ Item {
                 Label {
                     text: "height:"
                 }
+                Button {
+                    id: abortButton
+                    text: "abort"
+                    onClicked : {settingsWindow.updateSettings();}
+                }
             }
             Column {
                 id: controlsColumn
@@ -106,8 +111,8 @@ Item {
                 TextField {
                     id: pixelBaseAddressTextField
 
-                    onAccepted: { processInput(); }
-                    onEditingFinished: { processInput(); }
+                    // onAccepted: { processInput(); }
+                    // onEditingFinished: { processInput(); }
 
                     function processInput() {
                         var inputValue = controlsColumn.integerFromInputString(String(pixelBaseAddressTextField.text))
@@ -120,8 +125,8 @@ Item {
                 TextField {
                     id: colorBaseAddressTextField
 
-                    onAccepted: { processInput(); }
-                    onEditingFinished: { processInput(); }
+                    // onAccepted: { processInput(); }
+                    // onEditingFinished: { processInput(); }
 
                     function processInput() {
                         var inputValue = controlsColumn.integerFromInputString(String(colorBaseAddressTextField.text))
@@ -134,10 +139,9 @@ Item {
                 ComboBox {
                     id: colorModeComboBox
                     model: [ "Monochrome", "RGB" ]
-                    onAccepted: {
-                        pixeldisplaypainteditemid.colorMode = colorModeComboBox.currentIndex
-                    }
-                    onActivated: {
+                    // onAccepted: {processInput();}
+                    // onActivated: { processInput(); }
+                    function processInput() {
                         pixeldisplaypainteditemid.colorMode = colorModeComboBox.currentIndex
                     }
                 }
@@ -145,8 +149,8 @@ Item {
                 TextField {
                     id: widthTextField
 
-                    onAccepted: { processInput(); }
-                    onEditingFinished: { processInput(); }
+                    // onAccepted: { processInput(); }
+                    // onEditingFinished: { processInput(); }
 
                     function processInput() {
                         var inputValue = controlsColumn.integerFromInputString(String(widthTextField.text))
@@ -159,14 +163,28 @@ Item {
                 TextField {
                     id: heightTextField
 
-                    onAccepted: { processInput(); }
-                    onEditingFinished: { processInput(); }
+                    // onAccepted: { processInput(); }
+                    // onEditingFinished: { processInput(); }
 
                     function processInput() {
                         var inputValue = controlsColumn.integerFromInputString(String(heightTextField.text))
                         if (inputValue && inputValue > 0) {
                             pixeldisplaypainteditemid.height = inputValue
                         }
+                    }
+                }
+
+                Button {
+                    id: doneButton
+                    text: "done"
+                    onClicked : {processSettings();}
+
+                    function processSettings() {
+                        pixelBaseAddressTextField.processInput();
+                        colorBaseAddressTextField.processInput();
+                        colorModeComboBox.processInput();
+                        widthTextField.processInput();
+                        heightTextField.processInput();
                     }
                 }
             }
