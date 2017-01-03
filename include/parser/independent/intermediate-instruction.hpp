@@ -137,11 +137,6 @@ class IntermediateInstruction : public IntermediateOperation {
   virtual std::string toString() const;
 
   /**
-   * \return The type of this operation: it is an instruction.
-   */
-  virtual Type getType() const;
-
-  /**
    * Finalizes an intermediate instruction.
    */
   virtual ~IntermediateInstruction() = default;

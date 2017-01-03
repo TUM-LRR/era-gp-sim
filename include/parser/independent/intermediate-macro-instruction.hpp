@@ -111,11 +111,6 @@ class IntermediateMacroInstruction : public IntermediateOperation {
   virtual std::string toString() const;
 
   /**
-     * \return The type of this operation: it is a macro instruction.
-     */
-  virtual Type getType() const;
-
-  /**
    * Finalizes an intermediate macro instruction.
    */
   virtual ~IntermediateMacroInstruction() = default;

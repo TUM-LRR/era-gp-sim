@@ -17,6 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "common/utility.hpp"
 #include "parser/independent/macro-directive.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/intermediate-instruction.hpp"
@@ -49,7 +50,7 @@ void MacroDirective::insert(const IntermediateOperationPointer& pointer) {
   // Remember index of the first instruction so we can use its address for
   // labels.
   if (_firstInstruction < 0 &&
-      pointer->getType() == IntermediateOperation::Type::INSTRUCTION) {
+      Utility::isInstance<IntermediateInstruction>(pointer)) {
     _firstInstruction = _operations.size();
   }
   _operations.emplace_back(pointer);

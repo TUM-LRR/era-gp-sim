@@ -18,6 +18,7 @@
 
 #include "parser/independent/intermediate-macro-instruction.hpp"
 
+#include "common/utility.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/intermediate-instruction.hpp"
 #include "parser/independent/macro-directive-table.hpp"
@@ -35,7 +36,7 @@ void IntermediateMacroInstruction::replaceWithMacros(
   for (auto i = begin; i != end; ++i) {
     // Try casting to IntermediateInstruction, skip instruction if it doesn't
     // work
-    if ((*i)->getType() != IntermediateOperation::Type::INSTRUCTION) continue;
+    if (!Utility::isInstance<IntermediateInstruction>(*i)) continue;
 
     auto& inst = static_cast<IntermediateInstruction&>(**i);
 
@@ -142,8 +143,4 @@ std::string IntermediateMacroInstruction::toString() const {
     str += operation->toString();
   }
   return str;
-}
-
-IntermediateOperation::Type IntermediateMacroInstruction::getType() const {
-  return Type::MACRO_INSTRUCTION;
 }

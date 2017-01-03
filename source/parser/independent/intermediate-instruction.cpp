@@ -244,10 +244,6 @@ PositionedStringVector IntermediateInstruction::getArgsVector() const {
   return args;
 }
 
-IntermediateOperation::Type IntermediateInstruction::getType() const {
-  return Type::INSTRUCTION;
-}
-
 const PositionedStringVector& IntermediateInstruction::sources() const
     noexcept {
   return _sources;

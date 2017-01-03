@@ -18,6 +18,7 @@
 
 #include "parser/independent/intermediate-representator.hpp"
 
+#include "common/utility.hpp"
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
 #include "parser/common/compile-error-list.hpp"
@@ -39,7 +40,7 @@
 MacroInformationVector IntermediateRepresentator::generateMacroInformation() {
   MacroInformationVector output;
   for (const auto& command : _commandList) {
-    if (command->getType() == IntermediateOperation::Type::MACRO_INSTRUCTION) {
+    if (Utility::isInstance<IntermediateMacroInstruction>(command)) {
       auto macroCode =
           static_cast<IntermediateMacroInstruction&>(*command).toString();
 

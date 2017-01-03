@@ -210,12 +210,6 @@ class IntermediateOperation {
   virtual std::string toString() const;
 
   /**
-   * \return The type of this operation (instruction, macro instruction, other,
-   * etc.).
-   */
-  virtual Type getType() const;
-
-  /**
    * Finalizes an intermediate operation.
    */
   virtual ~IntermediateOperation() = default;
