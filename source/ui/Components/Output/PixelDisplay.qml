@@ -44,7 +44,12 @@ Item {
         title: "Pixel Display Settings"
 
         function updateSettings() {
-            // TODO?
+            // TODO::update in preferred number format
+            pixelBaseAddressTextField.text = pixeldisplaypainteditemid.pixelBaseAddress
+            colorBaseAddressTextField.text = pixeldisplaypainteditemid.colorBaseAddress
+            colorModeComboBox.currentIndex = pixeldisplaypainteditemid.colorMode
+            widthTextField.text = pixeldisplaypainteditemid.width
+            heightTextField.text = pixeldisplaypainteditemid.height
         }
 
         onVisibleChanged: {
@@ -64,19 +69,19 @@ Item {
             // Title of each settings control.
             Column {
                 spacing: 16
-                Text {
+                Label {
                     text: "Pixel Base Address:"
                 }
-                Text {
+                Label {
                     text: "Color Base Address:"
                 }
-                Text {
+                Label {
                     text: "Color Mode:"
                 }
-                Text {
+                Label {
                     text: "width:"
                 }
-                Text {
+                Label {
                     text: "height:"
                 }
             }
