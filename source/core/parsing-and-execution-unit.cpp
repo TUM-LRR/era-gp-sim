@@ -167,7 +167,7 @@ void ParsingAndExecutionUnit::parse(std::string code) {
   _setFinalRepresentation(_finalRepresentation);
   // assemble commands into memory
   if (!_finalRepresentation.errorList().hasErrors()) {
-    for (const auto &command : _finalRepresentation.commandList) {
+    for (const auto &command : _finalRepresentation.commandList()) {
       auto assemble = command.node()->assemble();
       _memoryAccess.putMemoryValueAt(command.address(), assemble);
       _memoryAccess.makeMemoryProtected(command.address(),
@@ -177,7 +177,7 @@ void ParsingAndExecutionUnit::parse(std::string code) {
     auto nextNode = _findNextNode();
     if (nextNode < _finalRepresentation.commandList().size()) {
       auto nextCommand = _finalRepresentation.commandList()[nextNode];
-      _setCurrentLine(nextCommand.position().lineStart());
+      _setCurrentLine(nextCommand.position().startLine());
     } else {
       // account for cases where the pc is not valid while parsing, but there
       // are valid instructions. Handle this situation like a reset.
