@@ -170,7 +170,7 @@ class MultiplicationInstruction : public WordableIntegerInstruction<SizeType> {
         _usePart(partOfResultReturned),
         _type(type) {
     // assert that SizeType is an unsigned integer type
-    assert(SizeType(0) - 1 >= 0);
+    assert::that(SizeType(0) - 1 >= 0);
   }
 
  protected:
@@ -244,10 +244,10 @@ class MultiplicationInstruction : public WordableIntegerInstruction<SizeType> {
           return result;
         }
       } else {
-        assert(false);  // invalid _type
+        assert::that(false);  // invalid _type
       }
     }
-    assert(false);  // invalid MultiplicationResultPart
+    assert::that(false);  // invalid MultiplicationResultPart
   }
 
  private:

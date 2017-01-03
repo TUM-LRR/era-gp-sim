@@ -79,7 +79,7 @@ class InstructionNode : public AbstractInstructionNode {
    */
   template <typename T>
   T _getChildValue(MemoryAccess& memoryAccess, size_t index) const {
-    assert(index < _children.size());
+    assert::that(index < _children.size());
     auto memory = _children[index]->getValue(memoryAccess);
     return riscv::convert<T>(memory);
   }

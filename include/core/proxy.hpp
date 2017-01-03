@@ -17,7 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <cassert>
+#include "common/assert.hpp"
 #include <functional>
 #include <future>
 #include <memory>
@@ -506,7 +506,7 @@ class Proxy {
       };
       sharedScheduler->push(std::move(task));
     } else {
-      assert(false);
+      assert::that(false);
     }
     _servant = future.get();
   }

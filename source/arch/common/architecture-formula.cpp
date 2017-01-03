@@ -24,7 +24,7 @@
 ArchitectureFormula::ArchitectureFormula(const std::string& architectureName,
                                          InitializerList list)
 : super(list), _architectureName(architectureName) {
-  assert(!architectureName.empty());
+  assert::that(!architectureName.empty());
 }
 
 bool ArchitectureFormula::operator==(const ArchitectureFormula& other) const
@@ -42,7 +42,7 @@ bool ArchitectureFormula::operator!=(const ArchitectureFormula& other) const
 
 ArchitectureFormula&
 ArchitectureFormula::addExtension(const std::string& name) {
-  assert(!name.empty());
+  assert::that(!name.empty());
   _container.emplace_back(name);
   return *this;
 }
@@ -52,13 +52,13 @@ bool ArchitectureFormula::hasExtensions() const noexcept {
 }
 
 const std::string& ArchitectureFormula::getArchitectureName() const noexcept {
-  assert(!_architectureName.empty());
+  assert::that(!_architectureName.empty());
   return _architectureName;
 }
 
 ArchitectureFormula&
 ArchitectureFormula::architectureName(const std::string& name) {
-  assert(!name.empty());
+  assert::that(!name.empty());
   _architectureName = name;
 
   return *this;
@@ -77,6 +77,6 @@ std::string ArchitectureFormula::getPath() const noexcept {
 }
 
 std::string ArchitectureFormula::getFolderName() const noexcept {
-  assert(!_architectureName.empty());
+  assert::that(!_architectureName.empty());
   return _architectureName + ".isa";
 }
