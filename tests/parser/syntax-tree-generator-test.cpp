@@ -20,7 +20,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
-
+#include "common/utility.hpp"
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/immediate-node.hpp"
@@ -48,11 +48,6 @@ static SyntaxTreeGenerator buildGenerator() {
   return generator;
 }
 
-template <typename SubType, typename BaseType>
-bool isInstance(const std::shared_ptr<BaseType>& ptr) {
-  return static_cast<SubType*>(ptr.get()) != nullptr;
-}
-
 TEST(SyntaxTreeGenerator, init) {
   buildGenerator();
 }
@@ -63,7 +58,7 @@ TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
   auto output =
       generator.transformOperand(ZP("1234"), SymbolReplacer(), errors);
   ASSERT_EQ(errors.size(), 0);
-  ASSERT_TRUE((isInstance<ImmediateNode>(output)));
+  ASSERT_TRUE((Utility::isInstance<ImmediateNode>(output)));
 }
 
 TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
@@ -71,7 +66,7 @@ TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   CompileErrorList errors;
   auto output = generator.transformOperand(ZP("x18"), SymbolReplacer(), errors);
   ASSERT_EQ(errors.size(), 0);
-  ASSERT_TRUE((isInstance<riscv::RegisterNode>(output)));
+  ASSERT_TRUE((Utility::isInstance<riscv::RegisterNode>(output)));
 }
 
 TEST(SyntaxTreeGenerator, instantiateCommandNode) {
@@ -80,15 +75,15 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
 
   auto arg1 = generator.transformOperand(ZP("x1"), SymbolReplacer(), errors);
   ASSERT_EQ(errors.size(), 0);
-  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
+  ASSERT_TRUE((Utility::isInstance<riscv::RegisterNode>(arg1)));
 
   auto arg2 = generator.transformOperand(ZP("x1"), SymbolReplacer(), errors);
   ASSERT_EQ(errors.size(), 0);
-  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
+  ASSERT_TRUE((Utility::isInstance<riscv::RegisterNode>(arg1)));
 
   auto arg3 = generator.transformOperand(ZP("x2"), SymbolReplacer(), errors);
   ASSERT_EQ(errors.size(), 0);
-  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg2)));
+  ASSERT_TRUE((Utility::isInstance<riscv::RegisterNode>(arg2)));
 
   std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> sources;
   sources.emplace_back(arg1);
@@ -105,5 +100,5 @@ TEST(SyntaxTreeGenerator, instantiateCommandNode) {
       ZP("add"), sources, targets, errors, memoryAccess);
 
   ASSERT_EQ(errors.size(), 0);
-  ASSERT_TRUE((isInstance<riscv::InstructionNode>(output)));
+  ASSERT_TRUE((Utility::isInstance<riscv::InstructionNode>(output)));
 }
