@@ -105,7 +105,7 @@ class IntegerParser {
       if (*position == 'x' || *position == 'X') {
         if (base == 0 || base == 16) {
           base = 16;
-          ++position;// Skip the 'x'
+          ++position;  // Skip the 'x'
         }
       } else if (base == 0) {
         base = 8;

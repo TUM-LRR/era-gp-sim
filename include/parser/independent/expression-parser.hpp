@@ -37,8 +37,8 @@
                       QT_TRANSLATE_NOOP("Expression Parser Error", msg), \
                       ##__VA_ARGS__)
 
-#define FIX_SOME_SYNTAX_HIGHLIGHTING// Yes, that's the only reason this macro
-                                    // exists.
+#define FIX_SOME_SYNTAX_HIGHLIGHTING  // Yes, that's the only reason this macro
+                                      // exists.
 
 /**
  * Parses a given token stream and evaluates it.

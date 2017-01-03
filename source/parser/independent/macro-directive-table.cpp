@@ -69,7 +69,8 @@ MacroDirectiveTable::MacroWrapper::MacroWrapper(MacroWrapper &&other)
 : _iterator{std::move(other._iterator)}
 , _end{other._end}
 , _cyclic{other._cyclic} {
-  other._iterator = other._end;// Invalidate other by setting _iterator to _end.
+  other._iterator =
+      other._end;  // Invalidate other by setting _iterator to _end.
 }
 
 MacroDirectiveTable::MacroWrapper::~MacroWrapper() {

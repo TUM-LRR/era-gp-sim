@@ -83,4 +83,4 @@ class RiscvParser : public Parser {
   MemoryAccess _memoryAccess;
 };
 
-#endif// ERAGPSIM_PARSER_RISCV_RISCV_PARSER_HPP
+#endif  // ERAGPSIM_PARSER_RISCV_RISCV_PARSER_HPP

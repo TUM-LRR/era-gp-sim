@@ -58,4 +58,4 @@ class Parser {
   virtual ~Parser() = default;
 };
 
-#endif// ERAGPSIM_PARSER_COMMON_PARSER_HPP
+#endif  // ERAGPSIM_PARSER_COMMON_PARSER_HPP

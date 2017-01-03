@@ -195,8 +195,9 @@ class Multiregex {
       for (auto i : Utility::range<size_t>(_baseGroup + 1, match.size())) {
         if ((size_t)match.length(i) == targetLength) {
           // Found one. We set our multimatch and return it.
-          assert::that(_choice.find(i) != _choice.end());//(this should actually
-                                                         // never fail, only if
+          assert::that(_choice.find(i) !=
+                       _choice.end());  //(this should actually
+                                        // never fail, only if
           // something in this
           // implementation has
           // gone wrong)
@@ -302,7 +303,8 @@ class Multiregex {
     }
 
     // Then we output the regex.
-    return prefix + String("(") + regexBuildString.substr(1) + String(")") + suffix;
+    return prefix + String("(") + regexBuildString.substr(1) + String(")") +
+           suffix;
   }
 
   // Denotes the number of the group which surrounds the choice.

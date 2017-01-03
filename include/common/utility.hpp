@@ -647,20 +647,19 @@ constexpr T mostSignificantBit(const T &value) {
 }
 
 template <typename SubType, typename BaseType>
-bool isInstance(const BaseType* ptr) {
-  return static_cast<SubType*>(ptr) != nullptr;
+bool isInstance(const BaseType *ptr) {
+  return static_cast<SubType *>(ptr) != nullptr;
 }
 
 template <typename SubType, typename BaseType>
-bool isInstance(const std::shared_ptr<BaseType>& ptr) {
-  return static_cast<SubType*>(ptr.get()) != nullptr;
+bool isInstance(const std::shared_ptr<BaseType> &ptr) {
+  return static_cast<SubType *>(ptr.get()) != nullptr;
 }
 
 template <typename SubType, typename BaseType>
-bool isInstance(const std::unique_ptr<BaseType>& ptr) {
-  return static_cast<SubType*>(ptr.get()) != nullptr;
+bool isInstance(const std::unique_ptr<BaseType> &ptr) {
+  return static_cast<SubType *>(ptr.get()) != nullptr;
 }
-
 }
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */

@@ -44,8 +44,8 @@ ParsingAndExecutionUnit::ParsingAndExecutionUnit(
 , _syntaxInformation(_parser->getSyntaxInformation())
 , _setContextInformation([](const std::vector<ContextInformation> &) {})
 , _setFinalRepresentation([](const FinalRepresentation &) {})
-, _throwError(([](const Translateable&) {}))
-, _setCurrentLine([](size_t ) {})
+, _throwError(([](const Translateable &) {}))
+, _setCurrentLine([](size_t) {})
 , _executionStopped([] {})
 , _syncCallback([] { assert::that(false); }) {
   // find the RegisterInformation object of the program counter
@@ -156,7 +156,8 @@ void ParsingAndExecutionUnit::parse(std::string code) {
       // create a empty MemoryValue as long as the command
       MemoryValue zero(command.node()->assemble().getSize());
       _memoryAccess.putMemoryValueAt(command.address(), zero);
-      _memoryAccess.removeMemoryProtection(command.address(), zero.getSize() / 8);
+      _memoryAccess.removeMemoryProtection(command.address(),
+                                           zero.getSize() / 8);
     }
   }
   // parse the new code and save the final representation
@@ -254,7 +255,7 @@ bool ParsingAndExecutionUnit::_executeNode(size_t nodeIndex) {
   auto validationResult = currentCommand.node()->validateRuntime(_memoryAccess);
   if (!validationResult.isSuccess()) {
     // notify the ui of a runtime error
-      _throwError(validationResult.getMessage());
+    _throwError(validationResult.getMessage());
     return false;
   }
   // update the current line in the ui (pre-execution)

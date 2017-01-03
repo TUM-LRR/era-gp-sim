@@ -18,8 +18,8 @@
 
 #include "parser/independent/intermediate-representator.hpp"
 
-#include "common/utility.hpp"
 #include "arch/common/architecture.hpp"
+#include "common/utility.hpp"
 #include "core/memory-access.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/common/final-command.hpp"

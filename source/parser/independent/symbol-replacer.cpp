@@ -84,7 +84,7 @@ PositionedString SymbolReplacer::replace(const PositionedString& data,
 
   // Then iterate at max 'maximumReplaceCount' round.
   for (const auto& _ : Utility::range<std::size_t>(0, _maximumReplaceCount)) {
-    (void)_;// (to prevent unused variable warnings)
+    (void)_;  // (to prevent unused variable warnings)
 
     auto previous = result;
 

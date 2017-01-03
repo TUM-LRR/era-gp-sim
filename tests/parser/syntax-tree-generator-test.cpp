@@ -19,15 +19,15 @@
 #include <memory>
 #include <vector>
 
-#include "gtest/gtest.h"
-#include "common/utility.hpp"
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/immediate-node.hpp"
 #include "arch/common/node-factory-collection-maker.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/register-node.hpp"
+#include "common/utility.hpp"
 #include "core/project-module.hpp"
+#include "gtest/gtest.h"
 #include "gtest/gtest.h"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/common/compile-error-list.hpp"

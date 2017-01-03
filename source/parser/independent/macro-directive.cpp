@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "common/utility.hpp"
 #include "parser/independent/macro-directive.hpp"
+#include "common/utility.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/intermediate-instruction.hpp"
 #include "parser/independent/macro-directive-table.hpp"

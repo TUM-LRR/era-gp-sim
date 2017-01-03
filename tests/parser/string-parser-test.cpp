@@ -127,7 +127,7 @@ TEST(StringParser, simpleEscape) {
   doTest(u8R"("\r")", u8"\r", true);
   doTest(u8R"("\?")", u8"\?", true);
   doTest(u8R"("\"")", u8"\"", true);
-  doTest(u8R"("\'")", u8"\'", true);//"' // <-- just a syntax highlighting fix.
+  doTest(u8R"("\'")", u8"\'", true);
   doTest(u8R"("\\")", u8"\\", true);
   doTest(u8R"("\ö")", u8"", false);
 }
