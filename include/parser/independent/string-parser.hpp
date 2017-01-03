@@ -148,7 +148,7 @@ class StringParserEngine {
                             ? inputString.positionInterval().start()
                             : inputString.nthCharacterPosition(position);
     auto codePositionInterval =
-        CodePositionInterval(codePosition, codePosition >> 1);
+        CodePositionInterval(codePosition, codePosition);
     errors.pushErrorInternal(codePositionInterval, message, arguments...);
   }
 

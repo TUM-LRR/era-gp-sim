@@ -34,49 +34,45 @@ class CodePosition {
   /**
    * Creates a new CodePosition with the given values (IMPORTANT: y
    * before x coordinate! Because row is more important than column).
-   * \param iy The given y position.
-   * \param ix The given x position.
+   *
+   * \param y The given y position.
+   * \param x The given x position.
    */
-  explicit CodePosition(CodeCoordinate iy = 0, CodeCoordinate ix = 0);
+  explicit CodePosition(CodeCoordinate y = 0, CodeCoordinate x = 0);
 
   /**
-   * Alias for the y position.
    * \return The y position.
    */
   CodeCoordinate line() const noexcept;
 
   /**
-   * Alias for the y position.
    * \return The y position.
    */
   CodeCoordinate row() const noexcept;
 
   /**
-   * Alias for the x position.
    * \return The x position.
    */
   CodeCoordinate character() const noexcept;
 
   /**
-   * Alias for the x position.
    * \return The x position.
    */
   CodeCoordinate column() const noexcept;
 
   /**
-   * Alias for the y position.
    * \return The y position.
    */
   CodeCoordinate y() const noexcept;
 
   /**
-   * Alias for the x position.
    * \return The x position.
    */
   CodeCoordinate x() const noexcept;
 
   /**
    * Adds a code position to this one.
+   *
    * \param other The code position summand.
    * \return The sum of the two code positions.
    */
@@ -84,6 +80,7 @@ class CodePosition {
 
   /**
    * Subtracts one code position from another.
+   *
    * \param other The code position denoting the value to subtract.
    * \return The difference between the first and the second code position.
    */
@@ -91,6 +88,7 @@ class CodePosition {
 
   /**
    * Moves a code position to the right by the given coordinate.
+   *
    * \param other The given coordinate.
    * \return The transformed code position.
    */
@@ -98,6 +96,7 @@ class CodePosition {
 
   /**
    * Moves a code position to the left by the given coordinate.
+   *
    * \param other The given coordinate.
    * \return The transformed code position.
    */
@@ -105,6 +104,7 @@ class CodePosition {
 
   /**
    * Moves a code position down by the given coordinate.
+   *
    * \param c The given coordinate.
    * \return The transformed code position.
    */
@@ -112,6 +112,7 @@ class CodePosition {
 
   /**
    * Moves a code position up by the given coordinate.
+   *
    * \param c The given coordinate.
    * \return The transformed code position.
    */
@@ -119,6 +120,7 @@ class CodePosition {
 
   /**
    * Moves a code position to the left by the given coordinate.
+   *
    * \param c The given coordinate.
    * \return The transformed code position.
    */
@@ -126,6 +128,7 @@ class CodePosition {
 
   /**
    * Moves a code position to the right by the given coordinate.
+   *
    * \param c The given coordinate.
    * \return The transformed code position.
    */
@@ -133,6 +136,7 @@ class CodePosition {
 
   /**
    * Increments the line position, but sets the x coordinate to 0 again.
+   *
    * \return The transformed code position.
    */
   CodePosition newLine() const;
@@ -140,6 +144,7 @@ class CodePosition {
   /**
    * Creates a code position which takes the maximum of two code
    * positions for each argument.
+   *
    * \param c The other code position.
    * \return The maximized code position.
    */
@@ -148,20 +153,17 @@ class CodePosition {
   /**
    * Creates a code position which takes the minimum of two code
    * positions for each argument.
+   *
    * \param c The other code position.
    * \return The minimized code position.
    */
   CodePosition min(const CodePosition& c) const;
 
  private:
-  /**
-   * The x position in code (column/character).
-   */
+  /** The x position in code (column/character). */
   CodeCoordinate _x;
 
-  /**
-   * The y position in code (row/line).
-   */
+  /** The y position in code (row/line). */
   CodeCoordinate _y;
 };
 

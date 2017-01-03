@@ -31,13 +31,25 @@ class MemoryAllocator;
  */
 class IntermediateMacroInstruction : public IntermediateOperation {
  public:
-  IntermediateMacroInstruction(const IntermediateInstruction&,
-                               const MacroDirective&,
+  /**
+   * Creates a new `IntermediateMacroInstruction` using an existing macro
+   * directive.
+   *
+   * \param instruction The existing instruction to be replaced.
+   * \param macro The macro to replace the instruction with.
+   * \param macroTable The macro instruction table to replace every occuring sub
+   * macro occurence.
+   * \param errors The `CompileErrorList` to take down any errors during
+   * generation.
+   */
+  IntermediateMacroInstruction(const IntermediateInstruction& instruction,
+                               const MacroDirective& macro,
                                MacroDirectiveTable& macroTable,
                                CompileErrorList& errors);
 
   /**
      * Executes each of the sub-operations.
+     *
      * \param immutable Some constant arguments which might be helpful.
      * \param errors The compile error list to note down any errors.
      * \param commandOutput The final command output vector to record all
@@ -52,6 +64,7 @@ class IntermediateMacroInstruction : public IntermediateOperation {
 
   /**
      * Reserves entries for this macro instruction in the symbol table.
+     *
      * \param immutable Some constant arguments which might be helpful.
      * \param errors The compile error list to note down any errors.
      * \param graph The symbol graph for taking care of symbols (to check their
@@ -64,6 +77,7 @@ class IntermediateMacroInstruction : public IntermediateOperation {
 
   /**
      * Reserves memory for this macro instruction.
+     *
      * \param immutable Some constant arguments which might be helpful.
      * \param errors The compile error list to note down any errors.
      * \param allocator The allocator to reserve memory.
@@ -78,14 +92,27 @@ class IntermediateMacroInstruction : public IntermediateOperation {
   /**
    * Replaces `IntermediateInstruction`s with `IntermediateMacroInstructions` in
    * iterable containers of `IntermediateOperationPointer`s.
+   * \param begin The operation iterator begin.
+   * \param end The operation iterator end.
+   * \param macroTable The macro directive table.
+   * \param errors The compile error list to note down errors.
    */
   static void replaceWithMacros(IntermediateOperationVectorIterator begin,
                                 IntermediateOperationVectorIterator end,
                                 MacroDirectiveTable& macroTable,
                                 CompileErrorList& errors);
 
+  /**
+* Converts the instruction with all its arguments into a readable
+* representation.
+*
+* \return A readable representation of this instruction.
+*/
   virtual std::string toString() const;
 
+  /**
+     * \return The type of this operation: it is a macro instruction.
+     */
   virtual Type getType() const;
 
   /**
@@ -94,7 +121,15 @@ class IntermediateMacroInstruction : public IntermediateOperation {
   virtual ~IntermediateMacroInstruction() = default;
 
  private:
+  /**
+   * The operations which this macro contains.
+   */
   IntermediateOperationVector _operations;
+
+  /**
+   * The first real instruction of this macro instruction, used for memory
+   * locating.
+   */
   int _firstInstruction = -1;
 };
 

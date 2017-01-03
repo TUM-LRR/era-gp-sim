@@ -89,27 +89,71 @@ class RiscvParser::RiscvRegex {
                    CompileErrorList &errors);
 
  private:
+  /**
+   * Reads an instruction or a label from `line` beginning at `pos`.
+   *
+   * \param line The given line to parse.
+   * \param lineCoordinate The position of the line in code.
+   * \param errors The CompileErrorList to record errors.
+   * \param pos The position where to start recording errors.
+   * \return True, if successful, else false.
+   */
   bool _readInstructionOrLabel(const std::string &line,
                                CodeCoordinate lineCoordinate,
                                CompileErrorList &errors,
                                size_t &pos);
 
+  /**
+     * Reads a parameter from `line` beginning at `pos`.
+     *
+     * \param line The given line to parse.
+     * \param lineCoordinate The position of the line in code.
+     * \param errors The CompileErrorList to record errors.
+     * \param pos The position where to start recording errors.
+     * \return True, if successful, else false.
+     */
   bool _readParameter(const std::string &line,
                       CodeCoordinate lineCoordinate,
                       CompileErrorList &errors,
                       size_t &pos);
 
+  /**
+   * Resets this RISC-V regex so it may be used again later.
+   */
   void _resetResults();
 
+  /**
+   * Creates an interval which covers only this very character.
+   *
+   * \param lineCoordinate The y-coordinate of the character.
+   * \param erros The CompileErrorList to record errors.
+   * \param pos The x-coordinate of the character.
+   */
   CodePositionInterval _getCharacterPosition(CodeCoordinate lineCoordinate,
                                              CompileErrorList &errors,
                                              size_t pos) const;
 
+  /**
+   * Creates an interval which covers an interval of characters.
+   *
+   * \param lineCoordinate The y-coordinate of the interval.
+   * \param erros The CompileErrorList to record errors.
+   * \param start The start x-coordinate of the interval.
+   * \param end The end x-coordinate of the interval.
+   */
   CodePositionInterval _getCharacterInterval(CodeCoordinate lineCoordinate,
                                              CompileErrorList &errors,
                                              size_t start,
                                              size_t end) const;
 
+  /**
+   * Creates a positioned string out of the given interval of characters.
+   * \param line The string to take the position of.
+   * \param lineCoordinate The y-coordinate of the interval.
+   * \param erros The CompileErrorList to record errors.
+   * \param start The start x-coordinate of the interval.
+   * \param end The end x-coordinate of the interval.
+   */
   PositionedString _getPositionedString(const std::string &line,
                                         CodeCoordinate lineCoordinate,
                                         CompileErrorList &errors,

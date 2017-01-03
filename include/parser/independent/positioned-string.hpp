@@ -30,6 +30,7 @@
 /**
  * A string enhanced with a position interval which denotes where it is
  * located in code.
+ *
  * \tparam CharT The char type on which the string is based on.
  */
 template <typename CharT>
@@ -52,6 +53,7 @@ class PositionedBasicString {
 
   /**
    * Creates a new positioned basic string with the given parameters.
+   *
    * \param string The string which is represented by this positioned basic
    * string (defaults to an empty string).
    * \param positionInterval The code position interval where the string is
@@ -65,7 +67,8 @@ class PositionedBasicString {
 
   /**
    * Returns the string which is represented by this positioned basic
-   * string
+   * string.
+   *
    * \return The string which is represented by this positioned basic string
    */
   const String& string() const noexcept {
@@ -73,8 +76,9 @@ class PositionedBasicString {
   }
 
   /**
-   *  Returns the code position interval where the string is located in
+   * Returns the code position interval where the string is located in
    * code (defaults to an empty interval).
+   *
    * \return The code position interval where the string is located in code
    * (defaults to an empty interval).
    */
@@ -84,6 +88,7 @@ class PositionedBasicString {
 
   /**
    * Gets a part of the string, with reduced position interval in code.
+   *
    * \param start The start of the slice.
    * \param length The length of the slice. $$start+length$$ must be at most as
    * large as the whole string.
@@ -107,6 +112,7 @@ class PositionedBasicString {
   /**
    * Gets the estimated position of the nth character of this positioned
    * string.
+   *
    * \param n The character to get (0-based!).
    * \return The estimated code position where this character could be.
    */
@@ -131,6 +137,7 @@ class PositionedBasicString {
 
   /**
    * Forwarded method from the string, denotes if it is empty.
+   *
    * \return True, if the contained string is empty, else false.
    */
   bool empty() const noexcept {
@@ -139,6 +146,7 @@ class PositionedBasicString {
 
   /**
    * Forwarded method from the string, denotes if its size.
+   *
    * \return The size of the string.
    */
   size_t size() const noexcept {

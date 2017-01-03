@@ -31,6 +31,7 @@ class ConstantDirective : public IntermediateDirective {
  public:
   /**
    * Creates a new constant directive with the given parameters.
+   *
    * \param positionInterval The position in code where the constant directive
    * is located.
    * \param labels The labels associated with this directive.
@@ -44,6 +45,7 @@ class ConstantDirective : public IntermediateDirective {
 
   /**
    * Executes the constant directive, i.e. checks its validity.
+   *
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param commandOutput The final command output vector to record all
@@ -58,6 +60,7 @@ class ConstantDirective : public IntermediateDirective {
 
   /**
    * Inserts the constant into the symbol table.
+   *
    * \param immutable Some helpful parameters provided in one helper class.
    * \param errors The compile error list to record errors, warnings and
    * information entries.
@@ -68,7 +71,14 @@ class ConstantDirective : public IntermediateDirective {
                      CompileErrorList& errors,
                      SymbolGraph& graph);
 
+  /**
+   * \return The arguments of the constant directive.
+   */
   const PositionedStringVector& arguments() const noexcept;
+
+  /**
+   * \return The expression which this constant directive represents.
+   */
   const PositionedString& expression() const noexcept;
 
  private:

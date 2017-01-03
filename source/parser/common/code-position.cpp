@@ -20,8 +20,7 @@
 #include <cmath>
 #include "common/assert.hpp"
 
-CodePosition::CodePosition(CodeCoordinate iy, CodeCoordinate ix)
-: _x(ix), _y(iy) {
+CodePosition::CodePosition(CodeCoordinate y, CodeCoordinate x) : _x(x), _y(y) {
 }
 
 // Getters.

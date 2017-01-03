@@ -150,6 +150,11 @@ MacroDirective::MacroParameters::MacroParameters(
   }
 }
 
+MacroDirective::MacroParameters::MacroParameters(
+    const PositionedStringVector& arguments)
+: MacroParameters(arguments.begin(), arguments.end()) {
+}
+
 void MacroDirective::MacroParameters::validate(CompileErrorList& errors) const {
   bool containedDefault = false;
   MacroParameter last;

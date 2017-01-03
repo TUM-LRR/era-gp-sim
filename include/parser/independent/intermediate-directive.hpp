@@ -33,6 +33,7 @@ class IntermediateDirective : public IntermediateOperation {
   /**
    * Instantiates a new IntermediateDirective with the given arguments.
    * (only for subclass use!)
+   *
    * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation.

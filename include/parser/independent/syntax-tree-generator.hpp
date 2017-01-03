@@ -33,8 +33,14 @@ class AbstractInstructionNode;
 class MemoryAccess;
 class SymbolReplacer;
 
-
+/**
+ * A pointer to an abstract syntax tree node.
+ */
 using AbstractSyntaxTreeNodePointer = std::shared_ptr<AbstractSyntaxTreeNode>;
+
+/**
+ * A vector of abstract syntax tree node pointers.
+ */
 using AbstractSyntaxTreeNodePointerVector =
     std::vector<AbstractSyntaxTreeNodePointer>;
 
@@ -56,6 +62,7 @@ class SyntaxTreeGenerator {
   /**
    * Creates a new syntax tree generator with the given node factory
    * collection.
+   *
    * \param nodeFactories The node factory collection to instantiate the nodes
    * from.
    * \param argumentGenerator The generator function for operands.
@@ -68,8 +75,10 @@ class SyntaxTreeGenerator {
   /**
    * Transforms the given operand as string into a syntax tree node and
    * writes down any occuring errors.
+   *
    * \param operand The operand in pure-string form.
-   * \param The symbol replacer to replace any occuring symbols in the operand
+   * \param replacer The symbol replacer to replace any occuring symbols in the
+   * operand
    * strings.
    * \param errors The compile error list to denote errors.
    * \return The transformed operand.
@@ -82,10 +91,11 @@ class SyntaxTreeGenerator {
   /**
    * Transforms the given instruction/command into a syntax tree, adds
    * any source and target nodes and denotes any occuring errors.
+   *
    * \param commandName The opcode of the instruction.
-   * \param errors The compile error list to denote errors.
    * \param sources The source arguments.
    * \param targets The target arguments.
+   * \param errors The compile error list to denote errors.
    * \param memoryAccess The memory access to check the validity of the nodes.
    * \return The transformed command.
    */
@@ -97,7 +107,7 @@ class SyntaxTreeGenerator {
                    MemoryAccess& memoryAccess) const;
 
   /**
-   * Returns a reference to the NodeFactoryCollection used by this
+   * \return a reference to the NodeFactoryCollection used by this
    * SyntaxTreeGenerator
    */
   const NodeFactoryCollection& getNodeFactories() const;

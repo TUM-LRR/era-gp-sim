@@ -36,12 +36,12 @@ namespace RiscVDirectiveFactory {
  * IntermediateRepresentator if valid.
  *
  * \param positionInterval        The line interval the directive occupies.
- * \param labels       The labels assigned to this directive.
- * \param name         The name of the directive.
- * \param arguments    The arguments of the directive.
- * \param intermediate The intermediate represenator to insert the new directive
- *                     into.
- * \param state        The current compile state to record errors.
+ * \param labels                  The labels assigned to this directive.
+ * \param name                    The name of the directive.
+ * \param arguments               The arguments of the directive.
+ * \param intermediate            The intermediate represenator to insert the
+ * new directive into.
+ * \param state                   The current compile state to record errors.
  */
 void create(const CodePositionInterval &positionInterval,
             const PositionedStringVector &labels,

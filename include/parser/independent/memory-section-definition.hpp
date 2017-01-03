@@ -35,6 +35,7 @@ struct MemorySectionDefinition {
 
   /**
    * Creates a new memory section definition with the given parameters.
+   *
    * \param name The name of the section.
    * \param sectionAlignment The alignment of the section.
    * \param dataAlignment The alignment of the data.
@@ -45,6 +46,7 @@ struct MemorySectionDefinition {
 
   /**
    * Creates a new memory section definition with the given parameters.
+   *
    * \param name The name of the section.
    * \param alignment The alignment of the section and the data.
    */
@@ -52,19 +54,16 @@ struct MemorySectionDefinition {
                                    size_t alignment = 1);
 
   /**
-   * Returns the name of the section.
    * \return The name of the section.
    */
   const std::string& name() const noexcept;
 
   /**
-   * Returns the alignment of the whole section in memory.
    * \return The alignment of the whole section in memory.
    */
   size_t sectionAlignment() const noexcept;
 
   /**
-   * Returns the alignment of each new data block in memory.
    * \return The alignment of each new data block in memory.
    */
   size_t dataAlignment() const noexcept;

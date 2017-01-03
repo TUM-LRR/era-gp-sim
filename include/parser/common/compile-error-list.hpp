@@ -53,13 +53,8 @@
 class CompileErrorList {
  public:
   using size_t = std::size_t;
-  /**
-   * Constructs an empty compile error list.
-   */
-  CompileErrorList() = default;
 
   /**
-   * The internal compile error vector.
    * \return The internal compile error vector.
    */
   const CompileErrorVector& errors() const noexcept;
@@ -67,6 +62,7 @@ class CompileErrorList {
   /**
    * A helper method to determine if the list has any errors (not
    * including warnings, information).
+   *
    * \return True, if errors exist, else false.
    */
   bool hasErrors() const noexcept;
@@ -74,6 +70,7 @@ class CompileErrorList {
   /**
    * A helper method to determine if the list has any warning (not
    * including error, information).
+   *
    * \return True, if warnings exist, else false.
    */
   bool hasWarnings() const noexcept;
@@ -81,6 +78,7 @@ class CompileErrorList {
   /**
    * A helper method to determine if the list has any information entries
    * (not including warnings, information).
+   *
    * \return True, if information entires exist, else false.
    */
   bool hasInformation() const noexcept;
@@ -88,6 +86,7 @@ class CompileErrorList {
   /**
    * Forwarded method from the internal vector. Determines, if there are
    * any compile errors (errors, warnings, information) in the list.
+   *
    * \return True, if the vector is empty, else false.
    */
   bool empty() const noexcept;
@@ -95,6 +94,7 @@ class CompileErrorList {
   /**
    * A helper method to determine if the number of errors (not including
    * warnings, information).
+   *
    * \return The number of errors.
    */
   size_t errorCount() const noexcept;
@@ -102,6 +102,7 @@ class CompileErrorList {
   /**
    * A helper method to determine if the number of warnings (not
    * including errors, information).
+   *
    * \return The number of warnings.
    */
   size_t warningCount() const noexcept;
@@ -109,6 +110,7 @@ class CompileErrorList {
   /**
    * A helper method to determine if the number of information entries
    * (not including warnings, information).
+   *
    * \return The number of information entries.
    */
   size_t informationCount() const noexcept;
@@ -116,6 +118,7 @@ class CompileErrorList {
   /**
    * Forwarded method from the internal vector. Determines, the number of
    * compile errors (errors, warnings, information) in the list.
+   *
    * \return The number of all compile errors in the list.
    */
   size_t size() const noexcept;
@@ -128,6 +131,7 @@ class CompileErrorList {
 
   /**
    * Adds a compile error created from the arguments to the list.
+   *
    * \param severity The given severity of the compile error.
    * \param interval The given code position interval where to error occured.
    * \param message The message to record. (do not change to std::string as
@@ -149,6 +153,7 @@ class CompileErrorList {
   /**
    * Adds a compile error created from the arguments to the list,
    * pre-specified of severity 'error'.
+   *
    * \param interval The given code position interval where to error occured.
    * \param message The message to record. (do not change to std::string as
    * input parameter! We want to force that people insert a string literal here,
@@ -168,6 +173,7 @@ class CompileErrorList {
   /**
    * Adds a compile error created from the arguments to the list,
    * pre-specified of severity 'warning'.
+   *
    * \param interval The given code position interval where to error occured.
    * \param message The message to record. (do not change to std::string as
    * input parameter! We want to force that people insert a string literal here,
@@ -187,6 +193,7 @@ class CompileErrorList {
   /**
    * Adds a compile error created from the arguments to the list,
    * pre-specified of severity 'information'.
+   *
    * \param interval The given code position interval where to error occured.
    * \param message The message to record. (do not change to std::string as
    * input parameter! We want to force that people insert a string literal here,
@@ -204,9 +211,7 @@ class CompileErrorList {
   }
 
  private:
-  /**
-   * The internal vector for compile errors.
-   */
+  /** The internal vector for compile errors. */
   CompileErrorVector _errors;
 };
 

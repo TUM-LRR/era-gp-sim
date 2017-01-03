@@ -25,14 +25,14 @@
 
 /**
  * Represents an interval of codePositions, denoted by an upper and lower
- * codePosition
- * bound.
+ * codePosition bound.
  */
 class CodePositionInterval {
  public:
   /**
    * Creates a new codePosition interval with a given upper and lower
    * bound.
+   *
    * \param start The lower bound of the interval.
    * \param end The upper bound of the interval.
    */
@@ -41,6 +41,7 @@ class CodePositionInterval {
   /**
    * Creates a new codePosition interval containing only one
    * codePosition.
+   *
    * \param codePosition The upper and lower bound of the interval.
    */
   explicit CodePositionInterval(CodePosition codePosition);
@@ -51,43 +52,38 @@ class CodePositionInterval {
   CodePositionInterval();
 
   /**
-   * The start code position of the interval.
    * \return The start code position of the interval.
    */
   const CodePosition& start() const noexcept;
 
   /**
-   * The end code position of the interval.
    * \return The end code position of the interval.
    */
   const CodePosition& end() const noexcept;
 
   /**
-   * The start line of the interval.
    * \return The start line of the interval.
    */
   CodeCoordinate startLine() const noexcept;
 
   /**
-   * The start character/row index of the interval.
    * \return The start character/row index of the interval.
    */
   CodeCoordinate startCharacter() const noexcept;
 
   /**
-   * The last line of the interval.
    * \return The last line of the interval.
    */
   CodeCoordinate endLine() const noexcept;
 
   /**
-   * The last character/row index of the interval.
    * \return The last character/row index of the interval.
    */
   CodeCoordinate endCharacter() const noexcept;
 
   /**
    * Determines, if the code position interval is empty.
+   *
    * \return True, if either the line index of the last position is smaller than
    * the index of the first line or the start and last line are the same and the
    * x-indices are reversed.
@@ -96,6 +92,7 @@ class CodePositionInterval {
 
   /**
    * Builds the smallest interval containing two code position intervals.
+   *
    * \param other The code position interval to unite with.
    * \return The resulting interval.
    */
@@ -104,6 +101,7 @@ class CodePositionInterval {
   /**
    * Builds the biggest interval containing an area contained within two
    * code position intervals.
+   *
    * \param other The code position interval to cut with.
    * \return The resulting interval.
    */
@@ -112,6 +110,7 @@ class CodePositionInterval {
   /**
    * Builds the smallest interval containg all code position intervals in
    * the given iterator.
+   *
    * \param start The iterator start position.
    * \param end The iterator end position.
    * \return The resulting interval.
@@ -123,6 +122,7 @@ class CodePositionInterval {
   /**
    * Builds the biggest interval containing an area contained within all
    * code position intervals in the given iterator.
+   *
    * \param start The iterator start position.
    * \param end The iterator end position.
    * \return The resulting interval.
@@ -132,14 +132,10 @@ class CodePositionInterval {
             const std::vector<CodePositionInterval>::const_iterator& end);
 
  private:
-  /**
-   * The upper codePosition bound of the interval.
-   */
+  /** The upper codePosition bound of the interval. */
   CodePosition _codePositionStart;
 
-  /**
-   * The lower codePosition bound of the interval.
-   */
+  /** The lower codePosition bound of the interval. */
   CodePosition _codePositionEnd;
 };
 

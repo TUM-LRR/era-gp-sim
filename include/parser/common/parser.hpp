@@ -29,26 +29,32 @@ class SyntaxInformation;
 class Architecture;
 
 /**
- * Base Parser class
+ * Base Parser class.
  */
 class Parser {
  public:
   /**
    * Parses text into syntax tree.
    *
-   * \param text Text to parse
+   * \param text Text to parse.
    */
   virtual FinalRepresentation parse(const std::string &text) = 0;
 
   /**
    * Retrieves information for syntax highlighting.
    *
-   * \return Object containing syntax hightlighting information
+   * \return Object containing syntax hightlighting information.
    */
   virtual const SyntaxInformation getSyntaxInformation() = 0;
 
-
+  /**
+   * Creates a new parser with default parameters.
+   */
   Parser() = default;
+
+  /**
+   * Finalizes the given parser instance.
+   */
   virtual ~Parser() = default;
 };
 

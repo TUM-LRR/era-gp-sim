@@ -20,7 +20,6 @@
 #include <vector>
 
 #include "arch/common/architecture.hpp"
-#include "arch/common/architecture.hpp"
 #include "common/assert.hpp"
 #include "common/string-conversions.hpp"
 #include "common/utility.hpp"

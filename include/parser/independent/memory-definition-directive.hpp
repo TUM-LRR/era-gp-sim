@@ -43,13 +43,22 @@
 
 /**
  * A directive to reserve memory and writes specified data to it.
+ *
  * \tparam T The number type used for parsing.
  */
 template <typename T>
 class MemoryDefinitionDirective : public IntermediateDirective {
  public:
   using size_t = std::size_t;
+
+  /**
+   * The internally used function to store values in memory.
+   */
   using MemoryStorageFunction = std::function<void(T, size_t)>;
+
+  /**
+   * The function to compile values and put them into memory.
+   */
   using ProcessValuesFunction =
       std::function<size_t(const PositionedStringVector&,
                            const SymbolReplacer&,
@@ -59,6 +68,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
 
   /**
  * Instantiates a new MemoryDefinitionDirective with the given arguments.
+ *
  * \param positionInterval The line interval the operation occupies.
  * \param labels The vector of labels assigned to the operation.
  * \param name The name of the operation.
@@ -81,6 +91,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
 
   /**
    * Reserves memory for this operation (but does not write it).
+   *
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param allocator The allocator to reserve memory.
@@ -119,13 +130,12 @@ class MemoryDefinitionDirective : public IntermediateDirective {
 
     // The bit size is store for further usage.
     _size = sizeInBytes * immutable.architecture().getByteSize();
-
-    _byteSize = immutable.architecture().getByteSize();
   }
 
   /**
    * Reserves entries for this operation in the symbol table, also for
    * the labels for this operation.
+   *
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param graph The symbol graph for taking care of symbols (to check their
@@ -146,6 +156,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   /**
    * Executes the operation (e.g. it is inserted into the commandOutput
    * list).
+   *
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param commandOutput The final command output vector to record all
@@ -161,23 +172,25 @@ class MemoryDefinitionDirective : public IntermediateDirective {
       // We first of all create our memory value locally.
       MemoryValue data(_size);
 
+      auto byteSize = immutable.architecture().getByteSize();
+      size_t bitLength = byteSize * _cellSize;
+
+      auto signedRepresentation = conversions::detail::mapRepresentation(
+          immutable.architecture().getSignedRepresentation());
+      auto conversion =
+          conversions::detail::switchConversion(signedRepresentation);
+
       // Then we write to it.
       _processValues(_values,
                      SymbolReplacer(),
                      _cellSize,
                      errors,
                      [&](T value, std::size_t position) {
-                       // For now. Later to be replaced by the real enum of the
-                       // arch,
-                       // maybe...
-                       auto memoryValue = conversions::convert(
-                           value,
-                           conversions::standardConversions::helper::
-                               twosComplement::toMemoryValueFunction,
-                           _byteSize * _cellSize);
+                       auto memoryValue =
+                           conversions::convert(value, conversion, bitLength);
 
                        // Once converted, we take down the value.
-                       data.write(memoryValue, position * _byteSize);
+                       data.write(memoryValue, position * byteSize);
                      });
 
       // Then, let's do a (probably also here) expensive memory call.
@@ -188,9 +201,16 @@ class MemoryDefinitionDirective : public IntermediateDirective {
     }
   }
 
+  /**
+  * \return The absolute memory position where the memory will be defined.
+  */
   MemoryAddress absolutePosition() const noexcept {
     return _absolutePosition;
   }
+
+  /**
+   * \return The raw string values which shall be written to memory.
+   */
   const PositionedStringVector& values() const noexcept {
     return _values;
   }
@@ -201,12 +221,34 @@ class MemoryDefinitionDirective : public IntermediateDirective {
   virtual ~MemoryDefinitionDirective() = default;
 
  private:
-  std::size_t _byteSize;
+  /**
+ * The absolute memory position where the memory will be defined.
+ */
   MemoryAddress _absolutePosition;
+
+  /**
+* The section-relative memory position where the memory will be defined.
+*/
   RelativeMemoryPosition _relativePosition;
+
+  /**
+   * The requested amount which shall be reserved by this instruction in bits.
+   */
   size_t _size;
+
+  /**
+   * The cell size for this memory definition in bytes.
+   */
   size_t _cellSize;
+
+  /**
+  * The raw string values which shall be written to memory.
+  */
   PositionedStringVector _values;
+
+  /**
+   * A function to process the values for this instruction.
+   */
   ProcessValuesFunction _processValues;
 };
 

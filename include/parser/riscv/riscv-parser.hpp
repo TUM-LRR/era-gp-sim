@@ -38,24 +38,42 @@ class RiscvParser : public Parser {
  public:
   class RiscvRegex;
 
+  /**
+   * Creates a new RISC-V parser with the given architecture and memory.
+   *
+   * \param architecture The provided architecture.
+   * \param memoryAccess The provided access to memory.
+   */
   RiscvParser(const Architecture &architecture,
               const MemoryAccess &memoryAccess);
 
-  virtual FinalRepresentation parse(const std::string &text) override;
+  /**
+   * Parses the given text.
+   *
+   * \param text The input text.
+   * \return The compiled assembler program.
+   */
+  virtual FinalRepresentation parse(const std::string &text);
 
-  virtual const SyntaxInformation getSyntaxInformation() override;
+  /**
+   * \return The syntax information for this parser.
+   */
+  virtual const SyntaxInformation getSyntaxInformation();
 
+  /**
+   * A helper function for creating RISC-V syntax tree nodes.
+   */
   static const SyntaxTreeGenerator::ArgumentNodeGenerator
       argumentGeneratorFunction;
 
  protected:
   /**
-   * The NodeFactoryCollection used to create the syntax tree nodes
+   * The NodeFactoryCollection used to create the syntax tree nodes.
    */
   NodeFactoryCollection _factoryCollection;
 
   /**
-   * Reference to the Architecture this parser compiles for
+   * Reference to the Architecture this parser compiles for.
    */
   Architecture _architecture;
 

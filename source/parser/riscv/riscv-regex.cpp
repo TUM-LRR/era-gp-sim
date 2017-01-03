@@ -199,12 +199,14 @@ int RiscvParser::RiscvRegex::getParameterCount() const noexcept {
   return _parameters.size();
 }
 
+// Some character positioning helper methods.
+
 CodePositionInterval
 RiscvParser::RiscvRegex::_getCharacterPosition(CodeCoordinate lineCoordinate,
                                                CompileErrorList &errors,
                                                size_t pos) const {
   CodePosition position(lineCoordinate, pos);
-  return CodePositionInterval(position, position >> 1);
+  return CodePositionInterval(position, position);
 }
 
 CodePositionInterval

@@ -38,6 +38,7 @@ class CompileError {
   /**
    * Instantiates a new compile error with the given arguments. Marks
    * only a positional error.
+   *
    * \param message The error message.
    * \param position The position of the error in the code.
    * \param severity The severity of the error.
@@ -48,6 +49,7 @@ class CompileError {
 
   /**
    * Instantiates a new compile error with the given arguments.
+   *
    * \param message The error message.
    * \param startPosition The start position of the error in the code.
    * \param endPosition The end position of the error in the code.
@@ -60,6 +62,7 @@ class CompileError {
 
   /**
    * Instantiates a new compile error with the given arguments.
+   *
    * \param message The error message.
    * \param position The position interval of the error in the code.
    * \param severity The severity of the error.
@@ -69,43 +72,32 @@ class CompileError {
                CompileErrorSeverity severity);
 
   /**
-   * Returns the message of this error.
    * \return The message of the error.
    */
   const Translateable& message() const noexcept;
 
   /**
-   * Returns the position where this error occured.
    * \return The position of the error.
    */
   const CodePositionInterval& position() const noexcept;
 
   /**
-   * Returns the severity of the error.
    * \return The severity of the error.
    */
   CompileErrorSeverity severity() const noexcept;
 
  private:
-  /**
-   * The internal message attribute.
-   */
+  /** The internal message attribute. */
   TranslateablePtr _message;
 
-  /**
-   * The internal position attribute.
-   */
+  /** The internal position attribute. */
   CodePositionInterval _position;
 
-  /**
-   * The internal severity attribute.
-   */
+  /** The internal severity attribute. */
   CompileErrorSeverity _severity;
 };
 
-/**
- * A vector of compile errors.
- */
+/** A vector of compile errors. */
 using CompileErrorVector = std::vector<CompileError>;
 
 #endif

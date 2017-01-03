@@ -31,37 +31,34 @@
 class MacroInformation {
  public:
   /**
-   * \param code Parsed macro code
-   * \param position Position of the macro call
+   * Creates a new MacroInformation with the given parameters.
+   *
+   * \param code Parsed macro code.
+   * \param position Position of the macro call.
    */
   MacroInformation(const std::string& code,
                    const CodePositionInterval& position);
 
   /**
-   * Returns the expanded code for this macro.
    * \return The expanded code for this macro.
    */
   const std::string& macroCode() const noexcept;
 
   /**
-   * Returns the position of this macro.
    * \return The position of the macro.
    */
   const CodePositionInterval& position() const noexcept;
 
 
  private:
-  /**
-   * The internal code attribute.
-   */
+  /** The internal code attribute. */
   std::string _code;
 
-  /**
-   * The internal position attribute.
-   */
+  /** The internal position attribute. */
   CodePositionInterval _position;
 };
 
+/** A vector of macro information. */
 using MacroInformationVector = std::vector<MacroInformation>;
 
 #endif /* ERAGPSIM_PARSER_COMMON_MACRO_INFORMATION_HPP */

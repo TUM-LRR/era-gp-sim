@@ -45,7 +45,7 @@ class SectionTracker {
   void section(const std::string& section) noexcept;
 
   /**
-   * Get the section of this section tracker.
+   * Gets the section of this section tracker.
    * \return The current section.
    */
   const std::string& section() const noexcept;

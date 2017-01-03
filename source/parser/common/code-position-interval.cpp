@@ -28,7 +28,7 @@ CodePositionInterval::CodePositionInterval(CodePosition start, CodePosition end)
  * \param codePosition The upper and lower bound of the interval.
  */
 CodePositionInterval::CodePositionInterval(CodePosition codePosition)
-: CodePositionInterval(codePosition, codePosition >> 1) {
+: CodePositionInterval(codePosition, codePosition) {
 }
 
 /**

@@ -32,6 +32,7 @@
 namespace CLikeExpressionCompilers {
 /**
  * Creates a default expression compiler, oriented at the C language.
+ *
  * \tparam IntType The given integer type.
  * \return A C-like compiler for the given integer type.
  */

@@ -58,7 +58,17 @@ using MemoryAddress = std::size_t;
  * This feature has been implemented to support macros. It allows that the
  * operations are placed inside of other operations on syntax level.
  */
-enum class TargetSelector { KEEP, MAIN, THIS };
+enum class TargetSelector {
+  /** The previous target will be preserved. */
+  KEEP,
+
+  /** The new target is the main command output of the intermediate
+     representator. */
+  MAIN,
+
+  /** Insert future operations into this one. */
+  THIS
+};
 
 /**
  * Convenience class for a pointer to an operation.
@@ -76,6 +86,7 @@ class IntermediateOperation {
   /**
    * Instantiates a new IntermediateOperation with the given arguments.
    * (only for subclass use!)
+   *
    * \param positionInterval The code position interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation.
@@ -87,6 +98,7 @@ class IntermediateOperation {
   /**
    * Executes the operation (e.g. it is inserted into the commandOutput
    * list).
+   *
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param commandOutput The final command output vector to record all
@@ -101,6 +113,7 @@ class IntermediateOperation {
 
   /**
    * Reserves entries for this operation in the symbol table.
+   *
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param graph The symbol graph for taking care of symbols (to check their
@@ -113,6 +126,7 @@ class IntermediateOperation {
 
   /**
 * Reserves memory for this operation.
+*
 * \param immutable Some constant arguments which might be helpful.
 * \param errors The compile error list to note down any errors.
 * \param allocator The allocator to reserve memory.
@@ -126,6 +140,7 @@ class IntermediateOperation {
 
   /**
 * Preprocesses some operations, mostly used for macros.
+*
 * \param immutable Some constant arguments which might be helpful.
 * \param errors The compile error list to note down any errors.
 * \param macroTable A table to record occured macros.
@@ -136,24 +151,28 @@ class IntermediateOperation {
 
   /**
    * Specifies if the this operation should be processed.
+   *
    * \return True, if so, else false.
    */
   virtual bool shouldInsert() const;
 
   /**
    * Specifies the new target for operations after this command.
+   *
    * \return Normally, we keep the target.
    */
   virtual TargetSelector newTarget() const;
 
   /**
    * Inserts an operation into a possible internal command list.
+   *
    * \param pointer The operation to insert.
    */
   virtual void insert(const IntermediateOperationPointer& pointer);
 
   /**
    * Inserts a value for the variable parameter called name.
+   *
    * \param name  Name of the parameter.
    * \param value Value of the parameter.
    */
@@ -162,24 +181,22 @@ class IntermediateOperation {
 
   /**
    * Clones the operation if supported.
+   *
    * \return Pointer to cloned operation if supported. Otherwise `nullptr`.
    */
   virtual IntermediateOperationPointer clone();
 
   /**
-   * Returns the internal code position interval.
    * \return The internal code position interval.
    */
   const CodePositionInterval& positionInterval() const noexcept;
 
   /**
-   * Returns the internal label list.
    * \return The internal label list.
    */
   const PositionedStringVector& labels() const noexcept;
 
   /**
-   * Returns the internal operation name.
    * \return The internal operation name.
    */
   const PositionedString& name() const noexcept;
@@ -187,12 +204,12 @@ class IntermediateOperation {
   /**
    * Converts the operation with all its arguments into a readable
    * representation.
+   *
    * \return A readable representation of this operation.
    */
   virtual std::string toString() const;
 
   /**
-   * Returns the type of this operation.
    * \return The type of this operation (instruction, macro instruction, other,
    * etc.).
    */
@@ -220,7 +237,14 @@ class IntermediateOperation {
   PositionedString _name;
 };
 
+/**
+ * A vector of intermediate operations.
+ */
 using IntermediateOperationVector = std::vector<IntermediateOperationPointer>;
+
+/**
+ * An iterator over a vector of intermediate operations.
+ */
 using IntermediateOperationVectorIterator =
     typename IntermediateOperationVector::iterator;
 

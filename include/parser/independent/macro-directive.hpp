@@ -28,12 +28,16 @@
 
 class SymbolTable;
 
+/**
+ * A macro directive, denoting the start of a macro definition in code.
+ */
 class MacroDirective : public IntermediateDirective {
  public:
   friend class MacroDirectiveTable;
 
   /**
    * Instantiates a new MacroDirective with the given arguments.
+   *
    * \param positionInterval     The line interval the operation occupies.
    * \param labels    The vector of labels assigned to the operation.
    * \param name      The name of the operation. (e.g. '.macro')
@@ -47,6 +51,7 @@ class MacroDirective : public IntermediateDirective {
 
   /**
    * Instantiates a new MacroDirective with the given arguments.
+   *
    * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation. (e.g. '.macro')
@@ -61,6 +66,7 @@ class MacroDirective : public IntermediateDirective {
 
   /**
    * Preprocesses the macro.
+   *
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param macroTable A table to record occured macros.
@@ -72,48 +78,58 @@ class MacroDirective : public IntermediateDirective {
 
   /**
    * Specifies the new target for operations after this command.
+   *
    * \return Set ourselves as target.
    */
   virtual TargetSelector newTarget() const;
 
   /**
    * Inserts an operation into the internal command list.
+   *
    * \param pointer The operation to insert.
    */
   virtual void insert(const IntermediateOperationPointer& pointer);
 
   /**
-   * Returns the macro name.
    * \return The macro name.
    */
   const PositionedString& macroName() const noexcept;
 
   /**
-   * Returns number of operations.
+   * \return The number of operations.
    */
   size_t getOperationCount() const;
 
   /**
-   * Returns a pair with the minimum and maximum amount of parameters for this
+   * \return A pair with the minimum and maximum amount of parameters for this
    * macro.
    */
   std::pair<size_t, size_t> getParameterCount() const;
 
   /**
-   * Returns if an instance of the macro is currently compiling. Used to detect
+   * \return If an instance of the macro is currently compiling. Used to detect
    * cyclic macro calls.
    */
   bool isCompiling();
 
   /**
-   * Returns a copy of the instruction with index `index` after inserting
+   * \return A copy of the instruction with index `index` after inserting
    * arguments.
    */
   IntermediateOperationPointer
   getOperation(size_t index, const PositionedStringVector& arguments) const;
 
+  /**
+   * \return The index of the first real instruction.
+   */
   int firstInstructionIndex() const;
 
+  /**
+   * Returns the name of the operation at the given index.
+   *
+   * \param index The given index.
+   * \return The resulting operation string.
+   */
   const PositionedString& getOperationName(size_t index) const;
 
   /**
@@ -130,12 +146,21 @@ class MacroDirective : public IntermediateDirective {
     using MacroParameter =
         std::pair<PositionedString, Optional<PositionedString>>;
 
+    /**
+     * Creates a new `MacroParameters` class from the given iterator bounds.
+     *
+     * \param begin The begin of the iterator.
+     * \param end The end of the iterator.
+     */
     MacroParameters(PositionedStringVector::const_iterator begin,
                     PositionedStringVector::const_iterator end);
 
-    MacroParameters(const PositionedStringVector& arguments)
-    : MacroParameters(arguments.begin(), arguments.end()) {
-    }
+    /**
+* Creates a new `MacroParameters` class from the given vector.
+*
+* \param arguments The given vector.
+*/
+    MacroParameters(const PositionedStringVector& arguments);
 
     /**
      * Validates the macro parameters.
@@ -145,6 +170,7 @@ class MacroDirective : public IntermediateDirective {
 
     /**
      * Inserts all parameters into the operation.
+     *
      * \param operation Operation to insert into.
      * \param values Values to insert for the parameters.
      */
@@ -188,8 +214,14 @@ class MacroDirective : public IntermediateDirective {
    */
   std::vector<IntermediateOperationPointer> _operations;
 
+  /**
+   * Denotes, if the directive compiles.
+   */
   bool _isCompiling = false;
 
+  /**
+   * The index of the first instruction in memory.
+   */
   int _firstInstruction = -1;
 };
 

@@ -40,6 +40,7 @@ class MemoryReservationDirective : public IntermediateDirective {
   /**
  * Instantiates a new IntermediateDirective with the given arguments.
  * (only for subclass use!)
+ *
  * \param positionInterval The line interval the operation occupies.
  * \param labels The vector of labels assigned to the operation.
  * \param name The name of the operation.
@@ -54,6 +55,7 @@ class MemoryReservationDirective : public IntermediateDirective {
   /**
    * Executes the reservation directive by inserting the data into
    * memory.
+   *
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param commandOutput The final command output vector to record all
@@ -69,6 +71,7 @@ class MemoryReservationDirective : public IntermediateDirective {
   /**
    * Reserves memory for this operation (but does not write it yet!) (if
    * needed).
+   *
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param allocator The allocator to reserve memory.
@@ -83,6 +86,7 @@ class MemoryReservationDirective : public IntermediateDirective {
   /**
    * Reserves entries for this operation in the symbol table, inserts
    * labels.
+   *
    * \param immutable Some constant arguments which might be helpful.
    * \param errors The compile error list to note down any errors.
    * \param graph The symbol graph for taking care of symbols (to check their
@@ -93,7 +97,14 @@ class MemoryReservationDirective : public IntermediateDirective {
                      CompileErrorList& errors,
                      SymbolGraph& graph);
 
+  /**
+  * \return The absolute memory position where the memory will be reserved.
+  */
   MemoryAddress absolutePosition() const noexcept;
+
+  /**
+   * \return The raw string values to reserve.
+   */
   const PositionedStringVector& values() const noexcept;
 
   /**
@@ -102,11 +113,34 @@ class MemoryReservationDirective : public IntermediateDirective {
   virtual ~MemoryReservationDirective() = default;
 
  private:
+  /**
+ * The absolute memory position where the memory will be reserved.
+ */
   MemoryAddress _absolutePosition;
+
+  /**
+* The section-relative memory position where the memory will be reserved.
+*/
   RelativeMemoryPosition _relativePosition;
+
+  /**
+   * The requested amount which shall be reserved by this instruction in bits.
+   */
   std::size_t _size;
+
+  /**
+   * The cell size for this memory reservation in bytes.
+   */
   std::size_t _cellSize;
+
+  /**
+   * The raw string values to reserve.
+   */
   PositionedStringVector _values;
+
+  /**
+   * A function to compile the arguments for this instruction (string values).
+   */
   ArgumentCompileFunction _argumentCompile;
 };
 

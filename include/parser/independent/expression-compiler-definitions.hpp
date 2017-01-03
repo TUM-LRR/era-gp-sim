@@ -87,6 +87,7 @@ enum class ExpressionOperatorAssociativity {
 
 /**
  * Represents a binary operator of an arithmetic expression.
+ *
  * \tparam T The number type we operate on.
  */
 template <typename T>
@@ -116,10 +117,11 @@ struct ExpressionBinaryOperator {
 
 /**
  * Represents a unary operator of an arithmetic expression.
- * \tparam T The number type we operate on.
  *
  * For this specific algorithm, unary operators always have the same low
  * precedence which is lower than for any binary operator.
+ *
+ * \tparam T The number type we operate on.
  */
 template <typename T>
 struct ExpressionUnaryOperator {
@@ -136,6 +138,7 @@ struct ExpressionUnaryOperator {
 
 /**
  * Provides information about how to decode a specific literal.
+ *
  * \tparam T The number type we operate on.
  */
 template <typename T>
@@ -173,6 +176,7 @@ struct ExpressionHelpRegexes {
 
 /**
  * Provides information about how to parse specific symbols.
+ *
  * \tparam T The number type we operate on.
  */
 template <typename T>
@@ -196,6 +200,7 @@ struct ExpressionParserDefinition {
 
 /**
  * Provides information about how to compile specific expressions.
+ *
  * \tparam T The number type we operate on.
  */
 template <typename T>

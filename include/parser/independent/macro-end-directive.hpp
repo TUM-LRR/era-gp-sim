@@ -29,6 +29,7 @@ class MacroEndDirective : public IntermediateDirective {
  public:
   /**
    * Instantiates a new MacroEndDirective with the given arguments.
+   *
    * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation.
@@ -42,12 +43,14 @@ class MacroEndDirective : public IntermediateDirective {
   /**
    * Specifies if the this operation should be processed. In this case:
    * never!
+   *
    * \return Always false.
    */
   virtual bool shouldInsert() const;
 
   /**
    * Specifies the new target for operations after this command.
+   *
    * \return Switch back to the main target.
    */
   virtual TargetSelector newTarget() const;

@@ -58,11 +58,13 @@ void IntermediateMacroInstruction::replaceWithMacros(
 }
 
 IntermediateMacroInstruction::IntermediateMacroInstruction(
-    const IntermediateInstruction& ins,
+    const IntermediateInstruction& instruction,
     const MacroDirective& macro,
     MacroDirectiveTable& macroTable,
     CompileErrorList& errors)
-: IntermediateOperation(ins.positionInterval(), ins.labels(), ins.name()) {
+: IntermediateOperation(instruction.positionInterval(),
+                        instruction.labels(),
+                        instruction.name()) {
   for (auto i : Utility::range<size_t>(0, macro.getOperationCount())) {
     if (i == (size_t)macro.firstInstructionIndex() &&
         macro.firstInstructionIndex() >= 0) {
@@ -70,7 +72,7 @@ IntermediateMacroInstruction::IntermediateMacroInstruction(
     }
 
     IntermediateOperationPointer ptr =
-        macro.getOperation(i, ins.getArgsVector());
+        macro.getOperation(i, instruction.getArgsVector());
 
     if (ptr) {
       _operations.emplace_back(ptr);

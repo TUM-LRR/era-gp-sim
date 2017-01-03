@@ -34,6 +34,7 @@ class EnhanceSymbolTableImmutableArguments {
   /**
    * Creates a new EnhanceSymbolTableImmutableArguments with the given
    * parameters.
+   *
    * \param architecture The architecture with which the operation was called.
    * \param generator The generator for syntax tree nodes.
    * \param allocator The memory allocator used to convert relative to absolute
@@ -45,6 +46,7 @@ class EnhanceSymbolTableImmutableArguments {
   /**
    * Creates a new ExecuteImmutableArguments with the given parameters
    * out of some PreprocessingImmutableArguments.
+   *
    * \param beforeBeforePass The PreprocessingImmutableArguments these arguments
    * are based on.
    * \param allocator The memory allocator used to convert relative to absolute
@@ -55,20 +57,16 @@ class EnhanceSymbolTableImmutableArguments {
       const MemoryAllocator& allocator);
 
   /**
-   * Returns the architecture with which the operation was called.
    * \return The architecture with which the operation was called.
    */
   const Architecture& architecture() const noexcept;
 
   /**
-   * Returns the generator for syntax tree nodes.
    * \return The generator for syntax tree nodes.
    */
   const SyntaxTreeGenerator& generator() const noexcept;
 
   /**
-   * Returns the memory allocator used to convert relative to absolute
-   * positions and also for different section management.
    * \return The memory allocator used to convert relative to absolute positions
    * and also for different section management.
    */
@@ -81,7 +79,7 @@ class EnhanceSymbolTableImmutableArguments {
   Architecture _architecture;
 
   /**
-   * Returns the generator for syntax tree nodes.
+   * The generator for syntax tree nodes.
    */
   SyntaxTreeGenerator _generator;
 

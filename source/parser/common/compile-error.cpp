@@ -24,7 +24,7 @@
 CompileError::CompileError(const CompileError::TranslateablePtr& message,
                            const CodePosition& position,
                            CompileErrorSeverity severity)
-: CompileError(message, position, position >> 1, severity) {
+: CompileError(message, position, position, severity) {
 }
 
 CompileError::CompileError(const CompileError::TranslateablePtr& message,

@@ -34,6 +34,7 @@ class TransformationParameters {
  public:
   /**
    * Creates a new ExecuteImmutableArguments with the given parameters.
+   *
    * \param architecture The architecture with which the operation was called.
    * \param allocator The memory allocator passed for section layout information
    * (must be empty).
@@ -44,19 +45,16 @@ class TransformationParameters {
                            const SyntaxTreeGenerator& generator);
 
   /**
-   * Returns the architecture with which the operation was called.
    * \return The architecture with which the operation was called.
    */
   const Architecture& architecture() const noexcept;
 
   /**
-   * Returns the memory allocator passed for section layout information.
    * \return The memory allocator passed for section layout information.
    */
   const MemoryAllocator& allocator() const noexcept;
 
   /**
-   * Returns the generator for syntax tree nodes.
    * \return The generator for syntax tree nodes.
    */
   const SyntaxTreeGenerator& generator() const noexcept;

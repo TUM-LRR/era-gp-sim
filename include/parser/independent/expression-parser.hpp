@@ -42,7 +42,6 @@
 
 /**
  * Parses a given token stream and evaluates it.
- * \tparam T The number output type.
  *
  * So, this class applies the Shunting Yard algorithm (oriented at
  * http://wcipeg.com/wiki/Shunting_yard_algorithm). It knows its binary and
@@ -89,12 +88,15 @@
  * operators on the stack which we then all discard (by applying a more powerful
  * operator than the one used for brackets, one which is not present on the
  * stack at all times). Then we should be done.
+ *
+ * \tparam T The number output type.
  */
 template <typename T>
 class ExpressionParser {
  public:
   /**
    * Creates a new expression parser based on a parser definition.
+   *
    * \param definition The supplied parser definition.
    */
   ExpressionParser(const ExpressionParserDefinition<T>& definition)
@@ -111,6 +113,7 @@ class ExpressionParser {
 
   /**
    * Parses the given token stream into a single number.
+   *
    * \param tokens The input token stream.
    * \param errors The compile error list to note down any errors.
    * \return The result of the expression if the compilation has been

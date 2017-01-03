@@ -42,6 +42,7 @@ class FinalCommand {
  public:
   /**
    * Creates a final command with the given parameters.
+   *
    * \param node The pointer to the syntax tree node containing the instruction
    * data.
    * \param position The position in code where the interval is located.
@@ -52,46 +53,36 @@ class FinalCommand {
                const MemoryAddress& address);
 
   /**
-   * Returns the pointer to the syntax tree node containing the
-   * instruction data.
    * \return The pointer to the syntax tree node containing the instruction
    * data.
    */
   const FinalCommandNodePointer& node() const noexcept;
 
   /**
-   * Returns the position in code where the interval is located.
    * \return The position in code where the interval is located.
    */
   const CodePositionInterval& position() const noexcept;
 
   /**
-   * Returns the address of the command in memory.
    * \return The address of the command in memory.
    */
   const MemoryAddress& address() const noexcept;
 
  private:
   /**
-   * Returns the pointer to the syntax tree node containing the
+   * The pointer to the syntax tree node containing the
    * instruction data.
    */
   FinalCommandNodePointer _node;
 
-  /**
-   * The position in code where the interval is located.
-   */
+  /** The position in code where the interval is located. */
   CodePositionInterval _position;
 
-  /**
-   * The address of the command in memory.
-   */
+  /** The address of the command in memory. */
   MemoryAddress _address;
 };
 
-/**
- * A vector of final commands.
- */
+/** A vector of final commands. */
 using FinalCommandVector = std::vector<FinalCommand>;
 
 #endif /* ERAGPSIM_PARSER_COMMON_FINAL_COMMAND_HPP */

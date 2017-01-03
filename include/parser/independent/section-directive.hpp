@@ -39,6 +39,7 @@ class SectionDirective : public IntermediateDirective {
  public:
   /**
    * Creates a new section directive with the given section.
+   *
    * \param positionInterval The interval of the command.
    * \param labels The associated labels with the command (doesn't make sense
    * for this one!?).
@@ -53,6 +54,7 @@ class SectionDirective : public IntermediateDirective {
 
   /**
      * Sets the section to the specified value.
+     *
      * \param immutable Some constant arguments which might be helpful.
      * \param errors The compile error list to note down any errors.
      * \param allocator The allocator to reserve memory.
@@ -69,7 +71,14 @@ class SectionDirective : public IntermediateDirective {
 */
   virtual ~SectionDirective() = default;
 
+  /**
+   * \return The section name.
+   */
   const PositionedString& section() const noexcept;
+
+  /**
+   * \return True, if the section name is specified, else false.
+   */
   bool hasName() const noexcept;
 
  private:

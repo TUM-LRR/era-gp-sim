@@ -31,7 +31,6 @@
 
 /**
  * A compiler for arithmetic expressions.
- * \tparam T The number type for the compiler to operate on.
  *
  * This expression compiler uses the Shunting Yard algorithm as described here:
  * http://wcipeg.com/wiki/Shunting_yard_algorithm
@@ -62,12 +61,15 @@
  * also stuff like [eax+ebx*8+1234] is to write a full-grown LR parser or
  * something similar, then one may implement this all and must only supply a
  * table with parser data.
+ *
+ * \tparam T The number type for the compiler to operate on.
  */
 template <typename T>
 class ExpressionCompiler {
  public:
   /**
    * Creates a new expression compiler based on the definition given.
+   *
    * \param definition The given compiler definition.
    */
   ExpressionCompiler(const ExpressionCompilerDefinition<T>& definition)
@@ -78,6 +80,7 @@ class ExpressionCompiler {
   /**
    * Creates a new expression compiler with the given tokenizer and
    * parser.
+   *
    * \param tokenizer The tokenizer to use.
    * \param parser The parser to use.
    */
@@ -88,6 +91,7 @@ class ExpressionCompiler {
 
   /**
    * Compiles a given string into a number.
+   *
    * \param string The given string.
    * \param replacer The symbol replacer for replacing constants – if they
    * exist.

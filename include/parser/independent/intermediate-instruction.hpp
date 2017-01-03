@@ -39,6 +39,7 @@ class IntermediateInstruction : public IntermediateOperation {
  public:
   /**
    * Instantiates a new compile error with the given arguments.
+   *
    * \param positionInterval The line interval the operation occupies.
    * \param labels The vector of labels assigned to the operation.
    * \param name The name of the operation.
@@ -54,6 +55,7 @@ class IntermediateInstruction : public IntermediateOperation {
   /**
 * Executes the operation (i.e. it is inserted into the commandOutput
 * list).
+*
 * \param immutable Some constant arguments which might be helpful.
 * \param errors The compile error list to note down any errors.
 * \param commandOutput The final command output vector to record all finalized
@@ -69,6 +71,7 @@ class IntermediateInstruction : public IntermediateOperation {
   /**
      * Reserves entries for this operation in the symbol table, inserts
    * all labels.
+   *
      * \param immutable Some constant arguments which might be helpful.
      * \param errors The compile error list to note down any errors.
      * \param graph The symbol graph for taking care of symbols (to check their
@@ -81,6 +84,7 @@ class IntermediateInstruction : public IntermediateOperation {
 
   /**
      * Reserves memory for this operation.
+     *
      * \param immutable Some constant arguments which might be helpful.
      * \param errors The compile error list to note down any errors.
      * \param allocator The allocator to reserve memory.
@@ -95,6 +99,7 @@ class IntermediateInstruction : public IntermediateOperation {
 
   /**
    * Converts this instruction into a syntax tree.
+   *
    * \param table The SymbolTable required for replacing the arguments.
    * \param generator The generator to transform the instructions.
    * \param state The CompileState logging all errors occuring.
@@ -105,18 +110,35 @@ class IntermediateInstruction : public IntermediateOperation {
                                   MemoryAccess& memoryAccess);
 
   /**
-   * Returns the memory address of this operation.
    * \return The memory address of this operation.
    */
   MemoryAddress address() const noexcept;
 
+  /**
+   * Inserts a value for the variable parameter called name.
+   *
+   * \param name  Name of the parameter.
+   * \param value Value of the parameter.
+   */
   virtual void insertIntoArguments(const PositionedString& name,
                                    const PositionedString& value);
 
+  /**
+   * \brief Returns a copy of this instruction.
+   */
   virtual IntermediateOperationPointer clone();
 
+  /**
+   * Converts the instruction with all its arguments into a readable
+   * representation.
+   *
+   * \return A readable representation of this instruction.
+   */
   virtual std::string toString() const;
 
+  /**
+   * \return The type of this operation: it is an instruction.
+   */
   virtual Type getType() const;
 
   /**
@@ -124,13 +146,21 @@ class IntermediateInstruction : public IntermediateOperation {
    */
   virtual ~IntermediateInstruction() = default;
 
+  /**
+   * \return The source parameters of this operation.
+   */
   const PositionedStringVector& sources() const noexcept;
+
+  /**
+   * \return The target parameters of this operation.
+   */
   const PositionedStringVector& targets() const noexcept;
 
  protected:
   /**
    * Compiles a vector of arguments (i.e. inserts symbols and converts to
    * syntax tree nodes).
+   *
    * \param vector The vector to compile.
    * \param table The SymbolTable required for replacing the arguments.
    * \param generator The generator to transform the instructions.
@@ -168,6 +198,7 @@ class IntermediateInstruction : public IntermediateOperation {
 
   /**
    * Constructs an argument vector from the sources and targets vectors.
+   *
    * \return New vector containing all instruction arguments.
    */
   PositionedStringVector getArgsVector() const;

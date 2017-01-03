@@ -32,6 +32,7 @@ class PreprocessingImmutableArguments {
   /**
    * Creates a new PreprocessingImmutableArguments with the given
    * parameters.
+   *
    * \param architecture The architecture with which the operation was called.
    * \param generator The generator for syntax tree nodes.
    */
@@ -39,13 +40,11 @@ class PreprocessingImmutableArguments {
                                   const SyntaxTreeGenerator& generator);
 
   /**
-    * Returns the architecture with which the operation was called.
     * \return The architecture with which the operation was called.
     */
   const Architecture& architecture() const noexcept;
 
   /**
-   * Returns the generator for syntax tree nodes.
    * \return The generator for syntax tree nodes.
    */
   const SyntaxTreeGenerator& generator() const noexcept;

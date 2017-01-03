@@ -40,6 +40,7 @@ class ExpressionTokenizer {
  public:
   /**
    * Creates a new expression tokenizer out of a token list.
+   *
    * \param definitions The token list.
    */
   ExpressionTokenizer(
@@ -47,6 +48,7 @@ class ExpressionTokenizer {
 
   /**
    * Tokenizes a given string and records any errors.
+   *
    * \param data The string to tokenize.
    * \param errors The compile error list to note down any errors.
    * \return A vector of tokens created from the input string.

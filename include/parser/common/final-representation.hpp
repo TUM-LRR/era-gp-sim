@@ -46,6 +46,7 @@ class FinalRepresentation {
 
   /**
    * Creates a final representation with the given arguments.
+   *
    * \param commandList The list with the assembled instructions and their
    * location in code.
    * \param errorList The list with errors that occurred during the compilation
@@ -58,23 +59,17 @@ class FinalRepresentation {
                       const MacroInformationVector& macroList);
 
   /**
-   * Returns the list with the assembled instructions and their location
-   * in code.
    * \return The list with the assembled instructions and their location in
    * code.
    */
   const FinalCommandVector& commandList() const noexcept;
 
   /**
-   * Returns the list with errors that occurred during the compilation
-   * process.
    * \return The list with errors that occurred during the compilation process.
    */
   const CompileErrorList& errorList() const noexcept;
 
   /**
-   * Returns a helper list containing all macros which have been
-   * assembled.
    * \return A helper list containing all macros which have been assembled.
    */
   const MacroInformationVector& macroList() const noexcept;
@@ -82,6 +77,7 @@ class FinalRepresentation {
   /**
    * Create a mapping between index in memory and index in command vector
    * of this FinalRepresentation.
+   *
    * \return The created mapping.
    */
   AddressMapping createMapping() const;

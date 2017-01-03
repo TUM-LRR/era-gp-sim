@@ -24,7 +24,8 @@
 #include <string>
 
 /**
- * A relative memory position in one specific section.
+ * A relative memory position in one specific memory section (used by the memory
+ * allocator).
  */
 struct RelativeMemoryPosition {
  public:
@@ -32,6 +33,7 @@ struct RelativeMemoryPosition {
 
   /**
    * Creates a new relative memory position with the given parameters.
+   *
    * \param section The given section where the data is stored.
    * \param offset The given offset from the beginning of the section.
    */
@@ -43,19 +45,16 @@ struct RelativeMemoryPosition {
   RelativeMemoryPosition();
 
   /**
-   * Checks if the relative memory position is not in an empty section.
    * \return True, if the section name is not an empty string.
    */
   bool valid() const;
 
   /**
-   * Returns the section which contains this memory piece.
    * \return The section which contains this memory piece.
    */
   const std::string& section() const noexcept;
 
   /**
-   * Returns the offset to the beginning of this section.
    * \return The offset to the beginning of this section.
    */
   size_t offset() const noexcept;

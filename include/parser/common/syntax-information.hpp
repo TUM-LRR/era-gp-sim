@@ -33,6 +33,10 @@ class SyntaxInformation {
    */
   enum class Token { Register, Instruction, Comment, Label, Immediate };
 
+  /**
+   * Helper class for identifying a token regex containing a string representing
+   * the regex and the token type.
+   */
   using TokenRegex = std::pair<const std::string, const Token>;
 
   /**

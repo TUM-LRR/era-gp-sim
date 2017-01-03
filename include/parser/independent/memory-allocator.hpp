@@ -51,6 +51,7 @@ class MemoryAllocator {
 
     /**
      * Create a new memory section out of a definition of it.
+     *
      * \param definition The definition of the memory section.
      */
     MemorySection(const MemorySectionDefinition& definition);
@@ -63,25 +64,25 @@ class MemoryAllocator {
 
     /**
      * Reserves the given amout of memory.
+     *
      * \param size The given amount of memory.
      * \return The position where the memory starts in the given section.
      */
     RelativeMemoryPosition allocateRelative(size_t size);
 
     /**
-     * The current size of the section.
      * \return The current size of the section.
      */
     size_t currentSize() const noexcept;
 
     /**
-     * The absolute position of this section in memory.
      * \return The absolute position of this section in memory.
      */
     size_t currentPosition() const noexcept;
 
     /**
      * Converts the given relative address into an absolute one.
+     *
      * \param relative The relative position.
      * \return The absolute position.
      */
@@ -89,6 +90,7 @@ class MemoryAllocator {
 
     /**
      * Converts the given relative address into an absolute one.
+     *
      * \param relative The relative position.
      * \return The absolute position.
      */
@@ -114,6 +116,7 @@ class MemoryAllocator {
   /**
    * Creates a new memory allocator with the given memory section
    * definitions.
+   *
    * \param sectionDefinitions The definition vector of the memory sections.
    */
   MemoryAllocator(
@@ -126,18 +129,21 @@ class MemoryAllocator {
 
   /**
    * Calculates the complete memory size.
+   *
    * \return The complete occupied size of the memory.
    */
   size_t estimateSize() const;
 
   /**
    * Calculates the absolute positions of the memory sections.
+   *
    * \return The complete occupied size of the memory.
    */
   size_t calculatePositions();
 
   /**
    * Accessor for the sections by name.
+   *
    * \param name The name of the section to be retrieved.
    * \return A reference on the memory section.
    */
@@ -145,6 +151,7 @@ class MemoryAllocator {
 
   /**
    * Accessor for the sections by index.
+   *
    * \param index The index of the section to be retrieved.
    * \return A reference on the memory section.
    */
@@ -152,6 +159,7 @@ class MemoryAllocator {
 
   /**
    * Constant accessor for the sections by name.
+   *
    * \param name The name of the section to be retrieved.
    * \return A reference on the memory section.
    */
@@ -159,6 +167,7 @@ class MemoryAllocator {
 
   /**
    * Constant accessor for the sections by index.
+   *
    * \param index The index of the section to be retrieved.
    * \return A reference on the memory section.
    */
@@ -166,6 +175,7 @@ class MemoryAllocator {
 
   /**
    * Transforms the given relative position into an absolute one.
+   *
    * \param relative The given relative position.
    * \return The calculated absolute position.
    */
@@ -173,6 +183,7 @@ class MemoryAllocator {
 
   /**
    * Checks if the given string the name of a section.
+   *
    * \param name The name to check.
    * \return True if and only if the name if the name of a memory section.
    */
