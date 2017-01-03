@@ -8,6 +8,10 @@
         <file>Components/Output/Output.qml</file>
         <file>Components/Output/RedRectangle.qml</file>
         <file>SplitviewItem.qml</file>
+	<file>Icons/Settings Icon Pressed.png</file>
+        <file>Icons/Settings Icon Pressed@2x.png</file>
+        <file>Icons/Settings Icon.png</file>
+        <file>Icons/Settings Icon@2x.png</file>
         <file>InnerSplitviews.qml</file>
         <file>Components/editor/Editor.qml</file>
         <file>Components/Memory/MemoryComponent.qml</file>
