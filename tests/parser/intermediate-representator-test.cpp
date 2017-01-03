@@ -16,55 +16,68 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/intermediate-representator.hpp"
+#include "parser/independent/intermediate-representator.hpp"
 #include "gtest/gtest.h"
-#include "parser/intermediate-instruction.hpp"
-#include "parser/macro-directive.hpp"
-#include "parser/macro-end-directive.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/independent/intermediate-instruction.hpp"
+#include "parser/independent/macro-directive.hpp"
+#include "parser/independent/macro-end-directive.hpp"
+#include "parser/independent/positioned-string.hpp"
+#define ZP(x) PositionedString(x)
 
 TEST(IntermediateRepresentator, insertSimple) {
-  CompileState state;
+  CompileErrorList errors;
   IntermediateRepresentator ir;
-  ir.insertCommand(IntermediateInstruction(LineInterval(0, 1),
-                                           {"label1", "label2", "label3"},
-                                           "mov",
-                                           {"eax"},
-                                           {"eax"}),
-                   state);
+  ir.insertCommand(
+      IntermediateInstruction(CodePositionInterval(),
+                              {ZP("label1"), ZP("label2"), ZP("label3")},
+                              ZP("mov"),
+                              {ZP("eax")},
+                              {ZP("eax")}),
+      errors);
 }
 
 TEST(IntermediateRepresentator, transformSimple) {
-  CompileState state;
+  CompileErrorList errors;
   IntermediateRepresentator ir;
-  ir.insertCommand(IntermediateInstruction(LineInterval(0, 1),
-                                           {"label1", "label2", "label3"},
-                                           "mov",
-                                           {"eax"},
-                                           {"eax"}),
-                   state);
-  ir.insertCommand(IntermediateInstruction(
-                       LineInterval(2, 5), {"label4"}, "add", {"eax"}, {"ebx"}),
-                   state);
+  ir.insertCommand(
+      IntermediateInstruction(CodePositionInterval(),
+                              {ZP("label1"), ZP("label2"), ZP("label3")},
+                              ZP("mov"),
+                              {ZP("eax")},
+                              {ZP("eax")}),
+      errors);
+  ir.insertCommand(IntermediateInstruction(CodePositionInterval(),
+                                           {ZP("label4")},
+                                           ZP("add"),
+                                           {ZP("eax")},
+                                           {ZP("ebx")}),
+                   errors);
   // Test disabled for now.
   // FinalRepresentation fr = ir.transform(state);
   // ASSERT_EQ(fr.commandList.size(), 2);
 }
 
 TEST(IntermediateRepresentator, macroDefinition) {
-  CompileState state;
+  CompileErrorList errors;
   IntermediateRepresentator ir;
-  ir.insertCommand(IntermediateInstruction(LineInterval(0, 1),
-                                           {"label1", "label2", "label3"},
-                                           "mov",
-                                           {"eax"},
-                                           {"eax"}),
-                   state);
-  ir.insertCommand(MacroDirective(LineInterval(2, 2), {}, ".macro", "test", {}),
-                   state);
-  ir.insertCommand(IntermediateInstruction(
-                       LineInterval(3, 3), {"label1"}, "add", {"eax"}, {"eax"}),
-                   state);
-  ir.insertCommand(MacroEndDirective(LineInterval(4, 4), {}, ".endmacro"),
-                   state);
-  // To be extended in a later branch.
+  ir.insertCommand(
+      IntermediateInstruction(CodePositionInterval(),
+                              {ZP("label1"), ZP("label2"), ZP("label3")},
+                              ZP("mov"),
+                              {ZP("eax")},
+                              {ZP("eax")}),
+      errors);
+  ir.insertCommand(
+      MacroDirective(CodePositionInterval(), {}, ZP(".macro"), ZP("test"), {}),
+      errors);
+  ir.insertCommand(IntermediateInstruction(CodePositionInterval(),
+                                           {ZP("label1")},
+                                           ZP("add"),
+                                           {ZP("eax")},
+                                           {ZP("eax")}),
+                   errors);
+  ir.insertCommand(
+      MacroEndDirective(CodePositionInterval(), {}, ZP(".endmacro")), errors);
 }

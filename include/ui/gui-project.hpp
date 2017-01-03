@@ -33,7 +33,7 @@
 #include "arch/common/architecture-formula.hpp"
 #include "core/memory-value.hpp"
 #include "core/project-module.hpp"
-#include "parser/final-representation.hpp"
+#include "parser/common/final-representation.hpp"
 #include "third-party/json/json.hpp"
 #include "ui/editor-component.hpp"
 #include "ui/input-button-model.hpp"

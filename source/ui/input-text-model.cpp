@@ -30,7 +30,7 @@ InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess memoryAccess)
 }
 
 void InputTextModel::newText(QString text) {
-  for (size_t i = 0; i < text.length(); i++) {
+  for (auto i : Utility::range<size_t>(0, text.length())) {
     if (_start + i > _memoryAccess.getMemorySize().get()) {
       // Too long
       break;
