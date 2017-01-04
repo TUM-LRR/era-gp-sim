@@ -239,8 +239,8 @@ QString GuiProject::getCommandHelp(std::size_t line) {
   } else {
     bool helpFound = false;
     for (const auto& command : _commandList) {
-      if (command.node && command.position.lineStart == line) {
-        auto translateable = command.node->getInstructionDocumentation();
+      if (command.node() && command.position().startLine() == line) {
+        auto translateable = command.node()->getInstructionDocumentation();
         help = Ui::translate(translateable);
         _helpCache.emplace(line, help);
         helpFound = true;
@@ -312,7 +312,7 @@ void GuiProject::_throwError(const Translateable& message) {
 
 void GuiProject::_updateCommandList(
     const FinalRepresentation& finalRepresentation) {
-  _commandList = finalRepresentation.commandList;
+  _commandList = finalRepresentation.commandList();
   _helpCache.clear();
   emit commandListUpdated();
 }

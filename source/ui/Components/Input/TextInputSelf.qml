@@ -22,6 +22,8 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 Item {
+    property int mode: 0  //array based
+    property int oldMode: 1 //pipelike
     Rectangle{
         color: "black"
         anchors.left: parent.left
@@ -41,9 +43,9 @@ Item {
 
             menu: null
 
-            textColor: "green"
+            textColor: "white"
             font.pointSize: 12
-            font.bold: true
+            font.bold: false
 
             style: TextFieldStyle{
                 background: Rectangle{
@@ -51,8 +53,15 @@ Item {
                 }
             }
 
+            onLengthChanged: {
+                if (mode === 1 && length > 0){
+                    accepted();
+                }
+            }
+
             onAccepted: {
-                inputtextMod.newText(text.text);
+                inputTextModel.newText(text.text);
+                text.text = "";
             }
 
 
@@ -61,16 +70,42 @@ Item {
     }
 
     Component.onCompleted: {
-        text.maximumLength = inputtextMod.getMaximumLength();
+        text.maximumLength = inputTextModel.getMaximumLength();
     }
 
-    //update Maximum Length
+    //update Maximum Length and mode
     Connections {
-        target: inputtextMod
+        target: inputTextModel
         // Send when maximum Length was changed
         onMaximumLengthChanged: {
-            text.maximumLength = inputtextMod.getMaximumLength();
+            text.maximumLength = inputTextModel.getMaximumLength();
         }
+        onModeChanged: {
+            mode = inputTextModel.getMode();
+            if(oldMode !== mode){
+                text.text = "";
+            }
+        }
+    }
+
+    Keys.onPressed: {
+        if (event.key === Qt.Key_Left || event.key === Qt.Key_Up || event.key === Qt.Key_Right || event.key === Qt.Key_Down) {
+            if(mode === 1){//Pipelike
+                var inputValue = 0;
+                if(event.key === Qt.Key_Right){
+                    inputValue = 1;
+                } else if (event.key === Qt.Key_Down) {
+                    inputValue = 2;
+                } else if (event.key === Qt.Key_Left) {
+                    inputValue = 3;
+                } else {
+                    inputValue = 4;
+                }
+
+                inputTextModel.newNumber(inputValue);
+            }
+        }
+
     }
 
 

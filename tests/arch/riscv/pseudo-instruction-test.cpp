@@ -24,7 +24,7 @@
 
 #include "arch/riscv/properties.hpp"
 #include "arch/riscv/utility.hpp"
-#include "parser/riscv-parser.hpp"
+#include "parser/riscv/riscv-parser.hpp"
 #include "common/translateable.hpp"
 #include "ui/translateable-processing.hpp"
 #include "tests/arch/riscv/base-fixture.hpp"
@@ -42,8 +42,8 @@ class PseudoInstructionTest : public riscv::BaseFixture {
    */
   void
   execute(FinalRepresentation& representation, MemoryAccess& memoryAccess) {
-    for (auto& command : representation.commandList) {
-      auto newProgramCounter = command.node->getValue(memoryAccess);
+    for (auto& command : representation.commandList()) {
+      auto newProgramCounter = command.node()->getValue(memoryAccess);
       memoryAccess.setRegisterValue("pc", newProgramCounter);
     }
   }
@@ -61,18 +61,20 @@ class PseudoInstructionTest : public riscv::BaseFixture {
     auto architecture = getArchitecture();
 
     RiscvParser parser{architecture, memoryAccess};
+
+    // We crossed this out, already added by the parser:
+    // architecture.getBuiltinMacros() + "\n" + 
     auto rep =
-        parser.parse(architecture.getBuiltinMacros() + "\n" + instruction,
-                     ParserMode::COMPILE);
+        parser.parse(instruction);
 
     // Assert that no compile error occurred
-    for (auto& compileError : rep.errorList) {
+    for (auto& compileError : rep.errorList().errors()) {
       ASSERT_TRUE(false) << compileError.message().getBaseString();
     }
 
     // Assert that the amount of parsed instructions is equal to the expected
     // amount of instructions
-    ASSERT_EQ(rep.commandList.size(), expectedInstructionAmount);
+    ASSERT_EQ(rep.commandList().size(), expectedInstructionAmount);
 
     // Execute the instructions
     execute(rep, memoryAccess);
