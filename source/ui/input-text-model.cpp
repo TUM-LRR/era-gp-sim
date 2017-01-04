@@ -25,8 +25,9 @@ InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess memoryAccess)
 , _context(context)
 , _start(0)
 , _maximumLength(20)
-, _memoryAccess(memoryAccess) {
-  _context->setContextProperty("inputtextMod", this);
+, _memoryAccess(memoryAccess)
+, _mode(Mode::ARRAY_BASED) {
+  _context->setContextProperty("inputTextModel", this);
 }
 
 void InputTextModel::newText(QString text) {
@@ -44,7 +45,12 @@ void InputTextModel::newText(QString text) {
   }
 }
 
-void InputTextModel::setStart(unsigned int start) {
+void InputTextModel::newNumber(size_t number) {
+  auto memoryValue = conversions::convert(number, 32);
+  _memoryAccess.putMemoryValueAt(_start, memoryValue);
+}
+
+void InputTextModel::setStart(size_t start) {
   if (_memoryAccess.getMemorySize().get() >= start + _maximumLength) {
     _start = start;
   }
@@ -54,11 +60,20 @@ QString InputTextModel::getStart() {
   return QString::number(_start);
 }
 
-void InputTextModel::setMaximumLength(length_t maximumLength) {
+void InputTextModel::setMaximumLength(size_t maximumLength) {
   _maximumLength = maximumLength;
   emit maximumLengthChanged();
 }
 
-InputTextModel::length_t InputTextModel::getMaximumLength() {
+InputTextModel::size_t InputTextModel::getMaximumLength() {
   return _maximumLength;
+}
+
+void InputTextModel::setMode(int mode) {
+  _mode = static_cast<Mode>(mode);
+  emit modeChanged();
+}
+
+int InputTextModel::getMode() {
+  return static_cast<int>(_mode);
 }

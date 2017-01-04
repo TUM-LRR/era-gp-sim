@@ -82,6 +82,10 @@ Item {
         textarea.text = outputComponent.getTextFromMemory(_baseAddress, currentText, mode);
     }
 
+    Component.onCompleted: {
+        it.updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
+    }
+
 
     ConsoleSettingsWindow {
         id: settingsWindowC
