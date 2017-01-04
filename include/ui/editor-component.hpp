@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_UI_EDITOR_COMPONENT_HPP_
-#define ERAGPSIM_UI_EDITOR_COMPONENT_HPP_
+#ifndef ERAGPSIM_UI_EDITOR_COMPONENT_HPP
+#define ERAGPSIM_UI_EDITOR_COMPONENT_HPP
 
 #include <QObject>
 #include <QTextDocument>
@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "core/command-interface.hpp"
-#include "parser/syntax-information.hpp"
+#include "parser/common/syntax-information.hpp"
 #include "ui/syntaxhighlighter.hpp"
 
 class ParserInterface;
@@ -169,7 +169,7 @@ class EditorComponent : public QObject {
   void deleteErrors();
 
   /** A signal to add an error in the editor. */
-  void addError(QString message, int line, QColor color);
+  void addIssue(const QString &message, int line, const QString &color);
 
   /** Change the highlighted line which indicates the execution point. */
   void executionLineChanged(int line);
@@ -198,4 +198,4 @@ class EditorComponent : public QObject {
   void forceCursorUpdate();
 };
 
-#endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP_ */
+#endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP */

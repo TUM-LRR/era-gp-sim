@@ -187,20 +187,20 @@ TEST_F(JumpInstructionTest, JALValidation) {
 }
 
 TEST_F(JumpInstructionTest, JALCanJumpForwards) {
-  testJAL("x1", 1);
-  testJAL("x2", 123);
-  testJAL("x3", 12345);
-  testJAL("x4", 0x7FFFF - initialAddress - progress);
+  testJAL("x1", 2);
+  testJAL("x2", 124);
+  testJAL("x3", 12346);
+  testJAL("x4", 0x7FFFF -3 - initialAddress - progress);
 }
 
 TEST_F(JumpInstructionTest, JALCanJumpBackwards) {
   // Swap sides
   setInitialAddress(std::numeric_limits<address_t>::max() - initialAddress);
 
-  testJAL("x1", -1);
-  testJAL("x2", -123);
-  testJAL("x3", -1235);
-  testJAL("x4", -0x8000 + initialAddress + progress);
+  testJAL("x1", -2);
+  testJAL("x2", -124);
+  testJAL("x3", -1236);
+  testJAL("x4", -0x8000 +3 + initialAddress + progress);
 }
 
 TEST_F(JumpInstructionTest, JALDoesNothingWhenOffsetIsZero) {

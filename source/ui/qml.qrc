@@ -35,6 +35,7 @@
         <file>Components/editor/MacroTriangleButton.qml</file>
         <file>Components/editor/MacroSubeditor.qml</file>
         <file>Components/Common/TextUtilities.js</file>
+        <file>Components/editor/HelpToolTip.qml</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected@2x.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon.png</file>
@@ -55,6 +56,12 @@
         <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentSettingsWindow.qml</file>
         <file>Components/Output/LightstripSettingsWindow.qml</file>
+        <file>Components/editor/Issue Icons/Error Icon.png</file>
+        <file>Components/editor/Issue Icons/Error Icon@2x.png</file>
+        <file>Components/editor/Issue Icons/Information Icon.png</file>
+        <file>Components/editor/Issue Icons/Information Icon@2x.png</file>
+        <file>Components/editor/Issue Icons/Warning Icon.png</file>
+        <file>Components/editor/Issue Icons/Warning Icon@2x.png</file>
         <file>Components/Output/Console.qml</file>
         <file>Components/Output/ConsoleSettingsWindow.qml</file>
         <file>Components/Input/ButtonInput.qml</file>
@@ -78,5 +85,6 @@
         <file>Components/Input/Buttons/Text Console Icon@2x.png</file>
         <file>Components/help/HelpWindow.qml</file>
         <file>BlankComponent.qml</file>
+        <file>Components/editor/IssueMark.qml</file>
     </qresource>
 </RCC>

@@ -126,6 +126,16 @@ class JumpAndLinkImmediateInstructionNode
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Immediate operand must be 20 bit or less"));
+    } else if (offset.get(0)) {
+      // the offset is odd (bit 0 is 1) -> 2*offset can never be a multiple of 4
+      // let offset = 2k+1; 2(2k+1)/4 = (2k+1)/2 which is not dividable without
+      // remainder
+      SignedWord off = riscv::convert<SignedWord>(offset);
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "The given offset %1 will result into an invalid "
+                            "jump adress (pc+%2)"),
+          std::to_string(off), std::to_string(2 * off));
     }
 
     return ValidationResult::success();
@@ -139,13 +149,14 @@ class JumpAndLinkImmediateInstructionNode
    *
    * \return A `ValidationResult` reflecting the result of the check.
    */
-  ValidationResult
-  _validateResultingProgramCounter(MemoryAccess& memoryAccess) const override {
+  ValidationResult _validateResultingProgramCounter(
+      MemoryAccess& memoryAccess) const override {
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
     auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
 
     // Check if the program counter would underflow or overflow
-    if (!riscv::isAddressValid(memoryAccess, programCounter + 2 * offset)) {
+    if (!riscv::addressIsValid(memoryAccess, programCounter + 2 * offset,
+                               programCounter)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Branch offset would invalidate program counter"));
@@ -276,12 +287,13 @@ class JumpAndLinkRegisterInstructionNode
    *
    * \return A `ValidationResult` reflecting the result of the check.
    */
-  ValidationResult
-  _validateResultingProgramCounter(MemoryAccess& memoryAccess) const override {
+  ValidationResult _validateResultingProgramCounter(
+      MemoryAccess& memoryAccess) const override {
     auto base = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
     auto offset =
         super::template _getChildValue<UnsignedWord>(memoryAccess, 2) + base;
-    if (!riscv::isAddressValid(memoryAccess, base + offset)) {
+    auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
+    if (!riscv::addressIsValid(memoryAccess, base + offset, programCounter)) {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Jump offset would invalidate program counter"));
@@ -311,13 +323,12 @@ class JumpInstructionNode
    * \param information The information object for the instruction.
    */
   explicit JumpInstructionNode(const InstructionInformation& information)
-  : super(information) {
+      : super(information) {
     // Create a register node and insert it a the first operand to `JAL`.
     // auto zero = std::make_unique<RegisterNode>("x0");
     // super::insertChild(0, std::move(zero));
   }
 };
 }
-
 
 #endif /* ERAGPSIM_ARCH_RISCV_JUMP_INSTRUCTIONS_HPP */

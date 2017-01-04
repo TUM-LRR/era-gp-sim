@@ -28,83 +28,77 @@
 #include "common/utility.hpp"
 
 /**
- * \brief Helper class for matches of the multiregex.
+ * Helper class for matches of the multiregex.
  * \tparam CharT The character type. Must be integral.
  */
 template <typename CharT>
 struct MultiregexMatch {
   /**
-   * \brief The character type, for internal use.
+   * The character type, for internal use.
    */
   using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
 
   /**
-   * \brief Internal string type.
+   * Internal string type.
    */
   using String = std::basic_string<CharType>;
 
   /**
-   * \brief The position in the string where the match is located.
+   * Creates a new multiregex match with the given arguments.
+   * \param source The COMPLETE source string (the relevant part will be cut
+   * out).
+   * \param position The positition of the match in the string.
+   * \param length The length of the match.
+   * \param choice The taken choice.
+   */
+  MultiregexMatch(const String& source = String(),
+                  size_t position = 0,
+                  size_t length = 0,
+                  size_t choice = 0)
+  : position(position)
+  , length(length)
+  , choice(choice)
+  , source(source.substr(position, length)) {
+  }
+
+  /**
+   * The position in the string where the match is located.
    */
   size_t position;
 
   /**
-   * \brief The length of the match.
+   * The length of the match.
    */
   size_t length;
 
   /**
-   * \brief The taken choice of the offered ones.
+   * The taken choice of the offered ones.
    */
   size_t choice;
 
   /**
-   * \brief The match as string.
+   * The match as string.
    */
   String source;
-
-  /**
-   * \brief Creates a new multiregex match with the given arguments.
-   * \param source_ The COMPLETE source string (the relevant part will be cut
-   * out).
-   * \param position_ The positition of the match in the string.
-   * \param length_ The length of the match.
-   * \param choice_ The taken choice.
-   */
-  MultiregexMatch(const String& source_,
-                  size_t position_,
-                  size_t length_,
-                  size_t choice_)
-  : position(position_)
-  , length(length_)
-  , choice(choice_)
-  , source(source_.substr(position_, length_)) {
-  }
-
-  /**
-   * \brief Creates an empty multiregex match.
-   */
-  MultiregexMatch() : position(0), length(0), choice(0), source("") {
-  }
 };
 
 /**
- * \brief A multiregex match for (normally) 1 byte-wide characters.
+ * A multiregex match for (normally) 1 byte-wide characters.
  */
 using MSMatch = MultiregexMatch<char>;
 
 /**
- * \brief A multiregex match for 2 byte-wide characters.
+ * A multiregex match for 2 byte-wide characters.
  */
 using MS16Match = MultiregexMatch<char16_t>;
 
 /**
- * \brief A multiregex match for 4 byte-wide characters.
+ * A multiregex match for 4 byte-wide characters.
  */
 using MS32Match = MultiregexMatch<char32_t>;
 
 /**
- * \brief A wrapper which tries to match multiple regexes at the same time.
+ * A wrapper which tries to match multiple regexes at the same time.
  * \tparam CharT The character type used for strings and the regex. Must be
  * integral.
  *
@@ -117,37 +111,39 @@ class Multiregex {
   // Note: if you want to break this class, you will probably manage to do so...
  public:
   /**
-   * \brief The internal character type.
+   * The internal character type.
    */
   using CharType = Utility::TypeBarrier<CharT, std::is_integral>;
 
   /**
-   * \brief The internal string type.
+   * The internal string type.
    */
   using String = std::basic_string<CharType>;
 
   /**
-   * \brief The internal string iterator type.
+   * The internal string iterator type.
    */
   using StringIterator = typename String::const_iterator;
 
   /**
-   * \brief The internal regex type.
+   * The internal regex type.
    */
   using Regex = std::basic_regex<CharType>;
 
   /**
-   * \brief The internal regex iterator type.
+   * The internal regex iterator type.
    */
   using RegexIterator = std::regex_iterator<StringIterator>;
 
   /**
-   * \brief The internal regex matches.
+   * The internal regex matches.
    */
   using RegexMatch = std::match_results<StringIterator>;
 
+  using MultiReplaceFunction = std::function<String(std::size_t)>;
+
   /**
-   * \brief Creates a multiregex with the given prefix and suffix.
+   * Creates a multiregex with the given prefix and suffix.
    * \param prefix The prefix is mandatory to match and put before the choice.
    * \param suffix The suffix is mandatory to match and put after the choice.
    * \param choice A vector of strings which will be put into the regex. Only
@@ -159,13 +155,13 @@ class Multiregex {
              const String& suffix,
              const std::vector<String>& choice,
              std::regex::flag_type flags = std::regex_constants::ECMAScript)
-  : _choice()
-  , _baseGroup(countBrackets(prefix) + 1)
+  : _baseGroup(countBrackets(prefix) + 1)
+  , _choice()
   , _regex(buildMultiregex(prefix, suffix, choice, flags), flags) {
   }
 
   /**
-   * \brief Creates a multiregex.
+   * Creates a multiregex.
    * \param choice A vector of strings which will be put into the regex. Only
    * one of them has to match. There is no order which regex in the list if
    * preferred, this is rather implementation-defined.
@@ -173,11 +169,11 @@ class Multiregex {
    */
   Multiregex(const std::vector<String>& choice,
              std::regex::flag_type flags = std::regex_constants::ECMAScript)
-  : Multiregex("", "", choice, flags) {
+  : Multiregex(String(), String(), choice, flags) {
   }
 
   /**
-   * \brief Tries to match a string at some position and records the output.
+   * Tries to match a string at some position and records the output.
    * \param data The string to match.
    * \param multimatch The multimatch to output the success.
    * \return True if and only if the matching succeeds.
@@ -196,11 +192,12 @@ class Multiregex {
       // have been another group as big before. So we get always the first
       // matching group.
       size_t targetLength = match.length(_baseGroup);
-      for (size_t i = _baseGroup + 1; i < match.size(); ++i) {
-        if (match.length(i) == targetLength) {
+      for (auto i : Utility::range<size_t>(_baseGroup + 1, match.size())) {
+        if ((size_t)match.length(i) == targetLength) {
           // Found one. We set our multimatch and return it.
-          assert::that(_choice.find(i) != _choice.end());//(this should actually
-                                                         // never fail, only if
+          assert::that(_choice.find(i) !=
+                       _choice.end());  //(this should actually
+                                        // never fail, only if
           // something in this
           // implementation has
           // gone wrong)
@@ -215,36 +212,67 @@ class Multiregex {
   }
 
   /**
-   * \brief Tries to match a string at some position.
+   * Tries to match a string at some position.
    * \param data The string to match.
    * \return True if and only if the matching succeeds.
    */
-  bool search(const std::basic_string<CharType>& data) const {
+  bool search(const String& data) const {
     MultiregexMatch<CharType> multimatch;
 
     // We do also record the data, but simply do not use nor return it.
     return search(data, multimatch);
   }
 
+  /**
+   * Replaced any match in the multi-regex by something, using a replace
+   * function for the choice.
+   * \param data The string which should be treated.
+   * \param replacement The selector for the replacement.
+   * \return The string with everything replaced.
+   */
+  String
+  replace(const String& data, const MultiReplaceFunction& replacement) const {
+    // This implementation here might be rather inefficient... But it works!
+    MultiregexMatch<CharType> multimatch;
+    String substring = data;
+    String result;
+
+    // We create substrings and search for the next occurence until there is no
+    // more.
+    while (search(substring, multimatch)) {
+      // Then replace.
+      auto end = multimatch.position + multimatch.length;
+      result += substring.substr(0, multimatch.position);
+      result += replacement(multimatch.choice);
+
+      // Continue with the next substring.
+      substring = substring.substr(end);
+    }
+
+    // Adding up the rest.
+    result += substring;
+    return result;
+  }
+
  private:
   // Counts the number of opening brackets in the string which denote the start
   // of a regex group.
-  size_t countBrackets(const String& str) const {
+  size_t countBrackets(const String& string) const {
     // A regex did not work here, b/c negative lookbehind is not implemented.
     size_t count = 0;
 
     // One time iterate over the complete string.
-    for (size_t i = 0; i < str.size(); ++i) {
+    for (auto i : Utility::range<size_t>(0, string.size())) {
       // clang-format off
-            char prev = i     >= 1         ? str[i - 1] : '\0';
-            char next = i + 1 < str.size() ? str[i + 1] : '\0';
+            char prev = i     >= 1             ? string[i - 1] : '\0';
+            char next = i + 1 <  string.size() ? string[i + 1] : '\0';
       // clang-format on
 
       // Conditions that need to be fulfilled:
       //* The bracket must not be escaped.
       //* The bracket must not denote the start of a not-captured
       // group/lookahead.
-      if (prev != '\\' && next != '?' && str[i] == '(') {
+      if (prev != '\\' && next != '?' && string[i] == '(') {
         ++count;
       }
     }
@@ -257,15 +285,15 @@ class Multiregex {
                          const std::vector<String>& choice,
                          std::regex::flag_type flags) {
     // The choice regex string.
-    String regexBuildString = "";
+    String regexBuildString = String();
 
     // We start with our base group.
     size_t id = _baseGroup;
-    for (size_t i = 0; i < choice.size(); ++i) {
+    for (auto i : Utility::range<size_t>(0, choice.size())) {
       // Each regex choice opens a new group.
       ++id;
       _choice[id] = i;
-      regexBuildString += "|(" + choice[i] + ")";
+      regexBuildString += String("|(") + choice[i] + String(")");
 
       // Test-wise, we build the regex to check its syntax.
       std::regex test(choice[i], flags);
@@ -275,7 +303,8 @@ class Multiregex {
     }
 
     // Then we output the regex.
-    return prefix + "(" + regexBuildString.substr(1) + ")" + suffix;
+    return prefix + String("(") + regexBuildString.substr(1) + String(")") +
+           suffix;
   }
 
   // Denotes the number of the group which surrounds the choice.
@@ -289,17 +318,17 @@ class Multiregex {
 };
 
 /**
- * \brief A multiregex using (normally) 1 byte-wide characters.
+ * A multiregex using (normally) 1 byte-wide characters.
  */
 using MSRegex = Multiregex<char>;
 
 /**
- * \brief A multiregex using 2 byte-wide characters.
+ * A multiregex using 2 byte-wide characters.
  */
 using MS16Regex = Multiregex<char16_t>;
 
 /**
- * \brief A multiregex using 4 byte-wide characters.
+ * A multiregex using 4 byte-wide characters.
  */
 using MS32Regex = Multiregex<char32_t>;
 

@@ -29,7 +29,7 @@
 #include "arch/common/validation-result.hpp"
 #include "common/assert.hpp"
 #include "core/parser-interface.hpp"
-#include "parser/compile-error.hpp"
+#include "parser/common/compile-error.hpp"
 #include "ui/translateable-processing.hpp"
 
 EditorComponent::EditorComponent(QQmlContext *projectContext,
@@ -123,15 +123,17 @@ void EditorComponent::deleteBreakpoint(int line) {
 void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
   emit deleteErrors();
   for (const CompileError &error : errorList) {
+    QString issueType;
     QColor color;
     switch (error.severity()) {
-      case CompileErrorSeverity::ERROR: color = QColor(Qt::red); break;
-      case CompileErrorSeverity::WARNING: color = QColor(Qt::yellow); break;
-      case CompileErrorSeverity::INFORMATION: color = QColor(Qt::blue); break;
+      case CompileErrorSeverity::ERROR: issueType = "Error"; break;
+      case CompileErrorSeverity::WARNING: issueType = "Warning"; break;
+      case CompileErrorSeverity::INFORMATION: issueType = "Information"; break;
       default: assert::that(false);
     }
-    emit addError(
-        translate(error.message()), error.position().first.line(), color);
+    emit addIssue(translate(error.message()),
+                  error.position().startLine(),
+                  issueType);
   }
 }
 
@@ -143,9 +145,9 @@ void EditorComponent::setMacroList(
     macroInformationMap["code"] =
         QString::fromStdString(macroInformation.macroCode());
     macroInformationMap["startLine"] =
-        QVariant::fromValue(macroInformation.position().first.line() - 1);
+        QVariant::fromValue(macroInformation.position().startLine() - 1);
     macroInformationMap["endLine"] =
-        QVariant::fromValue(macroInformation.position().second.line() - 1);
+        QVariant::fromValue(macroInformation.position().endLine() - 1);
     int lineCount =
         static_cast<int>(std::count(macroInformation.macroCode().begin(),
                                     macroInformation.macroCode().end(),
@@ -167,8 +169,8 @@ QString EditorComponent::getText() {
 
 void EditorComponent::onFinalRepresentationChanged(
     const FinalRepresentation &finalRepresentation) {
-  setErrorList(finalRepresentation.errorList);
-  setMacroList(finalRepresentation.macroList);
+  setErrorList(finalRepresentation.errorList().errors());
+  setMacroList(finalRepresentation.macroList());
 }
 
 void EditorComponent::_addKeywords(

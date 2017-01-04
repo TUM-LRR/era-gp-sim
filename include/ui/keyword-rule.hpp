@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_UI_KEYWORD_RULE_HPP_
-#define ERAGPSIM_UI_KEYWORD_RULE_HPP_
+#ifndef ERAGPSIM_UI_KEYWORD_RULE_HPP
+#define ERAGPSIM_UI_KEYWORD_RULE_HPP
 
 #include <QRegularExpression>
 #include <QTextCharFormat>
@@ -36,4 +36,4 @@ struct KeywordRule {
   QTextCharFormat ruleTextFormat;
 };
 
-#endif /* ERAGPSIM_UI_KEYWORD_RULE_HPP_ */
+#endif /* ERAGPSIM_UI_KEYWORD_RULE_HPP */
