@@ -49,7 +49,7 @@ class DocumentationBuilder {
     SHORT_DESCRIPTION,
     /** The key for the detailed description of what the instruction does. */
     DETAIL_DESCRIPTION,
-
+    /** The key for a description about the range of the immediate operand*/
     OPERAND_RANGE
   };
 

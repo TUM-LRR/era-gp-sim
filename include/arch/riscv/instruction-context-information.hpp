@@ -210,6 +210,11 @@ class InstructionContextInformation {
                      const std::string& operand2Desc,
                      const std::string& resultPart = std::string());
 
+  /**
+   *
+   * \param mnemonic mnemonic of the instruction to check
+   * \return True if the given mnemonic denotes an immediate instruction
+   */
   bool _isImmediateInstruction(const std::string& mnemonic) const;
 
   Table _table;
