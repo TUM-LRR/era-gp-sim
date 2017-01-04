@@ -125,8 +125,8 @@ Window {
         anchors.bottomMargin: 5
 
         onClicked: {
-            baseAddressTextField.processInput();
-            maxLength.processInput();
+            baseAddressTextField.focus = false;
+            maxLength.focus = false;
             close();
         }
     }
