@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_UI_EDITOR_COMPONENT_HPP_
-#define ERAGPSIM_UI_EDITOR_COMPONENT_HPP_
+#ifndef ERAGPSIM_UI_EDITOR_COMPONENT_HPP
+#define ERAGPSIM_UI_EDITOR_COMPONENT_HPP
 
 #include <QObject>
 #include <QTextDocument>
@@ -198,4 +198,4 @@ class EditorComponent : public QObject {
   void forceCursorUpdate();
 };
 
-#endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP_ */
+#endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP */

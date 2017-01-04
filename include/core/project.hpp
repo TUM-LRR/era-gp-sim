@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_PROJECT_HPP_
-#define ERAGPSIM_CORE_PROJECT_HPP_
+#ifndef ERAGPSIM_CORE_PROJECT_HPP
+#define ERAGPSIM_CORE_PROJECT_HPP
 
 #include <functional>
 #include <string>
@@ -314,4 +314,4 @@ class Project : public Servant {
   ErrorCallback _errorCallback;
 };
 
-#endif /* ERAGPSIM_CORE_PROJECT_HPP_ */
+#endif /* ERAGPSIM_CORE_PROJECT_HPP */
