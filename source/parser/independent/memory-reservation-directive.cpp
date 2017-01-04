@@ -18,7 +18,10 @@
 */
 
 #include "parser/independent/memory-reservation-directive.hpp"
+
+#include <cstddef>
 #include <cstdint>
+
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"

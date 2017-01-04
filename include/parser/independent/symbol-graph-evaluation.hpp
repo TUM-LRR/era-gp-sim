@@ -21,6 +21,7 @@
 #define ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_GRAPH_EVALUATION_HPP
 
 #include <vector>
+
 #include "parser/independent/symbol.hpp"
 
 /**

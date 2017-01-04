@@ -19,8 +19,12 @@
 #include "parser/riscv/riscv-parser.hpp"
 
 #include <iostream>
+#include <memory>
 #include <regex>
 #include <sstream>
+#include <string>
+#include <vector>
+
 #include "arch/common/architecture.hpp"
 #include "arch/common/node-factory-collection-maker.hpp"
 #include "arch/common/unit-information.hpp"
@@ -162,7 +166,8 @@ void readText(const std::string& text,
     }
   }
 }
-};
+}  // namespace
+
 FinalRepresentation RiscvParser::parse(const std::string& text) {
   IntermediateRepresentator intermediate;
   CompileErrorList errors;

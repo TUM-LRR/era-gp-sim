@@ -19,6 +19,10 @@
 
 #include "parser/independent/memory-allocator.hpp"
 
+#include <cstddef>
+#include <string>
+#include <vector>
+
 void MemoryAllocator::MemorySection::clear() {
   // Really, just setting it to zero.
   _currentSize = 0;

@@ -19,6 +19,7 @@
 #ifndef ERAGPSIM_PARSER_COMMON_CODE_POSITION_HPP
 #define ERAGPSIM_PARSER_COMMON_CODE_POSITION_HPP
 
+#include <cstddef>
 #include <utility>
 
 /**

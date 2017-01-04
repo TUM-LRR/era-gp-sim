@@ -17,10 +17,13 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "parser/independent/macro-directive-table.hpp"
+
+#include <cstddef>
 #include <string>
+#include <utility>
 
 #include "common/assert.hpp"
-#include "parser/independent/macro-directive-table.hpp"
 #include "parser/independent/macro-directive.hpp"
 
 bool MacroDirectiveTable::insert(const MacroDirective &macro) {

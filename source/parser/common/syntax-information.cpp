@@ -19,6 +19,10 @@
 
 #include "parser/common/syntax-information.hpp"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 void SyntaxInformation::addSyntaxRegex(const std::string &regex, Token token) {
   _entries.emplace_back(std::make_pair(regex, token));
 }

@@ -20,6 +20,8 @@
 #ifndef ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_CLIKE_HPP
 #define ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_CLIKE_HPP
 
+#include <vector>
+
 #include "common/translateable.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/expression-compiler.hpp"
@@ -300,7 +302,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
       ExpressionHelpRegexes{"\\(", "\\)", "[_A-Za-z][_A-Za-z0-9]*"};
   auto compilerDefinition =
       ExpressionCompilerDefinition<IntType>{parserDefinition, helpRegexes};
-  return compilerDefinition;
+  return ExpressionCompiler<IntType>(compilerDefinition);
 }
 
 /**
@@ -342,6 +344,7 @@ extern ExpressionCompiler<int64_t> CLikeCompilerI64;
  * A default compiler for 64-bit wide unsigned integers.
  */
 extern ExpressionCompiler<uint64_t> CLikeCompilerU64;
-}
+
+}  // namespace CLikeExpressionCompilers
 
 #endif /* ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_CLIKE_HPP */

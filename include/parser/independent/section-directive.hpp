@@ -23,10 +23,10 @@
 #include <string>
 #include <vector>
 
+#include "parser/common/final-command.hpp"
 #include "parser/independent/intermediate-directive.hpp"
 
 class MemoryAllocator;
-#include "parser/common/final-command.hpp"
 class SymbolTable;
 class SyntaxTreeGenerator;
 class CompileErrorList;

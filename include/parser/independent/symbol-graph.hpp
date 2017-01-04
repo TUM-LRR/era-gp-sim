@@ -20,9 +20,12 @@
 #ifndef ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_GRAPH_HPP
 #define ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_GRAPH_HPP
 
+#include <cstddef>
 #include <string>
 #include <vector>
+
 #include "parser/independent/symbol.hpp"
+
 class SymbolGraphEvaluation;
 
 /**

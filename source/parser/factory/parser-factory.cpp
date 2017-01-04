@@ -19,6 +19,10 @@
 
 #include "parser/factory/parser-factory.hpp"
 
+#include <memory>
+#include <string>
+#include <unordered_map>
+
 #include "common/assert.hpp"
 #include "core/memory-access.hpp"
 #include "parser/riscv/riscv-parser.hpp"

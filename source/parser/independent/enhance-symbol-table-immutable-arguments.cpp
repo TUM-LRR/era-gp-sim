@@ -18,6 +18,7 @@
 */
 
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
+
 #include "parser/independent/preprocessing-immutable-arguments.hpp"
 
 // Just constructors and getters.

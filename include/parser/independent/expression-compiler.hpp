@@ -20,14 +20,15 @@
 #ifndef ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_HPP
 #define ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_HPP
 
+#include <set>
+#include <string>
+#include <vector>
+
 #include "parser/independent/expression-compiler-definitions.hpp"
 #include "parser/independent/expression-parser.hpp"
 #include "parser/independent/expression-tokenizer.hpp"
 #include "parser/independent/positioned-string.hpp"
 #include "parser/independent/symbol-replacer.hpp"
-
-#include <set>
-#include <vector>
 
 /**
  * A compiler for arithmetic expressions.
@@ -72,7 +73,7 @@ class ExpressionCompiler {
    *
    * \param definition The given compiler definition.
    */
-  ExpressionCompiler(const ExpressionCompilerDefinition<T>& definition)
+  explicit ExpressionCompiler(const ExpressionCompilerDefinition<T>& definition)
   : _tokenizer(getTokenDefinitions(definition))
   , _parser(definition.parserDefinition) {
   }

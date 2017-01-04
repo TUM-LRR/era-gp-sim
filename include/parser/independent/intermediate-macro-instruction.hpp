@@ -19,6 +19,8 @@
 #ifndef ERAGPSIM_PARSER_INDEPENDENT_INTERMEDIATE_MACRO_INSTRUCTION_HPP
 #define ERAGPSIM_PARSER_INDEPENDENT_INTERMEDIATE_MACRO_INSTRUCTION_HPP
 
+#include <string>
+
 #include "parser/independent/intermediate-operation.hpp"
 
 class CompileErrorList;

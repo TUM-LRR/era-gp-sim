@@ -22,6 +22,9 @@
 
 #include "parser/independent/integer-parser.hpp"
 
+#include <cstddef>
+#include <string>
+
 template <>
 int IntegerParser<int>::parseInternal(const std::string &str,
                                       size_t start,

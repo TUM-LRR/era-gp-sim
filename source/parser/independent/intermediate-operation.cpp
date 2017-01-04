@@ -16,10 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "parser/independent/intermediate-operation.hpp"
+
 #include <string>
 #include <vector>
-
-#include "parser/independent/intermediate-operation.hpp"
 
 #include "common/assert.hpp"
 #include "parser/common/code-position-interval.hpp"

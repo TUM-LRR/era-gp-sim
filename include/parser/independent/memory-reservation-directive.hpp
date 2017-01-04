@@ -20,10 +20,12 @@
 #ifndef ERAGPSIM_PARSER_INDEPENDENT_MEMORY_RESERVATION_DIRECTIVE_HPP
 #define ERAGPSIM_PARSER_INDEPENDENT_MEMORY_RESERVATION_DIRECTIVE_HPP
 
-
+#include <cstddef>
 #include <functional>
+
 #include "parser/independent/intermediate-directive.hpp"
 #include "parser/independent/relative-memory-position.hpp"
+
 class MemoryAllocator;
 class CompileErrorList;
 class CodePositionInterval;

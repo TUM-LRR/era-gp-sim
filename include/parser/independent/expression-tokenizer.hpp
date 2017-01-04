@@ -20,12 +20,15 @@
 #ifndef ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_TOKENIZER_HPP
 #define ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_TOKENIZER_HPP
 
-#include "parser/independent/expression-compiler-definitions.hpp"
-
 #include <regex>
+#include <string>
 #include <unordered_map>
+#include <vector>
+
 #include "common/multiregex.hpp"
+#include "parser/independent/expression-compiler-definitions.hpp"
 #include "parser/independent/positioned-string.hpp"
+
 class CompileErrorList;
 
 /**

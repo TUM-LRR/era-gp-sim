@@ -17,6 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "parser/independent/symbol-replacer.hpp"
+
 #include <cstddef>
 #include <regex>
 #include <string>
@@ -26,7 +28,6 @@
 #include "common/utility.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/symbol-graph-evaluation.hpp"
-#include "parser/independent/symbol-replacer.hpp"
 
 // Helper method to create multiregex out of symbol names (which have been
 // checked for valid names before, hopefully... Otherwise, we might have a regex

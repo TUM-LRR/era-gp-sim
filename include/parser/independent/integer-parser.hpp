@@ -21,9 +21,11 @@
 #define ERAGPSIM_PARSER_INDEPENDENT_INTEGER_PARSER_HPP
 
 #include <cctype>
+#include <cstddef>
 #include <limits>
 #include <stdexcept>
 #include <string>
+
 #include "common/assert.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/positioned-string.hpp"
