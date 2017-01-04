@@ -57,8 +57,8 @@ class InstructionContextInformation {
    * instruction
    * \return A reference to a Translateable containing the context information
    */
-  const Translateable&
-  getContextInformation(const InstructionInformation& instructionInfo) const;
+  const Translateable& getContextInformation(
+      const InstructionInformation& instructionInfo) const;
 
   /**
    * Checks if a documentation/context information is present for the given
@@ -108,7 +108,9 @@ class InstructionContextInformation {
                               const std::string& operationSign,
                               const std::string& description,
                               const std::string& specialImmediateOperandDesc =
-                                  RISCV_TR("A 12 bit signed immediate"));
+                                  RISCV_TR("A 12 bit signed immediate"),
+                              const Optional<int> range = Optional<int>(),
+                              const Optional<bool> isSigned = Optional<bool>(true));
 
   /**
    * A convenience function for a defining an arithmetic instruction.
@@ -124,7 +126,8 @@ class InstructionContextInformation {
                                const std::string& operationSign,
                                const std::string& description,
                                const std::string& specialImmediateOperandDesc =
-                                   RISCV_TR("A 12 bit signed immediate"));
+                                   RISCV_TR("A 12 bit signed immediate"),
+                               int range=12, bool isSigned=true);
 
   /**
    * A convenience function for a defining a word arithmetic instruction
@@ -154,7 +157,8 @@ class InstructionContextInformation {
                                 const std::string& operationSign,
                                 const std::string& description,
                                 const std::string& specialImmediateOperandDesc =
-                                    RISCV_TR("A 12 bit signed immediate"));
+                                    RISCV_TR("A 12 bit signed immediate"),
+                                int range=12, bool isSigned=true);
 
   /**
    * A convenience function for defining a load instruction documentation
@@ -164,8 +168,7 @@ class InstructionContextInformation {
    * \param size The load size in bits
    */
   void _loadInstruction(const std::string& mnemonic,
-                        const std::string& sizeDesc,
-                        int size);
+                        const std::string& sizeDesc, int size);
 
   /**
    * A convenience function for defining a store instruction documentation
@@ -175,8 +178,7 @@ class InstructionContextInformation {
    * \param size The stored size in bits
    */
   void _storeInstruction(const std::string& mnemonic,
-                         const std::string& sizeDesc,
-                         int size);
+                         const std::string& sizeDesc, int size);
 
   /**
    * A convenience function for defining a branch instruction documentation
@@ -208,10 +210,12 @@ class InstructionContextInformation {
                      const std::string& operand2Desc,
                      const std::string& resultPart = std::string());
 
+  bool _isImmediateInstruction(const std::string& mnemonic) const;
+
   Table _table;
   /** The architecture size in bits */
   std::string _architectureSize;
   bool _is64BitArchitecture;
 };
 
-#endif// ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
+#endif  // ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP

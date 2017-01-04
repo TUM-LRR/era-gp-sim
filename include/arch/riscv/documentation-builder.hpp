@@ -32,7 +32,7 @@
  */
 class DocumentationBuilder {
  public:
-    using StringList = std::initializer_list<const std::string>;
+  using StringList = std::initializer_list<const std::string>;
 
   /**
  * A Key is the identifier for a certain component of the text.
@@ -48,7 +48,9 @@ class DocumentationBuilder {
        in some kind of pseudo-code: e.g. "rd=rs + imm" */
     SHORT_DESCRIPTION,
     /** The key for the detailed description of what the instruction does. */
-    DETAIL_DESCRIPTION
+    DETAIL_DESCRIPTION,
+
+    OPERAND_RANGE
   };
 
   /**
@@ -99,7 +101,8 @@ class DocumentationBuilder {
 
   /**
    * Convenience function for adding one operand description.
-   * The operand descriptions will be stacked so that multiple operands are supported
+   * The operand descriptions will be stacked so that multiple operands are
+   * supported
    * Note: Any literal text that is meant to be translated must be wrapped with
    * one of
    * Qts translation macros prior to this call
@@ -125,14 +128,19 @@ class DocumentationBuilder {
    * Note: Any literal text that is meant to be translated must be wrapped with
    * one of
    * Qts translation macros prior to this call
-   * \param operands A list of all operand names that this instruction takes (in the order of definition)
+   * \param operands A list of all operand names that this instruction takes (in
+   * the order of definition)
    * \return The current DocumentationBuilder for chaining convenience
    */
-  DocumentationBuilder& shortSyntax(
-      StringList operands);
+  DocumentationBuilder& shortSyntax(StringList operands);
+
+  DocumentationBuilder& operandRange(const std::string& name, int range,
+                                     bool isSigned = true);
 
  private:
-  /** A list of colors in a html compliant format. These colors are used to mark each operand in a seperate color*/
+  using TranslateablePtr = Translateable::TranslateablePtr;
+  /** A list of colors in a html compliant format. These colors are used to mark
+   * each operand in a seperate color*/
   static const std::vector<std::string> _colors;
 
   /**
@@ -140,12 +148,13 @@ class DocumentationBuilder {
    * \param key The components key
    * \param value The components value
    */
-  void _add(const Key& key, const Translateable::TranslateablePtr& value);
+  void _add(const Key& key, const TranslateablePtr& value);
 
   /**
    * Checks if the given key is available in the internal map
    * \param key
-   * \return True, if there is a component already associated with this key, otherwise false
+   * \return True, if there is a component already associated with this key,
+   * otherwise false
    */
   bool _hasKey(const Key& key) const;
 
@@ -156,14 +165,16 @@ class DocumentationBuilder {
   const std::string& _nextColor() const;
 
   /**
-   * Returns the associated Translateable if the key exists in the internal map, otherwise a Translateable of an empty string
+   * Returns the associated Translateable if the key exists in the internal map,
+   * otherwise a Translateable of an empty string
    * \param key The key of the key-value pair
    * \return
    */
-  Translateable::TranslateablePtr _optional(const Key& key);
+  TranslateablePtr _optional(const Key& key);
 
-  /** A map to store all components until building to offer arbitrary filling order */
-  std::unordered_map<Key, Translateable::TranslateablePtr, Utility::EnumHash<Key>> _components;
+  /** A map to store all components until building to offer arbitrary filling
+   * order */
+  std::unordered_map<Key, TranslateablePtr, Utility::EnumHash<Key>> _components;
 
   /** A counter, counting the amount of operands */
   size_t _operandCount;
