@@ -78,7 +78,7 @@ struct ArchCommonTestFixture : ::testing::Test {
         .wordSize(32)
         .byteSize(8)
         .endianness(ArchitectureProperties::Endianness::MIXED)
-        .alignmentBehavior(ArchitectureProperties::AlignmentBehavior::STRICT)
+        .alignmentBehavior(ArchitectureProperties::AlignmentBehavior::FORCED)
         .signedRepresentation(
             ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT);
 
@@ -283,7 +283,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   extension.byteSize(8);
   extension.endianness(ArchitectureProperties::Endianness::MIXED);
   extension.alignmentBehavior(
-      ArchitectureProperties::AlignmentBehavior::STRICT);
+      ArchitectureProperties::AlignmentBehavior::FORCED);
   extension.signedRepresentation(
       ArchitectureProperties::SignedRepresentation::TWOS_COMPLEMENT);
 
@@ -300,7 +300,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformation) {
   EXPECT_EQ(extension.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(extension.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::STRICT);
+            ArchitectureProperties::AlignmentBehavior::FORCED);
 }
 
 TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
@@ -319,7 +319,7 @@ TEST_F(ArchCommonTestFixture, TestExtensionInformationMerging) {
   EXPECT_EQ(extension.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(extension.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::STRICT);
+            ArchitectureProperties::AlignmentBehavior::FORCED);
   EXPECT_EQ(extension.getSignedRepresentation(),
             Architecture::SignedRepresentation::TWOS_COMPLEMENT);
 
@@ -350,7 +350,7 @@ TEST_F(ArchCommonTestFixture, TestArchitecture) {
   EXPECT_EQ(architecture.getEndianness(),
             ArchitectureProperties::Endianness::MIXED);
   EXPECT_EQ(architecture.getAlignmentBehavior(),
-            ArchitectureProperties::AlignmentBehavior::STRICT);
+            ArchitectureProperties::AlignmentBehavior::FORCED);
   EXPECT_EQ(architecture.getSignedRepresentation(),
             Architecture::SignedRepresentation::TWOS_COMPLEMENT);
 

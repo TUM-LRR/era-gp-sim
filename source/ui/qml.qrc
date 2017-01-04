@@ -31,6 +31,7 @@
         <file>Components/editor/MacroTriangleButton.qml</file>
         <file>Components/editor/MacroSubeditor.qml</file>
         <file>Components/Common/TextUtilities.js</file>
+        <file>Components/editor/HelpToolTip.qml</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected@2x.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon.png</file>

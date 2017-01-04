@@ -33,7 +33,7 @@
 #include "arch/common/architecture-formula.hpp"
 #include "core/memory-value.hpp"
 #include "core/project-module.hpp"
-#include "parser/final-representation.hpp"
+#include "parser/common/final-representation.hpp"
 #include "third-party/json/json.hpp"
 #include "ui/editor-component.hpp"
 #include "ui/input-button-model.hpp"
@@ -225,12 +225,10 @@ class GuiProject : QObject {
 
  private:
   /**
-   * Shows a runtime error in the ui.
-   *
-   * \param validationResult The validation result which indicated the error.
+   * Shows a runtime error in the ui
+   * \param message The translateable that contains the message
    */
-  void _throwError(const std::string& message,
-                   const std::vector<std::string>& arguments);
+  void _throwError(const Translateable& message);
 
   /**
    * \brief the module in the core
@@ -316,6 +314,11 @@ class GuiProject : QObject {
    */
   void _updateCommandList(const FinalRepresentation& finalRepresentation);
 
+  /**
+   * Slot to notify the core, part of the ui synchronization during execution.
+   */
+  void _notifyCore();
+
  signals:
   /**
    * \brief A signal to notify components that a register changed.
@@ -371,6 +374,11 @@ class GuiProject : QObject {
    * \param singleStep wether the button was runLine
    */
   void runClicked(bool isSingleStep);
+
+  /**
+   * Signal for ui synchronization during execution.
+   */
+  void guiSync();
 };
 
-#endif// ERAGPSIM_UI_GUIPROJECT_HPP
+#endif  // ERAGPSIM_UI_GUIPROJECT_HPP

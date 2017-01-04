@@ -23,7 +23,7 @@
 #include <QSyntaxHighlighter>
 #include <vector>
 
-#include "parser/syntax-information.hpp"
+#include "parser/common/syntax-information.hpp"
 #include "ui/keyword-rule.hpp"
 
 class ParserInterface;

@@ -29,9 +29,9 @@
 #include "core/servant.hpp"
 #include "core/proxy.hpp"
 #include "arch/common/architecture-formula.hpp"
-#include "parser/final-representation.hpp"
-#include "parser/parser-factory.hpp"
-#include "parser/syntax-information.hpp"
+#include "parser/common/final-representation.hpp"
+#include "parser/factory/parser-factory.hpp"
+#include "parser/common/syntax-information.hpp"
 // clang-format on
 
 class Testservant : public Servant {
@@ -89,6 +89,9 @@ class ProjectTestFixture : public ::testing::Test {
     MemoryManager memoryManager = projectModule.getMemoryManager();
     memoryManager.setErrorCallback(errorCallback);
     architectureValidator.validate();
+    CommandInterface commandInterface = projectModule.getCommandInterface();
+    commandInterface.setSyncCallback(
+        [this] { this->projectModule.guiReady(); });
   }
 
   std::size_t findNextNode(
@@ -102,7 +105,7 @@ class ProjectTestFixture : public ::testing::Test {
     }
     auto iterator = addressCommandMapValidator.find(nextInstructionAddress);
     if (iterator == addressCommandMapValidator.end()) {
-      return finalRepresentation.commandList.size();
+      return finalRepresentation.commandList().size();
     }
     return iterator->second;
   }
@@ -124,13 +127,12 @@ addi x0, x0, 0)";
   };
   std::function<void(const FinalRepresentation&)> errorListCallback =
       [this](const FinalRepresentation& finalRepresentation) {
-        std::vector<CompileError> errors = finalRepresentation.errorList;
+        std::vector<CompileError> errors = finalRepresentation.errorList().errors();
         proxy.setErrorList(errors);
       };
-  std::function<void(const std::string&, const std::vector<std::string>&)>
-      errorCallback = [this](const std::string& message,
-                             const std::vector<std::string>& arguments) {
-        std::cout << message << std::endl;
+  std::function<void(const Translateable&)>
+      errorCallback = [](const Translateable& message) {
+        std::cout << message.getBaseString() << std::endl;
         assert::gtest(false);
       };
 };
@@ -216,7 +218,7 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
   MemoryAccess memoryAccess = projectModule.getMemoryAccess();
 
   FinalRepresentation finalRepresentationValidator =
-      parserValidator->parse(testProgram, ParserMode::COMPILE);
+      parserValidator->parse(testProgram);
   auto addressCommandMapValidator =
       finalRepresentationValidator.createMapping();
 
@@ -225,16 +227,16 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
   // wait for commandInterfaceThread
   commandInterface.setBreakpoint(0).get();
 
-  EXPECT_EQ(finalRepresentationValidator.errorList.size(),
+  EXPECT_EQ(finalRepresentationValidator.errorList().size(),
             proxy.getErrorList().get().size());
-  EXPECT_EQ(0, finalRepresentationValidator.errorList.size());
+  EXPECT_EQ(0, finalRepresentationValidator.errorList().size());
 
   // test if correct values for the assembled program are written into memory
-  for (auto&& command : finalRepresentationValidator.commandList) {
-    MemoryValue assembledValidator = command.node->assemble();
+  for (auto&& command : finalRepresentationValidator.commandList()) {
+    MemoryValue assembledValidator = command.node()->assemble();
     MemoryValue assembledInMemory =
         memoryAccess
-            .getMemoryValueAt(command.address, assembledValidator.getSize() / 8)
+            .getMemoryValueAt(command.address(), assembledValidator.getSize() / 8)
             .get();
     EXPECT_EQ(assembledValidator, assembledInMemory);
   }
@@ -244,22 +246,22 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
       memoryAccess, addressCommandMapValidator, finalRepresentationValidator);
   std::size_t nextNode = firstNode;
   std::size_t lastNode = firstNode;
-  while (nextNode < finalRepresentationValidator.commandList.size()) {
-    FinalCommand& currentCommand =
-        finalRepresentationValidator.commandList.at(nextNode);
+  while (nextNode < finalRepresentationValidator.commandList().size()) {
+    const FinalCommand& currentCommand =
+        finalRepresentationValidator.commandList().at(nextNode);
     memoryAccess.putRegisterValue("pc",
-                                  currentCommand.node->getValue(memoryAccess));
+                                  currentCommand.node()->getValue(memoryAccess));
     nextNode = findNextNode(
         memoryAccess, addressCommandMapValidator, finalRepresentationValidator);
     commandInterface.executeNextLine();
     // sync with other thread
     commandInterface.setBreakpoint(0).get();
 
-    if (nextNode < finalRepresentationValidator.commandList.size()) {
+    if (nextNode < finalRepresentationValidator.commandList().size()) {
       lastNode = nextNode;
-      FinalCommand& nextCommand =
-          finalRepresentationValidator.commandList.at(nextNode);
-      // EXPECT_EQ(nextCommand.position.lineStart, proxy.getLine().get());
+      const FinalCommand& nextCommand =
+          finalRepresentationValidator.commandList().at(nextNode);
+      // EXPECT_EQ(nextCommand.position.startLine(), proxy.getLine().get());
     }
   }
   commandInterface.setExecutionPoint(1);

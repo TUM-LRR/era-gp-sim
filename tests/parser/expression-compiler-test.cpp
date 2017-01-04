@@ -18,26 +18,30 @@
 
 #include "common/utility.hpp"
 #include "gtest/gtest.h"
-#include "parser/expression-compiler-clike.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/independent/expression-compiler-clike.hpp"
+#include "parser/independent/positioned-string.hpp"
+#define ZP(x) PositionedString(x)
 
 // Passing test case.
 #define TEST_CASE_P(expr)                                            \
   {                                                                  \
-    CompileState state;                                              \
+    CompileErrorList errors;                                         \
     int output = CLikeExpressionCompilers::CLikeCompilerI32.compile( \
-        STRINGIFY(expr), state);                                     \
+        ZP(STRINGIFY(expr)), SymbolReplacer(), errors);              \
     int expected = (expr);                                           \
     ASSERT_EQ(output, expected);                                     \
-    ASSERT_TRUE(state.errorList.empty());                            \
+    ASSERT_TRUE(errors.empty());                                     \
   }
 
 // Failing test case.
-#define TEST_CASE_E(expr)                                                \
-  {                                                                      \
-    CompileState state;                                                  \
-    int output =                                                         \
-        CLikeExpressionCompilers::CLikeCompilerI32.compile(expr, state); \
-    ASSERT_TRUE(!state.errorList.empty());                               \
+#define TEST_CASE_E(expr)                                            \
+  {                                                                  \
+    CompileErrorList errors;                                         \
+    int output = CLikeExpressionCompilers::CLikeCompilerI32.compile( \
+        ZP(expr), SymbolReplacer(), errors);                         \
+    ASSERT_TRUE(!errors.empty());                                    \
   }
 
 // We need to surpass some warnings, b/c we intentionally want to use

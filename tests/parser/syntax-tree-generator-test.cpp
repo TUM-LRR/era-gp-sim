@@ -19,18 +19,23 @@
 #include <memory>
 #include <vector>
 
-#include "gtest/gtest.h"
-
 #include "arch/common/architecture-formula.hpp"
 #include "arch/common/architecture.hpp"
 #include "arch/common/immediate-node.hpp"
 #include "arch/common/node-factory-collection-maker.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "arch/riscv/register-node.hpp"
+#include "common/utility.hpp"
 #include "core/project-module.hpp"
-#include "parser/compile-state.hpp"
-#include "parser/riscv-parser.hpp"
-#include "parser/syntax-tree-generator.hpp"
+#include "gtest/gtest.h"
+#include "gtest/gtest.h"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/independent/positioned-string.hpp"
+#include "parser/independent/symbol-replacer.hpp"
+#include "parser/independent/syntax-tree-generator.hpp"
+#include "parser/riscv/riscv-parser.hpp"
+#define ZP(x) PositionedString(x, CodePositionInterval())
 
 
 static SyntaxTreeGenerator buildGenerator() {
@@ -43,61 +48,57 @@ static SyntaxTreeGenerator buildGenerator() {
   return generator;
 }
 
-template <typename SubType, typename BaseType>
-bool isInstance(const std::shared_ptr<BaseType>& ptr) {
-  return static_cast<SubType*>(ptr.get()) != nullptr;
-}
-
 TEST(SyntaxTreeGenerator, init) {
   buildGenerator();
 }
 
 TEST(SyntaxTreeGenerator, instantiateArgumentNumberNode) {
   auto generator = buildGenerator();
-  CompileState state;
-  auto output = generator.transformOperand("1234", state);
-  ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<ImmediateNode>(output)));
+  CompileErrorList errors;
+  auto output =
+      generator.transformOperand(ZP("1234"), SymbolReplacer(), errors);
+  ASSERT_EQ(errors.size(), 0);
+  ASSERT_TRUE((Utility::isInstance<ImmediateNode>(output)));
 }
 
 TEST(SyntaxTreeGenerator, instantiateArgumentRegisterNode) {
   auto generator = buildGenerator();
-  CompileState state;
-  auto output = generator.transformOperand("x18", state);
-  ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<riscv::RegisterNode>(output)));
+  CompileErrorList errors;
+  auto output = generator.transformOperand(ZP("x18"), SymbolReplacer(), errors);
+  ASSERT_EQ(errors.size(), 0);
+  ASSERT_TRUE((Utility::isInstance<riscv::RegisterNode>(output)));
 }
 
 TEST(SyntaxTreeGenerator, instantiateCommandNode) {
   auto generator = buildGenerator();
-  CompileState state;
+  CompileErrorList errors;
 
-  auto arg1 = generator.transformOperand("x1", state);
-  ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
+  auto arg1 = generator.transformOperand(ZP("x1"), SymbolReplacer(), errors);
+  ASSERT_EQ(errors.size(), 0);
+  ASSERT_TRUE((Utility::isInstance<riscv::RegisterNode>(arg1)));
 
-  auto arg2 = generator.transformOperand("x1", state);
-  ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg1)));
+  auto arg2 = generator.transformOperand(ZP("x1"), SymbolReplacer(), errors);
+  ASSERT_EQ(errors.size(), 0);
+  ASSERT_TRUE((Utility::isInstance<riscv::RegisterNode>(arg1)));
 
-  auto arg3 = generator.transformOperand("x2", state);
-  ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<riscv::RegisterNode>(arg2)));
+  auto arg3 = generator.transformOperand(ZP("x2"), SymbolReplacer(), errors);
+  ASSERT_EQ(errors.size(), 0);
+  ASSERT_TRUE((Utility::isInstance<riscv::RegisterNode>(arg2)));
 
   std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> sources;
-  sources.push_back(std::move(arg1));
-  sources.push_back(std::move(arg2));
+  sources.emplace_back(arg1);
+  sources.emplace_back(arg2);
 
   std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> targets;
-  targets.push_back(std::move(arg3));
+  targets.emplace_back(arg3);
 
   ProjectModule projectModule(
       ArchitectureFormula{"riscv", {"rv32i"}}, 4096, "riscv");
   auto memoryAccess = projectModule.getMemoryAccess();
 
-  auto output =
-      generator.transformCommand("add", sources, targets, state, memoryAccess);
+  auto output = generator.transformCommand(
+      ZP("add"), sources, targets, errors, memoryAccess);
 
-  ASSERT_EQ(state.errorList.size(), 0);
-  ASSERT_TRUE((isInstance<riscv::InstructionNode>(output)));
+  ASSERT_EQ(errors.size(), 0);
+  ASSERT_TRUE((Utility::isInstance<riscv::InstructionNode>(output)));
 }
