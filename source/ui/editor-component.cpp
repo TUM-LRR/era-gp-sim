@@ -58,6 +58,16 @@ void EditorComponent::init(QQuickTextDocument *qDocument) {
       (std::make_unique<SyntaxHighlighter>(_parserInterface, _textDocument));
 }
 
+void EditorComponent::addSecondarySyntaxHighlighter(
+    QQuickTextDocument *qDocument) {
+  _secondaryHighlighters.push_back(std::make_unique<SyntaxHighlighter>(
+      _parserInterface, qDocument->textDocument()));
+}
+
+void EditorComponent::deleteSecondarySyntaxHighlighters() {
+  _secondaryHighlighters.clear();
+}
+
 void EditorComponent::parse(bool force) {
   if (_textChanged || force) {
     _commandInterface.parse(_textDocument->toPlainText().toStdString());

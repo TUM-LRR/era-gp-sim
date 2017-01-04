@@ -60,6 +60,21 @@ class EditorComponent : public QObject {
   Q_INVOKABLE void init(QQuickTextDocument *qDocument);
 
   /**
+    \brief Creates a new secondary syntax highlighter and adds it to
+    _secondarySyntaxHighlighters. Secondary syntax highlighters are used to
+    highlight content of macro subeditors.
+    \param qDocument Text document to be highlighted by the syntax highlighter.
+    Belongs to the corresponding subeditor.
+    */
+  Q_INVOKABLE void addSecondarySyntaxHighlighter(QQuickTextDocument *qDocument);
+
+  /**
+    Destroys all secondary syntax highlighters and removes them from
+    _secondarySyntaxHighlighters.
+    */
+  Q_INVOKABLE void deleteSecondarySyntaxHighlighters();
+
+  /**
    * Invokes the parser with the current text of the editor.
    *
    * \param force Set to true to force reparsing even if the code did not
@@ -134,6 +149,10 @@ class EditorComponent : public QObject {
   /** The syntax Highlighter of this editor. Is initialized in the init()
    * method. */
   std::unique_ptr<SyntaxHighlighter> _highlighter;
+
+  /** Syntax Highlighter of macro subeditors. New syntax highlighters
+   * added through addSecondarySyntaxHighlighter method. */
+  std::vector<std::unique_ptr<SyntaxHighlighter>> _secondaryHighlighters;
 
   /** The command interface of the core */
   CommandInterface _commandInterface;

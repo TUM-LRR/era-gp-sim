@@ -86,6 +86,22 @@ Item {
         readOnly: true
         textMargin: 2
         color: "#4A4A4A"
+
+        Component.onCompleted: {
+            // Add syntax highlighter that highlights the textEdit's text document.
+            editor.addSecondarySyntaxHighlighter(macroTextEdit.textDocument);
+        }
+
+        // Destroy all secondary syntax highlighter in EditorComponent to prevent them
+        // from accessing an already destroyed text area text document (would cause
+        // segmentation fault on program end) and to prevent the number of highlighters
+        // from growing monotonically without ever being reduced.
+        Component.onDestruction: {
+            // All secondary syntax highlighters can be destroyed at once, as MacroSubeditors
+            // are always destroyed at once, therefore leaving no highlighter behind being
+            // unhighlighted.
+            editor.deleteSecondarySyntaxHighlighters();
+        }
     }
 
 }
