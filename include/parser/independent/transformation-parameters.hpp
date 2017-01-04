@@ -24,7 +24,6 @@
 #include "parser/independent/memory-allocator.hpp"
 #include "parser/independent/syntax-tree-generator.hpp"
 
-
 /**
  * A collection of some constant parameters which are used during
  * transforming the command sequence to a FinalRepresentation with an

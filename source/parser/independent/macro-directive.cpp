@@ -18,6 +18,11 @@
 */
 
 #include "parser/independent/macro-directive.hpp"
+
+#include <cstddef>
+#include <string>
+#include <utility>
+
 #include "common/utility.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/intermediate-instruction.hpp"

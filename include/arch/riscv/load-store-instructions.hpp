@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_
-#define ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_
+#ifndef ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP
+#define ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP
 
 #include <QtGlobal>
 #include <string>
@@ -161,13 +161,13 @@ class LoadInstructionNode
   /* The different types of a load instruction. See RISC V specification
      for reference.*/
   enum struct Type {
-    DOUBLE_WORD,       // LD (Only in RVI64)
-    WORD,              // LW
-    WORD_UNSIGNED,     // LWU (Only in RVI64)
-    HALF_WORD,         // LH
-    HALF_WORD_UNSIGNED,// LHU
-    BYTE,              // LB
-    BYTE_UNSIGNED      // LBU
+    DOUBLE_WORD,         // LD (Only in RVI64)
+    WORD,                // LW
+    WORD_UNSIGNED,       // LWU (Only in RVI64)
+    HALF_WORD,           // LH
+    HALF_WORD_UNSIGNED,  // LHU
+    BYTE,                // LB
+    BYTE_UNSIGNED        // LBU
   };
 
   LoadInstructionNode(const InstructionInformation& instructionInformation,
@@ -314,10 +314,10 @@ class StoreInstructionNode
   /* The different types of a store instruction. See RISC V specification
      for reference. */
   enum struct Type {
-    DOUBLE_WORD,// SD (Only in RVI64)
-    WORD,       // SW
-    HALF_WORD,  // SH
-    BYTE        // SB
+    DOUBLE_WORD,  // SD (Only in RVI64)
+    WORD,         // SW
+    HALF_WORD,    // SH
+    BYTE          // SB
   };
 
   StoreInstructionNode(const InstructionInformation& instructionInformation,
@@ -367,4 +367,4 @@ class StoreInstructionNode
 };
 }
 
-#endif /* ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_ */
+#endif /* ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP */

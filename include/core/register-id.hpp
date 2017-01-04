@@ -16,8 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_REGISTERID_HPP_
-#define ERAGPSIM_CORE_REGISTERID_HPP_
+#ifndef ERAGPSIM_CORE_REGISTERID_HPP
+#define ERAGPSIM_CORE_REGISTERID_HPP
 
 // The information to uniquely identify a register
 struct RegisterID {
@@ -78,4 +78,4 @@ struct RegisterID {
   ~RegisterID() = default;
 };
 
-#endif// ERAGPSIM_CORE_REGISTERID_HPP_
+#endif// ERAGPSIM_CORE_REGISTERID_HPP

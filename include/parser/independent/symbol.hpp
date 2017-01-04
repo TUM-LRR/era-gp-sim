@@ -22,13 +22,13 @@
 
 #include <regex>
 #include <string>
+
 #include "parser/independent/positioned-string.hpp"
 
 /**
  * Denotes the behavior of a symbol.
  */
 enum class SymbolBehavior {
-
   /**
    * The symbol value never changes, i.e. we can optimize with it.
    */

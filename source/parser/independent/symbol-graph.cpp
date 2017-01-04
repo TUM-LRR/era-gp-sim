@@ -18,7 +18,13 @@
 */
 
 #include "parser/independent/symbol-graph.hpp"
+
+#include <cstddef>
+#include <stack>
+#include <string>
 #include <unordered_map>
+#include <vector>
+
 #include "common/assert.hpp"
 #include "common/utility.hpp"
 #include "parser/independent/positioned-string.hpp"
@@ -227,7 +233,7 @@ checkSymbolNames(const std::vector<SymbolGraph::SymbolNode>& nodes) {
   }
   return invalidNames;
 }
-};
+}  // namespace
 
 SymbolGraphEvaluation SymbolGraph::evaluate() const {
   // For evaluation, just check everything (invalid names, duplicates, cycles).

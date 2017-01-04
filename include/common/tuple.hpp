@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_COMMON_TUPLE_HPP_
-#define ERAGPSIM_COMMON_TUPLE_HPP_
+#ifndef ERAGPSIM_COMMON_TUPLE_HPP
+#define ERAGPSIM_COMMON_TUPLE_HPP
 
 #if __cpp_lib_apply >= 201603
 #include <tuple>
@@ -68,4 +68,4 @@ constexpr decltype(auto) apply(F&& f, Tuple&& t) {
 #endif
 }
 
-#endif /* ERAGPSIM_COMMON_TUPLE_HPP_ */
+#endif /* ERAGPSIM_COMMON_TUPLE_HPP */

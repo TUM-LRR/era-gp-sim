@@ -18,6 +18,10 @@
 */
 
 #include "parser/independent/symbol-graph-evaluation.hpp"
+
+#include <cstddef>
+#include <vector>
+
 #include "common/assert.hpp"
 
 // Parametrized constructor.

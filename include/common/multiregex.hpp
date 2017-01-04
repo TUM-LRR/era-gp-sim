@@ -195,12 +195,9 @@ class Multiregex {
       for (auto i : Utility::range<size_t>(_baseGroup + 1, match.size())) {
         if ((size_t)match.length(i) == targetLength) {
           // Found one. We set our multimatch and return it.
-          assert::that(_choice.find(i) !=
-                       _choice.end());  //(this should actually
-                                        // never fail, only if
-          // something in this
-          // implementation has
-          // gone wrong)
+          // (this should actually never fail, only if something in this
+          // implementation has gone wrong)
+          assert::that(_choice.find(i) != _choice.end());
           multimatch = MultiregexMatch<CharType>(
               data, match.position(0), match.length(0), _choice.at(i));
           return true;

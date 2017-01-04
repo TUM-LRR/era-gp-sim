@@ -20,7 +20,9 @@
 #ifndef ERAGPSIM_PARSER_INDEPENDENT_MACRO_DIRECTIVE_HPP
 #define ERAGPSIM_PARSER_INDEPENDENT_MACRO_DIRECTIVE_HPP
 
+#include <cstddef>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "common/optional.hpp"
@@ -156,11 +158,11 @@ class MacroDirective : public IntermediateDirective {
                     PositionedStringVector::const_iterator end);
 
     /**
-* Creates a new `MacroParameters` class from the given vector.
-*
-* \param arguments The given vector.
-*/
-    MacroParameters(const PositionedStringVector& arguments);
+     * Creates a new `MacroParameters` class from the given vector.
+     *
+     * \param arguments The given vector.
+     */
+    explicit MacroParameters(const PositionedStringVector& arguments);
 
     /**
      * Validates the macro parameters.

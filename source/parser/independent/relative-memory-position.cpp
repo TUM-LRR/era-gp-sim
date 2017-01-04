@@ -19,6 +19,9 @@
 
 #include "parser/independent/relative-memory-position.hpp"
 
+#include <cstddef>
+#include <string>
+
 RelativeMemoryPosition::RelativeMemoryPosition(const std::string& section,
                                                size_t offset)
 : _section(section), _offset(offset) {

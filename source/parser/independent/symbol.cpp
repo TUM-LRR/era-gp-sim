@@ -18,6 +18,10 @@
 */
 
 #include "parser/independent/symbol.hpp"
+
+#include <regex>
+#include <string>
+
 #include "common/assert.hpp"
 
 // Some testing regexes.

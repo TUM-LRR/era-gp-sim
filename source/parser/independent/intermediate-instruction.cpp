@@ -16,6 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "parser/independent/intermediate-instruction.hpp"
+
+#include <cstddef>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -31,7 +35,6 @@
 #include "parser/common/final-representation.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 #include "parser/independent/execute-immutable-arguments.hpp"
-#include "parser/independent/intermediate-instruction.hpp"
 #include "parser/independent/macro-directive.hpp"
 #include "parser/independent/positioned-string.hpp"
 #include "parser/independent/preprocessing-immutable-arguments.hpp"
@@ -198,7 +201,8 @@ void replaceInVector(PositionedStringVector& vector,
     vector[i] = PositionedString(str, vector[i].positionInterval());
   }
 }
-};
+}  // namespace
+
 void IntermediateInstruction::insertIntoArguments(
     const PositionedString& name, const PositionedString& value) {
   replaceInVector(_sources, name, value);

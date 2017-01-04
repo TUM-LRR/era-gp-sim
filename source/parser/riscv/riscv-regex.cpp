@@ -19,6 +19,9 @@
 #include "parser/riscv/riscv-regex.hpp"
 
 #include <cctype>
+#include <cstddef>
+#include <string>
+
 #include "common/assert.hpp"
 #include "parser/common/compile-error-list.hpp"
 

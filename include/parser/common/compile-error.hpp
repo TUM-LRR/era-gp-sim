@@ -24,10 +24,10 @@
 #include <string>
 #include <vector>
 
-class Translateable;
-
 #include "parser/common/code-position-interval.hpp"
 #include "parser/common/compile-error-severity.hpp"
+
+class Translateable;
 
 /**
  * Represents a mistake the compiler noticed.

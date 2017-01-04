@@ -21,9 +21,13 @@
 #define ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_PARSER_HPP
 
 #include <algorithm>
+#include <cstddef>
 #include <regex>
 #include <stack>
+#include <string>
 #include <unordered_map>
+#include <vector>
+
 #include "common/assert.hpp"
 #include "common/multiregex.hpp"
 #include "common/translateable.hpp"
@@ -99,7 +103,7 @@ class ExpressionParser {
    *
    * \param definition The supplied parser definition.
    */
-  ExpressionParser(const ExpressionParserDefinition<T>& definition)
+  explicit ExpressionParser(const ExpressionParserDefinition<T>& definition)
       // Setting up literal decoders.
       : _literalDecodeRegex(setupLiteralDecoders(definition)) {
     // Binary and unary operators are inserted in their corresponding maps.
@@ -276,7 +280,7 @@ class ExpressionParser {
       return false;
     }
 
-    //...and push our operator on it.
+    // ...and push our operator on it.
     state.operatorStack.push(token);
     return true;
   }

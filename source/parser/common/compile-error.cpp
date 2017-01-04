@@ -18,6 +18,7 @@
 */
 
 #include "parser/common/compile-error.hpp"
+
 #include "common/assert.hpp"
 #include "common/translateable.hpp"
 

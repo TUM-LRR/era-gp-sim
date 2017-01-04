@@ -21,10 +21,12 @@
 #define ERAGPSIM_PARSER_INDEPENDENT_STRING_PARSER_HPP
 
 #include <algorithm>
+#include <cstddef>
 #include <functional>
 #include <string>
 #include <unordered_map>
 #include <vector>
+
 #include "common/translateable.hpp"
 #include "common/utility.hpp"
 #include "parser/common/compile-error-list.hpp"
@@ -123,7 +125,7 @@ class StringParserEngine {
       return false;
     }
 
-    //...and the end.
+    // ...and the end.
     if (string[string.size() - 1] != separator) {
       invokeError(string.size() - 1,
                   inputString,
@@ -459,7 +461,7 @@ class StringParserEngine {
 
     size_t startIndex = index;
     auto chr = string[index];
-    char cchr = (char)chr;
+    char cchr = static_cast<char>(chr);
 
     int match = parseOneByteEscapeSequence(cchr);
     if (match != -1) {
@@ -685,6 +687,6 @@ static bool parseCharacter(const PositionedBasicString<CharT>& inputString,
 
   return index == string.size() - 1;
 }
-};
+}  // namespace StringParser
 
 #endif /* ERAGPSIM_PARSER_INDEPENDENT_STRING_PARSER_HPP */

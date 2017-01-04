@@ -21,8 +21,10 @@
 #define ERAGPSIM_PARSER_INDEPENDENT_POSITIONED_STRING_HPP
 
 #include <algorithm>
+#include <cstddef>
 #include <string>
 #include <vector>
+
 #include "common/assert.hpp"
 #include "common/utility.hpp"
 #include "parser/common/code-position-interval.hpp"

@@ -19,6 +19,8 @@
 
 #include "parser/common/code-position-interval.hpp"
 
+#include <vector>
+
 CodePositionInterval::CodePositionInterval(CodePosition start, CodePosition end)
 : _codePositionStart(start), _codePositionEnd(end) {
 }

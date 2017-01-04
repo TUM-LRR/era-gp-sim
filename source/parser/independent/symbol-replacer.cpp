@@ -18,6 +18,12 @@
 */
 
 #include "parser/independent/symbol-replacer.hpp"
+
+#include <cstddef>
+#include <regex>
+#include <string>
+#include <vector>
+
 #include "common/assert.hpp"
 #include "common/utility.hpp"
 #include "parser/common/compile-error-list.hpp"
@@ -40,7 +46,7 @@ MSRegex constructSymbolRegex(const std::vector<Symbol>& symbols) {
   }
   return MSRegex("\\b", "\\b", names, std::regex::optimize);
 }
-};
+}  // namespace
 
 // Some constructors.
 

@@ -19,10 +19,17 @@
 
 #include "parser/riscv/riscv-directive-factory.hpp"
 
-#include "parser/independent/intermediate-representator.hpp"
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/constant-directive.hpp"
+#include "parser/independent/expression-compiler-clike.hpp"
+#include "parser/independent/expression-compiler.hpp"
+#include "parser/independent/intermediate-representator.hpp"
 #include "parser/independent/macro-directive.hpp"
 #include "parser/independent/macro-end-directive.hpp"
 #include "parser/independent/memory-definition-directive.hpp"
@@ -40,6 +47,10 @@ DirectivePtr createInternal(const CodePositionInterval &positionInterval,
   return std::make_shared<T>(positionInterval, labels, name, arguments);
 }
 
+template <typename T>
+const ExpressionCompiler<T>
+    _expressionCompiler = CLikeExpressionCompilers::createCLikeCompiler<T>();
+
 // Function for `createMemoryDefinitionDirective`
 template <typename T>
 const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
@@ -50,8 +61,8 @@ const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
            CompileErrorList &errors,
            const std::function<void(T, std::size_t)> &handler) -> std::size_t {
   std::size_t currentPosition = 0;
-  ExpressionCompiler<T> compiler =
-      CLikeExpressionCompilers::createCLikeCompiler<T>();
+
+  const auto &compiler = _expressionCompiler<T>;
 
   for (const auto &value : values) {
     if (value.string().empty()) {
@@ -122,7 +133,7 @@ createMemoryReservationDirective(const CodePositionInterval &positionInterval,
       _memoryReservationArgumentCompile,
       cellSize);
 }
-};
+}  // namespace
 
 const std::unordered_map<
     std::string,

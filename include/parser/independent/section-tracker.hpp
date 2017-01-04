@@ -36,7 +36,7 @@ class SectionTracker {
   /**
    * Creates a new section tracker with the specified start section.
    */
-  SectionTracker(const std::string& startSection);
+  explicit SectionTracker(const std::string& startSection);
 
   /**
    * Sets the section of this section tracker.

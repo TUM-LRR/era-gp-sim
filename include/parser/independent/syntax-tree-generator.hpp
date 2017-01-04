@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_PARSER_INDEPENDENT_SYNTAX_TREE_GENERATOR_HPP
 #define ERAGPSIM_PARSER_INDEPENDENT_SYNTAX_TREE_GENERATOR_HPP
 
+#include <cstddef>
 #include <functional>
 #include <memory>
 #include <vector>

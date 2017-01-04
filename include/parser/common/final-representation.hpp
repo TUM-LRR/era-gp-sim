@@ -19,9 +19,11 @@
 #ifndef ERAGPSIM_PARSER_COMMON_FINAL_REPRESENTATION_HPP
 #define ERAGPSIM_PARSER_COMMON_FINAL_REPRESENTATION_HPP
 
+#include <cstddef>
 #include <memory>
 #include <unordered_map>
 #include <vector>
+
 #include "parser/common/compile-error-list.hpp"
 #include "parser/common/compile-error.hpp"
 #include "parser/common/final-command.hpp"

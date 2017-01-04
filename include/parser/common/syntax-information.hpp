@@ -21,6 +21,7 @@
 #define ERAGPSIM_PARSER_COMMON_SYNTAX_INFORMATION_HPP
 
 #include <string>
+#include <utility>
 #include <vector>
 
 /**

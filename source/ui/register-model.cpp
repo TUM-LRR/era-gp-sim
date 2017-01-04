@@ -24,7 +24,6 @@
 #include "core/memory-manager.hpp"
 #include "core/memory-value.hpp"
 
-
 const std::map<QByteArray, RegisterModel::MemoryValueToStringConversion>
     RegisterModel::_memoryValueToStringConversions = {
         {"BinaryData", StringConversions::toBinString},
@@ -129,8 +128,7 @@ QVariant RegisterModel::data(const QModelIndex &index, int role) const {
         case RegisterInformation::Type::PROGRAM_COUNTER:
           return "ProgramCounter";
       }
-    case IsConstantRole:
-      return registerItem->isConstant();
+    case IsConstantRole: return registerItem->isConstant();
     case FlagDataRole:
       return _memoryAccess.getRegisterValue(registerItem->getName())
           .get()
@@ -238,7 +236,7 @@ void RegisterModel::registerContentChanged(const QModelIndex &index,
   if (registerContentMemoryValue) {
     _memoryAccess.setRegisterValue(registerItem->getName(),
                                    *registerContentMemoryValue);
-  } else {// If conversion was unsuccessful, return empty MemoryValue.
+  } else {  // If conversion was unsuccessful, return empty MemoryValue.
     _memoryAccess.setRegisterValue(registerItem->getName(),
                                    MemoryValue(registerItem->getSize()));
   }
