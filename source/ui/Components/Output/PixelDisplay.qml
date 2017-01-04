@@ -138,7 +138,7 @@ Item {
 
                 ComboBox {
                     id: colorModeComboBox
-                    model: [ "Monochrome", "RGB" ]
+                    model: [ "RGB", "Monochrome",]
                     // onAccepted: {processInput();}
                     // onActivated: { processInput(); }
                     function processInput() {
