@@ -22,7 +22,6 @@ import QtQuick.Controls 1.5
 import QtQuick.Dialogs 1.2
 import "../Common"
 import "../Common/TextUtilities.js" as TextUtilities
-import ClipboardAdapter 1.0
 
 //decorates a Flickable with Scrollbars
 ScrollView {

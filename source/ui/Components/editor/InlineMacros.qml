@@ -3,7 +3,6 @@ import QtQuick.Controls 1.5
 import QtQuick.Dialogs 1.2
 import "../Common"
 import "../Common/TextUtilities.js" as TextUtilities
-import ClipboardAdapter 1.0
 
 Item {
     id: inlineMacros
@@ -364,37 +363,6 @@ Item {
                 textArea.cursorPosition = newPosition;
             }
             previousCursorPosition = textArea.cursorPosition;
-        }
-    }
-
-
-    // Text can be selected as always, however the blank lines inserted for macro expansions
-    // should be removed when copied. This can be done through the
-    // ClipboardAdapter (Clipboard cannot be accessed via QML directly).
-    ClipboardAdapter {
-        id: clipboard
-        // Prevents loop, as clipboard is edited inside onDataChanged.
-        property var shouldUpdateClipboardText: true
-        // Edit copied text when clipboard data changed.
-        onDataChanged: {
-            // Prevent loop.
-            if (shouldUpdateClipboardText && clipboard.text() === textArea.selectedText) {
-                shouldUpdateClipboardText = false;
-                // Remove any blank lines of macro expansions.
-                var alteredText = clipboard.text();
-                var selectionStartLine = TextUtilities.getLineNumberForPosition(alteredText, textArea.selectionStart);
-                for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
-                    var macro = macros[macroIndex];
-                    if (macro["collapsed"] === false) {
-                        // Calculate where the blank lines start and end, and remove the text inbetween.
-                        var blankStart = TextUtilities.getLineStartForLine(alteredText, (Number(macro["startLine"])+1-selectionStartLine));
-                        var blankEnd = TextUtilities.getLineStartForLine(alteredText, (Number(macro["startLine"])+1-selectionStartLine+Number(macro["lineCount"])));
-                        alteredText = [alteredText.slice(0, blankStart), alteredText.slice(blankEnd)].join('')
-                    }
-                }
-                clipboard.setText(alteredText);
-                shouldUpdateClipboardText = true;
-            }
         }
     }
 }
