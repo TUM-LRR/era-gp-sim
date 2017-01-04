@@ -16,8 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_DESERIALIZATION_ERROR_HPP_
-#define ERAGPSIM_CORE_DESERIALIZATION_ERROR_HPP_
+#ifndef ERAGPSIM_CORE_DESERIALIZATION_ERROR_HPP
+#define ERAGPSIM_CORE_DESERIALIZATION_ERROR_HPP
 
 #include <stdexcept>
 #include <string>
@@ -42,4 +42,4 @@ struct DeserializationError : public std::runtime_error {
   }
 };
 
-#endif// ERAGPSIM_CORE_DESERIALIZATION_ERROR_HPP_
+#endif// ERAGPSIM_CORE_DESERIALIZATION_ERROR_HPP

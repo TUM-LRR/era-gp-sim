@@ -111,6 +111,29 @@ class AbstractSyntaxTreeNode {
    *
    * \param node The node to be added.
    */
+  virtual void addChild(const Node& node);
+
+  /**
+   * Inserts the the child node at the given index.
+   *
+   * \param index The index to insert at.
+   * \param node The child node to insert.
+   */
+  virtual void insertChild(size_t index, const Node& node);
+
+  /**
+   * Sets a child to a new node.
+   *
+   * \param index The index of the child to re-assign.
+   * \param node The new node to assign to the child at the given index.
+   */
+  virtual void setChild(size_t index, const Node& node);
+
+  /**
+   * Appends a child to the node.
+   *
+   * \param node The node to be added.
+   */
   virtual void addChild(Node&& node);
 
   /**

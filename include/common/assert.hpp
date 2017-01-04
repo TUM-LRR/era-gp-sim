@@ -128,4 +128,4 @@ inline void unicorn() {
 #endif
 }
 
-#endif /* ERAGPSIM_COMMON_ASSERT_HPP_ */
+#endif /* ERAGPSIM_COMMON_ASSERT_HPP */

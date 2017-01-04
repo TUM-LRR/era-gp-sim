@@ -116,7 +116,7 @@ struct LazyRange {
   LazyRange(const T &start, const T &end, const T &step)
   : _start(start), _end(end), _step(step) {
     // Check that we wouldn't iterate forever
-    assert::that(((end - start) / step) > 0);
+    assert::that(((end - start) / step) >= 0);
 
     // Round up to the next multiple of the step
     _end = (end + step - 1) - ((end + step - 1) % step);
@@ -499,25 +499,63 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
   return binary;
 }
 
+// push_back n elements from the end of the src vector
+void pushBackFromEnd(std::vector<bool> &dest,
+                     const std::vector<bool> &src,
+                     size_t n);
+
+template <typename T>
+struct IterableRevert {
+  T &iterable;
+  auto begin() {
+    return iterable.rbegin();
+  }
+
+  auto end() {
+    return iterable.rend();
+  }
+
+  IterableRevert(T &iterable) : iterable(iterable) {
+  }
+};
+
+template <typename T>
+IterableRevert<T> revertIterable(T &iterable) {
+  return IterableRevert<T>(iterable);
+}
+
+
 template <typename T, typename S = T>
-constexpr T divideCeiling(T value, S divider) {
+constexpr auto divideCeiling(const T &value, const S &divider) {
   return (value + divider - 1) / divider;
 }
 
 // Only for completeness.
 template <typename T, typename S = T>
-constexpr T divideFloor(T value, S divider) {
+constexpr auto divideFloor(const T &value, const S &divider) {
   return value / divider;
 }
 
 template <typename T, typename S = T>
-constexpr T discreteCeiling(T value, S divider) {
+constexpr auto discreteCeiling(const T &value, const S &divider) {
   return divideCeiling(value, divider) * divider;
 }
 
 template <typename T, typename S = T>
-constexpr T discreteFloor(T value, S divider) {
+constexpr auto discreteFloor(const T &value, const S &divider) {
   return divideFloor(value, divider) * divider;
+}
+/**
+ * \brief roundToBoundary Rounds a given value up to a multiple of the
+ * given boundary.
+ * \param value Value to be rounded.
+ * \param boundary The value is rounded up to a multiple of the
+ * boundary.
+ * \return The rounded value.
+ */
+template <typename T>
+T roundToBoundary(const T &value, const T &boundary) {
+  return discreteCeiling(value, boundary);
 }
 
 template <typename Enum, typename = std::enable_if_t<std::is_enum<Enum>::value>>
@@ -606,6 +644,21 @@ template <typename T>
 constexpr T mostSignificantBit(const T &value) {
   constexpr auto width = sizeof(T) * 8;
   return value & (T(1) << (width - 1));
+}
+
+template <typename SubType, typename BaseType>
+bool isInstance(const BaseType *ptr) {
+  return static_cast<SubType *>(ptr) != nullptr;
+}
+
+template <typename SubType, typename BaseType>
+bool isInstance(const std::shared_ptr<BaseType> &ptr) {
+  return static_cast<SubType *>(ptr.get()) != nullptr;
+}
+
+template <typename SubType, typename BaseType>
+bool isInstance(const std::unique_ptr<BaseType> &ptr) {
+  return static_cast<SubType *>(ptr.get()) != nullptr;
 }
 }
 
