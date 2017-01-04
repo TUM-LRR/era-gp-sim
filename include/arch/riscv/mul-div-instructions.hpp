@@ -48,9 +48,9 @@ class WordableIntegerInstruction
  */
   WordableIntegerInstruction(const InstructionInformation& info,
                              bool isWordInstruction)
-      : AbstractIntegerInstructionNode<SizeType>(info,
-                                                 super::Operands::REGISTERS),
-        _isWordInstruction(isWordInstruction) {}
+  : AbstractIntegerInstructionNode<SizeType>(info, super::Operands::REGISTERS)
+  , _isWordInstruction(isWordInstruction) {
+  }
 
   /** default destructor */
   virtual ~WordableIntegerInstruction() = default;
@@ -99,7 +99,9 @@ class WordableIntegerInstruction
   /**
    * \return true, if this instruction is a word instruction; false, if not
    */
-  bool isWordInstruction() const noexcept { return _isWordInstruction; }
+  bool isWordInstruction() const noexcept {
+    return _isWordInstruction;
+  }
 
  private:
   /** and-bitmask for retrieving the sign bit of a SizeType-ranged value*/
@@ -165,10 +167,11 @@ class MultiplicationInstruction : public WordableIntegerInstruction<SizeType> {
    */
   MultiplicationInstruction(const InstructionInformation& info,
                             MultiplicationResultPart partOfResultReturned,
-                            Type type, bool isWord = false)
-      : WordableIntegerInstruction<SizeType>(info, isWord),
-        _usePart(partOfResultReturned),
-        _type(type) {
+                            Type type,
+                            bool isWord = false)
+  : WordableIntegerInstruction<SizeType>(info, isWord)
+  , _usePart(partOfResultReturned)
+  , _type(type) {
     // assert that SizeType is an unsigned integer type
     assert::that(SizeType(0) - 1 >= 0);
   }
@@ -248,6 +251,7 @@ class MultiplicationInstruction : public WordableIntegerInstruction<SizeType> {
       }
     }
     assert::that(false);  // invalid MultiplicationResultPart
+    return SizeType();    // so that clang does not complain
   }
 
  private:
@@ -391,10 +395,12 @@ class DivisionInstruction : public WordableIntegerInstruction<UnsignedWord> {
    * \param isSignedDivision boolean to indicate signedness of the division; Use
    * true for signed x signed (div); use false for unsigned x unsigned (divu)
    */
-  DivisionInstruction(const InstructionInformation& info, bool isSignedDivision,
+  DivisionInstruction(const InstructionInformation& info,
+                      bool isSignedDivision,
                       bool isWordInstruction)
-      : WordableIntegerInstruction<UnsignedWord>(info, isWordInstruction),
-        _isSignedDivision(isSignedDivision) {}
+  : WordableIntegerInstruction<UnsignedWord>(info, isWordInstruction)
+  , _isSignedDivision(isSignedDivision) {
+  }
 
  protected:
   /**
@@ -480,9 +486,11 @@ class RemainderInstruction : public WordableIntegerInstruction<UnsignedWord> {
    * use true for signed (rem); use false for unsigned(remu)
    */
   RemainderInstruction(const InstructionInformation& info,
-                       bool isSignedRemainder, bool isWordInstruction)
-      : WordableIntegerInstruction<UnsignedWord>(info, isWordInstruction),
-        _isSignedRemainder(isSignedRemainder) {}
+                       bool isSignedRemainder,
+                       bool isWordInstruction)
+  : WordableIntegerInstruction<UnsignedWord>(info, isWordInstruction)
+  , _isSignedRemainder(isSignedRemainder) {
+  }
 
  protected:
   /**
