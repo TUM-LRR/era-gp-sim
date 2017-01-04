@@ -375,7 +375,7 @@ void ExtensionInformation::_parseAlignmentBehavior(
     if (behavior == "strict") {
       _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::FORCED;
     } else if (behavior == "relaxed") {
-      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::RELAXEDLY_ALIGNED;
+      _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::RELAXED;
     } else {
       assert(false);
     }

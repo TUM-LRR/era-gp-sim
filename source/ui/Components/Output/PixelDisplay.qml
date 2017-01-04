@@ -45,11 +45,11 @@ Item {
 
         function updateSettings() {
             // TODO::update in preferred number format
-            pixelBaseAddressTextField.text = pixeldisplaypainteditemid.pixelBaseAddress
-            colorBaseAddressTextField.text = pixeldisplaypainteditemid.colorBaseAddress
-            colorModeComboBox.currentIndex = pixeldisplaypainteditemid.colorMode
-            widthTextField.text = pixeldisplaypainteditemid.width
-            heightTextField.text = pixeldisplaypainteditemid.height
+            pixelBaseAddressTextField.text = "0" + pixeldisplaypainteditemid.pixelBaseAddress
+            colorBaseAddressTextField.text = "0" + pixeldisplaypainteditemid.colorBaseAddress
+            colorModeComboBox.currentIndex = "0" + pixeldisplaypainteditemid.colorMode
+            widthTextField.text = "0" + pixeldisplaypainteditemid.width
+            heightTextField.text = "0" + pixeldisplaypainteditemid.height
         }
 
         onVisibleChanged: {

@@ -32,7 +32,7 @@
 #include "ui/pixel-display-painted-item.hpp"
 #include "ui/snapshot-component.hpp"
 #include "ui/snapshot-component.hpp"
-#include "ui/snapshot-component.hpp"
+#include "ui/snapshot-component.hpp"// why is this multiplying?
 
 Q_DECLARE_METATYPE(FinalRepresentation)
 
@@ -57,7 +57,7 @@ int Ui::runUi() {
   qRegisterMetaType<OutputComponent*>("OutputComponentPointer");
   qmlRegisterType<PixelDisplayPaintedItem>(
       "eragpsim.pixeldisplaypainteditem", 1, 0, "PixelDisplayPaintedItem");
-  qRegisterMetaType<InputText::length_t>("length_t");
+  //qRegisterMetaType<InputText::length_t>("length_t");
   qRegisterMetaType<Ui::id_t>("id_t");
   _engine.rootContext()->setContextProperty("ui", this);
   _engine.rootContext()->setContextProperty("snapshotComponent",
