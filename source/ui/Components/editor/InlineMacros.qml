@@ -46,7 +46,7 @@ Item {
         for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
             collapseMacroSubeditor(macroIndex);
         }
-        if (macros.length > 0) {
+        if (macroDisplayObjects.length > 0) {
             textArea.lineNumberStructureChanged();
         }
     }

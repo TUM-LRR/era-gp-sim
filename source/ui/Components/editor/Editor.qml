@@ -328,11 +328,12 @@ ScrollView {
                     width: 0.75 * textArea.cursorRectangle.height
                     color: "#00000000"
 
-                    property var issueMarks: [{}]
+                    property var issueMarks: ({})
 
                     Connections {
                         target: editor
                         onAddIssue: {
+                            // Note: Parser uses line numbering 1...n instead of 0...n.
                             errorBar.addIssue(message, line, color);
                         }
 
@@ -345,6 +346,20 @@ ScrollView {
                         }
                     }
 
+                    Connections {
+                        target: textArea
+
+                        // A line number structure change means the structure of the visible code is altered without
+                        // an obligatory recompile (e.g. when macro is expanded/collapsed). Therefore, the vertical Positioner
+                        // of errors has to be adjusted.
+                        onLineNumberStructureChanged: {
+                            Object.keys(errorBar.issueMarks).forEach(function(key) {
+                                var displayLineNumber = textArea.convertDisplayLineNumberToRawLineNumber(errorBar.issueMarks[key].lineNumber);
+                                errorBar.issueMarks[key].y = (displayLineNumber-1)*textArea.cursorRectangle.height+textArea.topPadding;
+                            });
+                        }
+                    }
+
                     // Adds a new issue of given type (error, warning, information) to the given line.
                     function addIssue(message, lineNumber, issueType) {
                         // If no issueMark exist, create a new one (issueMarks contain the actual issues
@@ -353,7 +368,7 @@ ScrollView {
                         if (issueMarks[lineNumber] === undefined) {
                             var issueMarkComponent = Qt.createComponent("IssueMark.qml");
                             newIssue = issueMarkComponent.createObject();
-                            newIssue.y = (lineNumber-1)*textArea.cursorRectangle.height+textArea.topPadding;
+                            newIssue.y = (textArea.convertDisplayLineNumberToRawLineNumber(lineNumber)-1)*textArea.cursorRectangle.height+textArea.topPadding;
                             newIssue.parent = errorBar;
                             newIssue.lineNumber = lineNumber;
                             issueMarks[lineNumber] = newIssue;
