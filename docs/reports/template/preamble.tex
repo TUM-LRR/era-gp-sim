@@ -52,6 +52,10 @@
 \usepackage{tikz}
 \usetikzlibrary{3d}
 \usetikzlibrary{shapes}
+\usetikzlibrary{shadings,shadows}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CODE                                                 %
@@ -187,6 +191,24 @@
     \end{tikzpicture}
   \end{figure}
 }
+
+\newenvironment{exampleblock}[1]{%
+    \tcolorbox[title filled,colback=ForestGreen!50!white,
+    noparskip,breakable,
+    title=#1]}%
+    {\endtcolorbox}
+	
+\newenvironment{infoblock}[1]{%
+    \tcolorbox[title filled,colback=NavyBlue!50!white,
+    noparskip,breakable,
+    title=#1]}%
+    {\endtcolorbox}
+	
+\newenvironment{warningblock}[0]{%
+    \tcolorbox[title filled,colback=Dandelion!50!white,
+    noparskip,breakable,
+    title={Vorsicht}]}%
+    {\endtcolorbox}
 
 %%% Local Variables:
 %%% mode: latex
