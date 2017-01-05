@@ -200,6 +200,12 @@ class EditorComponent : public QObject {
    * change.
    */
   void forceCursorUpdate();
+
+  /**
+   * \brief Tells the editor that its text is going to be fetched. Enables it to
+   * prepare the text in advance, e.g. to collapse macro expansions.
+   */
+  void prepareTextForRetrieval();
 };
 
 #endif /* ERAGPSIM_UI_EDITOR_COMPONENT_HPP */

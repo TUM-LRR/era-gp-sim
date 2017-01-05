@@ -75,7 +75,8 @@ ScrollView {
                 textMargin: 2
                 property real unscaledWidth: Math.max(scrollView.viewport.width - sidebar.width, contentWidth)
                 property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
-                property int line: 0
+                // Line that is going to be executed in the next step.
+                property int currentExecutionLine: 0
                 property var cursorLine: 1
 
                 width: (textArea.unscaledWidth)*scale.zoom;
@@ -163,11 +164,19 @@ ScrollView {
                     }
                 }
 
+                // A line number structure change means the structure of the visible code is altered without
+                // an obligatory recompile (e.g. when macro is expanded/collapsed). Therefore, the vertical position
+                // of errors has to be adjusted.
+                onLineNumberStructureChanged: {
+                    // Update execution line to consider new macro expansion.
+                    executionLineHighlight.lineNumber = textArea.convertDisplayLineNumberToRawLineNumber(textArea.currentExecutionLine);
+                }
+
                 //Connection to react to editor signals
                 Connections {
                     target: editor
                     onExecutionLineChanged: {
-                        textArea.line = textArea.convertDisplayLineNumberToRawLineNumber(line);
+                        textArea.currentExecutionLine = line;
                     }
                     onSetText: {
                         /* some text modifications methods of TextEdit are not available in qt 5.6,
@@ -177,6 +186,12 @@ ScrollView {
                     }
                     onForceCursorUpdate: {
                         editor.cursorLineChanged(textArea.cursorLine);
+                    }
+
+                    // Before the editor text is used by any other module, collapse all macros
+                    // to prevent blank lines from appearing inside the code.
+                    onPrepareTextForRetrieval: {
+                        textArea.inlineMacros.collapseAllMacros();
                     }
                 }
 
@@ -202,7 +217,7 @@ ScrollView {
                     }
                 }
 
-                //cursor line highlighting
+                // Cursor line highlighting
                 Rectangle{
                     color: Qt.rgba(0.9, 0.9, 0.9, 0.2)
                     y: textArea.cursorRectangle.y + textArea.topPadding
@@ -213,15 +228,25 @@ ScrollView {
                     border.color: Qt.rgba(0.7, 0.7, 0.7, 0.2)
                 }
 
-                // execution line highlighting
+                // Execution line highlighting
                 Rectangle{
+                    id: executionLineHighlight
+                    // Current raw line number to display the execution line highlight at.
+                    property var lineNumber
                     color: Qt.rgba(0.2, 0.8, 0.4, 0.2)
-                    y: textArea.cursorRectangle.height * (textArea.line - 1);
+                    y: textArea.cursorRectangle.height * (executionLineHighlight.lineNumber - 1);
                     height: textArea.cursorRectangle.height;
                     width: Math.max(scrollView.width, textArea.contentWidth)
+
+                    Connections {
+                        target: textArea
+                        onCurrentExecutionLineChanged: {
+                            executionLineHighlight.lineNumber = textArea.convertDisplayLineNumberToRawLineNumber(textArea.currentExecutionLine);
+                        }
+                    }
                 }
 
-                //scroll with the cursor
+                // Scroll with the cursor
                 function cursorScroll(cursor) {
                     if(cursor.y < scrollView.flickableItem.contentY/scale.zoom) {
                         //up
@@ -350,7 +375,7 @@ ScrollView {
                         target: textArea
 
                         // A line number structure change means the structure of the visible code is altered without
-                        // an obligatory recompile (e.g. when macro is expanded/collapsed). Therefore, the vertical Positioner
+                        // an obligatory recompile (e.g. when macro is expanded/collapsed). Therefore, the vertical position
                         // of errors has to be adjusted.
                         onLineNumberStructureChanged: {
                             Object.keys(errorBar.issueMarks).forEach(function(key) {

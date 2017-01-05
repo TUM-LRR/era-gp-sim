@@ -70,7 +70,7 @@ void EditorComponent::deleteSecondarySyntaxHighlighters() {
 
 void EditorComponent::parse(bool force) {
   if (_textChanged || force) {
-    _commandInterface.parse(_textDocument->toPlainText().toStdString());
+    _commandInterface.parse(getText().toStdString());
     _textChanged = false;
   }
 }
@@ -98,9 +98,8 @@ void EditorComponent::setErrorList(const std::vector<CompileError> &errorList) {
       case CompileErrorSeverity::INFORMATION: issueType = "Information"; break;
       default: assert::that(false);
     }
-    emit addIssue(translate(error.message()),
-                  error.position().startLine(),
-                  issueType);
+    emit addIssue(
+        translate(error.message()), error.position().startLine(), issueType);
   }
 }
 
@@ -131,6 +130,7 @@ void EditorComponent::setCurrentLine(int line) {
 }
 
 QString EditorComponent::getText() {
+  emit prepareTextForRetrieval();
   return _textDocument->toPlainText();
 }
 
