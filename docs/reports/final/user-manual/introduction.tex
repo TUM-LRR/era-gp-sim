@@ -2,4 +2,27 @@
 
 \section{Einleitung}
 
-Diese Benutzeranleitung enthält eine umfassende Beschreibung des ERA Simulators aus Sicht des Endnutzers. Wir beschreiben, wie man grundlegend die Ausführung von Assembler Programmen simulieren kann und welche Optionen dem Nutzer hierbei zur Verfügung stehen.
+\todo[inline]{Diese Benutzeranleitung enthält eine umfassende Beschreibung des ERA Simulators aus Sicht des Endnutzers. Wir beschreiben, wie man grundlegend die Ausführung von Assembler Programmen simulieren kann und welche Optionen dem Nutzer hierbei zur Verfügung stehen.}
+
+%TODO Name
+... ist ein Assembler-Simulator primär gedacht für die Begleitung der Lehrveranstaltung Einführung in die Rechnerarchitektur.
+Der Simulator soll vor allem eine Umgebung schaffen, in der der Nutzer durch Ausprobieren die Grundlagen der maschinennahen Programmierung in einer Assemblersprache erlernen kann.
+Mit ... kann Assembler-Code (insbesondere für den RISC-V Dialekt) geschrieben und dann ausgeführt werden. Die Erstellung von Programmen wird durch farbliche Hervorhebung und Trennung sprachlicher Syntaxkonstrukte, eingeblendete Informationen zu Befehlen, Übersetzungsfehlermeldungen und einige andere Features erleichtert. Die Ausführung des geschriebenen Codes kann komplett, schrittweise oder bis zum nächsten Breakpoint erfolgen. Dabei werden die simulierten Register und der simulierte Speicher mit Inhalt dargestellt. In diesen Punkten ähnelt der Simulator einer integrierten Entwicklungsumgebung (IDE) mit Debugger.\\
+Desweiteren bietet ... sogenannte Ein- und Ausgabekomponenten an, mit denen der Benutzer bzw. das laufende Programm interagieren kann. Solche Komponenten, wie z.B. erleichtertes Abfangen von Eingaben von Maus und Tastatur, das Anzeigen von Text und Bildern oder das erleichterte Ansteuern von Lichtband- und 7-Segment-Anzeigen, sind in den Simulator integriert. In echt funktioniert das Steuern einiger Komponenten ähnlich (z.B. das Ansteuern angeschlossener Anzeigen an einen Mikrocontroller), ist aber meist komplizierter, durch Bibliotheksfunktionen bereits implementiert und plattform- und geräteabhängig. Die im Simulator zur Verfügung gestellten Komponenten sollen keineswegs existierende Anzeigen oder Displays simulieren, sondern lediglich ein Grundverständnis vermitteln, wie die Steuerung einer Anzeige funktionieren kann. Zum Anderen erlauben solche Bauteile ein größeres Feld an Herausforderungen zum Ausprobieren.\\
+Der in diesem Simulator verwendete RISC-V Dialekt unterscheidet sich geringfügig vom Konzept der Erfinder (University of California, Berkeley)\footnote{\url{https://riscv.org/}}: Einige Instruktionen wurden angepasst (siehe STORE) und viele Instruktionen nicht implementiert. Das RISC-V Instruction Set Manual spezifiziert eine ganze Reihe weiterer Befehle (z.B. System-Calls, Traps und Interrupts) sowie Timer- und Counter-Register. Zum Einen geht der Umgang mit solchen Funktionalitäten über das Grundverständnis, dessen Erwerb unterstützt werden soll, hinaus. Zu Anderen würde die Simulation/Ausführung von z.B. System-Calls den Rahmen des Simulators sprengen.\\
+
+Nun zum Aufbau dieser Anleitung. Die Anleitung verwendet folgende Kästchen zur Hervorhebung:
+\begin{exampleblock}{Beispiel}
+	In so einem Kästchen steht ein Beispiel zur Verdeutlichung
+\end{exampleblock}
+
+\begin{infoblock}{Info}
+	Hier werden nice-to-know Informationen angezeigt, bspw. was im Simulator anders funktioniert als in der Realität
+\end{infoblock}
+
+\begin{warningblock}
+	Hier wird auf häufige Fehlerquellen und unintuitive Vorgänge hingewiesen
+\end{warningblock}
+
+\todo[inline] {Diese Kästen bitte auch nutzen! Sie sollen wichtige Informationen schneller ersichtlich machen
+	}
