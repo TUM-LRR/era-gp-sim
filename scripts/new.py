@@ -45,24 +45,38 @@ def create_header(argument, root, relative_path, name):
         header.write('#endif /* {0} */\n'.format(guard))
 
 
-def add_to_cmake(directory, file_name):
-    path = os.path.join(directory, 'CMakeLists.txt')
-    with open(path, 'r') as source:
-        contents = source.read()
-
+def cmake_replacer(file_name):
     def replace_cmake(match):
         lines = match.group().split('\n')
         lines.insert(len(lines) - 1, '  {0}'.format(file_name))
         return '\n'.join(lines)
 
-    contents = re.sub(
-        r'set\(\w+_SOURCES.*?(?:\))',
-        replace_cmake,
-        contents,
-        flags=re.DOTALL
-    )
+    return replace_cmake
 
-    print("Adding '{0}' to CMakeLists.txt ...".format(file_name))
+
+def add_to_cmake(root, relative_path, name, header_only):
+    print("Adding '{0}' to CMakeLists.txt ...".format(name))
+    path = os.path.join(root, 'source', relative_path, 'CMakeLists.txt')
+    with open(path, 'r') as source:
+        contents = source.read()
+
+    if not header_only:
+        contents = re.sub(
+            r'set\(\w+_SOURCES.*?(?:\))',
+            cmake_replacer('{0}.cpp'.format(name)),
+            contents,
+            flags=re.DOTALL
+        )
+
+    if 'ui' in relative_path:
+        header_file_name = '${CMAKE_SOURCE_DIR}/include/'
+        header_file_name += 'ui/{0}.hpp'.format(name)
+        contents = re.sub(
+            r'set\(\w+_HEADERS.*?(?:\))',
+            cmake_replacer(header_file_name),
+            contents,
+            flags=re.DOTALL
+        )
 
     with open(path, 'w') as destination:
         destination.write(contents)
@@ -77,7 +91,6 @@ def create_source(root, relative_path, name):
     with open(source_path, 'w') as source:
         source.write(get_license(root))
         source.write('#include "{0}"\n'.format(include_path))
-    add_to_cmake(directory, file_name)
 
 
 def main():
@@ -88,8 +101,10 @@ def main():
     create_header(args.path, root, relative_path, name)
     if not args.header_only:
         create_source(root, relative_path, name)
+    add_to_cmake(root, relative_path, name, args.header_only)
 
     print('Done \033[91m<3\033[0m')
+
 
 if __name__ == "__main__":
     main()
