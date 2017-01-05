@@ -84,22 +84,36 @@ Wir arbeiten mit folgenden Compilern:
 
 \subsubsection{Bibliotheken}
 
-Die einzige, für das Endprodukt benötigte Abhängigkeit ist Qt 5.6. Qt ist eine
-Klassenbibliothek zur Erstellung von grafischen Oberflächen.
+Die einzige, für das Endprodukt benötigte Abhängigkeit ist \textit{Qt}\footnote{\url{https://www.qt.io/}}
+>= 5.6 in Kombination mit QtQuick >= 2.6. Wir verwenden Qt zur Erstellung der grafischen Oberfläche,
+haben aber grundsätzlich eine strikte Trennung zwischen Code der GUI und dem Rest des Simulators.
+Durch diese Trennung wäre es möglich, den Simulator auch ohne Qt zur Verfügung zu stellen, z.B.
+mit einer anderen Grafikbibliothek oder als Kommandozeilenprogramm. \\
+Eine Ausnahme zu dieser Trennung bildet die Internationalisierung des Simulators. Der Simulator ist
+in der aktuellen Version ausschließlich in Englisch verfügbar, uns war es aber ein großes Anliegen,
+auch andere Sprachen unterstützen zu können. Somit verwenden wir die von Qt zur Verfügung gestellten
+Mittel, Nutzer sichtbare Nachrichten übersetzbar zu machen, auch in allen anderen Modulen außerhalb
+der GUI. So können z.B. Prozessorarchitektur-spezifische Fehlermeldungen übersetzt werden.
 
-\todo[inline]{TODO: Qt Translations, Qt Quick}
 
 \subsubsection{Build Umgebung}
 
-In dieser Sektion soll beschrieben werden, wie man eine neue Build Umgebung aufsetzten kann,
-beispielhaft gezeigt an Ubuntu 16.10 Desktop.
+Möchte man den Simulator selbst kompilieren, so wird eine Build Umgebung vorausgesetzt. In
+dieser Sektion wird gezeigt, wie man eine solche Umgebung auf Linux basierten Betriebssystemen
+einrichten kann.
 
-\todo[inline]{Ubuntu 16.10 ist leider keine LTS Version. In Ubuntu 16.04 ist eine zu alte Qt Quick
-Version enthalten}
+Da wir eine relativ neu Versionen von Qt verwenden, ist eine reine Installation der
+Abhängigkeiten über die Paketverwaltung nur unter solchen Linux Distributionen möglich,
+die auch die entsprechenden Versionen in den Paketquellen beinhalten. Während dies unter
+Rolling Release Systemen (wie z.B. Arch Linux) ein geringeres Problem ist, haben Anwender von
+z.B. Debian basierter Betriebssysteme häufiger mit älterer Software zu kämpfen.
+Unter Debian selbst sind die benötigten Versionen erst ab Debian Stretch (Debian 9)
+verfügbar, unter Ubuntu erst ab Ubuntu 16.10. \\
+Eine Installation unter Debian basierten Betriebssystemen könnte wie folgt ablaufen: \\
 
 \begin{lstlisting}[language=bash]
 # Abhaengigkeiten installieren
-sudo apt install git build-essential qtdeclarative5-dev
+sudo apt install git build-essential cmake qtdeclarative5-dev
 
 # Projekt herunterladen
 git clone https://github.com/TUM-LRR/era-gp-sim
@@ -117,8 +131,14 @@ mkdir build && cd build
 cmake .. && make
 
 # Programm starten
-./bin/era-sim # Start des Simulators
+./bin/era-sim
 \end{lstlisting}
+
+Ist eine Installation über die Paketquellen nicht möglich, bietet es sich an, Qt manuell
+zu installieren\footnote{\url{https://wiki.qt.io/Install_Qt_5_on_Ubuntu}}.
+
+\todo [inline]{Manuelle Installation von Qt und dann Verwendung des QtCreators noch genauer
+beschreiben. Ich machs über die Kommandozeile, kenn mich also mit QtCreator etc. nicht so aus}
 
 \subsubsection{CMake / Make}
 
