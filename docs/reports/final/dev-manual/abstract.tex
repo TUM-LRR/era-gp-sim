@@ -84,5 +84,61 @@ Wir arbeiten mit folgenden Compilern:
 
 \subsubsection{Bibliotheken}
 
-Die einzige, für das Endprodukt benötigte Abhängigkeit ist Qt 5.6 \todo{Oder 5.7?}. Qt ist eine
+Die einzige, für das Endprodukt benötigte Abhängigkeit ist Qt 5.6. Qt ist eine
 Klassenbibliothek zur Erstellung von grafischen Oberflächen.
+
+\todo[inline]{TODO: Qt Translations, Qt Quick}
+
+\subsubsection{Build Umgebung}
+
+In dieser Sektion soll beschrieben werden, wie man eine neue Build Umgebung aufsetzten kann,
+beispielhaft gezeigt an Ubuntu 16.10 Desktop.
+
+\todo[inline]{Ubuntu 16.10 ist leider keine LTS Version. In Ubuntu 16.04 ist eine zu alte Qt Quick
+Version enthalten}
+
+\begin{lstlisting}[language=bash]
+# Abhaengigkeiten installieren
+sudo apt install git build-essential qtdeclarative5-dev
+
+# Projekt herunterladen
+git clone https://github.com/TUM-LRR/era-gp-sim
+
+# In das Projektverzeichnis wechseln
+cd era-gp-sim
+
+# Submodule initialisieren (Google Test)
+git submodule update --init
+
+# Build Verzeichnis erstellen und betreten
+mkdir build && cd build
+
+# Projekt bauen
+cmake .. && make
+
+# Programm starten
+./bin/era-sim # Start des Simulators
+\end{lstlisting}
+
+\subsubsection{CMake / Make}
+
+\subsubsection{Tests}
+
+Wir nutzten das \textit{Google Test}\footnote{\url{https://github.com/google/googletest}} Framework
+zur Automatisierung unserer Tests. Die Tests befinden sich im \texttt{tests/} Verzeichnis, gruppiert
+nach ihren Modulen. Da Tests der grafischen Oberfläche zu komplex wären, haben wir uns auf die übrigen
+Module des Simulators beschränkt, deren korrekte Funktionalität in jeweils separaten Unit Tests
+überprüft wird.
+
+Um ein einheitliches Ergebnis bei den Tests zu erzielen, nutzen wir das Continuous Integration Tool
+\textit{Travis CI}\footnote{\url{https://travis-ci.org/}}. Dabei wird nach jedem hoch geladenen
+Commit ein Clean Build angefertigt, der alle verfügbaren Tests durchführt. Das Ergebnis dieses Tests
+wird auf Github veröffentlicht und ist bindend. Die Tests werden sowohl mit g++, als auch mit clang
+durchgeführt.
+
+Die Tests können auch lokal ausgeführt werden. Dazu wechselt man mit \texttt{cd} in das Build
+Verzeichnis und nutzt das von CMake mitgelieferte Programm \texttt{ctest} um die Tests zu starten.
+Um die Testgeschwindigkeit zu erhöhen empfiehlt es sich, mit der \texttt{-j} Option die Anzahl
+der Jobs zu erhöhen. 
+
+
