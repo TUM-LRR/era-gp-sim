@@ -1,0 +1,88 @@
+% ERA-Großpraktikum: Entwickleranleitung -- Allgemeines
+
+\section{Allgemeines}
+
+Dieser Teil dient dazu, die grundlegende Struktur des Simulators zu verstehen.
+
+\todo[inline, caption={}]{
+	Mögliche Themen sind:
+	\begin{itemize}
+		\item Git, Git Flow, Github - Warum jeweils benutzt
+		\item C++ - Version, Compiler, Bibliotheken, Code Style
+		\item Qt - Version, verwendete Module
+		\item Build Environment - Welche Pakete man unter Linux installieren muss
+		\item CMake/Make - Wie man das Projekt baut
+		\item Tests - Google Test, Travis
+	\end{itemize}
+}
+
+\subsection{Git}
+Bei der Entwicklung von Software im Team ist es zwingend Notwendig, viele verschiedene Versionen
+der selben Software zu verwalten. Deshalb haben wir uns für
+\textit{Git}\footnote{\url{https://git-scm.com/}} als Versionskontrollsystem entschieden. \\
+Das allein beschreibt allerdings noch nicht, \textit{wie} wir Git verwenden. Daher haben wir uns für
+die folgenden Systeme entschieden:
+
+\subsubsection{Gitflow}
+
+\textit{Gitflow}\footnote{\url{https://www.atlassian.com/git/tutorials/comparing-workflows/}} ist
+ein beliebtes Modell der Git-Nutzung, welches vor allem bei der Verwaltung von großen Projekten
+zum Einsatz kommt. Die von uns genutzte Variante lässt sich wie folgt beschreiben:
+
+\todo[inline]{Ich bin hier schon mal einen Schritt weiter gegangen und hab noch eine Unterscheidung
+zwischen dev und master Branch eingefügt. So wollten wir das ja ursprünglich machen, aber aus
+Bequemlichkeit nutzen wir nur den master. Falls nach der Abgabe noch Änderungen vorgenommen werden,
+sollten wir das dann nach dem "richtigen" Modell machen.}
+
+\begin{itemize}
+	\item Es gibt einen \textit{Master}-Branch, der immer die aktuellste, stabile Version enthält.
+	\item Es gibt einen \textit{Development}-Branch, der den aktuellen Stand bei der Entwicklung
+	einer neuen Version enthält. Der Code ist ebenfalls stabil, wenn auch manche Funktionen noch
+	nicht vollständig sein können.
+	\item Die einzelnen Aufgaben werden isoliert in einer \textit{Feature}-Branch bearbeitet.
+	\item Ist eine Aufgabe fertig, so wird der entsprechende Feature Branch in den Development
+	Branch gemerged.
+	\item Ist eine neue Version auf dem Development Branch fertiggestellt, so wird die Development
+	Branch in den Master Branch gemerged.
+\end{itemize}
+
+\subsubsection{Github}
+
+\todo[inline]{Das hier geht schon in Richtung Projektleiterbericht, ich denke es ist aber trzdm sinnvoll,
+hier ein paar Worte zu verlieren, da es schließlich zur Entwicklung dazugehört}
+
+Wir nutzen \textit{Github}\footnote{\url{https://github.com/}} as Filehoster des Simulators. Neben
+Gründen wie der großen Bekanntheit von Github und der auch für Einsteiger geeigneten grafischen
+Oberfläche, sind vor allem folgenden Funktionen hilfreich bei der Entwicklung:
+
+\begin{itemize}
+	\item \textit{Issues}: Die im vorherigen Kapitel genannten Aufgaben werden mit einem Issue
+	verwaltet. Über die Nummer eines Issues lässt sich der Status der Entwicklung verfolgen.
+	\item \textit{Pull Requests}: Nach der Fertigstellung einer Feature Branch wird ein Pull Request
+	erstellt, sodass andere Entwickler ein Code Review anfertigen können.
+	\item Integration von Tools wie \textit{Waffle}\footnote{\url{https://waffle.io/}} und
+	\textit{Travis CI}\footnote{\url{https://travis-ci.org/}}
+\end{itemize}
+
+\subsection{C++}
+
+Der Simulator ist zum Großteil in C++ geschrieben. Unser Augenmerk liegt dabei auf Portabilität
+zwischen verschiedenen Compilern, weshalb wir uns auf den \textbf{C++14} Standard geeinigt haben,
+sowie möglichst wenige externe Bibliotheken verwenden.
+
+\subsubsection{Compiler}
+
+Wir arbeiten mit folgenden Compilern:
+
+\begin{itemize}
+	\item \textit{g++ >= 5}
+	\item \textit{clang++ >= 3.7}
+	\item \textit{MinGW >= ???}
+	\item \textit{MSVC >= ???}
+	\todo{stimmt das?}
+\end{itemize}
+
+\subsubsection{Bibliotheken}
+
+Die einzige, für das Endprodukt benötigte Abhängigkeit ist Qt 5.6 \todo{Oder 5.7?}. Qt ist eine
+Klassenbibliothek zur Erstellung von grafischen Oberflächen.
