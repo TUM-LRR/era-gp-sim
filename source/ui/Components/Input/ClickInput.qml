@@ -18,6 +18,7 @@
   */
 
 import QtQuick 2.0
+import QtQuick.Controls 1.4
 
 
 
@@ -52,19 +53,19 @@ Item {
         anchors.topMargin: 10
         color: "transparent"
 
-        Text{
+        Label {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             text: "0"
         }
 
-        Text {
+        Label {
             font.pointSize: 12
             text: "x\n\u2192" ;
             anchors.centerIn: parent
         }
 
-        Text{
+        Label {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             text: "255"
@@ -78,19 +79,19 @@ Item {
         anchors.top: area.top
         color: "transparent"
 
-        Text{
+        Label {
             anchors.top: parent.top
             anchors.right: parent.right
             text: "0  "
         }
 
-        Text {
+        Label {
             font.pointSize: 12
             anchors.centerIn: parent
             text: "y \u2193"
         }
 
-        Text{
+        Label {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             text: "255  "

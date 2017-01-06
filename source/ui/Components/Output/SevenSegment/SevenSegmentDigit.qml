@@ -20,6 +20,7 @@
 
 import QtQuick 2.0
 import QtQuick.Dialogs 1.0
+import QtQuick.Controls 1.4
 
 /*
 Represent one digit of a 7-segment display:
@@ -76,7 +77,7 @@ Rectangle {
             origin.y: 0
             angle: -90
         }
-        Text {
+        Label {
             id: top_text
             text: "0"
             color: digitBackground.textColor
@@ -107,7 +108,7 @@ Rectangle {
         color: (segment5Activated) ? digitBackground.digitActiveColor : digitInactiveColor
         width: digitBackground.thickness
         height: digitBackground.height / 2 - digitBackground.thickness / 2 - 2
-        Text {
+        Label {
             id: left_top_text
             text: "5"
             color: digitBackground.textColor
@@ -133,7 +134,7 @@ Rectangle {
         color: (segment1Activated) ? digitBackground.digitActiveColor : digitInactiveColor
         width: digitBackground.thickness
         height: digitBackground.height / 2 - digitBackground.thickness / 2 - 2
-        Text {
+        Label {
             id: right_top_text
             text: "1"
             color: digitBackground.textColor
@@ -164,7 +165,7 @@ Rectangle {
             origin.y: 0
             angle: -90
         }
-        Text {
+        Label {
             id: middle_text
             text: "6"
             color: digitBackground.textColor
@@ -195,7 +196,7 @@ Rectangle {
         color: (segment4Activated) ? digitBackground.digitActiveColor : digitInactiveColor
         width: digitBackground.thickness
         height: digitBackground.height / 2 - digitBackground.thickness / 2 - 2
-        Text {
+        Label {
             id: left_bottom_text
             text: "4"
             color: digitBackground.textColor
@@ -221,7 +222,7 @@ Rectangle {
         color: (segment2Activated) ? digitBackground.digitActiveColor : digitInactiveColor
         width: digitBackground.thickness
         height: digitBackground.height / 2 - digitBackground.thickness / 2 - 2
-        Text {
+        Label {
             id: right_bottom_text
             text: "2"
             color: digitBackground.textColor
@@ -252,7 +253,7 @@ Rectangle {
             origin.y: 0
             angle: -90
         }
-        Text {
+        Label {
             id: bottom_text
             text: "3"
             color: digitBackground.textColor

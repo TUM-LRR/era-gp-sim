@@ -33,7 +33,7 @@ Button {
 
     text: collapsedIndicatorSymbol
     style: ButtonStyle {
-        label: Text {
+        label: Label {
             text: control.text
             font.pointSize: 10
             color: "gray"

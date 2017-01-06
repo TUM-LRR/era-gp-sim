@@ -50,7 +50,7 @@ ApplicationWindow {
                     Layout.minimumWidth: 100
                     Layout.maximumWidth: moduleSplitView.width - 50
                     color: "lightblue"
-                    Text {
+                    Label {
                         text: "View 1"
                         anchors.centerIn: parent
                     }
@@ -71,7 +71,7 @@ ApplicationWindow {
 
                         }
 
-                        Text {
+                        Label {
                             text: "Template"
                             anchors.centerIn: parent
                         }
@@ -84,7 +84,7 @@ ApplicationWindow {
                     Layout.minimumWidth: 100
                     Layout.maximumWidth: moduleSplitView.width - 50
                     color: "lightgray"
-                    Text {
+                    Label {
                         text: "View 2"
                         anchors.centerIn: parent
                     }

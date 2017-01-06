@@ -60,7 +60,7 @@ Item {
 
             Repeater {
                 model: textArea.lineCount
-                delegate: Text {
+                delegate: Label {
                     color: "gray"
                     font: macroTextEdit.font
                     text: index+1

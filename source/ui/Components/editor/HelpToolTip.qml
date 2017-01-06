@@ -1,4 +1,5 @@
 import QtQuick 2.6
+import QtQuick.Controls 1.4
 import "../Common"
 
 Rectangle {
@@ -17,7 +18,7 @@ Rectangle {
     border.color: Qt.rgba(32.0/255.0, 57.0/255.0, 77.0/255.0, 1.0)
     visible: false
 
-    Text {
+    Label {
       anchors.fill: parent
       text: "?"
       color: "white"

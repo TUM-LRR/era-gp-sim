@@ -182,7 +182,7 @@ Item {
                     label: Item {
                         id: comboBoxSelectionIndicator
                         // Triangle Up
-                        Text {
+                        Label {
                             id: triangleUp
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.top: parent.top
@@ -191,7 +191,7 @@ Item {
                             font.pointSize: 7
                         }
                         // Triangle Down
-                        Text {
+                        Label {
                             id: triangleDown
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.top: triangleUp.bottom

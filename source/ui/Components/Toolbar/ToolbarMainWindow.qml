@@ -86,7 +86,7 @@ ToolBar {
 
     Component{
         id: tbText
-        Text{
+        Label {
             id: textBin
             text: currentText
             font.bold: true

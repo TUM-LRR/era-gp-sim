@@ -48,7 +48,7 @@ Window {
         // Title of each settings control.
         Column {
             spacing: 16
-            Text {
+            Label {
                 text: "Memory Source (Address):"
             }
         }

@@ -34,7 +34,7 @@ Item {
             id: moduleName
             anchors.top: parent.top
             height: 20
-            Text {
+            Label {
                 text: "Snapshots"
                 color: "gray"
                 font.bold: true
@@ -70,7 +70,7 @@ Item {
                 height: textItem.height
                 width: listView.width
                 /* The name of the snapshot */
-                Text {
+                Label {
                     id: textItem
                     anchors.left: parent.left
                     anchors.leftMargin: 3
@@ -112,7 +112,7 @@ Item {
                       height: textLoad.height + 2
                       width: textLoad.width + 5
                       visible: false
-                      Text{
+                      Label {
                           id: textLoad
                           text: "Load"
                           color: "green"
@@ -129,7 +129,7 @@ Item {
                       height: textDelete.height + 2
                       width: textDelete.width + 5
                       visible: false
-                      Text{
+                      Label {
                           id: textDelete
                           text: "Delete"
                           color: "red"

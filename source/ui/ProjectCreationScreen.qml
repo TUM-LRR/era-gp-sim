@@ -74,7 +74,7 @@ Item {
         placeholderText: "project name"
     }
 
-    Text {
+    Label {
         id: memorySizeText
         anchors {
             left: memorySizeSelector.left
@@ -83,7 +83,7 @@ Item {
         text: "Memory size"
     }
 
-    Text {
+    Label {
       id: memorySizeFormat
       anchors {
         left: memorySizeSelector.right
@@ -112,7 +112,7 @@ Item {
         _step: 4
     }
 
-    Text {
+    Label {
         id: archText
         anchors {
             left: architectureSelector.left
@@ -142,7 +142,7 @@ Item {
         }
     }
 
-    Text {
+    Label {
       id: parserText
       anchors {
         left: parserSelector.left
@@ -166,7 +166,7 @@ Item {
       }
     }
 
-    Text {
+    Label {
       id: optionSelectorText
       anchors {
         left: optionSelector.left

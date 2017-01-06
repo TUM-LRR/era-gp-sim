@@ -738,7 +738,7 @@ ScrollView {
 
                         Repeater {
                             model: textArea.lineCount
-                            delegate: Text {
+                            delegate: Label {
                                 color: "gray"
                                 font: textArea.font
                                 text: {

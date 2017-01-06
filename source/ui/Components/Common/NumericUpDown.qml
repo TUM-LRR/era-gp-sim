@@ -119,11 +119,10 @@ Item {
         radius: 1
         smooth: true
 
-        Text {
+        Label {
             id: label_up
             anchors.centerIn: parent
             text: "△"
-            bottomPadding: 3
             color: "#808080"
         }
 
@@ -166,11 +165,10 @@ Item {
         radius: 1
         smooth: true
 
-        Text {
+        Label {
             id: label_down
             anchors.centerIn: parent
             text: "▽"
-            bottomPadding: 2
             color: "#808080"
         }
 

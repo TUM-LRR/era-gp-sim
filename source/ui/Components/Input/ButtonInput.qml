@@ -36,7 +36,7 @@ Item {
         height: middle.height
         anchors.left: middle.left
         anchors.bottom: middle.top
-        Text{
+        Label{
             font.pointSize: 16
             anchors.centerIn: parent
             text: "\u2191"
@@ -52,7 +52,7 @@ Item {
         height: middle.height
         anchors.left: middle.right
         anchors.bottom: middle.bottom
-        Text{
+        Label {
             font.pointSize: 16
             anchors.centerIn: parent
             text: "\u2192"
@@ -68,7 +68,7 @@ Item {
         height: middle.height
         anchors.left: middle.left
         anchors.top: middle.bottom
-        Text{
+        Label {
             font.pointSize: 16
             anchors.centerIn: parent
             text: "\u2193"
@@ -84,7 +84,7 @@ Item {
         height: middle.height
         anchors.right: middle.left
         anchors.bottom: middle.bottom
-        Text{
+        Label {
             font.pointSize: 16
             anchors.centerIn: parent
             text: "\u2190"

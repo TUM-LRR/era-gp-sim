@@ -158,7 +158,7 @@ Item {
                 }
 
                 // Displays the issueMessage (error message, warning message, information message).
-                Text {
+                Label {
                     id: issueText
                     anchors.right: parent.right
                     anchors.rightMargin: _textMargin

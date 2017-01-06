@@ -228,7 +228,7 @@ ApplicationWindow {
             standardButtons: StandardButton.Cancel;
             property var onAcceptedFunction
             property alias placeholderText: textField.placeholderText
-            Text {
+            Label {
                 id: description
                 anchors.top: parent.top
                 anchors.left: parent.left
