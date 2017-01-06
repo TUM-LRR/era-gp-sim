@@ -18,6 +18,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
+import Theme 1.0
 
 Item {
     // Displays the registers in a tree-like structure.
@@ -29,8 +30,8 @@ Item {
         backgroundVisible: false
         style: TreeViewStyle {
             frame: Rectangle {
-                border.width: 0
-                color: "#00000000"
+                border.width: 10
+                color: "#00ff00"
             }
             transientScrollBars: true
         }

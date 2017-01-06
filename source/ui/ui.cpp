@@ -17,10 +17,12 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui/ui.hpp"
-#include "ui/clipboard-adapter.hpp"
-
+#include <QQMLEngine>
 #include <QUrl>
+#include <string>
+
+#include "ui/clipboard-adapter.hpp"
+#include "ui/ui.hpp"
 
 #include "arch/common/architecture-formula.hpp"
 #include "common/assert.hpp"
@@ -29,7 +31,7 @@
 #include "parser/common/final-representation.hpp"
 #include "ui/input-text-model.hpp"
 #include "ui/snapshot-component.hpp"
-#include "ui/snapshot-component.hpp"
+#include "ui/theme.hpp"
 
 Q_DECLARE_METATYPE(FinalRepresentation)
 
@@ -53,6 +55,11 @@ int Ui::runUi() {
   qRegisterMetaType<FinalRepresentation>();
   qRegisterMetaType<id_t>("id_t");
 
+  qmlRegisterSingletonType<Theme>(
+      "Theme", 1, 0, "Theme", [](auto* qmlEngine, auto* jsEngine) -> QObject* {
+        return Theme::reset("solarized");
+      });
+
   _engine.rootContext()->setContextProperty("ui", this);
   _engine.rootContext()->setContextProperty("snapshotComponent",
                                             _snapshots.get());
@@ -74,14 +81,14 @@ id_t Ui::addProject(QQuickItem* tabItem,
     architectureFormula.addExtension(qstring.toStdString());
   }
   // get the memory size from the qvariant object.
-  std::size_t memorySize = memorySizeQVariant.value<std::size_t>();
+  auto memorySize = memorySizeQVariant.value<std::size_t>();
 
   // parent is tabItem, so it gets destroyed at the same time
-  QQmlContext* context = new QQmlContext(qmlContext(tabItem), tabItem);
+  auto context = new QQmlContext(qmlContext(tabItem), tabItem);
 
   // save the project pointer in a vector, the object is deleted by qml when
   // tabItem is deleted
-  unsigned int projectId = _rollingProjectId;
+  auto projectId = _rollingProjectId;
   auto project = new GuiProject(context,
                                 architectureFormula,
                                 memorySize,
@@ -91,7 +98,7 @@ id_t Ui::addProject(QQuickItem* tabItem,
   _projects.emplace(_rollingProjectId++, project);
 
   // instantiate the qml project item with the prepared context
-  QQuickItem* projectItem =
+  auto projectItem =
       qobject_cast<QQuickItem*>(projectComponent->create(context));
 
   // set the parent of projectItem, so its deletion is handled by qml

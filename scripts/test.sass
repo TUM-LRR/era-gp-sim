@@ -1,0 +1,126 @@
+
+// fdfds
+
+.pagination
+  a
+    -webkit-transition: all 0.2s ease-in-out
+    -moz-transition: all 0.2s ease-in-out
+    transition: all 0.2s ease-in-out
+    background: #fafafa
+    border-radius: 0.1875em
+    border: 1px solid #f3f3f3
+    color: #333333
+    padding: 1em 1.5em
+  .disabled
+    -webkit-transition: all 0.2s ease-in-out
+    -moz-transition: all 0.2s ease-in-out
+    transition: all 0.2s ease-in-out
+    background: #fafafa
+    border-radius: 0.1875em
+    border: 1px solid #f3f3f3
+    color: #333333
+    padding: 1em 1.5em
+    opacity: +0.5
+  a
+    &:hover, &:focus
+      background: white
+      color: #477dca
+    &:active
+      background: #f7f7f7
+  .button
+    font-size: +1rem
+    font-weight: 300
+    letter-spacing: -1px
+
+.button-disabled
+  opacity: 0.55
+  background-color: #999
+  &:hover, &:active, &:focus
+    cursor: not-allowed
+    background-color: #999
+
+.left
+  float: left
+
+.right
+  float: right
+
+.posts
+  margin: 0
+  .post
+    margin-bottom: 0.75em
+    border-bottom: thin solid #f3f3f3
+    &:last-child
+      border-bottom: none
+      margin-bottom: .375em
+      padding-bottom: 0
+
+.post-link .post-title
+  margin-top: 0
+  font-weight: 600
+
+.post-content
+  text-align: justify
+
+.post-footer
+  text-align: center
+
+.post-footer-left
+  float: left
+  display: inline-block
+
+.post-footer-center
+  display: inline-block
+  a
+    border-bottom: 2px solid transparent
+    &:hover, &:active, &:focus
+      border-bottom: 2px solid #dc4850
+  .avatar
+    margin: 2rem 0
+    margin-left: 4rem
+    width: 100px
+    border-radius: 50%
+
+.post-footer-right
+  float: right
+  display: inline-block
+
+.meta, .post-meta
+  width: auto
+  font-size: 1.3rem
+  font-weight: 300
+  margin: 0
+  padding: .25em 0
+  color: #7a7a7a
+
+.post-meta-small
+  width: auto
+  font-size: 1.3rem
+  font-weight: 300
+  margin: 0
+  padding: .25em 0
+  color: #7a7a7a
+  font-size: .8rem
+
+.related-post-title
+  border-bottom: thin solid #f3f3f3
+
+.share-links
+  padding-top: 2rem
+  ul
+    padding: 0
+    list-style: none
+  li
+    padding-top: 0.3rem
+    padding-bottom: 0.3rem
+  a
+    border: 0
+    font-size: 2rem
+
+.share-links-A
+  color: #dc4850
+
+.share-links-B
+  color: #27272b
+
+#foo.bar
