@@ -74,7 +74,7 @@ class AbstractIntegerInstructionNode : public InstructionNode {
   virtual ~AbstractIntegerInstructionNode() = 0;
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate(memoryAccess).isSuccess());
+    assert::that(validate(memoryAccess).isSuccess());
     // Get the destination register
     auto destination = _children.at(0)->getIdentifier();
 
@@ -125,7 +125,7 @@ class AbstractIntegerInstructionNode : public InstructionNode {
   * \return The result of the computation.
   */
   virtual SizeType _compute(SizeType first, SizeType second) const noexcept {
-    assert(static_cast<bool>(_operation));
+    assert::that(static_cast<bool>(_operation));
     return _operation(first, second);
   }
 
@@ -147,7 +147,7 @@ class AbstractIntegerInstructionNode : public InstructionNode {
   }
 
   ValidationResult _validateImmediateSize(MemoryAccess& memoryAccess) const {
-    assert(_children[2]->getType() == Type::IMMEDIATE);
+    assert::that(_children[2]->getType() == Type::IMMEDIATE);
 
     // No memory access is needed for a immediate node
     MemoryValue value = _children.at(2)->getValue(memoryAccess);

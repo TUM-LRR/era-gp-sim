@@ -32,7 +32,7 @@ FactoryMap::AbstractFacade::~AbstractFacade() = default;
 const FactoryMap::Factory&
 FactoryMap::get(const std::string& instructionName) const {
   auto iterator = _map.find(instructionName);
-  assert(iterator != _map.end());
+  assert::that(iterator != _map.end());
 
   return iterator->second;
 }
