@@ -539,7 +539,7 @@ ScrollView {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.left: lineNumbersBar.right
-                    width: 14
+                    width: 0.75*textArea.cursorRectangle.height
                     color: "#00000000"
                 }
 

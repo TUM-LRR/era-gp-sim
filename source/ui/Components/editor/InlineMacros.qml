@@ -99,11 +99,13 @@ Item {
                                                                 "y": yPos,
                                                                 "expandedHeight": textArea.cursorRectangle.height*Number(macros[macroIndex]["lineCount"]),
                                                                 "text": macro["code"]});
+            subeditor.fontPointSize = textArea.font.pointSize;
             macroDisplayObject["subeditor"] = subeditor;
             // Add triangle-button to display object
-            var triangleButton = triangleButtonComponent.createObject(sidebar._macroBar, {"y": textArea.positionToRectangle(linePosition).y-(textArea.cursorRectangle.height/5)});
+            var triangleButton = triangleButtonComponent.createObject(sidebar._macroBar);
+            triangleButton.y = textArea.positionToRectangle(linePosition).y-((textArea.cursorRectangle.height-triangleButton.height*0.45)/2);
             triangleButton.anchors.right = sidebar._macroBar.right;
-            triangleButton.anchors.rightMargin = -1;
+            triangleButton.anchors.rightMargin = -2;
             triangleButton.macroIndex = macroIndex;
             triangleButton.onExpandedChanged = function (currentMacroIndex){toggleExpandCollapse(currentMacroIndex);};
             macroDisplayObject["triangleButton"] = triangleButton;
