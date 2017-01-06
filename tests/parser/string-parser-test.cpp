@@ -16,24 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/string-parser.hpp"
+#include "parser/independent/string-parser.hpp"
 #include <iostream>
+#include "common/translateable.hpp"
 #include "gtest/gtest.h"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/independent/positioned-string.hpp"
 
 template <typename CharTypeIn, typename CharTypeOut>
 void doTestInternal(const std::basic_string<CharTypeIn>& provided,
                     const std::basic_string<CharTypeOut>& expected,
                     bool succeed) {
-  CompileState state;
+  CompileErrorList errors;
   std::vector<CharTypeOut> output;
-  bool result = StringParser::parseString(provided, output, state);
+  PositionedBasicString<CharTypeIn> input(provided);
+  bool result = StringParser::parseString(input, errors, output);
   if (succeed) {
-    for (const auto& i : state.errorList) {
-      std::cout << i.message().getBaseString() << std::endl;
+    for (const auto& error : errors.errors()) {
+      std::cout << error.message().getBaseString() << std::endl;
     }
     ASSERT_EQ(expected,
               std::basic_string<CharTypeOut>(output.begin(), output.end()));
-    ASSERT_EQ(0, state.errorList.size());
+    ASSERT_EQ(0, errors.size());
   }
   ASSERT_EQ(succeed, result);
 }
@@ -122,7 +127,7 @@ TEST(StringParser, simpleEscape) {
   doTest(u8R"("\r")", u8"\r", true);
   doTest(u8R"("\?")", u8"\?", true);
   doTest(u8R"("\"")", u8"\"", true);
-  doTest(u8R"("\'")", u8"\'", true);//"' // <-- just a syntax highlighting fix.
+  doTest(u8R"("\'")", u8"\'", true);
   doTest(u8R"("\\")", u8"\\", true);
   doTest(u8R"("\ö")", u8"", false);
 }
@@ -199,7 +204,7 @@ TEST(StringParser, practicalString) {
   U"occaecat cupidatat non proident, sunt in culpa qui officia deserunt "     \
   U"mollit anim id est laborum."
 
-// Note: this is NO CYRILLIC TRANSLATION. It is just the above text, translated
+// Note: this is NO CYRILLIC TRANSLATION. It is just the above text, transcribed
 // to cyrillic script (should sound the same as the latin version, but I'm not
 // sure), at least if the converter worked.
 #define SAMPLE_CYRILLIC_8                                                                                                                \

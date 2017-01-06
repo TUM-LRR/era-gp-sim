@@ -17,17 +17,33 @@
 
 #include "common/translateable.hpp"
 
-Translateable::Translateable() {}
+Translateable::Translateable() {
+}
 
 Translateable::Translateable(const std::string &baseString)
-    : _baseString(baseString) {}
+: _baseString(baseString) {
+}
 
 Translateable::Translateable(const char *baseString)
-    : Translateable(std::string{baseString}) {}
+: Translateable(std::string{baseString}) {
+}
 
-Translateable::Translateable(const std::string &baseString, const NO_TR_POSSIBLE &key) : Translateable(baseString) {}
+Translateable::Translateable(const std::string &baseString,
+                             const NO_TR_POSSIBLE &key)
+: Translateable(baseString) {
+}
 
-std::string &Translateable::getModifiableBaseString() { return _baseString; }
+Translateable::Translateable(const char *base,
+                             const std::initializer_list<std::string> arguments)
+: _baseString(base) {
+  for (const auto &argument : arguments) {
+    addOperand(argument);
+  }
+}
+
+std::string &Translateable::getModifiableBaseString() {
+  return _baseString;
+}
 
 void Translateable::addOperand(const TranslateablePtr &op) {
   _operands.push_back(op);
@@ -37,14 +53,16 @@ void Translateable::addOperand(const std::string &op) {
   _operands.push_back(createShared(op));
 }
 
-Translateable::TranslateablePtr Translateable::createShared(const Translateable::TranslateablePtr& arg) {
-    return arg;
+Translateable::TranslateablePtr
+Translateable::createShared(const Translateable::TranslateablePtr &arg) {
+  return arg;
 }
 
-const std::string& Translateable::getBaseString() const {
-    return _baseString;
+const std::string &Translateable::getBaseString() const {
+  return _baseString;
 }
 
-const std::vector<Translateable::TranslateablePtr>& Translateable::getOperands() const {
-    return _operands;
+const std::vector<Translateable::TranslateablePtr> &
+Translateable::getOperands() const {
+  return _operands;
 }

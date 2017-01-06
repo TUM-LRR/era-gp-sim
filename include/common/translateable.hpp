@@ -79,10 +79,14 @@ class Translateable {
 
   Translateable(const Translateable& copy) = default;
 
+  Translateable(const char* base,
+                const std::initializer_list<std::string> arguments);
+
   template <typename... Args>
   Translateable(const char* base, Args&&... arguments)
-      : _baseString(base),
-        _operands{createShared(std::forward<Args>(arguments))...} {}
+  : _baseString(base)
+  , _operands{createShared(std::forward<Args>(arguments))...} {
+  }
 
   /**
    * Returns a reference to the base string of this Translateable
@@ -122,10 +126,10 @@ class Translateable {
 
   template <typename T>
   static TranslateablePtr createShared(const T& arg) {
-      //not using std::make_shared as the function cannot access
-      //a private/protected constructor...
-      //solutions, like a wrapper or derived type accessing the constructor
-      //would make the code less understandable
+    // not using std::make_shared as the function cannot access
+    // a private/protected constructor...
+    // solutions, like a wrapper or derived type accessing the constructor
+    // would make the code less understandable
     return std::shared_ptr<Translateable>(new Translateable{arg});
   }
 

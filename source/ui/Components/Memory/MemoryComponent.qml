@@ -96,7 +96,7 @@ Item {
     Component {
         // disable row when cell is not needed
         id: itemdelegate
-        Text {
+        Label {
             visible: (styleData.row % (number_bits / 8) == 0) ? true : false
             enabled: (styleData.row % (number_bits / 8) == 0) ? true : false
             text: styleData.value
@@ -115,6 +115,14 @@ Item {
             // hide input if cell is not needed
             visible: (styleData.row % (number_bits / 8) == 0) ? true : false
             enabled: (styleData.row % (number_bits / 8) == 0) ? true : false
+
+            style: TextFieldStyle {
+                renderType: Text.QtRendering
+                background: Rectangle {
+                                id: styleRec
+                                color: "transparent"
+                }
+            }
 
             onEditingFinished: {
                 // update internal memory; use right number representation and byte size

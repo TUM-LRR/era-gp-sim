@@ -26,9 +26,9 @@
 #include "common/assert.hpp"
 #include "common/translateable.hpp"
 #include "common/utility.hpp"
-#include "parser/final-representation.hpp"
-#include "ui/snapshot-component.hpp"
+#include "parser/common/final-representation.hpp"
 #include "ui/input-text-model.hpp"
+#include "ui/snapshot-component.hpp"
 #include "ui/snapshot-component.hpp"
 
 Q_DECLARE_METATYPE(FinalRepresentation)
@@ -49,10 +49,10 @@ int Ui::runUi() {
   qmlRegisterType<ClipboardAdapter>(
       "ClipboardAdapter", 1, 0, "ClipboardAdapter");
   qRegisterMetaType<std::size_t>("std::size_t");
+  qRegisterMetaType<std::size_t>("size_t");
   qRegisterMetaType<FinalRepresentation>();
-  qRegisterMetaType<InputText::length_t>("length_t");
   qRegisterMetaType<id_t>("id_t");
-  
+
   _engine.rootContext()->setContextProperty("ui", this);
   _engine.rootContext()->setContextProperty("snapshotComponent",
                                             _snapshots.get());
@@ -204,6 +204,7 @@ void Ui::reset(int id) {
   assert::that(iterator != _projects.end());
   iterator->second->reset();
 }
+
 
 void Ui::saveText(int id) {
   auto iterator = _projects.find(id);

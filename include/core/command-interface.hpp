@@ -90,6 +90,13 @@ class CommandInterface : public Proxy<ParsingAndExecutionUnit> {
    * \param callback The callback function.
    */
   POST(setExecutionStoppedCallback)
+
+  /**
+   * Set the callback which is used to synchronize the ui.
+   *
+   * \param callback The callback.
+   */
+  POST(setSyncCallback)
 };
 
 #endif /* ERAGPSIM_CORE_COMMAND_INTERFACE_HPP */
