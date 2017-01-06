@@ -75,7 +75,7 @@ ArchitectureBrewery::_brew(const std::string& extensionName,
 
   _hull[extensionName] = extension;
 
-  assert(extension.isValid());
+  assert::that(extension.isValid());
 
   // Unwind stack
   traversalStack.erase(extensionName);
@@ -125,7 +125,7 @@ ArchitectureBrewery::_load(const std::string extensionName) {
   ));
   // clang-format on
 
-  assert(data.count("name"));
+  assert::that(data.count("name"));
 
   return data;
 }

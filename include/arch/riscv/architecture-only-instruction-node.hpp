@@ -80,7 +80,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   virtual ~ArchitectureOnlyInstructionNode() = default;
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate(memoryAccess).isSuccess());
+    assert::that(validate(memoryAccess).isSuccess());
     auto destination = _children[0]->getIdentifier();
 
     auto first = _getChildValue(1, memoryAccess);
@@ -135,7 +135,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
    */
   virtual WordSize _compute(OperationSize first, OperationSize second) const
       noexcept {
-    assert(_operation);
+    assert::that(_operation);
     return _operation(first, second);
   }
 

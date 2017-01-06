@@ -17,7 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <cassert>
+#include "common/assert.hpp"
 #include <string>
 
 #include "arch/common/information-interface.hpp"

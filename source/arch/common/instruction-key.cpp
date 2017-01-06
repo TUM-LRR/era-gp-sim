@@ -17,7 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <cassert>
+#include "common/assert.hpp"
 
 #include "arch/common/instruction-key.hpp"
 
@@ -45,14 +45,14 @@ InstructionKey::deserialize(InformationInterface::Format& data) {
 }
 
 InstructionKey& InstructionKey::addEntry(const Key& key, const Value& value) {
-  assert(!hasKey(key));
+  assert::that(!hasKey(key));
   _container.emplace(key, value);
 
   return *this;
 }
 
 InstructionKey& InstructionKey::addEntries(InitializerList list) {
-  assert(list.size() > 0);
+  assert::that(list.size() > 0);
   addEntries<InitializerList>(list);
 
   return *this;
@@ -64,7 +64,7 @@ const InstructionKey::Value& InstructionKey::opcode() const {
 
 const InstructionKey::Value& InstructionKey::get(const Key& key) const
 noexcept {
-  assert(hasKey(key));
+  assert::that(hasKey(key));
   return _container.at(key);
 }
 
@@ -101,7 +101,7 @@ bool InstructionKey::isValid() const noexcept {
 }
 
 void InstructionKey::_deserialize(InformationInterface::Format& data) {
-  assert(!data.empty());
+  assert::that(!data.empty());
   for (auto pair = data.begin(); pair != data.end(); ++pair) {
     addEntry(pair.key(), pair.value());
   }
