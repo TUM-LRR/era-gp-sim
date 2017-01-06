@@ -8,22 +8,47 @@ import functools
 import json
 import logging
 import os.path
+import re
 import subprocess
 import shlex
 import sys
-import re
+import time
+
+
+###############################################################################
+# LOGGING
+###############################################################################
 
 
 class ColorFormatter(logging.Formatter):
-    """ """
+    """A formatter class that adds colors to logs."""
 
     COLORS = dict(ERROR=31, WARNING=33, INFO=32, DEBUG=34)
 
     def __init__(self, format_string, use_color=True):
+        """
+        Constructs a new ColorFormatter.
+
+        Args:
+            format_string: (str) The format string with which
+                                 to display a message.
+            use_color: (bool) Whether to enable coloring.
+        """
         super(ColorFormatter, self).__init__(format_string)
         self.use_color = use_color
 
     def format(self, record):
+        """
+        Formats a record.
+
+        A color is chosen suitable for the log level of the record.
+
+        Args:
+            record: (logging.Record) The log record to format.
+
+        Returns:
+            A formatted log record.
+        """
         if self.use_color:
             record.levelname = '\033[{0}m{1}\033[0m'.format(
                 ColorFormatter.COLORS[record.levelname],
@@ -37,6 +62,66 @@ log_handler = logging.StreamHandler()
 log_handler.setFormatter(ColorFormatter('%(levelname)s %(message)s'))
 log = logging.getLogger(__name__)
 log.addHandler(log_handler)
+
+###############################################################################
+# UTILITY FUNCTIONS
+###############################################################################
+
+
+def attribute(**kwargs):
+    """
+    Function decorator to give a function an attribute.
+
+    Args:
+        kwargs: Any key=value pairs to add to the wrapped function.
+
+    Returns:
+        A new function, whose `__dict__` has the members specified in `kwargs`.
+    """
+    def inner_attribute(function):
+        @functools.wraps(function)
+        def function_with_attribute(*args, **kwargs):
+            return function(*args, **kwargs)
+        function_with_attribute.__dict__.update(kwargs)
+        return function_with_attribute
+    return inner_attribute
+
+
+def pattern(regex):
+    """
+    Adds a compiled regular expression as an attribute to a function.
+
+    Args:
+        regex: (str) The regular expression to compile and add to the function.
+
+    Returns:
+        A new function, with the given pattern
+        compiled and added to the function.
+    """
+    return attribute(pattern=re.compile(regex))
+
+
+def time_operation(operation):
+    """
+    Measures the execution time of an operation.
+
+    Args:
+        operation: (function) An operation to execute.
+
+    Returns:
+        A pair consisting of the running time of the operation in seconds
+        and the return value of the operation.
+    """
+    start_time = time.time()
+    return_value = operation()
+    duration = time.time() - start_time
+
+    return duration, return_value
+
+
+###############################################################################
+# PARSER
+###############################################################################
 
 
 @enum.unique
@@ -99,15 +184,15 @@ class Parser(argparse.ArgumentParser):
             Parser.Error for any command line badness.
         """
         arguments = self.parse_args()
-        argument_type = self._determine_argument_type(arguments)
-        self._check_path(arguments.theme, argument_type)
+        argument_kind = self._determine_argument_kind(arguments)
+        self._check_path(arguments.theme, argument_kind)
 
         if arguments.verbose:
             self._enable_logging(arguments.verbose)
 
         return Parser.Arguments(
             arguments.theme,
-            argument_type,
+            argument_kind,
             arguments.output
         )
 
@@ -125,22 +210,63 @@ class Parser(argparse.ArgumentParser):
         group.add_argument('-d', '--directory', action='store_true',
                            help="THEME is the theme's directory.")
 
-    def _check_path(self, path, argument_type):
+    def _check_path(self, path, argument_kind):
+        """
+        Check the validity of the input path supplied.
+
+        SASS and CSS kinds must be files, Themes must be directories. Either
+        way the path must exist.
+
+        Args:
+            path: (str) The input path to check.
+            argument_kind: (Kind) The kind of path it is supposed to be.
+
+        Raises:
+            ParseError: If the input path is not valid.
+        """
         if not os.path.exists(path):
             raise ParseError("Path '{0}' does not exist".format(path))
-        if argument_type is Kind.DIRECTORY and not os.path.isdir(path):
+        if argument_kind is Kind.DIRECTORY and not os.path.isdir(path):
             raise ParseError(
                 "Theme path '{0}' is not a directory".format(path)
             )
 
-    def _determine_argument_type(self, arguments):
+    def _determine_argument_kind(self, arguments):
+        """
+        Determines the kind of the input file.
+
+        It is first tried to detect the kind from the input options.
+        If no suitable input option (--css, --sass, --theme) was supplied the
+        file extension is inspected.
+
+        Args:
+            arguments: (dict) The input arguments to inspect.
+
+        Returns:
+            A member of the Kind enum.
+
+        Raises:
+            ParseError: If the type could not be determined.
+        """
         dictionary = vars(arguments)
         for possible_type in ('css', 'sass', 'directory'):
             if dictionary[possible_type]:
                 return Kind[possible_type.upper()]
-        return self._deduce_argument_type_from_path(arguments.theme)
+        return self._deduce_argument_kind_from_path(arguments.theme)
 
-    def _deduce_argument_type_from_path(self, path):
+    def _deduce_argument_kind_from_path(self, path):
+        """
+        Attempts to deduce the argument type from the input path.
+
+        Args:
+            path: (str) The path to inspect.
+
+        Returns:
+            A member of the Kind enum.
+
+        Raises:
+            ParseError: If the type could not be determined.
+        """
         extension = os.path.splitext(path)[1]
         # Alternatively (but less readable) access Kind.__members__
         if extension == '.css':
@@ -153,26 +279,34 @@ class Parser(argparse.ArgumentParser):
         raise ParseError("Could not deduce file type for '{0}'".format(path))
 
     def _enable_logging(self, verbosity):
+        """
+        Enables logging functionality.
+
+        The verbosity level may be in the range [0, 2] (inclusive).
+
+        Args:
+            verbosity: (int) The verbosity count supplied to the program.
+        """
         log.setLevel(logging.WARNING - min(verbosity, 2) * 10)
         level_name = logging.getLevelName(log.getEffectiveLevel())
         log.info('Enabled logging at level %s', level_name)
 
 
-def attribute(**kwargs):
-    def inner_attribute(function):
-        @functools.wraps(function)
-        def function_with_attribute(*args, **kwargs):
-            return function(*args, **kwargs)
-        function_with_attribute.__dict__.update(kwargs)
-        return function_with_attribute
-    return inner_attribute
-
-
-def pattern(regex):
-    return attribute(pattern=regex)
+###############################################################################
+# CONVERTER
+###############################################################################
 
 
 def remove_comments(css):
+    """
+    Removes any comments from CSS content.
+
+    Args:
+        css: (str) The CSS from which to remove comments.
+
+    Returns:
+        The resulting CSS.
+    """
     return re.sub(
         r'/\*.*\*/|//[^\n]*',
         '',
@@ -182,25 +316,73 @@ def remove_comments(css):
 
 
 def find_blocks(css):
+    """
+    Finds all CSS blocks in CSS content.
+
+    A block is string of the form '<selectors> { <properties> }'.
+
+    Args:
+        css: (str) The CSS in which to find blocks.
+
+    Returns:
+        A list of block strings.
+    """
     return re.findall(
-        r'([-.a-zA-Z][-.\w:\s,]+)\{(.*?)\}',
+        r'(\*|[-.a-zA-Z][-.\w:\s,]+)\s*?\{(.+?)\}',
         css,
         re.MULTILINE | re.DOTALL
     )
 
 
-def truncate(string, length=70):
+def truncate_string(string, length=70):
+    """
+    Truncates a string to the given length, if necessary.
+
+    If the string must be truncated, an ellipsis is added *after*
+    truncating the string to the specified length.
+
+    Args:
+        strings: (str) The string to (maybe) truncate.
+        length: (int) The maximum length the string should have.
+
+    Returns:
+        A new string, possibly truncated.
+    """
     string = string.replace('\n', '\\n')
     if len(string) <= length:
         return string
     return '{0} ...'.format(string[:length])
 
 
-@pattern(re.compile(r'\*|[-.\w: \t#]+\w'))
+@pattern(r'\*|[-.\w: \t#]+\w')
 def find_selectors(root, block_selectors):
+    """
+    Finds the selectors in a CSS block and returns their dictionaries.
+
+    Given a comma-separated list of selectors such as 'a.b #c:d, a b.c, #d',
+    this method will:
+        1. Create any necessary nested dictionairies in the root object.
+        2. Return a list of the leaves, such that they can be updated
+           with properties of the block these selectors belong to.
+
+    Note that CSS IDs are handled just like classes, as JSON has no notion
+    of selectivity.
+
+    Args:
+        root: (dict) The root dictionary to update.
+        block_selectors: (str) The string containing the selectors retrieved
+                               from a CSS block.
+
+    Returns:
+        A list of dictionaries, corresponding directly to the dictionaries
+        of each selector. For example, the selector string 'a.b.c, a .b.c,
+        #a b c d:f' with an empty root would produce the following tree:
+        { a-b-c: { }, a: { b-c: { }, b: { c: { d-f: { }}}}} and the return
+        value would be a list o the innermost dictionaries created here.
+    """
     log.debug(
         "Processing selector(s): '%s'",
-        truncate(block_selectors, 70)
+        truncate_string(block_selectors, 70)
     )
     # A selector group is a sequence of selectors one places before a comma or
     # the opening brace of the property block. In `a.b c, #d.g:f #x` there are
@@ -250,7 +432,7 @@ def find_selectors(root, block_selectors):
                 log.debug("'%s' selector already existed in parent selector")
                 log.debug(
                     "Current state of '%s' is: '%s'",
-                    truncate(selector, 70),
+                    truncate_string(selector, 70),
                     child
                 )
 
@@ -263,6 +445,21 @@ def find_selectors(root, block_selectors):
 
 
 def sanitize_property_value(value):
+    """
+    Sanitizes the value of a property.
+
+    We do not respect any kind of unit for numbers. For this script (and our
+    themes), 10px is the same as 10% and 10rem or 10em. In fact, the unit is
+    not even inspected, only any number is extracted.
+
+    Args:
+        value: (str) The value to sanitize.
+
+    Returns:
+        A new value, whose type depends on the value passed. For example, pixel
+        values will be converted to their numeric representation, or 'none' is
+        converted to None.
+    """
     if value == 'none':
         log.debug("Property value '%s' is 'none', converting to 'None'", value)
         return None
@@ -287,6 +484,16 @@ def sanitize_property_value(value):
 
 @pattern(re.compile(r'([-\w]+):([-+\w \t.#!%]+);'))
 def find_properties(block_properties):
+    """
+    Finds all the properties for a CSS block.
+
+    Args:
+        block_properties: (str) The block properties to parse.
+
+    Returns:
+        A list of (property, value) pairs with which the selector
+        dictionaries returned by find_selectors can be updated.
+    """
     properties = []
     for key, value in find_properties.pattern.findall(block_properties):
         values = [sanitize_property_value(v) for v in value.split()]
@@ -299,11 +506,16 @@ def find_properties(block_properties):
 
     return properties
 
-# a.b.c => a-b-c: { }
-# a .b.c => a: { b-c }
-# #a.b c d:f => a-b: { c: { d-f: { } } }
 
 def css_to_json(css_path, output_file):
+    """
+    Converts the CSS file at the given path to JSON and outputs it to a file.
+
+    Args:
+        css_path: (str) The path at which to load the CSS to convert.
+        output_file: (file) A file object which to write the lines
+                            of the converted CSS (i.e. the JSON).
+    """
     log.info("Processing CSS file at path '%s'", css_path)
     with open(css_path) as source:
         css = source.read()
@@ -314,11 +526,13 @@ def css_to_json(css_path, output_file):
     root = {}
 
     log.info("Looking for CSS blocks")
-    for block in find_blocks(css):
+    duration, blocks = time_operation(lambda: find_blocks(css))
+    log.info("Took %f seconds to parse CSS file", duration)
+    for block in blocks:
         selector_match, properties_match = block
         selectors = find_selectors(root, selector_match)
         properties = find_properties(properties_match)
-        log.debug("Found properties '%s'", truncate(repr(properties)))
+        log.debug("Found properties '%s'", truncate_string(repr(properties)))
 
         for selector in selectors:
             log.debug("Updating properties for selector '%s'", selector)
@@ -330,9 +544,20 @@ def css_to_json(css_path, output_file):
 
 
 def sass_to_json(sass_path, output_file):
+    """
+    Converts a SASS file to JSON.
+
+    The SASS file is first converted to CSS using the SASS command line
+    utility, then the resulting CSS file is converted as if by passing
+    it to the script directly.
+
+    Args:
+        sass_path: (str) The path of the SASS file to convert.
+        output_file: (file) The file to which to write the converted SASS to.
+    """
     log.info("Processing SASS file at path '%s'", sass_path)
 
-    sass_path = shlex.quote(sass_path)
+    sass_path = shlex.quote(sass_path)  # pylint: disable=E1101
     base_path = os.path.splitext(sass_path)[0]
     css_path = '{0}.css'.format(base_path)
     log.info("Compiling SASS file to CSS at path '%s'", css_path)
@@ -341,6 +566,7 @@ def sass_to_json(sass_path, output_file):
     command += '{0} {1}'.format(sass_path, css_path)
     log.debug("Executing sass command: '%s'", command)
     try:
+        # pylint: disable=E1101
         subprocess.run(shlex.split(command), check=True)
     except subprocess.CalledProcessError:
         log.error("SASS to CSS compilation failed!")
@@ -350,13 +576,30 @@ def sass_to_json(sass_path, output_file):
 
 
 def theme_to_json(theme_path, output_file):
+    """
+    Converts a theme to JSON.
+
+    The CSS file at `theme_path/theme.css` is processed as if by passing
+    it to the script directly.
+
+    Args:
+        theme_path: (str) The path at which to find the theme.
+        output_file: (file) The file to which to write the converted SASS to.
+    """
     log.info("Processing theme at path '%s'", theme_path)
     css_path = os.path.join(theme_path, 'theme.css')
-    return css_to_json(css_path, output_file)
+    css_to_json(css_path, output_file)
+
+
+###############################################################################
+# MAIN
+###############################################################################
 
 
 def main():
     arguments = Parser().parse(sys.argv[1:])
+
+    # We write to the specified output file or STDOUT
     if arguments.output is None:
         output = sys.stdout
     else:
