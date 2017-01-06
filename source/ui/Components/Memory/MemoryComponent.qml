@@ -114,10 +114,13 @@ Item {
             anchors.fill: parent
             // fadein on mouse hover
             onHoveredChanged: {
-                if(containsMouse)
+                if(containsMouse) {
                     textFieldMemoryValue.borderopacity = 1;
-                else
-                    textFieldMemoryValue.borderopacity = 0;
+                } else {
+                    if(!textFieldMemoryValue.activeFocus) {
+                        textFieldMemoryValue.borderopacity = 0;
+                    }
+                }
             }
 
             TextField {
@@ -126,6 +129,14 @@ Item {
                 anchors.fill: parent
                 visible: (styleData.row % (number_bits / 8) == 0) ? true : false
                 enabled: (styleData.row % (number_bits / 8) == 0) ? true : false
+
+                onActiveFocusChanged: {
+                    if(activeFocus) {
+                        textFieldMemoryValue.borderopacity = 1;
+                    } else {
+                        textFieldMemoryValue.borderopacity = 0;
+                    }
+                }
 
                 // fadein effect
                 property double borderopacity: 0
