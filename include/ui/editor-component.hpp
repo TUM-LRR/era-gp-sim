@@ -24,6 +24,7 @@
 #include <QTextDocument>
 #include <memory>
 #include <vector>
+#include <list>
 
 #include "core/command-interface.hpp"
 #include "core/parser-interface.hpp"
@@ -69,10 +70,10 @@ class EditorComponent : public QObject {
   Q_INVOKABLE void addSecondarySyntaxHighlighter(QQuickTextDocument *qDocument);
 
   /**
-    Destroys all secondary syntax highlighters and removes them from
-    _secondarySyntaxHighlighters.
+    Destroys the secondary syntax highlighter that highlights the given QQuikTextDocument and removes it from _secondarySyntaxHighlighters.
+    \param qDocument Text document that is highlighted by the syntax highlighter that is supposed to be deleted.
     */
-  Q_INVOKABLE void deleteSecondarySyntaxHighlighters();
+  Q_INVOKABLE void deleteSecondarySyntaxHighlighter(QQuickTextDocument *qDocument);
 
   /**
    * Invokes the parser with the current text of the editor.
@@ -152,7 +153,7 @@ class EditorComponent : public QObject {
 
   /** Syntax Highlighter of macro subeditors. New syntax highlighters
    * added through addSecondarySyntaxHighlighter method. */
-  std::vector<std::unique_ptr<SyntaxHighlighter>> _secondaryHighlighters;
+  std::list<std::unique_ptr<SyntaxHighlighter>> _secondaryHighlighters;
 
   /** The command interface of the core */
   CommandInterface _commandInterface;

@@ -33,7 +33,7 @@ class QTextCharFormat;
 /**
  * An implementation of a syntax highlighter for qml.
  */
-class SyntaxHighlighter : QSyntaxHighlighter {
+class SyntaxHighlighter : public QSyntaxHighlighter {
   Q_OBJECT
  public:
   /** Creates a new SyntaxHighlighter.
