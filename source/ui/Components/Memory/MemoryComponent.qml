@@ -153,7 +153,7 @@ Item {
                             id: background
                             anchors.fill: parent
                             opacity: textFieldMemoryValue.borderopacity
-                            focus: false
+                            activeFocusOnTab: false
                         }
                     }
                 }
