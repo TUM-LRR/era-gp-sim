@@ -23,6 +23,35 @@ import QtQuick.Dialogs 1.2
 import "../Common"
 import "../Common/TextUtilities.js" as TextUtilities
 
+/**
+This file is implements all the features of the editor component. Some features might
+be factored out into separate files however.
+
+Notes on line numbering:
+    The editor displays macro expansions inline which means that code below a macroBar
+    expansion that was expanded (i.e. is visible) has to be offset in order to accomodate
+    the macro expansion's code. To do this, blank lines are inserted. These blank lines
+    however are not considered actual lines for the user. So as far as line numbering is
+    concerened, these blank lines have the same line number as the line above them. These
+    kind of line numbers are called "display line numbers".
+    The Parser module and Core module however do not know about that kind of line numbering.
+    They use the normal line numbering that assign a sequential line number even to macro
+    blank lines. These kind of line numbers are called "raw line numbers".
+    QML interface components index their line numbers starting from 0.
+
+    The following naming conventions are (mostly) used in this file:
+    - Display Line Numbers: Values from 1 to m with macro blank lines factored out (e.g. blank
+      lines have same line number as line above). A variable referring to lines not specified
+      to be display or raw is usually type display (i.e. display is default).
+    - Raw Line Numbers: Values from 1 to n with macro blank lines treated as normal lines
+      (therefore n >= m).
+    - Line Indexes: Values from 0 to k. Used by QML components and often used for positioning.
+
+    The functions `convertRawLineNumberToDisplayLineNumber` and
+    `convertDisplayLineNumberToRawLineNumber` can be used to translate between both types of line
+    numbers.
+ */
+
 //decorates a Flickable with Scrollbars
 ScrollView {
     id: scrollView
@@ -98,7 +127,7 @@ ScrollView {
                 visible: true
                 onCursorRectangleChanged: {
                     cursorScroll(cursorRectangle);
-                    var newCursorLine = (cursorRectangle.y/cursorRectangle.height);
+                    var newCursorLine = (cursorRectangle.y/cursorRectangle.height)+1;
                     newCursorLine = textArea.convertRawLineNumberToDisplayLineNumber(newCursorLine);
                     if (cursorLine !== newCursorLine) {
                         cursorLine = newCursorLine;
@@ -291,11 +320,11 @@ ScrollView {
                 }
                 property var inlineMacros: undefined
 
-                function convertRawLineNumberToDisplayLineNumber(rawLineIndex) {
+                function convertRawLineNumberToDisplayLineNumber(rawLine) {
                     if (inlineMacros === undefined) {
-                        return rawLineIndex+1;
+                        return rawLine;
                     } else {
-                        return inlineMacros.convertRawLineNumberToDisplayLineNumber(textArea.text, rawLineIndex);
+                        return inlineMacros.convertRawLineNumberToDisplayLineNumber(textArea.text, rawLine);
                     }
                 }
 
@@ -358,7 +387,7 @@ ScrollView {
                     Connections {
                         target: editor
                         onAddIssue: {
-                            // Note: Parser uses line numbering 1...n instead of 0...n.
+                            // Note: Parser uses line numbering 1...n.
                             errorBar.addIssue(message, line, color);
                         }
 
@@ -461,7 +490,7 @@ ScrollView {
                             // Add as many lines as necessary at the bottom.
                             for (var lineIndex = currentRawLineCount; lineIndex < newLineCount; ++lineIndex) {
                                 var lineNumberTextObject = lineNumberTextComponent.createObject(lineNumbersBar);
-                                lineNumberTextObject.text = textArea.convertRawLineNumberToDisplayLineNumber(lineIndex);
+                                lineNumberTextObject.text = textArea.convertRawLineNumberToDisplayLineNumber(lineIndex+1);
                                 _lineNumberObjects[lineIndex] = lineNumberTextObject;
                             }
                             // Remove as many lines as necessary at the bottom.
@@ -473,7 +502,7 @@ ScrollView {
                             }
                         } else {    // Update all line numbers.
                             for (var lineIndex = 0; lineIndex < newLineCount; ++lineIndex) {
-                                var lineNumber = textArea.convertRawLineNumberToDisplayLineNumber(lineIndex);
+                                var lineNumber = textArea.convertRawLineNumberToDisplayLineNumber(lineIndex+1);
                                 // Line number for this lineIndex already exist.
                                 if (_lineNumberObjects[lineIndex] !== undefined && _lineNumberObjects[lineIndex] !== null) {
                                     // Line number for this lineIndex has changed, therefore delete and create new. Otherwise reuse
@@ -546,10 +575,10 @@ ScrollView {
 
                 property var breakpoints: ({})
 
-                function addBreakpoint(rawLine) {
-                    var displayLine = textArea.convertRawLineNumberToDisplayLineNumber(rawLine);
+                function addBreakpoint(lineIndex) {
+                    var displayLine = textArea.convertRawLineNumberToDisplayLineNumber(lineIndex+1);
                     sidebar.breakpoints[displayLine] = breakpointComponent.createObject(sidebar, {"line": displayLine});
-                    sidebar.breakpoints[displayLine].y = rawLine*textArea.cursorRectangle.height;
+                    sidebar.breakpoints[displayLine].y = lineIndex*textArea.cursorRectangle.height;
                 }
 
                 Component {

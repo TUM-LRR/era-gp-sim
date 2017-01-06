@@ -132,19 +132,6 @@ Item {
     function macroUpdatesOnTextChanged() {
         // Only update when text was changed by user but not by the program (e.g. when expanding macro).
         if (shouldUpdateText) {
-            /*// When lines where inserted or removed above any macro, its startLine has to be offset
-            // in order to guarantee its blank lines are removed correctly when collapsing.
-            // Calculate the number of lines inserted/deleted.
-            var lineCountDifference = textArea.lineCount - oldLineCount;
-            // Iterate over macros which have to be offset.
-            var currentLine = TextUtilities.getLineNumberForPosition(textArea.text, textArea.cursorPosition);
-            currentLine = convertRawLineNumberToDisplayLineNumber(textArea.text, currentLine);
-            for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
-                if (Number(macros[macroIndex]["startLine"]) >= (currentLine-1)) {
-                    var newStartLine = Number(macros[macroIndex]["startLine"]) + lineCountDifference;
-                    macros[macroIndex]["startLine"] = newStartLine;
-                }
-            }*/
             // Remove macros when new text was entered.
             removeCurrentMacros();
         }
@@ -289,7 +276,7 @@ Item {
     // Accepts a given line number inside the editor and factors out all blank lines inserted for macro expansions.
     function convertRawLineNumberToDisplayLineNumber(text, rawLineNumber) {
         var lineNumber = 0;
-        for (var lineIndex = 0; lineIndex <= rawLineNumber; ++lineIndex) {
+        for (var lineIndex = 0; lineIndex < rawLineNumber; ++lineIndex) {
             if (!isPositionInsideMacroBlankLine(text, TextUtilities.getLineStartForLine(text, lineIndex))) {
                 lineNumber++;
             }
