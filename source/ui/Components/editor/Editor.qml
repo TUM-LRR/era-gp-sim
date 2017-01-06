@@ -544,10 +544,12 @@ ScrollView {
                 }
 
 
-                function addBreakpoint(line) {
-                    var newBreakpoint =
-                            breakpointComponent.createObject(sidebar,
-                                                             {"y": line*textArea.cursorRectangle.height, "line": line});
+                property var breakpoints: ({})
+
+                function addBreakpoint(rawLine) {
+                    var displayLine = textArea.convertRawLineNumberToDisplayLineNumber(rawLine);
+                    sidebar.breakpoints[displayLine] = breakpointComponent.createObject(sidebar, {"line": displayLine});
+                    sidebar.breakpoints[displayLine].y = rawLine*textArea.cursorRectangle.height;
                 }
 
                 Component {
@@ -561,7 +563,7 @@ ScrollView {
                         height: textArea.cursorRectangle.height;
 
                         Component.onCompleted: {
-                            editor.setBreakpoint(line + 1);
+                            editor.setBreakpoint(line);
                         }
 
                         Rectangle {
@@ -584,8 +586,21 @@ ScrollView {
                             preventStealing: true
 
                             onClicked: {
-                                editor.deleteBreakpoint(line + 1);
+                                editor.deleteBreakpoint(line);
+                                delete sidebar.breakpoints[line];
                                 breakpointItem.destroy();
+                            }
+                        }
+
+                        Connections {
+                            target: textArea
+
+                            // A line number structure change means the structure of the visible code is altered without
+                            // an obligatory recompile (e.g. when macro is expanded/collapsed). Therefore, the vertical position
+                            // of breakpoints has to be adjusted.
+                            onLineNumberStructureChanged: {
+                                // Update y-position with any new macro expansions/collapses in mind.
+                                breakpointItem.y = (textArea.convertDisplayLineNumberToRawLineNumber(line)-1)*textArea.cursorRectangle.height;;
                             }
                         }
                     }
