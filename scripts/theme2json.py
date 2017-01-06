@@ -148,8 +148,8 @@ class Parser(argparse.ArgumentParser):
         super(Parser, self).__init__(description='Theme to JSON converter.')
 
         self.add_argument(
-            'theme',
-            metavar='THEME',
+            'input',
+            metavar='INPUT',
             help='The theme folder, SASS or CSS to convert.'
         )
 
@@ -184,16 +184,18 @@ class Parser(argparse.ArgumentParser):
             Parser.Error for any command line badness.
         """
         arguments = self.parse_args()
-        argument_kind = self._determine_argument_kind(arguments)
-        self._check_path(arguments.theme, argument_kind)
 
         if arguments.verbose:
             self._enable_logging(arguments.verbose)
 
+        input_kind = self._determine_input_kind(arguments)
+        self._check_path(arguments.input, input_kind)
+        output = self._determine_output_path(arguments, input_kind)
+
         return Parser.Arguments(
-            arguments.theme,
-            argument_kind,
-            arguments.output
+            arguments.input,
+            input_kind,
+            output
         )
 
     def _setup_kind_options(self, group):
@@ -204,13 +206,13 @@ class Parser(argparse.ArgumentParser):
             group: The mutually exclusive group to add the choices to.
         """
         group.add_argument('-c', '--css', action='store_true',
-                           help="THEME is the theme's CSS file.")
+                           help="INPUT is a CSS file.")
         group.add_argument('-s', '--sass', action='store_true',
-                           help="THEME is the theme's SASS file.")
+                           help="INPUT is a SASS file.")
         group.add_argument('-d', '--directory', action='store_true',
-                           help="THEME is the theme's directory.")
+                           help="INPUT is a directory.")
 
-    def _check_path(self, path, argument_kind):
+    def _check_path(self, path, input_kind):
         """
         Check the validity of the input path supplied.
 
@@ -219,19 +221,19 @@ class Parser(argparse.ArgumentParser):
 
         Args:
             path: (str) The input path to check.
-            argument_kind: (Kind) The kind of path it is supposed to be.
+            input_kind: (Kind) The kind of path it is supposed to be.
 
         Raises:
             ParseError: If the input path is not valid.
         """
         if not os.path.exists(path):
             raise ParseError("Path '{0}' does not exist".format(path))
-        if argument_kind is Kind.DIRECTORY and not os.path.isdir(path):
+        if input_kind is Kind.DIRECTORY and not os.path.isdir(path):
             raise ParseError(
                 "Theme path '{0}' is not a directory".format(path)
             )
 
-    def _determine_argument_kind(self, arguments):
+    def _determine_input_kind(self, arguments):
         """
         Determines the kind of the input file.
 
@@ -240,7 +242,7 @@ class Parser(argparse.ArgumentParser):
         file extension is inspected.
 
         Args:
-            arguments: (dict) The input arguments to inspect.
+            arguments: (argparse.Namespace) The input arguments to inspect.
 
         Returns:
             A member of the Kind enum.
@@ -252,9 +254,9 @@ class Parser(argparse.ArgumentParser):
         for possible_type in ('css', 'sass', 'directory'):
             if dictionary[possible_type]:
                 return Kind[possible_type.upper()]
-        return self._deduce_argument_kind_from_path(arguments.theme)
+        return self._deduce_input_kind_from_path(arguments.input)
 
-    def _deduce_argument_kind_from_path(self, path):
+    def _deduce_input_kind_from_path(self, path):
         """
         Attempts to deduce the argument type from the input path.
 
@@ -290,6 +292,29 @@ class Parser(argparse.ArgumentParser):
         log.setLevel(logging.WARNING - min(verbosity, 2) * 10)
         level_name = logging.getLevelName(log.getEffectiveLevel())
         log.info('Enabled logging at level %s', level_name)
+
+    def _determine_output_path(self, arguments, input_kind):
+        """
+        Determines the path to which to output the JSON.
+
+        Args:
+            arguments: (argparse.Namespace) The arguments supplied
+                                            to the script.
+            input_kind: (Kind) The kind of input supplied to the script.
+
+        Returns:
+            The path to which to output the converted JSON.
+        """
+        if arguments.output:
+            output_path = arguments.output
+        elif input_kind is Kind.DIRECTORY:
+            output_path = os.path.join(arguments.input, 'theme.json')
+        else:
+            input_path = os.path.splitext(arguments.input)[0]
+            output_path = '{0}.json'.format(input_path)
+
+        log.info("Will be writing JSON output to '%s'", output_path)
+        return output_path
 
 
 ###############################################################################
@@ -598,17 +623,12 @@ def theme_to_json(theme_path, output_file):
 
 def main():
     arguments = Parser().parse(sys.argv[1:])
-
-    # We write to the specified output file or STDOUT
-    if arguments.output is None:
-        output = sys.stdout
-    else:
-        output = open(arguments.output, 'w')
+    output = open(arguments.output, 'w')
 
     try:
-        if arguments.kind == Kind.CSS:
+        if arguments.kind is Kind.CSS:
             css_to_json(arguments.input, output)
-        elif arguments.kind == Kind.SASS:
+        elif arguments.kind is Kind.SASS:
             sass_to_json(arguments.input, output)
         else:
             theme_to_json(arguments.input, output)
