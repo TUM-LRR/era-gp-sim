@@ -439,8 +439,12 @@ def find_selectors(root, block_selectors):
                 selector
             )
 
-            # We replace class and pseudo-class specifiers with hyphens
-            selector = re.sub(r'[:.]', '-', selector)
+            # We replace class and pseudo-class specifiers with camelCased names
+            selector = re.sub(
+                r'[:.](\w)',
+                lambda m: m.group(1).upper(),
+                selector
+            )
             log.debug(
                 "Replaced '.' and ':' operators from "
                 "selector with hyphens to yield: '%s'",
