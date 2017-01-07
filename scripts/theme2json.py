@@ -439,15 +439,16 @@ def find_selectors(root, block_selectors):
                 selector
             )
 
-            # We replace class and pseudo-class specifiers with camelCased names
+            # We replace class and pseudo-class
+            # specifiers with camelCased names
             selector = re.sub(
                 r'[:.](\w)',
                 lambda m: m.group(1).upper(),
                 selector
             )
             log.debug(
-                "Replaced '.' and ':' operators from "
-                "selector with hyphens to yield: '%s'",
+                "Replaced '.' and ':' operators from selector"
+                "with a camelCased name to yield: '%s'",
                 selector
             )
 
@@ -534,6 +535,7 @@ def find_properties(block_properties):
     """
     properties = []
     for key, value in find_properties.pattern.findall(block_properties):
+        key = re.sub(r'-(\w)', lambda m: m.group(1).upper(), key)
         values = [process_property_value(v) for v in value.split()]
         if not values:
             continue
