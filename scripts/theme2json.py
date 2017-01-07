@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import argparse
 import collections
 import enum
@@ -469,9 +473,9 @@ def find_selectors(root, block_selectors):
             yield parent
 
 
-def sanitize_property_value(value):
+def process_property_value(value):
     """
-    Sanitizes the value of a property.
+    Processes the value of a property.
 
     We do not respect any kind of unit for numbers. For this script (and our
     themes), 10px is the same as 10% and 10rem or 10em. In fact, the unit is
@@ -493,18 +497,23 @@ def sanitize_property_value(value):
     # and ints (there's only 'number'), but if we convert everything
     # to float, there will be a trailing .0 behind every integer
 
-    float_match = re.match(r'^([+-]?\d*\.\d+)', value)
-    if float_match is not None:
+    match = re.match(r'^(?:([+-]?\d*\.\d+)|([+-]?\d+))\s*(%)?', value)
+
+    if not match:
+        log.debug("Property value '%s' seems to be a string", value)
+        return value
+
+    float_match, integer_match, percent_match = match.groups()
+
+    if percent_match is not None:
+        log.debug("Determined property value '%s' to be a percentage", value)
+    elif float_match is not None:
         log.debug("Determined property value '%s' to be a float", value)
-        return float(float_match.group(1))
-
-    number_match = re.match(r'^([+-]?\d+)', value)
-    if number_match is not None:
+    else:
         log.debug("Determined property value '%s' to be an integer", value)
-        return int(number_match.group(1))
 
-    log.debug("Property value '%s' seems to be a string", value)
-    return value
+    value = float(float_match) if float_match else int(integer_match)
+    return value / 100 if percent_match else value
 
 
 @pattern(re.compile(r'([-\w]+):([-+\w \t.#!%]+);'))
@@ -521,8 +530,9 @@ def find_properties(block_properties):
     """
     properties = []
     for key, value in find_properties.pattern.findall(block_properties):
-        values = [sanitize_property_value(v) for v in value.split()]
-        assert len(values) > 0
+        values = [process_property_value(v) for v in value.split()]
+        if not values:
+            continue
 
         log.debug("Found %d values for property key '%s'", len(values), key)
         values = values[0] if len(values) == 1 else values
