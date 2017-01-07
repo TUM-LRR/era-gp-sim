@@ -21,7 +21,7 @@
 #define ERAGPSIM_ARCH_RISCV_ABSTRACT_BRANCH_INSTRUCTION_NODE_HPP
 
 #include <QtCore/qglobal.h>
-#include <cassert>
+#include "common/assert.hpp"
 #include <functional>
 #include <limits>
 
@@ -104,7 +104,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
    * \return The resulting program counter.
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate(memoryAccess).isSuccess());
+    assert::that(validate(memoryAccess).isSuccess());
     auto first = _children[0]->getValue(memoryAccess);
     auto second = _children[1]->getValue(memoryAccess);
 
@@ -192,7 +192,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
    */
   virtual bool _checkCondition(const MemoryValue& first,
                                const MemoryValue& second) const {
-    assert(static_cast<bool>(_condition));
+    assert::that(static_cast<bool>(_condition));
     return _condition(first, second);
   }
 

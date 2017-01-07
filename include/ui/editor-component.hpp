@@ -22,9 +22,9 @@
 
 #include <QObject>
 #include <QTextDocument>
+#include <list>
 #include <memory>
 #include <vector>
-#include <list>
 
 #include "core/command-interface.hpp"
 #include "core/parser-interface.hpp"
@@ -70,10 +70,13 @@ class EditorComponent : public QObject {
   Q_INVOKABLE void addSecondarySyntaxHighlighter(QQuickTextDocument *qDocument);
 
   /**
-    Destroys the secondary syntax highlighter that highlights the given QQuikTextDocument and removes it from _secondarySyntaxHighlighters.
-    \param qDocument Text document that is highlighted by the syntax highlighter that is supposed to be deleted.
+    Destroys the secondary syntax highlighter that highlights the given
+    QQuikTextDocument and removes it from _secondarySyntaxHighlighters.
+    \param qDocument Text document that is highlighted by the syntax highlighter
+    that is supposed to be deleted.
     */
-  Q_INVOKABLE void deleteSecondarySyntaxHighlighter(QQuickTextDocument *qDocument);
+  Q_INVOKABLE void
+  deleteSecondarySyntaxHighlighter(QQuickTextDocument *qDocument);
 
   /**
    * Invokes the parser with the current text of the editor.

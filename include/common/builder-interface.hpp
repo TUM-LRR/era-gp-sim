@@ -34,7 +34,7 @@
  * strongly recommended that each concrete builder implement a `validate()`
  * builder method (i.e. that returns the instance), such that this method can be
  * called at the end of a building process. The `validate()` method, in the
- * simplest case, would just `assert(isValid())`. This could also just be
+ * simplest case, would just `assert::that(isValid())`. This could also just be
  * integrated into the `build()` method, if one exists.
  */
 class BuilderInterface {

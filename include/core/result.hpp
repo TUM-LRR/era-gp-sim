@@ -20,7 +20,7 @@
 #ifndef ERAGPSIM_CORE_RESULT_HPP
 #define ERAGPSIM_CORE_RESULT_HPP
 
-#include <cassert>
+#include "common/assert.hpp"
 #include <exception>
 
 /**
@@ -95,7 +95,7 @@ class Result {
    *
    */
   ResultType get() const {
-    assert(!isEmpty());
+    assert::that(!isEmpty());
     if (hasException()) {
       std::rethrow_exception(_exception);
     }

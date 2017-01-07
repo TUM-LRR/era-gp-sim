@@ -20,7 +20,7 @@
 #ifndef ERAGPSIM_ARCH_COMMON_ARCHITECTURE_FORMULA_HPP
 #define ERAGPSIM_ARCH_COMMON_ARCHITECTURE_FORMULA_HPP
 
-#include <cassert>
+#include "common/assert.hpp"
 #include <string>
 #include <vector>
 
@@ -63,7 +63,7 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
   explicit ArchitectureFormula(const std::string& architectureName,
                                const Range& range)
   : super(range) {
-    assert(!isEmpty());
+    assert::that(!isEmpty());
   }
 
   /**

@@ -64,13 +64,16 @@ void EditorComponent::addSecondarySyntaxHighlighter(
       _parserInterface, qDocument->textDocument()));
 }
 
-void EditorComponent::deleteSecondarySyntaxHighlighter(QQuickTextDocument *qDocument) {
-    for (auto it = _secondaryHighlighters.begin(); it != _secondaryHighlighters.end(); ++it) {
-        if ((*it)->document() == qDocument->textDocument()) {
-            _secondaryHighlighters.erase(it);
-            return;
-        }
+void EditorComponent::deleteSecondarySyntaxHighlighter(
+    QQuickTextDocument *qDocument) {
+  for (auto it = _secondaryHighlighters.begin();
+       it != _secondaryHighlighters.end();
+       ++it) {
+    if ((*it)->document() == qDocument->textDocument()) {
+      _secondaryHighlighters.erase(it);
+      return;
     }
+  }
 }
 
 void EditorComponent::parse(bool force) {
