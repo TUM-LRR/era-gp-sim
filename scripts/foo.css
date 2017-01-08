@@ -1,7 +1,7 @@
 /* A commont */
-* { color: red; }
+* { color: red; height: 80%; }
 
-div { font-size: 10px; color: blue; }
+div.bar:hello { font-size: 10px; color: blue; width: 40.423%; }
 
 img { border-width: 100px; color: red; }
 

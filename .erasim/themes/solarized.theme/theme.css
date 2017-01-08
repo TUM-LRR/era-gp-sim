@@ -1,6 +1,11 @@
-register {
-  background-color: #002b36;
-  color: #839496;
-  border: 10; }
+button { capitalization: 1; color: #FFFFFF; font-size: 16px; height: 40px; radius: 4; }
+button border { color: #39a1f4; width: 2px; }
+
+window { width: 1200px; height: 700px; background-color: #2196F3; }
+
+create-project name { length: 80px; }
+create-project add { background-color: #FF4081; width: 160px; }
+
+register { border: 10; }
 
 /*# sourceMappingURL=theme.css.map */

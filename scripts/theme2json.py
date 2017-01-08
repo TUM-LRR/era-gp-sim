@@ -54,7 +54,7 @@ class ColorFormatter(logging.Formatter):
             A formatted log record.
         """
         if self.use_color:
-            record.levelname = '\033[{0}m{1}\033[0m'.format(
+            record.levelname = '\033[{0}m[{1}]\033[0m'.format(
                 ColorFormatter.COLORS[record.levelname],
                 record.levelname
             )
@@ -410,7 +410,7 @@ def find_selectors(root, block_selectors):
         value would be a list o the innermost dictionaries created here.
     """
     log.debug(
-        "Processing selector(s): '%s'",
+        "Processing selector(s): %s",
         truncate_string(block_selectors, 70)
     )
     # A selector group is a sequence of selectors one places before a comma or
@@ -424,31 +424,31 @@ def find_selectors(root, block_selectors):
         # each selector in the group. With a selector, we here mean
         # one level in the DOM hierarchy (such `a.b`).
         parent = root
-        log.debug("Processing selector group: '%s'", selector_group)
+        log.debug("Processing selector group: %s", selector_group)
 
         selector = None
         for selector in selector_group.split():
-            log.info("Processing selector: '%s'", selector)
+            log.info("Processing selector: %s", selector)
             # Get rid of any possible ID selector
             # Note that since JSON only has no concept of selectivity
             # an ID has the same semantics as a class selector
             selector = selector.lstrip('#-.')
             log.debug(
                 "Removed leading '[#-.]' characters "
-                "from selector to yield: '%s'",
+                "from selector to yield: %s",
                 selector
             )
 
             # We replace class and pseudo-class
             # specifiers with camelCased names
             selector = re.sub(
-                r'[:.](\w)',
+                r'[-:.](\w)',
                 lambda m: m.group(1).upper(),
                 selector
             )
             log.debug(
                 "Replaced '.' and ':' operators from selector"
-                "with a camelCased name to yield: '%s'",
+                "with a camelCased name to yield: %s",
                 selector
             )
 
@@ -456,7 +456,7 @@ def find_selectors(root, block_selectors):
             child = parent.get(selector)
             if child is None:
                 log.debug(
-                    "'%s' selector did not exist yet in "
+                    "%s selector did not exist yet in "
                     "parent selector, creating nested block",
                     selector
                 )
@@ -465,7 +465,7 @@ def find_selectors(root, block_selectors):
             else:
                 log.debug("'%s' selector already existed in parent selector")
                 log.debug(
-                    "Current state of '%s' is: '%s'",
+                    "Current state of %s is: %s",
                     truncate_string(selector, 70),
                     child
                 )
@@ -474,7 +474,7 @@ def find_selectors(root, block_selectors):
             parent = child
 
         if selector:
-            log.debug("Yielding selector leaf '%s'", selector)
+            log.debug("Yielding selector leaf %s", selector)
             yield parent
 
 
@@ -628,8 +628,8 @@ def theme_to_json(theme_path, output_file):
         output_file: (file) The file to which to write the converted SASS to.
     """
     log.info("Processing theme at path '%s'", theme_path)
-    css_path = os.path.join(theme_path, 'theme.css')
-    css_to_json(css_path, output_file)
+    sass_path = os.path.join(theme_path, 'theme.sass')
+    sass_to_json(sass_path, output_file)
 
 
 ###############################################################################

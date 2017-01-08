@@ -24,12 +24,14 @@ import QtQuick.Dialogs 1.2
 import "Components"
 import "Components/Menubar"
 import "Components/Toolbar"
+import Theme 1.0
 
 ApplicationWindow {
     id: window
     visible: true
-    width: Screen.desktopAvailableWidth*0.7
-    height: Screen.desktopAvailableHeight*0.8
+    width: Theme.window.width
+    height: Theme.window.height
+    color: Theme.window.backgroundColor
 
     property alias menubar: menubar
     property alias toolbar: toolbar

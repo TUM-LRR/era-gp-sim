@@ -1,28 +1,33 @@
-$base03:    #002b36
-$base02:    #073642
-$base01:    #586e75
-$base00:    #657b83
-$base0:     #839496
-$base1:     #93a1a1
-$base2:     #eee8d5
-$base3:     #fdf6e3
-$yellow:    #b58900
-$orange:    #cb4b16
-$red:       #dc322f
-$magenta:   #d33682
-$violet:    #6c71c4
-$blue:      #268bd2
-$cyan:      #2aa198
-$green:     #859900
+$primary-color-dark:   #1976D2
+$primary-color:        #2196F3
+$primary-color-light:  #BBDEFB
+$primary-color-text:   #FFFFFF
+$accent-color:         #FF4081
+$primary-text-color:   #212121
+$secondary-text-color: #757575
+$divider-color:        #BDBDBD
 
-=solarized-dark
-  background-color: $base03
-  color: $base0
+button
+  capitalization: 1
+  color: $primary-color-text
+  font-size: 16px
+  height: 40px
+  radius: 4
+  border
+    color: lighten($primary-color, 5%)
+    width: 2px
 
-=solarized-light
-  background-color: $base3
-  color: $base00
+window
+  width: 1200px
+  height: 700px
+  background-color: $primary-color
+
+create-project
+  name
+    length: 80px
+  add
+    background-color: $accent-color
+    width: 160px
 
 register
-  +solarized-dark
   border: 10

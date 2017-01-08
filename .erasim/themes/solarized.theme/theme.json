@@ -1,6 +1,30 @@
 {
-  "register": {
-    "color": "#ff00ffff",
-    "border": 10
-  }
+    "window": {
+        "width": 1200,
+        "backgroundColor": "#2196F3",
+        "height": 700
+    },
+    "createProject": {
+        "add": {
+            "width": 160,
+            "backgroundColor": "#FF4081"
+        },
+        "name": {
+            "length": 80
+        }
+    },
+    "register": {
+        "border": 10
+    },
+    "button": {
+        "border": {
+            "width": 2,
+            "color": "#39a1f4"
+        },
+        "fontSize": 16,
+        "radius": 4,
+        "capitalization": 1,
+        "color": "#FFFFFF",
+        "height": 40
+    }
 }

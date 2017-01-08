@@ -55,6 +55,12 @@ void Theme::load(const QString& themeName) {
   for (auto iterator = json.begin(); iterator != json.end(); ++iterator) {
     const auto& value = iterator.value();
     assert::that(value.isObject());
+    std::clog << "Loading " << iterator.key().toStdString() << std::endl;
+    auto v = value.toObject();
+    for (auto i = v.begin(); i != v.end(); ++i) {
+      std::clog << i.key().toStdString() << " : "
+                << i.value().toString().toStdString() << std::endl;
+    }
     super::insert(iterator.key(), value.toObject().toVariantMap());
   }
 }
