@@ -18,6 +18,7 @@
 	\label{Project_Creation}
 \end{figure}
 
+
 \subsubsection{Speichern/Laden}
 \todo[inline]{Speichern/Laden von Projekt und Code}
 
@@ -29,6 +30,14 @@
 
 \subsubsection{Editor}
 \todo[inline]{Alles zum Editor (zoomen, Makros aufklappen, Fehlermeldungen anzeigen, Tooltips etc)}
+
+\begin{figure}[ht]
+	\centering
+  \includegraphics[scale=1]{Images/Editor}
+	\caption{der Programmeditor}
+	\label{Editor}
+\end{figure}
+
 
 \subsubsection{Hilfetextkomponente}
 \todo[inline]{Was wird angezeigt, zu welchem Befehl (Zeile!), wann (nach dem Parsen)}
@@ -45,6 +54,19 @@
 \subsubsection{Speicherkomponente}
 \todo[inline]{Alles zur Speicherkomponente: Wie verstelle ich die Zahlendarstellung, Hinzufügen/Entfernen von Spalten}
 
+\begin{figure}[ht]
+	\centering
+  \includegraphics[scale=1]{Images/Memory}
+	\caption{der Programmspeicher - RAM}
+	\label{Memory}
+\end{figure}
+
+\begin{warningblock}
+Bei einer ungültigen Eingabe wird die Zahl bestmöglich interpretiert und anstelle des
+eingegebenen Wertes an die Speicherstelle geschrieben. Dazu zählt auch die Eingabe zu großer Zahlen.
+Die Ersetzung erfolgt sofort.
+\end{warningblock}
+
 
 \subsection{Interaktion mit laufenden Programmen}
 \todo[inline]{Hier sollte (für alle Komponenten ja gleich) die Einstellungsmöglichkeiten (Zahnrad-knopf) und welches Symbol welche Komponente bedeutet}
@@ -57,6 +79,7 @@
 	\caption{Eingabe mit Pfeiltasten}
 	\label{Joystick}
 \end{figure}
+
 
 \subsubsection{Eingabe -- Mausklick}
 \todo[inline]{welche werte werden geschrieben, Reihenfolge?}
@@ -79,6 +102,7 @@
 	\caption{Leuchtbandanzeige mit verschiedenen Farben}
 	\label{Lightstrip_Colors}
 \end{figure}
+
 
 \subsubsection{Ausgabe -- 7-Segmentanzeige}
 Die sogenannte 7-Segment Anzeige ist eine einfache alphanumerische Ausgabe, 
@@ -108,8 +132,8 @@ Es können auch gleichzeitig mehrere Zeichen angesteuert werden. Die einzelnen B
 Dabei muss aber darauf geachtet werden, dass die Reihenfolge genau umgedreht ist. Das Zeichen am rechten Rand steht somit an der ersten Adresse im Speicher, 
 danach folgt das vorletzte usw.
 
-\begin{warningblock}{Reihenfolge der Zeichen}
-Die Ansteuerung der Zeichen ist genau geschieht (wie im Zahlensystem) von rechts nach links. 
+\begin{warningblock}
+Reihenfolge der Zeichen: Die Ansteuerung der Zeichen ist genau geschieht (wie im Zahlensystem) von rechts nach links. 
 \end{warningblock}
 
 Ein kleines Beispiel verdeutlicht dies wohl am besten.
