@@ -51,8 +51,12 @@
 \subsubsection{Registerkomponente}
 \todo[inline]{Alles zu den Registerkomponenten, wie verstelle ich die Zahlendarstellung, Highlight bei Änderung etc}
 
+
 \subsubsection{Speicherkomponente}
-\todo[inline]{Alles zur Speicherkomponente: Wie verstelle ich die Zahlendarstellung, Hinzufügen/Entfernen von Spalten}
+Der Haupspeicher stellt bei allen Programmen eine sehr wichtige Rolle. 
+Dort sind sowohl der assemblierte Programmcode, der Callstack, als auch Daten zum Arbeiten hinterlegt.
+Der Speicher ist dabei in Zellen unterteilt, die in der Regel 1 Byte groß sind.
+Auch der Simulator hat natürlich einen solchen RAM, der sich flexibel an die Bedürfnisse des Nutzers anpassen lässt.
 
 \begin{figure}[ht]
 	\centering
@@ -60,6 +64,21 @@
 	\caption{der Programmspeicher - RAM}
 	\label{Memory}
 \end{figure}
+
+Um den Inhalt des Speichers auf einen Blick erfassen zu können, stehen verschieden Einstellungen in der Kopfzeile zur Verfügung:\\
+In der ersten Spalte stehen immer die Adressen der Speicherzellen. 
+Bei großen Datenmengen ist es manchmal wünschenswert mehr als nur 1 Byte pro Zeile angezeigt zu bekommen.
+Deshalb kann im Menu oberhalb dieser Spalte die angezeigte Größe der Speicherzellen eingestellt werden.
+Standardmäßig stehen hier $8\, Bit$, $16\, Bit$, $32\, Bit$ und $64\, Bit$ zur Auswahl. 
+Dabei wird aber die die architekturbedingte Größe der Speicherzellen nicht beeinflusst; es werden stattdessen mehrere Speicherzellen pro Zeile dargestellt.
+Deshalb ändert sich die angezeigte Adressierung entsprechend.\\
+Des Weiteren stehen mehrere Anzeigeformate für den Inhalt zur Verfügung, welche jeweils oberhalb einer angezeigten Spalte ausgewählt werden können.
+Dabei stehen standardmäßig ``Binär'', ``Hexadezimal'', ``Dezimal'' und ``Dezimal (vorzeichenbehaftet/signed)'' zur Verfügung. 
+Letzteres kann den Speicherinhalt auch als negative Zahl interpretieren bzw. auch negative Eingaben entgegen nehmen. \\
+Außerdem können die Inhalte der Speicherzellen nebeneinander gleichzeitig in verschiedenen Formaten repräsentiert werden.
+Dazu einfach auf das ``\texttt{+}'' in der rechten oberen Ecke klicken. Daraufhin erscheint eine neue Spalte im Speicher, 
+bei der auch wieder das Format ausgewählt werden kann. Um eine Spalte wieder zu entfernen, muss in dem Auswahlfeld für das Format der letzte
+Eintrag ``\texttt{remove...}'' ausgewählt werden.
 
 \begin{warningblock}
 Bei einer ungültigen Eingabe wird die Zahl bestmöglich interpretiert und anstelle des
