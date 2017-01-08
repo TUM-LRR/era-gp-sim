@@ -74,6 +74,9 @@ void MemoryComponentPresenter::setValue(int address,
                                         QString number,
                                         int length_bit,
                                         QString presentation) {
+  if (number.length() == 0) {
+    number = "0";  // string conversions needs a number
+  }
   if (presentation.startsWith("bin"))
     _memoryAccess.putMemoryValueAt(address,
                                    *StringConversions::binStringToMemoryValue(
