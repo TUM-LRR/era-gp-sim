@@ -29,10 +29,6 @@ Item {
         anchors.fill: parent
         backgroundVisible: false
         style: TreeViewStyle {
-            frame: Rectangle {
-                border.width: 10
-                color: "#00ff00"
-            }
             transientScrollBars: true
         }
         alternatingRowColors: false
