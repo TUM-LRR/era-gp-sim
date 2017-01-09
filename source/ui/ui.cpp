@@ -17,7 +17,6 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QQMLEngine>
 #include <QUrl>
 #include <string>
 
@@ -73,17 +72,17 @@ id_t Ui::addProject(QQuickItem* tabItem,
                     const QString& architecture,
                     const QString& optionName,
                     const QString& parser) {
-  // create ArchitectureFormula
   ArchitectureFormula architectureFormula(architecture.toStdString());
 
-  // add all extensions which are defined for this option
+  // Add all extensions which are defined for this option
   for (const auto& qstring : _getOptionFormula(architecture, optionName)) {
     architectureFormula.addExtension(qstring.toStdString());
   }
-  // get the memory size from the qvariant object.
+
+  // Get the memory size from the qvariant object.
   auto memorySize = memorySizeQVariant.value<std::size_t>();
 
-  // parent is tabItem, so it gets destroyed at the same time
+  // Parent is tabItem, so it gets destroyed at the same time
   auto context = new QQmlContext(qmlContext(tabItem), tabItem);
 
   // save the project pointer in a vector, the object is deleted by qml when
