@@ -25,7 +25,7 @@ import time
 
 
 class ColorFormatter(logging.Formatter):
-    """A formatter class that adds colors to logs."""
+    ""'A formatter class that adds colors to logs.'""
 
     COLORS = dict(ERROR=31, WARNING=33, INFO=32, DEBUG=34)
 
@@ -210,11 +210,11 @@ class Parser(argparse.ArgumentParser):
             group: The mutually exclusive group to add the choices to.
         """
         group.add_argument('-c', '--css', action='store_true',
-                           help="INPUT is a CSS file.")
+                           help='INPUT is a CSS file.')
         group.add_argument('-s', '--sass', action='store_true',
-                           help="INPUT is a SASS file.")
+                           help='INPUT is a SASS file.')
         group.add_argument('-d', '--directory', action='store_true',
-                           help="INPUT is a directory.")
+                           help='INPUT is a directory.')
 
     def _check_path(self, path, input_kind):
         """
@@ -282,7 +282,7 @@ class Parser(argparse.ArgumentParser):
         if extension == '.theme' or os.path.isdir(path):
             return Kind.DIRECTORY
 
-        raise ParseError("Could not deduce file type for '{0}'".format(path))
+        raise ParseError("Could not deduce file type for: {0}".format(path))
 
     def _enable_logging(self, verbosity):
         """
@@ -317,7 +317,7 @@ class Parser(argparse.ArgumentParser):
             input_path = os.path.splitext(arguments.input)[0]
             output_path = '{0}.json'.format(input_path)
 
-        log.info("Will be writing JSON output to '%s'", output_path)
+        log.info('Will be writing JSON output to '%s'', output_path)
         return output_path
 
 
@@ -410,7 +410,7 @@ def find_selectors(root, block_selectors):
         value would be a list o the innermost dictionaries created here.
     """
     log.debug(
-        "Processing selector(s): %s",
+        'Processing selector(s): %s',
         truncate_string(block_selectors, 70)
     )
     # A selector group is a sequence of selectors one places before a comma or
@@ -424,18 +424,18 @@ def find_selectors(root, block_selectors):
         # each selector in the group. With a selector, we here mean
         # one level in the DOM hierarchy (such `a.b`).
         parent = root
-        log.debug("Processing selector group: %s", selector_group)
+        log.debug('Processing selector group: %s', selector_group)
 
         selector = None
         for selector in selector_group.split():
-            log.info("Processing selector: %s", selector)
+            log.info('Processing selector: %s', selector)
             # Get rid of any possible ID selector
             # Note that since JSON only has no concept of selectivity
             # an ID has the same semantics as a class selector
             selector = selector.lstrip('#-.')
             log.debug(
                 "Removed leading '[#-.]' characters "
-                "from selector to yield: %s",
+                'from selector to yield: %s',
                 selector
             )
 
@@ -448,7 +448,7 @@ def find_selectors(root, block_selectors):
             )
             log.debug(
                 "Replaced '.' and ':' operators from selector"
-                "with a camelCased name to yield: %s",
+                'with a camelCased name to yield: %s',
                 selector
             )
 
@@ -456,8 +456,8 @@ def find_selectors(root, block_selectors):
             child = parent.get(selector)
             if child is None:
                 log.debug(
-                    "%s selector did not exist yet in "
-                    "parent selector, creating nested block",
+                    "'%s' selector did not exist yet in "
+                    'parent selector, creating nested block',
                     selector
                 )
                 child = {}
@@ -465,7 +465,7 @@ def find_selectors(root, block_selectors):
             else:
                 log.debug("'%s' selector already existed in parent selector")
                 log.debug(
-                    "Current state of %s is: %s",
+                    'Current state of %s is: %s',
                     truncate_string(selector, 70),
                     child
                 )
@@ -474,7 +474,7 @@ def find_selectors(root, block_selectors):
             parent = child
 
         if selector:
-            log.debug("Yielding selector leaf %s", selector)
+            log.debug('Yielding selector leaf %s', selector)
             yield parent
 
 
@@ -500,7 +500,8 @@ def process_property_value(value):
 
     # JSON itself does not have a distinction between floats
     # and ints (there's only 'number'), but if we convert everything
-    # to float, there will be a trailing .0 behind every integer
+    # to float, there will be a trailing .0 behind every integer,
+    # which isn't nice
 
     match = re.match(r'^(?:([+-]?\d*\.\d+)|([+-]?\d+))\s*(%)?', value)
 
@@ -540,7 +541,7 @@ def find_properties(block_properties):
         if not values:
             continue
 
-        log.debug("Found %d values for property key '%s'", len(values), key)
+        log.debug("Found %d values for property key: %s", len(values), key)
         values = values[0] if len(values) == 1 else values
 
         properties.append((key, values))
@@ -557,26 +558,26 @@ def css_to_json(css_path, output_file):
         output_file: (file) A file object which to write the lines
                             of the converted CSS (i.e. the JSON).
     """
-    log.info("Processing CSS file at path '%s'", css_path)
+    log.info('Processing CSS file at path '%s'', css_path)
     with open(css_path) as source:
         css = source.read()
 
-    log.info("Removing comments from CSS")
+    log.info('Removing comments from CSS')
     css = remove_comments(css)
 
     root = {}
 
-    log.info("Looking for CSS blocks")
+    log.info('Looking for CSS blocks')
     duration, blocks = time_operation(lambda: find_blocks(css))
-    log.info("Took %f seconds to parse CSS file", duration)
+    log.info('Took %f seconds to parse CSS file', duration)
     for block in blocks:
         selector_match, properties_match = block
         selectors = find_selectors(root, selector_match)
         properties = find_properties(properties_match)
-        log.debug("Found properties '%s'", truncate_string(repr(properties)))
+        log.debug('Found properties: %s', truncate_string(repr(properties)))
 
         for selector in selectors:
-            log.debug("Updating properties for selector '%s'", selector)
+            log.debug('Updating properties for selector: %s', selector)
             selector.update(properties)
 
     log.info("Finished processing '%s' -- dumping JSON!", css_path)
@@ -596,21 +597,21 @@ def sass_to_json(sass_path, output_file):
         sass_path: (str) The path of the SASS file to convert.
         output_file: (file) The file to which to write the converted SASS to.
     """
-    log.info("Processing SASS file at path '%s'", sass_path)
+    log.info("Processing SASS file at path: %s", sass_path)
 
     sass_path = shlex.quote(sass_path)  # pylint: disable=E1101
     base_path = os.path.splitext(sass_path)[0]
     css_path = '{0}.css'.format(base_path)
-    log.info("Compiling SASS file to CSS at path '%s'", css_path)
+    log.info('Compiling SASS file to CSS at path: %s', css_path)
 
     command = 'sass --trace --style=compact '
     command += '{0} {1}'.format(sass_path, css_path)
-    log.debug("Executing sass command: '%s'", command)
+    log.debug("Executing sass command: %s", command)
     try:
         # pylint: disable=E1101
         subprocess.run(shlex.split(command), check=True)
     except subprocess.CalledProcessError:
-        log.error("SASS to CSS compilation failed!")
+        log.error('SASS to CSS compilation failed!')
         sys.exit()
 
     css_to_json(css_path, output_file)
@@ -620,14 +621,14 @@ def theme_to_json(theme_path, output_file):
     """
     Converts a theme to JSON.
 
-    The CSS file at `theme_path/theme.css` is processed as if by passing
+    The CSS file at `theme_path/theme.sass` is processed as if by passing
     it to the script directly.
 
     Args:
         theme_path: (str) The path at which to find the theme.
         output_file: (file) The file to which to write the converted SASS to.
     """
-    log.info("Processing theme at path '%s'", theme_path)
+    log.info("Processing theme at path: %s", theme_path)
     sass_path = os.path.join(theme_path, 'theme.sass')
     sass_to_json(sass_path, output_file)
 

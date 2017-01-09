@@ -75,7 +75,7 @@ class Theme : public QQmlPropertyMap {
   using Json = QJsonObject;
 
   /**
-   * How many themes to cache befor evicting a random one.
+   * How many themes to cache before evicting a random one.
    */
   static const std::size_t CACHE_CAPACITY = 8;
 
