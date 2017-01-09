@@ -7,27 +7,42 @@ $primary-text-color:   #212121
 $secondary-text-color: #757575
 $divider-color:        #BDBDBD
 
+$section-height: 50px
+$section-width: 280px
+$button-height: 40px
+
+create-project
+  width: $section-width
+  margin-top: 10px
+  section
+    margin: 20px
+    height: $section-height
+    font-size: 20px
+    border-width: 1px
+    border-color: $divider-color
+  name
+    length: 80px
+  button
+    margin-top: 10px
+    background-color: $primary-color
+    width: 160px
+
 button
   capitalization: 1
   color: $primary-color-text
   font-size: 16px
-  height: 40px
+  height: $button-height
   radius: 4
   border
-    color: lighten($primary-color, 5%)
+    color: lighten($primary-color, 20%)
     width: 2px
 
 window
-  width: 1200px
+  width: 1124px
   height: 700px
-  background-color: $primary-color
-
-create-project
-  name
-    length: 80px
-  add
-    background-color: $accent-color
-    width: 160px
+  background-color: white
+  initial-width: $section-width + 20px
+  initial-height: $section-height * 6 + $button-height + 10
 
 register
   border: 10

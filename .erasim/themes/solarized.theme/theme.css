@@ -1,10 +1,12 @@
-button { capitalization: 1; color: #FFFFFF; font-size: 16px; height: 40px; radius: 4; }
-button border { color: #39a1f4; width: 2px; }
-
-window { width: 1200px; height: 700px; background-color: #2196F3; }
-
+create-project { width: 280px; margin-top: 10px; }
+create-project section { margin: 20px; height: 50px; font-size: 20px; border-width: 1px; border-color: #BDBDBD; }
 create-project name { length: 80px; }
-create-project add { background-color: #FF4081; width: 160px; }
+create-project button { margin-top: 10px; background-color: #2196F3; width: 160px; }
+
+button { capitalization: 1; color: #FFFFFF; font-size: 16px; height: 40px; radius: 4; }
+button border { color: #82c4f8; width: 2px; }
+
+window { width: 1124px; height: 700px; background-color: white; initial-width: 300px; initial-height: 350px; }
 
 register { border: 10; }
 
