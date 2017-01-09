@@ -31,10 +31,11 @@ import Theme 1.0
 Item {
   id: root
 
-  signal buttonClicked(var memorySize,
-    string architecture, var optionName, string parser);
-
-    property var tab;
+  signal createProject(string projectName,
+                       var memorySize,
+                       string architecture,
+                       var optionName,
+                       string parser);
 
     property real marginWidth: width*0.1;
     property real marginHeight: height*0.1;
@@ -44,6 +45,167 @@ Item {
     property var baseExtensionsChecked: [];
     property var extensionsChecked: [];
 
+    /////////////////
+    // Project Name
+    /////////////////
+
+    ProjectCreationSection {
+      id: projectName
+      anchors.topMargin: Theme.createProject.marginTop
+      TextField {
+        id: projectNameField
+        focus: true
+        anchors.fill: parent
+        width: Theme.createProject.width
+        validator: RegExpValidator { regExp: /[\w ]+/ }
+        placeholderText: "Give your project a name ..."
+        style: TextFieldStyle {
+          font.pixelSize: Theme.createProject.section.fontSize
+        }
+      }
+    }
+
+    /////////////////
+    // Architecture
+    /////////////////
+
+    ProjectCreationSection {
+      id: architecture
+      anchors.top: projectName.bottom
+      anchors.topMargin: Theme.createProject.marginTop
+
+      Text {
+        id: architectureLabel
+        font.pixelSize: Theme.createProject.section.fontSize
+        text: "Architecture:"
+        anchors {
+          left: parent.left
+          leftMargin: Theme.createProject.section.margin
+          verticalCenter: parent.verticalCenter
+        }
+      }
+
+      ComboBox {
+        id: architectureSelector
+        model: ui.getArchitectures();
+        anchors {
+          right: parent.right
+          rightMargin: Theme.createProject.section.margin
+          left: architectureLabel.right
+          leftMargin: Theme.createProject.section.margin
+          verticalCenter: parent.verticalCenter
+        }
+        onCurrentIndexChanged: {
+          var currentArchitecture = model[currentIndex];
+          versionSelector.model = ui.getOptionNames(currentArchitecture);
+          syntaxSelector.model = ui.getParsers(currentArchitecture);
+        }
+        style: ComboBoxStyle {
+          font.pixelSize: Theme.createProject.section.fontSize
+        }
+      }
+    }
+
+    /////////////////
+    // Memory Size
+    /////////////////
+
+    ProjectCreationSection {
+      id: memorySize
+      anchors.top: architecture.bottom
+
+      Text {
+        id: memorySizeLabel
+        font.pixelSize: Theme.createProject.section.fontSize
+        text: "Memory:"
+        anchors {
+          left: parent.left
+          verticalCenter: parent.verticalCenter
+          leftMargin: Theme.createProject.section.margin
+        }
+      }
+
+      SpinBox {
+        id: memorySizeSelector
+        anchors {
+          right: parent.right
+          verticalCenter: parent.verticalCenter
+          rightMargin: Theme.createProject.section.margin
+        }
+        value: 1024
+        minimumValue: 4
+        maximumValue: (1 << 20)
+        stepSize: 2
+        suffix: "B"
+      }
+    }
+
+    ////////////
+    // Syntax
+    ////////////
+
+    ProjectCreationSection {
+      id: syntax
+      anchors.top: memorySize.bottom
+
+      Text {
+        id: syntaxLabel
+        font.pixelSize: Theme.createProject.section.fontSize
+        text: "Syntax:"
+        anchors {
+          left: parent.left
+          verticalCenter: parent.verticalCenter
+          leftMargin: Theme.createProject.section.margin
+        }
+      }
+
+      ComboBox {
+        id: syntaxSelector
+        anchors {
+          right: parent.right
+          rightMargin: Theme.createProject.section.margin
+          verticalCenter: parent.verticalCenter
+        }
+        style: ComboBoxStyle {
+          font.pixelSize: Theme.createProject.section.fontSize
+        }
+      }
+    }
+
+    ////////////
+    // Version
+    ////////////
+
+    ProjectCreationSection {
+      id: version
+      anchors.top: syntax.bottom
+
+      Text {
+        id: versionLabel
+        font.pixelSize: Theme.createProject.section.fontSize
+        text: "Version:"
+        anchors {
+          left: parent.left
+          verticalCenter: parent.verticalCenter
+          leftMargin: Theme.createProject.section.margin
+        }
+      }
+
+      ComboBox {
+        id: versionSelector
+        anchors {
+          right: parent.right
+          rightMargin: Theme.createProject.section.margin
+          left: versionLabel.right
+          leftMargin: Theme.createProject.section.margin
+          verticalCenter: parent.verticalCenter
+        }
+        style: ComboBoxStyle {
+          font.pixelSize: Theme.createProject.section.fontSize
+        }
+      }
+    }
+
     /////////////////////////////
     // Project Creation Button
     /////////////////////////////
@@ -51,19 +213,21 @@ Item {
     Button {
       id: button
       anchors {
-        top: optionSelector.bottom
+        top: version.bottom
         horizontalCenter: parent.horizontalCenter
+        topMargin: Theme.createProject.button.marginTop
       }
+
       MouseArea {
         anchors.fill: button
         cursorShape: Qt.PointingHandCursor
         onClicked: {
-          tab.title = textInputName.text;
-          root.buttonClicked(
-            memorySizeSelector.getCurrentValue(),
+          root.createProject(
+            projectName.text,
+            memorySizeSelector.value,
             architectureSelector.currentText,
-            optionSelector.currentText,
-            parserSelector.currentText
+            versionSelector.currentText,
+            syntaxSelector.currentText
           );
         }
       }
@@ -80,151 +244,13 @@ Item {
           }
         }
         background: Rectangle {
-          implicitWidth: Theme.createProject.add.width
+          implicitWidth: Theme.createProject.button.width
           implicitHeight: Theme.button.height
           border.width: Theme.button.border.width
           border.color: Theme.button.border.color
           radius: Theme.button.radius
-          color: Theme.createProject.add.backgroundColor
+          color: Theme.createProject.button.backgroundColor
         }
-      }
-    }
-
-    TextField {
-      id: textInputName
-      focus: true
-      style: TextFieldStyle {
-        background: Rectangle {
-          radius: 2
-          width: 100
-          implicitWidth: 100
-          implicitHeight: 24
-          border.color: "#333"
-          border.width: 1
-        }
-      }
-
-      anchors {
-        top: parent.top
-        horizontalCenter: parent.horizontalCenter
-      }
-
-      placeholderText: "Give your project a name ..."
-    }
-
-    Text {
-      id: memorySizeText
-      anchors {
-        left: memorySizeSelector.left
-        bottom: memorySizeSelector.top
-      }
-      text: "Memory size"
-    }
-
-    Text {
-      id: memorySizeFormat
-      anchors {
-        left: memorySizeSelector.right
-        verticalCenter: memorySizeSelector.verticalCenter
-        leftMargin: 3
-      }
-      text: "bytes"
-    }
-
-    //choose the memory size
-    NumericUpDown {
-      id: memorySizeSelector
-      anchors {
-        top: textInputName.bottom
-        left: parent.horizontalCenter
-        right: parent.right
-
-        topMargin: marginHeight
-        bottomMargin: 0
-        leftMargin: marginWidth
-        rightMargin: marginWidth
-      }
-      _value: 1024
-      _minValue: 4
-      _maxValue: 1048576
-      _step: 4
-    }
-
-    Text {
-      id: archText
-      anchors {
-        left: architectureSelector.left
-        bottom: architectureSelector.top
-      }
-      text: "Architecture"
-    }
-
-    //choose the architecture
-    ComboBox {
-      id: architectureSelector
-      anchors {
-        top: textInputName.bottom
-        left: parent.left
-        right: parent.horizontalCenter
-
-        topMargin: marginHeight
-        bottomMargin: marginHeight
-        leftMargin: marginWidth
-        rightMargin: marginWidth
-      }
-      model: ui.getArchitectures();
-      onCurrentIndexChanged: {
-        var currentArchitecture = model[currentIndex];
-        optionSelector.model = ui.getOptionNames(currentArchitecture);
-        parserSelector.model = ui.getParsers(currentArchitecture);
-      }
-    }
-
-    Text {
-      id: parserText
-      anchors {
-        left: parserSelector.left
-        bottom: parserSelector.top
-      }
-      text: "Parser"
-    }
-
-    //choose the parser
-    ComboBox {
-      id: parserSelector
-      anchors {
-        top: memorySizeSelector.bottom
-        left: parent.horizontalCenter
-        right: parent.right
-
-        topMargin: marginHeight
-        bottomMargin: 0
-        leftMargin: marginWidth
-        rightMargin: marginWidth
-      }
-    }
-
-    Text {
-      id: optionSelectorText
-      anchors {
-        left: optionSelector.left
-        bottom: optionSelector.top
-      }
-      text: "Select a version."
-    }
-
-    //select a formula for the architecture
-    ComboBox {
-      id: optionSelector
-      anchors {
-        top: architectureSelector.bottom
-        left: parent.left
-        right: parent.horizontalCenter
-
-        topMargin: marginHeight
-        bottomMargin: 0
-        leftMargin: marginWidth
-        rightMargin: marginWidth
       }
     }
   }
