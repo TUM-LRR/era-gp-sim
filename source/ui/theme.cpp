@@ -97,12 +97,12 @@ const Theme::Json& Theme::_loadJson(const QString& name) {
 }
 
 const Theme::Json&
-Theme::_cacheTheme(const QString& name, const QJsonObject& object) {
+Theme::_cacheTheme(const QString& name, QJsonObject& object) {
   // Pop a "random" element (random because the container is unordered)
   if (_cache.size() == CACHE_CAPACITY) {
     _cache.erase(_cache.begin());
   }
 
-  auto iterator = _cache.insert(name, object);
+  auto iterator = _cache.insert(name, std::move(object));
   return iterator.value();
 }
