@@ -113,11 +113,11 @@ DocumentationBuilder &DocumentationBuilder::operandRange(
     const std::string &name, int range, bool isSigned) {
   // signed range is from -2^(n-1) to 2^(n-1)-1
   // unsigned range is from 0 to 2^(n)-1
-  int minRange = isSigned ? -(1 << (range-1)) : 0;
-  int maxRange = isSigned ? ((1 << (range-1)) - 1) : ((1 << range) - 1);
+  int lowerBound = isSigned ? -(1 << (range-1)) : 0;
+  int upperBound = isSigned ? ((1 << (range-1)) - 1) : ((1 << range) - 1);
   TranslateablePtr ptr = std::make_shared<Translateable>(
       QT_TRANSLATE_NOOP("RISCV instruction help text", "Range of %1: %2 to %3"),
-      name, std::to_string(minRange), std::to_string(maxRange));
+      name, std::to_string(lowerBound), std::to_string(upperBound));
   _add(Key::OPERAND_RANGE, ptr);
   return *this;
 }

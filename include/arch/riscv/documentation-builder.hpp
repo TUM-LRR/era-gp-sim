@@ -134,11 +134,20 @@ class DocumentationBuilder {
    */
   DocumentationBuilder& shortSyntax(StringList operands);
 
+  /**
+   * Convenience function for adding the range of the immendiate operand
+   * \param name The name of the operand (in most cases "imm")
+   * \param range The amount of bits that define the range
+   * \param isSigned True if the range is signed, false if unsigned
+   * \return The current DocumentationBuilder for chaining convenience
+   */
   DocumentationBuilder& operandRange(const std::string& name, int range,
                                      bool isSigned = true);
 
  private:
   using TranslateablePtr = Translateable::TranslateablePtr;
+  using ComponentMap = std::unordered_map<Key, TranslateablePtr, Utility::EnumHash<Key>>;
+
   /** A list of colors in a html compliant format. These colors are used to mark
    * each operand in a seperate color*/
   static const std::vector<std::string> _colors;
@@ -174,7 +183,7 @@ class DocumentationBuilder {
 
   /** A map to store all components until building to offer arbitrary filling
    * order */
-  std::unordered_map<Key, TranslateablePtr, Utility::EnumHash<Key>> _components;
+  ComponentMap _components;
 
   /** A counter, counting the amount of operands */
   size_t _operandCount;

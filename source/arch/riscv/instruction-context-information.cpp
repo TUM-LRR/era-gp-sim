@@ -551,7 +551,7 @@ bool InstructionContextInformation::_isImmediateInstruction(
     const std::string &mnemonic) const {
   if (mnemonic.size() >= 2) {
     auto substring = mnemonic.substr(mnemonic.size() - 2, mnemonic.size());
-    return substring == std::string("iw") || substring.back() == 'i';
+    return substring == "iw" || substring.back() == 'i';
   } else {
     return mnemonic.back() == 'i';
   }
