@@ -84,7 +84,6 @@
         <file>Components/Input/Buttons/Text Console Icon Selected@2x.png</file>
         <file>Components/Input/Buttons/Text Console Icon@2x.png</file>
         <file>Components/help/HelpWindow.qml</file>
-        <file>BlankComponent.qml</file>
         <file>Components/editor/IssueMark.qml</file>
     </qresource>
 </RCC>

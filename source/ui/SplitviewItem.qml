@@ -24,7 +24,7 @@ import "Components"
 
 Item {
 
-    /*default value in the item*/
+    // default value in the item
     property var usual
     property bool isExpanded: false
 
@@ -135,13 +135,7 @@ Item {
                         componentLoader.item.settingsButtonPressed();
                     }
 
-                    Connections {
-                        target: componentLoader
-
-                        onLoaded: {
-                            settingsButton.visible = (componentLoader.item.hasComponentSettings !== undefined) ? componentLoader.item.hasComponentSettings : false
-                        }
-                    }
+                    visible: (componentLoader.item.hasComponentSettings !== undefined) ? componentLoader.item.hasComponentSettings : false
                 }
             }
         }
@@ -166,6 +160,6 @@ Item {
         anchors.bottom: parent.bottom
 
         property var sourceComponents: ["Snapshots/SnapshotList.qml", "Output/Output.qml", "Register/Register.qml", "Memory/MemoryComponent.qml", "Input/Input.qml", "help/HelpWindow.qml"]
-        source: (sourceComponents[componentSelector.currentIndex] !== undefined) ? ("Components/" + sourceComponents[componentSelector.currentIndex]) : ("BlankComponent.qml")
+        source: (sourceComponents[componentSelector.currentIndex] !== undefined) ? ("Components/" + sourceComponents[componentSelector.currentIndex]) : ("Components/help/HelpWindow.qml")
     }
 }
