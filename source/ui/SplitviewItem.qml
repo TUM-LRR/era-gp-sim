@@ -82,7 +82,7 @@ Item {
                 anchors.fill: parent
                 visible: false
 
-                /*Choose*/
+                // Choose
                 ComboBox{
                     id: componentSelector
 
