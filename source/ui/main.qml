@@ -24,6 +24,7 @@ import QtQuick.Dialogs 1.2
 import "Components"
 import "Components/Menubar"
 import "Components/Toolbar"
+import "Components/ConfigurationWindow/"
 
 ApplicationWindow {
     id: window
@@ -33,6 +34,7 @@ ApplicationWindow {
 
     property alias menubar: menubar
     property alias toolbar: toolbar
+    property alias config: config
 
     menuBar: Menubar {
         id: menubar
@@ -41,9 +43,8 @@ ApplicationWindow {
             window.updateMenuState();
         }
     }
-    toolBar: ToolbarMainWindow {
-        id: toolbar
-    }
+    toolBar: ToolbarMainWindow { id: toolbar }
+    ConfigurationWindow { id: config }
 
     TabView {
         anchors.fill: parent
