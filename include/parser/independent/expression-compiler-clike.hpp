@@ -214,6 +214,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
                                            const IntType& s,
                                            IntType& out,
                                            CompileErrorList& errors) -> bool {
+                                          if (s == 0) return false;
                                           out = f / s;
                                           return true;
                                         }},
@@ -224,6 +225,7 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
                                            const IntType& s,
                                            IntType& out,
                                            CompileErrorList& errors) -> bool {
+                                          if (s == 0) return false;
                                           out = f % s;
                                           return true;
                                         }}};

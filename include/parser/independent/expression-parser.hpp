@@ -144,6 +144,7 @@ class ExpressionParser {
     // We handle the rest of the operators.
     if (!decreaseStack(state,
                        IToken{ITokenType::EXPRESSION, PositionedString()})) {
+      recordError(state, "Arithmetic error in expression!");
       return T();
     }
 
