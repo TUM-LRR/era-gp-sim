@@ -32,8 +32,8 @@
 #include "ui/translateable-processing.hpp"
 
 EditorComponent::EditorComponent(QQmlContext *projectContext,
-                                 ParserInterface parserInterface,
-                                 CommandInterface commandInterface,
+                                 ParserInterface &parserInterface,
+                                 CommandInterface &commandInterface,
                                  QObject *parent)
 : _commandInterface(commandInterface)
 , _parserInterface(parserInterface)
@@ -66,11 +66,11 @@ void EditorComponent::addSecondarySyntaxHighlighter(
 
 void EditorComponent::deleteSecondarySyntaxHighlighter(
     QQuickTextDocument *qDocument) {
-  for (auto it = _secondaryHighlighters.begin();
-       it != _secondaryHighlighters.end();
-       ++it) {
-    if ((*it)->document() == qDocument->textDocument()) {
-      _secondaryHighlighters.erase(it);
+  for (auto iterator = _secondaryHighlighters.begin();
+       iterator != _secondaryHighlighters.end();
+       ++iterator) {
+    if ((*iterator)->document() == qDocument->textDocument()) {
+      _secondaryHighlighters.erase(iterator);
       return;
     }
   }

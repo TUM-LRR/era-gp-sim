@@ -41,7 +41,7 @@ class SyntaxHighlighter : public QSyntaxHighlighter {
    * \param ruleList List of keywords for the syntax highlighter.
    * \param document A pointer to the QTextDocument for this highlighter.
    */
-  SyntaxHighlighter(ParserInterface parserInterface, QTextDocument *document);
+  SyntaxHighlighter(ParserInterface &parserInterface, QTextDocument *document);
 
  protected:
   /**
@@ -53,13 +53,57 @@ class SyntaxHighlighter : public QSyntaxHighlighter {
   void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
 
  private:
+  /**
+   * \brief _addKeywords Adds the regex to highlight certain pieces of syntax
+   * information (e.g. immediates, instructions etc.) to the list of _keywords
+   * along with the associated format information.
+   * \param token Type of syntax information (e.g. immediates, instrucitons,
+   * registers etc.)
+   * \param format The format that is supposed to be used to highlight these
+   * patterns.
+   * \param patternOption Options for defining how the pattern is supposed to be
+   * interpreted (e.g. CaseInsensitive).
+   * \param parserInterface Parser Interface for fetching the regex for the
+   * given syntax information.
+   */
   void _addKeywords(SyntaxInformation::Token token,
                     QTextCharFormat format,
                     QRegularExpression::PatternOption patternOption,
-                    ParserInterface parserInterface);
+                    ParserInterface &parserInterface);
+
+  /**
+   * Adds regex for highlighting immediates to the syntax highlighter.
+   * \param parserInterface ParserInterface for retrieving regex.
+   */
+  void _addImmediateRegexToSyntaxHighlighter(ParserInterface &parserInterface);
+
+  /**
+   * Adds regex for highlighting instruction keywords to the syntax highlighter.
+   * \param parserInterface ParserInterface for retrieving regex.
+   */
+  void _addInstructionKeywordsRegexToSyntaxHighlighter(
+      ParserInterface &parserInterface);
+
+  /**
+   * Adds regex for highlighting comments to the syntax highlighter.
+   * \param parserInterface ParserInterface for retrieving regex.
+   */
+  void _addCommentRegexToSyntaxHighlighter(ParserInterface &parserInterface);
+
+  /**
+   * Adds regex for highlighting registers to the syntax highlighter.
+   * \param parserInterface ParserInterface for retrieving regex.
+   */
+  void _addRegisterRegexToSyntaxHighlighter(ParserInterface &parserInterface);
+
+  /**
+   * Adds regex for highlighting labels to the syntax highlighter.
+   * \param parserInterface ParserInterface for retrieving regex.
+   */
+  void _addLabelRegexToSyntaxHighlighter(ParserInterface &parserInterface);
 
   /** A list of all keywords to highlight. */
   std::vector<KeywordRule> _keywords;
 };
 
-#endif// INCLUDE_UI_EDITOR_SYNTAXHIGHLIGHTER_H
+#endif  // INCLUDE_UI_EDITOR_SYNTAXHIGHLIGHTER_H

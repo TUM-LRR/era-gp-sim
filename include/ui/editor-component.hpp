@@ -46,9 +46,11 @@ class CompileError;
 class EditorComponent : public QObject {
   Q_OBJECT
  public:
+  using SyntaxHighlighterList = std::list<std::unique_ptr<SyntaxHighlighter>>;
+
   explicit EditorComponent(QQmlContext *projectContext,
-                           ParserInterface parserInterface,
-                           CommandInterface commandInterface,
+                           ParserInterface &parserInterface,
+                           CommandInterface &commandInterface,
                            QObject *parent = 0);
 
   /**
@@ -156,7 +158,7 @@ class EditorComponent : public QObject {
 
   /** Syntax Highlighter of macro subeditors. New syntax highlighters
    * added through addSecondarySyntaxHighlighter method. */
-  std::list<std::unique_ptr<SyntaxHighlighter>> _secondaryHighlighters;
+  SyntaxHighlighterList _secondaryHighlighters;
 
   /** The command interface of the core */
   CommandInterface _commandInterface;
