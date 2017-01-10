@@ -8,6 +8,10 @@
         <file>Components/Output/Output.qml</file>
         <file>Components/Output/RedRectangle.qml</file>
         <file>SplitviewItem.qml</file>
+        <file>Icons/Settings Icon Pressed.png</file>
+        <file>Icons/Settings Icon Pressed@2x.png</file>
+        <file>Icons/Settings Icon.png</file>
+        <file>Icons/Settings Icon@2x.png</file>
         <file>InnerSplitviews.qml</file>
         <file>Components/editor/Editor.qml</file>
         <file>Components/Memory/MemoryComponent.qml</file>
@@ -44,10 +48,6 @@
         <file>Components/Output/Buttons/Sevensegment Icon Selected@2x.png</file>
         <file>Components/Output/Buttons/Sevensegment Icon.png</file>
         <file>Components/Output/Buttons/Sevensegment Icon@2x.png</file>
-        <file>Components/Output/Buttons/Settings Icon Pressed.png</file>
-        <file>Components/Output/Buttons/Settings Icon Pressed@2x.png</file>
-        <file>Components/Output/Buttons/Settings Icon.png</file>
-        <file>Components/Output/Buttons/Settings Icon@2x.png</file>
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>ProjectCreationScreen.qml</file>
@@ -71,7 +71,6 @@
         <file>Components/Input/ButtonInputSW.qml</file>
         <file>Components/Input/ClickInputSW.qml</file>
         <file>Components/Input/TextInputSW.qml</file>
-        <file>Components/Input/Buttons/Settings_Icon_Pressed.png</file>
         <file>Components/Input/Buttons/Text Console Icon Selected.png</file>
         <file>Components/Input/Buttons/Text Console Icon.png</file>
         <file>Components/Input/Buttons/Arrow Button Input Icon Selected.png</file>
@@ -84,10 +83,7 @@
         <file>Components/Input/Buttons/Mouse Input Icon@2x.png</file>
         <file>Components/Input/Buttons/Text Console Icon Selected@2x.png</file>
         <file>Components/Input/Buttons/Text Console Icon@2x.png</file>
-        <file>Components/Input/Buttons/Settings_Icon@2x.png</file>
-        <file>Components/Input/Buttons/Settings_Icon_Pressed@2x.png</file>
-        <file>Components/Input/Buttons/Settings_Icon.png</file>
+        <file>Components/help/HelpWindow.qml</file>
         <file>Components/editor/IssueMark.qml</file>
-	<file>Components/help/HelpWindow.qml</file>
     </qresource>
 </RCC>
