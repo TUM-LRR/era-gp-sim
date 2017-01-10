@@ -20,10 +20,13 @@
 #ifndef ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_DEFINITIONS_HPP
 #define ERAGPSIM_PARSER_INDEPENDENT_EXPRESSION_COMPILER_DEFINITIONS_HPP
 
+#include <cstddef>
 #include <functional>
 #include <string>
 #include <vector>
+
 #include "parser/independent/positioned-string.hpp"
+
 class CompileErrorList;
 
 /**
@@ -107,7 +110,7 @@ struct ExpressionBinaryOperator {
    *
    * The lower, the earlier it is evaluated.
    */
-  unsigned short precedence;
+  std::uint16_t precedence;
 
   /**
    * Applies the operator on two numbers and records any possible errors.

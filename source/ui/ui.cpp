@@ -49,8 +49,8 @@ int Ui::runUi() {
   qmlRegisterType<ClipboardAdapter>(
       "ClipboardAdapter", 1, 0, "ClipboardAdapter");
   qRegisterMetaType<std::size_t>("std::size_t");
+  qRegisterMetaType<std::size_t>("size_t");
   qRegisterMetaType<FinalRepresentation>();
-  qRegisterMetaType<InputText::length_t>("length_t");
   qRegisterMetaType<id_t>("id_t");
 
   _engine.rootContext()->setContextProperty("ui", this);
@@ -204,6 +204,7 @@ void Ui::reset(int id) {
   assert::that(iterator != _projects.end());
   iterator->second->reset();
 }
+
 
 void Ui::saveText(int id) {
   auto iterator = _projects.find(id);

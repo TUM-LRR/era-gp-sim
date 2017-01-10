@@ -23,6 +23,7 @@
 #include "arch/common/architecture.hpp"
 #include "parser/independent/memory-allocator.hpp"
 #include "parser/independent/syntax-tree-generator.hpp"
+
 class PreprocessingImmutableArguments;
 
 /**
@@ -89,6 +90,6 @@ class EnhanceSymbolTableImmutableArguments {
    */
   MemoryAllocator _allocator;
 };
-// clang-format off
-#endif /* ERAGPSIM_PARSER_INDEPENDENT_ENHANCE_SYMBOL_TABLE_IMMUTABLE_ARGUMENTS_HPP */
-// clang-format on
+
+#endif
+/* ERAGPSIM_PARSER_INDEPENDENT_ENHANCE_SYMBOL_TABLE_IMMUTABLE_ARGUMENTS_HPP */

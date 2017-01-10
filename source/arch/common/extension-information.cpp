@@ -19,7 +19,7 @@
 
 
 #include <algorithm>
-#include <cassert>
+#include "common/assert.hpp"
 #include <string>
 
 #include "arch/common/extension-information.hpp"
@@ -72,14 +72,14 @@ ExtensionInformation::deserialize(InformationInterface::Format& data) {
 }
 
 ExtensionInformation& ExtensionInformation::name(const std::string& name) {
-  assert(!name.empty());
+  assert::that(!name.empty());
   _name = name;
 
   return *this;
 }
 
 const std::string& ExtensionInformation::getName() const {
-  assert(hasName());
+  assert::that(hasName());
   return _name;
 }
 
@@ -93,7 +93,7 @@ ExtensionInformation& ExtensionInformation::endianness(Endianness endianness) {
 }
 
 ExtensionInformation::Endianness ExtensionInformation::getEndianness() const {
-  assert(hasEndianness());
+  assert::that(hasEndianness());
   return *_endianness;
 }
 
@@ -109,7 +109,7 @@ ExtensionInformation& ExtensionInformation::signedRepresentation(
 
 ExtensionInformation::SignedRepresentation
 ExtensionInformation::getSignedRepresentation() const {
-  assert(hasSignedRepresentation());
+  assert::that(hasSignedRepresentation());
   return *_signedRepresentation;
 }
 
@@ -126,7 +126,7 @@ ExtensionInformation::alignmentBehavior(AlignmentBehavior alignmentBehavior) {
 
 ExtensionInformation::AlignmentBehavior
 ExtensionInformation::getAlignmentBehavior() const {
-  assert(hasAlignmentBehavior());
+  assert::that(hasAlignmentBehavior());
   return *_alignmentBehavior;
 }
 
@@ -142,7 +142,7 @@ ExtensionInformation& ExtensionInformation::wordSize(word_size_t wordSize) {
 
 
 ExtensionInformation::word_size_t ExtensionInformation::getWordSize() const {
-  assert(hasWordSize());
+  assert::that(hasWordSize());
   return _wordSize;
 }
 
@@ -158,7 +158,7 @@ ExtensionInformation& ExtensionInformation::byteSize(byte_size_t byteSize) {
 
 ExtensionInformation::byte_size_t ExtensionInformation::getByteSize() const
     noexcept {
-  assert(hasByteSize());
+  assert::that(hasByteSize());
   return _byteSize;
 }
 
@@ -195,7 +195,7 @@ bool ExtensionInformation::hasInstructions() const noexcept {
 }
 
 ExtensionInformation& ExtensionInformation::addUnits(UnitList units) {
-  assert(units.size() > 0);
+  assert::that(units.size() > 0);
   return addUnits<UnitList>(units);
 }
 
@@ -246,7 +246,7 @@ const std::string& ExtensionInformation::getBuiltinMacros() const noexcept {
 }
 
 ExtensionInformation& ExtensionInformation::merge(ExtensionList list) {
-  assert(list.size() > 0);
+  assert::that(list.size() > 0);
   return merge<ExtensionList>(list);
 }
 
@@ -305,7 +305,7 @@ bool ExtensionInformation::isComplete() const noexcept {
 }
 
 void ExtensionInformation::_deserialize(InformationInterface::Format& data) {
-  assert(data.count("name"));
+  assert::that(data.count("name"));
 
   name(data["name"]);
   _parseEndianness(data);
@@ -349,7 +349,7 @@ void ExtensionInformation::_parseEndianness(
     } else if (endianness == "bi") {
       _endianness = Endianness::BI;
     } else {
-      assert(false);
+      assert::that(false);
     }
   });
 }
@@ -364,7 +364,7 @@ void ExtensionInformation::_parseSignedRepresentation(
     } else if (behavior == "sign-bit") {
       _signedRepresentation = SignedRepresentation::SIGN_BIT;
     } else {
-      assert(false);
+      assert::that(false);
     }
   });
 }
@@ -377,7 +377,7 @@ void ExtensionInformation::_parseAlignmentBehavior(
     } else if (behavior == "relaxed") {
       _alignmentBehavior = ArchitectureProperties::AlignmentBehavior::RELAXED;
     } else {
-      assert(false);
+      assert::that(false);
     }
   });
 }

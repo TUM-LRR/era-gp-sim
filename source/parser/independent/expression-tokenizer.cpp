@@ -18,6 +18,11 @@
 */
 
 #include "parser/independent/expression-tokenizer.hpp"
+
+#include <cstddef>
+#include <string>
+#include <vector>
+
 #include "common/multiregex.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/symbol-replacer.hpp"

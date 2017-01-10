@@ -18,6 +18,10 @@
 */
 
 #include "parser/independent/memory-section-definition.hpp"
+
+#include <cstddef>
+#include <string>
+
 #include "common/assert.hpp"
 
 MemorySectionDefinition::MemorySectionDefinition(const std::string& name,

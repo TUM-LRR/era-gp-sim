@@ -20,9 +20,12 @@
 #ifndef ERAGPSIM_PARSER_COMMON_COMPILE_ERROR_LIST_HPP
 #define ERAGPSIM_PARSER_COMMON_COMPILE_ERROR_LIST_HPP
 
+#include <cstddef>
 #include <functional>
+#include <memory>
 #include <utility>
 #include <vector>
+
 #include "common/translateable.hpp"
 #include "parser/common/code-position-interval.hpp"
 #include "parser/common/compile-error-severity.hpp"

@@ -18,6 +18,9 @@
 
 #include "parser/independent/intermediate-representator.hpp"
 
+#include <cstddef>
+#include <string>
+
 #include "arch/common/architecture.hpp"
 #include "common/utility.hpp"
 #include "core/memory-access.hpp"
@@ -162,7 +165,7 @@ bool checkMemorySize(
   }
   return true;
 }
-};
+}  // namespace
 
 FinalRepresentation
 IntermediateRepresentator::transform(const TransformationParameters& parameters,

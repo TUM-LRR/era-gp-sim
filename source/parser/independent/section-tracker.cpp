@@ -19,6 +19,8 @@
 
 #include "parser/independent/section-tracker.hpp"
 
+#include <string>
+
 // Just some constructors and getters.
 
 SectionTracker::SectionTracker() : SectionTracker("text") {

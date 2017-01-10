@@ -24,6 +24,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+
 class Parser;
 class MemoryAccess;
 class Architecture;
@@ -61,6 +62,6 @@ ParserPtr createParser(const Architecture &architecture,
  * names.
  */
 extern const std::unordered_map<std::string, ParserBuildFunction> mapping;
-}
+}  // namespace ParserFactory
 
 #endif /* ERAGPSIM_PARSER_FACTORY_PARSER_FACTORY_HPP */

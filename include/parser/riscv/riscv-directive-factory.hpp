@@ -20,7 +20,9 @@
 #define ERAGPSIM_PARSER_RISCV_RISCV_DIRECTIVE_FACTORY_HPP
 
 #include <memory>
+#include <string>
 #include <unordered_map>
+
 #include "parser/independent/intermediate-directive.hpp"
 
 class IntermediateRepresentator;
@@ -61,6 +63,6 @@ extern const std::unordered_map<
         const PositionedString &,
         const PositionedStringVector &)>>
     mapping;
-}
+}  // namespace RiscVDirectiveFactory
 
 #endif

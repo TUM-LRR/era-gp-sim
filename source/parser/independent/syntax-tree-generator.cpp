@@ -19,7 +19,9 @@
 #include "parser/independent/syntax-tree-generator.hpp"
 
 #include <cctype>
+#include <memory>
 #include <regex>
+#include <string>
 
 #include "arch/common/abstract-instruction-node.hpp"
 #include "arch/common/validation-result.hpp"

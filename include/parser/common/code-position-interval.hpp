@@ -21,6 +21,7 @@
 #define ERAGPSIM_PARSER_COMMON_CODE_POSITION_INTERVAL_HPP
 
 #include <vector>
+
 #include "parser/common/code-position.hpp"
 
 /**

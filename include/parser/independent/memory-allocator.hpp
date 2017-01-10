@@ -27,7 +27,6 @@
 
 #include "common/assert.hpp"
 #include "common/utility.hpp"
-
 #include "parser/independent/memory-section-definition.hpp"
 #include "parser/independent/relative-memory-position.hpp"
 
@@ -54,7 +53,7 @@ class MemoryAllocator {
      *
      * \param definition The definition of the memory section.
      */
-    MemorySection(const MemorySectionDefinition& definition);
+    explicit MemorySection(const MemorySectionDefinition& definition);
 
     /**
      * Frees the whole memory section (all previous reservations are
@@ -119,7 +118,7 @@ class MemoryAllocator {
    *
    * \param sectionDefinitions The definition vector of the memory sections.
    */
-  MemoryAllocator(
+  explicit MemoryAllocator(
       const std::vector<MemorySectionDefinition>& sectionDefinitions);
 
   /**

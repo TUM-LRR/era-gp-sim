@@ -17,10 +17,10 @@
  */
 
 
+#include "parser/independent/intermediate-directive.hpp"
+
 #include <string>
 #include <vector>
-
-#include "parser/independent/intermediate-directive.hpp"
 
 IntermediateDirective::IntermediateDirective(
     const CodePositionInterval& positionInterval,

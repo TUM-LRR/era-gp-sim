@@ -20,11 +20,15 @@
 #ifndef ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_REPLACER_HPP
 #define ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_REPLACER_HPP
 
+#include <cstddef>
 #include <functional>
+#include <string>
 #include <vector>
+
 #include "common/multiregex.hpp"
 #include "parser/independent/positioned-string.hpp"
 #include "parser/independent/symbol.hpp"
+
 class SymbolGraphEvaluation;
 class CompileErrorList;
 

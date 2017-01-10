@@ -17,10 +17,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "parser/independent/constant-directive.hpp"
+
 #include <string>
 
 #include "parser/common/compile-error-list.hpp"
-#include "parser/independent/constant-directive.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 #include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/preprocessing-immutable-arguments.hpp"
@@ -47,9 +48,9 @@ void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
         _expression, immutable.replacer(), errors);
   } else {
     // better error messages:
-    // 0 arguments -> this argument should be the name
-    // 1 argument -> this argument should be the value
-    //>1 arguments -> too many
+    //  0 arguments -> this argument should be the name
+    //  1 argument -> this argument should be the value
+    // >1 arguments -> too many
     switch (_arguments.size()) {
       case 0:
         errors.pushError(name().positionInterval(), "Missing constant name.");

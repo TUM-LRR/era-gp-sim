@@ -23,7 +23,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "parser/common/final-command.hpp"
+
 #include "parser/common/final-command.hpp"
 #include "parser/common/final-representation.hpp"
 #include "parser/common/macro-information.hpp"

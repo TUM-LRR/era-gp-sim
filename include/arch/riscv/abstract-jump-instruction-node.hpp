@@ -108,9 +108,10 @@ class AbstractJumpAndLinkInstructionNode : public InstructionNode {
    *
    * \param memoryAccess The memory access object.
    *
-   * \return The resulting program counter.   */
+   * \return The resulting program counter.
+   */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate(memoryAccess).isSuccess());
+    assert::that(validate(memoryAccess).isSuccess());
     auto destination = _children[0]->getIdentifier();
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
 
