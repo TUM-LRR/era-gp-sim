@@ -117,7 +117,7 @@ const ColorMode::GetPixelFromBufferFunction ColorMode::RGBGetPixelFromBuffer =
   if (buffer.getSize() > bitOffset + sizeInBit) {
     mem = buffer.subSet(bitOffset, bitOffset + sizeInBit);
   } else {
-    return 0xFFFF00FF;
+    return 0xFFFFFF00;
   }
   MemoryValue blueByte = mem.subSet(0, o.bBit);
   MemoryValue greenByte = mem.subSet(o.bBit, o.bBit + o.gBit);
@@ -287,7 +287,7 @@ const ColorMode::GetPixelFromBufferFunction
   size_t index =
       x * (o.columns_rows ? o.height : 1) + y * (o.columns_rows ? 1 : o.width);
   size_t address = (index / bitsPerByte * cellSize) + (index % bitsPerByte);
-  if (buffer.getSize() >= address) {
+  if (buffer.getSize() > address) {
     return buffer.get(address) ? 1 : 0;
   }
   return 0;
