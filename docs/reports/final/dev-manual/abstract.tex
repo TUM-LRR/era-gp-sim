@@ -2,19 +2,12 @@
 
 \section{Allgemeines}
 
-Dieser Teil dient dazu, die grundlegende Struktur des Simulators zu verstehen.
-
-\todo[inline, caption={}]{
-	Mögliche Themen sind:
-	\begin{itemize}
-		\item Git, Git Flow, Github - Warum jeweils benutzt
-		\item C++ - Version, Compiler, Bibliotheken, Code Style
-		\item Qt - Version, verwendete Module
-		\item Build Environment - Welche Pakete man unter Linux installieren muss
-		\item CMake/Make - Wie man das Projekt baut
-		\item Tests - Google Test, Travis
-	\end{itemize}
-}
+Diese Sektion ist eine Einführung in die von uns genutzten Entwicklungswerkzeuge,
+welche für die Entwicklung des Simulators benötigt werden. Das Ziel dieser Sektion
+ist es, dass Leser am Ende in der Lage sind, eigenständig einen Build des Projekts
+durchzuführen und somit am Projekt arbeiten können. \\
+Des Weiteren wird erläutert, welche Philosophie hinter der Auswahl an Werkzeugen
+steckt, von der wir uns erhoffen, dass zukünftige Entwickler diese fortsetzen.
 
 \subsection{Git}
 Bei der Entwicklung von Software im Team ist es zwingend Notwendig, viele verschiedene Versionen
@@ -96,11 +89,14 @@ Mittel, Nutzer sichtbare Nachrichten übersetzbar zu machen, auch in allen ander
 der GUI. So können z.B. Prozessorarchitektur-spezifische Fehlermeldungen übersetzt werden.
 
 
-\subsubsection{Build Umgebung}
+\subsection{Build Umgebung}
 
-Möchte man den Simulator selbst kompilieren, so wird eine Build Umgebung vorausgesetzt. In
-dieser Sektion wird gezeigt, wie man eine solche Umgebung auf Linux basierten Betriebssystemen
-einrichten kann.
+Möchte man den Simulator selbst kompilieren, so wird eine Build Umgebung vorausgesetzt. 
+Wie bereits genannt, liegt unser Augenmerk auf Portabilität zwischen Betriebssystemen,
+deshalb wird in dieser Sektion gezeigt, wie man eine solche Umgebung unter den gängigen
+Betriebssystemen (Linux, Mac, Windows) einrichten kann.
+
+\subsubsection{Linux}
 
 Da wir eine relativ neu Versionen von Qt verwenden, ist eine reine Installation der
 Abhängigkeiten über die Paketverwaltung nur unter solchen Linux Distributionen möglich,
@@ -111,10 +107,35 @@ Unter Debian selbst sind die benötigten Versionen erst ab Debian Stretch (Debia
 verfügbar, unter Ubuntu erst ab Ubuntu 16.10. \\
 Eine Installation unter Debian basierten Betriebssystemen könnte wie folgt ablaufen: \\
 
-\begin{lstlisting}[language=bash]
-# Abhaengigkeiten installieren
-sudo apt install git build-essential cmake qtdeclarative5-dev
+\begin{lstlisting}
+apt install git build-essential cmake qtdeclarative5-dev
+\end{lstlisting}
 
+Ist eine Installation über die Paketquellen nicht möglich, bietet es sich an, Qt manuell
+zu installieren\footnote{\url{https://wiki.qt.io/Install_Qt_5_on_Ubuntu}}.
+
+\todo [inline]{Manuelle Installation von Qt und dann Verwendung des QtCreators noch genauer
+beschreiben. Ich machs über die Kommandozeile, kenn mich also mit QtCreator etc. nicht so aus}
+
+\subsubsection{Mac}
+
+Wirklich?
+
+\subsubsection{Windows}
+
+Selbst schuld.
+
+\subsection{CMake / Make}
+
+Um auch den Build Prozess unabhängig vom Betriebssystem durchzuführen, haben wir uns für
+\textit{CMake}\footnote{\url{https://cmake.org/}} entschieden. CMake generiert die benötigten
+\texttt{Makefiles} für jedes Betriebssystem bzw. jeden Compiler neu, welche anschließend
+von \textit{Make}\footnote{\url{https://www.gnu.org/software/make/}} ausgeführt werden können.
+
+Um einen Build des Projekts durchzuführen, sollte vorher einen entsprechende Build Umgebung
+aufgesetzt werden. Anschließend kann man mit den Folgenden Befehlen einen Clean Build erzeugen:
+
+\begin{lstlisting}
 # Projekt herunterladen
 git clone https://github.com/TUM-LRR/era-gp-sim
 
@@ -127,22 +148,18 @@ git submodule update --init
 # Build Verzeichnis erstellen und betreten
 mkdir build && cd build
 
-# Projekt bauen
-cmake .. && make
+# Mit CMake die Makefiles erzeugen
+cmake ..
+
+# Projekt bauen (Die Option -j setzt Anzahl an
+# Jobs und beschleunigt so den Build Prozess)
+make -j 4
 
 # Programm starten
 ./bin/era-sim
 \end{lstlisting}
 
-Ist eine Installation über die Paketquellen nicht möglich, bietet es sich an, Qt manuell
-zu installieren\footnote{\url{https://wiki.qt.io/Install_Qt_5_on_Ubuntu}}.
-
-\todo [inline]{Manuelle Installation von Qt und dann Verwendung des QtCreators noch genauer
-beschreiben. Ich machs über die Kommandozeile, kenn mich also mit QtCreator etc. nicht so aus}
-
-\subsubsection{CMake / Make}
-
-\subsubsection{Tests}
+\subsection{Tests}
 
 Wir nutzten das \textit{Google Test}\footnote{\url{https://github.com/google/googletest}} Framework
 zur Automatisierung unserer Tests. Die Tests befinden sich im \texttt{tests/} Verzeichnis, gruppiert
