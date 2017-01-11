@@ -28,6 +28,15 @@
 #include "parser/independent/integer-parser.hpp"
 #include "parser/independent/string-parser.hpp"
 
+#define clike_recordError(errorList, position, msg, ...) \
+  errorList.pushErrorInternal(                           \
+      position,                                          \
+      QT_TRANSLATE_NOOP("Expression Parser Error", msg), \
+      ##__VA_ARGS__)
+
+#define FIX_SOME_SYNTAX_HIGHLIGHTING  // Yes, that's the only reason this macro
+                                      // exists.
+
 /**
  * Provides some basic expression compilers.
  */
@@ -41,204 +50,246 @@ namespace CLikeExpressionCompilers {
 template <typename IntType>
 ExpressionCompiler<IntType> createCLikeCompiler() {
   auto binaryOperators = std::vector<ExpressionBinaryOperator<IntType>>{
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "||",
-                                        120,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out =
-                                              f || s ? IntType(1) : IntType(0);
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "&&",
-                                        110,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out =
-                                              f && s ? IntType(1) : IntType(0);
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "|",
-                                        100,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out = f | s;
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "^",
-                                        90,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out = f ^ s;
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "&",
-                                        80,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out = f & s;
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "==",
-                                        70,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out =
-                                              f == s ? IntType(1) : IntType(0);
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "!=",
-                                        70,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out =
-                                              f != s ? IntType(1) : IntType(0);
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "<",
-                                        60,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out = f < s ? IntType(1) : IntType(0);
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "<=",
-                                        60,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out =
-                                              f <= s ? IntType(1) : IntType(0);
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        ">",
-                                        60,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out = f > s ? IntType(1) : IntType(0);
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        ">=",
-                                        60,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out =
-                                              f >= s ? IntType(1) : IntType(0);
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "<<",
-                                        50,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out = f << s;
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        ">>",
-                                        50,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out = f >> s;
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "+",
-                                        40,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out = f + s;
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "-",
-                                        40,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out = f - s;
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "*",
-                                        30,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          out = f * s;
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "/",
-                                        30,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          if (s == 0) return false;
-                                          out = f / s;
-                                          return true;
-                                        }},
-      ExpressionBinaryOperator<IntType>{ExpressionOperatorAssociativity::LEFT,
-                                        "%",
-                                        30,
-                                        [](const IntType& f,
-                                           const IntType& s,
-                                           IntType& out,
-                                           CompileErrorList& errors) -> bool {
-                                          if (s == 0) return false;
-                                          out = f % s;
-                                          return true;
-                                        }}};
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "||",
+          120,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f || s ? IntType(1) : IntType(0);
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "&&",
+          110,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f && s ? IntType(1) : IntType(0);
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "|",
+          100,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f | s;
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "^",
+          90,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f ^ s;
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "&",
+          80,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f & s;
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "==",
+          70,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f == s ? IntType(1) : IntType(0);
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "!=",
+          70,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f != s ? IntType(1) : IntType(0);
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "<",
+          60,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f < s ? IntType(1) : IntType(0);
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "<=",
+          60,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f <= s ? IntType(1) : IntType(0);
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          ">",
+          60,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f > s ? IntType(1) : IntType(0);
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          ">=",
+          60,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f >= s ? IntType(1) : IntType(0);
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "<<",
+          50,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f << s;
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          ">>",
+          50,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f >> s;
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "+",
+          40,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f + s;
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "-",
+          40,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f - s;
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "*",
+          30,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            out = f * s;
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "/",
+          30,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            if (s == IntType(0)) {
+              clike_recordError(errors, pos, "Division by zero!");
+              return false;
+            }
+            out = f / s;
+            return true;
+          }},
+      ExpressionBinaryOperator<IntType>{
+          ExpressionOperatorAssociativity::LEFT,
+          "%",
+          30,
+          [](const IntType& f,
+             const IntType& s,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
+            if (s == IntType(0)) {
+              clike_recordError(errors, pos, "Division by zero!");
+              return false;
+            }
+            out = f % s;
+            return true;
+          }}};
   auto unaryOperators = std::vector<ExpressionUnaryOperator<IntType>>{
       ExpressionUnaryOperator<IntType>{
           "+",
-          [](const IntType& v, IntType& out, CompileErrorList& errors) -> bool {
+          [](const IntType& v,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
             out = +v;
             return true;
           }},
       ExpressionUnaryOperator<IntType>{
           "-",
-          [](const IntType& v, IntType& out, CompileErrorList& errors) -> bool {
+          [](const IntType& v,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
 #if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4146)
@@ -251,13 +302,19 @@ ExpressionCompiler<IntType> createCLikeCompiler() {
           }},
       ExpressionUnaryOperator<IntType>{
           "!",
-          [](const IntType& v, IntType& out, CompileErrorList& errors) -> bool {
+          [](const IntType& v,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
             out = !v ? IntType(1) : IntType(0);
             return true;
           }},
       ExpressionUnaryOperator<IntType>{
           "~",
-          [](const IntType& v, IntType& out, CompileErrorList& errors) -> bool {
+          [](const IntType& v,
+             IntType& out,
+             CompileErrorList& errors,
+             const CodePositionInterval& pos) -> bool {
             out = ~v;
             return true;
           }}};

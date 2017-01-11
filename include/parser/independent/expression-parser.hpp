@@ -144,7 +144,6 @@ class ExpressionParser {
     // We handle the rest of the operators.
     if (!decreaseStack(state,
                        IToken{ITokenType::EXPRESSION, PositionedString()})) {
-      recordError(state, "Arithmetic error in expression!");
       return T();
     }
 
@@ -182,11 +181,11 @@ class ExpressionParser {
 
   // The state to carry all internal data (to prevent long parameter lists).
   struct ParseState {
-    // Current token.
+    // Last token.
     ExpressionToken last =
         ExpressionToken{PositionedString(), ExpressionTokenType::INVALID};
 
-    // Last token.
+    // Current token.
     ExpressionToken curr =
         ExpressionToken{PositionedString(), ExpressionTokenType::INVALID};
 
@@ -374,7 +373,10 @@ class ExpressionParser {
     // We try to apply it to the stack.
     T outputValue;
     if (!_unaryOperators.at(token.data.string())
-             .handler(args[0], outputValue, state.errors)) {
+             .handler(args[0],
+                      outputValue,
+                      state.errors,
+                      token.data.positionInterval())) {
       return false;
     }
 
@@ -395,7 +397,11 @@ class ExpressionParser {
     // We try to apply it to the stack.
     T outputValue;
     if (!_binaryOperators.at(token.data.string())
-             .handler(args[0], args[1], outputValue, state.errors)) {
+             .handler(args[0],
+                      args[1],
+                      outputValue,
+                      state.errors,
+                      token.data.positionInterval())) {
       return false;
     }
 
