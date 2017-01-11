@@ -30,6 +30,11 @@
 
 \subsubsection{Editor}
 \todo[inline]{Alles zum Editor (zoomen, Makros aufklappen, Fehlermeldungen anzeigen, Tooltips etc)}
+Makrodefinition werden wie alle anderen Instruktionen an jedwede Stelle ins Code-Dokument geschrieben und können anschließend beliebig oft aufgerufen werden. Jeder Makroaufruf kann außerdem über einen Dreieck-förmigen Button in der Editor-Seitenleiste aufgeklappt werden, wodurch die Makroerweiterung unterhalb des eigentliche Makroaufrufs eingeblendet wird. Makroparameter werden dabei durch die konkreten Argumente des Aufrufs ersetzt. Durch das Anzeigen der Makroerweiterung direkt beim Makroaufruf wird verdeutlicht, dass es sich bei Makroaufrufen nicht um einen Funktionsaufruf handelt, sondern um eine Text-Ersetzung, die vom Assemblierer durchgeführt wird.
+
+Wird das Code-Dokument verändert, so werden alle Makroerweiterungen wieder eingeklappt.
+
+Fehlermeldungen, Warnungen und Hinweise werden im Editor direkt in der betroffenen Zeile eingeblendet. Gehören mehrere Meldungen zu einer einzelnen Zeile, so werden diese untereinander angezeigt. Durch Klicken auf das zugehörige Meldungssymbol in der Editor-Seitenleiste, können alle Meldungen einer Zeile ein- und ausgeblendet werden.
 
 \begin{figure}[ht]
 	\centering
