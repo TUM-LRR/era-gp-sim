@@ -165,7 +165,7 @@ ScrollView {
                 * By hovering over it, the help text can be overlayed.
                 */
                 function updateHelpTooltip() {
-                    var help = guiProject.getCommandHelp(cursorLine);
+                    var help = guiProject.getCommandHelp(cursorLine-1);
                     if (help  === "") {
                         _toolTip.hideIcon();
                         return;

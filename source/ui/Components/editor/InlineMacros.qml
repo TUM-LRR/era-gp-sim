@@ -12,7 +12,7 @@ Item {
     property var shouldUpdateText: true
 
     // Information about the currently visible macros.
-    property var macros: [{}]
+    property var macros: []
 
     // Array of dictionaries each containing the display object (i.e. subeditor and triangle button)
     // for one macro.
@@ -202,7 +202,7 @@ Item {
 
     // Collapses the subeditor of the macro of given index by hiding subeditor component and removing blank lines.
     function collapseMacroSubeditor(macroIndex) {
-        if (macros[macroIndex]["collapsed"] === true) { return; }
+        if (macros[macroIndex]["collapsed"] === true) return;
 
         // When the editor's text is altered, its cursor position is reset to 0 and selections are removed. Therefore, selectionStart
         // (= cursorPosition) and selectionEnd are saved to be able to restore them later.
