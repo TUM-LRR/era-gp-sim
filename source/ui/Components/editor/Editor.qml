@@ -131,7 +131,8 @@ ScrollView {
                     newCursorLine = textArea.convertRawLineNumberToDisplayLineNumber(newCursorLine);
                     if (cursorLine !== newCursorLine) {
                         cursorLine = newCursorLine;
-                        editor.cursorLineChanged(newCursorLine);
+                        // editor-component uses line index.
+                        editor.cursorLineChanged(newCursorLine-1);
                     }
                     // do updates that rely on the new cursor line
                     updateHelpTooltip();
