@@ -45,7 +45,7 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
   // calculate region for (max) 64bit memory cells
   // region should not exceed real memory size
   std::size_t start = address - (address % (64 / 8));
-  std::size_t end = std::max(
+  std::size_t end = std::min(
       start + (length - (length % (64 / 8)) + (64 / 8)) - 1, _memorySize - 1);
 
   // if the memory that is hold in cache is changed, invalidate cache
