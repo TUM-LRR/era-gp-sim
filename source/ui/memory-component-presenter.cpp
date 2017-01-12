@@ -216,7 +216,7 @@ MemoryValue MemoryComponentPresenter::getMemoryValueCached(
     // add some offset around but
     // cache size should not exceed real memory boundaries
     // (done this way to prevent overflows)
-    const std::size_t offset = 10;
+    const std::size_t offset = std::min((std::size_t)10, _memorySize / 2);
     if (_memoryCacheBaseAddress < offset) {
       _memoryCacheBaseAddress = 0;
     } else {
