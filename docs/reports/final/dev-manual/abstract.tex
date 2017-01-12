@@ -88,7 +88,6 @@ auch andere Sprachen unterstützen zu können. Somit verwenden wir die von Qt zu
 Mittel, Nutzer sichtbare Nachrichten übersetzbar zu machen, auch in allen anderen Modulen außerhalb
 der GUI. So können z.B. Prozessorarchitektur-spezifische Fehlermeldungen übersetzt werden.
 
-
 \subsection{Build Umgebung}
 
 Möchte man den Simulator selbst kompilieren, so wird eine Build Umgebung vorausgesetzt. 
@@ -104,12 +103,21 @@ die auch die entsprechenden Versionen in den Paketquellen beinhalten. Während d
 Rolling Release Systemen (wie z.B. Arch Linux) ein geringeres Problem ist, haben Anwender von
 z.B. Debian basierter Betriebssysteme häufiger mit älterer Software zu kämpfen.
 Unter Debian selbst sind die benötigten Versionen erst ab Debian Stretch (Debian 9)
-verfügbar, unter Ubuntu erst ab Ubuntu 16.10. \\
-Eine Installation unter Debian basierten Betriebssystemen könnte wie folgt ablaufen: \\
+verfügbar, unter Ubuntu erst ab Ubuntu 16.10.
 
-\begin{lstlisting}
-apt install git build-essential cmake qtdeclarative5-dev
-\end{lstlisting}
+\begin{itemize}
+	\item \textbf{Debian basierte Betriebssysteme:} \\
+	\todo[inline]{Funktioniert nicht in Ubuntu 16.*}
+	\begin{lstlisting}
+apt install build-essential cmake git qtdeclarative5-dev
+	\end{lstlisting}
+
+	\item \textbf{Arch Linux:} \\
+	\begin{lstlisting}
+pacman -S base-devel cmake git qt5-declarative \
+ qt5-graphicaleffects qt5-quickcontrols
+	\end{lstlisting}
+\end{itemize}
 
 Ist eine Installation über die Paketquellen nicht möglich, bietet es sich an, Qt manuell
 zu installieren\footnote{\url{https://wiki.qt.io/Install_Qt_5_on_Ubuntu}}.
