@@ -2,19 +2,12 @@
 
 \section{Allgemeines}
 
-Dieser Teil dient dazu, die grundlegende Struktur des Simulators zu verstehen.
-
-\todo[inline, caption={}]{
-	Mögliche Themen sind:
-	\begin{itemize}
-		\item Git, Git Flow, Github - Warum jeweils benutzt
-		\item C++ - Version, Compiler, Bibliotheken, Code Style
-		\item Qt - Version, verwendete Module
-		\item Build Environment - Welche Pakete man unter Linux installieren muss
-		\item CMake/Make - Wie man das Projekt baut
-		\item Tests - Google Test, Travis
-	\end{itemize}
-}
+Diese Sektion ist eine Einführung in die von uns genutzten Entwicklungswerkzeuge,
+welche für die Entwicklung des Simulators benötigt werden. Das Ziel dieser Sektion
+ist es, dass Leser am Ende in der Lage sind, eigenständig einen Build des Projekts
+durchzuführen und somit am Projekt arbeiten können. \\
+Des Weiteren wird erläutert, welche Philosophie hinter der Auswahl an Werkzeugen
+steckt, von der wir uns erhoffen, dass zukünftige Entwickler diese fortsetzen.
 
 \subsection{Git}
 Bei der Entwicklung von Software im Team ist es zwingend Notwendig, viele verschiedene Versionen
@@ -84,5 +77,105 @@ Wir arbeiten mit folgenden Compilern:
 
 \subsubsection{Bibliotheken}
 
-Die einzige, für das Endprodukt benötigte Abhängigkeit ist Qt 5.6 \todo{Oder 5.7?}. Qt ist eine
-Klassenbibliothek zur Erstellung von grafischen Oberflächen.
+Die einzige, für das Endprodukt benötigte Abhängigkeit ist \textit{Qt}\footnote{\url{https://www.qt.io/}}
+>= 5.6 in Kombination mit QtQuick >= 2.6. Wir verwenden Qt zur Erstellung der grafischen Oberfläche,
+haben aber grundsätzlich eine strikte Trennung zwischen Code der GUI und dem Rest des Simulators.
+Durch diese Trennung wäre es möglich, den Simulator auch ohne Qt zur Verfügung zu stellen, z.B.
+mit einer anderen Grafikbibliothek oder als Kommandozeilenprogramm. \\
+Eine Ausnahme zu dieser Trennung bildet die Internationalisierung des Simulators. Der Simulator ist
+in der aktuellen Version ausschließlich in Englisch verfügbar, uns war es aber ein großes Anliegen,
+auch andere Sprachen unterstützen zu können. Somit verwenden wir die von Qt zur Verfügung gestellten
+Mittel, Nutzer sichtbare Nachrichten übersetzbar zu machen, auch in allen anderen Modulen außerhalb
+der GUI. So können z.B. Prozessorarchitektur-spezifische Fehlermeldungen übersetzt werden.
+
+
+\subsection{Build Umgebung}
+
+Möchte man den Simulator selbst kompilieren, so wird eine Build Umgebung vorausgesetzt. 
+Wie bereits genannt, liegt unser Augenmerk auf Portabilität zwischen Betriebssystemen,
+deshalb wird in dieser Sektion gezeigt, wie man eine solche Umgebung unter den gängigen
+Betriebssystemen (Linux, Mac, Windows) einrichten kann.
+
+\subsubsection{Linux}
+
+Da wir eine relativ neu Versionen von Qt verwenden, ist eine reine Installation der
+Abhängigkeiten über die Paketverwaltung nur unter solchen Linux Distributionen möglich,
+die auch die entsprechenden Versionen in den Paketquellen beinhalten. Während dies unter
+Rolling Release Systemen (wie z.B. Arch Linux) ein geringeres Problem ist, haben Anwender von
+z.B. Debian basierter Betriebssysteme häufiger mit älterer Software zu kämpfen.
+Unter Debian selbst sind die benötigten Versionen erst ab Debian Stretch (Debian 9)
+verfügbar, unter Ubuntu erst ab Ubuntu 16.10. \\
+Eine Installation unter Debian basierten Betriebssystemen könnte wie folgt ablaufen: \\
+
+\begin{lstlisting}
+apt install git build-essential cmake qtdeclarative5-dev
+\end{lstlisting}
+
+Ist eine Installation über die Paketquellen nicht möglich, bietet es sich an, Qt manuell
+zu installieren\footnote{\url{https://wiki.qt.io/Install_Qt_5_on_Ubuntu}}.
+
+\todo [inline]{Manuelle Installation von Qt und dann Verwendung des QtCreators noch genauer
+beschreiben. Ich machs über die Kommandozeile, kenn mich also mit QtCreator etc. nicht so aus}
+
+\subsubsection{Mac}
+
+Wirklich?
+
+\subsubsection{Windows}
+
+Selbst schuld.
+
+\subsection{CMake / Make}
+
+Um auch den Build Prozess unabhängig vom Betriebssystem durchzuführen, haben wir uns für
+\textit{CMake}\footnote{\url{https://cmake.org/}} entschieden. CMake generiert die benötigten
+\texttt{Makefiles} für jedes Betriebssystem bzw. jeden Compiler neu, welche anschließend
+von \textit{Make}\footnote{\url{https://www.gnu.org/software/make/}} ausgeführt werden können.
+
+Um einen Build des Projekts durchzuführen, sollte vorher einen entsprechende Build Umgebung
+aufgesetzt werden. Anschließend kann man mit den Folgenden Befehlen einen Clean Build erzeugen:
+
+\begin{lstlisting}
+# Projekt herunterladen
+git clone https://github.com/TUM-LRR/era-gp-sim
+
+# In das Projektverzeichnis wechseln
+cd era-gp-sim
+
+# Submodule initialisieren (Google Test)
+git submodule update --init
+
+# Build Verzeichnis erstellen und betreten
+mkdir build && cd build
+
+# Mit CMake die Makefiles erzeugen
+cmake ..
+
+# Projekt bauen (Die Option -j setzt Anzahl an
+# Jobs und beschleunigt so den Build Prozess)
+make -j 4
+
+# Programm starten
+./bin/era-sim
+\end{lstlisting}
+
+\subsection{Tests}
+
+Wir nutzten das \textit{Google Test}\footnote{\url{https://github.com/google/googletest}} Framework
+zur Automatisierung unserer Tests. Die Tests befinden sich im \texttt{tests/} Verzeichnis, gruppiert
+nach ihren Modulen. Da Tests der grafischen Oberfläche zu komplex wären, haben wir uns auf die übrigen
+Module des Simulators beschränkt, deren korrekte Funktionalität in jeweils separaten Unit Tests
+überprüft wird.
+
+Um ein einheitliches Ergebnis bei den Tests zu erzielen, nutzen wir das Continuous Integration Tool
+\textit{Travis CI}\footnote{\url{https://travis-ci.org/}}. Dabei wird nach jedem hoch geladenen
+Commit ein Clean Build angefertigt, der alle verfügbaren Tests durchführt. Das Ergebnis dieses Tests
+wird auf Github veröffentlicht und ist bindend. Die Tests werden sowohl mit g++, als auch mit clang
+durchgeführt.
+
+Die Tests können auch lokal ausgeführt werden. Dazu wechselt man mit \texttt{cd} in das Build
+Verzeichnis und nutzt das von CMake mitgelieferte Programm \texttt{ctest} um die Tests zu starten.
+Um die Testgeschwindigkeit zu erhöhen empfiehlt es sich, mit der \texttt{-j} Option die Anzahl
+der Jobs zu erhöhen. 
+
+
