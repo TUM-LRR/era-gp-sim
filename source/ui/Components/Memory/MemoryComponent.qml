@@ -116,10 +116,8 @@ Item {
             onHoveredChanged: {
                 if(containsMouse) {
                     textFieldMemoryValue.borderopacity = 1;
-                } else {
-                    if(!textFieldMemoryValue.activeFocus) {
-                        textFieldMemoryValue.borderopacity = 0;
-                    }
+                } else if(!textFieldMemoryValue.activeFocus) {
+                    textFieldMemoryValue.borderopacity = 0;
                 }
             }
 
@@ -128,14 +126,10 @@ Item {
                 text: (styleData.row % (number_bits / 8) == 0) ? styleData.value : ""
                 anchors.fill: parent
                 visible: (styleData.row % (number_bits / 8) == 0) ? true : false
-                enabled: (styleData.row % (number_bits / 8) == 0) ? true : false
+                enabled: (styleData.row % (number_bits / 8) == 0)
 
                 onActiveFocusChanged: {
-                    if(activeFocus) {
-                        textFieldMemoryValue.borderopacity = 1;
-                    } else {
-                        textFieldMemoryValue.borderopacity = 0;
-                    }
+                    textFieldMemoryValue.borderopacity = (activeFocus) ? 1 : 0;
                 }
 
                 // fadein effect
