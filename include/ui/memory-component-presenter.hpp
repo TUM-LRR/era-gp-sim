@@ -176,18 +176,23 @@ class MemoryComponentPresenter : public QAbstractListModel {
       ValueRoleBin8,
       ValueRoleBin16,
       ValueRoleBin32,
+      ValueRoleBin64,
       ValueRoleOct8,
       ValueRoleOct16,
       ValueRoleOct32,
+      ValueRoleOct64,
       ValueRoleHex8,
       ValueRoleHex16,
       ValueRoleHex32,
+      ValueRoleHex64,
       ValueRoleDec8,
       ValueRoleDec16,
       ValueRoleDec32,
+      ValueRoleDec64,
       ValueRoleDecS8,
       ValueRoleDecS16,
       ValueRoleDecS32,
+      ValueRoleDecS64,
       InfoRole
   };
 
