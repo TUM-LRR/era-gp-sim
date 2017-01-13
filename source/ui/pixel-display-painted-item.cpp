@@ -21,6 +21,7 @@
 #include <ctime>
 #include <iostream>
 
+// #include "common/assert.hpp "
 #include "ui/output-component.hpp"
 #include "ui/pixel-display-painted-item.hpp"
 
@@ -78,10 +79,11 @@ void PixelDisplayPaintedItem::setHeight(size_t height) {
     resize(_options.width, height);
   }
 }
-void PixelDisplayPaintedItem::setColorMode(size_t colorMode) {
-  if (_options.colorMode != colorMode) {
-    std::cout << "ColorMode changed: " << colorMode << std::endl;
-    _options.colorMode = colorMode;
+void PixelDisplayPaintedItem::setColorMode(const QString &colorMode) {
+  size_t colorModeIndex = stringToColorMode(colorMode);
+  if (_options.colorMode != colorModeIndex) {
+    std::cout << "ColorMode changed: " << colorMode.toStdString() << std::endl;
+    _options.colorMode = colorModeIndex;
     _image = _options.makeImage();
     _options.updateAllPixels(_outputComponentPointer, _image);
     _options.updateAllColors(_outputComponentPointer, _image);
@@ -173,8 +175,8 @@ size_t PixelDisplayPaintedItem::getWidth() {
 size_t PixelDisplayPaintedItem::getHeight() {
   return _options.height;
 }
-size_t PixelDisplayPaintedItem::getColorMode() {
-  return _options.colorMode;
+QString PixelDisplayPaintedItem::getColorMode() {
+  return colorModeToString(_options.colorMode);
 }
 size_t PixelDisplayPaintedItem::getRBit() {
   return _options.rBit;
@@ -223,4 +225,22 @@ void PixelDisplayPaintedItem::resize(size_t width, size_t height) {
 
 void PixelDisplayPaintedItem::setOutputComponent(OutputComponent *o) {
   _outputComponentPointer = o;
+}
+
+size_t PixelDisplayPaintedItem::stringToColorMode(const QString &colorMode) {
+  const QString colorModeNameList[] = {QString::fromStdString("RGB"),
+                                       QString::fromStdString("Monochrome")};
+  for (std::size_t i = 0; i < 2; ++i) {
+    if (colorMode.compare(colorModeNameList[i]) == 0) {
+      return i;
+    }
+  }
+  assert::that(false);
+}
+QString PixelDisplayPaintedItem::colorModeToString(size_t colorMode) {
+  assert::that(colorMode>=0);
+  assert::that(colorMode<2);
+  const QString colorModeNameList[] = {QString::fromStdString("RGB"),
+                                       QString::fromStdString("Monochrome")};
+  return colorModeNameList[colorMode];
 }

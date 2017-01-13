@@ -45,11 +45,11 @@ Item {
 
         function updateSettings() {
             // TODO::update in preferred number format
-            pixelBaseAddressTextField.text = "0" + pixeldisplaypainteditemid.pixelBaseAddress
-            colorBaseAddressTextField.text = "0" + pixeldisplaypainteditemid.colorBaseAddress
-            colorModeComboBox.currentIndex = "0" + pixeldisplaypainteditemid.colorMode
-            widthTextField.text = "0" + pixeldisplaypainteditemid.width
-            heightTextField.text = "0" + pixeldisplaypainteditemid.height
+            pixelBaseAddressTextField.text = pixeldisplaypainteditemid.pixelBaseAddress
+            colorBaseAddressTextField.text = pixeldisplaypainteditemid.colorBaseAddress
+            colorModeComboBox.currentIndex = colorModeComboBox.find(pixeldisplaypainteditemid.colorMode)
+            widthTextField.text = pixeldisplaypainteditemid.width
+            heightTextField.text = pixeldisplaypainteditemid.height
         }
 
         onVisibleChanged: {
@@ -142,7 +142,7 @@ Item {
                     // onAccepted: {processInput();}
                     // onActivated: { processInput(); }
                     function processInput() {
-                        pixeldisplaypainteditemid.colorMode = colorModeComboBox.currentIndex
+                        pixeldisplaypainteditemid.colorMode = colorModeComboBox.currentText
                     }
                 }
 

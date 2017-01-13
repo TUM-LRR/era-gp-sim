@@ -23,6 +23,7 @@
 #include <QImage>
 #include <QPainter>
 #include <QQuickPaintedItem>
+#include <QString>
 #include <cstdint>
 #include <memory>
 
@@ -41,7 +42,7 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
                  setColorBaseAddress)
   Q_PROPERTY(size_t width READ getWidth WRITE setWidth)
   Q_PROPERTY(size_t height READ getHeight WRITE setHeight)
-  Q_PROPERTY(size_t colorMode READ getColorMode WRITE setColorMode)
+  Q_PROPERTY(QString colorMode READ getColorMode WRITE setColorMode)
   Q_PROPERTY(size_t rBit READ getRBit WRITE setRBit)
   Q_PROPERTY(size_t gBit READ getGBit WRITE setGBit)
   Q_PROPERTY(size_t bBit READ getBBit WRITE setBBit)
@@ -116,7 +117,7 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
    * \param colorMode The colorMode to be set active
    * \Note I maybe should use enums but enums in qt are annoying
    */
-  void setColorMode(size_t colorMode);
+  void setColorMode(const QString &colorMode);
   /*
    * \brief sets the rBit
    * \param rBit The rBit to be set
@@ -197,7 +198,7 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
    * \brief returns ColorMode
    * \returns ColorMode
    */
-  size_t getColorMode();
+  QString getColorMode();
   /*
    * \brief returns rBit
    * \returns rBit
@@ -255,6 +256,17 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   size_t getFreeBits();
 
  private:
+
+  /*
+   * gives the index of a given name of a colorMode
+   * \param colorMode Name of the colorMode
+   */
+  static size_t stringToColorMode(const QString &colorMode);
+  /*
+   * gives the name of a given index of a colorMode
+   * \param colorMode Index of the colorMode
+   */
+  static QString colorModeToString(size_t colorMode);
   /// shared pointer to the image
   std::shared_ptr<QImage> _image;
   /// struct storing the options used to draw the image
