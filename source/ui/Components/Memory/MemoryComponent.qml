@@ -109,26 +109,58 @@ Item {
         // when editing is finished the new value is passed to the memory in the core
         id: inputBox
 
-        TextField {
-            id: textFieldMemoryValue
-            text: (styleData.row % (number_bits / 8) == 0) ? styleData.value : ""
-            // hide input if cell is not needed
-            visible: (styleData.row % (number_bits / 8) == 0) ? true : false
-            enabled: (styleData.row % (number_bits / 8) == 0) ? true : false
-
-            style: TextFieldStyle {
-                renderType: Text.QtRendering
-                background: Rectangle {
-                                id: styleRec
-                                color: "transparent"
+        MouseArea {
+            hoverEnabled: true
+            anchors.fill: parent
+            // fadein on mouse hover
+            onHoveredChanged: {
+                if(containsMouse) {
+                    textFieldMemoryValue.borderopacity = 1;
+                } else if(!textFieldMemoryValue.activeFocus) {
+                    textFieldMemoryValue.borderopacity = 0;
                 }
             }
 
-            onEditingFinished: {
-                // update internal memory; use right number representation and byte size
-                // if cell is not needed we can save an update
-                if(styleData.row % (number_bits / 8) == 0) {
-                    memoryModel.setValue(styleData.row, textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
+            TextField {
+                id: textFieldMemoryValue
+                text: (styleData.row % (number_bits / 8) == 0) ? styleData.value : ""
+                anchors.fill: parent
+                visible: (styleData.row % (number_bits / 8) == 0) ? true : false
+                enabled: (styleData.row % (number_bits / 8) == 0)
+
+                onActiveFocusChanged: {
+                    textFieldMemoryValue.borderopacity = (activeFocus) ? 1 : 0;
+                }
+
+                // fadein effect
+                property double borderopacity: 0
+                Behavior on borderopacity {
+                    NumberAnimation {
+                        duration: 250
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                onEditingFinished: {
+                    // update internal memory; use right number representation and byte size
+                    // if cell is not needed we can save an update
+                    if(styleData.row % (number_bits / 8) == 0) {
+                        memoryModel.setValue(styleData.row, textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
+                    }
+                }
+
+                style: TextFieldStyle {
+                    id: style
+                    renderType: Text.QtRendering
+                    background: Item{
+                        // textfield as background for default look and feel
+                        TextField {
+                            id: background
+                            anchors.fill: parent
+                            opacity: textFieldMemoryValue.borderopacity
+                            activeFocusOnTab: false
+                        }
+                    }
                 }
             }
         }
@@ -201,11 +233,12 @@ Item {
                             ListElement { text: "8 Bit"; bits: 8 }
                             ListElement { text: "16 Bit"; bits: 16 }
                             ListElement { text: "32 Bit"; bits: 32 }
+                            ListElement { text: "64 Bit"; bits: 64 }
                         }
                         ListModel {
                             id: modelNumeric
                             ListElement { text: "Binary"; role: "bin" }
-                            ListElement { text: "Octal"; role: "oct" }
+                            // ListElement { text: "Octal"; role: "oct" } // not supported
                             ListElement { text: "Hexadecimal"; role: "hex" }
                             ListElement { text: "Decimal"; role: "dec" }
                             ListElement { text: "Decimal (signed)"; role: "decs" }

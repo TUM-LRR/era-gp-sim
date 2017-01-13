@@ -74,6 +74,9 @@ void MemoryComponentPresenter::setValue(int address,
                                         QString number,
                                         int length_bit,
                                         QString presentation) {
+  if (number.length() == 0) {
+    number = "0";  // string conversions needs a number
+  }
   if (presentation.startsWith("bin"))
     _memoryAccess.putMemoryValueAt(address,
                                    *StringConversions::binStringToMemoryValue(
@@ -145,6 +148,7 @@ MemoryComponentPresenter::dataMemory(const QModelIndex &index, int role) const {
   int number_of_bits = 8;
   if (role_string.endsWith("16")) number_of_bits = 16;
   if (role_string.endsWith("32")) number_of_bits = 32;
+  if (role_string.endsWith("64")) number_of_bits = 64;
 
 
   int memory_address = index.row();
@@ -212,7 +216,7 @@ MemoryValue MemoryComponentPresenter::getMemoryValueCached(
     // add some offset around but
     // cache size should not exceed real memory boundaries
     // (done this way to prevent overflows)
-    const std::size_t offset = 10;
+    const std::size_t offset = std::min((std::size_t)10, _memorySize / 2);
     if (_memoryCacheBaseAddress < offset) {
       _memoryCacheBaseAddress = 0;
     } else {
@@ -248,18 +252,23 @@ QHash<int, QByteArray> MemoryComponentPresenter::roleNames() const {
   roles[ValueRoleBin8] = "bin8";
   roles[ValueRoleBin16] = "bin16";
   roles[ValueRoleBin32] = "bin32";
+  roles[ValueRoleBin64] = "bin64";
   roles[ValueRoleOct8] = "oct8";
   roles[ValueRoleOct16] = "oct16";
   roles[ValueRoleOct32] = "oct32";
+  roles[ValueRoleOct64] = "oct64";
   roles[ValueRoleHex8] = "hex8";
   roles[ValueRoleHex16] = "hex16";
   roles[ValueRoleHex32] = "hex32";
+  roles[ValueRoleHex64] = "hex64";
   roles[ValueRoleDec8] = "dec8";
   roles[ValueRoleDec16] = "dec16";
   roles[ValueRoleDec32] = "dec32";
+  roles[ValueRoleDec64] = "dec64";
   roles[ValueRoleDecS8] = "decs8";
   roles[ValueRoleDecS16] = "decs16";
   roles[ValueRoleDecS32] = "decs32";
+  roles[ValueRoleDecS64] = "decs64";
   roles[InfoRole] = "info";
   return roles;
 }
