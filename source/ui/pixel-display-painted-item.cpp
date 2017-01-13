@@ -17,13 +17,14 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "ui/pixel-display-painted-item.hpp"
+
 #include <algorithm>
 #include <ctime>
 #include <iostream>
 
-// #include "common/assert.hpp "
+#include "common/assert.hpp"
 #include "ui/output-component.hpp"
-#include "ui/pixel-display-painted-item.hpp"
 
 PixelDisplayPaintedItem::PixelDisplayPaintedItem(QQuickItem *parent)
 : QQuickPaintedItem(parent), _options{} {
@@ -236,6 +237,7 @@ size_t PixelDisplayPaintedItem::stringToColorMode(const QString &colorMode) {
     }
   }
   assert::that(false);
+  return 0; // oh what beautiful error code
 }
 QString PixelDisplayPaintedItem::colorModeToString(size_t colorMode) {
   assert::that(colorMode>=0);
