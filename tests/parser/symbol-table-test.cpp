@@ -16,7 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/independent/symbol.hpp"
 #include "gtest/gtest.h"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/common/compile-error-list.hpp"
@@ -24,6 +23,7 @@
 #include "parser/independent/symbol-graph-evaluation.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
+#include "parser/independent/symbol.hpp"
 #define ZP(x) PositionedString(x, CodePositionInterval())
 
 TEST(SymbolTable, empty) {
@@ -66,7 +66,18 @@ TEST(SymbolTable, simpleCycle) {
   auto eval = graph.evaluate();
   ASSERT_FALSE(eval.valid());
   ASSERT_FALSE(eval.sampleCycle().empty());
-  ASSERT_EQ(eval.sampleCycle().size(), 5);
+  ASSERT_EQ(eval.sampleCycle().size(), 4);
+}
+
+TEST(SymbolTable, simpleDoubleCycle) {
+  CompileErrorList errors;
+  SymbolGraph graph;
+  graph.addNode(Symbol(ZP("a"), ZP("a+b")));
+  graph.addNode(Symbol(ZP("b"), ZP("a")));
+  graph.addNode(Symbol(ZP("c"), ZP("a")));
+  auto eval = graph.evaluate();
+  ASSERT_FALSE(eval.valid());
+  ASSERT_FALSE(eval.sampleCycle().empty());
 }
 
 TEST(SymbolTable, doubleInsertion) {
