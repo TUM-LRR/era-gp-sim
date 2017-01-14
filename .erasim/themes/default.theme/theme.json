@@ -1,48 +1,78 @@
 {
-    "createProject": {
-        "section": {
-            "borderWidth": 1,
-            "height": 50,
-            "margin": 20,
-            "fontSize": 20,
-            "borderColor": "#BDBDBD"
-        },
-        "button": {
-            "background": "#2196F3",
-            "width": 160,
-            "marginTop": 10
-        },
-        "marginTop": 10,
-        "name": {
-            "length": 80
-        },
-        "width": 280
-    },
     "window": {
-        "background": "white",
-        "height": 0.9,
         "initialWidth": 300,
-        "initialHeight": 350,
-        "width": 0.9
+        "background": "white",
+        "width": 0.9,
+        "height": 0.9,
+        "initialHeight": 350
+    },
+    "configuration": {
+        "section": {
+            "paddingBottom": 5,
+            "height": 95
+        },
+        "hr": {
+            "color": "#BDBDBD",
+            "height": 1
+        },
+        "h1": {
+            "padding": 10,
+            "color": "#212121",
+            "fontSize": 16
+        },
+        "paddingTop": 15,
+        "h2": {
+            "color": "#757575",
+            "marginBottom": 10,
+            "fontSize": 13,
+            "marginTop": 8
+        },
+        "snapshots": {
+            "button": {
+                "background": "#FFFFFF",
+                "paddingLeft": 10,
+                "paddingRight": 20,
+                "fontSize": 14
+            }
+        }
     },
     "register": {
         "border": 10
     },
     "button": {
-        "height": 40,
+        "disabled": {
+            "color": "#212121",
+            "background": "#BDBDBD",
+            "border": {
+                "color": "#d7d7d7"
+            }
+        },
+        "color": "#FFFFFF",
         "radius": 4,
-        "fontSize": 16,
         "border": {
             "color": "#82c4f8",
             "width": 2
         },
-        "color": "#FFFFFF",
-        "disabled": {
-            "background": "#BDBDBD",
-            "color": "#212121",
-            "border": {
-                "color": "#d7d7d7"
-            }
-        }
+        "height": 40,
+        "fontSize": 16
+    },
+    "createProject": {
+        "section": {
+            "borderWidth": 1,
+            "borderColor": "#BDBDBD",
+            "margin": 20,
+            "fontSize": 20,
+            "height": 50
+        },
+        "button": {
+            "background": "#2196F3",
+            "marginTop": 10,
+            "width": 160
+        },
+        "width": 280,
+        "name": {
+            "length": 80
+        },
+        "marginTop": 10
     }
 }
