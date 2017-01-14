@@ -20,10 +20,10 @@
 #define ERAGPSIM_UI_REGISTERMODEL_HPP
 
 #include <QAbstractItemModel>
-#include <QDebug>
 #include <QQmlContext>
 #include <map>
 #include <string>
+
 #include "arch/common/register-information.hpp"
 #include "common/optional.hpp"
 #include "core/memory-access.hpp"
@@ -217,4 +217,4 @@ class RegisterModel : public QAbstractItemModel {
   void updateContent(const QString &registerTitle);
 };
 
-#endif// ERAGPSIM_UI_REGISTERMODEL_HPP
+#endif  // ERAGPSIM_UI_REGISTERMODEL_HPP

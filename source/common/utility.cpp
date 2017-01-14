@@ -77,7 +77,7 @@ std::string toUpper(const std::string& string) {
   return transform(string, [](auto& c) { return std::toupper(c); });
 }
 
-std::string rootPath() {
+const std::string& rootPath() {
   static const std::string query("era-gp-sim");
   static std::string root;
 
