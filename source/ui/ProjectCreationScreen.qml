@@ -57,10 +57,13 @@ Item {
         focus: true
         anchors.fill: parent
         width: Theme.createProject.width
-        validator: RegExpValidator { regExp: /[\w ]+/ }
+        validator: RegExpValidator { regExp: /^\w[\w ]*$/ }
         placeholderText: "Give your project a name ..."
         style: TextFieldStyle {
           font.pixelSize: Theme.createProject.section.fontSize
+        }
+        onTextChanged: {
+          button.enabled = text.length > 0;
         }
       }
     }
@@ -217,13 +220,25 @@ Item {
         horizontalCenter: parent.horizontalCenter
         topMargin: Theme.createProject.button.marginTop
       }
+      enabled: false
+
+      property color background: {
+        if (this.enabled) {
+          return Theme.createProject.button.background;
+        } else {
+          return Theme.button.disabled.background;
+        }
+      }
+
+      property color border: switchForEnabled(Theme.button, 'border', 'color')
+      property color color: switchForEnabled(Theme.button, 'color');
 
       MouseArea {
         anchors.fill: button
         cursorShape: Qt.PointingHandCursor
         onClicked: {
           root.createProject(
-            projectName.text,
+            projectNameField.text,
             memorySizeSelector.value,
             architectureSelector.currentText,
             versionSelector.currentText,
@@ -237,7 +252,7 @@ Item {
           anchors.centerIn: parent
           Text {
             anchors.centerIn: parent
-            color: Theme.button.color
+            color: button.color
             font.pixelSize: Theme.button.fontSize
             font.capitalization: Font.AllUppercase
             text: "Create project"
@@ -247,10 +262,27 @@ Item {
           implicitWidth: Theme.createProject.button.width
           implicitHeight: Theme.button.height
           border.width: Theme.button.border.width
-          border.color: Theme.button.border.color
+          border.color: button.border
           radius: Theme.button.radius
-          color: Theme.createProject.button.backgroundColor
+          color: button.background
         }
+      }
+
+      // Given a node and any number of further property names of increasing
+      // depth, returns the either node.[...properties...] or
+      // node.disabled.[...properties...] depending on whether or not the button
+      // is enabled. The properties are extracted from the `arguments` list.
+      function switchForEnabled(node) {
+          if (!button.enabled) {
+            node = node['disabled'];
+          }
+
+          // Skip the first element in the arguments list (the node)
+          for (var level = 1; level < arguments.length; ++level) {
+            node = node[arguments[level]];
+          }
+
+          return node;
       }
     }
   }
