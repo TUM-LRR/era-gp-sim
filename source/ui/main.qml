@@ -24,8 +24,7 @@ import QtQuick.Dialogs 1.2
 import "Components"
 import "Components/Menubar"
 import "Components/Toolbar"
-import "Components/ConfigurationWindow/"
-
+import "Components/ProjectCreation"
 import Theme 1.0
 
 ApplicationWindow {
@@ -35,19 +34,19 @@ ApplicationWindow {
   height: Theme.window.initialHeight
   color: Theme.window.background
 
-    property alias menubar: menubar
-    property alias toolbar: toolbar
-    property alias config: config
+  property alias menubar: menubar
+  property alias toolbar: toolbar
 
-    menuBar: Menubar {
-        id: menubar
-        main: window
-        Component.onCompleted: {
-            window.updateMenuState();
-        }
+  menuBar: Menubar {
+    id: menubar
+    main: window
+    Component.onCompleted: {
+      window.updateMenuState();
     }
-    toolBar: ToolbarMainWindow { id: toolbar }
-    ConfigurationWindow { id: config }
+  }
+  toolBar: ToolbarMainWindow {
+    id: toolbar
+  }
 
   TabView {
     id: tabView
@@ -214,13 +213,8 @@ ApplicationWindow {
     property alias textDialog: textDialog
 
     //Dialog to show errors
-    MessageDialog {
+    ErrorDialog {
       id: errorDialog
-      title: "error"
-      standardButtons: StandardButton.Ok
-      onAccepted: {
-        close();
-      }
     }
 
     //File dialog for selecting a file
