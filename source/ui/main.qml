@@ -213,13 +213,8 @@ ApplicationWindow {
     property alias textDialog: textDialog
 
     //Dialog to show errors
-    MessageDialog {
+    ErrorDialog {
       id: errorDialog
-      title: "error"
-      standardButtons: StandardButton.Ok
-      onAccepted: {
-        close();
-      }
     }
 
     //File dialog for selecting a file
