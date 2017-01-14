@@ -20,6 +20,9 @@ import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
 Item {
+    // Tell SplitViewItem (i.e. component wrapper) that settings are available to make it display settings icon.
+    property var hasComponentSettings: true
+
     // Displays the registers in a tree-like structure.
     TreeView {
         id: registerTreeView
@@ -300,5 +303,10 @@ Item {
         onClicked: {
             contextMenu.popup();
         }
+    }
+
+    // Called by SplitViewItem.qml (i.e. component wrapper) when component settings icon was pressed.
+    function settingsButtonPressed() {
+        contextMenu.popup();
     }
 }
