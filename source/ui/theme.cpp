@@ -43,8 +43,6 @@ Status Theme::Make(const QString& themeName) {
     _theme = nullptr;
   }
 
-  std::cout << status.message() << 4 << std::endl;
-
   return status;
 }
 
@@ -81,25 +79,23 @@ StatusWithValue<QByteArray> Theme::_loadThemeData(const QString& name) {
       QDir(QString::fromStdString(Utility::rootPath()));  // QDir::home();
 
   if (!directory.exists()) {
-    return Status(Status::FAILURE, "Could not find home directory!");
+    return Status(Status::FAILURE, "Could not find home directory");
   }
 
   if (!directory.cd(".erasim/themes/")) {
-    return Status(Status::FAILURE, "Could not find theme directory!");
+    return Status(Status::FAILURE, "Could not find theme directory");
   }
 
   if (!directory.cd(name + ".theme")) {
     return Status(Status::FAILURE,
-                  "Could not find theme: " + name.toStdString() + "!");
+                  "Could not find theme: " + name.toStdString());
   }
-
-  std::cout << 2 << std::endl;
 
   QFile file(directory.filePath("theme.json"));
 
   if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
     return Status(Status::FAILURE,
-                  "Could not open theme: " + name.toStdString() + "!");
+                  "Could not open theme: " + name.toStdString());
   }
 
   auto contents = file.readAll();
@@ -107,7 +103,7 @@ StatusWithValue<QByteArray> Theme::_loadThemeData(const QString& name) {
   if (contents.isEmpty()) {
     return Status(
         Status::FAILURE,
-        "Contents of theme '" + name.toStdString() + "' are corrupted!");
+        "Contents of theme '" + name.toStdString() + "' are corrupted");
   }
 
   return contents;
