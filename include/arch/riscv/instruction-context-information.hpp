@@ -18,6 +18,9 @@
 #define ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
 
 #include <QtGlobal>
+
+#include <cstddef>
+#include <string>
 #include <unordered_map>
 
 #include "arch/common/architecture.hpp"
@@ -33,18 +36,19 @@
  */
 class InstructionContextInformation {
  public:
+  using size_t = std::size_t;
+
   /**
- * Constructs the documentation collection with the given architecture.
- * As the Translateable text parts are freshly made, requiring many string
- * operations,
- * this may be slow
- * \param architecture
- */
-  InstructionContextInformation(const Architecture& architecture);
+  * Constructs the documentation collection with the given architecture.
+  * As the Translateable text parts are freshly made, requiring many string
+  * operations, this may be slow.
+  * \param architecture
+  */
+  explicit InstructionContextInformation(const Architecture& architecture);
 
   /**
    * Retrieves and returns the documentation/context information for the given
-   * mnemonic
+   * mnemonic.
    * \param mnemonic The mnemonic identifying the instruction
    * \return A reference to a Translateable containing the context information
    */
@@ -52,7 +56,7 @@ class InstructionContextInformation {
 
   /**
    * Retrieves and returns the documentation/context information for the given
-   * instruction information
+   * instruction information.
    * \param instructionInfo The instruction information object identifying the
    * instruction
    * \return A reference to a Translateable containing the context information
@@ -62,7 +66,7 @@ class InstructionContextInformation {
 
   /**
    * Checks if a documentation/context information is present for the given
-   * mnemonic
+   * mnemonic.
    * \param mnemonic The mnemonic identifying the instruction
    * \return true, if an entry is available, otherwise false
    */
@@ -70,7 +74,7 @@ class InstructionContextInformation {
 
   /**
    * Checks if a documentation/context information is present for the given
-   * instruction information
+   * instruction information.
    * \param instructionInfo The instruction information object identifying the
    * instruction
    * \return true, if an entry is available, otherwise false
@@ -84,20 +88,20 @@ class InstructionContextInformation {
   /**
    * Fills (creates and puts the Translateables into) the map.
    * Only the information for instructions present in the given architecture is
-   * generated
+   * generated.
    * \param architecture The architecture that defines the instructions
    */
   void _fill(const Architecture& architecture);
 
   /**
-   * Adds a key-value pair to the map
+   * Adds a key-value pair to the map.
    * \param key The instruction name
    * \param value A Translateable text
    */
   void _add(const std::string& key, const Translateable& value);
 
   /**
-   * A convenience function for a defining an arithmetic instruction
+   * A convenience function for a defining an arithmetic instruction.
    * \param mnemonic The instruction mnemonic
    * \param operationSign The operator used in the pseudo-code description
    * \param description A description of the behaviour of the instruction
@@ -127,7 +131,7 @@ class InstructionContextInformation {
                                    RISCV_TR("A 12 bit signed immediate"));
 
   /**
-   * A convenience function for a defining a word arithmetic instruction
+   * A convenience function for a defining a word arithmetic instruction.
    * \param mnemonic The instruction mnemonic
    * \param operationSign The operator used in the pseudo-code description
    * \param description A description of the behaviour of the instruction
@@ -157,7 +161,7 @@ class InstructionContextInformation {
                                     RISCV_TR("A 12 bit signed immediate"));
 
   /**
-   * A convenience function for defining a load instruction documentation
+   * A convenience function for defining a load instruction documentation.
    * \param mnemonic The instruction mnemonic
    * \param sizeDesc A string description of the load size (like byte, word,
    * double-word, etc.)
@@ -165,10 +169,10 @@ class InstructionContextInformation {
    */
   void _loadInstruction(const std::string& mnemonic,
                         const std::string& sizeDesc,
-                        int size);
+                        size_t size);
 
   /**
-   * A convenience function for defining a store instruction documentation
+   * A convenience function for defining a store instruction documentation.
    * \param mnemonic The instruction mnemonic
    * \param sizeDesc A string description of the stored size (like byte, word,
    * double-word, etc.)
@@ -176,10 +180,10 @@ class InstructionContextInformation {
    */
   void _storeInstruction(const std::string& mnemonic,
                          const std::string& sizeDesc,
-                         int size);
+                         size_t size);
 
   /**
-   * A convenience function for defining a branch instruction documentation
+   * A convenience function for defining a branch instruction documentation.
    * \param mnemonic The instruction mnemonic
    * \param condition A string description of the condition when the branch is
    * taken
@@ -193,7 +197,7 @@ class InstructionContextInformation {
                           const std::string& compareType = std::string());
 
   /**
-   * A convenience function for defining a instruction from RISCV Extension M
+   * A convenience function for defining a instruction from RISCV Extension M.
    * \param mnemonic The instruction mnemonic
    * \param operationSign The pseudo-code operator for the arithmetic operation
    * \param description A description of the behaviour of the instruction
@@ -209,9 +213,10 @@ class InstructionContextInformation {
                      const std::string& resultPart = std::string());
 
   Table _table;
+
   /** The architecture size in bits */
   std::string _architectureSize;
   bool _is64BitArchitecture;
 };
 
-#endif// ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
+#endif  // ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
