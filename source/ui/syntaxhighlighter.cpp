@@ -18,15 +18,25 @@
 */
 
 #include "ui/syntaxhighlighter.hpp"
-#include <iostream>
 
-SyntaxHighlighter::SyntaxHighlighter(std::vector<KeywordRule> &&keywords,
+#include <QQuickTextDocument>
+#include <QString>
+#include <QTextCharFormat>
+
+#include "core/parser-interface.hpp"
+
+SyntaxHighlighter::SyntaxHighlighter(ParserInterface &parserInterface,
                                      QTextDocument *document)
-: QSyntaxHighlighter(document), _keywords(std::move(keywords)) {
+: QSyntaxHighlighter(document) {
+  _addInstructionKeywordsRegexToSyntaxHighlighter(parserInterface);
+  _addImmediateRegexToSyntaxHighlighter(parserInterface);
+  _addCommentRegexToSyntaxHighlighter(parserInterface);
+  _addRegisterRegexToSyntaxHighlighter(parserInterface);
+  _addLabelRegexToSyntaxHighlighter(parserInterface);
 }
 
 void SyntaxHighlighter::highlightBlock(const QString &text) {
-  for (uint i = 0; i < _keywords.size(); i++) {
+  for (std::size_t i = 0; i < _keywords.size(); i++) {
     const KeywordRule &rule = _keywords.at(i);
     QRegularExpressionMatchIterator it = rule.rulePattern.globalMatch(text);
     while (it.hasNext()) {
@@ -35,4 +45,71 @@ void SyntaxHighlighter::highlightBlock(const QString &text) {
           match.capturedStart(), match.capturedLength(), rule.ruleTextFormat);
     }
   }
+}
+
+void SyntaxHighlighter::_addKeywords(
+    SyntaxInformation::Token token,
+    QTextCharFormat format,
+    QRegularExpression::PatternOption patternOption,
+    ParserInterface &parserInterface) {
+  for (const auto &regexString : parserInterface.getSyntaxRegex(token).get()) {
+    QRegularExpression regex(QString::fromStdString(regexString),
+                             patternOption);
+    KeywordRule keyword{regex, format};
+    _keywords.push_back(keyword);
+  }
+}
+
+void SyntaxHighlighter::_addImmediateRegexToSyntaxHighlighter(
+    ParserInterface &parserInterface) {
+  QTextCharFormat immediateFormat;
+  immediateFormat.setForeground(Qt::red);
+  immediateFormat.setFontWeight(QFont::Bold);
+  _addKeywords(SyntaxInformation::Token::Immediate,
+               immediateFormat,
+               QRegularExpression::CaseInsensitiveOption,
+               parserInterface);
+}
+
+void SyntaxHighlighter::_addInstructionKeywordsRegexToSyntaxHighlighter(
+    ParserInterface &parserInterface) {
+  QTextCharFormat instructionFormat;
+  instructionFormat.setForeground(Qt::darkBlue);
+  instructionFormat.setFontWeight(QFont::Bold);
+  _addKeywords(SyntaxInformation::Token::Instruction,
+               instructionFormat,
+               QRegularExpression::CaseInsensitiveOption,
+               parserInterface);
+}
+
+void SyntaxHighlighter::_addCommentRegexToSyntaxHighlighter(
+    ParserInterface &parserInterface) {
+  QTextCharFormat commentFormat;
+  commentFormat.setForeground(Qt::darkGreen);
+  _addKeywords(SyntaxInformation::Token::Comment,
+               commentFormat,
+               QRegularExpression::NoPatternOption,
+               parserInterface);
+}
+
+void SyntaxHighlighter::_addRegisterRegexToSyntaxHighlighter(
+    ParserInterface &parserInterface) {
+  QTextCharFormat registerFormat;
+  registerFormat.setForeground(QColor::fromRgb(177, 137, 4));
+  registerFormat.setFontWeight(QFont::Bold);
+  _addKeywords(SyntaxInformation::Token::Register,
+               registerFormat,
+               QRegularExpression::NoPatternOption,
+               parserInterface);
+}
+
+void SyntaxHighlighter::_addLabelRegexToSyntaxHighlighter(
+    ParserInterface &parserInterface) {
+  QTextCharFormat labelFormat;
+  labelFormat.setForeground(Qt::red);
+  labelFormat.setFontWeight(QFont::Bold);
+  _addKeywords(SyntaxInformation::Token::Label,
+               labelFormat,
+               QRegularExpression::CaseInsensitiveOption,
+               parserInterface);
 }

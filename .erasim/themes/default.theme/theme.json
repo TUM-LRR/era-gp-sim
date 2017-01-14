@@ -1,0 +1,48 @@
+{
+    "createProject": {
+        "section": {
+            "borderWidth": 1,
+            "height": 50,
+            "margin": 20,
+            "fontSize": 20,
+            "borderColor": "#BDBDBD"
+        },
+        "button": {
+            "background": "#2196F3",
+            "width": 160,
+            "marginTop": 10
+        },
+        "marginTop": 10,
+        "name": {
+            "length": 80
+        },
+        "width": 280
+    },
+    "window": {
+        "background": "white",
+        "height": 0.9,
+        "initialWidth": 300,
+        "initialHeight": 350,
+        "width": 0.9
+    },
+    "register": {
+        "border": 10
+    },
+    "button": {
+        "height": 40,
+        "radius": 4,
+        "fontSize": 16,
+        "border": {
+            "color": "#82c4f8",
+            "width": 2
+        },
+        "color": "#FFFFFF",
+        "disabled": {
+            "background": "#BDBDBD",
+            "color": "#212121",
+            "border": {
+                "color": "#d7d7d7"
+            }
+        }
+    }
+}
