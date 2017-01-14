@@ -111,7 +111,7 @@ Window {
 
       FileDialog {
           id: snapshotLocationDialog
-          title: qsTr("Select Snapshot Location")
+          title: "Select Snapshot Location"
           selectFolder: true
           onAccepted: {
             var location = snapshotLocationDialog.folder.toString();

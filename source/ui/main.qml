@@ -25,6 +25,7 @@ import "Components"
 import "Components/Menubar"
 import "Components/Toolbar"
 import "Components/ProjectCreation"
+import "Components/ConfigurationWindow"
 import Theme 1.0
 
 ApplicationWindow {
@@ -36,6 +37,7 @@ ApplicationWindow {
 
   property alias menubar: menubar
   property alias toolbar: toolbar
+  property alias config: config
 
   menuBar: Menubar {
     id: menubar
@@ -47,6 +49,8 @@ ApplicationWindow {
   toolBar: ToolbarMainWindow {
     id: toolbar
   }
+
+  ConfigurationWindow { id: config }
 
   TabView {
     id: tabView
