@@ -31,7 +31,7 @@ ApplicationWindow {
   visible: true
   width: Theme.window.initialWidth
   height: Theme.window.initialHeight
-  color: Theme.window.backgroundColor
+  color: Theme.window.background
 
   property alias menubar: menubar
   property alias toolbar: toolbar
@@ -48,8 +48,8 @@ ApplicationWindow {
   }
 
   TabView {
-    anchors.fill: parent
     id: tabView
+    anchors.fill: parent
 
     Component.onCompleted: {
       createProject()
@@ -94,8 +94,8 @@ ApplicationWindow {
   }
 
   function expand() {
-    window.width = Theme.window.width;
-    window.height = Theme.window.height;
+    window.width = Theme.window.width * Screen.desktopAvailableWidth;
+    window.height = Theme.window.height * Screen.desktopAvailableHeight;
     window.x = (Screen.width - window.width) / 2
     window.y = (Screen.height - window.height) / 2
   }
