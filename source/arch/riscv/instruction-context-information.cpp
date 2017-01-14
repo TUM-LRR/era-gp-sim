@@ -528,7 +528,7 @@ void InstructionContextInformation::_storeInstruction(
     size_t size) {
   DocumentationBuilder builder;
   builder.instruction(mnemonic);
-  builder.shortSyntax({"base", "source", "offset"})
+  builder.shortSyntax({"source", "base", "offset"})
       .shortDescription("[base+offset] = source");
   builder
       .operandDescription("source",
