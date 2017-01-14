@@ -56,7 +56,7 @@ int Ui::runUi() {
 
   qmlRegisterSingletonType<Theme>(
       "Theme", 1, 0, "Theme", [](auto* qmlEngine, auto* jsEngine) -> QObject* {
-        return Theme::reset("solarized");
+        return Theme::reset("default");
       });
 
   _engine.rootContext()->setContextProperty("ui", this);
