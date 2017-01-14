@@ -27,12 +27,13 @@ ConfigurationSection {
   id: root
   text: "Snapshot Location"
   description: "The path at which to load and store snapshots."
+  bottomAnchor: button.bottom
 
   Button {
     id: button
     anchors {
-      top: parent.anchor
-      topMargin: 10
+      top: parent.topAnchor
+      topMargin: Theme.configuration.h2.marginBottom
       left: parent.left
       right: parent.right
     }
@@ -48,14 +49,16 @@ ConfigurationSection {
     style: ButtonStyle {
       label: Text {
         elide: Text.ElideRight
-        font.pointSize: 14
+        font.pixelSize: Theme.configuration.snapshots.button.fontSize
         horizontalAlignment: Text.AlignHCenter
-        leftPadding: 10
+        leftPadding: Theme.configuration.snapshots.button.paddingLeft
         maximumLineCount: 1
-        rightPadding: 20
+        rightPadding: Theme.configuration.snapshots.button.paddingRight
         text: button.text // Configuration.snapshotLocation
       }
-      background: Rectangle { color: "white" }
+      background: Rectangle {
+        color: Theme.configuration.snapshots.button.background
+      }
     }
 
     FileDialog {

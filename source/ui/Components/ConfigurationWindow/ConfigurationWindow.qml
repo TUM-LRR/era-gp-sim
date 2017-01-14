@@ -21,6 +21,8 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
+
+import Theme 1.0
 import "Sections"
 
 Window {
@@ -38,6 +40,7 @@ Window {
   SnapshotLocation {
     id: snapshotLocation
     anchors.top: parent.top
+    anchors.topMargin: Theme.configuration.paddingTop
   }
 
   Theme {
@@ -45,11 +48,15 @@ Window {
     anchors.top: snapshotLocation.bottom
   }
 
+  Theme {
+    id: theme2
+    anchors.top: theme.bottom
+  }
+
   Button {
     text: "Save"
     anchors {
-      top: theme.bottom
-      // topMargin: 10
+      top: theme2.bottom
       horizontalCenter: parent.horizontalCenter
     }
   }

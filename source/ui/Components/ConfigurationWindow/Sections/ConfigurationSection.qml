@@ -19,52 +19,56 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.4
 
+import Theme 1.0
+
 Rectangle {
+  height: Theme.configuration.section.height
   anchors {
     top: parent.top
-    topMargin: 10
     left: parent.left
     right: parent.right
   }
-  height: 100
 
   property alias text: label.text
   property alias description: description.text
-  property alias anchor: description.bottom
+  property alias topAnchor: description.bottom
+  property var bottomAnchor
 
   Label {
     id: label
-    font.pointSize: 16
+    font.pixelSize: Theme.configuration.h1.fontSize
     font.weight: Font.DemiBold
+    color: Theme.configuration.h1.color
     anchors {
       top: parent.top
       left: parent.left
-      leftMargin: 10
+      leftMargin: Theme.configuration.h1.padding
       right: parent.right
-      rightMargin: 10
+      rightMargin: Theme.configuration.h1.padding
     }
   }
 
   Label {
     id: description
-    font.pointSize: 13
+    font.pixelSize: Theme.configuration.h2.fontSize
     anchors {
       top: label.bottom
-      topMargin: 8
+      topMargin: Theme.configuration.h2.marginTop
       left: label.left
       right: label.right
     }
-    color: "#888888"
+    color: Theme.configuration.h2.color
   }
 
   Rectangle {
     id: rule
     anchors {
-      bottom: parent.bottom
+      top: bottomAnchor
+      topMargin: Theme.configuration.section.paddingBottom
       left: parent.left
       right: parent.right
     }
-    height: 1
-    color: "#BDBDBD"
+    height: Theme.configuration.hr.height
+    color: Theme.configuration.hr.color
   }
 }

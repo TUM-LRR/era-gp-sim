@@ -27,12 +27,14 @@ ConfigurationSection {
   text: "Theme"
   description: "The UI and syntax theme. " +
                "Changes apply instantly and automagically."
+  bottomAnchor: selection.bottom
 
   ComboBox {
+    id: selection
     model: ["Darcula", "Solarized Dark", "Solarized Light"]
     anchors {
-      top: parent.anchor
-      topMargin: 10
+      top: parent.topAnchor
+      topMargin: Theme.configuration.h2.marginBottom
       horizontalCenter: parent.horizontalCenter
     }
   }
