@@ -1,3 +1,9 @@
+//////////////////////////////
+// VARIABLES
+//////////////////////////////
+
+// Material Design (Blue/Pink) Palette
+
 $primary-color-dark:   #1976D2
 $primary-color:        #2196F3
 $primary-color-light:  #BBDEFB
@@ -10,6 +16,10 @@ $divider-color:        #BDBDBD
 $section-height: 50px
 $section-width: 280px
 $button-height: 40px
+
+//////////////////////////////
+// STYLES
+//////////////////////////////
 
 create-project
   width: $section-width
@@ -24,7 +34,7 @@ create-project
     length: 80px
   button
     margin-top: 10px
-    background-color: $primary-color
+    background: $primary-color
     width: 160px
 
 button
@@ -35,11 +45,16 @@ button
   border
     color: lighten($primary-color, 20%)
     width: 2px
+  &:disabled
+    background: $divider-color
+    color: $primary-text-color
+    border
+      color: lighten($divider-color, 10%)
 
 window
-  width: 1124px
-  height: 700px
-  background-color: white
+  width: 90%
+  height: 90%
+  background: white
   initial-width: $section-width + 20px
   initial-height: $section-height * 6 + $button-height + 10
 
