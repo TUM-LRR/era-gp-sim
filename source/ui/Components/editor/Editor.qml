@@ -20,6 +20,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Dialogs 1.2
+import Theme 1.0
 import "../Common"
 import "../Common/TextUtilities.js" as TextUtilities
 

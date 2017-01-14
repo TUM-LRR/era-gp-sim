@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#include "arch/riscv/instruction-context-information.hpp"
-#include <iostream>
+#include <string>
+
 #include "arch/riscv/documentation-builder.hpp"
+#include "arch/riscv/instruction-context-information.hpp"
 
 InstructionContextInformation::InstructionContextInformation(
     const Architecture &architecture) {
@@ -52,48 +53,64 @@ bool InstructionContextInformation::isContextInformationAvailable(
 void InstructionContextInformation::_fill(const Architecture &architecture) {
   // Add arithmetic instructions
   _arithmeticInstructionI(
-      "add", "+", RISCV_TR("Calculates the sum of %1 and %2 and stores the "
-                           "result in the destination register"));
+      "add",
+      "+",
+      RISCV_TR("Calculates the sum of %1 and %2 and stores the "
+               "result in the destination register"));
   _arithmeticInstruction(
-      "sub", "-", RISCV_TR("Subtracts %2 from %1 and stores the result in the "
-                           "destination register"));
+      "sub",
+      "-",
+      RISCV_TR("Subtracts %2 from %1 and stores the result in the "
+               "destination register"));
   _arithmeticInstructionI(
-      "and", RISCV_TR("AND"),
+      "and",
+      RISCV_TR("AND"),
       RISCV_TR("Calculates a bitwise AND of %1 and %2 and stores "
                "the result in the destination register"));
   _arithmeticInstructionI(
-      "or", RISCV_TR("OR"),
+      "or",
+      RISCV_TR("OR"),
       RISCV_TR("Calculates a bitwise OR of %1 and %2 and stores "
                "the result in the destination register"));
   _arithmeticInstructionI(
-      "xor", RISCV_TR("XOR"),
+      "xor",
+      RISCV_TR("XOR"),
       RISCV_TR("Calculates a bitwise XOR of %1 and %2 and stores "
                "the result in the destination register"));
   _arithmeticInstructionI(
-      "sll", "<<",
+      "sll",
+      "&lt;&lt;",
       RISCV_TR("(Logical) shifts the content of %1 by %2 bits to "
                "the left, inserting 0s in bit 0.<br>Note that only "
                "the lower 5bit of %2 determine the shift amount"),
-      RISCV_TR("A 5bit unsigned immediate"));
+      RISCV_TR("A 5bit unsigned immediate"),
+      5,
+      false);
   _arithmeticInstructionI(
-      "srl", ">>",
+      "srl",
+      "&gt;&gt;",
       RISCV_TR("(Logical) shifts the content of %1 by %2 bits to "
                "the right, inserting 0s in the last bit.<br>Note "
                "that only the lower 5bit of %2 determine the shift "
                "amount"),
-      RISCV_TR("A 5bit unsigned immediate"));
+      RISCV_TR("A 5bit unsigned immediate"),
+      5,
+      false);
   _arithmeticInstructionI(
-      "sra", "<<",
+      "sra",
+      "&gt;&gt;&gt;",
       RISCV_TR("(Arithmetical) shifts the content of %1 by %2 bits "
                "to the right, inserting the sign bit.<br>Note that "
                "only the lower 5bit of %2 determine the shift "
                "amount"),
-      RISCV_TR("A 5bit unsigned immediate"));
+      RISCV_TR("A 5bit unsigned immediate"),
+      5,
+      false);
 
   _add("slt",
        DocumentationBuilder()
            .instruction("slt")
-           .shortDescription("rd = (rs1 < rs2) ? 1 : 0")
+           .shortDescription("rd = (rs1 &lt; rs2) ? 1 : 0")
            .shortSyntax({"rd", "rs1", "rs2"})
            .operandDescription("rd", RISCV_TR("The destination register"))
            .operandDescription("rs1", RISCV_TR("First source register"))
@@ -108,7 +125,7 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
   _add("sltu",
        DocumentationBuilder()
            .instruction("sltu")
-           .shortDescription("rd = (rs1 < rs2) ? 1 : 0")
+           .shortDescription("rd = (rs1 &lt; rs2) ? 1 : 0")
            .shortSyntax({"rd", "rs1", "rs2"})
            .operandDescription("rd", RISCV_TR("The destination register"))
            .operandDescription("rs1", RISCV_TR("First source register"))
@@ -123,7 +140,7 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
   _add("slti",
        DocumentationBuilder()
            .instruction("slti")
-           .shortDescription("rd = (rs < imm) ? 1 : 0")
+           .shortDescription("rd = (rs &lt; imm) ? 1 : 0")
            .shortSyntax({"rd", "rs", "imm"})
            .operandDescription("rd", RISCV_TR("The destination register"))
            .operandDescription("rs", RISCV_TR("The source register"))
@@ -138,7 +155,7 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
   _add("sltiu",
        DocumentationBuilder()
            .instruction("sltiu")
-           .shortDescription("rd = (rs < imm) ? 1 : 0")
+           .shortDescription("rd = (rs &lt; imm) ? 1 : 0")
            .shortSyntax({"rd", "rs", "imm"})
            .operandDescription("rd", RISCV_TR("The destination register"))
            .operandDescription("rs", RISCV_TR("The source register"))
@@ -177,10 +194,11 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
            .shortSyntax({"rd", "imm"})
            .operandDescription("rd", RISCV_TR("The destination register"))
            .operandDescription("imm", RISCV_TR("A signed 20bit immediate"))
-           .shortDescription("rd = imm << 12")
+           .shortDescription("rd = imm &lt;&lt; 12")
            .detailDescription(
                RISCV_TR("Places the sign extended immediate into bit 31 "
                         "to 12. Bits 11 to 0 are filled with 0s"))
+           .operandRange("imm", 20, true)
            .build());
   _add("auipc",
        DocumentationBuilder()
@@ -188,11 +206,12 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
            .shortSyntax({"rd", "imm"})
            .operandDescription("rd", RISCV_TR("The destination register"))
            .operandDescription("imm", RISCV_TR("A signed 20bit immediate"))
-           .shortDescription("rd = (imm << 12) + pc")
+           .shortDescription("rd = (imm &lt;&lt; 12) + pc")
            .detailDescription(
                RISCV_TR("Places the sign extended immediate into bit 31 "
                         "to 12. Bits 11 to 0 are filled with 0s. The "
                         "the current program counter is added"))
+           .operandRange("imm", 20, true)
            .build());
 
   // jump instructions
@@ -200,8 +219,9 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
        DocumentationBuilder()
            .instruction("jal")
            .shortSyntax({"rd", "offset"})
-           .operandDescription("rd", RISCV_TR("Register where the address of "
-                                              "the next instruction is stored"))
+           .operandDescription("rd",
+                               RISCV_TR("Register where the address of "
+                                        "the next instruction is stored"))
            .operandDescription("offset",
                                RISCV_TR("A signed 20bit offset that is used to "
                                         "calculate the jump address in bytes"))
@@ -211,48 +231,57 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
                         "address determined by program counter + "
                         "2xoffset. The instruction address following the "
                         "jump instruction is saved in the rd register"))
+           .operandRange("offset", 20, true)
            .build());
-  _add("jalr",
-       DocumentationBuilder()
-           .instruction("jalr")
-           .shortSyntax({"rd", "base", "offset"})
-           .operandDescription("rd", RISCV_TR("Register where the address of "
-                                              "the next instruction is stored"))
-           .operandDescription("base",
-                               RISCV_TR("A base register used for calculating "
-                                        "the jump address in bytes"))
-           .operandDescription(
-               "offset", RISCV_TR("A signed 12 bit offset that is used to "
-                                  "calculate the jump address in bytes"))
-           .shortDescription("rd = pc+4<br>pc=base+offset")
-           .detailDescription(
-               RISCV_TR("Performs a jump to a label or an instruction "
-                        "address determined by adding base and offset. "
-                        "The instruction address following the jump "
-                        "instruction is saved in the rd register"))
-           .build());
+  _add(
+      "jalr",
+      DocumentationBuilder()
+          .instruction("jalr")
+          .shortSyntax({"rd", "base", "offset"})
+          .operandDescription("rd",
+                              RISCV_TR("Register where the address of "
+                                       "the next instruction is stored"))
+          .operandDescription("base",
+                              RISCV_TR("A base register used for calculating "
+                                       "the jump address in bytes"))
+          .operandDescription("offset",
+                              RISCV_TR("A signed 12 bit offset that is used to "
+                                       "calculate the jump address in bytes"))
+          .shortDescription("rd = pc+4<br>pc=base+offset")
+          .detailDescription(
+              RISCV_TR("Performs a jump to a label or an instruction "
+                       "address determined by adding base and offset. "
+                       "The instruction address following the jump "
+                       "instruction is saved in the rd register"))
+          .operandRange("offset", 20, true)
+          .build());
   // branch instructions
   _branchInstruction("beq", RISCV_TR("equal to"), "==");
   _branchInstruction("bne", RISCV_TR("not equal to"), "!=");
-  _branchInstruction("blt", RISCV_TR("less than"), "<",
+  _branchInstruction(
+      "blt", RISCV_TR("less than"), "&lt;", RISCV_TR(" (signed compare)"));
+  _branchInstruction(
+      "bltu", RISCV_TR("less than"), RISCV_TR(" (unsigned compare)"));
+  _branchInstruction("bge",
+                     RISCV_TR("greater or equal to"),
+                     "&gt;=",
                      RISCV_TR(" (signed compare)"));
-  _branchInstruction("bltu", RISCV_TR("less than"),
-                     RISCV_TR(" (unsigned compare)"));
-  _branchInstruction("bge", RISCV_TR("greater or equal to"), ">=",
-                     RISCV_TR(" (signed compare)"));
-  _branchInstruction("bgeu", RISCV_TR("greater or equal to"), ">=",
+  _branchInstruction("bgeu",
+                     RISCV_TR("greater or equal to"),
+                     "&gt;=",
                      RISCV_TR(" (unsigned compare)"));
 
   // sleep & crash
-  _add("simusleep", DocumentationBuilder()
-                        .instruction("simusleep")
-                        .shortSyntax({"ms"})
-                        .operandDescription(
-                            "ms", RISCV_TR("The time to sleep in milliseconds"))
-                        .detailDescription(RISCV_TR(
-                            "Holds the execution of the next instruction at "
-                            "least ms milliseconds"))
-                        .build());
+  _add("simusleep",
+       DocumentationBuilder()
+           .instruction("simusleep")
+           .shortSyntax({"ms"})
+           .operandDescription("ms",
+                               RISCV_TR("The time to sleep in milliseconds"))
+           .detailDescription(
+               RISCV_TR("Holds the execution of the next instruction at "
+                        "least ms milliseconds"))
+           .build());
   _add(
       "simucrash",
       DocumentationBuilder()
@@ -268,110 +297,148 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
   // RV64I
   if (_is64BitArchitecture) {
     _arithmeticInstructionIW(
-        "add", "+",
+        "add",
+        "+",
         RISCV_TR("Calculates the sum of the lower 32bit of %1 and the lower "
                  "32bit of %2 "
                  "and stores the "
                  "sign extended 64bit result in the destination register"));
     _arithmeticInstructionW(
-        "sub", "-", RISCV_TR("Subtracts the lower 32bit of %2 from the lower "
-                             "32bit of %1 and stores the sign extended 64bit "
-                             "result in the "
-                             "destination register"));
+        "sub",
+        "-",
+        RISCV_TR("Subtracts the lower 32bit of %2 from the lower "
+                 "32bit of %1 and stores the sign extended 64bit "
+                 "result in the "
+                 "destination register"));
     _arithmeticInstructionIW(
-        "and", RISCV_TR("AND"),
+        "and",
+        RISCV_TR("AND"),
         RISCV_TR(
             "Calculates a bitwise AND of the lower 32bit of %1 and the lower "
             "32bit of %2 and stores "
             "the sign extended 64 result in the destination register"));
     _arithmeticInstructionIW(
-        "or", RISCV_TR("OR"),
+        "or",
+        RISCV_TR("OR"),
         RISCV_TR("Calculates a bitwise OR of the lower 32bit of %1 and the "
                  "lower 32bit "
                  "of %2 and stores "
                  "the sign extended 64bit result in the destination register"));
     _arithmeticInstructionIW(
-        "xor", RISCV_TR("XOR"),
+        "xor",
+        RISCV_TR("XOR"),
         RISCV_TR(
             "Calculates a bitwise XOR of the lower 32bit of %1 and the lower "
             "32bit of %2 and stores "
             "the sign extended 64bit result in the destination register"));
     _arithmeticInstructionIW(
-        "sll", "<<",
+        "sll",
+        "&lt;&lt;",
         RISCV_TR("(Logical) shifts the content of the lower 32bit of %1 by %2 "
                  "bits to "
                  "the left, inserting 0s in bit 0.<br>Note that only "
                  "the lower 5bit of %2 determine the shift amount. The result "
                  "is sign "
                  "extended to 64bit"),
-        RISCV_TR("A 5bit unsigned immediate"));
+        RISCV_TR("A 5bit unsigned immediate"),
+        5,
+        false);
     _arithmeticInstructionIW(
-        "srl", ">>",
+        "srl",
+        "&gt;&gt;",
         RISCV_TR("(Logical) shifts the content of the lower 32bit of %1 by %2 "
                  "bits to "
                  "the right, inserting 0s in the last bit.<br>Note "
                  "that only the lower 5bit of %2 determine the shift "
                  "amount. The result is sign extended to 64bit"),
-        RISCV_TR("A 5bit unsigned immediate"));
+        RISCV_TR("A 5bit unsigned immediate"),
+        5,
+        false);
     _arithmeticInstructionIW(
-        "sra", "<<",
+        "sra",
+        "&gt;&gt;&gt;",
         RISCV_TR("(Arithmetical) shifts the content of the lower 32bit of %1 "
                  "by %2 bits "
                  "to the right, inserting the sign bit.<br>Note that "
                  "only the lower 5bit of %2 determine the shift "
                  "amount. The result is sign extended to 64bit"),
-        RISCV_TR("A 5bit unsigned immediate"));
+        RISCV_TR("A 5bit unsigned immediate"),
+        5,
+        false);
   }
 
   // M-Extension
   if (architecture.getInstructions().hasInstruction("mul")) {
-    _mInstruction("mul", "*", RISCV_TR("a signed x signed multiplication"),
+    _mInstruction("mul",
+                  "*",
+                  RISCV_TR("a signed x signed multiplication"),
                   RISCV_TR("register used for the multiplicand"),
                   RISCV_TR("register used for the multiplier"),
                   RISCV_TR("lower"));
-    _mInstruction("mulh", "*", RISCV_TR("a signed x signed multiplication"),
+    _mInstruction("mulh",
+                  "*",
+                  RISCV_TR("a signed x signed multiplication"),
                   RISCV_TR("register used for the multiplicand"),
                   RISCV_TR("register used for the multiplier"),
                   RISCV_TR("upper"));
-    _mInstruction("mulhu", "*", RISCV_TR("an unsigned x unsigned multiplication"),
+    _mInstruction("mulhu",
+                  "*",
+                  RISCV_TR("an unsigned x unsigned multiplication"),
                   RISCV_TR("register used for the multiplicand"),
                   RISCV_TR("register used for the multiplier"),
                   RISCV_TR("upper"));
-    _mInstruction("mulhsu", "*", RISCV_TR("a signed x unsigned multiplication"),
+    _mInstruction("mulhsu",
+                  "*",
+                  RISCV_TR("a signed x unsigned multiplication"),
                   RISCV_TR("register used for the multiplicand"),
                   RISCV_TR("register used for the multiplier"),
                   RISCV_TR("upper"));
 
-    _mInstruction("div", "/", RISCV_TR("a signed-signed division"),
+    _mInstruction("div",
+                  "/",
+                  RISCV_TR("a signed-signed division"),
                   RISCV_TR("register used as dividend"),
                   RISCV_TR("register used as divisor"));
-    _mInstruction("divu", "/", RISCV_TR("an unsigned-unsigned division"),
+    _mInstruction("divu",
+                  "/",
+                  RISCV_TR("an unsigned-unsigned division"),
                   RISCV_TR("register used as dividend"),
                   RISCV_TR("register used as divisor"));
-    _mInstruction("rem", "%", RISCV_TR("a signed remainder operation"),
+    _mInstruction("rem",
+                  "%",
+                  RISCV_TR("a signed remainder operation"),
                   RISCV_TR("register used as dividend"),
                   RISCV_TR("register used as divisor"));
-    _mInstruction("remu", "%", RISCV_TR("an unsigned remainder operation"),
+    _mInstruction("remu",
+                  "%",
+                  RISCV_TR("an unsigned remainder operation"),
                   RISCV_TR("register used as dividend"),
                   RISCV_TR("register used as divisor"));
 
     if (_is64BitArchitecture) {
-      _mInstruction(
-          "mulw", "*", RISCV_TR("a signed 32bit x signed 32bit multiplication"),
-          RISCV_TR("register used for the multiplicand"),
-          RISCV_TR("register used for the multiplier"), RISCV_TR("lower"));
-      _mInstruction("divw", "/",
+      _mInstruction("mulw",
+                    "*",
+                    RISCV_TR("a signed 32bit x signed 32bit multiplication"),
+                    RISCV_TR("register used for the multiplicand"),
+                    RISCV_TR("register used for the multiplier"),
+                    RISCV_TR("lower"));
+      _mInstruction("divw",
+                    "/",
                     RISCV_TR("a signed 32bit -signed 32bit division"),
                     RISCV_TR("register used as dividend"),
                     RISCV_TR("register used as divisor"));
-      _mInstruction("divuw", "/",
+      _mInstruction("divuw",
+                    "/",
                     RISCV_TR("an unsigned 32bit -unsigned 32bit division"),
                     RISCV_TR("register used as dividend"),
                     RISCV_TR("register used as divisor"));
-      _mInstruction("remw", "%", RISCV_TR("a signed 32bit remainder operation"),
+      _mInstruction("remw",
+                    "%",
+                    RISCV_TR("a signed 32bit remainder operation"),
                     RISCV_TR("register used as dividend"),
                     RISCV_TR("register used as divisor"));
-      _mInstruction("remuw", "%",
+      _mInstruction("remuw",
+                    "%",
                     RISCV_TR("an unsigned 32bit remainder operation"),
                     RISCV_TR("register used as dividend"),
                     RISCV_TR("register used as divisor"));
@@ -380,61 +447,86 @@ void InstructionContextInformation::_fill(const Architecture &architecture) {
 }
 
 void InstructionContextInformation::_arithmeticInstructionI(
-    const std::string &mnemonic, const std::string &operationSign,
+    const std::string &mnemonic,
+    const std::string &operationSign,
     const std::string &description,
-    const std::string &specialImmediateOperandDesc) {
-  _arithmeticInstruction(mnemonic, operationSign, description,
-                         specialImmediateOperandDesc);
-  _arithmeticInstruction(mnemonic + 'i', operationSign, description,
-                         specialImmediateOperandDesc);
+    const std::string &specialImmediateOperandDesc,
+    int range,
+    bool isSigned) {
+  _arithmeticInstruction(
+      mnemonic, operationSign, description, specialImmediateOperandDesc);
+  _arithmeticInstruction(mnemonic + 'i',
+                         operationSign,
+                         description,
+                         specialImmediateOperandDesc,
+                         range,
+                         isSigned);
 }
 
 void InstructionContextInformation::_arithmeticInstructionW(
-    const std::string &mnemonic, const std::string &operationSign,
+    const std::string &mnemonic,
+    const std::string &operationSign,
     const std::string &description,
     const std::string &specialImmediateOperandDesc) {
-  _arithmeticInstruction(mnemonic + 'w', operationSign, description,
-                         specialImmediateOperandDesc);
+  _arithmeticInstruction(
+      mnemonic + 'w', operationSign, description, specialImmediateOperandDesc);
 }
 
 void InstructionContextInformation::_arithmeticInstructionIW(
-    const std::string &mnemonic, const std::string &operationSign,
+    const std::string &mnemonic,
+    const std::string &operationSign,
     const std::string &description,
-    const std::string &specialImmediateOperandDesc) {
-  _arithmeticInstruction(mnemonic + 'w', operationSign, description,
-                         specialImmediateOperandDesc);
-  _arithmeticInstruction(mnemonic + "iw", operationSign, description,
-                         specialImmediateOperandDesc);
+    const std::string &specialImmediateOperandDesc,
+    int range,
+    bool isSigned) {
+  _arithmeticInstruction(
+      mnemonic + 'w', operationSign, description, specialImmediateOperandDesc);
+  _arithmeticInstruction(mnemonic + "iw",
+                         operationSign,
+                         description,
+                         specialImmediateOperandDesc,
+                         range,
+                         isSigned);
 }
 
 void InstructionContextInformation::_arithmeticInstruction(
-    const std::string &mnemonic, const std::string &operationSign,
+    const std::string &mnemonic,
+    const std::string &operationSign,
     const std::string &description,
-    const std::string &specialImmediateOperandDesc) {
+    const std::string &specialImmediateOperandDesc,
+    const Optional<int> range,
+    const Optional<bool> isSigned) {
   DocumentationBuilder builder;
   builder.instruction(mnemonic);
-  bool isImmediate = mnemonic.back() == 'i' || mnemonic.back() == 'I';
+  bool isImmediate = _isImmediateInstruction(mnemonic);
   std::string rd = "rd";
   std::string op1 = isImmediate ? "rs" : "rs1";
   std::string op2 = isImmediate ? "imm" : "rs2";
   builder.shortSyntax({rd, op1, op2})
       .shortDescription(rd + " = " + op1 + " " + operationSign + " " + op2);
   builder.operandDescription(rd, RISCV_TR("The destination register"))
-      .operandDescription(op1, isImmediate
-                                   ? RISCV_TR("The operand register")
-                                   : RISCV_TR("The first operand register"))
-      .operandDescription(op2, isImmediate
-                                   ? specialImmediateOperandDesc
-                                   : RISCV_TR("The second operand register"));
-  auto detailDesc = std::make_shared<Translateable>(description, Translateable::NO_TR_POSSIBLE{});
+      .operandDescription(op1,
+                          isImmediate ? RISCV_TR("The operand register")
+                                      : RISCV_TR("The first operand register"))
+      .operandDescription(op2,
+                          isImmediate
+                              ? specialImmediateOperandDesc
+                              : RISCV_TR("The second operand register"));
+  auto detailDesc = std::make_shared<Translateable>(
+      description, Translateable::NO_TR_POSSIBLE{});
   detailDesc->addOperand(op1);
   detailDesc->addOperand(op2);
   builder.detailDescription(detailDesc);
+  if (range) {
+    builder.operandRange("imm", *range, *isSigned);
+  }
   _add(mnemonic, builder.build());
 }
 
 void InstructionContextInformation::_loadInstruction(
-    const std::string &mnemonic, const std::string &sizeDesc, int size) {
+    const std::string &mnemonic,
+    const std::string &sizeDescription,
+    size_t size) {
   DocumentationBuilder builder;
   builder.instruction(mnemonic);
   builder.shortSyntax({"rd", "base", "offset"})
@@ -445,11 +537,12 @@ void InstructionContextInformation::_loadInstruction(
       "base",
       RISCV_TR("A base register used for calculating the memory address"));
   builder.operandDescription(
-      "offset", RISCV_TR("A 12 bit signed immediate offset that is used to "
-                         "calculate the memory address"));
+      "offset",
+      RISCV_TR("A 12 bit signed immediate offset that is used to "
+               "calculate the memory address"));
   auto detailTranslate = std::make_shared<Translateable>(
       RISCV_TR("Loads one %1(%2 bit) into the register rd%3%4"));
-  detailTranslate->addOperand(sizeDesc);
+  detailTranslate->addOperand(sizeDescription);
   detailTranslate->addOperand(std::to_string(size));
   if (mnemonic.back() != 'u' && mnemonic.back() != 'U') {
     detailTranslate->addOperand(RISCV_TR(
@@ -464,32 +557,37 @@ void InstructionContextInformation::_loadInstruction(
 }
 
 void InstructionContextInformation::_storeInstruction(
-    const std::string &mnemonic, const std::string &sizeDesc, int size) {
+    const std::string &mnemonic,
+    const std::string &sizeDescription,
+    size_t size) {
   DocumentationBuilder builder;
   builder.instruction(mnemonic);
-  builder.shortSyntax({"base", "source", "offset"})
+  builder.shortSyntax({"source", "base", "offset"})
       .shortDescription("[base+offset] = source");
   builder
-      .operandDescription(
-          "base",
-          RISCV_TR("A base register used for calculating the memory address"))
       .operandDescription("source",
                           RISCV_TR("The register whose value will be stored"))
       .operandDescription(
-          "offset", RISCV_TR("A 12 bit signed immediate offset that us used to "
-                             "calculate the memory address"));
+          "base",
+          RISCV_TR("A base register used for calculating the memory address"))
+      .operandDescription(
+          "offset",
+          RISCV_TR("A 12 bit signed immediate offset that us used to "
+                   "calculate the memory address"));
   auto detail = std::make_shared<Translateable>(
       RISCV_TR("Stores a %1 from the source register (using bit 0 to %2). The "
                "memory address is determined by adding base and offset"));
-  detail->addOperand(sizeDesc);
+  detail->addOperand(sizeDescription);
   detail->addOperand(std::to_string(size - 1));
   builder.detailDescription(detail);
   _add(mnemonic, builder.build());
 }
 
 void InstructionContextInformation::_branchInstruction(
-    const std::string &mnemonic, const std::string &condition,
-    const std::string &operation, const std::string &compareType) {
+    const std::string &mnemonic,
+    const std::string &condition,
+    const std::string &operation,
+    const std::string &compareType) {
   DocumentationBuilder builder;
   builder.instruction(mnemonic);
   builder.shortSyntax({"rs1", "rs2", "offset"})
@@ -497,8 +595,9 @@ void InstructionContextInformation::_branchInstruction(
   builder.operandDescription("rs1", RISCV_TR("First register to compare"))
       .operandDescription("rs2", RISCV_TR("Second register to compare"))
       .operandDescription(
-          "offset", RISCV_TR("A 12 bit signed immediate offset that is used to "
-                             "calculate the branch address"));
+          "offset",
+          RISCV_TR("A 12 bit signed immediate offset that is used to "
+                   "calculate the branch address"));
   auto detail = std::make_shared<Translateable>(
       RISCV_TR("Compares rs1 and rs2. If rs1 is %1 rs2%2, the program jumps to "
                "the label or instruction address determined by adding the "
@@ -506,13 +605,17 @@ void InstructionContextInformation::_branchInstruction(
   detail->addOperand(condition);
   detail->addOperand(compareType);
   builder.detailDescription(detail);
+  builder.operandRange("offset", 12, true);
   _add(mnemonic, builder.build());
 }
 
 void InstructionContextInformation::_mInstruction(
-    const std::string &mnemonic, const std::string &operationSign,
-    const std::string &description, const std::string &operand1Desc,
-    const std::string &operand2Desc, const std::string &resultPart) {
+    const std::string &mnemonic,
+    const std::string &operationSign,
+    const std::string &description,
+    const std::string &operand1Desc,
+    const std::string &operand2Desc,
+    const std::string &resultPart) {
   DocumentationBuilder builder;
   builder.instruction(mnemonic);
   builder.shortSyntax({"rd", "rs1", "rs2"})
@@ -535,4 +638,14 @@ void InstructionContextInformation::_mInstruction(
 void InstructionContextInformation::_add(const std::string &key,
                                          const Translateable &value) {
   _table.emplace(key, value);
+}
+
+bool InstructionContextInformation::_isImmediateInstruction(
+    const std::string &mnemonic) const {
+  if (mnemonic.size() >= 2) {
+    auto substring = mnemonic.substr(mnemonic.size() - 2, mnemonic.size());
+    return substring == "iw" || substring.back() == 'i';
+  } else {
+    return mnemonic.back() == 'i';
+  }
 }

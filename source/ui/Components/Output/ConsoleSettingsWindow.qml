@@ -152,7 +152,7 @@ Window {
         anchors.bottomMargin: 5
 
         onClicked: {
-            baseAddressTextField.processInput();
+            baseAddressTextField.focus = false;
             close();
         }
     }

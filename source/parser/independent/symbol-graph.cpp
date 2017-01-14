@@ -69,7 +69,6 @@ decomposeCycle(size_t startNode, std::stack<size_t>& stack) {
     stack.pop();
     assert::that(!stack.empty());
   }
-  cycle.emplace_back(startNode);
   return cycle;
 }
 
