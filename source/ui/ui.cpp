@@ -54,15 +54,28 @@ int Ui::runUi() {
   qRegisterMetaType<FinalRepresentation>();
   qRegisterMetaType<id_t>("id_t");
 
-  qmlRegisterSingletonType<Theme>(
-      "Theme", 1, 0, "Theme", [](auto* qmlEngine, auto* jsEngine) -> QObject* {
-        return Theme::reset("default");
-      });
+  auto status = Theme::Make("default");
 
-  _engine.rootContext()->setContextProperty("ui", this);
-  _engine.rootContext()->setContextProperty("snapshotComponent",
-                                            _snapshots.get());
-  _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+  _engine.rootContext()->setContextProperty(
+      "errorMessageFromStartup", QString::fromStdString(status.message()));
+
+  if (status) {
+    // clang-format off
+    qmlRegisterSingletonType<Theme>(
+        "Theme", 1, 0, "Theme",
+        [](auto* qmlEngine, auto* jsEngine) -> QObject* {
+          return Theme::pointer();
+        });
+    // clang-format on
+
+    _engine.rootContext()->setContextProperty("ui", this);
+    _engine.rootContext()->setContextProperty("snapshotComponent",
+                                              _snapshots.get());
+    _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+  } else {
+    _engine.load(QUrl(QStringLiteral("qrc:/ErrorDialog.qml")));
+  }
+
   return _qmlApplication.exec();
 }
 
