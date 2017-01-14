@@ -17,4 +17,30 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui/foo.hpp"
+#include "common/status.hpp"
+
+#include <string>
+
+Status::Status(Code code, const std::string& message)
+: _code(code), _message(message) {
+}
+
+bool Status::operator==(const Status& other) const noexcept {
+  return *this == other._code;
+}
+
+bool operator==(const Status& status, Status::Code code) noexcept {
+  return status._code == code;
+}
+
+bool operator==(Status::Code code, const Status& status) noexcept {
+  return status == code;
+}
+
+const Status::Code& Status::code() const noexcept {
+  return _code;
+}
+
+const std::string& Status::message() const noexcept {
+  return _message;
+}

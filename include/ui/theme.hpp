@@ -29,6 +29,8 @@
 
 #include <cstddef>
 
+#include "common/status-with-value.hpp"
+
 /**
  * Represents the theme being used to style the GUI.
  *
@@ -52,15 +54,32 @@ class Theme : public QQmlPropertyMap {
 
  public:
   /**
-   * Resets the theme singleton.
-   * \param  themeName The theme to initialize the new theme singleton with.
-   * \param  parent    Optionally, a parent object for this QObject.
+   * Creates a new Theme instance.
+   *
+   * This factory function should only be called once.
+   * The class does not take ownership of the allocated theme, it
+   * only provides access to it.
+   *
+   * \param themeName The theme to initialize the new theme singleton with.
    * \returns A pointer to the newly created theme.
    */
-  static Theme* reset(const QString& themeName, QObject* parent = nullptr);
+  static Status Make(const QString& themeName);
 
-  /** \returns A reference to the theme instance. */
+  /**
+   * Note: Make() must have been called before.
+   * \returns A reference to the theme instance.
+   * \see Make()
+   * \see pointer()
+   */
   static Theme& instance();
+
+  /**
+   * Note: Make() must have been called before.
+   * \returns A pointer to the theme instance.
+   * \see Make()
+   * \see instance()
+   */
+  static Theme* pointer();
 
   /**
    * Loads the theme with the given name from disk.
@@ -69,7 +88,7 @@ class Theme : public QQmlPropertyMap {
    *
    * \param themeName The theme to load.
    */
-  void load(const QString& themeName);
+  Status load(const QString& themeName);
 
  private:
   using Json = QJsonObject;
@@ -82,14 +101,13 @@ class Theme : public QQmlPropertyMap {
   /** The singleton. */
   static Theme* _theme;
 
-  static QByteArray _loadThemeData(const QString& name);
-
   /**
-   * (Private) constructor.
-   * \param themeName The name of the theme to construct with.
-   * \param parent Optionally, a parent object for this QObject.
+   * Loads raw data from disk for a given theme.
+   *
+   * \param name The name of the theme to load.
+   * \returns A QByteArray of raw JSON bytes.
    */
-  explicit Theme(const QString& themeName, QObject* parent = nullptr);
+  static StatusWithValue<QByteArray> _loadThemeData(const QString& name);
 
   /**
    * Loads the JSON for a theme.
@@ -100,7 +118,7 @@ class Theme : public QQmlPropertyMap {
    * \param name The name of the theme to load.
    * \return The JSON of the specified theme.
    */
-  const Json& _loadJson(const QString& name);
+  StatusWithValue<const Json&> _loadJson(const QString& name);
 
   /**
    * Stores a theme's JSON in the cache.

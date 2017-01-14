@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>ErrorDialog.qml</file>
         <file>Splitview.qml</file>
         <file>Components/ComponentHolder.qml</file>
         <file>Components/Snapshots/SnapshotList.qml</file>
@@ -50,8 +51,15 @@
         <file>Components/Output/Buttons/Sevensegment Icon@2x.png</file>
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
-        <file>ProjectCreationScreen.qml</file>
-        <file>ProjectCreationSection.qml</file>
+        <file>Components/ProjectCreation/ProjectCreationScreen.qml</file>
+        <file>Components/ProjectCreation/ProjectCreationSection.qml</file>
+        <file>Components/ProjectCreation/Sections/ProjectName.qml</file>
+        <file>Components/ProjectCreation/Sections/ProjectArchitecture.qml</file>
+        <file>Components/ProjectCreation/Sections/ProjectSyntax.qml</file>
+        <file>Components/ProjectCreation/Sections/ProjectArchitectureVersion.qml</file>
+        <file>Components/ProjectCreation/Sections/ProjectCreationButton.qml</file>
+        <file>Components/ProjectCreation/Sections/ProjectMemorySize.qml</file>
+
         <file>Components/Output/SevenSegment/SevenSegment.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentEdge.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
