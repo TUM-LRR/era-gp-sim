@@ -317,7 +317,7 @@ class Parser(argparse.ArgumentParser):
             input_path = os.path.splitext(arguments.input)[0]
             output_path = '{0}.json'.format(input_path)
 
-        log.info('Will be writing JSON output to '%s'', output_path)
+        log.info('Will be writing JSON output to: %s', output_path)
         return output_path
 
 
@@ -383,19 +383,22 @@ def truncate_string(string, length=70):
     return '{0} ...'.format(string[:length])
 
 
-@pattern(r'\*|[-.\w: \t#]+\w')
+@pattern(r'\*|[-.\w#][-.\w#: \t]+\w')
 def find_selectors(root, block_selectors):
     """
     Finds the selectors in a CSS block and returns their dictionaries.
 
     Given a comma-separated list of selectors such as 'a.b #c:d, a b.c, #d',
     this method will:
-        1. Create any necessary nested dictionairies in the root object.
+        1. Create any necessary nested dictionaries in the root object.
         2. Return a list of the leaves, such that they can be updated
            with properties of the block these selectors belong to.
 
     Note that CSS IDs are handled just like classes, as JSON has no notion
-    of selectivity.
+    of selectivity. Otherwise, the rules for nesting are that any valid
+    partial selector up to the first subsequent whitespace __or colon__
+    character constitute one level in the tree. That is, 'a b:c' will result
+    in a tree of height three (counting vertices, not edges).
 
     Args:
         root: (dict) The root dictionary to update.
@@ -406,8 +409,8 @@ def find_selectors(root, block_selectors):
         A list of dictionaries, corresponding directly to the dictionaries
         of each selector. For example, the selector string 'a.b.c, a .b.c,
         #a b c d:f' with an empty root would produce the following tree:
-        { a-b-c: { }, a: { b-c: { }, b: { c: { d-f: { }}}}} and the return
-        value would be a list o the innermost dictionaries created here.
+        { a-b-c: { }, a: { b-c: { }, b: { c: { d: { f: { }}}}}} and the
+        return value would be a list o the innermost dictionaries created here.
     """
     log.debug(
         'Processing selector(s): %s',
@@ -427,7 +430,8 @@ def find_selectors(root, block_selectors):
         log.debug('Processing selector group: %s', selector_group)
 
         selector = None
-        for selector in selector_group.split():
+        # We split on each whitespace or colon (pseudo-class) separator.
+        for selector in re.split(r'[:\s]', selector_group):
             log.info('Processing selector: %s', selector)
             # Get rid of any possible ID selector
             # Note that since JSON only has no concept of selectivity
@@ -439,10 +443,9 @@ def find_selectors(root, block_selectors):
                 selector
             )
 
-            # We replace class and pseudo-class
-            # specifiers with camelCased names
+            # We replace class and hyphenated specifiers with camelCased names
             selector = re.sub(
-                r'[-:.](\w)',
+                r'[-.](\w)',
                 lambda m: m.group(1).upper(),
                 selector
             )
@@ -483,8 +486,10 @@ def process_property_value(value):
     Processes the value of a property.
 
     We do not respect any kind of unit for numbers. For this script (and our
-    themes), 10px is the same as 10% and 10rem or 10em. In fact, the unit is
-    not even inspected, only any number is extracted.
+    themes), 10px is the same as 10rem or 10em. In fact, the unit is
+    not even inspected, only any number is extracted. However, we make an
+    exception to this rule for percentages. If a number is suffixed by a
+    percent sign, its value is divided by 100.
 
     Args:
         value: (str) The value to sanitize.
@@ -558,7 +563,7 @@ def css_to_json(css_path, output_file):
         output_file: (file) A file object which to write the lines
                             of the converted CSS (i.e. the JSON).
     """
-    log.info('Processing CSS file at path '%s'', css_path)
+    log.info('Processing CSS file at path: s', css_path)
     with open(css_path) as source:
         css = source.read()
 
