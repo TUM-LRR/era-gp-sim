@@ -7,7 +7,6 @@ set(UI_SOURCES
   register-model.cpp
   syntaxhighlighter.cpp
   editor-component.cpp
-  clipboard-adapter.cpp
   memory-component-presenter.cpp
   ui.cpp
   gui-project.cpp
@@ -25,7 +24,6 @@ set(UI_HEADERS
   ${CMAKE_SOURCE_DIR}/include/ui/gui-project.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/syntaxhighlighter.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/editor-component.hpp
-  ${CMAKE_SOURCE_DIR}/include/ui/clipboard-adapter.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/memory-component-presenter.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/ui.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/snapshot-component.hpp

@@ -26,6 +26,7 @@ Item {
     anchors.right: parent.right
 
     property alias text: macroTextEdit.text
+    property alias fontPointSize: macroTextEdit.font.pointSize
     property var expandedHeight: 0
     height: 0
     clip: true
@@ -86,6 +87,19 @@ Item {
         readOnly: true
         textMargin: 2
         color: "#4A4A4A"
+
+        Component.onCompleted: {
+            // Add syntax highlighter that highlights the textEdit's text document.
+            editor.addSecondarySyntaxHighlighter(macroTextEdit.textDocument);
+        }
+
+        Component.onDestruction: {
+            // Destroy the corresponding secondary syntax highlighter in EditorComponent to prevent it
+            // from accessing an already destroyed text area text document (would cause
+            // segmentation fault on program end) and to prevent the number of highlighters
+            // from growing monotonically without ever being reduced.
+            editor.deleteSecondarySyntaxHighlighter(macroTextEdit.textDocument);
+        }
     }
 
 }

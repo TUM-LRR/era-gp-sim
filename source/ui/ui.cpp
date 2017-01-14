@@ -20,7 +20,6 @@
 #include <QUrl>
 #include <string>
 
-#include "ui/clipboard-adapter.hpp"
 #include "ui/ui.hpp"
 
 #include "arch/common/architecture-formula.hpp"
@@ -47,8 +46,6 @@ Ui::Ui(int& argc, char** argv)
 }
 
 int Ui::runUi() {
-  qmlRegisterType<ClipboardAdapter>(
-      "ClipboardAdapter", 1, 0, "ClipboardAdapter");
   qRegisterMetaType<std::size_t>("std::size_t");
   qRegisterMetaType<std::size_t>("size_t");
   qRegisterMetaType<FinalRepresentation>();
