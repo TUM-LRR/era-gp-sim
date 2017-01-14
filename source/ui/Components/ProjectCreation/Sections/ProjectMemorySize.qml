@@ -17,4 +17,39 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui/foo.hpp"
+import QtQuick 2.6
+import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
+
+import Theme 1.0
+import ".."
+
+ProjectCreationSection {
+  id: memorySize
+  property alias selection: memorySizeSelector.value
+
+  Text {
+    id: memorySizeLabel
+    font.pixelSize: Theme.createProject.section.fontSize
+    text: "Memory:"
+    anchors {
+      left: parent.left
+      verticalCenter: parent.verticalCenter
+      leftMargin: Theme.createProject.section.margin
+    }
+  }
+
+  SpinBox {
+    id: memorySizeSelector
+    anchors {
+      right: parent.right
+      verticalCenter: parent.verticalCenter
+      rightMargin: Theme.createProject.section.margin
+    }
+    value: 1024
+    minimumValue: 4
+    maximumValue: (1 << 20)
+    stepSize: 2
+    suffix: "B"
+  }
+}

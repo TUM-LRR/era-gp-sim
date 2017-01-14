@@ -24,6 +24,7 @@ import QtQuick.Dialogs 1.2
 import "Components"
 import "Components/Menubar"
 import "Components/Toolbar"
+import "Components/ProjectCreation"
 import Theme 1.0
 
 ApplicationWindow {
