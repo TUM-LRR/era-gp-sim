@@ -17,6 +17,7 @@
 */
 
 import QtQuick 2.6
+import QtQuick.Controls 1.4
 
 Rectangle {
   anchors {
@@ -29,7 +30,7 @@ Rectangle {
 
   property alias text: label.text
   property alias description: description.text
-  property alias anchor: description
+  property alias anchor: description.bottom
 
   Label {
     id: label
@@ -59,7 +60,7 @@ Rectangle {
   Rectangle {
     id: rule
     anchors {
-      topMargin: 10
+      bottom: parent.bottom
       left: parent.left
       right: parent.right
     }

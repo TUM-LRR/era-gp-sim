@@ -16,63 +16,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import QtQuick 2.6
+import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs 1.2
 
-Rectangle {
-  id: theme
-  anchors {
-    top: snapshotLocation.bottom
-    topMargin: 10
-    left: parent.left
-    right: parent.right
-  }
-  height: 100
+import Theme 1.0
 
-  Label {
-    id: themeLabel
-    text: "Theme"
-    font.pointSize: 16
-    font.weight: Font.DemiBold
-    anchors {
-      top: parent.top
-      left: parent.left
-      leftMargin: 10
-      right: parent.right
-      rightMargin: 10
-    }
-  }
-
-  Label {
-    id: themeDescription
-    font.pointSize: 13
-    anchors {
-      top: themeLabel.bottom
-      topMargin: 8
-      left: themeLabel.left
-      right: themeLabel.right
-    }
-    text: qsTr("The UI and syntax theme. " +
-               "Changes apply instantly and automagically.")
-    color: "#888888"
-  }
+ConfigurationSection {
+  text: "Theme"
+  description: "The UI and syntax theme. " +
+               "Changes apply instantly and automagically."
 
   ComboBox {
-    id: themeSelector
     model: ["Darcula", "Solarized Dark", "Solarized Light"]
     anchors {
-      top: themeDescription.bottom
+      top: parent.anchor
       topMargin: 10
       horizontalCenter: parent.horizontalCenter
     }
-  }
-
-  Rectangle {
-    anchors {
-      top: themeSelector.bottom
-      topMargin: 10
-      left: parent.left
-      right: parent.right
-    }
-    height: 1
-    color: "#BDBDBD"
   }
 }

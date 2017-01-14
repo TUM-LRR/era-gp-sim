@@ -31,6 +31,9 @@
         <file>Components/Toolbar/Icons/StopButtonInactiveWithBorder.svg</file>
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/ConfigurationWindow/ConfigurationWindow.qml</file>
+        <file>Components/ConfigurationWindow/Sections/SnapshotLocation.qml</file>
+        <file>Components/ConfigurationWindow/Sections/ConfigurationSection.qml</file>
+        <file>Components/ConfigurationWindow/Sections/Theme.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
         <file>Components/editor/MacroTriangleButton.qml</file>

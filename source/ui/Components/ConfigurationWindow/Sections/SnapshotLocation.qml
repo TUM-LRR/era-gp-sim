@@ -22,16 +22,16 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
 import Theme 1.0
-import ".."
 
 ConfigurationSection {
+  id: root
   text: "Snapshot Location"
   description: "The path at which to load and store snapshots."
 
   Button {
     id: button
     anchors {
-      top: anchor.bottom
+      top: parent.anchor
       topMargin: 10
       left: parent.left
       right: parent.right
@@ -72,16 +72,5 @@ ConfigurationSection {
           button.tooltip = location;
         }
     }
-  }
-
-  Rectangle {
-    anchors {
-      top: button.bottom
-      topMargin: 10
-      left: parent.left
-      right: parent.right
-    }
-    height: 1
-    color: "#BDBDBD"
   }
 }
