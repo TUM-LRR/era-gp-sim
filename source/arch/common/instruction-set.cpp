@@ -18,7 +18,7 @@
 */
 
 
-#include <cassert>
+#include "common/assert.hpp"
 #include <string>
 
 #include "arch/common/instruction-set.hpp"
@@ -52,7 +52,7 @@ operator[](const std::string& mnemonic) const {
 const InstructionInformation&
 InstructionSet::getInstruction(const std::string& mnemonic) const {
   auto lower = Utility::toLower(mnemonic);
-  assert(_container.count(lower));
+  assert::that(_container.count(lower));
   return _container.find(lower)->second;
 }
 
@@ -97,7 +97,7 @@ bool InstructionSet::isValid() const noexcept {
 }
 
 void InstructionSet::_deserialize(InformationInterface::Format& data) {
-  assert(!data.empty());
+  assert::that(!data.empty());
   for (auto& instruction : data) {
     addInstruction(static_cast<InstructionInformation>(instruction));
   }

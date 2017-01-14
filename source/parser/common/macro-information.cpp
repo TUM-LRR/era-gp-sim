@@ -19,6 +19,8 @@
 
 #include "parser/common/macro-information.hpp"
 
+#include <string>
+
 MacroInformation::MacroInformation(const std::string& code,
                                    const CodePositionInterval& position)
 : _code(code), _position(position) {

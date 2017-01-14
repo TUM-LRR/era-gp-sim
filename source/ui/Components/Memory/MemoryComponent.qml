@@ -45,7 +45,7 @@ Item {
         // 2. content of each memory cell           (dynamic)
         // 3. additional information on each cell   (fixed)
         TableViewColumn {
-            role: "address" + number_bits
+            role: "address"
             title: "Address"
             movable: false
             resizable: true
@@ -60,12 +60,15 @@ Item {
         }
 
         model: memoryModel
+        rowDelegate: rowdelegate
+        itemDelegate: itemdelegate
 
         // add a column with the content for each cell at startup
         Component.onCompleted: {
             tableView.insertColumn(tableView.columnCount - 1, column);
         }
     }
+
 
     Component {
         // component for a column with the contents of the memory
@@ -81,17 +84,84 @@ Item {
         }
     }
 
+
+    Component {
+        id: rowdelegate
+        // collapse row if cell is not needed
+        Rectangle{
+            height: (styleData.row % (number_bits / 8) == 0) ? 25 : 0
+        }
+    }
+
+    Component {
+        // disable row when cell is not needed
+        id: itemdelegate
+        Label {
+            visible: (styleData.row % (number_bits / 8) == 0) ? true : false
+            enabled: (styleData.row % (number_bits / 8) == 0) ? true : false
+            text: styleData.value
+            verticalAlignment: Text.AlignVCenter
+        }
+    }
+
     Component {
         // makes each memory cell editable by using a textbox
         // when editing is finished the new value is passed to the memory in the core
         id: inputBox
-        TextField {
-            id: textFieldMemoryValue
-            text: styleData.value
 
-            onEditingFinished: {
-                // update internal memory; use right number representation and byte size
-                memoryModel.setValue(styleData.row * (number_bits / 8), textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
+        MouseArea {
+            hoverEnabled: true
+            anchors.fill: parent
+            // fadein on mouse hover
+            onHoveredChanged: {
+                if(containsMouse) {
+                    textFieldMemoryValue.borderopacity = 1;
+                } else if(!textFieldMemoryValue.activeFocus) {
+                    textFieldMemoryValue.borderopacity = 0;
+                }
+            }
+
+            TextField {
+                id: textFieldMemoryValue
+                text: (styleData.row % (number_bits / 8) == 0) ? styleData.value : ""
+                anchors.fill: parent
+                visible: (styleData.row % (number_bits / 8) == 0) ? true : false
+                enabled: (styleData.row % (number_bits / 8) == 0)
+
+                onActiveFocusChanged: {
+                    textFieldMemoryValue.borderopacity = (activeFocus) ? 1 : 0;
+                }
+
+                // fadein effect
+                property double borderopacity: 0
+                Behavior on borderopacity {
+                    NumberAnimation {
+                        duration: 250
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                onEditingFinished: {
+                    // update internal memory; use right number representation and byte size
+                    // if cell is not needed we can save an update
+                    if(styleData.row % (number_bits / 8) == 0) {
+                        memoryModel.setValue(styleData.row, textFieldMemoryValue.text, number_bits, tableView.getColumn(styleData.column).role);
+                    }
+                }
+
+                style: TextFieldStyle {
+                    id: style
+                    renderType: Text.QtRendering
+                    background: Item{
+                        // textfield as background for default look and feel
+                        TextField {
+                            id: background
+                            anchors.fill: parent
+                            opacity: textFieldMemoryValue.borderopacity
+                            activeFocusOnTab: false
+                        }
+                    }
+                }
             }
         }
     }
@@ -156,18 +226,19 @@ Item {
                         }
 
                         // choose the right underlaying model depending on the column it is responsible for
-                        model: (tableView.getColumn(index).role === "address" + number_bits)? modelBits : modelNumeric;
+                        model: (tableView.getColumn(index).role === "address")? modelBits : modelNumeric;
 
                         ListModel {
                             id: modelBits
                             ListElement { text: "8 Bit"; bits: 8 }
                             ListElement { text: "16 Bit"; bits: 16 }
                             ListElement { text: "32 Bit"; bits: 32 }
+                            ListElement { text: "64 Bit"; bits: 64 }
                         }
                         ListModel {
                             id: modelNumeric
                             ListElement { text: "Binary"; role: "bin" }
-                            ListElement { text: "Octal"; role: "oct" }
+                            // ListElement { text: "Octal"; role: "oct" } // not supported
                             ListElement { text: "Hexadecimal"; role: "hex" }
                             ListElement { text: "Decimal"; role: "dec" }
                             ListElement { text: "Decimal (signed)"; role: "decs" }

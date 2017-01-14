@@ -22,6 +22,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+
 #include "parser/common/final-representation.hpp"
 
 class SyntaxInformation;

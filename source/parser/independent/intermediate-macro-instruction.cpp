@@ -18,6 +18,11 @@
 
 #include "parser/independent/intermediate-macro-instruction.hpp"
 
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "common/utility.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/intermediate-instruction.hpp"

@@ -17,6 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "parser/independent/symbol-graph.hpp"
+
 #include <cstddef>
 #include <stack>
 #include <string>
@@ -27,7 +29,6 @@
 #include "common/utility.hpp"
 #include "parser/independent/positioned-string.hpp"
 #include "parser/independent/symbol-graph-evaluation.hpp"
-#include "parser/independent/symbol-graph.hpp"
 
 using size_t = std::size_t;
 
@@ -68,7 +69,6 @@ decomposeCycle(size_t startNode, std::stack<size_t>& stack) {
     stack.pop();
     assert::that(!stack.empty());
   }
-  cycle.emplace_back(startNode);
   return cycle;
 }
 

@@ -38,6 +38,9 @@ Rectangle {
     property color titleColor: "#4A4A4A"
     property color titleColorHighlighted: "#111111"
 
+    // Tell SplitViewItem (i.e. component wrapper) that settings are available to make it display settings icon.
+    property var hasComponentSettings: true
+
     // Allows to select the available output items (e.g. Lightstrip, Seven-Segment, Console)
     TabView {
         id: outputTabView
@@ -93,28 +96,6 @@ Rectangle {
                     anchors.right: parent.right
                     color: innerBorderColor
                 }
-
-                // Display output settings button in the rightmost corner of the tab bar.
-                Button {
-                    id: settingsButton
-                    anchors.right: parent.right
-                    anchors.rightMargin: 4
-                    anchors.verticalCenter: parent.verticalCenter
-                    height: 18
-                    width: 18
-                    style: ButtonStyle {
-                        background: Rectangle {
-                            color: "#00000000"
-                            Image {
-                                source: (control.pressed) ? "Buttons/Settings Icon Pressed.png" : "Buttons/Settings Icon.png"
-                            }
-                        }
-                    }
-                    // Clicking the settings button opens the output settings window in the currently active output item..
-                    onClicked: {
-                        outputTabView.getTab(outputTabView.currentIndex).item.settingsButtonPressed();
-                    }
-                }
             }
 
             tab: Rectangle {
@@ -129,5 +110,10 @@ Rectangle {
                 }
             }
         }
+    }
+
+    // Called by SplitViewItem.qml (i.e. component wrapper) when component settings icon was pressed.
+    function settingsButtonPressed() {
+        outputTabView.getTab(outputTabView.currentIndex).item.settingsButtonPressed();
     }
 }

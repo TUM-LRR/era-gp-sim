@@ -18,6 +18,7 @@
 #ifndef ERAGPSIM_PARSER_RISCV_RISCV_REGEX_HPP
 #define ERAGPSIM_PARSER_RISCV_RISCV_REGEX_HPP
 
+#include <cstddef>
 #include <regex>
 #include <string>
 

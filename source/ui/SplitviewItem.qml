@@ -19,12 +19,12 @@
 
 import QtQuick 2.0
 import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 import "Components"
 
 Item {
 
-
-    /*default value in the item*/
+    // default value in the item
     property var usual
     property bool isExpanded: false
 
@@ -37,17 +37,18 @@ Item {
             headerFadeOut.start()
         }
     }
+
     SequentialAnimation {
         id: headerFadeIn
         PauseAnimation { duration: 100 }
-        PropertyAnimation { target: header; properties: "height"; to: "24"; duration: 100}
-        PropertyAnimation { target: componentSelector; properties: "visible"; to: true; duration: 0}
+        PropertyAnimation { target: header; properties: "height"; to: header.expandedHeight; duration: 100}
+        PropertyAnimation { target: headerItems; properties: "visible"; to: true; duration: 0}
     }
     SequentialAnimation {
         id: headerFadeOut
         PauseAnimation { duration: 100 }
-        PropertyAnimation { target: componentSelector; properties: "visible"; to: false; duration: 0}
-        PropertyAnimation { target: header; properties: "height"; to: "10"; duration: 100}
+        PropertyAnimation { target: headerItems; properties: "visible"; to: false; duration: 0}
+        PropertyAnimation { target: header; properties: "height"; to: 8; duration: 100}
     }
 
 
@@ -58,8 +59,10 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        height: 10
-        color: "gray"
+        height: 8
+        color: Qt.rgba(241.0/255.0, 241.0/255.0, 241.0/255.0, 1.0)
+
+        property var expandedHeight: componentSelector.height + 8
 
         MouseArea {
             anchors.fill: parent
@@ -67,68 +70,96 @@ Item {
             propagateComposedEvents: true
 
             onHoveredChanged: {
-                if(containsMouse || componentSelector.hovered || componentSelector.pressed){
+                if(containsMouse) {
                     isExpanded=true
                 } else {
                     isExpanded=false
                 }
             }
+
+            Item {
+                id: headerItems
+                anchors.fill: parent
+                visible: false
+
+                // Choose
+                ComboBox{
+                    id: componentSelector
+
+                    enabled: true
+                    anchors.top: parent.top
+                    anchors.topMargin: 4
+                    anchors.left: parent.left
+                    anchors.leftMargin: 4
+                    anchors.right: (settingsButton.visible === true) ? settingsButton.left : parent.right
+                    anchors.rightMargin: 4
+                    model: ["Snapshots", "Output", /*"Editor",*/ "Register", "Memory", "Input", "Help" ]
+
+                    onPressedChanged: {
+                        if (pressed) {
+                            isExpanded=true
+                        } else if(!hovered) {
+                            isExpanded=false
+                        }
+                    }
+
+                    property var usualList: ["snapshots", "output", "register", "memory", "input", "help"]
+                    onModelChanged: {
+                        var usualIndex = usualList.indexOf(usual);
+                        if (usualIndex !== -1) {
+                            componentSelector.currentIndex = usualList.indexOf(usual);
+                        } else {
+                            componentSelector.currentIndex = 0;
+                        }
+                    }
+                }
+
+                // Button for opening component settings for the current component.
+                Button {
+                    id: settingsButton
+                    anchors.right: parent.right
+                    anchors.rightMargin: 4
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 18
+                    width: 18
+                    style: ButtonStyle {
+                        background: Rectangle {
+                            color: "#00000000"
+                            Image {
+                                source: (control.pressed) ? "Icons/Settings Icon Pressed.png" : "Icons/Settings Icon.png"
+                            }
+                        }
+                    }
+                    // Clicking the settings button opens the current components settings menu.
+                    onClicked: {
+                        componentLoader.item.settingsButtonPressed();
+                    }
+
+                    visible: (componentLoader.item.hasComponentSettings !== undefined) ? componentLoader.item.hasComponentSettings : false
+                }
+            }
         }
 
-        /*Choose*/
-        ComboBox{
-            id: componentSelector
-
-            visible: false
-            enabled: true
-            width: 150
-            height: 20
-            y: 2
-            x: 2
-            model: ["Choose Component","Snapshots", "Output", /*"Editor",*/ "Register", "Memory", "Input", "Help" ]
-
-            onCurrentIndexChanged:{
-                if (currentIndex === 0) {
-                    holder.change("nothing");
-                } else if (currentIndex === 1) {
-                    holder.change("snapshots");
-                } else if (currentIndex === 2) {
-                    holder.change("output");
-                } else if (currentIndex === 3) {
-                    holder.change("register");
-                } else if  (currentIndex === 4) {
-                    holder.change("memory");
-                } else if ( currentIndex === 5) {
-                    holder.change("input");
-                } else {
-                    holder.change("help");
-                }
-            }
-            onPressedChanged: {
-                if (pressed) {
-                    isExpanded=true
-                } else if(!hovered) {
-                    isExpanded=false
-                }
-            }
-            onHoveredChanged: {
-                if (hovered) {
-                    isExpanded=true
-                }
-                else if (!pressed) {
-                    isExpanded=false
-                }
-            }
+        Rectangle {
+            id: bottomBorder
+            color: Qt.rgba(175.0/255.0, 175.0/255.0, 175.0/255.0, 1.0)
+            anchors.bottom: parent.bottom
+            height: 1
+            anchors.left: parent.left
+            anchors.right: parent.right
         }
+
     }
 
-    /*holds the actual component*/
-    ComponentHolder {
-        id: holder
+    Loader {
+        id: componentLoader
+
         anchors.top: header.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        usual: parent.usual
+
+        property var sourceComponents: ["Snapshots/SnapshotList.qml", "Output/Output.qml", "Register/Register.qml", "Memory/MemoryComponent.qml", "Input/Input.qml", "help/HelpWindow.qml"]
+        source: (sourceComponents[componentSelector.currentIndex] !== undefined) ? ("Components/" + sourceComponents[componentSelector.currentIndex]) : ("Components/help/HelpWindow.qml")
     }
 }

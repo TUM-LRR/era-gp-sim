@@ -108,11 +108,14 @@ class InstructionContextInformation {
    * \param specialImmediateOperandDesc (optional) A description for the last
    * operand (the immediate operand). Defaults to "A 12bit signed immediate2
    */
-  void _arithmeticInstruction(const std::string& mnemonic,
-                              const std::string& operationSign,
-                              const std::string& description,
-                              const std::string& specialImmediateOperandDesc =
-                                  RISCV_TR("A 12 bit signed immediate"));
+  void
+  _arithmeticInstruction(const std::string& mnemonic,
+                         const std::string& operationSign,
+                         const std::string& description,
+                         const std::string& specialImmediateOperandDesc =
+                             RISCV_TR("A 12 bit signed immediate"),
+                         const Optional<int> range = Optional<int>(),
+                         const Optional<bool> isSigned = Optional<bool>(true));
 
   /**
    * A convenience function for a defining an arithmetic instruction.
@@ -128,7 +131,9 @@ class InstructionContextInformation {
                                const std::string& operationSign,
                                const std::string& description,
                                const std::string& specialImmediateOperandDesc =
-                                   RISCV_TR("A 12 bit signed immediate"));
+                                   RISCV_TR("A 12 bit signed immediate"),
+                               int range = 12,
+                               bool isSigned = true);
 
   /**
    * A convenience function for a defining a word arithmetic instruction.
@@ -158,28 +163,30 @@ class InstructionContextInformation {
                                 const std::string& operationSign,
                                 const std::string& description,
                                 const std::string& specialImmediateOperandDesc =
-                                    RISCV_TR("A 12 bit signed immediate"));
+                                    RISCV_TR("A 12 bit signed immediate"),
+                                int range = 12,
+                                bool isSigned = true);
 
   /**
    * A convenience function for defining a load instruction documentation.
    * \param mnemonic The instruction mnemonic
-   * \param sizeDesc A string description of the load size (like byte, word,
-   * double-word, etc.)
+   * \param sizeDescription A string description of the load size (like byte,
+   * word, double-word, etc.)
    * \param size The load size in bits
    */
   void _loadInstruction(const std::string& mnemonic,
-                        const std::string& sizeDesc,
+                        const std::string& sizeDescription,
                         size_t size);
 
   /**
    * A convenience function for defining a store instruction documentation.
    * \param mnemonic The instruction mnemonic
-   * \param sizeDesc A string description of the stored size (like byte, word,
-   * double-word, etc.)
+   * \param sizeDescription A string description of the stored size (like byte,
+   * word, double-word, etc.)
    * \param size The stored size in bits
    */
   void _storeInstruction(const std::string& mnemonic,
-                         const std::string& sizeDesc,
+                         const std::string& sizeDescription,
                          size_t size);
 
   /**
@@ -211,6 +218,13 @@ class InstructionContextInformation {
                      const std::string& operand1Desc,
                      const std::string& operand2Desc,
                      const std::string& resultPart = std::string());
+
+  /**
+   *
+   * \param mnemonic mnemonic of the instruction to check
+   * \return True if the given mnemonic denotes an immediate instruction
+   */
+  bool _isImmediateInstruction(const std::string& mnemonic) const;
 
   Table _table;
 

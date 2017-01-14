@@ -18,6 +18,9 @@
 */
 
 #include "parser/independent/section-directive.hpp"
+
+#include <string>
+
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/memory-allocator.hpp"
 #include "parser/independent/section-tracker.hpp"

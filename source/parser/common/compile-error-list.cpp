@@ -17,11 +17,13 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "parser/common/compile-error-list.hpp"
+
 #include <algorithm>
+#include <cstddef>
 
 #include "common/translateable.hpp"
 #include "common/utility.hpp"
-#include "parser/common/compile-error-list.hpp"
 
 using size_t = std::size_t;
 

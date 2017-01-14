@@ -20,11 +20,15 @@
 #ifndef ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_REPLACER_HPP
 #define ERAGPSIM_PARSER_INDEPENDENT_SYMBOL_REPLACER_HPP
 
+#include <cstddef>
 #include <functional>
+#include <string>
 #include <vector>
+
 #include "common/multiregex.hpp"
 #include "parser/independent/positioned-string.hpp"
 #include "parser/independent/symbol.hpp"
+
 class SymbolGraphEvaluation;
 class CompileErrorList;
 
@@ -56,7 +60,7 @@ class SymbolReplacer {
    */
   explicit SymbolReplacer(const SymbolGraphEvaluation& evaluation,
                           const DynamicReplacer& replacer = IDENTITY_REPLACE,
-                          size_t maximumReplaceCount = 64);
+                          size_t maximumReplaceCount = 4);
   /**
    * Creates a new `SymbolReplacer`.
    *
@@ -66,7 +70,7 @@ class SymbolReplacer {
    */
   explicit SymbolReplacer(const std::vector<Symbol>& symbols = {},
                           const DynamicReplacer& replacer = IDENTITY_REPLACE,
-                          size_t maximumReplaceCount = 64);
+                          size_t maximumReplaceCount = 4);
 
   /**
    * Creates a new `SymbolReplacer`.

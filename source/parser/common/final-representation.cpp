@@ -17,6 +17,9 @@
  */
 
 #include "parser/common/final-representation.hpp"
+
+#include <cstddef>
+
 #include "arch/common/abstract-instruction-node.hpp"
 
 FinalRepresentation::AddressMapping FinalRepresentation::createMapping() const {

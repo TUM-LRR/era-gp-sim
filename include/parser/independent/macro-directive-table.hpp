@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_PARSER_INDEPENDENT_MACRO_DIRECTIVE_TABLE_HPP
 #define ERAGPSIM_PARSER_INDEPENDENT_MACRO_DIRECTIVE_TABLE_HPP
 
+#include <cstddef>
 #include <string>
 #include <unordered_map>
 #include <utility>

@@ -219,7 +219,7 @@ InstructionNodeFactory::InstructionNodeFactory(
     const InstructionSet& instructions, const Architecture& architecture)
     : _instructionSet(instructions), _documentation(std::make_shared<InstructionContextInformation>(architecture)) {
   auto wordSize = architecture.getWordSize();
-  assert(wordSize == 32 || wordSize == 64);
+  assert::that(wordSize == 32 || wordSize == 64);
 
   if (wordSize == 32) {
     _setupIntegerInstructions<riscv::unsigned32_t, riscv::signed32_t>(

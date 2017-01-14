@@ -20,8 +20,10 @@
 #ifndef ERAGPSIM_PARSER_COMMON_FINAL_COMMAND_HPP
 #define ERAGPSIM_PARSER_COMMON_FINAL_COMMAND_HPP
 
+#include <cstddef>
 #include <memory>
 #include <vector>
+
 #include "parser/common/code-position-interval.hpp"
 class AbstractInstructionNode;
 

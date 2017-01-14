@@ -17,7 +17,10 @@
  */
 
 #include "parser/common/code-position.hpp"
+
+#include <algorithm>
 #include <cmath>
+
 #include "common/assert.hpp"
 
 CodePosition::CodePosition(CodeCoordinate y, CodeCoordinate x) : _x(x), _y(y) {

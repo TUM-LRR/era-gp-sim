@@ -532,4 +532,4 @@ class MemoryValue {
   /** The Data stored by the MemoryValue */
   Underlying _data;
 };
-#endif// ERAGPSIM_CORE_MEMORYVALUE_HPP
+#endif  // ERAGPSIM_CORE_MEMORYVALUE_HPP

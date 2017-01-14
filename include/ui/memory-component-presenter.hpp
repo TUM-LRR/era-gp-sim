@@ -80,6 +80,44 @@ class MemoryComponentPresenter : public QAbstractListModel {
                 int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
   /**
+   * helper method: returns address data for data method
+   *
+   * /param index the index where the data should be written to
+   * /param role one of several DisplayRoles for this column
+   * /return returns the QVariant that is displayed as address
+   */
+  QVariant dataAdress(const QModelIndex &index,
+                      int role = Qt::DisplayRole) const;
+
+  /**
+   * helper method: returns memory data for data method
+   *
+   * /param index the index where the data should be written to
+   * /param role one of several DisplayRoles for this column
+   * /return returns the QVariant that is displayed as memory
+   */
+  QVariant dataMemory(const QModelIndex &index,
+                      int role = Qt::DisplayRole) const;
+
+  /**
+   * helper method: returns info data for data method
+   *
+   * /param index the index where the data should be written to
+   * /param role one of several DisplayRoles for this column
+   * /return returns the QVariant that is displayed as info
+   */
+  QVariant dataInfo(const QModelIndex &index,
+                      int role = Qt::DisplayRole) const;
+
+  /**
+   * Gets a MemoryValue at the given position either from the core or by using a cache.
+   * /param address Address of the MemoryValue
+   * /param length Size of the MemoryValue
+   * /return The requested MemoryValue
+   */
+  MemoryValue getMemoryValueCached(const std::size_t address, const std::size_t length) const;
+
+  /**
    * Returns the number of rows in this table
    * Inherited from QAbstractListModel
    *
@@ -98,15 +136,6 @@ class MemoryComponentPresenter : public QAbstractListModel {
    */
   QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
 
-  /**
-   * Returns the number of bytes to be displayed in one memory cell.
-   * The role is an indicator of how many bytes are chosen by the user.
-   *
-   * /param role the display role for this cell in the QAbstractListModel
-   * /return the number of bytes to be shown in one cell
-   */
-  int numberOfBytes(int role) const;
-
   /** Holds a MemoryAccess for accessing the memory */
   MemoryAccess _memoryAccess;
 
@@ -114,31 +143,56 @@ class MemoryComponentPresenter : public QAbstractListModel {
    */
   MemoryManager _memoryManager;
 
-
   /** Saves the size of the memory, as calling MemoryAccess::getMemorySize() in
    * rowCount causes a deadlock. */
   std::size_t _memorySize;
 
+  /**
+   * Cache for core memory on updates. When the memory is updates every view
+   * has to fetch values multiple times. In order to decrease the number of
+   * calls to the core this cache has been introduced.
+   */
+  mutable MemoryValue _memoryCache;
+
+  /**
+   * Size of core memory that is hold in cache.
+   */
+  mutable std::size_t _memoryCacheSize = 0;
+
+  /**
+   * Starting address of the memory hold in cache.
+   * Just one block of memory will be kept in the cache.
+   */
+  mutable std::size_t _memoryCacheBaseAddress = 0;
+
+  /**
+   * Determines whether the current cache is valid or outdated.
+   */
+  mutable bool _memoryCacheValid = false;
+
   /** enumeration of all roles of the columns */
   enum ColumnRoles {
-      AddressRole8 = Qt::UserRole,// avoid collisions with predefined roles
-      AddressRole16,
-      AddressRole32,
+      AddressRole = Qt::UserRole,// avoid collisions with predefined roles
       ValueRoleBin8,
       ValueRoleBin16,
       ValueRoleBin32,
+      ValueRoleBin64,
       ValueRoleOct8,
       ValueRoleOct16,
       ValueRoleOct32,
+      ValueRoleOct64,
       ValueRoleHex8,
       ValueRoleHex16,
       ValueRoleHex32,
+      ValueRoleHex64,
       ValueRoleDec8,
       ValueRoleDec16,
       ValueRoleDec32,
+      ValueRoleDec64,
       ValueRoleDecS8,
       ValueRoleDecS16,
       ValueRoleDecS32,
+      ValueRoleDecS64,
       InfoRole
   };
 

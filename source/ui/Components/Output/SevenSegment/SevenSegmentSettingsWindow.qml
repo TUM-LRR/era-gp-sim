@@ -163,8 +163,8 @@ Window {
         anchors.bottomMargin: 5
 
         onClicked: {
-            baseAddressTextField.processInput();
-            numberOfDigitsTextField.processInput();
+            baseAddressTextField.focus = false;
+            numberOfDigitsTextField.focus = false;
             close();
         }
     }
