@@ -15,7 +15,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/.*/
 
-import QtQuick 2.6
+import QtQuick 2.7
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
@@ -94,7 +94,7 @@ ComboBox {
       radius: Theme.register.selector.radius
     }
     label: Text {
-      text: root.currentText[0]
+      text: root.currentText ? root.currentText[0] : ""
       color: Theme.register.selector.color
       font.pixelSize: Theme.register.selector.fontSize
       font.weight: Font.DemiBold
@@ -121,5 +121,16 @@ ComboBox {
   function indexOfFormat(format) {
     var type = registerModel.data(index, 1);
     return type ? formats[type].indexOf(format) : -1;
+  }
+
+  function nextFormat() {
+    root.currentIndex = (root.currentIndex + 1) % root.count;
+  }
+
+  function previousFormat() {
+    root.currentIndex -= 1;
+    if (root.currentIndex < 0) {
+      root.currentIndex = root.count - 1;
+    }
   }
 }

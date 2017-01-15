@@ -191,7 +191,7 @@ class RegisterModel : public QAbstractItemModel {
   static std::map<QByteArray, MemoryValueToStringConversion>
       _memoryValueToStringConversions;
 
-  /// Map between format format type description (e.g. "Decimal (Unsigned)") and
+  /// Map between format format type description (e.g. "Unsigned Decimal") and
   /// corresponding string to MemoryValue conversion function.
   static std::map<QString, StringToMemoryValueConversion>
       _stringToMemoryValueConversions;

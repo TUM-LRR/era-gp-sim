@@ -89,6 +89,7 @@ Item {
 
     Loader {
       id: registerContent
+      focus: true
       anchors {
         left: registerName.right
         leftMargin: Theme.register.content.margin
@@ -101,6 +102,13 @@ Item {
           return "FlagRegister.qml";
         } else {
           return "DefaultRegister.qml";
+        }
+      }
+      Keys.onPressed: {
+        if (event.key === Qt.Key_Up || event.key === Qt.Key_Left) {
+          formatSelector.previousFormat();
+        } else if (event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
+          formatSelector.nextFormat();
         }
       }
     }
@@ -136,7 +144,7 @@ Item {
       Link: ["Binary", "Hexadecimal"],
       ProgramCounter: ["Binary", "Hexadecimal"],
       Integer: [
-      "Binary", "Hexadecimal", "Decimal (Unsigned)", "Decimal (Signed)"
+      "Binary", "Hexadecimal", "Unsigned Decimal", "Signed Decimal"
       ]
     })
 

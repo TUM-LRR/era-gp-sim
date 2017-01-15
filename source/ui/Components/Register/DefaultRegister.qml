@@ -45,10 +45,10 @@ TextField {
     case "Hexadecimal":
       registerContentString = model.HexData;
       break;
-    case "Decimal (Unsigned)":
+    case "Unsigned Decimal":
       registerContentString = model.UnsignedDecData;
       break;
-    case "Decimal (Signed)":
+    case "Signed Decimal":
       registerContentString = model.SignedDecData;
       break;
     default:

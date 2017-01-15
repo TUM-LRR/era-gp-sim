@@ -38,8 +38,8 @@ std::map<QString, RegisterModel::StringToMemoryValueConversion>
     RegisterModel::_stringToMemoryValueConversions = {
         {"Binary", StringConversions::binStringToMemoryValue},
         {"Hexadecimal", StringConversions::hexStringToMemoryValue},
-        {"Decimal (Signed)", StringConversions::signedDecStringToMemoryValue},
-        {"Decimal (Unsigned)",
+        {"Signed Decimal", StringConversions::signedDecStringToMemoryValue},
+        {"Unsigned Decimal",
          StringConversions::unsignedDecStringToMemoryValue}};
 
 

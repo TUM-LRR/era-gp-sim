@@ -33,13 +33,13 @@ Item {
     }
 
     MenuItem {
-      text: "All registers to Decimal (Unsigned)"
-      onTriggered: registerTreeView.formatAllRegisters("Decimal (Unsigned)");
+      text: "All registers to Unsigned Decimal"
+      onTriggered: registerTreeView.formatAllRegisters("Unsigned Decimal");
     }
 
     MenuItem {
-      text: "All registfadsers to Decimal (Signed)"
-      onTriggered: registerTreeView.formatAllRegisters("Decimal (Signed)");
+      text: "All registfadsers to Signed Decimal"
+      onTriggered: registerTreeView.formatAllRegisters("Signed Decimal");
     }
 
     MenuItem {
