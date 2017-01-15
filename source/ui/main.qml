@@ -21,11 +21,12 @@ import QtQuick 2.6
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.2
+
 import "Components"
 import "Components/Menubar"
 import "Components/Toolbar"
 import "Components/ProjectCreation"
-import "Components/ConfigurationWindow"
+import "Components/Settings"
 import Theme 1.0
 
 ApplicationWindow {
@@ -50,7 +51,7 @@ ApplicationWindow {
     id: toolbar
   }
 
-  ConfigurationWindow { id: config }
+  SettingsWindow { id: config }
 
   TabView {
     id: tabView

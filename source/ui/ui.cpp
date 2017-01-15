@@ -28,6 +28,7 @@
 #include "common/utility.hpp"
 #include "parser/common/final-representation.hpp"
 #include "ui/input-text-model.hpp"
+#include "ui/settings.hpp"
 #include "ui/snapshot-component.hpp"
 #include "ui/theme.hpp"
 
@@ -46,31 +47,11 @@ Ui::Ui(int& argc, char** argv)
 }
 
 int Ui::runUi() {
-  qRegisterMetaType<std::size_t>("std::size_t");
-  qRegisterMetaType<std::size_t>("size_t");
-  qRegisterMetaType<FinalRepresentation>();
-  qRegisterMetaType<id_t>("id_t");
-
-  auto status = Theme::Make("default");
-
-  _engine.rootContext()->setContextProperty(
-      "errorMessageFromStartup", QString::fromStdString(status.message()));
-
-  if (status) {
-    // clang-format off
-    qmlRegisterSingletonType<Theme>(
-        "Theme", 1, 0, "Theme",
-        [](auto* qmlEngine, auto* jsEngine) -> QObject* {
-          return Theme::pointer();
-        });
-    // clang-format on
-
-    _engine.rootContext()->setContextProperty("ui", this);
-    _engine.rootContext()->setContextProperty("snapshotComponent",
-                                              _snapshots.get());
-    _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+  _registerCustomTypes();
+  if (_setupEngine()) {
+    _startMainEngine();
   } else {
-    _engine.load(QUrl(QStringLiteral("qrc:/ErrorDialog.qml")));
+    _startErrorEngine();
   }
 
   return _qmlApplication.exec();
@@ -129,50 +110,8 @@ QStringList Ui::getOptionNames(QString architectureName) const {
   return formulaMap.keys();
 }
 
-QStringList
-Ui::_getOptionFormula(QString architectureName, QString optionName) const {
-  auto formulaMap =
-      std::get<0>(_architectureMap.find(architectureName).value());
-  return formulaMap.find(optionName).value();
-}
-
 QStringList Ui::getParsers(QString architectureName) const {
   return std::get<1>(_architectureMap.find(architectureName).value());
-}
-
-void Ui::_loadArchitectures() {
-  assert::that(_architectureMap.empty());
-  std::string path = Utility::joinToRoot("isa", "isa-list.json");
-  Ui::Json data = Ui::Json::parse(Utility::loadFromFile(path));
-  assert::that(data.count("architectures"));
-  assert::that(!data["architectures"].empty());
-
-  for (auto& architecture : data["architectures"]) {
-    assert::that(architecture.count("name"));
-    assert::that(architecture.count("options"));
-    assert::that(!architecture["options"].empty());
-    assert::that(architecture.count("parsers"));
-    assert::that(!architecture["parsers"].empty());
-
-    QMap<QString, QStringList> optionNameFormulaMap;
-    QStringList parserList;
-    for (const auto& option : architecture["options"]) {
-      assert::that(option.count("name"));
-      assert::that(option.count("formula"));
-      assert::that(!option["formula"].empty());
-      QStringList formula;
-      for (const auto& extension : option["formula"]) {
-        formula.push_back(QString::fromStdString(extension));
-      }
-      optionNameFormulaMap.insert(QString::fromStdString(option["name"]),
-                                  formula);
-    }
-    for (const auto& parser : architecture["parsers"]) {
-      parserList.push_back(QString::fromStdString(parser));
-    }
-    _architectureMap.insert(QString::fromStdString(architecture["name"]),
-                            std::make_tuple(optionNameFormulaMap, parserList));
-  }
 }
 
 void Ui::removeProject(int id) {
@@ -258,4 +197,93 @@ QString Ui::translate(const Translateable& translateable) {
     translation = translation.arg(translate(*operand));
   }
   return translation;
+}
+
+void Ui::_loadArchitectures() {
+  assert::that(_architectureMap.empty());
+  std::string path = Utility::joinToRoot("isa", "isa-list.json");
+  Ui::Json data = Ui::Json::parse(Utility::loadFromFile(path));
+  assert::that(data.count("architectures"));
+  assert::that(!data["architectures"].empty());
+
+  for (auto& architecture : data["architectures"]) {
+    assert::that(architecture.count("name"));
+    assert::that(architecture.count("options"));
+    assert::that(!architecture["options"].empty());
+    assert::that(architecture.count("parsers"));
+    assert::that(!architecture["parsers"].empty());
+
+    QMap<QString, QStringList> optionNameFormulaMap;
+    QStringList parserList;
+    for (const auto& option : architecture["options"]) {
+      assert::that(option.count("name"));
+      assert::that(option.count("formula"));
+      assert::that(!option["formula"].empty());
+      QStringList formula;
+      for (const auto& extension : option["formula"]) {
+        formula.push_back(QString::fromStdString(extension));
+      }
+      optionNameFormulaMap.insert(QString::fromStdString(option["name"]),
+                                  formula);
+    }
+    for (const auto& parser : architecture["parsers"]) {
+      parserList.push_back(QString::fromStdString(parser));
+    }
+    _architectureMap.insert(QString::fromStdString(architecture["name"]),
+                            std::make_tuple(optionNameFormulaMap, parserList));
+  }
+}
+
+QStringList
+Ui::_getOptionFormula(QString architectureName, QString optionName) const {
+  auto formulaMap =
+      std::get<0>(_architectureMap.find(architectureName).value());
+  return formulaMap.find(optionName).value();
+}
+
+void Ui::_registerCustomTypes() {
+  qRegisterMetaType<std::size_t>("std::size_t");
+  qRegisterMetaType<std::size_t>("size_t");
+  qRegisterMetaType<FinalRepresentation>();
+  qRegisterMetaType<id_t>("id_t");
+}
+
+bool Ui::_setupEngine() {
+  QString message;
+
+  auto status = Settings::Make();
+  if (status) {
+    auto configuredTheme = Settings::instance().value("theme").toString();
+    status = Theme::Make(configuredTheme);
+  }
+
+  if (!status) message = QString::fromStdString(status.message());
+  _engine.rootContext()->setContextProperty("errorMessageFromStartup", message);
+
+  // No error message means the setup was successful
+  return message.isEmpty();
+}
+
+void Ui::_startMainEngine() {
+  // clang-format off
+  qmlRegisterSingletonType<Theme>(
+      "Theme", 1, 0, "Theme",
+      [](auto* qmlEngine, auto* jsEngine) -> QObject* {
+        return Theme::pointer();
+      });
+  qmlRegisterSingletonType<Settings>(
+      "Settings", 1, 0, "Settings",
+      [](auto* qmlEngine, auto* jsEngine) -> QObject* {
+        return Settings::pointer();
+      });
+  // clang-format on
+
+  _engine.rootContext()->setContextProperty("ui", this);
+  _engine.rootContext()->setContextProperty("snapshotComponent",
+                                            _snapshots.get());
+  _engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+}
+
+void Ui::_startErrorEngine() {
+  _engine.load(QUrl(QStringLiteral("qrc:/ErrorDialog.qml")));
 }

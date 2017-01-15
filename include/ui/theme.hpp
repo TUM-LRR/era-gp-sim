@@ -21,7 +21,6 @@
 #define ERAGPSIM_UI_THEME_HPP
 
 #include <QByteArray>
-#include <QFile>
 #include <QHash>
 #include <QJsonObject>
 #include <QQmlPropertyMap>
@@ -30,6 +29,7 @@
 #include <cstddef>
 
 #include "common/status-with-value.hpp"
+#include "common/status.hpp"
 
 /**
  * Represents the theme being used to style the GUI.

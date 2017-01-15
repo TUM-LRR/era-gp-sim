@@ -225,6 +225,29 @@ class Ui : public QObject {
   QStringList
   _getOptionFormula(QString architectureName, QString optionName) const;
 
+  /**
+   * Registers any custom types we want QML to know about.
+   */
+  void _registerCustomTypes();
+
+  /**
+   * Attempts to setup the QML engine.
+   * \returns True if setup was successful and the main engine can be started,
+   * false if there was a configuration error and the error dialog engine was
+   * already started instead.
+   */
+  bool _setupEngine();
+
+  /**
+   * Starts the main QML engine after loading all configuration successfully.
+   */
+  void _startMainEngine();
+
+  /**
+   * Starts the error QML engine when there was some error setting up the UI.
+   */
+  void _startErrorEngine();
+
   /** This map contains the Architectures as string and a list of their
    * extensions as vector of strings. */
   ArchitectureMap _architectureMap;

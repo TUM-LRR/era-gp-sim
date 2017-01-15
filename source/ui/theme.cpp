@@ -17,6 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "ui/theme.hpp"
+
 #include <QDir>
 #include <QIODevice>
 #include <QJsonDocument>
@@ -26,7 +28,6 @@
 
 #include "common/assert.hpp"
 #include "common/utility.hpp"
-#include "ui/theme.hpp"
 
 Theme* Theme::_theme = nullptr;
 

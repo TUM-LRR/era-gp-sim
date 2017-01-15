@@ -22,7 +22,8 @@ import QtQuick.Dialogs 1.2
 
 MessageDialog {
   title: "Error"
-  text: "Error"
+  // Poor man's margin. Cannot style a message dialog ... :(
+  text: "Error                                                          "
   standardButtons: StandardButton.Ok
   icon: StandardIcon.Critical
   onAccepted: close()
