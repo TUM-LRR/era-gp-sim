@@ -22,7 +22,7 @@ import QtQuick.Controls 1.4
 import Theme 1.0
 
 Rectangle {
-  height: Theme.configuration.section.height
+  height: Theme.settings.section.height
   anchors {
     top: parent.top
     left: parent.left
@@ -36,39 +36,39 @@ Rectangle {
 
   Label {
     id: label
-    font.pixelSize: Theme.configuration.h1.fontSize
+    font.pixelSize: Theme.settings.h1.fontSize
     font.weight: Font.DemiBold
-    color: Theme.configuration.h1.color
+    color: Theme.settings.h1.color
     anchors {
       top: parent.top
       left: parent.left
-      leftMargin: Theme.configuration.h1.padding
+      leftMargin: Theme.settings.h1.padding
       right: parent.right
-      rightMargin: Theme.configuration.h1.padding
+      rightMargin: Theme.settings.h1.padding
     }
   }
 
   Label {
     id: description
-    font.pixelSize: Theme.configuration.h2.fontSize
+    font.pixelSize: Theme.settings.h2.fontSize
     anchors {
       top: label.bottom
-      topMargin: Theme.configuration.h2.marginTop
+      topMargin: Theme.settings.h2.marginTop
       left: label.left
       right: label.right
     }
-    color: Theme.configuration.h2.color
+    color: Theme.settings.h2.color
   }
 
   Rectangle {
     id: rule
     anchors {
       top: bottomAnchor
-      topMargin: Theme.configuration.section.paddingBottom
+      topMargin: Theme.settings.section.paddingBottom
       left: parent.left
       right: parent.right
     }
-    height: Theme.configuration.hr.height
-    color: Theme.configuration.hr.color
+    height: Theme.settings.hr.height
+    color: Theme.settings.hr.color
   }
 }

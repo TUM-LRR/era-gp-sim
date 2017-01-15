@@ -20,21 +20,43 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
+import QtQuick.Window 2.2
 
 import Theme 1.0
+import "Sections"
 
-ConfigurationSection {
-  text: "Theme"
-  description: "The UI and syntax theme. " +
-               "Changes apply instantly and automagically."
-  bottomAnchor: selection.bottom
+Window {
+  width: 500
+  height: 500
 
-  ComboBox {
-    id: selection
-    model: ["Darcula", "Solarized Dark", "Solarized Light"]
+  title: "Preferences"
+  flags: Qt.Dialog
+  modality: Qt.ApplicationModal
+
+  onClosing: function(event) {
+    console.log(event);
+  }
+
+  SnapshotLocation {
+    id: snapshotLocation
+    anchors.top: parent.top
+    anchors.topMargin: Theme.settings.paddingTop
+  }
+
+  Theme {
+    id: theme
+    anchors.top: snapshotLocation.bottom
+  }
+
+  Theme {
+    id: theme2
+    anchors.top: theme.bottom
+  }
+
+  Button {
+    text: "Save"
     anchors {
-      top: parent.topAnchor
-      topMargin: Theme.configuration.h2.marginBottom
+      top: theme2.bottom
       horizontalCenter: parent.horizontalCenter
     }
   }

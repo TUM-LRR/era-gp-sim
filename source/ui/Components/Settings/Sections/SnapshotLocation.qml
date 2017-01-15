@@ -23,7 +23,7 @@ import QtQuick.Dialogs 1.2
 
 import Theme 1.0
 
-ConfigurationSection {
+Setting {
   id: root
   text: "Snapshot Location"
   description: "The path at which to load and store snapshots."
@@ -33,7 +33,7 @@ ConfigurationSection {
     id: button
     anchors {
       top: parent.topAnchor
-      topMargin: Theme.configuration.h2.marginBottom
+      topMargin: Theme.settings.h2.marginBottom
       left: parent.left
       right: parent.right
     }
@@ -49,15 +49,15 @@ ConfigurationSection {
     style: ButtonStyle {
       label: Text {
         elide: Text.ElideRight
-        font.pixelSize: Theme.configuration.snapshots.button.fontSize
+        font.pixelSize: Theme.settings.snapshots.button.fontSize
         horizontalAlignment: Text.AlignHCenter
-        leftPadding: Theme.configuration.snapshots.button.paddingLeft
+        leftPadding: Theme.settings.snapshots.button.paddingLeft
         maximumLineCount: 1
-        rightPadding: Theme.configuration.snapshots.button.paddingRight
-        text: button.text // Configuration.snapshotLocation
+        rightPadding: Theme.settings.snapshots.button.paddingRight
+        text: button.text // SettingsWindow.snapshotLocation
       }
       background: Rectangle {
-        color: Theme.configuration.snapshots.button.background
+        color: Theme.settings.snapshots.button.background
       }
     }
 
