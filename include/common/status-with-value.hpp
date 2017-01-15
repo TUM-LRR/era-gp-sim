@@ -93,7 +93,7 @@ class StatusWithValue {
   /**
    * \returns The message of the status.
    */
-  auto message() const noexcept(noexcept(_status.message())) {
+  auto message() const noexcept {
     return _status.message();
   }
 
