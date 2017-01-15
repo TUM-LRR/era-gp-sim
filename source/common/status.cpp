@@ -21,6 +21,10 @@
 
 #include <string>
 
+Status Status::Fail(const std::string& message) {
+  return {Status::FAILURE, message};
+}
+
 Status::Status(Code code, const std::string& message)
 : _code(code), _message(message) {
 }
