@@ -65,8 +65,25 @@ Status Settings::load() {
 
   // We simply override all entries
   for (auto iterator = json.begin(); iterator != json.end(); ++iterator) {
-    const auto& value = iterator.value();
-    super::insert(iterator.key(), value.toVariant());
+    super::insert(iterator.key(), iterator.value().toVariant());
+  }
+
+  return Status::OK;
+}
+
+Status Settings::store() {
+  QJsonDocument document(toJson());
+  QFile file(_settingsFilePath);
+
+  // The Settings should have been loaded and the path found by now.
+  assert::that(file.exists());
+
+  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    return Status::Fail("Could not open settings file for writing");
+  }
+
+  if (file.write(document.toJson()) == -1) {
+    return Status::Fail("Could not write to settings file");
   }
 
   return Status::OK;
@@ -80,16 +97,27 @@ const QString& Settings::settingsFilePath() const noexcept {
   return _settingsFilePath;
 }
 
+Settings::Json Settings::toJson() const {
+  Json json;
+
+  for (const auto& key : super::keys()) {
+    json[key] = QJsonValue::fromVariant((*this)[key]);
+    assert::that(!json[key].isNull());
+  }
+
+  return json;
+}
+
 StatusWithValue<QString> Settings::_findSettingsDirectory() {
   auto directory =
       QDir(QString::fromStdString(Utility::rootPath()));  // QDir::home();
 
   if (!directory.exists()) {
-    return Status(Status::FAILURE, "Could not find home directory");
+    return Status::Fail("Could not find home directory");
   }
 
   if (!directory.cd(".erasim")) {
-    return Status(Status::FAILURE, "Could not find settings directory");
+    return Status::Fail("Could not find settings directory");
   }
 
   return directory.canonicalPath();
@@ -101,7 +129,7 @@ Settings::_findSettingsFile(const QString& directoryPath) {
   QFileInfo file(directory.filePath("settings.json"));
 
   if (!file.exists()) {
-    return Status(Status::FAILURE, "Could not find settings file");
+    return Status::Fail("Could not find settings file");
   }
 
   return file.canonicalFilePath();
@@ -115,13 +143,13 @@ StatusWithValue<QByteArray> Settings::_loadSettingsData() {
 
   QFile file(_settingsFilePath);
   if (!file.open(QIODevice::ReadOnly)) {
-    return Status(Status::FAILURE, "Could not open settings file for loading");
+    return Status::Fail("Could not open settings file for loading");
   }
 
   auto contents = file.readAll();
 
   if (contents.isEmpty()) {
-    return Status(Status::FAILURE, "Contents of settings are empty. Why?");
+    return Status::Fail("Contents of settings are empty. Why?");
   }
 
   return contents;

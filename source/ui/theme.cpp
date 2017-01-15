@@ -24,7 +24,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QString>
-#include <QVariantMap>
 
 #include "common/assert.hpp"
 #include "common/utility.hpp"
@@ -80,31 +79,28 @@ StatusWithValue<QByteArray> Theme::_loadThemeData(const QString& name) {
       QDir(QString::fromStdString(Utility::rootPath()));  // QDir::home();
 
   if (!directory.exists()) {
-    return Status(Status::FAILURE, "Could not find home directory");
+    return Status::Fail("Could not find home directory");
   }
 
   if (!directory.cd(".erasim/themes/")) {
-    return Status(Status::FAILURE, "Could not find theme directory");
+    return Status::Fail("Could not find theme directory");
   }
 
   if (!directory.cd(name + ".theme")) {
-    return Status(Status::FAILURE,
-                  "Could not find theme: " + name.toStdString());
+    return Status::Fail("Could not find theme: " + name.toStdString());
   }
 
   QFile file(directory.filePath("theme.json"));
 
   if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
-    return Status(Status::FAILURE,
-                  "Could not open theme: " + name.toStdString());
+    return Status::Fail("Could not open theme: " + name.toStdString());
   }
 
   auto contents = file.readAll();
 
   if (contents.isEmpty()) {
-    return Status(
-        Status::FAILURE,
-        "Contents of theme '" + name.toStdString() + "' are corrupted");
+    return Status::Fail("Contents of theme '" + name.toStdString() +
+                        "' are corrupted");
   }
 
   return contents;

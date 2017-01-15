@@ -33,6 +33,8 @@ class Settings : public QQmlPropertyMap {
   using super = QQmlPropertyMap;
 
  public:
+  using Json = QJsonObject;
+
   /**
    * Creates a new Settings instance.
    *
@@ -84,9 +86,12 @@ class Settings : public QQmlPropertyMap {
    */
   const QString& settingsFilePath() const noexcept;
 
- private:
-  using Json = QJsonObject;
+  /**
+   * \returns A JSON object containing the contents of the settings.
+   */
+  Json toJson() const;
 
+ private:
   /** The singleton. */
   static Settings* _settings;
 

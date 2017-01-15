@@ -253,7 +253,9 @@ bool Ui::_setupEngine() {
 
   auto status = Settings::Make();
   if (status) {
-    auto configuredTheme = Settings::instance().value("theme").toString();
+    Settings::instance()["theme"] = "other";
+    Settings::instance().store();
+    auto configuredTheme = Settings::instance()["theme"].toString();
     status = Theme::Make(configuredTheme);
   }
 

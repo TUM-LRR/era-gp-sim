@@ -1,4 +1,4 @@
 {
-  "theme": "default",
-  "snapshotPath": "/usr/bin/lol"
+    "snapshotPath": "/usr/bin/lol",
+    "theme": "other"
 }
