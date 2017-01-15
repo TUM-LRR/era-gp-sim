@@ -29,30 +29,35 @@
 #include "ui/ui.hpp"
 
 GuiProject::GuiProject(
-    QQmlContext* context, const ArchitectureFormula& formula,
-    std::size_t memorySize, const std::string& parserName,
+    QQmlContext* context,
+    const ArchitectureFormula& formula,
+    std::size_t memorySize,
+    const std::string& parserName,
     const std::shared_ptr<SnapshotComponent>& snapshotComponent,
     QObject* parent)
-    : QObject(parent),
-      _projectModule(formula, memorySize, parserName),
-      _registerModel(_projectModule.getArchitectureAccess(),
-                     _projectModule.getMemoryManager(),
-                     _projectModule.getMemoryAccess(), context),
-      _editorComponent(context, _projectModule.getParserInterface(),
-                       _projectModule.getCommandInterface()),
-      _outputComponent(_projectModule.getMemoryManager(),
-                       _projectModule.getMemoryAccess(), context),
-      _inputBM(context, _projectModule.getMemoryAccess()),
-      _inputTM(context, _projectModule.getMemoryAccess()),
-      _inputCM(context, _projectModule.getMemoryAccess()),
-      _memoryModel(_projectModule.getMemoryAccess(),
-                   _projectModule.getMemoryManager(), context),
-      _defaultTextFileSavePath(),
-      _snapshotComponent(snapshotComponent),
-      _architectureFormulaString(
-          SnapshotComponent::architectureToString(formula)),
-      _commandList(),
-      _helpCache() {
+: QObject(parent)
+, _projectModule(formula, memorySize, parserName)
+, _registerModel(_projectModule.getArchitectureAccess(),
+                 _projectModule.getMemoryManager(),
+                 _projectModule.getMemoryAccess(),
+                 context)
+, _editorComponent(context,
+                   _projectModule.getParserInterface(),
+                   _projectModule.getCommandInterface())
+, _outputComponent(_projectModule.getMemoryManager(),
+                   _projectModule.getMemoryAccess(),
+                   context)
+, _inputBM(context, _projectModule.getMemoryAccess())
+, _inputTM(context, _projectModule.getMemoryAccess())
+, _inputCM(context, _projectModule.getMemoryAccess())
+, _memoryModel(_projectModule.getMemoryAccess(),
+               _projectModule.getMemoryManager(),
+               context)
+, _defaultTextFileSavePath()
+, _snapshotComponent(snapshotComponent)
+, _architectureFormulaString(SnapshotComponent::architectureToString(formula))
+, _commandList()
+, _helpCache() {
   context->setContextProperty("guiProject", this);
   // set the callback for memory and register
   _projectModule.getMemoryManager().setUpdateRegisterCallback(
@@ -127,7 +132,9 @@ void GuiProject::changeSystem(std::string base) {
   // Alle Komponenten informieren
 }
 
-void GuiProject::parse() { _editorComponent.parse(); }
+void GuiProject::parse() {
+  _editorComponent.parse();
+}
 
 void GuiProject::run() {
   emit runClicked(false);
@@ -147,7 +154,9 @@ void GuiProject::runBreakpoint() {
   _projectModule.getCommandInterface().executeToBreakpoint();
 }
 
-void GuiProject::stop() { _projectModule.stopExecution(); }
+void GuiProject::stop() {
+  _projectModule.stopExecution();
+}
 
 void GuiProject::reset() {
   emit runClicked(false);
@@ -254,54 +263,51 @@ QString GuiProject::getCommandHelp(std::size_t line) {
   return help;
 }
 
-std::function<std::string(MemoryValue)> GuiProject::getHexConversion() {
+GuiProject::MemoryToStringConverter GuiProject::getHexConversion() {
   return hexConversion;
 }
 
-std::function<std::string(MemoryValue)> GuiProject::getBinConversion() {
+GuiProject::MemoryToStringConverter GuiProject::getBinConversion() {
   return binConversion;
 }
 
-std::function<std::string(MemoryValue)> GuiProject::getOctConversion() {
+GuiProject::MemoryToStringConverter GuiProject::getOctConversion() {
   return octConversion;
 }
 
-std::function<std::string(MemoryValue)>
-GuiProject::getSignedDecimalConversion() {
+GuiProject::MemoryToStringConverter GuiProject::getSignedDecimalConversion() {
   return signedDecimalConversion;
 }
 
-std::function<std::string(MemoryValue)>
-GuiProject::getUnsignedDecimalConversion() {
+GuiProject::MemoryToStringConverter GuiProject::getUnsignedDecimalConversion() {
   return unsignedDecimalConversion;
 }
 
-std::function<std::string(MemoryValue)>
-GuiProject::getDecimalFloatConversion() {
+GuiProject::MemoryToStringConverter GuiProject::getDecimalFloatConversion() {
   return decimalFloatConversion;
 }
 
-std::function<MemoryValue(std::string)> GuiProject::getSignedToMemoryValue() {
+GuiProject::StringToMemoryConverter GuiProject::getSignedToMemoryValue() {
   return signedToMemoryValue;
 }
 
-std::function<MemoryValue(std::string)> GuiProject::getHexToMemoryValue() {
+GuiProject::StringToMemoryConverter GuiProject::getHexToMemoryValue() {
   return hexToMemoryValue;
 }
 
-std::function<MemoryValue(std::string)> GuiProject::getBinToMemoryValue() {
+GuiProject::StringToMemoryConverter GuiProject::getBinToMemoryValue() {
   return binToMemoryValue;
 }
 
-std::function<MemoryValue(std::string)> GuiProject::getOctToMemoryValue() {
+GuiProject::StringToMemoryConverter GuiProject::getOctToMemoryValue() {
   return octToMemoryValue;
 }
 
-std::function<MemoryValue(std::string)> GuiProject::getUnsignedToMemoryValue() {
+GuiProject::StringToMemoryConverter GuiProject::getUnsignedToMemoryValue() {
   return unsignedToMemoryValue;
 }
 
-std::function<MemoryValue(std::string)> GuiProject::getFloatToMemoryValue() {
+GuiProject::StringToMemoryConverter GuiProject::getFloatToMemoryValue() {
   return floatToMemoryValue;
 }
 

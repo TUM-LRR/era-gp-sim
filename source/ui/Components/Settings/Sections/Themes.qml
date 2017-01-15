@@ -30,10 +30,10 @@ Setting {
                "Changes apply instantly and automagically."
   bottomAnchor: selector.bottom
 
-  property string initialSelection
   property alias selection: selector.currentText
+  property bool differentThanInitially
+
   signal change()
-  signal unchange()
 
   ComboBox {
     id: selector
@@ -43,6 +43,9 @@ Setting {
       topMargin: Theme.settings.h2.marginBottom
       horizontalCenter: parent.horizontalCenter
     }
-    onCurrentIndexChanged: (currentIndex > 0) ? change() : unchange();
+    onCurrentIndexChanged: {
+      differentThanInitially = currentIndex > 0;
+      change()
+    }
   }
 }

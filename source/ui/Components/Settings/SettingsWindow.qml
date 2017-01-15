@@ -25,6 +25,7 @@ import QtQuick.Window 2.2
 import Theme 1.0
 import Settings 1.0
 import "Sections"
+import "../../"
 
 Window {
   id: window
@@ -48,16 +49,13 @@ Window {
     id: snapshotLocation
     anchors.top: parent.top
     anchors.topMargin: Theme.settings.paddingTop
-    initialLocation: Settings.snapshotLocation
-    onChange: hasUnsavedChanges = true
-    onUnchange: hasUnsavedChanges = false
+    onChange: hasUnsavedChanges = differentThanInitially
   }
 
   Themes {
     id: themes
     anchors.top: snapshotLocation.bottom
-    onChange: hasUnsavedChanges = true
-    onUnchange: hasUnsavedChanges = false
+    onChange: hasUnsavedChanges = differentThanInitially
   }
 
   AskAboutUnsavedChangesDialog {
@@ -68,6 +66,8 @@ Window {
     }
   }
 
+  ErrorDialog { id: errorDialog }
+
   Button {
     text: "Save"
     enabled: hasUnsavedChanges
@@ -76,11 +76,18 @@ Window {
       horizontalCenter: parent.horizontalCenter
     }
     onClicked: {
-      console.log(themes.selection);
-      console.log(snapshotLocation.location);
-      // Settings.theme = themes.selection;
-      // Settings.snapshotLocation = snapshotLocation.location;
-      // Settings.store();
+      Settings.theme = themes.selection;
+      Settings.snapshotLocation = snapshotLocation.location;
+      if (snapshotLocation.differentThanInitially) {
+        Settings.snapshotLocationChanged(snapshotLocation.location);
+      }
+
+      var message = Settings.store();
+      if (message.length > 0) {
+        errorDialog.show(message);
+      } else {
+        hasUnsavedChanges = false;
+      }
     }
   }
 }

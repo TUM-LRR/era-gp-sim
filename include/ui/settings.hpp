@@ -25,6 +25,7 @@
 #include <QQmlPropertyMap>
 #include <QString>
 #include <QStringList>
+#include <QVariant>
 
 #include "common/status-with-value.hpp"
 #include "common/status.hpp"
@@ -63,9 +64,15 @@ class Settings : public QQmlPropertyMap {
    */
   static Settings* pointer();
 
-  Q_INVOKABLE int f() const {
-    return 5;
-  }
+  /**
+   * Utility method to lookup a value in the setting singleton.
+   *
+   * `Settings::get(key)` is equivalent to `Settings::instance()[key]`.
+   *
+   * \param key The key to look for.
+   * \return The value for the key.
+   */
+  static QVariant get(const QString& key);
 
   /**
    * Loads the settings from disk into the `Settings` object.
@@ -75,9 +82,9 @@ class Settings : public QQmlPropertyMap {
 
   /**
    * Stores the current settings to disk.
-   * \returns A status object indicating the success of the operation.
+   * \returns A message string if an error occurs, else the empty string.
    */
-  Q_INVOKABLE Status store();
+  Q_INVOKABLE QString store();
 
   /**
    * \returns The directory path of the settings.
@@ -101,6 +108,14 @@ class Settings : public QQmlPropertyMap {
    * \returns A JSON object containing the contents of the settings.
    */
   Json toJson() const;
+
+ signals:
+
+  /**
+   * Signal sent when the `snapshotLocation` property changes.
+   * \param newPath The new path where snapshots are to be found and stored.
+   */
+  Q_INVOKABLE void snapshotLocationChanged(const QString& newPath) const;
 
  private:
   /** The singleton. */

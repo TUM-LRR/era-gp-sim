@@ -20,6 +20,7 @@
 import QtQuick 2.6
 import QtQuick.Dialogs 1.2
 
+
 MessageDialog {
   title: "Error"
   // Poor man's margin. Cannot style a message dialog ... :(
@@ -32,5 +33,10 @@ MessageDialog {
       informativeText = errorMessageFromStartup;
       open();
     }
+  }
+
+  function show(text) {
+    this.text = text;
+    open();
   }
 }

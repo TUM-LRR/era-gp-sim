@@ -248,6 +248,13 @@ class Ui : public QObject {
    */
   void _startErrorEngine();
 
+  /**
+   * Sets up the snapshots component.
+   *
+   * \param snapshotLocation The path where snapshots can be found and stored.
+   */
+  void _setupSnapshots(const QString& snapshotLocation);
+
   /** This map contains the Architectures as string and a list of their
    * extensions as vector of strings. */
   ArchitectureMap _architectureMap;

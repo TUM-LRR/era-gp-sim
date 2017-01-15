@@ -22,6 +22,7 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
 import Theme 1.0
+import Settings 1.0
 
 Setting {
   id: root
@@ -29,10 +30,10 @@ Setting {
   description: "The path at which to load and store snapshots."
   bottomAnchor: button.bottom
 
-  property string initialLocation
   property alias location: button.text
+  property bool differentThanInitially
+
   signal change()
-  signal unchange()
 
   Button {
     id: button
@@ -49,8 +50,15 @@ Setting {
       onClicked: fileDialog.open()
     }
 
-    text: initialLocation
-    onTextChanged: (text != initialLocation) ? change() : unchange()
+    text: Settings.snapshotLocation
+    onTextChanged: {
+      differentThanInitially = text != Settings.snapshotLocation;
+      change()
+    }
+
+    // The tooltip is not bounded by a length, so it can show
+    // the full path when the button is not wide enough for it
+    tooltip: text
 
     style: ButtonStyle {
       label: Text {
@@ -60,7 +68,7 @@ Setting {
         leftPadding: Theme.settings.snapshots.button.paddingLeft
         maximumLineCount: 1
         rightPadding: Theme.settings.snapshots.button.paddingRight
-        text: button.text // SettingsWindow.snapshotLocation
+        text: button.text
       }
       background: Rectangle {
         color: Theme.settings.snapshots.button.background
@@ -73,12 +81,7 @@ Setting {
         selectFolder: true
         onAccepted: {
           var location = fileDialog.folder.toString();
-          location = location.slice("file://".length);
-          button.text = location;
-
-          // The tooltip is not bounded by a length, so it can show
-          // the full path when the button is not wide enough for it
-          button.tooltip = location;
+          button.text = location.slice("file://".length);
         }
     }
   }

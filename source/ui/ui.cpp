@@ -37,12 +37,7 @@ Q_DECLARE_METATYPE(FinalRepresentation)
 Ui::id_t Ui::_rollingProjectId = 0;
 
 Ui::Ui(int& argc, char** argv)
-: _architectureMap()
-, _qmlApplication(argc, argv)
-, _engine()
-, _projects()
-, _snapshots(std::make_shared<SnapshotComponent>(
-      QString::fromStdString(Utility::joinToRoot("snapshots")))) {
+: _architectureMap(), _qmlApplication(argc, argv), _engine(), _projects() {
   _loadArchitectures();
 }
 
@@ -253,8 +248,8 @@ bool Ui::_setupEngine() {
 
   auto status = Settings::Make();
   if (status) {
-    auto configuredTheme = Settings::instance()["theme"].toString();
-    status = Theme::Make(configuredTheme);
+    _setupSnapshots(Settings::get("snapshotLocation").toString());
+    status = Theme::Make(Settings::get("theme").toString());
   }
 
   if (!status) message = QString::fromStdString(status.message());
@@ -286,4 +281,14 @@ void Ui::_startMainEngine() {
 
 void Ui::_startErrorEngine() {
   _engine.load(QUrl(QStringLiteral("qrc:/ErrorDialog.qml")));
+}
+
+void Ui::_setupSnapshots(const QString& snapshotLocation) {
+  _snapshots = std::make_shared<SnapshotComponent>(snapshotLocation);
+  // clang-format off
+  QObject::connect(Settings::pointer(), &Settings::snapshotLocationChanged,
+                   [this](const auto& path){
+                     this->_snapshots->snapshotDirectory(path);
+                   });
+  // clang-format on
 }

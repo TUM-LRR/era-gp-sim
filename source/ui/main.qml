@@ -250,9 +250,9 @@ ApplicationWindow {
         textFormat: Text.StyledText
         text: "<p>Save a snapshot of the current register and memory state to disk. " +
         "Your snapshot files can be found here:</p> " +
-        "<a href=\"" + snapshotComponent.getSnapshotBasePath().toString() + "\">" +
-        snapshotComponent.getSnapshotBasePath().toString() + "</a>"
-        onLinkActivated: Qt.openUrlExternally(snapshotComponent.getSnapshotBasePath())
+        "<a href=\"" + snapshotComponent.snapshotDirectory() + "\">" +
+        snapshotComponent.snapshotDirectory() + "</a>"
+        onLinkActivated: Qt.openUrlExternally(snapshotComponent.snapshotDirectory())
       }
       TextField {
         id: textField

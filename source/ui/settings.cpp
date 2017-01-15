@@ -57,6 +57,10 @@ Settings* Settings::pointer() {
   return _settings;
 }
 
+QVariant Settings::get(const QString& key) {
+  return instance()[key];
+}
+
 Settings::Settings() : super(this, nullptr) {
 }
 
@@ -74,7 +78,7 @@ Status Settings::load() {
   return Status::OK;
 }
 
-Status Settings::store() {
+QString Settings::store() {
   QJsonDocument document(toJson());
   QFile file(_settingsFilePath);
 
@@ -82,14 +86,14 @@ Status Settings::store() {
   assert::that(file.exists());
 
   if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    return Status::Fail("Could not open settings file for writing");
+    return "Could not open settings file for writing";
   }
 
   if (file.write(document.toJson()) == -1) {
-    return Status::Fail("Could not write to settings file");
+    return "Could not write to settings file";
   }
 
-  return Status::OK;
+  return QString();
 }
 
 const QString& Settings::settingsDirectoryPath() const noexcept {
@@ -105,10 +109,9 @@ QStringList Settings::listOfAllThemeNames() const noexcept {
     QDir directory(_settingsDirectoryPath);
     directory.cd("themes");
 
-    for (auto theme : directory.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-      // Get rid of the .theme at the end
-      theme.chop(6);
-      _listOfAllThemeNames.append(theme);
+    for (const auto& theme :
+         directory.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+      _listOfAllThemeNames.append(theme.completeBaseName());
     }
 
     // Swap the default theme into the first position (we guarantee this)/
@@ -116,10 +119,6 @@ QStringList Settings::listOfAllThemeNames() const noexcept {
         _listOfAllThemeNames.indexOf((*this)["theme"].toString());
     assert::that(defaultThemeIndex != -1);
     _listOfAllThemeNames.swap(0, defaultThemeIndex);
-
-    for (const auto& i : _listOfAllThemeNames) {
-      std::cout << i.toStdString() << std::endl;
-    }
   }
 
   return _listOfAllThemeNames;
