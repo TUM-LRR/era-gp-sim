@@ -57,6 +57,9 @@ Settings* Settings::pointer() {
   return _settings;
 }
 
+Settings::Settings() : super(this, nullptr) {
+}
+
 Status Settings::load() {
   auto result = _loadJson();
   if (!result) return result.status();
@@ -95,6 +98,31 @@ const QString& Settings::settingsDirectoryPath() const noexcept {
 
 const QString& Settings::settingsFilePath() const noexcept {
   return _settingsFilePath;
+}
+
+QStringList Settings::listOfAllThemeNames() const noexcept {
+  if (_listOfAllThemeNames.isEmpty()) {
+    QDir directory(_settingsDirectoryPath);
+    directory.cd("themes");
+
+    for (auto theme : directory.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+      // Get rid of the .theme at the end
+      theme.chop(6);
+      _listOfAllThemeNames.append(theme);
+    }
+
+    // Swap the default theme into the first position (we guarantee this)/
+    auto defaultThemeIndex =
+        _listOfAllThemeNames.indexOf((*this)["theme"].toString());
+    assert::that(defaultThemeIndex != -1);
+    _listOfAllThemeNames.swap(0, defaultThemeIndex);
+
+    for (const auto& i : _listOfAllThemeNames) {
+      std::cout << i.toStdString() << std::endl;
+    }
+  }
+
+  return _listOfAllThemeNames;
 }
 
 Settings::Json Settings::toJson() const {
