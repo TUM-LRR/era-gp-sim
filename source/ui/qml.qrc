@@ -49,6 +49,7 @@
         <file>Components/Output/Buttons/Sevensegment Icon@2x.png</file>
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
+        <file>Components/Register/ContextMenu.qml</file>
         <file>ProjectCreationScreen.qml</file>
         <file>ProjectCreationSection.qml</file>
         <file>Components/Output/SevenSegment/SevenSegment.qml</file>
