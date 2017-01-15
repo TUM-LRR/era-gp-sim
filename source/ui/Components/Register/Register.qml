@@ -22,24 +22,23 @@ import Theme 1.0
 
 Item {
   // Tell SplitViewItem (i.e. component wrapper) that settings are available to make it display settings icon.
-  property var hasComponentSettings: true
+  property bool hasComponentSettings: true
 
-  // Displays the registers in a tree-like structure.
   TreeView {
     id: registerTreeView
 
     // Set the TreeView's style.
     anchors.fill: parent
     backgroundVisible: false
-    style: TreeViewStyle {
-      transientScrollBars: true
-    }
     alternatingRowColors: false
     headerVisible: false
     selectionMode: SelectionMode.NoSelection
+    style: TreeViewStyle {
+      transientScrollBars: true
+    }
 
-    // Signal to format all registres at once.
     signal formatAllRegisters(string format)
+
     // When loading, each register uses the default format if no other
     // cached format is available.
     property var defaultFormat: "Binary"
@@ -57,50 +56,59 @@ Item {
   // delegate item has been delete because it was scrolled out of the visible
   // area. This property cannot be part of the model, as the model can be
   // assigned to multiple TreeViews.
-  property variant dataTypeFormatCache: ({})
+  property var dataTypeFormatCache: ({})
 
   // Uses the RegisterModel to populate the registers.
   model: registerModel
 
+  rowDelegate: Item { height: Theme.register.height }
+
   itemDelegate: Item {
     id: treeViewItemDelegate
+    anchors {
+      left: parent.left
+      leftMargin: Theme.register.margin
+      right: parent.right
+      rightMargin: Theme.register.margin
+    }
 
-    // Delegates of some well-supported QML-views (such as ListView) have a property
-    // for accessing the view the delegate is attached to from a delegate's sub-component
-    // via ListView.view.
-    // However treeView does not have such a property. In order to still be able
-    // to access some of the TreeView's properties, we have to create a property
-    // inside the delegate itself, which can then be used from within the delegate's
-    // components.
+    // Delegates of some well-supported QML-views (such as ListView) have a
+    // property for accessing the view the delegate is attached to from a
+    // delegate's sub-component via ListView.view. However treeView does not
+    // have such a property. In order to still be able to access some of the
+    // TreeView's properties, we have to create a property inside the delegate
+    // itself, which can then be used from within the delegate's components.
     property TreeView attachedTreeView: registerTreeView
 
-    // Register Title
     Label {
-      id: registerTitleLabel
+      id: registerName
       anchors.left: parent.left
-      anchors.verticalCenter: registerContentItem.verticalCenter
+      anchors.verticalCenter: registerContent.verticalCenter
+
       text: model ? model.Title : ""
-      font.pointSize: 12
-      // font.weight: Font.Bold
-      color: "#585858"
+      font.pixelSize: Theme.register.label.fontSize
+      font.weight: Font.DemiBold
+      color: Theme.register.label.color
     }
-    // The actual content of the register. Its appearance depends on the current
-    // format type (e.g. hex/bin/dec uses TextField, flag uses checkbox).
+
     Loader {
-      id: registerContentItem
+      id: registerContent
       anchors {
-        verticalCenter: registerTitleLabel.verticalCenter
-        left: registerTitleLabel.right
+        verticalCenter: registerName.verticalCenter
+        left: registerName.right
+        leftMargin: Theme.register.content.margin
         right: dataTypeFormatComboBox.left
+        rightMargin: Theme.register.content.margin
       }
     }
+
     // The list of available data formats.
     ComboBox {
       id: dataTypeFormatComboBox
-      anchors.verticalCenter: registerContentItem.verticalCenter
-      anchors.right: parent.right
       width: 18
-      height: registerContentItem.height
+      anchors.verticalCenter: registerContent.verticalCenter
+      anchors.right: parent.right
+      height: registerContent.height
       property bool shouldCacheFormatIndex: false
       model: {
         // Property bindings are magic; dark, dark magic. So how often this
@@ -117,20 +125,7 @@ Item {
         dataTypeFormatComboBox.shouldCacheFormatIndex = false;
         // Note: model.Type does not work...
         var type = registerModel.data(styleData.index, 1);
-        switch (type) {
-        case "Integer":
-          return formatListInteger;
-        case "Float":
-          return formatListFloat;
-        case "Vector":
-          return formatListVector;
-        case "Flag":
-          return formatListFlag;
-        case "Link":
-          return formatListLink;
-        case "ProgramCounter":
-          return formatListProgramCounter;
-        }
+        return formats[type];
       }
 
       onModelChanged: {
@@ -150,11 +145,11 @@ Item {
         // They are loaded when such a data format is selected.
         // For the content to be reloaded correctly, the source component has to be
         // cleared.
-        registerContentItem.sourceComponent = undefined;
+        registerContent.sourceComponent = undefined;
         if (currentText == "Flag") {
-          registerContentItem.source = "FlagRegister.qml";
+          registerContent.source = "FlagRegister.qml";
         } else {
-          registerContentItem.source = "DefaultRegister.qml"
+          registerContent.source = "DefaultRegister.qml"
         }
         // Cache the new currently selected data type format, but only if the
         // index change was not triggered upon the creation of the combo box
@@ -211,8 +206,8 @@ Item {
 
     Connections {
       target: registerTreeView
-      // When all registers should be formatted, change the format of all registers currently
-      // visible (and therefore loaded).
+      // When all registers should be formatted, change the format of all
+      // registers currently visible (and therefore loaded).
       onFormatAllRegisters: {
         var defaultFormatIndex = indexOfFormat(attachedTreeView.defaultFormat);
         if (defaultFormatIndex !== -1) {
@@ -221,45 +216,30 @@ Item {
       }
     }
 
-    // Available data formats for each type of register.
-    property var formatListInteger: ["Binary", "Hexadecimal", "Decimal (Unsigned)", "Decimal (Signed)"]
-    property var formatListFloat: ["Binary", "Hexadecimal"]
-    property var formatListVector: ["Binary", "Hexadecimal"]
-    property var formatListFlag: ["Flag", "Binary"]
-    property var formatListLink: ["Binary", "Hexadecimal"]
-    property var formatListProgramCounter: ["Binary", "Hexadecimal"]
+    property var formats: ({
+      Float: ["Binary", "Hexadecimal"],
+      Vector: ["Binary", "Hexadecimal"],
+      Flag: ["Flag", "Binary"],
+      Link: ["Binary", "Hexadecimal"],
+      ProgramCounter: ["Binary", "Hexadecimal"],
+      Integer: [
+      "Binary", "Hexadecimal", "Decimal (Unsigned)", "Decimal (Signed)"
+      ]
+    })
 
     // Searches for a given data format string and returns the corresponding index inside the
     // register's associated type's format list.
     function indexOfFormat(format) {
-      switch (registerModel.data(styleData.index, 1)) {
-      case "Integer":
-        return formatListInteger.indexOf(format);
-      case "Float":
-        return formatListFloat.indexOf(format);
-      case "Vector":
-        return formatListVector.indexOf(format);
-      case "Flag":
-        return formatListFlag.indexOf(format);
-      case "Link":
-        return formatListLink.indexOf(format);
-      case "ProgramCounter":
-        return formatListProgramCounter.indexOf(format);
-      }
+      var type = registerModel.data(styleData.index, 1);
+      return formats[type].indexOf(format);
     }
   }
 
-  rowDelegate: Item {
-    height: 50
-  }
-
-  TableViewColumn {
-    title: "Register"
-  }
+  TableViewColumn { title: "Register" }
 }
 
-  ContextMenu {
-    id: contextMenu
-    anchors.fill: parent
-  }
+ContextMenu {
+  id: contextMenu
+  anchors.fill: parent
+}
 }

@@ -17,8 +17,6 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 1.5
-import QtQuick.Controls.Styles 1.4
-import Theme 1.0
 
 Item {
   Menu {
@@ -40,7 +38,7 @@ Item {
     }
 
     MenuItem {
-      text: "All registers to Decimal (Signed)"
+      text: "All registfadsers to Decimal (Signed)"
       onTriggered: registerTreeView.formatAllRegisters("Decimal (Signed)");
     }
 

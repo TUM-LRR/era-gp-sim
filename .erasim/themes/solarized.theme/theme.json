@@ -1,0 +1,48 @@
+{
+    "register": {
+        "border": 10
+    },
+    "createProject": {
+        "width": 280,
+        "marginTop": 10,
+        "button": {
+            "width": 160,
+            "marginTop": 10,
+            "background": "#2196F3"
+        },
+        "name": {
+            "length": 80
+        },
+        "section": {
+            "margin": 20,
+            "height": 50,
+            "borderColor": "#BDBDBD",
+            "fontSize": 20,
+            "borderWidth": 1
+        }
+    },
+    "window": {
+        "width": 0.9,
+        "height": 0.9,
+        "background": "white",
+        "initialHeight": 350,
+        "initialWidth": 300
+    },
+    "button": {
+        "height": 40,
+        "color": "#FFFFFF",
+        "border": {
+            "width": 2,
+            "color": "#82c4f8"
+        },
+        "fontSize": 16,
+        "radius": 4,
+        "disabled": {
+            "background": "#BDBDBD",
+            "color": "#212121",
+            "border": {
+                "color": "#d7d7d7"
+            }
+        }
+    }
+}

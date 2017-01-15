@@ -1,48 +1,56 @@
 {
-    "createProject": {
-        "section": {
-            "borderWidth": 1,
-            "height": 50,
-            "margin": 20,
-            "fontSize": 20,
-            "borderColor": "#BDBDBD"
-        },
-        "button": {
-            "background": "#2196F3",
-            "width": 160,
-            "marginTop": 10
-        },
-        "marginTop": 10,
-        "name": {
-            "length": 80
-        },
-        "width": 280
-    },
-    "window": {
-        "background": "white",
-        "height": 0.9,
-        "initialWidth": 300,
-        "initialHeight": 350,
-        "width": 0.9
-    },
-    "register": {
-        "border": 10
-    },
     "button": {
         "height": 40,
         "radius": 4,
-        "fontSize": 16,
+        "disabled": {
+            "color": "#212121",
+            "background": "#BDBDBD",
+            "border": {
+                "color": "#d7d7d7"
+            }
+        },
+        "color": "#FFFFFF",
         "border": {
             "color": "#82c4f8",
             "width": 2
         },
-        "color": "#FFFFFF",
-        "disabled": {
-            "background": "#BDBDBD",
+        "fontSize": 16
+    },
+    "register": {
+        "height": 50,
+        "label": {
             "color": "#212121",
-            "border": {
-                "color": "#d7d7d7"
-            }
+            "fontSize": 12
+        },
+        "margin": 20,
+        "content": {
+            "margin": 4
         }
+    },
+    "createProject": {
+        "button": {
+            "background": "#2196F3",
+            "marginTop": 10,
+            "width": 160
+        },
+        "section": {
+            "height": 50,
+            "borderWidth": 1,
+            "margin": 20,
+            "fontSize": 20,
+            "borderColor": "#BDBDBD"
+        },
+        "name": {
+            "length": 80
+        },
+        "marginTop": 10,
+        "width": 280
+    },
+    "window": {
+        "height": 0.9,
+        "background": "white",
+        "initialHeight": 350,
+        "initialWidth": 300,
+        "width": 0.9
     }
 }

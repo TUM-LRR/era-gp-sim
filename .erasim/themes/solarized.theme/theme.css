@@ -10,8 +10,6 @@ button:disabled border { color: #d7d7d7; }
 
 window { width: 90%; height: 90%; background: white; initial-width: 300px; initial-height: 350px; }
 
-register { margin: 20px; height: 50px; }
-register label { color: #212121; font-size: 12px; }
-register content { margin: 4px; }
+register { border: 10; }
 
 /*# sourceMappingURL=theme.css.map */
