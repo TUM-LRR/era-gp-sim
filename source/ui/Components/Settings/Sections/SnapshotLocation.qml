@@ -29,7 +29,10 @@ Setting {
   description: "The path at which to load and store snapshots."
   bottomAnchor: button.bottom
 
-  signal change();
+  property string initialLocation
+  property alias location: button.text
+  signal change()
+  signal unchange()
 
   Button {
     id: button
@@ -46,8 +49,8 @@ Setting {
       onClicked: fileDialog.open()
     }
 
-    text: "/usr/bin/snapshots"
-    onTextChanged: root.change();
+    text: initialLocation
+    onTextChanged: (text != initialLocation) ? change() : unchange()
 
     style: ButtonStyle {
       label: Text {

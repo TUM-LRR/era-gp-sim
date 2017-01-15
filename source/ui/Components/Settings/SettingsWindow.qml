@@ -23,6 +23,7 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
 
 import Theme 1.0
+import Settings 1.0
 import "Sections"
 
 Window {
@@ -34,7 +35,7 @@ Window {
   flags: Qt.Dialog
   modality: Qt.ApplicationModal
 
-  property bool hasUnsavedChanges: false
+  property bool hasUnsavedChanges
 
   onClosing: function(event) {
     if (hasUnsavedChanges) {
@@ -47,13 +48,16 @@ Window {
     id: snapshotLocation
     anchors.top: parent.top
     anchors.topMargin: Theme.settings.paddingTop
+    initialLocation: Settings.snapshotLocation
     onChange: hasUnsavedChanges = true
+    onUnchange: hasUnsavedChanges = false
   }
 
-  Theme {
-    id: theme
+  Themes {
+    id: themes
     anchors.top: snapshotLocation.bottom
     onChange: hasUnsavedChanges = true
+    onUnchange: hasUnsavedChanges = false
   }
 
   AskAboutUnsavedChangesDialog {
@@ -66,9 +70,17 @@ Window {
 
   Button {
     text: "Save"
+    enabled: hasUnsavedChanges
     anchors {
-      top: theme.bottom
+      top: themes.bottom
       horizontalCenter: parent.horizontalCenter
+    }
+    onClicked: {
+      console.log(themes.selection);
+      console.log(snapshotLocation.location);
+      // Settings.theme = themes.selection;
+      // Settings.snapshotLocation = snapshotLocation.location;
+      // Settings.store();
     }
   }
 }

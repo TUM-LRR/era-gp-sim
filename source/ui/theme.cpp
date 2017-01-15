@@ -56,6 +56,9 @@ Theme* Theme::pointer() {
   return _theme;
 }
 
+Theme::Theme() : super(this, nullptr) {
+}
+
 Status Theme::load(const QString& themeName) {
   assert::that(!themeName.isEmpty());
 

@@ -34,7 +34,7 @@
         <file>Components/Settings/Sections/SnapshotLocation.qml</file>
         <file>Components/Settings/Sections/AskAboutUnsavedChangesDialog.qml</file>
         <file>Components/Settings/Sections/Setting.qml</file>
-        <file>Components/Settings/Sections/Theme.qml</file>
+        <file>Components/Settings/Sections/Themes.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
         <file>Components/editor/MacroTriangleButton.qml</file>

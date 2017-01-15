@@ -22,23 +22,27 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
 import Theme 1.0
+import Settings 1.0
 
 Setting {
   text: "Theme"
   description: "The UI and syntax theme. " +
                "Changes apply instantly and automagically."
-  bottomAnchor: selection.bottom
+  bottomAnchor: selector.bottom
 
-  signal change();
+  property string initialSelection
+  property alias selection: selector.currentText
+  signal change()
+  signal unchange()
 
   ComboBox {
-    id: selection
-    model: ["Darcula", "Solarized Dark", "Solarized Light"]
+    id: selector
+    model: Settings.listOfAllThemeNames()
     anchors {
       top: parent.topAnchor
       topMargin: Theme.settings.h2.marginBottom
       horizontalCenter: parent.horizontalCenter
     }
-    onCurrentIndexChanged: change()
+    onCurrentIndexChanged: (currentIndex > 0) ? change() : unchange();
   }
 }
