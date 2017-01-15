@@ -144,11 +144,11 @@ builtin-macros:
     auipc \rd, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
     ld \rd, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
     .endm
-#  - |
-#    .macro sdg, rd, symbol, rt
-#    auipc \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-#    sd \rt, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
-#    .endm
+  - |
+    .macro sdg, rd, symbol, rt
+    auipc \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
+    sd \rt, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
+    .endm
   - |
     .macro negw, rd, rs
     subw \rd, x0, \rs
