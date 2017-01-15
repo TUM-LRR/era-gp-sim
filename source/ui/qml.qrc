@@ -50,6 +50,9 @@
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>Components/Register/ContextMenu.qml</file>
+        <file>Components/Register/FormatSelector.qml</file>
+        <file>Components/Register/RegisterComponent.qml</file>
+        <file>Components/Register/Icons/Settings.png</file>
         <file>ProjectCreationScreen.qml</file>
         <file>ProjectCreationSection.qml</file>
         <file>Components/Output/SevenSegment/SevenSegment.qml</file>

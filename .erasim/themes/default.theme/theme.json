@@ -1,56 +1,65 @@
 {
     "button": {
-        "height": 40,
         "radius": 4,
-        "disabled": {
-            "color": "#212121",
-            "background": "#BDBDBD",
-            "border": {
-                "color": "#d7d7d7"
-            }
-        },
+        "height": 40,
         "color": "#FFFFFF",
         "border": {
-            "color": "#82c4f8",
-            "width": 2
+            "width": 2,
+            "color": "#82c4f8"
         },
-        "fontSize": 16
+        "fontSize": 16,
+        "disabled": {
+            "border": {
+                "color": "#d7d7d7"
+            },
+            "background": "#BDBDBD",
+            "color": "#212121"
+        }
+    },
+    "createProject": {
+        "marginTop": 10,
+        "name": {
+            "length": 80
+        },
+        "section": {
+            "borderColor": "#BDBDBD",
+            "borderWidth": 1,
+            "margin": 20,
+            "height": 50,
+            "fontSize": 20
+        },
+        "width": 280,
+        "button": {
+            "marginTop": 10,
+            "width": 160,
+            "background": "#2196F3"
+        }
     },
     "register": {
-        "height": 50,
         "label": {
             "color": "#212121",
             "fontSize": 12
         },
-        "margin": 20,
         "content": {
-            "margin": 4
+            "margin": 4,
+            "fontSize": 12
+        },
+        "margin": 20,
+        "height": 40,
+        "selector": {
+            "radius": 1,
+            "height": 23,
+            "width": 15,
+            "background": "transparent",
+            "fontSize": 14,
+            "color": "#FF4081"
         }
     },
-    "createProject": {
-        "button": {
-            "background": "#2196F3",
-            "marginTop": 10,
-            "width": 160
-        },
-        "section": {
-            "height": 50,
-            "borderWidth": 1,
-            "margin": 20,
-            "fontSize": 20,
-            "borderColor": "#BDBDBD"
-        },
-        "name": {
-            "length": 80
-        },
-        "marginTop": 10,
-        "width": 280
-    },
     "window": {
-        "height": 0.9,
-        "background": "white",
-        "initialHeight": 350,
         "initialWidth": 300,
-        "width": 0.9
+        "height": 0.9,
+        "initialHeight": 350,
+        "width": 0.9,
+        "background": "white"
     }
 }

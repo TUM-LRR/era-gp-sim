@@ -167,7 +167,7 @@ class RegisterModel : public QAbstractItemModel {
    */
   Q_INVOKABLE void
   registerContentChanged(const QModelIndex &index,
-                         const QString &registerContent,
+                         QString registerContent,
                          const QString &currentDataFormatIndex);
 
 
@@ -188,12 +188,12 @@ class RegisterModel : public QAbstractItemModel {
 
   /// Map between format type string (e.g. "UnsignedDecData") and corresponding
   /// MemoryValue to string conversion function.
-  static const std::map<QByteArray, MemoryValueToStringConversion>
+  static std::map<QByteArray, MemoryValueToStringConversion>
       _memoryValueToStringConversions;
 
   /// Map between format format type description (e.g. "Decimal (Unsigned)") and
   /// corresponding string to MemoryValue conversion function.
-  static const std::map<QString, StringToMemoryValueConversion>
+  static std::map<QString, StringToMemoryValueConversion>
       _stringToMemoryValueConversions;
 
   /**

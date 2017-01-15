@@ -10,8 +10,9 @@ button:disabled border { color: #d7d7d7; }
 
 window { width: 90%; height: 90%; background: white; initial-width: 300px; initial-height: 350px; }
 
-register { margin: 20px; height: 50px; }
+register { margin: 20px; height: 40px; }
 register label { color: #212121; font-size: 12px; }
-register content { margin: 4px; }
+register content { margin: 4px; font-size: 12px; }
+register selector { height: 23px; width: 15px; background: transparent; color: #FF4081; font-size: 14px; radius: 1px; }
 
 /*# sourceMappingURL=theme.css.map */

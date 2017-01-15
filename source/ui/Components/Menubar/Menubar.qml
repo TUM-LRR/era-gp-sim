@@ -36,7 +36,6 @@ MenuBar {
     }
 
     function saveAs(filePath) {
-        console.log("save path: " + filePath)
         ui.saveTextAs(tabView.getCurrentProjectId(), filePath);
     }
 
