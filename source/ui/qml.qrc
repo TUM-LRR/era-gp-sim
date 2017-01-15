@@ -32,6 +32,7 @@
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Settings/SettingsWindow.qml</file>
         <file>Components/Settings/Sections/SnapshotLocation.qml</file>
+        <file>Components/Settings/Sections/AskAboutUnsavedChangesDialog.qml</file>
         <file>Components/Settings/Sections/Setting.qml</file>
         <file>Components/Settings/Sections/Theme.qml</file>
         <file>Components/Output/LightStrip.qml</file>

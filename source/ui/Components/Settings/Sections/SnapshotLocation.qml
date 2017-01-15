@@ -29,6 +29,8 @@ Setting {
   description: "The path at which to load and store snapshots."
   bottomAnchor: button.bottom
 
+  signal change();
+
   Button {
     id: button
     anchors {
@@ -45,6 +47,7 @@ Setting {
     }
 
     text: "/usr/bin/snapshots"
+    onTextChanged: root.change();
 
     style: ButtonStyle {
       label: Text {
@@ -63,7 +66,7 @@ Setting {
 
     FileDialog {
         id: fileDialog
-        title: qsTr("Select Snapshot Location")
+        title: "Select Snapshot Location"
         selectFolder: true
         onAccepted: {
           var location = fileDialog.folder.toString();

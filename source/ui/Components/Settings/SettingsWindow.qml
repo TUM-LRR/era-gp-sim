@@ -26,6 +26,7 @@ import Theme 1.0
 import "Sections"
 
 Window {
+  id: window
   width: 500
   height: 500
 
@@ -33,30 +34,40 @@ Window {
   flags: Qt.Dialog
   modality: Qt.ApplicationModal
 
+  property bool hasUnsavedChanges: false
+
   onClosing: function(event) {
-    console.log(event);
+    if (hasUnsavedChanges) {
+      askAboutUnsavedChangesDialog.open();
+      event.accepted = false;
+    }
   }
 
   SnapshotLocation {
     id: snapshotLocation
     anchors.top: parent.top
     anchors.topMargin: Theme.settings.paddingTop
+    onChange: hasUnsavedChanges = true
   }
 
   Theme {
     id: theme
     anchors.top: snapshotLocation.bottom
+    onChange: hasUnsavedChanges = true
   }
 
-  Theme {
-    id: theme2
-    anchors.top: theme.bottom
+  AskAboutUnsavedChangesDialog {
+    id: askAboutUnsavedChangesDialog
+    onYes: {
+      hasUnsavedChanges = false;
+      window.close();
+    }
   }
 
   Button {
     text: "Save"
     anchors {
-      top: theme2.bottom
+      top: theme.bottom
       horizontalCenter: parent.horizontalCenter
     }
   }

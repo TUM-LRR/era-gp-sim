@@ -29,6 +29,8 @@ Setting {
                "Changes apply instantly and automagically."
   bottomAnchor: selection.bottom
 
+  signal change();
+
   ComboBox {
     id: selection
     model: ["Darcula", "Solarized Dark", "Solarized Light"]
@@ -37,5 +39,6 @@ Setting {
       topMargin: Theme.settings.h2.marginBottom
       horizontalCenter: parent.horizontalCenter
     }
+    onCurrentIndexChanged: change()
   }
 }
