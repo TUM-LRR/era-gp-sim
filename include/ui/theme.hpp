@@ -110,6 +110,11 @@ class Theme : public QQmlPropertyMap {
   static StatusWithValue<QByteArray> _loadThemeData(const QString& name);
 
   /**
+   * Constructor.
+   */
+  Theme();
+
+  /**
    * Loads the JSON for a theme.
    *
    * The theme's JSON will either be retrieved

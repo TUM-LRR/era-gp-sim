@@ -24,6 +24,7 @@
 #include <QJsonObject>
 #include <QQmlPropertyMap>
 #include <QString>
+#include <QStringList>
 
 #include "common/status-with-value.hpp"
 #include "common/status.hpp"
@@ -62,6 +63,10 @@ class Settings : public QQmlPropertyMap {
    */
   static Settings* pointer();
 
+  Q_INVOKABLE int f() const {
+    return 5;
+  }
+
   /**
    * Loads the settings from disk into the `Settings` object.
    * \returns A status object indicating the success of the operation.
@@ -72,19 +77,25 @@ class Settings : public QQmlPropertyMap {
    * Stores the current settings to disk.
    * \returns A status object indicating the success of the operation.
    */
-  Status store();
+  Q_INVOKABLE Status store();
 
   /**
    * \returns The directory path of the settings.
    * \details This is the directory where themes, settings.json etc. can be
    * found.
    */
-  const QString& settingsDirectoryPath() const noexcept;
+  Q_INVOKABLE const QString& settingsDirectoryPath() const noexcept;
 
   /**
    * \returns The file path of the settings file (settings.json).
    */
-  const QString& settingsFilePath() const noexcept;
+  Q_INVOKABLE const QString& settingsFilePath() const noexcept;
+
+  /**
+   * \returns A list of all theme names available with the default
+   * theme (that is stored in the settings) in the first position in the list.
+   */
+  Q_INVOKABLE QStringList listOfAllThemeNames() const noexcept;
 
   /**
    * \returns A JSON object containing the contents of the settings.
@@ -116,6 +127,11 @@ class Settings : public QQmlPropertyMap {
   _findSettingsFile(const QString& directoryPath);
 
   /**
+   * Constructor.
+   */
+  Settings();
+
+  /**
    * Loads raw settings data from disk.
    *
    * \returns A QByteArray of raw JSON bytes.
@@ -142,6 +158,9 @@ class Settings : public QQmlPropertyMap {
 
   /** The lazily determined settings directory path. */
   QString _settingsDirectoryPath;
+
+  /** A list of all theme names. */
+  mutable QStringList _listOfAllThemeNames;
 };
 
 
