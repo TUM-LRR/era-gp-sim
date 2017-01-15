@@ -31,9 +31,9 @@ Setting {
   bottomAnchor: selector.bottom
 
   property alias selection: selector.currentText
-  property bool differentThanInitially
-
-  signal change()
+  property bool differentThanInitially: {
+    return selector.currentText !== Settings.theme;
+  }
 
   ComboBox {
     id: selector
@@ -43,9 +43,10 @@ Setting {
       topMargin: Theme.settings.h2.marginBottom
       horizontalCenter: parent.horizontalCenter
     }
-    onCurrentIndexChanged: {
-      differentThanInitially = currentIndex > 0;
-      change()
+    onCurrentTextChanged: {
+      if (selector.currentText !== Theme.current) {
+        Theme.load(selector.currentText);
+      }
     }
   }
 }

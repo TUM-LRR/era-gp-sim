@@ -36,7 +36,12 @@ Window {
   flags: Qt.Dialog
   modality: Qt.ApplicationModal
 
-  property bool hasUnsavedChanges
+  property bool hasUnsavedChanges: {
+    return snapshotLocation.differentThanInitially ||
+           themes.differentThanInitially;
+  }
+
+  signal store();
 
   onClosing: function(event) {
     if (hasUnsavedChanges) {
@@ -49,13 +54,19 @@ Window {
     id: snapshotLocation
     anchors.top: parent.top
     anchors.topMargin: Theme.settings.paddingTop
-    onChange: hasUnsavedChanges = differentThanInitially
+    Connections {
+      target: window
+      onStore: {
+        if (snapshotLocation.differentThanInitially) {
+          Settings.snapshotLocationChanged(snapshotLocation.location);
+        }
+      }
+    }
   }
 
   Themes {
     id: themes
     anchors.top: snapshotLocation.bottom
-    onChange: hasUnsavedChanges = differentThanInitially
   }
 
   AskAboutUnsavedChangesDialog {
@@ -63,6 +74,12 @@ Window {
     onYes: {
       hasUnsavedChanges = false;
       window.close();
+
+      // The user can load new themes and they will take effect immediately
+      // but if he/she does not save, they should not take effect at the end.
+      if (themes.differentThanInitially) {
+        Theme.load(Settings.theme);
+      }
     }
   }
 
@@ -76,11 +93,10 @@ Window {
       horizontalCenter: parent.horizontalCenter
     }
     onClicked: {
+      store();
+
       Settings.theme = themes.selection;
       Settings.snapshotLocation = snapshotLocation.location;
-      if (snapshotLocation.differentThanInitially) {
-        Settings.snapshotLocationChanged(snapshotLocation.location);
-      }
 
       var message = Settings.store();
       if (message.length > 0) {
@@ -88,6 +104,7 @@ Window {
       } else {
         hasUnsavedChanges = false;
       }
+
     }
   }
 }

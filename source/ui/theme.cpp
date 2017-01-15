@@ -74,7 +74,14 @@ Status Theme::load(const QString& themeName) {
     super::insert(iterator.key(), value.toObject().toVariantMap());
   }
 
+  _currentThemeName = themeName;
+  emit themeChanged(themeName);
+
   return Status::OK;
+}
+
+const QString& Theme::currentThemeName() const noexcept {
+  return _currentThemeName;
 }
 
 StatusWithValue<QByteArray> Theme::_loadThemeData(const QString& name) {

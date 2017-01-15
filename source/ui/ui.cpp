@@ -33,6 +33,7 @@
 #include "ui/theme.hpp"
 
 Q_DECLARE_METATYPE(FinalRepresentation)
+Q_DECLARE_METATYPE(Status)
 
 Ui::id_t Ui::_rollingProjectId = 0;
 
@@ -240,6 +241,7 @@ void Ui::_registerCustomTypes() {
   qRegisterMetaType<std::size_t>("std::size_t");
   qRegisterMetaType<std::size_t>("size_t");
   qRegisterMetaType<FinalRepresentation>();
+  qRegisterMetaType<Status>();
   qRegisterMetaType<id_t>("id_t");
 }
 

@@ -31,9 +31,9 @@ Setting {
   bottomAnchor: button.bottom
 
   property alias location: button.text
-  property bool differentThanInitially
-
-  signal change()
+  property bool differentThanInitially: {
+    return button.text !== Settings.snapshotLocation;
+  }
 
   Button {
     id: button
@@ -51,10 +51,6 @@ Setting {
     }
 
     text: Settings.snapshotLocation
-    onTextChanged: {
-      differentThanInitially = text != Settings.snapshotLocation;
-      change()
-    }
 
     // The tooltip is not bounded by a length, so it can show
     // the full path when the button is not wide enough for it
