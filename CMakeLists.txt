@@ -28,7 +28,6 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third-party)
 # The following variables are for Qt support
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 # Find the actual Qt5 packages
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Qml REQUIRED)
@@ -75,3 +74,13 @@ if(ERA_SIM_TESTS)
   enable_testing()
   add_subdirectory(tests)
 endif()
+
+#############
+# QTCREATOR #
+#############
+# Unfortunately this is needed for QtCreator (CMake-Project) to
+# recognize all header files in the include directory
+# Obviously DON'T build or link these created targets/libraries
+FILE(GLOB_RECURSE QTCREATOR_INCLUDES "include/*")
+add_custom_target(dummy-qtcreator-includes SOURCES ${QTCREATOR_INCLUDES})
+add_library(dummy-qtcreator-lib EXCLUDE_FROM_ALL ${QTCREATOR_INCLUDES})
