@@ -75,7 +75,8 @@ Status Settings::load() {
 
   // We simply override all entries
   for (auto iterator = json.begin(); iterator != json.end(); ++iterator) {
-    super::insert(iterator.key(), iterator.value().toVariant());
+    auto value = static_cast<QJsonValue>(iterator.value());
+    super::insert(iterator.key(), value.toVariant());
   }
 
   return Status::OK;
