@@ -21,7 +21,6 @@
 #define ERAGPSIM_UI_THEME_HPP
 
 #include <QByteArray>
-#include <QFile>
 #include <QHash>
 #include <QJsonObject>
 #include <QQmlPropertyMap>
@@ -30,6 +29,7 @@
 #include <cstddef>
 
 #include "common/status-with-value.hpp"
+#include "common/status.hpp"
 
 /**
  * Represents the theme being used to style the GUI.
@@ -50,6 +50,8 @@
  */
 class Theme : public QQmlPropertyMap {
   Q_OBJECT
+  Q_PROPERTY(QString current READ currentThemeName NOTIFY themeChanged);
+
   using super = QQmlPropertyMap;
 
  public:
@@ -88,7 +90,20 @@ class Theme : public QQmlPropertyMap {
    *
    * \param themeName The theme to load.
    */
-  Status load(const QString& themeName);
+  Q_INVOKABLE Status load(const QString& themeName);
+
+  /**
+   * \returns The name of the theme currently loaded into the singleton.
+   */
+  const QString& currentThemeName() const noexcept;
+
+ signals:
+
+  /**
+   * A signal sent when the current theme loaded into the singleton changes.
+   * \paran newName The name of the newly loaded theme.
+   */
+  void themeChanged(const QString& newName);
 
  private:
   using Json = QJsonObject;
@@ -108,6 +123,11 @@ class Theme : public QQmlPropertyMap {
    * \returns A QByteArray of raw JSON bytes.
    */
   static StatusWithValue<QByteArray> _loadThemeData(const QString& name);
+
+  /**
+   * Constructor.
+   */
+  Theme();
 
   /**
    * Loads the JSON for a theme.
@@ -135,6 +155,9 @@ class Theme : public QQmlPropertyMap {
 
   /** A cache to store recently-loaded styles. */
   QHash<QString, Json> _cache;
+
+  /** The name of the theme currently loaded into the singleton. */
+  QString _currentThemeName;
 };
 
 #endif /* ERAGPSIM_UI_THEME_HPP */

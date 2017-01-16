@@ -21,10 +21,12 @@ import QtQuick 2.6
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.2
+
 import "Components"
 import "Components/Menubar"
 import "Components/Toolbar"
 import "Components/ProjectCreation"
+import "Components/Settings"
 import Theme 1.0
 
 ApplicationWindow {
@@ -36,6 +38,7 @@ ApplicationWindow {
 
   property alias menubar: menubar
   property alias toolbar: toolbar
+  property alias config: config
 
   menuBar: Menubar {
     id: menubar
@@ -47,6 +50,8 @@ ApplicationWindow {
   toolBar: ToolbarMainWindow {
     id: toolbar
   }
+
+  SettingsWindow { id: config }
 
   TabView {
     id: tabView
@@ -80,7 +85,8 @@ ApplicationWindow {
   // this function should be called when the tab is switched
   function updateMenuState() {
     if (tabView.count === 0 || !tabView.isCurrentProjectValid()) {
-      // deactivate project specific functions if there is no valid project at the current index
+      // deactivate project specific functions if there is no valid project at
+      // the current index
       toolbar.hideToolbar();
       menubar.setMenuEnabled(false);
     } else {
@@ -245,9 +251,9 @@ ApplicationWindow {
         textFormat: Text.StyledText
         text: "<p>Save a snapshot of the current register and memory state to disk. " +
         "Your snapshot files can be found here:</p> " +
-        "<a href=\"" + snapshotComponent.getSnapshotBasePath().toString() + "\">" +
-        snapshotComponent.getSnapshotBasePath().toString() + "</a>"
-        onLinkActivated: Qt.openUrlExternally(snapshotComponent.getSnapshotBasePath())
+        "<a href=\"" + snapshotComponent.snapshotDirectory() + "\">" +
+        snapshotComponent.snapshotDirectory() + "</a>"
+        onLinkActivated: Qt.openUrlExternally(snapshotComponent.snapshotDirectory())
       }
       TextField {
         id: textField

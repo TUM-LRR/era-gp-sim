@@ -1,11 +1,41 @@
 {
+    "settings": {
+        "h2": {
+            "color": "#757575",
+            "marginTop": 8,
+            "fontSize": 13,
+            "marginBottom": 10
+        },
+        "snapshots": {
+            "button": {
+                "paddingLeft": 10,
+                "background": "#FFFFFF",
+                "paddingRight": 20,
+                "fontSize": 14
+            }
+        },
+        "section": {
+            "paddingBottom": 5,
+            "height": 95
+        },
+        "paddingTop": 15,
+        "hr": {
+            "height": 1,
+            "color": "#BDBDBD"
+        },
+        "h1": {
+            "color": "#212121",
+            "padding": 10,
+            "fontSize": 16
+        }
+    },
     "createProject": {
         "section": {
             "borderWidth": 1,
-            "height": 50,
+            "borderColor": "#BDBDBD",
             "margin": 20,
             "fontSize": 20,
-            "borderColor": "#BDBDBD"
+            "height": 50
         },
         "button": {
             "background": "#2196F3",
@@ -13,36 +43,36 @@
             "marginTop": 10
         },
         "marginTop": 10,
+        "width": 280,
         "name": {
             "length": 80
+        }
+    },
+    "button": {
+        "color": "#FFFFFF",
+        "fontSize": 16,
+        "border": {
+            "width": 2,
+            "color": "#82c4f8"
         },
-        "width": 280
+        "disabled": {
+            "background": "#BDBDBD",
+            "border": {
+                "color": "#d7d7d7"
+            },
+            "color": "#212121"
+        },
+        "radius": 4,
+        "height": 40
     },
     "window": {
         "background": "white",
-        "height": 0.9,
-        "initialWidth": 300,
         "initialHeight": 350,
+        "initialWidth": 300,
+        "height": 0.9,
         "width": 0.9
     },
     "register": {
         "border": 10
-    },
-    "button": {
-        "height": 40,
-        "radius": 4,
-        "fontSize": 16,
-        "border": {
-            "color": "#82c4f8",
-            "width": 2
-        },
-        "color": "#FFFFFF",
-        "disabled": {
-            "background": "#BDBDBD",
-            "color": "#212121",
-            "border": {
-                "color": "#d7d7d7"
-            }
-        }
     }
 }
