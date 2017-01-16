@@ -358,17 +358,17 @@ class GuiProject : QObject {
   /**
    * The Functions for the conversion
    */
-  MemoryToStringConverter hexConversion;
-  MemoryToStringConverter binConversion;
-  MemoryToStringConverter signedDecimalConversion;
-  MemoryToStringConverter unsignedDecimalConversion;
-  MemoryToStringConverter decimalFloatConversion;
+  MemoryToStringConverter _hexConversion;
+  MemoryToStringConverter _binConversion;
+  MemoryToStringConverter _signedDecimalConversion;
+  MemoryToStringConverter _unsignedDecimalConversion;
+  MemoryToStringConverter _decimalFloatConversion;
 
-  StringToMemoryConverter signedToMemoryValue;
-  StringToMemoryConverter hexToMemoryValue;
-  StringToMemoryConverter binToMemoryValue;
-  StringToMemoryConverter unsignedToMemoryValue;
-  StringToMemoryConverter floatToMemoryValue;
+  StringToMemoryConverter _signedToMemoryValue;
+  StringToMemoryConverter _hexToMemoryValue;
+  StringToMemoryConverter _binToMemoryValue;
+  StringToMemoryConverter _unsignedToMemoryValue;
+  StringToMemoryConverter _floatToMemoryValue;
 
  private slots:
   /**

@@ -85,7 +85,8 @@ ApplicationWindow {
   // this function should be called when the tab is switched
   function updateMenuState() {
     if (tabView.count === 0 || !tabView.isCurrentProjectValid()) {
-      // deactivate project specific functions if there is no valid project at the current index
+      // deactivate project specific functions if there is no valid project at
+      // the current index
       toolbar.hideToolbar();
       menubar.setMenuEnabled(false);
     } else {
