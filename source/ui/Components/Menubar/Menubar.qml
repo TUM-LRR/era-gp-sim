@@ -45,10 +45,11 @@ MenuBar {
     main.fileDialog.open();
   }
 
-  function setMenuEnabled(value) {
-    openFileOption.enabled = value;
-    saveFileOption.enabled = value;
-    saveFileAsOption.enabled = value;
+  function setMenuEnabled(yes) {
+    openFileOption.enabled = yes;
+    saveFileOption.enabled = yes;
+    saveFileAsOption.enabled = yes;
+    projectMenu.enable(yes);
   }
 
   Menu {
@@ -115,6 +116,7 @@ MenuBar {
     }
 
     MenuItem {
+      id: openSnapshot
       text: "Open Snapshot"
       shortcut: "Ctrl+O"
       function importSnapshot(name) {
@@ -128,11 +130,17 @@ MenuBar {
     }
 
     MenuItem {
+      id: saveSnapshot
       text: "Save Snapshot"
       shortcut: "Ctrl+S"
       onTriggered: {
         actionSnapshot();
       }
+    }
+
+    function enable(yes) {
+      openSnapshot.enabled = yes;
+      saveSnapshot.enabled = yes;
     }
   }
 }
