@@ -75,6 +75,14 @@ Status Settings::load() {
     super::insert(iterator.key(), iterator.value().toVariant());
   }
 
+  // check if the snapshot path is set
+  if (!json.contains("snapshotLocation") ||
+      json["snapshotLocation"].toString().isEmpty()) {
+    auto defaultSnapshotPath = Utility::joinToRoot(".erasim", "snapshots");
+    super::insert("snapshotLocation",
+                  QString::fromStdString(defaultSnapshotPath));
+  }
+
   return Status::OK;
 }
 

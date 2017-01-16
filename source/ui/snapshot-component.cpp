@@ -100,8 +100,8 @@ void SnapshotComponent::snapshotDirectory(
     const QString& snapshotDirectoryPath) {
   assert::that(!snapshotDirectoryPath.isEmpty());
   // Creates the directory if it does not exist yet.
-  QDir::root().mkpath(snapshotDirectoryPath);
   _snapshotDirectory.setPath(snapshotDirectoryPath);
+  QDir::root().mkpath(snapshotDirectory());
   _snapshotMap = _collectSnapshots(_snapshotDirectory);
   emit snapshotsChanged();
 }

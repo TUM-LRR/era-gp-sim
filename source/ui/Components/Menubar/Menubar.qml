@@ -105,7 +105,7 @@ MenuBar {
     MenuItem {
       text: "New Project"
       shortcut: "Ctrl+N"
-      onTriggered: main.createProject
+      onTriggered: main.createProject()
     }
 
     MenuItem {
