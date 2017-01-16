@@ -20,8 +20,8 @@
 #include "ui/gui-project.hpp"
 
 #include <QUrl>
-#include <cstdio>
 #include <functional>
+#include <string>
 
 #include "common/utility.hpp"
 #include "ui/snapshot-component.hpp"
@@ -128,7 +128,7 @@ GuiProject::~GuiProject() {
   _notifyCore();
 }
 
-void GuiProject::changeSystem(std::string base) {
+void GuiProject::changeSystem(const std::string& base) {
   // Alle Komponenten informieren
 }
 
@@ -222,7 +222,7 @@ void GuiProject::removeSnapshot(const QString& qName) {
 
 void GuiProject::loadSnapshot(const QString& qName) {
   try {
-    std::string path =
+    auto path =
         _snapshotComponent->snapshotPath(_architectureFormulaString, qName);
     Json snapshot = Json::parse(Utility::loadFromFile(path));
     _projectModule.getMemoryManager().loadSnapshot(snapshot);
@@ -264,51 +264,43 @@ QString GuiProject::getCommandHelp(std::size_t line) {
 }
 
 GuiProject::MemoryToStringConverter GuiProject::getHexConversion() {
-  return hexConversion;
+  return _hexConversion;
 }
 
 GuiProject::MemoryToStringConverter GuiProject::getBinConversion() {
-  return binConversion;
-}
-
-GuiProject::MemoryToStringConverter GuiProject::getOctConversion() {
-  return octConversion;
+  return _binConversion;
 }
 
 GuiProject::MemoryToStringConverter GuiProject::getSignedDecimalConversion() {
-  return signedDecimalConversion;
+  return _signedDecimalConversion;
 }
 
 GuiProject::MemoryToStringConverter GuiProject::getUnsignedDecimalConversion() {
-  return unsignedDecimalConversion;
+  return _unsignedDecimalConversion;
 }
 
 GuiProject::MemoryToStringConverter GuiProject::getDecimalFloatConversion() {
-  return decimalFloatConversion;
+  return _decimalFloatConversion;
 }
 
 GuiProject::StringToMemoryConverter GuiProject::getSignedToMemoryValue() {
-  return signedToMemoryValue;
+  return _signedToMemoryValue;
 }
 
 GuiProject::StringToMemoryConverter GuiProject::getHexToMemoryValue() {
-  return hexToMemoryValue;
+  return _hexToMemoryValue;
 }
 
 GuiProject::StringToMemoryConverter GuiProject::getBinToMemoryValue() {
-  return binToMemoryValue;
-}
-
-GuiProject::StringToMemoryConverter GuiProject::getOctToMemoryValue() {
-  return octToMemoryValue;
+  return _binToMemoryValue;
 }
 
 GuiProject::StringToMemoryConverter GuiProject::getUnsignedToMemoryValue() {
-  return unsignedToMemoryValue;
+  return _unsignedToMemoryValue;
 }
 
 GuiProject::StringToMemoryConverter GuiProject::getFloatToMemoryValue() {
-  return floatToMemoryValue;
+  return _floatToMemoryValue;
 }
 
 void GuiProject::_throwError(const Translateable& message) {

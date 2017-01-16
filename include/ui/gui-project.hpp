@@ -112,10 +112,10 @@ class GuiProject : QObject {
    * in which numbers are presented
    *
    * \param base the name of the system,
-   *  for example hex, oct, bin or dec
+   *  for example hex, bin or dec
    *
    */
-  void changeSystem(std::string base);
+  void changeSystem(const std::string& base);
 
   /**
    * parses the text
@@ -360,7 +360,6 @@ class GuiProject : QObject {
    */
   MemoryToStringConverter hexConversion;
   MemoryToStringConverter binConversion;
-  MemoryToStringConverter octConversion;
   MemoryToStringConverter signedDecimalConversion;
   MemoryToStringConverter unsignedDecimalConversion;
   MemoryToStringConverter decimalFloatConversion;
@@ -368,7 +367,6 @@ class GuiProject : QObject {
   StringToMemoryConverter signedToMemoryValue;
   StringToMemoryConverter hexToMemoryValue;
   StringToMemoryConverter binToMemoryValue;
-  StringToMemoryConverter octToMemoryValue;
   StringToMemoryConverter unsignedToMemoryValue;
   StringToMemoryConverter floatToMemoryValue;
 
