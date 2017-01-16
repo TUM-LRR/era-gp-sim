@@ -30,22 +30,8 @@ Item {
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right
+    memoryContent: m
   }
-
-  Component {
-    // component for a column with the contents of the memory
-    // default settings: Binary number representation
-    id: column
-    TableViewColumn {
-      role: "bin" + number_bits
-      title: "Content"
-      movable: false
-      resizable: true
-      width: 80
-      delegate: inputBox
-    }
-  }
-
 
   Component {
     id: rowdelegate
@@ -64,12 +50,24 @@ Item {
     }
   }
 
-  MemoryCell {
-    id: inputBox
+  Component {
+    id: i
+    MemoryCell {
+      tableView: memoryTreeView
+    }
   }
 
   MemoryHeader {
     id: menuBar
     tableView: memoryTreeView
+    memoryContent: m
+  }
+
+  Component {
+    id: m
+    MemoryContent {
+      number_bits: 8
+      inputBox: i
+    }
   }
 }

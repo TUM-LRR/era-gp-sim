@@ -26,6 +26,7 @@ import QtGraphicalEffects 1.0
 // It is built upon a list of interactive ComboBoxes.
 Rectangle {
   property var tableView
+  property var memoryContent
 
   height: 25
   width: parent.width
@@ -163,8 +164,8 @@ Rectangle {
         }
       }
 
+      // This button is used for creating new columns for the memory.
       Button {
-        // this button is used for creating new columns for the memory
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -176,7 +177,7 @@ Rectangle {
         text: "+"
 
         onClicked: {
-          tableView.insertColumn( tableView.columnCount - 1, column);
+          tableView.insertColumn(tableView.columnCount - 1, memoryContent);
         }
       }
     }

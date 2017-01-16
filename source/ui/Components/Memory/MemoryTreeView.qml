@@ -19,6 +19,8 @@ import QtQuick 2.6
 import QtQuick.Controls 1.5
 
 TableView {
+  property var memoryContent
+
   selectionMode: SelectionMode.NoSelection
   verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
 
@@ -50,6 +52,6 @@ TableView {
 
   // add a column with the content for each cell at startup
   Component.onCompleted: {
-    insertColumn(columnCount - 1, column);
+    insertColumn(columnCount - 1, memoryContent);
   }
 }

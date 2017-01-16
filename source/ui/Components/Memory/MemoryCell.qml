@@ -19,7 +19,9 @@ import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
-Component {
+Item {
+  property var tableView
+
   // makes each memory cell editable by using a textbox
   // when editing is finished the new value is passed to the memory in the core
   MouseArea {
