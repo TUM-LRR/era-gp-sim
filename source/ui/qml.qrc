@@ -15,7 +15,6 @@
         <file>InnerSplitviews.qml</file>
         <file>Components/editor/Editor.qml</file>
         <file>Components/Memory/MemoryComponent.qml</file>
-        <file>Components/Register/Register.qml</file>
         <file>InnerSplitviewsEditor.qml</file>
         <file>Components/Toolbar/ToolbarMainWindow.qml</file>
         <file>Components/Toolbar/Icons/RunBreakpointButton.svg</file>
@@ -47,12 +46,14 @@
         <file>Components/Output/Buttons/Sevensegment Icon Selected@2x.png</file>
         <file>Components/Output/Buttons/Sevensegment Icon.png</file>
         <file>Components/Output/Buttons/Sevensegment Icon@2x.png</file>
+        <file>Components/Register/RegisterLabel.qml</file>
+        <file>Components/Register/Register.qml</file>
+        <file>Components/Register/RegisterFormat.qml</file>
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>Components/Register/ContextMenu.qml</file>
         <file>Components/Register/FormatSelector.qml</file>
         <file>Components/Register/RegisterComponent.qml</file>
-        <file>Components/Register/Icons/Settings.png</file>
         <file>ProjectCreationScreen.qml</file>
         <file>ProjectCreationSection.qml</file>
         <file>Components/Output/SevenSegment/SevenSegment.qml</file>

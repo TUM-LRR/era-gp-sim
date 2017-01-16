@@ -22,42 +22,15 @@ import QtGraphicalEffects 1.0
 import Theme 1.0
 
 TextField {
-  id: registerTextField
+  id: root
+  enabled: model === null || !model.IsConstant
 
   property bool singleStep: false
   property bool isHighlighted: false
-  property color backgroundColor: isHighlighted ? "lightblue" : "white"
 
   font.pixelSize: Theme.register.content.fontSize
-
-  text: registerContent();
-
-  enabled: model === null || !model.IsConstant
-
-  // Fetches the register's content with the appropiate format from the model.
-  function registerContent() {
-    if (model === null) return "";
-    var registerContentString;
-    switch (formatSelector.selection) {
-    case "Binary":
-      registerContentString = model.BinaryData;
-      break;
-    case "Hexadecimal":
-      registerContentString = model.HexData;
-      break;
-    case "Unsigned Decimal":
-      registerContentString = model.UnsignedDecData;
-      break;
-    case "Signed Decimal":
-      registerContentString = model.SignedDecData;
-      break;
-    default:
-      registerContentString = model.BinaryData;
-      break;
-    }
-    return format(registerContentString);
-  }
-
+  horizontalAlignment: TextInput.AlignRight
+  text: getRegisterContent()
 
   // As some values need to be set manually (i.e. not using the model's
   // data-method and the corresponding roles), they also have to be updated
@@ -69,7 +42,7 @@ TextField {
     onDataChanged: {
       // Check if the current item's index is affected by the data change.
       if (topLeft <= styleData.index && styleData.index <= bottomRight) {
-        text = Qt.binding(registerContent);
+        text = Qt.binding(getRegisterContent);
         if(singleStep) isHighlighted = true;
       }
     }
@@ -80,7 +53,7 @@ TextField {
   Connections {
     target: guiProject
     onRunClicked: {
-      registerTextField.singleStep = isSingleStep;
+      root.singleStep = isSingleStep;
       isHighlighted = false;
     }
   }
@@ -89,60 +62,67 @@ TextField {
   onEditingFinished: {
     if (!formatSelector.selection) return;
     registerModel.registerContentChanged(
-        styleData.index,
-        registerTextField.text,
-        formatSelector.selection
+      styleData.index,
+      root.text,
+      formatSelector.selection
     );
   }
 
   onAccepted: {
     if (!formatSelector.selection) return;
     registerModel.registerContentChanged(
-        styleData.index,
-        registerTextField.text,
-        formatSelector.selection
+      styleData.index,
+      root.text,
+      formatSelector.selection
     );
   }
 
   Keys.onPressed: {
     if (event.key === Qt.Key_Tab) {
-      registerTextField.focus = false;
+      root.focus = false;
     }
   }
 
-  function format(registerContentString) {
-    registerContentString = registerContentString.replace(/ /g, '');
-    if (formatSelector.selection === "Binary"
-    || formatSelector.selection === "Hexadecimal") {
-      var characterPerByte =
-        (formatSelector.selection === "Hexadecimal") ? 2 : 8;
-      // Insert new spaces
-      for (var characterIndex = 2;
-           characterIndex < registerContentString.length;
-           characterIndex+=(characterPerByte+1)) {
-        registerContentString = [
-          registerContentString.slice(0, characterIndex),
-          ' ',
-          registerContentString.slice(characterIndex)
-        ].join('')
+  style: TextFieldStyle {
+    textColor: Theme.register.content.color
+    background: Rectangle {
+      height: Theme.register.content.height
+      radius: Theme.register.content.radius
+      border.color: Theme.register.content.border.color
+      border.width: Theme.register.content.border.width
+      color: {
+        if (root.isHighlighted) {
+          return Theme.register.content.highlighted.background;
+        } else {
+          return Theme.register.content.background;
+        }
       }
     }
-
-    return registerContentString;
   }
 
+  function insertWhitespace(content) {
+    // For binary and hex numbers we insert a space
+    // every 4/2 characters (to delimit a nibble/byte)
+    if (formatSelector.selection === 'Binary') {
+      return content.replace(/(\d{4})(?=.)/g, '$& ');
+    } else if (formatSelector.selection === 'Hexadecimal') {
+      return content.replace(/(\d{2})(?=.)/g, '$& ');
+    } else {
+      return content;
+    }
+  }
 
-  style: TextFieldStyle{
-    background: Rectangle {
-      id: rect
-      x: registerTextField.x
-      y: registerTextField.y
-      width: registerTextField.width
-      height: registerTextField.height
-      color: registerTextField.backgroundColor
-      radius: 2
-      border.color: "lightgray"
-      border.width: 1
+  function getRegisterContent() {
+    if (model === null) return "";
+    switch (formatSelector.selection) {
+    case "Binary":
+      return insertWhitespace(model.BinaryData);
+    case "Hexadecimal":
+      return insertWhitespace(model.HexData);
+    case "Unsigned Decimal":
+      return insertWhitespace(model.UnsignedDecimalData);
+    default:
+      return insertWhitespace(model.SignedDecimalData);
     }
   }
 

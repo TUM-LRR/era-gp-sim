@@ -37,7 +37,7 @@ ComboBox {
     // Property bindings are magic; dark, dark magic. So how often this
     // function is called depends on your version of Qt. The problem is,
     // whenever the model is changed, the currentIndex of the ComboBox is
-    // reset to 0 (=Binary) Depending on what your version of Qt is, this
+    // reset to 0 (=Binary). Depending on what your version of Qt is, this
     // might happen when you edit the register or just scroll through. So
     // the current format needs to be cached and restored. We only want to
     // cache a current index if it was changed by the user rather than
@@ -112,7 +112,7 @@ ComboBox {
     Link: ['Binary', 'Hexadecimal'],
     ProgramCounter: ['Binary', 'Hexadecimal'],
     Integer: [
-    'Binary', 'Hexadecimal', 'Unsigned Decimal', 'Signed Decimal'
+      'Signed Decimal', 'Unsigned Decimal', 'Binary', 'Hexadecimal'
     ]
   })
 

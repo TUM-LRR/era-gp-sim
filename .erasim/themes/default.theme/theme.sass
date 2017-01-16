@@ -59,14 +59,27 @@ window
   initial-height: $section-height * 6 + $button-height + 10
 
 register
-  margin: 20px
+  background: transparent
   height: 40px
+  margin-left: -5px
+  margin-right: 10px
+  overflow: auto
   label
     color: $primary-text-color
     font-size: 12px
+    font-weight: bold
   content
-    margin: 4px
+    background: white
+    color: $primary-text-color
     font-size: 12px
+    height: 25px
+    margin: 4px
+    radius: 2px
+    border
+      color: $divider-color
+      width: 1
+    highlighted:
+      background: $accent-color
   selector
     height: 23px
     width: 15px

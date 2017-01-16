@@ -23,60 +23,63 @@ import Theme 1.0
 
 Item {
   property var model
-  property var treeView
 
-  anchors {
-    left: parent.left
-    leftMargin: Theme.register.margin
-    right: parent.right
-    rightMargin: Theme.register.margin
-  }
-
-  // Delegates of some well-supported QML-views (such as ListView) have a
-  // property for accessing the view the delegate is attached to from a
-  // delegate's sub-component via ListView.view. However treeView does not
-  // have such a property. In order to still be able to access some of the
-  // TreeView's properties, we have to create a property inside the delegate
-  // itself, which can then be used from within the delegate's components.
-  property TreeView attachedTreeView: treeView
-
-  Label {
+  RegisterLabel {
     id: registerName
-    anchors.left: parent.left
-    anchors.verticalCenter: registerContent.verticalCenter
-
-    text: model ? model.Title : ""
-    font.pixelSize: Theme.register.label.fontSize
-    font.weight: Font.DemiBold
-    color: Theme.register.label.color
+    model: parent.model
+    anchors {
+      left: parent.left
+      leftMargin: Theme.register.marginLeft
+      verticalCenter: parent.verticalCenter
+    }
   }
 
   Loader {
     id: registerContent
+    focus: true
+    source: {
+      if (formatSelector.selection === "Flag") {
+        return "FlagRegister.qml";
+      } else {
+        return "DefaultRegister.qml";
+      }
+    }
     anchors {
-      verticalCenter: registerName.verticalCenter
       left: registerName.right
       leftMargin: Theme.register.content.margin
-      right: format.left
+      right: formatSelector.left
       rightMargin: Theme.register.content.margin
+      verticalCenter: registerName.verticalCenter
+    }
+    Keys.onPressed: {
+      if (event.key === Qt.Key_Up || event.key === Qt.Key_Left) {
+        formatSelector.previousFormat();
+      } else if (event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
+        formatSelector.nextFormat();
+      }
     }
   }
 
   FormatSelector {
-    id: format
-    anchors.verticalCenter: registerContent.verticalCenter
-    anchors.right: parent.right
+    id: formatSelector
+    index: styleData.index
+    treeView: registerTreeView
+    registerModel: registerTreeView.model
+    anchors {
+      right: parent.right
+      rightMargin: Theme.register.marginRight
+      verticalCenter: registerContent.verticalCenter
+    }
   }
 
-  // Connections {
-  //   target: treeView
-  //   // When all registers should be formatted, change the format of all
-  //   // registers currently visible (and therefore loaded).
-  //   onFormatAllRegisters: {
-  //     var defaultFormatIndex = indexOfFormat(attachedTreeView.defaultFormat);
-  //     if (defaultFormatIndex !== -1) {
-  //       format.currentIndex = defaultFormatIndex;
-  //     }
-  //   }
-  // }
+  Connections {
+    target: registerTreeView
+    onFormatAllRegisters: {
+      var defaultFormatIndex =
+       formatSelector.indexOfFormat(registerTreeView.defaultFormat);
+      if (defaultFormatIndex !== -1) {
+        formatSelector.currentIndex = defaultFormatIndex;
+      }
+    }
+  }
 }

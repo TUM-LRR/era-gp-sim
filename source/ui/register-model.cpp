@@ -31,8 +31,8 @@ std::map<QByteArray, RegisterModel::MemoryValueToStringConversion>
     RegisterModel::_memoryValueToStringConversions = {
         {"BinaryData", StringConversions::toBinString},
         {"HexData", StringConversions::toHexString},
-        {"SignedDecData", StringConversions::toSignedDecString},
-        {"UnsignedDecData", StringConversions::toUnsignedDecString}};
+        {"SignedDecimalData", StringConversions::toSignedDecString},
+        {"UnsignedDecimalData", StringConversions::toUnsignedDecString}};
 
 std::map<QString, RegisterModel::StringToMemoryValueConversion>
     RegisterModel::_stringToMemoryValueConversions = {
@@ -103,8 +103,8 @@ QHash<int, QByteArray> RegisterModel::roleNames() const {
   roles[IsConstantRole] = "IsConstant";
   roles[BinaryDataRole] = "BinaryData";
   roles[HexDataRole] = "HexData";
-  roles[SignedDecDataRole] = "SignedDecData";
-  roles[UnsignedDecDataRole] = "UnsignedDecData";
+  roles[SignedDecimalDataRole] = "SignedDecimalData";
+  roles[UnsignedDecimalDataRole] = "UnsignedDecimalData";
   roles[FlagDataRole] = "FlagData";
   return roles;
 }

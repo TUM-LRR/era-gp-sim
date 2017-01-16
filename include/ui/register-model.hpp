@@ -80,8 +80,8 @@ class RegisterModel : public QAbstractItemModel {
     IsConstantRole,
     BinaryDataRole,
     HexDataRole,
-    SignedDecDataRole,
-    UnsignedDecDataRole,
+    SignedDecimalDataRole,
+    UnsignedDecimalDataRole,
     FlagDataRole
   };
 
@@ -186,7 +186,7 @@ class RegisterModel : public QAbstractItemModel {
   /// Interface for communicating register data changes to core.
   MemoryAccess _memoryAccess;
 
-  /// Map between format type string (e.g. "UnsignedDecData") and corresponding
+  /// Map between format type string (e.g. "UnsignedDecimalData") and corresponding
   /// MemoryValue to string conversion function.
   static std::map<QByteArray, MemoryValueToStringConversion>
       _memoryValueToStringConversions;
