@@ -27,8 +27,8 @@ Item {
   // Makes each memory cell editable by using a textbox
   // when editing is finished the new value is passed to the memory in the core.
   MouseArea {
-    hoverEnabled: true
     anchors.fill: parent
+    hoverEnabled: true
     onHoveredChanged: {
       if (containsMouse) {
         cell.borderOpacity = 1;
@@ -39,19 +39,19 @@ Item {
 
     TextField {
       id: cell
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
       horizontalAlignment: Qt.AlignRight
-
-      text: (styleData.row % (numberOfBits / 8) == 0) ? styleData.value : ""
-
-      anchors.fill: parent
-      visible: styleData.row % (numberOfBits / 8) == 0
-      enabled: styleData.row % (numberOfBits / 8) == 0
-
-      onActiveFocusChanged: {
-        cell.borderOpacity = (activeFocus) ? 1 : 0;
+      anchors {
+        fill: parent
+        right: parent.right
+        verticalCenter: parent.verticalCenter
       }
+
+      enabled: styleData.row % numberOfBytes == 0
+      visible: enabled
+
+      text: enabled ? styleData.value : ""
+
+      onActiveFocusChanged: cell.borderOpacity = (activeFocus) ? 1 : 0;
 
       // fadein effect
       property double borderOpacity: 0
@@ -63,10 +63,7 @@ Item {
       }
 
       onEditingFinished: {
-        // update internal memory; use right number representation and byte size
-        // if cell is not needed we can save an update
-        if(styleData.row % (numberOfBits / 8) !== 0) return;
-
+        if(!enabled) return;
         memoryModel.setValue(
           styleData.row,
           cell.content,
