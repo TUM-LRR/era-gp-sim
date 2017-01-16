@@ -20,13 +20,9 @@ import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
 TableViewColumn {
-  property int number_bits
-  property var inputBox
-
-  role: "bin" + number_bits
+  role: "bin" + numberOfBits
   title: "Content"
   movable: false
   resizable: true
   width: 80
-  delegate: inputBox
 }

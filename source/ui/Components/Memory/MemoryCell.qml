@@ -38,10 +38,10 @@ Item {
 
     TextField {
       id: textFieldMemoryValue
-      text: (styleData.row % (number_bits / 8) == 0) ? styleData.value : ""
+      text: (styleData.row % (numberOfBits / 8) == 0) ? styleData.value : ""
       anchors.fill: parent
-      visible: (styleData.row % (number_bits / 8) == 0) ? true : false
-      enabled: (styleData.row % (number_bits / 8) == 0)
+      visible: (styleData.row % (numberOfBits / 8) == 0) ? true : false
+      enabled: (styleData.row % (numberOfBits / 8) == 0)
 
       onActiveFocusChanged: {
         textFieldMemoryValue.borderopacity = (activeFocus) ? 1 : 0;
@@ -59,11 +59,11 @@ Item {
       onEditingFinished: {
         // update internal memory; use right number representation and byte size
         // if cell is not needed we can save an update
-        if(styleData.row % (number_bits / 8) == 0) {
+        if(styleData.row % (numberOfBits / 8) == 0) {
           memoryModel.setValue(
             styleData.row,
             textFieldMemoryValue.text,
-            number_bits,
+            numberOfBits,
             tableView.getColumn(styleData.column).role
           );
         }

@@ -47,8 +47,8 @@ TableView {
   }
 
   model: memoryModel
-  rowDelegate: rowdelegate
-  itemDelegate: itemdelegate
+  // rowDelegate: rowdelegate
+  // itemDelegate: itemdelegate
 
   // add a column with the content for each cell at startup
   Component.onCompleted: {

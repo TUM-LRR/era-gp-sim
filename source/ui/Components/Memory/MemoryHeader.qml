@@ -105,7 +105,7 @@ Rectangle {
             // depending on the usage there are 3 different actions
             // 1. update the number of bits in each memory cell
             if(model === modelBits) {
-              number_bits = model.get(bitChooser.currentIndex).bits;
+              numberOfBits = model.get(bitChooser.currentIndex).bits;
             }
             else {
               // 2. dynamically remove the column
@@ -115,9 +115,9 @@ Rectangle {
               }
               // 3. update the numeric representation of the memory values
               else {
-                // explicitly create a property binding for number_bits so the role gets updated correctly
+                // explicitly create a property binding for numberOfBits so the role gets updated correctly
                 tableView.getColumn(index).role = Qt.binding(function() {
-                  return model.get(bitChooser.currentIndex).role + number_bits })
+                  return model.get(bitChooser.currentIndex).role + numberOfBits })
                 }
               }
             }

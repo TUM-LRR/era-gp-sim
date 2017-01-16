@@ -20,54 +20,57 @@ import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
 Item {
-  // number_bits: holds the number of bits shown in each memory cell,
+  // numberOfBits: holds the number of bits shown in each memory cell,
   // it is used for calculating the address and for fetching the right amount of bits from the core
-  property int number_bits: 8
+  property int numberOfBits: 8
+  property int numberOfBytes: numberOfBits / 8
 
   MemoryTreeView {
     id: memoryTreeView
-    anchors.top: menuBar.bottom
-    anchors.bottom: parent.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
-    memoryContent: m
+    memoryContent: content
+    itemDelegate: item
+    rowDelegate: row
+    anchors {
+      top: header.bottom
+      bottom: parent.bottom
+      left: parent.left
+      right: parent.right
+    }
   }
 
   Component {
-    id: rowdelegate
+    id: row
     Rectangle {
-      height: (styleData.row % (number_bits / 8) == 0) ? 25 : 0
+      height: styleData.row % numberOfBytes ? 0 : 25
     }
   }
 
   Component {
-    id: itemdelegate
+    id: item
     Label {
-      visible: (styleData.row % (number_bits / 8) == 0) ? true : false
-      enabled: (styleData.row % (number_bits / 8) == 0) ? true : false
-      text: styleData.value
+      visible: styleData.row % numberOfBytes == 0
       verticalAlignment: Text.AlignVCenter
+      text: styleData.value
     }
   }
 
   Component {
-    id: i
+    id: cell
     MemoryCell {
       tableView: memoryTreeView
     }
   }
 
   MemoryHeader {
-    id: menuBar
+    id: header
     tableView: memoryTreeView
-    memoryContent: m
+    memoryContent: content
   }
 
   Component {
-    id: m
+    id: content
     MemoryContent {
-      number_bits: 8
-      inputBox: i
+      delegate: cell
     }
   }
 }

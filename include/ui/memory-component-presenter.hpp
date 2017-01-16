@@ -34,11 +34,10 @@ class MemoryComponentPresenter : public QAbstractListModel {
   Q_OBJECT
 
  public:
-  explicit MemoryComponentPresenter(MemoryAccess access,
-                                    MemoryManager manager,
-                                    QQmlContext *projectContext,
-                                    QObject *parent = 0);
-  ~MemoryComponentPresenter();
+  MemoryComponentPresenter(MemoryAccess access,
+                           MemoryManager manager,
+                           QQmlContext *projectContext,
+                           QObject *parent = 0);
 
   /**
    * Converts a hexademcimal representation of a string into a memory value
@@ -46,13 +45,15 @@ class MemoryComponentPresenter : public QAbstractListModel {
    *
    * \param address the address of the cell to be updated
    * \param newvalue the new value for the memory cell
-   * \param length_bit the number of bits shown in the string
+   * \param numberOfBits the number of bits shown in the string
    * \param presentation which numeric representation is used (eg. hex, oct,
    * bin)
    *
    */
-  Q_INVOKABLE void
-  setValue(int address, QString newvalue, int length_bit, QString presentation);
+  Q_INVOKABLE void setValue(int address,
+                            QString newvalue,
+                            int numberOfBits,
+                            QString presentation);
 
   /**
    * Sets the context information for memory cells (NOT IMPLEMENTED YET)
@@ -128,7 +129,7 @@ class MemoryComponentPresenter : public QAbstractListModel {
    * \return returns the length of the table
    *
    */
-  int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+  int rowCount(const QModelIndex &) const Q_DECL_OVERRIDE;
 
   /**
    * Returns the translation between roleNames in QML and the internal index
