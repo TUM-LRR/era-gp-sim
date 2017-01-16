@@ -21,6 +21,7 @@
         <file>Components/Memory/MemoryContent.qml</file>
         <file>Components/Memory/MemoryAddressCell.qml</file>
         <file>Components/Memory/FadeOutEffect.qml</file>
+        <file>Components/Memory/MemoryBorder.qml</file>
         <file>Components/Memory/MemoryHeader.qml</file>
         <file>Components/Register/Register.qml</file>
         <file>InnerSplitviewsEditor.qml</file>

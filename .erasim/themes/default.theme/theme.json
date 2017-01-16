@@ -1,101 +1,101 @@
 {
-    "window": {
-        "background": "white",
-        "initialHeight": 350,
-        "initialWidth": 300,
-        "width": 0.9,
-        "height": 0.9
-    },
-    "memory": {
-        "header": {
-            "background": "transparent",
-            "fontSize": 12,
-            "fontWeight": "bold",
-            "height": 25
+    "createProject": {
+        "button": {
+            "background": "#2196F3",
+            "width": 160,
+            "marginTop": 10
         },
-        "address": {
-            "background": "transparent",
-            "color": "#212121",
-            "fontSize": 12,
-            "fontWeight": "bold",
-            "marginLeft": -10,
-            "width": 80
+        "marginTop": 10,
+        "section": {
+            "borderWidth": 1,
+            "borderColor": "#BDBDBD",
+            "fontSize": 20,
+            "height": 50,
+            "margin": 20
         },
-        "cell": {
-            "background": "transparent",
-            "fontSize": 12,
-            "border": {
-                "width": 1,
-                "color": "#BDBDBD"
-            },
-            "color": "#212121",
-            "height": 24
-        }
+        "name": {
+            "length": 80
+        },
+        "width": 280
     },
     "button": {
+        "fontSize": 16,
+        "radius": 4,
+        "border": {
+            "width": 2,
+            "color": "#82c4f8"
+        },
+        "color": "#FFFFFF",
+        "height": 40,
         "disabled": {
             "background": "#BDBDBD",
             "border": {
                 "color": "#d7d7d7"
             },
             "color": "#212121"
-        },
-        "radius": 4,
-        "color": "#FFFFFF",
-        "height": 40,
-        "fontSize": 16,
-        "border": {
-            "width": 2,
-            "color": "#82c4f8"
         }
     },
+    "window": {
+        "background": "white",
+        "height": 0.9,
+        "width": 0.9,
+        "initialHeight": 350,
+        "initialWidth": 300
+    },
     "settings": {
-        "section": {
-            "paddingBottom": 5,
-            "height": 95
-        },
         "snapshots": {
             "button": {
-                "fontSize": 14,
                 "background": "#FFFFFF",
+                "fontSize": 14,
                 "paddingRight": 20,
                 "paddingLeft": 10
             }
         },
-        "h1": {
-            "fontSize": 16,
-            "padding": 10,
-            "color": "#212121"
-        },
         "hr": {
-            "color": "#BDBDBD",
-            "height": 1
+            "height": 1,
+            "color": "#BDBDBD"
+        },
+        "section": {
+            "height": 95,
+            "paddingBottom": 5
+        },
+        "h1": {
+            "padding": 10,
+            "fontSize": 16,
+            "color": "#212121"
         },
         "h2": {
             "fontSize": 13,
             "marginTop": 8,
-            "color": "#757575",
-            "marginBottom": 10
+            "marginBottom": 10,
+            "color": "#757575"
         },
         "paddingTop": 15
     },
-    "createProject": {
-        "section": {
-            "margin": 20,
-            "fontSize": 20,
-            "borderWidth": 1,
-            "borderColor": "#BDBDBD",
-            "height": 50
+    "memory": {
+        "cell": {
+            "background": "transparent",
+            "border": {
+                "width": 1,
+                "color": "#BDBDBD"
+            },
+            "fontSize": 12,
+            "height": 24,
+            "color": "#212121"
         },
-        "marginTop": 10,
-        "button": {
-            "background": "#2196F3",
-            "marginTop": 10,
-            "width": 160
+        "address": {
+            "fontWeight": "normal",
+            "fontSize": 12,
+            "color": "#212121",
+            "background": "transparent",
+            "marginLeft": -10,
+            "width": 80
         },
-        "width": 280,
-        "name": {
-            "length": 80
+        "header": {
+            "background": "transparent",
+            "fontWeight": "bold",
+            "fontSize": 12,
+            "height": 25
         }
     }
 }

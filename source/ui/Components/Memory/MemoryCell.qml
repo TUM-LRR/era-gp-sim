@@ -37,6 +37,8 @@ Item {
       }
     }
 
+    MemoryBorder { }
+
     TextField {
       id: cell
       horizontalAlignment: Qt.AlignRight
@@ -53,7 +55,7 @@ Item {
 
       onActiveFocusChanged: cell.borderOpacity = (activeFocus) ? 1 : 0;
 
-      // fadein effect
+      // Fadein effect
       property double borderOpacity: 0
       Behavior on borderOpacity {
         NumberAnimation {
@@ -68,7 +70,7 @@ Item {
           styleData.row,
           cell.content,
           numberOfBits,
-          tableView.getColumn(styleData.column).role
+          currentRole
         );
       }
 
@@ -86,16 +88,5 @@ Item {
         }
       }
     } // TextField
-
-    Rectangle {
-      anchors {
-        bottom: cell.bottom
-        right: cell.left
-        top: cell.top
-      }
-      width: Theme.memory.cell.border.width
-      color: Theme.memory.cell.border.color
-    }
-
   }
 }
