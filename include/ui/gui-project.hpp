@@ -60,6 +60,10 @@ class GuiProject : QObject {
   using Json = nlohmann::json;
   using CommandList = std::vector<FinalCommand>;
   using LineHelpMap = std::unordered_map<std::size_t, QString>;
+  using MemoryToStringConverter =
+      std::function<std::string(const MemoryValue&)>;
+  using StringToMemoryConverter =
+      std::function<MemoryValue(const std::string&)>;
 
   /**
    * The Constructor
@@ -104,81 +108,81 @@ class GuiProject : QObject {
   GuiProject& operator=(GuiProject&& other) = delete;
 
   /**
-   * \brief Can set The global system
+   * Can set The global system
    * in which numbers are presented
    *
    * \param base the name of the system,
-   *  for example hex, oct, bin or dec
+   *  for example hex, bin or dec
    *
    */
-  void changeSystem(std::string base);
+  void changeSystem(const std::string& base);
 
   /**
-   * \brief parses the text
+   * parses the text
    */
   void parse();
 
   /**
-   * \brief runs all of the code
+   * runs all of the code
    */
   void run();
 
   /**
-   * \brief runs the actual line
+   * runs the actual line
    */
   void runLine();
 
   /**
-   * \brief runs until a breakpoint is found
+   * runs until a breakpoint is found
    */
   void runBreakpoint();
 
   /**
-   * \brief stops execution
+   * stops execution
    */
   void stop();
 
   /**
-   * \brief  Resets the state of registers, memory
+   *  Resets the state of registers, memory
    * and the execution point
    */
   void reset();
 
   /**
-   * \brief saves the project
+   * saves the project
    */
   void saveText();
 
   /**
-   * \brief saves with another name
+   * saves with another name
    *
    * \param path the path to save to.
    */
   void saveTextAs(const QUrl& path);
 
   /**
-   * \brief Load a text file into the editor.
+   * Load a text file into the editor.
    *
    * \param path the path of the file.
    */
   void loadText(const QUrl& path);
 
   /**
-   * \brief takes a snapshot
+   * takes a snapshot
    *
    * \param qName name of the snapshot
    */
   void saveSnapshot(const QString& qName);
 
   /**
-   * \brief Removes a snapshot.
+   * Removes a snapshot.
    *
    * \param qName name of the snapshot.
    */
   Q_INVOKABLE void removeSnapshot(const QString& qName);
 
   /**
-   * \brief loads a snapshot
+   * loads a snapshot
    * \param qName The name of the snapshot which should be loaded.
    */
   Q_INVOKABLE void loadSnapshot(const QString& qName);
@@ -198,137 +202,41 @@ class GuiProject : QObject {
   Q_INVOKABLE QString getCommandHelp(std::size_t line);
 
   /**
-   * \brief Functions for converting MemoryValues to Strings.
+   * Functions for converting MemoryValues to Strings.
    *  Names should explain the single Functions
    *
-   * \return the string
+   * \return The string
    */
-  std::function<std::string(MemoryValue)> getHexConversion();
-  std::function<std::string(MemoryValue)> getBinConversion();
-  std::function<std::string(MemoryValue)> getOctConversion();
-  std::function<std::string(MemoryValue)> getSignedDecimalConversion();
-  std::function<std::string(MemoryValue)> getUnsignedDecimalConversion();
-  std::function<std::string(MemoryValue)> getDecimalFloatConversion();
+  MemoryToStringConverter getHexConversion();
+  MemoryToStringConverter getBinConversion();
+  MemoryToStringConverter getOctConversion();
+  MemoryToStringConverter getSignedDecimalConversion();
+  MemoryToStringConverter getUnsignedDecimalConversion();
+  MemoryToStringConverter getDecimalFloatConversion();
 
   /**
-   * \brief Functions for converting strings to MemoryValues.
+   * Functions for converting strings to MemoryValues.
    * Names should explain the single Functions
    *
    * \return the memoryValue
    */
-  std::function<MemoryValue(std::string)> getSignedToMemoryValue();
-  std::function<MemoryValue(std::string)> getHexToMemoryValue();
-  std::function<MemoryValue(std::string)> getBinToMemoryValue();
-  std::function<MemoryValue(std::string)> getOctToMemoryValue();
-  std::function<MemoryValue(std::string)> getUnsignedToMemoryValue();
-  std::function<MemoryValue(std::string)> getFloatToMemoryValue();
-
- private:
-  /**
-   * Shows a runtime error in the ui
-   * \param message The translateable that contains the message
-   */
-  void _throwError(const Translateable& message);
-
-  /**
-   * \brief the module in the core
-   */
-  ProjectModule _projectModule;
-
-  /**
-   * \brief The model for the register
-   */
-  RegisterModel _registerModel;
-
-  /**
-   * \brief the model of the editor
-   */
-  EditorComponent _editorComponent;
-
-
-  /**
-   * \brief _outputComponent The model for each output item (i.e
-   * lightstrip, sevensegment, console).
-   */
-  OutputComponent _outputComponent;
-
-  /**
-    *\brief The input-models
-    */
-  InputButtonModel _inputBM;
-  InputTextModel _inputTM;
-  InputClickModel _inputCM;
-
-  /*
-   * The c++ component for the memory.
-   */
-  MemoryComponentPresenter _memoryModel;
-
-  /**
-   * The default path to save the text of this project to.
-   */
-  QString _defaultTextFileSavePath;
-
-  /**
-   * A shared pointer to the configuration json (for snapshots,...)
-   */
-  std::shared_ptr<SnapshotComponent> _snapshotComponent;
-
-  /**
-   * The architecture formula, needed to save snapshot configuration.
-   */
-  QString _architectureFormulaString;
-
-  /**
-   * List of Final commands to access the documentation.
-   */
-  CommandList _commandList;
-
-  /**
-   * Map of line number to QString, caches the help text of a specific line.
-   */
-  LineHelpMap _helpCache;
-
-  /**
-   * \brief The Functions for the conversion
-   */
-  std::function<std::string(MemoryValue)> hexConversion;
-  std::function<std::string(MemoryValue)> binConversion;
-  std::function<std::string(MemoryValue)> octConversion;
-  std::function<std::string(MemoryValue)> signedDecimalConversion;
-  std::function<std::string(MemoryValue)> unsignedDecimalConversion;
-  std::function<std::string(MemoryValue)> decimalFloatConversion;
-
-  std::function<MemoryValue(std::string)> signedToMemoryValue;
-  std::function<MemoryValue(std::string)> hexToMemoryValue;
-  std::function<MemoryValue(std::string)> binToMemoryValue;
-  std::function<MemoryValue(std::string)> octToMemoryValue;
-  std::function<MemoryValue(std::string)> unsignedToMemoryValue;
-  std::function<MemoryValue(std::string)> floatToMemoryValue;
-
- private slots:
-  /**
-   * updates the cached command list.
-   *
-   * \param finalRepresentation A final representation with a new command list.
-   */
-  void _updateCommandList(const FinalRepresentation& finalRepresentation);
-
-  /**
-   * Slot to notify the core, part of the ui synchronization during execution.
-   */
-  void _notifyCore();
+  StringToMemoryConverter getSignedToMemoryValue();
+  StringToMemoryConverter getHexToMemoryValue();
+  StringToMemoryConverter getBinToMemoryValue();
+  StringToMemoryConverter getOctToMemoryValue();
+  StringToMemoryConverter getUnsignedToMemoryValue();
+  StringToMemoryConverter getFloatToMemoryValue();
 
  signals:
   /**
-   * \brief A signal to notify components that a register changed.
+   * A signal to notify components that a register changed.
    *
    * \param name The name of the register that changed
    */
   void registerChanged(const QString& name);
 
   /**
-   * \brief A signal to notify components that a part of the memory changed
+   * A signal to notify components that a part of the memory changed
    *
    * \param address The address of the memory
    * \param length The number of bytes that changed
@@ -336,7 +244,7 @@ class GuiProject : QObject {
   void memoryChanged(std::size_t address, std::size_t length);
 
   /**
-   * \brief A signal to notify the gui to ask the user for a save path for a
+   * A signal to notify the gui to ask the user for a save path for a
    * text save.
    */
   void saveTextAs();
@@ -379,6 +287,101 @@ class GuiProject : QObject {
    * Signal for ui synchronization during execution.
    */
   void guiSync();
+
+
+ private:
+  /**
+   * Shows a runtime error in the ui
+   * \param message The translateable that contains the message
+   */
+  void _throwError(const Translateable& message);
+
+  /**
+   * the module in the core
+   */
+  ProjectModule _projectModule;
+
+  /**
+   * The model for the register
+   */
+  RegisterModel _registerModel;
+
+  /**
+   * the model of the editor
+   */
+  EditorComponent _editorComponent;
+
+
+  /**
+   * _outputComponent The model for each output item (i.e
+   * lightstrip, sevensegment, console).
+   */
+  OutputComponent _outputComponent;
+
+  /**
+    *The input-models
+    */
+  InputButtonModel _inputBM;
+  InputTextModel _inputTM;
+  InputClickModel _inputCM;
+
+  /*
+   * The C++ component for the memory.
+   */
+  MemoryComponentPresenter _memoryModel;
+
+  /**
+   * The default path to save the text of this project to.
+   */
+  QString _defaultTextFileSavePath;
+
+  /**
+   * A shared pointer to the configuration json (for snapshots,...)
+   */
+  std::shared_ptr<SnapshotComponent> _snapshotComponent;
+
+  /**
+   * The architecture formula, needed to save snapshot configuration.
+   */
+  QString _architectureFormulaString;
+
+  /**
+   * List of Final commands to access the documentation.
+   */
+  CommandList _commandList;
+
+  /**
+   * Map of line number to QString, caches the help text of a specific line.
+   */
+  LineHelpMap _helpCache;
+
+  /**
+   * The Functions for the conversion
+   */
+  MemoryToStringConverter _hexConversion;
+  MemoryToStringConverter _binConversion;
+  MemoryToStringConverter _signedDecimalConversion;
+  MemoryToStringConverter _unsignedDecimalConversion;
+  MemoryToStringConverter _decimalFloatConversion;
+
+  StringToMemoryConverter _signedToMemoryValue;
+  StringToMemoryConverter _hexToMemoryValue;
+  StringToMemoryConverter _binToMemoryValue;
+  StringToMemoryConverter _unsignedToMemoryValue;
+  StringToMemoryConverter _floatToMemoryValue;
+
+ private slots:
+  /**
+   * updates the cached command list.
+   *
+   * \param finalRepresentation A final representation with a new command list.
+   */
+  void _updateCommandList(const FinalRepresentation& finalRepresentation);
+
+  /**
+   * Slot to notify the core, part of the ui synchronization during execution.
+   */
+  void _notifyCore();
 };
 
 #endif  // ERAGPSIM_UI_GUIPROJECT_HPP

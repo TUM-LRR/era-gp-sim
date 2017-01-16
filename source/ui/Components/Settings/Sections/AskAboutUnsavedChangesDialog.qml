@@ -20,23 +20,14 @@
 import QtQuick 2.6
 import QtQuick.Dialogs 1.2
 
-
 MessageDialog {
-  title: "Error"
-  // Poor man's margin. Cannot style a message dialog ... :(
-  text: "Error                                                          "
-  standardButtons: StandardButton.Ok
-  icon: StandardIcon.Critical
-  onAccepted: close()
-  Component.onCompleted: {
-    if (errorMessageFromStartup) {
-      informativeText = errorMessageFromStartup;
-      open();
-    }
-  }
+  title: "Unsaved Changes"
+  text: "You have unsaved changes. Do you really want to quit?"
+  standardButtons: StandardButton.Yes | StandardButton.No
+  icon: StandardIcon.Warning
 
-  function show(text) {
-    this.text = text;
-    open();
-  }
+  property bool answeredYes
+
+  onYes: { answeredYes = true;  close(); }
+  onNo:  { answeredYes = false; close(); }
 }

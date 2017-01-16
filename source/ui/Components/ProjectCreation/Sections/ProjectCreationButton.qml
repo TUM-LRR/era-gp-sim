@@ -36,7 +36,7 @@ Button {
   MouseArea {
     anchors.fill: parent
     cursorShape: Qt.PointingHandCursor
-    onClicked: button.clicked()
+    onClicked: root.clicked()
   }
 
   style: ButtonStyle {
