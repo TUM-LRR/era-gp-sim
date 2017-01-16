@@ -44,3 +44,7 @@ const Status::Code& Status::code() const noexcept {
 const std::string& Status::message() const noexcept {
   return _message;
 }
+
+explicit operator Status::bool() const noexcept {
+  return _code == Code::OK;
+}
