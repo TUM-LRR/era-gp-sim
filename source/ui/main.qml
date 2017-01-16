@@ -24,6 +24,7 @@ import QtQuick.Dialogs 1.2
 import "Components"
 import "Components/Menubar"
 import "Components/Toolbar"
+import "Components/ProjectCreation"
 import Theme 1.0
 
 ApplicationWindow {
@@ -212,13 +213,8 @@ ApplicationWindow {
     property alias textDialog: textDialog
 
     //Dialog to show errors
-    MessageDialog {
+    ErrorDialog {
       id: errorDialog
-      title: "error"
-      standardButtons: StandardButton.Ok
-      onAccepted: {
-        close();
-      }
     }
 
     //File dialog for selecting a file
