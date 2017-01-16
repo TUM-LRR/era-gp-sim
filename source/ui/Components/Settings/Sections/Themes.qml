@@ -31,9 +31,7 @@ Setting {
   bottomAnchor: selector.bottom
 
   property alias selection: selector.currentText
-  property bool differentThanInitially: {
-    return selector.currentText !== Settings.theme;
-  }
+  property bool hasChanged: selection !== Settings.theme
 
   ComboBox {
     id: selector

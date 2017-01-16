@@ -31,9 +31,7 @@ Setting {
   bottomAnchor: button.bottom
 
   property alias location: button.text
-  property bool differentThanInitially: {
-    return button.text !== Settings.snapshotLocation;
-  }
+  property bool hasChanged: button.text !== Settings.snapshotLocation
 
   Button {
     id: button

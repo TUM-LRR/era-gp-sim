@@ -36,17 +36,19 @@ Window {
   flags: Qt.Dialog
   modality: Qt.ApplicationModal
 
+  property bool internalCloseOverride
   property bool hasUnsavedChanges: {
-    return snapshotLocation.differentThanInitially ||
-           themes.differentThanInitially;
+    return snapshotLocation.hasChanged || themes.hasChanged;
   }
 
   signal store();
 
   onClosing: function(event) {
-    if (hasUnsavedChanges) {
+    if (!internalCloseOverride && hasUnsavedChanges) {
       askAboutUnsavedChangesDialog.open();
       event.accepted = false;
+    } else {
+      internalCloseOverride = false;
     }
   }
 
@@ -57,7 +59,7 @@ Window {
     Connections {
       target: window
       onStore: {
-        if (snapshotLocation.differentThanInitially) {
+        if (snapshotLocation.hasChanged) {
           Settings.snapshotLocationChanged(snapshotLocation.location);
         }
       }
@@ -71,13 +73,15 @@ Window {
 
   AskAboutUnsavedChangesDialog {
     id: askAboutUnsavedChangesDialog
+
+    // Do you really want to quit?"
     onYes: {
-      hasUnsavedChanges = false;
+      internalCloseOverride = true;
       window.close();
 
       // The user can load new themes and they will take effect immediately
       // but if he/she does not save, they should not take effect at the end.
-      if (themes.differentThanInitially) {
+      if (themes.hasChanged) {
         Theme.load(Settings.theme);
       }
     }
@@ -93,7 +97,7 @@ Window {
       horizontalCenter: parent.horizontalCenter
     }
     onClicked: {
-      store();
+      store(); // emit signal
 
       Settings.theme = themes.selection;
       Settings.snapshotLocation = snapshotLocation.location;
@@ -101,10 +105,7 @@ Window {
       var message = Settings.store();
       if (message.length > 0) {
         errorDialog.show(message);
-      } else {
-        hasUnsavedChanges = false;
       }
-
     }
   }
 }
