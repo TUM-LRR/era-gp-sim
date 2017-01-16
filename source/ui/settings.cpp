@@ -68,40 +68,22 @@ Status Settings::load() {
   auto result = _loadJson();
   if (!result) return result.status();
 
-  const auto& json = result.value();
+  auto json = result.value();
+
+  auto status = _checkSnapshotLocation(json);
+  if (!status) return status;
 
   // We simply override all entries
   for (auto iterator = json.begin(); iterator != json.end(); ++iterator) {
     super::insert(iterator.key(), iterator.value().toVariant());
   }
 
-  // check if the snapshot path is set
-  if (!json.contains("snapshotLocation") ||
-      json["snapshotLocation"].toString().isEmpty()) {
-    auto defaultSnapshotPath = Utility::joinToRoot(".erasim", "snapshots");
-    super::insert("snapshotLocation",
-                  QString::fromStdString(defaultSnapshotPath));
-  }
-
   return Status::OK;
 }
 
 QString Settings::store() {
-  QJsonDocument document(toJson());
-  QFile file(_settingsFilePath);
-
-  // The Settings should have been loaded and the path found by now.
-  assert::that(file.exists());
-
-  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    return "Could not open settings file for writing";
-  }
-
-  if (file.write(document.toJson()) == -1) {
-    return "Could not write to settings file";
-  }
-
-  return QString();
+  auto status = _store(toJson());
+  return QString::fromStdString(status.message());
 }
 
 const QString& Settings::settingsDirectoryPath() const noexcept {
@@ -212,4 +194,44 @@ StatusWithValue<Settings::Json> Settings::_loadJson() {
 
   assert::that(json.isObject());
   return json.object();
+}
+
+Status Settings::_checkSnapshotLocation(Json& json) {
+  // We perform a special check for the snapshot location in case
+  // it is null (the *very* first time it is run on a new machine)
+  // and assign it a default path (at $HOME/.erasim/snapshots).
+  assert::that(json.contains("snapshotLocation"));
+  if (!json["snapshotLocation"].isNull()) {
+    return Status::OK;
+  }
+
+  // TODO(psag): QDir::home();
+  QDir defaultLocation(QString::fromStdString(Utility::rootPath()));
+  defaultLocation.cd(".erasim/snapshots");
+
+  json["snapshotLocation"] = defaultLocation.canonicalPath();
+
+  // Store this to disk so that it will be set the next time.
+  auto status = _store(json);
+  if (status) return status;
+
+  return Status::Fail(status.message() + " when defaulting snapshot location");
+}
+
+Status Settings::_store(const Json& json) {
+  QJsonDocument document(json);
+  QFile file(_settingsFilePath);
+
+  // The Settings should have been loaded and the path found by now.
+  assert::that(file.exists());
+
+  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    return Status::Fail("Could not open settings file for writing");
+  }
+
+  if (file.write(document.toJson()) == -1) {
+    return Status::Fail("Could not write to settings file");
+  }
+
+  return Status::OK;
 }

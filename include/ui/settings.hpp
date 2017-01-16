@@ -168,6 +168,23 @@ class Settings : public QQmlPropertyMap {
    */
   StatusWithValue<Json> _loadJson();
 
+  /**
+   * Checks if the snapshot location is null in the JSON and coalesces it
+   * otherwise.
+   *
+   * \param json The newly loaded JSON object.
+   * \returns A status object indicating the success of the operation.
+   */
+  Status _checkSnapshotLocation(Json& json);
+
+  /**
+   * Stores the given JSON object to disk.
+   *
+   * \param json The JSON object to store.
+   * \returns A status object indicating the success of the operation.
+   */
+  Status _store(const Json& json);
+
   /** The lazily determined settings file path. */
   QString _settingsFilePath;
 
