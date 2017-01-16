@@ -18,33 +18,25 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 
-TableView {
-  model: memoryModel
-  selectionMode: SelectionMode.NoSelection
+import Theme 1.0
 
-  // We have a completely custom header (due to a bug in QML).
-  headerVisible: false
-
-  property var memoryContent
-
-  // The default MemoryView consists of three columns:
-  // 1. address                               (fixed)
-  // 2. content of each memory cell           (dynamic)
-  // 3. additional information on each cell   (fixed)
-  TableViewColumn {
-    role: "address"
-    movable: false
-    resizable: true
-    width: 70
+Rectangle {
+  anchors.centerIn: parent
+  color: Theme.memory.address.background
+  Label {
+    anchors.centerIn: parent
+    color: Theme.memory.address.color
+    font.pixelSize: Theme.memory.address.fontSize
+    horizontalAlignment: Text.AlignHCenter
+    text: styleData.value
+    verticalAlignment: Text.AlignVCenter
+    visible: styleData.row % numberOfBytes == 0
+    font.weight: {
+      if (Theme.memory.address.fontWeight === 'bold') {
+        return Font.DemiBold;
+      } else {
+        return Font.Normal;
+      }
+    }
   }
-
-  TableViewColumn {
-    role: "info"
-    movable: false
-    resizable: true
-    width: 100
-  }
-
-  // Add a column with the content for each cell at startup.
-  Component.onCompleted: insertColumn(columnCount - 1, memoryContent);
 }

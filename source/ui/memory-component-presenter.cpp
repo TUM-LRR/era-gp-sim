@@ -120,13 +120,8 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
 
 QVariant
 MemoryComponentPresenter::dataAdress(const QModelIndex &index, int role) const {
-  // format address as hex value and return it
-  return QString("%1")
-      .arg(index.row(), 4, 16, QLatin1Char('0'))
-      .toUpper()
-      .prepend("0x");
+  return QString("0x%1").arg(index.row(), 4, 16, QLatin1Char('0'));
 }
-
 
 QVariant
 MemoryComponentPresenter::dataMemory(const QModelIndex &index, int role) const {

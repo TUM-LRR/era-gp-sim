@@ -19,6 +19,8 @@ import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
+import Theme 1.0
+
 Item {
   // numberOfBits: holds the number of bits shown in each memory cell,
   // it is used for calculating the address and for fetching the right amount of bits from the core
@@ -41,17 +43,13 @@ Item {
   Component {
     id: row
     Rectangle {
-      height: styleData.row % numberOfBytes ? 0 : 25
+      height: styleData.row % numberOfBytes ? 0 : Theme.memory.cell.height
     }
   }
 
   Component {
     id: item
-    Label {
-      visible: styleData.row % numberOfBytes == 0
-      verticalAlignment: Text.AlignVCenter
-      text: styleData.value
-    }
+    MemoryAddressCell { }
   }
 
   Component {

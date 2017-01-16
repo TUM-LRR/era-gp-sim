@@ -17,6 +17,9 @@ settings h2 { font-size: 13px; margin-top: 8px; margin-bottom: 10px; color: #757
 settings hr { color: #BDBDBD; height: 1px; }
 settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
 
-register { border: 10; }
+memory cell { background: transparent; color: #212121; font-size: 12px; height: 24px; }
+memory cell border { color: #BDBDBD; width: 1px; }
+memory address { background: transparent; color: #212121; font-size: 12px; font-weight: bold; margin-left: -10px; width: 80px; }
+memory header { background: transparent; font-size: 12px; font-weight: bold; height: 25px; }
 
 /*# sourceMappingURL=theme.css.map */

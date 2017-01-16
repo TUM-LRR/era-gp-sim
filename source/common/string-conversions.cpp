@@ -52,8 +52,8 @@ std::string toBinString(const MemoryValue& memoryValue) {
         memoryValue.get(memoryValue.getSize() - 1 - currentBitAddress);
     result.push_back(currentBitValue ? '1' : '0');
   }
-  // Add the binary-indicator-prefix and return.
-  return result.insert(0, "0b");
+
+  return result;
 }
 
 
@@ -75,9 +75,7 @@ std::string toHexString(const MemoryValue& memoryValue) {
   }
   std::string result = stream.str();
   // Remove leading digits that exceed the memory value's specified bit-size.
-  result = result.substr((result.length() * 4 - memoryValue.getSize()) / 4);
-  // Add the hex-indicator-prefix and return.
-  return result.insert(0, "0x");
+  return result.substr((result.length() * 4 - memoryValue.getSize()) / 4);
 }
 
 
@@ -109,7 +107,7 @@ binStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize) {
   // complete byte is available.
   for (size_t index = stringValueNoPrefix.length();; index -= 8) {
     size_t startPos = (index >= 8) ? index - 8 : 0;
-    size_t length   = (index >= 8) ? 8 : index;
+    size_t length = (index >= 8) ? 8 : index;
     // Try to parse the string-byte to an 8bit-integer value.
     uint8_t currentValue;
     try {
@@ -146,8 +144,7 @@ hexStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize) {
   std::vector<uint8_t> resultingInternal;
   // Iterate over the input string in 8bit-steps (= 2 hex digits), starting with
   // the least significant bit.
-  for (auto it = stringValueNoPrefix.rbegin();
-       it < stringValueNoPrefix.rend();
+  for (auto it = stringValueNoPrefix.rbegin(); it < stringValueNoPrefix.rend();
        it += 2) {
     // Initializes the string representing the current 8bit with the first 4bit
     // directly behind the iterator.
@@ -192,7 +189,7 @@ unsignedDecStringToMemoryValue(const std::string& stringValue,
   } catch (const std::invalid_argument& e) {
     return Optional<MemoryValue>();
   } catch (const std::out_of_range& e) {
-      return Optional<MemoryValue>();
+    return Optional<MemoryValue>();
   }
   // Convert int to MemoryValue.
   MemoryValue result =
@@ -211,7 +208,7 @@ signedDecStringToMemoryValue(const std::string& stringValue,
   } catch (const std::invalid_argument& e) {
     return Optional<MemoryValue>();
   } catch (const std::out_of_range& e) {
-      return Optional<MemoryValue>();
+    return Optional<MemoryValue>();
   }
   // Convert int to MemoryValue.
   MemoryValue result =

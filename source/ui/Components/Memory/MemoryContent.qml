@@ -17,12 +17,12 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 1.5
-import QtQuick.Controls.Styles 1.4
+
+import Theme 1.0
 
 TableViewColumn {
   role: "bin" + numberOfBits
-  title: "Content"
   movable: false
   resizable: true
-  width: 80
+  width: Theme.memory.address.width
 }

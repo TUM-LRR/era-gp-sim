@@ -19,37 +19,43 @@ import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
+import Theme 1.0
+
 Item {
   property var tableView
 
-  // makes each memory cell editable by using a textbox
-  // when editing is finished the new value is passed to the memory in the core
+  // Makes each memory cell editable by using a textbox
+  // when editing is finished the new value is passed to the memory in the core.
   MouseArea {
     hoverEnabled: true
     anchors.fill: parent
-    // fadein on mouse hover
     onHoveredChanged: {
-      if(containsMouse) {
-        textFieldMemoryValue.borderopacity = 1;
-      } else if(!textFieldMemoryValue.activeFocus) {
-        textFieldMemoryValue.borderopacity = 0;
+      if (containsMouse) {
+        cell.borderOpacity = 1;
+      } else if (!cell.activeFocus) {
+        cell.borderOpacity = 0;
       }
     }
 
     TextField {
-      id: textFieldMemoryValue
+      id: cell
+      anchors.right: parent.right
+      anchors.verticalCenter: parent.verticalCenter
+      horizontalAlignment: Qt.AlignRight
+
       text: (styleData.row % (numberOfBits / 8) == 0) ? styleData.value : ""
+
       anchors.fill: parent
-      visible: (styleData.row % (numberOfBits / 8) == 0) ? true : false
-      enabled: (styleData.row % (numberOfBits / 8) == 0)
+      visible: styleData.row % (numberOfBits / 8) == 0
+      enabled: styleData.row % (numberOfBits / 8) == 0
 
       onActiveFocusChanged: {
-        textFieldMemoryValue.borderopacity = (activeFocus) ? 1 : 0;
+        cell.borderOpacity = (activeFocus) ? 1 : 0;
       }
 
       // fadein effect
-      property double borderopacity: 0
-      Behavior on borderopacity {
+      property double borderOpacity: 0
+      Behavior on borderOpacity {
         NumberAnimation {
           duration: 250
           easing.type: Easing.OutCubic
@@ -59,29 +65,40 @@ Item {
       onEditingFinished: {
         // update internal memory; use right number representation and byte size
         // if cell is not needed we can save an update
-        if(styleData.row % (numberOfBits / 8) == 0) {
-          memoryModel.setValue(
-            styleData.row,
-            textFieldMemoryValue.text,
-            numberOfBits,
-            tableView.getColumn(styleData.column).role
-          );
-        }
+        if(styleData.row % (numberOfBits / 8) !== 0) return;
+
+        memoryModel.setValue(
+          styleData.row,
+          cell.content,
+          numberOfBits,
+          tableView.getColumn(styleData.column).role
+        );
       }
 
       style: TextFieldStyle {
-        id: style
         renderType: Text.QtRendering
-        background: Item{
-          // textfield as background for default look and feel
+        font.pixelSize: Theme.memory.cell.fontSize
+        textColor: Theme.memory.cell.color
+        background: Rectangle {
+          color: Theme.memory.cell.background
           TextField {
-            id: background
             anchors.fill: parent
-            opacity: textFieldMemoryValue.borderopacity
+            opacity: cell.borderOpacity
             activeFocusOnTab: false
           }
         }
       }
+    } // TextField
+
+    Rectangle {
+      anchors {
+        bottom: cell.bottom
+        right: cell.left
+        top: cell.top
+      }
+      width: Theme.memory.cell.border.width
+      color: Theme.memory.cell.border.color
     }
+
   }
 }
