@@ -36,7 +36,6 @@ MenuBar {
   }
 
   function saveAs(filePath) {
-    console.log("save path: " + filePath)
     ui.saveTextAs(tabView.getCurrentProjectId(), filePath);
   }
 
@@ -50,7 +49,6 @@ MenuBar {
     openFileOption.enabled = value;
     saveFileOption.enabled = value;
     saveFileAsOption.enabled = value;
-    projectMenu.enabled = value;
   }
 
   Menu {
@@ -132,14 +130,6 @@ MenuBar {
     MenuItem {
       text: "Save Snapshot"
       shortcut: "Ctrl+S"
-      onTriggered: {
-        actionSnapshot();
-      }
-    }
-
-    MenuItem {
-      text: "Save Snapshot As"
-      shortcut: "Ctrl+Shift+S"
       onTriggered: {
         actionSnapshot();
       }
