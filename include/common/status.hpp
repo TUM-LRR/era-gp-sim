@@ -93,9 +93,7 @@ class Status {
   /**
    * \returns True if the status code is OK, else false.
    */
-  explicit operator bool() const noexcept {
-    return _code == Code::OK;
-  }
+  explicit operator bool() const noexcept;
 
  private:
   /** The code of the status. */
