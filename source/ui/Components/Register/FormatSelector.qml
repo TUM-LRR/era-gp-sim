@@ -76,7 +76,7 @@ ComboBox {
 
   function _tryToRestoreCachedFormatIndex() {
     // Try to restore a cached selected data type root.
-    if (treeView.dataTypeFormatCache[registerModel.index] !== undefined) {
+    if (treeView.dataTypeFormatCache[index] !== undefined) {
       root.currentIndex = treeView.dataTypeFormatCache[index];
     } else {    // If no cached format could be restored, load the default root.
       var defaultFormatIndex = indexOfFormat(treeView.defaultFormat);
