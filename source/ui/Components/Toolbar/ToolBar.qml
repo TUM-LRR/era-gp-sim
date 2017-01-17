@@ -29,7 +29,7 @@ ToolBar {
   visible: enabled
 
   property bool running
-  onRunningChanged: tabView.getCurrentProjectItem().running = running;
+  onRunningChanged: tabView.getCurrentProjectItem().running = running
 
   style: ToolBarStyle {
     background: Rectangle {

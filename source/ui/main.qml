@@ -97,6 +97,7 @@ ApplicationWindow {
 
   function showMenus() {
     toolbar.enabled = true;
+    toolbar.running = tabView.getCurrentProjectItem().running;
     menubar.setMenuEnabled(true);
   }
 
