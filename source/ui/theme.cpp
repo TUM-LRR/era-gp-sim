@@ -17,16 +17,16 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "ui/theme.hpp"
+
 #include <QDir>
 #include <QIODevice>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QString>
-#include <QVariantMap>
 
 #include "common/assert.hpp"
 #include "common/utility.hpp"
-#include "ui/theme.hpp"
 
 Theme* Theme::_theme = nullptr;
 
@@ -56,6 +56,9 @@ Theme* Theme::pointer() {
   return _theme;
 }
 
+Theme::Theme() : super(this, nullptr) {
+}
+
 Status Theme::load(const QString& themeName) {
   assert::that(!themeName.isEmpty());
 
@@ -71,7 +74,14 @@ Status Theme::load(const QString& themeName) {
     super::insert(iterator.key(), value.toObject().toVariantMap());
   }
 
+  _currentThemeName = themeName;
+  emit themeChanged(themeName);
+
   return Status::OK;
+}
+
+const QString& Theme::currentThemeName() const noexcept {
+  return _currentThemeName;
 }
 
 StatusWithValue<QByteArray> Theme::_loadThemeData(const QString& name) {
@@ -79,31 +89,28 @@ StatusWithValue<QByteArray> Theme::_loadThemeData(const QString& name) {
       QDir(QString::fromStdString(Utility::rootPath()));  // QDir::home();
 
   if (!directory.exists()) {
-    return Status(Status::FAILURE, "Could not find home directory");
+    return Status::Fail("Could not find home directory");
   }
 
   if (!directory.cd(".erasim/themes/")) {
-    return Status(Status::FAILURE, "Could not find theme directory");
+    return Status::Fail("Could not find theme directory");
   }
 
   if (!directory.cd(name + ".theme")) {
-    return Status(Status::FAILURE,
-                  "Could not find theme: " + name.toStdString());
+    return Status::Fail("Could not find theme: " + name.toStdString());
   }
 
   QFile file(directory.filePath("theme.json"));
 
   if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
-    return Status(Status::FAILURE,
-                  "Could not open theme: " + name.toStdString());
+    return Status::Fail("Could not open theme: " + name.toStdString());
   }
 
   auto contents = file.readAll();
 
   if (contents.isEmpty()) {
-    return Status(
-        Status::FAILURE,
-        "Contents of theme '" + name.toStdString() + "' are corrupted");
+    return Status::Fail("Contents of theme '" + name.toStdString() +
+                        "' are corrupted");
   }
 
   return contents;

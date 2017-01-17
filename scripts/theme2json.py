@@ -357,7 +357,7 @@ def find_blocks(css):
         A list of block strings.
     """
     return re.findall(
-        r'(\*|[-.a-zA-Z][-.\w:\s,]+)\s*?\{(.+?)\}',
+        r'(\*|[-.#a-zA-Z][-.#\w:\s,]+)\s*?\{(.+?)\}',
         css,
         re.MULTILINE | re.DOTALL
     )
@@ -546,7 +546,7 @@ def find_properties(block_properties):
         if not values:
             continue
 
-        log.debug("Found %d values for property key: %s", len(values), key)
+        log.debug("Found %d values for property: %s", len(values), key)
         values = values[0] if len(values) == 1 else values
 
         properties.append((key, values))
@@ -563,7 +563,7 @@ def css_to_json(css_path, output_file):
         output_file: (file) A file object which to write the lines
                             of the converted CSS (i.e. the JSON).
     """
-    log.info('Processing CSS file at path: s', css_path)
+    log.info('Processing CSS file at path: %s', css_path)
     with open(css_path) as source:
         css = source.read()
 

@@ -37,6 +37,13 @@ class Status {
   static constexpr Code UNDEFINED = Code::UNDEFINED;
 
   /**
+   * Utility factory method to return a failure status with the given message.
+   * \param message The message to fail with.
+   * \return A failure status with the given message.
+   */
+  static Status Fail(const std::string& message);
+
+  /**
    * Constructor.
    *
    * \param code The success code for the status.
