@@ -17,23 +17,33 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "ui/theme.hpp"
+
 #include <QDir>
 #include <QIODevice>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QString>
-#include <QVariantMap>
 
 #include "common/assert.hpp"
 #include "common/utility.hpp"
-#include "ui/theme.hpp"
 
 Theme* Theme::_theme = nullptr;
 
-Theme* Theme::reset(const QString& themeName, QObject* parent) {
+Status Theme::Make(const QString& themeName) {
   assert::that(!themeName.isEmpty());
-  delete _theme;
-  return _theme = new Theme(themeName, parent);
+  assert::that(_theme == nullptr);
+
+  _theme = new Theme();
+
+  auto status = _theme->load(themeName);
+
+  if (!status) {
+    delete _theme;
+    _theme = nullptr;
+  }
+
+  return status;
 }
 
 Theme& Theme::instance() {
@@ -41,15 +51,21 @@ Theme& Theme::instance() {
   return *_theme;
 }
 
-Theme::Theme(const QString& themeName, QObject* parent) : super(this, parent) {
-  assert::that(!themeName.isEmpty());
-  load(themeName);
+Theme* Theme::pointer() {
+  assert::that(_theme != nullptr);
+  return _theme;
 }
 
-void Theme::load(const QString& themeName) {
+Theme::Theme() : super(this, nullptr) {
+}
+
+Status Theme::load(const QString& themeName) {
   assert::that(!themeName.isEmpty());
 
-  const auto& json = _loadJson(themeName);
+  auto result = _loadJson(themeName);
+  if (!result) return result.status();
+
+  const auto& json = result.value();
 
   // We simply override all entries
   for (auto iterator = json.begin(); iterator != json.end(); ++iterator) {
@@ -57,32 +73,59 @@ void Theme::load(const QString& themeName) {
     assert::that(value.isObject());
     super::insert(iterator.key(), value.toObject().toVariantMap());
   }
+
+  _currentThemeName = themeName;
+  emit themeChanged(themeName);
+
+  return Status::OK;
 }
 
-QByteArray Theme::_loadThemeData(const QString& name) {
+const QString& Theme::currentThemeName() const noexcept {
+  return _currentThemeName;
+}
+
+StatusWithValue<QByteArray> Theme::_loadThemeData(const QString& name) {
   auto directory =
       QDir(QString::fromStdString(Utility::rootPath()));  // QDir::home();
-  assert::that(directory.exists());
-  assert::that(directory.cd(".erasim/themes/" + name + ".theme"));
+
+  if (!directory.exists()) {
+    return Status::Fail("Could not find home directory");
+  }
+
+  if (!directory.cd(".erasim/themes/")) {
+    return Status::Fail("Could not find theme directory");
+  }
+
+  if (!directory.cd(name + ".theme")) {
+    return Status::Fail("Could not find theme: " + name.toStdString());
+  }
 
   QFile file(directory.filePath("theme.json"));
-  assert::that(file.exists());
-  assert::that(file.open(QIODevice::ReadOnly));
+
+  if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
+    return Status::Fail("Could not open theme: " + name.toStdString());
+  }
 
   auto contents = file.readAll();
-  assert::that(!contents.isEmpty());
+
+  if (contents.isEmpty()) {
+    return Status::Fail("Contents of theme '" + name.toStdString() +
+                        "' are corrupted");
+  }
 
   return contents;
 }
 
-const Theme::Json& Theme::_loadJson(const QString& name) {
+StatusWithValue<const Theme::Json&> Theme::_loadJson(const QString& name) {
   auto iterator = _cache.constFind(name);
   if (iterator != _cache.cend()) {
     return iterator.value();
   }
 
   auto data = _loadThemeData(name);
-  auto json = QJsonDocument::fromJson(data);
+  if (!data) return data.status();
+
+  auto json = QJsonDocument::fromJson(data.value());
 
   assert::that(json.isObject());
   auto object = json.object();

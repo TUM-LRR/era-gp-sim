@@ -1,4 +1,4 @@
-window { width: 90%; height: 90%; background: white; initial-width: 300px; initial-height: 350px; }
+window { width: 90%; height: 90%; background: red; initial-width: 300px; initial-height: 350px; }
 
 create-project { width: 280px; margin-top: 10px; }
 create-project section { margin: 20px; height: 50px; font-size: 20px; border-width: 1px; border-color: #BDBDBD; }
@@ -16,13 +16,5 @@ settings h1 { font-size: 16px; padding: 10px; color: #212121; }
 settings h2 { font-size: 13px; margin-top: 8px; margin-bottom: 10px; color: #757575; }
 settings hr { color: #BDBDBD; height: 1px; }
 settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
-
-register { background: transparent; height: 40px; margin-left: -5px; margin-right: 10px; overflow: auto; }
-register label { color: #212121; font-size: 12px; font-weight: bold; }
-register content { background: white; color: #212121; font-size: 12px; height: 25px; margin: 4px; radius: 2px; }
-register content border { color: #BDBDBD; width: 1; }
-register content highlighted { background: #FF4081; }
-register content:disabled { background: #f2f2f2; color: #757575; }
-register selector { height: 23px; width: 15px; background: transparent; color: #FF4081; font-size: 14px; radius: 1px; }
 
 /*# sourceMappingURL=theme.css.map */

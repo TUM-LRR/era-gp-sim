@@ -17,6 +17,7 @@ set(UI_SOURCES
   input-click-model.cpp
   translateable-processing.cpp
   theme.cpp
+  settings.cpp
 )
 
 set(UI_HEADERS
@@ -32,6 +33,7 @@ set(UI_HEADERS
   ${CMAKE_SOURCE_DIR}/include/ui/input-click-model.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/input-text-model.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/theme.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/settings.hpp
 )
 
 

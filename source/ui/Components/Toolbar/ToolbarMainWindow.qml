@@ -183,10 +183,7 @@ ToolBar {
         ToolButton {
             id: parseButton
             text: "parse"
-            onClicked: {
-                ui.parse(tabView.getCurrentProjectId());
-                console.log("reset " + tabView.getCurrentProjectId());
-            }
+            onClicked: ui.parse(tabView.getCurrentProjectId());
         }
 
         ToolButton {
