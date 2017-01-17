@@ -203,11 +203,17 @@ void GuiProject::loadText(const QUrl& path) {
 }
 
 void GuiProject::saveSnapshot(const QString& qName) {
-  Json snapshot = _projectModule.getMemoryManager().generateSnapshot().get();
-  std::string snapshotString = snapshot.dump(4);
+  // clang-format off
+  auto snapshot = _projectModule
+    .getMemoryManager()
+    .generateSnapshot()
+    .get()
+    .dump(4);
+  // clang-format on
+
   try {
     _snapshotComponent->addSnapshot(
-        _architectureFormulaString, qName, snapshotString);
+        _architectureFormulaString, qName, snapshot);
   } catch (const std::exception& exception) {
     _throwError(Translateable(
         QT_TRANSLATE_NOOP("GUI error messages",

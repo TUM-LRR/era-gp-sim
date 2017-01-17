@@ -5,6 +5,7 @@
         <file>Splitview.qml</file>
         <file>Components/ComponentHolder.qml</file>
         <file>Components/Snapshots/SnapshotList.qml</file>
+        <file>Components/Snapshots/SnapshotDialog.qml</file>
         <file>Components/Output/GreenRectangle.qml</file>
         <file>Components/Output/Output.qml</file>
         <file>Components/Output/RedRectangle.qml</file>

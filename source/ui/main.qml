@@ -27,6 +27,7 @@ import "Components/Menubar"
 import "Components/Toolbar"
 import "Components/ProjectCreation"
 import "Components/Settings"
+import "Components/Snapshots"
 import Theme 1.0
 
 ApplicationWindow {
@@ -137,13 +138,13 @@ ApplicationWindow {
     Item {
       id: placeholderItem
 
-      // if there is a project for this tab in the backend, this is true
+      // If there is a project for this tab in the backend, this is true.
       property bool projectValid: false
 
-      // index of the project in the project vector
+      // Index of the project in the project vector.
       property int projectId: -1
 
-      // indicates the execution state of this project
+      // Indicates the execution state of this project.
       property bool isRunning: false
 
       anchors.fill: parent
@@ -155,11 +156,11 @@ ApplicationWindow {
 
           parent.parent.title = projectName;
           placeholderItem.projectId = ui.addProject(placeholderItem,
-                                                    projectComponent,
-                                                    memorySize,
-                                                    architecture,
-                                                    optionName,
-                                                    parser);
+            projectComponent,
+            memorySize,
+            architecture,
+            optionName,
+            parser);
             window.expand();
             window.showMenus();
             projectValid = true;
@@ -198,7 +199,6 @@ ApplicationWindow {
           }
           onExecutionStopped: {
             toolbar.rowLayout.setStoppedState();
-            // reparse in case a parse was blocked during execution.
             editor.parse();
             placeholderItem.isRunning = false;
           }
@@ -216,14 +216,10 @@ ApplicationWindow {
 
     property alias errorDialog: errorDialog
     property alias fileDialog: fileDialog
-    property alias textDialog: textDialog
+    property var snapshotDialog: SnapshotDialog { }
 
-    //Dialog to show errors
-    ErrorDialog {
-      id: errorDialog
-    }
+    ErrorDialog { id: errorDialog }
 
-    //File dialog for selecting a file
     FileDialog {
       id: fileDialog
       property var onAcceptedFunction
@@ -231,47 +227,7 @@ ApplicationWindow {
       selectFolder: false
       selectMultiple: false
       onAccepted: {
-        onAcceptedFunction(fileDialog.fileUrl);
-      }
-    }
-
-    // Dialog to input text
-    Dialog {
-      id: textDialog
-      title: "Save snapshot"
-      standardButtons: StandardButton.Cancel;
-      property var onAcceptedFunction
-      property alias placeholderText: textField.placeholderText
-      Text {
-        id: description
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        wrapMode: Text.WordWrap
-        textFormat: Text.StyledText
-        text: "<p>Save a snapshot of the current register and memory state to disk. " +
-        "Your snapshot files can be found here:</p> " +
-        "<a href=\"" + snapshotComponent.snapshotDirectory() + "\">" +
-        snapshotComponent.snapshotDirectory() + "</a>"
-        onLinkActivated: Qt.openUrlExternally(snapshotComponent.snapshotDirectory())
-      }
-      TextField {
-        id: textField
-        anchors.topMargin: 10
-        anchors.top: description.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        onTextChanged: {
-          if(text == "") {
-            textDialog.standardButtons = StandardButton.Cancel;
-          }
-          else {
-            textDialog.standardButtons = StandardButton.Cancel | StandardButton.Save;
-          }
-        }
-      }
-      onAccepted: {
-        onAcceptedFunction(textField.text);
-        textField.text = "";
+        ui.saveTextAs(tabView.getCurrentProjectId(), fileDialog.fileUrl);
       }
     }
   }

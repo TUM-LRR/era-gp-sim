@@ -25,16 +25,6 @@ MenuBar {
   id: menubar
   property var main
 
-  function saveSnapshot(name) {
-    ui.saveSnapshot(tabView.getCurrentProjectId(), name);
-  }
-
-  function actionSnapshot() {
-    main.textDialog.onAcceptedFunction = saveSnapshot;
-    main.textDialog.placeholderText = "name";
-    main.textDialog.open();
-  }
-
   function saveAs(filePath) {
     ui.saveTextAs(tabView.getCurrentProjectId(), filePath);
   }
@@ -133,9 +123,7 @@ MenuBar {
       id: saveSnapshot
       text: "Save Snapshot"
       shortcut: "Ctrl+S"
-      onTriggered: {
-        actionSnapshot();
-      }
+      onTriggered: main.snapshotDialog.open()
     }
 
     function enable(yes) {

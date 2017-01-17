@@ -1,78 +1,105 @@
 {
-    "settings": {
-        "h2": {
-            "color": "#757575",
-            "marginTop": 8,
-            "fontSize": 13,
-            "marginBottom": 10
-        },
-        "snapshots": {
-            "button": {
-                "paddingLeft": 10,
-                "background": "#FFFFFF",
-                "paddingRight": 20,
-                "fontSize": 14
-            }
-        },
-        "section": {
-            "paddingBottom": 5,
-            "height": 95
-        },
-        "paddingTop": 15,
-        "hr": {
-            "height": 1,
-            "color": "#BDBDBD"
-        },
-        "h1": {
-            "color": "#212121",
-            "padding": 10,
-            "fontSize": 16
-        }
-    },
-    "createProject": {
-        "section": {
-            "borderWidth": 1,
-            "borderColor": "#BDBDBD",
-            "margin": 20,
-            "fontSize": 20,
-            "height": 50
-        },
-        "button": {
-            "background": "#2196F3",
-            "width": 160,
-            "marginTop": 10
-        },
-        "marginTop": 10,
-        "width": 280,
-        "name": {
-            "length": 80
-        }
+    "window": {
+        "width": 0.9,
+        "background": "white",
+        "height": 0.9,
+        "initialWidth": 300,
+        "initialHeight": 350
     },
     "button": {
-        "color": "#FFFFFF",
-        "fontSize": 16,
         "border": {
             "width": 2,
             "color": "#82c4f8"
         },
+        "radius": 4,
         "disabled": {
             "background": "#BDBDBD",
+            "color": "#212121",
             "border": {
                 "color": "#d7d7d7"
-            },
-            "color": "#212121"
+            }
         },
-        "radius": 4,
-        "height": 40
+        "color": "#FFFFFF",
+        "height": 40,
+        "fontSize": 16
     },
-    "window": {
-        "background": "white",
-        "initialHeight": 350,
-        "initialWidth": 300,
-        "height": 0.9,
-        "width": 0.9
+    "snapshots": {
+        "dialog": {
+            "width": 400,
+            "background": "white",
+            "height": 95,
+            "button": {
+                "marginRight": 10,
+                "marginTop": 10,
+                "marginBottom": 20
+            },
+            "marginBottom": 40,
+            "marginRight": 10,
+            "input": {
+                "background": "white",
+                "border": {
+                    "width": 1,
+                    "color": "#BDBDBD"
+                },
+                "radius": 2,
+                "color": "#212121",
+                "fontSize": 14,
+                "marginTop": 8
+            },
+            "marginTop": 25,
+            "marginLeft": 10
+        }
+    },
+    "settings": {
+        "paddingTop": 15,
+        "h1": {
+            "color": "#212121",
+            "fontSize": 16,
+            "padding": 10
+        },
+        "section": {
+            "height": 95,
+            "paddingBottom": 5
+        },
+        "hr": {
+            "color": "#BDBDBD",
+            "height": 1
+        },
+        "snapshots": {
+            "button": {
+                "paddingLeft": 10,
+                "fontSize": 14,
+                "background": "#FFFFFF",
+                "paddingRight": 20
+            }
+        },
+        "h2": {
+            "color": "#757575",
+            "marginBottom": 10,
+            "fontSize": 13,
+            "marginTop": 8
+        }
     },
     "register": {
         "border": 10
+    },
+    "createProject": {
+        "width": 280,
+        "section": {
+            "borderWidth": 1,
+            "height": 50,
+            "borderColor": "#BDBDBD",
+            "fontSize": 20,
+            "margin": 20
+        },
+        "button": {
+            "width": 160,
+            "background": "#2196F3",
+            "marginTop": 10
+        },
+        "marginTop": 10,
+        "name": {
+            "length": 80
+        }
     }
 }
