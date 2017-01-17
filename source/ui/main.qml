@@ -47,7 +47,7 @@ ApplicationWindow {
       window.updateMenuState();
     }
   }
-  toolBar: Toolbar {
+  toolBar: ToolbarComponent {
     id: toolbar
   }
 
