@@ -1,5 +1,5 @@
 # Era-sim settings
-.erasim/settings.json
+/.erasim/settings.json
 
 # Snapshot files
 *.snapshot

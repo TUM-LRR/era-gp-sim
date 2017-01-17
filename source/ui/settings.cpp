@@ -226,7 +226,7 @@ Status Settings::_checkSettingsFile(Json& json) {
   // there is no settings file, so the default settings were loaded and we have
   // to store them to disk.
   auto status = _store(json);
-  return status;
+  return Status::Fail(status.message() + " when creating settings file");
 }
 
 Status Settings::_store(const Json& json) {
