@@ -4,7 +4,6 @@ init_stack:
 lui x31, max_addr >> 12
 addi x31, x0, max_addr & 0xfff
 add x30, x0, x0
-jalr x0, x4, 0
 
 ; Call fact_rec
 addi x1, x0, 12
@@ -32,14 +31,14 @@ pop_exn:
 simucrash "Stack is empty!"
 
 ;reserved registers: x1
-.macro call, symbol
+.macro call_rec, symbol
 auipc x1, 0
 addi x1, x1, 4 ;return address
 jal x4, push
 jal x0, \symbol
 .endm
 
-.macro ret
+.macro ret_rec
 jal x4, pop
 jalr x0, x1, 0
 .endm
@@ -50,15 +49,15 @@ beq x1, x0, fr_end
 jal x4, push
 addi x1, x1, -1
 jal x4, push
-call factorial_rec
+call_rec factorial_rec
 jal x4, pop
 mul x5, x5, x1
-ret
+ret_rec
 
 fr_end:
 addi x5, x0, 1
-ret
+ret_rec
 
 
 end:
-add x0, x0, x0 ;NOP
+nop

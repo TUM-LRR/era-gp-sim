@@ -291,7 +291,7 @@ class JumpAndLinkRegisterInstructionNode
       MemoryAccess& memoryAccess) const override {
     auto base = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
     auto offset =
-        super::template _getChildValue<UnsignedWord>(memoryAccess, 2) + base;
+        super::template _getChildValue<UnsignedWord>(memoryAccess, 2);
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
     if (!riscv::addressIsValid(memoryAccess, base + offset, programCounter)) {
       return ValidationResult::fail(
