@@ -1,3 +1,4 @@
+
 /*
 * C++ Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
@@ -78,14 +79,14 @@ ApplicationWindow {
 
     // returns false if there is only a creation screen in the current tab.
     // Undefined if there is no tab.
-    function isCurrentProjectValid() {
+    function currentProjectIsReady() {
       return getCurrentProjectItem().projectValid;
     }
   }
 
   // this function should be called when the tab is switched
   function updateMenuState() {
-    if (tabView.count === 0 || !tabView.isCurrentProjectValid()) {
+    if (tabView.count === 0 || !tabView.currentProjectIsReady()) {
       // deactivate project specific functions if there is no valid project at
       // the current index
       toolbar.hideToolbar();
@@ -116,12 +117,13 @@ ApplicationWindow {
   function closeProject() {
     var currentTabIndex = tabView.currentIndex;
     var currentProjectId = tabView.getCurrentProjectId();
-    var isValid = tabView.isCurrentProjectValid();
+    var isReady = tabView.currentProjectIsReady();
 
     tabView.removeTab(currentTabIndex);
 
-    if(isValid) ui.removeProject(currentProjectId);
+    if(!isReady) window.close();
 
+    ui.removeProject(currentProjectId);
     updateMenuState();
 
     // Create a new tab if there is no tab
