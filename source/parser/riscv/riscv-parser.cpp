@@ -179,8 +179,13 @@ FinalRepresentation RiscvParser::parse(const std::string& text) {
 
   auto byteAlignment =
       _architecture.getWordSize() / _architecture.getByteSize();
-  MemoryAllocator allocator({MemorySectionDefinition("data", byteAlignment),
-                             MemorySectionDefinition("text", 1)});
+
+  auto riscvInstructionSize = 4u;
+
+  MemoryAllocator allocator({
+    MemorySectionDefinition("data", 1, byteAlignment),
+    MemorySectionDefinition("text", 1, riscvInstructionSize)
+  });
 
   TransformationParameters parameters(
       _architecture,
