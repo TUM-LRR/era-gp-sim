@@ -17,9 +17,10 @@ settings h2 { font-size: 13px; margin-top: 8px; margin-bottom: 10px; color: #757
 settings hr { color: #BDBDBD; height: 1px; }
 settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
 
-memory cell { background: transparent; color: #212121; font-size: 12px; height: 24px; }
-memory cell border { color: #BDBDBD; width: 1px; }
+memory cell { background: transparent; color: #212121; font-size: 12px; height: 24px; width: 80px; }
+memory divider { color: #BDBDBD; width: 1px; }
 memory address { background: transparent; color: #212121; font-size: 12px; font-weight: normal; margin-left: -10px; width: 80px; }
 memory header { background: transparent; font-size: 12px; font-weight: bold; height: 25px; }
+memory header remove { background: transparent; color: #FF4081; font-size: 16px; font-weight: bold; margin-bottom: 2px; margin-left: 7px; }
 
 /*# sourceMappingURL=theme.css.map */

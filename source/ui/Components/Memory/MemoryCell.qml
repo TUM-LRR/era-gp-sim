@@ -22,6 +22,7 @@ import QtQuick.Controls.Styles 1.4
 import Theme 1.0
 
 Item {
+  id: root
   property var tableView
 
   // Makes each memory cell editable by using a textbox
@@ -37,11 +38,11 @@ Item {
       }
     }
 
-    MemoryBorder { }
+    MemoryDivider { anchors.left: parent.right }
 
     TextField {
       id: cell
-      horizontalAlignment: Qt.AlignRight
+      horizontalAlignment: Qt.AlignHCenter
       anchors {
         fill: parent
         right: parent.right
@@ -66,11 +67,15 @@ Item {
 
       onEditingFinished: {
         if(!enabled) return;
+        console.log(styleData.row);
+        console.log(cell.text);
+        console.log(numberOfBits);
+        console.log(tableView.getColumn(model.index).role);
         memoryModel.setValue(
           styleData.row,
-          cell.content,
+          cell.text,
           numberOfBits,
-          currentRole
+          tableView.getColumn(model.index).role
         );
       }
 
@@ -87,6 +92,6 @@ Item {
           }
         }
       }
-    } // TextField
+    }
   }
 }

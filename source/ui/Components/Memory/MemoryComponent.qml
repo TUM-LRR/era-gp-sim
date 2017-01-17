@@ -52,13 +52,6 @@ Item {
     MemoryAddressCell { }
   }
 
-  Component {
-    id: cell
-    MemoryCell {
-      tableView: memoryTreeView
-    }
-  }
-
   MemoryHeader {
     id: header
     tableView: memoryTreeView
@@ -71,4 +64,12 @@ Item {
       delegate: cell
     }
   }
+
+  Component {
+    id: cell
+    MemoryCell {
+      tableView: memoryTreeView
+    }
+  }
+
 }

@@ -23,6 +23,9 @@ import Theme 1.0
 Rectangle {
   anchors.centerIn: parent
   color: Theme.memory.address.background
+
+  MemoryDivider { anchors.left: parent.right }
+
   Label {
     anchors.centerIn: parent
     color: Theme.memory.address.color

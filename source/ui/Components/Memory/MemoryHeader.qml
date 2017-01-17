@@ -34,6 +34,10 @@ Rectangle {
   height: Theme.memory.header.height
   width: parent.width
 
+  FadeOutEffect { }
+
+  MemoryDivider { anchors.right: parent.right }
+
   Flickable {
     ListView {
       id: header
@@ -49,7 +53,7 @@ Rectangle {
         target: tableView
         onColumnCountChanged: {
           // Dynamically add columns that were added by the user.
-          while(headerDropdownList.count < tableView.columnCount - 1) {
+          while (headerDropdownList.count < tableView.columnCount - 1) {
             headerDropdownList.append(ListElement);
           }
         }
@@ -58,19 +62,39 @@ Rectangle {
       model: ListModel { id: headerDropdownList }
 
       delegate: Rectangle {
-        width: bitChooser.width + resizer.width
-        height: root.height
+        id: headerSection
+        property var currentRole: tableView.getColumn(index).role
 
-        property alias text: bitChooser.currentText
+        height: root.height
+        width: {
+          if (currentRole === 'address') {
+            return Theme.memory.address.width;
+          } else {
+            return Theme.memory.cell.width;
+          }
+        }
+
+        property alias text: headerOptions.currentText
 
         // The ComboBox above each row the user can either choose the number
-        // of bits or the numberical representation of a memory cell depending
+        // of bits or the numerical representation of a memory cell depending
         // on the column.
         ComboBox {
-          id: bitChooser
+          id: headerOptions
           height: root.height
-
-          property var currentRole: tableView.getColumn(index).role
+          anchors {
+            top: parent.top
+            bottom: parent.bottom
+            left: parent.left
+            right: remove.right
+            rightMargin: {
+              if (currentRole === 'address') {
+                return 0;
+              } else {
+                return Theme.memory.header.remove.marginLeft;
+              }
+            }
+          }
 
           style: ComboBoxStyle {
             background: Rectangle {
@@ -80,7 +104,7 @@ Rectangle {
               font.pixelSize: Theme.memory.header.fontSize
               horizontalAlignment: Qt.AlignHCenter
               verticalAlignment: Qt.AlignVCenter
-              text: (bitChooser.currentRole === 'address') ? 'Address' : 'Memory';
+              text: (currentRole === 'address') ? 'Address' : 'Memory'
               font.weight: {
                 if (Theme.memory.header.fontWeight === 'bold') {
                   return Font.DemiBold;
@@ -91,9 +115,8 @@ Rectangle {
             }
           }
 
-          width: resizer.x - bitChooser.x
           onWidthChanged: {
-            tableView.getColumn(index).width = bitChooser.width + resizer.width;
+            return tableView.getColumn(index).width = headerSection.width;
           }
 
           // Choose the right underlaying model depending on the
@@ -114,55 +137,30 @@ Rectangle {
             ListElement { text: "Hexadecimal"; role: "hex" }
             ListElement { text: "Unsigned Decimal"; role: "dec" }
             ListElement { text: "Signed Decimal"; role: "decs" }
-
-            ListElement { text : "Remove" }
           }
 
-          // Depending on the usage there are 3 different actions:
-          // 1. update the number of bits in each memory cell
-          // 2. dynamically remove the column
-          // 3. update the numeric representation of the memory values
           onCurrentIndexChanged: {
             if (model === bitModel) {
-              numberOfBits = model.get(bitChooser.currentIndex).bits;
-              return;
+              numberOfBits = model.get(headerOptions.currentIndex).bits;
+            } else {
+              tableView.getColumn(index).role = Qt.binding(function() {
+                var formatRole = model.get(headerOptions.currentIndex).role;
+                return formatRole + numberOfBits;
+              });
             }
-
-            if (bitChooser.currentText === "Remove") {
-              tableView.removeColumn(index);
-              headerDropdownList.remove(index);
-              return;
-            }
-
-            // Explicitly create a property binding for numberOfBits so the
-            // role gets updated correctly.
-            tableView.getColumn(index).role = Qt.binding(function() {
-              return model.get(bitChooser.currentIndex).role + numberOfBits;
-            });
           }
         }
 
-        // This rectangle is a resizer located next to each ComboBox in the
-        // header of the memory. by dragging this rectangle to the left or
-        // right someone could resize the width of each column
-        Rectangle {
-
-          id: resizer
-          height: root.height
-          width: 5
-          x: bitChooser.x + 70 // default width of a column
-          MouseArea {
-            drag.axis: Drag.XAxis
-            drag.target: resizer
-            anchors.fill: parent
-            cursorShape: Qt.SizeHorCursor
-            //give a minimum size for column width
-            drag.minimumX: bitChooser.x + 40
+        RemoveButton {
+          id: remove
+          anchors.right: headerSection.right
+          visible: currentRole !== 'address'
+          onClicked: {
+            tableView.removeColumn(index);
+            headerDropdownList.remove(index);
           }
         }
       }
     }
   }
-
-  FadeOutEffect { id: buttonFadeOut }
 }

@@ -80,7 +80,9 @@ void MemoryComponentPresenter::setValue(int address,
   const auto string = number.toStdString();
 
   if (presentation.startsWith("bin")) {
+    std::cout << string << std::endl;
     memory = *binStringToMemoryValue(string, numberOfBits);
+    std::cout << memory << std::endl;
   } else if (presentation.startsWith("hex")) {
     memory = *hexStringToMemoryValue(string, numberOfBits);
   } else if (presentation.startsWith("decs")) {

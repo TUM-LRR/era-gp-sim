@@ -19,11 +19,10 @@ import QtQuick 2.6
 import Theme 1.0
 
 Rectangle {
-  width: Theme.memory.cell.border.width
-  color: Theme.memory.cell.border.color
+  width: Theme.memory.divider.width
+  color: Theme.memory.divider.color
   anchors {
-    bottom: cell.bottom
-    right: cell.left
-    top: cell.top
+    bottom: parent.bottom
+    top: parent.top
   }
 }
