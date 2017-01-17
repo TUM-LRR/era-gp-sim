@@ -31,6 +31,12 @@ ToolBar {
   property bool running
   onRunningChanged: tabView.getCurrentProjectItem().running = running;
 
+  style: ToolBarStyle {
+    background: Rectangle {
+      color: Theme.toolbar.background
+    }
+  }
+
   RowLayout {
     id: rowLayout
     spacing: Theme.toolbar.margin
@@ -88,7 +94,7 @@ ToolBar {
       onClicked: ui.reset(tabView.getCurrentProjectId());
     }
 
-    // Use up the remaining space to the right.
+    // Use up the remaining space to the right
     Item { Layout.fillWidth: true }
   }
 }
