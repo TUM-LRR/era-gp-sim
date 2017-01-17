@@ -47,7 +47,7 @@ ApplicationWindow {
       window.updateMenuState();
     }
   }
-  toolBar: ToolbarMainWindow {
+  toolBar: Toolbar {
     id: toolbar
   }
 
@@ -77,26 +77,26 @@ ApplicationWindow {
 
     // returns false if there is only a creation screen in the current tab.
     // Undefined if there is no tab.
-    function isCurrentProjectValid() {
+    function currentProjectIsValid() {
       return getCurrentProjectItem().projectValid;
     }
   }
 
-  // this function should be called when the tab is switched
+  // This function should be called when the tab is switched
   function updateMenuState() {
-    if (tabView.count === 0 || !tabView.isCurrentProjectValid()) {
-      // deactivate project specific functions if there is no valid project at
-      // the current index
-      toolbar.hideToolbar();
+    if (tabView.count === 0 || !tabView.currentProjectIsValid()) {
+      // Deactivate project specific functions if there is no
+      // valid project at the current index.
+      toolbar.enabled = false;
       menubar.setMenuEnabled(false);
     } else {
-      // enable menus otherwise (could have been disabled before)
+      // Enable menus otherwise (could have been disabled before).
       showMenus();
     }
   }
 
   function showMenus() {
-    toolbar.showToolbar();
+    toolbar.enabled = true;
     menubar.setMenuEnabled(true);
   }
 
@@ -115,7 +115,7 @@ ApplicationWindow {
   function closeProject() {
     var currentTabIndex = tabView.currentIndex;
     var currentProjectId = tabView.getCurrentProjectId();
-    var isValid = tabView.isCurrentProjectValid();
+    var isValid = tabView.currentProjectIsValid();
 
     tabView.removeTab(currentTabIndex);
 
@@ -144,7 +144,7 @@ ApplicationWindow {
       property int projectId: -1
 
       // indicates the execution state of this project
-      property bool isRunning: false
+      property bool running
 
       anchors.fill: parent
       ProjectCreationScreen {
@@ -155,123 +155,123 @@ ApplicationWindow {
 
           parent.parent.title = projectName;
           placeholderItem.projectId = ui.addProject(placeholderItem,
-                                                    projectComponent,
-                                                    memorySize,
-                                                    architecture,
-                                                    optionName,
-                                                    parser);
-            window.expand();
-            window.showMenus();
-            projectValid = true;
-          }
+            projectComponent,
+            memorySize,
+            architecture,
+            optionName,
+            parser
+          );
+          window.expand();
+          window.showMenus();
+          projectValid = true;
         }
-      }
-    }
-
-    // This component is instantiated by the addProject method
-    Component {
-      id: projectComponent
-      Item {
-        anchors.fill: parent
-        Splitview {
-          anchors.fill: parent
-
-          SystemPalette {
-            id: systemPalette
-          }
-
-          handleDelegate: Rectangle {
-            width: 2
-            height: 2
-            color: Qt.darker(systemPalette.window, 1.5)
-          }
-        }
-
-        Connections {
-          target: guiProject
-          onSaveTextAs: {
-            menubar.actionSaveAs();
-          }
-          onError: {
-            window.errorDialog.text = errorMessage;
-            window.errorDialog.open();
-          }
-          onExecutionStopped: {
-            toolbar.rowLayout.setStoppedState();
-            // reparse in case a parse was blocked during execution.
-            editor.parse();
-            placeholderItem.isRunning = false;
-          }
-        }
-      }
-    }
-
-    Connections {
-      target: snapshotComponent
-      onSnapshotError: {
-        errorDialog.text = errorMessage;
-        errorDialog.open();
-      }
-    }
-
-    property alias errorDialog: errorDialog
-    property alias fileDialog: fileDialog
-    property alias textDialog: textDialog
-
-    //Dialog to show errors
-    ErrorDialog {
-      id: errorDialog
-    }
-
-    //File dialog for selecting a file
-    FileDialog {
-      id: fileDialog
-      property var onAcceptedFunction
-      selectExisting: false
-      selectFolder: false
-      selectMultiple: false
-      onAccepted: {
-        onAcceptedFunction(fileDialog.fileUrl);
-      }
-    }
-
-    // Dialog to input text
-    Dialog {
-      id: textDialog
-      title: "Save snapshot"
-      standardButtons: StandardButton.Cancel;
-      property var onAcceptedFunction
-      property alias placeholderText: textField.placeholderText
-      Text {
-        id: description
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        wrapMode: Text.WordWrap
-        textFormat: Text.StyledText
-        text: "<p>Save a snapshot of the current register and memory state to disk. " +
-        "Your snapshot files can be found here:</p> " +
-        "<a href=\"" + snapshotComponent.snapshotDirectory() + "\">" +
-        snapshotComponent.snapshotDirectory() + "</a>"
-        onLinkActivated: Qt.openUrlExternally(snapshotComponent.snapshotDirectory())
-      }
-      TextField {
-        id: textField
-        anchors.topMargin: 10
-        anchors.top: description.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        onTextChanged: {
-          if(text == "") {
-            textDialog.standardButtons = StandardButton.Cancel;
-          }
-          else {
-            textDialog.standardButtons = StandardButton.Cancel | StandardButton.Save;
-          }
-        }
-      }
-      onAccepted: {
-        onAcceptedFunction(textField.text);
-        textField.text = "";
       }
     }
   }
+
+  // This component is instantiated by the addProject method
+  Component {
+    id: projectComponent
+    Item {
+      anchors.fill: parent
+      Splitview {
+        anchors.fill: parent
+
+        SystemPalette {
+          id: systemPalette
+        }
+
+        handleDelegate: Rectangle {
+          width: 2
+          height: 2
+          color: Qt.darker(systemPalette.window, 1.5)
+        }
+      }
+
+      Connections {
+        target: guiProject
+        onSaveTextAs: menubar.actionSaveAs();
+        onError: {
+          window.errorDialog.text = errorMessage;
+          window.errorDialog.open();
+        }
+        onExecutionStopped: {
+          toolbar.running = false;
+          placeholderItem.running = false;
+
+          // Reparse in case a parse was blocked during execution.
+          editor.parse();
+        }
+      }
+    }
+  }
+
+  Connections {
+    target: snapshotComponent
+    onSnapshotError: {
+      errorDialog.text = errorMessage;
+      errorDialog.open();
+    }
+  }
+
+  property alias errorDialog: errorDialog
+  property alias fileDialog: fileDialog
+  property alias textDialog: textDialog
+
+  //Dialog to show errors
+  ErrorDialog {
+    id: errorDialog
+  }
+
+  //File dialog for selecting a file
+  FileDialog {
+    id: fileDialog
+    property var onAcceptedFunction
+    selectExisting: false
+    selectFolder: false
+    selectMultiple: false
+    onAccepted: {
+      onAcceptedFunction(fileDialog.fileUrl);
+    }
+  }
+
+  // Dialog to input text
+  Dialog {
+    id: textDialog
+    title: "Save snapshot"
+    standardButtons: StandardButton.Cancel;
+    property var onAcceptedFunction
+    property alias placeholderText: textField.placeholderText
+    Text {
+      id: description
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      wrapMode: Text.WordWrap
+      textFormat: Text.StyledText
+      text: "<p>Save a snapshot of the current register and memory state to disk. " +
+      "Your snapshot files can be found here:</p> " +
+      "<a href=\"" + snapshotComponent.snapshotDirectory() + "\">" +
+      snapshotComponent.snapshotDirectory() + "</a>"
+      onLinkActivated: Qt.openUrlExternally(snapshotComponent.snapshotDirectory())
+    }
+    TextField {
+      id: textField
+      anchors.topMargin: 10
+      anchors.top: description.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      onTextChanged: {
+        if(text == "") {
+          textDialog.standardButtons = StandardButton.Cancel;
+        }
+        else {
+          textDialog.standardButtons = StandardButton.Cancel | StandardButton.Save;
+        }
+      }
+    }
+    onAccepted: {
+      onAcceptedFunction(textField.text);
+      textField.text = "";
+    }
+  }
+}
