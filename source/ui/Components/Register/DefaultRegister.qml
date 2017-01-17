@@ -106,7 +106,7 @@ TextField {
     if (formatSelector.selection === 'Binary') {
       return content.replace(/(\d{4})(?=.)/g, '$& ');
     } else if (formatSelector.selection === 'Hexadecimal') {
-      return content.replace(/(\d{2})(?=.)/g, '$& ');
+      return content.replace(/([\da-fA-F]{2})(?=.)/g, '$& ');
     } else {
       return content;
     }
