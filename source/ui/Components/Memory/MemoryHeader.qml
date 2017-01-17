@@ -34,7 +34,7 @@ Rectangle {
   height: Theme.memory.header.height
   width: parent.width
 
-  FadeOutEffect { }
+  AddColumnButton { }
 
   MemoryDivider { anchors.right: parent.right }
 
@@ -43,7 +43,7 @@ Rectangle {
       id: header
       height: parent.height
       width:  tableView.flickableItem.contentWidth
-      // move header left and right as the tableView
+      // Move header left and right as the tableView
       // is moved by the horizontal scroll bars
       x: -tableView.flickableItem.contentX
 
@@ -63,7 +63,10 @@ Rectangle {
 
       delegate: Rectangle {
         id: headerSection
-        property var currentRole: tableView.getColumn(index).role
+        property var currentRole: {
+          var column = tableView.getColumn(index);
+          return column ? column.role : "";
+        }
 
         height: root.height
         width: {
@@ -121,10 +124,10 @@ Rectangle {
 
           // Choose the right underlaying model depending on the
           // column it is responsible for
-          model: (currentRole === 'address') ? bitModel : numericModel;
+          model: (currentRole === 'address') ? numberOfBitsModel : formatModel;
 
           ListModel {
-            id: bitModel
+            id: numberOfBitsModel
             ListElement { text: "8 Bit"; bits: 8 }
             ListElement { text: "16 Bit"; bits: 16 }
             ListElement { text: "32 Bit"; bits: 32 }
@@ -132,7 +135,7 @@ Rectangle {
           }
 
           ListModel {
-            id: numericModel
+            id: formatModel
             ListElement { text: "Binary"; role: "bin" }
             ListElement { text: "Hexadecimal"; role: "hex" }
             ListElement { text: "Unsigned Decimal"; role: "dec" }
@@ -140,7 +143,7 @@ Rectangle {
           }
 
           onCurrentIndexChanged: {
-            if (model === bitModel) {
+            if (model === numberOfBitsModel) {
               numberOfBits = model.get(headerOptions.currentIndex).bits;
             } else {
               tableView.getColumn(index).role = Qt.binding(function() {

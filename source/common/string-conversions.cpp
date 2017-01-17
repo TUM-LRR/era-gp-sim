@@ -22,6 +22,8 @@
 #include <cstdint>
 #include <iomanip>
 #include <sstream>
+#include <string>
+#include <vector>
 
 #include "core/conversions.hpp"
 

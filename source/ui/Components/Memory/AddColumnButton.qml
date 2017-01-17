@@ -24,13 +24,19 @@ import Theme 1.0
 
 // This rectangle is only used for styling it provides a fadeout effect on
 // the right side of the header when there are too many columns the
-// ComboBoxes slightly disappear with a fadeout effect on the right
+// ComboBoxes slightly disappear with a fadeout effect on the right.
 
 Rectangle {
-  width: 50
-  height: 25
-  anchors.right: parent.right
-  color: "transparent"
+  width: Theme.memory.addButton.width
+  height: Theme.memory.addButton.height
+  anchors {
+    right: parent.right
+    bottom: parent.bottom
+    bottomMargin: Theme.memory.addButton.marginBottom
+    top: parent.top
+  }
+
+  color: Theme.memory.addButton.background
   LinearGradient{
     anchors.fill: parent
     start: Qt.point(0, 0)
@@ -42,22 +48,38 @@ Rectangle {
     }
   }
 
-  // This button is used for creating new columns for the memory.
   Button {
+    id: button
     anchors {
       right: parent.right
-      top: parent.top
       bottom: parent.bottom
-      rightMargin: 1
-      topMargin: 1
-      bottomMargin: 1
+      top: parent.top
     }
-    width: 25
 
-    text: "+"
+    MouseArea {
+      anchors.fill: parent
+      cursorShape: Qt.PointingHandCursor
+      onClicked: {
+        tableView.insertColumn(tableView.columnCount - 1, memoryContent);
+      }
+    }
 
-    onClicked: {
-      tableView.insertColumn(tableView.columnCount - 1, memoryContent);
+    style: ButtonStyle {
+      background: Rectangle { visible: false }
+      label: Text {
+        text: "+"
+        horizontalAlignment: Qt.AlignHCenter
+        verticalAlignment: Qt.AlignVCenter
+        color: Theme.memory.addButton.color
+        font.pixelSize: Theme.memory.addButton.fontSize
+        font.weight: {
+          if (Theme.memory.header.fontWeight === 'bold') {
+            return Font.DemiBold;
+          } else {
+            return Font.Normal;
+          }
+        }
+      }
     }
   }
 }
