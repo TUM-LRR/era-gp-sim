@@ -40,20 +40,15 @@ class MemoryComponentPresenter : public QAbstractListModel {
                            QObject *parent = 0);
 
   /**
-   * Converts a hexademcimal representation of a string into a memory value
-   * and saves it to the internal memory object.
+   * Stores a value to memory.
    *
    * \param address the address of the cell to be updated
-   * \param newvalue the new value for the memory cell
-   * \param numberOfBits the number of bits shown in the string
-   * \param presentation which numeric representation is used (eg. hex, oct,
-   * bin)
-   *
+   * \param value the new value for the memory cell
+   * \param numberOfBits The number of bits used.
+   * \param role The current role (format + bits).
    */
-  Q_INVOKABLE void setValue(int address,
-                            QString newvalue,
-                            int numberOfBits,
-                            QString presentation);
+  Q_INVOKABLE void
+  setValue(int address, QString value, int numberOfBits, QString role);
 
   /**
    * Sets the context information for memory cells (NOT IMPLEMENTED YET)

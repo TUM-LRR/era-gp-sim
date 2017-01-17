@@ -51,13 +51,13 @@ Item {
 
       enabled: styleData.row % numberOfBytes == 0
       visible: enabled
-
+      onActiveFocusChanged: cell.borderOpacity = (activeFocus) ? 1 : 0;
       text: enabled ? styleData.value : ""
 
-      onActiveFocusChanged: cell.borderOpacity = (activeFocus) ? 1 : 0;
-
-      // Fadein effect
+      property string lastText
       property double borderOpacity: 0
+
+      // FadeIn effect
       Behavior on borderOpacity {
         NumberAnimation {
           duration: 250
@@ -66,16 +66,13 @@ Item {
       }
 
       onEditingFinished: {
-        if(!enabled) return;
-        console.log(styleData.row);
-        console.log(cell.text);
-        console.log(numberOfBits);
-        console.log(tableView.getColumn(model.index).role);
+        if(!enabled || cell.text === cell.lastText) return;
+        lastText = cell.text;
         memoryModel.setValue(
           styleData.row,
           cell.text,
           numberOfBits,
-          tableView.getColumn(model.index).role
+          tableView.getColumn(styleData.column).role
         );
       }
 

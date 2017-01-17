@@ -102,6 +102,7 @@ binStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize) {
   if (stringValue.find("0b") == 0) {
     stringValueNoPrefix = stringValueNoPrefix.substr(2);
   }
+
   std::vector<uint8_t> resultingInternal;
   // Read the string starting with the least significant bit until no more
   // complete byte is available.

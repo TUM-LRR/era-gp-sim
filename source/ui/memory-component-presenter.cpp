@@ -67,28 +67,30 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
 
 
 void MemoryComponentPresenter::setValue(int address,
-                                        QString number,
+                                        QString value,
                                         int numberOfBits,
-                                        QString presentation) {
+                                        QString role) {
   using namespace StringConversions;  // NOLINT(build/namespaces)
 
-  if (number.isEmpty()) {
-    number = "0";
+  assert::that(role != "address");
+
+  std::string string("0");
+  if (!value.isEmpty()) {
+    string = value.toStdString();
   }
 
   MemoryValue memory;
-  const auto string = number.toStdString();
 
-  if (presentation.startsWith("bin")) {
-    std::cout << string << std::endl;
+  if (role.startsWith("bin")) {
     memory = *binStringToMemoryValue(string, numberOfBits);
-    std::cout << memory << std::endl;
-  } else if (presentation.startsWith("hex")) {
+  } else if (role.startsWith("hex")) {
     memory = *hexStringToMemoryValue(string, numberOfBits);
-  } else if (presentation.startsWith("decs")) {
+  } else if (role.startsWith("decs")) {
     memory = *unsignedDecStringToMemoryValue(string, numberOfBits);
-  } else if (presentation.startsWith("dec")) {
+  } else if (role.startsWith("dec")) {
     memory = *signedDecStringToMemoryValue(string, numberOfBits);
+  } else {
+    assert::that(false);
   }
 
   _memoryAccess.putMemoryValueAt(address, memory);
