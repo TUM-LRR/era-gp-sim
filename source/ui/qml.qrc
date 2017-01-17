@@ -19,6 +19,7 @@
         <file>Components/Register/Register.qml</file>
         <file>InnerSplitviewsEditor.qml</file>
         <file>Components/Toolbar/Toolbar.qml</file>
+        <file>Components/Toolbar/ToolbarButton.qml</file>
         <file>Components/Toolbar/Icons/Run.svg</file>
         <file>Components/Toolbar/Icons/Step.svg</file>
         <file>Components/Toolbar/Icons/Stop.svg</file>

@@ -1,78 +1,78 @@
 {
-    "settings": {
-        "h2": {
-            "color": "#757575",
-            "marginTop": 8,
-            "fontSize": 13,
-            "marginBottom": 10
+    "button": {
+        "color": "#FFFFFF",
+        "fontSize": 16,
+        "disabled": {
+            "color": "#212121",
+            "background": "#BDBDBD",
+            "border": {
+                "color": "#d7d7d7"
+            }
         },
+        "height": 40,
+        "radius": 4,
+        "border": {
+            "color": "#82c4f8",
+            "width": 2
+        }
+    },
+    "settings": {
+        "paddingTop": 15,
         "snapshots": {
             "button": {
-                "paddingLeft": 10,
-                "background": "#FFFFFF",
+                "fontSize": 14,
                 "paddingRight": 20,
-                "fontSize": 14
+                "paddingLeft": 10,
+                "background": "#FFFFFF"
             }
+        },
+        "h2": {
+            "fontSize": 13,
+            "marginBottom": 10,
+            "marginTop": 8,
+            "color": "#757575"
+        },
+        "h1": {
+            "fontSize": 16,
+            "color": "#212121",
+            "padding": 10
         },
         "section": {
             "paddingBottom": 5,
             "height": 95
         },
-        "paddingTop": 15,
         "hr": {
-            "height": 1,
-            "color": "#BDBDBD"
-        },
-        "h1": {
-            "color": "#212121",
-            "padding": 10,
-            "fontSize": 16
+            "color": "#BDBDBD",
+            "height": 1
         }
     },
     "createProject": {
-        "section": {
-            "borderWidth": 1,
-            "borderColor": "#BDBDBD",
-            "margin": 20,
-            "fontSize": 20,
-            "height": 50
-        },
+        "marginTop": 10,
         "button": {
             "background": "#2196F3",
-            "width": 160,
-            "marginTop": 10
+            "marginTop": 10,
+            "width": 160
         },
-        "marginTop": 10,
-        "width": 280,
+        "section": {
+            "fontSize": 20,
+            "borderColor": "#BDBDBD",
+            "borderWidth": 1,
+            "height": 50,
+            "margin": 20
+        },
         "name": {
             "length": 80
-        }
+        },
+        "width": 280
     },
-    "button": {
-        "color": "#FFFFFF",
-        "fontSize": 16,
-        "border": {
-            "width": 2,
-            "color": "#82c4f8"
-        },
-        "disabled": {
-            "background": "#BDBDBD",
-            "border": {
-                "color": "#d7d7d7"
-            },
-            "color": "#212121"
-        },
-        "radius": 4,
-        "height": 40
+    "toolbar": {
+        "margin": 20
     },
     "window": {
         "background": "white",
         "initialHeight": 350,
-        "initialWidth": 300,
         "height": 0.9,
-        "width": 0.9
-    },
-    "register": {
-        "border": 10
+        "width": 0.9,
+        "initialWidth": 300
     }
 }

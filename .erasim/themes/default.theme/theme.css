@@ -17,6 +17,6 @@ settings h2 { font-size: 13px; margin-top: 8px; margin-bottom: 10px; color: #757
 settings hr { color: #BDBDBD; height: 1px; }
 settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
 
-register { border: 10; }
+toolbar { margin: 20px; }
 
 /*# sourceMappingURL=theme.css.map */
