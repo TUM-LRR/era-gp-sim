@@ -1,0 +1,23 @@
+.section data
+result: .resw 1
+data: .word 50, -4, 150, -135, 0x446, 0b110
+.word end_data
+
+.section text
+.equ end_data, 0xff37ad
+
+add x1, x0, x0 ;Sum reg
+add x2, x0, x0 ;Index reg
+add x3, x0, x0 ;Content reg
+lui x4, end_data >> 12 ;Load compare reg
+addi x4, x4, end_data & 0xfff
+
+loop:
+lw x3, x2, data ;Load current memory data into content reg
+beq x3, x4, end
+add x1, x1, x3 ;Add the new data
+addi x2, x2, 4 ;Increment index
+jal x0, loop
+
+end:
+sw x1, x0, result ;Store result to memory
