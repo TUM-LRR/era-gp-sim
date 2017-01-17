@@ -63,7 +63,6 @@
         <file>Components/ProjectCreation/Sections/ProjectArchitectureVersion.qml</file>
         <file>Components/ProjectCreation/Sections/ProjectCreationButton.qml</file>
         <file>Components/ProjectCreation/Sections/ProjectMemorySize.qml</file>
-
         <file>Components/Output/SevenSegment/SevenSegment.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentEdge.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
@@ -99,5 +98,6 @@
         <file>Components/help/HelpWindow.qml</file>
         <file>Components/editor/IssueMark.qml</file>
         <file>Components/editor/InlineMacros.qml</file>
+        <file>Components/Settings/default-settings.json</file>
     </qresource>
 </RCC>
