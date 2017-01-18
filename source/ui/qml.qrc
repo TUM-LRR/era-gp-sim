@@ -99,5 +99,6 @@
         <file>Components/help/HelpWindow.qml</file>
         <file>Components/editor/IssueMark.qml</file>
         <file>Components/editor/InlineMacros.qml</file>
+        <file>Components/Settings/default-settings.json</file>
     </qresource>
 </RCC>
