@@ -18,38 +18,51 @@
 */
 
 import QtQuick 2.0
-import QtQuick.Dialogs 1.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
-  Label {
-    height: Theme.snapshots.title.height
-    anchors {
-      left: parent.left
-      top: parent.top
-      bottom: parent.bottom
-    }
+Button {
+  id: button
+  property var theme
+  property bool highlighted
 
-    text: "Snapshots"
-    color: Theme.snapshots.title.color
-    font.pixelSize: Theme.snapshots.title.fontSize
-    verticalAlignment: Text.AlignVCenter;
-    horizontalAlignment: {
-      if (Theme.snapshots.title.textAlign === 'center') {
-        return Text.AlignHCenter;
-      } else if (Theme.snapshots.title.textAlign === 'right') {
-        return Text.AlignRight;
-      } else {
-        return Text.AlignLeft;
-      }
+  anchors {
+    right: parent.right
+    rightMargin: theme.rightMargin
+    top: parent.top
+    topMargin: theme.topMargin
+    bottom: parent.bottom
+    bottomMargin: theme.marginBottom
+  }
+
+  MouseArea {
+    anchors.fill: parent
+    cursorShape: Qt.PointingHandCursor
+    onClicked: button.clicked()
+  }
+
+  style: ButtonStyle {
+    background: Rectangle {
+      color: theme.background
+      height: theme.height
     }
-    font.weight: {
-      if (Theme.snapshots.title.fontWeight === 'bold') {
-        return Font.DemiBold;
-      } else {
-        return Font.Normal;
+    label: Text {
+      text: button.text
+      color: theme.color
+      font.pixelSize: theme.fontSize
+      verticalAlignment: Text.AlignVCenter
+      wrapMode: Text.Wrap
+      elide: Text.ElideRight
+      maximumLineCount: 1
+      font.weight: {
+        if (highlighted || theme.fontWeight === 'bold') {
+          return Font.DemiBold;
+        } else {
+          return Font.Normal;
+        }
       }
     }
   }
+}

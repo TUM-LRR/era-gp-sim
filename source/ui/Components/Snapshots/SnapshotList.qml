@@ -24,8 +24,9 @@ import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
-Item {
+Rectangle {
   anchors.fill: parent
+  color: Theme.snapshots.background
 
   SnapshotHeader { id: header }
   SnapshotDialog { id: snapshotDialog }
@@ -39,34 +40,12 @@ Item {
     id: snapshotItem
   }
 
-  // A component to display a highlight on mouse hover.
-  Component {
-    id: highlightComponent
-    Rectangle {
-      color: Qt.rgba(0.7, 0.7, 0.7, 0.2)
-      radius: 5
-      MouseArea{
-        id: mouseText
-        anchors.fill: parent
-        acceptedButtons: Qt.AllButtons
-        onDoubleClicked: {
-          if(mouse.button === Qt.LeftButton){
-            if(listView.currentItem !== null) {
-              guiProject.loadSnapshot(listView.currentItem.text);
-            }
-          } else if(mouse.button === Qt.RightButton){
-            if(listView.currentItem !== null) {
-              guiProject.removeSnapshot(listView.currentItem.text);
-            }
-          }
-        }
-      }
-    }
-  }
-
   // The list view to display a list of snapshots.
   ListView {
     id: listView
+    model: guiProject.getSnapshots();
+    currentIndex: -1
+    delegate: snapshotItem
     anchors {
       topMargin: 10
       top: header.bottom
@@ -74,12 +53,5 @@ Item {
       bottom: parent.bottom
       right: parent.right
     }
-
-
-    model: guiProject.getSnapshots();
-    highlight: highlightComponent
-    highlightFollowsCurrentItem: true
-    currentIndex: -1
-    delegate: snapshotItem
   }
 }

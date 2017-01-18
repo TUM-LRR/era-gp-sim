@@ -6,10 +6,11 @@
         <file>Components/ComponentHolder.qml</file>
         <file>Components/Snapshots/SnapshotList.qml</file>
         <file>Components/Snapshots/SnapshotTitle.qml</file>
-        <file>Components/Snapshots/AddSnapshotButton.qml</file>
         <file>Components/Snapshots/SnapshotItem.qml</file>
         <file>Components/Snapshots/SnapshotHeader.qml</file>
         <file>Components/Snapshots/SnapshotDialog.qml</file>
+        <file>Components/Snapshots/TextButton.qml</file>
+        <file>Components/Snapshots/Divider.qml</file>
         <file>Components/Output/GreenRectangle.qml</file>
         <file>Components/Output/Output.qml</file>
         <file>Components/Output/RedRectangle.qml</file>

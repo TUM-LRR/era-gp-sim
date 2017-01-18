@@ -18,7 +18,6 @@
 */
 
 import QtQuick 2.0
-import QtQuick.Dialogs 1.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
@@ -37,10 +36,21 @@ Rectangle {
   SnapshotTitle {
     id: title
     anchors.right: button.right
+    anchors.bottom: divider.top
   }
 
-  AddSnapshotButton {
+  TextButton {
     id: button
+    text: "+"
+    theme: Theme.snapshots.add
     onClicked: snapshotDialog.open()
+    anchors.bottom: divider.top
   }
+
+  Divider {
+    id: divider
+    height: Theme.snapshots.title.hr.height
+    color: Theme.snapshots.title.hr.color
+  }
+
 }

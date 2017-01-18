@@ -23,39 +23,8 @@ import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
-Button {
+TextButton {
   id: button
   text: "Save Snapshot"
-  anchors {
-    right: parent.right
-    top: parent.top
-    bottom: parent.bottom
-    bottomMargin: Theme.snapshots.button.marginBottom
-  }
-
-  MouseArea {
-    anchors.fill: parent
-    cursorShape: Qt.PointingHandCursor
-    onClicked: button.clicked()
-  }
-
-  style: ButtonStyle {
-    background: Rectangle {
-      color: Theme.snapshots.button.background
-      height: Theme.snapshots.title.height
-    }
-    label: Text {
-      text: "+"
-      color: Theme.snapshots.button.color
-      font.pixelSize: Theme.snapshots.button.fontSize
-      verticalAlignment: Text.AlignVCenter
-      font.bold: {
-        if (Theme.snapshots.title.fontWeight === 'bold') {
-          return Font.DemiBold;
-        } else {
-          return Font.Normal;
-        }
-      }
-    }
-  }
+  theme: Theme.snapshots.add
 }

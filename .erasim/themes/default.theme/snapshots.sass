@@ -1,16 +1,35 @@
 snapshots
+  $height: 20px
+  background: white
+  hr
+    color: $divider-color
+    height: 0
+  add
+    background: white
+    color: $accent-color
+    font-size: 16px
+    margin-bottom: 3px
+    font-weight: bold
+    height: 22px
+  item
+    height: $height
+    background: white
+    color: $primary-text-color
+    font-size: 12px
+    font-weight: normal
+    margin-right: 10px
+    remove
+      @extend add
   title
     background: white
     color: $primary-text-color
     font-weight: bold
     font-size: 12px
     text-align: center
-    height: 20px
-  button
-    background: white
-    color: $accent-color
-    font-size: 16px
-    margin-bottom: 3px
+    height: $height
+    hr
+      @extend hr
+      color: black
   dialog
     background: white
     margin:
