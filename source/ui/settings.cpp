@@ -208,9 +208,9 @@ Status Settings::_checkSnapshotLocation(Json& json) {
 
   // TODO(psag): QDir::home();
   QDir defaultLocation(QString::fromStdString(Utility::rootPath()));
-  defaultLocation.cd(".erasim/snapshots");
+  defaultLocation.setPath(".erasim/snapshots");
 
-  json["snapshotLocation"] = defaultLocation.canonicalPath();
+  json["snapshotLocation"] = defaultLocation.absolutePath();
 
   // Store this to disk so that it will be set the next time.
   auto status = _store(json);
