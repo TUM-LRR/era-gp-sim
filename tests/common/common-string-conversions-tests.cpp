@@ -27,29 +27,29 @@
 TEST(StringConversionsTests, TestToBinStringConversion) {
   // Check if converting simple memory value works.
   EXPECT_EQ(StringConversions::toBinString(MemoryValue{{0, 0}, 16}),
-            "0b0000000000000000");
+            "0000000000000000");
 
   // Check if converting simple memory value works.
   EXPECT_EQ(StringConversions::toBinString(MemoryValue{{254, 2}, 16}),
-            "0b0000001011111110");
+            "0000001011111110");
 
   // Check if converting memory value works if its size is uneven.
   EXPECT_EQ(StringConversions::toBinString(MemoryValue{{42, 1}, 9}),
-            "0b100101010");
+            "100101010");
 }
 
 
 TEST(StringConversionsTests, TestToHexStringConversion) {
   // Check if converting simple memory value works.
-  EXPECT_EQ(StringConversions::toHexString(MemoryValue{{0, 0}, 16}), "0x0000");
+  EXPECT_EQ(StringConversions::toHexString(MemoryValue{{0, 0}, 16}), "0000");
 
   // Check if converting simple memory value works.
   EXPECT_EQ(StringConversions::toHexString(MemoryValue{{255, 200, 100, 2}, 32}),
-            "0x0264c8ff");
+            "0264c8ff");
 
   // Check if converting memory value work if its size is not a power of 2.
   EXPECT_EQ(StringConversions::toHexString(MemoryValue{{0, 2, 2}, 20}),
-            "0x20200");
+            "20200");
 }
 
 

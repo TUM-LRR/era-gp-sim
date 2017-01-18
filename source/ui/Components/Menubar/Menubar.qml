@@ -88,13 +88,6 @@ MenuBar {
         ui.saveText(tabView.getCurrentProjectId());
       }
     }
-
-    MenuItem {
-      id: saveFileAsOption
-      text: "Save File As"
-      shortcut: "Alt+Shift+S"
-      onTriggered: actionSaveAs
-    }
   }
 
   Menu {
