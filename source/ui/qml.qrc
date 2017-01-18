@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>ErrorDialog.qml</file>
         <file>Splitview.qml</file>
         <file>Components/ComponentHolder.qml</file>
         <file>Components/Snapshots/SnapshotList.qml</file>
@@ -28,6 +29,11 @@
         <file>Components/Toolbar/Icons/StopButtonInactive.svg</file>
         <file>Components/Toolbar/Icons/StopButtonInactiveWithBorder.svg</file>
         <file>Components/Menubar/Menubar.qml</file>
+        <file>Components/Settings/SettingsWindow.qml</file>
+        <file>Components/Settings/Sections/SnapshotLocation.qml</file>
+        <file>Components/Settings/Sections/AskAboutUnsavedChangesDialog.qml</file>
+        <file>Components/Settings/Sections/Setting.qml</file>
+        <file>Components/Settings/Sections/Themes.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
         <file>Components/editor/MacroTriangleButton.qml</file>
@@ -52,10 +58,15 @@
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
         <file>Components/Register/ContextMenu.qml</file>
-        <file>Components/Register/FormatSelector.qml</file>
         <file>Components/Register/RegisterComponent.qml</file>
-        <file>ProjectCreationScreen.qml</file>
-        <file>ProjectCreationSection.qml</file>
+        <file>Components/ProjectCreation/ProjectCreationScreen.qml</file>
+        <file>Components/ProjectCreation/ProjectCreationSection.qml</file>
+        <file>Components/ProjectCreation/Sections/ProjectName.qml</file>
+        <file>Components/ProjectCreation/Sections/ProjectArchitecture.qml</file>
+        <file>Components/ProjectCreation/Sections/ProjectSyntax.qml</file>
+        <file>Components/ProjectCreation/Sections/ProjectArchitectureVersion.qml</file>
+        <file>Components/ProjectCreation/Sections/ProjectCreationButton.qml</file>
+        <file>Components/ProjectCreation/Sections/ProjectMemorySize.qml</file>
         <file>Components/Output/SevenSegment/SevenSegment.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentEdge.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
@@ -90,7 +101,6 @@
         <file>Components/Input/Buttons/Text Console Icon@2x.png</file>
         <file>Components/help/HelpWindow.qml</file>
         <file>Components/editor/IssueMark.qml</file>
-        <file>Components/help/HelpWindow.qml</file>
         <file>Components/editor/InlineMacros.qml</file>
     </qresource>
 </RCC>
