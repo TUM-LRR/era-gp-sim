@@ -19,6 +19,12 @@ settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right:
 
 toolbar { margin: 20px; background: white; }
 
+editor keywords immediate { color: red; font-weight: bold; }
+editor keywords instruction { color: blue; }
+editor keywords comment { color: green; }
+editor keywords register { color: #b18904; }
+editor keywords label { color: red; }
+
 register { background: transparent; height: 40px; margin-left: -5px; margin-right: 10px; overflow: auto; }
 register label { color: #212121; font-size: 12px; font-weight: bold; }
 register content { background: white; color: #212121; font-size: 12px; height: 25px; margin: 4px; radius: 2px; }
