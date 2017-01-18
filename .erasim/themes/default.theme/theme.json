@@ -1,61 +1,19 @@
 {
-    "window": {
-        "width": 0.9,
-        "background": "white",
-        "height": 0.9,
-        "initialWidth": 300,
-        "initialHeight": 350
-    },
-    "button": {
-        "border": {
-            "width": 2,
-            "color": "#82c4f8"
-        },
-        "radius": 4,
-        "disabled": {
-            "background": "#BDBDBD",
-            "color": "#212121",
-            "border": {
-                "color": "#d7d7d7"
-            }
-        },
-        "color": "#FFFFFF",
-        "height": 40,
-        "fontSize": 16
-    },
-    "snapshots": {
-        "dialog": {
-            "width": 400,
-            "background": "white",
-            "height": 95,
-            "button": {
-                "marginRight": 10,
-                "marginTop": 10,
-                "marginBottom": 20
-            },
-            "marginBottom": 40,
-            "marginRight": 10,
-            "input": {
-                "background": "white",
-                "border": {
-                    "width": 1,
-                    "color": "#BDBDBD"
-                },
-                "radius": 2,
-                "color": "#212121",
-                "fontSize": 14,
-                "marginTop": 8
-            },
-            "marginTop": 25,
-            "marginLeft": 10
-        }
-    },
     "settings": {
+        "h2": {
+            "marginTop": 8,
+            "color": "#757575",
+            "marginBottom": 10,
+            "fontSize": 13
+        },
         "paddingTop": 15,
-        "h1": {
-            "color": "#212121",
-            "fontSize": 16,
-            "padding": 10
+        "snapshots": {
+            "button": {
+                "paddingLeft": 10,
+                "background": "#FFFFFF",
+                "paddingRight": 20,
+                "fontSize": 14
+            }
         },
         "section": {
             "height": 95,
@@ -65,41 +23,97 @@
             "color": "#BDBDBD",
             "height": 1
         },
-        "snapshots": {
-            "button": {
-                "paddingLeft": 10,
-                "fontSize": 14,
-                "background": "#FFFFFF",
-                "paddingRight": 20
-            }
+        "h1": {
+            "padding": 10,
+            "fontSize": 16,
+            "color": "#212121"
+        }
+    },
+    "button": {
+        "disabled": {
+            "border": {
+                "color": "#d7d7d7"
+            },
+            "color": "#212121",
+            "background": "#BDBDBD"
         },
-        "h2": {
-            "color": "#757575",
-            "marginBottom": 10,
-            "fontSize": 13,
-            "marginTop": 8
+        "height": 40,
+        "radius": 4,
+        "border": {
+            "color": "#82c4f8",
+            "width": 2
+        },
+        "color": "#FFFFFF",
+        "fontSize": 16
+    },
+    "window": {
+        "height": 0.9,
+        "background": "white",
+        "initialHeight": 350,
+        "initialWidth": 300,
+        "width": 0.9
+    },
+    "snapshots": {
+        "title": {
+            "height": 20,
+            "background": "white",
+            "textAlign": "center",
+            "fontWeight": "bold",
+            "color": "#212121",
+            "fontSize": 12
+        },
+        "dialog": {
+            "marginTop": 25,
+            "marginBottom": 40,
+            "marginLeft": 10,
+            "button": {
+                "marginTop": 10,
+                "marginBottom": 20,
+                "marginRight": 10
+            },
+            "width": 400,
+            "background": "white",
+            "input": {
+                "marginTop": 8,
+                "border": {
+                    "color": "#BDBDBD",
+                    "width": 1
+                },
+                "background": "white",
+                "radius": 2,
+                "color": "#212121",
+                "fontSize": 14
+            },
+            "height": 95,
+            "marginRight": 10
+        },
+        "button": {
+            "color": "#FF4081",
+            "marginBottom": 2,
+            "background": "white",
+            "fontSize": 16
         }
     },
     "register": {
         "border": 10
     },
     "createProject": {
-        "width": 280,
+        "marginTop": 10,
         "section": {
             "borderWidth": 1,
-            "height": 50,
             "borderColor": "#BDBDBD",
+            "height": 50,
             "fontSize": 20,
             "margin": 20
         },
         "button": {
-            "width": 160,
+            "marginTop": 10,
             "background": "#2196F3",
-            "marginTop": 10
+            "width": 160
         },
-        "marginTop": 10,
         "name": {
             "length": 80
-        }
+        },
+        "width": 280
     }
 }

@@ -17,6 +17,8 @@ settings h2 { font-size: 13px; margin-top: 8px; margin-bottom: 10px; color: #757
 settings hr { color: #BDBDBD; height: 1px; }
 settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
 
+snapshots title { background: white; color: #212121; font-weight: bold; font-size: 12px; text-align: center; height: 20px; }
+snapshots button { background: white; color: #FF4081; font-size: 16px; margin-bottom: 2px; }
 snapshots dialog { background: white; margin-left: 10px; margin-right: 10px; margin-top: 25px; margin-bottom: 40px; width: 400px; height: 95px; }
 snapshots dialog input { background: white; color: #212121; font-size: 14px; margin-top: 8px; radius: 2px; }
 snapshots dialog input border { color: #BDBDBD; width: 1px; }

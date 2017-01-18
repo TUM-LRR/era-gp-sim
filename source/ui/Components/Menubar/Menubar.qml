@@ -51,9 +51,14 @@ MenuBar {
       text: "Settings"
       shortcut: "Ctrl+,"
 
-      onTriggered: {
-        main.config.show();
-      }
+      onTriggered: main.config.show();
+    }
+
+    MenuItem {
+      id: quit
+      text: "Quit Application"
+      shortcut: "Ctrl+Shift+W"
+      onTriggered: window.close()
     }
 
     MenuItem {

@@ -22,113 +22,21 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
+import Theme 1.0
+
 Item {
   anchors.fill: parent
 
-  Rectangle {
-    id: moduleName
-    anchors.top: parent.top
-    height: 20
-    Text {
-      text: "Snapshots"
-      color: "gray"
-      font.bold: true
-      font.pixelSize: 12
-    }
-  }
-
-  SnapshotDialog { }
-
-  // Add a snapshot
-  Button {
-    id: addButton
-    anchors.top: moduleName.bottom
-    anchors.horizontalCenter: parent.horizontalCenter
-    height: 30
-    text: "Save Snapshot"
-    onClicked: snapshotDialog.open()
-  }
+  SnapshotHeader { id: header }
+  SnapshotDialog { id: snapshotDialog }
 
   Connections {
     target: snapshotComponent
     onSnapshotsChanged: listView.model = guiProject.getSnapshots()
   }
 
-  // Defines how the the entries should be presented
-  Component {
-    id: listDelegate
-    Item {
-      property alias text: textItem.text
-      height: textItem.height
-      width: listView.width
-      
-      Text {
-        id: textItem
-        anchors.left: parent.left
-        anchors.leftMargin: 3
-        anchors.verticalCenter: parent.verticalCenter
-        text: model.modelData
-        font.bold: true
-      }
-
-      // Mouse are to check if the mouse hovers above this list entry
-      MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        z: listView.z + 1
-        hoverEnabled: true
-        acceptedButtons: Qt.NoButton
-        propagateComposedEvents: true
-        onEntered: {
-          listView.currentIndex = index;
-          loadButton.visible = true;
-          deleteButton.visible = true;
-        }
-        onExited: {
-          loadButton.visible = false;
-          deleteButton.visible = false;
-          if(listView.currentIndex === index) {
-            listView.currentIndex = -1;
-          }
-        }
-
-        /*Buttons to load or delete a snapshot
-        These buttons can't be in the highlight component, as the
-        text of this snapshot entry would be above them.
-        */
-        Button {
-          id: loadButton
-          anchors.right: deleteButton.left
-          anchors.verticalCenter: parent.verticalCenter
-          height: textLoad.height + 2
-          width: textLoad.width + 5
-          visible: false
-          onClicked: guiProject.loadSnapshot(model.modelData);
-          Text {
-            id: textLoad
-            text: "Load"
-            color: "green"
-            anchors.centerIn: parent
-          }
-        }
-
-        Button {
-          id: deleteButton
-          anchors.right: parent.right
-          anchors.verticalCenter: parent.verticalCenter
-          height: textDelete.height + 2
-          width: textDelete.width + 5
-          visible: false
-          onClicked: guiProject.removeSnapshot(model.modelData);
-          Text {
-            id: textDelete
-            text: "Delete"
-            color: "red"
-            anchors.centerIn: parent
-          }
-        }
-      }
-    }
+  SnapshotItem {
+    id: snapshotItem
   }
 
   // A component to display a highlight on mouse hover.
@@ -159,15 +67,19 @@ Item {
   // The list view to display a list of snapshots.
   ListView {
     id: listView
-    anchors.topMargin: 10
-    anchors.top: addButton.bottom
-    anchors.left: parent.left
-    anchors.bottom: parent.bottom
-    anchors.right: parent.right
+    anchors {
+      topMargin: 10
+      top: header.bottom
+      left: parent.left
+      bottom: parent.bottom
+      right: parent.right
+    }
+
+
     model: guiProject.getSnapshots();
     highlight: highlightComponent
     highlightFollowsCurrentItem: true
     currentIndex: -1
-    delegate: listDelegate
+    delegate: snapshotItem
   }
 }
