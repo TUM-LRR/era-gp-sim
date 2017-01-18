@@ -228,13 +228,9 @@ ScrollView {
 
           Connections {
             target: guiProject
-            // Send when text changes
-            onCommandListUpdated: {
-              textArea.updateHelpTooltip();
-            }
+            onCommandListUpdated: textArea.updateHelpTooltip();
           }
 
-          //timer for parsing
           Timer {
             id: parseTimer
             interval: 1000
@@ -242,7 +238,7 @@ ScrollView {
             onTriggered: {
               // don't parse while executing to avoid parsing multiple
               // times on stopping (onStopped triggers parse)
-              if(!tabView.getCurrentProjectItem().isRunning) {
+              if(!tabView.getCurrentProjectItem().running) {
                 editor.parse();
               }
             }

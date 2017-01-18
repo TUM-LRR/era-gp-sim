@@ -182,10 +182,9 @@ FinalRepresentation RiscvParser::parse(const std::string& text) {
 
   auto riscvInstructionSize = 4u;
 
-  MemoryAllocator allocator({
-    MemorySectionDefinition("data", byteAlignment, 1),
-    MemorySectionDefinition("text", riscvInstructionSize, 1)
-  });
+  MemoryAllocator allocator(
+      {MemorySectionDefinition("data", byteAlignment, 1),
+       MemorySectionDefinition("text", riscvInstructionSize, 1)});
 
   TransformationParameters parameters(
       _architecture,

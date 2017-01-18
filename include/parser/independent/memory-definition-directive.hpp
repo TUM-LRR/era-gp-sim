@@ -28,12 +28,12 @@
 #include "core/memory-access.hpp"
 #include "core/memory-value.hpp"
 #include "parser/common/compile-error-list.hpp"
+#include "parser/independent/allocate-memory-immutable-arguments.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 #include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/expression-compiler-clike.hpp"
 #include "parser/independent/intermediate-directive.hpp"
 #include "parser/independent/memory-allocator.hpp"
-#include "parser/independent/preprocessing-immutable-arguments.hpp"
 #include "parser/independent/relative-memory-position.hpp"
 #include "parser/independent/section-tracker.hpp"
 #include "parser/independent/string-parser.hpp"
@@ -97,7 +97,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
    * \param tracker The section tracker so we know in which section to reserve
    * our data.
    */
-  virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
+  virtual void allocateMemory(const AllocateMemoryImmutableArguments& immutable,
                               CompileErrorList& errors,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker) {
@@ -118,7 +118,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
     // Let's hope, the compiler optimizes this...
     auto temporary = CompileErrorList();
     size_t sizeInBytes = _processValues(_values,
-                                        SymbolReplacer(),
+                                        immutable.preliminaryReplacer(),
                                         _cellSize,
                                         temporary,
                                         [](T value, size_t position) {});

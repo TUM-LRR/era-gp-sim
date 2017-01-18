@@ -136,10 +136,9 @@ class Settings : public QQmlPropertyMap {
    * Should be .erasim/settings.json (in canonical format).
    *
    * \param directoryPath The path of the settings directory.
-   * \returns A status, possibly with the directory path as the value.
+   * \returns The file path of the settings. The file may not exist.
    */
-  static StatusWithValue<QString>
-  _findSettingsFile(const QString& directoryPath);
+  static QString _findSettingsFile(const QString& directoryPath);
 
   /**
    * Constructor.
@@ -178,6 +177,15 @@ class Settings : public QQmlPropertyMap {
   Status _checkSnapshotLocation(Json& json);
 
   /**
+   * Checks if the settings file exists and creates it otherwise from a settings
+   * JSON.
+   *
+   * \param json The newly loaded JSON object.
+   * \returns A status object indicating the success of the operation.
+   */
+  Status _checkSettingsFile(Json& json);
+
+  /**
    * Stores the given JSON object to disk.
    *
    * \param json The JSON object to store.
@@ -193,6 +201,10 @@ class Settings : public QQmlPropertyMap {
 
   /** A list of all theme names. */
   mutable QStringList _listOfAllThemeNames;
+
+  /** The path to the default settings (in the qrc). */
+  static constexpr auto _settingsDefaultPath =
+      ":/Components/Settings/default-settings.json";
 };
 
 
