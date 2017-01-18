@@ -38,6 +38,45 @@ Core weiter, welcher dann wiederum die übrigen Module anspricht.
 
 \subsection{Architektur}
 
+\todo[inline]{
+	* Syntax Tree \\
+	* Factory \\
+	* Architecture \\
+	* Teilung common/riscv \\
+	* ValidationResult \\
+	* InstructionNode \\
+}
+
+Die Architektur (kurz: \textit{Arch}) kümmert sich um die Ausführung der
+Assembler Programme und wurde vor dem Hintergrund entworfen, einen möglichst
+Architektur-unabhängigen Simulator zu entwickeln. So stellt sie Klassen zur
+Verfügung, mit der eine konkrete Architektur (wie z.B. RISC-V) umgesetzt
+werden kann. Eine Architektur kann in \texttt{YAML} Konfigurationsdateien
+beschrieben, und anschließend in das Programm geladen werden. \\
+Da wir uns gegen die Ausführung von Maschinencode entschieden haben, bietet
+die Architektur eine abstraktere Darstellung von Assembler Programmen in Form
+eines Syntax Baums. Des Weiteren ist die Architektur für die Validierung einer
+Instruktion zuständig, und stellt bei Fehlern entsprechende Nachrichten zur
+Verfügung, die dem Nutzer helfen sollen, das Problem zu beheben.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth,keepaspectratio]{img/arch-overview.jpg}
+	\caption{Schnittstelle Architektur Übersicht (sehr professionell)}
+	\label{fig:arch-overview}
+\end{figure}
+
+Abbildung \ref{fig:arch-overview} zeigt eine Übersicht über die Schnittstelle zu den
+anderen Modulen.
+\todo[inline]{Mit dem Bild will ich das Zusammenspiel aus Architecture,
+Factory und SyntaxTree zeigen. Da brauchen wir vielleicht ein besseres Diagramm ;)}
+
+\subsubsection{Architecture Description Language}
+
+Eine Architektur kann in \texttt{YAML} Dateien beschrieben werden.
+
+\todo[inline]{@Peter}
+
 \subsection{Parser}
 
 \subsection{Core}
