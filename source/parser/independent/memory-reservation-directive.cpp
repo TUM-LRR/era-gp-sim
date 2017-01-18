@@ -56,7 +56,9 @@ void MemoryReservationDirective::allocateMemory(
         name().positionInterval(),
         "Careful, you are trying to reserve memory in the text "
         "section where the program instructions are stored. This "
-        "might cause unexpected behavior.");
+        "might cause unexpected behavior. Use a '.section "
+        "data' directive in front of this to resolve the "
+        "issue.");
   }
 
   if (_values.empty()) {
@@ -68,7 +70,8 @@ void MemoryReservationDirective::allocateMemory(
   for (const auto& value : _values) {
     // b/c of the definition of argumentCompile and the C standard, the result
     // is non-negative.
-    auto result = _argumentCompile(value, SymbolReplacer(), errors);
+    auto result =
+        _argumentCompile(value, immutable.preliminaryReplacer(), errors);
     if (result > 0) {
       sizeInCells += result;
     } else {

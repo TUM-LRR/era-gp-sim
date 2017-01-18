@@ -118,7 +118,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
     // Let's hope, the compiler optimizes this...
     auto temporary = CompileErrorList();
     size_t sizeInBytes = _processValues(_values,
-                                        SymbolReplacer(),
+                                        immutable.preliminaryReplacer(),
                                         _cellSize,
                                         temporary,
                                         [](T value, size_t position) {});
