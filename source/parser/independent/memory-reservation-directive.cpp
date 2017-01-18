@@ -28,7 +28,7 @@
 #include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/expression-compiler-clike.hpp"
 #include "parser/independent/memory-allocator.hpp"
-#include "parser/independent/preprocessing-immutable-arguments.hpp"
+#include "parser/independent/precompile-immutable-arguments.hpp"
 #include "parser/independent/section-tracker.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
@@ -47,7 +47,7 @@ MemoryReservationDirective::MemoryReservationDirective(
 }
 
 void MemoryReservationDirective::allocateMemory(
-    const PreprocessingImmutableArguments& immutable,
+    const PrecompileImmutableArguments& immutable,
     CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {

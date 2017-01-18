@@ -24,7 +24,7 @@
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 #include "parser/independent/execute-immutable-arguments.hpp"
-#include "parser/independent/preprocessing-immutable-arguments.hpp"
+#include "parser/independent/precompile-immutable-arguments.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
 #include "parser/independent/syntax-tree-generator.hpp"

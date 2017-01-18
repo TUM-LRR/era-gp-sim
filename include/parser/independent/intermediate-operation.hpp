@@ -45,7 +45,7 @@ class MemoryAllocator;
 
 class ExecuteImmutableArguments;
 class EnhanceSymbolTableImmutableArguments;
-class PreprocessingImmutableArguments;
+class PrecompileImmutableArguments;
 
 /**
  * A memory address substitute as long as we do not have one.
@@ -133,7 +133,7 @@ class IntermediateOperation {
 * \param tracker The section tracker so we know in which section to reserve our
 * data.
 */
-  virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
+  virtual void allocateMemory(const PrecompileImmutableArguments& immutable,
                               CompileErrorList& errors,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);
@@ -145,7 +145,7 @@ class IntermediateOperation {
 * \param errors The compile error list to note down any errors.
 * \param macroTable A table to record occured macros.
 */
-  virtual void precompile(const PreprocessingImmutableArguments& immutable,
+  virtual void precompile(const PrecompileImmutableArguments& immutable,
                           CompileErrorList& errors,
                           MacroDirectiveTable& macroTable);
 

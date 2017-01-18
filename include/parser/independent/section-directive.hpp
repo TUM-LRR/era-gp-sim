@@ -27,7 +27,6 @@
 #include "parser/independent/intermediate-directive.hpp"
 
 class MemoryAllocator;
-class SymbolTable;
 class SyntaxTreeGenerator;
 class CompileErrorList;
 class MemoryAccess;
@@ -61,7 +60,7 @@ class SectionDirective : public IntermediateDirective {
      * \param tracker The section tracker so we know in which section to reserve
    * our data.
      */
-  virtual void allocateMemory(const PreprocessingImmutableArguments& immutable,
+  virtual void allocateMemory(const PrecompileImmutableArguments& immutable,
                               CompileErrorList& errors,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);

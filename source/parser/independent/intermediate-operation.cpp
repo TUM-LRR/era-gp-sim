@@ -28,7 +28,7 @@
 #include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/memory-allocator.hpp"
 #include "parser/independent/memory-section-definition.hpp"
-#include "parser/independent/preprocessing-immutable-arguments.hpp"
+#include "parser/independent/precompile-immutable-arguments.hpp"
 #include "parser/independent/relative-memory-position.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
@@ -54,14 +54,14 @@ void IntermediateOperation::enhanceSymbolTable(
 }
 
 void IntermediateOperation::allocateMemory(
-    const PreprocessingImmutableArguments& immutable,
+    const PrecompileImmutableArguments& immutable,
     CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
 }
 
 void IntermediateOperation::precompile(
-    const PreprocessingImmutableArguments& immutable,
+    const PrecompileImmutableArguments& immutable,
     CompileErrorList& errors,
     MacroDirectiveTable& macroTable) {
 }

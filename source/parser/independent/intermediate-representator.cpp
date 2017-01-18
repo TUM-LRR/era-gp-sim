@@ -33,7 +33,7 @@
 #include "parser/independent/intermediate-macro-instruction.hpp"
 #include "parser/independent/macro-directive-table.hpp"
 #include "parser/independent/memory-allocator.hpp"
-#include "parser/independent/preprocessing-immutable-arguments.hpp"
+#include "parser/independent/precompile-immutable-arguments.hpp"
 #include "parser/independent/section-tracker.hpp"
 #include "parser/independent/symbol-graph-evaluation.hpp"
 #include "parser/independent/symbol-graph.hpp"
@@ -182,12 +182,12 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
                      "Macro not closed. Missing a macro end directive?");
   }
 
-  auto preprocessingArguments = PreprocessingImmutableArguments(
+  auto precompileImmutableArguments = PrecompileImmutableArguments(
       parameters.architecture(), parameters.generator());
 
   auto macroTable = MacroDirectiveTable();
   for (const auto& command : _commandList) {
-    command->precompile(preprocessingArguments, errors, macroTable);
+    command->precompile(precompileImmutableArguments, errors, macroTable);
   }
 
   IntermediateMacroInstruction::replaceWithMacros(
@@ -202,7 +202,8 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
   auto firstMemoryExceedingOperation = IntermediateOperationPointer(nullptr);
 
   for (const auto& command : _commandList) {
-    command->allocateMemory(preprocessingArguments, errors, allocator, tracker);
+    command->allocateMemory(
+        precompileImmutableArguments, errors, allocator, tracker);
     if (allocator.estimateSize() > allowedSize &&
         !firstMemoryExceedingOperation) {
       firstMemoryExceedingOperation = command;
@@ -212,8 +213,8 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
   auto allocatedSize = allocator.calculatePositions();
 
   auto graph = SymbolGraph();
-  auto symbolTableArguments =
-      EnhanceSymbolTableImmutableArguments(preprocessingArguments, allocator);
+  auto symbolTableArguments = EnhanceSymbolTableImmutableArguments(
+      precompileImmutableArguments, SymbolReplacer(), allocator);
   for (const auto& command : _commandList) {
     command->enhanceSymbolTable(symbolTableArguments, errors, graph);
   }
