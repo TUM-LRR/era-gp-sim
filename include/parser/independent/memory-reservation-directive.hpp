@@ -32,7 +32,7 @@ class CodePositionInterval;
 class SyntaxTreeGenerator;
 class Architecture;
 class SymbolReplacer;
-struct FinalRepresentation;
+class FinalRepresentation;
 
 class MemoryReservationDirective : public IntermediateDirective {
  public:
@@ -79,7 +79,7 @@ class MemoryReservationDirective : public IntermediateDirective {
    * \param tracker The section tracker so we know in which section to reserve
    * our data.
    */
-  virtual void allocateMemory(const PrecompileImmutableArguments& immutable,
+  virtual void allocateMemory(const AllocateMemoryImmutableArguments& immutable,
                               CompileErrorList& errors,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);

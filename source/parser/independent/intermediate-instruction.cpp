@@ -33,11 +33,11 @@
 #include "parser/common/code-position.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/common/final-representation.hpp"
+#include "parser/independent/allocate-memory-immutable-arguments.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 #include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/macro-directive.hpp"
 #include "parser/independent/positioned-string.hpp"
-#include "parser/independent/precompile-immutable-arguments.hpp"
 #include "parser/independent/section-tracker.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
@@ -147,7 +147,7 @@ void IntermediateInstruction::enhanceSymbolTable(
 }
 
 void IntermediateInstruction::allocateMemory(
-    const PrecompileImmutableArguments& immutable,
+    const AllocateMemoryImmutableArguments& immutable,
     CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {

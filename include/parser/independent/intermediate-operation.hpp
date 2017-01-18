@@ -31,20 +31,18 @@
 class Architecture;
 class SymbolReplacer;
 class MemoryAllocator;
-
 class MemoryValue;
 class MemoryAccess;
 class CompileErrorList;
 class SectionTracker;
 class MacroDirectiveTable;
 class SymbolGraph;
-
 class IntermediateOperation;
 class Architecture;
 class MemoryAllocator;
-
 class ExecuteImmutableArguments;
 class EnhanceSymbolTableImmutableArguments;
+class AllocateMemoryImmutableArguments;
 class PrecompileImmutableArguments;
 
 /**
@@ -133,7 +131,7 @@ class IntermediateOperation {
 * \param tracker The section tracker so we know in which section to reserve our
 * data.
 */
-  virtual void allocateMemory(const PrecompileImmutableArguments& immutable,
+  virtual void allocateMemory(const AllocateMemoryImmutableArguments& immutable,
                               CompileErrorList& errors,
                               MemoryAllocator& allocator,
                               SectionTracker& tracker);
@@ -147,6 +145,7 @@ class IntermediateOperation {
 */
   virtual void precompile(const PrecompileImmutableArguments& immutable,
                           CompileErrorList& errors,
+                          SymbolGraph& graph,
                           MacroDirectiveTable& macroTable);
 
   /**

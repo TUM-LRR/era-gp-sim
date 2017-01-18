@@ -24,11 +24,11 @@
 
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
+#include "parser/independent/allocate-memory-immutable-arguments.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 #include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/expression-compiler-clike.hpp"
 #include "parser/independent/memory-allocator.hpp"
-#include "parser/independent/precompile-immutable-arguments.hpp"
 #include "parser/independent/section-tracker.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
@@ -47,7 +47,7 @@ MemoryReservationDirective::MemoryReservationDirective(
 }
 
 void MemoryReservationDirective::allocateMemory(
-    const PrecompileImmutableArguments& immutable,
+    const AllocateMemoryImmutableArguments& immutable,
     CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {

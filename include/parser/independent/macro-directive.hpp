@@ -73,6 +73,7 @@ class MacroDirective : public IntermediateDirective {
    */
   virtual void precompile(const PrecompileImmutableArguments& immutable,
                           CompileErrorList& errors,
+                          SymbolGraph& graph,
                           MacroDirectiveTable& macroTable);
 
 

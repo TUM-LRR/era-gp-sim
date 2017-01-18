@@ -104,7 +104,7 @@ void IntermediateMacroInstruction::execute(
 }
 
 void IntermediateMacroInstruction::allocateMemory(
-    const PrecompileImmutableArguments& immutable,
+    const AllocateMemoryImmutableArguments& immutable,
     CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {

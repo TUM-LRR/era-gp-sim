@@ -24,6 +24,7 @@
 #include "common/assert.hpp"
 #include "parser/common/code-position-interval.hpp"
 #include "parser/common/final-representation.hpp"
+#include "parser/independent/allocate-memory-immutable-arguments.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 #include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/memory-allocator.hpp"
@@ -54,7 +55,7 @@ void IntermediateOperation::enhanceSymbolTable(
 }
 
 void IntermediateOperation::allocateMemory(
-    const PrecompileImmutableArguments& immutable,
+    const AllocateMemoryImmutableArguments& immutable,
     CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
@@ -63,6 +64,7 @@ void IntermediateOperation::allocateMemory(
 void IntermediateOperation::precompile(
     const PrecompileImmutableArguments& immutable,
     CompileErrorList& errors,
+    SymbolGraph& graph,
     MacroDirectiveTable& macroTable) {
 }
 

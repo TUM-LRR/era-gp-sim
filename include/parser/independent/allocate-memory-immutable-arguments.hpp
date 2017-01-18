@@ -91,4 +91,5 @@ class AllocateMemoryImmutableArguments {
 };
 
 #endif /* ERAGPSIM_PARSER_INDEPENDENT_ALLOCATE_MEMORY_IMMUTABLE_ARGUMENTS_HPP \
+        * \                                                                   \
           */
