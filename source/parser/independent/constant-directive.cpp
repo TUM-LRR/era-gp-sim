@@ -41,40 +41,37 @@ void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
                                 FinalCommandVector& commandOutput,
                                 MemoryAccess& memoryAccess) {
   // Try to parse argument to catch errors early.
-  auto fullExpression = immutable.replacer().replace(_expression, errors);
-  if (!fullExpression.string().empty()) {
-    immutable.generator().transformOperand(
-        _expression, immutable.replacer(), errors);
-  } else {
-    // better error messages:
-    //  0 arguments -> this argument should be the name
-    //  1 argument -> this argument should be the value
-    // >1 arguments -> too many
-    switch (_arguments.size()) {
-      case 0:
-        errors.pushError(name().positionInterval(), "Missing constant name.");
-        break;
-      case 1:
-        errors.pushError(
-            name().positionInterval().unite(_arguments[0].positionInterval()),
-            "Missing constant value.");
-        break;
-      default:
-        errors.pushError(
-            name().positionInterval(),
-            "Malformed constant directive, too many operands provided.");
-        break;
-    }
-  }
+  immutable.generator().transformOperand(
+      _expression, immutable.replacer(), errors);
 }
 
-void ConstantDirective::enhanceSymbolTable(
-    const EnhanceSymbolTableImmutableArguments& immutable,
+void ConstantDirective::precompile(
+    const PrecompileImmutableArguments& immutable,
     CompileErrorList& errors,
-    SymbolGraph& graph) {
-  if (_arguments.size() != 2) {
-    errors.pushError(name().positionInterval(), "Malformed constant directive");
-    return;
+    SymbolGraph& graph,
+    MacroDirectiveTable& macroTable) {
+  // better error messages:
+  //  0 arguments -> this argument should be the name
+  //  1 argument  -> this argument should be the value
+  //  2 arguments -> ok
+  // >2 arguments -> too many
+  switch (_arguments.size()) {
+    case 0:
+      errors.pushError(name().positionInterval(), "Missing constant name.");
+      return;
+    case 1:
+      errors.pushError(
+          name().positionInterval().unite(_arguments[0].positionInterval()),
+          "Missing constant value.");
+      return;
+    case 2:
+      // Everything ok, break.
+      break;
+    default:
+      errors.pushError(
+          name().positionInterval(),
+          "Malformed constant directive, too many operands provided.");
+      return;
   }
 
   // We embrace the expression with brackets, so it causes no conflicts when we

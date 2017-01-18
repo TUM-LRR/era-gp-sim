@@ -90,6 +90,6 @@ class AllocateMemoryImmutableArguments {
   SymbolReplacer _preliminaryReplacer;
 };
 
-#endif /* ERAGPSIM_PARSER_INDEPENDENT_ALLOCATE_MEMORY_IMMUTABLE_ARGUMENTS_HPP \
-        * \                                                                   \
-          */
+// clang-format off
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_ALLOCATE_MEMORY_IMMUTABLE_ARGUMENTS_HPP */
+// clang-format on
