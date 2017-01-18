@@ -16,19 +16,15 @@
         <file>InnerSplitviews.qml</file>
         <file>Components/editor/Editor.qml</file>
         <file>Components/Memory/MemoryComponent.qml</file>
-        <file>Components/Register/Register.qml</file>
         <file>InnerSplitviewsEditor.qml</file>
-        <file>Components/Toolbar/ToolbarMainWindow.qml</file>
-        <file>Components/Toolbar/Icons/RunBreakpointButton.svg</file>
-        <file>Components/Toolbar/Icons/RunBreakpointButtonWithBorder.svg</file>
-        <file>Components/Toolbar/Icons/RunButton.svg</file>
-        <file>Components/Toolbar/Icons/RunButtonWithBorder.svg</file>
-        <file>Components/Toolbar/Icons/RunLineButton.svg</file>
-        <file>Components/Toolbar/Icons/RunLineButtonWithBorder.svg</file>
-        <file>Components/Toolbar/Icons/StopButtonActive.svg</file>
-        <file>Components/Toolbar/Icons/StopButtonActiveWithBorder.svg</file>
-        <file>Components/Toolbar/Icons/StopButtonInactive.svg</file>
-        <file>Components/Toolbar/Icons/StopButtonInactiveWithBorder.svg</file>
+        <file>Components/Toolbar/ToolbarComponent.qml</file>
+        <file>Components/Toolbar/ToolbarButton.qml</file>
+        <file>Components/Toolbar/Icons/Run.svg</file>
+        <file>Components/Toolbar/Icons/Step.svg</file>
+        <file>Components/Toolbar/Icons/Stop.svg</file>
+        <file>Components/Toolbar/Icons/Clear.svg</file>
+        <file>Components/Toolbar/Icons/Parse.svg</file>
+        <file>Components/Toolbar/Icons/RunToBreakpoint.svg</file>
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Settings/SettingsWindow.qml</file>
         <file>Components/Settings/Sections/SnapshotLocation.qml</file>
@@ -53,8 +49,13 @@
         <file>Components/Output/Buttons/Sevensegment Icon Selected@2x.png</file>
         <file>Components/Output/Buttons/Sevensegment Icon.png</file>
         <file>Components/Output/Buttons/Sevensegment Icon@2x.png</file>
+        <file>Components/Register/RegisterLabel.qml</file>
+        <file>Components/Register/Register.qml</file>
+        <file>Components/Register/RegisterFormat.qml</file>
         <file>Components/Register/DefaultRegister.qml</file>
         <file>Components/Register/FlagRegister.qml</file>
+        <file>Components/Register/ContextMenu.qml</file>
+        <file>Components/Register/RegisterComponent.qml</file>
         <file>Components/ProjectCreation/ProjectCreationScreen.qml</file>
         <file>Components/ProjectCreation/ProjectCreationSection.qml</file>
         <file>Components/ProjectCreation/Sections/ProjectName.qml</file>
