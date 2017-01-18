@@ -62,15 +62,15 @@ Die Einstellung der Formate erfolgt über den Button, der sich rechts vom Regist
 
 Um den Wert eines Registers manuell zu ändern, wird der Text im Textfeld bearbeitet und die Eingabe mit Enter bestätigt. Auf die Einhaltung der Formatierung wie etwa der Leerzeichen bei Byte-Grenzen muss nicht geachtet werden. Nach Bestätigung der Eingabe wird der Registerwert automatisch der aktuellen Einstellung entsprechend formatiert. Ist etwa ein eingegebener Wert zu lang um im Register gegebener Größe gespeichert werden zu können, werden die höherwertigen überschüssigen Zeichen entfernt. Zudem wird der Registerinhalt durch höherwertige Nullen auf seine Maximalgröße aufgefüllt. Ungültige Zeichen werden automatisch entfernt. Die Registerwerte erhalten im Binär-Format den Präfix ``0b'', im Hexadezimal-Format den Präfix ``0x''.
 
-Über das Einstellungsmenü der Registerkomponente (erreichbar über die Kopfzeile der Komponente) können alle Register auf einmal formatiert werden. Steht das gewählt Format für ein Register nicht zur Vergügung (bspw. Dezimal für den Programmzähler), so behält dieses seine ursprüngliche Formatierung bei.
+Über das Einstellungsmenü der Registerkomponente (erreichbar über die Kopfzeile der Komponente) können alle Register auf einmal formatiert werden. Steht das gewählt Format für ein Register nicht zur Verfügung (bspw. Dezimal für den Programmzähler), so behält dieses seine ursprüngliche Formatierung bei.
 
-Einige Register können je nach Architektur festverdrahtet sein und können deshalb weder über eine Assemblerinstruktion noch manuell geändert werden. Die Textfelder dieser Register sind deaktiviert.
+Einige Register können je nach Architektur fest verdrahtet sein und können deshalb weder über eine Assemblerinstruktion noch manuell geändert werden. Die Textfelder dieser Register sind deaktiviert.
 
 Führt man eine einzelne Zeile aus, die den Wert eines Registers ändert, so wird dieses farblich hinterlegt, um die Änderung schnell nachvollziehen zu können.
 
 
 \subsubsection{Speicherkomponente}
-Der Haupspeicher spielt bei allen Programmen eine sehr wichtige Rolle.
+Der Hauptspeicher spielt bei allen Programmen eine sehr wichtige Rolle.
 Dort sind sowohl der assemblierte Programmcode, der Callstack, als auch Daten zum Arbeiten hinterlegt.
 Der Speicher ist dabei in Zellen unterteilt, die in der Regel 1 Byte groß sind.
 Auch der Simulator hat natürlich einen solchen RAM, der sich flexibel an die Bedürfnisse des Nutzers anpassen lässt.
@@ -108,20 +108,30 @@ Die Ersetzung erfolgt sofort.
 \todo[inline]{Hier sollte (für alle Komponenten ja gleich) die Einstellungsmöglichkeiten (Zahnrad-knopf) und welches Symbol welche Komponente bedeutet}
 
 \subsubsection{Eingabe -- Pfeiltasten}
-\todo[inline]{v.a. welche Werte werden für welchen Pfeil geschrieben}
+Die Eingabe über die Pfeiltasten, welche in Abbildung \ref{Joystick} zu sehen sind, wird in das Byte geschrieben, dessen Adresse in den Einstellungen angegeben wurde. Der Pfeil rechts schreibt den Wert 1, alle anderen Pfeile werden fortlaufend im Uhrzeigersinn nummeriert. Das heißt, dass beispielsweise der Pfeil nach oben die Zahl vier in den Speicher schreibt.
 \begin{figure}[ht]
 	\centering
-  \includegraphics[width=0.2\textwidth]{Images/Joystick}
+	\includegraphics[width=0.2\textwidth]{Images/Joystick}
 	\caption{Eingabe mit Pfeiltasten}
 	\label{Joystick}
 \end{figure}
+Eine ähnliche Eingabe kann auch über die Konsole erfolgen.
 
 
 \subsubsection{Eingabe -- Mausklick}
-\todo[inline]{welche werte werden geschrieben, Reihenfolge?}
+%\todo[inline]{welche werte werden geschrieben, Reihenfolge?}
+Wird ein Punkt im farbigen Feld dieses Moduls geklickt, so werden seine Koordinaten in den Speicher geschrieben. In das erste Byte wird die x-Koordinate eingetragen, in das zweite die y-Koordinate. Die Angabe erfolgt dabei in ganzen Zahlen. Das linke obere Eck hat die Koordinaten $(0, 0)$, die rechte untere entsprechend $(255, 255)$. Man erkennt, dass der größte mögliche Wert $255$ ist. Die Werte der y-Achse steigen dabei, wie am Rand des Moduls eingezeichnet, siehe Abbildung \ref{MouseArea}, nach unten hin an, die Werte der x-Achse nach rechts.
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.3\textwidth]{Images/MouseArea}
+	\caption{Eingabe mit Mausklick}
+	\label{MouseArea}
+\end{figure}
 
 \subsubsection{Eingabe -- Text}
-\todo[inline]{wann wird geschriebener Text in den Speicher geschrieben?, Wie lang kann mein Text sein?}
+%\todo[inline]{wann wird geschriebener Text in den Speicher geschrieben?, Wie lang kann mein Text sein?}
+Die Texteingabe verfügt über zwei Modi, array-based und pipe-like.
+Im ersten Modus wird die Eingabe ab der Startadresse, angegeben in den Einstellungen, in den Speicher geschrieben. Verwendet werden dabei die ASCII-Zeichen. Die Eingabe wird übernommen und eingetragen, wenn die Enter-Taste gedrückt wird, dann wird auch der Inhalt des Feldes gelöscht. Die Maximale Länge ist wiederum in den Einstellungen angegeben und kann dort verändert werden. Verwendet man den zweiten Modus, so wird nach jeder Eingabe das entsprechende Zeichen an die Startadresse geschrieben. Man beachte, dass damit der letzte Wert überschrieben wird. Es ist dabei auch möglich, Pfeiltasten anzugeben. Befindet sich der Cursor im Eingabefeld und eine Pfeiltaste wird gedrückt, so wird für die Pfeiltaste rechts die eins in den Speicher geschrieben. Alle anderen sind fortlaufend im Uhrzeigersinn nummeriert, genau wie bei der Eingabe über die Buttons, die die Pfeiltasten zeigen. Der Inhalt des Eingabefeldes wird nach jedem Zeichen gelöscht.
 
 \subsubsection{Ausgabe -- Lichtbandanzeige}
 \todo[inline]{besondere Einstellungen! Farbwahl! Manuelles setzen der Strips möglich!}
@@ -198,7 +208,10 @@ Für die Anzeige gibt es zwei Einstellungen, die man über das Zahnrad rechts un
 
 
 \subsubsection{Ausgabe -- Konsole}
-\todo[inline]{pipe-like, array-based; }
-
+%\todo[inline]{pipe-like, array-based; }
+%\todo[inline]{pipe-like, array-based; }
+Die Konsole verfügt wiederum über zwei Modi, pipe-like und array-based, die in den Einstellungen ausgewählt werden können. Pipe-Like liest immer den Wert des Speichers an der Startadresse ein und gibt das entsprechende ASCII-Zeichen aus. Die Ausgabe wird dabei nicht gelöscht. Möchte man den Text, den die Konsole anzeigt, löschen, so ist das mit einem doppelten Rechtsklick möglich.
+Array-based hingegen liest ab der Speicheradresse, die in den Einstellungen gegeben ist, jedes Byte ein und wandelt es in das entsprechende ASCII-Zeichen um, bis das Ende des Speichers erreicht wird, oder ein Nullbyte auftritt. Der Text kann in dieser Komponente nicht verändert werden. Alle Änderungen müssen über den Speicher erfolgen.
 
 \subsection{Sonstige Features}
+
