@@ -15,7 +15,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/.*/
 
-import QtQuick 2.7
+import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 
@@ -76,7 +76,7 @@ ComboBox {
 
   function _tryToRestoreCachedFormatIndex() {
     // Try to restore a cached selected data type root.
-    if (treeView.dataTypeFormatCache[registerModel.index] !== undefined) {
+    if (treeView.dataTypeFormatCache[index] !== undefined) {
       root.currentIndex = treeView.dataTypeFormatCache[index];
     } else {    // If no cached format could be restored, load the default root.
       var defaultFormatIndex = indexOfFormat(treeView.defaultFormat);

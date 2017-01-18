@@ -54,8 +54,11 @@ Item {
     onClicked: contextMenu.popup();
   }
 
-  // Called by SplitViewItem.qml (i.e. component wrapper) when component settings icon was pressed.
-  function settingsButtonPressed() {
-    contextMenu.popup();
+  Connections {
+    target: registerComponent
+
+    onSettingsButtonPressed: {
+       contextMenu.popup();
+    }
   }
 }

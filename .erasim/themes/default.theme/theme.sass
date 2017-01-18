@@ -46,8 +46,11 @@ register
     border
       color: $divider-color
       width: 1
-    highlighted:
+    highlighted
       background: $accent-color
+    &:disabled
+      background: darken(white, 5%)
+      color: $secondary-text-color
   selector
     height: 23px
     width: 15px

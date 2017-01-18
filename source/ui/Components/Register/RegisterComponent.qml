@@ -21,9 +21,15 @@ import QtQuick.Controls.Styles 1.4
 import Theme 1.0
 
 Item {
+  id: registerComponent
+
   // Tell SplitViewItem (i.e. component wrapper) that settings are
   // available to make it display settings icon.
   property bool hasComponentSettings: true
+
+  // Called by SplitViewItem.qml (i.e. component wrapper) when component settings icon was pressed.
+  signal settingsButtonPressed
+
 
   ContextMenu {
     id: contextMenu

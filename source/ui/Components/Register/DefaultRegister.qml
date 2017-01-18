@@ -84,7 +84,13 @@ TextField {
   }
 
   style: TextFieldStyle {
-    textColor: Theme.register.content.color
+    textColor: {
+      if (enabled) {
+        Theme.register.content.color
+      } else {
+        Theme.register.content.disabled.color
+      }
+    }
     background: Rectangle {
       height: Theme.register.content.height
       radius: Theme.register.content.radius
@@ -93,6 +99,8 @@ TextField {
       color: {
         if (root.isHighlighted) {
           return Theme.register.content.highlighted.background;
+        } else if (!enabled) {
+          return Theme.register.content.disabled.background;
         } else {
           return Theme.register.content.background;
         }
@@ -106,7 +114,7 @@ TextField {
     if (formatSelector.selection === 'Binary') {
       return content.replace(/(\d{4})(?=.)/g, '$& ');
     } else if (formatSelector.selection === 'Hexadecimal') {
-      return content.replace(/(\d{2})(?=.)/g, '$& ');
+      return content.replace(/([\da-fA-F]{2})(?=.)/g, '$& ');
     } else {
       return content;
     }
