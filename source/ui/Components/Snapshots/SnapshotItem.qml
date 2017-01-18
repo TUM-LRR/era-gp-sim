@@ -27,49 +27,37 @@ import Theme 1.0
 Component {
   id: listDelegate
   Item {
-    property alias text: textItem.text
-    height: textItem.height
+    id: item
+    property alias text: snapshot.text
+    property bool active: listView.currentIndex == model.index
+
+    height: snapshot.height
     width: listView.width
 
-    Text {
-      id: textItem
-      anchors.left: parent.left
-      anchors.leftMargin: 3
-      anchors.verticalCenter: parent.verticalCenter
+    TextButton {
+      id: snapshot
       text: model.modelData
-      font.bold: true
-    }
-
-    Button {
-      id: loadButton
-      anchors.right: deleteButton.left
-      anchors.verticalCenter: parent.verticalCenter
-      height: textLoad.height + 2
-      width: textLoad.width + 5
-      visible: false
-      onClicked: guiProject.loadSnapshot(model.modelData);
-      Text {
-        id: textLoad
-        text: "Load"
-        color: "green"
-        anchors.centerIn: parent
+      theme: Theme.snapshots.item
+      highlighted: active
+      onClicked: {
+        guiProject.loadSnapshot(model.modelData);
+        listView.currentIndex = model.index;
+      }
+      anchors {
+        right: removeButton.left
+        left: parent.left
+        bottom: divider.bottom
       }
     }
 
-    Button {
-      id: deleteButton
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
-      height: textDelete.height + 2
-      width: textDelete.width + 5
-      visible: false
+    TextButton {
+      id: removeButton
+      anchors.bottom: divider.bottom
+      text: "\u00D7"
       onClicked: guiProject.removeSnapshot(model.modelData);
-      Text {
-        id: textDelete
-        text: "Delete"
-        color: "red"
-        anchors.centerIn: parent
-      }
+      theme: Theme.snapshots.item.remove
     }
+
+    Divider { id: divider }
   }
 }
