@@ -92,8 +92,8 @@ der GUI. So können z.B. Prozessorarchitektur-spezifische Fehlermeldungen übers
 
 Da der Code nicht nur funktionieren, sondern auch gewissen Standards folgen
 sollte, haben wir uns entschieden, den \textit{Google C++ Style Guide}
-\footnote{\url{https://google.github.io/styleguide/cppguide.html}} unter folgenden
-Ausnahmen zu verwenden:
+\footnote{\url{https://google.github.io/styleguide/cppguide.html}} als Grundlage
+für unseren Code Style zu nutzen. Folgende Ausnahmen haben wir dabei festgelegt:
 
 \begin{itemize}
 	\item Präfix \texttt{\_}, anstatt Suffix \texttt{\_} für private Klassenattribute,
@@ -106,6 +106,17 @@ Um dies automatisiert zu gewährleisten, nutzen wir das Tool \textit{ClangFormat
 \footnote{\url{http://clang.llvm.org/docs/ClangFormat.html}}. Damit werden
 z.B. Einrückungen automatisch angeordnet. \\
 Die Konfiguration von ClangFormat befindet sich in der Datei \texttt{.clang-format}
+
+\subsubsection{Dokumentation}
+
+Neben diesem Bericht ist der gesamte Quellcode des Simulators in Form von
+\textit{Doxygen}\footnote{\url{http://www.stack.nl/~dimitri/doxygen/}} Kommentaren
+dokumentiert. Diese Dokumentation ist weitaus ausführlicher als dieser Bericht und
+ist essentiell für die Weiterentwicklung des Simulators. Neben der einfachsten
+Möglichkeit, die Kommentare im Quellcode zu lesen, ist es mit Doxygen ebenfalls möglich,
+eine HTML bzw. \LaTeX Version zu generieren. Dazu wechselt man in das \texttt{docs/}
+Verzeichnis und führt den Befehl \texttt{doxygen} aus, welcher anschließend die
+Dokumentation generiert.
 
 \subsection{Build Umgebung}
 
