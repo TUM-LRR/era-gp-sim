@@ -118,7 +118,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
     // Let's hope, the compiler optimizes this...
     auto temporary = CompileErrorList();
     size_t sizeInBytes = _processValues(_values,
-                                        immutable.preliminaryReplacer(),
+                                        SymbolReplacer(),
                                         _cellSize,
                                         temporary,
                                         [](T value, size_t position) {});
@@ -181,7 +181,7 @@ class MemoryDefinitionDirective : public IntermediateDirective {
 
       // Then we write to it.
       _processValues(_values,
-                     SymbolReplacer(),
+                     immutable.replacer(),
                      _cellSize,
                      errors,
                      [&](T value, std::size_t position) {
