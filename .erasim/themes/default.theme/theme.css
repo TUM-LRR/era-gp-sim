@@ -25,4 +25,7 @@ register content highlighted { background: #FF4081; }
 register content:disabled { background: #f2f2f2; color: #757575; }
 register selector { height: 23px; width: 15px; background: transparent; color: #FF4081; font-size: 14px; radius: 1px; }
 
+toolbar { margin: 20px; background: white; }
+toolbar button { background: green; radius: 2; }
+
 /*# sourceMappingURL=theme.css.map */
