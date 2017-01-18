@@ -42,7 +42,7 @@ TableView {
     role: "info"
     movable: false
     resizable: true
-    width: 100
+    width: 0
   }
 
   // Add a column with the content for each cell at startup.

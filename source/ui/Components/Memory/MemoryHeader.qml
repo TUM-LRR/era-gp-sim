@@ -34,8 +34,6 @@ Rectangle {
   height: Theme.memory.header.height
   width: parent.width
 
-  AddColumnButton { }
-
   MemoryDivider { anchors.right: parent.right }
 
   Flickable {
@@ -166,4 +164,6 @@ Rectangle {
       }
     }
   }
+
+  AddColumnButton { }
 }
