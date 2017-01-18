@@ -223,8 +223,8 @@ Status Settings::_checkSettingsFile(Json& json) {
   QFile file(_settingsFilePath);
   if (file.exists()) return Status::OK;
 
-  // there is no settings file, so the default settings were loaded and we have
-  // to store them to disk.
+  // There is no settings file, so the default settings
+  // were loaded and we have to store them to disk.
   auto status = _store(json);
   return Status::Fail(status.message() + " when creating settings file");
 }
