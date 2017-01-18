@@ -59,17 +59,46 @@ eines Syntax Baums. Des Weiteren ist die Architektur für die Validierung einer
 Instruktion zuständig, und stellt bei Fehlern entsprechende Nachrichten zur
 Verfügung, die dem Nutzer helfen sollen, das Problem zu beheben.
 
+Eine Übersicht über die Schnittstellen des Architekturmoduls bietet Abbildung
+\ref{fig:arch-overview}
+
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth,keepaspectratio]{img/arch-overview.jpg}
-	\caption{Schnittstelle Architektur Übersicht (sehr professionell)}
+	\begin{center}
+		\begin{tikzpicture}[node distance=3.5cm]
+		\tikzstyle{class} = [rectangle, rounded corners, draw=black, drop shadow, fill=white]
+		\tikzstyle{myarrow} = [->, thick]
+
+		\node (architecture) [class]
+		{
+			\textbf{Architecture}
+		};
+		\node (factory) [class, right = of architecture]
+		{
+			\textbf{NodeFactory}
+		};
+		\node (syntaxtree) [class, rectangle split, rectangle split parts=2, right = of factory]
+		{
+			\textbf{SyntaxTreeNode}
+			\nodepart{second}
+			\begin{tabular}{c}
+				getValue() \\
+				validate() \\
+				\ldots
+			\end{tabular}
+		};
+		\draw[myarrow] (architecture) edge node [yshift=2mm] {getFactory()} (factory);
+		\draw[myarrow] (factory) edge node [yshift=2mm] {create()} (syntaxtree);
+		\end{tikzpicture}
+	\end{center}
+	\caption{Schnittstelle Architektur Übersicht}
 	\label{fig:arch-overview}
 \end{figure}
 
-Abbildung \ref{fig:arch-overview} zeigt eine Übersicht über die Schnittstelle zu den
-anderen Modulen.
-\todo[inline]{Mit dem Bild will ich das Zusammenspiel aus Architecture,
-Factory und SyntaxTree zeigen. Da brauchen wir vielleicht ein besseres Diagramm ;)}
+\subsubsection{Architecture}
+
+\subsubsection{Node Factory}
+
+\subsubsection{Syntax Tree}
 
 \subsubsection{Architecture Description Language}
 
