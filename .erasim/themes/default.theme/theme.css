@@ -19,6 +19,15 @@ settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right:
 
 toolbar { margin: 20px; background: white; }
 
+tabbar { background: #ececec; }
+tabbar tab { color: #666666; }
+tabbar tab highlighted { color: #333333; }
+tabbar tab active { background: white; }
+tabbar tab inactive { background: #d4d4d4; }
+tabbar tab closeButton { color: #666666; }
+tabbar tab closeButton highlighted { color: #FF4081; }
+tabbar frame { background: #f2f2f2; }
+
 register { background: transparent; height: 40px; margin-left: -5px; margin-right: 10px; overflow: auto; }
 register label { color: #212121; font-size: 12px; font-weight: bold; }
 register content { background: white; color: #212121; font-size: 12px; height: 25px; margin: 4px; radius: 2px; }

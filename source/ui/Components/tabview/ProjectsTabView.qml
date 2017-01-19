@@ -21,6 +21,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import Theme 1.0
 
 TabView {
   id: tabView
@@ -51,14 +52,14 @@ TabView {
   }
 
   style: TabViewStyle {
-    property color tabColorActive: "white"
-    property color tabColorInactive: Qt.rgba(212.0/255.0, 212.0/255.0, 212.0/255.0, 1.0)
-    property color tabBarBackgroundColor: Qt.rgba(236.0/255.0, 236.0/255.0, 236.0/255.0, 1.0)
-    property color componentBackgroundColor: Qt.rgba(242.0/255.0, 242.0/255.0, 242.0/255.0, 1.0)
-    property color tabTitleColor: "#666666"
-    property color tabTitleColorHighlighted: "#444444"
-    property color tabCloseButtonColor: "#666666"
-    property color tabCloseButtonColorHighlighted: "#666666"
+    property color tabColorActive: Theme.tabbar.tab.active.background
+    property color tabColorInactive: Theme.tabbar.tab.inactive.background
+    property color tabBarBackgroundColor: Theme.tabbar.background
+    property color componentBackgroundColor: Theme.tabbar.frame.background
+    property color tabTitleColor: Theme.tabbar.tab.color
+    property color tabTitleColorHighlighted: Theme.tabbar.tab.highlighted.color
+    property color tabCloseButtonColor: Theme.tabbar.tab.closeButton.color
+    property color tabCloseButtonColorHighlighted: Theme.tabbar.tab.closeButton.highlighted.color
 
     property int tabHeight: 25
 
@@ -145,7 +146,7 @@ TabView {
               Text {
                 text: "\u00d7"  // Cross or x unicode
                 anchors.centerIn: parent
-                color: control.hovered ? tabTitleColorHighlighted : tabTitleColor
+                color: control.hovered ? tabCloseButtonColorHighlighted : tabCloseButtonColor
                 font.bold: true
               }
             }
