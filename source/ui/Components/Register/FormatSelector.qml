@@ -25,7 +25,6 @@ ComboBox {
   id: root
 
   property var index
-  property var registerModel
   property TreeView treeView
   property alias selection: root.currentText
 
