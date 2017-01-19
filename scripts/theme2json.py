@@ -512,6 +512,8 @@ def process_property_value(value):
 
     if not match:
         log.debug("Property value '%s' seems to be a string", value)
+        if value.startswith("\""):
+            return value[1:-1]
         return value
 
     float_match, integer_match, percent_match = match.groups()
@@ -527,7 +529,7 @@ def process_property_value(value):
     return value / 100 if percent_match else value
 
 
-@pattern(re.compile(r'([-\w]+):([-+\w \t.#!%]+);'))
+@pattern(re.compile(r'([-\w]+):([-+\w \t.#!\'"%]+);'))
 def find_properties(block_properties):
     """
     Finds all the properties for a CSS block.
