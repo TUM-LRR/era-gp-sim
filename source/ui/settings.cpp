@@ -73,6 +73,9 @@ Status Settings::load() {
   auto status = _checkSnapshotLocation(json);
   if (!status) return status;
 
+  status = _checkSettingsFile(json);
+  if (!status) return status;
+
   // We simply override all entries
   for (auto iterator = json.begin(); iterator != json.end(); ++iterator) {
     auto value = static_cast<QJsonValue>(iterator.value());
@@ -141,16 +144,10 @@ StatusWithValue<QString> Settings::_findSettingsDirectory() {
   return directory.canonicalPath();
 }
 
-StatusWithValue<QString>
-Settings::_findSettingsFile(const QString& directoryPath) {
+QString Settings::_findSettingsFile(const QString& directoryPath) {
   QDir directory(directoryPath);
   QFileInfo file(directory.filePath("settings.json"));
-
-  if (!file.exists()) {
-    return Status::Fail("Could not find settings file");
-  }
-
-  return file.canonicalFilePath();
+  return file.absoluteFilePath();
 }
 
 StatusWithValue<QByteArray> Settings::_loadSettingsData() {
@@ -159,7 +156,13 @@ StatusWithValue<QByteArray> Settings::_loadSettingsData() {
     if (!status) return status;
   }
 
-  QFile file(_settingsFilePath);
+  auto settingsLoadPath = _settingsFilePath;
+  QFileInfo fileInfo(_settingsFilePath);
+  if (!fileInfo.exists()) {
+    settingsLoadPath = _settingsDefaultPath;
+  }
+
+  QFile file(settingsLoadPath);
   if (!file.open(QIODevice::ReadOnly)) {
     return Status::Fail("Could not open settings file for loading");
   }
@@ -178,12 +181,9 @@ Status Settings::_findSettings() {
   auto directoryResult = _findSettingsDirectory();
   if (!directoryResult) return directoryResult.status();
 
-  auto fileResult = _findSettingsFile(directoryResult.value());
-  if (!fileResult) return fileResult.status();
+  _settingsFilePath = _findSettingsFile(directoryResult.value());
 
   _settingsDirectoryPath = directoryResult.value();
-  _settingsFilePath = fileResult.value();
-
   return Status::OK;
 }
 
@@ -208,9 +208,9 @@ Status Settings::_checkSnapshotLocation(Json& json) {
 
   // TODO(psag): QDir::home();
   QDir defaultLocation(QString::fromStdString(Utility::rootPath()));
-  defaultLocation.cd(".erasim/snapshots");
+  defaultLocation.setPath(".erasim/snapshots");
 
-  json["snapshotLocation"] = defaultLocation.canonicalPath();
+  json["snapshotLocation"] = defaultLocation.absolutePath();
 
   // Store this to disk so that it will be set the next time.
   auto status = _store(json);
@@ -219,12 +219,22 @@ Status Settings::_checkSnapshotLocation(Json& json) {
   return Status::Fail(status.message() + " when defaulting snapshot location");
 }
 
+Status Settings::_checkSettingsFile(Json& json) {
+  QFile file(_settingsFilePath);
+  if (file.exists()) return Status::OK;
+
+  // There is no settings file, so the default settings
+  // were loaded and we have to store them to disk.
+  auto status = _store(json);
+  return Status::Fail(status.message() + " when creating settings file");
+}
+
 Status Settings::_store(const Json& json) {
   QJsonDocument document(json);
   QFile file(_settingsFilePath);
 
   // The Settings should have been loaded and the path found by now.
-  assert::that(file.exists());
+  assert::that(!_settingsFilePath.isEmpty());
 
   if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
     return Status::Fail("Could not open settings file for writing");

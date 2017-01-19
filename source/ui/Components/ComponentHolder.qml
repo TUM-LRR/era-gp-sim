@@ -22,7 +22,7 @@ import "Snapshots"
 import "Output"
 import "editor"
 import "Memory"
-import "Register"
+import "RegisterComponent"
 import "Input"
 import "help"
 
@@ -49,7 +49,7 @@ Item {
 
     Component {
         id: register
-        Register {
+        RegisterComponent {
             anchors.fill: parent
         }
     }

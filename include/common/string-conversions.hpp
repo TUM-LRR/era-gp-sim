@@ -69,7 +69,7 @@ std::string toSignedDecString(const MemoryValue& memoryValue);
  * empty optional if no conversion was possible.
  */
 Optional<MemoryValue>
-binStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize);
+binStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
 
 /**
  * \brief hexStringToMemoryValue Converts a given hex string to a corresponding
@@ -82,7 +82,7 @@ binStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize);
  * empty optional if no conversion was possible.
  */
 Optional<MemoryValue>
-hexStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize);
+hexStringToMemoryValue(std::string stringValue, size_t memoryValueSize);
 
 /**
  * \brief unsignedDecStringToMemoryValue Converts a given unsigned decimal

@@ -233,10 +233,10 @@ constexpr uint8_t write1[8]{
 
 void MemoryValue::write(const MemoryValue &other, address_t begin) {
   address_t end{begin + other._size};
-  assert::that(begin < end);// _size > 0
+  assert::that(begin < end);  // _size > 0
   assert::that(end <= _size);
   // wipe clean
-  if (begin / 8 == (end - 1) / 8) {// begin & end are same byte
+  if (begin / 8 == (end - 1) / 8) {  // begin & end are same byte
     _data[begin / 8] &= write0[begin % 8] | write1[(end - 1) % 8];
   } else {
     // clear first byte

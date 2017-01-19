@@ -30,7 +30,10 @@ MenuBar {
   }
 
   function actionSaveAs() {
-    main.fileDialog.onAcceptedFunction = saveAs;
+    main.fileDialog.onAcceptedFunction = function(filePath) {
+      ui.saveTextAs(tabView.getCurrentProjectId(), filePath);
+    };
+
     main.fileDialog.selectExisting = false;
     main.fileDialog.open();
   }
@@ -79,9 +82,7 @@ MenuBar {
       id: saveFileOption
       text: "Save File"
       shortcut: "Alt+S"
-      onTriggered: {
-        ui.saveText(tabView.getCurrentProjectId());
-      }
+      onTriggered: ui.saveText(tabView.getCurrentProjectId())
     }
 
     MenuItem {
