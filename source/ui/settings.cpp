@@ -108,7 +108,7 @@ QStringList Settings::listOfAllThemeNames() const noexcept {
       _listOfAllThemeNames.append(theme.completeBaseName());
     }
 
-    // Swap the default theme into the first position (we guarantee this)/
+    // Swap the default theme into the first position (we guarantee this)
     auto defaultThemeIndex =
         _listOfAllThemeNames.indexOf((*this)["theme"].toString());
     assert::that(defaultThemeIndex != -1);
@@ -123,7 +123,7 @@ Settings::Json Settings::toJson() const {
 
   for (const auto& key : super::keys()) {
     json[key] = QJsonValue::fromVariant((*this)[key]);
-    assert::that(!json[key].isNull());
+    assert::that(!json[key].isUndefined());
   }
 
   return json;

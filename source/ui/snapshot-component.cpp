@@ -63,9 +63,13 @@ void SnapshotComponent::addSnapshot(const QString& architectureIdentifier,
 }
 
 void SnapshotComponent::removeSnapshot(const QString& architectureIdentifier,
-                                       const QString& snapshotName) {
-  auto path = snapshotPath(architectureIdentifier, snapshotName);
-  QFile(QString::fromStdString(path)).remove();
+                                       const QString& snapshotName,
+                                       bool removePermanently) {
+  if (removePermanently) {
+    auto path = snapshotPath(architectureIdentifier, snapshotName);
+    QFile(QString::fromStdString(path)).remove();
+  }
+
   _snapshotMap.remove(architectureIdentifier, snapshotName);
   emit snapshotsChanged();
 }

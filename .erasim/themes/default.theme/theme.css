@@ -17,18 +17,29 @@ settings h2 { font-size: 13px; margin-top: 8px; margin-bottom: 10px; color: #757
 settings hr, settings snapshots title hr, snapshots title settings hr { color: #BDBDBD; height: 1px; }
 settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
 
+snapshots creation-dialog, snapshots setting-dialog { background: white; margin-left: 10px; margin-right: 10px; margin-top: 25px; margin-bottom: 40px; }
+
 snapshots { background: white; }
 snapshots hr, snapshots title hr { color: #BDBDBD; height: 0; }
 snapshots add, snapshots item remove { background: white; color: #FF4081; font-size: 16px; margin-bottom: 3px; font-weight: bold; height: 22px; }
 snapshots item { height: 20px; background: white; color: #212121; font-size: 12px; font-weight: normal; margin-right: 10px; }
 snapshots title { background: white; color: #212121; font-weight: bold; font-size: 12px; text-align: center; height: 20px; }
 snapshots title hr { color: black; }
-snapshots dialog { background: white; margin-left: 10px; margin-right: 10px; margin-top: 25px; margin-bottom: 40px; width: 400px; height: 95px; }
-snapshots dialog input { background: white; color: #212121; font-size: 14px; margin-top: 8px; radius: 2px; }
-snapshots dialog input border { color: #BDBDBD; width: 1px; }
-snapshots dialog button { margin-top: 10px; margin-bottom: 20px; margin-right: 10px; }
+snapshots creation-dialog { height: 95px; width: 400px; }
+snapshots creation-dialog input { background: white; color: #212121; font-size: 14px; margin-top: 8px; radius: 2px; }
+snapshots creation-dialog input border { color: #BDBDBD; width: 1px; }
+snapshots creation-dialog button { margin-top: 10px; margin-bottom: 20px; margin-right: 10px; }
+snapshots setting-dialog { height: 140px; width: 350px; }
+snapshots setting-dialog text { font-size: 14px; font-weight: normal; color: #212121; }
+snapshots setting-dialog checkbox { font-size: 12px; margin-bottom: 20px; margin-top: 20px; }
+snapshots setting-dialog button { margin-bottom: 10px; }
 
 toolbar { margin: 20px; background: white; }
+
+checkbox { background: white; color: #212121; font-size: 14px; font-weight: normal; height: 14px; margin: 2px; radius: 2px; width: 14px; }
+checkbox border { color: #82c4f8; width: 1px; }
+checkbox active { background: #2196F3; }
+checkbox active border { color: #82c4f8; width: 2px; }
 
 register { background: transparent; height: 40px; margin-left: -5px; margin-right: 10px; overflow: auto; }
 register label { color: #212121; font-size: 12px; font-weight: bold; }

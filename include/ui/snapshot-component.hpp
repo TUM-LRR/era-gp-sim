@@ -93,9 +93,11 @@ class SnapshotComponent : public QObject {
    *
    * \param architectureIdentifier The architecture of the snapshots.
    * \param snapshotName The name of the snapshot to remove.
+   * \param removePermanently Whether to erase the snapshot from disk.
    */
   void removeSnapshot(const QString& architectureIdentifier,
-                      const QString& snapshotName);
+                      const QString& snapshotName,
+                      bool removePermanently);
 
   /**
    * \returns The path of a snapshot of a specific architecture and name.

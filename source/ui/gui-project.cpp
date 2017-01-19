@@ -222,8 +222,9 @@ void GuiProject::saveSnapshot(const QString& qName) {
   }
 }
 
-void GuiProject::removeSnapshot(const QString& qName) {
-  _snapshotComponent->removeSnapshot(_architectureFormulaString, qName);
+void GuiProject::removeSnapshot(const QString& qName, bool removePermanently) {
+  _snapshotComponent->removeSnapshot(
+      _architectureFormulaString, qName, removePermanently);
 }
 
 void GuiProject::loadSnapshot(const QString& qName) {

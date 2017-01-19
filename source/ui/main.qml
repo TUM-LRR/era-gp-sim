@@ -147,13 +147,8 @@ ApplicationWindow {
       // Index of the project in the project vector.
       property int projectId: -1
 
-<<<<<<< HEAD
       // Indicates the execution state of this project.
-      property bool isRunning: false
-=======
-      // indicates the execution state of this project
       property bool running
->>>>>>> hotfix/snapshots
 
       anchors.fill: parent
       ProjectCreationScreen {
@@ -168,19 +163,11 @@ ApplicationWindow {
             memorySize,
             architecture,
             optionName,
-<<<<<<< HEAD
-            parser);
-            window.expand();
-            window.showMenus();
-            projectValid = true;
-          }
-=======
             parser
           );
           window.expand();
           window.showMenus();
           projectValid = true;
->>>>>>> hotfix/snapshots
         }
       }
     }
@@ -198,7 +185,6 @@ ApplicationWindow {
           id: systemPalette
         }
 
-<<<<<<< HEAD
         Connections {
           target: guiProject
           onSaveTextAs: {
@@ -213,12 +199,6 @@ ApplicationWindow {
             editor.parse();
             placeholderItem.isRunning = false;
           }
-=======
-        handleDelegate: Rectangle {
-          width: 2
-          height: 2
-          color: Qt.darker(systemPalette.window, 1.5)
->>>>>>> hotfix/snapshots
         }
       }
 
@@ -240,41 +220,12 @@ ApplicationWindow {
     }
   }
 
-<<<<<<< HEAD
-    property alias errorDialog: errorDialog
-    property alias fileDialog: fileDialog
-    property var snapshotDialog: SnapshotDialog { }
-
-    ErrorDialog { id: errorDialog }
-
-    FileDialog {
-      id: fileDialog
-      property var onAcceptedFunction
-      selectExisting: false
-      selectFolder: false
-      selectMultiple: false
-      onAccepted: {
-        ui.saveTextAs(tabView.getCurrentProjectId(), fileDialog.fileUrl);
-      }
-=======
-  Connections {
-    target: snapshotComponent
-    onSnapshotError: {
-      errorDialog.text = errorMessage;
-      errorDialog.open();
-    }
-  }
-
   property alias errorDialog: errorDialog
   property alias fileDialog: fileDialog
-  property alias textDialog: textDialog
+  property var snapshotDialog: SnapshotDialog { }
 
-  //Dialog to show errors
-  ErrorDialog {
-    id: errorDialog
-  }
+  ErrorDialog { id: errorDialog }
 
-  //File dialog for selecting a file
   FileDialog {
     id: fileDialog
     property var onAcceptedFunction
@@ -282,48 +233,7 @@ ApplicationWindow {
     selectFolder: false
     selectMultiple: false
     onAccepted: {
-      onAcceptedFunction(fileDialog.fileUrl);
-    }
-  }
-
-  // Dialog to input text
-  Dialog {
-    id: textDialog
-    title: "Save snapshot"
-    standardButtons: StandardButton.Cancel;
-    property var onAcceptedFunction
-    property alias placeholderText: textField.placeholderText
-    Text {
-      id: description
-      anchors.top: parent.top
-      anchors.left: parent.left
-      anchors.right: parent.right
-      wrapMode: Text.WordWrap
-      textFormat: Text.StyledText
-      text: "<p>Save a snapshot of the current register and memory state to disk. " +
-      "Your snapshot files can be found here:</p> " +
-      "<a href=\"" + snapshotComponent.snapshotDirectory() + "\">" +
-      snapshotComponent.snapshotDirectory() + "</a>"
-      onLinkActivated: Qt.openUrlExternally(snapshotComponent.snapshotDirectory())
-    }
-    TextField {
-      id: textField
-      anchors.topMargin: 10
-      anchors.top: description.bottom
-      anchors.horizontalCenter: parent.horizontalCenter
-      onTextChanged: {
-        if(text == "") {
-          textDialog.standardButtons = StandardButton.Cancel;
-        }
-        else {
-          textDialog.standardButtons = StandardButton.Cancel | StandardButton.Save;
-        }
-      }
-    }
-    onAccepted: {
-      onAcceptedFunction(textField.text);
-      textField.text = "";
->>>>>>> hotfix/snapshots
+      ui.saveTextAs(tabView.getCurrentProjectId(), fileDialog.fileUrl);
     }
   }
 }

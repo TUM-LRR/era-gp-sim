@@ -25,6 +25,7 @@
 #include <QQmlContext>
 #include <QString>
 #include <QStringList>
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -178,8 +179,9 @@ class GuiProject : QObject {
    * Removes a snapshot.
    *
    * \param qName name of the snapshot.
+   * \param removePermanently Whether to erase the snapshot from disk.
    */
-  Q_INVOKABLE void removeSnapshot(const QString& qName);
+  Q_INVOKABLE void removeSnapshot(const QString& qName, bool removePermanently);
 
   /**
    * loads a snapshot

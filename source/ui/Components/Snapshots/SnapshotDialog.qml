@@ -30,8 +30,8 @@ Dialog {
   title: "Save Snapshot"
 
   contentItem: Rectangle {
-    implicitHeight: Theme.snapshots.dialog.height
-    implicitWidth: Theme.snapshots.dialog.width
+    implicitHeight: Theme.snapshots.creationDialog.height
+    implicitWidth: Theme.snapshots.creationDialog.width
 
     TextField {
       id: name
@@ -40,20 +40,21 @@ Dialog {
 
       anchors {
         top: parent.top
-        topMargin: Theme.snapshots.dialog.marginTop
+        topMargin: Theme.snapshots.creationDialog.marginTop
         left: parent.left
-        leftMargin: Theme.snapshots.dialog.marginLeft
+        leftMargin: Theme.snapshots.creationDialog.marginLeft
         right: parent.right
-        rightMargin: Theme.snapshots.dialog.marginRight
+        rightMargin: Theme.snapshots.creationDialog.marginRight
       }
 
       style: TextFieldStyle {
-        font.pixelSize: Theme.snapshots.dialog.input.fontSize
+        textColor: Theme.snapshots.creationDialog.input.color
+        font.pixelSize: Theme.snapshots.creationDialog.input.fontSize
         background: Rectangle {
-          color: Theme.snapshots.dialog.input.background
-          border.color: Theme.snapshots.dialog.input.border.color
-          border.width: Theme.snapshots.dialog.input.border.width
-          radius: Theme.snapshots.dialog.input.radius
+          color: Theme.snapshots.creationDialog.input.background
+          border.color: Theme.snapshots.creationDialog.input.border.color
+          border.width: Theme.snapshots.creationDialog.input.border.width
+          radius: Theme.snapshots.creationDialog.input.radius
         }
       }
       Keys.onPressed: {
@@ -88,9 +89,9 @@ Dialog {
       }
       anchors {
         right: parent.right
-        rightMargin: Theme.snapshots.dialog.button.marginRight
+        rightMargin: Theme.snapshots.creationDialog.button.marginRight
         top: name.bottom
-        topMargin: Theme.snapshots.dialog.button.marginTop
+        topMargin: Theme.snapshots.creationDialog.button.marginTop
       }
     }
   }

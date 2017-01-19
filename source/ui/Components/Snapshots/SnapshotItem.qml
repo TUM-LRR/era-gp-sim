@@ -23,6 +23,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
+import Settings 1.0
 
 Component {
   id: listDelegate
@@ -50,14 +51,31 @@ Component {
       }
     }
 
+    SingleSettingDialog {
+      id: removalDialog
+      text: "Do you want to permanently remove the snapshot?"
+      propertyName: 'removeSnapshotsPermanently'
+      onDone: removeSnapshot(answerWasYes)
+    }
+
     TextButton {
       id: removeButton
       anchors.bottom: divider.bottom
       text: "\u00D7"
-      onClicked: guiProject.removeSnapshot(model.modelData);
       theme: Theme.snapshots.item.remove
+      onClicked: {
+        if (removalDialog.alreadySet) {
+          removeSnapshot(Settings.removeSnapshotsPermanently);
+        } else {
+          removalDialog.open()
+        }
+      }
     }
 
     Divider { id: divider }
+
+    function removeSnapshot(removePermanently) {
+      guiProject.removeSnapshot(model.modelData, removePermanently);
+    }
   }
 }
