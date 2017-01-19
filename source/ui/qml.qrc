@@ -11,6 +11,7 @@
         <file>Components/Snapshots/SnapshotDialog.qml</file>
         <file>Components/Snapshots/TextButton.qml</file>
         <file>Components/Snapshots/Divider.qml</file>
+        <file>Components/Snapshots/SingleSettingDialog.qml</file>
         <file>Components/Output/GreenRectangle.qml</file>
         <file>Components/Output/Output.qml</file>
         <file>Components/Output/RedRectangle.qml</file>
@@ -39,6 +40,7 @@
         <file>Components/Settings/Sections/Themes.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
+        <file>Components/Common/ThemeableCheckBox.qml</file>
         <file>Components/editor/MacroTriangleButton.qml</file>
         <file>Components/editor/MacroSubeditor.qml</file>
         <file>Components/Common/TextUtilities.js</file>
