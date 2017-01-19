@@ -20,6 +20,7 @@
 import QtQuick 2.6
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
 import "Components"
@@ -27,6 +28,7 @@ import "Components/Menubar"
 import "Components/Toolbar"
 import "Components/ProjectCreation"
 import "Components/Settings"
+import "Components/tabview"
 import Theme 1.0
 
 ApplicationWindow {
@@ -34,7 +36,9 @@ ApplicationWindow {
   visible: true
   width: Theme.window.initialWidth
   height: Theme.window.initialHeight
-  color: Theme.window.background
+  style: ApplicationWindowStyle {
+    background: Rectangle { color: Theme.window.background }
+  }
 
   property alias menubar: menubar
   property alias toolbar: toolbar
@@ -53,33 +57,8 @@ ApplicationWindow {
 
   SettingsWindow { id: config }
 
-  TabView {
+  ProjectsTabView {
     id: tabView
-    anchors.fill: parent
-
-    Component.onCompleted: {
-      createProject()
-    }
-
-    onCurrentIndexChanged: {
-      updateMenuState();
-    }
-
-    // get the project of the current tab, is undefined if there is no tab.
-    function getCurrentProjectItem() {
-      return tabView.getTab(tabView.currentIndex).item;
-    }
-
-    // get the id of the project in the current tab, undefined if there is no tab.
-    function getCurrentProjectId() {
-      return getCurrentProjectItem().projectId;
-    }
-
-    // returns false if there is only a creation screen in the current tab.
-    // Undefined if there is no tab.
-    function currentProjectIsValid() {
-      return getCurrentProjectItem().projectValid;
-    }
   }
 
   // This function should be called when the tab is switched
