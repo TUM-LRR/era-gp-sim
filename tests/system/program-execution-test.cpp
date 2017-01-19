@@ -41,11 +41,12 @@ struct ProgramExecutionFixture : public ::testing::Test {
     setCallbackOnError([](auto msg) {
       ASSERT_TRUE(false) << "Received an error: " << msg.getBaseString();
     });
-    _project->getParserInterface().setFinalRepresentationCallback([](auto finalRep){
+    _project->getParserInterface().setFinalRepresentationCallback(
+        [](auto finalRep) {
           if (finalRep.errorList().hasErrors()) {
-              ASSERT_TRUE(false) << "Program generates errors!";
-            }
-      });
+            ASSERT_TRUE(false) << "Program generates errors!";
+          }
+        });
     _project->getCommandInterface().parse(_input);
   }
 
@@ -216,10 +217,8 @@ struct SuperSumTest : public ProgramExecutionFixture<SizeType> {
         [](auto reg, auto val) { ASSERT_EQ(0, val) << "In Register " << reg; });
     this->executeAll();
     this->waitUntilExecutionFinished();
-    this->assertRegisterValue(
-        "x5",
-        819);  // See
-               // http://www.wolframalpha.com/input/?i=sum+k%3D1+to+13+sum+l%3D1+to+k+k
+    this->assertRegisterValue("x5", 819);  // See
+    // http://www.wolframalpha.com/input/?i=sum+k%3D1+to+13+sum+l%3D1+to+k+k
   }
 };
 
@@ -228,3 +227,27 @@ TEST_F(SuperSumTest32, supersum32) { superSumTest(); }
 
 using SuperSumTest64 = SuperSumTest<int64_t>;
 TEST_F(SuperSumTest64, supersum64) { superSumTest(); }
+
+template <typename SizeType>
+struct EndlessTest : public ProgramExecutionFixture<SizeType> {
+  EndlessTest() : ProgramExecutionFixture<SizeType>("endless.txt") {}
+
+  void endlessTest() {
+    this->assertForAllRegisters(
+        [](auto reg, auto val) { ASSERT_EQ(0, val) << "In Register " << reg; });
+    this->executeNext();  // nop instruction
+    this->waitUntilExecutionFinished();
+    this->executeNext();  // backwards jump to nop
+    this->waitUntilExecutionFinished();
+    // if everything is the same as in the beginning, this will be an endless
+    // loop
+    this->assertForAllRegisters(
+        [](auto reg, auto val) { ASSERT_EQ(0, val) << "In Register " << reg; });
+  }
+};
+
+using EndlessTest32 = EndlessTest<int32_t>;
+TEST_F(EndlessTest32, endless32) { endlessTest(); }
+
+using EndlessTest64 = EndlessTest<int64_t>;
+TEST_F(EndlessTest64, endless64) { endlessTest(); }
