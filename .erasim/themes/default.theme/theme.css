@@ -20,17 +20,17 @@ settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right:
 toolbar { margin: 20px; background: white; }
 
 editor { color: black; background: white; selection: #2d2d91; }
-editor keywords immediate { color: #a86c0d; font-weight: bold; }
+editor keywords immediate { color: #a86c0d; }
 editor keywords instruction { color: #2196F3; }
 editor keywords comment { color: green; }
 editor keywords register { color: #f59332; }
 editor keywords label { color: #FF4081; }
 editor lineHighlight { background: "#1ae8e8e8"; }
 editor lineHighlight border { color: "#1ab2b2b2"; }
-editor executionLineHighlight { background: "#1a32cc64"; }
+editor executionLineHighlight { background: "#1a2196F3"; }
 editor executionLineHighlight border { color: "transparent"; }
 editor breakpoint { color: #FF4081; }
-editor sidebar { background: #eeeeeb; }
+editor sidebar { background: #e8e8e8; }
 editor sidebar lineNumber { color: "gray"; }
 editor macro { background: #f5f5f5; }
 editor issue error { darkColor: #ffb998; lightColor: "#10ff5000"; }
