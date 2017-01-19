@@ -168,9 +168,9 @@ using FactorialTest64 = FactorialTest<int64_t>;
 TEST_F(FactorialTest64, factorial64) { factorialTest(); }
 
 template <typename SizeType>
-struct FactorialRecTest : public ProgramExecutionFixture<SizeType, true> {
+struct FactorialRecTest : public ProgramExecutionFixture<SizeType, true, 1024> {
   FactorialRecTest()
-      : ProgramExecutionFixture<SizeType, true>("factorial_rec.txt") {}
+      : ProgramExecutionFixture<SizeType, true, 1024>("factorial_rec.txt") {}
   void factorialRecTest() {
     this->assertForAllRegisters([](auto reg, auto value) {
       ASSERT_EQ(0, value) << "In Register " << reg;

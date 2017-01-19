@@ -1,17 +1,28 @@
 .equ max_addr, 0x3fc
-
+.equ factorial, 12
 init_stack:
 lui x31, max_addr >> 12
 addi x31, x0, max_addr & 0xfff
 add x30, x0, x0
 
-; Call fact_rec
-addi x1, x0, 12
-addi x3, x0, 1
-add x5, x0, x0
-jal x4, push
-call factorial_rec
-jal x0, end
+addi x2, x0, 1;Needed recursion end
+addi x3, x0, factorial
+mcall factorial_rec, end
+
+;n : x3
+; ret x5
+factorial_rec:
+bne x3, x2, compute
+add x5, x0, x2; x5=1
+mret
+
+compute:
+addi x3, x3, -1
+mcall factorial_rec, ret_compute
+ret_compute:
+addi x3, x3, 1
+mul x5, x3, x5
+mret
 
 ; content in x1, ret addr in x4
 push:
@@ -23,40 +34,24 @@ jalr x0, x4, 0
 ;content will be placed in x1, ret addr: x4
 pop:
 beq x30, x0, pop_exn
-lw x1, x31, 0
 addi x31, x31, 4
 addi x30, x30, -1
+lw x1, x31, 0
 jalr x0, x4, 0
 pop_exn:
 simucrash "Stack is empty!"
 
-;reserved registers: x1
-.macro call_rec, symbol
-auipc x1, 0
-addi x1, x1, 4 ;return address
+.macro mcall, label, ret
+addi x1, x0, \ret
 jal x4, push
-jal x0, \symbol
+jal x0, \label
 .endm
 
-.macro ret_rec
+.macro mret
 jal x4, pop
 jalr x0, x1, 0
 .endm
 
-factorial_rec:
-jal x4, pop
-beq x1, x0, fr_end
-jal x4, push
-addi x1, x1, -1
-jal x4, push
-call_rec factorial_rec
-jal x4, pop
-mul x5, x5, x1
-ret_rec
-
-fr_end:
-addi x5, x0, 1
-ret_rec
 
 
 end:
