@@ -19,31 +19,57 @@
 
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 
-#include "parser/independent/preprocessing-immutable-arguments.hpp"
+#include "parser/independent/allocate-memory-immutable-arguments.hpp"
+#include "parser/independent/precompile-immutable-arguments.hpp"
 
 // Just constructors and getters.
 
 EnhanceSymbolTableImmutableArguments::EnhanceSymbolTableImmutableArguments(
     const Architecture& architecture,
     const SyntaxTreeGenerator& generator,
+    const SymbolReplacer& preliminaryReplacer,
     const MemoryAllocator& allocator)
-: _architecture(architecture), _generator(generator), _allocator(allocator) {
+: _architecture(architecture)
+, _generator(generator)
+, _preliminaryReplacer(preliminaryReplacer)
+, _allocator(allocator) {
 }
+
 EnhanceSymbolTableImmutableArguments::EnhanceSymbolTableImmutableArguments(
-    const PreprocessingImmutableArguments& beforePass,
+    const PrecompileImmutableArguments& beforeBeforePass,
+    const SymbolReplacer& preliminaryReplacer,
     const MemoryAllocator& allocator)
-: EnhanceSymbolTableImmutableArguments(
-      beforePass.architecture(), beforePass.generator(), allocator) {
+: EnhanceSymbolTableImmutableArguments(beforeBeforePass.architecture(),
+                                       beforeBeforePass.generator(),
+                                       preliminaryReplacer,
+                                       allocator) {
 }
+
+EnhanceSymbolTableImmutableArguments::EnhanceSymbolTableImmutableArguments(
+    const AllocateMemoryImmutableArguments& beforePass,
+    const MemoryAllocator& allocator)
+: EnhanceSymbolTableImmutableArguments(beforePass.architecture(),
+                                       beforePass.generator(),
+                                       beforePass.preliminaryReplacer(),
+                                       allocator) {
+}
+
 const Architecture& EnhanceSymbolTableImmutableArguments::architecture() const
     noexcept {
   return _architecture;
 }
+
 const SyntaxTreeGenerator&
 EnhanceSymbolTableImmutableArguments::generator() const noexcept {
   return _generator;
 }
+
 const MemoryAllocator& EnhanceSymbolTableImmutableArguments::allocator() const
     noexcept {
   return _allocator;
+}
+
+const SymbolReplacer&
+EnhanceSymbolTableImmutableArguments::preliminaryReplacer() const noexcept {
+  return _preliminaryReplacer;
 }

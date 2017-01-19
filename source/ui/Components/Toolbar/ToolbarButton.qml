@@ -17,19 +17,21 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/independent/preprocessing-immutable-arguments.hpp"
+import QtQuick 2.6
+import QtQuick.Controls 1.4
+import QtQuick.Layouts 1.3
+import QtQuick.Controls.Styles 1.4
 
-// Just constructors and getters.
+import Theme 1.0
 
-PreprocessingImmutableArguments::PreprocessingImmutableArguments(
-    const Architecture& architecture, const SyntaxTreeGenerator& generator)
-: _architecture(architecture), _generator(generator) {
-}
-const Architecture& PreprocessingImmutableArguments::architecture() const
-    noexcept {
-  return _architecture;
-}
-const SyntaxTreeGenerator& PreprocessingImmutableArguments::generator() const
-    noexcept {
-  return _generator;
+ToolButton {
+  id: button
+  property url icon
+
+  iconSource: icon
+  MouseArea {
+    anchors.fill: parent
+    cursorShape: Qt.PointingHandCursor
+    onClicked: button.clicked();
+  }
 }
