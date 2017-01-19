@@ -157,8 +157,7 @@ StatusWithValue<QByteArray> Settings::_loadSettingsData() {
   }
 
   auto settingsLoadPath = _settingsFilePath;
-  QFileInfo fileInfo(_settingsFilePath);
-  if (!fileInfo.exists()) {
+  if (!QFile::exists(settingsLoadPath)) {
     settingsLoadPath = _settingsDefaultPath;
   }
 
