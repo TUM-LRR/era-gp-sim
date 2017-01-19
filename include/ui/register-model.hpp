@@ -20,10 +20,10 @@
 #define ERAGPSIM_UI_REGISTERMODEL_HPP
 
 #include <QAbstractItemModel>
-#include <QDebug>
 #include <QQmlContext>
 #include <map>
 #include <string>
+
 #include "arch/common/register-information.hpp"
 #include "common/optional.hpp"
 #include "core/memory-access.hpp"
@@ -67,7 +67,7 @@ class RegisterModel : public QAbstractItemModel {
                          QObject *parent = 0);
 
   /**
-   * \brief The RegisterModelRole enum Identifies different kinds of data stored
+   * RegisterModelRole enum Identifies different kinds of data stored
    * for each register.
    *
    * In particular, there is one data role for each available data format type
@@ -80,13 +80,13 @@ class RegisterModel : public QAbstractItemModel {
     IsConstantRole,
     BinaryDataRole,
     HexDataRole,
-    SignedDecDataRole,
-    UnsignedDecDataRole,
+    SignedDecimalDataRole,
+    UnsignedDecimalDataRole,
     FlagDataRole
   };
 
   /**
-   * \brief index Returns a QModelIndex for the specified item inside the
+   * Returns a QModelIndex for the specified item inside the
    * model.
    *
    * A model must provide an index to each item (i.e. register) it contains.
@@ -106,7 +106,7 @@ class RegisterModel : public QAbstractItemModel {
         const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
   /**
-   * \brief roleNames Returns the available role names of this model, which
+   * Returns the available role names of this model, which
    * the delegate (refer to corresponding QML delegate) can bind to.
    *
    * Data roles represent different types of representations of an item.
@@ -116,7 +116,7 @@ class RegisterModel : public QAbstractItemModel {
   QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
 
   /**
-   * \brief data The data for the register referenced by the given
+   * The data for the register referenced by the given
    * QModelIndex and specified by the given data role.
    *
    * RegisterModel offers role for the register's title, its type and each
@@ -133,7 +133,7 @@ class RegisterModel : public QAbstractItemModel {
   QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
 
   /**
-   * \brief parent Returns an index refering to the register item's parent
+   * Returns an index refering to the register item's parent
    * register, if available.
    *
    * \param index The QModelIndex of the register item whose parent register
@@ -142,13 +142,13 @@ class RegisterModel : public QAbstractItemModel {
   QModelIndex parent(const QModelIndex &index) const Q_DECL_OVERRIDE;
 
   /**
-   * \brief rowCount The number of rows a given register item contains.
+   * The number of rows a given register item contains.
    * \param parent The register item's whose number of rows is requested.
    */
   int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
   /**
-   * \brief columnCount The number of columns for each register item. Set
+   * The number of columns for each register item. Set
    * to 1 for this model as only one column containing the register itself
    * is available.
    * \param parent The parent register item whose children's column count is
@@ -158,7 +158,7 @@ class RegisterModel : public QAbstractItemModel {
       Q_DECL_OVERRIDE;
 
   /**
-   * \brief registerContentChanged Notifies the Core when a register's content
+   * Notifies the Core when a register's content
    * was changed by the user.
    * \param index The register's index.
    * \param registerContent The register's new content value.
@@ -167,7 +167,7 @@ class RegisterModel : public QAbstractItemModel {
    */
   Q_INVOKABLE void
   registerContentChanged(const QModelIndex &index,
-                         const QString &registerContent,
+                         QString registerContent,
                          const QString &currentDataFormatIndex);
 
 
@@ -186,18 +186,18 @@ class RegisterModel : public QAbstractItemModel {
   /// Interface for communicating register data changes to core.
   MemoryAccess _memoryAccess;
 
-  /// Map between format type string (e.g. "UnsignedDecData") and corresponding
+  /// Map between format type string (e.g. "UnsignedDecimalData") and corresponding
   /// MemoryValue to string conversion function.
-  static const std::map<QByteArray, MemoryValueToStringConversion>
+  static std::map<QByteArray, MemoryValueToStringConversion>
       _memoryValueToStringConversions;
 
-  /// Map between format format type description (e.g. "Decimal (Unsigned)") and
+  /// Map between format format type description (e.g. "Unsigned Decimal") and
   /// corresponding string to MemoryValue conversion function.
-  static const std::map<QString, StringToMemoryValueConversion>
+  static std::map<QString, StringToMemoryValueConversion>
       _stringToMemoryValueConversions;
 
   /**
-   * \brief _getRowRelativeToParent Returns the row of a given register relative
+   * Returns the row of a given register relative
    * to its parent register.
    * \param registerItem The register whose row is requested.
    * \return The row of the given register relative to its parent register.
@@ -208,7 +208,7 @@ class RegisterModel : public QAbstractItemModel {
 
  public slots:
   /**
-   * \brief updateContent Sets the content (i.e. AB01DE23) of a specified
+   * Sets the content (i.e. AB01DE23) of a specified
    * register.
    * \param registerTitle The unique title of the register whose
    * content shall be altered.
@@ -217,4 +217,4 @@ class RegisterModel : public QAbstractItemModel {
   void updateContent(const QString &registerTitle);
 };
 
-#endif// ERAGPSIM_UI_REGISTERMODEL_HPP
+#endif  // ERAGPSIM_UI_REGISTERMODEL_HPP

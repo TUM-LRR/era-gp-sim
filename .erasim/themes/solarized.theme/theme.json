@@ -1,0 +1,48 @@
+{
+    "window": {
+        "background": "white",
+        "initialHeight": 350,
+        "width": 0.9,
+        "initialWidth": 300,
+        "height": 0.9
+    },
+    "button": {
+        "fontSize": 16,
+        "radius": 4,
+        "color": "#FFFFFF",
+        "height": 40,
+        "disabled": {
+            "background": "#BDBDBD",
+            "border": {
+                "color": "#d7d7d7"
+            },
+            "color": "#212121"
+        },
+        "border": {
+            "width": 2,
+            "color": "#82c4f8"
+        }
+    },
+    "createProject": {
+        "button": {
+            "background": "#2196F3",
+            "marginTop": 10,
+            "width": 160
+        },
+        "name": {
+            "length": 80
+        },
+        "section": {
+            "fontSize": 20,
+            "borderWidth": 1,
+            "borderColor": "#BDBDBD",
+            "margin": 20,
+            "height": 50
+        },
+        "marginTop": 10,
+        "width": 280
+    },
+    "register": {
+        "border": 10
+    }
+}

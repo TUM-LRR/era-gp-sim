@@ -144,8 +144,8 @@ Window {
         anchors.bottomMargin: 5
 
         onClicked: {
-            baseAddressTextField.processInput();
-            numberOfStripsTextField.processInput();
+            baseAddressTextField.focus = false;
+            numberOfStripsTextField.focus = false;
             close();
         }
     }

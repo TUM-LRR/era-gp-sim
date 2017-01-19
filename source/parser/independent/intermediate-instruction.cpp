@@ -77,19 +77,19 @@ IntermediateInstruction::compileArgumentVector(
     MemoryAccess& memoryAccess) {
   std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> output;
 
-  SymbolReplacer::DynamicReplacer labelReplacerFunction = [&](
-      const Symbol& symbol) {
-    size_t byteBitSize =
-        sizeof(size_t) * immutable.architecture().getByteSize();
-    auto labelValue = conversions::convert<size_t>(
-        std::stoul(symbol.value().string()), byteBitSize);
-    auto instructionAdress =
-        conversions::convert<size_t>(_relativeAddress.offset(), byteBitSize);
-    auto relativeAddress =
-        immutable.generator().getNodeFactories().labelToImmediate(
-            labelValue, name().string(), instructionAdress);
-    return StringConversions::toSignedDecString(relativeAddress);
-  };
+  SymbolReplacer::DynamicReplacer labelReplacerFunction =
+      [&](const Symbol& symbol) {
+        size_t byteBitSize =
+            sizeof(size_t) * immutable.architecture().getByteSize();
+        auto labelValue = conversions::convert<size_t>(
+            std::stoul(symbol.value().string()), byteBitSize);
+        auto instructionAdress =
+            conversions::convert<size_t>(_address, byteBitSize);
+        auto relativeAddress =
+            immutable.generator().getNodeFactories().labelToImmediate(
+                labelValue, name().string(), instructionAdress);
+        return StringConversions::toSignedDecString(relativeAddress);
+      };
 
   auto replacer = SymbolReplacer(immutable.replacer(), labelReplacerFunction);
 

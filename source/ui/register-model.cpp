@@ -15,8 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-
 #include "ui/register-model.hpp"
+
+#include <QByteArray>
+#include <QString>
+#include <map>
 
 #include "arch/common/unit-container.hpp"
 #include "common/string-conversions.hpp"
@@ -24,19 +27,19 @@
 #include "core/memory-manager.hpp"
 #include "core/memory-value.hpp"
 
-const std::map<QByteArray, RegisterModel::MemoryValueToStringConversion>
+std::map<QByteArray, RegisterModel::MemoryValueToStringConversion>
     RegisterModel::_memoryValueToStringConversions = {
         {"BinaryData", StringConversions::toBinString},
         {"HexData", StringConversions::toHexString},
-        {"SignedDecData", StringConversions::toSignedDecString},
-        {"UnsignedDecData", StringConversions::toUnsignedDecString}};
+        {"SignedDecimalData", StringConversions::toSignedDecString},
+        {"UnsignedDecimalData", StringConversions::toUnsignedDecString}};
 
-const std::map<QString, RegisterModel::StringToMemoryValueConversion>
+std::map<QString, RegisterModel::StringToMemoryValueConversion>
     RegisterModel::_stringToMemoryValueConversions = {
         {"Binary", StringConversions::binStringToMemoryValue},
         {"Hexadecimal", StringConversions::hexStringToMemoryValue},
-        {"Decimal (Signed)", StringConversions::signedDecStringToMemoryValue},
-        {"Decimal (Unsigned)",
+        {"Signed Decimal", StringConversions::signedDecStringToMemoryValue},
+        {"Unsigned Decimal",
          StringConversions::unsignedDecStringToMemoryValue}};
 
 
@@ -100,8 +103,8 @@ QHash<int, QByteArray> RegisterModel::roleNames() const {
   roles[IsConstantRole] = "IsConstant";
   roles[BinaryDataRole] = "BinaryData";
   roles[HexDataRole] = "HexData";
-  roles[SignedDecDataRole] = "SignedDecData";
-  roles[UnsignedDecDataRole] = "UnsignedDecData";
+  roles[SignedDecimalDataRole] = "SignedDecimalData";
+  roles[UnsignedDecimalDataRole] = "UnsignedDecimalData";
   roles[FlagDataRole] = "FlagData";
   return roles;
 }
@@ -201,9 +204,7 @@ int RegisterModel::rowCount(const QModelIndex &parent) const {
   // As specified in RegisterModel::parent, any nested structure occurs inside
   // the first column. Therefore, any other column
   // does not have any rows.
-  if (parent.column() > 0) {
-    return 0;
-  }
+  if (parent.column() > 0) return 0;
 
   if (!parent.isValid()) {
     return _rootItem->getConstituents().size();
@@ -211,6 +212,7 @@ int RegisterModel::rowCount(const QModelIndex &parent) const {
     parentItem = static_cast<RegisterInformation *>(parent.internalPointer());
     return parentItem->getConstituents().size();
   }
+
   return 0;
 }
 
@@ -221,24 +223,22 @@ int RegisterModel::columnCount(const QModelIndex &parent) const {
 
 
 void RegisterModel::registerContentChanged(const QModelIndex &index,
-                                           const QString &registerContent,
+                                           QString registerContent,
                                            const QString &dataFormat) {
-  RegisterInformation *registerItem =
+  auto registerItem =
       static_cast<RegisterInformation *>(index.internalPointer());
-  // Remove whitespaces.
-  QString registerContentCleared = registerContent;
-  registerContentCleared.remove(QChar(' '));
-  // Convert content string to MemoryValue.
-  Optional<MemoryValue> registerContentMemoryValue =
-      _stringToMemoryValueConversions.at(dataFormat)(
-          registerContentCleared.toStdString(), registerItem->getSize());
-  // Notify core about the change.
-  if (registerContentMemoryValue) {
-    _memoryAccess.setRegisterValue(registerItem->getName(),
-                                   *registerContentMemoryValue);
-  } else {  // If conversion was unsuccessful, return empty MemoryValue.
-    _memoryAccess.setRegisterValue(registerItem->getName(),
-                                   MemoryValue(registerItem->getSize()));
+
+  auto content = registerContent.remove(QChar(' ')).toStdString();
+  assert::that(_stringToMemoryValueConversions.count(dataFormat) > 0);
+  auto converter = _stringToMemoryValueConversions[dataFormat];
+  auto memory = converter(content, registerItem->getSize());
+
+  // Notify core about the change
+  if (memory) {
+    _memoryAccess.setRegisterValue(registerItem->getName(), *memory);
+  } else {
+    MemoryValue empty(registerItem->getSize());
+    _memoryAccess.setRegisterValue(registerItem->getName(), empty);
   }
 }
 

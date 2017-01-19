@@ -94,7 +94,9 @@ void IntermediateRepresentator::insertCommandPointer(
 namespace {
 bool evaluateGraph(const SymbolGraphEvaluation& graphEvaluation,
                    CompileErrorList& errors) {
-  if (!graphEvaluation.valid()) {
+  if (graphEvaluation.valid()) {
+    return true;
+  } else {
     if (!graphEvaluation.invalidNames().empty()) {
       for (auto index : graphEvaluation.invalidNames()) {
         const auto& symbol = graphEvaluation.symbols()[index];
@@ -116,11 +118,16 @@ bool evaluateGraph(const SymbolGraphEvaluation& graphEvaluation,
     }
     if (!graphEvaluation.sampleCycle().empty()) {
       std::string displayString;
+      auto detectionSymbolIndex = graphEvaluation.sampleCycle()[0];
+      auto detectionSymbolName =
+          graphEvaluation.symbols()[detectionSymbolIndex].name().string();
+
       for (auto index : graphEvaluation.sampleCycle()) {
         const auto& symbol = graphEvaluation.symbols()[index];
         displayString += "'" + symbol.name().string() + "' -> ";
       }
-      displayString += "...";
+      displayString += "'" + detectionSymbolName + "' -> ...";
+
       for (auto index : graphEvaluation.sampleCycle()) {
         const auto& symbol = graphEvaluation.symbols()[index];
         errors.pushError(
@@ -131,8 +138,6 @@ bool evaluateGraph(const SymbolGraphEvaluation& graphEvaluation,
       }
     }
     return false;
-  } else {
-    return true;
   }
 }
 
@@ -217,7 +222,7 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
   auto graphValid = evaluateGraph(graphEvaluation, errors);
   auto memoryValid = checkMemorySize(
       allocatedSize, allowedSize, firstMemoryExceedingOperation, errors);
-  if (!(graphValid || memoryValid)) {
+  if (!(graphValid && memoryValid)) {
     return FinalRepresentation({}, errors, macroList);
   }
 

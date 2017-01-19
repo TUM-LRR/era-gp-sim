@@ -60,7 +60,7 @@ class SymbolReplacer {
    */
   explicit SymbolReplacer(const SymbolGraphEvaluation& evaluation,
                           const DynamicReplacer& replacer = IDENTITY_REPLACE,
-                          size_t maximumReplaceCount = 64);
+                          size_t maximumReplaceCount = 4);
   /**
    * Creates a new `SymbolReplacer`.
    *
@@ -70,7 +70,7 @@ class SymbolReplacer {
    */
   explicit SymbolReplacer(const std::vector<Symbol>& symbols = {},
                           const DynamicReplacer& replacer = IDENTITY_REPLACE,
-                          size_t maximumReplaceCount = 64);
+                          size_t maximumReplaceCount = 4);
 
   /**
    * Creates a new `SymbolReplacer`.

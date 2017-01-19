@@ -1,0 +1,20 @@
+window { width: 90%; height: 90%; background: red; initial-width: 300px; initial-height: 350px; }
+
+create-project { width: 280px; margin-top: 10px; }
+create-project section { margin: 20px; height: 50px; font-size: 20px; border-width: 1px; border-color: #BDBDBD; }
+create-project name { length: 80px; }
+create-project button { margin-top: 10px; background: #2196F3; width: 160px; }
+
+button { color: #FFFFFF; font-size: 16px; height: 40px; radius: 4; }
+button border { color: #82c4f8; width: 2px; }
+button:disabled { background: #BDBDBD; color: #212121; }
+button:disabled border { color: #d7d7d7; }
+
+settings { padding-top: 15px; }
+settings section { height: 95px; padding-bottom: 5px; }
+settings h1 { font-size: 16px; padding: 10px; color: #212121; }
+settings h2 { font-size: 13px; margin-top: 8px; margin-bottom: 10px; color: #757575; }
+settings hr { color: #BDBDBD; height: 1px; }
+settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
+
+/*# sourceMappingURL=theme.css.map */

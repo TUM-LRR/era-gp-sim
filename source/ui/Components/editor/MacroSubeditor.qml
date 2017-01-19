@@ -20,12 +20,14 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import "../Common"
+import Theme 1.0
 
 Item {
     anchors.left: parent.left
     anchors.right: parent.right
 
     property alias text: macroTextEdit.text
+    property alias fontPointSize: macroTextEdit.font.pointSize
     property var expandedHeight: 0
     height: 0
     clip: true
@@ -41,7 +43,7 @@ Item {
     // Background
     Rectangle {
         anchors.fill: parent
-        color: "#F5F5F5"
+        color: Theme.editor.macro.background
     }
 
     Rectangle {
@@ -51,7 +53,7 @@ Item {
         anchors.left: parent.left
         width: lineNumbersBar.width + 3
 
-        color: "#eeeeeb"
+        color: Theme.editor.sidebar.background
 
         Column {
             id: lineNumbersBar
@@ -86,6 +88,19 @@ Item {
         readOnly: true
         textMargin: 2
         color: "#4A4A4A"
+
+        Component.onCompleted: {
+            // Add syntax highlighter that highlights the textEdit's text document.
+            editor.addSecondarySyntaxHighlighter(macroTextEdit.textDocument);
+        }
+
+        Component.onDestruction: {
+            // Destroy the corresponding secondary syntax highlighter in EditorComponent to prevent it
+            // from accessing an already destroyed text area text document (would cause
+            // segmentation fault on program end) and to prevent the number of highlighters
+            // from growing monotonically without ever being reduced.
+            editor.deleteSecondarySyntaxHighlighter(macroTextEdit.textDocument);
+        }
     }
 
 }

@@ -27,6 +27,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -417,7 +418,7 @@ bool contains(const Range &range, T &&element) {
   return iterator != end(range);
 }
 
-std::string rootPath();
+const std::string &rootPath();
 
 std::string joinPaths(const std::string &single);
 
@@ -660,6 +661,25 @@ template <typename SubType, typename BaseType>
 bool isInstance(const std::unique_ptr<BaseType> &ptr) {
   return dynamic_cast<SubType *>(ptr.get()) != nullptr;
 }
+
+template <typename Range>
+Range sorted(Range range) {
+  using std::begin;
+  using std::end;
+
+  std::sort(begin(range), end(range));
+
+  return range;
 }
+
+template <typename Range, typename T>
+auto accumulate(const Range &range, const T &initial) {
+  using std::begin;
+  using std::end;
+
+  return std::accumulate(begin(range), end(range), initial);
+}
+
+}  // namespace Utility
 
 #endif /* ERAGPSIM_COMMON_UTILITY_HPP */
