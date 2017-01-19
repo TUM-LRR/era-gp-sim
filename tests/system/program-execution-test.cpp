@@ -217,8 +217,8 @@ struct SuperSumTest : public ProgramExecutionFixture<SizeType> {
         [](auto reg, auto val) { ASSERT_EQ(0, val) << "In Register " << reg; });
     this->executeAll();
     this->waitUntilExecutionFinished();
-    this->assertRegisterValue("x5", 819);  // See
-    // http://www.wolframalpha.com/input/?i=sum+k%3D1+to+13+sum+l%3D1+to+k+k
+    this->assertRegisterValue("x5", 35);//1+(1+2)+(1+2+3)+(1+2+3+4)+(1+2+3+4+5)
+    // = 1+3+6+10+15 = 35
   }
 };
 
