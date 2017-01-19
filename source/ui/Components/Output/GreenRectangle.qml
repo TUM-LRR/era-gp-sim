@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.6
 
 Item {
     Rectangle{//Dummy-Module, will be replaced
