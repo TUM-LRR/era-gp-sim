@@ -74,7 +74,7 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
         conversions::convert(result,
                              conversions::standardConversions::helper::
                                  twosComplement::toMemoryValueFunction,
-                             32));
+                             64));
   }
   return outputNode;
 };
