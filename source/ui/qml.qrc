@@ -16,6 +16,15 @@
         <file>InnerSplitviews.qml</file>
         <file>Components/editor/Editor.qml</file>
         <file>Components/Memory/MemoryComponent.qml</file>
+        <file>Components/Memory/MemoryTreeView.qml</file>
+        <file>Components/Memory/MemoryCell.qml</file>
+        <file>Components/Memory/MemoryContent.qml</file>
+        <file>Components/Memory/MemoryAddressCell.qml</file>
+        <file>Components/Memory/RemoveButton.qml</file>
+        <file>Components/Memory/AddColumnButton.qml</file>
+        <file>Components/Memory/MemoryDivider.qml</file>
+        <file>Components/Memory/MemoryHeader.qml</file>
+        <file>Components/Register/Register.qml</file>
         <file>InnerSplitviewsEditor.qml</file>
         <file>Components/Toolbar/ToolbarComponent.qml</file>
         <file>Components/Toolbar/ToolbarButton.qml</file>

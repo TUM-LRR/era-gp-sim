@@ -18,7 +18,8 @@
 */
 
 #include "ui/memory-component-presenter.hpp"
-#include <iostream>
+
+#include <algorithm>
 
 #include "common/assert.hpp"
 #include "common/string-conversions.hpp"
@@ -34,11 +35,6 @@ MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access,
 , _memorySize(access.getMemorySize().get()) {
   projectContext->setContextProperty("memoryModel", this);
 }
-
-
-MemoryComponentPresenter::~MemoryComponentPresenter() {
-}
-
 
 void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
                                                std::size_t length) {
@@ -71,36 +67,33 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
 
 
 void MemoryComponentPresenter::setValue(int address,
-                                        QString number,
-                                        int length_bit,
-                                        QString presentation) {
-  if (number.length() == 0) {
-    number = "0";  // string conversions needs a number
+                                        QString value,
+                                        int numberOfBits,
+                                        QString role) {
+  using namespace StringConversions;  // NOLINT(build/namespaces)
+
+  assert::that(role != "address");
+
+  std::string string("0");
+  if (!value.isEmpty()) {
+    string = value.toStdString();
   }
-  if (presentation.startsWith("bin"))
-    _memoryAccess.putMemoryValueAt(address,
-                                   *StringConversions::binStringToMemoryValue(
-                                       number.toStdString(), length_bit));
-  // not yet implemented by conversions
-  /*else if (pres.startsWith("oct"))
-    _memoryAccess.putMemoryValueAt(address,
-                                   *StringConversions::octStringToMemoryValue(
-                                       number.toStdString(), length_bit));*/
-  else if (presentation.startsWith("hex"))
-    _memoryAccess.putMemoryValueAt(address,
-                                   *StringConversions::hexStringToMemoryValue(
-                                       number.toStdString(), length_bit));
-  else if (presentation.startsWith("decs"))
-    _memoryAccess.putMemoryValueAt(
-        address,
-        *StringConversions::unsignedDecStringToMemoryValue(number.toStdString(),
-                                                           length_bit));
-  else if (presentation.startsWith("dec"))
-    _memoryAccess.putMemoryValueAt(
-        address,
-        *StringConversions::signedDecStringToMemoryValue(number.toStdString(),
-                                                         length_bit));
-  return;
+
+  MemoryValue memory;
+
+  if (role.startsWith("bin")) {
+    memory = *binStringToMemoryValue(string, numberOfBits);
+  } else if (role.startsWith("hex")) {
+    memory = *hexStringToMemoryValue(string, numberOfBits);
+  } else if (role.startsWith("decs")) {
+    memory = *unsignedDecStringToMemoryValue(string, numberOfBits);
+  } else if (role.startsWith("dec")) {
+    memory = *signedDecStringToMemoryValue(string, numberOfBits);
+  } else {
+    assert::that(false);
+  }
+
+  _memoryAccess.putMemoryValueAt(address, memory);
 }
 
 
@@ -111,8 +104,7 @@ void MemoryComponentPresenter::setContextInformation(int addressStart,
 }
 
 
-int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
-  Q_UNUSED(parent)
+int MemoryComponentPresenter::rowCount(const QModelIndex &) const {
   return _memorySize;
 }
 
@@ -132,13 +124,8 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
 
 QVariant
 MemoryComponentPresenter::dataAdress(const QModelIndex &index, int role) const {
-  // format address as hex value and return it
-  return QString("%1")
-      .arg(index.row(), 4, 16, QLatin1Char('0'))
-      .toUpper()
-      .prepend("0x");
+  return QString("0x%1").arg(index.row(), 4, 16, QLatin1Char('0'));
 }
-
 
 QVariant
 MemoryComponentPresenter::dataMemory(const QModelIndex &index, int role) const {
@@ -165,11 +152,7 @@ MemoryComponentPresenter::dataMemory(const QModelIndex &index, int role) const {
     std::string memoryStringValue;
     if (role_string.startsWith("bin")) {
       memoryStringValue = StringConversions::toBinString(memory_cell);
-    }
-    // not yet implemented by conversions
-    // else if (role_string.startsWith("oct"))
-    //  stringvalue = StringConversions::toOctString(memory_cell);
-    else if (role_string.startsWith("hex")) {
+    } else if (role_string.startsWith("hex")) {
       memoryStringValue = StringConversions::toHexString(memory_cell);
     } else if (role_string.startsWith("decs")) {
       memoryStringValue = StringConversions::toSignedDecString(memory_cell);
@@ -246,29 +229,31 @@ MemoryValue MemoryComponentPresenter::getMemoryValueCached(
 
 
 QHash<int, QByteArray> MemoryComponentPresenter::roleNames() const {
-  // connect TableColumns in View with columns in this model
-  QHash<int, QByteArray> roles;
-  roles[AddressRole] = "address";
-  roles[ValueRoleBin8] = "bin8";
-  roles[ValueRoleBin16] = "bin16";
-  roles[ValueRoleBin32] = "bin32";
-  roles[ValueRoleBin64] = "bin64";
-  roles[ValueRoleOct8] = "oct8";
-  roles[ValueRoleOct16] = "oct16";
-  roles[ValueRoleOct32] = "oct32";
-  roles[ValueRoleOct64] = "oct64";
-  roles[ValueRoleHex8] = "hex8";
-  roles[ValueRoleHex16] = "hex16";
-  roles[ValueRoleHex32] = "hex32";
-  roles[ValueRoleHex64] = "hex64";
-  roles[ValueRoleDec8] = "dec8";
-  roles[ValueRoleDec16] = "dec16";
-  roles[ValueRoleDec32] = "dec32";
-  roles[ValueRoleDec64] = "dec64";
-  roles[ValueRoleDecS8] = "decs8";
-  roles[ValueRoleDecS16] = "decs16";
-  roles[ValueRoleDecS32] = "decs32";
-  roles[ValueRoleDecS64] = "decs64";
-  roles[InfoRole] = "info";
+  // clang-format off
+  static QHash<int, QByteArray> roles = {
+    {AddressRole, "address"},
+    {ValueRoleBin8, "bin8"},
+    {ValueRoleBin16, "bin16"},
+    {ValueRoleBin32, "bin32"},
+    {ValueRoleBin64, "bin64"},
+    {ValueRoleOct8, "oct8"},
+    {ValueRoleOct16, "oct16"},
+    {ValueRoleOct32, "oct32"},
+    {ValueRoleOct64, "oct64"},
+    {ValueRoleHex8, "hex8"},
+    {ValueRoleHex16, "hex16"},
+    {ValueRoleHex32, "hex32"},
+    {ValueRoleHex64, "hex64"},
+    {ValueRoleDec8, "dec8"},
+    {ValueRoleDec16, "dec16"},
+    {ValueRoleDec32, "dec32"},
+    {ValueRoleDec64, "dec64"},
+    {ValueRoleDecS8, "decs8"},
+    {ValueRoleDecS16, "decs16"},
+    {ValueRoleDecS32, "decs32"},
+    {ValueRoleDecS64, "decs64"},
+    {InfoRole, "info"}
+  };
+  // clang-format on
   return roles;
 }
