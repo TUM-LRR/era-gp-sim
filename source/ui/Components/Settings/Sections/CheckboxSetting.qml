@@ -25,14 +25,17 @@ import QtQuick.Window 2.2
 
 import Theme 1.0
 import Settings 1.0
+import "../../Common"
 
 Setting {
   property var setting
   property string checkboxText
 
   widget: checkbox
+  value: checkbox.checked
+  hasChanged: value !== setting
 
-  CheckBox {
+  ThemeableCheckBox {
     id: checkbox
     text: checkboxText
     checked: !!setting

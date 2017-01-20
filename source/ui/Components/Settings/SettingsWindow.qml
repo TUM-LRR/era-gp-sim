@@ -39,9 +39,13 @@ Window {
 
   property bool internalCloseOverride
   property bool hasUnsavedChanges: {
-    return snapshotLocation.hasChanged || themes.hasChanged;
+    for (var index = 0; index < sections.withSettings.length; ++index) {
+      if (sections.withSettings[index].hasChanged) {
+        return true;
+      }
+    }
+    return false;
   }
-
   signal store();
 
   AskAboutUnsavedChangesDialog {
@@ -72,20 +76,22 @@ Window {
   ScrollView {
     anchors.fill: parent
     Column {
+      id: sections
       topPadding: Theme.settings.section.paddingTop
       bottomPadding: Theme.settings.section.paddingBottom
 
-      SnapshotLocation {
-        id: snapshotLocation
-        Connections {
-          target: window
-          onStore: {
-            if (snapshotLocation.hasChanged) {
-              Settings.snapshotLocationChanged(snapshotLocation.location);
-            }
+      property var withSettings: {
+        var result = [];
+        for (var index = 0; index < sections.children.length; ++index) {
+          var child = sections.children[index];
+          if (child.isSetting) {
+            result.push(child);
           }
         }
+        return result;
       }
+
+      SnapshotLocation { id: snapshotLocation }
 
       HorizontalDivider { anchor: snapshotLocation }
 
@@ -93,30 +99,25 @@ Window {
 
       HorizontalDivider { anchor: themes }
 
-      // Row {
-        // leftPadding: Theme.settings.section.paddingLeft
-        // rightPadding: Theme.settings.section.paddingRight
+      CheckboxSetting {
+        id: removeSnapshotsPermanently
+        text: "Remove Snapshots Permanently"
+        description: "If checked, snapshots will be erased " +
+                     "permanently when removing them from a project."
+        checkboxText: "Yes"
+        setting: Settings.removeSnapshotsPermanently
+      }
 
-        CheckboxSetting {
-          id: removeSnapshotsPermanently
-          text: "Remove Snapshots Permanently"
-          description: "If checked, snapshots will be erased " +
-          "permanently when removing them from a project."
-          checkboxText: "Yes"
-          setting: Settings.removeSnapshotsPermanently
-        }
+      HorizontalDivider { anchor: overrideSnapshots }
 
-        HorizontalDivider { anchor: overrideSnapshots }
-
-        CheckboxSetting {
-          id: overrideSnapshots
-          text: "Override Snapshots"
-          description: "If checked, saving a snapshot will override " +
-          "the one last loaded."
-          checkboxText: "Yes"
-          setting: Settings.overrideSnapshots
-        }
-      // }
+      CheckboxSetting {
+        id: overrideSnapshots
+        text: "Override Snapshots"
+        description: "If checked, saving a snapshot will override " +
+                    "the one last loaded."
+        checkboxText: "Yes"
+        setting: Settings.overrideSnapshots
+      }
     }
   }
 
@@ -131,8 +132,8 @@ Window {
   //   onClicked: {
   //     store(); // emit signal
   //
-  //     Settings.theme = themes.selection;
-  //     Settings.snapshotLocation = snapshotLocation.location;
+  //     Settings.theme = themes.value;
+  //     Settings.snapshotLocation = snapshotLocation.value;
   //
   //     var message = Settings.store();
   //     if (message.length > 0) {

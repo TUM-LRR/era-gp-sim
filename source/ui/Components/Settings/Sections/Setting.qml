@@ -28,7 +28,11 @@ Rectangle {
   property alias text: label.text
   property alias description: description.text
   property alias topAnchor: description.bottom
+  property bool isSetting: true // A 'tag' to identify a Setting instance
 
+  property var value
+  property var setting
+  property bool hasChanged
   property var widget
 
   Label {

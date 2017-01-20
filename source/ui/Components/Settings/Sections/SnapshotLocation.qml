@@ -29,10 +29,11 @@ Setting {
   width: window.width
   text: "Snapshot Location"
   description: "The path at which to load and store snapshots."
-  widget: button
 
-  property alias location: button.text
-  property bool hasChanged: button.text !== Settings.snapshotLocation
+  widget: button
+  setting: Settings.snapshotLocation
+  value: button.text
+  hasChanged: value !== Settings.snapshotLocation
 
   Button {
     id: button

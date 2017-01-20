@@ -28,7 +28,7 @@ CheckBox {
   checked: true
 
   property string text
-  property var theme
+  property var theme: ({})
 
   MouseArea {
     anchors.fill: parent

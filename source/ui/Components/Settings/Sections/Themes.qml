@@ -28,10 +28,11 @@ Setting {
   width: window.width
   text: "Theme"
   description: "The UI and syntax theme. Changes apply instantly."
-  widget: selector
 
-  property alias selection: selector.currentText
-  property bool hasChanged: selection !== Settings.theme
+  widget: selector
+  setting: Settings.theme
+  value: selector.currentText
+  hasChanged: value !== Settings.theme
 
   ComboBox {
     id: selector
