@@ -86,7 +86,9 @@ Rectangle {
       top: label.bottom
       topMargin: Theme.settings.h2.marginTop
       left: parent.left
+      leftMargin: Theme.settings.h2.marginLeft
       right: parent.right
+      rightMargin: Theme.settings.h2.marginRight
     }
   }
 }
