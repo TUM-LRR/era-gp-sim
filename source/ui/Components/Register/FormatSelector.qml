@@ -28,6 +28,7 @@ ComboBox {
   property var registerModel
   property TreeView treeView
   property alias selection: root.currentText
+  property string selectionRole: formatToRoleMap[root.currentText]
 
   width: Theme.register.selector.width
   height: Theme.register.selector.height
@@ -105,7 +106,7 @@ ComboBox {
     }
   }
 
-  property var formats: ({
+  readonly property var formats: ({
     Float: ['Binary', 'Hexadecimal'],
     Vector: ['Binary', 'Hexadecimal'],
     Flag: ['Flag', 'Binary'],
@@ -114,6 +115,13 @@ ComboBox {
     Integer: [
       'Signed Decimal', 'Unsigned Decimal', 'Binary', 'Hexadecimal'
     ]
+  })
+
+  readonly property var formatToRoleMap: ({
+    "Binary": "BinaryData",
+    "Hexadecimal": "HexData",
+    "Unsigned Decimal": "UnsignedDecimalData",
+    "Signed Decimal": "SignedDecimalData"
   })
 
   // Searches for a given data format string and returns the corresponding

@@ -60,20 +60,20 @@ TextField {
 
   // Notify the model that the register's content was changed by the user.
   onEditingFinished: {
-    if (!formatSelector.selection) return;
+    if (!formatSelector.selectionRole) return;
     registerModel.registerContentChanged(
       styleData.index,
       root.text,
-      formatSelector.selection
+      formatSelector.selectionRole
     );
   }
 
   onAccepted: {
-    if (!formatSelector.selection) return;
+    if (!formatSelector.selectionRole) return;
     registerModel.registerContentChanged(
       styleData.index,
       root.text,
-      formatSelector.selection
+      formatSelector.selectionRole
     );
   }
 
