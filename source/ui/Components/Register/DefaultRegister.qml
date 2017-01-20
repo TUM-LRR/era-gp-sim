@@ -84,6 +84,7 @@ TextField {
   }
 
   style: TextFieldStyle {
+    renderType: Text.QtRendering
     textColor: {
       if (enabled) {
         Theme.register.content.color
