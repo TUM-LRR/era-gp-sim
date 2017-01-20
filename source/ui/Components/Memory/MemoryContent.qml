@@ -21,7 +21,7 @@ import QtQuick.Controls 1.5
 import Theme 1.0
 
 TableViewColumn {
-  role: "bin" + numberOfBits
+  role: "BinaryData" + numberOfBits
   movable: false
   resizable: true
   width: Theme.memory.address.width

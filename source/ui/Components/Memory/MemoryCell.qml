@@ -49,7 +49,7 @@ Item {
         verticalCenter: parent.verticalCenter
       }
 
-      enabled: styleData.row % numberOfBytes == 0
+      enabled: (styleData.row % numberOfBytes) === 0
       visible: enabled
       onActiveFocusChanged: cell.borderOpacity = (activeFocus) ? 1 : 0;
       text: enabled ? styleData.value : ""
@@ -66,13 +66,19 @@ Item {
       }
 
       onEditingFinished: {
-        if(!enabled || cell.text === cell.lastText) return;
+        if (!enabled || cell.text === cell.lastText) return;
+
+        var role = styleData.role;
+        if (role === "address" || role === "info") {
+          return;
+        }
+
         lastText = cell.text;
         memoryModel.setValue(
           styleData.row,
           cell.text,
           numberOfBits,
-          tableView.getColumn(styleData.column).role
+          role
         );
       }
 

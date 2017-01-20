@@ -135,6 +135,14 @@ class MemoryComponentPresenter : public QAbstractListModel {
    */
   QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
 
+  /**
+   * Turns a role string into the data format string by removing the number of
+   * bits at the end.
+   *
+   * \returns The data format string.
+   */
+  static QString _roleToDataFormat(const QString &role);
+
   /** Holds a MemoryAccess for accessing the memory */
   MemoryAccess _memoryAccess;
 
@@ -176,10 +184,6 @@ class MemoryComponentPresenter : public QAbstractListModel {
     ValueRoleBin16,
     ValueRoleBin32,
     ValueRoleBin64,
-    ValueRoleOct8,
-    ValueRoleOct16,
-    ValueRoleOct32,
-    ValueRoleOct64,
     ValueRoleHex8,
     ValueRoleHex16,
     ValueRoleHex32,
