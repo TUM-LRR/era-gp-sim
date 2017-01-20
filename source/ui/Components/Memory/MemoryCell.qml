@@ -87,12 +87,10 @@ Item {
         font.pixelSize: Theme.memory.cell.fontSize
         textColor: Theme.memory.cell.color
         background: Rectangle {
+          opacity: cell.borderOpacity
           color: Theme.memory.cell.background
-          TextField {
-            anchors.fill: parent
-            opacity: cell.borderOpacity
-            activeFocusOnTab: false
-          }
+          border.color: Theme.memory.cell.borderColor
+          radius: Theme.memory.cell.borderRadius
         }
       }
     }

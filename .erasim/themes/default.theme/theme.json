@@ -140,6 +140,8 @@
         "cell": {
             "background": "transparent",
             "color": "#212121",
+            "borderColor": "#BDBDBD",
+            "borderRadius": 3,
             "fontSize": 12,
             "height": 24,
             "width": 80

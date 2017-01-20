@@ -37,7 +37,7 @@ editor issue error { darkColor: #ffb998; lightColor: "#10ff5000"; }
 editor issue warning { darkColor: #ffe39d; lightColor: "#10ffb90a"; }
 editor issue information { darkColor: #99c8ff; lightColor: "#100075ff"; }
 
-memory cell { background: transparent; color: #212121; font-size: 12px; height: 24px; width: 80px; }
+memory cell { background: transparent; color: #212121; border-color: #BDBDBD; border-radius: 3px; font-size: 12px; height: 24px; width: 80px; }
 memory divider { color: #BDBDBD; width: 1px; }
 memory address { background: transparent; color: #212121; font-size: 12px; font-weight: normal; margin-left: -10px; width: 80px; }
 memory header { background: transparent; font-size: 12px; font-weight: bold; height: 25px; }
