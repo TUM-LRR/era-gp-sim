@@ -34,13 +34,14 @@
         <file>Components/Toolbar/Icons/RunToBreakpoint.svg</file>
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Settings/SettingsWindow.qml</file>
-        <file>Components/Settings/Sections/CheckboxSetting.qml</file>
-        <file>Components/Settings/Sections/SnapshotLocation.qml</file>
-        <file>Components/Settings/Sections/AskAboutUnsavedChangesDialog.qml</file>
-        <file>Components/Settings/Sections/HorizontalDivider.qml</file>
-        <file>Components/Settings/Sections/VerticalDivider.qml</file>
-        <file>Components/Settings/Sections/Setting.qml</file>
-        <file>Components/Settings/Sections/Themes.qml</file>
+        <file>Components/Settings/SaveArea.qml</file>
+        <file>Components/Settings/CheckboxSetting.qml</file>
+        <file>Components/Settings/SnapshotLocation.qml</file>
+        <file>Components/Settings/AskAboutUnsavedChangesDialog.qml</file>
+        <file>Components/Settings/HorizontalDivider.qml</file>
+        <file>Components/Settings/VerticalDivider.qml</file>
+        <file>Components/Settings/Setting.qml</file>
+        <file>Components/Settings/Themes.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
         <file>Components/Common/ThemeableCheckBox.qml</file>

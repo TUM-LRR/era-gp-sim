@@ -18,29 +18,46 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
-import QtQuick.Dialogs 1.2
-import QtQuick.Layouts 1.3
-import QtQuick.Window 2.2
 
 import Theme 1.0
 import Settings 1.0
-import "../../Common"
 
-Setting {
-  property string checkboxText
+// For ErrorDialog
+import "../../"
 
-  widget: checkbox
-  value: checkbox.checked
+Rectangle {
+  anchors.bottom: parent.bottom
+  width: window.width
+  height: hasUnsavedChanges ? Theme.settings.saveArea.height : 0
+  color: Theme.settings.saveArea.background
 
-  ThemeableCheckBox {
-    id: checkbox
-    text: checkboxText
-    checked: !!Settings[setting]
-    anchors {
-      top: parent.topAnchor
-      topMargin: Theme.settings.h2.marginBottom
-      horizontalCenter: parent.horizontalCenter
+  Behavior on height {
+    NumberAnimation {
+      duration: 200
+      easing.type: Easing.OutExpo
+    }
+  }
+
+  ErrorDialog { id: errorDialog }
+
+  Button {
+    id: save
+    text: "Save"
+    enabled: hasUnsavedChanges
+    visible: enabled
+    anchors.centerIn: parent
+    onClicked: {
+      store(); // emit signal
+
+      for (var index = 0; index < sections.withSettings.length; ++index) {
+        var section = sections.withSettings[index];
+        Settings[section.setting] = section.value;
+      }
+
+      var message = Settings.store();
+      if (message.length > 0) {
+        errorDialog.show(message);
+      }
     }
   }
 }

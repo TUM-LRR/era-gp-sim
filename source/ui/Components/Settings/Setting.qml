@@ -37,6 +37,18 @@ Rectangle {
 
   property bool hasChanged: (value !== undefined) && Settings[setting] !== value
 
+  function dynamicStyle(children) {
+    var node = Theme.settings.status;
+    if (hasChanged) node = node.changed;
+
+    children = children.split('.');
+    for (var index = 0; index < children.length; ++index) {
+      node = node[children[index]];
+    }
+
+    return node;
+  }
+
   Label {
     id: label
     font.pixelSize: Theme.settings.h1.fontSize
@@ -46,11 +58,22 @@ Rectangle {
     horizontalAlignment: Text.AlignHCenter
     anchors {
       top: parent.top
-      left: parent.left
-      leftMargin: Theme.settings.h1.padding
-      right: parent.right
-      rightMargin: Theme.settings.h1.padding
+      horizontalCenter: parent.horizontalCenter
     }
+  }
+
+  Rectangle {
+    anchors {
+      left: label.right
+      leftMargin: Theme.settings.status.margin
+      verticalCenter: label.verticalCenter
+    }
+    height: Theme.settings.status.height
+    width: Theme.settings.status.width
+    radius: Theme.settings.status.radius
+    border.color: dynamicStyle('border.color')
+    border.width: dynamicStyle('border.width')
+    color: dynamicStyle('background')
   }
 
   Label {
@@ -62,8 +85,8 @@ Rectangle {
     anchors {
       top: label.bottom
       topMargin: Theme.settings.h2.marginTop
-      left: label.left
-      right: label.right
+      left: parent.left
+      right: parent.right
     }
   }
 }

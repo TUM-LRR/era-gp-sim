@@ -27,6 +27,22 @@ settings
   saveArea
     background: $primary-color
     height: 50px
+  status
+    $dimension: 8px
+    margin: 7px
+    height: $dimension
+    width: $dimension
+    radius: $dimension/2
+    background: $green
+    border
+      color: lighten($green, 40%)
+      width: 2px
+    changed
+      background: $red
+      border
+        color: lighten($red, 40%)
+        width: 2px
+
 
   #snapshots button
     font-size: 13px

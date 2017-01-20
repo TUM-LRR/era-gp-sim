@@ -25,8 +25,6 @@ import QtQuick.Window 2.2
 
 import Theme 1.0
 import Settings 1.0
-import "Sections"
-import "../../"
 
 Window {
   id: window
@@ -128,41 +126,6 @@ Window {
     }
   }
 
-  ErrorDialog { id: errorDialog }
+  SaveArea { id: saveArea }
 
-  Rectangle {
-    id: saveArea
-    anchors.bottom: parent.bottom
-    width: window.width
-    height: hasUnsavedChanges ? Theme.settings.saveArea.height : 0
-    color: Theme.settings.saveArea.background
-
-    Behavior on height {
-      NumberAnimation {
-        duration: 200
-        easing.type: Easing.OutExpo
-      }
-    }
-
-    Button {
-      id: save
-      text: "Save"
-      enabled: hasUnsavedChanges
-      visible: enabled
-      anchors.centerIn: parent
-      onClicked: {
-        store(); // emit signal
-
-        for (var index = 0; index < sections.withSettings.length; ++index) {
-          var section = sections.withSettings[index];
-          Settings[section.setting] = section.value;
-        }
-
-        var message = Settings.store();
-        if (message.length > 0) {
-          errorDialog.show(message);
-        }
-      }
-    }
-  }
 }
