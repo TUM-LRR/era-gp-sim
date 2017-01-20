@@ -28,7 +28,7 @@ import "Sections"
 // Project Creation Screen
 /////////////////////////////
 
-Item {
+Rectangle {
   id: root
 
   signal createProject(string projectName,

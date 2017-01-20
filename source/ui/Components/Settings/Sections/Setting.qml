@@ -22,23 +22,22 @@ import QtQuick.Controls 1.4
 import Theme 1.0
 
 Rectangle {
+  width: window.width
   height: Theme.settings.section.height
-  anchors {
-    top: parent.top
-    left: parent.left
-    right: parent.right
-  }
 
   property alias text: label.text
   property alias description: description.text
   property alias topAnchor: description.bottom
-  property var bottomAnchor
+
+  property var widget
 
   Label {
     id: label
     font.pixelSize: Theme.settings.h1.fontSize
     font.weight: Font.DemiBold
+    wrapMode: Text.Wrap
     color: Theme.settings.h1.color
+    horizontalAlignment: Text.AlignHCenter
     anchors {
       top: parent.top
       left: parent.left
@@ -51,24 +50,14 @@ Rectangle {
   Label {
     id: description
     font.pixelSize: Theme.settings.h2.fontSize
+    wrapMode: Text.Wrap
+    horizontalAlignment: Text.Justify
+    color: Theme.settings.h2.color
     anchors {
       top: label.bottom
       topMargin: Theme.settings.h2.marginTop
       left: label.left
       right: label.right
     }
-    color: Theme.settings.h2.color
-  }
-
-  Rectangle {
-    id: rule
-    anchors {
-      top: bottomAnchor
-      topMargin: Theme.settings.section.paddingBottom
-      left: parent.left
-      right: parent.right
-    }
-    height: Theme.settings.hr.height
-    color: Theme.settings.hr.color
   }
 }

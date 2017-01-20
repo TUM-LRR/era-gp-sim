@@ -10,12 +10,13 @@ button border { color: #82c4f8; width: 2px; }
 button:disabled { background: #BDBDBD; color: #212121; }
 button:disabled border { color: #d7d7d7; }
 
-settings { padding-top: 15px; }
-settings section { height: 95px; padding-bottom: 5px; }
-settings h1 { font-size: 16px; padding: 10px; color: #212121; }
-settings h2 { font-size: 13px; margin-top: 8px; margin-bottom: 10px; color: #757575; }
-settings hr, settings snapshots title hr, snapshots title settings hr { color: #BDBDBD; height: 1px; }
-settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
+settings { min-width: 420px; min-height: 400px; }
+settings section { height: 95px; padding-top: 10px; padding-left: 0px; padding-right: 0px; }
+settings h1 { font-size: 14px; padding: 10px; color: #212121; }
+settings h2 { font-size: 12px; margin-top: 8px; margin-bottom: 10px; color: #757575; }
+settings horizontal-divider { color: #BDBDBD; height: 1px; width: 100%; }
+settings vertical-divider { color: #BDBDBD; width: 0px; height: 100%; }
+settings #snapshots button { font-size: 13px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
 
 snapshots creation-dialog, snapshots setting-dialog { background: white; margin-left: 10px; margin-right: 10px; margin-top: 25px; margin-bottom: 40px; }
 

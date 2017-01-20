@@ -26,9 +26,10 @@ import Settings 1.0
 
 Setting {
   id: root
+  width: window.width
   text: "Snapshot Location"
   description: "The path at which to load and store snapshots."
-  bottomAnchor: button.bottom
+  widget: button
 
   property alias location: button.text
   property bool hasChanged: button.text !== Settings.snapshotLocation
@@ -57,6 +58,7 @@ Setting {
     style: ButtonStyle {
       label: Text {
         elide: Text.ElideRight
+        wrapMode: Text.Wrap
         font.pixelSize: Theme.settings.snapshots.button.fontSize
         horizontalAlignment: Text.AlignHCenter
         leftPadding: Theme.settings.snapshots.button.paddingLeft
