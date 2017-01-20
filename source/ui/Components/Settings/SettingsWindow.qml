@@ -46,6 +46,7 @@ Window {
     }
     return false;
   }
+
   signal store();
 
   AskAboutUnsavedChangesDialog {
@@ -74,7 +75,13 @@ Window {
   }
 
   ScrollView {
-    anchors.fill: parent
+    id: scrollView
+    anchors {
+      left: parent.left
+      right: parent.right
+      top: parent.top
+      bottom: saveArea.top
+    }
     Column {
       id: sections
       topPadding: Theme.settings.section.paddingTop
@@ -105,7 +112,7 @@ Window {
         description: "If checked, snapshots will be erased " +
                      "permanently when removing them from a project."
         checkboxText: "Yes"
-        setting: Settings.removeSnapshotsPermanently
+        setting: 'removeSnapshotsPermanently'
       }
 
       HorizontalDivider { anchor: overrideSnapshots }
@@ -116,29 +123,46 @@ Window {
         description: "If checked, saving a snapshot will override " +
                     "the one last loaded."
         checkboxText: "Yes"
-        setting: Settings.overrideSnapshots
+        setting: 'overrideSnapshots'
       }
     }
   }
 
-  // ErrorDialog { id: errorDialog }
-  //
-  // Button {
-  //   id: save
-  //   text: "Save"
-  //   enabled: hasUnsavedChanges
-  //   anchors.top: parent.bottom
-  //   anchors.horizontalCenter: parent.horizontalCenter
-  //   onClicked: {
-  //     store(); // emit signal
-  //
-  //     Settings.theme = themes.value;
-  //     Settings.snapshotLocation = snapshotLocation.value;
-  //
-  //     var message = Settings.store();
-  //     if (message.length > 0) {
-  //       errorDialog.show(message);
-  //     }
-  //   }
-  // }
+  ErrorDialog { id: errorDialog }
+
+  Rectangle {
+    id: saveArea
+    anchors.bottom: parent.bottom
+    width: window.width
+    height: hasUnsavedChanges ? Theme.settings.saveArea.height : 0
+    color: Theme.settings.saveArea.background
+
+    Behavior on height {
+      NumberAnimation {
+        duration: 200
+        easing.type: Easing.OutExpo
+      }
+    }
+
+    Button {
+      id: save
+      text: "Save"
+      enabled: hasUnsavedChanges
+      visible: enabled
+      anchors.centerIn: parent
+      onClicked: {
+        store(); // emit signal
+
+        for (var index = 0; index < sections.withSettings.length; ++index) {
+          var section = sections.withSettings[index];
+          Settings[section.setting] = section.value;
+        }
+
+        var message = Settings.store();
+        if (message.length > 0) {
+          errorDialog.show(message);
+        }
+      }
+    }
+  }
 }

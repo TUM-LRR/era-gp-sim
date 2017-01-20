@@ -30,9 +30,8 @@ Setting {
   description: "The UI and syntax theme. Changes apply instantly."
 
   widget: selector
-  setting: Settings.theme
+  setting: 'theme'
   value: selector.currentText
-  hasChanged: value !== Settings.theme
 
   ComboBox {
     id: selector

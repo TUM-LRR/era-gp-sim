@@ -31,9 +31,17 @@ Setting {
   description: "The path at which to load and store snapshots."
 
   widget: button
-  setting: Settings.snapshotLocation
+  setting: 'snapshotLocation'
   value: button.text
-  hasChanged: value !== Settings.snapshotLocation
+
+  Connections {
+    target: window
+    onStore: {
+      if (snapshotLocation.hasUnsavedChanges) {
+        Settings.snapshotLocationChanged(snapshotLocation.value);
+      }
+    }
+  }
 
   Button {
     id: button

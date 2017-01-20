@@ -28,17 +28,15 @@ import Settings 1.0
 import "../../Common"
 
 Setting {
-  property var setting
   property string checkboxText
 
   widget: checkbox
   value: checkbox.checked
-  hasChanged: value !== setting
 
   ThemeableCheckBox {
     id: checkbox
     text: checkboxText
-    checked: !!setting
+    checked: !!Settings[setting]
     anchors {
       top: parent.topAnchor
       topMargin: Theme.settings.h2.marginBottom

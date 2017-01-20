@@ -20,6 +20,7 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 
 import Theme 1.0
+import Settings 1.0
 
 Rectangle {
   width: window.width
@@ -31,9 +32,10 @@ Rectangle {
   property bool isSetting: true // A 'tag' to identify a Setting instance
 
   property var value
-  property var setting
-  property bool hasChanged
+  property string setting
   property var widget
+
+  property bool hasChanged: (value !== undefined) && Settings[setting] !== value
 
   Label {
     id: label

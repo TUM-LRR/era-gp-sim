@@ -16,6 +16,7 @@ settings h1 { font-size: 14px; padding: 10px; color: #212121; }
 settings h2 { font-size: 12px; margin-top: 8px; margin-bottom: 10px; color: #757575; }
 settings horizontal-divider { color: #BDBDBD; height: 1px; width: 100%; }
 settings vertical-divider { color: #BDBDBD; width: 0px; height: 100%; }
+settings saveArea { background: #2196F3; height: 50px; }
 settings #snapshots button { font-size: 13px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
 
 snapshots creation-dialog, snapshots setting-dialog { background: white; margin-left: 10px; margin-right: 10px; margin-top: 25px; margin-bottom: 40px; }
