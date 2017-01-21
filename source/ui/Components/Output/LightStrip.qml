@@ -3,13 +3,14 @@ import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.0
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import Theme 1.0
 
 import "../Common"
 
-Item {
+Rectangle {
     // Color definitions
-    property var lightstripInactiveColor: "#9B9B9B"
-    property var lightstripDefaultActiveColor: "#0080FF"
+    property var lightstripInactiveColor: Theme.output.lightStrip.strip.inactive.background
+    property var lightstripDefaultActiveColor: Theme.output.lightStrip.strip.active.background
 
     // Index of output item relative to all available output outems.
     // Required to identify this output item when communicating with
@@ -17,6 +18,8 @@ Item {
     property var outputItemIndex: 0
 
     signal settingsButtonPressed()
+
+    color: Theme.output.lightStrip.background
 
     ListModel {
         id: lightstripModel

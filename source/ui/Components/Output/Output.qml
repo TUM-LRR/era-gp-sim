@@ -28,7 +28,7 @@ import "./SevenSegment/"
 /*
  Container for output items (e.g. lightstrip, seven-segment, text console).
  */
-Rectangle {
+Item {
     id: rootRectangle
 
     // Color definitions
