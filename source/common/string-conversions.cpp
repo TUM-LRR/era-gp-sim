@@ -28,7 +28,7 @@
 #include "core/conversions.hpp"
 
 namespace StringConversions {
-
+namespace {
 /**
  * \brief _toDecString Converts a given integral typed value to string.
  * \tparam T Integral type of the given value.
@@ -36,11 +36,10 @@ namespace StringConversions {
  * \return String corresponding to the given integral value.
  */
 template <typename T>
-std::string _toDecString(T intValue) {
-  std::stringstream stream;
-  stream << std::dec << intValue;
-  return stream.str();
+std::string _toDecString(T value) {
+  return std::to_string(value);
 }
+}  // anonymous namespace
 
 
 std::string toBinString(const MemoryValue& memoryValue) {
@@ -48,10 +47,11 @@ std::string toBinString(const MemoryValue& memoryValue) {
   result.reserve(memoryValue.getSize());
   // Iterate over each bit of the memory value and insert the corresponding
   // binary digit.
-  for (size_t currentBitAddress = 0; currentBitAddress < memoryValue.getSize();
+  for (std::size_t currentBitAddress = 0;
+       currentBitAddress < memoryValue.getSize();
        ++currentBitAddress) {
-    bool currentBitValue =
-        memoryValue.get(memoryValue.getSize() - 1 - currentBitAddress);
+    auto address = memoryValue.getSize() - 1 - currentBitAddress;
+    bool currentBitValue = memoryValue.get(address);
     result.push_back(currentBitValue ? '1' : '0');
   }
 
@@ -60,8 +60,9 @@ std::string toBinString(const MemoryValue& memoryValue) {
 
 
 std::string toHexString(const MemoryValue& memoryValue) {
-  const std::vector<uint8_t>& internal = memoryValue.internal();
+  const auto& internal = memoryValue.internal();
   std::stringstream stream;
+
   // Iterate over the 8bit-values of the internal representation to convert each
   // into hex-values.
   // In order to be able to conveniently push the hex-digits into the stream,
@@ -69,13 +70,14 @@ std::string toHexString(const MemoryValue& memoryValue) {
   // significant bit.
   for (auto it = internal.rbegin(); it != internal.rend(); ++it) {
     // The current 8bit-value.
-    uint8_t currentValue = *it;
+    std::uint8_t currentValue = *it;
     // Convert the current 8bit-value into hex (= two digits) and push it into
     // the stream, inserting leading zeros where required.
     stream << std::setfill('0') << std::setw(sizeof(uint8_t) * 2) << std::hex
            << static_cast<int>(currentValue);
   }
-  std::string result = stream.str();
+  auto result = stream.str();
+
   // Remove leading digits that exceed the memory value's specified bit-size.
   return result.substr((result.length() * 4 - memoryValue.getSize()) / 4);
 }
@@ -98,28 +100,30 @@ std::string toSignedDecString(const MemoryValue& memoryValue) {
 
 
 Optional<MemoryValue>
-binStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize) {
-  std::string stringValueNoPrefix = stringValue;
+binStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
   // Remove the hex-indicator-prefix if necessary.
   if (stringValue.find("0b") == 0) {
-    stringValueNoPrefix = stringValueNoPrefix.substr(2);
+    stringValue = stringValue.substr(2);
   }
 
   std::vector<uint8_t> resultingInternal;
+
   // Read the string starting with the least significant bit until no more
   // complete byte is available.
-  for (size_t index = stringValueNoPrefix.length();; index -= 8) {
+  for (size_t index = stringValue.length();; index -= 8) {
     size_t startPos = (index >= 8) ? index - 8 : 0;
     size_t length = (index >= 8) ? 8 : index;
     // Try to parse the string-byte to an 8bit-integer value.
     uint8_t currentValue;
     try {
       currentValue =
-          std::stoi(stringValueNoPrefix.substr(startPos, length), nullptr, 2);
+          std::stoi(stringValue.substr(startPos, length), nullptr, 2);
     } catch (const std::invalid_argument& e) {
       return Optional<MemoryValue>();
     }
+
     resultingInternal.push_back(currentValue);
+
     // Stop iterating when the value that was just added was the last
     // value of the string
     // OR when pushing the next internal value would result in the
@@ -129,34 +133,37 @@ binStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize) {
       break;
     }
   }
+
   // Insert implicit-zero leading zeros.
   while (resultingInternal.size() * 8 < memoryValueSize) {
     resultingInternal.push_back(0);
   }
+
   return MemoryValue{resultingInternal, memoryValueSize};
 }
 
 
 Optional<MemoryValue>
-hexStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize) {
-  std::string stringValueNoPrefix = stringValue;
+hexStringToMemoryValue(std::string stringValue, size_t memoryValueSize) {
   // Remove the hex-indicator-prefix if necessary.
   if (stringValue.find("0x") == 0) {
-    stringValueNoPrefix = stringValueNoPrefix.substr(2);
+    stringValue = stringValue.substr(2);
   }
+
   std::vector<uint8_t> resultingInternal;
   // Iterate over the input string in 8bit-steps (= 2 hex digits), starting with
   // the least significant bit.
-  for (auto it = stringValueNoPrefix.rbegin(); it < stringValueNoPrefix.rend();
-       it += 2) {
+  for (auto it = stringValue.rbegin(); it < stringValue.rend(); it += 2) {
     // Initializes the string representing the current 8bit with the first 4bit
     // directly behind the iterator.
     std::string currentValueString(1, *it);
+
     // If another 4 bit following the first 4 bit are available, add them as
     // well.
-    if ((it + 1) != stringValueNoPrefix.rend()) {
+    if ((it + 1) != stringValue.rend()) {
       currentValueString = *(it + 1) + currentValueString;
     }
+
     // currentValueString has a maximum of two hex digits which results in a
     // 8bit-integer.
     uint8_t currentValue;
@@ -174,10 +181,12 @@ hexStringToMemoryValue(const std::string& stringValue, size_t memoryValueSize) {
       break;
     }
   }
+
   // Insert implicit-zero leading zeros.
   while (resultingInternal.size() * 8 < memoryValueSize) {
     resultingInternal.push_back(0);
   }
+
   return MemoryValue{resultingInternal, memoryValueSize};
 }
 
@@ -189,15 +198,15 @@ unsignedDecStringToMemoryValue(const std::string& stringValue,
   std::uintmax_t intermediateValue;
   try {
     intermediateValue = std::stoll(stringValue, nullptr, 10);
-  } catch (const std::invalid_argument& e) {
+  } catch (const std::invalid_argument&) {
     return Optional<MemoryValue>();
-  } catch (const std::out_of_range& e) {
+  } catch (const std::out_of_range&) {
     return Optional<MemoryValue>();
   }
+
   // Convert int to MemoryValue.
-  MemoryValue result =
-      conversions::convert<std::uintmax_t>(intermediateValue, memoryValueSize);
-  return result;
+  return conversions::convert<std::uintmax_t>(intermediateValue,
+                                              memoryValueSize);
 }
 
 

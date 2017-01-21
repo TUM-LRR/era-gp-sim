@@ -1,4 +1,5 @@
-/* C++ Assembler Interpreter
+/*
+* C++ Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -13,16 +14,24 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 import QtQuick 2.6
-import QtQuick.Controls 1.5
+import QtQuick.Controls 1.4
+import QtQuick.Layouts 1.3
+import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
-TableViewColumn {
-  role: "BinaryData" + numberOfBits
-  movable: false
-  resizable: true
-  width: Theme.memory.address.width
+ToolButton {
+  id: button
+  property url icon
+
+  iconSource: icon
+  MouseArea {
+    anchors.fill: parent
+    cursorShape: Qt.PointingHandCursor
+    onClicked: button.clicked();
+  }
 }

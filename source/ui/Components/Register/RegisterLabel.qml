@@ -13,16 +13,25 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
+* along with this program. If not, see http://www.gnu.org/licenses/.*/
 
 import QtQuick 2.6
 import QtQuick.Controls 1.5
+import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
-TableViewColumn {
-  role: "BinaryData" + numberOfBits
-  movable: false
-  resizable: true
-  width: Theme.memory.address.width
+Label {
+  property var model
+  text: model ? model.Title : ""
+
+  color: Theme.register.label.color
+  font.pixelSize: Theme.register.label.fontSize
+  font.weight: {
+    if (Theme.register.label.fontWeight === 'bold') {
+      return Font.DemiBold;
+    } else {
+      return Font.Normal;
+    }
+  }
 }

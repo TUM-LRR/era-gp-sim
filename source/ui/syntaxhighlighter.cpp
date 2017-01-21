@@ -24,6 +24,7 @@
 #include <QTextCharFormat>
 
 #include "core/parser-interface.hpp"
+#include "ui/theme.hpp"
 
 SyntaxHighlighter::SyntaxHighlighter(ParserInterface &parserInterface,
                                      QTextDocument *document)
@@ -63,7 +64,7 @@ void SyntaxHighlighter::_addKeywords(
 void SyntaxHighlighter::_addImmediateRegexToSyntaxHighlighter(
     ParserInterface &parserInterface) {
   QTextCharFormat immediateFormat;
-  immediateFormat.setForeground(Qt::red);
+  immediateFormat.setForeground(QColor(Theme::instance()["editor"].toMap()["keywords"].toMap()["immediate"].toMap()["color"].toString()));
   immediateFormat.setFontWeight(QFont::Bold);
   _addKeywords(SyntaxInformation::Token::Immediate,
                immediateFormat,
@@ -74,7 +75,7 @@ void SyntaxHighlighter::_addImmediateRegexToSyntaxHighlighter(
 void SyntaxHighlighter::_addInstructionKeywordsRegexToSyntaxHighlighter(
     ParserInterface &parserInterface) {
   QTextCharFormat instructionFormat;
-  instructionFormat.setForeground(Qt::darkBlue);
+  instructionFormat.setForeground(QColor(Theme::instance()["editor"].toMap()["keywords"].toMap()["instruction"].toMap()["color"].toString()));
   instructionFormat.setFontWeight(QFont::Bold);
   _addKeywords(SyntaxInformation::Token::Instruction,
                instructionFormat,
@@ -85,7 +86,7 @@ void SyntaxHighlighter::_addInstructionKeywordsRegexToSyntaxHighlighter(
 void SyntaxHighlighter::_addCommentRegexToSyntaxHighlighter(
     ParserInterface &parserInterface) {
   QTextCharFormat commentFormat;
-  commentFormat.setForeground(Qt::darkGreen);
+  commentFormat.setForeground(QColor(Theme::instance()["editor"].toMap()["keywords"].toMap()["comment"].toMap()["color"].toString()));
   _addKeywords(SyntaxInformation::Token::Comment,
                commentFormat,
                QRegularExpression::NoPatternOption,
@@ -95,7 +96,7 @@ void SyntaxHighlighter::_addCommentRegexToSyntaxHighlighter(
 void SyntaxHighlighter::_addRegisterRegexToSyntaxHighlighter(
     ParserInterface &parserInterface) {
   QTextCharFormat registerFormat;
-  registerFormat.setForeground(QColor::fromRgb(177, 137, 4));
+  registerFormat.setForeground(QColor(Theme::instance()["editor"].toMap()["keywords"].toMap()["register"].toMap()["color"].toString()));
   registerFormat.setFontWeight(QFont::Bold);
   _addKeywords(SyntaxInformation::Token::Register,
                registerFormat,
@@ -106,7 +107,7 @@ void SyntaxHighlighter::_addRegisterRegexToSyntaxHighlighter(
 void SyntaxHighlighter::_addLabelRegexToSyntaxHighlighter(
     ParserInterface &parserInterface) {
   QTextCharFormat labelFormat;
-  labelFormat.setForeground(Qt::red);
+  labelFormat.setForeground(QColor(Theme::instance()["editor"].toMap()["keywords"].toMap()["label"].toMap()["color"].toString()));
   labelFormat.setFontWeight(QFont::Bold);
   _addKeywords(SyntaxInformation::Token::Label,
                labelFormat,

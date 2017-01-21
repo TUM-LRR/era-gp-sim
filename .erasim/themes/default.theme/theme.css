@@ -17,11 +17,39 @@ settings h2 { font-size: 13px; margin-top: 8px; margin-bottom: 10px; color: #757
 settings hr { color: #BDBDBD; height: 1px; }
 settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
 
-memory cell { background: transparent; color: #212121; font-size: 12px; height: 24px; width: 80px; }
+toolbar { margin: 20px; background: white; }
+
+editor { color: black; background: white; selection: #2d2d91; }
+editor keywords immediate { color: #a86c0d; }
+editor keywords instruction { color: #2196F3; }
+editor keywords comment { color: green; }
+editor keywords register { color: #f59332; }
+editor keywords label { color: #FF4081; }
+editor lineHighlight { background: "#1ae8e8e8"; }
+editor lineHighlight border { color: "#1ab2b2b2"; }
+editor executionLineHighlight { background: "#1a2196F3"; }
+editor executionLineHighlight border { color: "transparent"; }
+editor breakpoint { color: #FF4081; }
+editor sidebar { background: #e8e8e8; }
+editor sidebar lineNumber { color: "gray"; }
+editor macro { background: #f5f5f5; }
+editor issue error { darkColor: #ffb998; lightColor: "#10ff5000"; }
+editor issue warning { darkColor: #ffe39d; lightColor: "#10ffb90a"; }
+editor issue information { darkColor: #99c8ff; lightColor: "#100075ff"; }
+
+memory cell { background: transparent; color: #212121; border-color: #BDBDBD; border-radius: 3px; font-size: 12px; height: 24px; width: 80px; }
 memory divider { color: #BDBDBD; width: 1px; }
 memory address { background: transparent; color: #212121; font-size: 12px; font-weight: normal; margin-left: -10px; width: 80px; }
 memory header { background: transparent; font-size: 12px; font-weight: bold; height: 25px; }
 memory header remove { background: transparent; color: #FF4081; font-size: 16px; font-weight: bold; margin-bottom: 2px; margin-left: 7px; }
 memory add-button { background: transparent; color: #FF4081; font-size: 14px; font-weight: bold; height: 25px; width: 50px; margin-bottom: 1px; }
+
+register { background: transparent; height: 40px; margin-left: -5px; margin-right: 10px; overflow: auto; }
+register label { color: #212121; font-size: 12px; font-weight: bold; }
+register content { background: white; color: #212121; font-size: 12px; height: 25px; margin: 4px; radius: 2px; }
+register content border { color: #BDBDBD; width: 1; }
+register content highlighted { background: #FF4081; }
+register content:disabled { background: #f2f2f2; color: #757575; }
+register selector { height: 23px; width: 15px; background: transparent; color: #FF4081; font-size: 14px; radius: 1px; }
 
 /*# sourceMappingURL=theme.css.map */

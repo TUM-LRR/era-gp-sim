@@ -34,8 +34,8 @@ class MemoryComponentPresenter : public QAbstractListModel {
   Q_OBJECT
 
  public:
-  MemoryComponentPresenter(MemoryAccess access,
-                           MemoryManager manager,
+  MemoryComponentPresenter(const MemoryAccess &access,
+                           const MemoryManager &manager,
                            QQmlContext *projectContext,
                            QObject *parent = 0);
 
@@ -47,8 +47,10 @@ class MemoryComponentPresenter : public QAbstractListModel {
    * \param numberOfBits The number of bits used.
    * \param role The current role (format + bits).
    */
-  Q_INVOKABLE void
-  setValue(int address, QString value, int numberOfBits, QString role);
+  Q_INVOKABLE void setValue(int address,
+                            const QString &value,
+                            int numberOfBits,
+                            const QString &role);
 
   /**
    * Sets the context information for memory cells (NOT IMPLEMENTED YET)
@@ -135,6 +137,14 @@ class MemoryComponentPresenter : public QAbstractListModel {
    */
   QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
 
+  /**
+   * Turns a role string into the data format string by removing the number of
+   * bits at the end.
+   *
+   * \returns The data format string.
+   */
+  static QString _roleToDataFormat(const QString &role);
+
   /** Holds a MemoryAccess for accessing the memory */
   MemoryAccess _memoryAccess;
 
@@ -176,10 +186,6 @@ class MemoryComponentPresenter : public QAbstractListModel {
     ValueRoleBin16,
     ValueRoleBin32,
     ValueRoleBin64,
-    ValueRoleOct8,
-    ValueRoleOct16,
-    ValueRoleOct32,
-    ValueRoleOct64,
     ValueRoleHex8,
     ValueRoleHex16,
     ValueRoleHex32,

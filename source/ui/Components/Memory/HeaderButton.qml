@@ -65,7 +65,7 @@ ComboBox {
     return tableView.getColumn(index).width = headerSection.width;
   }
 
-  // Choose the right underlaying model depending on the
+  // Choose the right underlying model depending on the
   // column it is responsible for
   model: (currentRole === 'address') ? numberOfBitsModel : formatModel;
 
@@ -79,10 +79,10 @@ ComboBox {
 
   ListModel {
     id: formatModel
-    ListElement { text: "Binary"; role: "bin" }
-    ListElement { text: "Hexadecimal"; role: "hex" }
-    ListElement { text: "Unsigned Decimal"; role: "dec" }
-    ListElement { text: "Signed Decimal"; role: "decs" }
+    ListElement { text: "Binary"; role: "BinaryData" }
+    ListElement { text: "Hexadecimal"; role: "HexData" }
+    ListElement { text: "Unsigned Decimal"; role: "UnsignedDecimalData" }
+    ListElement { text: "Signed Decimal"; role: "SignedDecimalData" }
   }
 
   onCurrentIndexChanged: {
