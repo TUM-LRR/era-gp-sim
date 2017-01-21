@@ -142,20 +142,21 @@ struct ProgramExecutionFixture : public ::testing::Test {
 
 template <typename SizeType>
 struct FactorialTest : public ProgramExecutionFixture<SizeType, true> {
-  FactorialTest() : ProgramExecutionFixture<SizeType, true>("factorial.txt") {}
+  using super = ProgramExecutionFixture<SizeType, true>;
+  FactorialTest() : super("factorial.txt") {}
 
   void factorialTest() {
-    this->assertForAllRegisters([](auto reg, SizeType value) {
+    super::assertForAllRegisters([](auto reg, SizeType value) {
       ASSERT_EQ(0, value) << "In Register " << reg;
     });
-    this->executeAll();
-    this->waitUntilExecutionFinished();
-    this->assertForAllRegisters([](auto reg, SizeType value) {
+    super::executeAll();
+    super::waitUntilExecutionFinished();
+    super::assertForAllRegisters([](auto reg, SizeType value) {
       if (reg != "x1") {
         EXPECT_EQ(0, value) << "In Register " << reg;
       }
     });
-    this->assertRegisterValue("x1", 479001600);
+    super::assertRegisterValue("x1", 479001600);
   }
 };
 
@@ -169,15 +170,15 @@ TEST_F(FactorialTest64, factorial64) { factorialTest(); }
 
 template <typename SizeType>
 struct FactorialRecTest : public ProgramExecutionFixture<SizeType, true, 1024> {
-  FactorialRecTest()
-      : ProgramExecutionFixture<SizeType, true, 1024>("factorial_rec.txt") {}
+  using super = ProgramExecutionFixture<SizeType, true, 1024>;
+  FactorialRecTest() : super("factorial_rec.txt") {}
   void factorialRecTest() {
-    this->assertForAllRegisters([](auto reg, auto value) {
+    super::assertForAllRegisters([](auto reg, auto value) {
       ASSERT_EQ(0, value) << "In Register " << reg;
     });
-    this->executeAll();
-    this->waitUntilExecutionFinished();
-    this->assertRegisterValue("x5", 479001600);
+    super::executeAll();
+    super::waitUntilExecutionFinished();
+    super::assertRegisterValue("x5", 479001600);
   }
 };
 
@@ -189,16 +190,16 @@ TEST_F(FactorialRecTest64, factorialRec64) { factorialRecTest(); }
 
 template <typename SizeType>
 struct MemoryIOTest : public ProgramExecutionFixture<SizeType, false, 1024> {
-  MemoryIOTest()
-      : ProgramExecutionFixture<SizeType, false, 1024>("memoryio.txt") {}
+  using super = ProgramExecutionFixture<SizeType, false, 1024>;
+  MemoryIOTest() : super("memoryio.txt") {}
   void memoryioTest() {
-    this->assertForAllRegisters([](auto reg, auto value) {
+    super::assertForAllRegisters([](auto reg, auto value) {
       ASSERT_EQ(0, value) << "In Register " << reg;
     });
-    this->executeAll();
-    this->waitUntilExecutionFinished();
-    this->assertRegisterValue("x1", 0x489);
-    this->assertMemory(0, 4, 0x489);
+    super::executeAll();
+    super::waitUntilExecutionFinished();
+    super::assertRegisterValue("x1", 0x489);
+    super::assertMemory(0, 4, 0x489);
   }
 };
 
@@ -210,14 +211,16 @@ TEST_F(MemoryIOTest64, memoryio64) { memoryioTest(); }
 
 template <typename SizeType>
 struct SuperSumTest : public ProgramExecutionFixture<SizeType> {
-  SuperSumTest() : ProgramExecutionFixture<SizeType>("super_sum.txt") {}
+  using super = ProgramExecutionFixture<SizeType>;
+  SuperSumTest() : super("super_sum.txt") {}
 
   void superSumTest() {
-    this->assertForAllRegisters(
+    super::assertForAllRegisters(
         [](auto reg, auto val) { ASSERT_EQ(0, val) << "In Register " << reg; });
-    this->executeAll();
-    this->waitUntilExecutionFinished();
-    this->assertRegisterValue("x5", 35);//1+(1+2)+(1+2+3)+(1+2+3+4)+(1+2+3+4+5)
+    super::executeAll();
+    super::waitUntilExecutionFinished();
+    super::assertRegisterValue("x5",
+                              35);  // 1+(1+2)+(1+2+3)+(1+2+3+4)+(1+2+3+4+5)
     // = 1+3+6+10+15 = 35
   }
 };
@@ -230,18 +233,19 @@ TEST_F(SuperSumTest64, supersum64) { superSumTest(); }
 
 template <typename SizeType>
 struct EndlessTest : public ProgramExecutionFixture<SizeType> {
-  EndlessTest() : ProgramExecutionFixture<SizeType>("endless.txt") {}
+  using super = ProgramExecutionFixture<SizeType>;
+  EndlessTest() : super("endless.txt") {}
 
   void endlessTest() {
-    this->assertForAllRegisters(
+    super::assertForAllRegisters(
         [](auto reg, auto val) { ASSERT_EQ(0, val) << "In Register " << reg; });
-    this->executeNext();  // nop instruction
-    this->waitUntilExecutionFinished();
-    this->executeNext();  // backwards jump to nop
-    this->waitUntilExecutionFinished();
+    super::executeNext();  // nop instruction
+    super::waitUntilExecutionFinished();
+    super::executeNext();  // backwards jump to nop
+    super::waitUntilExecutionFinished();
     // if everything is the same as in the beginning, this will be an endless
     // loop
-    this->assertForAllRegisters(
+    super::assertForAllRegisters(
         [](auto reg, auto val) { ASSERT_EQ(0, val) << "In Register " << reg; });
   }
 };
