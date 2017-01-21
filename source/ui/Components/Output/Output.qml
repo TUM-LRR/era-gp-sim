@@ -23,6 +23,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import Theme 1.0
 import "./SevenSegment/"
 
 /*
@@ -32,8 +33,8 @@ Item {
     id: rootRectangle
 
     // Color definitions
-    property color tabBarColor: Qt.rgba(236.0/255.0, 236.0/255.0, 236.0/255.0, 1.0)
-    property color innerBorderColor: "#AFAFAF"
+    property color tabBarColor: Theme.output.tabBar.background
+    property color innerBorderColor: Theme.output.tabBar.border.color
     property color highlightColor: "#4A90E2"
     property color titleColor: "#4A4A4A"
     property color titleColorHighlighted: "#111111"
@@ -90,7 +91,7 @@ Item {
                 color: tabBarColor
                 // Display border between tab bar and content frame.
                 Rectangle {
-                    height: 1
+                    height: Theme.output.tabBar.border.width
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
