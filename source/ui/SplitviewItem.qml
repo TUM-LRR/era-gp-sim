@@ -169,8 +169,9 @@ Item {
     ]
 
     source: {
-      if (sourceComponents[componentSelector.currentIndex] !== undefined) {
-        return  "Components/" + sourceComponents[componentSelector.currentIndex];
+      var currentComponent = sourceComponents[componentSelector.currentIndex];
+      if (currentComponent) {
+        return  "Components/" + currentComponent;
       } else {
         return "Components/help/HelpWindow.qml";
       }

@@ -68,6 +68,7 @@ Dialog {
       id: save
       enabled: name.text.length > 0
       text: 'Save'
+      isDefault: true
       anchors {
         top: cancel.top
         bottom: cancel.bottom

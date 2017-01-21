@@ -25,25 +25,8 @@ MenuBar {
   id: menubar
   property var main
 
-  function saveAs(filePath) {
-    ui.saveTextAs(tabView.getCurrentProjectId(), filePath);
-  }
-
-  function actionSaveAs() {
-    main.fileDialog.onAcceptedFunction = function(filePath) {
-      ui.saveTextAs(tabView.getCurrentProjectId(), filePath);
-    };
-
-    main.fileDialog.selectExisting = false;
-    main.fileDialog.open();
-  }
-
-  function setMenuEnabled(yes) {
-    openFileOption.enabled = yes;
-    saveFileOption.enabled = yes;
-    saveFileAsOption.enabled = yes;
-    projectMenu.enable(yes);
-  }
+  signal saveSnapshotRequest();
+  signal saveSnapshotAsRequest();
 
   Menu {
     id: editorMenu
@@ -68,11 +51,10 @@ MenuBar {
       id: openFileOption
       text: "Open File"
       shortcut: "Alt+O"
-      function openTextFile(filePath) {
-        ui.loadText(tabView.getCurrentProjectId(), filePath);
-      }
       onTriggered: {
-        main.fileDialog.onAcceptedFunction = openTextFile;
+        main.fileDialog.onAcceptedFunction = function(filePath) {
+          ui.loadText(tabView.getCurrentProjectId(), filePath);
+        };
         main.fileDialog.selectExisting = true;
         main.fileDialog.open();
       }
@@ -115,11 +97,10 @@ MenuBar {
       id: openSnapshot
       text: "Open Snapshot"
       shortcut: "Ctrl+O"
-      function importSnapshot(name) {
-        var success = snapshotComponent.importSnapshot(name);
-      }
       onTriggered: {
-        main.fileDialog.onAcceptedFunction = importSnapshot;
+        main.fileDialog.onAcceptedFunction = function(name) {
+          snapshotComponent.importSnapshot(name);
+        };
         main.fileDialog.selectExisting = true;
         main.fileDialog.open();
       }
@@ -129,12 +110,39 @@ MenuBar {
       id: saveSnapshot
       text: "Save Snapshot"
       shortcut: "Ctrl+S"
-      onTriggered: main.snapshotDialog.open()
+      onTriggered: saveSnapshotRequest()
+    }
+
+    MenuItem {
+      id: saveSnapshotAs
+      text: "Save Snapshot As"
+      shortcut: "Ctrl+Shift+S"
+      onTriggered: saveSnapshotAsRequest()
     }
 
     function enable(yes) {
       openSnapshot.enabled = yes;
       saveSnapshot.enabled = yes;
     }
+  }
+
+  function saveAs(filePath) {
+    ui.saveTextAs(tabView.getCurrentProjectId(), filePath);
+  }
+
+  function actionSaveAs() {
+    main.fileDialog.onAcceptedFunction = function(filePath) {
+      ui.saveTextAs(tabView.getCurrentProjectId(), filePath);
+    };
+
+    main.fileDialog.selectExisting = false;
+    main.fileDialog.open();
+  }
+
+  function setMenuEnabled(yes) {
+    openFileOption.enabled = yes;
+    saveFileOption.enabled = yes;
+    saveFileAsOption.enabled = yes;
+    projectMenu.enable(yes);
   }
 }

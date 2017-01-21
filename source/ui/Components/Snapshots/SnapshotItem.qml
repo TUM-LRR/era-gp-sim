@@ -64,8 +64,7 @@ Component {
       text: "\u00D7"
       theme: Theme.snapshots.item.remove
       onClicked: {
-        console.log(Settings['removeSnapshotsPermanently']);
-        if (removalDialog.alreadySet) {
+        if (removalDialog.alreadyAsked) {
           removeSnapshot(Settings.removeSnapshotsPermanently);
         } else {
           removalDialog.open()

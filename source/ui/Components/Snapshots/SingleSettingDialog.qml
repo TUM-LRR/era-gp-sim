@@ -30,7 +30,7 @@ Dialog {
   id: dialog
   property string text
   property string propertyName
-  property bool alreadySet: !!Settings[propertyName]
+  property bool alreadyAsked: Settings[propertyName] !== null
   property alias remember: checkbox.checked
 
   signal done(bool answerWasYes);
@@ -94,6 +94,7 @@ Dialog {
 
       Button {
         text: "Yes"
+        isDefault: true
         onClicked: processResponse(true)
       }
 

@@ -49,10 +49,8 @@ ApplicationWindow {
       window.updateMenuState();
     }
   }
-  toolBar: ToolbarComponent {
-    id: toolbar
-  }
 
+  toolBar: ToolbarComponent { id: toolbar }
   SettingsWindow { id: config }
 
   TabView {
@@ -67,17 +65,18 @@ ApplicationWindow {
       updateMenuState();
     }
 
-    // get the project of the current tab, is undefined if there is no tab.
+    // Get the project of the current tab, is undefined if there is no tab.
     function getCurrentProjectItem() {
       return tabView.getTab(tabView.currentIndex).item;
     }
 
-    // get the id of the project in the current tab, undefined if there is no tab.
+    // Get the id of the project in the current tab,
+    // undefined if there is no tab.
     function getCurrentProjectId() {
       return getCurrentProjectItem().projectId;
     }
 
-    // returns false if there is only a creation screen in the current tab.
+    // Returns false if there is only a creation screen in the current tab.
     // Undefined if there is no tab.
     function currentProjectIsReady() {
       return getCurrentProjectItem().projectValid;
@@ -151,6 +150,7 @@ ApplicationWindow {
       property bool running
 
       anchors.fill: parent
+
       ProjectCreationScreen {
         anchors.fill: parent
         onCreateProject: {
@@ -165,6 +165,7 @@ ApplicationWindow {
             optionName,
             parser
           );
+
           window.expand();
           window.showMenus();
           projectValid = true;
@@ -181,21 +182,16 @@ ApplicationWindow {
       Splitview {
         anchors.fill: parent
 
-        SystemPalette {
-          id: systemPalette
-        }
+        SystemPalette { id: systemPalette }
 
         Connections {
           target: guiProject
-          onSaveTextAs: {
-            menubar.actionSaveAs();
-          }
+          onSaveTextAs: menubar.actionSaveAs();
           onError: {
             window.errorDialog.text = errorMessage;
             window.errorDialog.open();
           }
           onExecutionStopped: {
-            toolbar.rowLayout.setStoppedState();
             editor.parse();
             placeholderItem.isRunning = false;
           }
@@ -222,7 +218,6 @@ ApplicationWindow {
 
   property alias errorDialog: errorDialog
   property alias fileDialog: fileDialog
-  property var snapshotDialog: SnapshotDialog { }
 
   ErrorDialog { id: errorDialog }
 

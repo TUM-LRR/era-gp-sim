@@ -338,7 +338,7 @@ class GuiProject : QObject {
   QString _defaultTextFileSavePath;
 
   /**
-   * A shared pointer to the configuration json (for snapshots,...)
+   * A shared pointer to the snapshot component.
    */
   std::shared_ptr<SnapshotComponent> _snapshotComponent;
 

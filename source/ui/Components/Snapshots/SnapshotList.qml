@@ -23,6 +23,8 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
+import Settings 1.0
+import "../Menubar"
 
 Rectangle {
   anchors.fill: parent
@@ -36,9 +38,7 @@ Rectangle {
     onSnapshotsChanged: listView.model = guiProject.getSnapshots()
   }
 
-  SnapshotItem {
-    id: snapshotItem
-  }
+  SnapshotItem { id: snapshotItem }
 
   // The list view to display a list of snapshots.
   ListView {
@@ -46,12 +46,42 @@ Rectangle {
     model: guiProject.getSnapshots();
     currentIndex: -1
     delegate: snapshotItem
+    property string currentSnapshot: {
+      return listView.currentItem ? listView.currentItem.text : "";
+    }
     anchors {
       topMargin: 10
       top: header.bottom
       left: parent.left
       bottom: parent.bottom
       right: parent.right
+    }
+  }
+
+  function saveSnapshot(override) {
+    if (listView.currentSnapshot && override) {
+      ui.saveSnapshot(tabView.getCurrentProjectId(), listView.currentSnapshot);
+    } else {
+      snapshotDialog.open();
+    }
+  }
+
+  SingleSettingDialog {
+    id: overrideDialog
+    text: "Override the current snapshot?"
+    propertyName: 'overrideSnapshots'
+    onDone: saveSnapshot(answerWasYes)
+  }
+
+  Connections {
+    target: menubar
+    onSaveSnapshotAsRequest: snapshotDialog.open();
+    onSaveSnapshotRequest: {
+      if (overrideDialog.alreadyAsked) {
+        saveSnapshot(Settings.overrideSnapshots);
+      } else {
+        overrideDialog.open();
+      }
     }
   }
 }

@@ -51,9 +51,12 @@ void SnapshotComponent::addSnapshot(const QString& architectureIdentifier,
                                     const std::string& data) {
   bool snapshotExists =
       _snapshotMap.contains(architectureIdentifier, snapshotName);
+
   _snapshotDirectory.mkdir(architectureIdentifier);
+
   auto path = snapshotPath(architectureIdentifier, snapshotName);
   Utility::storeToFile(path, data);
+
   if (!snapshotExists) {
     // As the _snapshotMap is a QMultiHash, duplicates of key value pairs can be
     // inserted, which is stopped by this.
