@@ -35,8 +35,9 @@ Rectangle {
     bottomMargin: Theme.memory.addButton.marginBottom
   }
 
-  color: Theme.memory.addButton.background
-  LinearGradient{
+  color: 'transparent'
+
+  LinearGradient {
     anchors.fill: parent
     start: Qt.point(0, 0)
     end: Qt.point(parent.width, 0)
