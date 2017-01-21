@@ -1,102 +1,159 @@
 {
-    "settings": {
-        "section": {
-            "paddingBottom": 5,
-            "height": 95
-        },
-        "hr": {
-            "color": "#BDBDBD",
-            "height": 1
-        },
-        "h1": {
+    "memory": {
+        "cell": {
+            "borderRadius": 3,
+            "borderColor": "#BDBDBD",
+            "background": "transparent",
             "color": "#212121",
-            "padding": 10,
-            "fontSize": 16
+            "height": 24,
+            "width": 80,
+            "fontSize": 12
         },
-        "paddingTop": 15,
-        "snapshots": {
-            "button": {
-                "background": "#FFFFFF",
-                "paddingRight": 20,
-                "paddingLeft": 10,
-                "fontSize": 14
-            }
+        "address": {
+            "color": "#212121",
+            "fontSize": 12,
+            "background": "transparent",
+            "marginLeft": -10,
+            "width": 80,
+            "fontWeight": "normal"
         },
-        "h2": {
-            "color": "#757575",
-            "marginTop": 8,
-            "marginBottom": 10,
-            "fontSize": 13
+        "divider": {
+            "width": 1,
+            "color": "#BDBDBD"
+        },
+        "addButton": {
+            "fontSize": 14,
+            "background": "transparent",
+            "fontWeight": "bold",
+            "width": 50,
+            "height": 25,
+            "color": "#FF4081",
+            "marginBottom": 1
+        },
+        "header": {
+            "height": 25,
+            "fontSize": 12,
+            "remove": {
+                "marginLeft": 7,
+                "fontSize": 16,
+                "background": "transparent",
+                "fontWeight": "bold",
+                "color": "#FF4081",
+                "marginBottom": 2
+            },
+            "background": "transparent",
+            "fontWeight": "bold"
+        }
+    },
+    "toolbar": {
+        "margin": 20,
+        "background": "white"
+    },
+    "register": {
+        "content": {
+            "margin": 4,
+            "fontSize": 12,
+            "background": "white",
+            "color": "#212121",
+            "height": 25,
+            "highlighted": {
+                "background": "#FF4081"
+            },
+            "border": {
+                "width": 1,
+                "color": "#BDBDBD"
+            },
+            "disabled": {
+                "background": "#f2f2f2",
+                "color": "#757575"
+            },
+            "radius": 2
+        },
+        "label": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "color": "#212121"
+        },
+        "background": "transparent",
+        "overflow": "auto",
+        "marginRight": 10,
+        "height": 40,
+        "marginLeft": -5,
+        "selector": {
+            "radius": 1,
+            "fontSize": 14,
+            "background": "transparent",
+            "color": "#FF4081",
+            "height": 23,
+            "width": 15
         }
     },
     "button": {
-        "color": "#FFFFFF",
         "radius": 4,
+        "fontSize": 16,
+        "color": "#FFFFFF",
+        "height": 40,
         "border": {
-            "color": "#82c4f8",
-            "width": 2
+            "width": 2,
+            "color": "#82c4f8"
         },
         "disabled": {
-            "background": "#BDBDBD",
-            "color": "#212121",
             "border": {
                 "color": "#d7d7d7"
-            }
-        },
-        "fontSize": 16,
-        "height": 40
+            },
+            "background": "#BDBDBD",
+            "color": "#212121"
+        }
     },
-    "createProject": {
+    "settings": {
+        "h1": {
+            "padding": 10,
+            "fontSize": 16,
+            "color": "#212121"
+        },
         "section": {
-            "margin": 20,
-            "fontSize": 20,
-            "borderWidth": 1,
-            "borderColor": "#BDBDBD",
-            "height": 50
+            "height": 95,
+            "paddingBottom": 5
         },
-        "name": {
-            "length": 80
+        "hr": {
+            "height": 1,
+            "color": "#BDBDBD"
         },
-        "button": {
-            "background": "#2196F3",
-            "width": 160,
-            "marginTop": 10
+        "paddingTop": 15,
+        "h2": {
+            "marginTop": 8,
+            "fontSize": 13,
+            "marginBottom": 10,
+            "color": "#757575"
         },
-        "width": 280,
-        "marginTop": 10
-    },
-    "toolbar": {
-        "background": "white",
-        "margin": 20
+        "snapshots": {
+            "button": {
+                "fontSize": 14,
+                "paddingLeft": 10,
+                "paddingRight": 20,
+                "background": "#FFFFFF"
+            }
+        }
     },
     "editor": {
-        "color": "black",
-        "background": "white",
-        "executionLineHighlight": {
-            "background": "#1a2196F3",
+        "macro": {
+            "background": "#f5f5f5"
+        },
+        "lineHighlight": {
             "border": {
-                "color": "transparent"
-            }
-        },
-        "selection": "#2d2d91",
-        "sidebar": {
-            "background": "#e8e8e8",
-            "lineNumber": {
-                "color": "gray"
-            }
-        },
-        "breakpoint": {
-            "color": "#FF4081"
+                "color": "#1ab2b2b2"
+            },
+            "background": "#1ae8e8e8"
         },
         "keywords": {
             "instruction": {
                 "color": "#2196F3"
             },
-            "immediate": {
-                "color": "#a86c0d"
-            },
             "label": {
                 "color": "#FF4081"
+            },
+            "immediate": {
+                "color": "#a86c0d"
             },
             "comment": {
                 "color": "green"
@@ -105,15 +162,8 @@
                 "color": "#f59332"
             }
         },
-        "macro": {
-            "background": "#f5f5f5"
-        },
-        "lineHighlight": {
-            "background": "#1ae8e8e8",
-            "border": {
-                "color": "#1ab2b2b2"
-            }
-        },
+        "background": "white",
+        "color": "black",
         "issue": {
             "warning": {
                 "darkColor": "#ffe39d",
@@ -127,98 +177,48 @@
                 "darkColor": "#ffb998",
                 "lightColor": "#10ff5000"
             }
+        },
+        "sidebar": {
+            "lineNumber": {
+                "color": "gray"
+            },
+            "background": "#e8e8e8"
+        },
+        "breakpoint": {
+            "color": "#FF4081"
+        },
+        "selection": "#2d2d91",
+        "executionLineHighlight": {
+            "border": {
+                "color": "transparent"
+            },
+            "background": "#1a2196F3"
         }
     },
-    "register": {
-        "background": "transparent",
-        "overflow": "auto",
-        "content": {
-            "background": "white",
-            "color": "#212121",
-            "margin": 4,
-            "border": {
-                "color": "#BDBDBD",
-                "width": 1
-            },
-            "highlighted": {
-                "background": "#FF4081"
-            },
-            "disabled": {
-                "background": "#f2f2f2",
-                "color": "#757575"
-            },
-            "fontSize": 12,
-            "radius": 2,
-            "height": 25
-        },
-        "label": {
-            "color": "#212121",
-            "fontWeight": "bold",
-            "fontSize": 12
-        },
-        "marginLeft": -5,
-        "marginRight": 10,
-        "selector": {
-            "background": "transparent",
-            "color": "#FF4081",
-            "radius": 1,
-            "width": 15,
-            "height": 23,
-            "fontSize": 14
-        },
-        "height": 40
-    },
     "window": {
-        "background": "white",
+        "initialHeight": 350,
+        "height": 0.9,
         "width": 0.9,
         "initialWidth": 300,
-        "initialHeight": 350,
-        "height": 0.9
+        "background": "white"
     },
-    "memory": {
-        "divider": {
-            "color": "#BDBDBD",
-            "width": 1
+    "createProject": {
+        "marginTop": 10,
+        "section": {
+            "margin": 20,
+            "height": 50,
+            "fontSize": 20,
+            "borderWidth": 1,
+            "borderColor": "#BDBDBD"
         },
-        "header": {
-            "background": "transparent",
-            "remove": {
-                "background": "transparent",
-                "color": "#FF4081",
-                "fontWeight": "bold",
-                "marginLeft": 7,
-                "marginBottom": 2,
-                "fontSize": 16
-            },
-            "height": 25,
-            "fontWeight": "bold",
-            "fontSize": 12
+        "width": 280,
+        "button": {
+            "marginTop": 10,
+            "width": 160,
+            "background": "#2196F3"
         },
-        "addButton": {
-            "background": "transparent",
-            "color": "#FF4081",
-            "width": 50,
-            "fontWeight": "bold",
-            "fontSize": 14,
-            "marginBottom": 1,
-            "height": 25
-        },
-        "address": {
-            "background": "transparent",
-            "color": "#212121",
-            "width": 80,
-            "fontWeight": "normal",
-            "marginLeft": -10,
-            "fontSize": 12
-        },
-        "cell": {
-            "background": "transparent",
-            "color": "#212121",
-            "width": 80,
-            "borderColor": "#BDBDBD",
-            "height": 24,
-            "borderRadius": 3,
-            "fontSize": 12
+        "name": {
+            "length": 80
         }
     }
 }

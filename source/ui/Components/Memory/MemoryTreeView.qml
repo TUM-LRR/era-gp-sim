@@ -40,5 +40,5 @@ TableView {
   }
 
   // Add a column with the content for each cell at startup.
-  Component.onCompleted: insertColumn(1, memoryContent);
+  Component.onCompleted: insertColumn(treeView.columnCount, memoryContent);
 }
