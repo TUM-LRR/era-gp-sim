@@ -18,6 +18,8 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 
+import Theme 1.0
+
 TableView {
   model: memoryModel
   selectionMode: SelectionMode.NoSelection
@@ -30,21 +32,13 @@ TableView {
   // The default MemoryView consists of three columns:
   // 1. address                               (fixed)
   // 2. content of each memory cell           (dynamic)
-  // 3. additional information on each cell   (fixed)
   TableViewColumn {
     role: "address"
     movable: false
     resizable: true
-    width: 70
-  }
-
-  TableViewColumn {
-    role: "info"
-    movable: false
-    resizable: true
-    width: 0
+    width: Theme.memory.address.width
   }
 
   // Add a column with the content for each cell at startup.
-  Component.onCompleted: insertColumn(columnCount - 1, memoryContent);
+  Component.onCompleted: insertColumn(1, memoryContent);
 }

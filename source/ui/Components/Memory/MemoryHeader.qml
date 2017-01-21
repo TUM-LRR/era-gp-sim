@@ -51,7 +51,7 @@ Rectangle {
         target: tableView
         onColumnCountChanged: {
           // Dynamically add columns that were added by the user.
-          while (headerDropdownList.count < tableView.columnCount - 1) {
+          while (headerDropdownList.count < tableView.columnCount) {
             headerDropdownList.append(ListElement);
           }
         }
@@ -75,82 +75,9 @@ Rectangle {
           }
         }
 
-        property alias text: headerOptions.currentText
+        property alias text: headerButton.currentText
 
-        // The ComboBox above each row the user can either choose the number
-        // of bits or the numerical representation of a memory cell depending
-        // on the column.
-        ComboBox {
-          id: headerOptions
-          height: root.height
-          anchors {
-            top: parent.top
-            bottom: parent.bottom
-            left: parent.left
-            right: remove.right
-            rightMargin: {
-              if (currentRole === 'address') {
-                return 0;
-              } else {
-                return Theme.memory.header.remove.marginLeft;
-              }
-            }
-          }
-
-          style: ComboBoxStyle {
-            background: Rectangle {
-              color: Theme.memory.header.background
-            }
-            label: Text {
-              font.pixelSize: Theme.memory.header.fontSize
-              horizontalAlignment: Qt.AlignHCenter
-              verticalAlignment: Qt.AlignVCenter
-              text: (currentRole === 'address') ? 'Address' : 'Memory'
-              font.weight: {
-                if (Theme.memory.header.fontWeight === 'bold') {
-                  return Font.DemiBold;
-                } else {
-                  return Font.Normal;
-                }
-              }
-            }
-          }
-
-          onWidthChanged: {
-            return tableView.getColumn(index).width = headerSection.width;
-          }
-
-          // Choose the right underlaying model depending on the
-          // column it is responsible for
-          model: (currentRole === 'address') ? numberOfBitsModel : formatModel;
-
-          ListModel {
-            id: numberOfBitsModel
-            ListElement { text: "8 Bit"; bits: 8 }
-            ListElement { text: "16 Bit"; bits: 16 }
-            ListElement { text: "32 Bit"; bits: 32 }
-            ListElement { text: "64 Bit"; bits: 64 }
-          }
-
-          ListModel {
-            id: formatModel
-            ListElement { text: "Binary"; role: "bin" }
-            ListElement { text: "Hexadecimal"; role: "hex" }
-            ListElement { text: "Unsigned Decimal"; role: "dec" }
-            ListElement { text: "Signed Decimal"; role: "decs" }
-          }
-
-          onCurrentIndexChanged: {
-            if (model === numberOfBitsModel) {
-              numberOfBits = model.get(headerOptions.currentIndex).bits;
-            } else {
-              tableView.getColumn(index).role = Qt.binding(function() {
-                var formatRole = model.get(headerOptions.currentIndex).role;
-                return formatRole + numberOfBits;
-              });
-            }
-          }
-        }
+        HeaderButton { id: headerButton }
 
         RemoveButton {
           id: remove

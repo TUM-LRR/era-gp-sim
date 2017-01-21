@@ -33,7 +33,6 @@ Rectangle {
     right: parent.right
     bottom: parent.bottom
     bottomMargin: Theme.memory.addButton.marginBottom
-    top: parent.top
   }
 
   color: Theme.memory.addButton.background
@@ -44,7 +43,7 @@ Rectangle {
 
     gradient: Gradient {
       GradientStop { position: 0.0; color: "#00000000" }
-      GradientStop { position: 0.4; color: "white" }
+      GradientStop { position: 0.4; color: Theme.memory.addButton.background }
     }
   }
 
