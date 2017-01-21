@@ -30,6 +30,7 @@ class MemoryAllocator;
 class SyntaxTreeGenerator;
 class CompileErrorList;
 class MemoryAccess;
+class AllocateMemoryImmutableArguments;
 
 /**
  * Represents a section directive in code.

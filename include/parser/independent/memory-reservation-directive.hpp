@@ -33,6 +33,7 @@ class SyntaxTreeGenerator;
 class Architecture;
 class SymbolReplacer;
 class FinalRepresentation;
+class AllocateMemoryImmutableArguments;
 
 class MemoryReservationDirective : public IntermediateDirective {
  public:
