@@ -31,7 +31,7 @@ Rectangle {
   color: Theme.snapshots.background
 
   SnapshotHeader { id: header }
-  SaveSnapshotDialog { id: snapshotDialog }
+  SaveSnapshotDialog { id: saveSnapshotDialog }
 
   Connections {
     target: snapshotComponent
@@ -50,7 +50,7 @@ Rectangle {
       return listView.currentItem ? listView.currentItem.text : "";
     }
     anchors {
-      topMargin: 10
+      topMargin: Theme.snapshots.marginTop
       top: header.bottom
       left: parent.left
       bottom: parent.bottom
@@ -60,9 +60,9 @@ Rectangle {
 
   function saveSnapshot(override) {
     if (listView.currentSnapshot && override) {
-      ui.saveSnapshot(tabView.getCurrentProjectId(), listView.currentSnapshot);
+      ui.saveSnapshot(tabView.currentProjectId(), listView.currentSnapshot);
     } else {
-      snapshotDialog.open();
+      saveSnapshotDialog.open();
     }
   }
 
@@ -75,8 +75,14 @@ Rectangle {
 
   Connections {
     target: menubar
-    onSaveSnapshotAsRequest: snapshotDialog.open();
+    onSaveSnapshotAsRequest: {
+      if (projectId === sourceProjectId) {
+        saveSnapshotDialog.open();
+      }
+    }
     onSaveSnapshotRequest: {
+      if (projectId !== sourceProjectId) return;
+      console.log("hit: " + projectId);
       if (overrideDialog.alreadyAsked) {
         saveSnapshot(Settings.overrideSnapshots);
       } else {

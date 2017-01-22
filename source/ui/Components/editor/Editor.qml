@@ -240,7 +240,7 @@ ScrollView {
             onTriggered: {
               // don't parse while executing to avoid parsing multiple
               // times on stopping (onStopped triggers parse)
-              if(!tabView.getCurrentProjectItem().running) {
+              if(!tabView.currentProjectItem().running) {
                 editor.parse();
               }
             }

@@ -24,10 +24,6 @@ import QtGraphicalEffects 1.0
 import Theme 1.0
 import "Sections"
 
-/////////////////////////////
-// Project Creation Screen
-/////////////////////////////
-
 Rectangle {
   id: root
 
@@ -74,7 +70,7 @@ Rectangle {
       id: button
       anchors.top: version.bottom
       onClicked: {
-        root.createProject(
+        createProject(
           projectName.text,
           memorySize.selection,
           architecture.selection,

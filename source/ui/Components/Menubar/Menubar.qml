@@ -25,8 +25,8 @@ MenuBar {
   id: menubar
   property var main
 
-  signal saveSnapshotRequest();
-  signal saveSnapshotAsRequest();
+  signal saveSnapshotRequest(int sourceProjectId);
+  signal saveSnapshotAsRequest(int sourceProjectId);
 
   Menu {
     id: editorMenu
@@ -53,7 +53,7 @@ MenuBar {
       shortcut: "Alt+O"
       onTriggered: {
         main.fileDialog.onAcceptedFunction = function(filePath) {
-          ui.loadText(tabView.getCurrentProjectId(), filePath);
+          ui.loadText(tabView.currentProjectId(), filePath);
         };
         main.fileDialog.selectExisting = true;
         main.fileDialog.open();
@@ -64,7 +64,7 @@ MenuBar {
       id: saveFileOption
       text: "Save File"
       shortcut: "Alt+S"
-      onTriggered: ui.saveText(tabView.getCurrentProjectId())
+      onTriggered: ui.saveText(tabView.currentProjectId())
     }
 
     MenuItem {
@@ -110,14 +110,14 @@ MenuBar {
       id: saveSnapshot
       text: "Save Snapshot"
       shortcut: "Ctrl+S"
-      onTriggered: saveSnapshotRequest()
+      onTriggered: saveSnapshotRequest(tabView.currentProjectId())
     }
 
     MenuItem {
       id: saveSnapshotAs
       text: "Save Snapshot As"
       shortcut: "Ctrl+Shift+S"
-      onTriggered: saveSnapshotAsRequest()
+      onTriggered: saveSnapshotAsRequest(tabView.currentProjectId())
     }
 
     function enable(yes) {
@@ -127,12 +127,12 @@ MenuBar {
   }
 
   function saveAs(filePath) {
-    ui.saveTextAs(tabView.getCurrentProjectId(), filePath);
+    ui.saveTextAs(tabView.currentProjectId(), filePath);
   }
 
   function actionSaveAs() {
     main.fileDialog.onAcceptedFunction = function(filePath) {
-      ui.saveTextAs(tabView.getCurrentProjectId(), filePath);
+      ui.saveTextAs(tabView.currentProjectId(), filePath);
     };
 
     main.fileDialog.selectExisting = false;

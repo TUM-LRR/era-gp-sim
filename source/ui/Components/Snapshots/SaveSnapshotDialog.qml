@@ -75,7 +75,7 @@ Dialog {
         right: cancel.left
       }
       onClicked: {
-        ui.saveSnapshot(tabView.getCurrentProjectId(), name.text);
+        ui.saveSnapshot(tabView.currentProjectId(), name.text);
         name.text = ''
         dialog.close()
       }

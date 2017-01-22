@@ -57,29 +57,23 @@ ApplicationWindow {
     id: tabView
     anchors.fill: parent
 
-    Component.onCompleted: {
-      createProject()
-    }
+    Component.onCompleted: createProject()
+    onCurrentIndexChanged: updateMenuState();
 
-    onCurrentIndexChanged: {
-      updateMenuState();
-    }
-
-    // Get the project of the current tab, is undefined if there is no tab.
-    function getCurrentProjectItem() {
+    // Undefined if there is no tab.
+    function currentProjectItem() {
       return tabView.getTab(tabView.currentIndex).item;
     }
 
-    // Get the id of the project in the current tab,
-    // undefined if there is no tab.
-    function getCurrentProjectId() {
-      return getCurrentProjectItem().projectId;
+    // Undefined if there is no tab.
+    function currentProjectId() {
+      return currentProjectItem().projectId;
     }
 
     // Returns false if there is only a creation screen in the current tab.
     // Undefined if there is no tab.
     function currentProjectIsReady() {
-      return getCurrentProjectItem().projectValid;
+      return currentProjectItem().projectValid;
     }
   }
 
@@ -98,7 +92,7 @@ ApplicationWindow {
 
   function showMenus() {
     toolbar.enabled = true;
-    toolbar.running = tabView.getCurrentProjectItem().running;
+    toolbar.running = tabView.currentProjectItem().running;
     menubar.setMenuEnabled(true);
   }
 
@@ -110,13 +104,13 @@ ApplicationWindow {
   }
 
   function createProject() {
-    tabView.addTab("", tabs);
+    tabView.addTab("", tabComponent);
     tabView.currentIndex = tabView.count - 1;
   }
 
   function closeProject() {
     var currentTabIndex = tabView.currentIndex;
-    var currentProjectId = tabView.getCurrentProjectId();
+    var currentProjectId = tabView.currentProjectId();
     var isReady = tabView.currentProjectIsReady();
 
     tabView.removeTab(currentTabIndex);
@@ -135,8 +129,7 @@ ApplicationWindow {
 
   // Component for a project, instantiated by the TabView
   Component {
-    id: tabs
-
+    id: tabComponent
     Item {
       id: placeholderItem
 
@@ -228,7 +221,7 @@ ApplicationWindow {
     selectFolder: false
     selectMultiple: false
     onAccepted: {
-      ui.saveTextAs(tabView.getCurrentProjectId(), fileDialog.fileUrl);
+      ui.saveTextAs(tabView.currentProjectId(), fileDialog.fileUrl);
     }
   }
 }

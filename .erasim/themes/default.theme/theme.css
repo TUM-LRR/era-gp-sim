@@ -25,7 +25,7 @@ settings #snapshots button { font-size: 13px; padding-left: 10px; padding-right:
 
 snapshots creation-dialog, snapshots setting-dialog { background: white; margin-left: 10px; margin-right: 10px; margin-top: 25px; margin-bottom: 40px; }
 
-snapshots { background: white; }
+snapshots { background: white; margin-top: 10px; }
 snapshots hr, snapshots title hr { color: #BDBDBD; height: 0; }
 snapshots add, snapshots item remove { background: white; color: #FF4081; font-size: 16px; margin-bottom: 3px; font-weight: bold; height: 22px; }
 snapshots item { height: 20px; background: white; color: #212121; font-size: 12px; font-weight: normal; margin-right: 10px; }
