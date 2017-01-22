@@ -5,7 +5,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import Theme 1.0
 
-import "../Common"
+import "../../Common"
 
 Rectangle {
     // Color definitions

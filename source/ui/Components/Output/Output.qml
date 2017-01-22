@@ -25,6 +25,8 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import Theme 1.0
 import "./SevenSegment/"
+import "./Lightstrip/"
+import "./Console/"
 
 /*
  Container for output items (e.g. lightstrip, seven-segment, text console).
