@@ -8,7 +8,7 @@
         <file>Components/Snapshots/SnapshotTitle.qml</file>
         <file>Components/Snapshots/SnapshotItem.qml</file>
         <file>Components/Snapshots/SnapshotHeader.qml</file>
-        <file>Components/Snapshots/SnapshotDialog.qml</file>
+        <file>Components/Snapshots/SaveSnapshotDialog.qml</file>
         <file>Components/Snapshots/TextButton.qml</file>
         <file>Components/Snapshots/Divider.qml</file>
         <file>Components/Snapshots/SingleSettingDialog.qml</file>

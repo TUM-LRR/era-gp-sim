@@ -31,7 +31,7 @@ Rectangle {
   color: Theme.snapshots.background
 
   SnapshotHeader { id: header }
-  SnapshotDialog { id: snapshotDialog }
+  SaveSnapshotDialog { id: snapshotDialog }
 
   Connections {
     target: snapshotComponent
