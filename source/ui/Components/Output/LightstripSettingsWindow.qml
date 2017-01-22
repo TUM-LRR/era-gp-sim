@@ -21,132 +21,114 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.0
+import QtQuick.Layouts 1.1
+import "../Common/TextUtilities.js" as TextUtilities
 
 // Window for lightstrip settings.
 Window {
-    id: settingsWindow
-    width: 400
-    height: 200
+  id: settingsWindow
+  width: 350
+  height: 120
 
-    title: "Lightstrip Settings"
+  title: "Lightstrip Settings"
+  flags: Qt.Dialog
+  modality: Qt.ApplicationModal
 
-    // Refreshes the window's control contentItem.
-    function updateSettings() {
-        numberOfStripsTextField.text = outputComponent.getOutputItem(outputItemIndex)["numberOfStrips"];
-        baseAddressTextField.text = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
+  // Refreshes the window's control contentItem.
+  function updateSettings() {
+    numberOfStripsTextField.text = outputComponent.getOutputItem(outputItemIndex)["numberOfStrips"];
+    baseAddressTextField.text = "0x" + outputComponent.getOutputItem(outputItemIndex)["baseAddress"].toString(16);
+  }
+
+  onVisibleChanged: {
+    settingsWindow.updateSettings();
+  }
+
+  GridLayout {
+    id: grid
+
+    anchors.left: parent.left
+    anchors.leftMargin: 15
+    anchors.right: parent.right
+    anchors.rightMargin: 15
+    anchors.top: parent.top
+    anchors.topMargin: 15
+
+    columns: 2
+
+    Text {
+      text: "Memory Source Address:"
     }
 
-    // The controls for editing lightstrip settings.
-    Row {
-        anchors.fill: parent
-        anchors.leftMargin: 15
-        anchors.topMargin: 15
-        anchors.rightMargin: 15
-        anchors.bottomMargin: 15
+    // Text field for setting the output item's source address in memory.
+    TextField {
+      id: baseAddressTextField
 
-        spacing: 15
+      onAccepted: { processInput(); }
+      onEditingFinished: { processInput(); }
 
-        // Title of each settings control.
-        Column {
-            spacing: 16
-            Text {
-                text: "Memory Source (Address):"
-            }
-            Text {
-                text: "Number of Strips:"
-            }
+      // Reads the current input, checks if it is valid and passes the new value to the model.
+      function processInput() {
+        var inputValue = TextUtilities.convertStringToInteger(String(baseAddressTextField.text))
+        var maxSize = outputComponent.getMemorySize();
+        if (inputValue !== undefined && inputValue >= 0 && inputValue < maxSize) {
+          outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
+          var maxStrips = (outputComponent.getMemorySize() - (inputValue)) * 8;
+          var strips = TextUtilities.convertStringToInteger(String(numberOfStripsTextField.text));
+          if(strips > maxStrips){
+            numberOfStripsTextField.text = maxStrips + "";
+            numberOfStripsTextField.processInput();
+          }
+        } else {
+          updateSettings();
         }
-
-        // Settings controls itself.
-        Column {
-            id: controlsColumn
-            spacing: 8
-
-            // Converts a given dec/hex/bin-string to an integer.
-            function integerFromInputString(input) {
-                var base = 10;
-                if (input.indexOf("0x") === 0) {
-                    base = 16;
-                    input = input.slice(2);
-                } else if (input.indexOf("0b") === 0) {
-                    input = input.slice(2);
-                    base = 2;
-                }
-                return parseInt(input, base);
-            }
-
-            // Text field for setting the output item's source address in memory.
-            TextField {
-                id: baseAddressTextField
-
-                onAccepted: { processInput(); }
-                onEditingFinished: { processInput(); }
-
-                // Reads the current input and passes the new value to the model.
-                function processInput() {
-                    var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
-                    var maxSize = outputComponent.getMemorySize();
-                    if (inputValue !== undefined && inputValue >= 0 && inputValue < maxSize) {
-                        outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
-                        var maxStrips = (outputComponent.getMemorySize() - (inputValue)) * 8;
-                        var strips = controlsColumn.integerFromInputString(String(numberOfStripsTextField.text));
-                        if(strips > maxStrips){
-                            numberOfStripsTextField.text = maxStrips + "";
-                            numberOfStripsTextField.processInput();
-                        }
-                    } else {
-                        updateSettings();
-                    }
-                }
-            }
-
-            // Text field for settings the number of light-strips.
-            TextField {
-                id: numberOfStripsTextField
-                height: baseAddressTextField.height
-
-                onAccepted: { processInput(); }
-                onEditingFinished: { processInput(); }
-
-                Component.onCompleted: {
-                    settingsWindow.updateSettings();
-                }
-
-                // Reads the current input and passes the new value to the model.
-                function processInput() {
-                    var inputValue = controlsColumn.integerFromInputString(String(numberOfStripsTextField.text));
-                    var size = controlsColumn.integerFromInputString(String(baseAddressTextField.text)) ;
-                    var maxStrips = (outputComponent.getMemorySize() - size) * 8;
-                    if (inputValue !== undefined && inputValue > 0) {
-                        if(inputValue <= maxStrips){
-                            outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", inputValue);
-                        } else {
-                            outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", maxStrips);
-                        }
-                    } else {
-                        updateSettings();
-                    }
-                }
-            }
-
-        }
+      }
     }
 
-    // Button for accepting setting changes and closing the settings window.
-    Button {
-        id: doneButton
-
-        text: "Done"
-
-        anchors.right: parent.right
-        anchors.rightMargin: 5
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 5
-
-        onClicked: {
-            baseAddressTextField.focus = false;
-            numberOfStripsTextField.focus = false;
-            close();
-        }
+    Text {
+      text: "Number of Strips:"
     }
+
+    // Text field for settings the number of light-strips.
+    TextField {
+      id: numberOfStripsTextField
+      height: baseAddressTextField.height
+
+      onAccepted: { processInput(); }
+      onEditingFinished: { processInput(); }
+
+      // Reads the current input, checks if it is valid and passes the new value to the model.
+      function processInput() {
+        var inputValue = TextUtilities.convertStringToInteger(String(numberOfStripsTextField.text));
+        var size = TextUtilities.convertStringToInteger(String(baseAddressTextField.text)) ;
+        var maxStrips = (outputComponent.getMemorySize() - size) * 8;
+        if (inputValue !== undefined && inputValue > 0) {
+          if(inputValue <= maxStrips){
+            outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", inputValue);
+          } else {
+            outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", maxStrips);
+          }
+        } else {
+          updateSettings();
+        }
+      }
+    }
+  }
+
+  // Button for accepting setting changes and closing the settings window.
+  Button {
+    id: doneButton
+
+    text: "Done"
+
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.bottom: parent.bottom
+    anchors.bottomMargin: 5
+
+    onClicked: {
+      baseAddressTextField.focus = false;
+      numberOfStripsTextField.focus = false;
+      close();
+    }
+  }
 }

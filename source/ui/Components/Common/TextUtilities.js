@@ -70,3 +70,16 @@ function numberOfOccurences(string, searchString) {
     }
     return count;
 }
+
+// Converts a given dec/hex/bin-string to an integer.
+function convertStringToInteger(input) {
+    var base = 10;
+    if (input.indexOf("0x") === 0) {
+        base = 16;
+        input = input.slice(2);
+    } else if (input.indexOf("0b") === 0) {
+        input = input.slice(2);
+        base = 2;
+    }
+    return parseInt(input, base);
+}
