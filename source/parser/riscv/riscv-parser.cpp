@@ -201,7 +201,7 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   SyntaxInformation info;
 
   // Add instruction regexes
-  for (auto instruction : _architecture.getInstructions()) {
+  /*for (auto instruction : _architecture.getInstructions()) {
     // Matches all instruction mnemonics which don't end with a ':'
     info.addSyntaxRegex("\\b" + instruction.first + "\\b(?!:)",
                         SyntaxInformation::Token::Instruction);
@@ -213,7 +213,10 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
     // a ':'
     info.addSyntaxRegex("\\." + directive.first + "\\b(?!:)",
                         SyntaxInformation::Token::Instruction);
-  }
+  }*/
+
+  info.addSyntaxRegex(R"((?<=^|:) *[a-zA-Z.]+)",
+                      SyntaxInformation::Token::Instruction);
 
   // Add comment regex
   // Matches everything after a ';'
@@ -225,11 +228,10 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   info.addSyntaxRegex("^\\s*\\w+:", SyntaxInformation::Token::Label);
 
   // Add immediate regex
-  // Matches arithmetic expressions containing digits, operators, brackets and
-  // spaces. Expressions need to start with a digit, an open bracket or an unary
-  // operator.
+  // Matches expressions containing digits, letters, operators, brackets and
+  // spaces.
   info.addSyntaxRegex(
-      R"(\b[\+\-0-9\(!~][0-9a-fA-Fx\+\-%\*\/\(\)\|\^&=!<>~\t ]*)",
+      R"([0-9a-zA-Z\+\-%\*\/\(\)\|\^&=!<>~_]+)",
       SyntaxInformation::Token::Immediate);
 
   // Matches string literals
