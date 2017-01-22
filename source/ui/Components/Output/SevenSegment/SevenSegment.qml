@@ -1,4 +1,3 @@
-
 /*
  * C++ Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
@@ -30,8 +29,9 @@ import QtQuick 2.0
 import QtQuick.Window 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import Theme 1.0
 
-Item {
+Rectangle {
     id: sevenSegmentOutputItem
 
     // Index of output item relative to all available output outems.
@@ -42,8 +42,11 @@ Item {
     signal settingsButtonPressed()
 
     // Color definitions
-    property var digitsInactiveColor: "#9B9B9B"
-    property var digitsActiveColor: "#0080FF"
+    property var digitsInactiveColor: Theme.output.sevenSegment.digit.inactive.background
+    property var digitsActiveColor: Theme.output.sevenSegment.digit.active.background
+    property var digitsTextColor: Theme.output.sevenSegment.digit.color
+
+    color: Theme.output.sevenSegment.background
 
     // Connect the output item to signals that the model might send.
     Connections {
@@ -108,7 +111,7 @@ Item {
             color: "#00000000"  // Background Color
             digitActiveColor: digitsActiveColor
             digitInactiveColor: digitsInactiveColor
-            textColor: "black"
+            textColor: digitsTextColor
 
             segment0Activated: segment0
             segment1Activated: segment1
