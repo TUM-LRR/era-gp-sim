@@ -17,8 +17,8 @@
   * along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
 
-#include "core/conversions.hpp"
 #include "ui/input-button-model.hpp"
+#include "core/conversions.hpp"
 
 InputButtonModel::InputButtonModel(QQmlContext* context,
                                    MemoryAccess memoryAccess)
@@ -28,7 +28,7 @@ InputButtonModel::InputButtonModel(QQmlContext* context,
 
 void InputButtonModel::buttonClicked(unsigned int id) {
   // save id at start in Memory
-  auto memoryValue = conversions::convert(id, 32);
+  auto memoryValue = conversions::convert(id, 8);
   _memoryAccess.putMemoryValueAt(_start, memoryValue);
 }
 

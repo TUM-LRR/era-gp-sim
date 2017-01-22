@@ -17,8 +17,9 @@
   * along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
 
-#include "core/conversions.hpp"
 #include "ui/input-click-model.hpp"
+
+#include "core/conversions.hpp"
 
 InputClickModel::InputClickModel(QQmlContext *context,
                                  MemoryAccess memoryAccess)
@@ -28,8 +29,8 @@ InputClickModel::InputClickModel(QQmlContext *context,
 
 void InputClickModel::newClick(int x, int y) {
   // save in Memory as 2 bytes
-  auto xMemory = conversions::convert(x, 32);
-  auto yMemory = conversions::convert(y, 32);
+  auto xMemory = conversions::convert(x, 8);
+  auto yMemory = conversions::convert(y, 8);
 
   _memoryAccess.putMemoryValueAt(_start, xMemory);
   _memoryAccess.putMemoryValueAt(_start + 1, yMemory);
