@@ -34,6 +34,7 @@
         <file>Components/editor/MacroSubeditor.qml</file>
         <file>Components/editor/HelpToolTip.qml</file>
         <file>Components/Output/Output.qml</file>
+        <file>Components/Output/ColorChooser.qml</file>
         <file>Components/Output/SevenSegment/SevenSegment.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentEdge.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
