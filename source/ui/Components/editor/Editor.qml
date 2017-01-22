@@ -22,7 +22,7 @@ import QtQuick.Controls 1.5
 import QtQuick.Dialogs 1.2
 import Theme 1.0
 import "../Common"
-import "../Common/TextUtilities.js" as TextUtilities
+import "../../Js/TextUtility.js" as TextUtility
 
 /**
 This file is implements all the features of the editor component. Some features might

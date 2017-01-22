@@ -22,6 +22,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
+import "../../../Js/ThemeUtility.js" as ThemeUtility
 
 CheckBox {
   id: checkbox
@@ -36,29 +37,20 @@ CheckBox {
     onClicked: checked = !checked
   }
 
-  // Returns a style in the Theme.checkbox or Theme.checkbox.active object
-  // depending on whether this checkbox is active. For example,
-  // dynamicStyle('foo.bar') will return Theme.checkbox.active.foo.bar when
-  // the checkbox is active, and Theme.checkbox.foo.bar otherwise.
-  function dynamicStyle(children) {
-    var node = checkbox.checked ? Theme.checkbox.active : Theme.checkbox;
-
-    children = children.split('.');
-    for (var index = 0; index < children.length; ++index) {
-      node = node[children[index]];
-    }
-
-    return node;
-  }
+  property var dynamic: ({ theme: ThemeUtility.dynamicThemeFactory(
+    Theme.checkbox,
+    checkbox.checked,
+    'active'
+  )})
 
   style: CheckBoxStyle {
     indicator: Rectangle {
       implicitWidth: Theme.checkbox.width
       implicitHeight: Theme.checkbox.height
       radius: Theme.checkbox.radius
-      border.color: dynamicStyle('border.color')
-      border.width: dynamicStyle('border.width')
-      color: dynamicStyle('background')
+      border.color: dynamic.theme('border.color')
+      border.width: dynamic.theme('border.width')
+      color: dynamic.theme('background')
     }
 
     label: Text {

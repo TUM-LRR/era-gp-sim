@@ -21,6 +21,7 @@ import QtQuick.Controls 1.4
 
 import Theme 1.0
 import Settings 1.0
+import "../../../Js/ThemeUtility.js" as ThemeUtility
 
 Rectangle {
   width: window.width
@@ -37,17 +38,11 @@ Rectangle {
 
   property bool hasChanged: (value !== undefined) && Settings[setting] !== value
 
-  function dynamicStyle(children) {
-    var node = Theme.settings.status;
-    if (hasChanged) node = node.changed;
-
-    children = children.split('.');
-    for (var index = 0; index < children.length; ++index) {
-      node = node[children[index]];
-    }
-
-    return node;
-  }
+  property var dynamic: ({ theme: ThemeUtility.dynamicThemeFactory(
+      Theme.settings.status,
+      hasChanged,
+      'changed'
+  )})
 
   Label {
     id: label
@@ -71,9 +66,9 @@ Rectangle {
     height: Theme.settings.status.height
     width: Theme.settings.status.width
     radius: Theme.settings.status.radius
-    border.color: dynamicStyle('border.color')
-    border.width: dynamicStyle('border.width')
-    color: dynamicStyle('background')
+    border.color: dynamic.theme('border.color')
+    border.width: dynamic.theme('border.width')
+    color: dynamic.theme('background')
   }
 
   Label {
