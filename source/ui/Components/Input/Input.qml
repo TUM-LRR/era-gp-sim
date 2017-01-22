@@ -23,6 +23,9 @@ import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
+import "InputButtons/"
+import "InputMouse/"
+
 Rectangle {
   // Tell SplitViewItem (i.e. component wrapper) that settings are available to make it display settings icon.
   property var hasComponentSettings: true

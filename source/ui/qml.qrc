@@ -77,12 +77,12 @@
         <file>Components/editor/Issue Icons/Warning Icon@2x.png</file>
         <file>Components/Output/Console.qml</file>
         <file>Components/Output/ConsoleSettingsWindow.qml</file>
-        <file>Components/Input/ButtonInput.qml</file>
-        <file>Components/Input/ClickInput.qml</file>
+        <file>Components/Input/InputButtons/ButtonInput.qml</file>
+        <file>Components/Input/InputMouse/ClickInput.qml</file>
         <file>Components/Input/Input.qml</file>
         <file>Components/Input/TextInputSelf.qml</file>
-        <file>Components/Input/ButtonInputSW.qml</file>
-        <file>Components/Input/ClickInputSW.qml</file>
+        <file>Components/Input/InputButtons/ButtonInputSettings.qml</file>
+        <file>Components/Input/InputMouse/ClickInputSettings.qml</file>
         <file>Components/Input/TextInputSW.qml</file>
         <file>Components/Input/Buttons/Text Console Icon Selected.png</file>
         <file>Components/Input/Buttons/Text Console Icon.png</file>
