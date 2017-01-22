@@ -21,6 +21,32 @@ import QtQuick 2.0
 import QtQuick.Controls 1.4
 
 Item {
+  id: item
+
+  property int upKey: Qt.Key_Up
+  property int downKey: Qt.Key_Down
+  property int leftKey: Qt.Key_Left
+  property int rightKey: Qt.Key_Right
+
+  MouseArea {
+    anchors.fill: parent
+    onClicked: {
+      item.focus = true;
+      item.forceActiveFocus();
+    }
+  }
+
+  Keys.onPressed: {
+    if (event.key == upKey) {
+      up.clicked();
+    } else if (event.key == downKey) {
+      down.clicked();
+    } else if (event.key == leftKey) {
+      left.clicked();
+    } else if (event.key == rightKey) {
+      right.clicked();
+    }
+  }
 
     Rectangle{
         id: middle
@@ -29,6 +55,7 @@ Item {
         anchors.centerIn: parent
         visible: false
     }
+
 
     Button{
         id: up
