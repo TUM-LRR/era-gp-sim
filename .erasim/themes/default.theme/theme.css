@@ -10,7 +10,7 @@ button border { color: #82c4f8; width: 2px; }
 button:disabled { background: #BDBDBD; color: #212121; }
 button:disabled border { color: #d7d7d7; }
 
-settings { min-width: 420px; min-height: 400px; }
+settings { min-width: 420px; min-height: 440px; }
 settings section { height: 90px; padding-top: 10px; padding-left: 5px; padding-right: 0px; }
 settings h1 { font-size: 14px; padding: 10px; color: #212121; }
 settings h2 { font-size: 12px; color: #757575; margin-bottom: 10px; margin-left: 10px; margin-right: 5px; margin-top: 10px; }

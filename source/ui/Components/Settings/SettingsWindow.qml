@@ -19,7 +19,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.3
 import QtQuick.Window 2.2
 
@@ -74,12 +73,14 @@ Window {
 
   ScrollView {
     id: scrollView
+    style: ScrollViewStyle { transientScrollBars: true }
     anchors {
       left: parent.left
       right: parent.right
       top: parent.top
       bottom: saveArea.top
     }
+
     Column {
       id: sections
       topPadding: Theme.settings.section.paddingTop

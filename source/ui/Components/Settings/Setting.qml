@@ -27,6 +27,7 @@ Rectangle {
   width: window.width
   height: Theme.settings.section.height
 
+  // 'Public' properties
   property alias text: label.text
   property alias description: description.text
   property alias topAnchor: description.bottom
@@ -36,7 +37,17 @@ Rectangle {
   property string setting
   property var widget
 
-  property bool hasChanged: (value !== undefined) && Settings[setting] !== value
+  property bool hasChanged: numberOfChanges > 0 && Settings[setting] !== value
+
+  // 'Private properties'
+
+  // All properties are 'changed' when they are
+  // initialized, so we offset this count.
+  property int numberOfChanges: -1
+
+  // This rules out changes for null, undefined and the empty string, but
+  // ensures changing a boolean to false does indeed constitute a change
+  onValueChanged: if (value || value === false) numberOfChanges += 1;
 
   property var dynamic: ({ theme: ThemeUtility.dynamicThemeFactory(
       Theme.settings.status,
