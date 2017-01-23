@@ -100,6 +100,17 @@ class SnapshotComponent : public QObject {
                       bool removePermanently);
 
   /**
+   * Tests if a snapshot exists.
+   *
+   * \param architectureIdentifier The identifier for the architecture.
+   * \param snapshotName The name of the snapshot to look for.
+   * \returns True if a snapshot with the given name exists for the given
+   *          architecture, else false.
+   */
+  bool snapshotExists(const QString& architectureIdentifier,
+                      const QString& snapshotName);
+
+  /**
    * \returns The path of a snapshot of a specific architecture and name.
    *
    * \param architectureIdentifier The architecture string.

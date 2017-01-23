@@ -40,18 +40,16 @@ ApplicationWindow {
 
   property alias menubar: menubar
   property alias toolbar: toolbar
-  property alias config: config
+  property alias settings: settings
 
   menuBar: Menubar {
     id: menubar
     main: window
-    Component.onCompleted: {
-      window.updateMenuState();
-    }
+    Component.onCompleted: window.updateMenuState();
   }
 
   toolBar: ToolbarComponent { id: toolbar }
-  SettingsWindow { id: config }
+  SettingsWindow { id: settings }
 
   TabView {
     id: tabView

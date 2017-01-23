@@ -24,11 +24,12 @@ import QtQuick.Window 2.2
 
 import Theme 1.0
 import Settings 1.0
+import "../../../Js/ThemeUtility.js" as ThemeUtility
 
 Window {
   id: window
   minimumWidth: Theme.settings.minWidth
-  minimumHeight: Theme.settings.minHeight
+  minimumHeight: dynamic.theme('minHeight')
 
   title: "Preferences"
   flags: Qt.Dialog
@@ -43,6 +44,12 @@ Window {
     }
     return false;
   }
+
+  property var dynamic: ({ theme: ThemeUtility.dynamicThemeFactory(
+      Theme.settings,
+      hasUnsavedChanges,
+      'changed'
+  )})
 
   signal store();
 

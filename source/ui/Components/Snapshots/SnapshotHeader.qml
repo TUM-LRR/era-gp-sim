@@ -43,7 +43,7 @@ Rectangle {
     id: button
     text: "+"
     theme: Theme.snapshots.add
-    onClicked: snapshotDialog.open()
+    onClicked: saveSnapshotDialog.open()
     anchors.bottom: divider.top
   }
 

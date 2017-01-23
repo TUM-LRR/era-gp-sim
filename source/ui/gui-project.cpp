@@ -246,6 +246,10 @@ QStringList GuiProject::getSnapshots() {
   return _snapshotComponent->getSnapshotList(_architectureFormulaString);
 }
 
+bool GuiProject::snapshotExists(QString name) {
+  return _snapshotComponent->snapshotExists(_architectureFormulaString, name);
+}
+
 QString GuiProject::getCommandHelp(std::size_t line) {
   QString help = "";
   // try to find the helptext in the cache

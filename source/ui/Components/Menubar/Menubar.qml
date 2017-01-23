@@ -37,7 +37,7 @@ MenuBar {
       text: "Settings"
       shortcut: "Ctrl+,"
 
-      onTriggered: main.config.show();
+      onTriggered: main.settings.show();
     }
 
     MenuItem {

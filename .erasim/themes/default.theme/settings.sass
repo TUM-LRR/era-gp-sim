@@ -1,7 +1,8 @@
 settings
+  $window-height: 405px
   $save-area-height: 50px
   min-width: 420px
-  min-height: 390px + $save-area-height
+  min-height: $window-height
   section
     height: 90px
     padding:
@@ -41,7 +42,9 @@ settings
     border
       color: lighten($green, 40%)
       width: 2px
-    changed
+  changed
+    min-height: $window-height + $save-area-height
+    status
       background: $red
       border
         color: lighten($red, 40%)

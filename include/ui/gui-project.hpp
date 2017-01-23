@@ -196,6 +196,11 @@ class GuiProject : QObject {
   Q_INVOKABLE QStringList getSnapshots();
 
   /**
+   * \returns True if a snapshot with the given name already exists, else false.
+   */
+  Q_INVOKABLE bool snapshotExists(QString name);
+
+  /**
    * \returns the translated help string of the command node in the specified
    * line. Returns an empty string if there is no command in that line.
    *

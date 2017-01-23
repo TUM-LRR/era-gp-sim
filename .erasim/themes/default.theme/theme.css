@@ -10,7 +10,7 @@ button border { color: #82c4f8; width: 2px; }
 button:disabled { background: #BDBDBD; color: #212121; }
 button:disabled border { color: #d7d7d7; }
 
-settings { min-width: 420px; min-height: 440px; }
+settings { min-width: 420px; min-height: 405px; }
 settings section { height: 90px; padding-top: 10px; padding-left: 5px; padding-right: 0px; }
 settings h1 { font-size: 14px; padding: 10px; color: #212121; }
 settings h2 { font-size: 12px; color: #757575; margin-bottom: 10px; margin-left: 10px; margin-right: 5px; margin-top: 10px; }
@@ -19,8 +19,9 @@ settings vertical-divider { color: #BDBDBD; width: 0px; height: 100%; }
 settings saveArea { background: #2196F3; height: 50px; }
 settings status { margin: 7px; height: 8px; width: 8px; radius: 4px; background: #8BC34A; }
 settings status border { color: #edf6e3; width: 2px; }
-settings status changed { background: #F44336; }
-settings status changed border { color: #fff8f7; width: 2px; }
+settings changed { min-height: 455px; }
+settings changed status { background: #F44336; }
+settings changed status border { color: #fff8f7; width: 2px; }
 settings #snapshots button { font-size: 13px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
 
 snapshots creation-dialog, snapshots setting-dialog { background: white; margin-left: 10px; margin-right: 10px; margin-top: 25px; margin-bottom: 40px; }

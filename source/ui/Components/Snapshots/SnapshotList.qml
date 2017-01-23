@@ -58,19 +58,9 @@ Rectangle {
     }
   }
 
-  function saveSnapshot(override) {
-    if (listView.currentSnapshot && override) {
-      ui.saveSnapshot(tabView.currentProjectId(), listView.currentSnapshot);
-    } else {
-      saveSnapshotDialog.open();
-    }
-  }
-
-  SingleSettingDialog {
-    id: overrideDialog
-    text: "Override the current snapshot?"
-    propertyName: 'overrideSnapshots'
-    onDone: saveSnapshot(answerWasYes)
+  SaveSnapshotFunctionality {
+    id: saveSnapshot
+    onNoOverride: saveSnapshotDialog.open();
   }
 
   Connections {
@@ -81,12 +71,8 @@ Rectangle {
       }
     }
     onSaveSnapshotRequest: {
-      if (projectId !== sourceProjectId) return;
-      console.log("hit: " + projectId);
-      if (overrideDialog.alreadyAsked) {
-        saveSnapshot(Settings.overrideSnapshots);
-      } else {
-        overrideDialog.open();
+      if (projectId === sourceProjectId) {
+        saveSnapshot.activate(listView.currentSnapshot, true);
       }
     }
   }

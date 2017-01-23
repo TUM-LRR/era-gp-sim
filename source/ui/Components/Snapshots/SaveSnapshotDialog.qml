@@ -24,6 +24,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
+import "../Settings"
 
 Dialog {
   id: dialog
@@ -64,6 +65,32 @@ Dialog {
       }
     }
 
+    SettingsWindow { id: settings }
+
+    MessageDialog {
+      id: warnAboutOverrideDialog
+      icon: StandardIcon.Warning
+      text: 'Refusing to override snapshot'
+      informativeText: 'You disallowed snapshot overriding. ' +
+                       'Do you want to change this in your settings?'
+      standardButtons: StandardButton.Yes    |
+                       StandardButton.Ignore |
+                       StandardButton.Cancel
+
+      // This is the 'Ignore' button
+      onAccepted: saveSnapshot.save(name.text);
+      onYes: settings.show();
+    }
+
+    SaveSnapshotFunctionality {
+      id: saveSnapshot
+      onNoOverride: warnAboutOverrideDialog.open();
+      Connections {
+        target: warnAboutOverrideDialog
+        onAccepted: dialog.close()
+      }
+    }
+
     Button {
       id: save
       enabled: name.text.length > 0
@@ -75,9 +102,10 @@ Dialog {
         right: cancel.left
       }
       onClicked: {
-        ui.saveSnapshot(tabView.currentProjectId(), name.text);
-        name.text = ''
-        dialog.close()
+        if (saveSnapshot.activate(name.text)) {
+          dialog.close();
+          name.text = '';
+        }
       }
     }
 

@@ -5,6 +5,7 @@
         <file>Splitview.qml</file>
         <file>Components/ComponentHolder.qml</file>
         <file>Components/Snapshots/SnapshotList.qml</file>
+        <file>Components/Snapshots/SaveSnapshotFunctionality.qml</file>
         <file>Components/Snapshots/SnapshotTitle.qml</file>
         <file>Components/Snapshots/SnapshotItem.qml</file>
         <file>Components/Snapshots/SnapshotHeader.qml</file>

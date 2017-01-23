@@ -50,7 +50,7 @@ Rectangle {
   onValueChanged: if (value || value === false) numberOfChanges += 1;
 
   property var dynamic: ({ theme: ThemeUtility.dynamicThemeFactory(
-      Theme.settings.status,
+      Theme.settings,
       hasChanged,
       'changed'
   )})
@@ -77,9 +77,9 @@ Rectangle {
     height: Theme.settings.status.height
     width: Theme.settings.status.width
     radius: Theme.settings.status.radius
-    border.color: dynamic.theme('border.color')
-    border.width: dynamic.theme('border.width')
-    color: dynamic.theme('background')
+    border.color: dynamic.theme('status.border.color')
+    border.width: dynamic.theme('status.border.width')
+    color: dynamic.theme('status.background')
   }
 
   Label {
