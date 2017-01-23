@@ -83,6 +83,9 @@ void ParsingAndExecutionUnit::executeNextLine() {
     if (!_executeNode(nextNode)) break;
 
     nextNode = _updateLineNumber(nextNode);
+
+    if (nextNode >= _filenalRepresentation.commandList().size()) break;
+
     // Skip nodes that aren't part of the users program
   } while (_finalRepresentation.commandList()[nextNode].position().isEmpty());
   _executionStopped();
