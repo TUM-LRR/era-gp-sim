@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_INDEPENDENT_PREPROCESSING_IMMUTABLE_ARGUMENTS_HPP
-#define ERAGPSIM_PARSER_INDEPENDENT_PREPROCESSING_IMMUTABLE_ARGUMENTS_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_PRECOMPILE_IMMUTABLE_ARGUMENTS_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_PRECOMPILE_IMMUTABLE_ARGUMENTS_HPP
 
 #include "arch/common/architecture.hpp"
 #include "parser/independent/syntax-tree-generator.hpp"
@@ -27,17 +27,17 @@
  * A collection of some constant parameters which can be used during the
  * 'allocateMemory' and 'preprocess' operation of the intermediate operation.
  */
-class PreprocessingImmutableArguments {
+class PrecompileImmutableArguments {
  public:
   /**
-   * Creates a new PreprocessingImmutableArguments with the given
+   * Creates a new PrecompileImmutableArguments with the given
    * parameters.
    *
    * \param architecture The architecture with which the operation was called.
    * \param generator The generator for syntax tree nodes.
    */
-  PreprocessingImmutableArguments(const Architecture& architecture,
-                                  const SyntaxTreeGenerator& generator);
+  PrecompileImmutableArguments(const Architecture& architecture,
+                               const SyntaxTreeGenerator& generator);
 
   /**
     * \return The architecture with which the operation was called.
@@ -62,4 +62,4 @@ class PreprocessingImmutableArguments {
   SyntaxTreeGenerator _generator;
 };
 
-#endif /* ERAGPSIM_PARSER_INDEPENDENT_PREPROCESSING_IMMUTABLE_ARGUMENTS_HPP */
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_PRECOMPILE_IMMUTABLE_ARGUMENTS_HPP */

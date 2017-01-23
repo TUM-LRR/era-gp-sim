@@ -17,68 +17,46 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_INDEPENDENT_ENHANCE_SYMBOL_TABLE_IMMUTABLE_ARGUMENTS_HPP
-#define ERAGPSIM_PARSER_INDEPENDENT_ENHANCE_SYMBOL_TABLE_IMMUTABLE_ARGUMENTS_HPP
+#ifndef ERAGPSIM_PARSER_INDEPENDENT_ALLOCATE_MEMORY_IMMUTABLE_ARGUMENTS_HPP
+#define ERAGPSIM_PARSER_INDEPENDENT_ALLOCATE_MEMORY_IMMUTABLE_ARGUMENTS_HPP
 
 #include "arch/common/architecture.hpp"
-#include "parser/independent/memory-allocator.hpp"
 #include "parser/independent/symbol-replacer.hpp"
 #include "parser/independent/syntax-tree-generator.hpp"
 
 class PrecompileImmutableArguments;
-class AllocateMemoryImmutableArguments;
 
 /**
  * A collection of some constant parameters which can be used during the
- * 'enhanceSymbolTable' operation of the intermediate operation.
+ * 'allocateMemory' operation of the intermediate operation.
  */
-class EnhanceSymbolTableImmutableArguments {
+class AllocateMemoryImmutableArguments {
  public:
   /**
-   * Creates a new EnhanceSymbolTableImmutableArguments with the given
+   * Creates a new AllocateMemoryImmutableArguments with the given
    * parameters.
    *
    * \param architecture The architecture with which the operation was called.
    * \param generator The generator for syntax tree nodes.
    * \param preliminaryReplacer The preliminaryReplacer to replace constants,
    * not labels.
-   * \param allocator The memory allocator used to convert relative to absolute
-   * positions and also for different section management.
    */
-  EnhanceSymbolTableImmutableArguments(
-      const Architecture& architecture,
-      const SyntaxTreeGenerator& generator,
-      const SymbolReplacer& preliminaryReplacer,
-      const MemoryAllocator& allocator);
+  AllocateMemoryImmutableArguments(const Architecture& architecture,
+                                   const SyntaxTreeGenerator& generator,
+                                   const SymbolReplacer& preliminaryReplacer);
 
   /**
-   * Creates a new ExecuteImmutableArguments with the given parameters
+   * Creates a new AllocateMemoryImmutableArguments with the given parameters
    * out of some PrecompileImmutableArguments.
    *
    * \param beforeBeforePass The PrecompileImmutableArguments these arguments
    * are based on.
    * \param preliminaryReplacer The preliminaryReplacer to replace constants,
    * not labels.
-   * \param allocator The memory allocator used to convert relative to absolute
-   * positions and also for different section management.
    */
-  EnhanceSymbolTableImmutableArguments(
-      const PrecompileImmutableArguments& beforebeforePass,
-      const SymbolReplacer& preliminaryReplacer,
-      const MemoryAllocator& allocator);
-
-  /**
-   * Creates a new ExecuteImmutableArguments with the given parameters
-   * out of some AllocateMemoryImmutableArguments.
-   *
-   * \param beforePass The AllocateMemoryImmutableArguments these arguments
-   * are based on.
-   * \param allocator The memory allocator used to convert relative to absolute
-   * positions and also for different section management.
-   */
-  EnhanceSymbolTableImmutableArguments(
-      const AllocateMemoryImmutableArguments& beforePass,
-      const MemoryAllocator& allocator);
+  AllocateMemoryImmutableArguments(
+      const PrecompileImmutableArguments& beforePass,
+      const SymbolReplacer& preliminaryReplacer);
 
   /**
    * \return The architecture with which the operation was called.
@@ -89,12 +67,6 @@ class EnhanceSymbolTableImmutableArguments {
    * \return The generator for syntax tree nodes.
    */
   const SyntaxTreeGenerator& generator() const noexcept;
-
-  /**
-   * \return The memory allocator used to convert relative to absolute positions
-   * and also for different section management.
-   */
-  const MemoryAllocator& allocator() const noexcept;
 
   /**
    * \return The preliminary replacer for constants, not labels.
@@ -113,16 +85,11 @@ class EnhanceSymbolTableImmutableArguments {
   SyntaxTreeGenerator _generator;
 
   /**
-   * The memory allocator used to convert relative to absolute positions
-   * and also for different section management.
-   */
-  MemoryAllocator _allocator;
-
-  /**
    * The preliminary replacer for constants, not labels.
    */
   SymbolReplacer _preliminaryReplacer;
 };
 
-#endif
-/* ERAGPSIM_PARSER_INDEPENDENT_ENHANCE_SYMBOL_TABLE_IMMUTABLE_ARGUMENTS_HPP */
+// clang-format off
+#endif /* ERAGPSIM_PARSER_INDEPENDENT_ALLOCATE_MEMORY_IMMUTABLE_ARGUMENTS_HPP */
+// clang-format on

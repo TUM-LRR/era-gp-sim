@@ -22,7 +22,6 @@ import QtQuick.Controls.Styles 1.4
 import Theme 1.0
 
 Label {
-  property var model
   text: model ? model.Title : ""
 
   color: Theme.register.label.color
