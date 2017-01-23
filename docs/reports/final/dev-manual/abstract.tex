@@ -88,6 +88,35 @@ auch andere Sprachen unterstützen zu können. Somit verwenden wir die von Qt zu
 Mittel, Nutzer sichtbare Nachrichten übersetzbar zu machen, auch in allen anderen Modulen außerhalb
 der GUI. So können z.B. Prozessorarchitektur-spezifische Fehlermeldungen übersetzt werden.
 
+\subsubsection{Code Style}
+
+Da der Code nicht nur funktionieren, sondern auch gewissen Standards folgen
+sollte, haben wir uns entschieden, den \textit{Google C++ Style Guide}
+\footnote{\url{https://google.github.io/styleguide/cppguide.html}} als Grundlage
+für unseren Code Style zu nutzen. Folgende Ausnahmen haben wir dabei festgelegt:
+
+\begin{itemize}
+	\item Präfix \texttt{\_}, anstatt Suffix \texttt{\_} für private Klassenattribute,
+	\item \texttt{.hpp} und \texttt{.cpp} als Dateiendungen für C++ Header/Klassen,
+	\item \texttt{camelCase} für Funktionsnamen und
+	\item Parameter Namen werden immer angegeben, egal ob benötigt oder nicht.
+\end{itemize}
+
+Um dies automatisiert zu gewährleisten, nutzen wir das Tool \textit{ClangFormat}
+\footnote{\url{http://clang.llvm.org/docs/ClangFormat.html}}. Damit werden
+z.B. Einrückungen automatisch angeordnet. \\
+Die Konfiguration von ClangFormat befindet sich in der Datei \texttt{.clang-format}
+
+\subsubsection{Dokumentation}
+
+Neben diesem Bericht ist der gesamte Quellcode des Simulators in Form von
+\textit{Doxygen}\footnote{\url{http://www.stack.nl/~dimitri/doxygen/}} Kommentaren
+dokumentiert. Diese Dokumentation ist weitaus ausführlicher als dieser Bericht und
+ist essentiell für die Weiterentwicklung des Simulators. Neben der einfachsten
+Möglichkeit, die Kommentare im Quellcode zu lesen, ist es mit Doxygen ebenfalls möglich,
+eine HTML bzw. \LaTeX Version zu generieren. Dazu wechselt man in das \texttt{docs/}
+Verzeichnis und führt den Befehl \texttt{doxygen} aus, welcher anschließend die
+Dokumentation generiert.
 
 \subsection{Build Umgebung}
 
@@ -104,18 +133,26 @@ die auch die entsprechenden Versionen in den Paketquellen beinhalten. Während d
 Rolling Release Systemen (wie z.B. Arch Linux) ein geringeres Problem ist, haben Anwender von
 z.B. Debian basierter Betriebssysteme häufiger mit älterer Software zu kämpfen.
 Unter Debian selbst sind die benötigten Versionen erst ab Debian Stretch (Debian 9)
-verfügbar, unter Ubuntu erst ab Ubuntu 16.10. \\
-Eine Installation unter Debian basierten Betriebssystemen könnte wie folgt ablaufen: \\
+verfügbar, unter Ubuntu erst ab Ubuntu 16.10.
 
-\begin{lstlisting}
-apt install git build-essential cmake qtdeclarative5-dev
-\end{lstlisting}
+\begin{itemize}
+	\item \textbf{Debian basierte Betriebssysteme:} \\
+	\todo[inline]{Funktioniert nicht in Ubuntu 16.*}
+	\begin{lstlisting}
+apt install build-essential cmake git qtdeclarative5-dev
+	\end{lstlisting}
+
+	\item \textbf{Arch Linux:} \\
+	\begin{lstlisting}
+pacman -S base-devel cmake git qt5-declarative \
+ qt5-graphicaleffects qt5-quickcontrols
+	\end{lstlisting}
+\end{itemize}
 
 Ist eine Installation über die Paketquellen nicht möglich, bietet es sich an, Qt manuell
-zu installieren\footnote{\url{https://wiki.qt.io/Install_Qt_5_on_Ubuntu}}.
-
-\todo [inline]{Manuelle Installation von Qt und dann Verwendung des QtCreators noch genauer
-beschreiben. Ich machs über die Kommandozeile, kenn mich also mit QtCreator etc. nicht so aus}
+zu installieren\footnote{\url{https://wiki.qt.io/Install_Qt_5_on_Ubuntu}}. Dafür lädt
+man sich von der offiziellen Website einen Installer runter, der nach dem Start einen
+Installationsort erfragt. Dieser muss später beim Bauen des Projekts angegeben werden.
 
 \input{setup-qtcreator-linux.tex}
 
@@ -161,6 +198,23 @@ make -j 4
 ./bin/era-sim
 \end{lstlisting}
 
+Hat man Qt manuell installiert, ist es ggf. notwendig, den Installationspfad bei der
+Ausführung von CMake zu spezifizieren.
+
+\begin{lstlisting}
+# Wurde z.B. der Ordner ~/Qt5.7.0 bei der manuellen
+# Installation von Qt angegeben, so muss man CMake mit
+# dem folgenden Argument aufrufen:
+cmake -D CMAKE_PREFIX_PATH=~/Qt5.7.0/5.7/gcc_64 ..
+\end{lstlisting}
+
+Alternativ ist es auch möglich, mit der von Qt mitgelieferten Entwicklungsumgebung
+\textit{QtCreator}\footnote{\url{https://wiki.qt.io/Qt_Creator}} zu arbeiten.
+Dabei öffnet man die \texttt{CMakeLists.txt} als Projekt, und hat so eine grafische
+Oberfläche für die Entwicklung am Simulator. Auch CMake/Make muss so nicht mehr
+manuell über die Kommandozeile bedient werden, ein Build kann über die grafische
+Oberfläche von QtCreator erzeugt werden.
+
 \subsection{Tests}
 
 Wir nutzten das \textit{Google Test}\footnote{\url{https://github.com/google/googletest}} Framework
@@ -173,7 +227,8 @@ Um ein einheitliches Ergebnis bei den Tests zu erzielen, nutzen wir das Continuo
 \textit{Travis CI}\footnote{\url{https://travis-ci.org/}}. Dabei wird nach jedem hoch geladenen
 Commit ein Clean Build angefertigt, der alle verfügbaren Tests durchführt. Das Ergebnis dieses Tests
 wird auf Github veröffentlicht und ist bindend. Die Tests werden sowohl mit g++, als auch mit clang
-durchgeführt.
+durchgeführt. \\
+Die Konfiguration von Travis befindet sich in der Datei \texttt{.travis.yml}
 
 Die Tests können auch lokal ausgeführt werden. Dazu wechselt man mit \texttt{cd} in das Build
 Verzeichnis und nutzt das von CMake mitgelieferte Programm \texttt{ctest} um die Tests zu starten.
