@@ -24,25 +24,35 @@ import Settings 1.0
 Item {
   SingleSettingDialog {
     id: dialog
+    property string snapshotName
     propertyName: 'overrideSnapshots'
-    property string lastName
+    text: "Override snapshot <b>" + snapshotName + "</b>?"
     onDone: {
       if (answerWasYes) {
-        save(lastName);
-        didOverride();
+        save(snapshotName);
+        didSave();
       } else {
-        noOverride();
+        dontOverride();
       }
     }
   }
 
-  signal noOverride();
-  signal didOverride();
+  signal dontOverride();
+  signal didSave();
 
+  // Takes a snapshot of the current project and saves it under the given name.
+  //
+  // \parm name The name of the snapshot to save.
   function save(name) {
     ui.saveSnapshot(tabView.currentProjectId(), name);
+    didSave();
   }
 
+  // Activates the snapshot saving functionality.
+  //
+  // \param name The name of the snapshot to save.
+  // \param exists (optional) If passed, specifies whether the snapshot
+  //        is known to already exist. If not passed at all, this is determined.
   function activate(name) {
     var exists = arguments[1];
     if (exists === undefined) {
@@ -52,23 +62,18 @@ Item {
     console.assert(exists !== undefined && exists !== null);
     if (!exists) {
       save(name);
-      return true;
+      return;
     }
-
-    dialog.text = "Override snapshot '" + name + "'?"
 
     if (dialog.alreadyAsked) {
       if (Settings.overrideSnapshots) {
         save(name);
-        return true;
       } else {
-        noOverride();
+        dontOverride();
       }
     } else {
-      dialog.lastName = name;
+      dialog.snapshotName = name;
       dialog.open();
     }
-
-    return false;
   }
 }

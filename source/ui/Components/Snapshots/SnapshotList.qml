@@ -61,7 +61,7 @@ Rectangle {
 
   SaveSnapshotFunctionality {
     id: saveSnapshot
-    onNoOverride: saveSnapshotDialog.open();
+    onDontOverride: saveSnapshotDialog.open();
   }
 
   Connections {

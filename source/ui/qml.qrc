@@ -51,11 +51,9 @@
         <file>Components/Output/Buttons/Text Console Icon@2x.png</file>
         <file>Components/Output/Console.qml</file>
         <file>Components/Output/ConsoleSettingsWindow.qml</file>
-        <file>Components/Output/GreenRectangle.qml</file>
         <file>Components/Output/LightStrip.qml</file>
         <file>Components/Output/LightstripSettingsWindow.qml</file>
         <file>Components/Output/Output.qml</file>
-        <file>Components/Output/RedRectangle.fdqml</file>
         <file>Components/Output/SevenSegment/SevenSegment.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
         <file>Components/Output/SevenSegment/SevenSegmentEdge.qml</file>

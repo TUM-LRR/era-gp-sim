@@ -86,13 +86,14 @@ Dialog {
 
     SaveSnapshotFunctionality {
       id: saveSnapshot
-      onNoOverride: warnAboutOverrideDialog.open();
-      onDidOverride: {
+      onDontOverride: warnAboutOverrideDialog.open();
+      onDidSave: {
         dialog.reset();
         dialog.close();
       }
       Connections {
         target: warnAboutOverrideDialog
+        // onAccepted means onIgnore
         onAccepted: dialog.close()
       }
     }
@@ -102,12 +103,12 @@ Dialog {
       enabled: name.text.length > 0
       text: 'Save'
       isDefault: true
+      onClicked: saveSnapshot.activate(name.text);
       anchors {
         top: cancel.top
         bottom: cancel.bottom
         right: cancel.left
       }
-      onClicked: saveSnapshot.activate(name.text);
     }
 
     Button {
