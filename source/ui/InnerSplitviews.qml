@@ -21,6 +21,8 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
 
+import Theme 1.0
+
 SplitView{
   property var usual1
   property var usual2
@@ -33,10 +35,12 @@ SplitView{
     id: systemPalette
   }
 
+  // height and witdth have to be greater than 1 to achieve correct behaviour on
+  // devices with touchscreen
   handleDelegate: Rectangle {
-    width: 2
-    height: 2
-    color: Qt.darker(systemPalette.window, 1.5)
+    width: Theme.splitview.handleWidth
+    height: Theme.splitview.handleHeight
+    color: Theme.splitview.handleColor
   }
 
   orientation: Qt.Vertical

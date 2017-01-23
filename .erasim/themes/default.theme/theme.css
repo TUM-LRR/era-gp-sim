@@ -74,4 +74,6 @@ register content highlighted { background: #FF4081; }
 register content:disabled { background: #f2f2f2; color: #757575; }
 register selector { height: 23px; width: 15px; background: transparent; color: #FF4081; font-size: 14px; radius: 1px; }
 
+splitview { handle-width: 2px; handle-height: 2px; handle-color: #BDBDBD; }
+
 /*# sourceMappingURL=theme.css.map */
