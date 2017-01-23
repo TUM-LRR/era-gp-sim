@@ -9,7 +9,6 @@ Die zweite Menge sind die eigentlichen RISC-V Instruktionen. Diese werden durch 
 \todo[inline]{.equ und .section nicht vergessen!}
 
 \subsubsection{Speicherreservierung}
-\todo[inline]{Alle Reservierungs-Instruktionen (also nicht schreibend): z.B. .resb 5}
 Speicherreservierungen sind eine Möglichkeit, eine oder mehrere Speicherzellen (hier: byte) im Speicher freizuhalten. Freihalten bedeutet in dem Fall, dass der Assemblierer keine assemblierten Instruktionen an diese Speicherzelle schreibt.
 So kann man sicherstellen, dass man bei Verwendung dieser Speicherzelle(n) nicht den gerade auszuführenden Code korrumpiert.
 Da die Adresse der Speicherzelle(n) vom Assemblierer abhängt, sollte man die Adresse mit einem vorgeschobenen Label ''speichern''. Das Label vor einer Speicherreservierungs-Direktive nimmt die Anfangsadresse des reservierten Speicherblocks an.\\
@@ -45,7 +44,6 @@ Da die Adresse der Speicherzelle(n) vom Assemblierer abhängt, sollte man die Ad
 \end{exampleblock}
 
 \subsubsection{Speicherdefinition}
-\todo[inline]{Alle Definitions-Instruktionen (also die die schreibenden): z.B .byte 0xff; auch auf Möglichkeit .byte ''string'' hinweisen}
 
 Speicherdefinitionen sind die andere Möglichkeit Speicherzellen von assemblierten Instruktionen freizuhalten. Im Gegensatz zu Speicherreservierungen wird hier der Speicher nicht nur reserviert, sondern gleichzeitig auch mit dem übergebenen Datum gefüllt. Mit Speicherdefinitionen kann man also den Speicher noch vor der Ausführung des Programms mit Daten befüllen. Da auch hier die genaue Adresse des Speicherblocks von der Assemblierung abhängt, sollte zur Verwendung ein Label vorangestellt werden.\\
 
@@ -131,7 +129,6 @@ Wird die Zahl ohne Präfix geschrieben, interpretiert sie der Simulator als Zahl
 \end{warningblock}
 
 \subsubsection{Arithmetische Befehle}
-\todo[inline]{add(i), sub, and(i), or(i), xor(i), sll(i), srl(i), sra(i)}
 Jeder arithmetische Befehl hat eine Register-Register und eine Register-Immediate Variante. Letztere hat das Suffix ''i''.\\
 \begin{warningblock}
 	Die Register-Register Instruktionen arbeiten auf den vollen 32/64 Bit.\\
@@ -167,54 +164,188 @@ Das Format der arithmetischen Operationen ist gleich aufgebaut:\\
 \begin{warningblock}
 	Alle Shiftinstruktionen der Variante Register-Immediate erlauben eine Konstante im Wertebereich zwischen 5 und 12 Bit. Obwohl nur die unteren 5 Bit verwendet werden, führt eine Zahl, die größer als 5 Bit ist, nicht zu einem Übersetzungsfehler.
 \end{warningblock}
-Das 64 Bit Modul \textbf{RV64I} fügt zusätzliche spezielle arithmetische Befehle hinzu. Mit RV64I werden die ''normalen'' Instruktionen (siehe Tabelle oben) auf 64 Bit erweitert. Die nun folgenden ''word''-Instruktionen (erkennbar am Suffix ''w'') betrachten jeweils nur die unteren 32 Bit der 64 Bit breiten Operandenregister und berechnen ein 32 Bit breites Ergebnis, das auf 64 erweitert wird.
-\todo[inline]{Tabelle mit 64Bit Befehlen}
+Das 64 Bit Modul \textbf{RV64I} fügt zusätzliche spezielle arithmetische Befehle hinzu. Mit RV64I werden die ''normalen'' Instruktionen (siehe Tabelle oben) auf 64 Bit erweitert. Die nun folgenden ''word''-Instruktionen (erkennbar am Suffix ''w'') betrachten jeweils nur die unteren 32 Bit der 64 Bit breiten Operandenregister und berechnen ein 32 Bit breites Ergebnis, das auf 64bit erweitert wird.
+\begin{tabular}{|c|p{8cm}|p{4cm}|}
+	\hline
+	\textbf{add(i)w} & Addiert die beiden Operanden & \\
+	\hline
+	\textbf{subw} & Subtrahiert \texttt{reg2} von \texttt{reg1}& Es gibt kein \texttt{subiw}, aber \texttt{addiw rd, rs1, -imm} \\
+	\hline
+	\textbf{sll(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch nach links (Am LSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \multirow{3}{4cm}{Arbeitet auf den vollen 64Bit. Als Stellenanzahl werden nur die unteren 6 Bit betrachtet} \\
+	\cline{1-2}
+	\textbf{srl(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch nach rechts (Am MSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \\
+	\cline{1-2}
+	\textbf{sra(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen arithmetisch nach rechts (Am MSBit wird \texttt{reg2|imm}-mal das Sign-Bit eingeschoben) & \\
+	\hline
+	\textbf{sll(i)w} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch nach links (Am LSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \multirow{3}{4cm}{Als Stellenanzahl werden nur die unteren 5 Bit betrachtet} \\
+	\cline{1-2}
+	\textbf{srl(i)w} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch nach rechts (Am MSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \\
+	\cline{1-2}
+	\textbf{sra(i)w} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen arithmetisch nach rechts (Am MSBit wird \texttt{reg2|imm}-mal das Sign-Bit eingeschoben) & \\
+	\hline
+\end{tabular}
 
 \subsubsection{LUI, AUIPC, SLT}
-\todo[inline]{lui, auipc, slt, sltu, slti, sltiu}
 \textbf{lui} und \textbf{auipc} sind spezielle Instruktionen, um 32-Bit große Konstanten in ein Register zu bringen. Da die Instruktionslänge bei RISC-V nur 32 Bit beträgt, kann also keine 32 Bit große Konstante und der Ladebefehl gleichzeitig in einer Instruktion zusammengefasst werden. Somit muss das Laden der Konstante in mehreren Instruktionen erfolgen.\\
 
 Mit \textbf{lui} kann eine bis zu 20 Bit große Konstante \texttt{imm} direkt in die oberen 20 Bit des Registers \texttt{reg} geladen werden:
 \texttt{lui <reg>, <imm>}
 \begin{exampleblock}{32 Bit Konstante laden}
-		Die Konstante 0xabcd1234 in x2 laden:\\
-	\begin{lstlisting}{style=risc-v_Assembler}
-		lui x2, 0xabcd1 	;Lade obere 20 Bit
-		addi x2, x2, 0x234	;Lade untere 12 Bit
-	\end{lstlisting}
-	Oder eleganter:\\
-	\begin{lstlisting}{style=risc-v_Assembler}
-	
-	.equ myConstant, 0xabcd1234
-	lui x2, myConstant>>12		 ;Lade obere 20 Bit
-	addi x2, x2, myConstant&0xfff;Lade untere 12 Bit
-	\end{lstlisting}
+Die Konstante 0xabcd1234 in x2 laden:\\
+\begin{lstlisting}{style=risc-v_Assembler}
+  lui x2, 0xabcd1 	;Lade obere 20 Bit
+  addi x2, x2, 0x234	;Lade untere 12 Bit
+\end{lstlisting}
+Oder eleganter:
+\begin{lstlisting}{style=risc-v_Assembler}	
+  .equ myConstant, 0xabcd1234
+  lui x2, myConstant>>12        ;Lade obere 20 Bit
+  addi x2, x2, myConstant&0xfff ;Lade untere 12 Bit
+\end{lstlisting}
+Vorsicht, die obige Implementierung funktioniert nicht bei Zahlen, in deren Repräsentation das 11. Bit gesetzt ist. Ist dies der Fall muss für den lui-Teil zusätzlich noch eins addiert werden. Wem das zu kompliziert ist, verwendet am besten eine passende Pseudoinstruktion (\autoref{user-manual-riscv-overview-pseudos})
 \end{exampleblock}
 \textbf{auipc} ermöglicht es, 32 Bit große Sprungadressen relativ zum Programmzähler zu bauen. Wie auch schon bei \texttt{lui} werden hier mehrere Instruktionen benötigt. \texttt{auipc} lädt eine bis zu 20 Bit große Konstante \texttt{imm} in die oberen 20 Bit des Registers \texttt{reg} und addiert danach den Programmzähler auf das Register:
 \texttt{auipc <reg>, <imm>}
 \begin{exampleblock}{Ganz weiter Sprung}
-	Sprung um 0xbadeaffe Byte nach unten:
-	\begin{lstlisting}{style=risc-v_Assembler}
-		auipc x2, 0xbadea	;Lade obere 20 Bit
-		jalr x0, 0xffe		;Addiere untere 12Bit & Sprung
-	\end{lstlisting}
-	Auch hier ist eine elegantere Variante mit Konstante und Übersetzungszeit Arithmetik möglich.
+Sprung um 0xbadeaffe Byte nach unten:
+\begin{lstlisting}{style=risc-v_Assembler}
+  auipc x2, 0xbadea	;Lade obere 20 Bit
+  jalr x0, 0xffe	;Addiere untere 12Bit & Sprung
+\end{lstlisting}
+Auch hier ist eine elegantere Variante mit Konstante und Übersetzungszeit Arithmetik möglich.
 \end{exampleblock}
 
+\textbf{slt} \texttt{<dest>, <reg1>, <reg2>} vergleicht reg1 und reg2 und schreibt eine 1 in Register dest, wenn reg1 kleiner reg2. Ist dies nicht der Fall, wird eine 0 in Register dest geschrieben. \textbf{sltu} vergleicht die Register vorzeichenlos. \textbf{slti} bzw. \textbf{sltiu} akzeptieren anstatt eines zweiten Registers eine 12-Bit vorzeichenbehaftete bzw. vorzeichenlose Zahl.
+
 \subsubsection{Kontrollflussbefehle (Sprung und Verzweigung)}
-\todo[inline]{jal, jalr, beq, bne, blt(u), bge(u)}
 \label{manual-riscv-jump-instructions}
+In RISC-V gibt es zwei Arten von Sprung- bzw. Verzweigungsbefehle: unbedingte und bedingte Sprünge.
+
+\textbf{Unbedigte Sprünge}\\
+
+Die folgenden Instruktionen springen an die gegebenen Adressen, sobald sie ausgeführt werden.\\
+\textbf{jal} \texttt{<rd>, <marke>} springt zu \texttt{marke} und legt die Rücksprungadresse in \texttt{rd} ab.\\
+\textbf{jalr} \texttt{<rd>, <basis>, <offset>} springt zur Adresse \texttt{<basis> + <offset>} und legt die Rücksprungadresse in \texttt{rd} ab.\\
+
+Im Gegensatz zu Intel-386 besitzt RISC-V keine Instruktionen zur Verwaltung des Stacks. Benötigt man einen Stack (z.B. für rekursive Aufrufe), muss entsprechende push, pop, call und ret Funktionalitäten selbst schreiben.
+
+\begin{exampleblock}{Sprünge}
+Das folgende Programm springt zu sub\_routine und kehrt wieder zurück:
+\begin{lstlisting}{style=risc-v_Assembler}
+  jal x4, sub_routine
+  ; hierhin wird zurückgekehrt
+  
+  ; ...
+sub_routine:
+  ; ... Ausführung Unterprogramm
+  jalr x0, x4, 0
+\end{lstlisting}
+Der \texttt{jal}-Ausdruck speichert die Adresse des nachfolgenden Befehls (durch Kommentar angedeutet) in Register x4 und spring das Unterprogramm an. Der \texttt{jalr}-Ausdruck springt daraufhin am Ende des Unterprogramms zur Adresse in Register 4. Die Adresse dessen nachfolgenden Befehls wird verworfen (also in x0 gespeichert)
+\end{exampleblock}
+
+\textbf{Bedingte Sprünge}\\
+
+Die Syntax der bedingten Sprünge ist gleich: \textbf{op} \texttt{<cmp1>, <cmp2>, <marke>}\\
+Bei Ausführung prüft die Instruktion eine Bedingung (spezifiziert durch \texttt{op}) zwischen den beiden Registern \texttt{cmp1} und \texttt{cmp2}. Ist diese Bedingung wahr, springt die Instruktion zu \texttt{marke}. Ist die Bedingung falsch, wird kein Sprung ausgeführt, d.h. die Ausführung läuft ganz normal mit dem nächsten Befehl weiter.\\
+\begin{tabular}{|c|c|l|}
+	\hline
+	op & Bedingung & Besonderheit\\
+	\hline
+	beq & $\texttt{cmp1} = \texttt{cmp2}$ & \\
+	\hline
+	bne & $\texttt{cmp1} \ne \texttt{cmp2}$ & \\
+	\hline
+	blt & $\texttt{cmp1} < \texttt{cmp2}$ & Vorzeichenbehafteter Vergleich\\
+	\hline
+	bltu & $\texttt{cmp1} < \texttt{cmp2}$ & Vorzeichenloser Vergleich\\
+	\hline
+	bge & $\texttt{cmp1} \ge \texttt{cmp2}$ & Vorzeichenbehafteter Vergleich\\
+	\hline
+	bgeu & $\texttt{cmp1} \ge \texttt{cmp2}$ & Vorzeichenloser Vergleich\\
+	\hline
+\end{tabular}
+
 \begin{infoblock}{Umgang mit Labels in Sprungbefehlen}
 	Ein Label enthält die absolute Adresse an der es definiert ist. Einige der Kontrollflussinstruktionen funktionieren jedoch mit Programmzähler-relativen Adressen, d.h. eigentlich ist eine Umrechnung von absoluter Labeladresse zu relativer Adresse nötig. Diese Umrechnung führt der Simulator aber automatisch für die Befehle durch, die relativ adressiert werden. So können auch relative Kontrollflussinstruktionen wie gewohnt an ein angegebenes Label springen.\\
 	Vorsicht ist lediglich geboten, wenn ein Label in einer relativ adressierten Instruktion noch durch Arithmetik verändert wird. Hier wird das Label zuerst in relative Form gebracht und dann durch die Arithmetik verändert. Es können also unerwartete Ergebnisse entstehen.
 \end{infoblock}
 
+\begin{warningblock}
+	Es ist möglich, statt einer Marke auch einfach nur eine Zahl anzugeben (z.B. \texttt{jal x0, 8}).
+	Alle Kontrollflussinstruktionen außer \texttt{jalr} sind Programmzähler-relativ und springen relativ zum Programmzähler um das doppelte des eigentlichen Werts.\\
+\begin{lstlisting}{style=risc-v_Assembler}
+jal x0, 4 ; Springt 2 Instruktionen (8 Byte) nach unten
+beq x0, x0, -2 ; Springt eine Instruktion (4 Byte) nach oben
+jalr x0, x0, 0x44 ; Springt an Adresse 0x44
+\end{lstlisting}
+\end{warningblock}
+
 
 \subsubsection{Speicherinteraktion}
-\todo[inline]{sb,sw,sd,lb,lw,ld; Hier Infobox zu vertauschten Operanden bei Store}
+Für Interaktion mit dem Speicher (Laden und Speichern) stellt RISC-V folgende Instruktionen bereit:\\
+
+\textbf{Store-Instruktionen}\\
+
+Alle Instruktionen zum Speichern eines Wertes aus einem Register sind gleich aufgebaut:\\
+ \textbf{op} \texttt{<source>, <base>, <offset>}. Der Inhalt aus \texttt{source} (\texttt{op} entscheidet welche Byte) wird an Speicheradresse \texttt{base+offset} und folgende geschrieben.\\
+
+\begin{tabular}{|c|c|l|}
+	\hline
+	Befehl & Größe & Beispiel (source= 0x1234 5678)\\
+	\hline
+	sb & unteres Byte & 0x78\\
+	\hline
+	sh & unteres Halbwort (2 Byte) & 0x5678\\
+	\hline
+	sw & (unteres) Wort (4 Byte) & 0x1234 5678\\
+	\hline
+\end{tabular}\\
+
+Für RV64 kommt eine weitere Instruktion dazu, die oberen Instruktionen funktionieren wie angegeben.\\
+
+\begin{tabular}{|c|c|l|}
+	\hline
+	Befehl & Größe & Beispiel (source= 0x1234 5678 9abc def0)\\
+	\hline
+	sd & Doppelwort (8 Byte) & 0x1234 5678 9abc def0\\
+	\hline
+\end{tabular}
+
+\textbf{Load-Instruktionen}\\
+
+Auch die Lade-Instruktionen sind gleich aufgebaut: \textbf{op} \texttt{<dest>, <base>, <offset>}. Der Inhalt aus Speicherzelle(n) ab \texttt{base+offset} wird ins Register \texttt{dest} geschrieben. Analog zu den Store-Instruktionen spezifiert auch hier \texttt{op} die genaue Anzahl an Bytes. Übrige Bytes im Register \texttt{dest} werden auf 0 gesetzt.\\
+
+\begin{tabular}{|c|c|l|}
+	\hline
+	Befehl & Größe & Beispiel (Speicher: 0x01|0x23|0x45|0x67|0x89)\\
+	\hline
+	lb & 1 Byte in unterstes Byte & dest = 0x0000 0001\\
+	\hline
+	lh & 2 Byte in unteres Halbwort & dest = 0x0000 000123\\
+	\hline
+	lw & 4 Byte in (unteres) Wort & dest =  0x0123 4567\\
+	\hline
+\end{tabular}\\
+
+Für RV64 kommt eine weitere Instruktion dazu:\\
+
+\begin{tabular}{|c|c|l|}
+	\hline
+	Befehl & Größe & Beispiel (Speicher: 0x01|0x23|0x45|0x67|0x89|0xab|0xcd|0xef)\\
+	\hline
+	sd & 8 Byte in Doppelwort& dest = 0x0123 4567 89ab cdef\\
+	\hline
+\end{tabular}
+
+\begin{warningblock}
+	Ein schreibender Speicherzugriff in den Text-Bereich, wo die assemblierten Instruktionen des Programms liegen, führt zu einem Laufzeitfehler. Ein lesender Zugriff ist jedoch erlaubt.
+\end{warningblock}
+
+\begin{infoblock}{Reihenfolge der Load-Operanden}
+	Die RISC-V Spezifikation definiert die Reihenfolge der Operanden aller Load-Instruktionen anders: Das Zielregister liegt zwischen Basisregister und Offset. Dies ist unintuitiv, daher sind die Load-Instruktionen im Simulator analog zu den Store-Instruktionen definiert.
+\end{infoblock}
 
 \subsubsection{Simulatorbefehle}
-\todo[inline]{simucrash, simusleep}
 Um ein einfaches Debuggen zu ermöglichen, unterstützt der Simulator noch Instruktionen, die nicht im RISC-V Standard enthalten sind und vom Verhalten auch eigentlich nicht mehr einer Maschineninstruktion entsprechen. Die Funktionalität ist jedoch, zur einfachen Benutzung, auch als Instruktion im selben Stil implementiert.\\
 
 \textbf{simucrash }\texttt{<msg>} akzeptiert als einzigen Operanden ein String-Literal. Wird diese Instruktion ausgeführt, terminiert das Programm und die eingegebene Nachricht wird angezeigt. Diese Simulatorinstruktion eignet sich also zur Absicherung des Codes, ähnlich wie Exceptions in höheren Programmiersprachen.\\
@@ -224,4 +355,5 @@ Um ein einfaches Debuggen zu ermöglichen, unterstützt der Simulator noch Instr
 
 
 \subsection{Pseudoinstruktionen}
+\label{user-manual-riscv-overview-pseudos}
 \todo[inline]{Was sind Pseudoinstruktionen + Liste mit Verhalten}
