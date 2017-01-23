@@ -23,52 +23,44 @@ import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 import "../../../Js/ThemeUtility.js" as ThemeUtility
-import ".."
 
+CheckBox {
+  id: checkbox
+  checked: true
 
-Button {
-  id: button
-  enabled: false
-  anchors {
-    horizontalCenter: parent.horizontalCenter
-    topMargin: Theme.createProject.button.marginTop
-  }
+  property string text
+  property var theme: ({})
 
   MouseArea {
     anchors.fill: parent
     cursorShape: Qt.PointingHandCursor
-    onClicked: button.clicked()
+    onClicked: checked = !checked
   }
 
   property var dynamic: ({ theme: ThemeUtility.dynamicThemeFactory(
-      Theme.button,
-      !button.enabled,
-      'disabled'
+    Theme.checkbox,
+    checkbox.checked,
+    'active'
   )})
 
-  style: ButtonStyle {
-    label: Item {
-      anchors.centerIn: parent
-      Text {
-        anchors.centerIn: parent
-        color: dynamic.theme('color')
-        font.pixelSize: Theme.button.fontSize
-        font.capitalization: Font.AllUppercase
-        text: "Create project"
-      }
-    }
-    background: Rectangle {
-      implicitWidth: Theme.createProject.button.width
-      implicitHeight: Theme.button.height
-      border.width: Theme.button.border.width
+  style: CheckBoxStyle {
+    indicator: Rectangle {
+      implicitWidth: Theme.checkbox.width
+      implicitHeight: Theme.checkbox.height
+      radius: Theme.checkbox.radius
       border.color: dynamic.theme('border.color')
-      radius: Theme.button.radius
-      color: {
-        if (button.enabled) {
-          return Theme.createProject.button.background;
-        } else {
-          return Theme.button.disabled.background;
-        }
+      border.width: dynamic.theme('border.width')
+      color: dynamic.theme('background')
+    }
+
+    label: Text {
+      text: checkbox.text
+      leftPadding: Theme.checkbox.margin
+      color: theme.color || Theme.checkbox.color
+      font.pixelSize: theme.fontSize || Theme.checkbox.fontSize
+      font.weight: {
+        var fontWeight = theme.fontWeight || Theme.checkbox.fontWeight;
+        return fontWeight === 'bold' ? Font.DemiBold : Font.Normal;
       }
     }
   }

@@ -203,11 +203,17 @@ void GuiProject::loadText(const QUrl& path) {
 }
 
 void GuiProject::saveSnapshot(const QString& qName) {
-  Json snapshot = _projectModule.getMemoryManager().generateSnapshot().get();
-  std::string snapshotString = snapshot.dump(4);
+  // clang-format off
+  auto snapshot = _projectModule
+    .getMemoryManager()
+    .generateSnapshot()
+    .get()
+    .dump(4);
+  // clang-format on
+
   try {
     _snapshotComponent->addSnapshot(
-        _architectureFormulaString, qName, snapshotString);
+        _architectureFormulaString, qName, snapshot);
   } catch (const std::exception& exception) {
     _throwError(Translateable(
         QT_TRANSLATE_NOOP("GUI error messages",
@@ -216,8 +222,9 @@ void GuiProject::saveSnapshot(const QString& qName) {
   }
 }
 
-void GuiProject::removeSnapshot(const QString& qName) {
-  _snapshotComponent->removeSnapshot(_architectureFormulaString, qName);
+void GuiProject::removeSnapshot(const QString& qName, bool removePermanently) {
+  _snapshotComponent->removeSnapshot(
+      _architectureFormulaString, qName, removePermanently);
 }
 
 void GuiProject::loadSnapshot(const QString& qName) {
@@ -237,6 +244,10 @@ void GuiProject::loadSnapshot(const QString& qName) {
 
 QStringList GuiProject::getSnapshots() {
   return _snapshotComponent->getSnapshotList(_architectureFormulaString);
+}
+
+bool GuiProject::snapshotExists(QString name) {
+  return _snapshotComponent->snapshotExists(_architectureFormulaString, name);
 }
 
 QString GuiProject::getCommandHelp(std::size_t line) {

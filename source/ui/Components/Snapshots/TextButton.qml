@@ -22,16 +22,19 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
-import "../../../Js/ThemeUtility.js" as ThemeUtility
-import ".."
-
 
 Button {
   id: button
-  enabled: false
+  property var theme
+  property bool highlighted
+
   anchors {
-    horizontalCenter: parent.horizontalCenter
-    topMargin: Theme.createProject.button.marginTop
+    right: parent.right
+    rightMargin: theme.rightMargin
+    top: parent.top
+    topMargin: theme.topMargin
+    bottom: parent.bottom
+    bottomMargin: theme.marginBottom
   }
 
   MouseArea {
@@ -40,34 +43,24 @@ Button {
     onClicked: button.clicked()
   }
 
-  property var dynamic: ({ theme: ThemeUtility.dynamicThemeFactory(
-      Theme.button,
-      !button.enabled,
-      'disabled'
-  )})
-
   style: ButtonStyle {
-    label: Item {
-      anchors.centerIn: parent
-      Text {
-        anchors.centerIn: parent
-        color: dynamic.theme('color')
-        font.pixelSize: Theme.button.fontSize
-        font.capitalization: Font.AllUppercase
-        text: "Create project"
-      }
-    }
     background: Rectangle {
-      implicitWidth: Theme.createProject.button.width
-      implicitHeight: Theme.button.height
-      border.width: Theme.button.border.width
-      border.color: dynamic.theme('border.color')
-      radius: Theme.button.radius
-      color: {
-        if (button.enabled) {
-          return Theme.createProject.button.background;
+      color: theme.background
+      height: theme.height
+    }
+    label: Text {
+      text: button.text
+      color: theme.color
+      font.pixelSize: theme.fontSize
+      verticalAlignment: Text.AlignVCenter
+      wrapMode: Text.Wrap
+      elide: Text.ElideRight
+      maximumLineCount: 1
+      font.weight: {
+        if (highlighted || theme.fontWeight === 'bold') {
+          return Font.DemiBold;
         } else {
-          return Theme.button.disabled.background;
+          return Font.Normal;
         }
       }
     }
