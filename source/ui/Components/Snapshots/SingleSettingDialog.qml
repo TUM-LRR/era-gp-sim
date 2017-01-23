@@ -30,8 +30,11 @@ Dialog {
   id: dialog
   property string text
   property string propertyName
-  property bool alreadyAsked: Settings[propertyName] !== null
   property alias remember: checkbox.checked
+  property bool alreadyAsked: {
+    return Settings[propertyName] !== null &&
+           Settings[propertyName] !== undefined;
+  }
 
   signal done(bool answerWasYes);
 
