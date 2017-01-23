@@ -77,4 +77,6 @@ register selector { height: 23px; width: 15px; background: transparent; color: #
 input tab-bar { background: white; }
 input tab-bar border { color: #BDBDBD; width: 1px; }
 
+splitview { handle-width: 2px; handle-height: 2px; handle-color: #BDBDBD; }
+
 /*# sourceMappingURL=theme.css.map */

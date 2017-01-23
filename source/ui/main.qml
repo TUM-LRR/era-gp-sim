@@ -175,6 +175,14 @@ ApplicationWindow {
 
         SystemPalette { id: systemPalette }
 
+        // height and witdth have to be greater than 1 to achieve correct behaviour on
+        // devices with touchscreen
+        handleDelegate: Rectangle {
+          width: Theme.splitview.handleWidth
+          height: Theme.splitview.handleHeight
+          color: Theme.splitview.handleColor
+        }
+
         Connections {
           target: guiProject
           onSaveTextAs: menubar.actionSaveAs();
