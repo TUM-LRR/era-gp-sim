@@ -117,6 +117,8 @@ zu installieren\footnote{\url{https://wiki.qt.io/Install_Qt_5_on_Ubuntu}}.
 \todo [inline]{Manuelle Installation von Qt und dann Verwendung des QtCreators noch genauer
 beschreiben. Ich machs über die Kommandozeile, kenn mich also mit QtCreator etc. nicht so aus}
 
+\input{setup-qtcreator-linux.tex}
+
 \subsubsection{Mac}
 
 Wirklich?
@@ -126,7 +128,7 @@ Wirklich?
 Selbst schuld.
 
 \subsection{CMake / Make}
-
+\label{dev-report-cmake-build}
 Um auch den Build Prozess unabhängig vom Betriebssystem durchzuführen, haben wir uns für
 \textit{CMake}\footnote{\url{https://cmake.org/}} entschieden. CMake generiert die benötigten
 \texttt{Makefiles} für jedes Betriebssystem bzw. jeden Compiler neu, welche anschließend
