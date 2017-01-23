@@ -25,10 +25,19 @@ Item {
   SingleSettingDialog {
     id: dialog
     propertyName: 'overrideSnapshots'
-    onDone: saveSnapshot(answerWasYes)
+    property string lastName
+    onDone: {
+      if (answerWasYes) {
+        save(lastName);
+        didOverride();
+      } else {
+        noOverride();
+      }
+    }
   }
 
   signal noOverride();
+  signal didOverride();
 
   function save(name) {
     ui.saveSnapshot(tabView.currentProjectId(), name);
@@ -48,7 +57,7 @@ Item {
 
     dialog.text = "Override snapshot '" + name + "'?"
 
-    if (name && dialog.alreadyAsked) {
+    if (dialog.alreadyAsked) {
       if (Settings.overrideSnapshots) {
         save(name);
         return true;
@@ -56,6 +65,7 @@ Item {
         noOverride();
       }
     } else {
+      dialog.lastName = name;
       dialog.open();
     }
 

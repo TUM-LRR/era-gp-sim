@@ -46,15 +46,16 @@ Rectangle {
     model: guiProject.getSnapshots();
     currentIndex: -1
     delegate: snapshotItem
-    property string currentSnapshot: {
-      return listView.currentItem ? listView.currentItem.text : "";
-    }
     anchors {
       topMargin: Theme.snapshots.marginTop
       top: header.bottom
       left: parent.left
       bottom: parent.bottom
       right: parent.right
+    }
+    property bool hasCurrentSnapshot: currentSnapshot.length > 0
+    property string currentSnapshot: {
+      return listView.currentItem ? listView.currentItem.text : "";
     }
   }
 
@@ -72,7 +73,11 @@ Rectangle {
     }
     onSaveSnapshotRequest: {
       if (projectId === sourceProjectId) {
-        saveSnapshot.activate(listView.currentSnapshot, true);
+        if (listView.hasCurrentSnapshot) {
+          saveSnapshot.activate(listView.currentSnapshot, true);
+        } else {
+          saveSnapshotDialog.open();
+        }
       }
     }
   }

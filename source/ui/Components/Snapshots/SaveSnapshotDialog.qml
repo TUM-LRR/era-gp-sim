@@ -30,6 +30,8 @@ Dialog {
   id: dialog
   title: "Save Snapshot"
 
+  function reset() { name.text = ''; }
+
   contentItem: Rectangle {
     implicitHeight: Theme.snapshots.creationDialog.height
     implicitWidth: Theme.snapshots.creationDialog.width
@@ -85,6 +87,10 @@ Dialog {
     SaveSnapshotFunctionality {
       id: saveSnapshot
       onNoOverride: warnAboutOverrideDialog.open();
+      onDidOverride: {
+        dialog.reset();
+        dialog.close();
+      }
       Connections {
         target: warnAboutOverrideDialog
         onAccepted: dialog.close()
@@ -101,12 +107,7 @@ Dialog {
         bottom: cancel.bottom
         right: cancel.left
       }
-      onClicked: {
-        if (saveSnapshot.activate(name.text)) {
-          dialog.close();
-          name.text = '';
-        }
-      }
+      onClicked: saveSnapshot.activate(name.text);
     }
 
     Button {
