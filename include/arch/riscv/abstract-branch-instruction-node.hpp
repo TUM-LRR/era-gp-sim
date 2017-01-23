@@ -283,7 +283,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
   ValidationResult _validateResultingProgramCounter(
       MemoryAccess& memoryAccess) const {
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
-    auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 2);
+    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 2);
     // Check if the program counter would underflow or overflow
     if (!riscv::addressIsValid(memoryAccess, programCounter + 2 * offset,
                                programCounter)) {

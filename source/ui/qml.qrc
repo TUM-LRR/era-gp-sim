@@ -3,17 +3,15 @@
         <file>main.qml</file>
         <file>ErrorDialog.qml</file>
         <file>Splitview.qml</file>
+        <file>InnerSplitviews.qml</file>
+        <file>InnerSplitviewsEditor.qml</file>
+        <file>SplitviewItem.qml</file>
         <file>Components/ComponentHolder.qml</file>
         <file>Components/Snapshots/SnapshotList.qml</file>
-        <file>Components/Output/GreenRectangle.qml</file>
-        <file>Components/Output/Output.qml</file>
-        <file>Components/Output/RedRectangle.qml</file>
-        <file>SplitviewItem.qml</file>
         <file>Icons/Settings Icon Pressed.png</file>
         <file>Icons/Settings Icon Pressed@2x.png</file>
         <file>Icons/Settings Icon.png</file>
         <file>Icons/Settings Icon@2x.png</file>
-        <file>InnerSplitviews.qml</file>
         <file>Components/editor/Editor.qml</file>
         <file>Components/Memory/MemoryComponent.qml</file>
         <file>Components/Memory/MemoryTreeView.qml</file>
@@ -40,12 +38,13 @@
         <file>Components/Settings/Sections/AskAboutUnsavedChangesDialog.qml</file>
         <file>Components/Settings/Sections/Setting.qml</file>
         <file>Components/Settings/Sections/Themes.qml</file>
-        <file>Components/Output/LightStrip.qml</file>
         <file>Components/Common/ToolTip.qml</file>
+        <file>Components/Common/TextUtilities.js</file>
         <file>Components/editor/MacroTriangleButton.qml</file>
         <file>Components/editor/MacroSubeditor.qml</file>
-        <file>Components/Common/TextUtilities.js</file>
         <file>Components/editor/HelpToolTip.qml</file>
+        <file>Components/Output/Output.qml</file>
+        <file>Components/Output/LightStrip.qml</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected@2x.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon.png</file>

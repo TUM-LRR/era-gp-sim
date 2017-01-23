@@ -1,0 +1,19 @@
+; Config: lightstrip (8 strips, start address 0x0)
+.section data ; Start a data section to define values in memory
+strip: .resb 1
+.equ startvalue, 0xff
+.equ num_stripes, 8
+.equ sleeptime, 500
+
+.section text ; The code follows
+start:
+addi x1, x0, startvalue
+sb x1, x0, 0
+addi x2, x0, num_stripes
+loop:
+srli x1, x1, 1
+sb x1, x0, 0
+addi x2, x2, -1
+simusleep sleeptime
+bne x0, x2, loop
+jal x0, start

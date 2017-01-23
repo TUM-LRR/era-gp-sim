@@ -61,10 +61,10 @@ void MacroDirective::insert(const IntermediateOperationPointer& pointer) {
   _operations.emplace_back(pointer);
 }
 
-void MacroDirective::precompile(
-    const PreprocessingImmutableArguments& immutable,
-    CompileErrorList& errors,
-    MacroDirectiveTable& macroTable) {
+void MacroDirective::precompile(const PrecompileImmutableArguments& immutable,
+                                CompileErrorList& errors,
+                                SymbolGraph& graph,
+                                MacroDirectiveTable& macroTable) {
   if (macroName().string().empty()) {
     errors.pushError(name().positionInterval(), "Missing macro name.");
     return;

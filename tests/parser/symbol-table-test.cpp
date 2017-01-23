@@ -16,6 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "parser/independent/symbol.hpp"
 #include "gtest/gtest.h"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/common/compile-error-list.hpp"
@@ -23,7 +24,6 @@
 #include "parser/independent/symbol-graph-evaluation.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
-#include "parser/independent/symbol.hpp"
 #define ZP(x) PositionedString(x, CodePositionInterval())
 
 TEST(SymbolTable, empty) {
