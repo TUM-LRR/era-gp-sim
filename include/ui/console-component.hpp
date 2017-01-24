@@ -17,15 +17,15 @@
   * along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
 
-#ifndef INPUTTEXTMODEL_HPP
-#define INPUTTEXTMODEL_HPP
+#ifndef ERASIM_UI_CONSOLE_COMPONENT_HPP
+#define ERASIM_UI_CONSOLE_COMPONENT_HPP
 
 #include <QObject>
 #include <QQmlContext>
 
 #include "core/memory-access.hpp"
 
-class InputTextModel : public QObject {
+class ConsoleComponent : public QObject {
   Q_OBJECT
 
  public:
@@ -37,7 +37,7 @@ class InputTextModel : public QObject {
    */
   enum Mode { ARRAY_BASED, PIPELIKE };
 
-  InputTextModel(QQmlContext* context, MemoryAccess memoryAccess);
+  ConsoleComponent(QQmlContext* context, MemoryAccess memoryAccess);
 
   /**
    * Sets the new text which should be stored in the memory.
@@ -124,4 +124,4 @@ class InputTextModel : public QObject {
   void modeChanged();
 };
 
-#endif// INPUTTEXTMODEL_HPP
+#endif  // ERASIM_UI_CONSOLE_COMPONENT_HPP

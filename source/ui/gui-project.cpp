@@ -47,9 +47,9 @@ GuiProject::GuiProject(
 , _outputComponent(_projectModule.getMemoryManager(),
                    _projectModule.getMemoryAccess(),
                    context)
-, _inputBM(context, _projectModule.getMemoryAccess())
-, _inputTM(context, _projectModule.getMemoryAccess())
-, _inputCM(context, _projectModule.getMemoryAccess())
+, _inputButtons(context, _projectModule.getMemoryAccess())
+, _inputMouse(context, _projectModule.getMemoryAccess())
+, _consoleComponent(context, _projectModule.getMemoryAccess())
 , _memoryModel(_projectModule.getMemoryAccess(),
                _projectModule.getMemoryManager(),
                context)

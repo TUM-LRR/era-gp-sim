@@ -17,20 +17,22 @@
   * along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
 
-#include "ui/input-text-model.hpp"
+#include "ui/console-component.hpp"
+
 #include "core/conversions.hpp"
 
-InputTextModel::InputTextModel(QQmlContext* context, MemoryAccess memoryAccess)
+ConsoleComponent::ConsoleComponent(QQmlContext* context,
+                                   MemoryAccess memoryAccess)
 : QObject()
 , _context(context)
 , _start(0)
 , _maximumLength(20)
 , _memoryAccess(memoryAccess)
 , _mode(Mode::ARRAY_BASED) {
-  _context->setContextProperty("inputTextModel", this);
+  _context->setContextProperty("consoleComponent", this);
 }
 
-void InputTextModel::newText(QString text) {
+void ConsoleComponent::newText(QString text) {
   for (auto i : Utility::range<size_t>(0, text.length())) {
     if (_start + i > _memoryAccess.getMemorySize().get()) {
       // Too long
@@ -45,35 +47,35 @@ void InputTextModel::newText(QString text) {
   }
 }
 
-void InputTextModel::newNumber(size_t number) {
+void ConsoleComponent::newNumber(size_t number) {
   auto memoryValue = conversions::convert(number, 32);
   _memoryAccess.putMemoryValueAt(_start, memoryValue);
 }
 
-void InputTextModel::setStart(size_t start) {
+void ConsoleComponent::setStart(size_t start) {
   if (_memoryAccess.getMemorySize().get() >= start + _maximumLength) {
     _start = start;
   }
 }
 
-QString InputTextModel::getStart() {
+QString ConsoleComponent::getStart() {
   return QString::number(_start);
 }
 
-void InputTextModel::setMaximumLength(size_t maximumLength) {
+void ConsoleComponent::setMaximumLength(size_t maximumLength) {
   _maximumLength = maximumLength;
   emit maximumLengthChanged();
 }
 
-InputTextModel::size_t InputTextModel::getMaximumLength() {
+ConsoleComponent::size_t ConsoleComponent::getMaximumLength() {
   return _maximumLength;
 }
 
-void InputTextModel::setMode(int mode) {
+void ConsoleComponent::setMode(int mode) {
   _mode = static_cast<Mode>(mode);
   emit modeChanged();
 }
 
-int InputTextModel::getMode() {
+int ConsoleComponent::getMode() {
   return static_cast<int>(_mode);
 }

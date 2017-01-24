@@ -75,8 +75,8 @@
         <file>Components/editor/Issue Icons/Information Icon@2x.png</file>
         <file>Components/editor/Issue Icons/Warning Icon.png</file>
         <file>Components/editor/Issue Icons/Warning Icon@2x.png</file>
-        <file>Components/Output/Console.qml</file>
-        <file>Components/Output/ConsoleSettingsWindow.qml</file>
+        <file>Components/Output/Console/Console.qml</file>
+        <file>Components/Output/Console/ConsoleSettingsWindow.qml</file>
         <file>Components/Input/InputButtons/ButtonInput.qml</file>
         <file>Components/Input/InputMouse/ClickInput.qml</file>
         <file>Components/Input/Input.qml</file>

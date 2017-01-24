@@ -13,7 +13,7 @@ set(UI_SOURCES
   snapshot-component.cpp
   output-component.cpp
   input-button-model.cpp
-  input-text-model.cpp
+  console-component.cpp
   input-click-model.cpp
   translateable-processing.cpp
   theme.cpp
@@ -31,7 +31,7 @@ set(UI_HEADERS
   ${CMAKE_SOURCE_DIR}/include/ui/output-component.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/input-button-model.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/input-click-model.hpp
-  ${CMAKE_SOURCE_DIR}/include/ui/input-text-model.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/console-component.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/theme.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/settings.hpp
 )
