@@ -90,8 +90,8 @@ Rectangle {
     id: digitsListView
 
     anchors.centerIn: parent
-    height: parent.height - 10
-    spacing: 10
+    height: parent.height - (2 * Theme.output.sevenSegment.verticalMargin)
+    spacing: Theme.output.sevenSegment.spacing
     width: (height / 2) * count + (spacing) * (count - 1)
 
     orientation: ListView.Horizontal

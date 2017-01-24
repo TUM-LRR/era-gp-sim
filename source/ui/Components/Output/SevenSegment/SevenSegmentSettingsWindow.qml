@@ -22,13 +22,14 @@ import QtQuick.Window 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.1
+import Theme 1.0
 import "../../Common/TextUtilities.js" as TextUtilities
 
 // Window for seven segment settings.
 Window {
   id: settingsWindow
-  width: 350
-  height: 120
+  width: Theme.output.lightStrip.settings.width
+  height: Theme.output.lightStrip.settings.height
 
   title: "Seven-Segment Settings"
   flags: Qt.Dialog
@@ -40,19 +41,17 @@ Window {
     baseAddressTextField.text = "0x" + outputComponent.getOutputItem(outputItemIndex)["baseAddress"].toString(16);
   }
 
-  onVisibleChanged: {
-    settingsWindow.updateSettings();
-  }
+  onVisibleChanged: settingsWindow.updateSettings();
 
   GridLayout {
     id: grid
 
     anchors.left: parent.left
-    anchors.leftMargin: 15
+    anchors.leftMargin: Theme.output.lightStrip.settings.margin
     anchors.right: parent.right
-    anchors.rightMargin: 15
+    anchors.rightMargin: Theme.output.lightStrip.settings.margin
     anchors.top: parent.top
-    anchors.topMargin: 15
+    anchors.topMargin: Theme.output.lightStrip.settings.margin
 
     columns: 2
 
@@ -66,8 +65,8 @@ Window {
 
       text: outputComponent.getOutputItem(outputItemIndex)["baseAddress"]
 
-      onAccepted: { processInput(); }
-      onEditingFinished: { processInput(); }
+      onAccepted: processInput()
+      onEditingFinished: processInput()
 
       // Reads the current input and passes the new value to the model.
       function processInput() {
@@ -138,7 +137,7 @@ Window {
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
-    anchors.bottomMargin: 5
+    anchors.bottomMargin: Theme.output.lightStrip.settings.doneButton.bottomMargin
 
     onClicked: {
       baseAddressTextField.focus = false;

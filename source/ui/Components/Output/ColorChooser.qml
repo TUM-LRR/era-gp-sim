@@ -23,15 +23,14 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.2
+import Theme 1.0
 
 ColorDialog {
   id: colorDialog
-  width: 300
-  height: 200
+  width: Theme.output.colorChooser.width
+  height: Theme.output.colorChooser.height
   title: "Please choose a color"
 
-  onRejected: {
-    colorDialog.close();
-  }
+  onRejected: colorDialog.close();
   Component.onCompleted: visible = true
 }

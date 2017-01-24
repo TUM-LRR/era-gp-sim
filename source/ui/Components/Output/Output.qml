@@ -37,9 +37,6 @@ Item {
     // Color definitions
     property color tabBarColor: Theme.output.tabBar.background
     property color innerBorderColor: Theme.output.tabBar.border.color
-    property color highlightColor: "#4A90E2"
-    property color titleColor: "#4A4A4A"
-    property color titleColorHighlighted: "#111111"
 
     // Tell SplitViewItem (i.e. component wrapper) that settings are available to make it display settings icon.
     property var hasComponentSettings: true

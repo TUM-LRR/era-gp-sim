@@ -54,9 +54,7 @@ Rectangle {
 
   // Called from outside by the output tab view to signal that the settings button for the current
   // output item was pressed.
-  onSettingsButtonPressed: {
-    lightstripSettingsWindow.show();
-  }
+  onSettingsButtonPressed: lightstripSettingsWindow.show();
 
   // Updates the content of the output model depending on the value in memory.
   function updateContent(_baseAddress) {
@@ -91,24 +89,39 @@ Rectangle {
   Rectangle{
     id: lightstripBackground
     color: "#00000000"
+
+    // The lightstrip is rastered in strips. The amount of strips can be set via the current theme
+    // and alters the amount of raster-strips according to the following formula: (rasterGranularity * numberOfStrips + 1).
+    // Each spacing between strips uses one raster-strip of space. Each lightstrip uses the remaining space (e.g. if
+    // rasterGranularity is 5, the lightstrip each uses 4 and the spacing each uses 1).
+    property var rasterGranularity: Theme.output.lightStrip.strip.rasterGranularity // e.g. 5 in the example above.
+    property var stripWidthParts: rasterGranularity - 1;  // e.g. 4 in the example above.
+    // Each theme can set a maximum width for a lightstrip. The following formula calculates whether using the full
+    // space of the lightstripBackground would make the lightstrips exceed the maximum width. In this case the lightstrip
+    // width using the maximum width is returned.
+    property var lightstripWidth: {
+      var normalWidth = parent.width - 2*Theme.output.lightStrip.margin;
+      var stripWidth = (stripWidthParts * normalWidth) / (rasterGranularity * lightstripModel.count + 1)
+      if (stripWidth > Theme.output.lightStrip.strip.maximumWidth) {
+        return (rasterGranularity * lightstripModel.count + 1) / stripWidthParts * Theme.output.lightStrip.strip.maximumWidth;
+      } else {
+        normalWidth;
+      }
+    }
+
     anchors.verticalCenter: parent.verticalCenter
-    height: parent.height-20
-    anchors.left: parent.left
-    anchors.leftMargin: 10
-    anchors.right: parent.right
-    anchors.rightMargin: 10
-    radius: 5
+    height: Math.min(parent.height-2*Theme.output.lightStrip.margin, Theme.output.lightStrip.maximumHeight)
+    anchors.horizontalCenter: parent.horizontalCenter
+    width: lightstripWidth
+    radius: Theme.output.lightStrip.cornerRadius
     border.color: lightstripInactiveColor
-    border.width: 2
+    border.width: Theme.output.lightStrip.borderWidth
 
     // ListView for lights.
     ListView {
-      spacing: (lightstripBackground.width)/(5*lightstripModel.count+1)
+      spacing: (lightstripBackground.width)/(lightstripBackground.rasterGranularity*lightstripModel.count+1)
       anchors.fill: parent
-      anchors.leftMargin: (lightstripBackground.width)/(5*lightstripModel.count+1)
-      anchors.rightMargin: (lightstripBackground.width)/(5*lightstripModel.count+1)
-      anchors.topMargin: (lightstripBackground.width)/(5*lightstripModel.count+1)
-      anchors.bottomMargin: (lightstripBackground.width)/(5*lightstripModel.count+1)
+      anchors.margins: spacing
 
       orientation: ListView.Horizontal
       interactive: false
@@ -116,57 +129,53 @@ Rectangle {
       model: lightstripModel
       delegate: light
     }
-  }
 
-  // Single light.
-  Component {
-    id: light
-    Rectangle{
-      id: rect
+    // Single light.
+    Component {
+      id: light
+      Rectangle{
+        id: rect
 
-      color: (active == true) ? activeColor : inactiveColor
-      height: parent.height
-      anchors.verticalCenter: parent.center
-      width: (4*lightstripBackground.width)/(5*lightstripModel.count+1)
-      border.color: systemColorPalette.highlight
-      border.width: 0
-      radius: 5
+        color: (active == true) ? activeColor : inactiveColor
+        height: parent.height
+        anchors.verticalCenter: parent.center
+        width: (lightstripBackground.stripWidthParts*lightstripBackground.width)/(lightstripBackground.rasterGranularity*lightstripModel.count+1)
+        border.color: systemColorPalette.highlight
+        border.width: 0
+        radius: Theme.output.lightStrip.strip.cornerRadius
 
-      MouseArea{
-        anchors.fill: parent
-        hoverEnabled: true
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: {
-          // Show change-color-dialog on right-click.
-          if(mouse.button === Qt.RightButton){
-            var newObject = colorChooserComponent.createObject(light);
-          }
-          // Set light active on left-click.
-          else {
-            lightstripModel.setProperty(index, "active", !lightstripModel.get(index).active);
-            var memoryContent = [];
-            for (var lightIndex = 0; lightIndex < lightstripModel.count; ++lightIndex) {
-              memoryContent.push(lightstripModel.get(lightIndex).active);
+        MouseArea{
+          anchors.fill: parent
+          hoverEnabled: true
+          acceptedButtons: Qt.LeftButton | Qt.RightButton
+          onClicked: {
+            // Show change-color-dialog on right-click.
+            if(mouse.button === Qt.RightButton){
+              var newObject = colorChooserComponent.createObject(light);
             }
-            var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
-            outputComponent.putMemoryValue(_baseAddress, memoryContent);
+            // Set light active on left-click.
+            else {
+              lightstripModel.setProperty(index, "active", !lightstripModel.get(index).active);
+              var memoryContent = [];
+              for (var lightIndex = 0; lightIndex < lightstripModel.count; ++lightIndex) {
+                memoryContent.push(lightstripModel.get(lightIndex).active);
+              }
+              var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
+              outputComponent.putMemoryValue(_baseAddress, memoryContent);
+            }
           }
-        }
-        onEntered: {
-          rect.border.width=1
-        }
-        onExited: {
-          rect.border.width=0
-        }
+          onEntered: rect.border.width=Theme.output.lightStrip.strip.hovered.borderWidth
+          onExited: rect.border.width=0
 
-        Component {
-          id: colorChooserComponent
-          ColorChooser {
-            id: colorDialog
-            currentColor: lightstripModel.get(index).activeColor
-            onAccepted: {
-              lightstripModel.setProperty(index, "activeColor", colorDialog.color.toString());
-              colorDialog.close();
+          Component {
+            id: colorChooserComponent
+            ColorChooser {
+              id: colorDialog
+              currentColor: lightstripModel.get(index).activeColor
+              onAccepted: {
+                lightstripModel.setProperty(index, "activeColor", colorDialog.color.toString());
+                colorDialog.close();
+              }
             }
           }
         }

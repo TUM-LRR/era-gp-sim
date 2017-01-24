@@ -22,13 +22,14 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.0
 import QtQuick.Layouts 1.1
+import Theme 1.0
 import "../../Common/TextUtilities.js" as TextUtilities
 
 // Window for lightstrip settings.
 Window {
   id: settingsWindow
-  width: 350
-  height: 120
+  width: Theme.output.sevenSegment.settings.width
+  height: Theme.output.sevenSegment.settings.width
 
   title: "Lightstrip Settings"
   flags: Qt.Dialog
@@ -48,11 +49,11 @@ Window {
     id: grid
 
     anchors.left: parent.left
-    anchors.leftMargin: 15
+    anchors.leftMargin: Theme.output.sevenSegment.settings.margin
     anchors.right: parent.right
-    anchors.rightMargin: 15
+    anchors.rightMargin: Theme.output.sevenSegment.settings.margin
     anchors.top: parent.top
-    anchors.topMargin: 15
+    anchors.topMargin: Theme.output.sevenSegment.settings.margin
 
     columns: 2
 
@@ -94,8 +95,8 @@ Window {
       id: numberOfStripsTextField
       height: baseAddressTextField.height
 
-      onAccepted: { processInput(); }
-      onEditingFinished: { processInput(); }
+      onAccepted: processInput()
+      onEditingFinished: processInput()
 
       // Reads the current input, checks if it is valid and passes the new value to the model.
       function processInput() {
@@ -123,7 +124,7 @@ Window {
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
-    anchors.bottomMargin: 5
+    anchors.bottomMargin: Theme.output.sevenSegment.settings.doneButton.bottomMargin
 
     onClicked: {
       baseAddressTextField.focus = false;
