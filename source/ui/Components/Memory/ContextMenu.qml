@@ -20,12 +20,18 @@ import QtQuick.Controls 1.5
 
 Item {
   anchors.fill: parent
+  property var target
+
+  enabled: header.count > 2
 
   Menu {
     id: menu
     MenuItem {
       text: "Remove"
-      onTriggered: header.remove();
+      onTriggered: {
+        tableView.removeColumn(index);
+        headerModel.remove(index);
+      }
     }
   }
 

@@ -54,18 +54,13 @@ Rectangle {
         target: tableView
         onColumnCountChanged: {
           // Dynamically add columns that were added by the user.
-          while (headerDropdownList.count < tableView.columnCount) {
-            headerDropdownList.append(ListElement);
+          while (headerModel.count < tableView.columnCount) {
+            headerModel.append(ListElement);
           }
         }
       }
 
-      function remove() {
-        tableView.removeColumn(index);
-        headerDropdownList.remove(index);
-      }
-
-      model: ListModel { id: headerDropdownList }
+      model: ListModel { id: headerModel }
 
       delegate: Rectangle {
         id: headerSection
@@ -82,9 +77,9 @@ Rectangle {
           if (currentRole === 'address') {
             return Theme.memory.address.width;
           } else {
-            var visibleWidth = root.width - Theme.memory.address.width;
-            var sharedWidth = visibleWidth / (header.count - 1);
-            return Math.max(sharedWidth, Theme.memory.cell.width);
+            var remainingWidth = root.width - Theme.memory.address.width;
+            var sharedWidth = remainingWidth / (header.count - 1);
+            return Math.max(sharedWidth, Theme.memory.cell.minWidth);
           }
         }
 

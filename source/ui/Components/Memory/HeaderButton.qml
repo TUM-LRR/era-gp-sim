@@ -30,7 +30,7 @@ ComboBox {
   height: parent.height
   width: Theme.memory.header.button.width
 
-  ContextMenu { }
+  ContextMenu { target: combobox }
 
   style: ComboBoxStyle {
     background: Rectangle {
