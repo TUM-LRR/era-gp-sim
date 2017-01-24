@@ -411,17 +411,17 @@ builtin-macros:
   - |
     .macro sbg, rd, symbol, rt
     auipc \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    sb \rt, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
+    sb \rd, \rt, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
     .endm
   - |
     .macro shg, rd, symbol, rt
     auipc \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    sh \rt, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
+    sh \rd, \rt, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
     .endm
   - |
     .macro swg, rd, symbol, rt
     auipc \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    sw \rt, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
+    sw \rd, \rt, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
     .endm
   - |
     .macro nop
