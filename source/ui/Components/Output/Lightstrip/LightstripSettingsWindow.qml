@@ -41,9 +41,7 @@ Window {
     baseAddressTextField.text = "0x" + outputComponent.getOutputItem(outputItemIndex)["baseAddress"].toString(16);
   }
 
-  onVisibleChanged: {
-    settingsWindow.updateSettings();
-  }
+  onVisibleChanged: settingsWindow.updateSettings();
 
   GridLayout {
     id: grid
@@ -65,8 +63,8 @@ Window {
     TextField {
       id: baseAddressTextField
 
-      onAccepted: { processInput(); }
-      onEditingFinished: { processInput(); }
+      onAccepted: processInput()
+      onEditingFinished: processInput()
 
       // Reads the current input, checks if it is valid and passes the new value to the model.
       function processInput() {
