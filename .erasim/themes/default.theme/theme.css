@@ -20,12 +20,14 @@ settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right:
 toolbar { margin: 20px; background: white; }
 
 tabbar { background: #ececec; }
-tabbar tab { color: #666666; }
+tabbar tab { color: #666666; height: 25; minWidth: 60; }
 tabbar tab highlighted { color: #333333; }
 tabbar tab active { background: white; }
 tabbar tab inactive { background: #d4d4d4; }
 tabbar tab closeButton { color: #666666; }
 tabbar tab closeButton highlighted { color: #FF4081; }
+tabbar addTabButton { background: transparent; color: #666666; pointSize: 18; }
+tabbar addTabButton highlighted { color: #FF4081; }
 tabbar frame { background: #f2f2f2; }
 
 register { background: transparent; height: 40px; margin-left: -5px; margin-right: 10px; overflow: auto; }

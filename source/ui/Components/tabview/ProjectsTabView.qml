@@ -27,13 +27,9 @@ TabView {
   id: tabView
   anchors.fill: parent
 
-  Component.onCompleted: {
-    createProject()
-  }
+  Component.onCompleted: createProject()
 
-  onCurrentIndexChanged: {
-    updateMenuState();
-  }
+  onCurrentIndexChanged: updateMenuState();
 
   // get the project of the current tab, is undefined if there is no tab.
   function getCurrentProjectItem() {
@@ -60,15 +56,18 @@ TabView {
     property color tabTitleColorHighlighted: Theme.tabbar.tab.highlighted.color
     property color tabCloseButtonColor: Theme.tabbar.tab.closeButton.color
     property color tabCloseButtonColorHighlighted: Theme.tabbar.tab.closeButton.highlighted.color
+    property color addTabButtonBackgroundColor: Theme.tabbar.addTabButton.background
+    property color addTabButtonColorHighlighted: Theme.tabbar.addTabButton.highlighted.color
+    property color addTabButtonColor: Theme.tabbar.addTabButton.color
 
-    property int tabHeight: 25
+    property int tabHeight: Theme.tabbar.tab.height
 
     // Overlap between tabs and the components below set to leave a small space
     // which gives the impression of stacked record cards.
     frameOverlap: -3
 
     // Sets the style of the blank area next to the tabs
-    tabBar : Rectangle {
+    tabBar: Rectangle {
       color: tabBarBackgroundColor
     }
 
@@ -85,21 +84,24 @@ TabView {
       Button {
         anchors.centerIn: parent
         anchors.verticalCenterOffset: -2
+        MouseArea {
+          acceptedButtons: Qt.NoButton
+          anchors.fill: parent
+          cursorShape: Qt.PointingHandCursor
+        }
         style: ButtonStyle {
           background: Rectangle {
-            color: "transparent"
+            color: addTabButtonBackgroundColor
           }
           label: Text {
             text: "\u002B"  // + unicode
             anchors.centerIn: parent
-            color: control.pressed ? tabCloseButtonColorHighlighted : tabCloseButtonColor
+            color: control.pressed ? addTabButtonColorHighlighted : addTabButtonColor
             font.bold: true
-            font.pointSize: 18
+            font.pointSize: Theme.tabbar.addTabButton.pointSize
           }
         }
-        onClicked: {
-          createProject();
-        }
+        onClicked: createProject();
       }
     }
 
@@ -107,8 +109,14 @@ TabView {
     tab: Rectangle {
       id: tabStyle
       color: styleData.selected ? tabColorActive : tabColorInactive
-      implicitWidth: Math.max(tabTitle.width + tabCloseButton.width + 8, 80)
+      implicitWidth: Math.max(tabTitle.width + tabCloseButton.width + 8, Theme.tabbar.tab.minWidth)
       implicitHeight: tabHeight
+
+      MouseArea {
+        acceptedButtons: Qt.NoButton
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+      }
 
       // Add fake (i.e. actually inside the tab not inside the tab bar) top spacing between upper tab edge and tab bar.
       Rectangle {
@@ -118,43 +126,53 @@ TabView {
         height: 2
         color: tabBarBackgroundColor
       }
-
+      // Container for centering tabTitle between left tab edge and tabCloseButton.
       Item {
-        anchors.centerIn: parent
+        anchors.left: parent.left
+        anchors.right: tabCloseButton.left
+        anchors.rightMargin: -6 // Correction term to find the actual left edge of character (not text component)
+        anchors.verticalCenter: parent.verticalCenter
         width: tabTitle.width + tabCloseButton.width
-        // Tab title
         Text {
           id: tabTitle
-          anchors.left: parent.left
-          anchors.verticalCenter: parent.verticalCenter
+          anchors.centerIn: parent
           text: styleData.title
           color: tabTitleColor
         }
-        // Tab close Button
-        Button {
-          id: tabCloseButton
-          property var buttonHeight: 0.65*tabHeight
-          anchors.left: tabTitle.right
-          anchors.verticalCenter: tabTitle.verticalCenter
-          height: buttonHeight
-          width: buttonHeight
-          style: ButtonStyle {
-            background: Rectangle {
-              implicitWidth: tabCloseButton.buttonHeight
-              implicitHeight: tabCloseButton.buttonHeight
-              color: "transparent"
-              Text {
-                text: "\u00d7"  // Cross or x unicode
-                anchors.centerIn: parent
-                color: control.hovered ? tabCloseButtonColorHighlighted : tabCloseButtonColor
-                font.bold: true
+      }
+      Button {
+        id: tabCloseButton
+        property var buttonHeight: 0.65*tabHeight
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+        anchors.rightMargin: 4
+        height: buttonHeight
+        width: buttonHeight
+        MouseArea {
+          acceptedButtons: Qt.NoButton
+          anchors.fill: parent
+          cursorShape: Qt.PointingHandCursor
+        }
+        style: ButtonStyle {
+          background: Rectangle {
+            implicitWidth: tabCloseButton.buttonHeight
+            implicitHeight: tabCloseButton.buttonHeight
+            color: "transparent"
+            Text {
+              text: "\u00d7"  // Cross or x unicode
+              anchors.centerIn: parent
+              color: {
+                if (control.hovered) {
+                  return tabCloseButtonColorHighlighted;
+                } else {
+                  return tabCloseButtonColor;
+                }
               }
+              font.bold: true
             }
           }
-          onClicked: {
-            closeProject();
-          }
         }
+        onClicked: closeProject();
       }
     }
   }
