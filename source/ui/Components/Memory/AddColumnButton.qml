@@ -24,6 +24,7 @@ import Theme 1.0
 
 Button {
   id: button
+  width: Theme.memory.add.width
   anchors {
     top: parent.top
     bottom: parent.bottom
@@ -39,7 +40,9 @@ Button {
   }
 
   style: ButtonStyle {
-    background: Rectangle { color: Theme.memory.add.background }
+    background: Rectangle {
+      color: Theme.memory.add.background
+    }
     label: Text {
       text: "+"
       horizontalAlignment: Qt.AlignHCenter
