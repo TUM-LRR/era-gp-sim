@@ -20,25 +20,27 @@ import QtQuick.Controls 1.5
 
 import Theme 1.0
 
-Rectangle {
-  anchors.centerIn: parent
-  color: Theme.memory.address.background
-
-  MemoryDivider { anchors.left: parent.right }
-
-  Label {
+Component {
+  Rectangle {
     anchors.centerIn: parent
-    color: Theme.memory.address.color
-    font.pixelSize: Theme.memory.address.fontSize
-    horizontalAlignment: Text.AlignHCenter
-    text: styleData.value
-    verticalAlignment: Text.AlignVCenter
-    visible: styleData.row % numberOfBytes == 0
-    font.weight: {
-      if (Theme.memory.address.fontWeight === 'bold') {
-        return Font.DemiBold;
-      } else {
-        return Font.Normal;
+    color: Theme.memory.address.background
+
+    MemoryDivider { anchors.left: parent.right }
+
+    Label {
+      anchors.centerIn: parent
+      color: Theme.memory.address.color
+      font.pixelSize: Theme.memory.address.fontSize
+      horizontalAlignment: Text.AlignHCenter
+      text: styleData.value
+      verticalAlignment: Text.AlignVCenter
+      visible: styleData.row % numberOfBytes == 0
+      font.weight: {
+        if (Theme.memory.address.fontWeight === 'bold') {
+          return Font.DemiBold;
+        } else {
+          return Font.Normal;
+        }
       }
     }
   }

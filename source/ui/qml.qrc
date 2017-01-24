@@ -23,7 +23,7 @@
         <file>Components/Memory/MemoryDivider.qml</file>
         <file>Components/Memory/MemoryHeader.qml</file>
         <file>Components/Memory/HeaderButton.qml</file>
-        <file>InnerSplitviewsEditor.qml</file>
+        <file>Components/Memory/ContextMenu.qml</file>
         <file>Components/Toolbar/ToolbarComponent.qml</file>
         <file>Components/Toolbar/ToolbarButton.qml</file>
         <file>Components/Toolbar/Icons/Run.svg</file>

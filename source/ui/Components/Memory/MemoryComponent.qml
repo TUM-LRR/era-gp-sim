@@ -27,16 +27,22 @@ Item {
   property int numberOfBits: 8
   property int numberOfBytes: numberOfBits / 8
 
+  MemoryHeader {
+    id: header
+    tableView: memoryTreeView
+    memoryContent: content
+  }
+
   MemoryTreeView {
     id: memoryTreeView
     memoryContent: content
-    itemDelegate: item
+    itemDelegate: MemoryAddressCell { }
     rowDelegate: row
     anchors {
       top: header.bottom
       bottom: parent.bottom
-      left: parent.left
       right: parent.right
+      left: parent.left
     }
   }
 
@@ -48,27 +54,11 @@ Item {
   }
 
   Component {
-    id: item
-    MemoryAddressCell { }
-  }
-
-  MemoryHeader {
-    id: header
-    tableView: memoryTreeView
-    memoryContent: content
-  }
-
-  Component {
     id: content
     MemoryContent {
-      delegate: cell
-    }
-  }
-
-  Component {
-    id: cell
-    MemoryCell {
-      tableView: memoryTreeView
+      delegate: Component {
+        MemoryCell { tableView: memoryTreeView }
+      }
     }
   }
 

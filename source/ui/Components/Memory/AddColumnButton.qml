@@ -22,62 +22,35 @@ import QtGraphicalEffects 1.0
 
 import Theme 1.0
 
-// This rectangle is only used for styling it provides a fadeout effect on
-// the right side of the header when there are too many columns the
-// ComboBoxes slightly disappear with a fadeout effect on the right.
-
-Rectangle {
-  width: Theme.memory.addButton.width
-  height: Theme.memory.addButton.height
+Button {
+  id: button
   anchors {
-    right: parent.right
+    top: parent.top
     bottom: parent.bottom
-    bottomMargin: Theme.memory.addButton.marginBottom
+    bottomMargin: Theme.memory.add.marginBottom
+    right: parent.right
+    rightMargin: Theme.memory.add.marginRight
   }
 
-  color: 'transparent'
-
-  LinearGradient {
+  MouseArea {
     anchors.fill: parent
-    start: Qt.point(0, 0)
-    end: Qt.point(parent.width, 0)
-
-    gradient: Gradient {
-      GradientStop { position: 0.0; color: "#00000000" }
-      GradientStop { position: 0.4; color: Theme.memory.addButton.background }
-    }
+    cursorShape: Qt.PointingHandCursor
+    onClicked: tableView.addColumn(memoryContent);
   }
 
-  Button {
-    id: button
-    anchors {
-      right: parent.right
-      bottom: parent.bottom
-      top: parent.top
-    }
-
-    MouseArea {
-      anchors.fill: parent
-      cursorShape: Qt.PointingHandCursor
-      onClicked: {
-        tableView.insertColumn(tableView.columnCount - 1, memoryContent);
-      }
-    }
-
-    style: ButtonStyle {
-      background: Rectangle { visible: false }
-      label: Text {
-        text: "+"
-        horizontalAlignment: Qt.AlignHCenter
-        verticalAlignment: Qt.AlignVCenter
-        color: Theme.memory.addButton.color
-        font.pixelSize: Theme.memory.addButton.fontSize
-        font.weight: {
-          if (Theme.memory.header.fontWeight === 'bold') {
-            return Font.DemiBold;
-          } else {
-            return Font.Normal;
-          }
+  style: ButtonStyle {
+    background: Rectangle { color: Theme.memory.add.background }
+    label: Text {
+      text: "+"
+      horizontalAlignment: Qt.AlignHCenter
+      verticalAlignment: Qt.AlignVCenter
+      color: Theme.memory.add.color
+      font.pixelSize: Theme.memory.add.fontSize
+      font.weight: {
+        if (Theme.memory.header.fontWeight === 'bold') {
+          return Font.DemiBold;
+        } else {
+          return Font.Normal;
         }
       }
     }

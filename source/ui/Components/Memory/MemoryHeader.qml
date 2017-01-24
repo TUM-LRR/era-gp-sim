@@ -36,16 +36,19 @@ Rectangle {
 
   MemoryDivider { anchors.right: parent.right }
 
+  color: Theme.memory.header.background
+
   Flickable {
+    anchors.bottom: parent.bottom
     ListView {
       id: header
-      height: parent.height
-      width:  tableView.flickableItem.contentWidth
-      // Move header left and right as the tableView
-      // is moved by the horizontal scroll bars
-      x: -tableView.flickableItem.contentX
-
       orientation: Qt.Horizontal
+      anchors.bottom: parent.bottom
+      height: Theme.memory.header.height
+      width: tableView.flickableItem.contentWidth
+
+      // Make header follow the flickable
+      x: -tableView.flickableItem.contentX
 
       Connections {
         target: tableView
@@ -57,40 +60,41 @@ Rectangle {
         }
       }
 
+      function remove() {
+        tableView.removeColumn(index);
+        headerDropdownList.remove(index);
+      }
+
       model: ListModel { id: headerDropdownList }
 
       delegate: Rectangle {
         id: headerSection
+        height: header.height
+
+        property alias text: headerButton.currentText
         property var currentRole: {
           var column = tableView.getColumn(index);
           return column ? column.role : "";
         }
 
-        height: root.height
+        onWidthChanged: tableView.getColumn(index).width = width
         width: {
           if (currentRole === 'address') {
             return Theme.memory.address.width;
           } else {
-            return Theme.memory.cell.width;
+            var visibleWidth = root.width - Theme.memory.address.width;
+            var sharedWidth = visibleWidth / (header.count - 1);
+            return Math.max(sharedWidth, Theme.memory.cell.width);
           }
         }
 
-        property alias text: headerButton.currentText
-
-        HeaderButton { id: headerButton }
-
-        RemoveButton {
-          id: remove
-          anchors.right: headerSection.right
-          visible: currentRole !== 'address'
-          onClicked: {
-            tableView.removeColumn(index);
-            headerDropdownList.remove(index);
-          }
+        HeaderButton {
+          id: headerButton
+          anchors.centerIn: parent
         }
+
+        AddColumnButton { visible: index === header.count - 1 }
       }
     }
   }
-
-  AddColumnButton { }
 }

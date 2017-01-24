@@ -24,5 +24,4 @@ TableViewColumn {
   role: "BinaryData" + numberOfBits
   movable: false
   resizable: true
-  width: Theme.memory.address.width
 }

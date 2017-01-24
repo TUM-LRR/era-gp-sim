@@ -23,6 +23,7 @@ import Theme 1.0
 
 Item {
   id: root
+  readonly property string role: styleData.role
   property var tableView
 
   // Makes each memory cell editable by using a textbox
@@ -43,11 +44,7 @@ Item {
     TextField {
       id: cell
       horizontalAlignment: Qt.AlignHCenter
-      anchors {
-        fill: parent
-        right: parent.right
-        verticalCenter: parent.verticalCenter
-      }
+      anchors.fill: parent
 
       enabled: (styleData.row % numberOfBytes) === 0
       visible: enabled
@@ -67,11 +64,7 @@ Item {
 
       onEditingFinished: {
         if (!enabled || cell.text === cell.lastText) return;
-
-        var role = styleData.role;
-        if (role === "address" || role === "info") {
-          return;
-        }
+        if (role === "address") return;
 
         lastText = cell.text;
         memoryModel.setValue(
@@ -87,10 +80,11 @@ Item {
         font.pixelSize: Theme.memory.cell.fontSize
         textColor: Theme.memory.cell.color
         background: Rectangle {
-          opacity: cell.borderOpacity
-          color: Theme.memory.cell.background
           border.color: Theme.memory.cell.borderColor
+          color: Theme.memory.cell.background
+          opacity: cell.borderOpacity
           radius: Theme.memory.cell.borderRadius
+          width: root.width
         }
       }
     }

@@ -23,9 +23,8 @@ import Theme 1.0
 
 Button {
   id: button
-
+  visible: currentRole !== 'address'
   anchors {
-    top: parent.top
     bottom: parent.bottom
     bottomMargin: Theme.memory.header.remove.marginBottom
   }

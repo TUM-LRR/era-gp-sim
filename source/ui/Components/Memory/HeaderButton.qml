@@ -26,21 +26,11 @@ import Theme 1.0
 // of bits or the numerical representation of a memory cell depending
 // on the column.
 ComboBox {
-  id: root
-  height: root.height
-  anchors {
-    top: parent.top
-    bottom: parent.bottom
-    left: parent.left
-    right: remove.right
-    rightMargin: {
-      if (currentRole === 'address') {
-        return 0;
-      } else {
-        return Theme.memory.header.remove.marginLeft;
-      }
-    }
-  }
+  id: combobox
+  height: parent.height
+  width: Theme.memory.header.button.width
+
+  ContextMenu { }
 
   style: ComboBoxStyle {
     background: Rectangle {
@@ -50,7 +40,15 @@ ComboBox {
       font.pixelSize: Theme.memory.header.fontSize
       horizontalAlignment: Qt.AlignHCenter
       verticalAlignment: Qt.AlignVCenter
-      text: (currentRole === 'address') ? 'Address' : 'Memory'
+      text: {
+        if (currentRole === 'address') {
+          var bits = combobox.currentText.match(/\d+/)[0];
+          return 'Address (' + bits + ')';
+        } else {
+          var format = combobox.currentText[0];
+          return 'Memory (' + format + ')';
+        }
+      }
       font.weight: {
         if (Theme.memory.header.fontWeight === 'bold') {
           return Font.DemiBold;
@@ -61,9 +59,7 @@ ComboBox {
     }
   }
 
-  onWidthChanged: {
-    return tableView.getColumn(index).width = headerSection.width;
-  }
+  onWidthChanged: tableView.getColumn(index).width = headerSection.width
 
   // Choose the right underlying model depending on the
   // column it is responsible for
@@ -87,10 +83,10 @@ ComboBox {
 
   onCurrentIndexChanged: {
     if (model === numberOfBitsModel) {
-      numberOfBits = model.get(root.currentIndex).bits;
+      numberOfBits = model.get(combobox.currentIndex).bits;
     } else {
       tableView.getColumn(index).role = Qt.binding(function() {
-        var formatRole = model.get(root.currentIndex).role;
+        var formatRole = model.get(combobox.currentIndex).role;
         return formatRole + numberOfBits;
       });
     }
