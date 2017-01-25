@@ -36,6 +36,180 @@ um auch durch andere Oberflächen (wie z.B. einer Kommandozeile) ausgetauscht
 werden zu können. Die grafische Oberfläche leitet die Benutzereingaben an den
 Core weiter, welcher dann wiederum die übrigen Module anspricht.
 
+\subsection{Architektur}
+
+\todo[inline]{
+	* Syntax Tree \\
+	* Factory \\
+	* Architecture \\
+	* Teilung common/riscv \\
+	* ValidationResult \\
+	* InstructionNode \\
+}
+
+Die Architektur (kurz: \textit{Arch}) kümmert sich um die Ausführung der
+Assembler Programme und wurde vor dem Hintergrund entworfen, einen möglichst
+Architektur-unabhängigen Simulator zu entwickeln. So stellt sie Klassen zur
+Verfügung, mit der eine konkrete Architektur (wie z.B. RISC-V) umgesetzt
+werden kann. Eine Architektur wird in \texttt{YAML} Konfigurationsdateien
+beschrieben, und anschließend in das Programm geladen. \\
+Da wir uns gegen die Ausführung von Maschinencode entschieden haben, bietet
+die Architektur eine abstraktere Darstellung von Assembler Programmen in Form
+eines Syntax Baums. Des Weiteren ist die Architektur für die Validierung einer
+Instruktion zuständig, und stellt bei Fehlern entsprechende Nachrichten zur
+Verfügung, die dem Nutzer helfen sollen, das Problem zu beheben.
+
+Eine Übersicht über die Schnittstellen des Architekturmoduls bietet Abbildung
+\ref{fig:arch-overview}
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}[node distance=3.0cm]
+		\tikzstyle{class} = [rectangle, rounded corners, draw=black, drop shadow, fill=white]
+		\tikzstyle{myarrow} = [->, thick]
+
+		\node (architecture) [class, rectangle split, rectangle split parts=2]
+		{
+			\textbf{Architecture}
+			\nodepart{second}
+			\begin{tabular}{c}
+				getName() \\
+				getEndianness() \\
+				getWordSize() \\
+				\ldots
+			\end{tabular}
+		};
+		\node (factory) [class, right = of architecture]
+		{
+			\textbf{NodeFactory}
+		};
+		\node (syntaxtree) [class, rectangle split, rectangle split parts=2, right = of factory]
+		{
+			\textbf{SyntaxTreeNode}
+			\nodepart{second}
+			\begin{tabular}{c}
+				validate() \\
+				getValue() \\
+				\ldots
+			\end{tabular}
+		};
+		\draw[myarrow] (architecture) edge node [yshift=2mm] {getFactory()} (factory);
+		\draw[myarrow] (factory) edge node [yshift=2mm] {create()} (syntaxtree);
+		\end{tikzpicture}
+	\end{center}
+	\caption{Übersicht der Architekturschnittstelle}
+	\label{fig:arch-overview}
+\end{figure}
+
+Das \textit{Architecture} Objekt stellt allgemeine Informationen über die
+geladene Architektur zur Verfügung (wie z.B. der Name, die Byte-Reihenfolge oder
+die Wortgröße) und bietet zusätzlich Zugang zur \textit{NodeFactory}.
+Mit der NodeFactory werden die Syntax Bäume in Form von \textit{SyntaxTreeNode}
+Objekten erzeugt, welche anschließend validiert und ausgeführt werden können. \\
+Im Folgenden wird auf diese Klassen genauer eingegangen.
+
+\subsubsection{Architecture}
+
+\todo[inline]{
+	* Builder Pattern \\
+	* Formula/Brewery \\
+	* Information Interfaces
+}
+
+Ein \textit{Architecture} Objekt repräsentiert eine geladene Architektur im
+Simulator. Der Grundgedanke bei der Entwicklung war das modulare Design von RISC-V
+zu unterstützen, dieses Konzept lässt sich aber leicht auf andere Prozessorarchitekturen
+übertragen. So wird angenommen, dass eine Architektur immer aus einem Basismodul
+besteht (bei RISC-V: \textit{RV32I}), welches wieder durch andere Module erweitert
+werden kann (bei RISC-V z.B. Multiplikation/Division, Floating Point, etc.). \\
+Um also ein Architecture Objekt zu erzeugen, wird im ersten Schritt eine
+\textit{ArchitectureFormula} erstellt, die das Basismodul und alle Erweiterungen
+spezifiziert. Ein Aufruf von \textit{Brew()} löst die Abhängigkeiten auf und liest
+anschließend die Informationen aus den Konfigurationsdateien ein.
+
+Das Architecture Objekt beschreibt lediglich die Eigenschaften einer Architektur,
+d.h. es stellt Informationen wie die Byte-Reihenfolge, Wortgröße, Speicherausrichtung
+oder die Eigenschaften der Register bereit. Es beschreibt auch, welche Instruktionen
+zur Verfügung stehen, definiert aber nicht, wie diese konkret implementiert sind,
+da dies für eine Konfigurationsdatei zu komplex wäre. Die Implementation der
+einzelnen Instruktionen wird deshalb in C++ Code übernommen. Wie die Verbindung
+zwischen der Beschreibung der Architektur und der Implementation abläuft, wird
+im Folgenden erläutert.
+
+\subsubsection{Syntax Tree}
+
+\todo[inline]{
+	* Immediate \\
+	* Instruction \\
+	* MemoryAccess \\
+	* RegisterAccess \\
+	* Arithmetic \\
+	* DataNode \\
+	* getValue() assemble() etc.
+}
+
+\subsubsection{Node Factory}
+
+\todo[inline]{
+	* NodeFactoryCollection \\
+	* NodeFactoryCollectionMaker \\
+	* FactoryTypes
+}
+
+Die Node Factory basiert auf dem Abstract Factory Pattern und wird als Diagramm
+in Abbildung \ref{fig:arch-node-factory} dargestellt.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}[node distance=0.5cm and 3cm]
+		\pgfdeclarelayer{background}
+		\pgfdeclarelayer{foreground}
+		\pgfsetlayers{background,main,foreground}
+		\tikzstyle{class} = [rectangle, rounded corners, draw=black, fill=white, drop shadow]
+		\tikzstyle{inheritance-arrow} = [->, thick,>=open triangle 90]
+
+		\node (instr-abstr) [class, anchor=west] {AbstractInstructionNodeFactory};
+		\node (imm-abstr) [class, below = of instr-abstr] {AbstractImmediateNodeFactory};
+		\node (reg-abstr) [class, below = of imm-abstr]	{AbstractRegisterNodeFactory};
+		\node (data-abstr) [class, below = of reg-abstr] {AbstractDataNodeFactory};
+		\node (mem-abstr) [class, below = of data-abstr] {AbstractMemoryAccessNodeFactory};
+		\node (arithmetic-abstr) [class, below = of mem-abstr] {AbstractArithmeticNodeFactory};
+		\node (abstr) [below = of arithmetic-abstr] {common};
+
+		\node (instr-riscv) [class, right = of instr-abstr] {riscv::InstructionNodeFactory};
+		\node (imm-riscv) [class, below = of instr-riscv] {riscv::ImmediateNodeFactory};
+		\node (reg-riscv) [class, below = of imm-riscv] {riscv::RegisterNodeFactory};
+		\node (data-riscv) [class, below = of reg-riscv] {riscv::DataNodeFactory};
+		\node (riscv) [below = of data-riscv] {riscv};
+
+		\draw[inheritance-arrow] (instr-riscv) edge (instr-abstr);
+		\draw[inheritance-arrow] (imm-riscv) edge (imm-abstr);
+		\draw[inheritance-arrow] (reg-riscv) edge (reg-abstr);
+		\draw[inheritance-arrow] (data-riscv) edge (data-abstr);
+
+		\begin{pgfonlayer}{background}
+		\path (instr-abstr.west |- instr-abstr.north)+(-1,0.5) node (a1) {};
+		\path (arithmetic-abstr.east |- arithmetic-abstr.south)+(+1,-1.5) node (a2) {};
+		\path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
+		\end{pgfonlayer}
+
+		\begin{pgfonlayer}{background}
+		\path (instr-riscv.west |- instr-riscv.north)+(-0.5,0.5) node (a1) {};
+		\path (data-riscv.east |- data-riscv.south)+(+1,-1.5) node (a2) {};
+		\path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
+		\end{pgfonlayer}
+		\end{tikzpicture}
+	\end{center}
+	\caption{Klassendiagramm Node Factory}
+	\label{fig:arch-node-factory}
+\end{figure}
+
+\subsubsection{Architecture Description Language}
+
+Eine Architektur kann in \texttt{YAML} Dateien beschrieben werden.
+
+\todo[inline]{@Peter}
+
 \input{module-arch.tex}
 
 \subsection{Parser}
@@ -45,3 +219,34 @@ Core weiter, welcher dann wiederum die übrigen Module anspricht.
 Beschreibung des Moduls + Schnittstellen zu anderen Modulen
 
 \subsection{GUI}
+
+
+\subsubsection{Aufbau}
+
+Die grafische Benutzeroberfläche des Simulators besteht aus einer Reihe von Komponenten, die sich innerhalb des gegebenen Rasters nahezu beliebig anordnen lassen. Diese Aufteilung in Komponenten spiegelt sich auch in der Implementierung der GUI wieder, indem jede Komponente einer QML-Komponente entspricht, die gegebenenfalls andere Teilkomponenten, nicht zuletzt elementare Qt-Quick-Komponenten, benutzen. Die Komponenten umfassen den Editor, die sechs frei wählbaren Komponenten Snapshots, Output, Input, Register, Speicher und Hilfe, sowie übergeordnete Elemente wie den Split-View, die Projekt-Tabbar, die Toolbar, die Menubar und den Einstellungsdialog.
+
+QML-Komponenten, die Zugriff auf das vom Core zur Verfügung gestellte Modell benötigen, werden zusätzlich mit einer C++-Klasse assoziiert. Diese Klassen halten in der Regel Instanzen der Interface-Klassen \texttt{MemoryAccess}, \texttt{MemoryManager}, \texttt{ArchitectureAccess}, \texttt{ParserInterface} oder \texttt{CommandInterface}  über die der Zugriff auf den Core unter Verwendung des Schedulers erfolgt.
+
+Da das Qt-Framework einen in sich stark abgeschlossenen Aufbau besitzt, werden für QML-Komponenten mit komplexen Modellen, wie etwa der Speicher oder die Register, von Qt-Klassen abgeleitete Modelle benötigt. Da keine Abhängigkeiten vom Qt-Framework innerhalb der GUI-fernen Module Core, Parser, Arch entstehen sollen, kann diese Funktion nicht von Klassen des Cores übernommen werden. Aus diesem Grund übernehmen einige der zu den QML-Komponenten gehörigen C++-Klassen der GUI die Aufgabe des Modells und werden folglich von Qt-Modell-Klassen wie etwa \texttt{QAbstractItemModel} abgeleitet. Ausgenommen von Cache-Zwecken halten diese Modelle selbst keine Daten, sondern holen diese über das zugehörige Interface-Objekt, sobald Daten seitens der QML-Komponente angefordert werden.
+
+\subsubsection{Kommunikation}
+
+Der Simulator unterstützt das gleichzeitige Laden mehrerer unabhängiger Projekte. Diese werden jeweils durch eine \texttt{GUIProject}-Instanz repräsentiert, welches Komponenten-übergreifende Funktionalität für ein Projekt zur Verfügung stellt.
+
+Im \texttt{GUIProject} werden mitunter die C++-Klassen der QML-Komponente gehalten, initialisiert und deren Kommunikation mit dem Core koordiniert.
+Dieses übernimmt also die Rolle des Mittelsmann zwischen dem Core, der keine Qt-Mechanismen verwendet, und der GUI.
+
+Bei der Initialisierung der C++-Klassen übergibt das \texttt{GUIProject} Instanzen der Interface-Klassen (bspw. \texttt{MemoryAccess} und \texttt{ArchitectureAccess}).
+
+Datenaustausch ausgehend vom Core hin zu den QML-Komponenten in der GUI hat nicht den Scheduler zwischengeschaltet, sondern verläuft über das \texttt{GUIProject} in zwei Schritten. Dabei ruft der Core im Schritt einen Callback auf, der im \texttt{ProjectModule} gesetzt werden (näher Informationen im Abschnitt /Core/). Das \texttt{GUIProject} leitet im zweiten Schritt den im \texttt{GUIProject} eingehenden Callback mit Hilfe des Qt-eigenen Signal-Slot-Mechanismus an die Instanzen der C++-Klassen der QML-Komponenten weiter. Diese Umleitung ist mitunter deshalb notwendig, um die eingehende Nachricht, die im Thread des Cores gesendet wird, in den Main-Thread zu übertragen, der von der GUI verwendet wird.
+
+Nachrichten, die von einer der C++-Klassen der Komponenten an den Core gesendet werden sollen, können mit Hilfe der Interface-Klassen in den Scheduler eingefügt werden, der diese an das korrespondierende Core-Objekt weiterleitet.
+
+Damit die QML-Komponenten auf Methoden der zugehörigen C++-Klasse zugreifen können, werden deren Instanzen im \texttt{GUIProject} zum projektspezifischen \texttt{QQMLContext} hinzugefügt, beispielsweise die Klasse \texttt{RegisterModel} als Context-Property \texttt{registerModel}. Auf die Properties dieses Kontexts kann über die zugehörige Bezeichnung (bspw. \texttt{registerModel}) global in jeder QML-Datei zugegriffen werden. Die Trennung der Daten verschiedener Projekte wird gewährleistet, indem jedes \texttt{GUIProject} seinen eigenen Kontext erhält.
+
+Eine Ausnahme von der regulären Kommunikation bildet die Toolbar, die anders als die übrigen QML-Komponenten, die als Kommunikationspartner auftreten, nicht für jedes Projekt einzeln existiert, sondern übergeordnet ist. Der Datenaustausch erfolgt deshalb nicht über das \texttt{GUIProject}, sondern über die \texttt{Ui}-Klasse, die den QML-Dateien über die Context-Property \texttt{ui} zur Verfügung gestellt wird. Da die \texttt{Ui}-Instanz Kenntnis über das aktive Projekt hat, können auch projektspezifische Informationen, etwa über den aktuellen Ausführungszustand, ausgetauscht werden.
+
+
+\subsubsection{Initialisierung}
+
+Nachdem das Programm in der main-Methode der Klasse \texttt{main.cpp} gestartet ist, wird eine Instanz der graphischen Benutzeroberfläche \texttt{Ui} erstellt.
