@@ -357,3 +357,101 @@ Um ein einfaches Debuggen zu ermöglichen, unterstützt der Simulator noch Instr
 \subsection{Pseudoinstruktionen}
 \label{user-manual-riscv-overview-pseudos}
 \todo[inline]{Was sind Pseudoinstruktionen + Liste mit Verhalten}
+Pseudoinstruktionen sind keine wirklichen Instruktionen, die es im RISC-V Befehlssatz so gibt. Ihre Funktionalität lässt sich mit einer Kombination von RISC-V Instruktionen erreichen. Diese Kombination kann aber unter Umständen recht kompliziert oder mühsam sein, daher stellen viele Assembler-Dialekte Pseudo-Instruktionen zur Verfügung. Diese können wie eine normale Instruktion verwendet werden, werden aber beim Übersetzen/Assemblieren in die eigentliche Kombination zerlegt.\\
+Diese Funktionalität bietet auch der Simulator. Die Pseudoinstruktionen sind hier als Makros ''vordefiniert'', können also überall genutzt werden. Durch Aufklappen der Makros kann man diejenigen Instruktionen sehen, in die die Pseudo-Instruktion zerlegt wird.\\
+
+\begin{tabular}{|c|p{5cm}|p{5cm}|}
+	\hline
+	Pseudoinstruktion & Operanden & Beschreibung\\
+	\hline
+	\textbf{la} \texttt{<rd>, <symbol>} & 
+	\begin{itemize}
+		\item \texttt{rd}: Register, in das die Adresse reingeladen wird\
+		\item \texttt{symbol}: 32-Bit Adresse (relativ zum Programmzähler)\footnote{\label{user-manual-riscv-overview-pseudos-foot1}Da jede Marke eine Adresse darstellt führt die Verwendung einer Marke hier nicht zu einem Übersetzungsfehler. Anders als bei den relativen Kontrollflussinstruktionen wird hier eine Marke \textbf{nicht} automatisch in die passende relative Adresse umgewandelt}
+	\end{itemize}
+	& Lädt die zum Programmzähler relative Adresse \texttt{symbol} in das Register \texttt{rd}. Im Gegensatz zu den Kontrollflussinstruktionen kann hier eine bis zu 32-Bit große Konstante verwendet werden.\\
+	\hline
+	\textbf{lbg} \texttt{<rd>, <mem\_addr>} &
+	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{lb}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf}\\
+	\hline
+	\textbf{lhg} \texttt{<rd>, <mem\_addr>} &
+	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{lh}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf}\\
+	\hline
+	\textbf{lwg} \texttt{<rd>, <mem\_addr>} &
+	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{lw}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf}\\
+	\hline
+	\textbf{sbg} \texttt{<rd>, <mem\_addr>, <rt>} &
+	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{sb}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf. \texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird}\\
+	\hline
+	\textbf{shg} \texttt{<rd>, <mem\_addr>, <rt>} &
+	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{sh}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf. \texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird}\\
+	\hline
+	\textbf{swg} \texttt{<rd>, <mem\_addr>, <rt>} &
+	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{sw}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf. \texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird}\\
+	\hline
+	\textbf{nop} & & Eine No-Operation. Es wird kein Register und keine Speicherzelle verändert.\\
+	\hline
+	\textbf{li} \texttt{<rd>, <immediate>} &
+	\begin{itemize}
+		\item \texttt{rd}: Zielregister, in das die Konstante geladen wird
+		\item \texttt{immediate}: 32-Bit Konstante
+	\end{itemize}
+	& Lädt die gegebene 32-Bit Konstante in das Register \texttt{rd}.\\
+	\hline
+\end{tabular}\\
+
+\begin{tabular}{|c|p{5cm}|p{5cm}|}
+	\hline
+	Pseudoinstruktion & Operanden & Beschreibung\\
+	\hline
+	\textbf{mv} \texttt{<rd>, <rs>} &
+	\begin{itemize}
+		\item \texttt{rd}: Zielregister
+		\item \texttt{rs}: Register, dessen Wert kopiert wird
+	\end{itemize}
+	& Kopiert den Inhalt des Registers \texttt{rs} in Register \texttt{rd}\\
+	\hline
+	\textbf{not} \texttt{<rd>, <rs>} & 
+	\begin{itemize}
+		\item \texttt{rd}: Zielregister
+		\item \texttt{rs}: Register, dessen Wert bitweise negiert wird
+	\end{itemize}
+	& Negiert den Wert von \texttt{rs} bitweise und schreibt das Ergebnis nach \texttt{rd} ($\equiv$ Negation im 1er-Komplement).\\
+	\hline
+	\textbf{neg} \texttt{<rd>, <rs>} &
+	\begin{itemize}
+		\item \texttt{rd}: Zielregister
+		\item \texttt{rs}: Register, dessen Wert negiert wird
+	\end{itemize}
+	& Ändert das Vorzeichen des Registers \texttt{rs} und schreibt das Ergebnis nach \texttt{rd} ($\equiv$ Negation im 2er-Komplement).\\
+	\hline
+	\textbf{seqz} \texttt{<rd>, <rs>} &
+	\multirow{4}{5cm}
+		{\begin{itemize}
+			\item \texttt{rd}: Zielregister
+			\item \texttt{rs}: Register, das überprüft wird
+		\end{itemize}}
+	& 
+	\multirow{4}{5cm}{
+		\begin{tabular}{ccc}
+			\multirow{4}{2cm}{Legt 1 in Register \texttt{rd} ab, wenn}& $=0$ & \multirow{4}{0.5cm}{Sonst 0}\\
+			& $\ne0$ &\\
+			& $<0$ &\\
+			& $>0$ &\\
+		\end{tabular}
+		}\\
+	\textbf{snez} \texttt{<rd>, <rs>} &  &\\
+	\textbf{sltz} \texttt{<rd>, <rs>} &  &\\
+	\textbf{sgtz} \texttt{<rd>, <rs>} &  &\\
+	\hline
+	\textbf{beqz} \texttt{<rs>, <marke>} & 
+	\multirow{6}{5cm}{
+		\begin{itemize}
+			\item \texttt{rs}: Register für die Rücksprungadresse und Register für den Vergleich mit 0
+			\item \texttt{marke}: Sprungmarke, die angesprungen wird, wenn die Bedingung stimmt
+		\end{itemize}}
+	& \begin{tabular}{cc}
+		\multirow{6}{2cm}{Springt, wenn} & $rs = 0$\\
+		$rs
+	\end{tabular}
+\end{tabular}
