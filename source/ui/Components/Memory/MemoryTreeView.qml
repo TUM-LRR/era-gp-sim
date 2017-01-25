@@ -17,6 +17,7 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 1.5
+import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
@@ -28,6 +29,10 @@ TableView {
   headerVisible: false
 
   property var memoryContent
+
+  style: TableViewStyle {
+    transientScrollBars: true
+  }
 
   // The default MemoryView consists of three columns:
   // 1. address                               (fixed)
