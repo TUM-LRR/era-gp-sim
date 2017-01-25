@@ -25,13 +25,13 @@ import Theme 1.0
 import Settings 1.0
 
 Setting {
+  width: window.width
   text: "Theme"
-  description: "The UI and syntax theme. " +
-               "Changes apply instantly and automagically."
-  bottomAnchor: selector.bottom
+  description: "The UI and syntax theme. Changes apply instantly."
 
-  property alias selection: selector.currentText
-  property bool hasChanged: selection !== Settings.theme
+  widget: selector
+  setting: 'theme'
+  value: selector.currentText
 
   ComboBox {
     id: selector

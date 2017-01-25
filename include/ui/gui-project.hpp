@@ -26,6 +26,7 @@
 #include <QQmlContext>
 #include <QString>
 #include <QStringList>
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -181,8 +182,9 @@ class GuiProject : QObject {
    * Removes a snapshot.
    *
    * \param qName name of the snapshot.
+   * \param removePermanently Whether to erase the snapshot from disk.
    */
-  Q_INVOKABLE void removeSnapshot(const QString& qName);
+  Q_INVOKABLE void removeSnapshot(const QString& qName, bool removePermanently);
 
   /**
    * loads a snapshot
@@ -195,6 +197,11 @@ class GuiProject : QObject {
    *
    */
   Q_INVOKABLE QStringList getSnapshots();
+
+  /**
+   * \returns True if a snapshot with the given name already exists, else false.
+   */
+  Q_INVOKABLE bool snapshotExists(QString name);
 
   /**
    * \returns the translated help string of the command node in the specified
@@ -327,7 +334,7 @@ class GuiProject : QObject {
   QString _defaultTextFileSavePath;
 
   /**
-   * A shared pointer to the configuration json (for snapshots,...)
+   * A shared pointer to the snapshot component.
    */
   std::shared_ptr<SnapshotComponent> _snapshotComponent;
 

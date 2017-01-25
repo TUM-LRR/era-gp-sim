@@ -29,7 +29,7 @@ ToolBar {
   visible: enabled
 
   property bool running
-  onRunningChanged: tabView.getCurrentProjectItem().running = running
+  onRunningChanged: tabView.currentProjectItem().running = running
 
   style: ToolBarStyle {
     background: Rectangle {
@@ -48,7 +48,7 @@ ToolBar {
       tooltip: "Execute the whole program"
       onClicked: {
         running = true;
-        ui.run(tabView.getCurrentProjectId());
+        ui.run(tabView.currentProjectId());
       }
     }
 
@@ -58,7 +58,7 @@ ToolBar {
       tooltip: "Execute the next line"
       onClicked: {
         running = true;
-        ui.runLine(tabView.getCurrentProjectId());
+        ui.runLine(tabView.currentProjectId());
       }
     }
 
@@ -68,7 +68,7 @@ ToolBar {
       tooltip: "Execute up to next breakpoint"
       onClicked: {
         running = true;
-        ui.runBreakpoint(tabView.getCurrentProjectId());
+        ui.runBreakpoint(tabView.currentProjectId());
       }
     }
 
@@ -78,20 +78,20 @@ ToolBar {
       icon: "Icons/Stop.svg"
       onClicked: {
         running = false;
-        ui.stop(tabView.getCurrentProjectId());
+        ui.stop(tabView.currentProjectId());
       }
     }
 
     ToolbarButton {
       tooltip: "Reparse code"
       icon: "Icons/Parse.svg"
-      onClicked: ui.parse(tabView.getCurrentProjectId());
+      onClicked: ui.parse(tabView.currentProjectId());
     }
 
     ToolbarButton {
       tooltip: "Reset registers and memory"
       icon: "Icons/Clear.svg"
-      onClicked: ui.reset(tabView.getCurrentProjectId());
+      onClicked: ui.reset(tabView.currentProjectId());
     }
 
     // Use up the remaining space to the right
