@@ -1,0 +1,51 @@
+output
+  background: transparent
+  tab-bar
+    background: white
+    border
+      color: $divider-color
+      width: 1px
+  colorChooser
+    width: 300
+    height: 200
+  lightStrip
+    background: white
+    margin: 10
+    maximumHeight: 150
+    cornerRadius: 5
+    borderWidth: 2
+    strip
+      maximumWidth: 40
+      // Lightstrip is rastered. Spacing between strips uses 1 part, light uses
+      // rasterGranularity-1 parts. Larger rasterGranularity means smaller
+      // spacing.
+      rasterGranularity: 5
+      cornerRadius: 5
+      active
+        background: $primary-color
+      inactive
+        background: $divider-color
+      hovered
+        borderWidth: 1
+    settings
+      width: 350
+      height: 120
+      margin: 15
+      doneButton
+        bottomMargin: 5
+  sevenSegment
+    background: white
+    verticalMargin: 5
+    spacing: 12
+    digit
+      color: "black"
+      active
+        background: $primary-color
+      inactive
+        background: $divider-color
+    settings
+      width: 350
+      height: 120
+      margin: 15
+      doneButton
+        bottomMargin: 5

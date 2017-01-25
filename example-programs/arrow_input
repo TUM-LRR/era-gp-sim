@@ -1,0 +1,33 @@
+; Config: Pfeiltasten src=0
+; Lightstrip 8 stripes; src = 4
+.section data
+.resb 5
+.equ input, 0
+.equ out, 4
+.equ left, 0x3
+.equ right, 0x1
+.section text
+
+init:
+addi x1, x0, 1
+sb x1, x0, out
+addi x3, x0, left
+addi x4, x0, right
+loop:
+lb x2, x0, input
+beq x2, x3, shift_l
+beq x2, x4, shift_r
+end:
+simusleep 100
+jal x0, loop
+
+shift_l:
+srli x1, x1, 1
+sb x1, x0, out
+sb x0, x0, input
+jal x0, end
+shift_r:
+slli x1, x1, 1
+sb x1, x0, out
+sb x0, x0, input
+jal x0, end

@@ -38,6 +38,9 @@ const SignedRepresentation SIGNED_REPRESENTATION =
 /** Bits per byte in RISC-V architecture. */
 const std::size_t BITS_PER_BYTE = 8;
 
+/** The ordinary length of one instruction in byte in the RISC-V architecture */
+const std::size_t INSTRUCTION_LENGTH_BYTE = 4;
+
 /** Internal integer type to represent 32bit for arithmetic operations. */
 using unsigned32_t = std::uint32_t;
 

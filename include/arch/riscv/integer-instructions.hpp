@@ -21,7 +21,7 @@
 #define ERAGPSIM_ARCH_RISCV_INTEGER_INSTRUCTIONS_HPP
 
 #include <QtGlobal>
-#include <cassert>
+#include "common/assert.hpp"
 #include <string>
 #include <type_traits>
 

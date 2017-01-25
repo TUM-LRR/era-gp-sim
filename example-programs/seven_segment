@@ -1,0 +1,22 @@
+; Config seven-segment (start address 0x0)
+.section data
+.equ seg, 0
+.resb 2
+numbers: .byte 0b111111, 0b110, 0b1011011, 0b1001111, 0b1100110, 0b1101101,0b1111101,0b111,0b1111111,0b1101111
+
+.section text
+init:
+addi x1, x0, 0
+addi x2, x0, 10
+main_loop:
+jal x3, show_num
+simusleep 250
+addi x1, x1, 1
+blt x1, x2, main_loop
+addi x1, x0, 0
+jal x0, main_loop
+
+show_num:
+lb x30, x1, numbers
+sb x30, x0, seg
+jalr x0, x3, 0

@@ -22,10 +22,11 @@
 
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <functional>
+#include <mutex>
+#include <queue>
 #include <thread>
-
-#include "core/lockfree-queue.hpp"
 
 /**
  * This class is a task-scheduler, to be used by a servant
@@ -38,16 +39,13 @@
  */
 class Scheduler {
  public:
-  using Task  = std::function<void()>;
-  using Queue = LockfreeQueue<Task>;
+  using Task = std::function<void()>;
+  using Queue = std::queue<Task>;
 
   /**
    * \brief creates new Scheduler
-   * \param sleepMillis optional parameter, how long the scheduler tries to
-   * sleep
-   * if there are no tasks in the queue, default is 5ms
    */
-  Scheduler(int sleepMillis = 5);
+  Scheduler();
 
   /**
    * Destroys the scheduler safely by posting an interrupting tasks into its own
@@ -58,7 +56,7 @@ class Scheduler {
 
   // The scheduler can not be moved or copied, as it has a own thread and its
   // queue can not be copied or moved as well
-  Scheduler(const Scheduler& other)  = delete;
+  Scheduler(const Scheduler& other) = delete;
   Scheduler(const Scheduler&& other) = delete;
   Scheduler& operator=(const Scheduler& other) = delete;
   Scheduler& operator=(const Scheduler&& other) = delete;
@@ -91,13 +89,15 @@ class Scheduler {
   /** A queue to store Task objects. */
   Queue _taskQueue;
 
+  /** A mutex to control access to the queue. */
+  std::mutex _mutex;
+
+  /** A condition variable to notify the scheduler of new tasks. */
+  std::condition_variable _conditionVariable;
+
   /** A boolean flag indicating whether the scheduler should interrupt its loop.
    */
   bool _interrupt;
-
-  /** The time in milliseconds which the scheduler aims to sleep for after each
-   * loop if no tasks are in the queue. */
-  std::chrono::milliseconds _sleepMilliseconds;
 
   /** The thread handle of the scheduler execution thread, this thread is
    * running the scheduler loop. */

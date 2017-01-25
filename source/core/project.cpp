@@ -33,7 +33,7 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
 , _registerSet()
 , _architectureFormula(architectureFormula)
 , _errorCallback(
-      [](const std::string &s, const std::vector<std::string> &v) {}) {
+      [](const Translateable&) {}) {
   _architecture.validate();
 
   for (UnitInformation unitInfo : _architecture.getUnits()) {
@@ -195,19 +195,18 @@ void Project::resetRegisters() {
 void Project::loadSnapshot(const Json &snapshotData) {
   Snapshot snapshot(snapshotData);
   if (!snapshot.isValid()) {
-    _errorCallback("Snapshot format is not valid.", {});
+    _errorCallback("Snapshot format is not valid.");
     return;
   }
   if (snapshot.getArchitectureFormula() != _architectureFormula) {
-    _errorCallback("This snapshot was created with a different architecture.",
-                   {});
+    _errorCallback("This snapshot was created with a different architecture.");
     return;
   }
   try {
     _memory.deserializeJSON(snapshot.getMemoryJson());
     _registerSet.deserializeJSON(snapshot.getRegisterJson());
   } catch (const DeserializationError &exception) {
-    _errorCallback(exception.what(), {});
+      _errorCallback(exception.what());
   }
 }
 

@@ -29,22 +29,6 @@
 
 #include "tests/arch/riscv/base-fixture.hpp"
 
-/*
- * BIG TODO:
- * Currently these tests operate on a dummy implementation of the
- * DummyMemoryAccess. In addition, the memory value & conversions don't
- * work as expected.
- *
- * Some issues of this tests are:
- * * The immediate offset of the load/store instructions is always set
- *   to 0. This is done, to archieve better results with the dummy memory
- *   access.
- * * All the test numbers are selected, to have no 0-byte. This is due
- *   to issues with the conversions/memory values: For example if you
- *   convert a 1 using uint32_t, a memory value of size 8 will be returned,
- *   as 1 has three 0-bytes in the 32 bit representation.
- */
-
 using namespace riscv;
 
 class LoadStoreInstructionTest : public riscv::BaseFixture {
@@ -65,28 +49,27 @@ class LoadStoreInstructionTest : public riscv::BaseFixture {
  *        been performed
  * \param byteAmount Amount of bytes, loaded from memory.
  */
-#define TEST_LOAD(contextNbr,                                            \
-                  convertFunction,                                       \
-                  instructionName,                                       \
-                  testValue,                                             \
-                  expectedResult,                                        \
-                  byteAmount)                                            \
-  MemoryValue loadValue_##contextNbr = convertFunction(testValue);       \
-  memoryAccess.putRegisterValue(base, convertFunction(0));               \
-  memoryAccess.setMemoryValueAt(                                         \
-      0, loadValue_##contextNbr.subSet(0, byteAmount* BITS_PER_BYTE));   \
-  auto instr_##contextNbr =                                              \
-      factories.createInstructionNode(instructionName);             \
-  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
-  instr_##contextNbr->addChild(factories.createRegisterNode(dest)); \
-  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
-  instr_##contextNbr->addChild(factories.createRegisterNode(base)); \
-  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
-  instr_##contextNbr->addChild(                                          \
-      factories.createImmediateNode(convertFunction(0)));           \
-  ASSERT_TRUE(instr_##contextNbr->validate(memoryAccess));               \
-  instr_##contextNbr->getValue(memoryAccess);                            \
-  ASSERT_EQ(memoryAccess.getRegisterValue(dest).get(),                   \
+#define TEST_LOAD(contextNbr,                                                 \
+                  convertFunction,                                            \
+                  instructionName,                                            \
+                  testValue,                                                  \
+                  expectedResult,                                             \
+                  byteAmount)                                                 \
+  MemoryValue loadValue_##contextNbr = convertFunction(testValue);            \
+  memoryAccess.putRegisterValue(base, convertFunction(0));                    \
+  memoryAccess.setMemoryValueAt(                                              \
+      0, loadValue_##contextNbr.subSet(0, byteAmount* BITS_PER_BYTE));        \
+  auto instr_##contextNbr = factories.createInstructionNode(instructionName); \
+  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));                   \
+  instr_##contextNbr->addChild(factories.createRegisterNode(dest));           \
+  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));                   \
+  instr_##contextNbr->addChild(factories.createRegisterNode(base));           \
+  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));                   \
+  instr_##contextNbr->addChild(                                               \
+      factories.createImmediateNode(convertFunction(0)));                     \
+  ASSERT_TRUE(instr_##contextNbr->validate(memoryAccess));                    \
+  instr_##contextNbr->getValue(memoryAccess);                                 \
+  ASSERT_EQ(memoryAccess.getRegisterValue(dest).get(),                        \
             convertFunction(expectedResult));
 
 /**
@@ -98,23 +81,22 @@ class LoadStoreInstructionTest : public riscv::BaseFixture {
  * \param testValue The value to be stored into memory
  * \param byteAmount The amount of bytes, stored into memory
  */
-#define TEST_STORE(                                                      \
-    contextNbr, convertFunction, instructionName, testValue, byteAmount) \
-  MemoryValue storeValue_##contextNbr = convertFunction(testValue);      \
-  memoryAccess.putRegisterValue(base, convertFunction(0));               \
-  memoryAccess.setRegisterValue(src, storeValue_##contextNbr);           \
-  auto instr_##contextNbr =                                              \
-      factories.createInstructionNode(instructionName);             \
-  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
-  instr_##contextNbr->addChild(factories.createRegisterNode(base)); \
-  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
-  instr_##contextNbr->addChild(factories.createRegisterNode(src));  \
-  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));              \
-  instr_##contextNbr->addChild(                                          \
-      factories.createImmediateNode(convertFunction(0)));           \
-  ASSERT_TRUE(instr_##contextNbr->validate(memoryAccess));               \
-  instr_##contextNbr->getValue(memoryAccess);                            \
-  ASSERT_EQ(memoryAccess.getMemoryValueAt(0, byteAmount).get(),          \
+#define TEST_STORE(                                                           \
+    contextNbr, convertFunction, instructionName, testValue, byteAmount)      \
+  MemoryValue storeValue_##contextNbr = convertFunction(testValue);           \
+  memoryAccess.putRegisterValue(base, convertFunction(0));                    \
+  memoryAccess.setRegisterValue(src, storeValue_##contextNbr);                \
+  auto instr_##contextNbr = factories.createInstructionNode(instructionName); \
+  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));                   \
+  instr_##contextNbr->addChild(factories.createRegisterNode(src));            \
+  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));                   \
+  instr_##contextNbr->addChild(factories.createRegisterNode(base));           \
+  ASSERT_FALSE(instr_##contextNbr->validate(memoryAccess));                   \
+  instr_##contextNbr->addChild(                                               \
+      factories.createImmediateNode(convertFunction(0)));                     \
+  ASSERT_TRUE(instr_##contextNbr->validate(memoryAccess));                    \
+  instr_##contextNbr->getValue(memoryAccess);                                 \
+  ASSERT_EQ(memoryAccess.getMemoryValueAt(0, byteAmount).get(),               \
             storeValue_##contextNbr.subSet(0, byteAmount* BITS_PER_BYTE));
 
 // Load Tests

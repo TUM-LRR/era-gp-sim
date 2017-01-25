@@ -18,115 +18,131 @@
 */
 
 
-import QtQuick 2.0
+import QtQuick 2.6
 import QtQuick.Controls 1.4
 
 MenuBar {
-    id: menubar
-    property var main
+  id: menubar
+  property var main
 
-    function saveSnapshot(name) {
-        ui.saveSnapshot(tabView.getCurrentProjectId(), name);
+  signal saveSnapshotRequest(int sourceProjectId);
+  signal saveSnapshotAsRequest(int sourceProjectId);
+
+  Menu {
+    id: editorMenu
+    title: "Editor"
+
+    MenuItem {
+      id: settings
+      text: "Settings"
+      shortcut: "Ctrl+,"
+
+      onTriggered: main.settings.show();
     }
 
-    function actionSnapshot() {
-        main.textDialog.onAcceptedFunction = saveSnapshot;
-        main.textDialog.placeholderText = "name";
-        main.textDialog.open();
+    MenuItem {
+      id: quit
+      text: "Quit Application"
+      shortcut: "Ctrl+Shift+W"
+      onTriggered: window.close()
     }
 
-    function saveAs(filePath) {
-        console.log("save path: " + filePath)
-        ui.saveTextAs(tabView.getCurrentProjectId(), filePath);
-    }
-
-    function actionSaveAs() {
-        main.fileDialog.onAcceptedFunction = saveAs;
-        main.fileDialog.selectExisting = false;
+    MenuItem {
+      id: openFileOption
+      text: "Open File"
+      shortcut: "Alt+O"
+      onTriggered: {
+        main.fileDialog.onAcceptedFunction = function(filePath) {
+          ui.loadText(tabView.currentProjectId(), filePath);
+        };
+        main.fileDialog.selectExisting = true;
         main.fileDialog.open();
+      }
     }
 
-    function setMenuEnabled(value) {
-        codeMenu.enabled = value;
-        snapshotMenu.enabled = value;
+    MenuItem {
+      id: saveFileOption
+      text: "Save File"
+      shortcut: "Alt+S"
+      onTriggered: ui.saveText(tabView.currentProjectId())
     }
 
-    Menu {
-        id: projectMenu
-        title: "Project"
+    MenuItem {
+      id: saveFileAsOption
+      text: "Save File As"
+      shortcut: "Alt+Shift+S"
+      onTriggered: actionSaveAs
+    }
+  }
 
-        MenuItem {
-            text: "New Project..."
-            onTriggered: {
-                main.createProject();
-            }
-        }
+  Menu {
+    id: projectMenu
+    title: "Project"
 
-        MenuItem {
-            text: "Close Project"
-            onTriggered: {
-                main.closeProject();
-            }
-        }
+    MenuItem {
+      text: "New Project"
+      shortcut: "Ctrl+N"
+      onTriggered: main.createProject()
     }
 
-    Menu {
-        id: codeMenu
-        title: "Code"
-
-        MenuItem {
-            id: loadCodeMenu
-            text: "Load Code..."
-            function openTextFile(filePath) {
-                ui.loadText(tabView.getCurrentProjectId(), filePath);
-            }
-            onTriggered: {
-                main.fileDialog.onAcceptedFunction = openTextFile;
-                main.fileDialog.selectExisting = true;
-                main.fileDialog.open();
-            }
-        }
-
-        MenuItem {
-            id: saveCodeMenu
-            text: "Save Code"
-            onTriggered: {
-                ui.saveText(tabView.getCurrentProjectId());
-            }
-        }
-
-        MenuItem {
-            id: saveCodeAsMenu
-            text: "Save Code as..."
-            onTriggered: {
-                actionSaveAs();
-            }
-        }
+    MenuItem {
+      text: "Close Project"
+      shortcut: "Ctrl+W"
+      onTriggered: {
+        main.closeProject();
+      }
     }
 
-    Menu {
-        id: snapshotMenu
-        title: "Snapshots"
-
-        MenuItem {
-            id: importSnapshotMenu
-            text: "Import Snapshot"
-            function importSnapshot(name) {
-                var success = snapshotComponent.importSnapshot(name);
-            }
-            onTriggered: {
-                main.fileDialog.onAcceptedFunction = importSnapshot;
-                main.fileDialog.selectExisting = true;
-                main.fileDialog.open();
-            }
-        }
-
-        MenuItem {
-            id: saveSnapshotMenu
-            text: "Save Snapshot"
-            onTriggered: {
-                actionSnapshot();
-            }
-        }
+    MenuItem {
+      id: openSnapshot
+      text: "Open Snapshot"
+      shortcut: "Ctrl+O"
+      onTriggered: {
+        main.fileDialog.onAcceptedFunction = function(name) {
+          snapshotComponent.importSnapshot(name);
+        };
+        main.fileDialog.selectExisting = true;
+        main.fileDialog.open();
+      }
     }
+
+    MenuItem {
+      id: saveSnapshot
+      text: "Save Snapshot"
+      shortcut: "Ctrl+S"
+      onTriggered: saveSnapshotRequest(tabView.currentProjectId())
+    }
+
+    MenuItem {
+      id: saveSnapshotAs
+      text: "Save Snapshot As"
+      shortcut: "Ctrl+Shift+S"
+      onTriggered: saveSnapshotAsRequest(tabView.currentProjectId())
+    }
+
+    function enable(yes) {
+      openSnapshot.enabled = yes;
+      saveSnapshot.enabled = yes;
+    }
+  }
+
+  function saveAs(filePath) {
+    ui.saveTextAs(tabView.currentProjectId(), filePath);
+  }
+
+  function actionSaveAs() {
+    main.fileDialog.onAcceptedFunction = function(filePath) {
+      ui.saveTextAs(tabView.currentProjectId(), filePath);
+    };
+
+    main.fileDialog.selectExisting = false;
+    main.fileDialog.open();
+  }
+
+  function setMenuEnabled(yes) {
+    openFileOption.enabled = yes;
+    saveFileOption.enabled = yes;
+    saveFileAsOption.enabled = yes;
+    projectMenu.enable(yes);
+  }
 }

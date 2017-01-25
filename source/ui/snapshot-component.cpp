@@ -21,73 +21,71 @@
 
 #include <QFileInfo>
 #include <QUrl>
-#include <algorithm>
+#include <string>
 
 #include "arch/common/architecture-formula.hpp"
 #include "common/utility.hpp"
 #include "core/snapshot.hpp"
 
-SnapshotComponent::SnapshotComponent(const QString& path, QObject* parent)
-: QObject(parent), _baseDirectory(path) {
-  // check if snapshot directory exists, if not, create it.
-  if (!_baseDirectory.exists()) {
-    QString baseDirName = _baseDirectory.dirName();
-    _baseDirectory.cdUp();
-    _baseDirectory.mkpath(path);
-    _baseDirectory.cd(baseDirName);
+QString
+SnapshotComponent::architectureToString(const ArchitectureFormula& formula) {
+  auto identifier = formula.getArchitectureName();
+  for (const auto& extension : Utility::sorted(formula)) {
+    identifier += extension;
   }
-  QString fileExtensionFilter(_fileExtension);
-  fileExtensionFilter.prepend("*");
-  QStringList filterList = {fileExtensionFilter};
-  // Find all subdirectories and their snapshots
-  auto subDirectories =
-      _baseDirectory.entryList(QDir::AllDirs | QDir::NoDot | QDir::NoDotDot);
-  for (const auto& subDirectoryName : subDirectories) {
-    // There is a subdirectory for every combination of architecutre and
-    // extensions.
-    QDir subDirectory = _baseDirectory;
-    if (subDirectory.cd(subDirectoryName)) {
-      // Get all snapshots names in the directory.
-      auto files = subDirectory.entryInfoList(
-          filterList, QDir::Files | QDir::NoDot | QDir::NoDotDot);
-      QSet<QString> snapshots;
-      for (const auto& file : files) {
-        snapshots.insert(file.completeBaseName());
-      }
-      _snapshotMap.insert(subDirectory.dirName(), snapshots);
-    }
-  }
+  return QString::fromStdString(identifier);
+}
+
+SnapshotComponent::SnapshotComponent(const QString& snapshotDirectoryPath,
+                                     QObject* parent)
+: QObject(parent) {
+  snapshotDirectory(snapshotDirectoryPath);
 }
 
 QStringList SnapshotComponent::getSnapshotList(const QString& architecture) {
-  return _snapshotMap.value(architecture).toList();
+  return _snapshotMap.values(architecture);
 }
 
-void SnapshotComponent::addSnapshot(const QString& architecture,
-                                    const QString& snapshot,
+void SnapshotComponent::addSnapshot(const QString& architectureIdentifier,
+                                    const QString& snapshotName,
                                     const std::string& data) {
-  if (!_baseDirectory.exists(architecture)) {
-    _baseDirectory.mkpath(architecture);
-  }
-  std::string path = snapshotPath(architecture, snapshot);
+  _snapshotDirectory.mkdir(architectureIdentifier);
+
+  auto path = snapshotPath(architectureIdentifier, snapshotName);
   Utility::storeToFile(path, data);
-  _snapshotMap[architecture].insert(snapshot);
+
+  if (!snapshotExists(architectureIdentifier, snapshotName)) {
+    // As the _snapshotMap is a QMultiHash, duplicates of key value pairs can be
+    // inserted, which is stopped by this.
+    _snapshotMap.insert(architectureIdentifier, snapshotName);
+    emit snapshotsChanged();
+  }
+}
+
+void SnapshotComponent::removeSnapshot(const QString& architectureIdentifier,
+                                       const QString& snapshotName,
+                                       bool removePermanently) {
+  if (removePermanently) {
+    auto path = snapshotPath(architectureIdentifier, snapshotName);
+    QFile(QString::fromStdString(path)).remove();
+  }
+
+  _snapshotMap.remove(architectureIdentifier, snapshotName);
   emit snapshotsChanged();
 }
 
-void SnapshotComponent::removeSnapshot(const QString& architecture,
-                                       const QString& snapshot) {
-  _snapshotMap[architecture].remove(snapshot);
-  std::string path = snapshotPath(architecture, snapshot);
-  std::remove(path.c_str());
-  emit snapshotsChanged();
+bool SnapshotComponent::snapshotExists(const QString& architectureIdentifier,
+                                       const QString& snapshotName) {
+  return _snapshotMap.contains(architectureIdentifier, snapshotName);
 }
 
-std::string SnapshotComponent::snapshotPath(const QString& architecture,
-                                            const QString& snapshot) {
-  return Utility::joinPaths(_baseDirectory.absolutePath().toStdString(),
-                            architecture.toStdString(),
-                            snapshot.toStdString() + _fileExtension);
+std::string
+SnapshotComponent::snapshotPath(const QString& architectureIdentifier,
+                                const QString& snapshotName) {
+  auto path = _snapshotDirectory;
+  path.cd(architectureIdentifier);
+  auto fileName = snapshotName + ".snapshot";
+  return path.absoluteFilePath(fileName).toStdString();
 }
 
 void SnapshotComponent::importSnapshot(const QUrl& qPath) {
@@ -109,17 +107,36 @@ void SnapshotComponent::importSnapshot(const QUrl& qPath) {
   }
 }
 
-QUrl SnapshotComponent::getSnapshotBasePath() {
-  return QUrl::fromLocalFile(_baseDirectory.absolutePath());
+QString SnapshotComponent::snapshotDirectory() {
+  return _snapshotDirectory.absolutePath();
 }
 
-QString
-SnapshotComponent::architectureToString(const ArchitectureFormula& formula) {
-  auto underlying = formula.getUnderlying();
-  std::sort(underlying.begin(), underlying.end());
-  auto architectureFormulaString = formula.getArchitectureName();
-  for (const auto& extension : underlying) {
-    architectureFormulaString += extension;
+void SnapshotComponent::snapshotDirectory(
+    const QString& snapshotDirectoryPath) {
+  assert::that(!snapshotDirectoryPath.isEmpty());
+  // Creates the directory if it does not exist yet.
+  _snapshotDirectory.setPath(snapshotDirectoryPath);
+  QDir::root().mkpath(snapshotDirectory());
+  _snapshotMap = _collectSnapshots(_snapshotDirectory);
+  emit snapshotsChanged();
+}
+
+SnapshotComponent::SnapshotMap
+SnapshotComponent::_collectSnapshots(QDir directory) {
+  SnapshotMap snapshots;
+
+  for (const auto& architectureIdentifier :
+       directory.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+    directory.cd(architectureIdentifier);
+
+    // Get all snapshots names in the directory.
+    for (const auto& file : directory.entryInfoList({"*.snapshot"})) {
+      snapshots.insert(architectureIdentifier, file.completeBaseName());
+    }
+
+    // Go back to the snapshot root
+    directory.cdUp();
   }
-  return QString::fromStdString(architectureFormulaString);
+
+  return snapshots;
 }

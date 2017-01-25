@@ -37,7 +37,7 @@
  */
 NodeFactoryCollection::InstrNode NodeFactoryCollection::createInstructionNode(
     const std::string &mnemonic) const {
-  assert(static_cast<bool>(_instructionFactory));
+  assert::that(static_cast<bool>(_instructionFactory));
   return _instructionFactory->createInstructionNode(mnemonic);
 }
 
@@ -48,7 +48,7 @@ NodeFactoryCollection::InstrNode NodeFactoryCollection::createInstructionNode(
  */
 NodeFactoryCollection::Node NodeFactoryCollection::createImmediateNode(
     const MemoryValue &numericalValue) const {
-  assert(static_cast<bool>(_immediateFactory));
+  assert::that(static_cast<bool>(_immediateFactory));
   return _immediateFactory->createImmediateNode(numericalValue);
 }
 
@@ -64,7 +64,7 @@ MemoryValue NodeFactoryCollection::labelToImmediate(const MemoryValue &labelValu
  */
 NodeFactoryCollection::Node NodeFactoryCollection::createRegisterNode(
     const std::string &registerName) const {
-  assert(static_cast<bool>(_registerFactory));
+  assert::that(static_cast<bool>(_registerFactory));
   return _registerFactory->createRegisterNode(registerName);
 }
 
@@ -75,7 +75,7 @@ NodeFactoryCollection::Node NodeFactoryCollection::createRegisterNode(
  */
 NodeFactoryCollection::Node
 NodeFactoryCollection::createMemoryAccessNode() const {
-  assert(static_cast<bool>(_memoryAccessFactory));
+  assert::that(static_cast<bool>(_memoryAccessFactory));
   return _memoryAccessFactory->createMemoryAccessNode();
 }
 
@@ -86,12 +86,12 @@ NodeFactoryCollection::createMemoryAccessNode() const {
  */
 NodeFactoryCollection::Node NodeFactoryCollection::createArithmeticNode(
     AbstractArithmeticNodeFactory::Operation operation) const {
-  assert(static_cast<bool>(_arithmeticFactory));
+  assert::that(static_cast<bool>(_arithmeticFactory));
   return _arithmeticFactory->createArithmeticNode(operation);
 }
 
 NodeFactoryCollection::Node NodeFactoryCollection::createDataNode(const std::string &data) const {
-    assert(static_cast<bool>(_dataNodeFactory));
+    assert::that(static_cast<bool>(_dataNodeFactory));
     return _dataNodeFactory->createDataNode(data);
 }
 
@@ -107,7 +107,7 @@ NodeFactoryCollection::NodeFactoryCollection(std::shared_ptr<AbstractInstruction
 , _arithmeticFactory(std::move(arithmeticFactory))
 , _dataNodeFactory(std::move(dataFactory)){
   // We should at least have these factories
-  // assert(static_cast<bool>(instructionFactory));
-  // assert(static_cast<bool>(registerFactory));
-  // assert(static_cast<bool>(immediateFactory));
+  // assert::that(static_cast<bool>(instructionFactory));
+  // assert::that(static_cast<bool>(registerFactory));
+  // assert::that(static_cast<bool>(immediateFactory));
 }

@@ -21,7 +21,7 @@
 #define ERAGPSIM_ARCH_RISCV_ABSTRACT_BRANCH_INSTRUCTION_NODE_HPP
 
 #include <QtCore/qglobal.h>
-#include <cassert>
+#include "common/assert.hpp"
 #include <functional>
 #include <limits>
 
@@ -85,8 +85,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
   explicit AbstractBranchInstructionNode(
       const InstructionInformation& information,
       Condition condition = Condition())
-  : super(information), _condition(condition) {
-  }
+      : super(information), _condition(condition) {}
 
   /**
    * Make the constructor pure virtual so that the class is abstract.
@@ -105,7 +104,7 @@ class AbstractBranchInstructionNode : public InstructionNode {
    * \return The resulting program counter.
    */
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate(memoryAccess).isSuccess());
+    assert::that(validate(memoryAccess).isSuccess());
     auto first = _children[0]->getValue(memoryAccess);
     auto second = _children[1]->getValue(memoryAccess);
 
@@ -191,9 +190,9 @@ class AbstractBranchInstructionNode : public InstructionNode {
    *
    * \return True if the condition w.r.t. the operands holds, else false.
    */
-  virtual bool
-  _checkCondition(const MemoryValue& first, const MemoryValue& second) const {
-    assert(static_cast<bool>(_condition));
+  virtual bool _checkCondition(const MemoryValue& first,
+                               const MemoryValue& second) const {
+    assert::that(static_cast<bool>(_condition));
     return _condition(first, second);
   }
 
@@ -258,6 +257,16 @@ class AbstractBranchInstructionNode : public InstructionNode {
       return ValidationResult::fail(
           QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
                             "Immediate operand must be 12 bit or less"));
+    } else if (offset.get(0)) {
+      // the offset is odd (bit 0 is 1) -> 2*offset can never be a multiple of 4
+      // let offset = 2k+1; 2(2k+1)/4 = (2k+1)/2 which is not divisable without
+      // remainder
+      SignedWord off = riscv::convert<SignedWord>(offset);
+      return ValidationResult::fail(
+          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
+                            "The given offset %1 will result in an invalid "
+                            "jump adress (pc+%2)"),
+          std::to_string(off), std::to_string(2 * off));
     }
 
     return ValidationResult::success();
@@ -271,15 +280,18 @@ class AbstractBranchInstructionNode : public InstructionNode {
    *
    * \return A ValidationResult reflecting the result of the check.
    */
-  ValidationResult
-  _validateResultingProgramCounter(MemoryAccess& memoryAccess) const {
+  ValidationResult _validateResultingProgramCounter(
+      MemoryAccess& memoryAccess) const {
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
-    auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
+    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 2);
     // Check if the program counter would underflow or overflow
-    if (!riscv::isAddressValid(memoryAccess, programCounter + 2 * offset)) {
+    if (!riscv::addressIsValid(memoryAccess, programCounter + 2 * offset,
+                               programCounter)) {
       return ValidationResult::fail(
-          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                            "Branch offset would invalidate program counter"));
+          QT_TRANSLATE_NOOP(
+              "Syntax-Tree-Validation",
+              "Branch offset would invalidate program counter to %1"),
+          std::to_string(programCounter + 2 * offset));
     }
 
     return ValidationResult::success();
@@ -296,4 +308,4 @@ AbstractBranchInstructionNode<
 // clang-format on
 }
 
-#endif /* ERAGPSIM_ARCH_RISCV_ABSTRACT_BRANCH_INSTRUCTION_NODE_HPP_ */
+#endif /* ERAGPSIM_ARCH_RISCV_ABSTRACT_BRANCH_INSTRUCTION_NODE_HPP */

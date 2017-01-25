@@ -6,6 +6,7 @@ set(COMMON_SOURCES
   utility.cpp
   string-conversions.cpp
   translateable.cpp
+  status.cpp
 )
 
 ########################################

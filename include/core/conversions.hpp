@@ -16,8 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP_
-#define ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP_
+#ifndef ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP
+#define ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP
 
 #include <algorithm>
 #include <cstddef>
@@ -421,4 +421,4 @@ convert(T value,
 }
 }
 
-#endif// ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP_
+#endif// ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP

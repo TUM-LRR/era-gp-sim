@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_RISCV_ARCHITECTURE_ONLY_INSTRUCTION_NODE_HPP_
-#define ERAGPSIM_ARCH_RISCV_ARCHITECTURE_ONLY_INSTRUCTION_NODE_HPP_
+#ifndef ERAGPSIM_ARCH_RISCV_ARCHITECTURE_ONLY_INSTRUCTION_NODE_HPP
+#define ERAGPSIM_ARCH_RISCV_ARCHITECTURE_ONLY_INSTRUCTION_NODE_HPP
 
 #include <QtGlobal>
 #include <climits>
@@ -80,7 +80,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
   virtual ~ArchitectureOnlyInstructionNode() = default;
 
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
-    assert(validate(memoryAccess).isSuccess());
+    assert::that(validate(memoryAccess).isSuccess());
     auto destination = _children[0]->getIdentifier();
 
     auto first = _getChildValue(1, memoryAccess);
@@ -135,7 +135,7 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
    */
   virtual WordSize _compute(OperationSize first, OperationSize second) const
       noexcept {
-    assert(_operation);
+    assert::that(_operation);
     return _operation(first, second);
   }
 
@@ -234,4 +234,4 @@ class ArchitectureOnlyInstructionNode : public InstructionNode {
 };
 }
 
-#endif /* ERAGPSIM_ARCH_RISCV_ARCHITECTURE_ONLY_INSTRUCTION_NODE_HPP_ */
+#endif /* ERAGPSIM_ARCH_RISCV_ARCHITECTURE_ONLY_INSTRUCTION_NODE_HPP */
