@@ -5,8 +5,60 @@
 Die Menge an verwendbaren Befehlen für den Simulator lässt sich grob in zwei Teile aufteilen. Die erste Menge an Befehlen sind die sogenannten Parser-Direktiven. Das sind diejenigen Befehle bzw. Direktiven, die schon zum Zeitpunkt der Übersetzung (also Assemblierung) aufgelöst und verarbeitet werden. Direktiven tauchen also nicht direkt im assemblierten Code auf, dennoch nehmen sie u.a. durch Anordnung des Speichers (Sektionen, Speicherreservierungen) oder durch Codegenerierung (Makros) wesentlich Einfluss auf das assemblierte Programm. Zur Unterscheidung haben Direktiven im Simulator ein .-Präfix. Direktiven werden im ersten Teil behandelt.\\
 Die zweite Menge sind die eigentlichen RISC-V Instruktionen. Diese werden durch den Assemblierer in maschinenlesbaren Code umgewandelt und können dann auch ausgeführt werden. Für alle unterstützten RISC-V Instruktionen gibt es im zweiten Teil eine Übersicht.
 
-{\subsection{Parser-Direktiven}
-\todo[inline]{.equ und .section nicht vergessen!}
+\subsection{Parser-Direktiven}
+
+\subsubsection{Konstanten}
+Um die Übersichtlichkeit eines Programmes zu verbessern, können häufig benötigte
+Konstanten eigens definiert werden. Auf diese kann dann über einen Namen
+zugegriffen werden.
+
+\textbf{.equ <name>, <wert>} erzeugt eine Konstante \texttt{name} mit Wert \texttt{wert}
+
+\begin{exampleblock}{Beispiel: Konstanten}
+	\begin{lstlisting}{style=risc-v_Assembler}
+	.equ my_number, 10
+	
+	; Konstanten können die Werte
+	; anderer Konstanten benutzen
+	.equ my_number_double, my_number * 2
+	
+	; Addiere 10 zu x1
+	addi x1, x1, my_number
+	
+	; Addiere 20 zu x2
+	addi x2, x2, my_number_double
+	
+	; Addiere 15 zu x3
+	addi x3, x3, my_number + 5
+	\end{lstlisting}
+\end{exampleblock}
+
+\subsubsection{Sektionswechsel}
+Beim Assemblieren wird der Speicher in zwei Sektionen unterteilt: Daten- und
+Textsektion. Dies dient der strikten Trennung von benutzerdefinierten Daten und
+assemblierten Programmcode.\\
+Instruktionen müssen dabei in der Textsektion, Speicherreservierungen
+und -definitionen in der Datensektion stehen.
+
+\begin{centering}
+	\begin{tabular}{rl}
+		\textbf{.section data} & wechselt zur Datensektion\\
+		\textbf{.section text} & wechselt zur Textsektion\\
+	\end{tabular}
+\end{centering}
+
+\begin{exampleblock}{Beispiel zum Sektionswechsel}
+	\begin{lstlisting}{style=risc-v_Assembler}
+	...
+	.section data ; Wechsel zur Datensektion
+	.word 0xff ; Speicherdefinitionen
+	.half 123
+	
+	.section text ; Wechsel zurück zum Programmcode
+	addi x1, x1, 10
+	...
+	\end{lstlisting}
+\end{exampleblock}
 
 \subsubsection{Speicherreservierung}
 Speicherreservierungen sind eine Möglichkeit, eine oder mehrere Speicherzellen (hier: byte) im Speicher freizuhalten. Freihalten bedeutet in dem Fall, dass der Assemblierer keine assemblierten Instruktionen an diese Speicherzelle schreibt.
@@ -25,6 +77,10 @@ Da die Adresse der Speicherzelle(n) vom Assemblierer abhängt, sollte man die Ad
 \begin{warningblock}
 	\texttt{anz} muss eine positive Ganzzahl sein.\\
 	Ist \texttt{anz<=0} wird kein Speicher reserviert und ein Übersetzungsfehler angezeigt
+\end{warningblock}
+
+\begin{warningblock}
+	Speicherreservierungen sollten sich nur in der Datensektion befinden!
 \end{warningblock}
 
 \begin{exampleblock}{Beispiel zur Speicherreservierung}
@@ -55,14 +111,16 @@ Speicherdefinitionen sind die andere Möglichkeit Speicherzellen von assembliert
 		define double word & \textbf{.dword <data>} & legt \texttt{data} als Doppelwort (64 Bit) in den Speicher\\
 	\end{tabular}
 \end{centering}
-\\
+
 \texttt{data} kann hier eine oder mehrere Zahlen sein (durch Kommas getrennt), die dann hintereinander als bytes, Halbwörter, usw. abgelegt werden.
+
 \begin{exampleblock}{Beispiel Speicherdefinition}
 	Es soll die Abfolge \texttt{0x12, 0x34, 0x56, 0x78} in den Speicher unter dem Label \texttt{sequence} abgelegt werden:
 	\begin{lstlisting}{style=risc-v_Assembler}
 		sequence: .byte 0x12, 0x34, 0x56, 0x78
 	\end{lstlisting}
 \end{exampleblock}
+
 \begin{infoblock}{Zeichenketten in den Speicher legen}
 	Es ist auch möglich eine komplette Zeichenkette ganz bequem in den Speicher zu legen.
 	\begin{lstlisting}{style=risc-v_Assembler}
@@ -71,8 +129,77 @@ Speicherdefinitionen sind die andere Möglichkeit Speicherzellen von assembliert
 	Die Zeichen werden im ASCII-Format abgelegt.
 \end{infoblock}
 
-\subsection{Makros}
+\begin{warningblock}
+	Speicherdefinitionen sollten sich nur in der Datensektion befinden!
+\end{warningblock}
+
+\subsubsection{Makros}
 \todo[inline]{Wie definiere ich ein Makro, Grenzen (Zyklische Aufrufe, Rekursion, Anzahl Parameter)}
+
+Häufig benötigte Folgen von Befehlen können als Makro definiert werden. Hierzu
+existieren folgende Direktiven:
+
+\begin{itemize}
+	\item \textbf{.macro <name> [, <parameter>]} beginnt die Definition eines
+	Makros mit dem Namen \texttt{name}. Optional kann eine kommagetrennte Liste
+	von Parametern angegeben werden.
+	\item \textbf{.endm} schließt die Definition eines Makros ab.
+\end{itemize}
+
+Alle Befehle zwischen \texttt{.macro} und \texttt{.endm} sind Teil des Makros.
+
+Im Programm kann das Makro wie jeder andere Befehl mit seinem Namen aufgerufen
+werden.
+
+\begin{exampleblock}{Beispiel: Einfaches Makro}
+	Es soll ein Makro definiert werden, dass die Register \texttt{x1}, \texttt{x2}
+	und \texttt{x3} verdoppelt:
+	\begin{lstlisting}{style=risc-v_Assembler}
+		.macro verdopple
+		add x1, x1, x1
+		add x2, x2, x2
+		add x3, x3, x3
+		.endm
+		
+		; Aufruf
+		verdopple
+	\end{lstlisting}
+\end{exampleblock}
+
+\begin{exampleblock}{Beispiel: Parameterisiertes Makro}
+	Es soll ein Makro definiert werden, dass das angegebene Register verdoppelt:
+	\begin{lstlisting}{style=risc-v_Assembler}
+		.macro verdopple, r
+		add \r, \r, \r
+		.endm
+		
+		; Aufrufe
+		verdopple x1
+		verdopple x2
+	\end{lstlisting}
+\end{exampleblock}
+
+\begin{exampleblock}{Beispiel: Parameterisiertes Makro mit Standardwerten}
+	Es soll ein Makro definiert werden, dass bis zu 3 angegebene Register
+	verdoppelt:
+	\begin{lstlisting}{style=risc-v_Assembler}
+		.macro verdopple, r1, r2=x0, r3=x0
+		add \r1, \r1, \r1
+		add \r2, \r2, \r2
+		add \r3, \r3, \r3
+		.endm
+		
+		; Aufrufe
+		verdopple x1
+		verdopple x2, x3
+		verdopple x1, x2, x3
+	\end{lstlisting}
+\end{exampleblock}
+
+\begin{infoblock}{Überladung von Makros}
+	Es ist möglich, mehrere Makros mit dem gleichen Namen zu definieren, solange
+	sich deren Parameteranzahl unterscheidet.
+\end{infoblock}
 
 \subsection{RISC-V Instruktionen}
 \todo[inline]{Erklärung Aufteilung in Module}
