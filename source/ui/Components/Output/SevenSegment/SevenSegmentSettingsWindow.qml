@@ -23,7 +23,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.1
 import Theme 1.0
-import "../../Common/TextUtilities.js" as TextUtilities
+import "../../../Js/TextUtility.js" as TextUtility
 
 // Window for seven segment settings.
 Window {
@@ -70,13 +70,13 @@ Window {
 
       // Reads the current input and passes the new value to the model.
       function processInput() {
-        var inputValue = TextUtilities.convertStringToInteger(String(baseAddressTextField.text))
+        var inputValue = TextUtility.convertStringToInteger(String(baseAddressTextField.text))
         var maxSize = outputComponent.getMemorySize();
         if (inputValue !== undefined && inputValue >= 0 && inputValue < maxSize) {
           // Check if there are too many digits to fit into memory for the
           // currently set number of digits. Adjust number of digits if necessary.
           var maxDigits = (maxSize - inputValue);
-          var digits = TextUtilities.convertStringToInteger(String(numberOfDigitsTextField.text));
+          var digits = TextUtility.convertStringToInteger(String(numberOfDigitsTextField.text));
           if (digits > maxDigits) {
             numberOfDigitsTextField.text = maxDigits + "";
             numberOfDigitsTextField.processInput();
@@ -110,12 +110,12 @@ Window {
 
       // Reads the current input and passes the new value to the model.
       function processInput() {
-        var inputValue = TextUtilities.convertStringToInteger(String(numberOfDigitsTextField.text));
+        var inputValue = TextUtility.convertStringToInteger(String(numberOfDigitsTextField.text));
         if (inputValue !== undefined && inputValue > 0) {
           // Check if the new number of digits would be too high to fit into memoryModel
           // and adjust number to maximum value if necessary.
           var maxSize = outputComponent.getMemorySize();
-          var maxDigits = maxSize - TextUtilities.convertStringToInteger(String(baseAddressTextField.text));
+          var maxDigits = maxSize - TextUtility.convertStringToInteger(String(baseAddressTextField.text));
           if (inputValue > maxDigits) {
             inputValue = maxDigits;
           }

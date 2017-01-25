@@ -57,7 +57,7 @@ Rectangle {
     // Send when any item's settings where updated.
     onOutputItemSettingsChanged: {
       var output = outputComponent.getOutputItem(outputItemIndex);
-      updateContent(ouput["baseAddress"]);
+      updateContent(output["baseAddress"]);
       lightstripSettingsWindow.updateSettings();
     }
   }

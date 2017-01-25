@@ -395,33 +395,33 @@ builtin-macros:
     .endm
   - |
     .macro lbg, rd, symbol
-    auipc \rd, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
+    lui \rd, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
     lb \rd, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
     .endm
   - |
     .macro lhg, rd, symbol
-    auipc \rd, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
+    lui \rd, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
     lh \rd, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
     .endm
   - |
     .macro lwg, rd, symbol
-    auipc \rd, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
+    lui \rd, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
     lw \rd, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
     .endm
   - |
     .macro sbg, rd, symbol, rt
-    auipc \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    sb \rt, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
+    lui \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
+    sb \rd, \rt, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
     .endm
   - |
     .macro shg, rd, symbol, rt
-    auipc \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    sh \rt, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
+    lui \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
+    sh \rd, \rt, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
     .endm
   - |
     .macro swg, rd, symbol, rt
-    auipc \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    sw \rt, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
+    lui \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
+    sw \rd, \rt, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
     .endm
   - |
     .macro nop
@@ -506,12 +506,12 @@ builtin-macros:
     .endm
   - |
     .macro call, offset
-    auipc x6, (((\offset) >> 12) + (((\offset) >> 11) & 1)) & ((1 << 20) - 1)
+    lui x6, (((\offset) >> 12) + (((\offset) >> 11) & 1)) & ((1 << 20) - 1)
     jalr x1, x6, ((\offset) & ((1 << 11) - 1)) - ((\offset) & (1 << 11))
     .endm
   - |
     .macro tail, offset
-    auipc x6, (((\offset) >> 12) + (((\offset) >> 11) & 1)) & ((1 << 20) - 1)
+    lui x6, (((\offset) >> 12) + (((\offset) >> 11) & 1)) & ((1 << 20) - 1)
     jalr x0, x6, ((\offset) & ((1 << 11) - 1)) - ((\offset) & (1 << 11))
     .endm
 units:

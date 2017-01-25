@@ -23,13 +23,13 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.0
 import QtQuick.Layouts 1.1
 import Theme 1.0
-import "../../Common/TextUtilities.js" as TextUtilities
+import "../../../Js/TextUtility.js" as TextUtility
 
 // Window for lightstrip settings.
 Window {
   id: settingsWindow
   width: Theme.output.sevenSegment.settings.width
-  height: Theme.output.sevenSegment.settings.width
+  height: Theme.output.sevenSegment.settings.height
 
   title: "Lightstrip Settings"
   flags: Qt.Dialog
@@ -68,12 +68,12 @@ Window {
 
       // Reads the current input, checks if it is valid and passes the new value to the model.
       function processInput() {
-        var inputValue = TextUtilities.convertStringToInteger(String(baseAddressTextField.text))
+        var inputValue = TextUtility.convertStringToInteger(String(baseAddressTextField.text))
         var maxSize = outputComponent.getMemorySize();
         if (inputValue !== undefined && inputValue >= 0 && inputValue < maxSize) {
           outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
           var maxStrips = (outputComponent.getMemorySize() - (inputValue)) * 8;
-          var strips = TextUtilities.convertStringToInteger(String(numberOfStripsTextField.text));
+          var strips = TextUtility.convertStringToInteger(String(numberOfStripsTextField.text));
           if(strips > maxStrips){
             numberOfStripsTextField.text = maxStrips + "";
             numberOfStripsTextField.processInput();
@@ -98,8 +98,8 @@ Window {
 
       // Reads the current input, checks if it is valid and passes the new value to the model.
       function processInput() {
-        var inputValue = TextUtilities.convertStringToInteger(String(numberOfStripsTextField.text));
-        var size = TextUtilities.convertStringToInteger(String(baseAddressTextField.text)) ;
+        var inputValue = TextUtility.convertStringToInteger(String(numberOfStripsTextField.text));
+        var size = TextUtility.convertStringToInteger(String(baseAddressTextField.text)) ;
         var maxStrips = (outputComponent.getMemorySize() - size) * 8;
         if (inputValue !== undefined && inputValue > 0) {
           if(inputValue <= maxStrips){
