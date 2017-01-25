@@ -20,6 +20,7 @@
 #include "ui/memory-component-presenter.hpp"
 
 #include <algorithm>
+#include <string>
 
 #include "common/assert.hpp"
 #include "common/string-conversions.hpp"
@@ -33,32 +34,27 @@ MemoryComponentPresenter::MemoryComponentPresenter(const MemoryAccess &access,
 : QAbstractListModel(parent)
 , _memoryAccess(access)
 , _memoryManager(manager)
-, _memorySize(access.getMemorySize().get()) {
+, _memorySize(access.getMemorySize().get())
+, _memoryCacheOffset(std::min(static_cast<size_t>(10), _memorySize / 2)) {
   projectContext->setContextProperty("memoryModel", this);
 }
 
-void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
-                                               std::size_t length) {
+void MemoryComponentPresenter::onMemoryChanged(size_t address, size_t length) {
   // calculate region for (max) 64bit memory cells
   // region should not exceed real memory size
-  std::size_t start = address - (address % (64 / 8));
-  std::size_t end = std::min(
-      start + (length - (length % (64 / 8)) + (64 / 8)) - 1, _memorySize - 1);
+  size_t start = address - (address % (64 / 8));
+  size_t end = std::min(start + (length - (length % (64 / 8)) + (64 / 8)) - 1,
+                        _memorySize - 1);
 
   // if the memory that is hold in cache is changed, invalidate cache
-  // new value intersects with the beginning of the cached region
-  bool overlapBeginning =
-      (address <= _memoryCacheBaseAddress + _memoryCacheSize &&
-       address + length >= _memoryCacheBaseAddress + _memoryCacheSize);
-  // new value intersects with the ending of the cached region
-  bool overlapEnding = (address <= _memoryCacheBaseAddress &&
-                        address + length >= _memoryCacheBaseAddress);
-  // new value is completly inside cached region
-  bool overlapMiddle =
-      (address >= _memoryCacheBaseAddress &&
-       address + length <= _memoryCacheBaseAddress + _memoryCacheSize);
+  bool overlapAddress = (address >= _memoryCacheBaseAddress &&
+                         address <= _memoryCacheBaseAddress + _memoryCacheSize);
 
-  if (overlapBeginning || overlapMiddle || overlapEnding) {
+  bool overlapLength =
+      ((address + length) >= _memoryCacheBaseAddress &&
+       (address + length) <= _memoryCacheBaseAddress + _memoryCacheSize);
+
+  if (overlapAddress || overlapLength) {
     _memoryCacheValid = false;
   }
 
@@ -164,7 +160,7 @@ MemoryComponentPresenter::dataInfo(const QModelIndex &index, int role) const {
 
 
 MemoryValue MemoryComponentPresenter::getMemoryValueCached(
-    const std::size_t memoryAddress, const std::size_t memoryLength) const {
+    const size_t memoryAddress, const size_t memoryLength) const {
   // check for cache
   if (_memoryCacheValid && memoryAddress >= _memoryCacheBaseAddress &&
       memoryAddress + memoryLength <=
@@ -182,32 +178,10 @@ MemoryValue MemoryComponentPresenter::getMemoryValueCached(
     _memoryCacheBaseAddress = memoryAddress;
     _memoryCacheSize = memoryLength;
 
-    // add some offset around but
-    // cache size should not exceed real memory boundaries
-    // (done this way to prevent overflows)
-    const std::size_t offset = std::min((std::size_t)10, _memorySize / 2);
-    if (_memoryCacheBaseAddress < offset) {
-      _memoryCacheBaseAddress = 0;
-    } else {
-      _memoryCacheBaseAddress -= offset;
-    }
-    if (_memoryCacheBaseAddress + _memoryCacheSize >=
-        _memorySize - offset * 2) {
-      _memoryCacheSize = _memorySize - _memoryCacheBaseAddress;
-    } else {
-      _memoryCacheSize += offset * 2;
-    }
+    _updateCache();
 
-    // fetch cache from core
-    _memoryCache =
-        _memoryAccess
-            .getMemoryValueAt(_memoryCacheBaseAddress, _memoryCacheSize)
-            .get();
-    // set cache status to valid
-    _memoryCacheValid = true;
-
-    std::size_t subsetStart = (memoryAddress - _memoryCacheBaseAddress) * 8;
-    std::size_t subsetEnd =
+    size_t subsetStart = (memoryAddress - _memoryCacheBaseAddress) * 8;
+    size_t subsetEnd =
         (memoryAddress - _memoryCacheBaseAddress + memoryLength) * 8;
     return _memoryCache.subSet(subsetStart, subsetEnd);
   }
@@ -240,12 +214,31 @@ QHash<int, QByteArray> MemoryComponentPresenter::roleNames() const {
   return roles;
 }
 
-QString MemoryComponentPresenter::_roleToDataFormat(const QString &role) {
-  QString dataFormat = role;
-  if (dataFormat.endsWith("8")) {
-    dataFormat.chop(1);
+void MemoryComponentPresenter::_updateCache() const {
+  // add some offset around but
+  // cache size should not exceed real memory boundaries
+  // (done this way to prevent overflows)
+  if (_memoryCacheBaseAddress < _memoryCacheOffset) {
+    _memoryCacheBaseAddress = 0;
   } else {
-    dataFormat.chop(2);
+    _memoryCacheBaseAddress -= _memoryCacheOffset;
   }
-  return dataFormat;
+  if (_memoryCacheBaseAddress + _memoryCacheSize >=
+      _memorySize - _memoryCacheOffset * 2) {
+    _memoryCacheSize = _memorySize - _memoryCacheBaseAddress;
+  } else {
+    _memoryCacheSize += _memoryCacheOffset * 2;
+  }
+
+  // fetch cache from core
+  _memoryCache =
+      _memoryAccess.getMemoryValueAt(_memoryCacheBaseAddress, _memoryCacheSize)
+          .get();
+  // set cache status to valid
+  _memoryCacheValid = true;
+}
+
+QString MemoryComponentPresenter::_roleToDataFormat(QString role) {
+  // remove digits at line ending
+  return role.remove(QRegularExpression("\\d+$"));
 }
