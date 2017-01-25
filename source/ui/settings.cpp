@@ -32,6 +32,10 @@
 
 Settings* Settings::_settings = nullptr;
 
+// Note: this is a QResource File (compiled into the binary, see qml.qrc)
+const char* const Settings::_settingsDefaultPath =
+    ":/Components/Settings/default-settings.json";
+
 Status Settings::Make() {
   assert::that(_settings == nullptr);
 
@@ -130,8 +134,7 @@ Settings::Json Settings::toJson() const {
 }
 
 StatusWithValue<QString> Settings::_findSettingsDirectory() {
-  auto directory =
-      QDir(QString::fromStdString(Utility::rootPath()));  // QDir::home();
+  auto directory = QDir::home();  // Represents an absolute path to $HOME.
 
   if (!directory.exists()) {
     return Status::Fail("Could not find home directory");
@@ -146,8 +149,17 @@ StatusWithValue<QString> Settings::_findSettingsDirectory() {
 
 QString Settings::_findSettingsFile(const QString& directoryPath) {
   QDir directory(directoryPath);
-  QFileInfo file(directory.filePath("settings.json"));
-  return file.absoluteFilePath();
+  return directory.absoluteFilePath("settings.json");
+}
+
+StatusWithValue<Settings::Json> Settings::_loadJson() {
+  auto data = _loadSettingsData();
+  if (!data) return data.status();
+
+  auto json = QJsonDocument::fromJson(data.value());
+
+  assert::that(json.isObject());
+  return json.object();
 }
 
 StatusWithValue<QByteArray> Settings::_loadSettingsData() {
@@ -180,20 +192,15 @@ Status Settings::_findSettings() {
   auto directoryResult = _findSettingsDirectory();
   if (!directoryResult) return directoryResult.status();
 
+  // Note that it is OK if we do not find the settings file, since we can
+  // use the default settings file built into the application. We *do* need
+  // to find the settings directory, however. That's why we check the
+  // status above.
+
   _settingsFilePath = _findSettingsFile(directoryResult.value());
-
   _settingsDirectoryPath = directoryResult.value();
+
   return Status::OK;
-}
-
-StatusWithValue<Settings::Json> Settings::_loadJson() {
-  auto data = _loadSettingsData();
-  if (!data) return data.status();
-
-  auto json = QJsonDocument::fromJson(data.value());
-
-  assert::that(json.isObject());
-  return json.object();
 }
 
 Status Settings::_checkSnapshotLocation(Json& json) {
@@ -205,9 +212,12 @@ Status Settings::_checkSnapshotLocation(Json& json) {
     return Status::OK;
   }
 
-  // TODO(psag): QDir::home();
-  QDir defaultLocation(QString::fromStdString(Utility::rootPath()));
-  defaultLocation.setPath(".erasim/snapshots");
+  auto defaultLocation = QDir::home();
+  defaultLocation.cd(".erasim");
+
+  // No-Op if the directory already exists
+  defaultLocation.mkdir("snapshots");
+  defaultLocation.cd("snapshots");
 
   json["snapshotLocation"] = defaultLocation.absolutePath();
 
