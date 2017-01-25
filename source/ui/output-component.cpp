@@ -102,7 +102,6 @@ OutputComponent::getTextFromMemory(int start, QString currentText, int mode) {
     for (int i = 0; (start + i) < _memoryAccess.getMemorySize().get(); i++) {
       MemoryValue memoryValue = _memoryAccess.getMemoryValueAt(start + i).get();
       unsigned int z = conversions::convert<uint32_t>(memoryValue);
-
       if (z == 0) {
         break;
       }
@@ -115,7 +114,7 @@ OutputComponent::getTextFromMemory(int start, QString currentText, int mode) {
     unsigned int z = conversions::convert<uint32_t>(memoryValue);
     if (z == 0) {
       text = "";
-    } else if (z == 127) {// Delete sign
+    } else if (z == 127) {  // Delete sign
       text = "";
     } else {
       text += char(z);

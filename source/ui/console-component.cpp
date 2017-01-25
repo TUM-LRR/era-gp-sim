@@ -39,11 +39,8 @@ void ConsoleComponent::newText(QString text) {
       break;
     }
     QChar qchar = text.at(i);
-    if (qchar.isPrint()) {
-      // else do nothing, was not an printable sign
-      MemoryValue m = conversions::convert(qchar.unicode(), 32);
-      _memoryAccess.putMemoryValueAt(_start + i, m);
-    }
+    MemoryValue m = conversions::convert(qchar.unicode(), 32);
+    _memoryAccess.putMemoryValueAt(_start + i, m);
   }
 }
 
