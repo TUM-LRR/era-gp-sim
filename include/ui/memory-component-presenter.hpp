@@ -34,6 +34,8 @@ class MemoryComponentPresenter : public QAbstractListModel {
   Q_OBJECT
 
  public:
+  using size_t = std::size_t;
+
   MemoryComponentPresenter(const MemoryAccess &access,
                            const MemoryManager &manager,
                            QQmlContext *projectContext,
@@ -115,8 +117,8 @@ class MemoryComponentPresenter : public QAbstractListModel {
    * \param length Size of the MemoryValue
    * \return The requested MemoryValue
    */
-  MemoryValue getMemoryValueCached(const std::size_t address,
-                                   const std::size_t length) const;
+  MemoryValue
+  getMemoryValueCached(const size_t address, const size_t length) const;
 
   /**
    * Returns the number of rows in this table
@@ -138,12 +140,18 @@ class MemoryComponentPresenter : public QAbstractListModel {
   QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
 
   /**
-   * Turns a role string into the data format string by removing the number of
+   * Updates the memory cache. Has to be const as the data method is const.
+   */
+  void _updateCache() const;
+
+  /**
+   * Turns a role string into the data format string by removing the number
+   * of
    * bits at the end.
    *
-   * \returns The data format string.
+   * \returns The data format string (taken by value)
    */
-  static QString _roleToDataFormat(const QString &role);
+  static QString _roleToDataFormat(QString role);
 
   /** Holds a MemoryAccess for accessing the memory */
   MemoryAccess _memoryAccess;
@@ -154,7 +162,7 @@ class MemoryComponentPresenter : public QAbstractListModel {
 
   /** Saves the size of the memory, as calling MemoryAccess::getMemorySize() in
    * rowCount causes a deadlock. */
-  std::size_t _memorySize;
+  size_t _memorySize;
 
   /**
    * Cache for core memory on updates. When the memory is updates every view
@@ -166,13 +174,16 @@ class MemoryComponentPresenter : public QAbstractListModel {
   /**
    * Size of core memory that is hold in cache.
    */
-  mutable std::size_t _memoryCacheSize = 0;
+  mutable size_t _memoryCacheSize = 0;
 
   /**
    * Starting address of the memory hold in cache.
    * Just one block of memory will be kept in the cache.
    */
-  mutable std::size_t _memoryCacheBaseAddress = 0;
+  mutable size_t _memoryCacheBaseAddress = 0;
+
+  /** An offset for the cache. */
+  mutable size_t _memoryCacheOffset;
 
   /**
    * Determines whether the current cache is valid or outdated.
@@ -210,7 +221,7 @@ class MemoryComponentPresenter : public QAbstractListModel {
    * \param length the number of cells that were changed
    *
    */
-  void onMemoryChanged(const std::size_t address, const std::size_t length);
+  void onMemoryChanged(const size_t address, const size_t length);
 };
 
 #endif /* ERAGPSIM_UI_MEMORY_COMPONENT_PRESENTER_HPP */
