@@ -168,7 +168,8 @@ bietet Abbildung \ref{fig:arch-syntax-tree}
 Die aufgeführten Klassen haben folgende Funktion:
 \begin{itemize}
 	\item \textbf{AbstractSyntaxTreeNode} ist die Oberklasse jedes Syntax Knotens
-	und definiert, welche Methoden die Unterklassen implementieren müssen.
+	und definiert, welche Methoden die Unterklassen implementieren müssen. Des
+	Weiteren enthält sie eine Liste an etwaige Kindknoten.
 	\item \textbf{ImmediateNode} repräsentiert einen \textit{Immediate}-Wert,
 	also einen Wert, der direkt im Assembler Quelltext angegeben ist. Architekturen
 	stellen im Allgemeinen keine Spezialisierung eines Immediate Wertes zur
@@ -195,6 +196,50 @@ konzeptioniert, die jedoch nicht im Quellcode definiert sind:
 	im oben aufgeführten Beispiel also der Inhalt der eckigen Klammern.
 	\item \textbf{ArithmeticNode} stellt eine arithmetische Operation dar, im
 	obigen Beispiel also sowohl die Multiplikation, als auch die Addition.
+\end{itemize}
+
+Die Oberklasse jedes Knotens ist die Klasse \texttt{AbstractSyntaxTreeNode}.
+Folgende Methoden werden von ihr vorgegeben:
+
+\begin{itemize}
+	\item \textbf{\texttt{getValue(MemoryAccess\&)}}: Diese Methode führt den
+	darunter liegenden Syntax Baum aus, und ruft ggf. rekursiv dieselbe Methode
+	bei den Kindknoten auf. Je nach Knotentyp variiert der Rückgabewert: So gibt
+	beispielsweise ein Instruktionsknoten die Adresse der nächsten Instruktion
+	zurück, ein Register seinen aktuellen Wert und ein Immediateknoten die
+	abgespeicherte Konstante. Als Parameter wird eine Zugriffsmöglichkeit auf den
+	Speicher übergeben, mit dem die Instruktion z.B. das Resultat der Operation
+	abspeichern kann. \\
+	Mit Diesem Konzept werden Codeduplikate verhindert, da z.B. eine arithmetische
+	Operation, die sowohl mit Registern, als auch mit Immediate Werten arbeiten
+	kann, nur einmal implementiert werden muss. In RISC-V kann man dieses Konzept
+	beispielsweise auf \textit{add} und \textit{addi} anwenden.
+
+	\item \textbf{\texttt{validate(MemoryAccess\&)}}: Während der Parser lediglich
+	eine syntaktische Überprüfung des Assembler Quelltext vornimmt, validiert
+	diese Methode die semantische Korrektheit einer Instruktion. Es wird zum
+	Beispiel überprüft, ob der richtige Typ und die korrekte Anzahl an Operanden
+	übergeben wurde, oder ob der übergebene Immediate Werte in die vorgegebenen
+	Anzahl an Bits passen. War die Validierung nicht erfolgreich, so wird eine
+	übersetzbare Fehlermeldung zurückgegeben.
+
+	\item \textbf{\texttt{validateRuntime(MemoryAccess\&)}}: Validiert, ob eine
+	Instruktion zur Laufzeit ausgeführt werden kann. Die Methode wird vor allem
+	für Sprunginstruktionen benötigt, sodass geprüft werden kann, ob das Ziel
+	des Sprungs innerhalb des zur Verfügung stehenden Programms liegt. Des
+	Weiteren lässt es sich so verhindert, dass geschützte Speicherbereiche
+	von Store Instruktionen beschrieben werden.
+
+	\item \textbf{\texttt{assemble()}}: Wandelt einen Syntax Baum in die
+	Binärdarstellung der Architektur um. Diese Darstellung ist lediglich zur
+	Visualisierung für den Benutzer vorgesehen, die eigentliche Simulation der
+	Instruktionen wird über den Syntax Baum vorgenommen.
+
+	\item \textbf{\texttt{getIdentifier()}}: Gibt den Typ eines Knotens als
+	Zeichenkette zurück. Beispielsweise geben Instruktionen ihren entsprechenden
+	Mnemonic (z.B. \textit{addi}) und Register ihren Namen (z.B. \textit{x1})
+	zurück. Letzteres wird verwendet, um Schreibzugriffe auf ein Register
+	in einem Instruktionsknoten durchzuführen.
 \end{itemize}
 
 \subsubsection{Node Factory}
