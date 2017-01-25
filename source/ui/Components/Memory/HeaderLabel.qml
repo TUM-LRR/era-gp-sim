@@ -18,43 +18,38 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
-import QtGraphicalEffects 1.0
 
 import Theme 1.0
 
-Button {
-  id: button
-  width: Theme.memory.add.width
-  anchors {
-    top: parent.top
-    bottom: parent.bottom
-    bottomMargin: Theme.memory.add.marginBottom
-    right: parent.right
-    rightMargin: Theme.memory.add.marginRight
-  }
+Rectangle {
+  color: Theme.memory.header.label.background
+  width: Theme.memory.header.label.width
+  height: parent.height
 
-  MouseArea {
+  property string comboboxSelection
+
+  Label {
     anchors.fill: parent
-    cursorShape: Qt.PointingHandCursor
-    onClicked: tableView.addColumn(memoryContent);
-  }
 
-  style: ButtonStyle {
-    background: Rectangle {
-      color: Theme.memory.add.background
+    text: {
+      if (currentRole === 'address') {
+        return Theme.memory.header.label.delimiterOpen
+             + comboboxSelection.match(/\d+/)[0]
+             + Theme.memory.header.label.delimiterClose;
+      } else {
+        return Theme.memory.header.label.delimiterOpen
+             + currentRole[0]
+             + Theme.memory.header.label.delimiterClose;
+      }
     }
-    label: Text {
-      text: "+"
-      horizontalAlignment: Qt.AlignHCenter
-      verticalAlignment: Qt.AlignVCenter
-      color: Theme.memory.add.color
-      font.pixelSize: Theme.memory.add.fontSize
-      font.weight: {
-        if (Theme.memory.header.remove.fontWeight === 'bold') {
-          return Font.DemiBold;
-        } else {
-          return Font.Normal;
-        }
+    verticalAlignment: Qt.AlignVCenter
+    color: Theme.memory.header.label.color
+    font.pixelSize: Theme.memory.header.label.fontSize
+    font.weight: {
+      if (Theme.memory.header.label.fontWeight === 'bold') {
+        return Font.DemiBold;
+      } else {
+        return Font.Normal;
       }
     }
   }

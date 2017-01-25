@@ -6,7 +6,7 @@ memory
     border-radius: 3px
     font-size: 12px
     height: 24px
-    min-width: 110px
+    min-width: 120px
   divider
     color: $divider-color
     width: 1px
@@ -19,11 +19,24 @@ memory
     width: 90px
   header
     background: transparent
-    font-size: 12px
-    font-weight: bold
     height: 25px
-    button
-      width: 70px
+    @mixin header-base
+      background: transparent
+      font-size: 12px
+    label
+      +header-base
+      color: $accent-color
+      delimiter-open: "("
+      delimiter-close: ")"
+      font-weight: normal
+      margin-right: 2px
+      width: 10px
+    combobox
+      +header-base
+      color: $primary-text-color
+      font-weight: bold
+      margin-bottom: 0px
+      width: 53px
     remove
       background: transparent
       color: $accent-color

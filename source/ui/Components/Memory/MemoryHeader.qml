@@ -66,7 +66,6 @@ Rectangle {
         id: headerSection
         height: header.height
 
-        property alias text: headerButton.currentText
         property var currentRole: {
           var column = tableView.getColumn(index);
           return column ? column.role : "";
@@ -83,7 +82,7 @@ Rectangle {
           }
         }
 
-        HeaderButton {
+        HeaderSection {
           id: headerButton
           anchors.centerIn: parent
         }

@@ -18,39 +18,33 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
-import QtGraphicalEffects 1.0
 
 import Theme 1.0
 
-// The ComboBox above each row the user can either choose the number
-// of bits or the numerical representation of a memory cell depending
-// on the column.
 ComboBox {
   id: combobox
   height: parent.height
-  width: Theme.memory.header.button.width
+  width: Theme.memory.header.combobox.width
 
-  ContextMenu { target: combobox }
+  ContextMenu { }
+
+  anchors {
+    bottom: parent.bottom
+    bottomMargin: Theme.memory.header.combobox.marginBottom
+  }
 
   style: ComboBoxStyle {
     background: Rectangle {
-      color: Theme.memory.header.background
+      color: Theme.memory.header.combobox.background
     }
     label: Text {
-      font.pixelSize: Theme.memory.header.fontSize
+      text: currentRole === 'address' ? 'Address' : 'Memory'
       horizontalAlignment: Qt.AlignHCenter
       verticalAlignment: Qt.AlignVCenter
-      text: {
-        if (currentRole === 'address') {
-          var bits = combobox.currentText.match(/\d+/)[0];
-          return 'Address (' + bits + ')';
-        } else {
-          var format = combobox.currentText[0];
-          return 'Memory (' + format + ')';
-        }
-      }
+      color: Theme.memory.header.combobox.color
+      font.pixelSize: Theme.memory.header.combobox.fontSize
       font.weight: {
-        if (Theme.memory.header.fontWeight === 'bold') {
+        if (Theme.memory.header.combobox.fontWeight === 'bold') {
           return Font.DemiBold;
         } else {
           return Font.Normal;

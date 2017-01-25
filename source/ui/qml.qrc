@@ -22,7 +22,9 @@
         <file>Components/Memory/AddColumnButton.qml</file>
         <file>Components/Memory/MemoryDivider.qml</file>
         <file>Components/Memory/MemoryHeader.qml</file>
-        <file>Components/Memory/HeaderButton.qml</file>
+        <file>Components/Memory/HeaderComboBox.qml</file>
+        <file>Components/Memory/HeaderLabel.qml</file>
+        <file>Components/Memory/HeaderSection.qml</file>
         <file>Components/Memory/ContextMenu.qml</file>
         <file>Components/Toolbar/ToolbarComponent.qml</file>
         <file>Components/Toolbar/ToolbarButton.qml</file>

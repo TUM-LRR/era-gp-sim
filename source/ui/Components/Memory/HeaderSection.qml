@@ -13,34 +13,18 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see http://www.gnu.org/licenses/.*/
+* along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
 import QtQuick 2.6
 import QtQuick.Controls 1.5
+import QtQuick.Controls.Styles 1.4
 
-Item {
-  anchors.fill: parent
+import Theme 1.0
 
-  Menu {
-    id: menu
-    MenuItem {
-      text: "Remove"
-      onTriggered: {
-        tableView.removeColumn(index);
-        headerModel.remove(index);
-      }
-    }
-  }
+Row {
+  spacing: Theme.memory.header.label.marginRight
+  height: parent.height
 
-  MouseArea {
-    anchors.fill: parent
-    cursorShape: Qt.PointingHandCursor
-    acceptedButtons: Qt.RightButton
-    onClicked: {
-      // Only enable when we have more than one memory column.
-      if (header.count > 2 && currentRole !== 'address') {
-        menu.popup();
-      }
-    }
-  }
+  HeaderComboBox { id: combobox }
+  HeaderLabel { comboboxSelection: combobox.currentText }
 }
