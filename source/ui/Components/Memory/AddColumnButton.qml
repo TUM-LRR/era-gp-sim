@@ -18,48 +18,44 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
+import QtGraphicalEffects 1.0
 
 import Theme 1.0
 
-Item {
-  // numberOfBits: holds the number of bits shown in each memory cell,
-  // it is used for calculating the address and for fetching the right amount of bits from the core
-  property int numberOfBits: 8
-  property int numberOfBytes: numberOfBits / 8
-
-  MemoryHeader {
-    id: header
-    tableView: memoryTreeView
-    memoryContent: content
+Button {
+  id: button
+  width: Theme.memory.add.width
+  anchors {
+    top: parent.top
+    bottom: parent.bottom
+    bottomMargin: Theme.memory.add.marginBottom
+    right: parent.right
+    rightMargin: Theme.memory.add.marginRight
   }
 
-  MemoryTreeView {
-    id: memoryTreeView
-    memoryContent: content
-    itemDelegate: MemoryAddressCell { }
-    rowDelegate: row
-    anchors {
-      top: header.bottom
-      bottom: parent.bottom
-      right: parent.right
-      left: parent.left
+  MouseArea {
+    anchors.fill: parent
+    cursorShape: Qt.PointingHandCursor
+    onClicked: tableView.addColumn(memoryContent);
+  }
+
+  style: ButtonStyle {
+    background: Rectangle {
+      color: Theme.memory.add.background
     }
-  }
-
-  Component {
-    id: row
-    Rectangle {
-      height: styleData.row % numberOfBytes ? 0 : Theme.memory.cell.height
-    }
-  }
-
-  Component {
-    id: content
-    MemoryContent {
-      delegate: Component {
-        MemoryCell { tableView: memoryTreeView }
+    label: Text {
+      text: "+"
+      horizontalAlignment: Qt.AlignHCenter
+      verticalAlignment: Qt.AlignVCenter
+      color: Theme.memory.add.color
+      font.pixelSize: Theme.memory.add.fontSize
+      font.weight: {
+        if (Theme.memory.header.remove.fontWeight === 'bold') {
+          return Font.DemiBold;
+        } else {
+          return Font.Normal;
+        }
       }
     }
   }
-
 }

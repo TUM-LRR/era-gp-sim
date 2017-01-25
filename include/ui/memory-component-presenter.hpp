@@ -34,32 +34,32 @@ class MemoryComponentPresenter : public QAbstractListModel {
   Q_OBJECT
 
  public:
-  explicit MemoryComponentPresenter(MemoryAccess access,
-                                    MemoryManager manager,
-                                    QQmlContext *projectContext,
-                                    QObject *parent = 0);
-  ~MemoryComponentPresenter();
+  MemoryComponentPresenter(const MemoryAccess &access,
+                           const MemoryManager &manager,
+                           QQmlContext *projectContext,
+                           QObject *parent = 0);
 
   /**
-   * Converts a hexademcimal representation of a string into a memory value
-   * and saves it to the internal memory object.
+   * Stores a value to memory.
    *
-   * /param address the address of the cell to be updated
-   * /param newvalue the new value for the memory cell
-   * /param length_bit the number of bits shown in the string
-   * /param presentation which numeric representation is used (eg. hex, oct, bin)
-   *
+   * \param address the address of the cell to be updated
+   * \param value the new value for the memory cell
+   * \param numberOfBits The number of bits used.
+   * \param role The current role (format + bits).
    */
-  Q_INVOKABLE void setValue(int address, QString newvalue, int length_bit, QString presentation);
+  Q_INVOKABLE void setValue(int address,
+                            const QString &value,
+                            int numberOfBits,
+                            const QString &role);
 
   /**
    * Sets the context information for memory cells (NOT IMPLEMENTED YET)
    *
-   * /param addressStart the starting address of the memory cell the context
+   * \param addressStart the starting address of the memory cell the context
    * information is related to
-   * /param length the number of memory cells the context information is related
+   * \param length the number of memory cells the context information is related
    * to
-   * /param identifier the unique identifier for this context information (for
+   * \param identifier the unique identifier for this context information (for
    * further updates)
    *
    */
@@ -71,9 +71,9 @@ class MemoryComponentPresenter : public QAbstractListModel {
    * the index.
    * Inherited from QAbstractListModel
    *
-   * /param index the index where the data should be written to
-   * /param role one of several DisplayRoles for this column
-   * /return returns the QVariant that is displayed in the view
+   * \param index the index where the data should be written to
+   * \param role one of several DisplayRoles for this column
+   * \return returns the QVariant that is displayed in the view
    *
    */
   QVariant data(const QModelIndex &index,
@@ -82,59 +82,68 @@ class MemoryComponentPresenter : public QAbstractListModel {
   /**
    * helper method: returns address data for data method
    *
-   * /param index the index where the data should be written to
-   * /param role one of several DisplayRoles for this column
-   * /return returns the QVariant that is displayed as address
+   * \param index the index where the data should be written to
+   * \param role one of several DisplayRoles for this column
+   * \return returns the QVariant that is displayed as address
    */
-  QVariant dataAdress(const QModelIndex &index,
-                      int role = Qt::DisplayRole) const;
+  QVariant
+  dataAdress(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
   /**
    * helper method: returns memory data for data method
    *
-   * /param index the index where the data should be written to
-   * /param role one of several DisplayRoles for this column
-   * /return returns the QVariant that is displayed as memory
+   * \param index the index where the data should be written to
+   * \param role one of several DisplayRoles for this column
+   * \return returns the QVariant that is displayed as memory
    */
-  QVariant dataMemory(const QModelIndex &index,
-                      int role = Qt::DisplayRole) const;
+  QVariant
+  dataMemory(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
   /**
    * helper method: returns info data for data method
    *
-   * /param index the index where the data should be written to
-   * /param role one of several DisplayRoles for this column
-   * /return returns the QVariant that is displayed as info
+   * \param index the index where the data should be written to
+   * \param role one of several DisplayRoles for this column
+   * \return returns the QVariant that is displayed as info
    */
-  QVariant dataInfo(const QModelIndex &index,
-                      int role = Qt::DisplayRole) const;
+  QVariant dataInfo(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
   /**
-   * Gets a MemoryValue at the given position either from the core or by using a cache.
-   * /param address Address of the MemoryValue
-   * /param length Size of the MemoryValue
-   * /return The requested MemoryValue
+   * Gets a MemoryValue at the given position either from the core or by using a
+   * cache.
+   * \param address Address of the MemoryValue
+   * \param length Size of the MemoryValue
+   * \return The requested MemoryValue
    */
-  MemoryValue getMemoryValueCached(const std::size_t address, const std::size_t length) const;
+  MemoryValue getMemoryValueCached(const std::size_t address,
+                                   const std::size_t length) const;
 
   /**
    * Returns the number of rows in this table
    * Inherited from QAbstractListModel
    *
-   * /param parent pointer to the logical data parent
-   * /return returns the length of the table
+   * \param parent pointer to the logical data parent
+   * \return returns the length of the table
    *
    */
-  int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+  int rowCount(const QModelIndex &) const Q_DECL_OVERRIDE;
 
   /**
    * Returns the translation between roleNames in QML and the internal index
    * representation inherited from QAbstractListModel.
    *
-   * /return returns a QHash with the connection between the internal index
+   * \return returns a QHash with the connection between the internal index
    * representation and the name of the role in QML
    */
   QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
+
+  /**
+   * Turns a role string into the data format string by removing the number of
+   * bits at the end.
+   *
+   * \returns The data format string.
+   */
+  static QString _roleToDataFormat(const QString &role);
 
   /** Holds a MemoryAccess for accessing the memory */
   MemoryAccess _memoryAccess;
@@ -172,28 +181,24 @@ class MemoryComponentPresenter : public QAbstractListModel {
 
   /** enumeration of all roles of the columns */
   enum ColumnRoles {
-      AddressRole = Qt::UserRole,// avoid collisions with predefined roles
-      ValueRoleBin8,
-      ValueRoleBin16,
-      ValueRoleBin32,
-      ValueRoleBin64,
-      ValueRoleOct8,
-      ValueRoleOct16,
-      ValueRoleOct32,
-      ValueRoleOct64,
-      ValueRoleHex8,
-      ValueRoleHex16,
-      ValueRoleHex32,
-      ValueRoleHex64,
-      ValueRoleDec8,
-      ValueRoleDec16,
-      ValueRoleDec32,
-      ValueRoleDec64,
-      ValueRoleDecS8,
-      ValueRoleDecS16,
-      ValueRoleDecS32,
-      ValueRoleDecS64,
-      InfoRole
+    AddressRole = Qt::UserRole,  // avoid collisions with predefined roles
+    ValueRoleBin8,
+    ValueRoleBin16,
+    ValueRoleBin32,
+    ValueRoleBin64,
+    ValueRoleHex8,
+    ValueRoleHex16,
+    ValueRoleHex32,
+    ValueRoleHex64,
+    ValueRoleDec8,
+    ValueRoleDec16,
+    ValueRoleDec32,
+    ValueRoleDec64,
+    ValueRoleDecS8,
+    ValueRoleDecS16,
+    ValueRoleDecS32,
+    ValueRoleDecS64,
+    InfoRole
   };
 
  public slots:
@@ -201,8 +206,8 @@ class MemoryComponentPresenter : public QAbstractListModel {
    * Callback function for the core memory. Is beeing called when something in
    * the memory changes.
    *
-   * /param address the address of the first cell with a new value
-   * /param length the number of cells that were changed
+   * \param address the address of the first cell with a new value
+   * \param length the number of cells that were changed
    *
    */
   void onMemoryChanged(const std::size_t address, const std::size_t length);

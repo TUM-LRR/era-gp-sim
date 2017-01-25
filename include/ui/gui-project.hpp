@@ -21,6 +21,7 @@
 #ifndef ERAGPSIM_UI_GUIPROJECT_HPP
 #define ERAGPSIM_UI_GUIPROJECT_HPP
 
+#include <QHash>
 #include <QObject>
 #include <QQmlContext>
 #include <QString>
@@ -64,7 +65,9 @@ class GuiProject : QObject {
   using MemoryToStringConverter =
       std::function<std::string(const MemoryValue&)>;
   using StringToMemoryConverter =
-      std::function<MemoryValue(const std::string&)>;
+      std::function<Optional<MemoryValue>(const std::string&, std::size_t)>;
+  using MemoryToStringConverterMap = QHash<QString, MemoryToStringConverter>;
+  using StringToMemoryConverterMap = QHash<QString, StringToMemoryConverter>;
 
   /**
    * The Constructor
@@ -209,30 +212,18 @@ class GuiProject : QObject {
   Q_INVOKABLE QString getCommandHelp(std::size_t line);
 
   /**
-   * Functions for converting MemoryValues to Strings.
-   *  Names should explain the single Functions
+   * A map of function for converting MemoryValues to strings.
    *
-   * \return The string
+   * \return The map.
    */
-  MemoryToStringConverter getHexConversion();
-  MemoryToStringConverter getBinConversion();
-  MemoryToStringConverter getOctConversion();
-  MemoryToStringConverter getSignedDecimalConversion();
-  MemoryToStringConverter getUnsignedDecimalConversion();
-  MemoryToStringConverter getDecimalFloatConversion();
+  static const MemoryToStringConverterMap& getMemoryToStringConversions();
 
   /**
-   * Functions for converting strings to MemoryValues.
-   * Names should explain the single Functions
+   *  A map of functions for converting strings to MemoryValues.
    *
-   * \return the memoryValue
+   * \returns The map.
    */
-  StringToMemoryConverter getSignedToMemoryValue();
-  StringToMemoryConverter getHexToMemoryValue();
-  StringToMemoryConverter getBinToMemoryValue();
-  StringToMemoryConverter getOctToMemoryValue();
-  StringToMemoryConverter getUnsignedToMemoryValue();
-  StringToMemoryConverter getFloatToMemoryValue();
+  static const StringToMemoryConverterMap& getStringToMemoryConversions();
 
  signals:
   /**
@@ -362,20 +353,11 @@ class GuiProject : QObject {
    */
   LineHelpMap _helpCache;
 
-  /**
-   * The Functions for the conversion
-   */
-  MemoryToStringConverter _hexConversion;
-  MemoryToStringConverter _binConversion;
-  MemoryToStringConverter _signedDecimalConversion;
-  MemoryToStringConverter _unsignedDecimalConversion;
-  MemoryToStringConverter _decimalFloatConversion;
+  /** A map of conversion functions from memory values to strings. */
+  static MemoryToStringConverterMap _memoryToStringMap;
 
-  StringToMemoryConverter _signedToMemoryValue;
-  StringToMemoryConverter _hexToMemoryValue;
-  StringToMemoryConverter _binToMemoryValue;
-  StringToMemoryConverter _unsignedToMemoryValue;
-  StringToMemoryConverter _floatToMemoryValue;
+  /** A map of conversion functions from strings to memory values. */
+  static StringToMemoryConverterMap _stringToMemoryMap;
 
  private slots:
   /**

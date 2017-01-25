@@ -19,45 +19,28 @@ import QtQuick 2.6
 import QtQuick.Controls 1.5
 
 Item {
+  anchors.fill: parent
+
   Menu {
-    id: contextMenu
-
+    id: menu
     MenuItem {
-      text: "All registers to Binary"
-      onTriggered: registerTreeView.formatAllRegisters("Binary");
-    }
-
-    MenuItem {
-      text: "All registers to Hexadecimal"
-      onTriggered: registerTreeView.formatAllRegisters("Hexadecimal");
-    }
-
-    MenuItem {
-      text: "All registers to Unsigned Decimal"
-      onTriggered: registerTreeView.formatAllRegisters("Unsigned Decimal");
-    }
-
-    MenuItem {
-      text: "All registfadsers to Signed Decimal"
-      onTriggered: registerTreeView.formatAllRegisters("Signed Decimal");
-    }
-
-    MenuItem {
-      text: "All registers to Flag"
-      onTriggered: registerTreeView.formatAllRegisters("Flag");
+      text: "Remove"
+      onTriggered: {
+        tableView.removeColumn(index);
+        headerModel.remove(index);
+      }
     }
   }
 
   MouseArea {
     anchors.fill: parent
+    cursorShape: Qt.PointingHandCursor
     acceptedButtons: Qt.RightButton
-    onClicked: contextMenu.popup();
-  }
-
-  Connections {
-    target: registerComponent
-    onSettingsButtonPressed: {
-       contextMenu.popup();
+    onClicked: {
+      // Only enable when we have more than one memory column.
+      if (header.count > 2 && currentRole !== 'address') {
+        menu.popup();
+      }
     }
   }
 }

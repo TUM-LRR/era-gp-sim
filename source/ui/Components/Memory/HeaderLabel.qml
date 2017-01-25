@@ -21,45 +21,36 @@ import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
-Item {
-  // numberOfBits: holds the number of bits shown in each memory cell,
-  // it is used for calculating the address and for fetching the right amount of bits from the core
-  property int numberOfBits: 8
-  property int numberOfBytes: numberOfBits / 8
+Rectangle {
+  color: Theme.memory.header.label.background
+  width: Theme.memory.header.label.width
+  height: parent.height
 
-  MemoryHeader {
-    id: header
-    tableView: memoryTreeView
-    memoryContent: content
-  }
+  property string comboboxSelection
 
-  MemoryTreeView {
-    id: memoryTreeView
-    memoryContent: content
-    itemDelegate: MemoryAddressCell { }
-    rowDelegate: row
-    anchors {
-      top: header.bottom
-      bottom: parent.bottom
-      right: parent.right
-      left: parent.left
+  Label {
+    anchors.fill: parent
+
+    text: {
+      if (currentRole === 'address') {
+        return Theme.memory.header.label.delimiterOpen
+             + comboboxSelection.match(/\d+/)[0]
+             + Theme.memory.header.label.delimiterClose;
+      } else {
+        return Theme.memory.header.label.delimiterOpen
+             + currentRole[0]
+             + Theme.memory.header.label.delimiterClose;
+      }
     }
-  }
-
-  Component {
-    id: row
-    Rectangle {
-      height: styleData.row % numberOfBytes ? 0 : Theme.memory.cell.height
-    }
-  }
-
-  Component {
-    id: content
-    MemoryContent {
-      delegate: Component {
-        MemoryCell { tableView: memoryTreeView }
+    verticalAlignment: Qt.AlignVCenter
+    color: Theme.memory.header.label.color
+    font.pixelSize: Theme.memory.header.label.fontSize
+    font.weight: {
+      if (Theme.memory.header.label.fontWeight === 'bold') {
+        return Font.DemiBold;
+      } else {
+        return Font.Normal;
       }
     }
   }
-
 }

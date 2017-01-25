@@ -23,10 +23,24 @@
 #include <functional>
 #include <string>
 
+#include "common/string-conversions.hpp"
 #include "common/utility.hpp"
 #include "ui/snapshot-component.hpp"
 #include "ui/translateable-processing.hpp"
 #include "ui/ui.hpp"
+
+GuiProject::MemoryToStringConverterMap GuiProject::_memoryToStringMap = {
+    {"BinaryData", StringConversions::toBinString},
+    {"HexData", StringConversions::toHexString},
+    {"SignedDecimalData", StringConversions::toSignedDecString},
+    {"UnsignedDecimalData", StringConversions::toUnsignedDecString}};
+
+GuiProject::StringToMemoryConverterMap GuiProject::_stringToMemoryMap = {
+    {"BinaryData", StringConversions::binStringToMemoryValue},
+    {"HexData", StringConversions::hexStringToMemoryValue},
+    {"SignedDecimalData", StringConversions::signedDecStringToMemoryValue},
+    {"UnsignedDecimalData", StringConversions::unsignedDecStringToMemoryValue}};
+
 
 GuiProject::GuiProject(
     QQmlContext* context,
@@ -274,44 +288,14 @@ QString GuiProject::getCommandHelp(std::size_t line) {
   return help;
 }
 
-GuiProject::MemoryToStringConverter GuiProject::getHexConversion() {
-  return _hexConversion;
+const GuiProject::MemoryToStringConverterMap&
+GuiProject::getMemoryToStringConversions() {
+  return _memoryToStringMap;
 }
 
-GuiProject::MemoryToStringConverter GuiProject::getBinConversion() {
-  return _binConversion;
-}
-
-GuiProject::MemoryToStringConverter GuiProject::getSignedDecimalConversion() {
-  return _signedDecimalConversion;
-}
-
-GuiProject::MemoryToStringConverter GuiProject::getUnsignedDecimalConversion() {
-  return _unsignedDecimalConversion;
-}
-
-GuiProject::MemoryToStringConverter GuiProject::getDecimalFloatConversion() {
-  return _decimalFloatConversion;
-}
-
-GuiProject::StringToMemoryConverter GuiProject::getSignedToMemoryValue() {
-  return _signedToMemoryValue;
-}
-
-GuiProject::StringToMemoryConverter GuiProject::getHexToMemoryValue() {
-  return _hexToMemoryValue;
-}
-
-GuiProject::StringToMemoryConverter GuiProject::getBinToMemoryValue() {
-  return _binToMemoryValue;
-}
-
-GuiProject::StringToMemoryConverter GuiProject::getUnsignedToMemoryValue() {
-  return _unsignedToMemoryValue;
-}
-
-GuiProject::StringToMemoryConverter GuiProject::getFloatToMemoryValue() {
-  return _floatToMemoryValue;
+const GuiProject::StringToMemoryConverterMap&
+GuiProject::getStringToMemoryConversions() {
+  return _stringToMemoryMap;
 }
 
 void GuiProject::_throwError(const Translateable& message) {

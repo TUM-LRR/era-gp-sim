@@ -66,6 +66,15 @@ editor issue error { darkColor: #ffb998; lightColor: "#10ff5000"; }
 editor issue warning { darkColor: #ffe39d; lightColor: "#10ffb90a"; }
 editor issue information { darkColor: #99c8ff; lightColor: "#100075ff"; }
 
+memory cell { background: transparent; color: #212121; border-color: #BDBDBD; border-radius: 3px; font-size: 12px; height: 24px; min-width: 120px; }
+memory divider { color: #BDBDBD; width: 1px; }
+memory address { background: transparent; color: #212121; font-size: 12px; font-weight: normal; margin-left: -10px; width: 90px; }
+memory header { background: transparent; height: 25px; }
+memory header label { background: transparent; font-size: 12px; color: #FF4081; delimiter-open: "("; delimiter-close: ")"; font-weight: normal; margin-right: 2px; width: 10px; }
+memory header combobox { background: transparent; font-size: 12px; color: #212121; font-weight: bold; margin-bottom: 0px; width: 53px; }
+memory header remove { background: transparent; color: #FF4081; font-size: 16px; font-weight: bold; margin-bottom: 0px; margin-left: 0px; }
+memory add, memory snapshots item remove, snapshots item memory remove { background: transparent; color: #FF4081; font-size: 14px; font-weight: bold; margin-bottom: 2px; margin-right: 2px; width: 10px; }
+
 register { background: transparent; height: 40px; margin-left: -5px; margin-right: 10px; overflow: auto; }
 register label { color: #212121; font-size: 12px; font-weight: bold; }
 register content { background: white; color: #212121; font-size: 12px; height: 25px; margin: 4px; radius: 2px; }

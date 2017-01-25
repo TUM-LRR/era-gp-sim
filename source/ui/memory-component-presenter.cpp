@@ -18,14 +18,16 @@
 */
 
 #include "ui/memory-component-presenter.hpp"
-#include <iostream>
+
+#include <algorithm>
 
 #include "common/assert.hpp"
 #include "common/string-conversions.hpp"
 #include "core/memory-value.hpp"
+#include "ui/gui-project.hpp"
 
-MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access,
-                                                   MemoryManager manager,
+MemoryComponentPresenter::MemoryComponentPresenter(const MemoryAccess &access,
+                                                   const MemoryManager &manager,
                                                    QQmlContext *projectContext,
                                                    QObject *parent)
 : QAbstractListModel(parent)
@@ -34,11 +36,6 @@ MemoryComponentPresenter::MemoryComponentPresenter(MemoryAccess access,
 , _memorySize(access.getMemorySize().get()) {
   projectContext->setContextProperty("memoryModel", this);
 }
-
-
-MemoryComponentPresenter::~MemoryComponentPresenter() {
-}
-
 
 void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
                                                std::size_t length) {
@@ -50,18 +47,18 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
 
   // if the memory that is hold in cache is changed, invalidate cache
   // new value intersects with the beginning of the cached region
-  bool overlap_beginning =
+  bool overlapBeginning =
       (address <= _memoryCacheBaseAddress + _memoryCacheSize &&
        address + length >= _memoryCacheBaseAddress + _memoryCacheSize);
   // new value intersects with the ending of the cached region
-  bool overlap_ending = (address <= _memoryCacheBaseAddress &&
-                         address + length >= _memoryCacheBaseAddress);
+  bool overlapEnding = (address <= _memoryCacheBaseAddress &&
+                        address + length >= _memoryCacheBaseAddress);
   // new value is completly inside cached region
-  bool overlap_middle =
+  bool overlapMiddle =
       (address >= _memoryCacheBaseAddress &&
        address + length <= _memoryCacheBaseAddress + _memoryCacheSize);
 
-  if (overlap_beginning || overlap_middle || overlap_ending) {
+  if (overlapBeginning || overlapMiddle || overlapEnding) {
     _memoryCacheValid = false;
   }
 
@@ -71,36 +68,27 @@ void MemoryComponentPresenter::onMemoryChanged(std::size_t address,
 
 
 void MemoryComponentPresenter::setValue(int address,
-                                        QString number,
-                                        int length_bit,
-                                        QString presentation) {
-  if (number.length() == 0) {
-    number = "0";  // string conversions needs a number
+                                        const QString &value,
+                                        int numberOfBits,
+                                        const QString &role) {
+  assert::that(!role.isEmpty());
+
+  std::string string("0");
+  if (!value.isEmpty()) {
+    string = value.toStdString();
   }
-  if (presentation.startsWith("bin"))
-    _memoryAccess.putMemoryValueAt(address,
-                                   *StringConversions::binStringToMemoryValue(
-                                       number.toStdString(), length_bit));
-  // not yet implemented by conversions
-  /*else if (pres.startsWith("oct"))
-    _memoryAccess.putMemoryValueAt(address,
-                                   *StringConversions::octStringToMemoryValue(
-                                       number.toStdString(), length_bit));*/
-  else if (presentation.startsWith("hex"))
-    _memoryAccess.putMemoryValueAt(address,
-                                   *StringConversions::hexStringToMemoryValue(
-                                       number.toStdString(), length_bit));
-  else if (presentation.startsWith("decs"))
-    _memoryAccess.putMemoryValueAt(
-        address,
-        *StringConversions::unsignedDecStringToMemoryValue(number.toStdString(),
-                                                           length_bit));
-  else if (presentation.startsWith("dec"))
-    _memoryAccess.putMemoryValueAt(
-        address,
-        *StringConversions::signedDecStringToMemoryValue(number.toStdString(),
-                                                         length_bit));
-  return;
+  auto dataFormat = _roleToDataFormat(role);
+  assert::that(GuiProject::getStringToMemoryConversions().contains(dataFormat));
+
+  auto converter = GuiProject::getStringToMemoryConversions()[dataFormat];
+  auto memory = converter(value.toStdString(), numberOfBits);
+
+  // if the conversions returned a value, write the value, otherwise zero.
+  if (memory) {
+    _memoryAccess.putMemoryValueAt(address, *memory);
+  } else {
+    _memoryAccess.putMemoryValueAt(address, MemoryValue(numberOfBits));
+  }
 }
 
 
@@ -111,8 +99,7 @@ void MemoryComponentPresenter::setContextInformation(int addressStart,
 }
 
 
-int MemoryComponentPresenter::rowCount(const QModelIndex &parent) const {
-  Q_UNUSED(parent)
+int MemoryComponentPresenter::rowCount(const QModelIndex &) const {
   return _memorySize;
 }
 
@@ -132,54 +119,36 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
 
 QVariant
 MemoryComponentPresenter::dataAdress(const QModelIndex &index, int role) const {
-  // format address as hex value and return it
-  return QString("%1")
-      .arg(index.row(), 4, 16, QLatin1Char('0'))
-      .toUpper()
-      .prepend("0x");
+  return QString("0x%1").arg(index.row(), 4, 16, QLatin1Char('0'));
 }
-
 
 QVariant
 MemoryComponentPresenter::dataMemory(const QModelIndex &index, int role) const {
   // get role as a string because there is more information in it
-  QString role_string = MemoryComponentPresenter::roleNames().value(role);
+  QString roleString = MemoryComponentPresenter::roleNames().value(role);
 
-  int number_of_bits = 8;
-  if (role_string.endsWith("16")) number_of_bits = 16;
-  if (role_string.endsWith("32")) number_of_bits = 32;
-  if (role_string.endsWith("64")) number_of_bits = 64;
+  int numberOfBits = 8;
+  if (roleString.endsWith("16")) numberOfBits = 16;
+  if (roleString.endsWith("32")) numberOfBits = 32;
+  if (roleString.endsWith("64")) numberOfBits = 64;
 
 
-  int memory_address = index.row();
-  int memory_length = number_of_bits / 8;
+  int memoryAddress = index.row();
+  int memoryLength = numberOfBits / 8;
 
   // return empty string if cell is not displayed
-  if (memory_address % memory_length != 0) return QString("");
+  if (memoryAddress % memoryLength != 0) return QString("");
 
 
-  if (memory_address + memory_length <= _memorySize) {
-    MemoryValue memory_cell =
-        getMemoryValueCached(memory_address, memory_length);
+  if (memoryAddress + memoryLength <= _memorySize) {
+    MemoryValue memoryCell = getMemoryValueCached(memoryAddress, memoryLength);
 
-    std::string memoryStringValue;
-    if (role_string.startsWith("bin")) {
-      memoryStringValue = StringConversions::toBinString(memory_cell);
-    }
-    // not yet implemented by conversions
-    // else if (role_string.startsWith("oct"))
-    //  stringvalue = StringConversions::toOctString(memory_cell);
-    else if (role_string.startsWith("hex")) {
-      memoryStringValue = StringConversions::toHexString(memory_cell);
-    } else if (role_string.startsWith("decs")) {
-      memoryStringValue = StringConversions::toSignedDecString(memory_cell);
-    } else if (role_string.startsWith("dec")) {
-      memoryStringValue = StringConversions::toUnsignedDecString(memory_cell);
-    } else {
-      memoryStringValue = "unknown format";
-    }
+    // auto dataFormat = role_string.remove(QRegularExpression("\\d+"));
+    auto dataFormat = _roleToDataFormat(roleString);
+    auto converter = GuiProject::getMemoryToStringConversions()[dataFormat];
+    auto memoryValueString = converter(memoryCell);
 
-    return QString::fromStdString(memoryStringValue);
+    return QString::fromStdString(memoryValueString);
   } else {
     // wrong address
     return QString("");
@@ -195,23 +164,23 @@ MemoryComponentPresenter::dataInfo(const QModelIndex &index, int role) const {
 
 
 MemoryValue MemoryComponentPresenter::getMemoryValueCached(
-    const std::size_t memory_address, const std::size_t memory_length) const {
+    const std::size_t memoryAddress, const std::size_t memoryLength) const {
   // check for cache
-  if (_memoryCacheValid && memory_address >= _memoryCacheBaseAddress &&
-      memory_address + memory_length <=
+  if (_memoryCacheValid && memoryAddress >= _memoryCacheBaseAddress &&
+      memoryAddress + memoryLength <=
           _memoryCacheBaseAddress + _memoryCacheSize) {
     // cache hit -> get memory value from cache
 
     // fetch data from cache
     return _memoryCache.subSet(
-        (memory_address - _memoryCacheBaseAddress) * 8,
-        (memory_address - _memoryCacheBaseAddress + memory_length) * 8);
+        (memoryAddress - _memoryCacheBaseAddress) * 8,
+        (memoryAddress - _memoryCacheBaseAddress + memoryLength) * 8);
   } else {
     // cache miss -> update cache from core
 
     // calculate new cache region
-    _memoryCacheBaseAddress = memory_address;
-    _memoryCacheSize = memory_length;
+    _memoryCacheBaseAddress = memoryAddress;
+    _memoryCacheSize = memoryLength;
 
     // add some offset around but
     // cache size should not exceed real memory boundaries
@@ -237,38 +206,46 @@ MemoryValue MemoryComponentPresenter::getMemoryValueCached(
     // set cache status to valid
     _memoryCacheValid = true;
 
-    std::size_t subset_start = (memory_address - _memoryCacheBaseAddress) * 8;
-    std::size_t subset_end =
-        (memory_address - _memoryCacheBaseAddress + memory_length) * 8;
-    return _memoryCache.subSet(subset_start, subset_end);
+    std::size_t subsetStart = (memoryAddress - _memoryCacheBaseAddress) * 8;
+    std::size_t subsetEnd =
+        (memoryAddress - _memoryCacheBaseAddress + memoryLength) * 8;
+    return _memoryCache.subSet(subsetStart, subsetEnd);
   }
 }
 
 
 QHash<int, QByteArray> MemoryComponentPresenter::roleNames() const {
-  // connect TableColumns in View with columns in this model
-  QHash<int, QByteArray> roles;
-  roles[AddressRole] = "address";
-  roles[ValueRoleBin8] = "bin8";
-  roles[ValueRoleBin16] = "bin16";
-  roles[ValueRoleBin32] = "bin32";
-  roles[ValueRoleBin64] = "bin64";
-  roles[ValueRoleOct8] = "oct8";
-  roles[ValueRoleOct16] = "oct16";
-  roles[ValueRoleOct32] = "oct32";
-  roles[ValueRoleOct64] = "oct64";
-  roles[ValueRoleHex8] = "hex8";
-  roles[ValueRoleHex16] = "hex16";
-  roles[ValueRoleHex32] = "hex32";
-  roles[ValueRoleHex64] = "hex64";
-  roles[ValueRoleDec8] = "dec8";
-  roles[ValueRoleDec16] = "dec16";
-  roles[ValueRoleDec32] = "dec32";
-  roles[ValueRoleDec64] = "dec64";
-  roles[ValueRoleDecS8] = "decs8";
-  roles[ValueRoleDecS16] = "decs16";
-  roles[ValueRoleDecS32] = "decs32";
-  roles[ValueRoleDecS64] = "decs64";
-  roles[InfoRole] = "info";
+  // clang-format off
+  static QHash<int, QByteArray> roles = {
+    {AddressRole, "address"},
+    {ValueRoleBin8, "BinaryData8"},
+    {ValueRoleBin16, "BinaryData16"},
+    {ValueRoleBin32, "BinaryData32"},
+    {ValueRoleBin64, "BinaryData64"},
+    {ValueRoleHex8, "HexData8"},
+    {ValueRoleHex16, "HexData16"},
+    {ValueRoleHex32, "HexData32"},
+    {ValueRoleHex64, "HexData64"},
+    {ValueRoleDec8, "UnsignedDecimalData8"},
+    {ValueRoleDec16, "UnsignedDecimalData16"},
+    {ValueRoleDec32, "UnsignedDecimalData32"},
+    {ValueRoleDec64, "UnsignedDecimalData64"},
+    {ValueRoleDecS8, "SignedDecimalData8"},
+    {ValueRoleDecS16, "SignedDecimalData16"},
+    {ValueRoleDecS32, "SignedDecimalData32"},
+    {ValueRoleDecS64, "SignedDecimalData64"},
+    {InfoRole, "info"}
+  };
+  // clang-format on
   return roles;
+}
+
+QString MemoryComponentPresenter::_roleToDataFormat(const QString &role) {
+  QString dataFormat = role;
+  if (dataFormat.endsWith("8")) {
+    dataFormat.chop(1);
+  } else {
+    dataFormat.chop(2);
+  }
+  return dataFormat;
 }

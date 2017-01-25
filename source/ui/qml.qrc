@@ -4,6 +4,30 @@
         <file>Components/Common/ToolTip.qml</file>
         <file>Components/ComponentHolder.qml</file>
         <file>Components/editor/Editor.qml</file>
+        <file>Components/Memory/MemoryComponent.qml</file>
+        <file>Components/Memory/MemoryTreeView.qml</file>
+        <file>Components/Memory/MemoryCell.qml</file>
+        <file>Components/Memory/MemoryContent.qml</file>
+        <file>Components/Memory/MemoryAddressCell.qml</file>
+        <file>Components/Memory/RemoveButton.qml</file>
+        <file>Components/Memory/AddColumnButton.qml</file>
+        <file>Components/Memory/MemoryDivider.qml</file>
+        <file>Components/Memory/MemoryHeader.qml</file>
+        <file>Components/Memory/HeaderComboBox.qml</file>
+        <file>Components/Memory/HeaderLabel.qml</file>
+        <file>Components/Memory/HeaderSection.qml</file>
+        <file>Components/Memory/ContextMenu.qml</file>
+        <file>Components/Toolbar/ToolbarComponent.qml</file>
+        <file>Components/Toolbar/ToolbarButton.qml</file>
+        <file>Components/Toolbar/Icons/Run.svg</file>
+        <file>Components/Toolbar/Icons/Step.svg</file>
+        <file>Components/Toolbar/Icons/Stop.svg</file>
+        <file>Components/Toolbar/Icons/Clear.svg</file>
+        <file>Components/Toolbar/Icons/Parse.svg</file>
+        <file>Components/Toolbar/Icons/RunToBreakpoint.svg</file>
+        <file>Components/Menubar/Menubar.qml</file>
+        <file>Components/editor/MacroTriangleButton.qml</file>
+        <file>Components/editor/MacroSubeditor.qml</file>
         <file>Components/editor/HelpToolTip.qml</file>
         <file>Components/editor/InlineMacros.qml</file>
         <file>Components/editor/Issue Icons/Error Icon.png</file>
@@ -35,8 +59,6 @@
         <file>Components/Input/Input.qml</file>
         <file>Components/Input/TextInputSelf.qml</file>
         <file>Components/Input/TextInputSW.qml</file>
-        <file>Components/Memory/MemoryComponent.qml</file>
-        <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected@2x.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon.png</file>
@@ -92,14 +114,6 @@
         <file>Components/Snapshots/SnapshotList.qml</file>
         <file>Components/Snapshots/SnapshotTitle.qml</file>
         <file>Components/Snapshots/TextButton.qml</file>
-        <file>Components/Toolbar/Icons/Clear.svg</file>
-        <file>Components/Toolbar/Icons/Parse.svg</file>
-        <file>Components/Toolbar/Icons/Run.svg</file>
-        <file>Components/Toolbar/Icons/RunToBreakpoint.svg</file>
-        <file>Components/Toolbar/Icons/Step.svg</file>
-        <file>Components/Toolbar/Icons/Stop.svg</file>
-        <file>Components/Toolbar/ToolbarButton.qml</file>
-        <file>Components/Toolbar/ToolbarComponent.qml</file>
         <file>ErrorDialog.qml</file>
         <file>Icons/Settings Icon Pressed.png</file>
         <file>Icons/Settings Icon Pressed@2x.png</file>

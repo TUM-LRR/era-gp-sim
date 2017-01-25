@@ -21,45 +21,29 @@ import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
-Item {
-  // numberOfBits: holds the number of bits shown in each memory cell,
-  // it is used for calculating the address and for fetching the right amount of bits from the core
-  property int numberOfBits: 8
-  property int numberOfBytes: numberOfBits / 8
+TableView {
+  model: memoryModel
+  selectionMode: SelectionMode.NoSelection
 
-  MemoryHeader {
-    id: header
-    tableView: memoryTreeView
-    memoryContent: content
+  // We have a completely custom header (due to a bug in QML).
+  headerVisible: false
+
+  property var memoryContent
+
+  style: TableViewStyle {
+    transientScrollBars: true
   }
 
-  MemoryTreeView {
-    id: memoryTreeView
-    memoryContent: content
-    itemDelegate: MemoryAddressCell { }
-    rowDelegate: row
-    anchors {
-      top: header.bottom
-      bottom: parent.bottom
-      right: parent.right
-      left: parent.left
-    }
+  // The default MemoryView consists of three columns:
+  // 1. address                               (fixed)
+  // 2. content of each memory cell           (dynamic)
+  TableViewColumn {
+    role: "address"
+    movable: false
+    resizable: true
+    width: Theme.memory.address.width
   }
 
-  Component {
-    id: row
-    Rectangle {
-      height: styleData.row % numberOfBytes ? 0 : Theme.memory.cell.height
-    }
-  }
-
-  Component {
-    id: content
-    MemoryContent {
-      delegate: Component {
-        MemoryCell { tableView: memoryTreeView }
-      }
-    }
-  }
-
+  // Add a column with the content for each cell at startup.
+  Component.onCompleted: addColumn(memoryContent);
 }
