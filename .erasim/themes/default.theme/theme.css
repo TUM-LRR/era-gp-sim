@@ -50,7 +50,7 @@ tabbar tab active { background: white; }
 tabbar tab inactive { background: #d4d4d4; }
 tabbar tab closeButton { color: #666666; }
 tabbar tab closeButton highlighted { color: #FF4081; }
-tabbar addTabButton { background: transparent; color: #666666; pointSize: 18; }
+tabbar addTabButton { background: transparent; color: #FF4081; pointSize: 18; }
 tabbar addTabButton highlighted { color: #FF4081; }
 tabbar frame { background: #f2f2f2; }
 
