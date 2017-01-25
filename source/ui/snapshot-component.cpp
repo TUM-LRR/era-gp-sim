@@ -50,18 +50,33 @@ void SnapshotComponent::addSnapshot(const QString& architectureIdentifier,
                                     const QString& snapshotName,
                                     const std::string& data) {
   _snapshotDirectory.mkdir(architectureIdentifier);
+
   auto path = snapshotPath(architectureIdentifier, snapshotName);
   Utility::storeToFile(path, data);
-  _snapshotMap.insert(architectureIdentifier, snapshotName);
-  emit snapshotsChanged();
+
+  if (!snapshotExists(architectureIdentifier, snapshotName)) {
+    // As the _snapshotMap is a QMultiHash, duplicates of key value pairs can be
+    // inserted, which is stopped by this.
+    _snapshotMap.insert(architectureIdentifier, snapshotName);
+    emit snapshotsChanged();
+  }
 }
 
 void SnapshotComponent::removeSnapshot(const QString& architectureIdentifier,
-                                       const QString& snapshotName) {
-  auto path = snapshotPath(architectureIdentifier, snapshotName);
-  QFile(QString::fromStdString(path)).remove();
+                                       const QString& snapshotName,
+                                       bool removePermanently) {
+  if (removePermanently) {
+    auto path = snapshotPath(architectureIdentifier, snapshotName);
+    QFile(QString::fromStdString(path)).remove();
+  }
+
   _snapshotMap.remove(architectureIdentifier, snapshotName);
   emit snapshotsChanged();
+}
+
+bool SnapshotComponent::snapshotExists(const QString& architectureIdentifier,
+                                       const QString& snapshotName) {
+  return _snapshotMap.contains(architectureIdentifier, snapshotName);
 }
 
 std::string

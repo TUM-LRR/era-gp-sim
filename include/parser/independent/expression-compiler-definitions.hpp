@@ -115,7 +115,9 @@ struct ExpressionBinaryOperator {
   /**
    * Applies the operator on two numbers and records any possible errors.
    */
-  std::function<bool(const T&, const T&, T&, CompileErrorList&)> handler;
+  std::function<bool(
+      const T&, const T&, T&, CompileErrorList&, const CodePositionInterval&)>
+      handler;
 };
 
 /**
@@ -136,7 +138,9 @@ struct ExpressionUnaryOperator {
   /**
    * Applies the operator on one number and records any possible errors.
    */
-  std::function<bool(const T&, T&, CompileErrorList&)> handler;
+  std::function<bool(
+      const T&, T&, CompileErrorList&, const CodePositionInterval&)>
+      handler;
 };
 
 /**

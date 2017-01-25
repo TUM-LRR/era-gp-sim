@@ -26,21 +26,7 @@
 #include "core/architecture-access.hpp"
 #include "core/memory-manager.hpp"
 #include "core/memory-value.hpp"
-
-std::map<QByteArray, RegisterModel::MemoryValueToStringConversion>
-    RegisterModel::_memoryValueToStringConversions = {
-        {"BinaryData", StringConversions::toBinString},
-        {"HexData", StringConversions::toHexString},
-        {"SignedDecimalData", StringConversions::toSignedDecString},
-        {"UnsignedDecimalData", StringConversions::toUnsignedDecString}};
-
-std::map<QString, RegisterModel::StringToMemoryValueConversion>
-    RegisterModel::_stringToMemoryValueConversions = {
-        {"Binary", StringConversions::binStringToMemoryValue},
-        {"Hexadecimal", StringConversions::hexStringToMemoryValue},
-        {"Signed Decimal", StringConversions::signedDecStringToMemoryValue},
-        {"Unsigned Decimal",
-         StringConversions::unsignedDecStringToMemoryValue}};
+#include "ui/gui-project.hpp"
 
 
 RegisterModel::RegisterModel(ArchitectureAccess &architectureAccess,
@@ -137,10 +123,13 @@ QVariant RegisterModel::data(const QModelIndex &index, int role) const {
           .get()
           .get(0);
     default:
+      auto roleString = roleNames()[role];
       auto registerValue =
           _memoryAccess.getRegisterValue(registerItem->getName()).get();
-      return QString::fromStdString(
-          _memoryValueToStringConversions.at(roleNames()[role])(registerValue));
+      assert::that(
+          GuiProject::getMemoryToStringConversions().contains(roleString));
+      auto converter = GuiProject::getMemoryToStringConversions()[roleString];
+      return QString::fromStdString(converter(registerValue));
   }
   return QVariant();
 }
@@ -229,8 +218,8 @@ void RegisterModel::registerContentChanged(const QModelIndex &index,
       static_cast<RegisterInformation *>(index.internalPointer());
 
   auto content = registerContent.remove(QChar(' ')).toStdString();
-  assert::that(_stringToMemoryValueConversions.count(dataFormat) > 0);
-  auto converter = _stringToMemoryValueConversions[dataFormat];
+  assert::that(GuiProject::getStringToMemoryConversions().contains(dataFormat));
+  auto converter = GuiProject::getStringToMemoryConversions()[dataFormat];
   auto memory = converter(content, registerItem->getSize());
 
   // Notify core about the change

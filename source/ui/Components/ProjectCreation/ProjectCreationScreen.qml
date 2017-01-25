@@ -24,11 +24,7 @@ import QtGraphicalEffects 1.0
 import Theme 1.0
 import "Sections"
 
-/////////////////////////////
-// Project Creation Screen
-/////////////////////////////
-
-Item {
+Rectangle {
   id: root
 
   signal createProject(string projectName,
@@ -74,7 +70,7 @@ Item {
       id: button
       anchors.top: version.bottom
       onClicked: {
-        root.createProject(
+        createProject(
           projectName.text,
           memorySize.selection,
           architecture.selection,

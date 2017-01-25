@@ -28,12 +28,13 @@
 #include "parser/common/final-command.hpp"
 #include "parser/common/final-representation.hpp"
 #include "parser/common/macro-information.hpp"
+#include "parser/independent/allocate-memory-immutable-arguments.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 #include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/intermediate-macro-instruction.hpp"
 #include "parser/independent/macro-directive-table.hpp"
 #include "parser/independent/memory-allocator.hpp"
-#include "parser/independent/preprocessing-immutable-arguments.hpp"
+#include "parser/independent/precompile-immutable-arguments.hpp"
 #include "parser/independent/section-tracker.hpp"
 #include "parser/independent/symbol-graph-evaluation.hpp"
 #include "parser/independent/symbol-graph.hpp"
@@ -182,27 +183,39 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
                      "Macro not closed. Missing a macro end directive?");
   }
 
-  auto preprocessingArguments = PreprocessingImmutableArguments(
-      parameters.architecture(), parameters.generator());
+  PrecompileImmutableArguments precompileArguments(parameters.architecture(),
+                                                   parameters.generator());
 
-  auto macroTable = MacroDirectiveTable();
+  SymbolGraph graph;
+  MacroDirectiveTable macroTable;
   for (const auto& command : _commandList) {
-    command->precompile(preprocessingArguments, errors, macroTable);
+    command->precompile(precompileArguments, errors, graph, macroTable);
   }
 
   IntermediateMacroInstruction::replaceWithMacros(
       _commandList.begin(), _commandList.end(), macroTable, errors);
 
   auto macroList = generateMacroInformation();
+  auto preliminaryEvaluation = graph.evaluate();
 
-  auto allocator = MemoryAllocator(parameters.allocator());
-  auto tracker = SectionTracker();
+  if (!evaluateGraph(preliminaryEvaluation, errors)) {
+    return FinalRepresentation({}, errors, macroList);
+  }
+
+  SymbolReplacer preliminaryReplacer(preliminaryEvaluation);
+
+  MemoryAllocator allocator(parameters.allocator());
+  SectionTracker tracker;
 
   auto allowedSize = memoryAccess.getMemorySize().get();
-  auto firstMemoryExceedingOperation = IntermediateOperationPointer(nullptr);
+  IntermediateOperationPointer firstMemoryExceedingOperation(nullptr);
+
+  AllocateMemoryImmutableArguments allocateMemoryArguments(precompileArguments,
+                                                           preliminaryReplacer);
 
   for (const auto& command : _commandList) {
-    command->allocateMemory(preprocessingArguments, errors, allocator, tracker);
+    command->allocateMemory(
+        allocateMemoryArguments, errors, allocator, tracker);
     if (allocator.estimateSize() > allowedSize &&
         !firstMemoryExceedingOperation) {
       firstMemoryExceedingOperation = command;
@@ -211,9 +224,8 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
 
   auto allocatedSize = allocator.calculatePositions();
 
-  auto graph = SymbolGraph();
-  auto symbolTableArguments =
-      EnhanceSymbolTableImmutableArguments(preprocessingArguments, allocator);
+  EnhanceSymbolTableImmutableArguments symbolTableArguments(
+      allocateMemoryArguments, allocator);
   for (const auto& command : _commandList) {
     command->enhanceSymbolTable(symbolTableArguments, errors, graph);
   }
@@ -226,10 +238,9 @@ IntermediateRepresentator::transform(const TransformationParameters& parameters,
     return FinalRepresentation({}, errors, macroList);
   }
 
-  auto replacer = SymbolReplacer(graphEvaluation);
-  auto executeArguments =
-      ExecuteImmutableArguments(symbolTableArguments, replacer);
-  auto commandOutput = FinalCommandVector();
+  SymbolReplacer replacer(graphEvaluation);
+  ExecuteImmutableArguments executeArguments(symbolTableArguments, replacer);
+  FinalCommandVector commandOutput;
   for (const auto& command : _commandList) {
     command->execute(executeArguments, errors, commandOutput, memoryAccess);
   }
