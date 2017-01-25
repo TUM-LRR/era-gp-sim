@@ -85,8 +85,7 @@ const QString& Theme::currentThemeName() const noexcept {
 }
 
 StatusWithValue<QByteArray> Theme::_loadThemeData(const QString& name) {
-  auto directory =
-      QDir(QString::fromStdString(Utility::rootPath()));  // QDir::home();
+  auto directory = QDir::home();  // Represents an absolute path to $HOME.
 
   if (!directory.exists()) {
     return Status::Fail("Could not find home directory");
