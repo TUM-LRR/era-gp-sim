@@ -22,7 +22,7 @@ import QtQuick.Controls 1.5
 import QtQuick.Dialogs 1.2
 import Theme 1.0
 import "../Common"
-import "../../Js/TextUtility.js" as TextUtility
+import "../Common/TextUtilities.js" as TextUtilities
 
 /**
 This file is implements all the features of the editor component. Some features might
@@ -62,7 +62,7 @@ ScrollView {
   //background
   Rectangle {
     anchors.fill: parent
-    color: Theme.editor.background
+    color: "white"
   }
 
   //the Flickable of ScrollView
@@ -111,8 +111,6 @@ ScrollView {
 
           width: (textArea.unscaledWidth)*scale.zoom;
           height: (textArea.unscaledHeight)*scale.zoom;
-
-          color: Theme.editor.color
 
           x: sidebar.width
           selectByMouse: true
@@ -240,7 +238,7 @@ ScrollView {
             onTriggered: {
               // don't parse while executing to avoid parsing multiple
               // times on stopping (onStopped triggers parse)
-              if(!tabView.currentProjectItem().running) {
+              if(!tabView.getCurrentProjectItem().running) {
                 editor.parse();
               }
             }
@@ -248,23 +246,21 @@ ScrollView {
 
           // Cursor line highlighting
           Rectangle{
-            color: Theme.editor.lineHighlight.background
-            border.width: 1
-            border.color: Theme.editor.lineHighlight.border.color
+            color: Qt.rgba(0.9, 0.9, 0.9, 0.2)
             y: textArea.cursorRectangle.y + textArea.topPadding
             height: textArea.cursorRectangle.height
             width: Math.max(scrollView.width, textArea.contentWidth)
             visible: textArea.activeFocus
+            border.width: 1
+            border.color: Qt.rgba(0.7, 0.7, 0.7, 0.2)
           }
 
           // Execution line highlighting
           Rectangle{
             id: executionLineHighlight
-            color: Theme.editor.executionLineHighlight.background
-            border.width: 1
-            border.color: Theme.editor.executionLineHighlight.border.color
             // Current raw line number to display the execution line highlight at.
             property var lineNumber
+            color: Qt.rgba(0.2, 0.8, 0.4, 0.2)
             y: textArea.cursorRectangle.height * (executionLineHighlight.lineNumber - 1);
             height: textArea.cursorRectangle.height;
             width: Math.max(scrollView.width, textArea.contentWidth)
@@ -355,7 +351,7 @@ ScrollView {
           y: 0
           height: Math.max(container.height, textArea.contentHeight)
           width: errorBar.width + lineNumbersBar.width + macroBar.width
-          color: Theme.editor.sidebar.background
+          color: "#eeeeeb"
 
           property alias _macroBar: macroBar
 
@@ -521,9 +517,9 @@ ScrollView {
                   // paint it as normal (needs to be set explicitly as this line number might have been
                   // reused.
                   if (lineIndex > 0 && _lineNumberObjects[lineIndex-1].text === lineNumber.toString()) {
-                    _lineNumberObjects[lineIndex].color = Qt.lighter(Theme.editor.sidebar.lineNumber.color, 1.25);
+                    _lineNumberObjects[lineIndex].color = "#BBBBBB";
                   } else {
-                    _lineNumberObjects[lineIndex].color = Theme.editor.sidebar.lineNumber.color;
+                    _lineNumberObjects[lineIndex].color = "gray";
                   }
                 }
               }
@@ -536,7 +532,7 @@ ScrollView {
               id: lineNumberTextComponent
 
               Text {
-                color: Theme.editor.sidebar.lineNumber.color
+                color: "gray"
                 font: textArea.font
                 height: textArea.cursorRectangle.height
               }
@@ -606,7 +602,7 @@ ScrollView {
                 anchors.verticalCenter: parent.verticalCenter
                 x: (errorBar.width - width) / 2
                 radius: width*0.5
-                color: Theme.editor.breakpoint.color
+                color: "#0080FF"
               }
 
               MouseArea {

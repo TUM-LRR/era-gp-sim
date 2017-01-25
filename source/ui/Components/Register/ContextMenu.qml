@@ -56,6 +56,7 @@ Item {
 
   Connections {
     target: registerComponent
+
     onSettingsButtonPressed: {
        contextMenu.popup();
     }

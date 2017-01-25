@@ -152,7 +152,7 @@ class JumpAndLinkImmediateInstructionNode
   ValidationResult _validateResultingProgramCounter(
       MemoryAccess& memoryAccess) const override {
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
-    auto offset = super::template _getChildValue<SignedWord>(memoryAccess, 1);
+    auto offset = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
 
     // Check if the program counter would underflow or overflow
     if (!riscv::addressIsValid(memoryAccess, programCounter + 2 * offset,
@@ -291,7 +291,7 @@ class JumpAndLinkRegisterInstructionNode
       MemoryAccess& memoryAccess) const override {
     auto base = super::template _getChildValue<UnsignedWord>(memoryAccess, 1);
     auto offset =
-        super::template _getChildValue<SignedWord>(memoryAccess, 2);
+        super::template _getChildValue<UnsignedWord>(memoryAccess, 2) + base;
     auto programCounter = riscv::loadRegister<UnsignedWord>(memoryAccess, "pc");
     if (!riscv::addressIsValid(memoryAccess, base + offset, programCounter)) {
       return ValidationResult::fail(

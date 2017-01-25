@@ -65,7 +65,7 @@ class MemoryAccess : public Proxy<Project> {
    * Calls Memory::tryGet
    * \returns std::future<MemoryValue>
    */
-  POST_FUTURE_CONST(tryGetMemoryValueAt)
+  POST_FUTURE_CONST(tryGetMemoryValueAt);
 
   /**
    * Returns a number of memory cells at a given address as

@@ -23,24 +23,10 @@
 #include <functional>
 #include <string>
 
-#include "common/string-conversions.hpp"
 #include "common/utility.hpp"
 #include "ui/snapshot-component.hpp"
 #include "ui/translateable-processing.hpp"
 #include "ui/ui.hpp"
-
-GuiProject::MemoryToStringConverterMap GuiProject::_memoryToStringMap = {
-    {"BinaryData", StringConversions::toBinString},
-    {"HexData", StringConversions::toHexString},
-    {"SignedDecimalData", StringConversions::toSignedDecString},
-    {"UnsignedDecimalData", StringConversions::toUnsignedDecString}};
-
-GuiProject::StringToMemoryConverterMap GuiProject::_stringToMemoryMap = {
-    {"BinaryData", StringConversions::binStringToMemoryValue},
-    {"HexData", StringConversions::hexStringToMemoryValue},
-    {"SignedDecimalData", StringConversions::signedDecStringToMemoryValue},
-    {"UnsignedDecimalData", StringConversions::unsignedDecStringToMemoryValue}};
-
 
 GuiProject::GuiProject(
     QQmlContext* context,
@@ -217,17 +203,11 @@ void GuiProject::loadText(const QUrl& path) {
 }
 
 void GuiProject::saveSnapshot(const QString& qName) {
-  // clang-format off
-  auto snapshot = _projectModule
-    .getMemoryManager()
-    .generateSnapshot()
-    .get()
-    .dump(4);
-  // clang-format on
-
+  Json snapshot = _projectModule.getMemoryManager().generateSnapshot().get();
+  std::string snapshotString = snapshot.dump(4);
   try {
     _snapshotComponent->addSnapshot(
-        _architectureFormulaString, qName, snapshot);
+        _architectureFormulaString, qName, snapshotString);
   } catch (const std::exception& exception) {
     _throwError(Translateable(
         QT_TRANSLATE_NOOP("GUI error messages",
@@ -236,9 +216,8 @@ void GuiProject::saveSnapshot(const QString& qName) {
   }
 }
 
-void GuiProject::removeSnapshot(const QString& qName, bool removePermanently) {
-  _snapshotComponent->removeSnapshot(
-      _architectureFormulaString, qName, removePermanently);
+void GuiProject::removeSnapshot(const QString& qName) {
+  _snapshotComponent->removeSnapshot(_architectureFormulaString, qName);
 }
 
 void GuiProject::loadSnapshot(const QString& qName) {
@@ -258,10 +237,6 @@ void GuiProject::loadSnapshot(const QString& qName) {
 
 QStringList GuiProject::getSnapshots() {
   return _snapshotComponent->getSnapshotList(_architectureFormulaString);
-}
-
-bool GuiProject::snapshotExists(QString name) {
-  return _snapshotComponent->snapshotExists(_architectureFormulaString, name);
 }
 
 QString GuiProject::getCommandHelp(std::size_t line) {
@@ -288,14 +263,44 @@ QString GuiProject::getCommandHelp(std::size_t line) {
   return help;
 }
 
-const GuiProject::MemoryToStringConverterMap&
-GuiProject::getMemoryToStringConversions() {
-  return _memoryToStringMap;
+GuiProject::MemoryToStringConverter GuiProject::getHexConversion() {
+  return _hexConversion;
 }
 
-const GuiProject::StringToMemoryConverterMap&
-GuiProject::getStringToMemoryConversions() {
-  return _stringToMemoryMap;
+GuiProject::MemoryToStringConverter GuiProject::getBinConversion() {
+  return _binConversion;
+}
+
+GuiProject::MemoryToStringConverter GuiProject::getSignedDecimalConversion() {
+  return _signedDecimalConversion;
+}
+
+GuiProject::MemoryToStringConverter GuiProject::getUnsignedDecimalConversion() {
+  return _unsignedDecimalConversion;
+}
+
+GuiProject::MemoryToStringConverter GuiProject::getDecimalFloatConversion() {
+  return _decimalFloatConversion;
+}
+
+GuiProject::StringToMemoryConverter GuiProject::getSignedToMemoryValue() {
+  return _signedToMemoryValue;
+}
+
+GuiProject::StringToMemoryConverter GuiProject::getHexToMemoryValue() {
+  return _hexToMemoryValue;
+}
+
+GuiProject::StringToMemoryConverter GuiProject::getBinToMemoryValue() {
+  return _binToMemoryValue;
+}
+
+GuiProject::StringToMemoryConverter GuiProject::getUnsignedToMemoryValue() {
+  return _unsignedToMemoryValue;
+}
+
+GuiProject::StringToMemoryConverter GuiProject::getFloatToMemoryValue() {
+  return _floatToMemoryValue;
 }
 
 void GuiProject::_throwError(const Translateable& message) {

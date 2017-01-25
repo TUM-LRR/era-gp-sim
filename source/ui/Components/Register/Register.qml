@@ -22,9 +22,11 @@ import QtQuick.Controls.Styles 1.4
 import Theme 1.0
 
 Item {
+  property var model
 
   RegisterLabel {
     id: registerName
+    model: parent.model
     anchors {
       left: parent.left
       leftMargin: Theme.register.marginLeft
@@ -62,6 +64,7 @@ Item {
     id: formatSelector
     index: styleData.index
     treeView: registerTreeView
+    registerModel: registerTreeView.model
     anchors {
       right: parent.right
       rightMargin: Theme.register.marginRight

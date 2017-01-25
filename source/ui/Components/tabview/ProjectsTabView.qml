@@ -31,20 +31,20 @@ TabView {
 
   onCurrentIndexChanged: updateMenuState();
 
-  // Undefined if there is no tab.
-  function currentProjectItem() {
+  // get the project of the current tab, is undefined if there is no tab.
+  function getCurrentProjectItem() {
     return tabView.getTab(tabView.currentIndex).item;
   }
 
-  // Undefined if there is no tab.
-  function currentProjectId() {
-    return currentProjectItem().projectId;
+  // get the id of the project in the current tab, undefined if there is no tab.
+  function getCurrentProjectId() {
+    return getCurrentProjectItem().projectId;
   }
 
-  // Returns false if there is only a creation screen in the current tab.
+  // returns false if there is only a creation screen in the current tab.
   // Undefined if there is no tab.
-  function currentProjectIsReady() {
-    return currentProjectItem().projectValid;
+  function currentProjectIsValid() {
+    return getCurrentProjectItem().projectValid;
   }
 
   style: TabViewStyle {

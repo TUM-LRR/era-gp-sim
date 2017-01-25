@@ -20,7 +20,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import "../Common"
-import Theme 1.0
 
 Item {
     anchors.left: parent.left
@@ -43,7 +42,7 @@ Item {
     // Background
     Rectangle {
         anchors.fill: parent
-        color: Theme.editor.macro.background
+        color: "#F5F5F5"
     }
 
     Rectangle {
@@ -53,7 +52,7 @@ Item {
         anchors.left: parent.left
         width: lineNumbersBar.width + 3
 
-        color: Theme.editor.sidebar.background
+        color: "#eeeeeb"
 
         Column {
             id: lineNumbersBar

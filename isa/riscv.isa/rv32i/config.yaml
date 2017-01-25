@@ -359,78 +359,51 @@ instructions:
       funct3: 0
       funct7: 7
 
-# To explain the complex mechanism of calculating an address:
-# We got the problem that every immediate except auipc and lui is signed,
-# no exceptions. This means, calling for example li r1 2048 should actually
-# cause a compile error if you stick to the RISC-V spec, version 2.1 where
-# just the lower 12 bits are taken as an immediate.
-# To work around this problem, we do the following
-# (let imm be the immediate that was put in by the user):
-# * if the lower 12 bits (viewed unsigned) are less than 2048 (i.e. imm[11]
-#   is zero), we put imm[12:31] into our lui instruction and imm[0:11] into
-#   our addi instruction. And imm[0:11] is guaranteed less than 2048, so we
-#   can simply take imm[0:10].
-# * if this is not the case, we take imm[12:31] and increment it. Now, we
-#   calculate the difference: imm - (imm[12:31] + 2^12) = imm[0:11] - 2^12
-#   = 2^11 + imm[0:10] - 2^12 = imm[0:10] - 2^11 = imm[0:10] - 2048. As
-#   imm[0:10] is at least 0 and at max 2047, we have -2048 as the minimum
-#   value which just turns out to still be in our 12 bit range.
-# Summing it up:
-# We take imm[12:31] + imm[11]. Now we still have to handle the corner case
-# that imm[12:31] is the max value that can be stored in these bytes, in this
-# case imm[12:31] + imm[11] has to be zero. So we take
-#
-# (imm[12:31] + imm[11]) & (2^20 - 1)
-#
-# For the lower 12 bits, we simply do
-#
-# imm[0:10] - imm[11] * 2048
-#
-
 builtin-macros:
   - |
     .macro la, rd, symbol
-    auipc \rd, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    addi \rd, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
+    auipc \rd, ((\symbol >> 12) & 0xfffff)
+    addi \rd, \rd, (\symbol & 0xfff)
     .endm
   - |
     .macro lbg, rd, symbol
-    lui \rd, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    lb \rd, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
+    auipc \rd, ((\symbol >> 12) & 0xfffff)
+    lb \rd, \rd, (\symbol & 0xfff)
     .endm
   - |
     .macro lhg, rd, symbol
-    lui \rd, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    lh \rd, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
+    auipc \rd, ((\symbol >> 12) & 0xfffff)
+    lh \rd, \rd, (\symbol & 0xfff)
     .endm
   - |
     .macro lwg, rd, symbol
-    lui \rd, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    lw \rd, \rd, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
+    auipc \rd, ((\symbol >> 12) & 0xfffff)
+    lw \rd, \rd, (\symbol & 0xfff)
     .endm
-  - |
-    .macro sbg, rd, symbol, rt
-    lui \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    sb \rd, \rt, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
-    .endm
-  - |
-    .macro shg, rd, symbol, rt
-    lui \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    sh \rd, \rt, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
-    .endm
-  - |
-    .macro swg, rd, symbol, rt
-    lui \rt, (((\symbol) >> 12) + (((\symbol) >> 11) & 1)) & ((1 << 20) - 1)
-    sw \rd, \rt, ((\symbol) & ((1 << 11) - 1)) - ((\symbol) & (1 << 11))
-    .endm
+# Disabled due to issues with parser
+#  - |
+#    .macro sbg, rd, symbol, rt
+#    auipc \rt, ((\symbol >> 12) & 0xfffff)
+#    sb \rt, \rd, (\symbol & 0xfff)
+#    .endm
+#  - |
+#    .macro shg, rd, symbol, rt
+#    auipc \rt, ((\symbol >> 12) & 0xfffff)
+#    sh \rt, \rd, (\symbol & 0xfff)
+#    .endm
+#  - |
+#    .macro swg, rd, symbol, rt
+#    auipc \rt, ((\symbol >> 12) & 0xfffff)
+#    sw \rt, \rd, (\symbol & 0xfff)
+#    .endm
   - |
     .macro nop
     addi x0, x0, 0
     .endm
   - |
     .macro li, rd, imm
-    lui \rd, (((\imm) >> 12) + (((\imm) >> 11) & 1)) & ((1 << 20) - 1)
-    addi \rd, \rd, ((\imm) & ((1 << 11) - 1)) - ((\imm) & (1 << 11))
+    lui \rd, ((\imm >> 12) & 0xfffff)
+    addi \rd, \rd, (\imm & 0xfff)
     .endm
   - |
     .macro mv, rd, rs
@@ -506,13 +479,13 @@ builtin-macros:
     .endm
   - |
     .macro call, offset
-    lui x6, (((\offset) >> 12) + (((\offset) >> 11) & 1)) & ((1 << 20) - 1)
-    jalr x1, x6, ((\offset) & ((1 << 11) - 1)) - ((\offset) & (1 << 11))
+    auipc x6, ((\offset >> 12) & 0xfffff)
+    jalr x1, x6, (\offset & 0xfff)
     .endm
   - |
     .macro tail, offset
-    lui x6, (((\offset) >> 12) + (((\offset) >> 11) & 1)) & ((1 << 20) - 1)
-    jalr x0, x6, ((\offset) & ((1 << 11) - 1)) - ((\offset) & (1 << 11))
+    auipc x6, ((\offset >> 12) & 0xfffff)
+    jalr x0, x6, (\offset & 0xfff)
     .endm
 units:
   - name: cpu

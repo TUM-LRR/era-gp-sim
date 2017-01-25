@@ -17,7 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import QtQuick 2.6
+import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import "Components"
@@ -169,9 +169,8 @@ Item {
     ]
 
     source: {
-      var currentComponent = sourceComponents[componentSelector.currentIndex];
-      if (currentComponent) {
-        return  "Components/" + currentComponent;
+      if (sourceComponents[componentSelector.currentIndex] !== undefined) {
+        return  "Components/" + sourceComponents[componentSelector.currentIndex];
       } else {
         return "Components/help/HelpWindow.qml";
       }

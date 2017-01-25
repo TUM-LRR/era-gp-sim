@@ -37,7 +37,7 @@ SectionDirective::SectionDirective(const CodePositionInterval& positionInterval,
 }
 
 void SectionDirective::allocateMemory(
-    const AllocateMemoryImmutableArguments& immutable,
+    const PreprocessingImmutableArguments& immutable,
     CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {

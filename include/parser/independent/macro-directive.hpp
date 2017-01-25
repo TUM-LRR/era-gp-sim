@@ -28,6 +28,8 @@
 #include "common/optional.hpp"
 #include "parser/independent/intermediate-directive.hpp"
 
+class SymbolTable;
+
 /**
  * A macro directive, denoting the start of a macro definition in code.
  */
@@ -71,9 +73,8 @@ class MacroDirective : public IntermediateDirective {
    * \param errors The compile error list to note down any errors.
    * \param macroTable A table to record occured macros.
    */
-  virtual void precompile(const PrecompileImmutableArguments& immutable,
+  virtual void precompile(const PreprocessingImmutableArguments& immutable,
                           CompileErrorList& errors,
-                          SymbolGraph& graph,
                           MacroDirectiveTable& macroTable);
 
 

@@ -25,8 +25,7 @@
 #include "parser/independent/symbol-replacer.hpp"
 #include "parser/independent/syntax-tree-generator.hpp"
 
-class PrecompileImmutableArguments;
-class AllocateMemoryImmutableArguments;
+class PreprocessingImmutableArguments;
 class EnhanceSymbolTableImmutableArguments;
 
 /**
@@ -51,32 +50,16 @@ class ExecuteImmutableArguments {
 
   /**
    * Creates a new ExecuteImmutableArguments with the given parameters
-   * out of some PrecompileImmutableArguments.
+   * out of some PreprocessingImmutableArguments.
    *
-   * \param beforeBeforePass The PrecompileImmutableArguments these arguments
+   * \param beforeBeforePass The PreprocessingImmutableArguments these arguments
    * are based on.
    * \param allocator The memory allocator used to convert relative to absolute
    * positions and also for different section management.
    * \param replacer The replacer for constants, labels etc.
    */
   ExecuteImmutableArguments(
-      const PrecompileImmutableArguments& beforeBeforeBeforePass,
-      const MemoryAllocator& allocator,
-      const SymbolReplacer& replacer);
-
-  /**
-   * Creates a new ExecuteImmutableArguments with the given parameters
-   * out of some AllocateMemoryImmutableArguments.
-   *
-   * \param beforeBeforePass The AllocateMemoryImmutableArguments these
-   * arguments
-   * are based on.
-   * \param allocator The memory allocator used to convert relative to absolute
-   * positions and also for different section management.
-   * \param replacer The replacer for constants, labels etc.
-   */
-  ExecuteImmutableArguments(
-      const AllocateMemoryImmutableArguments& beforeBeforePass,
+      const PreprocessingImmutableArguments& beforeBeforePass,
       const MemoryAllocator& allocator,
       const SymbolReplacer& replacer);
 

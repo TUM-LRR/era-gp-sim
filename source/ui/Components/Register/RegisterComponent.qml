@@ -67,7 +67,9 @@ Item {
     model: registerModel
     rowDelegate: Item { height: Theme.register.height }
 
-    itemDelegate: Register { }
+    itemDelegate: Register {
+      model: parent.model
+    }
 
     onFormatAllRegisters: {
       // Set default format to make newly loaded

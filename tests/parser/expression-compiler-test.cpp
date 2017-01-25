@@ -97,7 +97,6 @@ TEST(ExpressionCompilerClike, errors) {
   TEST_CASE_E("1+2)*(3+4)")
   TEST_CASE_E("****1")
   TEST_CASE_E("Hi!")
-  TEST_CASE_E("1/0");
 }
 
 // Now we can return the warning stuff to normal.

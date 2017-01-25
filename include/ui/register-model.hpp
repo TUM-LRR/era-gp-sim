@@ -172,6 +172,10 @@ class RegisterModel : public QAbstractItemModel {
 
 
  private:
+  using MemoryValueToStringConversion = std::function<std::string(MemoryValue)>;
+  using StringToMemoryValueConversion =
+      std::function<Optional<MemoryValue>(std::string, std::size_t)>;
+
   /// The dummy top-level item holding references to the visible top-level
   /// registers.
   std::unique_ptr<RegisterInformation> _rootItem;
@@ -181,6 +185,16 @@ class RegisterModel : public QAbstractItemModel {
 
   /// Interface for communicating register data changes to core.
   MemoryAccess _memoryAccess;
+
+  /// Map between format type string (e.g. "UnsignedDecimalData") and corresponding
+  /// MemoryValue to string conversion function.
+  static std::map<QByteArray, MemoryValueToStringConversion>
+      _memoryValueToStringConversions;
+
+  /// Map between format format type description (e.g. "Unsigned Decimal") and
+  /// corresponding string to MemoryValue conversion function.
+  static std::map<QString, StringToMemoryValueConversion>
+      _stringToMemoryValueConversions;
 
   /**
    * Returns the row of a given register relative

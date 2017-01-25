@@ -60,20 +60,20 @@ TextField {
 
   // Notify the model that the register's content was changed by the user.
   onEditingFinished: {
-    if (!formatSelector.selectionRole) return;
+    if (!formatSelector.selection) return;
     registerModel.registerContentChanged(
       styleData.index,
       root.text,
-      formatSelector.selectionRole
+      formatSelector.selection
     );
   }
 
   onAccepted: {
-    if (!formatSelector.selectionRole) return;
+    if (!formatSelector.selection) return;
     registerModel.registerContentChanged(
       styleData.index,
       root.text,
-      formatSelector.selectionRole
+      formatSelector.selection
     );
   }
 
@@ -84,7 +84,6 @@ TextField {
   }
 
   style: TextFieldStyle {
-    renderType: Text.QtRendering
     textColor: {
       if (enabled) {
         Theme.register.content.color
@@ -111,11 +110,11 @@ TextField {
 
   function insertWhitespace(content) {
     // For binary and hex numbers we insert a space
-    // every 4/2 characters (to delimit a nibble/byte).
+    // every 4/2 characters (to delimit a nibble/byte)
     if (formatSelector.selection === 'Binary') {
-      return content.replace(/(\d{4})(?!$)/g, '$& ');
+      return content.replace(/(\d{4})(?=.)/g, '$& ');
     } else if (formatSelector.selection === 'Hexadecimal') {
-      return content.replace(/([\da-fA-F]{2})(?!$)/g, '$& ');
+      return content.replace(/([\da-fA-F]{2})(?=.)/g, '$& ');
     } else {
       return content;
     }

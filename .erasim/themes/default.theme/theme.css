@@ -10,19 +10,12 @@ button border { color: #82c4f8; width: 2px; }
 button:disabled { background: #BDBDBD; color: #212121; }
 button:disabled border { color: #d7d7d7; }
 
-settings { min-width: 420px; min-height: 405px; }
-settings section { height: 90px; padding-top: 10px; padding-left: 5px; padding-right: 0px; }
-settings h1 { font-size: 14px; padding: 10px; color: #212121; }
-settings h2 { font-size: 12px; color: #757575; margin-bottom: 10px; margin-left: 10px; margin-right: 5px; margin-top: 10px; }
-settings horizontal-divider { color: #BDBDBD; height: 1px; width: 100%; }
-settings vertical-divider { color: #BDBDBD; width: 0px; height: 100%; }
-settings saveArea { background: #2196F3; height: 50px; }
-settings status { margin: 7px; height: 8px; width: 8px; radius: 4px; background: #8BC34A; }
-settings status border { color: #edf6e3; width: 2px; }
-settings changed { min-height: 455px; }
-settings changed status { background: #F44336; }
-settings changed status border { color: #fff8f7; width: 2px; }
-settings #snapshots button { font-size: 13px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
+settings { padding-top: 15px; }
+settings section { height: 95px; padding-bottom: 5px; }
+settings h1 { font-size: 16px; padding: 10px; color: #212121; }
+settings h2 { font-size: 13px; margin-top: 8px; margin-bottom: 10px; color: #757575; }
+settings hr { color: #BDBDBD; height: 1px; }
+settings #snapshots button { font-size: 14px; padding-left: 10px; padding-right: 20px; background: #FFFFFF; }
 
 toolbar { margin: 20px; background: white; }
 
@@ -37,55 +30,6 @@ tabbar addTabButton { background: transparent; color: #666666; pointSize: 18; }
 tabbar addTabButton highlighted { color: #FF4081; }
 tabbar frame { background: #f2f2f2; }
 
-snapshots creation-dialog, snapshots setting-dialog { background: white; margin-left: 10px; margin-right: 10px; margin-top: 25px; margin-bottom: 40px; }
-
-snapshots { background: white; margin-top: 10px; }
-snapshots hr, snapshots title hr { color: #BDBDBD; height: 0; }
-snapshots add, snapshots item remove { background: white; color: #FF4081; font-size: 16px; margin-bottom: 3px; font-weight: bold; height: 22px; }
-snapshots item { height: 20px; background: white; color: #212121; font-size: 12px; font-weight: normal; margin-right: 10px; }
-snapshots title { background: white; color: #212121; font-weight: bold; font-size: 12px; text-align: center; height: 20px; }
-snapshots title hr { color: black; }
-snapshots creation-dialog { height: 95px; width: 400px; }
-snapshots creation-dialog input { background: white; color: #212121; font-size: 14px; margin-top: 8px; radius: 2px; }
-snapshots creation-dialog input border { color: #BDBDBD; width: 1px; }
-snapshots creation-dialog button { margin-top: 10px; margin-bottom: 20px; margin-right: 10px; }
-snapshots setting-dialog { height: 140px; width: 350px; }
-snapshots setting-dialog text { font-size: 14px; font-weight: normal; color: #212121; }
-snapshots setting-dialog checkbox { font-size: 12px; margin-bottom: 20px; margin-top: 20px; }
-snapshots setting-dialog button { margin-bottom: 10px; }
-
-checkbox { background: white; color: #212121; font-size: 14px; font-weight: normal; height: 14px; margin: 2px; radius: 2px; width: 14px; }
-checkbox border { color: #82c4f8; width: 1px; }
-checkbox active { background: #2196F3; }
-checkbox active border { color: #82c4f8; width: 2px; }
-
-editor { color: black; background: white; selection: #2d2d91; }
-editor keywords immediate { color: #a86c0d; }
-editor keywords instruction { color: #2196F3; }
-editor keywords comment { color: green; }
-editor keywords register { color: #f59332; }
-editor keywords label { color: #FF4081; }
-editor lineHighlight { background: "#1ae8e8e8"; }
-editor lineHighlight border { color: "#1ab2b2b2"; }
-editor executionLineHighlight { background: "#1a2196F3"; }
-editor executionLineHighlight border { color: "transparent"; }
-editor breakpoint { color: #FF4081; }
-editor sidebar { background: #e8e8e8; }
-editor sidebar lineNumber { color: "gray"; }
-editor macro { background: #f5f5f5; }
-editor issue error { darkColor: #ffb998; lightColor: "#10ff5000"; }
-editor issue warning { darkColor: #ffe39d; lightColor: "#10ffb90a"; }
-editor issue information { darkColor: #99c8ff; lightColor: "#100075ff"; }
-
-memory cell { background: transparent; color: #212121; border-color: #BDBDBD; border-radius: 3px; font-size: 12px; height: 24px; min-width: 120px; }
-memory divider { color: #BDBDBD; width: 1px; }
-memory address { background: transparent; color: #212121; font-size: 12px; font-weight: normal; margin-left: -10px; width: 90px; }
-memory header { background: transparent; height: 25px; }
-memory header label { background: transparent; font-size: 12px; color: #FF4081; delimiter-open: "("; delimiter-close: ")"; font-weight: normal; margin-right: 2px; width: 10px; }
-memory header combobox { background: transparent; font-size: 12px; color: #212121; font-weight: bold; margin-bottom: 0px; width: 53px; }
-memory header remove { background: transparent; color: #FF4081; font-size: 16px; font-weight: bold; margin-bottom: 0px; margin-left: 0px; }
-memory add, memory snapshots item remove, snapshots item memory remove { background: transparent; color: #FF4081; font-size: 14px; font-weight: bold; margin-bottom: 2px; margin-right: 2px; width: 10px; }
-
 register { background: transparent; height: 40px; margin-left: -5px; margin-right: 10px; overflow: auto; }
 register label { color: #212121; font-size: 12px; font-weight: bold; }
 register content { background: white; color: #212121; font-size: 12px; height: 25px; margin: 4px; radius: 2px; }
@@ -93,10 +37,5 @@ register content border { color: #BDBDBD; width: 1; }
 register content highlighted { background: #FF4081; }
 register content:disabled { background: #f2f2f2; color: #757575; }
 register selector { height: 23px; width: 15px; background: transparent; color: #FF4081; font-size: 14px; radius: 1px; }
-
-input tab-bar { background: white; }
-input tab-bar border { color: #BDBDBD; width: 1px; }
-
-splitview { handle-width: 2px; handle-height: 2px; handle-color: #BDBDBD; }
 
 /*# sourceMappingURL=theme.css.map */

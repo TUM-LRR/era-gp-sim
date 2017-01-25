@@ -1,4 +1,3 @@
-
 /*
 * C++ Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
@@ -29,9 +28,7 @@ import "Components/Menubar"
 import "Components/Toolbar"
 import "Components/ProjectCreation"
 import "Components/Settings"
-import "Components/Snapshots"
 import "Components/tabview"
-
 import Theme 1.0
 
 ApplicationWindow {
@@ -45,25 +42,28 @@ ApplicationWindow {
 
   property alias menubar: menubar
   property alias toolbar: toolbar
-  property alias settings: settings
+  property alias config: config
 
   menuBar: Menubar {
     id: menubar
     main: window
-    Component.onCompleted: window.updateMenuState();
+    Component.onCompleted: {
+      window.updateMenuState();
+    }
+  }
+  toolBar: ToolbarComponent {
+    id: toolbar
   }
 
-  toolBar: ToolbarComponent { id: toolbar }
-  SettingsWindow { id: settings }
+  SettingsWindow { id: config }
 
   ProjectsTabView {
     id: tabView
-    anchors.fill: parent
   }
 
   // This function should be called when the tab is switched
   function updateMenuState() {
-    if (tabView.count === 0 || !tabView.currentProjectIsReady()) {
+    if (tabView.count === 0 || !tabView.currentProjectIsValid()) {
       // Deactivate project specific functions if there is no
       // valid project at the current index.
       toolbar.enabled = false;
@@ -76,7 +76,7 @@ ApplicationWindow {
 
   function showMenus() {
     toolbar.enabled = true;
-    toolbar.running = tabView.currentProjectItem().running;
+    toolbar.running = tabView.getCurrentProjectItem().running;
     menubar.setMenuEnabled(true);
   }
 
@@ -88,20 +88,19 @@ ApplicationWindow {
   }
 
   function createProject() {
-    tabView.addTab("", tabComponent);
+    tabView.addTab("", tabs);
     tabView.currentIndex = tabView.count - 1;
   }
 
   function closeProject() {
     var currentTabIndex = tabView.currentIndex;
-    var currentProjectId = tabView.currentProjectId();
-    var isReady = tabView.currentProjectIsReady();
+    var currentProjectId = tabView.getCurrentProjectId();
+    var isValid = tabView.currentProjectIsValid();
 
     tabView.removeTab(currentTabIndex);
 
-    if(!isReady) window.close();
+    if(isValid) ui.removeProject(currentProjectId);
 
-    ui.removeProject(currentProjectId);
     updateMenuState();
 
     // Create a new tab if there is no tab
@@ -113,21 +112,21 @@ ApplicationWindow {
 
   // Component for a project, instantiated by the TabView
   Component {
-    id: tabComponent
+    id: tabs
+
     Item {
       id: placeholderItem
 
-      // If there is a project for this tab in the backend, this is true.
+      // if there is a project for this tab in the backend, this is true
       property bool projectValid: false
 
-      // Index of the project in the project vector.
+      // index of the project in the project vector
       property int projectId: -1
 
-      // Indicates the execution state of this project.
+      // indicates the execution state of this project
       property bool running
 
       anchors.fill: parent
-
       ProjectCreationScreen {
         anchors.fill: parent
         onCreateProject: {
@@ -142,7 +141,6 @@ ApplicationWindow {
             optionName,
             parser
           );
-
           window.expand();
           window.showMenus();
           projectValid = true;
@@ -159,27 +157,14 @@ ApplicationWindow {
       Splitview {
         anchors.fill: parent
 
-        SystemPalette { id: systemPalette }
-
-        // height and witdth have to be greater than 1 to achieve correct behaviour on
-        // devices with touchscreen
-        handleDelegate: Rectangle {
-          width: Theme.splitview.handleWidth
-          height: Theme.splitview.handleHeight
-          color: Theme.splitview.handleColor
+        SystemPalette {
+          id: systemPalette
         }
 
-        Connections {
-          target: guiProject
-          onSaveTextAs: menubar.actionSaveAs();
-          onError: {
-            window.errorDialog.text = errorMessage;
-            window.errorDialog.open();
-          }
-          onExecutionStopped: {
-            editor.parse();
-            placeholderItem.isRunning = false;
-          }
+        handleDelegate: Rectangle {
+          width: 2
+          height: 2
+          color: Qt.darker(systemPalette.window, 1.5)
         }
       }
 
@@ -201,11 +186,24 @@ ApplicationWindow {
     }
   }
 
+  Connections {
+    target: snapshotComponent
+    onSnapshotError: {
+      errorDialog.text = errorMessage;
+      errorDialog.open();
+    }
+  }
+
   property alias errorDialog: errorDialog
   property alias fileDialog: fileDialog
+  property alias textDialog: textDialog
 
-  ErrorDialog { id: errorDialog }
+  //Dialog to show errors
+  ErrorDialog {
+    id: errorDialog
+  }
 
+  //File dialog for selecting a file
   FileDialog {
     id: fileDialog
     property var onAcceptedFunction
@@ -213,7 +211,47 @@ ApplicationWindow {
     selectFolder: false
     selectMultiple: false
     onAccepted: {
-      ui.saveTextAs(tabView.currentProjectId(), fileDialog.fileUrl);
+      onAcceptedFunction(fileDialog.fileUrl);
+    }
+  }
+
+  // Dialog to input text
+  Dialog {
+    id: textDialog
+    title: "Save snapshot"
+    standardButtons: StandardButton.Cancel;
+    property var onAcceptedFunction
+    property alias placeholderText: textField.placeholderText
+    Text {
+      id: description
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      wrapMode: Text.WordWrap
+      textFormat: Text.StyledText
+      text: "<p>Save a snapshot of the current register and memory state to disk. " +
+      "Your snapshot files can be found here:</p> " +
+      "<a href=\"" + snapshotComponent.snapshotDirectory() + "\">" +
+      snapshotComponent.snapshotDirectory() + "</a>"
+      onLinkActivated: Qt.openUrlExternally(snapshotComponent.snapshotDirectory())
+    }
+    TextField {
+      id: textField
+      anchors.topMargin: 10
+      anchors.top: description.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      onTextChanged: {
+        if(text == "") {
+          textDialog.standardButtons = StandardButton.Cancel;
+        }
+        else {
+          textDialog.standardButtons = StandardButton.Cancel | StandardButton.Save;
+        }
+      }
+    }
+    onAccepted: {
+      onAcceptedFunction(textField.text);
+      textField.text = "";
     }
   }
 }

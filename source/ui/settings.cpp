@@ -108,7 +108,7 @@ QStringList Settings::listOfAllThemeNames() const noexcept {
       _listOfAllThemeNames.append(theme.completeBaseName());
     }
 
-    // Swap the default theme into the first position (we guarantee this)
+    // Swap the default theme into the first position (we guarantee this)/
     auto defaultThemeIndex =
         _listOfAllThemeNames.indexOf((*this)["theme"].toString());
     assert::that(defaultThemeIndex != -1);
@@ -123,7 +123,7 @@ Settings::Json Settings::toJson() const {
 
   for (const auto& key : super::keys()) {
     json[key] = QJsonValue::fromVariant((*this)[key]);
-    assert::that(!json[key].isUndefined());
+    assert::that(!json[key].isNull());
   }
 
   return json;
@@ -157,7 +157,8 @@ StatusWithValue<QByteArray> Settings::_loadSettingsData() {
   }
 
   auto settingsLoadPath = _settingsFilePath;
-  if (!QFile::exists(settingsLoadPath)) {
+  QFileInfo fileInfo(_settingsFilePath);
+  if (!fileInfo.exists()) {
     settingsLoadPath = _settingsDefaultPath;
   }
 
@@ -207,9 +208,9 @@ Status Settings::_checkSnapshotLocation(Json& json) {
 
   // TODO(psag): QDir::home();
   QDir defaultLocation(QString::fromStdString(Utility::rootPath()));
-  defaultLocation.setPath(".erasim/snapshots");
+  defaultLocation.cd(".erasim/snapshots");
 
-  json["snapshotLocation"] = defaultLocation.absolutePath();
+  json["snapshotLocation"] = defaultLocation.canonicalPath();
 
   // Store this to disk so that it will be set the next time.
   auto status = _store(json);

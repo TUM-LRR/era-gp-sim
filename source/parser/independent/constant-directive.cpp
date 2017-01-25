@@ -24,6 +24,7 @@
 #include "parser/common/compile-error-list.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 #include "parser/independent/execute-immutable-arguments.hpp"
+#include "parser/independent/preprocessing-immutable-arguments.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
 #include "parser/independent/syntax-tree-generator.hpp"
@@ -41,37 +42,40 @@ void ConstantDirective::execute(const ExecuteImmutableArguments& immutable,
                                 FinalCommandVector& commandOutput,
                                 MemoryAccess& memoryAccess) {
   // Try to parse argument to catch errors early.
-  immutable.generator().transformOperand(
-      _expression, immutable.replacer(), errors);
+  auto fullExpression = immutable.replacer().replace(_expression, errors);
+  if (!fullExpression.string().empty()) {
+    immutable.generator().transformOperand(
+        _expression, immutable.replacer(), errors);
+  } else {
+    // better error messages:
+    //  0 arguments -> this argument should be the name
+    //  1 argument -> this argument should be the value
+    // >1 arguments -> too many
+    switch (_arguments.size()) {
+      case 0:
+        errors.pushError(name().positionInterval(), "Missing constant name.");
+        break;
+      case 1:
+        errors.pushError(
+            name().positionInterval().unite(_arguments[0].positionInterval()),
+            "Missing constant value.");
+        break;
+      default:
+        errors.pushError(
+            name().positionInterval(),
+            "Malformed constant directive, too many operands provided.");
+        break;
+    }
+  }
 }
 
-void ConstantDirective::precompile(
-    const PrecompileImmutableArguments& immutable,
+void ConstantDirective::enhanceSymbolTable(
+    const EnhanceSymbolTableImmutableArguments& immutable,
     CompileErrorList& errors,
-    SymbolGraph& graph,
-    MacroDirectiveTable& macroTable) {
-  // better error messages:
-  //  0 arguments -> this argument should be the name
-  //  1 argument  -> this argument should be the value
-  //  2 arguments -> ok
-  // >2 arguments -> too many
-  switch (_arguments.size()) {
-    case 0:
-      errors.pushError(name().positionInterval(), "Missing constant name.");
-      return;
-    case 1:
-      errors.pushError(
-          name().positionInterval().unite(_arguments[0].positionInterval()),
-          "Missing constant value.");
-      return;
-    case 2:
-      // Everything ok, break.
-      break;
-    default:
-      errors.pushError(
-          name().positionInterval(),
-          "Malformed constant directive, too many operands provided.");
-      return;
+    SymbolGraph& graph) {
+  if (_arguments.size() != 2) {
+    errors.pushError(name().positionInterval(), "Malformed constant directive");
+    return;
   }
 
   // We embrace the expression with brackets, so it causes no conflicts when we

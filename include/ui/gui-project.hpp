@@ -21,12 +21,10 @@
 #ifndef ERAGPSIM_UI_GUIPROJECT_HPP
 #define ERAGPSIM_UI_GUIPROJECT_HPP
 
-#include <QHash>
 #include <QObject>
 #include <QQmlContext>
 #include <QString>
 #include <QStringList>
-
 #include <functional>
 #include <memory>
 #include <string>
@@ -65,9 +63,7 @@ class GuiProject : QObject {
   using MemoryToStringConverter =
       std::function<std::string(const MemoryValue&)>;
   using StringToMemoryConverter =
-      std::function<Optional<MemoryValue>(const std::string&, std::size_t)>;
-  using MemoryToStringConverterMap = QHash<QString, MemoryToStringConverter>;
-  using StringToMemoryConverterMap = QHash<QString, StringToMemoryConverter>;
+      std::function<MemoryValue(const std::string&)>;
 
   /**
    * The Constructor
@@ -182,9 +178,8 @@ class GuiProject : QObject {
    * Removes a snapshot.
    *
    * \param qName name of the snapshot.
-   * \param removePermanently Whether to erase the snapshot from disk.
    */
-  Q_INVOKABLE void removeSnapshot(const QString& qName, bool removePermanently);
+  Q_INVOKABLE void removeSnapshot(const QString& qName);
 
   /**
    * loads a snapshot
@@ -199,11 +194,6 @@ class GuiProject : QObject {
   Q_INVOKABLE QStringList getSnapshots();
 
   /**
-   * \returns True if a snapshot with the given name already exists, else false.
-   */
-  Q_INVOKABLE bool snapshotExists(QString name);
-
-  /**
    * \returns the translated help string of the command node in the specified
    * line. Returns an empty string if there is no command in that line.
    *
@@ -212,18 +202,30 @@ class GuiProject : QObject {
   Q_INVOKABLE QString getCommandHelp(std::size_t line);
 
   /**
-   * A map of function for converting MemoryValues to strings.
+   * Functions for converting MemoryValues to Strings.
+   *  Names should explain the single Functions
    *
-   * \return The map.
+   * \return The string
    */
-  static const MemoryToStringConverterMap& getMemoryToStringConversions();
+  MemoryToStringConverter getHexConversion();
+  MemoryToStringConverter getBinConversion();
+  MemoryToStringConverter getOctConversion();
+  MemoryToStringConverter getSignedDecimalConversion();
+  MemoryToStringConverter getUnsignedDecimalConversion();
+  MemoryToStringConverter getDecimalFloatConversion();
 
   /**
-   *  A map of functions for converting strings to MemoryValues.
+   * Functions for converting strings to MemoryValues.
+   * Names should explain the single Functions
    *
-   * \returns The map.
+   * \return the memoryValue
    */
-  static const StringToMemoryConverterMap& getStringToMemoryConversions();
+  StringToMemoryConverter getSignedToMemoryValue();
+  StringToMemoryConverter getHexToMemoryValue();
+  StringToMemoryConverter getBinToMemoryValue();
+  StringToMemoryConverter getOctToMemoryValue();
+  StringToMemoryConverter getUnsignedToMemoryValue();
+  StringToMemoryConverter getFloatToMemoryValue();
 
  signals:
   /**
@@ -334,7 +336,7 @@ class GuiProject : QObject {
   QString _defaultTextFileSavePath;
 
   /**
-   * A shared pointer to the snapshot component.
+   * A shared pointer to the configuration json (for snapshots,...)
    */
   std::shared_ptr<SnapshotComponent> _snapshotComponent;
 
@@ -353,11 +355,20 @@ class GuiProject : QObject {
    */
   LineHelpMap _helpCache;
 
-  /** A map of conversion functions from memory values to strings. */
-  static MemoryToStringConverterMap _memoryToStringMap;
+  /**
+   * The Functions for the conversion
+   */
+  MemoryToStringConverter _hexConversion;
+  MemoryToStringConverter _binConversion;
+  MemoryToStringConverter _signedDecimalConversion;
+  MemoryToStringConverter _unsignedDecimalConversion;
+  MemoryToStringConverter _decimalFloatConversion;
 
-  /** A map of conversion functions from strings to memory values. */
-  static StringToMemoryConverterMap _stringToMemoryMap;
+  StringToMemoryConverter _signedToMemoryValue;
+  StringToMemoryConverter _hexToMemoryValue;
+  StringToMemoryConverter _binToMemoryValue;
+  StringToMemoryConverter _unsignedToMemoryValue;
+  StringToMemoryConverter _floatToMemoryValue;
 
  private slots:
   /**

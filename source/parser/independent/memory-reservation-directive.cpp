@@ -24,11 +24,11 @@
 
 #include "arch/common/architecture.hpp"
 #include "core/memory-access.hpp"
-#include "parser/independent/allocate-memory-immutable-arguments.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 #include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/expression-compiler-clike.hpp"
 #include "parser/independent/memory-allocator.hpp"
+#include "parser/independent/preprocessing-immutable-arguments.hpp"
 #include "parser/independent/section-tracker.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
@@ -47,7 +47,7 @@ MemoryReservationDirective::MemoryReservationDirective(
 }
 
 void MemoryReservationDirective::allocateMemory(
-    const AllocateMemoryImmutableArguments& immutable,
+    const PreprocessingImmutableArguments& immutable,
     CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {
@@ -56,9 +56,7 @@ void MemoryReservationDirective::allocateMemory(
         name().positionInterval(),
         "Careful, you are trying to reserve memory in the text "
         "section where the program instructions are stored. This "
-        "might cause unexpected behavior. Use a '.section "
-        "data' directive in front of this to resolve the "
-        "issue.");
+        "might cause unexpected behavior.");
   }
 
   if (_values.empty()) {
@@ -70,8 +68,7 @@ void MemoryReservationDirective::allocateMemory(
   for (const auto& value : _values) {
     // b/c of the definition of argumentCompile and the C standard, the result
     // is non-negative.
-    auto result =
-        _argumentCompile(value, immutable.preliminaryReplacer(), errors);
+    auto result = _argumentCompile(value, SymbolReplacer(), errors);
     if (result > 0) {
       sizeInCells += result;
     } else {

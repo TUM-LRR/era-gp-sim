@@ -22,12 +22,11 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
-import "../../../Js/ThemeUtility.js" as ThemeUtility
 import ".."
 
 
 Button {
-  id: button
+  id: root
   enabled: false
   anchors {
     horizontalCenter: parent.horizontalCenter
@@ -37,21 +36,15 @@ Button {
   MouseArea {
     anchors.fill: parent
     cursorShape: Qt.PointingHandCursor
-    onClicked: button.clicked()
+    onClicked: root.clicked()
   }
-
-  property var dynamic: ({ theme: ThemeUtility.dynamicThemeFactory(
-      Theme.button,
-      !button.enabled,
-      'disabled'
-  )})
 
   style: ButtonStyle {
     label: Item {
       anchors.centerIn: parent
       Text {
         anchors.centerIn: parent
-        color: dynamic.theme('color')
+        color: switchForEnabled(Theme.button, 'color')
         font.pixelSize: Theme.button.fontSize
         font.capitalization: Font.AllUppercase
         text: "Create project"
@@ -61,15 +54,32 @@ Button {
       implicitWidth: Theme.createProject.button.width
       implicitHeight: Theme.button.height
       border.width: Theme.button.border.width
-      border.color: dynamic.theme('border.color')
+      border.color: switchForEnabled(Theme.button, 'border', 'color')
       radius: Theme.button.radius
       color: {
-        if (button.enabled) {
+        if (root.enabled) {
           return Theme.createProject.button.background;
         } else {
           return Theme.button.disabled.background;
         }
       }
     }
+  }
+
+  // Given a node and any number of further property names of increasing
+  // depth, returns the either node.[...properties...] or
+  // node.disabled.[...properties...] depending on whether or not the button
+  // is enabled. The properties are extracted from the `arguments` list.
+  function switchForEnabled(node) {
+      if (!enabled) {
+        node = node['disabled'];
+      }
+
+      // Skip the first element in the arguments list (the node)
+      for (var level = 1; level < arguments.length; ++level) {
+        node = node[arguments[level]];
+      }
+
+      return node;
   }
 }

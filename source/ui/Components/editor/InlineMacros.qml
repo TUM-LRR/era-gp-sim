@@ -2,7 +2,7 @@ import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Dialogs 1.2
 import "../Common"
-import "../../Js/TextUtility.js" as TextUtility
+import "../Common/TextUtilities.js" as TextUtilities
 
 Item {
     id: inlineMacros
@@ -90,7 +90,7 @@ Item {
         for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
             var macro = macros[macroIndex];
             // Find the line for the macro expansion.
-            var linePosition = TextUtility.getPositionOfOccurence(textArea.text, "\n", Number(macro["startLine"])+1);
+            var linePosition = TextUtilities.getPositionOfOccurence(textArea.text, "\n", Number(macro["startLine"])+1);
             // Create display objects (i.e. sub-editor and triangle)
             var macroDisplayObject = {};
             // Add sub-editor to display object
@@ -248,7 +248,7 @@ Item {
 
     // Returns true, if the given position is inside a blank line that was soley inserted for a macro expansion.
     function isPositionInsideMacroBlankLine(text, position) {
-        var lineNumber = TextUtility.getLineNumberForPosition(text, position);
+        var lineNumber = TextUtilities.getLineNumberForPosition(text, position);
         var blankLineCount = 0;
         // Iterates over each macro and checks its blank lines. If a blank line is found that corresponds to
         // the given lineNumber, true is returned. If at some point the macro's line number surpasses the
@@ -277,7 +277,7 @@ Item {
     function convertRawLineNumberToDisplayLineNumber(text, rawLineNumber) {
         var lineNumber = 0;
         for (var lineIndex = 0; lineIndex < rawLineNumber; ++lineIndex) {
-            if (!isPositionInsideMacroBlankLine(text, TextUtility.getLineStartForLine(text, lineIndex))) {
+            if (!isPositionInsideMacroBlankLine(text, TextUtilities.getLineStartForLine(text, lineIndex))) {
                 lineNumber++;
             }
         }
@@ -305,7 +305,7 @@ Item {
         for (var i = 0; i < macroIndex; ++i) {
             insertedNewLines += (!macros[i]["collapsed"]) ? Number(macros[i]["lineCount"]) : 0;
         }
-        return TextUtility.getPositionOfOccurence(textArea.text, "\n", Number(macro["startLine"])+insertedNewLines+1);
+        return TextUtilities.getPositionOfOccurence(textArea.text, "\n", Number(macro["startLine"])+insertedNewLines+1);
     }
 
 
@@ -340,14 +340,14 @@ Item {
                 } else if (triggeringKeyEvent == Qt.Key_Up || triggeringKeyEvent == Qt.Key_Down) {
                     // Get the position of the previous cursor position relative to its lineCount
                     // in order to be able to use the same position in the next (non-blank) line.
-                    var positionRelativeToLine = TextUtility.getPositionRelativeToLineForPosition(textArea.text, previousCursorPosition);
+                    var positionRelativeToLine = TextUtilities.getPositionRelativeToLineForPosition(textArea.text, previousCursorPosition);
                     // Calculate the new cursor position.
-                    newPosition = TextUtility.getLineStartForPosition(textArea.text, position) + positionRelativeToLine;
-                    if (newPosition >= TextUtility.getLineEndForPosition(textArea.text, position)) { newPosition = TextUtility.getLineEndForPosition(textArea.text, position); }
+                    newPosition = TextUtilities.getLineStartForPosition(textArea.text, position) + positionRelativeToLine;
+                    if (newPosition >= TextUtilities.getLineEndForPosition(textArea.text, position)) { newPosition = TextUtilities.getLineEndForPosition(textArea.text, position); }
                 } else if (triggeringKeyEvent == Qt.Key_Left) {
-                    newPosition = TextUtility.getLineEndForPosition(textArea.text, position);
+                    newPosition = TextUtilities.getLineEndForPosition(textArea.text, position);
                 } else if (triggeringKeyEvent == Qt.Key_Right) {
-                    newPosition = TextUtility.getLineStartForPosition(textArea.text, position);
+                    newPosition = TextUtilities.getLineStartForPosition(textArea.text, position);
                 }
                 textArea.cursorPosition = newPosition;
             }

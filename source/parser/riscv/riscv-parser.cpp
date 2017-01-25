@@ -74,7 +74,7 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
         conversions::convert(result,
                              conversions::standardConversions::helper::
                                  twosComplement::toMemoryValueFunction,
-                             64));
+                             32));
   }
   return outputNode;
 };
@@ -179,12 +179,8 @@ FinalRepresentation RiscvParser::parse(const std::string& text) {
 
   auto byteAlignment =
       _architecture.getWordSize() / _architecture.getByteSize();
-
-  auto riscvInstructionSize = 4u;
-
-  MemoryAllocator allocator(
-      {MemorySectionDefinition("data", byteAlignment, 1),
-       MemorySectionDefinition("text", riscvInstructionSize, 1)});
+  MemoryAllocator allocator({MemorySectionDefinition("data", byteAlignment),
+                             MemorySectionDefinition("text", 1)});
 
   TransformationParameters parameters(
       _architecture,

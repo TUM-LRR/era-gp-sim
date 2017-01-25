@@ -40,15 +40,6 @@ class SnapshotComponent : public QObject {
   Q_OBJECT
 
  public:
-  /*
-  * We use a `QMultiHash<QString, QString>` here, which is basically a
-  * `QHash<QString, QList<QString>>`, but with a nicer interface. It might seem
-  * like a `QHash<QString, QSet<QString>>` would be better here, but as the
-  * number of snapshots will be relatively low, the list will not cause any
-  * performance issues. Futhermore, a `QList` is needed for the view anyways.
-  * We have to guard the list against duplicates, as a snapshot of the same
-  * architecture and value can only be saved to one file.
-  */
   using SnapshotMap = QMultiHash<QString, QString>;
   using Json = Snapshot::Json;
 
@@ -93,21 +84,8 @@ class SnapshotComponent : public QObject {
    *
    * \param architectureIdentifier The architecture of the snapshots.
    * \param snapshotName The name of the snapshot to remove.
-   * \param removePermanently Whether to erase the snapshot from disk.
    */
   void removeSnapshot(const QString& architectureIdentifier,
-                      const QString& snapshotName,
-                      bool removePermanently);
-
-  /**
-   * Tests if a snapshot exists.
-   *
-   * \param architectureIdentifier The identifier for the architecture.
-   * \param snapshotName The name of the snapshot to look for.
-   * \returns True if a snapshot with the given name exists for the given
-   *          architecture, else false.
-   */
-  bool snapshotExists(const QString& architectureIdentifier,
                       const QString& snapshotName);
 
   /**

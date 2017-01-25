@@ -4,9 +4,6 @@
 # Snapshot files
 *.snapshot
 
-# Themes
-*.css
-
 # Created by https://www.gitignore.io/api/emacs,c++,sass,c,qt
 
 ### Emacs ###

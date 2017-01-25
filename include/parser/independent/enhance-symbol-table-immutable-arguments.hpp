@@ -22,11 +22,9 @@
 
 #include "arch/common/architecture.hpp"
 #include "parser/independent/memory-allocator.hpp"
-#include "parser/independent/symbol-replacer.hpp"
 #include "parser/independent/syntax-tree-generator.hpp"
 
-class PrecompileImmutableArguments;
-class AllocateMemoryImmutableArguments;
+class PreprocessingImmutableArguments;
 
 /**
  * A collection of some constant parameters which can be used during the
@@ -40,44 +38,23 @@ class EnhanceSymbolTableImmutableArguments {
    *
    * \param architecture The architecture with which the operation was called.
    * \param generator The generator for syntax tree nodes.
-   * \param preliminaryReplacer The preliminaryReplacer to replace constants,
-   * not labels.
    * \param allocator The memory allocator used to convert relative to absolute
    * positions and also for different section management.
    */
-  EnhanceSymbolTableImmutableArguments(
-      const Architecture& architecture,
-      const SyntaxTreeGenerator& generator,
-      const SymbolReplacer& preliminaryReplacer,
-      const MemoryAllocator& allocator);
-
+  EnhanceSymbolTableImmutableArguments(const Architecture& architecture,
+                                       const SyntaxTreeGenerator& generator,
+                                       const MemoryAllocator& allocator);
   /**
    * Creates a new ExecuteImmutableArguments with the given parameters
-   * out of some PrecompileImmutableArguments.
+   * out of some PreprocessingImmutableArguments.
    *
-   * \param beforeBeforePass The PrecompileImmutableArguments these arguments
-   * are based on.
-   * \param preliminaryReplacer The preliminaryReplacer to replace constants,
-   * not labels.
-   * \param allocator The memory allocator used to convert relative to absolute
-   * positions and also for different section management.
-   */
-  EnhanceSymbolTableImmutableArguments(
-      const PrecompileImmutableArguments& beforebeforePass,
-      const SymbolReplacer& preliminaryReplacer,
-      const MemoryAllocator& allocator);
-
-  /**
-   * Creates a new ExecuteImmutableArguments with the given parameters
-   * out of some AllocateMemoryImmutableArguments.
-   *
-   * \param beforePass The AllocateMemoryImmutableArguments these arguments
+   * \param beforeBeforePass The PreprocessingImmutableArguments these arguments
    * are based on.
    * \param allocator The memory allocator used to convert relative to absolute
    * positions and also for different section management.
    */
   EnhanceSymbolTableImmutableArguments(
-      const AllocateMemoryImmutableArguments& beforePass,
+      const PreprocessingImmutableArguments& beforePass,
       const MemoryAllocator& allocator);
 
   /**
@@ -96,11 +73,6 @@ class EnhanceSymbolTableImmutableArguments {
    */
   const MemoryAllocator& allocator() const noexcept;
 
-  /**
-   * \return The preliminary replacer for constants, not labels.
-   */
-  const SymbolReplacer& preliminaryReplacer() const noexcept;
-
  private:
   /**
    * The architecture with which the operation was called.
@@ -117,11 +89,6 @@ class EnhanceSymbolTableImmutableArguments {
    * and also for different section management.
    */
   MemoryAllocator _allocator;
-
-  /**
-   * The preliminary replacer for constants, not labels.
-   */
-  SymbolReplacer _preliminaryReplacer;
 };
 
 #endif

@@ -21,6 +21,12 @@
 
 #include "arch/common/architecture-formula.hpp"
 
+ArchitectureFormula::ArchitectureFormula(const std::string& architectureName,
+                                         InitializerList list)
+: super(list), _architectureName(architectureName) {
+  assert::that(!architectureName.empty());
+}
+
 bool ArchitectureFormula::operator==(const ArchitectureFormula& other) const
     noexcept {
   if (this->_architectureName != other._architectureName) return false;
