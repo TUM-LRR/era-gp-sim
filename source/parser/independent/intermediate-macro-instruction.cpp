@@ -110,7 +110,7 @@ void IntermediateMacroInstruction::execute(
     commandOutput.emplace_back(innerCommands[0].node(),
                                positionInterval(),
                                innerCommands[0].address());
-    for (auto& error : innerErrors.errors()) {
+    for (const auto& error : innerErrors.errors()) {
       errors.pushCompileErrorInternal(
           error.severity(), positionInterval(), error.message());
     }
