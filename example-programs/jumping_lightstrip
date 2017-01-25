@@ -1,0 +1,28 @@
+; Config: lightstrip (16 strips, start address 0x0)
+.section data
+.resb 2
+.equ strip, 0
+.equ bars, 16
+.equ sleept, 250
+
+.section text
+addi x1, x0, 1
+addi x2, x0, 1
+addi x3, x0, bars
+addi x4, x0, 1
+
+go_right:
+slli x1, x1, 1
+sw x1, x0, strip
+addi x2, x2, 1
+simusleep sleept
+bne x3, x2, go_right
+jal x0, go_left
+
+go_left:
+srli x1, x1, 1
+sw x1, x0, strip
+addi x2, x2, -1
+simusleep sleept
+bne x4, x2, go_left
+jal x0, go_right

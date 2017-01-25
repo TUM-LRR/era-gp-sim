@@ -59,17 +59,16 @@ class ConstantDirective : public IntermediateDirective {
                        MemoryAccess& memoryAccess);
 
   /**
-   * Inserts the constant into the symbol table.
-   *
-   * \param immutable Some helpful parameters provided in one helper class.
-   * \param errors The compile error list to record errors, warnings and
-   * information entries.
-   * \param graph The symbol graph for checking dependencies among symbols.
-   */
-  virtual void
-  enhanceSymbolTable(const EnhanceSymbolTableImmutableArguments& immutable,
-                     CompileErrorList& errors,
-                     SymbolGraph& graph);
+* Inserts the constant into the symbol table.
+*
+* \param immutable Some constant arguments which might be helpful.
+* \param errors The compile error list to note down any errors.
+* \param macroTable A table to record occured macros.
+*/
+  virtual void precompile(const PrecompileImmutableArguments& immutable,
+                          CompileErrorList& errors,
+                          SymbolGraph& graph,
+                          MacroDirectiveTable& macroTable);
 
   /**
    * \return The arguments of the constant directive.

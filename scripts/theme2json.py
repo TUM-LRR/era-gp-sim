@@ -466,7 +466,10 @@ def find_selectors(root, block_selectors):
                 child = {}
                 parent[selector] = child
             else:
-                log.debug("'%s' selector already existed in parent selector")
+                log.debug(
+                    "'%s' selector already existed in parent selector",
+                    selector
+                )
                 log.debug(
                     'Current state of %s is: %s',
                     truncate_string(selector, 70),
@@ -512,6 +515,8 @@ def process_property_value(value):
 
     if not match:
         log.debug("Property value '%s' seems to be a string", value)
+        if value.startswith("\""):
+            return value[1:-1]
         return value
 
     float_match, integer_match, percent_match = match.groups()
@@ -527,7 +532,7 @@ def process_property_value(value):
     return value / 100 if percent_match else value
 
 
-@pattern(re.compile(r'([-\w]+):([-+\w \t.#!%]+);'))
+@pattern(re.compile(r'([-\w]+)\s*:\s*([^;\n]+);'))
 def find_properties(block_properties):
     """
     Finds all the properties for a CSS block.

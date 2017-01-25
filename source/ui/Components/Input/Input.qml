@@ -17,43 +17,26 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-/*this modul is the contaier for the input-windows*/
-
-
 import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
+import Theme 1.0
 
-/*
-Container for input items
-*/
 Rectangle {
-  id: rootRectangle
-
-  // Color definitions
-  property color tabBarColor: Qt.rgba(236.0/255.0, 236.0/255.0, 236.0/255.0, 1.0)
-  property color innerBorderColor: "#AFAFAF"
-  property color highlightColor: "#4A90E2"
-  property color titleColor: "#4A4A4A"
-  property color titleColorHighlighted: "#111111"
-
   // Tell SplitViewItem (i.e. component wrapper) that settings are available to make it display settings icon.
   property var hasComponentSettings: true
 
   // Allows to select the available input items
   TabView {
     id: inputTabView
-
     anchors.fill: parent
 
     // Position tab bar below the content frame.
     tabPosition: Qt.BottomEdge
 
-
-    /* Each input item is represented by its corresponding tab inside the input tab bar. */
+    // Each input item is represented by its
+    // corresponding tab inside the input tab bar.
 
     Tab {
       title: "Buttons/Arrow Button Input Icon"
@@ -80,18 +63,17 @@ Rectangle {
       }
     }
 
-
     // Change TabView appearance
     style: TabViewStyle {
       tabBar: Rectangle {
-        color: tabBarColor
+        color: Theme.input.tabBar.background
         // Display border between tab bar and content frame.
         Rectangle {
-          height: 1
+          height: Theme.input.tabBar.border.width
           anchors.top: parent.top
           anchors.left: parent.left
           anchors.right: parent.right
-          color: innerBorderColor
+          color: Theme.input.tabBar.border.color
         }
       }
 
@@ -102,14 +84,22 @@ Rectangle {
         Image {
           id: icon
           anchors.centerIn: parent
-          // Tab's title contains prefix for icon file; add suffix depending on selection.
-          source: (styleData.selected) ? styleData.title + " Selected.png" : styleData.title + ".png"
+          // Tab's title contains prefix for icon file; add
+          // suffix depending on selection.
+          source: {
+            if (styleData.selected) {
+              return styleData.title + " Selected.png";
+            } else {
+              return styleData.title + ".png";
+            }
+          }
         }
       }
     }
   }
 
-  // Called by SplitViewItem.qml (i.e. component wrapper) when component settings icon was pressed.
+  // Called by SplitViewItem.qml (i.e. component wrapper) when
+  // component settings icon was pressed.
   function settingsButtonPressed() {
     inputTabView.getTab(inputTabView.currentIndex).item.settingsButtonPressed();
   }
