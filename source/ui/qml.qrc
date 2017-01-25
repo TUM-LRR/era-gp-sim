@@ -3,17 +3,17 @@
         <file>main.qml</file>
         <file>ErrorDialog.qml</file>
         <file>Splitview.qml</file>
+        <file>InnerSplitviews.qml</file>
+        <file>InnerSplitviewsEditor.qml</file>
+        <file>SplitviewItem.qml</file>
         <file>Components/ComponentHolder.qml</file>
         <file>Components/Snapshots/SnapshotList.qml</file>
-        <file>SplitviewItem.qml</file>
         <file>Icons/Settings Icon Pressed.png</file>
         <file>Icons/Settings Icon Pressed@2x.png</file>
         <file>Icons/Settings Icon.png</file>
         <file>Icons/Settings Icon@2x.png</file>
-        <file>InnerSplitviews.qml</file>
         <file>Components/editor/Editor.qml</file>
         <file>Components/Memory/MemoryComponent.qml</file>
-        <file>InnerSplitviewsEditor.qml</file>
         <file>Components/Toolbar/ToolbarComponent.qml</file>
         <file>Components/Toolbar/ToolbarButton.qml</file>
         <file>Components/Toolbar/Icons/Run.svg</file>

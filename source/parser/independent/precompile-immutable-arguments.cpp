@@ -17,19 +17,19 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/independent/preprocessing-immutable-arguments.hpp"
+#include "parser/independent/precompile-immutable-arguments.hpp"
 
 // Just constructors and getters.
 
-PreprocessingImmutableArguments::PreprocessingImmutableArguments(
+PrecompileImmutableArguments::PrecompileImmutableArguments(
     const Architecture& architecture, const SyntaxTreeGenerator& generator)
 : _architecture(architecture), _generator(generator) {
 }
-const Architecture& PreprocessingImmutableArguments::architecture() const
+const Architecture& PrecompileImmutableArguments::architecture() const
     noexcept {
   return _architecture;
 }
-const SyntaxTreeGenerator& PreprocessingImmutableArguments::generator() const
+const SyntaxTreeGenerator& PrecompileImmutableArguments::generator() const
     noexcept {
   return _generator;
 }

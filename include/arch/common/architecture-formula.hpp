@@ -42,28 +42,19 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
   using index_t = typename Underlying::size_type;
 
   /**
-   * Constructs a new ArchitectureFormula.
-   *
-   * \param architectureName The name of the architecture.
-   * \param list A list of extension names.
-   */
-  ArchitectureFormula(const std::string& architectureName = std::string(),
-                      InitializerList list = InitializerList());
-
-  /**
    Constructs a new ArchitectureFormula.
    *
    * The first element of the range must be the base.
    *
-   * \tparam Range A range-like sequence type.
+   * \tparam Range A range-like sequence type containing the extension names
    *
-   * \param all The range of extensions for the formula.
+   * \param all The range container with the extensions for the formula.
    */
-  template <typename Range>
+  template <typename Range = InitializerList>
   explicit ArchitectureFormula(const std::string& architectureName,
-                               const Range& range)
-  : super(range) {
-    assert::that(!isEmpty());
+                               const Range& range = InitializerList())
+  : super(range), _architectureName(architectureName){
+    assert::that(!architectureName.empty());
   }
 
   /**
