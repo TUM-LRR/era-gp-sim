@@ -113,6 +113,7 @@
         <file>Components/Snapshots/SnapshotList.qml</file>
         <file>Components/Snapshots/SnapshotTitle.qml</file>
         <file>Components/Snapshots/TextButton.qml</file>
+        <file>Components/tabview/ProjectsTabView.qml</file>
         <file>ErrorDialog.qml</file>
         <file>Icons/Settings Icon Pressed.png</file>
         <file>Icons/Settings Icon Pressed@2x.png</file>

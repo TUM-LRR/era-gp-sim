@@ -43,6 +43,17 @@ snapshots setting-dialog button { margin-bottom: 10px; }
 
 toolbar { margin: 20px; background: white; }
 
+tabbar { background: #ececec; }
+tabbar tab { color: #666666; height: 25; minWidth: 60; }
+tabbar tab highlighted { color: #333333; }
+tabbar tab active { background: white; }
+tabbar tab inactive { background: #d4d4d4; }
+tabbar tab closeButton { color: #666666; }
+tabbar tab closeButton highlighted { color: #FF4081; }
+tabbar addTabButton { background: transparent; color: #FF4081; pointSize: 18; }
+tabbar addTabButton highlighted { color: #FF4081; }
+tabbar frame { background: #f2f2f2; }
+
 checkbox { background: white; color: #212121; font-size: 14px; font-weight: normal; height: 14px; margin: 2px; radius: 2px; width: 14px; }
 checkbox border { color: #82c4f8; width: 1px; }
 checkbox active { background: #2196F3; }
