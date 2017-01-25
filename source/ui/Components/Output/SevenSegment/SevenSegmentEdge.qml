@@ -36,7 +36,6 @@ Item {
     id: segment
     property color color: "yellow"
 
-
     height: 50
     width: 0.1 * height
 

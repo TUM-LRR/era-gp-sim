@@ -17,27 +17,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
-import QtQuick.Window 2.0
+import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Window 2.0
 import QtQuick.Layouts 1.1
 import Theme 1.0
 import "../../../Js/TextUtility.js" as TextUtility
 
-// Window for seven segment settings.
+// Window for lightstrip settings.
 Window {
   id: settingsWindow
-  width: Theme.output.lightStrip.settings.width
-  height: Theme.output.lightStrip.settings.height
+  width: Theme.output.sevenSegment.settings.width
+  height: Theme.output.sevenSegment.settings.height
 
-  title: "Seven-Segment Settings"
+  title: "Lightstrip Settings"
   flags: Qt.Dialog
   modality: Qt.ApplicationModal
 
-  // Refreshes the window's control content.
+  // Refreshes the window's control contentItem.
   function updateSettings() {
-    numberOfDigitsTextField.text = outputComponent.getOutputItem(outputItemIndex)["numberOfDigits"];
+    numberOfStripsTextField.text = outputComponent.getOutputItem(outputItemIndex)["numberOfStrips"];
     baseAddressTextField.text = "0x" + outputComponent.getOutputItem(outputItemIndex)["baseAddress"].toString(16);
   }
 
@@ -47,11 +47,11 @@ Window {
     id: grid
 
     anchors.left: parent.left
-    anchors.leftMargin: Theme.output.lightStrip.settings.margin
+    anchors.leftMargin: Theme.output.sevenSegment.settings.margin
     anchors.right: parent.right
-    anchors.rightMargin: Theme.output.lightStrip.settings.margin
+    anchors.rightMargin: Theme.output.sevenSegment.settings.margin
     anchors.top: parent.top
-    anchors.topMargin: Theme.output.lightStrip.settings.margin
+    anchors.topMargin: Theme.output.sevenSegment.settings.margin
 
     columns: 2
 
@@ -63,66 +63,51 @@ Window {
     TextField {
       id: baseAddressTextField
 
-      text: outputComponent.getOutputItem(outputItemIndex)["baseAddress"]
-
       onAccepted: processInput()
       onEditingFinished: processInput()
 
-      // Reads the current input and passes the new value to the model.
+      // Reads the current input, checks if it is valid and passes the new value to the model.
       function processInput() {
         var inputValue = TextUtility.convertStringToInteger(String(baseAddressTextField.text))
         var maxSize = outputComponent.getMemorySize();
         if (inputValue !== undefined && inputValue >= 0 && inputValue < maxSize) {
-          // Check if there are too many digits to fit into memory for the
-          // currently set number of digits. Adjust number of digits if necessary.
-          var maxDigits = (maxSize - inputValue);
-          var digits = TextUtility.convertStringToInteger(String(numberOfDigitsTextField.text));
-          if (digits > maxDigits) {
-            numberOfDigitsTextField.text = maxDigits + "";
-            numberOfDigitsTextField.processInput();
-          }
-          // Update to new value.
           outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
+          var maxStrips = (outputComponent.getMemorySize() - (inputValue)) * 8;
+          var strips = TextUtility.convertStringToInteger(String(numberOfStripsTextField.text));
+          if(strips > maxStrips){
+            numberOfStripsTextField.text = maxStrips + "";
+            numberOfStripsTextField.processInput();
+          }
         } else {
-          // If incorrect value was entered, reset to previous value.
           updateSettings();
         }
       }
     }
 
     Text {
-      text: "Number of Digits:"
+      text: "Number of Strips:"
     }
 
-    // Text field for settings the number of digits.
+    // Text field for settings the number of light-strips.
     TextField {
-      id: numberOfDigitsTextField
+      id: numberOfStripsTextField
       height: baseAddressTextField.height
 
-      text: numberOfDigitsTextField.text = outputComponent.getOutputItem(outputItemIndex)["numberOfDigits"];
+      onAccepted: processInput()
+      onEditingFinished: processInput()
 
-      onAccepted: { processInput(); }
-      onEditingFinished: { processInput(); }
-
-      Component.onCompleted: {
-        settingsWindow.updateSettings();
-      }
-
-      // Reads the current input and passes the new value to the model.
+      // Reads the current input, checks if it is valid and passes the new value to the model.
       function processInput() {
-        var inputValue = TextUtility.convertStringToInteger(String(numberOfDigitsTextField.text));
+        var inputValue = TextUtility.convertStringToInteger(String(numberOfStripsTextField.text));
+        var size = TextUtility.convertStringToInteger(String(baseAddressTextField.text)) ;
+        var maxStrips = (outputComponent.getMemorySize() - size) * 8;
         if (inputValue !== undefined && inputValue > 0) {
-          // Check if the new number of digits would be too high to fit into memoryModel
-          // and adjust number to maximum value if necessary.
-          var maxSize = outputComponent.getMemorySize();
-          var maxDigits = maxSize - TextUtility.convertStringToInteger(String(baseAddressTextField.text));
-          if (inputValue > maxDigits) {
-            inputValue = maxDigits;
+          if(inputValue <= maxStrips){
+            outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", inputValue);
+          } else {
+            outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", maxStrips);
           }
-          // Update to new value.
-          outputComponent.setOutputItemProperty(outputItemIndex, "numberOfDigits", inputValue);
         } else {
-          // If incorrect value was entered, reset to previous value.
           updateSettings();
         }
       }
@@ -137,11 +122,11 @@ Window {
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
-    anchors.bottomMargin: Theme.output.lightStrip.settings.doneButton.bottomMargin
+    anchors.bottomMargin: Theme.output.sevenSegment.settings.doneButton.bottomMargin
 
     onClicked: {
       baseAddressTextField.focus = false;
-      numberOfDigitsTextField.focus = false;
+      numberOfStripsTextField.focus = false;
       close();
     }
   }
