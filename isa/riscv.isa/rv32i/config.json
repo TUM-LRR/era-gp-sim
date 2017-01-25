@@ -677,12 +677,12 @@
     "word-size": 32,
     "builtin-macros": [
         ".macro la, rd, symbol\nauipc \\rd, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\naddi \\rd, \\rd, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
-        ".macro lbg, rd, symbol\nauipc \\rd, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nlb \\rd, \\rd, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
-        ".macro lhg, rd, symbol\nauipc \\rd, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nlh \\rd, \\rd, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
-        ".macro lwg, rd, symbol\nauipc \\rd, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nlw \\rd, \\rd, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
-        ".macro sbg, rd, symbol, rt\nauipc \\rt, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nsb \\rd, \\rt, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
-        ".macro shg, rd, symbol, rt\nauipc \\rt, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nsh \\rd, \\rt, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
-        ".macro swg, rd, symbol, rt\nauipc \\rt, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nsw \\rd, \\rt, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
+        ".macro lbg, rd, symbol\nlui \\rd, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nlb \\rd, \\rd, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
+        ".macro lhg, rd, symbol\nlui \\rd, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nlh \\rd, \\rd, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
+        ".macro lwg, rd, symbol\nlui \\rd, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nlw \\rd, \\rd, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
+        ".macro sbg, rd, symbol, rt\nlui \\rt, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nsb \\rd, \\rt, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
+        ".macro shg, rd, symbol, rt\nlui \\rt, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nsh \\rd, \\rt, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
+        ".macro swg, rd, symbol, rt\nlui \\rt, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nsw \\rd, \\rt, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
         ".macro nop\naddi x0, x0, 0\n.endm\n",
         ".macro li, rd, imm\nlui \\rd, (((\\imm) >> 12) + (((\\imm) >> 11) & 1)) & ((1 << 20) - 1)\naddi \\rd, \\rd, ((\\imm) & ((1 << 11) - 1)) - ((\\imm) & (1 << 11))\n.endm\n",
         ".macro mv, rd, rs\naddi \\rd, \\rs, 0\n.endm\n",
@@ -703,8 +703,8 @@
         ".macro jr, rs\njalr x0, \\rs, 0\n.endm\n",
         ".macro jalr, rs\njalr x1, \\rs, 0\n.endm\n",
         ".macro ret\njalr x0, x1, 0\n.endm\n",
-        ".macro call, offset\nauipc x6, (((\\offset) >> 12) + (((\\offset) >> 11) & 1)) & ((1 << 20) - 1)\njalr x1, x6, ((\\offset) & ((1 << 11) - 1)) - ((\\offset) & (1 << 11))\n.endm\n",
-        ".macro tail, offset\nauipc x6, (((\\offset) >> 12) + (((\\offset) >> 11) & 1)) & ((1 << 20) - 1)\njalr x0, x6, ((\\offset) & ((1 << 11) - 1)) - ((\\offset) & (1 << 11))\n.endm\n"
+        ".macro call, offset\nlui x6, (((\\offset) >> 12) + (((\\offset) >> 11) & 1)) & ((1 << 20) - 1)\njalr x1, x6, ((\\offset) & ((1 << 11) - 1)) - ((\\offset) & (1 << 11))\n.endm\n",
+        ".macro tail, offset\nlui x6, (((\\offset) >> 12) + (((\\offset) >> 11) & 1)) & ((1 << 20) - 1)\njalr x0, x6, ((\\offset) & ((1 << 11) - 1)) - ((\\offset) & (1 << 11))\n.endm\n"
     ],
     "byte-size": 8
 }

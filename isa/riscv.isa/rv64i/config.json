@@ -2,8 +2,8 @@
     "reset-units": true,
     "name": "rv64i",
     "builtin-macros": [
-        ".macro ldg, rd, symbol\nauipc \\rd, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nld \\rd, \\rd, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
-        ".macro sdg, rd, symbol, rt\nauipc \\rt, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nsd \\rd, \\rt, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
+        ".macro ldg, rd, symbol\nlui \\rd, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nld \\rd, \\rd, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
+        ".macro sdg, rd, symbol, rt\nlui \\rt, (((\\symbol) >> 12) + (((\\symbol) >> 11) & 1)) & ((1 << 20) - 1)\nsd \\rd, \\rt, ((\\symbol) & ((1 << 11) - 1)) - ((\\symbol) & (1 << 11))\n.endm\n",
         ".macro negw, rd, rs\nsubw \\rd, x0, \\rs\n.endm\n",
         ".macro sext.w, rd, rs\naddiw \\rd, \\rs, 0\n.endm\n"
     ],
