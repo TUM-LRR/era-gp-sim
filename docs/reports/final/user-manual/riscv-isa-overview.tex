@@ -483,81 +483,101 @@ Um ein einfaches Debuggen zu ermöglichen, unterstützt der Simulator noch Instr
 
 \subsection{Pseudoinstruktionen}
 \label{user-manual-riscv-overview-pseudos}
-\todo[inline]{Was sind Pseudoinstruktionen + Liste mit Verhalten}
 Pseudoinstruktionen sind keine wirklichen Instruktionen, die es im RISC-V Befehlssatz so gibt. Ihre Funktionalität lässt sich mit einer Kombination von RISC-V Instruktionen erreichen. Diese Kombination kann aber unter Umständen recht kompliziert oder mühsam sein, daher stellen viele Assembler-Dialekte Pseudo-Instruktionen zur Verfügung. Diese können wie eine normale Instruktion verwendet werden, werden aber beim Übersetzen/Assemblieren in die eigentliche Kombination zerlegt.\\
 Diese Funktionalität bietet auch der Simulator. Die Pseudoinstruktionen sind hier als Makros ''vordefiniert'', können also überall genutzt werden. Durch Aufklappen der Makros kann man diejenigen Instruktionen sehen, in die die Pseudo-Instruktion zerlegt wird.\\
 
-\begin{tabular}{|c|p{5cm}|p{5cm}|}
-	\hline
+% Define tabular layout
+\def\tabulardef{|p{4.8cm}|p{5.0cm}|p{5.0cm}|}
+
+\begin{tabular}{\tabulardef}
+\hline
+	
 	Pseudoinstruktion & Operanden & Beschreibung\\
-	\hline
+	
+\hline
+	
 	\textbf{la} \texttt{<rd>, <symbol>} & 
-	\begin{itemize}
-		\item \texttt{rd}: Register, in das die Adresse reingeladen wird\
-		\item \texttt{symbol}: 32-Bit Adresse (relativ zum Programmzähler)\footnote{\label{user-manual-riscv-overview-pseudos-foot1}Da jede Marke eine Adresse darstellt führt die Verwendung einer Marke hier nicht zu einem Übersetzungsfehler. Anders als bei den relativen Kontrollflussinstruktionen wird hier eine Marke \textbf{nicht} automatisch in die passende relative Adresse umgewandelt}
-	\end{itemize}
+	\textbullet \texttt{rd}: Register, in das die Adresse reingeladen wird \newline
+	\textbullet \texttt{symbol}: 32-Bit Adresse (relativ zum Programmzähler)\footnotemark
 	& Lädt die zum Programmzähler relative Adresse \texttt{symbol} in das Register \texttt{rd}. Im Gegensatz zu den Kontrollflussinstruktionen kann hier eine bis zu 32-Bit große Konstante verwendet werden.\\
-	\hline
+\hline
+	
 	\textbf{lbg} \texttt{<rd>, <mem\_addr>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{lb}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf}\\
-	\hline
+	
+\hline
+	
 	\textbf{lhg} \texttt{<rd>, <mem\_addr>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{lh}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf}\\
-	\hline
+	
+\hline
+	
 	\textbf{lwg} \texttt{<rd>, <mem\_addr>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{lw}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf}\\
-	\hline
+	
+\hline
+	
 	\textbf{sbg} \texttt{<rd>, <mem\_addr>, <rt>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{sb}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf. \texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird}\\
-	\hline
+	
+\hline
+	
 	\textbf{shg} \texttt{<rd>, <mem\_addr>, <rt>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{sh}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf. \texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird}\\
-	\hline
+	
+\hline
+	
 	\textbf{swg} \texttt{<rd>, <mem\_addr>, <rt>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{sw}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf. \texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird}\\
-	\hline
+	
+\hline
+	
 	\textbf{nop} & & Eine No-Operation. Es wird kein Register und keine Speicherzelle verändert.\\
-	\hline
+	
+\hline
+	
 	\textbf{li} \texttt{<rd>, <immediate>} &
-	\begin{itemize}
-		\item \texttt{rd}: Zielregister, in das die Konstante geladen wird
-		\item \texttt{immediate}: 32-Bit Konstante
-	\end{itemize}
+	\textbullet \texttt{rd}: Zielregister, in das die Konstante geladen wird \newline
+	\textbullet \texttt{immediate}: 32-Bit Konstante
 	& Lädt die gegebene 32-Bit Konstante in das Register \texttt{rd}.\\
-	\hline
+	
+\hline
 \end{tabular}\\
+\footnotetext{\label{user-manual-riscv-overview-pseudos-foot1}Da jede Marke eine Adresse darstellt führt die Verwendung einer Marke hier nicht zu einem Übersetzungsfehler. Anders als bei den relativen Kontrollflussinstruktionen wird hier eine Marke \textbf{nicht} automatisch in die passende relative Adresse umgewandelt}
 
-\begin{tabular}{|c|p{5cm}|p{5cm}|}
-	\hline
+\begin{tabular}{\tabulardef}
+\hline
+
 	Pseudoinstruktion & Operanden & Beschreibung\\
-	\hline
+	
+\hline
+	
 	\textbf{mv} \texttt{<rd>, <rs>} &
-	\begin{itemize}
-		\item \texttt{rd}: Zielregister
-		\item \texttt{rs}: Register, dessen Wert kopiert wird
-	\end{itemize}
+	\textbullet \texttt{rd}: Zielregister \newline
+	\textbullet \texttt{rs}: Register, dessen Wert kopiert wird
 	& Kopiert den Inhalt des Registers \texttt{rs} in Register \texttt{rd}\\
-	\hline
+	
+\hline
+	
 	\textbf{not} \texttt{<rd>, <rs>} & 
-	\begin{itemize}
-		\item \texttt{rd}: Zielregister
-		\item \texttt{rs}: Register, dessen Wert bitweise negiert wird
-	\end{itemize}
+	\textbullet \texttt{rd}: Zielregister \newline
+	\textbullet \texttt{rs}: Register, dessen Wert bitweise negiert wird
 	& Negiert den Wert von \texttt{rs} bitweise und schreibt das Ergebnis nach \texttt{rd} ($\equiv$ Negation im 1er-Komplement).\\
-	\hline
+	
+\hline
+	
 	\textbf{neg} \texttt{<rd>, <rs>} &
-	\begin{itemize}
-		\item \texttt{rd}: Zielregister
-		\item \texttt{rs}: Register, dessen Wert negiert wird
-	\end{itemize}
+		\textbullet \texttt{rd}: Zielregister \newline
+		\textbullet \texttt{rs}: Register, dessen Wert negiert wird
 	& Ändert das Vorzeichen des Registers \texttt{rs} und schreibt das Ergebnis nach \texttt{rd} ($\equiv$ Negation im 2er-Komplement).\\
-	\hline
+	
+\hline
+	
 	\textbf{seqz} \texttt{<rd>, <rs>} &
 	\multirow{4}{5cm}
-		{\begin{itemize}
-			\item \texttt{rd}: Zielregister
-			\item \texttt{rs}: Register, das überprüft wird
-		\end{itemize}}
+		{\textbullet \texttt{rd}: Zielregister \newline
+			\textbullet \texttt{rs}: Register, das überprüft wird
+		}
 	& 
 	\multirow{4}{5cm}{
 		\begin{tabular}{ccc}
@@ -567,18 +587,109 @@ Diese Funktionalität bietet auch der Simulator. Die Pseudoinstruktionen sind hi
 			& $>0$ &\\
 		\end{tabular}
 		}\\
+	
 	\textbf{snez} \texttt{<rd>, <rs>} &  &\\
 	\textbf{sltz} \texttt{<rd>, <rs>} &  &\\
 	\textbf{sgtz} \texttt{<rd>, <rs>} &  &\\
-	\hline
+	
+\hline
+	
 	\textbf{beqz} \texttt{<rs>, <marke>} & 
 	\multirow{6}{5cm}{
-		\begin{itemize}
-			\item \texttt{rs}: Register für die Rücksprungadresse und Register für den Vergleich mit 0
-			\item \texttt{marke}: Sprungmarke, die angesprungen wird, wenn die Bedingung stimmt
-		\end{itemize}}
-	& \begin{tabular}{cc}
-		\multirow{6}{2cm}{Springt, wenn} & $rs = 0$\\
-		$rs
-	\end{tabular}
+		\textbullet \texttt{rs}: Register für die Rücksprungadresse und Register für den Vergleich mit 0 \newline
+		\textbullet \texttt{marke}: Sprungmarke, die angesprungen wird
+		}
+	& \multirow{6}{5cm}{
+		\begin{tabular}{cc}
+			\multirow{6}{2cm}{Springt, wenn} & $rs = 0$\\
+			& $rs \ne 0$\\
+			& $rs \le 0$\\
+			& $rs \ge 0$\\
+			& $rs < 0$\\
+			& $rs > 0$\\
+		\end{tabular}
+		}\\
+	\textbf{bnez} \texttt{<rs>, <marke>} & & \\
+	\textbf{blez} \texttt{<rs>, <marke>} & & \\
+	\textbf{bgez} \texttt{<rs>, <marke>} & & \\
+	\textbf{bltz} \texttt{<rs>, <marke>} & & \\
+	\textbf{bgtz} \texttt{<rs>, <marke>} & & \\
+	
+\hline
+
+	\textbf{j} \texttt{<marke>} & \textbullet \texttt{marke}: Sprungmarke & Springt zu \texttt{marke} und verwirft die Rücksprungadresse\\
+	
+\hline
+
+	\textbf{jal} \texttt{<marke>} & \textbullet \texttt{marke}: Sprungmarke & Springt zu \texttt{marke} und speichert die Rücksprungandresse in Register x1\\
+	
+\hline
+
+	\textbf{jr} \texttt{<reg>} & \textbullet \texttt{reg}Enthält die Adresse, an die gesprungen wird & Springt an die Adresse in Register \texttt{reg} und verwirft die Rücksprungadresse\\
+
+\hline
+
+	\textbf{jalr} \texttt{<reg>} & \textbullet \texttt{reg}Enthält die Adresse, an die gesprungen wird & Springt an die Adresse in Register \texttt{reg} und speichert die Rücksprungadresse in Register x1\\
+	
+\hline
 \end{tabular}
+
+\begin{tabular}{\tabulardef}
+\hline
+	
+	Pseudoinstruktion & Operanden & Beschreibung\\
+
+\hline
+	
+	\textbf{ret} & & Springt an die Adresse in Register x1.\footnotemark \\
+	
+\hline
+	
+	\textbf{call} \texttt{<marke>} & \textbullet \texttt{marke}: Sprungmarke & Springt zu \texttt{marke} und legt die Rücksprungadresse in Register x1 ab. \textsuperscript{\ref{user-manual-riscv-overview-foot2}} Für die Adressberechnung wird Register x6 verwendet. Es kann beliebige Adresse im 32-Bit Adressbereich angesprungen werden.\\
+	
+\hline
+	
+	\textbf{tail} \texttt{<marke>} & \textbullet \texttt{marke}: Sprungmarke & Springt zu \texttt{marke} und verwirft die Rücksprungadresse. Für die Adressberechnung wird Register x6 verwendet. Es kann beliebige Adresse im 32-Bit Adressbereich angesprungen werden.\\
+	
+\hline
+\end{tabular}
+
+\footnotetext{\label{user-manual-riscv-overview-foot2}Anders als in 386 arbeiten die \texttt{call} bzw. \texttt{ret} Instruktionen nicht mit einem Callstack. \texttt{ret} kehrt also nur zum letzten Aufruf von \texttt{call} zurück, da x1 überschrieben wird.}
+
+Das 64Bit Basismodul von RISC-V fügt noch weitere Pseudoinstruktionen hinzu:\\
+
+\begin{tabular}{\tabulardef}
+\hline
+
+	Pseudoinstruktion & Operanden & Beschreibung\\
+	
+\hline
+
+	\textbf{ldg} \texttt{<rd>, <mem\_addr>} &
+	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{ld}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf}\\
+	
+\hline
+	
+	\textbf{sdg} \texttt{<rd>, <mem\_addr>, <rt>} &
+	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{sd}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf. \texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird}\\
+	
+\hline
+
+	\textbf{negw} \texttt{<rd>, <rs>} &
+	\textbullet \texttt{rd}: Zielregister \newline
+	\textbullet \texttt{rs}: Register, dessen untere 32Bit negiert werden
+	& Ändert das Vorzeichen der unteren 32Bit des Registers \texttt{rs} und schreibt das Ergebnis nach \texttt{rd}\\
+	
+\hline
+
+	\textbf{sext.w} \texttt{<rd>, <rs>} &
+	\textbullet \texttt{rd}: Zielregister \newline
+	\textbullet \texttt{rs}: Register, dessen untere 32Bit mit dem richtigen Vorzeichen erweitert werden
+	& Erweitert die unteren 32Bit des Registers \texttt{rs} und schreibt das Ergebnis nach \texttt{rd}\\
+	
+\hline
+\end{tabular}
+
+\begin{infoblock}{Pseudoinstruktionen}
+	Der RISC-V Standard geht beim den Pseudoinstruktionen von erheblich größeren Programmen aus, als im Simulator verwendet werden. Einige Instruktionen sind daher nur der Vollständigkeit halber definiert. Beispielsweise lassen sich die \texttt{call} und \texttt{tail} Instruktionen auch immer durch ein \texttt{jal} ersetzen, da eine Sprungadresse außerhalb des 12-Bit Bereichs im Simulator nicht vorkommen wird (Es müssten mehr als 512 Instruktionen übersprungen werden!).
+\end{infoblock}
