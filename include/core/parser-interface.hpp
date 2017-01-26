@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_PARSER_INTERFACE_HPP
-#define ERAGPSIM_CORE_PARSER_INTERFACE_HPP
+#ifndef ERASIM_CORE_PARSER_INTERFACE_HPP
+#define ERASIM_CORE_PARSER_INTERFACE_HPP
 
 #include "core/parsing-and-execution-unit.hpp"
 #include "core/proxy.hpp"
@@ -77,4 +77,4 @@ class ParserInterface : public Proxy<ParsingAndExecutionUnit> {
   POST(setSetCurrentLineCallback)
 };
 
-#endif /* ERAGPSIM_CORE_PARSER_INTERFACE_HPP */
+#endif /* ERASIM_CORE_PARSER_INTERFACE_HPP */

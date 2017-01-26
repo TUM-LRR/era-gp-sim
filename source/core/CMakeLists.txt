@@ -19,9 +19,9 @@ set(CORE_SOURCES
 # TARGET
 ########################################
 
-if (ERA_SIM_BUILD_CORE)
-  add_library(era-sim-core STATIC ${CORE_SOURCES})
+if (ERASIM_BUILD_CORE)
+  add_library(erasim-core STATIC ${CORE_SOURCES})
 
-  target_link_libraries(era-sim-core era-sim-common era-sim-parser-common era-sim-parser-factory era-sim-arch-common)
-  target_link_libraries(era-sim-core pthread)
+  target_link_libraries(erasim-core erasim-common erasim-parser-common erasim-parser-factory erasim-arch-common)
+  target_link_libraries(erasim-core pthread)
 endif()

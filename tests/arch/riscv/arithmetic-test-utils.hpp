@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_TESTS_ARCH_RISCV_ARITHMETIC_TEST_UTILS_HPP_
-#define ERAGPSIM_TESTS_ARCH_RISCV_ARITHMETIC_TEST_UTILS_HPP_
+#ifndef ERASIM_TESTS_ARCH_RISCV_ARITHMETIC_TEST_UTILS_HPP_
+#define ERASIM_TESTS_ARCH_RISCV_ARITHMETIC_TEST_UTILS_HPP_
 
 #include <cstdint>
 #include <string>
@@ -140,4 +140,4 @@ void test12BitImmediateBounds(const NodeFactoryCollection& factories,
   MemoryValue result_##contextNbr = memoryAccess.getRegisterValue(dest).get(); \
   ASSERT_EQ(memoryValueConverter(result), result_##contextNbr);
 
-#endif /* ERAGPSIM_TESTS_ARCH_RISCV_ARITHMETIC_TEST_UTILS_HPP_*/
+#endif /* ERASIM_TESTS_ARCH_RISCV_ARITHMETIC_TEST_UTILS_HPP_*/

@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_DATATYPE_INFORMATION_HPP
-#define ERAGPSIM_ARCH_DATATYPE_INFORMATION_HPP
+#ifndef ERASIM_ARCH_DATATYPE_INFORMATION_HPP
+#define ERASIM_ARCH_DATATYPE_INFORMATION_HPP
 
 #include <string>
 
@@ -139,4 +139,4 @@ class DataTypeInformation : public InformationInterface {
   size_t _size;
 };
 
-#endif /* ERAGPSIM_ARCH_DATATYPE_INFORMATION_HPP */
+#endif /* ERASIM_ARCH_DATATYPE_INFORMATION_HPP */

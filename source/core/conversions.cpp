@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *

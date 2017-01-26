@@ -37,7 +37,7 @@ set(PARSER_INDEPENDENT_SOURCES
 # TARGET
 ########################################
 
-if (ERA_SIM_BUILD_PARSER)
-  add_library(era-sim-parser-independent STATIC ${PARSER_INDEPENDENT_SOURCES})
-  target_link_libraries(era-sim-parser-independent era-sim-common era-sim-arch-common era-sim-parser-common)
+if (ERASIM_BUILD_PARSER)
+  add_library(erasim-parser-independent STATIC ${PARSER_INDEPENDENT_SOURCES})
+  target_link_libraries(erasim-parser-independent erasim-common erasim-arch-common erasim-parser-common)
 endif()

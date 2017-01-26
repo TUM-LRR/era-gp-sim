@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_INDEPENDENT_CONSTANT_DIRECTIVE_HPP
-#define ERAGPSIM_PARSER_INDEPENDENT_CONSTANT_DIRECTIVE_HPP
+#ifndef ERASIM_PARSER_INDEPENDENT_CONSTANT_DIRECTIVE_HPP
+#define ERASIM_PARSER_INDEPENDENT_CONSTANT_DIRECTIVE_HPP
 
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 #include "parser/independent/execute-immutable-arguments.hpp"
@@ -93,4 +93,4 @@ class ConstantDirective : public IntermediateDirective {
   PositionedString _expression;
 };
 
-#endif /* ERAGPSIM_PARSER_INDEPENDENT_CONSTANT_DIRECTIVE_HPP */
+#endif /* ERASIM_PARSER_INDEPENDENT_CONSTANT_DIRECTIVE_HPP */

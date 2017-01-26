@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_COMMON_UNIT_INFORMATION_CONTAINER_HPP
-#define ERAGPSIM_ARCH_COMMON_UNIT_INFORMATION_CONTAINER_HPP
+#ifndef ERASIM_ARCH_COMMON_UNIT_INFORMATION_CONTAINER_HPP
+#define ERASIM_ARCH_COMMON_UNIT_INFORMATION_CONTAINER_HPP
 
 #include <functional>
 #include <string>
@@ -45,4 +45,4 @@ using UnitContainer = std::unordered_set<UnitInformation,
                                          std::hash<UnitInformation>,
                                          UnitNameComparator>;
 
-#endif /* ERAGPSIM_ARCH_COMMON_UNIT_INFORMATION_CONTAINER_HPP */
+#endif /* ERASIM_ARCH_COMMON_UNIT_INFORMATION_CONTAINER_HPP */

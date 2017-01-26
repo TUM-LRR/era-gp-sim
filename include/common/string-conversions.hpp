@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_COMMON_STRING_CONVERSIONS_HPP
-#define ERAGPSIM_COMMON_STRING_CONVERSIONS_HPP
+#ifndef ERASIM_COMMON_STRING_CONVERSIONS_HPP
+#define ERASIM_COMMON_STRING_CONVERSIONS_HPP
 
 #include "common/optional.hpp"
 #include "core/memory-value.hpp"
@@ -111,4 +111,4 @@ signedDecStringToMemoryValue(const std::string& stringValue,
                              size_t memoryValueSize);
 }
 
-#endif /* ERAGPSIM_COMMON_STRING_CONVERSIONS_HPP */
+#endif /* ERASIM_COMMON_STRING_CONVERSIONS_HPP */

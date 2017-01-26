@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_COMMON_CODE_POSITION_INTERVAL_HPP
-#define ERAGPSIM_PARSER_COMMON_CODE_POSITION_INTERVAL_HPP
+#ifndef ERASIM_PARSER_COMMON_CODE_POSITION_INTERVAL_HPP
+#define ERASIM_PARSER_COMMON_CODE_POSITION_INTERVAL_HPP
 
 #include <vector>
 
@@ -140,4 +140,4 @@ class CodePositionInterval {
   CodePosition _codePositionEnd;
 };
 
-#endif /* ERAGPSIM_PARSER_COMMON_CODE_POSITION_INTERVAL_HPP */
+#endif /* ERASIM_PARSER_COMMON_CODE_POSITION_INTERVAL_HPP */

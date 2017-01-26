@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_CORE_MEMORYVALUE_HPP
-#define ERAGPSIM_CORE_MEMORYVALUE_HPP
+#ifndef ERASIM_CORE_MEMORYVALUE_HPP
+#define ERASIM_CORE_MEMORYVALUE_HPP
 
 #include <algorithm>
 #include <cstddef>
@@ -532,4 +532,4 @@ class MemoryValue {
   /** The Data stored by the MemoryValue */
   Underlying _data;
 };
-#endif  // ERAGPSIM_CORE_MEMORYVALUE_HPP
+#endif  // ERASIM_CORE_MEMORYVALUE_HPP

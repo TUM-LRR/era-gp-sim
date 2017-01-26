@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_RISCV_SPECIAL_INTEGER_INSTRUCTIONS_HPP
-#define ERAGPSIM_ARCH_RISCV_SPECIAL_INTEGER_INSTRUCTIONS_HPP
+#ifndef ERASIM_ARCH_RISCV_SPECIAL_INTEGER_INSTRUCTIONS_HPP
+#define ERASIM_ARCH_RISCV_SPECIAL_INTEGER_INSTRUCTIONS_HPP
 
 #include <QtGlobal>
 #include <cstdint>
@@ -180,4 +180,4 @@ class AuipcInstructionNode : public LuiAuipcValidationNode {
 
 }// Namespace riscv
 
-#endif /* ERAGPSIM_ARCH_RISCV_SPECIAL_INTEGER_INSTRUCTIONS_HPP */
+#endif /* ERASIM_ARCH_RISCV_SPECIAL_INTEGER_INSTRUCTIONS_HPP */

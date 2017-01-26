@@ -10,15 +10,15 @@ def getPath(fn):
     arr = []
     rest = npath
     curr = ''
-    while curr != 'era-gp-sim':
+    while curr != 'erasim':
         rest, curr = os.path.split(rest)
         arr = [curr] + arr
     return '-'.join(arr[2:]).replace('-', '_').replace('.', '_').upper()
 
 def refine(text, file):
     return re.sub(
-        r'ERAGPSIM_\S*',
-        lambda x: 'ERAGPSIM_' + getPath(file),
+        r'ERASIM_\S*',
+        lambda x: 'ERASIM_' + getPath(file),
         text)
 
 def handler(text, file):

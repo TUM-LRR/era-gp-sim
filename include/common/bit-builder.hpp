@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_COMMON_BIT_BUILDER_HPP
-#define ERAGPSIM_COMMON_BIT_BUILDER_HPP
+#ifndef ERASIM_COMMON_BIT_BUILDER_HPP
+#define ERASIM_COMMON_BIT_BUILDER_HPP
 
 #include <cstddef>
 #include <limits>
@@ -195,4 +195,4 @@ class BitBuilder {
   size_t _size;
 };
 
-#endif /* ERAGPSIM_COMMON_BIT_BUILDER_HPP */
+#endif /* ERASIM_COMMON_BIT_BUILDER_HPP */

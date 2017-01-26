@@ -10,12 +10,12 @@ set(TEST_SYSTEM_SOURCES
 # TARGET
 ########################################
 
-  add_executable(era-sim-system-tests ${TEST_SYSTEM_SOURCES})
+  add_executable(erasim-system-tests ${TEST_SYSTEM_SOURCES})
   add_test(
-    NAME era-sim-system-tests
-    COMMAND era-sim-system-tests
-    WORKING_DIRECTORY ${ERA_SIM_BINARY_DIR}
+    NAME erasim-system-tests
+    COMMAND erasim-system-tests
+    WORKING_DIRECTORY ${ERASIM_BINARY_DIR}
   )
 
-  target_link_libraries(era-sim-system-tests era-sim-core)
-  target_link_libraries(era-sim-system-tests gtest gtest_main)
+  target_link_libraries(erasim-system-tests erasim-core)
+  target_link_libraries(erasim-system-tests gtest gtest_main)

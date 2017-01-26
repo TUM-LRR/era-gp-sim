@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_RISCV_ABSTRACT_LOAD_STORE_INSTRUCTION_NODE_HPP
-#define ERAGPSIM_ARCH_RISCV_ABSTRACT_LOAD_STORE_INSTRUCTION_NODE_HPP
+#ifndef ERASIM_ARCH_RISCV_ABSTRACT_LOAD_STORE_INSTRUCTION_NODE_HPP
+#define ERASIM_ARCH_RISCV_ABSTRACT_LOAD_STORE_INSTRUCTION_NODE_HPP
 
 #include <QtGlobal>
 #include <cstddef>
@@ -163,4 +163,4 @@ class AbstractLoadStoreInstructionNode : public InstructionNode {
 };
 }  // namespace riscv
 
-#endif /* ERAGPSIM_ARCH_RISCV_ABSTRACT_LOAD_STORE_INSTRUCTION_NODE_HPP */
+#endif /* ERASIM_ARCH_RISCV_ABSTRACT_LOAD_STORE_INSTRUCTION_NODE_HPP */

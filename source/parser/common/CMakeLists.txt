@@ -17,5 +17,5 @@ set(PARSER_COMMON_SOURCES
 # TARGET
 ########################################
 
-add_library(era-sim-parser-common STATIC ${PARSER_COMMON_SOURCES})
-target_link_libraries(era-sim-parser-common era-sim-common era-sim-arch-common)
+add_library(erasim-parser-common STATIC ${PARSER_COMMON_SOURCES})
+target_link_libraries(erasim-parser-common erasim-common erasim-arch-common)

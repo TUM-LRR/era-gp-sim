@@ -10,5 +10,5 @@ set(PARSER_FACTORY_SOURCES
 # TARGET
 ########################################
 
-add_library(era-sim-parser-factory STATIC ${PARSER_FACTORY_SOURCES})
-target_link_libraries(era-sim-parser-factory era-sim-common era-sim-arch-common era-sim-parser-common era-sim-parser-riscv)
+add_library(erasim-parser-factory STATIC ${PARSER_FACTORY_SOURCES})
+target_link_libraries(erasim-parser-factory erasim-common erasim-arch-common erasim-parser-common erasim-parser-riscv)

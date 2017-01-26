@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
-#ifndef ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
-#define ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
+#ifndef ERASIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
+#define ERASIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
 
 #include <QtGlobal>
 
@@ -233,4 +233,4 @@ class InstructionContextInformation {
   bool _is64BitArchitecture;
 };
 
-#endif  // ERAGPSIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP
+#endif  // ERASIM_ARCH_RISCV_INSTRUCTIONCONTEXTINFORMATION_HPP

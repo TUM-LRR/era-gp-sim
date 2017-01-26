@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_INDEPENDENT_EXECUTE_IMMUTABLE_ARGUMENTS_HPP
-#define ERAGPSIM_PARSER_INDEPENDENT_EXECUTE_IMMUTABLE_ARGUMENTS_HPP
+#ifndef ERASIM_PARSER_INDEPENDENT_EXECUTE_IMMUTABLE_ARGUMENTS_HPP
+#define ERASIM_PARSER_INDEPENDENT_EXECUTE_IMMUTABLE_ARGUMENTS_HPP
 
 #include "arch/common/architecture.hpp"
 #include "parser/independent/memory-allocator.hpp"
@@ -136,4 +136,4 @@ class ExecuteImmutableArguments {
   SymbolReplacer _replacer;
 };
 
-#endif /* ERAGPSIM_PARSER_INDEPENDENT_EXECUTE_IMMUTABLE_ARGUMENTS_HPP */
+#endif /* ERASIM_PARSER_INDEPENDENT_EXECUTE_IMMUTABLE_ARGUMENTS_HPP */

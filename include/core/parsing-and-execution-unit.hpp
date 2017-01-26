@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
-#define ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
+#ifndef ERASIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
+#define ERASIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP
 
 #include <functional>
 #include <memory>
@@ -247,4 +247,4 @@ class ParsingAndExecutionUnit : public Servant {
   Callback<> _syncCallback;
 };
 
-#endif /* ERAGPSIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP */
+#endif /* ERASIM_CORE_PARSING_AND_EXECUTION_UNIT_HPP */

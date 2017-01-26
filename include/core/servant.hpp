@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_SERVANT_HPP
-#define ERAGPSIM_CORE_SERVANT_HPP
+#ifndef ERASIM_CORE_SERVANT_HPP
+#define ERASIM_CORE_SERVANT_HPP
 
 #include "common/assert.hpp"
 #include <functional>
@@ -109,4 +109,4 @@ class Servant : public std::enable_shared_from_this<Servant> {
   std::weak_ptr<Scheduler> _scheduler;
 };
 
-#endif /* ERAGPSIM_CORE_SERVANT_HPP */
+#endif /* ERASIM_CORE_SERVANT_HPP */

@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -16,8 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_REGISTERSET_HPP
-#define ERAGPSIM_CORE_REGISTERSET_HPP
+#ifndef ERASIM_CORE_REGISTERSET_HPP
+#define ERASIM_CORE_REGISTERSET_HPP
 
 #include <cstddef>
 #include <functional>
@@ -303,4 +303,4 @@ class RegisterSet {
   void _wasUpdated(const std::size_t address);
 };
 
-#endif// ERAGPSIM_CORE_REGISTERSET_HPP
+#endif// ERASIM_CORE_REGISTERSET_HPP

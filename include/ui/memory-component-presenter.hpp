@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_UI_MEMORY_COMPONENT_PRESENTER_HPP
-#define ERAGPSIM_UI_MEMORY_COMPONENT_PRESENTER_HPP
+#ifndef ERASIM_UI_MEMORY_COMPONENT_PRESENTER_HPP
+#define ERASIM_UI_MEMORY_COMPONENT_PRESENTER_HPP
 
 #include <QAbstractListModel>
 #include <QHash>
@@ -224,4 +224,4 @@ class MemoryComponentPresenter : public QAbstractListModel {
   void onMemoryChanged(const size_t address, const size_t length);
 };
 
-#endif /* ERAGPSIM_UI_MEMORY_COMPONENT_PRESENTER_HPP */
+#endif /* ERASIM_UI_MEMORY_COMPONENT_PRESENTER_HPP */

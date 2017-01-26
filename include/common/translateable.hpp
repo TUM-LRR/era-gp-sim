@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
-#ifndef ERAGPSIM_COMMON_TRANSLATEABLE_HPP
-#define ERAGPSIM_COMMON_TRANSLATEABLE_HPP
+#ifndef ERASIM_COMMON_TRANSLATEABLE_HPP
+#define ERASIM_COMMON_TRANSLATEABLE_HPP
 
 #include <initializer_list>
 #include <memory>
@@ -139,4 +139,4 @@ class Translateable {
   std::vector<TranslateablePtr> _operands;
 };
 
-#endif  // ERAGPSIM_COMMON_TRANSLATEABLE_HPP
+#endif  // ERASIM_COMMON_TRANSLATEABLE_HPP

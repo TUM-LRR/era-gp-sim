@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -16,8 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP
-#define ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP
+#ifndef ERASIM_CORE_ADVANCED_CONVERSIONS_HPP
+#define ERASIM_CORE_ADVANCED_CONVERSIONS_HPP
 
 #include <algorithm>
 #include <cstddef>
@@ -421,4 +421,4 @@ convert(T value,
 }
 }
 
-#endif// ERAGPSIM_CORE_ADVANCED_CONVERSIONS_HPP
+#endif// ERASIM_CORE_ADVANCED_CONVERSIONS_HPP

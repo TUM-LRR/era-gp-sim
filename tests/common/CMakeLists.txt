@@ -14,13 +14,13 @@ set(TEST_COMMON_SOURCES
 # TARGET
 ########################################
 
-add_executable(era-sim-common-tests ${TEST_COMMON_SOURCES})
+add_executable(erasim-common-tests ${TEST_COMMON_SOURCES})
 
-target_link_libraries(era-sim-common-tests era-sim-common)
-target_link_libraries(era-sim-common-tests gtest gtest_main)
+target_link_libraries(erasim-common-tests erasim-common)
+target_link_libraries(erasim-common-tests gtest gtest_main)
 
 add_test(
-  NAME era-sim-common-tests
-  COMMAND era-sim-common-tests
-  WORKING_DIRECTORY ${ERA_SIM_BINARY_DIR}
+  NAME erasim-common-tests
+  COMMAND erasim-common-tests
+  WORKING_DIRECTORY ${ERASIM_BINARY_DIR}
 )

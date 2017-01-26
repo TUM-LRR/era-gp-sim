@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_SCHEDULER_HPP
-#define ERAGPSIM_CORE_SCHEDULER_HPP
+#ifndef ERASIM_CORE_SCHEDULER_HPP
+#define ERASIM_CORE_SCHEDULER_HPP
 
 #include <atomic>
 #include <chrono>
@@ -104,4 +104,4 @@ class Scheduler {
   std::thread _schedulerThread;
 };
 
-#endif /* ERAGPSIM_CORE_SCHEDULER_HPP */
+#endif /* ERASIM_CORE_SCHEDULER_HPP */

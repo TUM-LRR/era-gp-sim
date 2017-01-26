@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_INDEPENDENT_INTEGER_PARSER_HPP
-#define ERAGPSIM_PARSER_INDEPENDENT_INTEGER_PARSER_HPP
+#ifndef ERASIM_PARSER_INDEPENDENT_INTEGER_PARSER_HPP
+#define ERASIM_PARSER_INDEPENDENT_INTEGER_PARSER_HPP
 
 #include <cctype>
 #include <cstddef>
@@ -203,4 +203,4 @@ template <>
 unsigned long long IntegerParser<unsigned long long>::parseInternal(
     const std::string &str, size_t start, int base, size_t &count);
 
-#endif /* ERAGPSIM_PARSER_INDEPENDENT_INTEGER_PARSER_HPP */
+#endif /* ERASIM_PARSER_INDEPENDENT_INTEGER_PARSER_HPP */

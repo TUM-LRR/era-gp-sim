@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -78,7 +78,7 @@ std::string toUpper(const std::string& string) {
 }
 
 const std::string& rootPath() {
-  static const std::string query("era-gp-sim");
+  static const std::string query("erasim");
   static std::string root;
 
   if (root.empty()) {

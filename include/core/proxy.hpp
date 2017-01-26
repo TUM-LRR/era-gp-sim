@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -25,8 +25,8 @@
 #include "common/tuple.hpp"
 #include "core/scheduler.hpp"
 
-#ifndef ERAGPSIM_CORE_PROXY_HPP
-#define ERAGPSIM_CORE_PROXY_HPP
+#ifndef ERASIM_CORE_PROXY_HPP
+#define ERASIM_CORE_PROXY_HPP
 
 /** \file proxy.hpp */
 
@@ -543,4 +543,4 @@ class Proxy {
   SharedServant _servant;
 };
 
-#endif /* ERAGPSIM_CORE_PROXY_HPP */
+#endif /* ERASIM_CORE_PROXY_HPP */

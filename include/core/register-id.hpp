@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -16,8 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_REGISTERID_HPP
-#define ERAGPSIM_CORE_REGISTERID_HPP
+#ifndef ERASIM_CORE_REGISTERID_HPP
+#define ERASIM_CORE_REGISTERID_HPP
 
 // The information to uniquely identify a register
 struct RegisterID {
@@ -78,4 +78,4 @@ struct RegisterID {
   ~RegisterID() = default;
 };
 
-#endif// ERAGPSIM_CORE_REGISTERID_HPP
+#endif// ERASIM_CORE_REGISTERID_HPP

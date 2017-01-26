@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_COMMON_IMMEDIATE_NODE_HPP
-#define ERAGPSIM_ARCH_COMMON_IMMEDIATE_NODE_HPP
+#ifndef ERASIM_ARCH_COMMON_IMMEDIATE_NODE_HPP
+#define ERASIM_ARCH_COMMON_IMMEDIATE_NODE_HPP
 
 #include <QtCore/qglobal.h>
 #include <memory>
@@ -70,4 +70,4 @@ class ImmediateNode : public AbstractSyntaxTreeNode {
   static const std::string IMMEDIATE_IDENTIFIER;
 };
 
-#endif /* ERAGPSIM_ARCH_COMMON_IMMEDIATE_NODE_HPP */
+#endif /* ERASIM_ARCH_COMMON_IMMEDIATE_NODE_HPP */

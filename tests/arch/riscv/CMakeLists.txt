@@ -22,15 +22,15 @@ set(TEST_ARCH_RISCV_SOURCES
 # TARGET
 ########################################
 
-if (ERA_SIM_BUILD_ARCH)
-  add_executable(era-sim-arch-riscv-tests ${TEST_ARCH_RISCV_SOURCES})
+if (ERASIM_BUILD_ARCH)
+  add_executable(erasim-arch-riscv-tests ${TEST_ARCH_RISCV_SOURCES})
 
-  target_link_libraries(era-sim-arch-riscv-tests era-sim-arch-riscv)
-  target_link_libraries(era-sim-arch-riscv-tests gtest gtest_main)
+  target_link_libraries(erasim-arch-riscv-tests erasim-arch-riscv)
+  target_link_libraries(erasim-arch-riscv-tests gtest gtest_main)
 
   add_test(
-    NAME era-sim-arch-riscv-tests
-    COMMAND era-sim-arch-riscv-tests
-    WORKING_DIRECTORY ${ERA_SIM_BINARY_DIR}
+    NAME erasim-arch-riscv-tests
+    COMMAND erasim-arch-riscv-tests
+    WORKING_DIRECTORY ${ERASIM_BINARY_DIR}
   )
 endif()

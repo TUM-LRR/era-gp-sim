@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_COMMON_ARCHITECTURE_FORMULA_HPP
-#define ERAGPSIM_ARCH_COMMON_ARCHITECTURE_FORMULA_HPP
+#ifndef ERASIM_ARCH_COMMON_ARCHITECTURE_FORMULA_HPP
+#define ERASIM_ARCH_COMMON_ARCHITECTURE_FORMULA_HPP
 
 #include "common/assert.hpp"
 #include <string>
@@ -133,4 +133,4 @@ class ArchitectureFormula : public ContainerAdapter<std::vector<std::string>>,
   std::string _architectureName;
 };
 
-#endif /* ERAGPSIM_ARCH_COMMON_ARCHITECTURE_FORMULA_HPP */
+#endif /* ERASIM_ARCH_COMMON_ARCHITECTURE_FORMULA_HPP */

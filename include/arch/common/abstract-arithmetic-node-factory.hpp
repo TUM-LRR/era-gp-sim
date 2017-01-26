@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
-#ifndef ERAGPSIM_ARCH_ABSTRACT_ARITHMETIC_NODE_FACTORY_HPP
-#define ERAGPSIM_ARCH_ABSTRACT_ARITHMETIC_NODE_FACTORY_HPP
+#ifndef ERASIM_ARCH_ABSTRACT_ARITHMETIC_NODE_FACTORY_HPP
+#define ERASIM_ARCH_ABSTRACT_ARITHMETIC_NODE_FACTORY_HPP
 
 #include <memory>
 
@@ -51,4 +51,4 @@ class AbstractArithmeticNodeFactory {
   virtual Node createArithmeticNode(Operation operation) const = 0;
 };
 
-#endif /* ERAGPSIM_ARCH_ABSTRACT_ARITHMETIC_NODE_FACTORY_HPP */
+#endif /* ERASIM_ARCH_ABSTRACT_ARITHMETIC_NODE_FACTORY_HPP */

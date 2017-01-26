@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_SNAPSHOT_HPP
-#define ERAGPSIM_CORE_SNAPSHOT_HPP
+#ifndef ERASIM_CORE_SNAPSHOT_HPP
+#define ERASIM_CORE_SNAPSHOT_HPP
 
 #include "arch/common/architecture-formula.hpp"
 #include "third-party/json/json.hpp"
@@ -80,4 +80,4 @@ class Snapshot {
   Json _snapshot;
 };
 
-#endif /* ERAGPSIM_CORE_SNAPSHOT_HPP */
+#endif /* ERASIM_CORE_SNAPSHOT_HPP */

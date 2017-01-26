@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
-#ifndef ERAGPSIM_ARCH_RISCV_DATA_NODE_FACTORY_HPP
-#define ERAGPSIM_ARCH_RISCV_DATA_NODE_FACTORY_HPP
+#ifndef ERASIM_ARCH_RISCV_DATA_NODE_FACTORY_HPP
+#define ERASIM_ARCH_RISCV_DATA_NODE_FACTORY_HPP
 
 #include "arch/common/abstract-data-node-factory.hpp"
 
@@ -40,4 +40,4 @@ public:
 };
 }
 
-#endif // ERAGPSIM_ARCH_RISCV_DATA_NODE_FACTORY_HPP
+#endif // ERASIM_ARCH_RISCV_DATA_NODE_FACTORY_HPP

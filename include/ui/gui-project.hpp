@@ -1,5 +1,5 @@
 /*
- * C++ Assembler Interpreter
+ * ERASIM Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -18,8 +18,8 @@
  */
 
 
-#ifndef ERAGPSIM_UI_GUIPROJECT_HPP
-#define ERAGPSIM_UI_GUIPROJECT_HPP
+#ifndef ERASIM_UI_GUIPROJECT_HPP
+#define ERASIM_UI_GUIPROJECT_HPP
 
 #include <QHash>
 #include <QObject>
@@ -373,4 +373,4 @@ class GuiProject : QObject {
   void _notifyCore();
 };
 
-#endif  // ERAGPSIM_UI_GUIPROJECT_HPP
+#endif  // ERASIM_UI_GUIPROJECT_HPP

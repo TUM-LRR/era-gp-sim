@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -38,7 +38,7 @@ TEST(AssertionTests, WorksForFalsyExpressions) {
 // This will only include what would have been included if the DEBUG symbol
 // had not been set before including the header initially (as if via a
 // command-line flag)
-#undef ERAGPSIM_COMMON_ASSERT_HPP
+#undef ERASIM_COMMON_ASSERT_HPP
 #undef DEBUG
 #undef that
 #undef gtest

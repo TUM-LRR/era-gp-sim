@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_MEMORY_MANAGER_HPP
-#define ERAGPSIM_CORE_MEMORY_MANAGER_HPP
+#ifndef ERASIM_CORE_MEMORY_MANAGER_HPP
+#define ERASIM_CORE_MEMORY_MANAGER_HPP
 
 #include "core/project.hpp"
 #include "core/proxy.hpp"
@@ -85,4 +85,4 @@ class MemoryManager : public Proxy<Project> {
   POST_FUTURE_CONST(generateSnapshot)
 };
 
-#endif /* ERAGPSIM_CORE_MEMORY_MANAGER_HPP */
+#endif /* ERASIM_CORE_MEMORY_MANAGER_HPP */

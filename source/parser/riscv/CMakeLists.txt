@@ -12,7 +12,7 @@ set(PARSER_RISCV_SOURCES
 # TARGET
 ########################################
 
-if (ERA_SIM_BUILD_PARSER)
-  add_library(era-sim-parser-riscv STATIC ${PARSER_RISCV_SOURCES})
-  target_link_libraries(era-sim-parser-riscv era-sim-common era-sim-arch-common era-sim-parser-common era-sim-parser-independent)
+if (ERASIM_BUILD_PARSER)
+  add_library(erasim-parser-riscv STATIC ${PARSER_RISCV_SOURCES})
+  target_link_libraries(erasim-parser-riscv erasim-common erasim-arch-common erasim-parser-common erasim-parser-independent)
 endif()

@@ -21,12 +21,12 @@ set(ARCH_RISCV_SOURCES
 # TARGET
 ########################################
 
-if (ERA_SIM_BUILD_ARCH)
-  add_library(era-sim-arch-riscv STATIC ${ARCH_RISCV_SOURCES})
+if (ERASIM_BUILD_ARCH)
+  add_library(erasim-arch-riscv STATIC ${ARCH_RISCV_SOURCES})
   target_link_libraries(
-    era-sim-arch-riscv
-    era-sim-common
-    era-sim-arch-common
-    era-sim-core
+    erasim-arch-riscv
+    erasim-common
+    erasim-arch-common
+    erasim-core
   )
 endif()

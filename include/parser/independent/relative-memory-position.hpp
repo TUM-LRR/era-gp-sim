@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_INDEPENDENT_RELATIVE_MEMORY_POSITION_HPP
-#define ERAGPSIM_PARSER_INDEPENDENT_RELATIVE_MEMORY_POSITION_HPP
+#ifndef ERASIM_PARSER_INDEPENDENT_RELATIVE_MEMORY_POSITION_HPP
+#define ERASIM_PARSER_INDEPENDENT_RELATIVE_MEMORY_POSITION_HPP
 
 #include <cstddef>
 #include <string>
@@ -71,4 +71,4 @@ struct RelativeMemoryPosition {
   size_t _offset;
 };
 
-#endif /* ERAGPSIM_PARSER_INDEPENDENT_RELATIVE_MEMORY_POSITION_HPP */
+#endif /* ERASIM_PARSER_INDEPENDENT_RELATIVE_MEMORY_POSITION_HPP */

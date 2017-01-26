@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_RESULT_HPP
-#define ERAGPSIM_CORE_RESULT_HPP
+#ifndef ERASIM_CORE_RESULT_HPP
+#define ERASIM_CORE_RESULT_HPP
 
 #include "common/assert.hpp"
 #include <exception>
@@ -122,4 +122,4 @@ class Result {
   std::exception_ptr _exception;
 };
 
-#endif /* ERAGPSIM_CORE_RESULT_HPP */
+#endif /* ERASIM_CORE_RESULT_HPP */

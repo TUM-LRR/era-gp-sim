@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -16,8 +16,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_DESERIALIZATION_ERROR_HPP
-#define ERAGPSIM_CORE_DESERIALIZATION_ERROR_HPP
+#ifndef ERASIM_CORE_DESERIALIZATION_ERROR_HPP
+#define ERASIM_CORE_DESERIALIZATION_ERROR_HPP
 
 #include <stdexcept>
 #include <string>
@@ -42,4 +42,4 @@ struct DeserializationError : public std::runtime_error {
   }
 };
 
-#endif// ERAGPSIM_CORE_DESERIALIZATION_ERROR_HPP
+#endif// ERASIM_CORE_DESERIALIZATION_ERROR_HPP

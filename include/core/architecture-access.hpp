@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_ARCHITECTURE_ACCESS_HPP
-#define ERAGPSIM_CORE_ARCHITECTURE_ACCESS_HPP
+#ifndef ERASIM_CORE_ARCHITECTURE_ACCESS_HPP
+#define ERASIM_CORE_ARCHITECTURE_ACCESS_HPP
 
 #include "core/project.hpp"
 #include "core/proxy.hpp"
@@ -99,4 +99,4 @@ class ArchitectureAccess : public Proxy<Project> {
   POST_FUTURE_CONST(getArchitecture)
 };
 
-#endif /* ERAGPSIM_CORE_ARCHITECTURE_ACCESS_HPP */
+#endif /* ERASIM_CORE_ARCHITECTURE_ACCESS_HPP */

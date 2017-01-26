@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_INDEPENDENT_SECTION_TRACKER_HPP
-#define ERAGPSIM_PARSER_INDEPENDENT_SECTION_TRACKER_HPP
+#ifndef ERASIM_PARSER_INDEPENDENT_SECTION_TRACKER_HPP
+#define ERASIM_PARSER_INDEPENDENT_SECTION_TRACKER_HPP
 
 #include <string>
 
@@ -57,4 +57,4 @@ class SectionTracker {
   std::string _section;
 };
 
-#endif /* ERAGPSIM_PARSER_INDEPENDENT_SECTION_TRACKER_HPP */
+#endif /* ERASIM_PARSER_INDEPENDENT_SECTION_TRACKER_HPP */

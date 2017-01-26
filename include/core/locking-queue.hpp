@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERAGPSIM_CORE_LOCKING_QUEUE_HPP
-#define ERAGPSIM_CORE_LOCKING_QUEUE_HPP
+#ifndef ERASIM_CORE_LOCKING_QUEUE_HPP
+#define ERASIM_CORE_LOCKING_QUEUE_HPP
 
 #include <deque>
 #include <mutex>
@@ -79,4 +79,4 @@ class LockingQueue {
   std::mutex _mutex;
 };
 
-#endif // ERAGPSIM_CORE_LOCKED_QUEUE_HPP
+#endif // ERASIM_CORE_LOCKED_QUEUE_HPP

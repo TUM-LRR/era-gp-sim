@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_INSTRUCTION_SET_HPP
-#define ERAGPSIM_ARCH_INSTRUCTION_SET_HPP
+#ifndef ERASIM_ARCH_INSTRUCTION_SET_HPP
+#define ERASIM_ARCH_INSTRUCTION_SET_HPP
 
 #include <string>
 #include <unordered_map>
@@ -245,4 +245,4 @@ class InstructionSet : public UnderlyingInstructionContainer,
   void _deserialize(InformationInterface::Format& data) override;
 };
 
-#endif /* ERAGPSIM_ARCH_INSTRUCTION_SET_HPP */
+#endif /* ERASIM_ARCH_INSTRUCTION_SET_HPP */

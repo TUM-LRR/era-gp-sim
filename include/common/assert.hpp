@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_COMMON_ASSERT_HPP
-#define ERAGPSIM_COMMON_ASSERT_HPP
+#ifndef ERASIM_COMMON_ASSERT_HPP
+#define ERASIM_COMMON_ASSERT_HPP
 
 #include <cstddef>
 #include <iostream>
@@ -128,4 +128,4 @@ inline void unicorn() {
 #endif
 }
 
-#endif /* ERAGPSIM_COMMON_ASSERT_HPP */
+#endif /* ERASIM_COMMON_ASSERT_HPP */

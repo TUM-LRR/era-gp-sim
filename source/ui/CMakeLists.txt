@@ -41,17 +41,17 @@ set(UI_HEADERS
 # EXECUTABLE
 ########################################
 
-if (ERA_SIM_BUILD_GUI)
+if (ERASIM_BUILD_GUI)
   qt5_add_resources(UI_RESOURCES qml.qrc)
   qt5_wrap_cpp(UI_HEADERS_WRAPPED ${UI_HEADERS})
 
   add_executable(
-    era-sim
+    erasim
     ${UI_SOURCES}
     ${UI_RESOURCES}
     ${UI_HEADERS_WRAPPED}
   )
-  target_link_libraries(era-sim era-sim-core)
+  target_link_libraries(erasim erasim-core)
 
-  qt5_use_modules(era-sim Widgets Qml Quick)
+  qt5_use_modules(erasim Widgets Qml Quick)
 endif()

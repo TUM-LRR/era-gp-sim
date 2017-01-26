@@ -3,7 +3,7 @@
 ########################################
 
 cmake_minimum_required(VERSION 3.2)
-project(era-sim)
+project(erasim)
 
 ########################################
 # C++ VERSIONING
@@ -48,14 +48,14 @@ include_directories(${GTEST_INCLUDE_DIRS})
 # BINARIES
 ########################################
 
-option(ERA_SIM_BUILD_ARCH "Enable compilation of arch modules" ON)
-option(ERA_SIM_BUILD_PARSER "Enable compilation of parser modules" ON)
-option(ERA_SIM_BUILD_CORE "Enable compilation of core modules" ON)
-option(ERA_SIM_BUILD_GUI "Enable compilation of gui modules" ON)
+option(ERASIM_BUILD_ARCH "Enable compilation of arch modules" ON)
+option(ERASIM_BUILD_PARSER "Enable compilation of parser modules" ON)
+option(ERASIM_BUILD_CORE "Enable compilation of core modules" ON)
+option(ERASIM_BUILD_GUI "Enable compilation of gui modules" ON)
 
-set(ERA_SIM_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
-message(STATUS "Building to directory ${ERA_SIM_BINARY_DIR}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ERA_SIM_BINARY_DIR})
+set(ERASIM_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
+message(STATUS "Building to directory ${ERASIM_BINARY_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ERASIM_BINARY_DIR})
 
 ########################################
 # SUBDIRECTORIES
@@ -67,9 +67,9 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/source)
 # TESTS
 ########################################
 
-option(ERA_SIM_TESTS "Enable tests" ON)
+option(ERASIM_TESTS "Enable tests" ON)
 
-if(ERA_SIM_TESTS)
+if(ERASIM_TESTS)
   message(STATUS "Enabling and adding tests")
   enable_testing()
   add_subdirectory(tests)

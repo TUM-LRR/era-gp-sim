@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_COMMON_ABSTRACT_FACTORY_TYPES_HPP
-#define ERAGPSIM_ARCH_COMMON_ABSTRACT_FACTORY_TYPES_HPP
+#ifndef ERASIM_ARCH_COMMON_ABSTRACT_FACTORY_TYPES_HPP
+#define ERASIM_ARCH_COMMON_ABSTRACT_FACTORY_TYPES_HPP
 
 #include <memory>
 
@@ -81,4 +81,4 @@ struct AbstractFactoryTypes {
 
 using NoSuchFactory = void;
 
-#endif /* ERAGPSIM_ARCH_COMMON_ABSTRACT_FACTORY_TYPES_HPP */
+#endif /* ERASIM_ARCH_COMMON_ABSTRACT_FACTORY_TYPES_HPP */

@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_PARSER_INDEPENDENT_SYNTAX_TREE_GENERATOR_HPP
-#define ERAGPSIM_PARSER_INDEPENDENT_SYNTAX_TREE_GENERATOR_HPP
+#ifndef ERASIM_PARSER_INDEPENDENT_SYNTAX_TREE_GENERATOR_HPP
+#define ERASIM_PARSER_INDEPENDENT_SYNTAX_TREE_GENERATOR_HPP
 
 #include <cstddef>
 #include <functional>
@@ -129,4 +129,4 @@ class SyntaxTreeGenerator {
   ArgumentNodeGenerator _argumentGenerator;
 };
 
-#endif /* ERAGPSIM_PARSER_INDEPENDENT_SYNTAX_TREE_GENERATOR_HPP */
+#endif /* ERASIM_PARSER_INDEPENDENT_SYNTAX_TREE_GENERATOR_HPP */

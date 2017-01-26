@@ -16,16 +16,16 @@ set(TEST_CORE_SOURCES
 # TARGET
 ########################################
 
-if (ERA_SIM_BUILD_CORE)
-  add_executable(era-sim-core-tests ${TEST_CORE_SOURCES})
+if (ERASIM_BUILD_CORE)
+  add_executable(erasim-core-tests ${TEST_CORE_SOURCES})
 
-  target_link_libraries(era-sim-core-tests era-sim-core)
-  target_link_libraries(era-sim-core-tests gtest gtest_main)
+  target_link_libraries(erasim-core-tests erasim-core)
+  target_link_libraries(erasim-core-tests gtest gtest_main)
 
   # test-name executable-name
   add_test(
-    NAME era-sim-core-tests
-    COMMAND era-sim-core-tests
-    WORKING_DIRECTORY ${ERA_SIM_BINARY_DIR}
+    NAME erasim-core-tests
+    COMMAND erasim-core-tests
+    WORKING_DIRECTORY ${ERASIM_BINARY_DIR}
   )
 endif()

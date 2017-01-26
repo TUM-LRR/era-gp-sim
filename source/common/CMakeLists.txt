@@ -13,6 +13,6 @@ set(COMMON_SOURCES
 # TARGET
 ########################################
 
-add_library(era-sim-common STATIC ${COMMON_SOURCES})
+add_library(erasim-common STATIC ${COMMON_SOURCES})
 
-target_link_libraries(era-sim-common era-sim-core)
+target_link_libraries(erasim-common erasim-core)

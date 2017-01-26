@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_CORE_MEMORY_ACCESS_HPP
-#define ERAGPSIM_CORE_MEMORY_ACCESS_HPP
+#ifndef ERASIM_CORE_MEMORY_ACCESS_HPP
+#define ERASIM_CORE_MEMORY_ACCESS_HPP
 
 #include <memory>
 
@@ -212,4 +212,4 @@ class MemoryAccess : public Proxy<Project> {
   SharedCondition _conditionTimer;
 };
 
-#endif /* ERAGPSIM_CORE_MEMORY_ACCESS_HPP */
+#endif /* ERASIM_CORE_MEMORY_ACCESS_HPP */

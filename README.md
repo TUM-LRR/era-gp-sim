@@ -1,11 +1,11 @@
-# era-gp-sim
+# erasim
 
 [![Stories in Ready](https://badge.waffle.io/TUM-LRR/era-gp-sim.png?label=ready&title=Ready)](https://waffle.io/TUM-LRR/era-gp-sim) [![Build Status](https://travis-ci.org/TUM-LRR/era-gp-sim.svg?branch=master)](https://travis-ci.org/TUM-LRR/era-gp-sim) [![AUR](https://img.shields.io/aur/license/yaourt.svg?maxAge=2592000)]()
 
 ERA-Großpraktikum Simulatorentwicklung
 
 # License
-> C++ Assembler Interpreter
+> ERASIM Assembler Interpreter
 > Copyright (C) 2016 Chair of Computer Architecture at Technical University of Munich
 >
 > This program is free software: you can redistribute it and/or modify

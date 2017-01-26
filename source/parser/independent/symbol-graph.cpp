@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -83,7 +83,7 @@ connectedDfs(const std::vector<SymbolGraph::SymbolNode>& nodes,
   // there are any cycles and record the reverse topologic order (a.k.a. finish
   // numbers of the nodes). In case this leads to a stack overflow, here is also
   // an iterative implementation, e.g.:
-  // https://github.com/TUM-LRR/era-gp-sim/blob/125a5d17378b7628608e0dc6977e36ee0b28da2a/source/parser/independent/symbol-graph.cpp
+  // https://github.com/TUM-LRR/erasim/blob/125a5d17378b7628608e0dc6977e36ee0b28da2a/source/parser/independent/symbol-graph.cpp
 
   if (!visited[node]) {
     // If we have not visited this node at all, then we do it now.

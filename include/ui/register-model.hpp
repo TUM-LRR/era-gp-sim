@@ -1,4 +1,4 @@
-/* C++ Assembler Interpreter
+/* ERASIM Assembler Interpreter
  * Copyright (C) 2016 Chair of Computer Architecture
  * at Technical University of Munich
  *
@@ -16,8 +16,8 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-#ifndef ERAGPSIM_UI_REGISTERMODEL_HPP
-#define ERAGPSIM_UI_REGISTERMODEL_HPP
+#ifndef ERASIM_UI_REGISTERMODEL_HPP
+#define ERASIM_UI_REGISTERMODEL_HPP
 
 #include <QAbstractItemModel>
 #include <QQmlContext>
@@ -203,4 +203,4 @@ class RegisterModel : public QAbstractItemModel {
   void updateContent(const QString &registerTitle);
 };
 
-#endif  // ERAGPSIM_UI_REGISTERMODEL_HPP
+#endif  // ERASIM_UI_REGISTERMODEL_HPP

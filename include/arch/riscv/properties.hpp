@@ -1,5 +1,5 @@
 /*
-* C++ Assembler Interpreter
+* ERASIM Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -17,8 +17,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_RISCV_PROPERTIES_HPP
-#define ERAGPSIM_ARCH_RISCV_PROPERTIES_HPP
+#ifndef ERASIM_ARCH_RISCV_PROPERTIES_HPP
+#define ERASIM_ARCH_RISCV_PROPERTIES_HPP
 
 #include <cstdint>
 
@@ -54,4 +54,4 @@ using signed32_t = std::int32_t;
 using signed64_t = std::int64_t;
 }
 
-#endif /* ERAGPSIM_ARCH_RISCV_PROPERTIES_HPP */
+#endif /* ERASIM_ARCH_RISCV_PROPERTIES_HPP */

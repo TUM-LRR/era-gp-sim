@@ -20,14 +20,14 @@ set(TEST_PARSER_SOURCES
 # TARGET
 ########################################
 
-if (ERA_SIM_BUILD_PARSER)
-  add_executable(era-sim-parser-tests ${TEST_PARSER_SOURCES})
+if (ERASIM_BUILD_PARSER)
+  add_executable(erasim-parser-tests ${TEST_PARSER_SOURCES})
   add_test(
-    NAME era-sim-parser-tests
-    COMMAND era-sim-parser-tests
-    WORKING_DIRECTORY ${ERA_SIM_BINARY_DIR}
+    NAME erasim-parser-tests
+    COMMAND erasim-parser-tests
+    WORKING_DIRECTORY ${ERASIM_BINARY_DIR}
   )
 
-  target_link_libraries(era-sim-parser-tests era-sim-parser-common era-sim-parser-factory era-sim-parser-independent era-sim-parser-riscv)
-  target_link_libraries(era-sim-parser-tests gtest gtest_main)
+  target_link_libraries(erasim-parser-tests erasim-parser-common erasim-parser-factory erasim-parser-independent erasim-parser-riscv)
+  target_link_libraries(erasim-parser-tests gtest gtest_main)
 endif()
