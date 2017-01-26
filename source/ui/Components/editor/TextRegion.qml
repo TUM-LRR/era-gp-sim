@@ -35,7 +35,7 @@ TextEdit {
   color: Theme.editor.color
 
   // Line that is going to be executed in the next step.
-  property int currentExdaecutionLine: 0
+  property int currentExecutionLine: 0
   property var cursorLine: 1
 
   Component.onCompleted: {
@@ -159,21 +159,8 @@ TextEdit {
     }
   }
 
-  // Cursor line highlighting
-  Rectangle {
-
-    border.width: 1
-    border.color: Theme.editor.lineHighlight.border.color
-
-    color: Theme.editor.lineHighlight.background
-
-    y: textArea.cursorRectangle.y + textArea.topPadding
-
-    height: textArea.cursorRectangle.height
-    width: Math.max(scrollView.width, textArea.contentWidth)
-
-    visible: textArea.activeFocus
-  }
+  // Cursor line highlightingf
+  CursorLineHighlighting { }
 
   // Execution line highlighting
   Rectangle {
