@@ -291,7 +291,8 @@ Das Format der arithmetischen Operationen ist gleich aufgebaut:\\
 \begin{warningblock}
 	Alle Shiftinstruktionen der Variante Register-Immediate erlauben eine Konstante im Wertebereich zwischen 5 und 12 Bit. Obwohl nur die unteren 5 Bit verwendet werden, führt eine Zahl, die größer als 5 Bit ist, nicht zu einem Übersetzungsfehler.
 \end{warningblock}
-Das 64 Bit Modul \textbf{RV64I} fügt zusätzliche spezielle arithmetische Befehle hinzu. Mit RV64I werden die ''normalen'' Instruktionen (siehe Tabelle oben) auf 64 Bit erweitert. Die nun folgenden ''word''-Instruktionen (erkennbar am Suffix ''w'') betrachten jeweils nur die unteren 32 Bit der 64 Bit breiten Operandenregister und berechnen ein 32 Bit breites Ergebnis, das auf 64bit erweitert wird.
+Das 64 Bit Modul \textbf{RV64I} fügt zusätzliche spezielle arithmetische Befehle hinzu. Mit RV64I werden die ''normalen'' Instruktionen (siehe Tabelle oben) auf 64 Bit erweitert. Die nun folgenden ''word''-Instruktionen (erkennbar am Suffix ''w'') betrachten jeweils nur die unteren 32 Bit der 64 Bit breiten Operandenregister und berechnen ein 32 Bit breites Ergebnis, das auf 64bit erweitert wird.\\
+
 \begin{tabular}{|c|p{8cm}|p{4cm}|}
 	\hline
 	\textbf{add(i)w} & Addiert die beiden Operanden & \\

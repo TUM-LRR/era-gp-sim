@@ -21,6 +21,7 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.0
+import QtQuick.Layouts 1.3
 
 // Window for input per Text settings.
 Window {
@@ -32,8 +33,8 @@ Window {
 
     // Refreshes the window's control contentItem.
     function updateSettings() {
-        baseAddressTextField.text = inputtextMod.getStart();
-        maxLength.text=inputtextMod.getMaximumLength();
+        baseAddressTextField.text = inputTextModel.getStart();
+        maxLength.text=inputTextModel.getMaximumLength();
     }
 
     // The controls for editing input settings.
@@ -54,6 +55,9 @@ Window {
             }
             Text {
                 text: "Maximum Length (int):"
+            }
+            Text {
+                text: "Mode :"
             }
         }
 
@@ -86,7 +90,7 @@ Window {
                 function processInput() {
                     var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
                     if (inputValue !== undefined && inputValue >= 0) {
-                        inputtextMod.setStart(inputValue);
+                        inputTextModel.setStart(inputValue);
                     }
                 }
             }
@@ -101,12 +105,42 @@ Window {
                 function processInput() {
                     var inputValue = controlsColumn.integerFromInputString(String(maxLength.text));
                     if (inputValue !== undefined && inputValue > 0) {
-                        inputtextMod.setMaximumLength(inputValue);
+                        inputTextModel.setMaximumLength(inputValue);
                     }
                 }
             }
 
+            RowLayout {
+                id: mode
+                ExclusiveGroup { id: modeGroup }
+
+                RadioButton{
+                    id: ab
+                    text: "ArrayBased"
+                    checked: true
+                    exclusiveGroup: modeGroup
+                    onClicked: {
+                        mode.processInput();
+                    }
+                }
+                RadioButton {
+                    id: pl
+                    text: "PipeLike"
+                    exclusiveGroup: modeGroup
+                    onClicked: {
+                        mode.processInput();
+                    }
+                }
+
+                // Reads the current input and passes the new value to the model.
+                function processInput() {
+                    var inputValue = ab.checked ? 0 : 1;
+                    inputTextModel.setMode(inputValue);
+                }
+            }
+
         }
+
     }
 
     Component.onCompleted: {
@@ -125,8 +159,9 @@ Window {
         anchors.bottomMargin: 5
 
         onClicked: {
-            baseAddressTextField.processInput();
-            maxLength.processInput();
+            baseAddressTextField.focus = false;
+            maxLength.focus = false;
+            mode.focus = false;
             close();
         }
     }

@@ -179,77 +179,77 @@ TEST_F(BranchInstructionTest, Validation) {
 }
 
 TEST_F(BranchInstructionTest, BEQIsTakenWhenShould) {
-  testBranch<>("beq", 1, 1, 123);
-  testBranch<>("beq", 0xDEAD, 0xDEAD, 0x7FF);
+  testBranch<>("beq", 1, 1, 124);
+  testBranch<>("beq", 0xDEAD, 0xDEAD, 0x7FE);
   testBranch<>("beq", 0xFF, 0xFF, -0x800);
 }
 
 TEST_F(BranchInstructionTest, BEQIsNotTakenWhenShouldnt) {
-  testBranch<>("beq", 1, 2, 123);
-  testBranch<>("beq", 0xDEAD, 0xAEAD, 0x7FF);
+  testBranch<>("beq", 1, 2, 124);
+  testBranch<>("beq", 0xDEAD, 0xAEAD, 0x7FE);
   testBranch<>("beq", 0xFF, 0xFFFFF, -0x800);
 }
 
 TEST_F(BranchInstructionTest, BNEIsTakenWhenShould) {
-  testBranch<>("bne", 1, 2, 123);
-  testBranch<>("bne", 0xDEAD, 0xAEAD, 0x7FF);
+  testBranch<>("bne", 1, 2, 124);
+  testBranch<>("bne", 0xDEAD, 0xAEAD, 0x7FE);
   testBranch<>("bne", 0xFF, 0xFFFFF, -0x800);
 }
 
 TEST_F(BranchInstructionTest, BNEIsNotTakenWhenShouldnt) {
-  testBranch<>("bne", 1, 1, 123);
-  testBranch<>("bne", 0xDEAD, 0xDEAD, 0x7FF);
+  testBranch<>("bne", 1, 1, 124);
+  testBranch<>("bne", 0xDEAD, 0xDEAD, 0x7FE);
   testBranch<>("bne", 0xFF, 0xFF, -0x800);
 }
 
 TEST_F(BranchInstructionTest, BLTIsTakenWhenShould) {
-  testBranch<>("blt", -1, 2, 123);
-  testBranch<>("blt", -0xDEAD, 0xDEAD, 0x7FF);
+  testBranch<>("blt", -1, 2, 124);
+  testBranch<>("blt", -0xDEAD, 0xDEAD, 0x7FE);
   testBranch<>("blt", -0xFFF, -0xFF, -0x800);
 }
 
 TEST_F(BranchInstructionTest, BLTIsNotTakenWhenShouldnt) {
-  testBranch<>("blt", -1, -1, 123);
-  testBranch<>("blt", -0xBEEF, -0xDEAD, 0x7FF);
+  testBranch<>("blt", -1, -1, 124);
+  testBranch<>("blt", -0xBEEF, -0xDEAD, 0x7FE);
   testBranch<>("blt", 0xFF, -0xFFFF, -0x800);
 }
 
 TEST_F(BranchInstructionTest, BGEIsTakenWhenShould) {
-  testBranch<>("bge", -1, -1, 123);
+  testBranch<>("bge", -1, -1, 124);
   testBranch<>("bge", 0xFFF, 0xFFF, -0x800);
-  testBranch<>("bge", 0xDEAD, -0xDEAD, 0x7FF);
+  testBranch<>("bge", 0xDEAD, -0xDEAD, 0x7FE);
   testBranch<>("bge", -0xFF, -0xFF, -0x800);
 }
 
 TEST_F(BranchInstructionTest, BGEIsNotTakenWhenShouldnt) {
-  testBranch<>("bge", -1, 2, 123);
-  testBranch<>("bge", -0xBEEF, 0xDEAD, 0x7FF);
+  testBranch<>("bge", -1, 2, 124);
+  testBranch<>("bge", -0xBEEF, 0xDEAD, 0x7FE);
   // testBranch<>("bge", 0xFF, 0xFFFE, -0x800);
 }
 
 TEST_F(BranchInstructionTest, BLTUIsTakenWhenShould) {
-  testUnsignedBranch("bltu", 1, 2, 123);
-  testUnsignedBranch("bltu", 0xBEEF, 0xDEAD, 0x7FF);
+  testUnsignedBranch("bltu", 1, 2, 124);
+  testUnsignedBranch("bltu", 0xBEEF, 0xDEAD, 0x7FE);
   testUnsignedBranch("bltu", 0xFF, 0xFFFFF, -0x800);
 }
 
 TEST_F(BranchInstructionTest, BLTUIsNotTakenWhenShouldnt) {
-  testUnsignedBranch("bltu", 1, 1, 123);
-  testUnsignedBranch("bltu", 0xDEAD, 0xBEEF, 0x7FF);
+  testUnsignedBranch("bltu", 1, 1, 124);
+  testUnsignedBranch("bltu", 0xDEAD, 0xBEEF, 0x7FE);
   testUnsignedBranch("bltu", 0xFFFF, 0xFF, -0x800);
 }
 
 
 TEST_F(BranchInstructionTest, BGEUIsTakenWhenShould) {
-  testUnsignedBranch("bltu", 1, 1, 123);
+  testUnsignedBranch("bltu", 1, 1, 124);
   testUnsignedBranch("bltu", 0xFFF, 0xFFF, -0x800);
-  testUnsignedBranch("bltu", 0xDEAD, 0xBEEF, 0x7FF);
+  testUnsignedBranch("bltu", 0xDEAD, 0xBEEF, 0x7FE);
   testUnsignedBranch("bltu", 0xFFF, 0xFF, -0x800);
 }
 
 TEST_F(BranchInstructionTest, BGEUIsNotTakenWhenShouldnt) {
-  testUnsignedBranch("bgeu", 1, 2, 123);
-  testUnsignedBranch("bgeu", 0xBEEF, 0xDEAD, 0x7FF);
+  testUnsignedBranch("bgeu", 1, 2, 124);
+  testUnsignedBranch("bgeu", 0xBEEF, 0xDEAD, 0x7FE);
   testUnsignedBranch("bgeu", 0xFF, 0xFFFF, -0x800);
 }
 }

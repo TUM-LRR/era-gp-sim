@@ -20,7 +20,7 @@
 #ifndef ERAGPSIM_CORE_SERVANT_HPP
 #define ERAGPSIM_CORE_SERVANT_HPP
 
-#include <cassert>
+#include "common/assert.hpp"
 #include <functional>
 #include <memory>
 
@@ -56,7 +56,7 @@ class Servant : public std::enable_shared_from_this<Servant> {
     if (auto scheduler = _scheduler.lock()) {
       scheduler->push(std::move(task));
     } else {
-      assert(false);
+      assert::that(false);
     }
   }
 

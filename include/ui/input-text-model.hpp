@@ -25,58 +25,103 @@
 
 #include "core/memory-access.hpp"
 
-namespace InputText {
-using length_t = unsigned;
-}
-
-class InputTextModel : QObject {
+class InputTextModel : public QObject {
   Q_OBJECT
+
  public:
-  using length_t = InputText::length_t;
+  using size_t = std::size_t;
+
+
+  /**
+   * \brief The Modes which are possible
+   */
+  enum Mode { ARRAY_BASED, PIPELIKE };
 
   InputTextModel(QQmlContext* context, MemoryAccess memoryAccess);
 
   /**
-   * \brief Sets the new text which should be stored in the memory
+   * Sets the new text which should be stored in the memory.
+   *
    * \param text the new Text
    */
   Q_INVOKABLE void newText(QString text);
 
   /**
-   * \brief Sets the new startindex
+   * Sets a number in the memory, used for left/up/etc.
+   *
+   * \param number the number
+   */
+  Q_INVOKABLE void newNumber(size_t number);
+
+  /**
+   * Sets the new startindex.
+   *
    * \param text the index
    */
-  Q_INVOKABLE void setStart(unsigned int start);
+  Q_INVOKABLE void setStart(size_t start);
 
   /**
-   * \brief sets the new Maximum Length
+   * Sets the new Maximum Length.
+   *
    * \param text the new length
    */
-  Q_INVOKABLE void setMaximumLength(length_t maximumLength);
+  Q_INVOKABLE void setMaximumLength(size_t maximumLength);
 
   /**
-   * \brief Gets the lenght
+   * Gets the lenght.
+   *
    * \return the length
    */
-  Q_INVOKABLE length_t getMaximumLength();
+  Q_INVOKABLE size_t getMaximumLength();
 
   /**
-   * \brief Gets the start index
+   * Gets the start index.
+   *
    * \return the length
    */
   Q_INVOKABLE QString getStart();
 
+  /**
+   * Sets the new Mode.
+   *
+   * \param text the new mode
+   */
+  Q_INVOKABLE void setMode(int mode);
+
+  /**
+   * Gets the current mode.
+   *
+   * \return the length
+   */
+  Q_INVOKABLE int getMode();
+
  private:
+  /** The context property. */
   QQmlContext* _context;
-  int _start;
-  length_t _maximumLength;
+
+  /** The start address in memory. */
+  size_t _start;
+
+  /** The maximum length of the input. */
+  size_t _maximumLength;
+
+  /** The component for accessing the memory. */
   MemoryAccess _memoryAccess;
 
+  /** The current mode. */
+  Mode _mode;
+
  signals:
+
   /**
-   * \brief called when maximum Length is changed
+   * Called when maximum Length has changed.
    */
   void maximumLengthChanged();
+
+  /**
+   * Called when mode has changed.
+   */
+  void modeChanged();
 };
 
 #endif// INPUTTEXTMODEL_HPP

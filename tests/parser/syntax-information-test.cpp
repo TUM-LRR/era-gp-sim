@@ -18,7 +18,7 @@
 
 #include "gtest/gtest.h"
 
-#include "parser/syntax-information.hpp"
+#include "parser/common/syntax-information.hpp"
 
 TEST(SyntaxInformation, EmptyObject) {
   SyntaxInformation info;

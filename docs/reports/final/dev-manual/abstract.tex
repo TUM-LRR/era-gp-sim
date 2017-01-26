@@ -120,10 +120,10 @@ Dokumentation generiert.
 
 \subsection{Build Umgebung}
 
-Möchte man den Simulator selbst kompilieren, so wird eine Build Umgebung vorausgesetzt. 
+Möchte man den Simulator selbst kompilieren, so wird eine Build Umgebung vorausgesetzt.
 Wie bereits genannt, liegt unser Augenmerk auf Portabilität zwischen Betriebssystemen,
 deshalb wird in dieser Sektion gezeigt, wie man eine solche Umgebung unter den gängigen
-Betriebssystemen (Linux, Mac, Windows) einrichten kann.
+Betriebssystemen (Linux, macOS, Windows) einrichten kann.
 
 \subsubsection{Linux}
 
@@ -156,9 +156,19 @@ Installationsort erfragt. Dieser muss später beim Bauen des Projekts angegeben 
 
 \input{setup-qtcreator-linux.tex}
 
-\subsubsection{Mac}
+\subsubsection{macOS}
 
-Wirklich?
+\textbf{Qt installieren}
+
+Um Qt auf ein Mac-Computer zu installieren, bietet es sich an, den Installer zu verwenden, den man über die offizielle Website herunterladen kann\footnote{https://www.qt.io/download/}. Bei der Installation können neben der akuellesten auch ältere Versionen des Framework heruntergeladen werden. Nach der Installation befindet sich am angegebenen Installationspfad ein Ordner "Qt", in dem sich auch der QtCreator-IDE befindet.
+
+\textbf{CMake aktualisieren}
+
+Zum Bauen des Projekts wird CMake benötigt, das in der Regel über einen Packagemanager installiert oder alternativ von der offiziellen Website\footnote{https://cmake.org/download/} heruntergeladen werden kann.
+
+\textbf{In QtCreator CMake-Projekt einrichten}
+
+Um ein CMake-Projekt in QtCreator einzurichten, können die selben Schritte, wie im Kapitel für Linux beschrieben, durchgeführt werden.
 
 \subsubsection{Windows}
 
@@ -233,6 +243,4 @@ Die Konfiguration von Travis befindet sich in der Datei \texttt{.travis.yml}
 Die Tests können auch lokal ausgeführt werden. Dazu wechselt man mit \texttt{cd} in das Build
 Verzeichnis und nutzt das von CMake mitgelieferte Programm \texttt{ctest} um die Tests zu starten.
 Um die Testgeschwindigkeit zu erhöhen empfiehlt es sich, mit der \texttt{-j} Option die Anzahl
-der Jobs zu erhöhen. 
-
-
+der Jobs zu erhöhen.

@@ -1,0 +1,29 @@
+create-project
+  width: $project-creation-section-width
+  margin-top: 10px
+  section
+    margin: 20px
+    height: $project-creation-section-height
+    font-size: 20px
+    border-width: 1px
+    border-color: $divider-color
+  name
+    length: 80px
+  button
+    margin-top: 10px
+    background: $primary-color
+    width: 160px
+
+button
+  color: $primary-color-text
+  font-size: 16px
+  height: $button-height
+  radius: 4
+  border
+    color: $primary-color-semi-light
+    width: 2px
+  &:disabled
+    background: $divider-color
+    color: $primary-text-color
+    border
+      color: lighten($divider-color, 10%)

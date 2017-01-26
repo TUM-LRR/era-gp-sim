@@ -17,25 +17,28 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "parser/integer-parser.hpp"
+#include "parser/independent/integer-parser.hpp"
 #include "gtest/gtest.h"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/common/compile-error-list.hpp"
+#include "parser/independent/positioned-string.hpp"
+#define ZP(x) PositionedString(x)
 
 template <typename T>
 static void
 testPass(T expected, const std::string &str, size_t start = 0, int base = 10) {
-  CompileState state;
-  EXPECT_EQ(IntegerParser<T>::parse(str, state, start, base), expected)
+  CompileErrorList errors;
+  EXPECT_EQ(IntegerParser<T>::parse(ZP(str), errors, start, base), expected)
       << '"' << str << "\" not equal to " << expected;
-  EXPECT_EQ(state.errorList.size(), 0) << "Error while parsing \"" << str
-                                       << '"';
+  EXPECT_EQ(errors.size(), 0) << "Error while parsing \"" << str << '"';
 }
 
 template <typename T>
 static void testFail(const std::string &str, size_t start = 0, int base = 10) {
-  CompileState state;
-  IntegerParser<T>::parse(str, state, start, base);
-  EXPECT_EQ(state.errorList.size(), 1) << "No exptected errors while parsing \""
-                                       << str << '"';
+  CompileErrorList errors;
+  IntegerParser<T>::parse(ZP(str), errors, start, base);
+  EXPECT_EQ(errors.size(), 1) << "No exptected errors while parsing \"" << str
+                              << '"';
 }
 
 TEST(IntegerParser, IntDecimalPass) {

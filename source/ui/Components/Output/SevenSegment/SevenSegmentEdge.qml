@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.6
 import QtQuick.Dialogs 1.0
 
 /*
@@ -35,7 +35,6 @@ Represents one generic segment for a 7-segment display:
 Item {
     id: segment
     property color color: "yellow"
-
 
     height: 50
     width: 0.1 * height

@@ -1,132 +1,138 @@
 /* C++ Assembler Interpreter
- * Copyright (C) 2016 Chair of Computer Architecture
- * at Technical University of Munich
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see http://www.gnu.org/licenses/.*/
+* Copyright (C) 2016 Chair of Computer Architecture
+* at Technical University of Munich
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see http://www.gnu.org/licenses/.*/
 
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 import QtGraphicalEffects 1.0
+import Theme 1.0
 
 TextField {
-    id: registerTextField
+  id: root
+  enabled: model === null || !model.IsConstant
 
-    property bool singleStep: false
-    property bool isHighlighted: false
-    property color backgroundColor: isHighlighted ? "lightblue" : "white"
+  property bool singleStep: false
+  property bool isHighlighted: false
 
-    font.pointSize: 13
+  font.pixelSize: Theme.register.content.fontSize
+  horizontalAlignment: TextInput.AlignRight
+  text: getRegisterContent()
 
-    text: registerContent();
+  // As some values need to be set manually (i.e. not using the model's
+  // data-method and the corresponding roles), they also have to be updated
+  // manually whenever the model's data changed for the current index.
+  Connections {
+    target: registerModel
+    // Data changed is emitted when some of the model's data has changed (e.g.
+    // refer to `updateContent`- method).
+    onDataChanged: {
+      // Check if the current item's index is affected by the data change.
+      if (topLeft <= styleData.index && styleData.index <= bottomRight) {
+        text = Qt.binding(getRegisterContent);
+        if(singleStep) isHighlighted = true;
+      }
+    }
+  }
 
-    enabled: (model !== null) ? !model.IsConstant : true
+  // The Registers must know, wether they should be highlighted. They only
+  // should change color if execution only works with one line
+  Connections {
+    target: guiProject
+    onRunClicked: {
+      root.singleStep = isSingleStep;
+      isHighlighted = false;
+    }
+  }
 
-    // Fetches the register's content with the appropiate format from the model.
-    function registerContent() {
-        if (model === null) { return ""; }
-        var registerContentString;
-        switch (dataTypeFormatComboBox.currentText) {
-        case "Binary":
-            registerContentString = model.BinaryData;
-            break;
-        case "Hexadecimal":
-            registerContentString = model.HexData;
-            break;
-        case "Decimal (Unsigned)":
-            registerContentString = model.UnsignedDecData;
-            break;
-        case "Decimal (Signed)":
-            registerContentString = model.SignedDecData;
-            break;
-        default:
-            registerContentString = model.BinaryData;
-            break;
+  // Notify the model that the register's content was changed by the user.
+  onEditingFinished: {
+    if (!formatSelector.selectionRole) return;
+    registerModel.registerContentChanged(
+      styleData.index,
+      root.text,
+      formatSelector.selectionRole
+    );
+  }
+
+  onAccepted: {
+    if (!formatSelector.selectionRole) return;
+    registerModel.registerContentChanged(
+      styleData.index,
+      root.text,
+      formatSelector.selectionRole
+    );
+  }
+
+  Keys.onPressed: {
+    if (event.key === Qt.Key_Tab) {
+      root.focus = false;
+    }
+  }
+
+  style: TextFieldStyle {
+    renderType: Text.QtRendering
+    textColor: {
+      if (enabled) {
+        Theme.register.content.color
+      } else {
+        Theme.register.content.disabled.color
+      }
+    }
+    background: Rectangle {
+      height: Theme.register.content.height
+      radius: Theme.register.content.radius
+      border.color: Theme.register.content.border.color
+      border.width: Theme.register.content.border.width
+      color: {
+        if (root.isHighlighted) {
+          return Theme.register.content.highlighted.background;
+        } else if (!enabled) {
+          return Theme.register.content.disabled.background;
+        } else {
+          return Theme.register.content.background;
         }
-        return format(registerContentString);
+      }
     }
+  }
 
-
-    // As some values need to be set manually (i.e. not using the model's data-method and the corresponding
-    // roles), they also have to be updated manually whenever the model's data changed for the current index.
-    Connections {
-        target: registerModel
-        // Data changed is emitted when some of the model's data has changed (e.g. refer to `updateContent`-
-        // method).
-        onDataChanged: {
-            // Check if the current item's index is affected by the data change.
-            if (topLeft <= styleData.index && styleData.index <= bottomRight) {
-                text = Qt.binding(registerContent);
-                //starts the highlighting
-                if(singleStep){
-                    isHighlighted = true;
-                }
-            }
-        }
+  function insertWhitespace(content) {
+    // For binary and hex numbers we insert a space
+    // every 4/2 characters (to delimit a nibble/byte).
+    if (formatSelector.selection === 'Binary') {
+      return content.replace(/(\d{4})(?!$)/g, '$& ');
+    } else if (formatSelector.selection === 'Hexadecimal') {
+      return content.replace(/([\da-fA-F]{2})(?!$)/g, '$& ');
+    } else {
+      return content;
     }
+  }
 
-    //The Registers must know, wether they should be highlighted.
-    //They only should change color if execution only works with one line
-    Connections {
-        target: guiProject
-        onRunClicked: {
-            registerTextField.singleStep = isSingleStep;
-            isHighlighted = false;
-        }
+  function getRegisterContent() {
+    if (model === null) return "";
+    switch (formatSelector.selection) {
+    case "Binary":
+      return insertWhitespace(model.BinaryData);
+    case "Hexadecimal":
+      return insertWhitespace(model.HexData);
+    case "Unsigned Decimal":
+      return insertWhitespace(model.UnsignedDecimalData);
+    default:
+      return insertWhitespace(model.SignedDecimalData);
     }
-
-    // Notify the model that the register's content was changed by the user.
-    onEditingFinished: {
-        registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentText);
-    }
-    onAccepted: {
-        registerModel.registerContentChanged(styleData.index, registerTextField.text, dataTypeFormatComboBox.currentText);
-    }
-
-    Keys.onPressed: {
-        if (event.key === Qt.Key_Tab) {
-            event.accepted = true;
-            registerTextField.focus = false;
-        }
-    }
-
-    function format(registerContentString) {
-        registerContentString = registerContentString.replace(/ /g, '');
-        if (dataTypeFormatComboBox.currentText === "Binary" || dataTypeFormatComboBox.currentText === "Hexadecimal") {
-            var characterPerByte = (dataTypeFormatComboBox.currentText === "Hexadecimal") ? 2 : 8;
-            // Insert new spaces
-            for (var characterIndex = 2; characterIndex < registerContentString.length; characterIndex+=(characterPerByte+1)) {
-                registerContentString = [registerContentString.slice(0, characterIndex), ' ', registerContentString.slice(characterIndex)].join('')
-            }
-        }
-        return registerContentString;
-    }
-
-
-    style: TextFieldStyle{
-        background: Rectangle {
-            id: rect
-            x: registerTextField.x
-            y: registerTextField.y
-            width: registerTextField.width
-            height: registerTextField.height
-            color: registerTextField.backgroundColor
-            radius: 2
-            border.color: "lightgray"
-            border.width: 1
-        }
-    }
+  }
 
 }
-

@@ -17,157 +17,39 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_
-#define ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_
+#ifndef ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP
+#define ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP
 
 #include <QtGlobal>
+#include <cstddef>
 #include <string>
 
 #include "arch/common/validation-result.hpp"
+#include "arch/riscv/abstract-load-store-instruction-node.hpp"
 #include "arch/riscv/instruction-node.hpp"
 #include "common/assert.hpp"
 
 namespace riscv {
-
-/**
- * \Brief a super class for both load & store instruction nodes
- */
-template <typename SignedWord, typename UnsignedWord>
-class LoadStoreInstructionNode : public InstructionNode {
- public:
-  LoadStoreInstructionNode(const InstructionInformation& instructionInformation,
-                           std::size_t byteAmount,
-                           bool writesProtectedMemory)
-  : InstructionNode(instructionInformation)
-  , _byteAmount(byteAmount)
-  , _writesProtectedMemory(writesProtectedMemory) {
-  }
-
-  /* Ensure this class is pure virtual */
-  virtual MemoryValue getValue(MemoryAccess& memoryAccess) const override = 0;
-
-  ValidationResult validate(MemoryAccess& memoryAccess) const override {
-    if (_children.size() != 3) {
-      return ValidationResult::fail(
-          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                            "This instruction must have exactly %1 operands"),
-          std::to_string(3));
-    }
-
-    if (!_requireChildren(AbstractSyntaxTreeNode::Type::REGISTER, 0, 2) ||
-        !_requireChildren(AbstractSyntaxTreeNode::Type::IMMEDIATE, 2, 1)) {
-      return ValidationResult::fail(QT_TRANSLATE_NOOP(
-          "Syntax-Tree-Validation",
-          "This instruction must have 2 registers and 1 immediate"));
-    }
-
-    ValidationResult resultAll = _validateChildren(memoryAccess);
-    if (!resultAll.isSuccess()) {
-      return resultAll;
-    }
-
-    // Check if the immediate value is representable by 12 bits
-    // We can use an empty stub here, because immediate values don't need to
-    // access the memory
-    MemoryValue value = _children.at(2)->getValue(memoryAccess);
-    if (Utility::occupiesMoreBitsThan(value, 12)) {
-      return ValidationResult::fail(
-          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                            "The immediate value of this instruction must "
-                            "be representable by %1 bits"),
-          std::to_string(12));
-    }
-
-    return ValidationResult::success();
-  }
-
-  ValidationResult validateRuntime(MemoryAccess& memoryAccess) const override {
-    std::size_t effectiveAddress = getEffectiveAddress(memoryAccess);
-
-    if (effectiveAddress + _byteAmount - 1 >
-        memoryAccess.getMemorySize().get()) {
-      return ValidationResult::fail(
-          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                            "The memory area you are trying to access is "
-                            "out of range (area: [%1,%2])"),
-          std::to_string(effectiveAddress),
-          std::to_string(effectiveAddress + _byteAmount - 1));
-    }
-
-    if (_writesProtectedMemory &&
-        memoryAccess.isMemoryProtectedAt(effectiveAddress, _byteAmount).get()) {
-      return ValidationResult::fail(
-          QT_TRANSLATE_NOOP("Syntax-Tree-Validation",
-                            "The memory area you are trying to access is "
-                            "protected (area: [%1,%2])"),
-          std::to_string(effectiveAddress),
-          std::to_string(effectiveAddress + _byteAmount - 1));
-    }
-
-    return ValidationResult::success();
-  }
-
- protected:
-  /**
-   * Returns the value of the child that holds the base address.
-   */
-  virtual MemoryValue getBase(MemoryAccess& memoryAccess) const = 0;
-  /**
-   * Returns the value of the child that holds the offset, added to the base
-   * address.
-   */
-  virtual MemoryValue getOffset(MemoryAccess& memoryAccess) const = 0;
-
-  /**
-   * A helper method to calculate the effective address of the load/store
-   * instruction.
-   *
-   * \param base The base address
-   * \param offset The offset, added to the base address
-   * \return the effective address
-   */
-  std::size_t getEffectiveAddress(MemoryAccess& memoryAccess) const {
-    // The base (that comes from a register) has to be converted using an
-    // unsigned integer, to be able to address the whole address space
-    UnsignedWord baseConverted =
-        riscv::convert<UnsignedWord>(getBase(memoryAccess));
-    // The offset (that comes from the immediate value) has to be converted
-    // using an unsigned integer, to be able to have negative offsets
-    SignedWord offsetConverted =
-        riscv::convert<SignedWord>(getOffset(memoryAccess));
-    return baseConverted + offsetConverted;
-  }
-
-  /**
-   * The amount of bytes, this load/store operation operates on.
-   */
-  std::size_t _byteAmount;
-
-  /**
-   * Whether this node writes into protected memory.
-   */
-  bool _writesProtectedMemory;
-};
-
 /**
  * \brief Represents a load instruction.
  */
 template <typename SignedWord, typename UnsignedWord>
 class LoadInstructionNode
-    : public LoadStoreInstructionNode<SignedWord, UnsignedWord> {
+    : public AbstractLoadStoreInstructionNode<SignedWord, UnsignedWord> {
  public:
-  using super = LoadStoreInstructionNode<SignedWord, UnsignedWord>;
+  using super = AbstractLoadStoreInstructionNode<SignedWord, UnsignedWord>;
+  using super::_byteAmount;
 
   /* The different types of a load instruction. See RISC V specification
      for reference.*/
-  enum struct Type {
-    DOUBLE_WORD,       // LD (Only in RVI64)
-    WORD,              // LW
-    WORD_UNSIGNED,     // LWU (Only in RVI64)
-    HALF_WORD,         // LH
-    HALF_WORD_UNSIGNED,// LHU
-    BYTE,              // LB
-    BYTE_UNSIGNED      // LBU
+  enum class Type {
+    DOUBLE_WORD,         // LD (Only in RVI64)
+    WORD,                // LW
+    WORD_UNSIGNED,       // LWU (Only in RVI64)
+    HALF_WORD,           // LH
+    HALF_WORD_UNSIGNED,  // LHU
+    BYTE,                // LB
+    BYTE_UNSIGNED        // LBU
   };
 
   LoadInstructionNode(const InstructionInformation& instructionInformation,
@@ -178,16 +60,17 @@ class LoadInstructionNode
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert::that(super::validate(memoryAccess));
 
-    const std::string& dest = super::_children.at(0)->getIdentifier();
-    std::size_t effectiveAddress = super::getEffectiveAddress(memoryAccess);
+    const auto& destination = super::_children.at(0)->getIdentifier();
+    auto effectiveAddress = super::_getEffectiveAddress(memoryAccess);
 
     if (isSigned(_type)) {
       performSignedLoad(
-          memoryAccess, effectiveAddress, super::_byteAmount, dest);
+          memoryAccess, effectiveAddress, _byteAmount, destination);
     } else {
       performUnsignedLoad(
-          memoryAccess, effectiveAddress, super::_byteAmount, dest);
+          memoryAccess, effectiveAddress, _byteAmount, destination);
     }
+
     return super::template _incrementProgramCounter<UnsignedWord>(memoryAccess);
   }
 
@@ -196,7 +79,7 @@ class LoadInstructionNode
    * This function returns the amount of bytes, a load instruction
    * loads from memory, depending on its type.
    */
-  static std::size_t getByteAmount(Type type) {
+  static size_t getByteAmount(Type type) {
     switch (type) {
       case Type::DOUBLE_WORD: return 8;
       case Type::WORD:
@@ -222,14 +105,6 @@ class LoadInstructionNode
     }
   }
 
-  MemoryValue getBase(MemoryAccess& memoryAccess) const override {
-    return super::_children.at(1)->getValue(memoryAccess);
-  }
-
-  MemoryValue getOffset(MemoryAccess& memoryAccess) const override {
-    return super::_children.at(2)->getValue(memoryAccess);
-  }
-
   /**
    * Internal method to perform an unsigned load operation
    *
@@ -240,11 +115,10 @@ class LoadInstructionNode
    *        the loaded value
    */
   void performUnsignedLoad(MemoryAccess& memoryAccess,
-                           std::size_t address,
-                           std::size_t byteAmount,
+                           size_t address,
+                           size_t byteAmount,
                            const std::string& destination) const {
-    MemoryValue result =
-        memoryAccess.getMemoryValueAt(address, byteAmount).get();
+    auto result = memoryAccess.getMemoryValueAt(address, byteAmount).get();
 
     // Check if zero-expansion is needed. This is the case, if the amount of
     // bits loaded from memory is not equal to the amount of bits, a register
@@ -252,12 +126,11 @@ class LoadInstructionNode
     if (result.getSize() != sizeof(UnsignedWord) * riscv::BITS_PER_BYTE) {
       // Do sign expansion by creating a new memory value of proper size
       // and setting the lower bits to the bits of the old memory value.
-      MemoryValue tmp =
-          MemoryValue{sizeof(UnsignedWord) * riscv::BITS_PER_BYTE};
-      for (std::size_t i = 0; i < result.getSize(); ++i) {
-        tmp.put(i, result.get(i));
+      MemoryValue temp(sizeof(UnsignedWord) * riscv::BITS_PER_BYTE);
+      for (size_t i = 0; i < result.getSize(); ++i) {
+        temp.put(i, result.get(i));
       }
-      result = tmp;
+      result = temp;
     }
     memoryAccess.putRegisterValue(destination, result);
   }
@@ -272,11 +145,10 @@ class LoadInstructionNode
    *        the loaded value
    */
   void performSignedLoad(MemoryAccess& memoryAccess,
-                         std::size_t address,
-                         std::size_t byteAmount,
+                         size_t address,
+                         size_t byteAmount,
                          const std::string& destination) const {
-    MemoryValue result =
-        memoryAccess.getMemoryValueAt(address, byteAmount).get();
+    auto result = memoryAccess.getMemoryValueAt(address, byteAmount).get();
     // Check if sign-expansion is needed. This is the case, if the amount of
     // bits loaded from memory is not equal to the amount of bits, a register
     // can hold.
@@ -285,20 +157,20 @@ class LoadInstructionNode
       // memory value in the lower region, and setting the upper region to the
       // sign bit of the old memory value.
       bool isSignBitSet = result.get(result.getSize() - 1);
-      MemoryValue tmp = MemoryValue{sizeof(SignedWord) * riscv::BITS_PER_BYTE};
-      for (std::size_t i = 0; i < tmp.getSize(); ++i) {
+      MemoryValue temp(sizeof(SignedWord) * riscv::BITS_PER_BYTE);
+      for (size_t i = 0; i < temp.getSize(); ++i) {
         if (i < result.getSize()) {
-          tmp.put(i, result.get(i));
+          temp.put(i, result.get(i));
         } else {
-          tmp.put(i, isSignBitSet);
+          temp.put(i, isSignBitSet);
         }
       }
-      result = tmp;
+      result = temp;
     }
     memoryAccess.putRegisterValue(destination, result);
   }
 
-
+  /** The type of load instruction this is. */
   Type _type;
 };
 
@@ -307,17 +179,18 @@ class LoadInstructionNode
  */
 template <typename SignedWord, typename UnsignedWord>
 class StoreInstructionNode
-    : public LoadStoreInstructionNode<SignedWord, UnsignedWord> {
+    : public AbstractLoadStoreInstructionNode<SignedWord, UnsignedWord> {
  public:
-  using super = LoadStoreInstructionNode<SignedWord, UnsignedWord>;
+  using super = AbstractLoadStoreInstructionNode<SignedWord, UnsignedWord>;
+  using typename super::size_t;
 
   /* The different types of a store instruction. See RISC V specification
      for reference. */
   enum struct Type {
-    DOUBLE_WORD,// SD (Only in RVI64)
-    WORD,       // SW
-    HALF_WORD,  // SH
-    BYTE        // SB
+    DOUBLE_WORD,  // SD (Only in RVI64)
+    WORD,         // SW
+    HALF_WORD,    // SH
+    BYTE          // SB
   };
 
   StoreInstructionNode(const InstructionInformation& instructionInformation,
@@ -328,15 +201,17 @@ class StoreInstructionNode
   MemoryValue getValue(MemoryAccess& memoryAccess) const override {
     assert::that(super::validate(memoryAccess));
 
-    const std::string& src = super::_children.at(1)->getIdentifier();
-    std::size_t effectiveAddress = super::getEffectiveAddress(memoryAccess);
+    const auto& sourceRegister = super::_children.at(0)->getIdentifier();
+    auto effectiveAddress = super::_getEffectiveAddress(memoryAccess);
 
-    MemoryValue registerValue = memoryAccess.getRegisterValue(src).get();
-    MemoryValue resultValue{super::_byteAmount * riscv::BITS_PER_BYTE};
+    auto registerValue = memoryAccess.getRegisterValue(sourceRegister).get();
+    MemoryValue resultValue(super::_byteAmount * riscv::BITS_PER_BYTE);
     for (size_t i = 0; i < super::_byteAmount * riscv::BITS_PER_BYTE; ++i) {
       resultValue.put(i, registerValue.get(i));
     }
+
     memoryAccess.putMemoryValueAt(effectiveAddress, resultValue);
+
     return super::template _incrementProgramCounter<UnsignedWord>(memoryAccess);
   }
 
@@ -345,7 +220,7 @@ class StoreInstructionNode
     * This function returns the amount of bytes, a store instruction
     * stores into memory, depending on its type.
     */
-  static std::size_t getByteAmount(Type type) {
+  static size_t getByteAmount(Type type) {
     switch (type) {
       case Type::DOUBLE_WORD: return 8;
       case Type::WORD: return 4;
@@ -355,16 +230,9 @@ class StoreInstructionNode
     }
   }
 
-  MemoryValue getBase(MemoryAccess& memoryAccess) const override {
-    return super::_children.at(0)->getValue(memoryAccess);
-  }
-
-  MemoryValue getOffset(MemoryAccess& memoryAccess) const override {
-    return super::_children.at(2)->getValue(memoryAccess);
-  }
-
+  /** The type of store instruction this is. */
   Type _type;
 };
 }
 
-#endif /* ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP_ */
+#endif /* ERAGPSIM_ARCH_RISCV_LOAD_STORE_INSTRUCTIONS_HPP */

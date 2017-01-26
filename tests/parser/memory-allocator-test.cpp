@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parser/memory-allocator.hpp"
+#include "parser/independent/memory-allocator.hpp"
 #include "gtest/gtest.h"
 
 TEST(MemoryAllocator, init) {
@@ -27,9 +27,9 @@ TEST(MemoryAllocator, init) {
 TEST(MemoryAllocator, allocateAligned) {
   MemoryAllocator allocator({MemorySectionDefinition("text", 8),
                              MemorySectionDefinition("data", 16)});
-  ASSERT_EQ(allocator["text"].allocateRelative(32).offset, 0);
-  ASSERT_EQ(allocator["text"].allocateRelative(32).offset, 32);
-  ASSERT_EQ(allocator["data"].allocateRelative(64).offset, 0);
+  ASSERT_EQ(allocator["text"].allocateRelative(32).offset(), 0);
+  ASSERT_EQ(allocator["text"].allocateRelative(32).offset(), 32);
+  ASSERT_EQ(allocator["data"].allocateRelative(64).offset(), 0);
   allocator.calculatePositions();
   ASSERT_EQ(allocator["text"].currentPosition(), 0);
   ASSERT_EQ(allocator["text"].currentSize(), 64);
@@ -40,9 +40,9 @@ TEST(MemoryAllocator, allocateAligned) {
 TEST(MemoryAllocator, allocateUnaligned) {
   MemoryAllocator allocator({MemorySectionDefinition("text", 32),
                              MemorySectionDefinition("data", 32)});
-  ASSERT_EQ(allocator["text"].allocateRelative(13).offset, 0);
-  ASSERT_EQ(allocator["text"].allocateRelative(129).offset, 32);
-  ASSERT_EQ(allocator["data"].allocateRelative(23).offset, 0);
+  ASSERT_EQ(allocator["text"].allocateRelative(13).offset(), 0);
+  ASSERT_EQ(allocator["text"].allocateRelative(129).offset(), 32);
+  ASSERT_EQ(allocator["data"].allocateRelative(23).offset(), 0);
   allocator.calculatePositions();
   ASSERT_EQ(allocator["text"].currentPosition(), 0);
   ASSERT_EQ(allocator["text"].currentSize(), 161);
@@ -53,9 +53,9 @@ TEST(MemoryAllocator, allocateUnaligned) {
 TEST(MemoryAllocator, allocateUnalignedSection) {
   MemoryAllocator allocator({MemorySectionDefinition("text", 256, 32),
                              MemorySectionDefinition("data", 256, 32)});
-  ASSERT_EQ(allocator["text"].allocateRelative(13).offset, 0);
-  ASSERT_EQ(allocator["text"].allocateRelative(129).offset, 32);
-  ASSERT_EQ(allocator["data"].allocateRelative(23).offset, 0);
+  ASSERT_EQ(allocator["text"].allocateRelative(13).offset(), 0);
+  ASSERT_EQ(allocator["text"].allocateRelative(129).offset(), 32);
+  ASSERT_EQ(allocator["data"].allocateRelative(23).offset(), 0);
   allocator.calculatePositions();
   ASSERT_EQ(allocator["text"].currentPosition(), 0);
   ASSERT_EQ(allocator["text"].currentSize(), 161);

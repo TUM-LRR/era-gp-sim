@@ -211,6 +211,7 @@ Eine Architektur kann in \texttt{YAML} Dateien beschrieben werden.
 \todo[inline]{@Peter}
 
 \input{module-arch.tex}
+\todo[inline]{Entscheiden, ob Datei oder Text, so ist es doppelt}
 
 \subsection{Parser}
 
@@ -230,7 +231,7 @@ QML-Komponenten, die Zugriff auf das vom Core zur Verfügung gestellte Modell be
 Da das Qt-Framework einen in sich stark abgeschlossenen Aufbau besitzt, werden für QML-Komponenten mit komplexen Modellen, wie etwa der Speicher oder die Register, von Qt-Klassen abgeleitete Modelle benötigt. Da keine Abhängigkeiten vom Qt-Framework innerhalb der GUI-fernen Module Core, Parser, Arch entstehen sollen, kann diese Funktion nicht von Klassen des Cores übernommen werden. Aus diesem Grund übernehmen einige der zu den QML-Komponenten gehörigen C++-Klassen der GUI die Aufgabe des Modells und werden folglich von Qt-Modell-Klassen wie etwa \texttt{QAbstractItemModel} abgeleitet. Ausgenommen von Cache-Zwecken halten diese Modelle selbst keine Daten, sondern holen diese über das zugehörige Interface-Objekt, sobald Daten seitens der QML-Komponente angefordert werden.
 
 \subsubsection{Kommunikation}
-
+\label{gui-kommunikation}
 Der Simulator unterstützt das gleichzeitige Laden mehrerer unabhängiger Projekte. Diese werden jeweils durch eine \texttt{GUIProject}-Instanz repräsentiert, welches Komponenten-übergreifende Funktionalität für ein Projekt zur Verfügung stellt.
 
 Im \texttt{GUIProject} werden mitunter die C++-Klassen der QML-Komponente gehalten, initialisiert und deren Kommunikation mit dem Core koordiniert.
