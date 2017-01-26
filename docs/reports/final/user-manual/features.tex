@@ -30,11 +30,23 @@
 
 \subsubsection{Editor}
 \todo[inline]{Alles zum Editor (zoomen, Makros aufklappen, Fehlermeldungen anzeigen, Tooltips etc)}
+
+Im Editor wird der Assemblercode verfasst, der vom Simulator assembliert und ausgeführt werden kann.
+Durch Syntax Highlighting werden bestimmte Code-Fragmente, wie Kommentare, Instruktionen,
+Register oder Immediate-Werte, farblich gekennzeichnet.
+
+Während des Schreibs erscheint unterhalb der aktuellen Zeile, in der sich der Cursor
+befindet, ein Fragezeichenfeld, über das bei Bedarf die Befehlsdokumentation der
+gegebenenfalls unvollständigen Assemblerinstruktion angezeigt werden kann.
+
 Makrodefinition werden wie alle anderen Instruktionen an jedwede Stelle ins Code-Dokument geschrieben und können anschließend beliebig oft aufgerufen werden. Jeder Makroaufruf kann außerdem über einen dreiecksförmigen Button in der Editor-Seitenleiste aufgeklappt werden, wodurch die Makroerweiterung unterhalb des eigentlichen Makroaufrufs eingeblendet wird. Makroparameter werden dabei durch die konkreten Argumente des Aufrufs ersetzt. Durch das Anzeigen der Makroerweiterung direkt beim Makroaufruf wird verdeutlicht, dass es sich bei Makroaufrufen nicht um einen Funktionsaufruf handelt, sondern um eine Text-Ersetzung, die vom Assemblierer durchgeführt wird.
 
 Wird das Code-Dokument verändert, so werden alle Makroerweiterungen wieder eingeklappt.
 
 Fehlermeldungen, Warnungen und Hinweise werden im Editor direkt in der betroffenen Zeile eingeblendet. Gehören mehrere Meldungen zu einer einzelnen Zeile, so werden diese untereinander angezeigt. Durch Klicken auf das zugehörige Meldungssymbol in der Editor-Seitenleiste, können alle Meldungen einer Zeile ein- und ausgeblendet werden.
+
+Des Weiteren besteht die Möglichkeit im Editor zu zoomen. Dazu wird bei gleichzeitigem
+Drücken der Steurungstaste (Cmd-Taste bei Mac-Computern) gescrollt.
 
 \begin{figure}[ht]
 	\centering
