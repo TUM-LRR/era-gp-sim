@@ -57,10 +57,32 @@ Item {
       TextEdit {
         id: readonlyConsole
 
-        anchors.leftMargin: Theme.console.leftMargin
+        anchors.leftMargin: Theme.console.promptMargin
         anchors.top: parent.top
-        anchors.left: parent.left
+        anchors.left: promptColumn.right
         anchors.right: parent.right
+
+        font.pixelSize: Theme.console.fontSize
+        color: Theme.console.textColor
+        wrapMode: Text.WrapAnywhere
+        text: ""
+        readOnly: true
+        selectByMouse: true
+        height: {
+          if (text === "") {
+            return 0;
+          } else {
+            return contentHeight;
+          }
+        }
+
+        property int correctedLineCount: {
+          if (text === "") {
+            return 0;
+          } else {
+            return lineCount;
+          }
+        }
 
         onActiveFocusChanged: {
           if (activeFocus) inputConsole.forceActiveFocus();
@@ -70,18 +92,6 @@ Item {
         // only output or input can be copied
         onSelectedTextChanged: inputConsole.deselect();
 
-        height: {
-          if (text === "") {
-            0
-          } else {
-            contentHeight
-          }
-        }
-        color: Theme.console.textColor
-        wrapMode: Text.WrapAnywhere
-        text: ""
-        readOnly: true
-        selectByMouse: true
 
         //Clears the Screen in pipelike mode
         MouseArea {
@@ -101,17 +111,29 @@ Item {
         }
       }
 
+      ////////////////////////////////////
+      // Column for the console prompt. //
+      ////////////////////////////////////
+
+      Column {
+        id: promptColumn
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.leftMargin: Theme.console.leftMargin
+        Repeater {
+          model: readonlyConsole.correctedLineCount + 1;
+          Text {
+            text: Theme.console.prompt
+            color: Theme.console.promptColor
+            height: inputConsole.cursorRectangle.height
+            font: inputConsole.font
+          }
+        }
+      }
+
       //////////////////////////////////////////////////
       // Components for the input part of the console //
       //////////////////////////////////////////////////
-
-      Text {
-        id: consolePrompt
-        anchors.left: readonlyConsole.left
-        anchors.bottom: inputConsole.bottom
-        text: Theme.console.prompt
-        color: Theme.console.promptColor
-      }
 
       TextEdit {
         id: inputConsole
@@ -119,10 +141,11 @@ Item {
         selectByMouse: true
 
         anchors.leftMargin: Theme.console.promptMargin
-        anchors.left: consolePrompt.right
+        anchors.left: promptColumn.right
         anchors.right: parent.right
         anchors.top: readonlyConsole.bottom
 
+        font.pixelSize: Theme.console.fontSize
         color: Theme.console.textColor
 
         Keys.onReturnPressed: {
@@ -166,6 +189,7 @@ Item {
     target: outputComponent
     // Check for changes in the memory (at any address).
     onMemoryChanged: {
+      // we have to parse size_t to int, as qml/javascript handles them like strings.
       var baseAddress = parseInt(consoleComponent.getStart());
       var deleteBuffer = consoleComponent.deleteBuffer();
       var textLength = parseInt(consoleComponent.getLength());
@@ -174,9 +198,12 @@ Item {
 
       // Check if the memory address that was changed (at least partly) belongs to
       // the output item's source space.
-      if (((addressVar >= baseAddress && addressVar <= (baseAddress + textLength)) ||
-         (addressVar + lengthVar >= baseAddress && addressVar <= baseAddress + textLength)) &&
-         !currentMode) {
+      var checkBegin = addressVar >= baseAddress &&
+          addressVar <= baseAddress + textLength;
+      var checkLength = addressVar + lengthVar >= baseAddress &&
+          addressVar <= baseAddress + textLength;
+
+      if (!currentMode && (checkBegin || checkLength)) {
         item.updateContent(baseAddress);
       } else if (consoleComponent.checkInterrupt()) {
         item.updateContent(baseAddress);

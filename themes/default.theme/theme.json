@@ -529,6 +529,7 @@
         "promptColor": "#FF4081",
         "prompt": "$",
         "promptMargin": 5,
+        "fontSize": 12,
         "settings": {
             "width": 400,
             "height": 200,

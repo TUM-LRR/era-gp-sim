@@ -25,7 +25,7 @@ import QtQuick.Layouts 1.3
 import "../../../Js/TextUtility.js" as TextUtility
 import Theme 1.0
 
-// Window for lightstrip settings.
+// Window for console settings.
 Window {
   id: settingsWindowConsole
   width: Theme.console.settings.width
@@ -140,7 +140,7 @@ Window {
     text: "Done"
 
     anchors.right: parent.right
-    anchors.borrom: parent.bottom
+    anchors.bottom: parent.bottom
     anchors.margins: Theme.console.settings.margin
 
     onClicked: {
