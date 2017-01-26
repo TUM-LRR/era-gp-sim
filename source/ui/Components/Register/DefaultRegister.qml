@@ -113,7 +113,7 @@ TextField {
     // For binary and hex numbers we insert a space
     // every 4/2 characters (to delimit a nibble/byte).
     if (formatSelector.selection === 'Binary') {
-      return content.replace(/(\d{4})(?!$)/g, '$& ');
+      return content.replace(/(\d {4})(?!$)/g, '$& ');
     } else if (formatSelector.selection === 'Hexadecimal') {
       return content.replace(/([\da-fA-F]{2})(?!$)/g, '$& ');
     } else {

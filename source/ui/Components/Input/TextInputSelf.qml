@@ -24,7 +24,7 @@ import QtQuick.Controls.Styles 1.4
 Item {
     property int mode: 0  //array based
     property int oldMode: 1 //pipelike
-    Rectangle{
+    Rectangle {
         color: "black"
         anchors.left: parent.left
         anchors.right: parent.right
@@ -34,7 +34,7 @@ Item {
 
         anchors.verticalCenter: parent.verticalCenter
 
-        TextField{
+        TextField {
             id: text
             anchors.fill: parent
 
@@ -47,8 +47,8 @@ Item {
             font.pointSize: 12
             font.bold: false
 
-            style: TextFieldStyle{
-                background: Rectangle{
+            style: TextFieldStyle {
+                background: Rectangle {
                 color: "black"
                 }
             }
@@ -113,7 +113,7 @@ Item {
         settingsWindowIT.show();
     }
 
-    TextInputSW{
+    TextInputSW {
         id: settingsWindowIT
     }
 }

@@ -67,7 +67,7 @@ CheckBox {
         registerModel.registerContentChanged(styleData.index, registerContentString, formatSelector.selectionRole);
     }
 
-    style: TextFieldStyle{
+    style: TextFieldStyle {
         background: Rectangle {
             id: rect
             x: registerCheckBox.x

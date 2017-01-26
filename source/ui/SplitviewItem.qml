@@ -83,7 +83,7 @@ Item {
         visible: false
 
         // Choose
-        ComboBox{
+        ComboBox {
           id: componentSelector
 
           enabled: true

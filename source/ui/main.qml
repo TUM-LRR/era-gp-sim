@@ -178,7 +178,7 @@ ApplicationWindow {
           }
           onExecutionStopped: {
             editor.parse();
-            placeholderItem.isRunning = false;
+            placeholderItem.running = false;
           }
         }
       }

@@ -138,7 +138,7 @@ Rectangle {
         outputComponent.putMemoryValue(_baseAddress, memoryContent);
       }
 
-      MouseArea{
+      MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: {

@@ -53,7 +53,6 @@ The functions `convertRawLineNumberToDisplayLineNumber` and
 numbers.
 */
 
-//decorates a Flickable with Scrollbars
 ScrollView {
   id: scrollView
   verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
@@ -99,252 +98,20 @@ ScrollView {
           z: parent.z + 1
         }
 
-        //text field component
-        TextEdit {
+
+        TextRegion {
           id: textArea
-          textMargin: 2
           property real unscaledWidth: Math.max(scrollView.viewport.width - sidebar.width, contentWidth)
           property real unscaledHeight: Math.max(scrollView.viewport.height, contentHeight)
-          // Line that is going to be executed in the next step.
-          property int currentExecutionLine: 0
-          property var cursorLine: 1
 
           width: (textArea.unscaledWidth)*scale.zoom;
           height: (textArea.unscaledHeight)*scale.zoom;
-
-          color: Theme.editor.color
-
-          x: sidebar.width
-          selectByMouse: true
-          smooth: true
-          focus: true
-          //tabChangesFocus: false //not working, qtbug, workaround is below
-          textFormat: TextEdit.PlainText
-          wrapMode: TextEdit.NoWrap
-          Component.onCompleted: {
-            cursorScroll(textArea.cursorRectangle);
-
-            // Add capabilities for inline macros.
-            inlineMacros = inlineMacrosComponent.createObject(textArea);
-          }
-          visible: true
-          onCursorRectangleChanged: {
-            cursorScroll(cursorRectangle);
-            var newCursorLine = (cursorRectangle.y/cursorRectangle.height)+1;
-            newCursorLine = textArea.convertRawLineNumberToDisplayLineNumber(newCursorLine);
-            if (cursorLine !== newCursorLine) {
-              cursorLine = newCursorLine;
-              // editor-component uses line index.
-              editor.cursorLineChanged(newCursorLine-1);
-            }
-            // do updates that rely on the new cursor line
-            updateHelpTooltip();
-          }
-
-          //workaround to get tab working correctly
-          Keys.onPressed: {
-            // If the user presses a key which potentially changes textArea's text, collapse all
-            // macros to prevent the text change interfering with macro expansions.
-            if (event.key < 0x01000010 || event.key > 0x01000060) {
-              if (inlineMacros !== undefined) {
-                inlineMacros.collapseAllMacros();
-              }
-            }
-
-            if(event.key === Qt.Key_Tab) {
-              textArea.insert(cursorPosition, "\t");
-              event.accepted = true;
-            }
-            // Prevent moving cursor into blank line of a macro expansion. For more information, refer to ``cursorPositionChanged``.
-            else if (event.key === Qt.Key_Left || event.key === Qt.Key_Up || event.key === Qt.Key_Right || event.key === Qt.Key_Down) {
-              textArea.setTriggeringKeyEvent(event.key);
-              event.accepted = false;
-            } else {
-              textArea.setTriggeringKeyEvent(undefined);
-              event.accepted = false;
-            }
-          }
-
-          /* Tooltips: A small '?' Symbol is placed under the cursor, if there is help available.
-          * By hovering over it, the help text can be overlayed.
-          */
-          function updateHelpTooltip() {
-            var help = guiProject.getCommandHelp(cursorLine-1);
-            if (help  === "") {
-              _toolTip.hideIcon();
-              return;
-            }
-            _toolTip.x = cursorRectangle.x + x;
-            //_toolTip.relativeX = cursorRectangle.x;
-            _toolTip.y = cursorRectangle.y + cursorRectangle.height-1
-            _toolTip.width = cursorRectangle.height;
-            _toolTip.height = cursorRectangle.height;
-            _toolTip.helpText = help;
-            _toolTip.showIcon();
-          }
-
-          //(re)start the parse timer, if an edit is made
-          onTextChanged: {
-            //(re)start the parse timer, if an edit is made
-            if (inlineMacros !== undefined && inlineMacros.shouldUpdateText) { // Prevent restart if change was made for macro expansion.
-              editor.setTextChanged(true);
-              parseTimer.restart();
-            }
-
-            // Update macros.
-            if (inlineMacros !== undefined) {
-              inlineMacros.macroUpdatesOnTextChanged();
-            }
-          }
-
-          // A line number structure change means the structure of the visible code is altered without
-          // an obligatory recompile (e.g. when macro is expanded/collapsed). Therefore, the vertical position
-          // of errors has to be adjusted.
-          onLineNumberStructureChanged: {
-            // Update execution line to consider new macro expansion.
-            executionLineHighlight.lineNumber = textArea.convertDisplayLineNumberToRawLineNumber(textArea.currentExecutionLine);
-          }
-
-          //Connection to react to editor signals
-          Connections {
-            target: editor
-            onExecutionLineChanged: {
-              textArea.currentExecutionLine = line;
-            }
-            onSetText: {
-              /* some text modifications methods of TextEdit are not available in qt 5.6,
-              *  so the text property has to be set directly.
-              */
-              textArea.text = text;
-            }
-            onForceCursorUpdate: {
-              editor.cursorLineChanged(textArea.cursorLine);
-            }
-
-            // Before the editor text is used by any other module, collapse all macros
-            // to prevent blank lines from appearing inside the code.
-            onPrepareTextForRetrieval: {
-              textArea.inlineMacros.collapseAllMacros();
-            }
-          }
-
-          Connections {
-            target: guiProject
-            onCommandListUpdated: textArea.updateHelpTooltip();
-          }
-
-          Timer {
-            id: parseTimer
-            interval: 1000
-            repeat: false
-            onTriggered: {
-              // don't parse while executing to avoid parsing multiple
-              // times on stopping (onStopped triggers parse)
-              if(!tabView.currentProjectItem().running) {
-                editor.parse();
-              }
-            }
-          }
-
-          // Cursor line highlighting
-          Rectangle{
-            color: Theme.editor.lineHighlight.background
-            border.width: 1
-            border.color: Theme.editor.lineHighlight.border.color
-            y: textArea.cursorRectangle.y + textArea.topPadding
-            height: textArea.cursorRectangle.height
-            width: Math.max(scrollView.width, textArea.contentWidth)
-            visible: textArea.activeFocus
-          }
-
-          // Execution line highlighting
-          Rectangle{
-            id: executionLineHighlight
-            color: Theme.editor.executionLineHighlight.background
-            border.width: 1
-            border.color: Theme.editor.executionLineHighlight.border.color
-            // Current raw line number to display the execution line highlight at.
-            property var lineNumber
-            y: textArea.cursorRectangle.height * (executionLineHighlight.lineNumber - 1);
-            height: textArea.cursorRectangle.height;
-            width: Math.max(scrollView.width, textArea.contentWidth)
-
-            Connections {
-              target: textArea
-              onCurrentExecutionLineChanged: {
-                executionLineHighlight.lineNumber = textArea.convertDisplayLineNumberToRawLineNumber(textArea.currentExecutionLine);
-              }
-            }
-          }
-
-          // Scroll with the cursor
-          function cursorScroll(cursor) {
-            if(cursor.y < scrollView.flickableItem.contentY/scale.zoom) {
-              //up
-              scrollView.flickableItem.contentY = (cursor.y - textMargin)*scale.zoom;
-            }
-            if(cursor.y + cursor.height >= scrollView.flickableItem.contentY/scale.zoom + scrollView.viewport.height/scale.zoom - textMargin) {
-              //down
-              scrollView.flickableItem.contentY = (cursor.y + cursor.height - scrollView.viewport.height/scale.zoom + textMargin)*scale.zoom;
-            }
-
-            if(cursor.x < scrollView.flickableItem.contentX/scale.zoom) {
-              //left
-              scrollView.flickableItem.contentX = (cursor.x- textMargin)*scale.zoom;
-            }
-            if(cursor.x + textArea.x >= (scrollView.flickableItem.contentX/scale.zoom + scrollView.viewport.width/scale.zoom - textMargin)) {
-              //right
-              scrollView.flickableItem.contentX = (cursor.x - scrollView.viewport.width/scale.zoom + textArea.x + textMargin)*scale.zoom;
-            }
-          }
-
-          onContentSizeChanged: textArea.cursorScroll(textArea.cursorRectangle);
-          Connections {
-            target: scrollView.viewport
-            onWidthChanged: textArea.cursorScroll(textArea.cursorRectangle);
-            onHeightChanged: textArea.cursorScroll(textArea.cursorRectangle);
-          }
-
-          //information about the font
-          FontMetrics {
-            id: fontMetrics
-            font: textArea.font
-          }
-
-
-          // Emitted when the structure of line numbers changes (e.g. when inline macro is expanded or collapsed).
-          signal lineNumberStructureChanged()
-
-          Component {
-            id: inlineMacrosComponent
-            InlineMacros {
-            }
-          }
-          property var inlineMacros: undefined
-
-          function convertRawLineNumberToDisplayLineNumber(rawLine) {
-            if (inlineMacros === undefined) {
-              return rawLine;
-            } else {
-              return inlineMacros.convertRawLineNumberToDisplayLineNumber(textArea.text, rawLine);
-            }
-          }
-
-          function convertDisplayLineNumberToRawLineNumber(displayLine) {
-            if (inlineMacros === undefined) {
-              return displayLine;
-            } else {
-              return inlineMacros.convertDisplayLineNumberToRawLineNumber(displayLine);
-            }
-          }
-
-          function setTriggeringKeyEvent(keyEvent) {
-            if (inlineMacros !== undefined) {
-              inlineMacros.triggeringKeyEvent = keyEvent;
-            }
-          }
         }
 
+        FontMetrics {
+          id: fontMetrics
+          font: textArea.font
+        }
 
         // Sidebar
 
@@ -476,14 +243,13 @@ ScrollView {
             property var currentRawLineCount: 0
             property var _lineNumberObjects: []
 
-            /**
-            Updates line numbers to show given line count in a performant way.
-            \param newLineCount: New number of line numbers to display. Considered raw line numbers, i.e.
-            without factoring out blank lines for macros.
-            \param updateAll: If false, only the required amount of line numbers are created/deleted to fit the
-            newLineCount. Changes to the internal structure are ignored (e.g. when there are blank lines). If true,
-            all line numbers are updated.
-            */
+
+            // Updates line numbers to show given line count in a performant way.
+            // \param newLineCount: New number of line numbers to display. Considered raw line numbers, i.e.
+            // without factoring out blank lines for macros.
+            // \param updateAll: If false, only the required amount of line numbers are created/deleted to fit the
+            // newLineCount. Changes to the internal structure are ignored (e.g. when there are blank lines). If true,
+            // all line numbers are updated.
             function updateLineNumbers(newLineCount, updateAll) {
               // If no changes since last update, don't update again.
               if (currentRawLineCount === newLineCount && !updateAll) return;

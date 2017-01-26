@@ -66,7 +66,7 @@ Item {
     }
 
     // MouseArea for showing the tooltip, includes the area of the parent object/specified height and length of the tooltip trigger and the tooltip itself
-    MouseArea{
+    MouseArea {
         id: _toolTipHitArea
         anchors.fill: parent
         hoverEnabled: true
@@ -221,7 +221,7 @@ Item {
                     showWithoutPause.start();
                 }
                 // Otherwise, animate.
-                else{
+                else {
                     _toolTipRect.visible = true;
                     showAnimation.start();
                 }

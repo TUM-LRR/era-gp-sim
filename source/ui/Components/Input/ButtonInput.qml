@@ -22,7 +22,7 @@ import QtQuick.Controls 1.4
 
 Item {
 
-    Rectangle{
+    Rectangle {
         id: middle
         height: 40
         width: 40
@@ -30,13 +30,13 @@ Item {
         visible: false
     }
 
-    Button{
+    Button {
         id: up
         width: middle.width
         height: middle.height
         anchors.left: middle.left
         anchors.bottom: middle.top
-        Text{
+        Text {
             font.pointSize: 16
             anchors.centerIn: parent
             text: "\u2191"
@@ -46,13 +46,13 @@ Item {
         }
     }
 
-    Button{
+    Button {
         id: right
         width: middle.width
         height: middle.height
         anchors.left: middle.right
         anchors.bottom: middle.bottom
-        Text{
+        Text {
             font.pointSize: 16
             anchors.centerIn: parent
             text: "\u2192"
@@ -62,13 +62,13 @@ Item {
         }
     }
 
-    Button{
+    Button {
         id: down
         width: middle.width
         height: middle.height
         anchors.left: middle.left
         anchors.top: middle.bottom
-        Text{
+        Text {
             font.pointSize: 16
             anchors.centerIn: parent
             text: "\u2193"
@@ -78,13 +78,13 @@ Item {
         }
     }
 
-    Button{
+    Button {
         id: left
         width: middle.width
         height: middle.height
         anchors.right: middle.left
         anchors.bottom: middle.bottom
-        Text{
+        Text {
             font.pointSize: 16
             anchors.centerIn: parent
             text: "\u2190"
@@ -98,7 +98,7 @@ Item {
         settingsWindowIB.show();
     }
 
-    ButtonInputSW{
+    ButtonInputSW {
         id: settingsWindowIB
     }
 
