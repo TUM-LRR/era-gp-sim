@@ -75,11 +75,11 @@ Fehlermeldungen, Warnungen und Hinweise werden im Editor direkt in der betroffen
 Die Registerkomponente zeigt die Prozessorregister an und ermöglicht es, deren Werte manuell zu verändern. Jedes Register besteht aus einem Registertitel, mit dem es in der Regel auch im Assemblercode referenziert werden kann, sowie dem zugehörigem Registerinhalt.
 
 Der Registerinhalt kann je nach Art des Registers unterschiedlich formatiert werden. Allzweckregistern stehen die Formate \textit{Binär}, \textit{Hexadezimal}, \textit{Dezimal (vorzeichenbehaftet)} und \textit{Dezimal (nicht vorzeichenbehfatet)} zur Verfügung. Ein-Bit Flag-Register können außerdem als Checkbox angezeigt werden.
-Die Einstellung der Formate erfolgt über den Button, der sich rechts vom Registertextfeld befindet. Beachten Sie, dass für ein Register unter Umständen nicht alle Format-Optionen zur Verfügung stehen --- so kann der Programmzähler etwa nicht im Dezimal-Format angezeigt werden.
+Das aktuelle Format des Registers wird rechts vom Registertextfeld über den Formatindikator angezeigt (\textit{S}: signed decimal, \textit{U}: unsigned decimal, \textit{H}: hexadecimal, \textit{B}: binary, \textit{F}: flag). Zum Anpassen des Formats kann entweder auf den Formatindikator geklickt werden und die passende Optionen ausgewählt werden oder gescrollt werden, während sich der Mauszeiger über dem Formatindikator befindet. Beachten Sie, dass für ein Register unter Umständen nicht alle Format-Optionen zur Verfügung stehen --- so kann der Programmzähler etwa nicht im Dezimal-Format angezeigt werden.
 
-Um den Wert eines Registers manuell zu ändern, wird der Text im Textfeld bearbeitet und die Eingabe mit Enter bestätigt. Auf die Einhaltung der Formatierung wie etwa der Leerzeichen bei Byte-Grenzen muss nicht geachtet werden. Nach Bestätigung der Eingabe wird der Registerwert automatisch der aktuellen Einstellung entsprechend formatiert. Ist etwa ein eingegebener Wert zu lang um im Register gegebener Größe gespeichert werden zu können, werden die höherwertigen überschüssigen Zeichen entfernt. Zudem wird der Registerinhalt durch höherwertige Nullen auf seine Maximalgröße aufgefüllt. Ungültige Zeichen werden automatisch entfernt. Die Registerwerte erhalten im Binär-Format den Präfix ``0b'', im Hexadezimal-Format den Präfix ``0x''.
+Um den Wert eines Registers manuell zu ändern, wird der Text im Textfeld bearbeitet und die Eingabe mit Enter bestätigt. Auf die Einhaltung der Formatierung muss nicht geachtet werden. Nach Bestätigung der Eingabe wird der Registerwert automatisch der aktuellen Einstellung entsprechend formatiert. Ist zudem ein eingegebener Wert zu lang um im Register gegebener Größe gespeichert werden zu können, werden die höherwertigen überschüssigen Zeichen entfernt. Zudem wird der Registerinhalt durch höherwertige Nullen auf seine Maximalgröße aufgefüllt. Ungültige Zeichen werden automatisch entfernt.
 
-Über das Einstellungsmenü der Registerkomponente (erreichbar über die Kopfzeile der Komponente) können alle Register auf einmal formatiert werden. Steht das gewählt Format für ein Register nicht zur Verfügung (bspw. Dezimal für den Programmzähler), so behält dieses seine ursprüngliche Formatierung bei.
+Über das Einstellungsmenü der Registerkomponente (erreichbar über die Kopfzeile der Komponente oder durch Rechtsklick) können alle Register auf einmal formatiert werden. Steht das gewählt Format für ein Register nicht zur Verfügung (bspw. Dezimal für den Programmzähler), so behält dieses seine ursprüngliche Formatierung bei.
 
 Einige Register können je nach Architektur fest verdrahtet sein und können deshalb weder über eine Assemblerinstruktion noch manuell geändert werden. Die Textfelder dieser Register sind deaktiviert.
 
@@ -100,14 +100,14 @@ Auch der Simulator hat natürlich einen solchen RAM, der sich flexibel an die Be
 \end{figure}
 
 Um den Inhalt des Speichers auf einen Blick erfassen zu können, stehen verschieden Einstellungen in der Kopfzeile zur Verfügung:\\
-In der ersten Spalte stehen immer die Adressen der Speicherzellen. 
+In der ersten Spalte stehen immer die Adressen der Speicherzellen.
 Bei großen Datenmengen ist es manchmal wünschenswert mehr als nur 1 Byte pro Zeile angezeigt zu bekommen.
 Deshalb kann im Menu oberhalb dieser Spalte die angezeigte Größe der Speicherzellen eingestellt werden.
-Standardmäßig stehen hier $8\, Bit$, $16\, Bit$, $32\, Bit$ und $64\, Bit$ zur Auswahl. 
+Standardmäßig stehen hier $8\, Bit$, $16\, Bit$, $32\, Bit$ und $64\, Bit$ zur Auswahl.
 Dabei wird aber die die architekturbedingte Größe der Speicherzellen nicht beeinflusst; es werden stattdessen mehrere Speicherzellen pro Zeile dargestellt.
 Deshalb ändert sich die angezeigte Adressierung entsprechend.\\
 Des Weiteren stehen mehrere Anzeigeformate für den Inhalt zur Verfügung, welche jeweils oberhalb einer angezeigten Spalte ausgewählt werden können.
-Dabei stehen standardmäßig ``Binär'', ``Hexadezimal'', ``Dezimal'' und ``Dezimal (vorzeichenbehaftet/signed)'' zur Verfügung. 
+Dabei stehen standardmäßig ``Binär'', ``Hexadezimal'', ``Dezimal'' und ``Dezimal (vorzeichenbehaftet/signed)'' zur Verfügung.
 Letzteres kann den Speicherinhalt auch als negative Zahl interpretieren bzw. auch negative Eingaben entgegen nehmen. \\
 
 \begin{figure}[ht]
@@ -118,8 +118,8 @@ Letzteres kann den Speicherinhalt auch als negative Zahl interpretieren bzw. auc
 \end{figure}
 
 Außerdem können die Inhalte der Speicherzellen nebeneinander gleichzeitig in verschiedenen Formaten repräsentiert werden.
-Dazu einfach auf das ``\texttt{+}'' in der rechten oberen Ecke klicken. Daraufhin erscheint eine neue Spalte im Speicher, 
-bei der auch wieder das Format ausgewählt werden kann. Um eine Spalte wieder zu entfernen, muss im Kontextmenu im Spaltenheader der 
+Dazu einfach auf das ``\texttt{+}'' in der rechten oberen Ecke klicken. Daraufhin erscheint eine neue Spalte im Speicher,
+bei der auch wieder das Format ausgewählt werden kann. Um eine Spalte wieder zu entfernen, muss im Kontextmenu im Spaltenheader der
 Eintrag ``\texttt{remove...}'' ausgewählt werden.
 
 \begin{warningblock}
@@ -179,7 +179,7 @@ Im ersten Modus wird die Eingabe ab der Startadresse, angegeben in den Einstellu
 
 
 \subsubsection{Ausgabe -- 7-Segmentanzeige}
-Die sogenannte 7-Segment Anzeige ist eine einfache alphanumerische Ausgabe, 
+Die sogenannte 7-Segment Anzeige ist eine einfache alphanumerische Ausgabe,
 wie sie häufig bei kleinen digitalen Geräten zum Einsatz kommt.
 Anzeige besteht, wie der Name schon sagt, aus 7 Strichen, die unabhängig voneinander zum Leuchten gebracht werden können.
 
@@ -203,11 +203,11 @@ Wenn man die Maus im Simulator über ein Zeichen bewegt, erscheint dort die Reih
 \end{figure}
 
 Es können auch gleichzeitig mehrere Zeichen angesteuert werden. Die einzelnen Bytes für jedes Zeichen stehen dann im Speicher an aufeinanderfolgenden Adressen.
-Dabei muss aber darauf geachtet werden, dass die Reihenfolge genau umgedreht ist. Das Zeichen am rechten Rand steht somit an der ersten Adresse im Speicher, 
+Dabei muss aber darauf geachtet werden, dass die Reihenfolge genau umgedreht ist. Das Zeichen am rechten Rand steht somit an der ersten Adresse im Speicher,
 danach folgt das vorletzte usw.
 
 \begin{warningblock}
-Reihenfolge der Zeichen: Die Ansteuerung der Zeichen ist genau geschieht (wie im Zahlensystem) von rechts nach links. 
+Reihenfolge der Zeichen: Die Ansteuerung der Zeichen ist genau geschieht (wie im Zahlensystem) von rechts nach links.
 \end{warningblock}
 
 Ein kleines Beispiel verdeutlicht dies wohl am besten.
@@ -223,13 +223,13 @@ Ein kleines Beispiel verdeutlicht dies wohl am besten.
 	\end{tabular}
 \end{exampleblock}
 
-Falls man sich den Umweg über die Ansteuerung über Speicheradressen sparen möchte, 
-kann man die einzelnen Leuchtsegmente auch durch einen Klick mit der linken Maustaste aktivieren bzw. deaktivieren. 
+Falls man sich den Umweg über die Ansteuerung über Speicheradressen sparen möchte,
+kann man die einzelnen Leuchtsegmente auch durch einen Klick mit der linken Maustaste aktivieren bzw. deaktivieren.
 
 Für die Anzeige gibt es zwei Einstellungen, die man über das Zahnrad rechts unten aufrufen kann:\\
 \begin{itemize}
 \item \texttt{Memory Source (Address):} definiert den Speicherbereich, der für die 7-Segment Ausgabe herangezogen wird. Default ist 0.
-\item \texttt{Number of Digits:} die Anzahl der angezeigten 7-Segment Zeichen. Für jedes der Zeichen wird ein Byte im Speicher benötigt. 
+\item \texttt{Number of Digits:} die Anzahl der angezeigten 7-Segment Zeichen. Für jedes der Zeichen wird ein Byte im Speicher benötigt.
 					Die Bytes für jedes Zeichen sind im Speicher an aufeinanderfolgenden Adressen ab der gewählten  \texttt{Memory Source Address} angeordnet.
 \end{itemize}
 
@@ -242,4 +242,3 @@ Die Konsole verfügt wiederum über zwei Modi, pipe-like und array-based, die in
 Array-based hingegen liest ab der Speicheradresse, die in den Einstellungen gegeben ist, jedes Byte ein und wandelt es in das entsprechende ASCII-Zeichen um, bis das Ende des Speichers erreicht wird, oder ein Nullbyte auftritt. Der Text kann in dieser Komponente nicht verändert werden. Alle Änderungen müssen über den Speicher erfolgen.
 
 \subsection{Sonstige Features}
-
