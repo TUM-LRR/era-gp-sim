@@ -26,18 +26,18 @@
 ConsoleComponent::ConsoleComponent(QQmlContext* context,
                                    MemoryAccess memoryAccess)
 : QObject()
-, _start(0)
+, _start(1)
 , _length(0)
+, _interruptAddress(0)
 , _memoryAccess(memoryAccess)
-, _deleteBuffer(false) {
+, _deleteBuffer(false)
+, _interruptTriggered(false) {
   context->setContextProperty("consoleComponent", this);
 }
 
 void ConsoleComponent::appendText(QString text) {
-  if (_deleteBuffer && _length > 0) {
-    _memoryAccess.putMemoryValueAt(_start,
-                                   MemoryValue(_length + (8 - (_length % 8))));
-    _length = 0;
+  if (_deleteBuffer) {
+    _deleteTextInMemory();
   }
   for (auto i : Utility::range<size_t>(0, text.length())) {
     if (_start + _length > _memoryAccess.getMemorySize().get()) {
@@ -70,6 +70,7 @@ QString ConsoleComponent::getText() {
 
 void ConsoleComponent::setStart(size_t start) {
   if (_memoryAccess.getMemorySize().get() >= start) {
+    _deleteTextInMemory();
     _start = start;
     _length = 0;
   }
@@ -77,6 +78,10 @@ void ConsoleComponent::setStart(size_t start) {
 
 void ConsoleComponent::setInterruptAddress(size_t interruptAddress) {
   _interruptAddress = interruptAddress;
+}
+
+ConsoleComponent::size_t ConsoleComponent::getInterruptAddress() {
+  return _interruptAddress;
 }
 
 ConsoleComponent::size_t ConsoleComponent::getStart() {
@@ -96,11 +101,18 @@ bool ConsoleComponent::deleteBuffer() {
   return _deleteBuffer;
 }
 
-bool ConsoleComponent::interruptSet() {
+bool ConsoleComponent::checkInterrupt() {
+  // The interrupt is edge triggered to prevent flooding the console.
   MemoryValue memoryValue =
       _memoryAccess.getMemoryValueAt(_interruptAddress).get();
   uint8_t value = conversions::convert<uint8_t>(memoryValue);
-  return value & 1;
+  bool interruptValue = value & 1;
+  if (_interruptTriggered) {
+    // reset the triggered flag (false if the interrupt was reset)
+    _interruptTriggered = interruptValue;
+    return false;
+  }
+  return interruptValue;
 }
 
 void ConsoleComponent::setInterrupt() {
@@ -117,4 +129,12 @@ void ConsoleComponent::resetInterrupt() {
   uint8_t value = conversions::convert<uint8_t>(memoryValue);
   MemoryValue resetValue = conversions::convert(value & 254, 8);
   _memoryAccess.putMemoryValueAt(_interruptAddress, resetValue);
+}
+
+void ConsoleComponent::_deleteTextInMemory() {
+  if (_length > 0) {
+    MemoryValue zero(_length * 8);
+    _memoryAccess.putMemoryValueAt(_start, zero);
+    _length = 0;
+  }
 }

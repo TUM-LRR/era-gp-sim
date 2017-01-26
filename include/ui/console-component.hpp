@@ -69,6 +69,11 @@ class ConsoleComponent : public QObject {
   Q_INVOKABLE void setInterruptAddress(size_t interruptAddress);
 
   /**
+   * \return The address of the simulated interrupt.
+   */
+  Q_INVOKABLE size_t getInterruptAddress();
+
+  /**
    * \return The current length of the text (in characters).
    */
   Q_INVOKABLE size_t getLength();
@@ -94,7 +99,7 @@ class ConsoleComponent : public QObject {
   Q_INVOKABLE bool deleteBuffer();
 
   /** Checks wether or not the simulated console interrupt is set. */
-  Q_INVOKABLE bool interruptSet();
+  Q_INVOKABLE bool checkInterrupt();
 
   /** Sets the simulated interrupt. */
   Q_INVOKABLE void setInterrupt();
@@ -103,6 +108,9 @@ class ConsoleComponent : public QObject {
   Q_INVOKABLE void resetInterrupt();
 
  private:
+  /** Deletes the text data in the memory. */
+  void _deleteTextInMemory();
+
   /** The start address in memory. */
   size_t _start;
 
@@ -117,6 +125,11 @@ class ConsoleComponent : public QObject {
 
   /** The current mode. */
   bool _deleteBuffer;
+
+  /** Flag to save wether or not the interrupt was already accepted.
+   * Assures that the interrupt is edge triggered.
+   */
+  bool _interruptTriggered;
 
  signals:
 

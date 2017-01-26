@@ -175,7 +175,7 @@ Item {
          (addressVar + lengthVar >= baseAddress && addressVar <= baseAddress + textLength)) &&
          !currentMode) {
         item.updateContent(baseAddress);
-      } else if (consoleComponent.interruptSet()) {
+      } else if (consoleComponent.checkInterrupt()) {
         item.updateContent(baseAddress);
         consoleComponent.resetInterrupt();
       }

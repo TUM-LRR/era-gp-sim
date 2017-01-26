@@ -35,6 +35,7 @@ Window {
     // Refreshes the window's control contentItem.
     function updateSettings() {
         baseAddressTextField.text = consoleComponent.getStart().toString();
+        interruptAddress.text = consoleComponent.getInterruptAddress().toString();
         deleteBuffer.checked = consoleComponent.deleteBuffer();
     }
 
@@ -97,7 +98,7 @@ Window {
             }
 
             TextField {
-              id: interrupAddress
+              id: interruptAddress
 
               onAccepted: processInput();
               onEditingFinished: processInput();
