@@ -34,13 +34,8 @@ Window {
 
     // Refreshes the window's control contentItem.
     function updateSettings() {
-        baseAddressTextField.text = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
-        var t = outputComponent.getOutputItem(outputItemIndex)["textMode"];
-        if(t === 0){
-            ab.checked = true;
-        } else {
-            pl.checked = true;
-        }
+        baseAddressTextField.text = consoleComponent.getStart().toString();
+        deleteBuffer.checked = consoleComponent.deleteBuffer();
     }
 
     // The controls for editing console settings.
@@ -94,11 +89,28 @@ Window {
                     var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text));
                     var maxSize = outputComponent.getMemorySize();
                     if (inputValue !== undefined && inputValue >= 0 && inputValue < maxSize) {
-                        outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
+                        consoleComponent.setStart(inputValue);
                     } else {
                         updateSettings();
                     }
                 }
+            }
+
+            TextField {
+              id: interrupAddress
+
+              onAccepted: processInput();
+              onEditingFinished: processInput();
+
+              function processInput() {
+                var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text));
+                var maxSize = outputComponent.getMemorySize();
+                if (inputValue !== undefined && inputValue >= 0 && inputValue < maxSize) {
+                    consoleComponent.setInterruptAddress(inputValue);
+                } else {
+                    updateSettings();
+                }
+              }
             }
 
             // Text field for settings the number of light-strips.
@@ -106,34 +118,19 @@ Window {
                 id: mode
                 ExclusiveGroup { id: modeGroup }
 
-                RadioButton{
-                    id: ab
-                    text: "ArrayBased"
+                CheckBox{
+                    id: deleteBuffer
+                    text: "deleteBuffer"
                     checked: true
                     exclusiveGroup: modeGroup
                     onClicked: {
-                        mode.processInput();
-                    }
-                }
-                RadioButton {
-                    id: pl
-                    text: "PipeLike"
-                    exclusiveGroup: modeGroup
-                    onClicked: {
-                        mode.processInput();
+                        consoleComponent.setDeleteBuffer(checked);
                     }
                 }
 
 
                 Component.onCompleted: {
                     settingsWindowC.updateSettings();
-                }
-
-                // Reads the current input and passes the new value to the model.
-                function processInput() {
-                    var inputValue = ab.checked ? 0 : 1;
-                    outputComponent.setOutputItemProperty(outputItemIndex, "textMode", inputValue);
-
                 }
             }
 

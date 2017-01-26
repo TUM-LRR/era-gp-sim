@@ -25,33 +25,35 @@
 
 #include "core/memory-access.hpp"
 
+/**
+ * The ConsoleComonent class is the C++ interface of the combined input output
+ * console.
+ */
 class ConsoleComponent : public QObject {
   Q_OBJECT
 
  public:
   using size_t = std::size_t;
 
-
   /**
-   * \brief The Modes which are possible
+   * Create a new console component.
+   * \param context The qml context of the parent project.
+   * \param memoryAccess The memory access of the parent project.
    */
-  enum Mode { ARRAY_BASED, PIPELIKE };
-
   ConsoleComponent(QQmlContext* context, MemoryAccess memoryAccess);
 
   /**
-   * Sets the new text which should be stored in the memory.
+   * Appends text to the stored text in memory.
    *
-   * \param text the new Text
+   * \param text The new text.
    */
-  Q_INVOKABLE void newText(QString text);
+  Q_INVOKABLE void appendText(QString text);
 
   /**
-   * Sets a number in the memory, used for left/up/etc.
-   *
-   * \param number the number
-   */
-  Q_INVOKABLE void newNumber(size_t number);
+    * Gets the Text from the Memory until a Nullbyte
+    * or end of Memory is reached
+    */
+  Q_INVOKABLE QString getText();
 
   /**
    * Sets the new startindex.
@@ -61,67 +63,67 @@ class ConsoleComponent : public QObject {
   Q_INVOKABLE void setStart(size_t start);
 
   /**
-   * Sets the new Maximum Length.
-   *
-   * \param text the new length
+   * Sets the address of the simulated interrupt.
+   * \param interruptAddress The interrupt address.
    */
-  Q_INVOKABLE void setMaximumLength(size_t maximumLength);
+  Q_INVOKABLE void setInterruptAddress(size_t interruptAddress);
 
   /**
-   * Gets the lenght.
-   *
-   * \return the length
+   * \return The current length of the text (in characters).
    */
-  Q_INVOKABLE size_t getMaximumLength();
+  Q_INVOKABLE size_t getLength();
 
   /**
    * Gets the start index.
    *
    * \return the length
    */
-  Q_INVOKABLE QString getStart();
+  Q_INVOKABLE size_t getStart();
 
   /**
    * Sets the new Mode.
    *
-   * \param text the new mode
+   * \param deleteBuffer If set to true, only the last line of the text is
+   * written to memory, else the whole text of the console is kept in memory.
    */
-  Q_INVOKABLE void setMode(int mode);
+  Q_INVOKABLE void setDeleteBuffer(bool deleteBuffer);
 
   /**
-   * Gets the current mode.
-   *
-   * \return the length
+   * \return True if only the last line is written to memory, false otherwise.
    */
-  Q_INVOKABLE int getMode();
+  Q_INVOKABLE bool deleteBuffer();
+
+  /** Checks wether or not the simulated console interrupt is set. */
+  Q_INVOKABLE bool interruptSet();
+
+  /** Sets the simulated interrupt. */
+  Q_INVOKABLE void setInterrupt();
+
+  /** Resets the simulated interrupt. */
+  Q_INVOKABLE void resetInterrupt();
 
  private:
-  /** The context property. */
-  QQmlContext* _context;
-
   /** The start address in memory. */
   size_t _start;
 
-  /** The maximum length of the input. */
-  size_t _maximumLength;
+  /** Current length of the text (in characters). */
+  size_t _length;
+
+  /** The address of the simulated interrupt for the console. */
+  size_t _interruptAddress;
 
   /** The component for accessing the memory. */
   MemoryAccess _memoryAccess;
 
   /** The current mode. */
-  Mode _mode;
+  bool _deleteBuffer;
 
  signals:
 
   /**
-   * Called when maximum Length has changed.
+   * Called when the settings have changed.
    */
-  void maximumLengthChanged();
-
-  /**
-   * Called when mode has changed.
-   */
-  void modeChanged();
+  void settingsChanged();
 };
 
 #endif  // ERASIM_UI_CONSOLE_COMPONENT_HPP

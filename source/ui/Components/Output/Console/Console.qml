@@ -7,8 +7,8 @@ import Theme 1.0
 
 Item {
   property int outputItemIndex: 2
-  property int oldMode: 0
-  property var oldAddress: 0
+  property bool currentMode
+  property var currentAddress
   id: item
 
   Rectangle {
@@ -107,7 +107,6 @@ Item {
         id: consolePrompt
         anchors.left: readonlyConsole.left
         anchors.bottom: inputConsole.bottom
-        //anchors.bottomMargin: inputConsole.cursorRectangle.height/8
         text: "$ "
         color: Theme.console.promptColor
       }
@@ -124,12 +123,15 @@ Item {
         color: Theme.console.textColor
 
         Keys.onReturnPressed: {
-          var newText = readonlyConsole.text;
-          if(newText !== "") {
-            newText += "\n";
+          var newText = "";
+          if (readonlyConsole.text !== "") {
+            newText = "\n" + newText;
           }
           newText += inputConsole.text;
-          consoleComponent.newText(newText);
+          consoleComponent.appendText(newText);
+          if (currentMode) {
+            consoleComponent.setInterrupt();
+          }
           text = "";
           if (y + height >= scrollView.flickableItem.contentY + scrollView.viewport.height) {
             scrollView.flickableItem.contentY = y + height - scrollView.viewport.height;
@@ -154,61 +156,75 @@ Item {
     }
   }
 
+  /////////////////////////////////////////////////////////////
+  // Connections to update the content according to signals. //
+  /////////////////////////////////////////////////////////////
   Connections {
     target: outputComponent
     // Check for changes in the memory (at any address).
     onMemoryChanged: {
-      var _baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
-      var _mode = outputComponent.getOutputItem(outputItemIndex)["textMode"];
+      var baseAddress = parseInt(consoleComponent.getStart());
+      var deleteBuffer = consoleComponent.deleteBuffer();
+      var textLength = parseInt(consoleComponent.getLength());
+      var addressVar = parseInt(address);
+      var lengthVar = parseInt(length);
+
       // Check if the memory address that was changed (at least partly) belongs to
       // the output item's source space.
-      if ((address + length) >= _baseAddress && _mode === 0) {
-        item.updateContent(_baseAddress);
-      } else if (_mode !== 0 ){
-        if(address <= _baseAddress && address + length >= _baseAddress) {
-          item.updateContent(_baseAddress);
-        }
+      if (((addressVar >= baseAddress && addressVar <= (baseAddress + textLength)) ||
+         (addressVar + lengthVar >= baseAddress && addressVar <= baseAddress + textLength)) &&
+         !currentMode) {
+        item.updateContent(baseAddress);
+      } else if (consoleComponent.interruptSet()) {
+        item.updateContent(baseAddress);
+        consoleComponent.resetInterrupt();
       }
-    }
-    // Send when any item's settings where updated.
-    onOutputItemSettingsChanged: {
-      var mode = outputComponent.getOutputItem(outputItemIndex)["textMode"];
-      var baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
-      if(mode === oldMode && baseAddress === oldAddress) {
-        return;
-      }
-      item.updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
-      settingsWindowC.updateSettings();
     }
   }
 
-  function updateContent(_baseAddress) {
-    var mode = outputComponent.getOutputItem(outputItemIndex)["textMode"];
-    if (oldMode !== mode) {
-      oldMode = mode;
-      readonlyConsole.clear();
-    }
+  Connections {
+    target: consoleComponent
+    onSettingsChanged: {
+      var mode = consoleComponent.deleteBuffer();
+      var baseAddress = consoleComponent.getStart();
 
-    if (oldAddress !== _baseAddress) {
-      oldAddress = _baseAddress;
-      readonlyConsole.clear();
-    }
+      if(mode === currentMode && baseAddress === currentAddress) return;
 
-    var currentText = readonlyConsole.text;
-    readonlyConsole.text = outputComponent.getTextFromMemory(_baseAddress, currentText, mode);
+      if (currentMode !== mode) {
+        currentMode = mode;
+        readonlyConsole.clear();
+      }
+
+      if (currentAddress !== baseAddress) {
+        currentAddress = baseAddress;
+        readonlyConsole.clear();
+      }
+      item.updateContent(baseAddress);
+      settingsWindowConsole.updateSettings();
+    }
+  }
+
+  function updateContent(baseAddress) {
+    if (currentMode) {
+      readonlyConsole.text += consoleComponent.getText();
+    } else {
+      readonlyConsole.text = consoleComponent.getText();
+    }
   }
 
   Component.onCompleted: {
-    item.updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);
+    currentAddress = consoleComponent.getStart();
+    currentMode = consoleComponent.deleteBuffer();
+    item.updateContent(currentAddress);
   }
 
 
   ConsoleSettingsWindow {
-    id: settingsWindowC
+    id: settingsWindowConsole
   }
 
   function settingsButtonPressed() {
-    settingsWindowC.show();
+    settingsWindowConsole.show();
   }
 
 }

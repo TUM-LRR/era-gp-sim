@@ -17,6 +17,7 @@
  */
 
 #include "ui/output-component.hpp"
+
 #include "core/conversions.hpp"
 #include "core/memory-manager.hpp"
 #include "core/memory-value.hpp"
@@ -93,34 +94,6 @@ QList<bool> OutputComponent::getMemoryContent(int address, int length) const {
     contentList.append(byte);
   }
   return contentList;
-}
-
-QString
-OutputComponent::getTextFromMemory(int start, QString currentText, int mode) {
-  std::string text = "";
-  if (mode == 0 /*ArrayBased*/) {
-    for (int i = 0; (start + i) < _memoryAccess.getMemorySize().get(); i++) {
-      MemoryValue memoryValue = _memoryAccess.getMemoryValueAt(start + i).get();
-      unsigned int z = conversions::convert<uint32_t>(memoryValue);
-      if (z == 0) {
-        break;
-      }
-
-      text += char(z);
-    }
-  } else /*pipeline*/ {
-    text = currentText.toStdString();
-    MemoryValue memoryValue = _memoryAccess.getMemoryValueAt(start).get();
-    unsigned int z = conversions::convert<uint32_t>(memoryValue);
-    if (z == 0) {
-      text = "";
-    } else if (z == 127) {  // Delete sign
-      text = "";
-    } else {
-      text += char(z);
-    }
-  }
-  return QString::fromStdString(text);
 }
 
 int OutputComponent::getMemorySize() {

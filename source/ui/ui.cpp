@@ -27,6 +27,7 @@
 #include "common/translateable.hpp"
 #include "common/utility.hpp"
 #include "parser/common/final-representation.hpp"
+#include "ui/console-component.hpp"
 #include "ui/settings.hpp"
 #include "ui/snapshot-component.hpp"
 #include "ui/theme.hpp"

@@ -19,60 +19,102 @@
 
 #include "ui/console-component.hpp"
 
+#include <string>
+
 #include "core/conversions.hpp"
 
 ConsoleComponent::ConsoleComponent(QQmlContext* context,
                                    MemoryAccess memoryAccess)
 : QObject()
-, _context(context)
 , _start(0)
-, _maximumLength(20)
+, _length(0)
 , _memoryAccess(memoryAccess)
-, _mode(Mode::ARRAY_BASED) {
-  _context->setContextProperty("consoleComponent", this);
+, _deleteBuffer(false) {
+  context->setContextProperty("consoleComponent", this);
 }
 
-void ConsoleComponent::newText(QString text) {
+void ConsoleComponent::appendText(QString text) {
+  if (_deleteBuffer && _length > 0) {
+    _memoryAccess.putMemoryValueAt(_start,
+                                   MemoryValue(_length + (8 - (_length % 8))));
+    _length = 0;
+  }
   for (auto i : Utility::range<size_t>(0, text.length())) {
-    if (_start + i > _memoryAccess.getMemorySize().get()) {
+    if (_start + _length > _memoryAccess.getMemorySize().get()) {
       // Too long
       break;
     }
     QChar qchar = text.at(i);
-    MemoryValue m = conversions::convert(qchar.unicode(), 32);
-    _memoryAccess.putMemoryValueAt(_start + i, m);
+    MemoryValue m = conversions::convert(qchar.unicode(), 8);
+    _memoryAccess.putMemoryValueAt(_start + _length, m);
+    ++_length;
   }
 }
 
-void ConsoleComponent::newNumber(size_t number) {
-  auto memoryValue = conversions::convert(number, 32);
-  _memoryAccess.putMemoryValueAt(_start, memoryValue);
+QString ConsoleComponent::getText() {
+  QString text = "";
+  for (_length = 0; (_start + _length) < _memoryAccess.getMemorySize().get();
+       ++_length) {
+    MemoryValue memoryValue =
+        _memoryAccess.getMemoryValueAt(_start + _length).get();
+    uint8_t value = conversions::convert<uint8_t>(memoryValue);
+
+    if (value == 0) {
+      break;
+    }
+
+    text += value;
+  }
+  return text;
 }
 
 void ConsoleComponent::setStart(size_t start) {
-  if (_memoryAccess.getMemorySize().get() >= start + _maximumLength) {
+  if (_memoryAccess.getMemorySize().get() >= start) {
     _start = start;
+    _length = 0;
   }
 }
 
-QString ConsoleComponent::getStart() {
-  return QString::number(_start);
+void ConsoleComponent::setInterruptAddress(size_t interruptAddress) {
+  _interruptAddress = interruptAddress;
 }
 
-void ConsoleComponent::setMaximumLength(size_t maximumLength) {
-  _maximumLength = maximumLength;
-  emit maximumLengthChanged();
+ConsoleComponent::size_t ConsoleComponent::getStart() {
+  return _start;
 }
 
-ConsoleComponent::size_t ConsoleComponent::getMaximumLength() {
-  return _maximumLength;
+ConsoleComponent::size_t ConsoleComponent::getLength() {
+  return _length;
 }
 
-void ConsoleComponent::setMode(int mode) {
-  _mode = static_cast<Mode>(mode);
-  emit modeChanged();
+void ConsoleComponent::setDeleteBuffer(bool deleteBuffer) {
+  _deleteBuffer = deleteBuffer;
+  emit settingsChanged();
 }
 
-int ConsoleComponent::getMode() {
-  return static_cast<int>(_mode);
+bool ConsoleComponent::deleteBuffer() {
+  return _deleteBuffer;
+}
+
+bool ConsoleComponent::interruptSet() {
+  MemoryValue memoryValue =
+      _memoryAccess.getMemoryValueAt(_interruptAddress).get();
+  uint8_t value = conversions::convert<uint8_t>(memoryValue);
+  return value & 1;
+}
+
+void ConsoleComponent::setInterrupt() {
+  MemoryValue memoryValue =
+      _memoryAccess.getMemoryValueAt(_interruptAddress).get();
+  uint8_t value = conversions::convert<uint8_t>(memoryValue);
+  MemoryValue resetValue = conversions::convert(value | 1, 8);
+  _memoryAccess.putMemoryValueAt(_interruptAddress, resetValue);
+}
+
+void ConsoleComponent::resetInterrupt() {
+  MemoryValue memoryValue =
+      _memoryAccess.getMemoryValueAt(_interruptAddress).get();
+  uint8_t value = conversions::convert<uint8_t>(memoryValue);
+  MemoryValue resetValue = conversions::convert(value & 254, 8);
+  _memoryAccess.putMemoryValueAt(_interruptAddress, resetValue);
 }
