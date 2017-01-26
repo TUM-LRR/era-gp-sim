@@ -48,7 +48,7 @@ Item {
         // Send when text changes
         onCommandListUpdated: {
             textarea.text = guiProject.getCommandHelp(currentLine);
-            if(textarea.text === ""){
+            if (textarea.text === ""){
                 textarea.text = usualText;
             }
         }
@@ -60,7 +60,7 @@ Item {
         onCursorLineChanged: {
             currentLine = line;
             textarea.text = guiProject.getCommandHelp(currentLine);
-            if(textarea.text === ""){
+            if (textarea.text === ""){
                 textarea.text = usualText;
             }
         }

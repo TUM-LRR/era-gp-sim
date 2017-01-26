@@ -44,7 +44,7 @@ CheckBox {
             if (topLeft <= styleData.index && styleData.index <= bottomRight) {
                 checked = Qt.binding(function() {return model.FlagData});
                 //starts the highlighting
-                if(singleStep){
+                if (singleStep){
                     isHighlighted = true;
                 }
             }

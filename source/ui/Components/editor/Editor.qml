@@ -349,95 +349,11 @@ ScrollView {
             sidebar.breakpoints[displayLine].y = lineIndex*textArea.cursorRectangle.height;
           }
 
-          Component {
-            id: breakpointComponent
-            Item {
-              z: breakpointTrigger.z + 1
-              id: breakpointItem
-              property int line;
-              property alias color: breakpointIcon.color
-              width: breakpointTrigger.width
-              height: textArea.cursorRectangle.height;
-
-              Component.onCompleted: {
-                editor.setBreakpoint(line);
-              }
-
-              Rectangle {
-                id: breakpointIcon
-                height: Math.min(parent.height, errorBar.width) * 0.8
-                width: height
-                anchors.left: parent.left
-                anchors.leftMargin: height*0.15
-                anchors.verticalCenter: parent.verticalCenter
-                x: (errorBar.width - width) / 2
-                radius: width*0.5
-                color: Theme.editor.breakpoint.color
-              }
-
-              MouseArea {
-                anchors.fill: parent
-                width: 100
-                height: textArea.cursorRectangle.height
-                propagateComposedEvents: false
-                preventStealing: true
-
-                onClicked: {
-                  editor.deleteBreakpoint(line);
-                  delete sidebar.breakpoints[line];
-                  breakpointItem.destroy();
-                }
-              }
-
-              Connections {
-                target: textArea
-
-                // A line number structure change means the structure of the visible code is altered without
-                // an obligatory recompile (e.g. when macro is expanded/collapsed). Therefore, the vertical position
-                // of breakpoints has to be adjusted.
-                onLineNumberStructureChanged: {
-                  // Update y-position with any new macro expansions/collapses in mind.
-                  breakpointItem.y = (textArea.convertDisplayLineNumberToRawLineNumber(line)-1)*textArea.cursorRectangle.height;;
-                }
-              }
-            }
-          }
+          BreakpointComponent { id: breakpointComponent }
         }
 
         // Input for zoom
-        MouseArea {
-          id: mouseInput
-          width: textArea.width
-          height: textArea.height
-          propagateComposedEvents: true
-          scrollGestureEnabled: true
-          acceptedButtons: Qt.MidButton
-          onWheel: {
-            if(wheel.modifiers == Qt.ControlModifier) {
-              if(wheel.angleDelta.y > 0){
-                scale.zoom += 0.1;
-              }
-              else if(wheel.angleDelta.y < 0){
-                scale.zoom -= 0.1;
-                if(scale.zoom < 1) {
-                  scale.zoom = 1.0;
-                }
-              }
-              textArea.cursorScroll(textArea.cursorRectangle);
-              wheel.accepted = true;
-            }
-            else {
-              wheel.accepted = false;
-            }
-          }
-
-          onClicked: wheel.accepted = false;
-          onPressed: wheel.accepted = false;
-          onReleased: wheel.accepted = false;
-          onDoubleClicked: wheel.accepted = false;
-          onPositionChanged: wheel.accepted = false;
-          onPressAndHold: wheel.accepted = false;
-        }
+        ZoomMouseArea { }
       }
     }
   }

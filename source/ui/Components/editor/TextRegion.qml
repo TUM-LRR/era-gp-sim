@@ -67,7 +67,7 @@ TextEdit {
       }
     }
 
-    if(event.key === Qt.Key_Tab) {
+    if (event.key === Qt.Key_Tab) {
       textArea.insert(cursorPosition, "\t");
       event.accepted = true;
     } else if (event.key === Qt.Key_Left  ||
@@ -153,7 +153,7 @@ TextEdit {
     onTriggered: {
       // Don't parse while executing to avoid parsing multiple
       // times on stopping (onStopped triggers parse).
-      if(!tabView.currentProjectItem().running) {
+      if (!tabView.currentProjectItem().running) {
         editor.parse();
       }
     }
@@ -172,7 +172,7 @@ TextEdit {
   }
 
   function scrollUp(cursor) {
-    if(cursor.y < (scrollView.flickableItem.contentY / scale.zoom)) {
+    if (cursor.y < (scrollView.flickableItem.contentY / scale.zoom)) {
       scrollView.flickableItem.contentY = (cursor.y - textMargin) * scale.zoom;
     }
   }
@@ -181,14 +181,14 @@ TextEdit {
     var viewportHeight = scrollView.viewport.height / scale.zoom;
     var bottomBoundary = scrollView.flickableItem.contentY / scale.zoom
                        + viewportHeight - textMargin;
-    if(cursor.y + cursor.height >= bottomBoundary) {
+    if (cursor.y + cursor.height >= bottomBoundary) {
       var newY = cursor.y + cursor.height - viewportHeight + textMargin;
       scrollview.flickableItem.contentY = newY * scale.zoom;
     }
   }
 
   function scrollLeft(cursor) {
-    if(cursor.x < scrollView.flickableItem.contentX / scale.zoom) {
+    if (cursor.x < scrollView.flickableItem.contentX / scale.zoom) {
       scrollView.flickableItem.contentX = (cursor.x - textMargin) * scale.zoom;
     }
   }
@@ -197,7 +197,7 @@ TextEdit {
     var topBoundary = (scrollView.flickableItem.contentX / scale.zoom)
                     + (scrollView.viewport.width / scale.zoom)
                     - textMargin;
-    if(cursor.x + textArea.x >= topBoundary) {
+    if (cursor.x + textArea.x >= topBoundary) {
       var newX = cursor.x
                - (scrollView.viewport.width / scale.zoom)
                + textArea.x + textMargin;
@@ -222,6 +222,7 @@ TextEdit {
     id: inlineMacrosComponent
     InlineMacros { }
   }
+
   property var inlineMacros: undefined
 
   function convertRawLineNumberToDisplayLineNumber(rawLine) {

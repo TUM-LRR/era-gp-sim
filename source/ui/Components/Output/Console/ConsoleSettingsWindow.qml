@@ -36,7 +36,7 @@ Window {
     function updateSettings() {
         baseAddressTextField.text = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
         var t = outputComponent.getOutputItem(outputItemIndex)["textMode"];
-        if(t === 0){
+        if (t === 0){
             ab.checked = true;
         } else {
             pl.checked = true;

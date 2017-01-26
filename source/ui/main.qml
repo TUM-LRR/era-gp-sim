@@ -99,14 +99,14 @@ ApplicationWindow {
 
     tabView.removeTab(currentTabIndex);
 
-    if(!isReady) window.close();
+    if (!isReady) window.close();
 
     ui.removeProject(currentProjectId);
     updateMenuState();
 
     // Create a new tab if there is no tab
     // anymore, to prevent a blank screen.
-    if(tabView.count === 0) {
+    if (tabView.count === 0) {
       createProject();
     }
   }

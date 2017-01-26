@@ -70,7 +70,7 @@ Item {
       propagateComposedEvents: true
 
       onHoveredChanged: {
-        if(containsMouse) {
+        if (containsMouse) {
           isExpanded=true
         } else {
           isExpanded=false
@@ -98,7 +98,7 @@ Item {
           onPressedChanged: {
             if (pressed) {
               isExpanded=true
-            } else if(!hovered) {
+            } else if (!hovered) {
               isExpanded=false
             }
           }
