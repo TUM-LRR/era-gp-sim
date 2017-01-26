@@ -55,10 +55,10 @@ Column {
   id: lineNumbering
   anchors.left: errorBar.right
 
-  y: textArea.textMargin / 2
+  y: textRegion.textMargin / 2
   width: {
     var lineNumber =
-      textArea.convertRawLineNumberToDisplayLineNumber(textArea.lineCount);
+      textRegion.convertRawLineNumberToDisplayLineNumber(textRegion.lineCount);
     return fontMetrics.averageCharacterWidth * lineNumber.toString().length;
   }
 
@@ -88,7 +88,7 @@ Column {
           lineNumberTextComponent.createObject(lineNumbering);
 
         lineNumberTextObject.text =
-          textArea.convertRawLineNumberToDisplayLineNumber(lineIndex + 1);
+          textRegion.convertRawLineNumberToDisplayLineNumber(lineIndex + 1);
         _lineNumberObjects[lineIndex] = lineNumberTextObject;
       }
 
@@ -105,7 +105,7 @@ Column {
     } else {
       for (var lineIndex = 0; lineIndex < newLineCount; ++lineIndex) {
         var lineNumber =
-          textArea.convertRawLineNumberToDisplayLineNumber(lineIndex + 1);
+          textRegion.convertRawLineNumberToDisplayLineNumber(lineIndex + 1);
 
         // Line number for this lineIndex already exist.
         if (_lineNumberObjects[lineIndex] !== undefined &&
@@ -145,28 +145,28 @@ Column {
 
     Text {
       color: Theme.editor.sidebar.lineNumber.color
-      font: textArea.font
-      height: textArea.cursorRectangle.height
+      font: textRegion.font
+      height: textRegion.cursorRectangle.height
     }
   }
 
   Connections {
-    target: textArea
+    target: textRegion
 
     // If only some lines were added or deleted (no
     // change in structure), do light update.
     onLineCountChanged: {
-      lineNumbering.updateLineNumbers(textArea.lineCount, false);
+      lineNumbering.updateLineNumbers(textRegion.lineCount, false);
     }
 
     // If structure of line numbers changed (e.g.
     // macro was expanded or collapsed), do full update.
     onLineNumberStructureChanged: {
-      lineNumbering.updateLineNumbers(textArea.lineCount, true);
+      lineNumbering.updateLineNumbers(textRegion.lineCount, true);
     }
 
     Component.onCompleted: {
-      lineNumbering.updateLineNumbers(textArea.lineCount, false);
+      lineNumbering.updateLineNumbers(textRegion.lineCount, false);
     }
   }
 }

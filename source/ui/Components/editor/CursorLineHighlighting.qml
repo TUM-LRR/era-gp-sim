@@ -29,10 +29,10 @@ Rectangle {
 
   color: Theme.editor.lineHighlight.background
 
-  y: textArea.cursorRectangle.y + textArea.topPadding
+  y: textRegion.cursorRectangle.y + textRegion.topPadding
 
-  height: textArea.cursorRectangle.height
-  width: Math.max(scrollView.width, textArea.contentWidth)
+  height: textRegion.cursorRectangle.height
+  width: Math.max(scrollView.width, textRegion.contentWidth)
 
-  visible: textArea.activeFocus
+  visible: textRegion.activeFocus
 }

@@ -41,8 +41,8 @@ ScrollView {
     focus: false
     anchors.fill: parent
 
-    contentWidth: (textArea.contentWidth + sidebar.width)*scale.zoom;
-    contentHeight: textArea.contentHeight*scale.zoom;
+    contentWidth: (textRegion.contentWidth + sidebar.width)*scale.zoom;
+    contentHeight: textRegion.contentHeight*scale.zoom;
 
     // Wrapper item, Flickable can only have one child
     Item {
@@ -70,14 +70,14 @@ ScrollView {
         relativeY: {
           var newY =
             scrollView.viewport.height - realHeight - y + container.contentY;
-          return Math.min(newY, textArea.cursorRectangle.height)
+          return Math.min(newY, textRegion.cursorRectangle.height)
         }
 
           z: parent.z + 1
         }
 
         TextRegion {
-          id: textArea
+          id: textRegion
           property real unscaledWidth: {
             return Math.max(
               scrollView.viewport.width - sidebar.width,
@@ -88,13 +88,13 @@ ScrollView {
             return Math.max(scrollView.viewport.height, contentHeight);
           }
 
-          width: (textArea.unscaledWidth)*scale.zoom;
-          height: (textArea.unscaledHeight)*scale.zoom;
+          width: (textRegion.unscaledWidth) * scale.zoom
+          height: (textRegion.unscaledHeight) * scale.zoom
         }
 
         FontMetrics {
           id: fontMetrics
-          font: textArea.font
+          font: textRegion.font
         }
 
         Sidebar { id: sidebar }

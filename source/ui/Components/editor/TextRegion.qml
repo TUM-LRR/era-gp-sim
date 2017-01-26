@@ -24,6 +24,7 @@ import QtQuick.Controls.Styles 1.4
 import Theme 1.0
 
 TextEdit {
+  id: textRegion
   x: sidebar.width
   textMargin: 2
   selectByMouse: true
@@ -38,9 +39,11 @@ TextEdit {
   property int currentlyExecutedLine: 0
   property var cursorLine: 1
 
+  ContextMenu { }
+
   Component.onCompleted: {
-    cursorScroll(textArea.cursorRectangle);
-    inlineMacros = inlineMacrosComponent.createObject(textArea);
+    cursorScroll(textRegion.cursorRectangle);
+    inlineMacros = inlineMacrosComponent.createObject(textRegion);
   }
 
   onCursorRectangleChanged: {
@@ -48,7 +51,7 @@ TextEdit {
 
     var newCursorLine = (cursorRectangle.y / cursorRectangle.height) + 1;
     newCursorLine =
-      textArea.convertRawLineNumberToDisplayLineNumber(newCursorLine);
+      textRegion.convertRawLineNumberToDisplayLineNumber(newCursorLine);
     if (cursorLine !== newCursorLine) {
       cursorLine = newCursorLine;
       editor.cursorLineChanged(newCursorLine - 1);
@@ -58,7 +61,7 @@ TextEdit {
   }
 
   Keys.onPressed: {
-    // If the user presses a key which potentially changes textArea's text,
+    // If the user presses a key which potentially changes textRegion's text,
     // collapse all macros to prevent the text change interfering with macro
     // expansions.
     if (event.key < 0x01000010 || event.key > 0x01000060) {
@@ -68,7 +71,7 @@ TextEdit {
     }
 
     if (event.key === Qt.Key_Tab) {
-      textArea.insert(cursorPosition, "\t");
+      textRegion.insert(cursorPosition, "\t");
       event.accepted = true;
     } else if (event.key === Qt.Key_Left  ||
               event.key === Qt.Key_Up     ||
@@ -76,10 +79,10 @@ TextEdit {
               event.key === Qt.Key_Down) {
       // Prevent moving cursor into blank line of a macro expansion. For more
       // information, refer to ``cursorPositionChanged``.
-      textArea.setTriggeringKeyEvent(event.key);
+      textRegion.setTriggeringKeyEvent(event.key);
       event.accepted = false;
     } else {
-      textArea.setTriggeringKeyEvent(undefined);
+      textRegion.setTriggeringKeyEvent(undefined);
       event.accepted = false;
     }
   }
@@ -121,29 +124,29 @@ TextEdit {
   onLineNumberStructureChanged: {
     // Update execution line to consider new macro expansion.
     executedLineHighlighting.lineNumber =
-      textArea.convertDisplayLineNumberToRawLineNumber(
-        textArea.currentlyExecutedLine
+      textRegion.convertDisplayLineNumberToRawLineNumber(
+        textRegion.currentlyExecutedLine
     );
   }
 
   Connections {
     target: editor
-    onExecutionLineChanged: textArea.currentlyExecutedLine = line
+    onExecutionLineChanged: textRegion.currentlyExecutedLine = line
 
     // Some text modifications methods of TextEdit are not available in Qt
     // 5.6, so the text property has to be set directly.
-    onSetText: textArea.text = text
+    onSetText: textRegion.text = text
 
-    onForceCursorUpdate: editor.cursorLineChanged(textArea.cursorLine)
+    onForceCursorUpdate: editor.cursorLineChanged(textRegion.cursorLine)
 
     // Before the editor text is used by any other module, collapse all macros
     // to prevent blank lines from appearing inside the code.
-    onPrepareTextForRetrieval: textArea.inlineMacros.collapseAllMacros();
+    onPrepareTextForRetrieval: textRegion.inlineMacros.collapseAllMacros();
   }
 
   Connections {
     target: guiProject
-    onCommandListUpdated: textArea.updateHelpTooltip();
+    onCommandListUpdated: textRegion.updateHelpTooltip();
   }
 
   Timer {
@@ -197,20 +200,20 @@ TextEdit {
     var topBoundary = (scrollView.flickableItem.contentX / scale.zoom)
                     + (scrollView.viewport.width / scale.zoom)
                     - textMargin;
-    if (cursor.x + textArea.x >= topBoundary) {
+    if (cursor.x + textRegion.x >= topBoundary) {
       var newX = cursor.x
                - (scrollView.viewport.width / scale.zoom)
-               + textArea.x + textMargin;
+               + textRegion.x + textMargin;
       scrollView.flickableItem.contentX = newX * scale.zoom;
     }
   }
 
 
-  onContentSizeChanged: textArea.cursorScroll(textArea.cursorRectangle);
+  onContentSizeChanged: textRegion.cursorScroll(textRegion.cursorRectangle);
   Connections {
     target: scrollView.viewport
-    onWidthChanged: textArea.cursorScroll(textArea.cursorRectangle);
-    onHeightChanged: textArea.cursorScroll(textArea.cursorRectangle);
+    onWidthChanged: textRegion.cursorScroll(textRegion.cursorRectangle);
+    onHeightChanged: textRegion.cursorScroll(textRegion.cursorRectangle);
   }
 
 
@@ -230,7 +233,7 @@ TextEdit {
       return rawLine;
     } else {
       return inlineMacros.convertRawLineNumberToDisplayLineNumber(
-        textArea.text,
+        textRegion.text,
         rawLine
       );
     }

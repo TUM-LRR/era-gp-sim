@@ -32,10 +32,10 @@ Rectangle {
   border.width: Theme.editor.executedLineHighlighting.border.width
   border.color: Theme.editor.executedLineHighlighting.border.color
 
-  height: textArea.cursorRectangle.height;
-  width: Math.max(scrollView.width, textArea.contentWidth)
+  height: textRegion.cursorRectangle.height;
+  width: Math.max(scrollView.width, textRegion.contentWidth)
   y: {
-    return textArea.cursorRectangle.height *
+    return textRegion.cursorRectangle.height *
             (executedLineHighlighting.lineNumber - 1);
   }
 
@@ -43,11 +43,11 @@ Rectangle {
   property var lineNumber
 
   Connections {
-    target: textArea
+    target: textRegion
     onCurrentlyExecutedLineChanged: {
       executedLineHighlighting.lineNumber =
-        textArea.convertDisplayLineNumberToRawLineNumber(
-          textArea.currentlyExecutedLine
+        textRegion.convertDisplayLineNumberToRawLineNumber(
+          textRegion.currentlyExecutedLine
       );
     }
   }

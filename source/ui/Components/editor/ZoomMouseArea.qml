@@ -24,8 +24,8 @@ import QtQuick.Controls.Styles 1.4
 import Theme 1.0
 
 MouseArea {
-  width: textArea.width
-  height: textArea.height
+  width: textRegion.width
+  height: textRegion.height
 
   propagateComposedEvents: true
   scrollGestureEnabled: true
@@ -42,7 +42,7 @@ MouseArea {
         }
       }
 
-      textArea.cursorScroll(textArea.cursorRectangle);
+      textRegion.cursorScroll(textRegion.cursorRectangle);
       wheel.accepted = true;
     } else {
       wheel.accepted = false;

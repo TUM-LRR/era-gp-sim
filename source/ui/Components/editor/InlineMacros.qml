@@ -47,7 +47,7 @@ Item {
             collapseMacroSubeditor(macroIndex);
         }
         if (macroDisplayObjects.length > 0) {
-            textArea.lineNumberStructureChanged();
+            textRegion.lineNumberStructureChanged();
         }
     }
 
@@ -65,18 +65,18 @@ Item {
 
         // When the editor's text is altered, its cursor position is reset to 0. Therefore, the cursor position
         // is saved to be able to restore it later.
-        var savedCursorPosition = textArea.cursorPosition;
+        var savedCursorPosition = textRegion.cursorPosition;
 
         // Update line numbers if necessary (i.e. when there were macros that had to be collapsed which resulted
         // in blank lines being deleted which changed the internal line number structure).
         if (macroDisplayObjects.length > 0) {
-            textArea.lineNumberStructureChanged();
+            textRegion.lineNumberStructureChanged();
         }
 
         macroDisplayObjects = [];
 
         // Restore previously saved cursor position.
-        textArea.cursorPosition = savedCursorPosition;
+        textRegion.cursorPosition = savedCursorPosition;
     }
 
     // Installs new macro display objects (i.e. subeditors and triangle buttons) for each of the current
@@ -90,20 +90,20 @@ Item {
         for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
             var macro = macros[macroIndex];
             // Find the line for the macro expansion.
-            var linePosition = TextUtility.getPositionOfOccurence(textArea.text, "\n", Number(macro["startLine"])+1);
+            var linePosition = TextUtility.getPositionOfOccurence(textRegion.text, "\n", Number(macro["startLine"])+1);
             // Create display objects (i.e. sub-editor and triangle)
             var macroDisplayObject = {};
             // Add sub-editor to display object
-            var yPos = textArea.positionToRectangle(linePosition).y + textArea.cursorRectangle.height
-            var subeditor = subeditorComponent.createObject(textArea, {
+            var yPos = textRegion.positionToRectangle(linePosition).y + textRegion.cursorRectangle.height
+            var subeditor = subeditorComponent.createObject(textRegion, {
                                                                 "y": yPos,
-                                                                "expandedHeight": textArea.cursorRectangle.height*Number(macros[macroIndex]["lineCount"]),
+                                                                "expandedHeight": textRegion.cursorRectangle.height*Number(macros[macroIndex]["lineCount"]),
                                                                 "text": macro["code"]});
-            subeditor.fontPointSize = textArea.font.pointSize;
+            subeditor.fontPointSize = textRegion.font.pointSize;
             macroDisplayObject["subeditor"] = subeditor;
             // Add triangle-button to display object
             var triangleButton = triangleButtonComponent.createObject(sidebar._macroBar);
-            triangleButton.y = textArea.positionToRectangle(linePosition).y-((textArea.cursorRectangle.height-triangleButton.height*0.45)/2);
+            triangleButton.y = textRegion.positionToRectangle(linePosition).y-((textRegion.cursorRectangle.height-triangleButton.height*0.45)/2);
             triangleButton.anchors.right = sidebar._macroBar.right;
             triangleButton.anchors.rightMargin = -2;
             triangleButton.macroIndex = macroIndex;
@@ -135,7 +135,7 @@ Item {
             // Remove macros when new text was entered.
             removeCurrentMacros();
         }
-        oldLineCount = textArea.lineCount;
+        oldLineCount = textRegion.lineCount;
     }
 
 
@@ -149,7 +149,7 @@ Item {
         }
 
         // Update line numbers
-        textArea.lineNumberStructureChanged();
+        textRegion.lineNumberStructureChanged();
     }
 
     // Expands the subeditor of the macro of given index by displaying subeditor component and inserting blank lines.
@@ -158,8 +158,8 @@ Item {
 
         // When the editor's text is altered, its cursor position is reset to 0 and selections are removed. Therefore, selectionStart
         // (= cursorPosition) and selectionEnd are saved to be able to restore them later.
-        var previousSelectionStart = textArea.selectionStart;
-        var previousSelectionEnd = textArea.selectionEnd;
+        var previousSelectionStart = textRegion.selectionStart;
+        var previousSelectionEnd = textRegion.selectionEnd;
 
         macros[macroIndex]["collapsed"] = false;
 
@@ -187,15 +187,15 @@ Item {
         var insertText = new Array(Number(macros[macroIndex]["lineCount"])+1).join("\n");
         // Prevent loop.
         shouldUpdateText = false;
-        textArea.insert(linePosition, insertText);
+        textRegion.insert(linePosition, insertText);
         // Restore cursor position and selection.
-        textArea.select(previousSelectionStart, previousSelectionEnd);
+        textRegion.select(previousSelectionStart, previousSelectionEnd);
         shouldUpdateText = true;
 
         // Move down the subeditors and triangle buttons of following macros
         for (var i = (macroIndex+1); i < macroDisplayObjects.length; i++) {
-            macroDisplayObjects[i]["subeditor"].y += textArea.cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
-            macroDisplayObjects[i]["triangleButton"].y += textArea.cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
+            macroDisplayObjects[i]["subeditor"].y += textRegion.cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
+            macroDisplayObjects[i]["triangleButton"].y += textRegion.cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
         }
 
     }
@@ -206,8 +206,8 @@ Item {
 
         // When the editor's text is altered, its cursor position is reset to 0 and selections are removed. Therefore, selectionStart
         // (= cursorPosition) and selectionEnd are saved to be able to restore them later.
-        var previousSelectionStart = textArea.selectionStart;
-        var previousSelectionEnd = textArea.selectionEnd;
+        var previousSelectionStart = textRegion.selectionStart;
+        var previousSelectionEnd = textRegion.selectionEnd;
 
         macros[macroIndex]["collapsed"] = true;
 
@@ -234,15 +234,15 @@ Item {
         // Remove the empty lines.
         // Prevent loop.
         shouldUpdateText = false;
-        textArea.remove(linePosition, linePosition+(Number(macros[macroIndex]["lineCount"])*1));
+        textRegion.remove(linePosition, linePosition+(Number(macros[macroIndex]["lineCount"])*1));
         // Restore cursor position and selection.
-        textArea.select(previousSelectionStart, previousSelectionEnd);
+        textRegion.select(previousSelectionStart, previousSelectionEnd);
         shouldUpdateText = true;
 
         // Move down the subeditors and triangle buttons of following macros
         for (var i = (macroIndex+1); i < macroDisplayObjects.length; i++) {
-            macroDisplayObjects[i]["subeditor"].y -= textArea.cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
-            macroDisplayObjects[i]["triangleButton"].y -= textArea.cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
+            macroDisplayObjects[i]["subeditor"].y -= textRegion.cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
+            macroDisplayObjects[i]["triangleButton"].y -= textRegion.cursorRectangle.height * Number(macros[macroIndex]["lineCount"]);
         }
     }
 
@@ -305,53 +305,53 @@ Item {
         for (var i = 0; i < macroIndex; ++i) {
             insertedNewLines += (!macros[i]["collapsed"]) ? Number(macros[i]["lineCount"]) : 0;
         }
-        return TextUtility.getPositionOfOccurence(textArea.text, "\n", Number(macro["startLine"])+insertedNewLines+1);
+        return TextUtility.getPositionOfOccurence(textRegion.text, "\n", Number(macro["startLine"])+insertedNewLines+1);
     }
 
 
     // Save cursor position to be able to restored later if needed.
     property var previousCursorPosition: 0
-    // Saves the key event triggering the cursor position change. Refer to textArea's Keys.onPressed to see where this property is altered.
+    // Saves the key event triggering the cursor position change. Refer to textRegion's Keys.onPressed to see where this property is altered.
     property var triggeringKeyEvent: undefined
     // In order to prevent the user from moving the cursor "behind" a macro subeditor, the position is automatically altered
     // when a macro blank line is met.
     Connections {
-        target: textArea
+        target: textRegion
 
         onCursorPositionChanged: {
             // 1. Only jump when the cursor position change was triggered by an arrow key or a mouse press. For more information see Keys.onPressed.
             // 2. Only jump over blank lines if the cursor position change does not occur due to the user
             // selecting some text. Jumping would result in deselecting the text.
             // 3. Only jump if the new position would be inside a blank line soley inserted to make space for a macro expansion.
-            if (triggeringKeyEvent != undefined && textArea.selectedText == "" && isPositionInsideMacroBlankLine(textArea.text, textArea.cursorPosition)) {
-                var position = textArea.cursorPosition;
+            if (triggeringKeyEvent != undefined && textRegion.selectedText == "" && isPositionInsideMacroBlankLine(textRegion.text, textRegion.cursorPosition)) {
+                var position = textRegion.cursorPosition;
                 // Determine whether the user moves the cursor upwards or downwards.
-                var direction = (textArea.cursorPosition > previousCursorPosition) ? 1 : -1;
+                var direction = (textRegion.cursorPosition > previousCursorPosition) ? 1 : -1;
                 // Jump over every blank line. Stop if you have reached the last line of the code.
-                while (position < (textArea.text.length-1) && isPositionInsideMacroBlankLine(textArea.text, position)) {
+                while (position < (textRegion.text.length-1) && isPositionInsideMacroBlankLine(textRegion.text, position)) {
                     position += (direction);
                 }
 
                 // Find the position of the cursor inside the just found non-blank line.
                 var newPosition = position;
                 // If there is no line beyond the macro expansion that is supposed to be skipped, don't move the cursor at all.
-                if (newPosition >= (textArea.text.length-1)) {
+                if (newPosition >= (textRegion.text.length-1)) {
                     newPosition = previousCursorPosition;
                 } else if (triggeringKeyEvent == Qt.Key_Up || triggeringKeyEvent == Qt.Key_Down) {
                     // Get the position of the previous cursor position relative to its lineCount
                     // in order to be able to use the same position in the next (non-blank) line.
-                    var positionRelativeToLine = TextUtility.getPositionRelativeToLineForPosition(textArea.text, previousCursorPosition);
+                    var positionRelativeToLine = TextUtility.getPositionRelativeToLineForPosition(textRegion.text, previousCursorPosition);
                     // Calculate the new cursor position.
-                    newPosition = TextUtility.getLineStartForPosition(textArea.text, position) + positionRelativeToLine;
-                    if (newPosition >= TextUtility.getLineEndForPosition(textArea.text, position)) { newPosition = TextUtility.getLineEndForPosition(textArea.text, position); }
+                    newPosition = TextUtility.getLineStartForPosition(textRegion.text, position) + positionRelativeToLine;
+                    if (newPosition >= TextUtility.getLineEndForPosition(textRegion.text, position)) { newPosition = TextUtility.getLineEndForPosition(textRegion.text, position); }
                 } else if (triggeringKeyEvent == Qt.Key_Left) {
-                    newPosition = TextUtility.getLineEndForPosition(textArea.text, position);
+                    newPosition = TextUtility.getLineEndForPosition(textRegion.text, position);
                 } else if (triggeringKeyEvent == Qt.Key_Right) {
-                    newPosition = TextUtility.getLineStartForPosition(textArea.text, position);
+                    newPosition = TextUtility.getLineStartForPosition(textRegion.text, position);
                 }
-                textArea.cursorPosition = newPosition;
+                textRegion.cursorPosition = newPosition;
             }
-            previousCursorPosition = textArea.cursorPosition;
+            previousCursorPosition = textRegion.cursorPosition;
         }
     }
 }

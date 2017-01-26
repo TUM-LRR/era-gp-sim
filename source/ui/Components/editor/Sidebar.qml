@@ -31,7 +31,7 @@ Rectangle {
   x: container.contentX / scale.zoom
   y: 0
 
-  height: Math.max(container.height, textArea.contentHeight)
+  height: Math.max(container.height, textRegion.contentHeight)
   width: errorBar.width + lineNumbering.width + macroBar.width
 
   color: Theme.editor.sidebar.background
@@ -50,7 +50,7 @@ Rectangle {
     hoverEnabled: true
     onClicked: {
       sidebar.addBreakpoint(
-        Math.floor(mouse.y / textArea.cursorRectangle.height)
+        Math.floor(mouse.y / textRegion.cursorRectangle.height)
       );
     }
   }
@@ -61,7 +61,7 @@ Rectangle {
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     anchors.left: parent.left
-    width: 0.75 * textArea.cursorRectangle.height
+    width: 0.75 * textRegion.cursorRectangle.height
     color: "#00000000"
 
     property var issueMarks: ({})
@@ -74,11 +74,11 @@ Rectangle {
       }
 
       onDeleteErrors: errorBar.issueMarks = ({})
-      Component.onCompleted: editor.init(textArea.textDocument);
+      Component.onCompleted: editor.init(textRegion.textDocument);
     }
 
     Connections {
-      target: textArea
+      target: textRegion
 
       // A line number structure change means the structure of the visible code
       // is altered without an obligatory recompile (e.g. when macro is
@@ -87,12 +87,12 @@ Rectangle {
       onLineNumberStructureChanged: {
         Object.keys(errorBar.issueMarks).forEach(function(key) {
           var displayLineNumber =
-            textArea.convertDisplayLineNumberToRawLineNumber(
+            textRegion.convertDisplayLineNumberToRawLineNumber(
               errorBar.issueMarks[key].lineNumber
           );
           errorBar.issueMarks[key].y = (displayLineNumber - 1)
-                                     * textArea.cursorRectangle.height
-                                     + textArea.topPadding;
+                                     * textRegion.cursorRectangle.height
+                                     + textRegion.topPadding;
         });
       }
     }
@@ -107,8 +107,8 @@ Rectangle {
         var issueMarkComponent = Qt.createComponent("IssueMark.qml");
         newIssue = issueMarkComponent.createObject();
         newIssue.y =
-          (textArea.convertDisplayLineNumberToRawLineNumber(lineNumber) - 1)
-        * textArea.cursorRectangle.height + textArea.topPadding;
+          (textRegion.convertDisplayLineNumberToRawLineNumber(lineNumber) - 1)
+        * textRegion.cursorRectangle.height + textRegion.topPadding;
         newIssue.parent = errorBar;
         newIssue.lineNumber = lineNumber;
         issueMarks[lineNumber] = newIssue;
@@ -158,7 +158,7 @@ Rectangle {
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     anchors.left: lineNumbering.right
-    width: 0.75 * textArea.cursorRectangle.height
+    width: 0.75 * textRegion.cursorRectangle.height
     color: "#00000000"
   }
 
@@ -166,11 +166,11 @@ Rectangle {
 
   function addBreakpoint(lineIndex) {
     var displayLine =
-      textArea.convertRawLineNumberToDisplayLineNumber(lineIndex + 1);
+      textRegion.convertRawLineNumberToDisplayLineNumber(lineIndex + 1);
     sidebar.breakpoints[displayLine] =
       breakpointComponent.createObject(sidebar, {"line": displayLine});
     sidebar.breakpoints[displayLine].y =
-      lineIndex * textArea.cursorRectangle.height;
+      lineIndex * textRegion.cursorRectangle.height;
   }
 
   BreakpointComponent { id: breakpointComponent }

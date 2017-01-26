@@ -15,6 +15,7 @@
         <file>Components/editor/ZoomMouseArea.qml</file>
         <file>Components/editor/LineNumbering.qml</file>
         <file>Components/editor/Sidebar.qml</file>
+        <file>Components/editor/ContextMenu.qml</file>
         <file>Components/editor/Issue Icons/Error Icon.png</file>
         <file>Components/editor/Issue Icons/Error Icon@2x.png</file>
         <file>Components/editor/Issue Icons/Information Icon.png</file>

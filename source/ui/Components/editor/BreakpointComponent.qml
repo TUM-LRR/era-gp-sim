@@ -31,7 +31,7 @@ Component {
     property int line;
     property alias color: breakpointIcon.color
     width: breakpointTrigger.width
-    height: textArea.cursorRectangle.height;
+    height: textRegion.cursorRectangle.height;
 
     Component.onCompleted: editor.setBreakpoint(line)
 
@@ -55,7 +55,7 @@ Component {
     MouseArea {
       anchors.fill: parent
       width: 100
-      height: textArea.cursorRectangle.height
+      height: textRegion.cursorRectangle.height
       propagateComposedEvents: false
       preventStealing: true
 
@@ -67,7 +67,7 @@ Component {
     }
 
     Connections {
-      target: textArea
+      target: textRegion
 
       // A line number structure change means the structure of the visible code
       // is altered without an obligatory recompile (e.g. when macro is
@@ -75,8 +75,8 @@ Component {
       // has to be adjusted.
       onLineNumberStructureChanged: {
         // Update y-position with any new macro expansions/collapses in mind.
-        var newY = textArea.convertDisplayLineNumberToRawLineNumber(line) - 1;
-        breakpointItem.y = newY * textArea.cursorRectangle.height;
+        var newY = textRegion.convertDisplayLineNumberToRawLineNumber(line) - 1;
+        breakpointItem.y = newY * textRegion.cursorRectangle.height;
       }
     }
   }
