@@ -23,7 +23,6 @@ import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
-
 MouseArea {
   width: textArea.width
   height: textArea.height

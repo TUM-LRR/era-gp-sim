@@ -51,12 +51,12 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left
-        width: lineNumbersBar.width + 3
+        width: lineNumbering.width + 3
 
         color: Theme.editor.sidebar.background
 
         Column {
-            id: lineNumbersBar
+            id: lineNumbering
             anchors.left: parent.left
             y: textArea.textMargin/2
 

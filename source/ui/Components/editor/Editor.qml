@@ -98,7 +98,6 @@ ScrollView {
           z: parent.z + 1
         }
 
-
         TextRegion {
           id: textArea
           property real unscaledWidth: Math.max(scrollView.viewport.width - sidebar.width, contentWidth)
@@ -121,7 +120,7 @@ ScrollView {
           x: container.contentX/scale.zoom
           y: 0
           height: Math.max(container.height, textArea.contentHeight)
-          width: errorBar.width + lineNumbersBar.width + macroBar.width
+          width: errorBar.width + lineNumbering.width + macroBar.width
           color: Theme.editor.sidebar.background
 
           property alias _macroBar: macroBar
@@ -140,7 +139,6 @@ ScrollView {
               sidebar.addBreakpoint(Math.floor(mouse.y/textArea.cursorRectangle.height));
             }
           }
-
 
           // Display errors, warnings, notes and breakpoints.
           Rectangle {
@@ -232,102 +230,7 @@ ScrollView {
             }
           }
 
-
-          // Displays line numbers.
-          Column {
-            id: lineNumbersBar
-            anchors.left: errorBar.right
-            y: textArea.textMargin/2
-            width: fontMetrics.averageCharacterWidth * textArea.convertRawLineNumberToDisplayLineNumber(textArea.lineCount).toString().length
-
-            property var currentRawLineCount: 0
-            property var _lineNumberObjects: []
-
-
-            // Updates line numbers to show given line count in a performant way.
-            // \param newLineCount: New number of line numbers to display. Considered raw line numbers, i.e.
-            // without factoring out blank lines for macros.
-            // \param updateAll: If false, only the required amount of line numbers are created/deleted to fit the
-            // newLineCount. Changes to the internal structure are ignored (e.g. when there are blank lines). If true,
-            // all line numbers are updated.
-            function updateLineNumbers(newLineCount, updateAll) {
-              // If no changes since last update, don't update again.
-              if (currentRawLineCount === newLineCount && !updateAll) return;
-              // Only some lines were added or deleted; no change in structure.
-              if (updateAll === false) {
-                // Add as many lines as necessary at the bottom.
-                for (var lineIndex = currentRawLineCount; lineIndex < newLineCount; ++lineIndex) {
-                  var lineNumberTextObject = lineNumberTextComponent.createObject(lineNumbersBar);
-                  lineNumberTextObject.text = textArea.convertRawLineNumberToDisplayLineNumber(lineIndex+1);
-                  _lineNumberObjects[lineIndex] = lineNumberTextObject;
-                }
-                // Remove as many lines as necessary at the bottom.
-                for (var lineIndex = currentRawLineCount; lineIndex >= newLineCount; --lineIndex) {
-                  if (_lineNumberObjects[lineIndex] !== undefined && _lineNumberObjects[lineIndex] !== null) {
-                    _lineNumberObjects[lineIndex].destroy();
-                    delete _lineNumberObjects[lineIndex];
-                  }
-                }
-              } else {    // Update all line numbers.
-                for (var lineIndex = 0; lineIndex < newLineCount; ++lineIndex) {
-                  var lineNumber = textArea.convertRawLineNumberToDisplayLineNumber(lineIndex+1);
-                  // Line number for this lineIndex already exist.
-                  if (_lineNumberObjects[lineIndex] !== undefined && _lineNumberObjects[lineIndex] !== null) {
-                    // Line number for this lineIndex has changed, therefore delete and create new. Otherwise reuse
-                    // old object.
-                    if (_lineNumberObjects[lineIndex].text !== lineNumber.toString()) {
-                      _lineNumberObjects[lineIndex].text = lineNumber.toString();
-                    }
-                  } else { // Add new line number.
-                    var lineNumberTextObject = lineNumberTextComponent.createObject(lineNumbersBar);
-                    lineNumberTextObject.text = lineNumber.toString();
-                    _lineNumberObjects[lineIndex] = lineNumberTextObject;
-                  }
-                  // If the line number belongs to a macro blank line, give it a lighter color. Otherwise
-                  // paint it as normal (needs to be set explicitly as this line number might have been
-                  // reused.
-                  if (lineIndex > 0 && _lineNumberObjects[lineIndex-1].text === lineNumber.toString()) {
-                    _lineNumberObjects[lineIndex].color = Qt.lighter(Theme.editor.sidebar.lineNumber.color, 1.25);
-                  } else {
-                    _lineNumberObjects[lineIndex].color = Theme.editor.sidebar.lineNumber.color;
-                  }
-                }
-              }
-              // Save newLineCount as currentRawLineCount.
-              currentRawLineCount = newLineCount;
-            }
-
-            // Component for displaying single line number.
-            Component {
-              id: lineNumberTextComponent
-
-              Text {
-                color: Theme.editor.sidebar.lineNumber.color
-                font: textArea.font
-                height: textArea.cursorRectangle.height
-              }
-            }
-
-            Connections {
-              target: textArea
-
-              // If only some lines were added or deleted (no change in structure), do light update.
-              onLineCountChanged: {
-                lineNumbersBar.updateLineNumbers(textArea.lineCount, false);
-              }
-
-              // If structure of line numbers changed (e.g. macro was expanded or collapsed), do
-              // full update.
-              onLineNumberStructureChanged: {
-                lineNumbersBar.updateLineNumbers(textArea.lineCount, true);
-              }
-
-              Component.onCompleted: {
-                lineNumbersBar.updateLineNumbers(textArea.lineCount, false);
-              }
-            }
-          }
-
+          LineNumbering { id: lineNumbering }
 
 
           // Displays buttons for expanding/collapsing macros.
@@ -335,11 +238,10 @@ ScrollView {
             id: macroBar
             anchors.top: parent.top
             anchors.bottom: parent.bottom
-            anchors.left: lineNumbersBar.right
+            anchors.left: lineNumbering.right
             width: 0.75*textArea.cursorRectangle.height
             color: "#00000000"
           }
-
 
           property var breakpoints: ({})
 
