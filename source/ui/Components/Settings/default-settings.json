@@ -1,4 +1,6 @@
 {
     "snapshotLocation": null,
-    "theme": "default"
+    "theme": "default",
+    "removeSnapshotsPermanently": null,
+    "overrideSnapshots": null
 }

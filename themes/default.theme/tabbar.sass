@@ -1,0 +1,29 @@
+$background-color-darker:   #666666   // Darker gray
+$background-color-dark:     #d4d4d4   // Dark gray
+$background-color-light:    #ececec   // Light gray
+$background-color-lighter:  #f2f2f2   // Lighter gray
+
+tabbar
+  background: $background-color-light
+  tab
+    color: $background-color-darker
+    height: 25
+    minWidth: 60
+    highlighted
+      color: darken($background-color-darker, 20%)
+    active
+      background: white
+    inactive
+      background: $background-color-dark
+    closeButton
+      color: $background-color-darker
+      highlighted
+        color: $accent-color
+  addTabButton
+    background: transparent
+    color: $accent-color
+    pointSize: 18
+    highlighted
+      color: $accent-color
+  frame
+    background: $background-color-lighter

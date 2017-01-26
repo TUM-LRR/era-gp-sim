@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.0
+import QtQuick 2.6
 import QtQuick.Dialogs 1.0
 
 /*
@@ -93,9 +93,7 @@ Rectangle {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                segmentPressed(0);
-            }
+            onClicked: segmentPressed(0);
         }
     }
 
@@ -119,9 +117,7 @@ Rectangle {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                segmentPressed(5);
-            }
+            onClicked: segmentPressed(5);
         }
     }
 
@@ -145,9 +141,7 @@ Rectangle {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                segmentPressed(1);
-            }
+            onClicked: segmentPressed(1);
         }
     }
 
@@ -181,9 +175,7 @@ Rectangle {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                segmentPressed(6);
-            }
+            onClicked: segmentPressed(6);
         }
     }
 
@@ -207,9 +199,7 @@ Rectangle {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                segmentPressed(4);
-            }
+            onClicked: segmentPressed(4);
         }
     }
 
@@ -233,9 +223,7 @@ Rectangle {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                segmentPressed(2);
-            }
+            onClicked: segmentPressed(2);
         }
     }
 
@@ -269,9 +257,7 @@ Rectangle {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                segmentPressed(3);
-            }
+            onClicked: segmentPressed(3);
         }
     }
 

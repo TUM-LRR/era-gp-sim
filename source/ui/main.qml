@@ -1,3 +1,4 @@
+
 /*
 * C++ Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
@@ -20,6 +21,7 @@
 import QtQuick 2.6
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
 import "Components"
@@ -27,6 +29,8 @@ import "Components/Menubar"
 import "Components/Toolbar"
 import "Components/ProjectCreation"
 import "Components/Settings"
+import "Components/tabview"
+import "Components/Snapshots"
 import Theme 1.0
 
 ApplicationWindow {
@@ -34,57 +38,31 @@ ApplicationWindow {
   visible: true
   width: Theme.window.initialWidth
   height: Theme.window.initialHeight
-  color: Theme.window.background
+  style: ApplicationWindowStyle {
+    background: Rectangle { color: Theme.window.background }
+  }
 
   property alias menubar: menubar
   property alias toolbar: toolbar
-  property alias config: config
+  property alias settings: settings
 
   menuBar: Menubar {
     id: menubar
     main: window
-    Component.onCompleted: {
-      window.updateMenuState();
-    }
-  }
-  toolBar: ToolbarComponent {
-    id: toolbar
+    Component.onCompleted: window.updateMenuState();
   }
 
-  SettingsWindow { id: config }
+  toolBar: ToolbarComponent { id: toolbar }
+  SettingsWindow { id: settings }
 
-  TabView {
+  ProjectsTabView {
     id: tabView
     anchors.fill: parent
-
-    Component.onCompleted: {
-      createProject()
-    }
-
-    onCurrentIndexChanged: {
-      updateMenuState();
-    }
-
-    // get the project of the current tab, is undefined if there is no tab.
-    function getCurrentProjectItem() {
-      return tabView.getTab(tabView.currentIndex).item;
-    }
-
-    // get the id of the project in the current tab, undefined if there is no tab.
-    function getCurrentProjectId() {
-      return getCurrentProjectItem().projectId;
-    }
-
-    // returns false if there is only a creation screen in the current tab.
-    // Undefined if there is no tab.
-    function currentProjectIsValid() {
-      return getCurrentProjectItem().projectValid;
-    }
   }
 
   // This function should be called when the tab is switched
   function updateMenuState() {
-    if (tabView.count === 0 || !tabView.currentProjectIsValid()) {
+    if (tabView.count === 0 || !tabView.currentProjectIsReady()) {
       // Deactivate project specific functions if there is no
       // valid project at the current index.
       toolbar.enabled = false;
@@ -97,7 +75,7 @@ ApplicationWindow {
 
   function showMenus() {
     toolbar.enabled = true;
-    toolbar.running = tabView.getCurrentProjectItem().running;
+    toolbar.running = tabView.currentProjectItem().running;
     menubar.setMenuEnabled(true);
   }
 
@@ -109,19 +87,20 @@ ApplicationWindow {
   }
 
   function createProject() {
-    tabView.addTab("", tabs);
+    tabView.addTab("", tabComponent);
     tabView.currentIndex = tabView.count - 1;
   }
 
   function closeProject() {
     var currentTabIndex = tabView.currentIndex;
-    var currentProjectId = tabView.getCurrentProjectId();
-    var isValid = tabView.currentProjectIsValid();
+    var currentProjectId = tabView.currentProjectId();
+    var isReady = tabView.currentProjectIsReady();
 
     tabView.removeTab(currentTabIndex);
 
-    if(isValid) ui.removeProject(currentProjectId);
+    if(!isReady) window.close();
 
+    ui.removeProject(currentProjectId);
     updateMenuState();
 
     // Create a new tab if there is no tab
@@ -133,21 +112,21 @@ ApplicationWindow {
 
   // Component for a project, instantiated by the TabView
   Component {
-    id: tabs
-
+    id: tabComponent
     Item {
       id: placeholderItem
 
-      // if there is a project for this tab in the backend, this is true
+      // If there is a project for this tab in the backend, this is true.
       property bool projectValid: false
 
-      // index of the project in the project vector
+      // Index of the project in the project vector.
       property int projectId: -1
 
-      // indicates the execution state of this project
+      // Indicates the execution state of this project.
       property bool running
 
       anchors.fill: parent
+
       ProjectCreationScreen {
         anchors.fill: parent
         onCreateProject: {
@@ -162,6 +141,7 @@ ApplicationWindow {
             optionName,
             parser
           );
+
           window.expand();
           window.showMenus();
           projectValid = true;
@@ -178,14 +158,27 @@ ApplicationWindow {
       Splitview {
         anchors.fill: parent
 
-        SystemPalette {
-          id: systemPalette
+        SystemPalette { id: systemPalette }
+
+        // height and witdth have to be greater than 1 to achieve correct behaviour on
+        // devices with touchscreen
+        handleDelegate: Rectangle {
+          width: Theme.splitview.handleWidth
+          height: Theme.splitview.handleHeight
+          color: Theme.splitview.handleColor
         }
 
-        handleDelegate: Rectangle {
-          width: 2
-          height: 2
-          color: Qt.darker(systemPalette.window, 1.5)
+        Connections {
+          target: guiProject
+          onSaveTextAs: menubar.actionSaveAs();
+          onError: {
+            window.errorDialog.text = errorMessage;
+            window.errorDialog.open();
+          }
+          onExecutionStopped: {
+            editor.parse();
+            placeholderItem.isRunning = false;
+          }
         }
       }
 
@@ -207,24 +200,11 @@ ApplicationWindow {
     }
   }
 
-  Connections {
-    target: snapshotComponent
-    onSnapshotError: {
-      errorDialog.text = errorMessage;
-      errorDialog.open();
-    }
-  }
-
   property alias errorDialog: errorDialog
   property alias fileDialog: fileDialog
-  property alias textDialog: textDialog
 
-  //Dialog to show errors
-  ErrorDialog {
-    id: errorDialog
-  }
+  ErrorDialog { id: errorDialog }
 
-  //File dialog for selecting a file
   FileDialog {
     id: fileDialog
     property var onAcceptedFunction
@@ -232,47 +212,7 @@ ApplicationWindow {
     selectFolder: false
     selectMultiple: false
     onAccepted: {
-      onAcceptedFunction(fileDialog.fileUrl);
-    }
-  }
-
-  // Dialog to input text
-  Dialog {
-    id: textDialog
-    title: "Save snapshot"
-    standardButtons: StandardButton.Cancel;
-    property var onAcceptedFunction
-    property alias placeholderText: textField.placeholderText
-    Text {
-      id: description
-      anchors.top: parent.top
-      anchors.left: parent.left
-      anchors.right: parent.right
-      wrapMode: Text.WordWrap
-      textFormat: Text.StyledText
-      text: "<p>Save a snapshot of the current register and memory state to disk. " +
-      "Your snapshot files can be found here:</p> " +
-      "<a href=\"" + snapshotComponent.snapshotDirectory() + "\">" +
-      snapshotComponent.snapshotDirectory() + "</a>"
-      onLinkActivated: Qt.openUrlExternally(snapshotComponent.snapshotDirectory())
-    }
-    TextField {
-      id: textField
-      anchors.topMargin: 10
-      anchors.top: description.bottom
-      anchors.horizontalCenter: parent.horizontalCenter
-      onTextChanged: {
-        if(text == "") {
-          textDialog.standardButtons = StandardButton.Cancel;
-        }
-        else {
-          textDialog.standardButtons = StandardButton.Cancel | StandardButton.Save;
-        }
-      }
-    }
-    onAccepted: {
-      onAcceptedFunction(textField.text);
-      textField.text = "";
+      ui.saveTextAs(tabView.currentProjectId(), fileDialog.fileUrl);
     }
   }
 }
