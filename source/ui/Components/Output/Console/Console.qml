@@ -47,6 +47,7 @@ Item {
     Flickable {
       id: flickable
       anchors.fill: parent
+      anchors.margins: Theme.console.margin
       contentHeight: readonlyConsole.height + inputConsole.height
       contentWidth: scrollView.viewport.width
 
@@ -84,6 +85,10 @@ Item {
           }
         }
 
+        onHeightChanged: {
+          if (inputConsole.activeFocus) inputConsole.updateScroll();
+        }
+
         onActiveFocusChanged: {
           if (activeFocus) inputConsole.forceActiveFocus();
         }
@@ -91,7 +96,6 @@ Item {
         // for correct clipboard behaviour without a clipboard adapter,
         // only output or input can be copied
         onSelectedTextChanged: inputConsole.deselect();
-
 
         //Clears the Screen in pipelike mode
         MouseArea {
@@ -119,7 +123,6 @@ Item {
         id: promptColumn
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.leftMargin: Theme.console.leftMargin
         Repeater {
           model: readonlyConsole.correctedLineCount + 1;
           Text {
@@ -154,13 +157,22 @@ Item {
             newText = "\n" + newText;
           }
           newText += inputConsole.text;
+          // Add a null char as delimiter
+          newText += "\0";
           consoleComponent.appendText(newText);
           if (currentMode) {
             consoleComponent.setInterrupt();
           }
           text = "";
+        }
+
+        // scroll to cursor, if necessary.
+        onCursorRectangleChanged: updateScroll();
+
+        function updateScroll() {
           if (y + height >= scrollView.flickableItem.contentY + scrollView.viewport.height) {
-            scrollView.flickableItem.contentY = y + height - scrollView.viewport.height;
+            scrollView.flickableItem.contentY =
+              y + height - scrollView.viewport.height + Theme.console.margin*2;
           }
         }
 

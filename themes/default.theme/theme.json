@@ -525,7 +525,7 @@
     "console": {
         "background": "#000000",
         "textColor": "#FFFFFF",
-        "leftMargin": 3,
+        "margin": 3,
         "promptColor": "#FF4081",
         "prompt": "$",
         "promptMargin": 5,

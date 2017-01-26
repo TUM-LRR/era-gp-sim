@@ -42,11 +42,17 @@ void ConsoleComponent::appendText(QString text) {
   for (auto i : Utility::range<size_t>(0, text.length())) {
     if (_start + _length > _memoryAccess.getMemorySize().get()) {
       // Too long
-      break;
+      return;
     }
     QChar qchar = text.at(i);
     MemoryValue m = conversions::convert(qchar.unicode(), 8);
     _memoryAccess.putMemoryValueAt(_start + _length, m);
+    // A nullbyte signals the last byte of the console, so we should not have
+    // one inside the text.
+    if (qchar == '\0') return;
+
+    // Don't count a nullbyte as length, otherwise text can't be appended
+    // afterwards!
     ++_length;
   }
 }
@@ -59,6 +65,7 @@ QString ConsoleComponent::getText() {
         _memoryAccess.getMemoryValueAt(_start + _length).get();
     uint8_t value = conversions::convert<uint8_t>(memoryValue);
 
+    // Stop when a null character is read.
     if (value == 0) {
       break;
     }
