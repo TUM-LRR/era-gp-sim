@@ -203,7 +203,6 @@ Item {
         readonlyConsole.clear();
       }
       item.updateContent(baseAddress);
-      settingsWindowConsole.updateSettings();
     }
   }
 

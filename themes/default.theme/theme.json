@@ -528,6 +528,11 @@
         "leftMargin": 3,
         "promptColor": "#FF4081",
         "prompt": "$",
-        "promptMargin": 5
+        "promptMargin": 5,
+        "settings": {
+            "width": 400,
+            "height": 200,
+            "margin": 15
+        }
     }
 }
