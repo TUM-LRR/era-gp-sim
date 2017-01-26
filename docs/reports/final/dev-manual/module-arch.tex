@@ -122,12 +122,6 @@ bietet Abbildung \ref{fig:arch-syntax-tree}
 \begin{figure}[H]
 	\begin{center}
 		\begin{tikzpicture}[node distance=0.5cm and 1.5cm]
-		\pgfdeclarelayer{background}
-		\pgfdeclarelayer{foreground}
-		\pgfsetlayers{background,main,foreground}
-		\tikzstyle{class} = [rectangle, rounded corners, draw=black, fill=white, drop shadow]
-		\tikzstyle{inheritance-arrow} = [->, thick,>=open triangle 90,every node/.style={font=\sffamily\small}]
-		\tikzstyle{empty} = [draw=none,fill=none]
 
 		\node (super) [class] {AbstractSyntaxTreeNode};
 		\node (invisible) [right = of super] {};
@@ -165,6 +159,7 @@ bietet Abbildung \ref{fig:arch-syntax-tree}
 	\label{fig:arch-syntax-tree}
 \end{figure}
 
+\label{module-arch-ast-node-types}
 Die aufgeführten Klassen haben folgende Funktion:
 \begin{itemize}
 	\item \textbf{AbstractSyntaxTreeNode} ist die Oberklasse jedes Syntax Knotens
@@ -243,6 +238,7 @@ Folgende Methoden werden von ihr vorgegeben:
 \end{itemize}
 
 \subsubsection{Node Factory}
+\label{module-arch-node-factory}
 
 \todo[inline]{
 	* NodeFactoryCollection \\

@@ -19,14 +19,14 @@ Im Reiter ''Configure Project'' für das Kit ''Desktop'' -> Details: Nur Debug u
 Jetzt sollte das Edit-Tab mit dem Projekt geöffnet sein. Im unteren Rand unter ''General Messages'' sollte einmal cmake automatisch aufgerufen worden sein, links oben im ''Projects'' Fenster sollte die Struktur des Projekts (mit CMakeLists.txt, include, source, tests und third-party) zu sehen sein.\\
 Im Projects-Tab (linker Rand, Schraubenschlüssel) im Reiter ''Build \& Run'' wird jetzt der Build-Prozess konfiguriert.
 Bei ''Edit build configuration'' Debug auswählen, dann unter ''Build Steps'' folgendes verändern:\\
-\includegraphics[scale=0.5]{images/setup-qtcreator-build-config.png}\\
+\includegraphics[scale=0.5]{images/setup-qtcreator-buildrun-config.png}\\
 Der Eintrag von cmake Arguments soll dabei der relative Pfad vom eingetragenen Build-Ordner zum obersten Ordner des Projekts sein. Im Beispiel ist der Build-Order unter \texttt{era-gp-sim/build\_qtcreator\_debug} angelegt, d.h. eine Ebene höher liegt der root-Ordner des Projekts. Das \texttt{-j4} Argument bei \texttt{make} erhöht die Geschwindigkeit beim Bauen, da 4 Jobs gleichzeitig ausgeführt werden.
 Zur Run-Konfiguration wechseln \includegraphics[scale=1.0]{images/setup-qtcreator-run-config.png} und als ''Working Directory'' den Build-Ordner eintragen.\\
 
 Nun zurück wechseln und bei ''Edit build configuration'' Release auswählen und sowohl ''Build Steps'' als auch ''Run'' wie oben verändern.\\
 
 Ins Edit-Tab wechseln und am linken Rand unten beim Monitor von ''Release'' auf ''Debug'' wechseln und dann mit Klick auf den Hammer das Projekt bauen.\\
-\includegraphics[scale=0.7]{images/setup-qtcreator-change-build-flavor.png}\\
+\includegraphics[scale=0.7]{images/setup-qtcreator-change-buildrun-flavor.png}\\
 Hier können dann auch später statt ''era-sim'' verschiedene Test-Suits lokal ausgeführt werden. In der ''Compile Output'' Konsole kann der Fortschritt des Bauvorgangs überwacht werden.\\
 
 
