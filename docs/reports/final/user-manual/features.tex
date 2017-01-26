@@ -171,8 +171,14 @@ Die Texteingabe verfügt über zwei Modi, array-based und pipe-like.
 Im ersten Modus wird die Eingabe ab der Startadresse, angegeben in den Einstellungen, in den Speicher geschrieben. Verwendet werden dabei die ASCII-Zeichen. Die Eingabe wird übernommen und eingetragen, wenn die Enter-Taste gedrückt wird, dann wird auch der Inhalt des Feldes gelöscht. Die Maximale Länge ist wiederum in den Einstellungen angegeben und kann dort verändert werden. Verwendet man den zweiten Modus, so wird nach jeder Eingabe das entsprechende Zeichen an die Startadresse geschrieben. Man beachte, dass damit der letzte Wert überschrieben wird. Es ist dabei auch möglich, Pfeiltasten anzugeben. Befindet sich der Cursor im Eingabefeld und eine Pfeiltaste wird gedrückt, so wird für die Pfeiltaste rechts die eins in den Speicher geschrieben. Alle anderen sind fortlaufend im Uhrzeigersinn nummeriert, genau wie bei der Eingabe über die Buttons, die die Pfeiltasten zeigen. Der Inhalt des Eingabefeldes wird nach jedem Zeichen gelöscht.
 
 \subsubsection{Ausgabe -- Lichtbandanzeige}
-\todo[inline]{besondere Einstellungen! Farbwahl! Manuelles setzen der Strips möglich!}
 
+Die Lichtbandanzeige dient hauptsächlich zur Anzeige verschiedener Arten von Fortschrittsbalken.
+Sie besteht aus mehreren einzelnen Leuchtkomponenten, der Anzahl im Einstellungsmenu der Anzeige definiert werden kann.
+Jede Leuchtkomponente kann durch ein Bit im Speicher an der richtigen Adresse angesteuert werden.
+Eine \texttt{1} bedeutet dabei, dass das Segment leuchtet; also farbig dargestellt wird. Bei einer \texttt{0} wird die Fläche in Grau dargestellt.
+Die Bits sind im Speicher an direkt aufeinanderfolgenden Stellen zu setzen. Ein Byte kann somit eine Leuchtbandanzeige aus 8 Elemente komplett ansteuern. 
+Dabei ist der Nutzer natürlich nicht darauf beschränkt eine Fortschrittsanzeige von links nach rechts aufzubauen, sondern kann jede Fläche unabhängig voneinander ein und ausschalten.
+Als Alternative kann man auch mit der Maus auf ein Leuchtfeld klicken, um es an- bzw. auszuschalten. Der Speicherinhalt an der entsprechenden Adresse wird dadurch entsprechend geändert.\\
 
 
 \begin{figure}[ht]
@@ -181,6 +187,8 @@ Im ersten Modus wird die Eingabe ab der Startadresse, angegeben in den Einstellu
 	\caption{Leuchtbandanzeige}
 	\label{Lightstrip}
 \end{figure}
+
+Ein besonderes Feature ist dabei die individuelle Gestaltung der Lichtbandanzeige. Bei einem Rechtsklick auf ein Leuchtelement öffnet sich ein Farbwahldialog, wo die Leuchtfarbe des Segments gewählt werden kann.
 
 \begin{figure}[ht]
 	\centering
@@ -219,7 +227,7 @@ Dabei muss aber darauf geachtet werden, dass die Reihenfolge genau umgedreht ist
 danach folgt das vorletzte usw.
 
 \begin{warningblock}
-Reihenfolge der Zeichen: Die Ansteuerung der Zeichen ist genau geschieht (wie im Zahlensystem) von rechts nach links.
+Reihenfolge der Zeichen: Die Ansteuerung der Zeichen geschieht (wie im Zahlensystem) von rechts nach links.
 \end{warningblock}
 
 Ein kleines Beispiel verdeutlicht dies wohl am besten.
