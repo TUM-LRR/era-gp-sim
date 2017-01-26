@@ -38,7 +38,7 @@ ProjectCreationSection {
     validator: RegExpValidator { regExp: /^\w[\w ]*$/ }
     placeholderText: "Give your project a name"
     style: TextFieldStyle {
-      font.pixelSize: Theme.createProject.section.fontSize
+      font.pixelSize: Theme.createProject.section.projectName.fontSize
     }
     onTextChanged: change()
   }

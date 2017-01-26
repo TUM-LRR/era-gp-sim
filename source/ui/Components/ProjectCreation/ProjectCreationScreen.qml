@@ -82,7 +82,7 @@ Rectangle {
 
     Keys.onPressed: {
       // == on purpose (to coerce types)
-      if (event.key == Qt.Key_Return || event.key == Qt.Key_Enter) {
+      if (event.key == Qt.Key_Return) {
         if (button.enabled) button.clicked();
       }
     }

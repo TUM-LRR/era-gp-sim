@@ -31,6 +31,7 @@ import "Components/ProjectCreation"
 import "Components/Settings"
 import "Components/tabview"
 import "Components/Snapshots"
+
 import Theme 1.0
 
 ApplicationWindow {
