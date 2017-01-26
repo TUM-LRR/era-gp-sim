@@ -211,6 +211,8 @@
 
 \newcommand{\code}[1]{\lstinline{#1}}
 
+\newcommand{\erasim}{{\scshape ERASIM}\,}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % NEW ENVIRONMENTS                                     %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -226,25 +228,44 @@
   \end{figure}
 }
 
-\newenvironment{exampleblock}[1]{%
-    \tcolorbox[title filled,colback=ForestGreen!50!white,
-    noparskip,breakable,
-    title=#1]}%
-    {\endtcolorbox}
-	
-\newenvironment{infoblock}[1]{%
-    \tcolorbox[title filled,colback=NavyBlue!50!white,
-    noparskip,breakable,
-    title=#1]}%
-    {\endtcolorbox}
-	
-\newenvironment{warningblock}[0]{%
-    \tcolorbox[title filled,colback=Dandelion!50!white,
-    noparskip,breakable,
-    title={Vorsicht}]}%
-    {\endtcolorbox}
+\newenvironment{exampleblock}[1]
+{
+    \tcolorbox[%
+      title filled,%
+      colback=ProcessBlue,%
+      noparskip,%
+      breakable,%
+      title=\MakeUppercase{#1}
+    ]
+}
+{
+  \endtcolorbox
+}
 
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: "document"
-%%% End:
+\newenvironment{infoblock}[1]
+{
+    \tcolorbox[%
+      title filled,%
+      colback=Green,%
+      noparskip,%
+      breakable,%
+      title=\MakeUppercase{#1}
+    ]
+}
+{
+  \endtcolorbox
+}
+
+\newenvironment{warningblock}[0]
+{
+    \tcolorbox[%
+      title filled,%
+      colback=Red,%
+      noparskip,%
+      breakable,%
+      title={VORSICHT}
+    ]
+}
+{
+  \endtcolorbox
+}
