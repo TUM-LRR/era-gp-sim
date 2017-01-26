@@ -523,8 +523,11 @@
         "handleColor": "#BDBDBD"
     },
     "console": {
-        "background": "#1976D2",
+        "background": "#000000",
         "textColor": "#FFFFFF",
-        "promptColor": "#FF4081"
+        "leftMargin": 3,
+        "promptColor": "#FF4081",
+        "prompt": "$",
+        "promptMargin": 5
     }
 }

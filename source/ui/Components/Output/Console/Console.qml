@@ -56,6 +56,8 @@ Item {
 
       TextEdit {
         id: readonlyConsole
+
+        anchors.leftMargin: Theme.console.leftMargin
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -107,7 +109,7 @@ Item {
         id: consolePrompt
         anchors.left: readonlyConsole.left
         anchors.bottom: inputConsole.bottom
-        text: "$ "
+        text: Theme.console.prompt
         color: Theme.console.promptColor
       }
 
@@ -116,6 +118,7 @@ Item {
 
         selectByMouse: true
 
+        anchors.leftMargin: Theme.console.promptMargin
         anchors.left: consolePrompt.right
         anchors.right: parent.right
         anchors.top: readonlyConsole.bottom
