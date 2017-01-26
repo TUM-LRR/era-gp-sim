@@ -21,7 +21,7 @@ Im Projects-Tab (linker Rand, Schraubenschlüssel) im Reiter ''Build \& Run'' wi
 Bei ''Edit build configuration'' Debug auswählen, dann unter ''Build Steps'' folgendes verändern:\\
 \includegraphics[scale=0.5]{images/setup-qtcreator-buildrun-config.png}\\
 Der Eintrag von cmake Arguments soll dabei der relative Pfad vom eingetragenen Build-Ordner zum obersten Ordner des Projekts sein. Im Beispiel ist der Build-Order unter \texttt{era-gp-sim/build\_qtcreator\_debug} angelegt, d.h. eine Ebene höher liegt der root-Ordner des Projekts. Das \texttt{-j4} Argument bei \texttt{make} erhöht die Geschwindigkeit beim Bauen, da 4 Jobs gleichzeitig ausgeführt werden.
-Zur Run-Konfiguration wechseln \includegraphics[scale=1.0]{images/setup-qtcreator-run-config.png} und als ''Working Directory'' den Build-Ordner eintragen.\\
+Zur Run-Konfiguration wechseln \includegraphics[scale=1.0]{images/setup-qtcreator-run-config} und als ''Working Directory'' den Build-Ordner eintragen.\\
 
 Nun zurück wechseln und bei ''Edit build configuration'' Release auswählen und sowohl ''Build Steps'' als auch ''Run'' wie oben verändern.\\
 
