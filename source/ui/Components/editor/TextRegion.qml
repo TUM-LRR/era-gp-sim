@@ -35,7 +35,7 @@ TextEdit {
   color: Theme.editor.color
 
   // Line that is going to be executed in the next step.
-  property int currentExecutionLine: 0
+  property int currentlyExecutedLine: 0
   property var cursorLine: 1
 
   Component.onCompleted: {
@@ -120,15 +120,15 @@ TextEdit {
   // position of errors has to be adjusted.
   onLineNumberStructureChanged: {
     // Update execution line to consider new macro expansion.
-    executionLineHighlight.lineNumber =
+    executedLineHighlighting.lineNumber =
       textArea.convertDisplayLineNumberToRawLineNumber(
-        textArea.currentExecutionLine
+        textArea.currentlyExecutedLine
     );
   }
 
   Connections {
     target: editor
-    onExecutionLineChanged: textArea.currentExecutionLine = line
+    onExecutionLineChanged: textArea.currentlyExecutedLine = line
 
     // Some text modifications methods of TextEdit are not available in Qt
     // 5.6, so the text property has to be set directly.
@@ -159,37 +159,9 @@ TextEdit {
     }
   }
 
-  // Cursor line highlightingf
   CursorLineHighlighting { }
+  ExecutedLineHighlighting { id: executedLineHighlighting }
 
-  // Execution line highlighting
-  Rectangle {
-    id: executionLineHighlight
-    color: Theme.editor.executionLineHighlight.background
-
-    border.width: 1
-    border.color: Theme.editor.executionLineHighlight.border.color
-
-    height: textArea.cursorRectangle.height;
-    width: Math.max(scrollView.width, textArea.contentWidth)
-    y: {
-      return textArea.cursorRectangle.height *
-              (executionLineHighlight.lineNumber - 1);
-    }
-
-    // Current raw line number to display the execution line highlight at.
-    property var lineNumber
-
-    Connections {
-      target: textArea
-      onCurrentExecutionLineChanged: {
-        executionLineHighlight.lineNumber =
-          textArea.convertDisplayLineNumberToRawLineNumber(
-            textArea.currentExecutionLine
-        );
-      }
-    }
-  }
 
   // Scroll with the cursor
   function cursorScroll(cursor) {

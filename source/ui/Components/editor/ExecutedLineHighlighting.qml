@@ -23,16 +23,32 @@ import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
+
 Rectangle {
-  border.width: Theme.editor.lineHighlight.border.width
-  border.color: Theme.editor.lineHighlight.border.color
+  id: executedLineHighlighting
 
-  color: Theme.editor.lineHighlight.background
+  color: Theme.editor.executedLineHighlighting.background
 
-  y: textArea.cursorRectangle.y + textArea.topPadding
+  border.width: Theme.editor.executedLineHighlighting.border.width
+  border.color: Theme.editor.executedLineHighlighting.border.color
 
-  height: textArea.cursorRectangle.height
+  height: textArea.cursorRectangle.height;
   width: Math.max(scrollView.width, textArea.contentWidth)
+  y: {
+    return textArea.cursorRectangle.height *
+            (executedLineHighlighting.lineNumber - 1);
+  }
 
-  visible: textArea.activeFocus
+  // Current raw line number to display the execution line highlight at.
+  property var lineNumber
+
+  Connections {
+    target: textArea
+    onCurrentlyExecutedLineChanged: {
+      executedLineHighlighting.lineNumber =
+        textArea.convertDisplayLineNumberToRawLineNumber(
+          textArea.currentlyExecutedLine
+      );
+    }
+  }
 }
