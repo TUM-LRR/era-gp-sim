@@ -32,7 +32,6 @@ Button {
   anchors {
     horizontalCenter: parent.horizontalCenter
     topMargin: Theme.createProject.button.marginTop
-    bottomMargin: 20
   }
 
   MouseArea {
