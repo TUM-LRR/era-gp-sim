@@ -1,11 +1,11 @@
 % ERA-Großpraktikum: Entwickleranleitung -- Erweiterung
 
 \section{Erweiterung}
-Der folgende Abschnitt soll Anhaltspunkte zur Erweiterung des Simulators bieten. Eine Erweiterung kann entweder ein neues Assembler-Paket (also die Unterstützung einer neuen Assembler-Sprache, z.B. Intel-386\todo{Stimmt der Name?}) oder ein neues Modul (''Extension'') für das bereits vorhandene Assembler-Paket RISC-V (z.B. das Modul RV32F) sein.\\
+Der folgende Abschnitt soll Anhaltspunkte zur Erweiterung des Simulators bieten. Eine Erweiterung kann entweder ein neues Assembler-Paket (also die Unterstützung einer neuen Assembler-Sprache, z.B. Intel-386\todo{Stimmt der Name?}) oder ein neues Modul (''Extension'') für das bereits vorhandene Assembler-Paket RISC-V (z.B. das Modul RV32F) sein. Des Weiteren ist es auch möglich, weitere Komponenten in der GUI zu ergänzen.\\
 
 Da der Simulator für mehrere Assembler-Pakete konzipiert worden ist, müssen große Teile der Benutzeroberfläche und auch der Grundstruktur nicht neu geschrieben bzw. verändert werden. Vielmehr kommt es darauf an, das Konzept der bereits vorhandenen Teile zu verstehen und anzuwenden.
 
-\subsection{Übersicht}
+\subsection{Übersicht zur Architektur}
 Um zu verstehen, wo die Erweiterung im Konzept einzuordnen ist, und welche Klassen zu implementieren sind, sollte man den Prozess verstehen, wie genau ein Assembler-Paket geladen und angesprochen wird. Einen groben Überblick bietet folgendes Diagramm. Die Namen der Komponenten finden sich so nicht im Code wieder, sie dienen lediglich als Oberbegriff für eine ganze Reihe von Klassen und -strukturen die grob die selbe Aufgabe haben.
 \begin{figure}
 	\centering
@@ -66,3 +66,18 @@ Für RISC-V haben wir im riscv-namespace eine NodeFactoryCollection mit den RISC
 \subsubsection{Implementierung der Instruktionen}
 \label{extension-arch-ast}
 Der zentrale und auch für den Nutzer sichtbare Teil einer neuen Architektur sind die neuen Instruktionen. Eine konkrete Instruktion also z.B. \texttt{addi x1, x0, 0x45 (riscv)} wird intern als Syntaxbaum dargestellt. Der Parser verwandelt jede Zeile Quelltext in einen Baum. Diese Liste an Bäumen repräsentiert dann das ausführbare Programm. Da der Parser nur die syntaktische Bedeutung eines Symbols kennt, nicht aber seine Semantik (also das Verhalten, die Implementierung), ruft der Parser die passende Fabrik auf, die dann eine semantisch passende Implementierung instanziiert und zurückgibt. Der Parser kann aufgrund z.B. der Position des Symbols auf seine syntaktische Rolle schließen. Das erste Word, das keine Direktive oder Marke ist, muss der mnemotechnische Befehl sein; der Ausdruck danach muss der erste Operand sein, usw. Die Implementierung der Fabriken wurde in \autoref{extension-arch-factories} bereits behandelt. 
+
+\subsection{Erweiterung der GUI}
+Soll eine neue Komponente zur GUI hinzugefügt werden, gibt es mehrere Entscheidungen zu treffen. Die Komponente kann etwas bestehendes, wie die Ausgabe, erweitern oder komplett neu sein. in diesem Fall gilt es noch zu klären, ob sie Projektspezifisch, wie Speicher oder Register, ist oder auf das ganze Programm, also außerhalb der TabView wie die Menubar, bezogen werden soll.
+
+\subsubsection{Erweiterung bestehender Komponenten}
+Das Erweitern bestehender Komponenten ist vergleichsweise einfach. Hier gilt es, in der entsprechenden C++-Datei nachzuschlagen. Ist, wie bei der Ausgabe, nur eine für die gesamte Komponente angelegt, müssen hier etwaige Attribute und Methoden ergänzt werden. Ist dagegen für jeden einzelnen Teil eine eigene Datei angelegt, so sollte auch für die Erweiterung eine ergänzt werden. Man beachte, dass es wahrscheinlich nötig sein wird, die Instanzen zum \texttt{QQMLContext} hinzuzufügen.\\
+In QML sind Komponenten, die mehrere eigene Module besitzen, üblicherweise in einer TabView dargestellt. Es muss also nur ein Tab in der Hauptdatei der zu erweiternden Komponente ergänzt werden. Die eigentliche Definition sollte in einer eigenen Datei in einem neuen Unterverzeichnis erfolgen. Im Allgemeinen sollte auch auf ein Einstellungsfenster, die entsprechende Funktion und die Themes geachtet werden. Um zu erkennen, ob dies nötig ist, beachte man die anderen Module.
+
+\subsubsection{Neue Komponenten}
+Auch das Hinzufügen neuer Komponenten gestaltet sich nicht besonders schwierig. Für den QML-Teil ist Folgendes zu tun: Im Ordner \texttt{ui/Components} ein neuer Ordner angelegt werden. Dort werden alle neuen Dateien der Erweiterung abgelegt. Außerhalb dieses Ordners muss nur die Datei \texttt{ui/SplitviewItem.qml} modifiziert werden. Hier muss in der ComboBox der entsprechende Name eingetragen werden, in den Variablen \texttt{model} und \texttt{usualList}. Außerdem muss unten im Loader der Pfad der Hauptdatei hinzugefügt werden, am gleichen Index wie der Name in der ComboBox. Des weiteren sei bemerkt, dass jede neue Komponente eine Variable \texttt{hasComponentSettings} benötigt.\\
+ Der C++-Teil wird einfach unter \texttt{ui} abgelegt. Auch ein Header sollte im entsprechenden Verzeichnis vorhanden sein. Soll die Komponente für jedes Projekt einzeln verwendet werden, so wird eine neue Instanz der C++-Klasse in der entsprechenden Instanz der Klasse \texttt{GuiProject} hinterlegt. Von dort kann man auch den \texttt{QQmlContext} bekommen. Dieser ist zwingend nötig, wenn aus QML auf die C++ Instanz zugegriffen werden soll. Ist die neue Komponente dagegen für alle Projekte gleich, so verwende man die \texttt{Ui} Klasse. Bei der Programmierung der neuen C++-Klasse sollte der Abschnitt zur Kommunikation der Module beachtet werden, siehe \autoref{gui-kommunikation}.
+ 
+
+
+
