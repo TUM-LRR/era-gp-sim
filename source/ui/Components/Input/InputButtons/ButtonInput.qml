@@ -19,105 +19,112 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
+import Theme 1.0
 
-Item {
+Rectangle {
   id: item
 
-  property int upKey: Qt.Key_Up
-  property int downKey: Qt.Key_Down
-  property int leftKey: Qt.Key_Left
-  property int rightKey: Qt.Key_Right
-
-  MouseArea {
-    anchors.fill: parent
-    onClicked: {
-      item.focus = true;
-      item.forceActiveFocus();
-    }
-  }
-
-  Keys.onPressed: {
-    if (event.key == upKey) {
-      up.clicked();
-    } else if (event.key == downKey) {
-      down.clicked();
-    } else if (event.key == leftKey) {
-      left.clicked();
-    } else if (event.key == rightKey) {
-      right.clicked();
-    }
-  }
+  color: Theme.input.keyInput.background
 
   Rectangle {
-    id: middle
-    height: 40
-    width: 40
-    anchors.centerIn: parent
-    visible: false
-  }
+    id: focusRectangle
 
+    property var marginsInactive: Theme.input.keyInput.inactive.margins
+    property var marginsActive: Theme.input.keyInput.active.margins
+    property var backgroundInactive: Theme.input.keyInput.inactive.background
+    property var backgroundActive: Theme.input.keyInput.active.background
+    property var defaultInfoText: "Click to start capturing key events"
 
-  Button {
-    id: up
-    width: middle.width
-    height: middle.height
-    anchors.left: middle.left
-    anchors.bottom: middle.top
-    Text{
-      font.pointSize: 16
-      anchors.centerIn: parent
-      text: "\u2191"
-    }
-    onClicked: {
-      inputButtonMod.buttonClicked(4);
-    }
-  }
+    anchors.fill: parent
+    anchors.margins: marginsInactive
+    color: backgroundInactive
 
-  Button {
-    id: right
-    width: middle.width
-    height: middle.height
-    anchors.left: middle.right
-    anchors.bottom: middle.bottom
-    Text{
-      font.pointSize: 16
-      anchors.centerIn: parent
-      text: "\u2192"
-    }
-    onClicked: {
-      inputButtonMod.buttonClicked(1);
-    }
-  }
+    TextEdit {
+      id: infoText
 
-  Button {
-    id: down
-    width: middle.width
-    height: middle.height
-    anchors.left: middle.left
-    anchors.top: middle.bottom
-    Text{
-      font.pointSize: 16
-      anchors.centerIn: parent
-      text: "\u2193"
-    }
-    onClicked: {
-      inputButtonMod.buttonClicked(2);
-    }
-  }
+      anchors.fill: parent
+      readOnly: true
+      horizontalAlignment: Text.AlignHCenter
+      verticalAlignment: Text.AlignVCenter
+      activeFocusOnPress: false; activeFocusOnTab: false
+      wrapMode: TextEdit.Wrap
+      color: Theme.input.keyInput.inactive.color
 
-  Button {
-    id: left
-    width: middle.width
-    height: middle.height
-    anchors.right: middle.left
-    anchors.bottom: middle.bottom
-    Text {
-      font.pointSize: 16
-      anchors.centerIn: parent
-      text: "\u2190"
+      text: focusRectangle.defaultInfoText
     }
-    onClicked: {
-      inputButtonMod.buttonClicked(3);
+
+    MouseArea {
+      anchors.fill: parent
+      cursorShape: Qt.PointingHandCursor
+      onClicked: {
+        focusRectangle.focus = !focusRectangle.focus;
+        if (focusRectangle.focus) {
+          focusRectangle.forceActiveFocus();
+        }
+      }
+    }
+
+    onFocusChanged: {
+      if (focus) {
+        gainFocusAnimation.start();
+        infoText.text = "";
+        infoText.font.bold = true;
+        infoText.color = Theme.input.keyInput.active.color;
+      } else {
+        looseFocusAnimation.start();
+        infoText.text = focusRectangle.defaultInfoText;
+        infoText.font.bold = false;
+        infoText.color = Theme.input.keyInput.inactive.color;
+      }
+    }
+
+    Keys.onPressed: {
+      event.accepted = true;
+      infoText.text = inputButtonMod.getKeyDescription(event.key);
+      inputButtonMod.buttonClicked(event.key);
+    }
+
+    ParallelAnimation {
+      id: looseFocusAnimation
+      running: false
+      PropertyAnimation {
+        id: looseFocusMarginAnimation
+        target: focusRectangle
+        property: "anchors.margins"
+        duration: Theme.input.keyInput.inactive.animation.marginAnimation.duration
+        to: focusRectangle.marginsInactive
+        easing.type: Easing.OutExpo
+      }
+      PropertyAnimation {
+        id: looseFocusColorAnimation
+        target: focusRectangle
+        property: "color"
+        duration: Theme.input.keyInput.inactive.animation.colorAnimation.duration
+        to: focusRectangle.backgroundInactive
+        easing.type: Easing.OutExpo
+      }
+    }
+
+    ParallelAnimation {
+      id: gainFocusAnimation
+      running: false
+      PropertyAnimation {
+        id: gainFocusMarginAnimation
+        target: focusRectangle
+        property: "anchors.margins"
+        duration: Theme.input.keyInput.active.animation.marginAnimation.duration
+        to: focusRectangle.marginsActive
+        easing.type: Easing.OutExpo
+      }
+      PropertyAnimation {
+        id: gainFocusColorAnimation
+        target: focusRectangle
+        property: "color"
+        duration: Theme.input.keyInput.active.animation.colorAnimation.duration
+        to: focusRectangle.backgroundActive
+        easing.type: Easing.OutExpo
+      }
     }
   }
 

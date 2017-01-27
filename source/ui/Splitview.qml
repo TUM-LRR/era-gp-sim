@@ -66,10 +66,10 @@ SplitView {
 
   /*Sets the widht at the beginning, because else the columns are too small*/
   onWidthChanged: {
-    splitView1.width = (width/10);
-    splitView2.width = 5*(width/10);
-    splitView3.width = 2*(width/10);
-    splitView4.width = 2*(width/10);
+    splitView1.width = 3*(width/20);
+    splitView2.width = 9*(width/20);
+    splitView3.width = 4*(width/20);
+    splitView4.width = 4*(width/20);
   }
 
 

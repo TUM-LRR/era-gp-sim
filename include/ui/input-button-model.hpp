@@ -31,21 +31,27 @@ class InputButtonModel : public QObject {
   InputButtonModel(QQmlContext* context, MemoryAccess memoryAccess);
 
   /**
-   * \brief wrotes clicked Button in memory
+   * Write clicked Button to memory
    * \param id  Id of clicked Button
    */
   Q_INVOKABLE void buttonClicked(unsigned int id);
 
   /**
-   * \brief Returns value of start
+   * Returns value of start
    */
   Q_INVOKABLE QString getStart();
 
   /**
-   * \brief sets start
+   * Sets start
    * \param start new value
    */
   Q_INVOKABLE void setStart(unsigned int start);
+
+  /**
+    Returns a human-readble description of the given key.
+    \param key Key requested to describe.
+   */
+  Q_INVOKABLE QString getKeyDescription(Qt::Key key) const;
 
  private:
   QQmlContext* _context;

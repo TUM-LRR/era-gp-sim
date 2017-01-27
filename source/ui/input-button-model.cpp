@@ -17,6 +17,7 @@
   * along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
 
+#include <QKeySequence>
 #include "ui/input-button-model.hpp"
 #include "core/conversions.hpp"
 
@@ -30,6 +31,10 @@ void InputButtonModel::buttonClicked(unsigned int id) {
   // save id at start in Memory
   auto memoryValue = conversions::convert(id, 8);
   _memoryAccess.putMemoryValueAt(_start, memoryValue);
+}
+
+QString InputButtonModel::getKeyDescription(Qt::Key key) const {
+    return QKeySequence(key).toString();
 }
 
 QString InputButtonModel::getStart() {
