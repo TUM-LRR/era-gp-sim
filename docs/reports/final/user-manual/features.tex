@@ -96,6 +96,25 @@ Drücken der Steurungstaste (Cmd-Taste bei Mac-Computern) gescrollt.
 \subsubsection{Ausführungsmodi}
 \todo[inline]{komplett, schritt-für-schritt, zum nächsten breakpoint; hier am besten mmit bildern der einzelnen Knöpfe}
 
+Der Simulator verfügt über drei verschiedene Ausführungsmodi. Die Zeile, an der die Ausführung begonnen wird, ist im Editor stets farblich hervorgehoben.
+
+Der erste Modus (erster Button von links in Abbildung \ref{Toolbar}) führt das ganze Programm komplett ab der hervorgehobenen Zeile aus.
+
+Möchte man die Ausführung dabei beenden, beispielsweise wegen einer Endlosschleife, so klickt man auf den Stopp-Button (vierter Button von links)
+
+Darüberhinaus gibt es die Möglichkeit nur die aktuelle Zeile auszuführen, also Schritt für Schritt (zweiter Button von links). Hierbei werden die geänderten Werte in den Registern hervorgehoben, was in anderen Modi nicht der Fall ist.
+
+Im letzten Ausführungsmodus wird das Programm bis zum nächsten Breakpoint ausgeführt (dritter Button von links). Einen neuen Breakpoint erstellt man, indem man in der Seitenleiste auf den Bereich neben der zugehörigen Zeile klickt. Durch erneutes Klicken auf den Breakpoint wird dieser wieder entfernt.
+
+\todo[inline]{Ggf. Bild von Breakpoint}
+
+Drückt man nach beendeter oder untebrochener Ausführung auf den Reset-Button (erster
+Button von rechts), so wird der Zeiger für die zunächst auszuführende Zeile wieder
+an den Anfang des Programms gesetzt und die Register- und Speicherinhalte zurückgesetzt.
+
+\todo{Abbildung von Toolbar einfügen}
+
+
 \subsubsection{Registerkomponente}
 Die Registerkomponente zeigt die Prozessorregister an und ermöglicht es, deren Werte manuell zu verändern. Jedes Register besteht aus einem Registertitel, mit dem es in der Regel auch im Assemblercode referenziert werden kann, sowie dem zugehörigem Registerinhalt.
 
