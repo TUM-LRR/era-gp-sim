@@ -19,8 +19,9 @@
 
 #include "parser/independent/execute-immutable-arguments.hpp"
 
+#include "parser/independent/allocate-memory-immutable-arguments.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
-#include "parser/independent/preprocessing-immutable-arguments.hpp"
+#include "parser/independent/precompile-immutable-arguments.hpp"
 
 // Just constructors and getters.
 
@@ -34,8 +35,19 @@ ExecuteImmutableArguments::ExecuteImmutableArguments(
 , _allocator(allocator)
 , _replacer(replacer) {
 }
+
 ExecuteImmutableArguments::ExecuteImmutableArguments(
-    const PreprocessingImmutableArguments& beforeBeforePass,
+    const PrecompileImmutableArguments& beforeBeforeBeforePass,
+    const MemoryAllocator& allocator,
+    const SymbolReplacer& replacer)
+: ExecuteImmutableArguments(beforeBeforeBeforePass.architecture(),
+                            beforeBeforeBeforePass.generator(),
+                            allocator,
+                            replacer) {
+}
+
+ExecuteImmutableArguments::ExecuteImmutableArguments(
+    const AllocateMemoryImmutableArguments& beforeBeforePass,
     const MemoryAllocator& allocator,
     const SymbolReplacer& replacer)
 : ExecuteImmutableArguments(beforeBeforePass.architecture(),
@@ -43,6 +55,7 @@ ExecuteImmutableArguments::ExecuteImmutableArguments(
                             allocator,
                             replacer) {
 }
+
 ExecuteImmutableArguments::ExecuteImmutableArguments(
     const EnhanceSymbolTableImmutableArguments& beforePass,
     const SymbolReplacer& replacer)

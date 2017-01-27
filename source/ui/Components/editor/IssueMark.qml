@@ -20,8 +20,9 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.5
 import QtQuick.Dialogs 1.2
+import Theme 1.0
 import "../Common"
-import "../Common/TextUtilities.js" as TextUtilities
+import "../../Js/TextUtility.js" as TextUtility
 
 // Each line wich contains any issue (error, warning or information) is marked by
 // an issueMark. An issueMark is the container of one or more issueItems.
@@ -48,12 +49,12 @@ Item {
     property var dominantIssueType: ""
 
     // Color definitions
-    property var errorColorSolid: Qt.rgba(1.0, 185.0/255.0, 152.0/255.0, 1.0)
-    property var errorColorLight: Qt.rgba(1.0, 80.0/255.0, 0.0, 0.14)
-    property var warningColorSolid: Qt.rgba(1.0, 227.0/255.0, 157.0/255.0, 1.0)
-    property var warningColorLight: Qt.rgba(1.0, 185.0/255.0, 10.0/255.0, 0.14)
-    property var informationColorSolid: Qt.rgba(153.0/255.0, 200.0/255.0, 255.0/255.0, 1.0)
-    property var informationColorLight: Qt.rgba(0.0, 117.0/255.0, 255.0/255.0, 0.14)
+    property var errorColorSolid: Theme.editor.issue.error.darkColor
+    property var errorColorLight: Theme.editor.issue.error.lightColor
+    property var warningColorSolid: Theme.editor.issue.warning.darkColor
+    property var warningColorLight: Theme.editor.issue.warning.lightColor
+    property var informationColorSolid: Theme.editor.issue.information.darkColor
+    property var informationColorLight: Theme.editor.issue.information.lightColor
 
     // The issue's Icon inside the error bar.
     Image {
@@ -215,7 +216,7 @@ Item {
         function _offsetFirstIssueItemIfNecessary() {
             if (issueMark.issueItems.length == 0 ) return;
             // Check if the first issueText would overlap the line text.
-            var lineEndX = textArea.positionToRectangle(TextUtilities.getLineEndForLine(textArea.text, lineNumber)).x;
+            var lineEndX = textArea.positionToRectangle(TextUtility.getLineEndForLine(textArea.text, lineNumber)).x;
             var errorLeftX = textArea.width - issueMark.issueItems[0].width;
             var textToErrorDistance = errorLeftX - lineEndX;
             // If it would overlap, offset it by one line.

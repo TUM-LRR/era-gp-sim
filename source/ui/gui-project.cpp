@@ -20,39 +20,58 @@
 #include "ui/gui-project.hpp"
 
 #include <QUrl>
-#include <cstdio>
 #include <functional>
+#include <string>
 
+#include "common/string-conversions.hpp"
 #include "common/utility.hpp"
 #include "ui/snapshot-component.hpp"
 #include "ui/translateable-processing.hpp"
 #include "ui/ui.hpp"
 
+GuiProject::MemoryToStringConverterMap GuiProject::_memoryToStringMap = {
+    {"BinaryData", StringConversions::toBinString},
+    {"HexData", StringConversions::toHexString},
+    {"SignedDecimalData", StringConversions::toSignedDecString},
+    {"UnsignedDecimalData", StringConversions::toUnsignedDecString}};
+
+GuiProject::StringToMemoryConverterMap GuiProject::_stringToMemoryMap = {
+    {"BinaryData", StringConversions::binStringToMemoryValue},
+    {"HexData", StringConversions::hexStringToMemoryValue},
+    {"SignedDecimalData", StringConversions::signedDecStringToMemoryValue},
+    {"UnsignedDecimalData", StringConversions::unsignedDecStringToMemoryValue}};
+
+
 GuiProject::GuiProject(
-    QQmlContext* context, const ArchitectureFormula& formula,
-    std::size_t memorySize, const std::string& parserName,
+    QQmlContext* context,
+    const ArchitectureFormula& formula,
+    std::size_t memorySize,
+    const std::string& parserName,
     const std::shared_ptr<SnapshotComponent>& snapshotComponent,
     QObject* parent)
-    : QObject(parent),
-      _projectModule(formula, memorySize, parserName),
-      _registerModel(_projectModule.getArchitectureAccess(),
-                     _projectModule.getMemoryManager(),
-                     _projectModule.getMemoryAccess(), context),
-      _editorComponent(context, _projectModule.getParserInterface(),
-                       _projectModule.getCommandInterface()),
-      _outputComponent(_projectModule.getMemoryManager(),
-                       _projectModule.getMemoryAccess(), context),
-      _inputBM(context, _projectModule.getMemoryAccess()),
-      _inputTM(context, _projectModule.getMemoryAccess()),
-      _inputCM(context, _projectModule.getMemoryAccess()),
-      _memoryModel(_projectModule.getMemoryAccess(),
-                   _projectModule.getMemoryManager(), context),
-      _defaultTextFileSavePath(),
-      _snapshotComponent(snapshotComponent),
-      _architectureFormulaString(
-          SnapshotComponent::architectureToString(formula)),
-      _commandList(),
-      _helpCache() {
+: QObject(parent)
+, _projectModule(formula, memorySize, parserName)
+, _registerModel(_projectModule.getArchitectureAccess(),
+                 _projectModule.getMemoryManager(),
+                 _projectModule.getMemoryAccess(),
+                 context)
+, _editorComponent(context,
+                   _projectModule.getParserInterface(),
+                   _projectModule.getCommandInterface())
+, _outputComponent(_projectModule.getMemoryManager(),
+                   _projectModule.getMemoryAccess(),
+                   context)
+, _inputBM(context, _projectModule.getMemoryAccess())
+, _inputTM(context, _projectModule.getMemoryAccess())
+, _inputCM(context, _projectModule.getMemoryAccess())
+, _memoryModel(_projectModule.getMemoryAccess(),
+               _projectModule.getMemoryManager(),
+               context)
+, _defaultTextFileSavePath()
+, _snapshotComponent(snapshotComponent)
+, _architectureFormulaString(SnapshotComponent::architectureToString(formula))
+, _commandList()
+, _helpCache() {
   context->setContextProperty("guiProject", this);
   // set the callback for memory and register
   _projectModule.getMemoryManager().setUpdateRegisterCallback(
@@ -123,11 +142,13 @@ GuiProject::~GuiProject() {
   _notifyCore();
 }
 
-void GuiProject::changeSystem(std::string base) {
+void GuiProject::changeSystem(const std::string& base) {
   // Alle Komponenten informieren
 }
 
-void GuiProject::parse() { _editorComponent.parse(); }
+void GuiProject::parse() {
+  _editorComponent.parse();
+}
 
 void GuiProject::run() {
   emit runClicked(false);
@@ -147,7 +168,9 @@ void GuiProject::runBreakpoint() {
   _projectModule.getCommandInterface().executeToBreakpoint();
 }
 
-void GuiProject::stop() { _projectModule.stopExecution(); }
+void GuiProject::stop() {
+  _projectModule.stopExecution();
+}
 
 void GuiProject::reset() {
   emit runClicked(false);
@@ -194,11 +217,17 @@ void GuiProject::loadText(const QUrl& path) {
 }
 
 void GuiProject::saveSnapshot(const QString& qName) {
-  Json snapshot = _projectModule.getMemoryManager().generateSnapshot().get();
-  std::string snapshotString = snapshot.dump(4);
+  // clang-format off
+  auto snapshot = _projectModule
+    .getMemoryManager()
+    .generateSnapshot()
+    .get()
+    .dump(4);
+  // clang-format on
+
   try {
     _snapshotComponent->addSnapshot(
-        _architectureFormulaString, qName, snapshotString);
+        _architectureFormulaString, qName, snapshot);
   } catch (const std::exception& exception) {
     _throwError(Translateable(
         QT_TRANSLATE_NOOP("GUI error messages",
@@ -207,13 +236,14 @@ void GuiProject::saveSnapshot(const QString& qName) {
   }
 }
 
-void GuiProject::removeSnapshot(const QString& qName) {
-  _snapshotComponent->removeSnapshot(_architectureFormulaString, qName);
+void GuiProject::removeSnapshot(const QString& qName, bool removePermanently) {
+  _snapshotComponent->removeSnapshot(
+      _architectureFormulaString, qName, removePermanently);
 }
 
 void GuiProject::loadSnapshot(const QString& qName) {
   try {
-    std::string path =
+    auto path =
         _snapshotComponent->snapshotPath(_architectureFormulaString, qName);
     Json snapshot = Json::parse(Utility::loadFromFile(path));
     _projectModule.getMemoryManager().loadSnapshot(snapshot);
@@ -228,6 +258,10 @@ void GuiProject::loadSnapshot(const QString& qName) {
 
 QStringList GuiProject::getSnapshots() {
   return _snapshotComponent->getSnapshotList(_architectureFormulaString);
+}
+
+bool GuiProject::snapshotExists(QString name) {
+  return _snapshotComponent->snapshotExists(_architectureFormulaString, name);
 }
 
 QString GuiProject::getCommandHelp(std::size_t line) {
@@ -254,55 +288,14 @@ QString GuiProject::getCommandHelp(std::size_t line) {
   return help;
 }
 
-std::function<std::string(MemoryValue)> GuiProject::getHexConversion() {
-  return hexConversion;
+const GuiProject::MemoryToStringConverterMap&
+GuiProject::getMemoryToStringConversions() {
+  return _memoryToStringMap;
 }
 
-std::function<std::string(MemoryValue)> GuiProject::getBinConversion() {
-  return binConversion;
-}
-
-std::function<std::string(MemoryValue)> GuiProject::getOctConversion() {
-  return octConversion;
-}
-
-std::function<std::string(MemoryValue)>
-GuiProject::getSignedDecimalConversion() {
-  return signedDecimalConversion;
-}
-
-std::function<std::string(MemoryValue)>
-GuiProject::getUnsignedDecimalConversion() {
-  return unsignedDecimalConversion;
-}
-
-std::function<std::string(MemoryValue)>
-GuiProject::getDecimalFloatConversion() {
-  return decimalFloatConversion;
-}
-
-std::function<MemoryValue(std::string)> GuiProject::getSignedToMemoryValue() {
-  return signedToMemoryValue;
-}
-
-std::function<MemoryValue(std::string)> GuiProject::getHexToMemoryValue() {
-  return hexToMemoryValue;
-}
-
-std::function<MemoryValue(std::string)> GuiProject::getBinToMemoryValue() {
-  return binToMemoryValue;
-}
-
-std::function<MemoryValue(std::string)> GuiProject::getOctToMemoryValue() {
-  return octToMemoryValue;
-}
-
-std::function<MemoryValue(std::string)> GuiProject::getUnsignedToMemoryValue() {
-  return unsignedToMemoryValue;
-}
-
-std::function<MemoryValue(std::string)> GuiProject::getFloatToMemoryValue() {
-  return floatToMemoryValue;
+const GuiProject::StringToMemoryConverterMap&
+GuiProject::getStringToMemoryConversions() {
+  return _stringToMemoryMap;
 }
 
 void GuiProject::_throwError(const Translateable& message) {

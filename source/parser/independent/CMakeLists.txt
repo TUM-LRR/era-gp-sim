@@ -3,6 +3,7 @@
 ########################################
 
 set(PARSER_INDEPENDENT_SOURCES
+  allocate-memory-immutable-arguments.cpp
   constant-directive.cpp
   enhance-symbol-table-immutable-arguments.cpp
   execute-immutable-arguments.cpp
@@ -20,7 +21,7 @@ set(PARSER_INDEPENDENT_SOURCES
   memory-allocator.cpp
   memory-reservation-directive.cpp
   memory-section-definition.cpp
-  preprocessing-immutable-arguments.cpp
+  precompile-immutable-arguments.cpp
   relative-memory-position.cpp
   section-directive.cpp
   section-tracker.cpp

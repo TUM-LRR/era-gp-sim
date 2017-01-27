@@ -3,41 +3,43 @@
 ########################################
 
 set(UI_SOURCES
-    main.cpp
-    register-model.cpp
-    syntaxhighlighter.cpp
-    editor-component.cpp
-    clipboard-adapter.cpp
-    memory-component-presenter.cpp
-    ui.cpp
-    gui-project.cpp
-    snapshot-component.cpp
-    output-component.cpp
-    color-mode.cpp
-    pixel-display-options.cpp
-    pixel-display-painted-item.cpp
-    input-button-model.cpp
-    input-text-model.cpp
-    input-click-model.cpp
-    translateable-processing.cpp
+  main.cpp
+  register-model.cpp
+  syntaxhighlighter.cpp
+  editor-component.cpp
+  memory-component-presenter.cpp
+  ui.cpp
+  gui-project.cpp
+  snapshot-component.cpp
+  output-component.cpp
+  color-mode.cpp
+  pixel-display-options.cpp
+  pixel-display-painted-item.cpp
+  input-button-model.cpp
+  input-text-model.cpp
+  input-click-model.cpp
+  translateable-processing.cpp
+  theme.cpp
+  settings.cpp
 )
 
 set(UI_HEADERS
-    ../../include/ui/register-model.hpp
-    ../../include/ui/gui-project.hpp
-    ../../include/ui/syntaxhighlighter.hpp
-    ../../include/ui/editor-component.hpp
-    ../../include/ui/clipboard-adapter.hpp
-    ../../include/ui/memory-component-presenter.hpp
-    ../../include/ui/ui.hpp
-    ../../include/ui/snapshot-component.hpp
-    ../../include/ui/output-component.hpp
-    ../../include/ui/color-mode.hpp
-    ../../include/ui/pixel-display-options.hpp
-    ../../include/ui/pixel-display-painted-item.hpp
-    ../../include/ui/input-button-model.hpp
-    ../../include/ui/input-click-model.hpp
-    ../../include/ui/input-text-model.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/register-model.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/gui-project.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/syntaxhighlighter.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/editor-component.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/memory-component-presenter.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/ui.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/snapshot-component.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/output-component.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/color-mode.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/pixel-display-options.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/pixel-display-painted-item.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/input-button-model.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/input-click-model.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/input-text-model.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/theme.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/settings.hpp
 )
 
 

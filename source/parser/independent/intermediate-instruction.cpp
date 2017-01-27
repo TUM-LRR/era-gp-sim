@@ -33,11 +33,11 @@
 #include "parser/common/code-position.hpp"
 #include "parser/common/compile-error-list.hpp"
 #include "parser/common/final-representation.hpp"
+#include "parser/independent/allocate-memory-immutable-arguments.hpp"
 #include "parser/independent/enhance-symbol-table-immutable-arguments.hpp"
 #include "parser/independent/execute-immutable-arguments.hpp"
 #include "parser/independent/macro-directive.hpp"
 #include "parser/independent/positioned-string.hpp"
-#include "parser/independent/preprocessing-immutable-arguments.hpp"
 #include "parser/independent/section-tracker.hpp"
 #include "parser/independent/symbol-graph.hpp"
 #include "parser/independent/symbol-replacer.hpp"
@@ -77,19 +77,19 @@ IntermediateInstruction::compileArgumentVector(
     MemoryAccess& memoryAccess) {
   std::vector<std::shared_ptr<AbstractSyntaxTreeNode>> output;
 
-  SymbolReplacer::DynamicReplacer labelReplacerFunction = [&](
-      const Symbol& symbol) {
-    size_t byteBitSize =
-        sizeof(size_t) * immutable.architecture().getByteSize();
-    auto labelValue = conversions::convert<size_t>(
-        std::stoul(symbol.value().string()), byteBitSize);
-    auto instructionAdress =
-        conversions::convert<size_t>(_relativeAddress.offset(), byteBitSize);
-    auto relativeAddress =
-        immutable.generator().getNodeFactories().labelToImmediate(
-            labelValue, name().string(), instructionAdress);
-    return StringConversions::toSignedDecString(relativeAddress);
-  };
+  SymbolReplacer::DynamicReplacer labelReplacerFunction =
+      [&](const Symbol& symbol) {
+        size_t byteBitSize =
+            sizeof(size_t) * immutable.architecture().getByteSize();
+        auto labelValue = conversions::convert<size_t>(
+            std::stoul(symbol.value().string()), byteBitSize);
+        auto instructionAdress =
+            conversions::convert<size_t>(_address, byteBitSize);
+        auto relativeAddress =
+            immutable.generator().getNodeFactories().labelToImmediate(
+                labelValue, name().string(), instructionAdress);
+        return StringConversions::toSignedDecString(relativeAddress);
+      };
 
   auto replacer = SymbolReplacer(immutable.replacer(), labelReplacerFunction);
 
@@ -147,7 +147,7 @@ void IntermediateInstruction::enhanceSymbolTable(
 }
 
 void IntermediateInstruction::allocateMemory(
-    const PreprocessingImmutableArguments& immutable,
+    const AllocateMemoryImmutableArguments& immutable,
     CompileErrorList& errors,
     MemoryAllocator& allocator,
     SectionTracker& tracker) {

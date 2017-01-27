@@ -23,20 +23,23 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import Theme 1.0
 import "./SevenSegment/"
+import "./Lightstrip/"
+import "./Console/"
 
 /*
  Container for output items (e.g. lightstrip, seven-segment, text console).
  */
-Rectangle {
+Item {
     id: rootRectangle
 
     // Color definitions
-    property color tabBarColor: Qt.rgba(236.0/255.0, 236.0/255.0, 236.0/255.0, 1.0)
-    property color innerBorderColor: "#AFAFAF"
-    property color highlightColor: "#4A90E2"
-    property color titleColor: "#4A4A4A"
-    property color titleColorHighlighted: "#111111"
+    property color tabBarColor: Theme.output.tabBar.background
+    property color innerBorderColor: Theme.output.tabBar.border.color
+
+    // Tell SplitViewItem (i.e. component wrapper) that settings are available to make it display settings icon.
+    property var hasComponentSettings: true
 
     // Allows to select the available output items (e.g. Lightstrip, Seven-Segment, Console)
     TabView {
@@ -93,33 +96,11 @@ Rectangle {
                 color: tabBarColor
                 // Display border between tab bar and content frame.
                 Rectangle {
-                    height: 1
+                    height: Theme.output.tabBar.border.width
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
                     color: innerBorderColor
-                }
-
-                // Display output settings button in the rightmost corner of the tab bar.
-                Button {
-                    id: settingsButton
-                    anchors.right: parent.right
-                    anchors.rightMargin: 4
-                    anchors.verticalCenter: parent.verticalCenter
-                    height: 18
-                    width: 18
-                    style: ButtonStyle {
-                        background: Rectangle {
-                            color: "#00000000"
-                            Image {
-                                source: (control.pressed) ? "Buttons/Settings Icon Pressed.png" : "Buttons/Settings Icon.png"
-                            }
-                        }
-                    }
-                    // Clicking the settings button opens the output settings window in the currently active output item..
-                    onClicked: {
-                        outputTabView.getTab(outputTabView.currentIndex).item.settingsButtonPressed();
-                    }
                 }
             }
 
@@ -135,5 +116,10 @@ Rectangle {
                 }
             }
         }
+    }
+
+    // Called by SplitViewItem.qml (i.e. component wrapper) when component settings icon was pressed.
+    function settingsButtonPressed() {
+        outputTabView.getTab(outputTabView.currentIndex).item.settingsButtonPressed();
     }
 }

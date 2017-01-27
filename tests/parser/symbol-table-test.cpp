@@ -66,7 +66,18 @@ TEST(SymbolTable, simpleCycle) {
   auto eval = graph.evaluate();
   ASSERT_FALSE(eval.valid());
   ASSERT_FALSE(eval.sampleCycle().empty());
-  ASSERT_EQ(eval.sampleCycle().size(), 5);
+  ASSERT_EQ(eval.sampleCycle().size(), 4);
+}
+
+TEST(SymbolTable, simpleDoubleCycle) {
+  CompileErrorList errors;
+  SymbolGraph graph;
+  graph.addNode(Symbol(ZP("a"), ZP("a+b")));
+  graph.addNode(Symbol(ZP("b"), ZP("a")));
+  graph.addNode(Symbol(ZP("c"), ZP("a")));
+  auto eval = graph.evaluate();
+  ASSERT_FALSE(eval.valid());
+  ASSERT_FALSE(eval.sampleCycle().empty());
 }
 
 TEST(SymbolTable, doubleInsertion) {

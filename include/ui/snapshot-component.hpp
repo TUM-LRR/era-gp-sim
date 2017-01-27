@@ -21,7 +21,7 @@
 #define ERAGPSIM_UI_SNAPSHOT_COMPONENT_HPP
 
 #include <QDir>
-#include <QHash>
+#include <QMultiHash>
 #include <QSet>
 #include <QString>
 #include <QStringList>
@@ -38,16 +38,36 @@ class ArchitectureFormula;
  */
 class SnapshotComponent : public QObject {
   Q_OBJECT
+
  public:
-  using SnapshotMap = QHash<QString, QSet<QString>>;
+  /*
+  * We use a `QMultiHash<QString, QString>` here, which is basically a
+  * `QHash<QString, QList<QString>>`, but with a nicer interface. It might seem
+  * like a `QHash<QString, QSet<QString>>` would be better here, but as the
+  * number of snapshots will be relatively low, the list will not cause any
+  * performance issues. Futhermore, a `QList` is needed for the view anyways.
+  * We have to guard the list against duplicates, as a snapshot of the same
+  * architecture and value can only be saved to one file.
+  */
+  using SnapshotMap = QMultiHash<QString, QString>;
   using Json = Snapshot::Json;
+
   /**
-   * Construct a new SnapshotComponent from a string.
+  * Creates a string representation of the architecture formula.
+  *
+  * \param formula An architecture formula.
+  */
+  static QString architectureToString(const ArchitectureFormula& formula);
+
+  /**
+   * Constructs a SnapshotComponent, using the given path as the snapshot
+   * location.
    *
    * \param path The path of the snapshot directory.
    * \param parent Pointer to the parent QObject. Defaults to 0.
    */
-  SnapshotComponent(const QString& path, QObject* parent = 0);
+  explicit SnapshotComponent(const QString& snapshotDirectoryPath,
+                             QObject* parent = nullptr);
 
   /**
    * Return a list of snapshots for a specific Architecture formula.
@@ -58,32 +78,46 @@ class SnapshotComponent : public QObject {
 
   /**
    * Add a snapshot for a specific architecture.
-   * Can throw a std::ios_base::failure exception.
    *
-   * \param architecture The architecture of the snapshots.
-   * \param snapshot The name of the snapshot to add.
-   * \param data The string of data of the snapshot.
+   * \param architectureIdentifier The architecture of the snapshots.
+   * \param snapshotName The name of the snapshot to add.
+   * \param data The string data of the snapshot.
+   * \throws std::ios_base::failure if there is an error writing to disk.
    */
-  void addSnapshot(const QString& architecture,
-                   const QString& snapshot,
+  void addSnapshot(const QString& architectureIdentifier,
+                   const QString& snapshotName,
                    const std::string& data);
 
   /**
    * Remove a snapshot for a specific architecture.
    *
-   * \param architecture The architecture of the snapshots.
-   * \param snapshot The name of the snapshot to remove.
+   * \param architectureIdentifier The architecture of the snapshots.
+   * \param snapshotName The name of the snapshot to remove.
+   * \param removePermanently Whether to erase the snapshot from disk.
    */
-  void removeSnapshot(const QString& architecture, const QString& snapshot);
+  void removeSnapshot(const QString& architectureIdentifier,
+                      const QString& snapshotName,
+                      bool removePermanently);
 
   /**
-   * \returns the path of a snapshot of a specific architecture and name.
+   * Tests if a snapshot exists.
    *
-   * \param architecture The architecture string.
-   * \param snapshot The name of the snapshot.
+   * \param architectureIdentifier The identifier for the architecture.
+   * \param snapshotName The name of the snapshot to look for.
+   * \returns True if a snapshot with the given name exists for the given
+   *          architecture, else false.
    */
-  std::string
-  snapshotPath(const QString& architecture, const QString& snapshot);
+  bool snapshotExists(const QString& architectureIdentifier,
+                      const QString& snapshotName);
+
+  /**
+   * \returns The path of a snapshot of a specific architecture and name.
+   *
+   * \param architectureIdentifier The architecture string.
+   * \param snapshotName The name of the snapshot.
+   */
+  std::string snapshotPath(const QString& architectureIdentifier,
+                           const QString& snapshotName);
 
   /**
   * Imports a snapshot (copies the file into the snapshot directory)
@@ -93,26 +127,18 @@ class SnapshotComponent : public QObject {
   Q_INVOKABLE void importSnapshot(const QUrl& qPath);
 
   /**
-   * \returns the path of the snapshot directory.
+   * \returns The path of the snapshot directory.
    */
-  Q_INVOKABLE QUrl getSnapshotBasePath();
+  Q_INVOKABLE QString snapshotDirectory();
+
+ public slots:
 
   /**
-  * Creates a string representation of the architecture formula.
-  *
-  * \param formula An architecture formula.
-  */
-  static QString architectureToString(const ArchitectureFormula& formula);
-
- private:
-  /** The base directory of the configuration. */
-  QDir _baseDirectory;
-
-  /** A map of architecture-signature to a list of snapshot names. */
-  SnapshotMap _snapshotMap;
-
-  /** The file extension of snapshots. */
-  static constexpr auto _fileExtension = ".snapshot";
+   * Assigns the snapshot directory where snapshots are to be found and stored.
+   *
+   * \param snapshotDirectory The new snapshot directory path.
+   */
+  void snapshotDirectory(const QString& snapshotDirectoryPath);
 
  signals:
   /** A signal that the snapshot list changed. */
@@ -120,6 +146,20 @@ class SnapshotComponent : public QObject {
 
   /** Signal an error during snapshot importing */
   void snapshotError(const QString& errorMessage);
+
+ private:
+  /**
+   * Walks the given directory and collects all snapshots.
+   * \param directory The directory at which to start walking.
+   * \return A new snapshot map of all (architecture, snapshot) pairs found.
+   */
+  static SnapshotMap _collectSnapshots(QDir directory);
+
+  /** The base directory of the configuration. */
+  QDir _snapshotDirectory;
+
+  /** A map of architecture-signature to a list of snapshot names. */
+  SnapshotMap _snapshotMap;
 };
 
 #endif /* ERAGPSIM_UI_SNAPSHOT_COMPONENT_HPP */

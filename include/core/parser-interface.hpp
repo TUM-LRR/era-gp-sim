@@ -39,7 +39,7 @@ class ParserInterface : public Proxy<ParsingAndExecutionUnit> {
    *
    * \see SyntaxInformation
    */
-  POST_FUTURE_CONST(getSyntaxRegex);
+  POST_FUTURE_CONST(getSyntaxRegex)
 
   /**
    * Set the callback which is used to signal the gui that context information
