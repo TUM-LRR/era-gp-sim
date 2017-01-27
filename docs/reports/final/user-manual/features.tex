@@ -23,7 +23,8 @@
 \subsection{Projekt}
 
 \subsubsection{Projekt erstellen}
-\todo[inline]{V.a. Projekt erstellen: Auswahl Architektur, Bitlänge, Modlue, Parser, etc.}
+\label{sec:project_creation}
+
 \begin{figure}[ht]
 	\centering
   \includegraphics[scale=1]{Images/create_new_project}
@@ -43,16 +44,30 @@ Manche Architekturen stehen in verschiedenen Versionen zur Verfügung. RISC-V et
 
 
 \subsubsection{Speichern/Laden}
-\todo[inline]{Speichern/Laden von Projekt und Code}
+
+Der Simulator unterstützt nicht das Speichern ganzer Projekte, sondern ermöglicht es stattdessen, den Assemblercode als Datei zu speichern, während der Prozessorzustand (Register- und Speicherinhalt) getrennt als Snapshot gespeichert werden können. Dies ermöglicht es, ein und denselben Snapshot in mehreren Projekten zu verwenden.
+
+Um den Assemblercode eines Projekts zu speichern wählt man in der Menüleiste die Option ``Editor'' $\rightarrow$ ``Save File'' aus und gibt einen Speicherort für die Datei an.
+
+Möchte man gespeicherten Assemblercode laden, so erstellt man zunächst ein neues Projekt und wählt dann über ``Editor'' $\rightarrow$ ``Open File'' die gewünschte Datei aus, deren Inhalt darauf im Editor erscheint.
+
+Um den Inhalt der Register und des Speichers persistent zu speichern, werden wie bereits erwähnt, Snapshots verwendet, deren Benutzung im folgenden Abschnitt erklärt wird.
 
 \subsubsection{Snapshots}
-\todo[inline]{Speichern/Laden + Was ist das?; Welche Eigenschaften muss mein erstelltes Projekt haben, damit ich SnapshotXY laden kann (passende Architektur/passende Module)}
 
+Snapshots sind, wie der Name bereits nahelegt, Schnappschüsse des Prozessorzustands, also der Register- und Speicherinhalte. Sie eigenen sich dazu, die Werte von Registern und Speicher automatisch in einen festgelegten Zustand zu bringen. Hat man beispielsweise ein Assemblerprogramm, dass auf bestimmten Ausgangswerten in Registern oder Speicher basiert, so kann man diese Werte zunächst manuell eintragen und dann einen Snapshot des aktuellen Zustands anlegen. Wurden die Inhalte von Registern und Speicher anschließend etwa durch die Programmausführung geändert, so kann man durch Laden des Snapshots ganz einfach wieder zum Ausgangszustand zurückkehren.
+
+Ein Snapshot wird über den Plus-Button in der Snapshot-Komponente oder die Menüleiste (``Project'' $\rightarrow$ ``Save Snapshot'') erstellt und mit einem eindeutigen Namen versehen. Die Werte, die zum Zeitpunkt des Schanppschusses in den Registern und im Speicher geschrieben stehen, werden dadurch im Snapshot gespeichert. Anschließend können die Register- und Speicherinhalte nach Belieben verändert werden, egal ob durch Drücken des Reset-Buttons, manuelles Ändern der Werte oder Ausführen eines Assemblerprogramms, das den Prozessorzustand verändert. Um einen Snapshot zu laden, wird einfach auf den zugehörigen Eintrag in der Snapshot-Komponente gedrückt.
+
+\begin{warningblock}
+Durch Laden eines Snapshots wird der aktuelle Prozessorzustand überschrieben. Soll dieser also nicht verloren geht, muss vorher ein weiterer Snapshot erstellt werden.
+\end{warningblock}
+
+Snapshots werden projektübergreifend abgelegt, ein Snapshot der in einem Projekt erstellt wurde, kann im Allgemeinen auch in einem anderen Projekt geladen werden. Es gilt allerdings zu beachten, dass ein Snapshot an eine bestimmte Architektur und sogar an eine bestimmte Version einer Architektur (siehe \ref{sec:project_creation} ``Projekt erstellen'') gebunden ist, da sich die etwa die Länge der Register je nach Architektur-Version unterscheiden können. Ein Snapshot der zum Beispiel für ein Projekt der RISC-V 32Bit Version erstellt wurde, kann nicht in einem Projekt mit RISC-V 64Bit Version geladen werden.
 
 \subsection{Erstellen von Programmen}
 
 \subsubsection{Editor}
-\todo[inline]{Alles zum Editor (zoomen, Makros aufklappen, Fehlermeldungen anzeigen, Tooltips etc)}
 
 Im Editor wird der Assemblercode verfasst, der vom Simulator assembliert und ausgeführt werden kann.
 Durch Syntax Highlighting werden bestimmte Code-Fragmente, wie Kommentare, Instruktionen,
