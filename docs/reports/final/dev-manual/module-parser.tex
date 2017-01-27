@@ -1,0 +1,30 @@
+\subsection{Parser}
+
+Das \textit{Parser}-Modul übernimmt die Übersetzung des eingegebenen Textes in die für das \textit{Architectur}-Modul lesbaren Syntaxbäume. Damit entspricht dieses Modul größtenteils dem eigentlichen Assemblierer.
+
+\subsubsection{Submodule}
+
+Bei Erscheinen der Version 1.0 besteht das Parser-Modul aus vier verschiedenen Untermodulen:
+\begin{itemize}
+\item Das \emph{Common-Submodul} stellt Klassen bereit, die zur öffentlichen Schnittstelle des Parsers zu anderen Modulen dienen. Dieses Submodul ist frei von Abhängigkeiten zu jeglichen konkreten Parser-Implementierungen.
+\item Mit dem \emph{Factory-Submodul} können neue, spezifische Parser erzeugt werden.
+\item Das \emph{RISC-V-Submodul} stellt eine konkrete Implementierung eines Assemblierers für die RISC-V-Architektur zur Verfügung.
+\item Im \emph{Independent-Submodul} sind viele Hilfsklassen (zum Beispiel Symboltabellen, Compiler für arithmetische Ausdrücke) bereitgestellt, welche von dem RISC-V-Parser verwendet, genauso gut aber auch gerne von zukünftigen Parser eingebunden werden können.
+\end{itemize}
+Im Folgenden sind diese Submodule nochmal genauer ausgeführt:
+\todo[inline]{...was noch zu erledigen ist.}
+
+\paragraph{Common-Submodul}
+\todo[inline]{TODO}
+
+\paragraph{Factory-Submodul}
+\todo[inline]{TODO}
+
+\paragraph{Independent-Submodul}
+\todo[inline]{TODO}
+
+\paragraph{RISC-V-Submodul}
+\todo[inline]{TODO}
+
+\subsubsection{Verwendung eines Parsers}
+\todo[inline]{TODO}
