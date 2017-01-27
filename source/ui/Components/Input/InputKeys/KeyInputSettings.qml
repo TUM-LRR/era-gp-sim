@@ -55,7 +55,7 @@ Window {
     columns: 2
 
     Text {
-      text: "Memory Source (Address):"
+      text: "Memory Source Address:"
     }
 
     // Text field for setting the input item's source address in memory.

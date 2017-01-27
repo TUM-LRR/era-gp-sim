@@ -24,7 +24,7 @@ Rectangle {
   id: root
   anchors.top: parent.top
 
-  color: Theme.input.clickInput.color
+  color: Theme.input.clickInput.background
 
   property var annotationMargin: Theme.input.clickInput.clickArea.margin
   property var annotationColor: Theme.input.clickInput.clickArea.annotation.color

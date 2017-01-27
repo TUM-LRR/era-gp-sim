@@ -21,76 +21,58 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.0
+import QtQuick.Layouts 1.1
+import Theme 1.0
+import "../../../Js/TextUtility.js" as TextUtility
 
 // Window for input per click settings.
 Window {
   id: settingsWindowIC
-  width: 400
-  height: 200
+  width: Theme.input.clickInput.settings.width
+  height: Theme.input.clickInput.settings.height
 
   title: "Click Input Settings"
+  flags: Qt.Dialog
+  modality: Qt.ApplicationModal
 
   // Refreshes the window's control contentItem.
   function updateSettings() {
-    baseAddressTextField.text = inputClickMod.getStart();
+    baseAddressTextField.text = "0x" + inputClickMod.getStart().toString(16);
   }
 
-  // The controls for editing input settings.
-  Row {
-    anchors.fill: parent
-    anchors.leftMargin: 15
-    anchors.topMargin: 15
-    anchors.rightMargin: 15
-    anchors.bottomMargin: 15
+  onVisibleChanged: settingsWindowIC.updateSettings()
 
-    spacing: 15
+  GridLayout {
+    id:grid
 
-    // Title of each settings control.
-    Column {
-      spacing: 16
-      Text {
-        text: "Memory Source (Address):"
-      }
+    anchors.left: parent.left
+    anchors.leftMargin: Theme.output.sevenSegment.settings.margin
+    anchors.right: parent.right
+    anchors.rightMargin: Theme.output.sevenSegment.settings.margin
+    anchors.top: parent.top
+    anchors.topMargin: Theme.output.sevenSegment.settings.margin
+
+    columns: 2
+
+    Text {
+      text: "Memory Source Address:"
     }
 
-    // Settings controls itself.
-    Column {
-      id: controlsColumn
-      spacing: 8
+    // Text field for setting the input item's source address in memory.
+    TextField {
+      id: baseAddressTextField
 
-      // Converts a given dec/hex/bin-string to an integer.
-      function integerFromInputString(input) {
-        var base = 10;
-        if (input.indexOf("0x") === 0) {
-          base = 16;
-          input = input.slice(2);
-        } else if (input.indexOf("0b") === 0) {
-          input = input.slice(2);
-          base = 2;
-        }
-        return parseInt(input, base);
-      }
+      onAccepted: { processInput(); }
+      onEditingFinished: { processInput(); }
 
-      // Text field for setting the input item's source address in memory.
-      TextField {
-        id: baseAddressTextField
-
-        onAccepted: { processInput(); }
-        onEditingFinished: { processInput(); }
-
-        // Reads the current input and passes the new value to the model.
-        function processInput() {
-          var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
-          if (inputValue !== undefined && inputValue >= 0) {
-            inputClickMod.setStart(inputValue);
-          }
+      // Reads the current input and passes the new value to the model.
+      function processInput() {
+        var inputValue = TextUtility.convertStringToInteger(String(baseAddressTextField.text))
+        if (inputValue !== undefined && inputValue >= 0) {
+          inputClickMod.setStart(inputValue);
         }
       }
-
     }
-  }
-  Component.onCompleted: {
-    updateSettings();
   }
 
   // Button for accepting setting changes and closing the settings window.
@@ -99,10 +81,9 @@ Window {
 
     text: "Done"
 
-    anchors.right: parent.right
-    anchors.rightMargin: 5
+    anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
-    anchors.bottomMargin: 5
+    anchors.bottomMargin: Theme.output.sevenSegment.settings.doneButton.bottomMargin
 
     onClicked: {
       baseAddressTextField.focus = false;
