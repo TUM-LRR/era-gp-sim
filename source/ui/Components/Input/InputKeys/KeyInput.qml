@@ -81,8 +81,8 @@ Rectangle {
 
     Keys.onPressed: {
       event.accepted = true;
-      infoText.text = inputButtonMod.getKeyDescription(event.key);
-      inputButtonMod.buttonClicked(event.key);
+      infoText.text = inputKeyMod.getKeyDescription(event.key);
+      inputKeyMod.keyPressed(event.key);
     }
 
     ParallelAnimation {
@@ -132,7 +132,7 @@ Rectangle {
     settingsWindowIB.show();
   }
 
-  ButtonInputSettings {
+  KeyInputSettings {
     id: settingsWindowIB
   }
 }

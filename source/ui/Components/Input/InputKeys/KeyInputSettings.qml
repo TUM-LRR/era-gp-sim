@@ -22,20 +22,20 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.0
 
-// Window for input per Button settings.
+// Window for input per keys settings.
 Window {
-  id: settingsWindowIB
+  id: settingsWindowIK
   width: 400
   height: 200
 
-  title: "Button Input Settings"
+  title: "Key Input Settings"
 
   // Refreshes the window's control contentItem.
   function updateSettings() {
-    baseAddressTextField.text = inputButtonMod.getStart();
+    baseAddressTextField.text = inputKeyMod.getStart();
   }
 
-  // The controls for editing button settings.
+  // The controls for editing keys settings.
   Row {
     anchors.fill: parent
     anchors.leftMargin: 15
@@ -82,7 +82,7 @@ Window {
         function processInput() {
           var inputValue = controlsColumn.integerFromInputString(String(baseAddressTextField.text))
           if (inputValue !== undefined && inputValue >= 0) {
-            inputButtonMod.setStart(inputValue);
+            inputKeyMod.setStart(inputValue);
           }
         }
       }

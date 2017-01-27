@@ -76,16 +76,16 @@
         <file>Components/ProjectCreation/Sections/ProjectArchitectureVersion.qml</file>
         <file>Components/ProjectCreation/Sections/ProjectCreationButton.qml</file>
         <file>Components/ProjectCreation/Sections/ProjectMemorySize.qml</file>
-        <file>Components/Input/InputButtons/ButtonInput.qml</file>
+        <file>Components/Input/InputKeys/KeyInput.qml</file>
         <file>Components/Input/InputMouse/ClickInput.qml</file>
         <file>Components/Input/Input.qml</file>
-        <file>Components/Input/InputButtons/ButtonInputSettings.qml</file>
+        <file>Components/Input/InputKeys/KeyInputSettings.qml</file>
         <file>Components/Input/InputMouse/ClickInputSettings.qml</file>
         <file>Components/help/HelpWindow.qml</file>
-        <file>Components/Input/Buttons/Arrow Button Input Icon Selected.png</file>
-        <file>Components/Input/Buttons/Arrow Button Input Icon Selected@2x.png</file>
-        <file>Components/Input/Buttons/Arrow Button Input Icon.png</file>
-        <file>Components/Input/Buttons/Arrow Button Input Icon@2x.png</file>
+        <file>Components/Input/Buttons/Key Input Icon Selected.png</file>
+        <file>Components/Input/Buttons/Key Input Icon Selected@2x.png</file>
+        <file>Components/Input/Buttons/Key Input Icon.png</file>
+        <file>Components/Input/Buttons/Key Input Icon@2x.png</file>
         <file>Components/Input/Buttons/Mouse Input Icon Selected.png</file>
         <file>Components/Input/Buttons/Mouse Input Icon Selected@2x.png</file>
         <file>Components/Input/Buttons/Mouse Input Icon.png</file>

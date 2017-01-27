@@ -23,7 +23,7 @@ import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
-import "InputButtons/"
+import "InputKeys/"
 import "InputMouse/"
 
 Rectangle {
@@ -42,9 +42,9 @@ Rectangle {
     // corresponding tab inside the input tab bar.
 
     Tab {
-      title: "Buttons/Arrow Button Input Icon"
-      ButtonInput{
-        id: buttonI
+      title: "Buttons/Key Input Icon"
+      KeyInput{
+        id: keyI
         anchors.fill: parent
       }
     }

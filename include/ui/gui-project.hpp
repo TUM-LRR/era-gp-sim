@@ -39,7 +39,7 @@
 #include "third-party/json/json.hpp"
 #include "ui/console-component.hpp"
 #include "ui/editor-component.hpp"
-#include "ui/input-button-model.hpp"
+#include "ui/input-key-model.hpp"
 #include "ui/input-click-model.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/output-component.hpp"
@@ -319,7 +319,7 @@ class GuiProject : QObject {
   /**
     *The input-models
     */
-  InputButtonModel _inputButtons;
+  InputKeyModel _inputKeys;
   InputClickModel _inputMouse;
 
   ConsoleComponent _consoleComponent;

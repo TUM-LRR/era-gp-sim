@@ -17,24 +17,24 @@
   * along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
 
-#ifndef INPUTBUTTONMODEL_H
-#define INPUTBUTTONMODEL_H
+#ifndef INPUTKEYMODEL_H
+#define INPUTKEYMODEL_H
 
 #include <QObject>
 #include <QQmlContext>
 
 #include "core/memory-access.hpp"
 
-class InputButtonModel : public QObject {
+class InputKeyModel : public QObject {
   Q_OBJECT
  public:
-  InputButtonModel(QQmlContext* context, MemoryAccess memoryAccess);
+  InputKeyModel(QQmlContext* context, MemoryAccess memoryAccess);
 
   /**
-   * Write clicked Button to memory
-   * \param id  Id of clicked Button
+   * Write pressed key to memory
+   * \param id  Id of pressed key
    */
-  Q_INVOKABLE void buttonClicked(unsigned int id);
+  Q_INVOKABLE void keyPressed(unsigned int id);
 
   /**
    * Returns value of start
@@ -62,4 +62,4 @@ class InputButtonModel : public QObject {
   MemoryAccess _memoryAccess;
 };
 
-#endif// INPUTBUTTONMODEL_H
+#endif// INPUTKEYMODEL_H
