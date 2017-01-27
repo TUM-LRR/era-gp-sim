@@ -36,7 +36,7 @@ size_t ColorMode::loadPointer(Optional<OutputComponent *> memoryAccess,
       if ((address + (pointerSize + cellSize - 1) / cellSize) >=
           (*memoryAccess)->getMemoryAccess().getMemorySize().get()) {
         // the address of the pointer is invalid
-        return 0; //TODO::do something to handle this error
+        return 0;  // TODO::do something to handle this error
       }
       MemoryValue pointer = ColorMode::getMemoryValueAt(
           memoryAccess, address, (pointerSize + cellSize - 1) / cellSize);
@@ -55,11 +55,16 @@ ColorMode::getMemoryValueAt(Optional<OutputComponent *> memoryAccess,
                             size_t length,
                             size_t defaultLength) {
   if (memoryAccess) {
-    if ((*memoryAccess)->getMemoryAccess().getMemorySize().get() >=
-        address + length) {
+    size_t memSize = (*memoryAccess)->getMemoryAccess().getMemorySize().get();
+    if (memSize >= address + length) {
       return (*memoryAccess)
           ->getMemoryAccess()
           .tryGetMemoryValueAt(address, length)
+          .get();
+    } else {
+      return (*memoryAccess)
+          ->getMemoryAccess()
+          .tryGetMemoryValueAt(address, memSize - address)
           .get();
     }
   }
