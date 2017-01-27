@@ -824,3 +824,20 @@ Das 64Bit Basismodul von RISC-V fügt noch weitere Pseudoinstruktionen hinzu:\\
 \begin{infoblock}{Pseudoinstruktionen}
 	Der RISC-V Standard geht beim den Pseudoinstruktionen von erheblich größeren Programmen aus, als im Simulator verwendet werden. Einige Instruktionen sind daher nur der Vollständigkeit halber definiert. Beispielsweise lassen sich die \texttt{call} und \texttt{tail} Instruktionen auch immer durch ein \texttt{jal} ersetzen, da eine Sprungadresse außerhalb des 12-Bit Bereichs im Simulator nicht vorkommen wird (Es müssten mehr als 512 Instruktionen übersprungen werden!).
 \end{infoblock}
+
+\subsection{Übersetzungsfehler}
+\label{user-manual-riscv-errors}
+
+\begin{tabular}{|p{5cm}|p{5cm}|p{5cm}|}
+	\hline
+	Fehlermeldung & häufiger Grund & Mögliche Lösung\\
+	\hline
+	Immediate operand must be 12 bit or less & Eine zu große Konstante als Operand übergeben & Die erwartete Konstante muss inklusive Vorzeichenbit in 12 Bit darstellbar sein.\\
+	\hline
+	The given offset \textit{x} will result in an invalid jump adress (pc+\textit{y}) &
+	Die errechnete Adresse des Sprungs wird einen Laufzeitfehler generieren, da sie keinen Befehl anspringt oder zwischen zwei Befehle springt. Meist ist die Offset-Konstante ungerade oder zu groß/klein. & Alle Instruktionen des Programms liegen hintereinander im Speicher, die Anfangsadresse kann durch Speicherreservierungen davor nach unten verschoben werden. Die Instruktionen sind stets auf 4 Byte angeordnet.\\
+	\hline
+	Branch offset would invalidate program counter to \textit{x} & Die errechnete Sprungadresse ist ungültig. Es wird entweder außerhalb des Textsegments gesprungen oder zwischen zwei Befehle &
+	Der Wert des Basisregisters ist möglicherweise falsch.\\
+	\hline
+\end{tabular}
