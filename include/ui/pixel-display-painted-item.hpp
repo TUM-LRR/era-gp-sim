@@ -34,7 +34,8 @@ class OutputComponent;
 
 class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_OBJECT
-  Q_PROPERTY(OutputComponent *outputComponentPointer WRITE setOutputComponent)
+  Q_PROPERTY(OutputComponent *outputComponentPointer READ getOutputComponent
+                 WRITE setOutputComponent)
   using size_t = std::size_t;
   Q_PROPERTY(size_t pixelBaseAddress READ getPixelBaseAddress WRITE
                  setPixelBaseAddress)
@@ -91,6 +92,11 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
    * \param o pointer to the OutputComponent
    */
   void setOutputComponent(OutputComponent *o);
+
+  /*
+   * \brief this should never be called
+   */
+  OutputComponent *getOutputComponent();
 
   /*
    * \brief sets the pixelBaseAddress
@@ -261,7 +267,6 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   void doUpdate();
 
  private:
-
   /*
    * gives the index of a given name of a colorMode
    * \param colorMode Name of the colorMode
@@ -280,4 +285,4 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Optional<OutputComponent *> _outputComponentPointer;
 };
 
-#endif// ERAGPSIM_UI_PIXEL_DISPLAY_PAINTED_ITEM_HPP
+#endif  // ERAGPSIM_UI_PIXEL_DISPLAY_PAINTED_ITEM_HPP

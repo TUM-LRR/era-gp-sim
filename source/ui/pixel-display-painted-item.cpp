@@ -40,21 +40,16 @@ void PixelDisplayPaintedItem::paint(QPainter *painter) {
 
 void PixelDisplayPaintedItem::memoryChanged(std::size_t address,
                                             std::size_t amount) {
-  std::clock_t timeElapsed = std::clock();
   if (amount == 0 && _outputComponentPointer) {
     amount =
         (*_outputComponentPointer)->getMemoryAccess().getMemorySize().get();
   }
   _options.updateMemory(_outputComponentPointer, _image, address, amount);
   doUpdate();
-  timeElapsed -= std::clock();
-  std::cout << "Memory Updated in " << (1000 * (-timeElapsed) / CLOCKS_PER_SEC)
-            << "ms" << std::endl;
 }
 
 void PixelDisplayPaintedItem::setPixelBaseAddress(size_t pixelBaseAddress) {
   if (_options.pixelBaseAddress != pixelBaseAddress) {
-    std::cout << "pixelBaseAddress changed: " << pixelBaseAddress << std::endl;
     _options.pixelBaseAddress = pixelBaseAddress;
     _options.updateAllPixels(_outputComponentPointer, _image);
     doUpdate();
@@ -62,7 +57,6 @@ void PixelDisplayPaintedItem::setPixelBaseAddress(size_t pixelBaseAddress) {
 }
 void PixelDisplayPaintedItem::setColorBaseAddress(size_t colorBaseAddress) {
   if (_options.colorBaseAddress != colorBaseAddress) {
-    std::cout << "colorBaseAddress changed: " << colorBaseAddress << std::endl;
     _options.colorBaseAddress = colorBaseAddress;
     _options.updateAllColors(_outputComponentPointer, _image);
     doUpdate();
@@ -70,20 +64,17 @@ void PixelDisplayPaintedItem::setColorBaseAddress(size_t colorBaseAddress) {
 }
 void PixelDisplayPaintedItem::setWidth(size_t width) {
   if (_options.width != width) {
-    std::cout << "width changed: " << width << std::endl;
     resize(width, _options.height);
   }
 }
 void PixelDisplayPaintedItem::setHeight(size_t height) {
   if (_options.height != height) {
-    std::cout << "height changed: " << height << std::endl;
     resize(_options.width, height);
   }
 }
 void PixelDisplayPaintedItem::setColorMode(const QString &colorMode) {
   size_t colorModeIndex = stringToColorMode(colorMode);
   if (_options.colorMode != colorModeIndex) {
-    std::cout << "ColorMode changed: " << colorMode.toStdString() << std::endl;
     _options.colorMode = colorModeIndex;
     _image = _options.makeImage();
     _options.updateAllPixels(_outputComponentPointer, _image);
@@ -250,4 +241,10 @@ QString PixelDisplayPaintedItem::colorModeToString(size_t colorMode) {
 void PixelDisplayPaintedItem::doUpdate(){
   _options.handleErrors();
   update();
+}
+
+OutputComponent *PixelDisplayPaintedItem::getOutputComponent(){
+  // this shouldn't be called ever
+  assert::that(false);
+  return nullptr;
 }
