@@ -68,6 +68,7 @@ Snapshots werden projektübergreifend abgelegt, ein Snapshot der in einem Projek
 \subsection{Erstellen von Programmen}
 
 \subsubsection{Editor}
+\label{sec:Editor}
 
 Im Editor wird der Assemblercode verfasst, der vom Simulator assembliert und ausgeführt werden kann.
 Durch Syntax Highlighting werden bestimmte Code-Fragmente, wie Kommentare, Instruktionen,
@@ -115,11 +116,12 @@ Drücken der Steurungstaste (Cmd-Taste bei Mac-Computern) gescrollt.
 \label{help-component}
 \todo[inline]{Was wird angezeigt, zu welchem Befehl (Zeile!), wann (nach dem Parsen)}
 
+Die Hilfetextkomponente zeigt die Befehlsdokumentation des Befehls der aktuellen Zeile an und ergänzt damit das Hilfefenster, da bei Bedarf direkt im Editor angezeigt werden kann (siehe \ref{sec:Editor} ``Editor''). Die Hilfetextkomponente bezieht sich immer auf den Befehl der Zeile, in der sich der Cursor befindet. Gegebenenfalls ist die Anzeige eines Hilfetextes leicht verzögert, da der aktuelle Code erst neu geparst werden muss.
+
 
 \subsection{Ausführung von Programmen}
 
 \subsubsection{Ausführungsmodi}
-\todo[inline]{komplett, schritt-für-schritt, zum nächsten breakpoint; hier am besten mmit bildern der einzelnen Knöpfe}
 
 Der Simulator verfügt über drei verschiedene Ausführungsmodi. Die Zeile, an der die Ausführung begonnen wird, ist im Editor stets farblich hervorgehoben.
 
@@ -146,7 +148,7 @@ Die Registerkomponente zeigt die Prozessorregister an und ermöglicht es, deren 
 Der Registerinhalt kann je nach Art des Registers unterschiedlich formatiert werden. Allzweckregistern stehen die Formate \textit{Binär}, \textit{Hexadezimal}, \textit{Dezimal (vorzeichenbehaftet)} und \textit{Dezimal (nicht vorzeichenbehfatet)} zur Verfügung. Ein-Bit Flag-Register können außerdem als Checkbox angezeigt werden.
 Das aktuelle Format des Registers wird rechts vom Registertextfeld über den Formatindikator angezeigt (\textit{S}: signed decimal, \textit{U}: unsigned decimal, \textit{H}: hexadecimal, \textit{B}: binary, \textit{F}: flag). Zum Anpassen des Formats kann entweder auf den Formatindikator geklickt werden und die passende Optionen ausgewählt werden oder gescrollt werden, während sich der Mauszeiger über dem Formatindikator befindet. Beachten Sie, dass für ein Register unter Umständen nicht alle Format-Optionen zur Verfügung stehen --- so kann der Programmzähler etwa nicht im Dezimal-Format angezeigt werden.
 
-Um den Wert eines Registers manuell zu ändern, wird der Text im Textfeld bearbeitet und die Eingabe mit Enter bestätigt. Auf die Einhaltung der Formatierung muss nicht geachtet werden. Nach Bestätigung der Eingabe wird der Registerwert automatisch der aktuellen Einstellung entsprechend formatiert. Ist zudem ein eingegebener Wert zu lang um im Register gegebener Größe gespeichert werden zu können, werden die höherwertigen überschüssigen Zeichen entfernt. Zudem wird der Registerinhalt durch höherwertige Nullen auf seine Maximalgröße aufgefüllt. Ungültige Zeichen werden automatisch entfernt.
+Um den Wert eines Registers manuell zu ändern, wird der Text im Textfeld bearbeitet und die Eingabe mit Enter bestätigt. Auf die Einhaltung der Formatierung muss nicht geachtet werden. Nach Bestätigung der Eingabe wird der Registerwert automatisch der aktuellen Einstellung entsprechend formatiert. Ist zudem ein eingegebener Wert zu lang um im Register gegebener Größe gespeichert werden zu können, werden die höherwertigen überschüssigen Zeichen entfernt. Gleichermaßen wird der Registerinhalt durch höherwertige Nullen auf seine Maximalgröße aufgefüllt. Ungültige Zeichen werden automatisch entfernt.
 
 Über das Einstellungsmenü der Registerkomponente (erreichbar über die Kopfzeile der Komponente oder durch Rechtsklick) können alle Register auf einmal formatiert werden. Steht das gewählt Format für ein Register nicht zur Verfügung (bspw. Dezimal für den Programmzähler), so behält dieses seine ursprüngliche Formatierung bei.
 
