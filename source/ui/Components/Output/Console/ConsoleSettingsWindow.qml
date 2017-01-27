@@ -36,8 +36,10 @@ Window {
 
   // Refreshes the window's control contentItem.
   function updateSettings() {
-    baseAddressTextField.text = "0x" + consoleComponent.getStart().toString();
-    interruptAddressTextField.text = "0x" + consoleComponent.getInterruptAddress().toString();
+    var baseAddressInt = parseInt(consoleComponent.getStart());
+    var interruptAddressInt = parseInt(consoleComponent.getInterruptAddress());
+    baseAddressTextField.text = "0x" + baseAddressInt.toString(16);
+    interruptAddressTextField.text = "0x" + interruptAddressInt.toString(16);
     if(consoleComponent.deleteBuffer()) {
       pipeMode.checked = true;
       grid.interruptSettingsOpacity = 1.0;
@@ -45,6 +47,11 @@ Window {
       arrayMode.checked = true;
       grid.interruptSettingsOpacity = 0.0;
     }
+  }
+
+  function finishEditing() {
+    baseAddressTextField.focus = false;
+    interruptAddressTextField.focus = false;
   }
 
   GridLayout {
@@ -103,7 +110,7 @@ Window {
       onEditingFinished: processInput();
 
       function processInput() {
-        var inputValue = TextUtility.convertStringToInteger(String(baseAddressTextField.text));
+        var inputValue = TextUtility.convertStringToInteger(String(interruptAddressTextField.text));
         var maxSize = outputComponent.getMemorySize();
         if (inputValue !== undefined && inputValue >= 0 && inputValue < maxSize) {
           consoleComponent.setInterruptAddress(inputValue);
@@ -121,6 +128,7 @@ Window {
       text: "Array Mode"
       exclusiveGroup: modeGroup
       onClicked: {
+        finishEditing();
         consoleComponent.setDeleteBuffer(false);
         grid.interruptSettingsOpacity = 0.0;
       }
@@ -131,6 +139,7 @@ Window {
       text: "Pipe Mode"
       exclusiveGroup: modeGroup
       onClicked: {
+        finishEditing();
         consoleComponent.setDeleteBuffer(true);
         grid.interruptSettingsOpacity = 1.0;
       }
@@ -153,8 +162,7 @@ Window {
     anchors.margins: Theme.console.settings.margin
 
     onClicked: {
-      baseAddressTextField.focus = false;
-      interruptAddressTextField.focus = false;
+      finishEditing();
       close();
     }
   }

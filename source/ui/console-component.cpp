@@ -40,7 +40,7 @@ void ConsoleComponent::appendText(QString text) {
     deleteTextInMemory();
   }
   for (auto i : Utility::range<size_t>(0, text.length())) {
-    if (_start + _length > _memoryAccess.getMemorySize().get()) {
+    if (_start + _length >= _memoryAccess.getMemorySize().get()) {
       // Too long
       return;
     }
