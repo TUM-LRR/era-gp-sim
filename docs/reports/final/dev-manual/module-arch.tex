@@ -361,3 +361,39 @@ voranschreiten, so könnte man das mit dem aktuellen C++ Standard nicht abdecken
 da kein 128 Bit Zahlentyp definiert ist. Man könnte dann aber eine vereinfachte
 Implementation eines \texttt{uint128\_t} schreiben, indem man z.B. zwei
 \texttt{uint64\_t} in einer Klasse kapselt.
+
+\subsubsection{Weiterführende Dokumentation}
+
+Diese vorherigen Sektionen geben einen Überblick über die Architektur.
+Weiterführende Dokumentation findet sich in denen für die Architektur relevanten
+Dateien, welche in Abbildung \ref{fig:arch-further} aufgelistet sind.
+
+\begin{figure}[H]
+	\begin{center}
+	\begin{tikzpicture}[%
+	grow via three points={one child at (0.8,-0.8) and
+		two children at (0.8,-0.8) and (0.8,-1.7)},
+	edge from parent path={($(\tikzparentnode\tikzparentanchor)+(.2cm,0pt)$) |- (\tikzchildnode\tikzchildanchor)},
+	growth parent anchor=west,
+	parent anchor=south west]
+	\tikzstyle{every node}=[draw=black,anchor=west]
+	\node {\erasim}
+	child { node {isa/}
+		child { node {riscv.isa/} }
+	}
+	child [missing] {}
+	child { node {$\{\text{tests/}, \text{include/}, \text{source/}\}$}
+		child { node {arch/}
+			child { node {common/} }
+			child { node {riscv/} }
+		}
+	}
+	child [missing] {}
+	child [missing] {}
+	child [missing] {};
+	\end{tikzpicture}
+	\end{center}
+
+	\caption{Relevante Dateien des Architekturmoduls}
+	\label{fig:arch-further}
+\end{figure}
