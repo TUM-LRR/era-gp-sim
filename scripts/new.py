@@ -17,7 +17,7 @@ def create_parser():
 
 
 def parse(argument):
-    root = re.match(r'.*(/|\\)erasim', os.getcwd()).group()
+    root = re.match(r'.*(/|\\)era-gp-sim', os.getcwd()).group()
     relative_path = os.path.dirname(argument)
     name = os.path.basename(argument)
 
@@ -86,7 +86,7 @@ def create_source(root, relative_path, name):
     directory = os.path.join(root, "source", relative_path)
     file_name = '{0}.cpp'.format(name)
     source_path = os.path.join(directory, file_name)
-    include_path = os.path.join(relative_path, "{0}.hpp".format(name))
+    include_path = '/'.join([relative_path, "{0}.hpp".format(name)])
     print('Creating source file ...')
     with open(source_path, 'w') as source:
         source.write(get_license(root))

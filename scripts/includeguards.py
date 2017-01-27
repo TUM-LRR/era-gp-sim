@@ -10,7 +10,7 @@ def getPath(fn):
     arr = []
     rest = npath
     curr = ''
-    while curr != 'erasim':
+    while curr != 'era-gp-sim':
         rest, curr = os.path.split(rest)
         arr = [curr] + arr
     return '-'.join(arr[2:]).replace('-', '_').replace('.', '_').upper()

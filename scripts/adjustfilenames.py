@@ -19,11 +19,11 @@ def rewriteFilename(fn, loc):
     dir, ofile = os.path.split(os.path.abspath(loc))
     npath = os.path.normpath(os.path.join(dir, fn))
     if not os.path.exists(npath):
-        npath = os.path.join('erasim', 'include', fn)
+        npath = os.path.join('era-gp-sim', 'include', fn)
     arr = []
     rest = npath
     curr = ''
-    while curr != 'erasim':
+    while curr != 'era-gp-sim':
         rest, curr = os.path.split(rest)
         arr = [curr] + arr
     return '/'.join(arr[2:])
