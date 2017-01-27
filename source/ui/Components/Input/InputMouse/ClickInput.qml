@@ -18,91 +18,98 @@
   */
 
 import QtQuick 2.6
+import Theme 1.0
 
+Rectangle {
+  id: root
+  anchors.top: parent.top
 
+  color: Theme.input.clickInput.color
 
-Item {
+  property var annotationMargin: Theme.input.clickInput.clickArea.margin
+  property var annotationColor: Theme.input.clickInput.clickArea.annotation.color
+
+  Rectangle {
+    id: area
+    anchors.fill: parent
+    anchors.margins: root.annotationMargin
+
+    color: Theme.input.clickInput.clickArea.background
+
+    MouseArea {
+      id: mouseArea
+      anchors.fill: parent
+
+      onClicked: {
+        inputClickMod.newClick(mouse.x/mouseArea.width * 255,
+                               mouse.y/mouseArea.height * 255);
+      }
+    }
+  }
+
+  Item {
+    id: xRect
+    height: annotationMargin
+    width: area.width
+    anchors.left: area.left
     anchors.top: parent.top
 
-    Rectangle{
-        id: area
-        width: 255
-        height: 255
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: xRect.bottom
-
-        color: "blue"
-
-        MouseArea{
-            anchors.fill: parent
-            onClicked: {
-                //console.info(mouse.x);
-                //console.info(mouse.y);
-                inputClickMod.newClick(mouse.x, mouse.y);
-            }
-        }
-
-    }
-    Rectangle{
-        id: xRect
-        height: 40
-        width: area.width
-        anchors.left: area.left
-        anchors.top: parent.top
-        anchors.topMargin: 10
-        color: "transparent"
-
-        Text{
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            text: "0"
-        }
-
-        Text {
-            font.pointSize: 12
-            text: "x\n\u2192" ;
-            anchors.centerIn: parent
-        }
-
-        Text{
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            text: "255"
-        }
+    Text {
+      anchors.bottom: parent.bottom
+      anchors.left: parent.left
+      text: "0"
+      color: annotationColor
     }
 
-    Rectangle{
-        width: 40
-        height: area.height
-        anchors.right: area.left
-        anchors.top: area.top
-        color: "transparent"
-
-        Text{
-            anchors.top: parent.top
-            anchors.right: parent.right
-            text: "0  "
-        }
-
-        Text {
-            font.pointSize: 12
-            anchors.centerIn: parent
-            text: "y \u2193"
-        }
-
-        Text{
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            text: "255  "
-        }
+    Text {
+      font.pointSize: 12
+      text: "x\n\u2192" // Right arrow
+      anchors.centerIn: parent
+      color: annotationColor
     }
 
-    function settingsButtonPressed(){
-        settingsWindowIC.show();
+    Text {
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      text: "255"
+      color: annotationColor
+    }
+  }
+
+  Item  {
+    width: annotationMargin
+    height: area.height
+    anchors.right: area.left
+    anchors.top: area.top
+
+    Text {
+      anchors.top: parent.top
+      anchors.right: parent.right
+      text: "0  "
+      color: annotationColor
     }
 
-    ClickInputSettings{
-        id: settingsWindowIC
+    Text {
+      font.pointSize: 12
+      anchors.centerIn: parent
+      text: "y \u2193"  // Down arrow
+      color: annotationColor
     }
+
+    Text {
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      text: "255  "
+      color: annotationColor
+    }
+  }
+
+  function settingsButtonPressed() {
+    settingsWindowIC.show();
+  }
+
+  ClickInputSettings {
+    id: settingsWindowIC
+  }
 
 }

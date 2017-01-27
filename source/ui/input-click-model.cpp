@@ -27,7 +27,7 @@ InputClickModel::InputClickModel(QQmlContext *context,
   _context->setContextProperty("inputClickMod", this);
 }
 
-void InputClickModel::newClick(int x, int y) {
+void InputClickModel::newClick(unsigned int x, unsigned int y) {
   // save in Memory as 2 bytes
   auto xMemory = conversions::convert(x, 8);
   auto yMemory = conversions::convert(y, 8);
