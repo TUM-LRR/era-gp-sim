@@ -200,21 +200,7 @@ FinalRepresentation RiscvParser::parse(const std::string& text) {
 const SyntaxInformation RiscvParser::getSyntaxInformation() {
   SyntaxInformation info;
 
-  // Add instruction regexes
-  /*for (auto instruction : _architecture.getInstructions()) {
-    // Matches all instruction mnemonics which don't end with a ':'
-    info.addSyntaxRegex("\\b" + instruction.first + "\\b(?!:)",
-                        SyntaxInformation::Token::Instruction);
-  }
-
-  // Add directive regexes
-  for (auto directive : RiscVDirectiveFactory::mapping) {
-    // Matches all directive mnemonics starting with a '.' which don't end with
-    // a ':'
-    info.addSyntaxRegex("\\." + directive.first + "\\b(?!:)",
-                        SyntaxInformation::Token::Instruction);
-  }*/
-
+  // Matches single words after a : or line-start
   info.addSyntaxRegex(R"((?<=^|:) *[a-zA-Z.]+)",
                       SyntaxInformation::Token::Instruction);
 
