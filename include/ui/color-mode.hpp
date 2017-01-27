@@ -51,66 +51,6 @@ struct ColorMode {
   using UpdateAllColorsFunction = std::function<void(
       Optional<OutputComponent *>, Options &, std::shared_ptr<QImage>)>;
 
-  /*
-   * \brief returns the color of the pixel at (x,y)
-   */
-  GetPixelFunction getPixel;
-  /*
-   * \brief returns the color from the color Table at the index index
-   */
-  GetColorFunction getColor;
-  /*
-   * \brief returns the color of the pixel at (x,y) fetching the data from the
-   *        prefetched Buffer buffer
-   */
-  GetPixelFromBufferFunction getPixelFromBuffer;
-  /*
-   * \brief returns the color from the color Table at the index index fetching
-   *        the data from the prefetched Buffer buffer
-   */
-  GetColorFromBufferFunction getColorFromBuffer;
-  /*
-   * \brief updates the image wherever the given change in memory modified the
-   *        image
-   */
-  UpdateMemoryFunction updateMemory;
-  /*
-   * \brief updates all pixels of the image
-   */
-  UpdateAllPixelsFunction updateAllPixels;
-  /*
-   * \brief updates all colors of the image
-   */
-  UpdateAllColorsFunction updateAllColors;
-
-  /*
-   * \brief loads a pointer from memory
-   * \param memoryAccess The access to the memory
-   * \param address Address of the pointer
-   * \param indirect ponter is at address : pointer is address
-   * \param cellSize size of a cell in memory
-   * \param pointerSize size of a pointer in Bits
-   * \return the pointer
-   */
-  static size_t loadPointer(Optional<OutputComponent *> memoryAccess,
-                            size_t address,
-                            bool indirect,
-                            size_t cellSize,
-                            size_t pointerSize,
-                            Options &o);
-  /*
-   * \brief returns the memoryValue from memory at address
-   * \param memoryAccess The access to the memory
-   * \param address address of the value
-   * \param length length of the value in byte
-   * \param defaultLength length of the output if there is no memoryAccess
-   * \return the memoryValue from memory at address
-   */
-  static MemoryValue getMemoryValueAt(Optional<OutputComponent *> memoryAccess,
-                                      size_t address,
-                                      size_t length,
-                                      Options &o);
-
   // RGB:
   const static GetPixelFunction RGBGetPixel;
   const static GetColorFunction RGBGetColor;
@@ -127,7 +67,67 @@ struct ColorMode {
   const static UpdateMemoryFunction MonochromeUpdateMemory;
   const static UpdateAllPixelsFunction MonochromeUpdateAllPixels;
   const static UpdateAllColorsFunction MonochromeUpdateAllColors;
+
+  /**
+   * \brief returns the color of the pixel at (x,y)
+   */
+  GetPixelFunction getPixel;
+  /**
+   * \brief returns the color from the color Table at the index index
+   */
+  GetColorFunction getColor;
+  /**
+   * \brief returns the color of the pixel at (x,y) fetching the data from the
+   *        prefetched Buffer buffer
+   */
+  GetPixelFromBufferFunction getPixelFromBuffer;
+  /**
+   * \brief returns the color from the color Table at the index index fetching
+   *        the data from the prefetched Buffer buffer
+   */
+  GetColorFromBufferFunction getColorFromBuffer;
+  /**
+   * \brief updates the image wherever the given change in memory modified the
+   *        image
+   */
+  UpdateMemoryFunction updateMemory;
+  /**
+   * \brief updates all pixels of the image
+   */
+  UpdateAllPixelsFunction updateAllPixels;
+  /**
+   * \brief updates all colors of the image
+   */
+  UpdateAllColorsFunction updateAllColors;
+
+  /**
+   * \brief loads a pointer from memory
+   * \param memoryAccess The access to the memory
+   * \param address Address of the pointer
+   * \param indirect ponter is at address : pointer is address
+   * \param cellSize size of a cell in memory
+   * \param pointerSize size of a pointer in Bits
+   * \return the pointer
+   */
+  static size_t loadPointer(Optional<OutputComponent *> memoryAccess,
+                            size_t address,
+                            bool indirect,
+                            size_t cellSize,
+                            size_t pointerSize,
+                            Options &o);
+  /**
+   * \brief returns the memoryValue from memory at address
+   * \param memoryAccess The access to the memory
+   * \param address address of the value
+   * \param length length of the value in byte
+   * \param defaultLength length of the output if there is no memoryAccess
+   * \return the memoryValue from memory at address
+   */
+  static MemoryValue getMemoryValueAt(Optional<OutputComponent *> memoryAccess,
+                                      size_t address,
+                                      size_t length,
+                                      Options &o);
 };
 }
 
-#endif// ERAGPSIM_UI_PIXEL_DISPLAY_COLOR_MODE_HPP
+#endif  // ERAGPSIM_UI_PIXEL_DISPLAY_COLOR_MODE_HPP

@@ -82,8 +82,8 @@ Item {
             }
         }
         Tab {
-            title: "Buttons/Lightstrip Icon"
-            PixelDisplay{
+            title: "Buttons/Pixel Display Icon"
+            PixelDisplay {
                 outputItemIndex: 3
             }
         }

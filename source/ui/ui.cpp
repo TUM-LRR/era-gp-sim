@@ -249,7 +249,6 @@ void Ui::_registerCustomTypes() {
   qRegisterMetaType<OutputComponent*>("OutputComponentPointer");
   qmlRegisterType<PixelDisplayPaintedItem>(
       "eragpsim.pixeldisplaypainteditem", 1, 0, "PixelDisplayPaintedItem");
-  // qRegisterMetaType<Ui::id_t>("id_t");
 }
 
 bool Ui::_setupEngine() {

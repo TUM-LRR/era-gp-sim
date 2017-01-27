@@ -67,7 +67,8 @@ struct Options {
   size_t freeBits = 0;
   // number of possible errors
   static constexpr size_t maxError = 5;
-  /* space for Errors
+  /**
+   * space for Errors
    * 0:couldn't access memoryAccess
    * 1:pointer outside memory
    * 2:pixelBuffer outside Memory
@@ -76,11 +77,12 @@ struct Options {
    */
   std::vector<bool> errorVector = std::vector<bool>(maxError, false);
 
-  /*
+  /**
    * \brief returns the current ColorMode
    */
   ColorMode getColorMode() const;
-  /*
+
+  /**
    * \brief returns the color of the pixel at (x,y)
    * \param memoryAccess source to load the data from
    * \param x X position of the Pixel
@@ -88,14 +90,16 @@ struct Options {
    */
   std::uint32_t
   getPixel(Optional<OutputComponent *> memoryAccess, size_t x, size_t y);
-  /*
+
+  /**
    * \brief returns the color from the color Table at the index index
    * \param memoryAccess source to load the data from
    * \param index index of the entry in the color Table
    */
   std::uint32_t
   getColor(Optional<OutputComponent *> memoryAccess, size_t index);
-  /*
+
+  /**
    * \brief returns the color of the pixel at (x,y) fetching the data from the
    *        prefetched Buffer buffer
    * \param buffer Buffer containing the pixel data for the to be drawn Pixel
@@ -108,7 +112,8 @@ struct Options {
                                    size_t offset,
                                    size_t x,
                                    size_t y);
-  /*
+
+  /**
    * \brief returns the color from the color Table at the index index fetching
    *        the data from the prefetched Buffer buffer
    * \param buffer Buffer containing the color data for the color at index
@@ -118,7 +123,8 @@ struct Options {
    */
   std::uint32_t
   getColorFromBuffer(const MemoryValue &buffer, size_t offset, size_t index);
-  /*
+
+  /**
    * \brief redraws the Pixel at (x,y)
    * \param memoryAccess source to load the data from
    * \param image the image to be graced with the pixel at (x,y)
@@ -129,7 +135,7 @@ struct Options {
                    std::shared_ptr<QImage> image,
                    size_t x,
                    size_t y);
-  /*
+  /**
    * \brief updates the color from the color Table at the index index
    * \param memoryAccess source to load the data from
    * \param image Image whichs color table at entry index should be updated
@@ -138,7 +144,7 @@ struct Options {
   void updateColor(Optional<OutputComponent *> memoryAccess,
                    std::shared_ptr<QImage> image,
                    size_t index);
-  /*
+  /**
    * \brief updates all pixels of the image
    * \param memoryAccess source to load the data from
    * \param image Image to be be updated
@@ -149,14 +155,14 @@ struct Options {
                     std::shared_ptr<QImage> image,
                     size_t address,
                     size_t amount);
-  /*
+  /**
    * \brief updates all pixels of the image
    * \param memoryAccess source to load the data from
    * \param image Image to be be updated
    */
   void updateAllPixels(Optional<OutputComponent *> memoryAccess,
                        std::shared_ptr<QImage> image);
-  /*
+  /**
    * \brief updates all colors of the image
    * \param memoryAccess source to load the data from
    * \param image Image to be be updated
@@ -164,22 +170,23 @@ struct Options {
   void updateAllColors(Optional<OutputComponent *> memoryAccess,
                        std::shared_ptr<QImage> image);
 
-  /*
+  /**
    * \brief sets the error with the index index to true
    * \param index index of the error in the error vector
    */
   void setError(size_t index);
 
-  /*
+  /**
    * \brief Handles all errors and resets the error vector
    */
   void handleErrors();
 
-  std::shared_ptr<QImage> makeImage() const;
-  // The color mode used for RGB Color Mode
+  /** The color mode used for RGB Color Mode */
   static ColorMode RGB;
-  // The color mode used for Monochrome ColorMode
+  /** The color mode used for Monochrome ColorMode */
   static ColorMode Monochrome;
+
+  std::shared_ptr<QImage> makeImage() const;
 };
 }
 

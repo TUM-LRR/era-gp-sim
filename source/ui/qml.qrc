@@ -10,7 +10,6 @@
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Output/PixelDisplay.qml</file>
         <file>Components/editor/MacroTriangleButton.qml</file>
-        <file>Components/editor/MacroSubeditor.qml</file>
         <file>Components/editor/Issue Icons/Error Icon.png</file>
         <file>Components/editor/Issue Icons/Error Icon@2x.png</file>
         <file>Components/editor/Issue Icons/Information Icon.png</file>
@@ -33,7 +32,6 @@
         <file>Components/Memory/ContextMenu.qml</file>
         <file>Components/Toolbar/ToolbarComponent.qml</file>
         <file>Components/Toolbar/ToolbarButton.qml</file>
-        <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Toolbar/Icons/Run.svg</file>
         <file>Components/Toolbar/Icons/Step.svg</file>
         <file>Components/Toolbar/Icons/Stop.svg</file>
@@ -62,6 +60,10 @@
         <file>Components/Output/Buttons/Sevensegment Icon Selected@2x.png</file>
         <file>Components/Output/Buttons/Sevensegment Icon.png</file>
         <file>Components/Output/Buttons/Sevensegment Icon@2x.png</file>
+        <file>Components/Output/Buttons/Pixel Display Icon Selected.png</file>
+        <file>Components/Output/Buttons/Pixel Display Icon Selected@2x.png</file>
+        <file>Components/Output/Buttons/Pixel Display Icon.png</file>
+        <file>Components/Output/Buttons/Pixel Display Icon@2x.png</file>
         <file>Components/Register/RegisterComponent.qml</file>
         <file>Components/Register/RegisterLabel.qml</file>
         <file>Components/Register/Register.qml</file>

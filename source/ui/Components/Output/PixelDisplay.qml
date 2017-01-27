@@ -12,7 +12,7 @@ Item {
         pixeldisplaypainteditemid.memoryChanged(0, 0);
     }
 
-    PixelDisplayPaintedItem{
+    PixelDisplayPaintedItem {
         id: pixeldisplaypainteditemid
         anchors.fill: parent
         outputComponentPointer : outputComponent
@@ -111,9 +111,6 @@ Item {
                 TextField {
                     id: pixelBaseAddressTextField
 
-                    // onAccepted: { processInput(); }
-                    // onEditingFinished: { processInput(); }
-
                     function processInput() {
                         var inputValue = controlsColumn.integerFromInputString(String(pixelBaseAddressTextField.text))
                         if (inputValue >= 0) {
@@ -124,9 +121,6 @@ Item {
 
                 TextField {
                     id: colorBaseAddressTextField
-
-                    // onAccepted: { processInput(); }
-                    // onEditingFinished: { processInput(); }
 
                     function processInput() {
                         var inputValue = controlsColumn.integerFromInputString(String(colorBaseAddressTextField.text))
@@ -139,8 +133,6 @@ Item {
                 ComboBox {
                     id: colorModeComboBox
                     model: [ "RGB", "Monochrome",]
-                    // onAccepted: {processInput();}
-                    // onActivated: { processInput(); }
                     function processInput() {
                         pixeldisplaypainteditemid.colorMode = colorModeComboBox.currentText
                     }
@@ -148,9 +140,6 @@ Item {
 
                 TextField {
                     id: widthTextField
-
-                    // onAccepted: { processInput(); }
-                    // onEditingFinished: { processInput(); }
 
                     function processInput() {
                         var inputValue = controlsColumn.integerFromInputString(String(widthTextField.text))
@@ -162,9 +151,6 @@ Item {
 
                 TextField {
                     id: heightTextField
-
-                    // onAccepted: { processInput(); }
-                    // onEditingFinished: { processInput(); }
 
                     function processInput() {
                         var inputValue = controlsColumn.integerFromInputString(String(heightTextField.text))
