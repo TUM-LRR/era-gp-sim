@@ -203,8 +203,20 @@ Die Ersetzung erfolgt sofort.
 \subsection{Interaktion mit laufenden Programmen}
 \todo[inline]{Hier sollte (für alle Komponenten ja gleich) die Einstellungsmöglichkeiten (Zahnrad-knopf) und welches Symbol welche Komponente bedeutet}
 
-\subsubsection{Eingabe -- Pfeiltasten}
-Die Eingabe über die Pfeiltasten, welche in Abbildung \ref{Joystick} zu sehen sind, wird in das Byte geschrieben, dessen Adresse in den Einstellungen angegeben wurde. Der Pfeil rechts schreibt den Wert 1, alle anderen Pfeile werden fortlaufend im Uhrzeigersinn nummeriert. Das heißt, dass beispielsweise der Pfeil nach oben die Zahl vier in den Speicher schreibt.
+Der Simulator unterstützt eine Reihe von Ein- und Ausgabekomponenten, die im Folgenden erläutert werden. Eine Eingabekomponente nimmt dabei Eingaben des Nutzers über die Benutzeroberfläche des Simulators entgegen, während Ausgabekomponenten Zahlenwerte graphisch darstellen.
+
+Die Kommunikation mit den Ein- und Ausgabekomponenten erfolgt über den Speicher. Für Eingabekomponenten lässt sich eine Adresse im Speicher (die sogenannte \textit{Memory Source Address} angeben, an die jegliche eingelesene Werte geschrieben werden. Analog gibt es auch für Ausgabekomponenten eine \textit{Memory Source Address}, die angibt, von welcher Stelle im Speicher an Daten von der Ausgabekomponente ausgelesen und graphisch interpretiert werden. Da auch Ausgabekomponenten oftmals Benutzereingaben zulassen, werden gleichfalls Daten in den Speicher geschrieben, natürlich an die selbe \textit{Memory Source Address}, die auch zum Einlesen verwendet wird.
+
+Die \textit{Memory Source Address} sowie gegebenenfalls weitere Optionen können über das Einstellungsmenü jeder Ein- und Ausgabekomponente einzeln festgelegt werden. Man erreicht das Menü über den Komponenten-Header, der am Kopf einer Komponente eingeblendet wird, wenn man den Mauszeiger darüberbewegt. Ein Klick auf den Zahnradbutton (\includegraphics[scale=0.22]{Images/SettingsIcon}) öffnet das Einstellungsfenster.
+
+\subsubsection{Eingabe -- Tastatur}
+
+Die Tastatur-Eingabekomponente fängt einzelne Tastatureingaben ab und schreibt eine Kodierung, die der gedrückten Taste entspricht, in den Speicher.
+
+Ein Klick auf das Rechteck im Zentrum der Komponente startet die Eingabe. In diesem Zustand werden alles Tastatureingaben abgefangen und in den Speicher geschrieben. Die Adresse im Speicher, an die die Kodierung geschrieben wird, ist durch die \textit{Memory Source Address} festgelegt. Diese bleibt im Laufe der Eingaben konstant, das heißt ein neues Tastensignal überschreibt die alte Kodierung im Speicher. Erneutes Klicken auf das Rechteck beendet die Eingabe. 
+
+Über das Einstellungsmenü der Komponente kann die \textit{Memory Source Address} festgelegt werden, also die Adresse im Speicher, an die die kodierte Tastatureingabe geschrieben wird.
+
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.2\textwidth]{Images/Joystick}
