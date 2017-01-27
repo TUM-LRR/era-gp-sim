@@ -88,9 +88,7 @@ MenuBar {
     MenuItem {
       text: "Close Project"
       shortcut: "Ctrl+W"
-      onTriggered: {
-        main.closeProject();
-      }
+      onTriggered: main.closeProject()
     }
 
     MenuItem {
