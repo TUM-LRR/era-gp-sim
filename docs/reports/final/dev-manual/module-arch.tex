@@ -307,4 +307,39 @@ implementiert. Der Grund dafür wurde in der vorherigen Sektion beschrieben: RIS
 unterstützt keine Inline Speicherzugriffe. Architekturen können durch das Fehlen
 einer Factory signalisieren, dass sie einen Knotentyp nicht unterstützen.
 
+\subsubsection{RISC-V}
 
+Bisher wurde fast ausschließlich die Schnittstelle beschrieben. Diese Sektion soll
+einen Einblick in unsere Gedanken bei der RISC-V Implementation geben.
+
+Zunächst etwas zur Implementation der Instruktionen. RISC-V definiert wiederum
+eine eigene abstrakte Oberklasse \texttt{riscv::InstructionNode}, von der alle
+weiteren Instruktionsknoten abgeleitet sind. Dies dient der Vermeidung von
+Redundanz, da Methoden wie \texttt{assemble()} und \texttt{getInstructionDocumentation()}
+für alle Instruktionen angewandt werden können. Des Weiteren definiert die Klasse
+hilfreiche Methoden, die in den Unterklassen verwendet werden, um zum Beispiel
+die Validierung der Operanden einer Instruktion zu vereinfachen.
+
+Die Knoten, die Instruktionen implementieren, sind ebenfalls darauf ausgelegt,
+Redundanz zu vermeiden. Beispielhaft seien hier die \textit{Integer Computational
+Instructions} (so der Name in der RISC-V Spezifikation) herangezogen (das sind
+Instruktionen wie \textit{add}, \textit{addi} oder \textit{and}). Da sich der
+Aufbau der Instruktionen lediglich in der auszuführenden Operation unterscheidet,
+existiert eine weitere abstrakte Oberklasse \texttt{riscv::AbstractIntegerInstructionNode},
+die all jene Instruktionen abdeckt. In dieser Oberklasse wird die Validierung
+der Instruktionen vollständig behandelt und der Aufruf von \texttt{getValue()}
+so weit abstrahiert, dass die konkreten Anwendung der Operation effektiv in einen
+einzeiligen Lamda Ausdruck reduziert werden kann. Diese findet sich in der Datei
+\texttt{integer-instructions.hpp}. \\
+Ein weiteres Konzept der RISC-V Instruktionen basiert auf der Unterstützung
+unterschiedlicher Wortgrößen. Derzeit bietet RISC-V ausgiebige Unterstützung für
+32 und 64 Bit, in Zukunft soll 128 Bit folgen. Um zu verhindern, dass Instruktionen
+für jede Wortgröße neu geschrieben werden müssen, nutzen wir C++ Templates, um
+die Wortgröße einer Instruktion zu spezifizieren. So wird in der Node Factory
+von RISC-V eine Fallunterscheidung nach der verwendeten Wortgröße gemacht, und
+dann der entsprechende Zahlentyp als Template Parameter gesetzt (für 32 Bit
+z.B. \texttt{std::uint32\_t} und für 64 Bit \texttt{std::uint64\_t}). Sollte die
+Entwicklung der 128 Bit Version von RISC-V voranschreiten, so könnte man das mit
+dem aktuellen C++ Standard nicht abdecken, da kein 128 Bit Zahlentyp definiert
+ist. Man könnte dann aber eine vereinfachte Implementation eines \texttt{uint128\_t}
+schreiben, indem man z.B. zwei \texttt{uint64\_t} in einer Klasse kapselt.
