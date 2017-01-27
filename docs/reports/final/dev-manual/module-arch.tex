@@ -300,7 +300,9 @@ schnell unübersichtlich werden kann. Um zu verhindern, dass andere Module
 mehrere Node Factory Objekte verwalten müssen, wird eine
 \texttt{NodeFactoryCollection} über das Architecture Objekt zur Verfügung gestellt,
 welches die einzelnen Factory Objekte kapselt und die \texttt{create()} Aufrufe
-weiterleitet.
+weiterleitet. \\
+Die Factory Methoden geben einen \texttt{std::shared\_ptr} auf den erzeugten
+Knoten zurück.
 
 Des Weiteren fällt auf, dass RISC-V die beiden letzten Node Factories nicht
 implementiert. Der Grund dafür wurde in der vorherigen Sektion beschrieben: RISC-V
@@ -330,7 +332,8 @@ die all jene Instruktionen abdeckt. In dieser Oberklasse wird die Validierung
 der Instruktionen vollständig behandelt und der Aufruf von \texttt{getValue()}
 so weit abstrahiert, dass die konkreten Anwendung der Operation effektiv in einen
 einzeiligen Lamda Ausdruck reduziert werden kann. Diese findet sich in der Datei
-\texttt{integer-instructions.hpp}. \\
+\texttt{integer-instructions.hpp}.
+
 Ein weiteres Konzept der RISC-V Instruktionen basiert auf der Unterstützung
 unterschiedlicher Wortgrößen. Derzeit bietet RISC-V ausgiebige Unterstützung für
 32 und 64 Bit, in Zukunft soll 128 Bit folgen. Um zu verhindern, dass Instruktionen
