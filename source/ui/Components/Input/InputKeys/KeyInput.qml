@@ -65,6 +65,10 @@ Rectangle {
       }
     }
 
+    // This is necessary to loose focus in some qt versions.
+    // Loose focus animation might not be played otherwise.
+    onActiveFocusChanged: focusRectangle.focus = activeFocus;
+
     onFocusChanged: {
       if (focus) {
         gainFocusAnimation.start();
