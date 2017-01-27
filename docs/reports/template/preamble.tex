@@ -57,86 +57,57 @@
 \usetikzlibrary{shadows}
 \usetikzlibrary{positioning}
 \usetikzlibrary{arrows}
-\usetikzlibrary{calc}
 
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,breakable}
 
 \usepackage{float}
 
+% GRAPH STUFF
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+\tikzstyle{class} = [rectangle, rounded corners, draw=black, fill=white, drop shadow]
+\tikzstyle{inheritance-arrow} = [->, thick,>=open triangle 90,every node/.style={font=\sffamily\small}]
+\tikzstyle{empty} = [draw=none,fill=none]
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CODE                                                 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \usepackage{listings}
+\usepackage{zi4}
 
-\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{stringgreen}{RGB}{50,220,15}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
-\lstdefinelanguage [risc-v]{Assembler}{
+\lstdefinelanguage [riscv]{Assembler}{
   morekeywords={ADD, ADDI, SLTI, SLTU, SLTIU, AND, ANDI, OR, ORI, XOR, XORI, SLLI, SRLI, SRAI, SLAI, LUI, AUIPC, SLT, SLL, SRL, SRA, SLA, JAL, JALR, BEQ, BNE, BLT, BLTU, BGE, BGEU, LW, LH, LB, SW, SH, SB, LHU, LBU, SHU, SBU, MUL, MULH, MULHU, MULHSU, DIV, DIVU, REM, REMU, .RESB},
   sensitive=false,
   morecomment=[l]{;},
 }
 
-\usepackage{zi4}
+\lstnewenvironment{c++}{\lstset{language=C++}}{}
+\lstnewenvironment{riscv}{\lstset{language={[riscv]Assembler}}}{}
+\lstnewenvironment{x86}{\lstset{language={[x86masm]Assembler}}}{}
 
-\lstdefinestyle{C++}{
-  basicstyle=\fontfamily{zi4}\selectfont,
-  language=C++,
+\lstset{
+  basicstyle=\small\fontfamily{zi4}\selectfont,
   aboveskip=3mm,
   belowskip=3mm,
   showstringspaces=false,
   columns=flexible,
   numbers=none,
-  numberstyle=\tiny\color{gray},
-  keywordstyle=\color{blue},
-  commentstyle=\color{dkgreen},
-  stringstyle=\color{mauve},
+  numberstyle=\tiny\color{red},
+  keywordstyle=\color{magenta},
+  commentstyle=\color{gray},
+  stringstyle=\color{stringgreen},
   breaklines=true,
   breakatwhitespace=true,
-  tabsize=2
-  extendedchars=true
-}
-
-\lstdefinestyle{risc-v_Assembler}{
-  basicstyle=\fontfamily{zi4}\selectfont,
-  language={[risc-v]Assembler},
-  aboveskip=3mm,
-  belowskip=3mm,
-  showstringspaces=false,
-  columns=flexible,
-  numbers=none,
-  numberstyle=\tiny\color{gray},
-  keywordstyle=\color{blue},
-  commentstyle=\color{dkgreen},
-  stringstyle=\color{mauve},
-  breaklines=true,
-  breakatwhitespace=true,
-  tabsize=2
-  extendedchars=true
-}
-
-\lstdefinestyle{x86Assembler}{
-  basicstyle=\fontfamily{zi4}\selectfont,
-  language={[x86masm]Assembler},
-  aboveskip=3mm,
-  belowskip=3mm,
-  showstringspaces=false,
-  columns=flexible,
-  numbers=none,
-  numberstyle=\tiny\color{gray},
-  keywordstyle=\color{blue},
-  commentstyle=\color{dkgreen},
-  stringstyle=\color{mauve},
-  breaklines=true,
-  breakatwhitespace=true,
-  tabsize=2
-  extendedchars=true
-}
-
-\lstset{literate=
+  tabsize=2,
+  extendedchars=true,
+  literate=
 	{á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
 	{Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
 	{à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
@@ -203,6 +174,8 @@
 
 \newcommand{\code}[1]{\lstinline{#1}}
 
+\newcommand{\erasim}{{\scshape ERASIM}\,}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % NEW ENVIRONMENTS                                     %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -218,25 +191,43 @@
   \end{figure}
 }
 
-\newenvironment{exampleblock}[1]{%
-    \tcolorbox[title filled,colback=ForestGreen!50!white,
-    noparskip,breakable,
-    title=#1]}%
-    {\endtcolorbox}
-	
-\newenvironment{infoblock}[1]{%
-    \tcolorbox[title filled,colback=NavyBlue!50!white,
-    noparskip,breakable,
-    title=#1]}%
-    {\endtcolorbox}
-	
-\newenvironment{warningblock}[0]{%
-    \tcolorbox[title filled,colback=Dandelion!50!white,
-    noparskip,breakable,
-    title={Vorsicht}]}%
-    {\endtcolorbox}
+\newenvironment{exampleblock}[1]
+{
+    \tcolorbox[%
+      title filled,%
+      noparskip,%
+      breakable,%
+      title={\large\fontfamily{zi4}\selectfont #1}
+    ]
+}
+{
+  \endtcolorbox
+}
 
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: "document"
-%%% End:
+\newenvironment{infoblock}[1]
+{
+    \tcolorbox[%
+      title filled,%
+      colback=Green,%
+      noparskip,%
+      breakable,%
+      title={\large\fontfamily{zi4}\selectfont #1}
+    ]
+}
+{
+  \endtcolorbox
+}
+
+\newenvironment{warningblock}[0]
+{
+    \tcolorbox[%
+      title filled,%
+      colback=Red,%
+      noparskip,%
+      breakable,%
+      title={\large\fontfamily{zi4}\selectfont Vorsicht}
+    ]
+}
+{
+  \endtcolorbox
+}

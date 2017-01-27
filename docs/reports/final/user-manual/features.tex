@@ -3,14 +3,28 @@
 \section{Features}
 
 \subsection*{Überblick}
-\todo[inline]{Am besten mit Bild und nummerierten Pfeilen}
+
+\todo[inline]{Bild mit nummerierten Komponenten einfügen.}
+
+\begin{enumerate}
+\item \textbf{Editor:} Hier wird der Assemblercode geschrieben, der vom Simulator assembliert und ausgeführt werden soll.
+\item \textbf{Toolbar:} Enthält Buttons zur Ausführung des Assemblerprogramms.
+\item \textbf{Tabbar:} Zeigt aktuell geöffnete Projekte an.
+\item \textbf{Register:} Zeigt Prozessorregister und erlaubt Bearbeitung der Registerwerte.
+\item \textbf{Speicher:} Zeigt Hauptspeicherinhalt und erlaubt Bearbeitung einzelner Speicherzellen.
+\item \textbf{Hilfe:} Zeigt Hilfestellungen zur aktiven Zeile im Editor an.
+\item \textbf{Output:} Bietet Auswahl an Ausgabegeräten, die über den Speicher angesteuert werden können.
+\item \textbf{Input:} Bietet Auswahl an Eingabegeräten, die Benutzereingaben empfangen und kodiert in den Speicher schreiben.
+\item \textbf{Snapshots:} Erlaubt das Anlegen und Laden von Schnappschüssen des Prozessorzustands (Register- und Speicherinhalt).
+\end{enumerate}
 
 % Ich schlage eine Teilung der einzelnen Features nach Projektverwaltung(Laden, Speichern, Snapshots), Erstellen von Programmen (Editor, Hilfetexte), Ausführung von Programmen(Ausfühmodi, Breakpoints), Interaktion mit laufenden Programmen (Input/Output-Components) und sonstiges vor
 
 \subsection{Projekt}
 
 \subsubsection{Projekt erstellen}
-\todo[inline]{V.a. Projekt erstellen: Auswahl Architektur, Bitlänge, Modlue, Parser, etc.}
+\label{sec:project_creation}
+
 \begin{figure}[ht]
 	\centering
   \includegraphics[scale=1]{Images/create_new_project}
@@ -18,18 +32,43 @@
 	\label{Project_Creation}
 \end{figure}
 
+Nach dem Start des Programms erscheint ein Fenster in dem ein neues Projekt erstellt werden kann. Sind bereits andere Projekte geöffnet so kann ein weiteres über den Plus-Button der Projekt-Tabbar, über die Menüleiste oder den Tastaturbefehl Strg-N (Cmd-N auf macOS) angelegt werden.
+
+Neben dem Projektnamen muss für ein Projekt auch die Architektur angegeben werden, also die simuliert werden soll. Diese beinflusst im Wesentlichen, welche Assembler-Instruktionen und Register zur Verfügung stehen.
+
+Darüberhinaus kann die Hauptspeichergröße frei gewählt werden, wobei der Wert zwischen 4 und 1.048.576 Byte liegen muss.
+
+Mit der Wahl der Syntax wird die Art und Weise, wie Assembler-Instrukionen geschrieben werden, festgelegt. Eine Syntax unterscheidet sich von der anderen beispielsweise in der Art, wie der Immediate-Teil einer Instruktion geschrieben wird. Der verfügbare Instruktionssatz selbst wird dadurch nicht beeinflusst.
+
+Manche Architekturen stehen in verschiedenen Versionen zur Verfügung. RISC-V etwa kann in einer 32 Bit Variante oder in einer 64 Bit Variante verwendet werden, was sich hauptsächlich auf die Länge der Register bezieht.
+
 
 \subsubsection{Speichern/Laden}
-\todo[inline]{Speichern/Laden von Projekt und Code}
+
+Der Simulator unterstützt nicht das Speichern ganzer Projekte, sondern ermöglicht es stattdessen, den Assemblercode als Datei zu speichern, während der Prozessorzustand (Register- und Speicherinhalt) getrennt als Snapshot gespeichert werden können. Dies ermöglicht es, ein und denselben Snapshot in mehreren Projekten zu verwenden.
+
+Um den Assemblercode eines Projekts zu speichern wählt man in der Menüleiste die Option ``Editor'' $\rightarrow$ ``Save File'' aus und gibt einen Speicherort für die Datei an.
+
+Möchte man gespeicherten Assemblercode laden, so erstellt man zunächst ein neues Projekt und wählt dann über ``Editor'' $\rightarrow$ ``Open File'' die gewünschte Datei aus, deren Inhalt darauf im Editor erscheint.
+
+Um den Inhalt der Register und des Speichers persistent zu speichern, werden wie bereits erwähnt, Snapshots verwendet, deren Benutzung im folgenden Abschnitt erklärt wird.
 
 \subsubsection{Snapshots}
-\todo[inline]{Speichern/Laden + Was ist das?; Welche Eigenschaften muss mein erstelltes Projekt haben, damit ich SnapshotXY laden kann (passende Architektur/passende Module)}
 
+Snapshots sind, wie der Name bereits nahelegt, Schnappschüsse des Prozessorzustands, also der Register- und Speicherinhalte. Sie eigenen sich dazu, die Werte von Registern und Speicher automatisch in einen festgelegten Zustand zu bringen. Hat man beispielsweise ein Assemblerprogramm, dass auf bestimmten Ausgangswerten in Registern oder Speicher basiert, so kann man diese Werte zunächst manuell eintragen und dann einen Snapshot des aktuellen Zustands anlegen. Wurden die Inhalte von Registern und Speicher anschließend etwa durch die Programmausführung geändert, so kann man durch Laden des Snapshots ganz einfach wieder zum Ausgangszustand zurückkehren.
+
+Ein Snapshot wird über den Plus-Button in der Snapshot-Komponente oder die Menüleiste (``Project'' $\rightarrow$ ``Save Snapshot'') erstellt und mit einem eindeutigen Namen versehen. Die Werte, die zum Zeitpunkt des Schanppschusses in den Registern und im Speicher geschrieben stehen, werden dadurch im Snapshot gespeichert. Anschließend können die Register- und Speicherinhalte nach Belieben verändert werden, egal ob durch Drücken des Reset-Buttons, manuelles Ändern der Werte oder Ausführen eines Assemblerprogramms, das den Prozessorzustand verändert. Um einen Snapshot zu laden, wird einfach auf den zugehörigen Eintrag in der Snapshot-Komponente gedrückt.
+
+\begin{warningblock}
+Durch Laden eines Snapshots wird der aktuelle Prozessorzustand überschrieben. Soll dieser also nicht verloren geht, muss vorher ein weiterer Snapshot erstellt werden.
+\end{warningblock}
+
+Snapshots werden projektübergreifend abgelegt, ein Snapshot der in einem Projekt erstellt wurde, kann im Allgemeinen auch in einem anderen Projekt geladen werden. Es gilt allerdings zu beachten, dass ein Snapshot an eine bestimmte Architektur und sogar an eine bestimmte Version einer Architektur (siehe \ref{sec:project_creation} ``Projekt erstellen'') gebunden ist, da sich die etwa die Länge der Register je nach Architektur-Version unterscheiden können. Ein Snapshot der zum Beispiel für ein Projekt der RISC-V 32Bit Version erstellt wurde, kann nicht in einem Projekt mit RISC-V 64Bit Version geladen werden.
 
 \subsection{Erstellen von Programmen}
 
 \subsubsection{Editor}
-\todo[inline]{Alles zum Editor (zoomen, Makros aufklappen, Fehlermeldungen anzeigen, Tooltips etc)}
+\label{sec:Editor}
 
 Im Editor wird der Assemblercode verfasst, der vom Simulator assembliert und ausgeführt werden kann.
 Durch Syntax Highlighting werden bestimmte Code-Fragmente, wie Kommentare, Instruktionen,
@@ -77,11 +116,31 @@ Drücken der Steurungstaste (Cmd-Taste bei Mac-Computern) gescrollt.
 \label{help-component}
 \todo[inline]{Was wird angezeigt, zu welchem Befehl (Zeile!), wann (nach dem Parsen)}
 
+Die Hilfetextkomponente zeigt die Befehlsdokumentation des Befehls der aktuellen Zeile an und ergänzt damit das Hilfefenster, da bei Bedarf direkt im Editor angezeigt werden kann (siehe \ref{sec:Editor} ``Editor''). Die Hilfetextkomponente bezieht sich immer auf den Befehl der Zeile, in der sich der Cursor befindet. Gegebenenfalls ist die Anzeige eines Hilfetextes leicht verzögert, da der aktuelle Code erst neu geparst werden muss.
+
 
 \subsection{Ausführung von Programmen}
 
 \subsubsection{Ausführungsmodi}
-\todo[inline]{komplett, schritt-für-schritt, zum nächsten breakpoint; hier am besten mmit bildern der einzelnen Knöpfe}
+
+Der Simulator verfügt über drei verschiedene Ausführungsmodi. Die Zeile, an der die Ausführung begonnen wird, ist im Editor stets farblich hervorgehoben.
+
+Der erste Modus (erster Button von links in Abbildung \ref{Toolbar}) führt das ganze Programm komplett ab der hervorgehobenen Zeile aus.
+
+Möchte man die Ausführung dabei beenden, beispielsweise wegen einer Endlosschleife, so klickt man auf den Stopp-Button (vierter Button von links)
+
+Darüberhinaus gibt es die Möglichkeit nur die aktuelle Zeile auszuführen, also Schritt für Schritt (zweiter Button von links). Hierbei werden die geänderten Werte in den Registern hervorgehoben, was in anderen Modi nicht der Fall ist.
+
+Im letzten Ausführungsmodus wird das Programm bis zum nächsten Breakpoint ausgeführt (dritter Button von links). Einen neuen Breakpoint erstellt man, indem man in der Seitenleiste auf den Bereich neben der zugehörigen Zeile klickt. Durch erneutes Klicken auf den Breakpoint wird dieser wieder entfernt.
+
+\todo[inline]{Ggf. Bild von Breakpoint}
+
+Drückt man nach beendeter oder untebrochener Ausführung auf den Reset-Button (erster
+Button von rechts), so wird der Zeiger für die zunächst auszuführende Zeile wieder
+an den Anfang des Programms gesetzt und die Register- und Speicherinhalte zurückgesetzt.
+
+\todo{Abbildung von Toolbar einfügen}
+
 
 \subsubsection{Registerkomponente}
 Die Registerkomponente zeigt die Prozessorregister an und ermöglicht es, deren Werte manuell zu verändern. Jedes Register besteht aus einem Registertitel, mit dem es in der Regel auch im Assemblercode referenziert werden kann, sowie dem zugehörigem Registerinhalt.
@@ -89,7 +148,7 @@ Die Registerkomponente zeigt die Prozessorregister an und ermöglicht es, deren 
 Der Registerinhalt kann je nach Art des Registers unterschiedlich formatiert werden. Allzweckregistern stehen die Formate \textit{Binär}, \textit{Hexadezimal}, \textit{Dezimal (vorzeichenbehaftet)} und \textit{Dezimal (nicht vorzeichenbehfatet)} zur Verfügung. Ein-Bit Flag-Register können außerdem als Checkbox angezeigt werden.
 Das aktuelle Format des Registers wird rechts vom Registertextfeld über den Formatindikator angezeigt (\textit{S}: signed decimal, \textit{U}: unsigned decimal, \textit{H}: hexadecimal, \textit{B}: binary, \textit{F}: flag). Zum Anpassen des Formats kann entweder auf den Formatindikator geklickt werden und die passende Optionen ausgewählt werden oder gescrollt werden, während sich der Mauszeiger über dem Formatindikator befindet. Beachten Sie, dass für ein Register unter Umständen nicht alle Format-Optionen zur Verfügung stehen --- so kann der Programmzähler etwa nicht im Dezimal-Format angezeigt werden.
 
-Um den Wert eines Registers manuell zu ändern, wird der Text im Textfeld bearbeitet und die Eingabe mit Enter bestätigt. Auf die Einhaltung der Formatierung muss nicht geachtet werden. Nach Bestätigung der Eingabe wird der Registerwert automatisch der aktuellen Einstellung entsprechend formatiert. Ist zudem ein eingegebener Wert zu lang um im Register gegebener Größe gespeichert werden zu können, werden die höherwertigen überschüssigen Zeichen entfernt. Zudem wird der Registerinhalt durch höherwertige Nullen auf seine Maximalgröße aufgefüllt. Ungültige Zeichen werden automatisch entfernt.
+Um den Wert eines Registers manuell zu ändern, wird der Text im Textfeld bearbeitet und die Eingabe mit Enter bestätigt. Auf die Einhaltung der Formatierung muss nicht geachtet werden. Nach Bestätigung der Eingabe wird der Registerwert automatisch der aktuellen Einstellung entsprechend formatiert. Ist zudem ein eingegebener Wert zu lang um im Register gegebener Größe gespeichert werden zu können, werden die höherwertigen überschüssigen Zeichen entfernt. Gleichermaßen wird der Registerinhalt durch höherwertige Nullen auf seine Maximalgröße aufgefüllt. Ungültige Zeichen werden automatisch entfernt.
 
 Über das Einstellungsmenü der Registerkomponente (erreichbar über die Kopfzeile der Komponente oder durch Rechtsklick) können alle Register auf einmal formatiert werden. Steht das gewählt Format für ein Register nicht zur Verfügung (bspw. Dezimal für den Programmzähler), so behält dieses seine ursprüngliche Formatierung bei.
 
@@ -171,8 +230,14 @@ Die Texteingabe verfügt über zwei Modi, array-based und pipe-like.
 Im ersten Modus wird die Eingabe ab der Startadresse, angegeben in den Einstellungen, in den Speicher geschrieben. Verwendet werden dabei die ASCII-Zeichen. Die Eingabe wird übernommen und eingetragen, wenn die Enter-Taste gedrückt wird, dann wird auch der Inhalt des Feldes gelöscht. Die Maximale Länge ist wiederum in den Einstellungen angegeben und kann dort verändert werden. Verwendet man den zweiten Modus, so wird nach jeder Eingabe das entsprechende Zeichen an die Startadresse geschrieben. Man beachte, dass damit der letzte Wert überschrieben wird. Es ist dabei auch möglich, Pfeiltasten anzugeben. Befindet sich der Cursor im Eingabefeld und eine Pfeiltaste wird gedrückt, so wird für die Pfeiltaste rechts die eins in den Speicher geschrieben. Alle anderen sind fortlaufend im Uhrzeigersinn nummeriert, genau wie bei der Eingabe über die Buttons, die die Pfeiltasten zeigen. Der Inhalt des Eingabefeldes wird nach jedem Zeichen gelöscht.
 
 \subsubsection{Ausgabe -- Lichtbandanzeige}
-\todo[inline]{besondere Einstellungen! Farbwahl! Manuelles setzen der Strips möglich!}
 
+Die Lichtbandanzeige dient hauptsächlich zur Anzeige verschiedener Arten von Fortschrittsbalken.
+Sie besteht aus mehreren einzelnen Leuchtkomponenten, der Anzahl im Einstellungsmenu der Anzeige definiert werden kann.
+Jede Leuchtkomponente kann durch ein Bit im Speicher an der richtigen Adresse angesteuert werden.
+Eine \texttt{1} bedeutet dabei, dass das Segment leuchtet; also farbig dargestellt wird. Bei einer \texttt{0} wird die Fläche in Grau dargestellt.
+Die Bits sind im Speicher an direkt aufeinanderfolgenden Stellen zu setzen. Ein Byte kann somit eine Leuchtbandanzeige aus 8 Elemente komplett ansteuern.
+Dabei ist der Nutzer natürlich nicht darauf beschränkt eine Fortschrittsanzeige von links nach rechts aufzubauen, sondern kann jede Fläche unabhängig voneinander ein und ausschalten.
+Als Alternative kann man auch mit der Maus auf ein Leuchtfeld klicken, um es an- bzw. auszuschalten. Der Speicherinhalt an der entsprechenden Adresse wird dadurch entsprechend geändert.\\
 
 
 \begin{figure}[ht]
@@ -181,6 +246,8 @@ Im ersten Modus wird die Eingabe ab der Startadresse, angegeben in den Einstellu
 	\caption{Leuchtbandanzeige}
 	\label{Lightstrip}
 \end{figure}
+
+Ein besonderes Feature ist dabei die individuelle Gestaltung der Lichtbandanzeige. Bei einem Rechtsklick auf ein Leuchtelement öffnet sich ein Farbwahldialog, wo die Leuchtfarbe des Segments gewählt werden kann.
 
 \begin{figure}[ht]
 	\centering
@@ -219,7 +286,7 @@ Dabei muss aber darauf geachtet werden, dass die Reihenfolge genau umgedreht ist
 danach folgt das vorletzte usw.
 
 \begin{warningblock}
-Reihenfolge der Zeichen: Die Ansteuerung der Zeichen ist genau geschieht (wie im Zahlensystem) von rechts nach links.
+Reihenfolge der Zeichen: Die Ansteuerung der Zeichen geschieht (wie im Zahlensystem) von rechts nach links.
 \end{warningblock}
 
 Ein kleines Beispiel verdeutlicht dies wohl am besten.
