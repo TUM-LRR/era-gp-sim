@@ -86,7 +86,7 @@ void ParsingAndExecutionUnit::executeNextLine() {
 
     if (nextNode >= _finalRepresentation.commandList().size()) break;
 
-    // Skip nodes that aren't part of the users program
+    // Skip nodes that aren't part of the user's program
   } while (_finalRepresentation.commandList()[nextNode].position().isEmpty());
   _executionStopped();
 }

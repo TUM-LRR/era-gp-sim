@@ -110,18 +110,16 @@ void IntermediateMacroInstruction::execute(
     commandOutput.emplace_back(innerCommands[0].node(),
                                positionInterval(),
                                innerCommands[0].address());
-    for (const auto& error : innerErrors.errors()) {
-      errors.pushCompileErrorInternal(
-          error.severity(), positionInterval(), error.message());
-    }
   } else {
     if (innerCommands.size() > 0) {
       commandOutput.push_back(std::move(innerCommands[0]));
     }
+  }
 
-    std::move(innerErrors.errors().begin(),
-              innerErrors.errors().end(),
-              std::back_inserter(errors.errors()));
+  // Move errors to macro call position
+  for (const auto& error : innerErrors.errors()) {
+    errors.pushCompileErrorInternal(
+        error.severity(), positionInterval(), error.message());
   }
 
   // Move rest of inner commands to commandOutput
