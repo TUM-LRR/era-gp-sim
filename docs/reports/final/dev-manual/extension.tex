@@ -19,18 +19,48 @@ bereits vorhandenen Teile zu verstehen und anzuwenden.\\
 
 Um zu verstehen, wo die Erweiterung im Konzept einzuordnen ist, und welche
 Klassen zu implementieren sind, sollte man den Prozess verstehen, wie genau ein
-Assembler-Paket geladen und angesprochen wird. Einen groben Überblick bietet
-folgendes Diagramm. Die Namen der Komponenten finden sich so nicht im Code
+Assembler-Paket geladen und angesprochen wird. Einen groben Überblick bietet \autoref{dev-manual-extension-overview}. Die Namen der Komponenten finden sich so nicht im Code
 wieder, sie dienen lediglich als Oberbegriff für eine ganze Reihe von Klassen
 und -strukturen die grob die selbe Aufgabe haben.
 
 \begin{figure}
 	\centering
-	\includegraphics[scale=0.5]{charts/extension-overview.png}
+	\begin{tikzpicture}[auto, node distance=2cm]
+	% NODE DEFINITIONS
+	\tikzstyle{module} = [draw, rectangle,
+	text width=3cm]
+	\tikzstyle{modulearrow} = [->, thick]
+	\tikzstyle{extension} = [dashed]
+	
+	
+	\node (core) [module] {Core};
+	\node (gui) [module, left = of core] {GUI};
+	\node (arch-common) [module, above= of core] {Arch Common};
+	\node (arch-riscv) [module, right = of arch-common] {Arch RISC-V};
+	\node (parser-common) [module, below = of core] {Parser Factory \& Parser-Common};
+	\node (parser-riscv) [module, right = of parser-common] {RISC-V Parser};
+	
+	\node (ext1) [above left = 0.2cm of arch-riscv]{};
+	\node (ext2) [above right = 0.2cm of arch-riscv]{};
+	\node (ext3) [below right = 0.2cm of parser-riscv]{};
+	\node (ext4) [below left = 0.2cm of parser-riscv]{};
+	\node (package) [below = of arch-riscv, above = of parser-riscv, xshift=3.6cm]{Assembler Paket};
+	
+	\draw[modulearrow] (core) edge node [xshift=-1.3cm, yshift=-0.3cm, text width=3cm] {Anzeige abstrahierter Informationen} (gui);
+
+	\draw[modulearrow] (arch-common) edge node [xshift=-4cm, text width=4cm]{Abstrahierte, geladene Assembler Architektur} (core);
+	
+	\draw[modulearrow] (arch-riscv) edge node [yshift=1.5cm, text width=6cm]{konkrete Instruktionen \& Register, Speicherausrichtung, ...} (arch-common);
+	
+	\draw[modulearrow] (parser-common) edge node [text width=5cm, xshift=5.5cm]{Lesen/Umwandeln von Quelltext in abstrahierte, ausführbare Form} (core);
+	
+	\draw[modulearrow] (parser-riscv) edge node [text width=5cm, yshift=-0.5cm]{Parser zum Übersetzen konkreter Instruktionen} (parser-common);
+	
+	\draw [extension] (ext1) -- (ext2) -- (ext3) -- (ext4) -- (ext1);
+	\end{tikzpicture}
+	\caption{Zusammenspiel Assembler Paket}
 	\label{dev-manual-extension-overview}
 \end{figure}
-
-\todo[inline]{Besseres Bild kommt noch (Erik)}
 
 Nach der Auswahl des Assembler-Pakets durch den Benutzer in der
 Benutzeroberfläche werden ausgewählter Architekturname, gewählte Extensions und
@@ -63,12 +93,52 @@ untergliedern in Definition und Eigenschaften des Assembler-Pakets,
 Implementierung des Verhaltens der Instruktionen und das Bereitstellen dieser
 für den Parser zum Bau eines Syntaxbaumes.
 
+\subsubsection{Definition und Eigenschaften des Assembler-Pakets}
+
 \begin{figure}[ht]
 	\centering
-	\includegraphics[scale=0.45]{charts/extension-arch.png}
+	\begin{tikzpicture}[auto, node distance=2cm]
+	\tikzstyle{files} = [draw, minimum height=4em, minimum width=3em, fill=white, double copy shadow={shadow xshift=4pt, shadow yshift=4pt, fill=white, draw}]
+	
+	\tikzstyle{arrow} = [thick, ->]
+	
+	\node (data-classes) [class, rectangle split, rectangle split parts=2, text width=5cm] {
+		Datenklassen zur Beschreibung der Architektur
+		\nodepart{second}
+		\begin{tabular}{l}
+		architecture-properties.hpp\\
+		architecture.hpp\\
+		constituent-information.hpp\\
+		datatype-information.hpp\\
+		extension-information.hpp\\
+		instruction-information.hpp\\
+		register-information.hpp\\
+		unit-information.hpp\\
+		\end{tabular}
+	};
+	
+	\node (isa-parser) [right = of data-classes, class, rectangle split, rectangle split parts=2, text width=5cm] {
+		ISA-Parser
+		\nodepart{second}
+		\begin{tabular}{l}
+		architecture-brewery.hpp\\
+		architecture-formula.hpp\\
+		\end{tabular}
+	};
+	
+	\node (line1) [below = 0.5cm of data-classes, xshift=-5cm]{};
+	\node (line2) [right = 15cm of line1]{};
+	\node [above = 0.3cm of line1] {Arch Common};
+	\node [below = 0.3cm of line1] {Assembler Paket};
+	\node (isa-file)[files, below = 3cm of isa-parser]{.isa Dateien};
+	
+	\draw[dashed] (line1) -- (line2);
+	\draw[arrow] (isa-parser) edge node[]{liest} (isa-file);
+	\draw[arrow] (isa-parser) edge node[]{erzeugt} (data-classes);
+	\end{tikzpicture}
+	\caption{Definition der Eigenschaften in .isa Dateien}
+	\label{dev-manual-extension-isa}
 \end{figure}
-
-\subsubsection{Definition und Eigenschaften des Assembler-Pakets}
 
 Für diesen Bereich ist keine Zeile Code nötig. Da eine Implementierung von
 Datenklassen zur Beschreibung der Eigenschaften sich inhaltlich, aber nicht
@@ -86,14 +156,36 @@ Bequemlichkeit halber auch das YAML Gegenstück). Beispiel: Die
 Assembler-Architektur \texttt{myArch} hat ein Basismodul \texttt{arch\_base} und
 eine Erweiterung \texttt{arch\_fancy}:
 
-\begin{lstlisting}
-era-gp-sim -- isa -- riscv.isa -- ...
-                  |- test.isa  -- ...
-                  |- myArch.isa   -- arch_base -- config.json
-                                  |          \- config.yaml
-                                  \- arch_fancy -- config.json
-                                                \- config.yaml
-\end{lstlisting}
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[%
+	grow via three points={one child at (0.8,-0.8) and
+		two children at (0.8,-0.8) and (0.8,-1.7)},
+	edge from parent path={($(\tikzparentnode\tikzparentanchor)+(.2cm,0pt)$) |- (\tikzchildnode\tikzchildanchor)},
+	growth parent anchor=west,
+	parent anchor=south west]
+	\tikzstyle{every node}=[draw=black,anchor=west]
+	\node {\erasim}
+	child { node {isa/}
+		child { node {riscv.isa/} }
+		child {node {test.isa/} }
+		child {node {myArch.isa/} 
+			child {node{arch\_base/}
+				child{node{config.json}}
+				child{node{config.yaml}}	
+			}
+			child [missing] {}
+			child [missing] {}
+			child {node{arch\_fancy/} 
+				child{node{config.json}}
+				child{node{config.yaml}}
+			}
+		}
+	};
+	\end{tikzpicture}
+	
+	\caption{Notwendiger Aufbau der .isa Struktur}
+\end{figure}
 In den ISA-Files werden folgende Eigenschaften definiert:
 
 \begin{itemize}
@@ -105,6 +197,40 @@ In den ISA-Files werden folgende Eigenschaften definiert:
 
 \subsubsection{Implementierung der Instruktionen}
 \label{extension-arch-ast}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[auto, node distance=2cm]
+		\node (superclasses) [class, rectangle split, rectangle split parts=2, text width=6cm] {
+			Abstrahierte Instruktionen
+			\nodepart{second}
+			\begin{tabular}{l}
+			abstract-syntax-tree-node.hpp\\
+			abstract-instruction-node.hpp\\
+			\end{tabular}
+		};
+	
+		\node(line1) [below =0.5cm of superclasses, xshift=-10cm]{};
+		\node(line2) [right= 13cm of line1]{};
+		\node [above= 0.5cm of line1]{Arch Common};
+		\node [below= 0.5cm of line1]{Assembler Paket};
+		
+		\draw[dashed](line1) -- (line2);
+		
+		\node (extension-classes) [class, below = of superclasses, rectangle split, rectangle split parts=2, text width=6cm] {
+			Konkrete Implementierungen
+			\nodepart{second}
+			\begin{tabular}{l}
+			z.B.:\\
+			my-add-isntruction.hpp\\
+			my-sub-instruction.hpp\\
+			\end{tabular}
+		};
+	
+		\draw[inheritance-arrow] (extension-classes) edge node[]{erben} (superclasses);
+	\end{tikzpicture}
+	\caption{Implementierung von konkreten Instruktionen}
+\end{figure}
 
 Der zentrale und auch für den Nutzer sichtbare Teil einer neuen Architektur sind
 die neuen Instruktionen. Eine konkrete Instruktion also z.B. \texttt{addi x1,
@@ -203,6 +329,45 @@ MemoryValue getValue(MemoryAccess memoryAccess) {
 
 \subsubsection{Bereitstellen der Instruktionen für den Parser}
 \label{extension-arch-factories}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[auto, node distance=2cm]
+		\node (superclasses) [class, rectangle split, rectangle split parts=2, text width=7.5cm] {
+			Bereitstellung der Instruktionen für den Parser
+			\nodepart{second}
+			\begin{tabular}{l}
+			abstract-arithmetic-node-factory.hpp\\
+			abstract-data-node-factory.hpp\\
+			abstract-immediate-node-factory.hpp\\
+			abstract-instruction-node-factory.hpp\\
+			abstract-memory-access-node-factory.hpp\\
+			abstract-register-node-factory.hpp\\
+			node-factory-collection.hpp\\
+			\end{tabular}
+		};
+		
+		\node(line1) [below =0.5cm of superclasses, xshift=-10cm]{};
+		\node(line2) [right= 13cm of line1]{};
+		\node [above= 0.5cm of line1]{Arch Common};
+		\node [below= 0.5cm of line1]{Assembler Paket};
+		
+		\draw[dashed](line1) -- (line2);
+		
+		\node (extension-classes) [class, below = of superclasses, rectangle split, rectangle split parts=2, text width=6cm] {
+			Konkrete Implementierungen der Fabriken
+			\nodepart{second}
+			\begin{tabular}{l}
+			z.B.:\\
+			my-instruction-node-factory.hpp\\
+			my-immediate-node-factory.hpp\\
+			...
+			\end{tabular}
+		};
+		
+		\draw[inheritance-arrow] (extension-classes) edge node[]{erben} (superclasses);
+	\end{tikzpicture}
+\end{figure}
 
 Der Parser baut beim Übersetzen aus jedem Befehl einen Syntaxbaum. Der Parser
 kennt aber die genauen Signaturen und damit die Implementierungen der
