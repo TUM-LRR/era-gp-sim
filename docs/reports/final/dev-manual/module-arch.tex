@@ -61,16 +61,16 @@ im Quellcode überein, es geht hier nur um das Prinzip).
 \end{figure}
 
 Die Architektur ist in einen allgemeinen Teil (im Folgenden \textbf{common})
-genannt) und in einen Architektur-spezifischen Teil (benannt nach der entsprechenden
-Architektur, z.B. \textbf{riscv} aufgeteilt. Die Schnittstelle ist so konzeptioniert,
-dass andere Module nichts von der konkreten Architektur mitbekommen, und lässt
-sich folgendermaßen charakterisieren: \\
-Das \textit{Architecture} Objekt stellt allgemeine Informationen über die
-geladene Architektur zur Verfügung (wie z.B. der Name, die Byte-Reihenfolge oder
-die Wortgröße) und bietet zusätzlich Zugang zur \textit{NodeFactory}.
-Mit der NodeFactory werden die Syntax Bäume in Form von \textit{SyntaxTreeNode}
-Objekten erzeugt, welche anschließend validiert und ausgeführt werden können. \\
-Im Folgenden wird auf diese Klassen genauer eingegangen.
+genannt) und in einen Architektur-spezifischen Teil (benannt nach der
+entsprechenden Architektur, z.B. \textbf{riscv} aufgeteilt. Die Schnittstelle
+ist so konzeptioniert, dass andere Module nichts von der konkreten Architektur
+mitbekommen, und lässt sich folgendermaßen charakterisieren: \\ Das
+\textit{Architecture} Objekt stellt allgemeine Informationen über die geladene
+Architektur zur Verfügung (wie z.B. der Name, die Byte-Reihenfolge oder die
+Wortgröße) und bietet zusätzlich Zugang zur \textit{NodeFactory}. Mit der
+NodeFactory werden die Syntax Bäume in Form von \textit{SyntaxTreeNode} Objekten
+erzeugt, welche anschließend validiert und ausgeführt werden können. \\ Im
+Folgenden wird auf diese Klassen genauer eingegangen.
 
 \subsubsection{Architecture Description Language}
 
@@ -81,40 +81,42 @@ Eine Architektur kann in \texttt{YAML} Dateien beschrieben werden.
 \subsubsection{Architecture}
 
 Ein \texttt{Architecture} Objekt repräsentiert eine geladene Architektur im
-Simulator. Der Grundgedanke bei der Entwicklung war das modulare Design von RISC-V
-zu unterstützen, dieses Konzept lässt sich aber leicht auf andere Prozessorarchitekturen
-übertragen. So wird angenommen, dass eine Architektur immer aus einem Basismodul
-besteht (bei RISC-V: \textit{RV32I}), welches wieder durch andere Module erweitert
-werden kann (bei RISC-V z.B. Multiplikation/Division, Floating Point, etc.). \\
-Um also ein Architecture Objekt zu erzeugen, wird im ersten Schritt eine
-\textit{ArchitectureFormula} erstellt, die das Basismodul und alle Erweiterungen
-spezifiziert. Ein Aufruf von \textit{Brew()} löst die Abhängigkeiten auf und liest
-anschließend die Informationen aus den Konfigurationsdateien ein.
+Simulator. Der Grundgedanke bei der Entwicklung war das modulare Design von
+RISC-V zu unterstützen, dieses Konzept lässt sich aber leicht auf andere
+Prozessorarchitekturen übertragen. So wird angenommen, dass eine Architektur
+immer aus einem Basismodul besteht (bei RISC-V: \textit{RV32I}), welches wieder
+durch andere Module erweitert werden kann (bei RISC-V z.B.
+Multiplikation/Division, Floating Point, etc.). \\ Um also ein Architecture
+Objekt zu erzeugen, wird im ersten Schritt eine \textit{ArchitectureFormula}
+erstellt, die das Basismodul und alle Erweiterungen spezifiziert. Ein Aufruf von
+\textit{Brew()} löst die Abhängigkeiten auf und liest anschließend die
+Informationen aus den Konfigurationsdateien ein.
 
 Intern wird das \textit{Builder Pattern} zum sukzessivem Aufbau des Objekts
 verwendet. Als Oberklasse dient dazu das \texttt{BuilderInterface}, von dem alle
 Komponenten abgeleitet werden. Da eine Architektur lediglich aus strukturierten
-Informationen besteht, existiert eine weitere Oberklasse \texttt{InformationInterface}.
-Von ihr sind wiederum die konkreten Informationsklassen abgeleitet. Nennenswert
-dabei ist die \texttt{ExtensionInformation} Klasse, die ein Modul in unserer
-modularen Auffassung einer Architektur widerspiegelt. Ein finales
-\texttt{Architecture} Modul besteht schließlich aus einem ExtensionInformation
-Objekt, welches mit allen Erweiterungen vereint wurde.
+Informationen besteht, existiert eine weitere Oberklasse
+\texttt{InformationInterface}. Von ihr sind wiederum die konkreten
+Informationsklassen abgeleitet. Nennenswert dabei ist die
+\texttt{ExtensionInformation} Klasse, die ein Modul in unserer modularen
+Auffassung einer Architektur widerspiegelt. Ein finales \texttt{Architecture}
+Modul besteht schließlich aus einem ExtensionInformation Objekt, welches mit
+allen Erweiterungen vereint wurde.
 
-Das Architecture Objekt beschreibt lediglich die Eigenschaften einer Architektur,
-d.h. es stellt Informationen wie die Byte-Reihenfolge, Wortgröße, Speicherausrichtung
-oder die Eigenschaften der Register bereit. Es beschreibt auch, welche Instruktionen
-zur Verfügung stehen, definiert aber nicht, wie diese konkret implementiert sind,
-da dies für eine Konfigurationsdatei zu komplex wäre. Die Implementation der
-einzelnen Instruktionen wird deshalb in C++ Code übernommen. Wie die Verbindung
-zwischen der Beschreibung der Architektur und der Implementation abläuft, wird
-im Folgenden erläutert.
+Das Architecture Objekt beschreibt lediglich die Eigenschaften einer
+Architektur, d.h. es stellt Informationen wie die Byte-Reihenfolge, Wortgröße,
+Speicherausrichtung oder die Eigenschaften der Register bereit. Es beschreibt
+auch, welche Instruktionen zur Verfügung stehen, definiert aber nicht, wie diese
+konkret implementiert sind, da dies für eine Konfigurationsdatei zu komplex
+wäre. Die Implementation der einzelnen Instruktionen wird deshalb in C++ Code
+übernommen. Wie die Verbindung zwischen der Beschreibung der Architektur und der
+Implementation abläuft, wird im Folgenden erläutert.
 
 \subsubsection{Syntax Tree}
 
 Der Syntax Baum mit durch Vererbung implementiert und in \textit{common} und
-\textit{riscv} (oder jede beliebige andere Architektur) gegliedert. Eine Übersicht
-bietet Abbildung \ref{fig:arch-syntax-tree}
+\textit{riscv} (oder jede beliebige andere Architektur) gegliedert. Eine
+Übersicht bietet Abbildung \ref{fig:arch-syntax-tree}
 
 \begin{figure}[H]
 	\begin{center}
@@ -159,28 +161,38 @@ bietet Abbildung \ref{fig:arch-syntax-tree}
 \label{module-arch-ast-node-types}
 Die aufgeführten Klassen haben folgende Funktion:
 \begin{itemize}
-	\item \textbf{AbstractSyntaxTreeNode} ist die Oberklasse jedes Syntax Knotens
-	und definiert, welche Methoden die Unterklassen implementieren müssen. Des
-	Weiteren enthält sie eine Liste an etwaige Kindknoten.
-	\item \textbf{ImmediateNode} repräsentiert einen \textit{Immediate}-Wert,
-	also einen Wert, der direkt im Assembler Quelltext angegeben ist. Architekturen
-	stellen im Allgemeinen keine Spezialisierung eines Immediate Wertes zur
-	Verfügung, weshalb diese Klasse vollständig im common Teil implementiert werden
-	kann.
-	\item \textbf{BinaryDataNode} enthält binäre Daten, wie z.B. Text Nachrichten.
-	Konkret wird er für die Implementierung der Crash Instruktion verwendet.
+
+  \item \textbf{AbstractSyntaxTreeNode} ist die Oberklasse jedes Syntax Knotens
+  und definiert, welche Methoden die Unterklassen implementieren müssen. Des
+  Weiteren enthält sie eine Liste an etwaige Kindknoten.
+
+  \item \textbf{ImmediateNode} repräsentiert einen \textit{Immediate}-Wert, also
+  einen Wert, der direkt im Assembler Quelltext angegeben ist. Architekturen
+  stellen im Allgemeinen keine Spezialisierung eines Immediate Wertes zur
+  Verfügung, weshalb diese Klasse vollständig im common Teil implementiert
+  werden kann.
+
+  \item \textbf{BinaryDataNode} enthält binäre Daten, wie z.B. Text Nachrichten.
+  Konkret wird er für die Implementierung der Crash Instruktion verwendet.
+
 	\item \textbf{AbstractRegisterNode} repräsentiert ein Register in der
 	Instruktion. In RISC-V muss die Assemblierung speziell behandelt werden,
 	weshalb es einen speziellen RegisterNode für RISC-V gibt.
-	\item \textbf{AbstractInstructionNode} ist die oberste Ebene eines jeden Syntax
-	Baums und repräsentiert die auszuführende Instruktion.
+
+	\item \textbf{AbstractInstructionNode} ist die oberste Ebene eines jeden
+	Syntax Baums und repräsentiert die auszuführende Instruktion.
+
 \end{itemize}
+
 Mit diesen Knotentypen lassen sich alle RISC-V Instruktionen modellieren. Nicht
-RISC Architekturen stellen aber häufig die Möglichkeit bereit, einen Speicherzugriff
-während einer anderen Instruktion durchzuführen. Ein Beispiel in x86:
-\begin{lstlisting}[language={[x86masm]Assembler}]
+RISC Architekturen stellen aber häufig die Möglichkeit bereit, einen
+Speicherzugriff während einer anderen Instruktion durchzuführen. Ein Beispiel in
+x86:
+
+\begin{x86}
 add eax, [ebx*2+2]
-\end{lstlisting}
+\end{x86}
+
 Um diese Instruktionen modellieren zu können, wurden folgende Knotentypen
 konzeptioniert, die jedoch nicht im Quellcode definiert sind:
 \begin{itemize}
@@ -256,7 +268,7 @@ Abbildung \ref{fig:arch-node-factory} dargestellt.
 		\pgfsetlayers{background,main,foreground}
 		\tikzstyle{class} = [rectangle, rounded corners, draw=black, fill=white, drop shadow]
 		\tikzstyle{inheritance-arrow} = [->, thick,>=open triangle 90]
-	
+
 		\node (instr-abstr) [class, anchor=west] {AbstractInstructionNodeFactory};
 		\node (imm-abstr) [class, below = of instr-abstr] {AbstractImmediateNodeFactory};
 		\node (reg-abstr) [class, below = of imm-abstr]	{AbstractRegisterNodeFactory};
@@ -298,51 +310,54 @@ dient der Übersicht, da vor allem die Implementation der
 \texttt{InstructionNodeFactory} bei Architekturen mit vielen Instruktionen
 schnell unübersichtlich werden kann. Um zu verhindern, dass andere Module
 mehrere Node Factory Objekte verwalten müssen, wird eine
-\texttt{NodeFactoryCollection} über das Architecture Objekt zur Verfügung gestellt,
-welches die einzelnen Factory Objekte kapselt und die \texttt{create()} Aufrufe
-weiterleitet. \\
+\texttt{NodeFactoryCollection} über das Architecture Objekt zur Verfügung
+gestellt, welches die einzelnen Factory Objekte kapselt und die
+\texttt{create()} Aufrufe weiterleitet. \\
 Die Factory Methoden geben einen \texttt{std::shared\_ptr} auf den erzeugten
 Knoten zurück.
 
 Des Weiteren fällt auf, dass RISC-V die beiden letzten Node Factories nicht
-implementiert. Der Grund dafür wurde in der vorherigen Sektion beschrieben: RISC-V
-unterstützt keine Inline Speicherzugriffe. Architekturen können durch das Fehlen
-einer Factory signalisieren, dass sie einen Knotentyp nicht unterstützen.
+implementiert. Der Grund dafür wurde in der vorherigen Sektion beschrieben:
+RISC-V unterstützt keine Inline Speicherzugriffe. Architekturen können durch das
+Fehlen einer Factory signalisieren, dass sie einen Knotentyp nicht unterstützen.
 
 \subsubsection{RISC-V}
 
-Bisher wurde fast ausschließlich die Schnittstelle beschrieben. Diese Sektion soll
-einen Einblick in unsere Gedanken bei der RISC-V Implementation geben.
+Bisher wurde fast ausschließlich die Schnittstelle beschrieben. Diese Sektion
+soll einen Einblick in unsere Gedanken bei der RISC-V Implementation geben.
 
 Zunächst etwas zur Implementation der Instruktionen. RISC-V definiert wiederum
 eine eigene abstrakte Oberklasse \texttt{riscv::InstructionNode}, von der alle
 weiteren Instruktionsknoten abgeleitet sind. Dies dient der Vermeidung von
-Redundanz, da Methoden wie \texttt{assemble()} und \texttt{getInstructionDocumentation()}
-für alle Instruktionen angewandt werden können. Des Weiteren definiert die Klasse
-hilfreiche Methoden, die in den Unterklassen verwendet werden, um zum Beispiel
-die Validierung der Operanden einer Instruktion zu vereinfachen.
+Redundanz, da Methoden wie \texttt{assemble()} und
+\texttt{getInstructionDocumentation()} für alle Instruktionen angewandt werden
+können. Des Weiteren definiert die Klasse hilfreiche Methoden, die in den
+Unterklassen verwendet werden, um zum Beispiel die Validierung der Operanden
+einer Instruktion zu vereinfachen.
 
 Die Knoten, die Instruktionen implementieren, sind ebenfalls darauf ausgelegt,
-Redundanz zu vermeiden. Beispielhaft seien hier die \textit{Integer Computational
-Instructions} (so der Name in der RISC-V Spezifikation) herangezogen (das sind
-Instruktionen wie \textit{add}, \textit{addi} oder \textit{and}). Da sich der
-Aufbau der Instruktionen lediglich in der auszuführenden Operation unterscheidet,
-existiert eine weitere abstrakte Oberklasse \texttt{riscv::AbstractIntegerInstructionNode},
-die all jene Instruktionen abdeckt. In dieser Oberklasse wird die Validierung
-der Instruktionen vollständig behandelt und der Aufruf von \texttt{getValue()}
-so weit abstrahiert, dass die konkreten Anwendung der Operation effektiv in einen
+Redundanz zu vermeiden. Beispielhaft seien hier die \textit{Integer
+Computational Instructions} (so der Name in der RISC-V Spezifikation)
+herangezogen (das sind Instruktionen wie \textit{add}, \textit{addi} oder
+\textit{and}). Da sich der Aufbau der Instruktionen lediglich in der
+auszuführenden Operation unterscheidet, existiert eine weitere abstrakte
+Oberklasse \texttt{riscv::AbstractIntegerInstructionNode}, die all jene
+Instruktionen abdeckt. In dieser Oberklasse wird die Validierung der
+Instruktionen vollständig behandelt und der Aufruf von \texttt{getValue()} so
+weit abstrahiert, dass die konkreten Anwendung der Operation effektiv in einen
 einzeiligen Lamda Ausdruck reduziert werden kann. Diese findet sich in der Datei
 \texttt{integer-instructions.hpp}.
 
 Ein weiteres Konzept der RISC-V Instruktionen basiert auf der Unterstützung
 unterschiedlicher Wortgrößen. Derzeit bietet RISC-V ausgiebige Unterstützung für
-32 und 64 Bit, in Zukunft soll 128 Bit folgen. Um zu verhindern, dass Instruktionen
-für jede Wortgröße neu geschrieben werden müssen, nutzen wir C++ Templates, um
-die Wortgröße einer Instruktion zu spezifizieren. So wird in der Node Factory
-von RISC-V eine Fallunterscheidung nach der verwendeten Wortgröße gemacht, und
-dann der entsprechende Zahlentyp als Template Parameter gesetzt (für 32 Bit
-z.B. \texttt{std::uint32\_t} und für 64 Bit \texttt{std::uint64\_t}). Sollte die
-Entwicklung der 128 Bit Version von RISC-V voranschreiten, so könnte man das mit
-dem aktuellen C++ Standard nicht abdecken, da kein 128 Bit Zahlentyp definiert
-ist. Man könnte dann aber eine vereinfachte Implementation eines \texttt{uint128\_t}
-schreiben, indem man z.B. zwei \texttt{uint64\_t} in einer Klasse kapselt.
+32 und 64 Bit, in Zukunft soll 128 Bit folgen. Um zu verhindern, dass
+Instruktionen für jede Wortgröße neu geschrieben werden müssen, nutzen wir C++
+Templates, um die Wortgröße einer Instruktion zu spezifizieren. So wird in der
+Node Factory von RISC-V eine Fallunterscheidung nach der verwendeten Wortgröße
+gemacht, und dann der entsprechende Zahlentyp als Template Parameter gesetzt
+(für 32 Bit z.B. \texttt{std::uint32\_t} und für 64 Bit
+\texttt{std::uint64\_t}). Sollte die Entwicklung der 128 Bit Version von RISC-V
+voranschreiten, so könnte man das mit dem aktuellen C++ Standard nicht abdecken,
+da kein 128 Bit Zahlentyp definiert ist. Man könnte dann aber eine vereinfachte
+Implementation eines \texttt{uint128\_t} schreiben, indem man z.B. zwei
+\texttt{uint64\_t} in einer Klasse kapselt.

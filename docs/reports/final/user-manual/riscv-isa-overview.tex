@@ -3,8 +3,20 @@
 
 \section{Übersicht Befehlssatz RISC-V}
 \todo[inline]{Hier Erläuterung: Unterschied Parser-direktiven, Instruktionen und Pseudo-instruktionen}
-Die Menge an verwendbaren Befehlen für den Simulator lässt sich grob in zwei Teile aufteilen. Die erste Menge an Befehlen sind die sogenannten Parser-Direktiven. Das sind diejenigen Befehle bzw. Direktiven, die schon zum Zeitpunkt der Übersetzung (also Assemblierung) aufgelöst und verarbeitet werden. Direktiven tauchen also nicht direkt im assemblierten Code auf, dennoch nehmen sie u.a. durch Anordnung des Speichers (Sektionen, Speicherreservierungen) oder durch Codegenerierung (Makros) wesentlich Einfluss auf das assemblierte Programm. Zur Unterscheidung haben Direktiven im Simulator ein .-Präfix. Direktiven werden im ersten Teil behandelt.\\
-Die zweite Menge sind die eigentlichen RISC-V Instruktionen. Diese werden durch den Assemblierer in maschinenlesbaren Code umgewandelt und können dann auch ausgeführt werden. Für alle unterstützten RISC-V Instruktionen gibt es im zweiten Teil eine Übersicht.
+
+Die Menge an verwendbaren Befehlen für den Simulator lässt sich grob in zwei
+Teile aufteilen. Die erste Menge an Befehlen sind die sogenannten
+Parser-Direktiven. Das sind diejenigen Befehle bzw. Direktiven, die schon zum
+Zeitpunkt der Übersetzung (also Assemblierung) aufgelöst und verarbeitet werden.
+Direktiven tauchen also nicht direkt im assemblierten Code auf, dennoch nehmen
+sie u.a. durch Anordnung des Speichers (Sektionen, Speicherreservierungen) oder
+durch Codegenerierung (Makros) wesentlich Einfluss auf das assemblierte
+Programm. Zur Unterscheidung haben Direktiven im Simulator ein .-Präfix.
+Direktiven werden im ersten Teil behandelt.\\
+Die zweite Menge sind die eigentlichen RISC-V Instruktionen. Diese werden durch
+den Assemblierer in maschinenlesbaren Code umgewandelt und können dann auch
+ausgeführt werden. Für alle unterstützten RISC-V Instruktionen gibt es im
+zweiten Teil eine Übersicht.
 
 \subsection{Parser-Direktiven}
 
@@ -13,7 +25,8 @@ Um die Übersichtlichkeit eines Programmes zu verbessern, können häufig benöt
 Konstanten eigens definiert werden. Auf diese kann dann über einen Namen
 zugegriffen werden.
 
-\textbf{.equ <name>, <wert>} erzeugt eine Konstante \texttt{name} mit Wert \texttt{wert}
+\textbf{.equ <name>, <wert>} erzeugt eine Konstante \texttt{name} mit Wert
+\texttt{wert}
 
 \begin{exampleblock}{Beispiel: Konstanten}
 	\begin{riscv}
@@ -35,10 +48,14 @@ zugegriffen werden.
 \end{exampleblock}
 
 \subsubsection{Sektionswechsel}
-Beim Assemblieren wird der Speicher in zwei Sektionen unterteilt: eine \emph{Datensektion} sowie eine \emph{Textsektion}. Dies dient der strikten Trennung von benutzerdefinierten Daten und
-assemblierten Programmcode.\\
-Instruktionen müssen dabei in der Textsektion, Speicherreservierungen
-und -initialisierung in der Datensektion stehen. Eine \texttt{.section} Direktive definiert den Beginn einer solchen Sektion:
+
+Beim Assemblieren wird der Speicher in zwei Sektionen unterteilt: eine
+\emph{Datensektion} sowie eine \emph{Textsektion}. Dies dient der strikten
+Trennung von benutzerdefinierten Daten und assemblierten Programmcode.\\
+
+Instruktionen müssen dabei in der Textsektion, Speicherreservierungen und
+-initialisierung in der Datensektion stehen. Eine \texttt{.section} Direktive
+definiert den Beginn einer solchen Sektion:
 
 \begin{itemize}
   \item \texttt{.section data}: wechselt zur Datensektion,
@@ -59,9 +76,14 @@ und -initialisierung in der Datensektion stehen. Eine \texttt{.section} Direktiv
 \end{exampleblock}
 
 \subsubsection{Speicherreservierung}
-Speicherreservierungen sind eine Möglichkeit, eine oder mehrere Speicherzellen (hier: byte) im Speicher freizuhalten. Freihalten bedeutet in dem Fall, dass der Assemblierer keine assemblierten Instruktionen an diese Speicherzelle schreibt.
-So kann man sicherstellen, dass man bei Verwendung dieser Speicherzelle(n) nicht den gerade auszuführenden Code korrumpiert.
-Da die Adresse der Speicherzelle(n) vom Assemblierer abhängt, sollte man die Adresse mit einem vorgeschobenen Label ''speichern''. Das Label vor einer Speicherreservierungs-Direktive nimmt die Anfangsadresse des reservierten Speicherblocks an.\\
+Speicherreservierungen sind eine Möglichkeit, eine oder mehrere Speicherzellen
+(hier: byte) im Speicher freizuhalten. Freihalten bedeutet in dem Fall, dass der
+Assemblierer keine assemblierten Instruktionen an diese Speicherzelle schreibt.
+So kann man sicherstellen, dass man bei Verwendung dieser Speicherzelle(n) nicht
+den gerade auszuführenden Code korrumpiert. Da die Adresse der Speicherzelle(n)
+vom Assemblierer abhängt, sollte man die Adresse mit einem vorgeschobenen Label
+''speichern''. Das Label vor einer Speicherreservierungs-Direktive nimmt die
+Anfangsadresse des reservierten Speicherblocks an.\\
 
 \begin{centering}
 	\begin{tabular}{rcl}
@@ -99,7 +121,13 @@ Da die Adresse der Speicherzelle(n) vom Assemblierer abhängt, sollte man die Ad
 
 \subsubsection{Speicherdefinition}
 
-Speicherdefinitionen sind die andere Möglichkeit Speicherzellen von assemblierten Instruktionen freizuhalten. Im Gegensatz zu Speicherreservierungen wird hier der Speicher nicht nur reserviert, sondern gleichzeitig auch mit dem übergebenen Datum gefüllt. Mit Speicherdefinitionen kann man also den Speicher noch vor der Ausführung des Programms mit Daten befüllen. Da auch hier die genaue Adresse des Speicherblocks von der Assemblierung abhängt, sollte zur Verwendung ein Label vorangestellt werden.\\
+Speicherdefinitionen sind die andere Möglichkeit Speicherzellen von
+assemblierten Instruktionen freizuhalten. Im Gegensatz zu Speicherreservierungen
+wird hier der Speicher nicht nur reserviert, sondern gleichzeitig auch mit dem
+übergebenen Datum gefüllt. Mit Speicherdefinitionen kann man also den Speicher
+noch vor der Ausführung des Programms mit Daten befüllen. Da auch hier die
+genaue Adresse des Speicherblocks von der Assemblierung abhängt, sollte zur
+Verwendung ein Label vorangestellt werden.\\
 
 \begin{centering}
 	\begin{tabular}{rcl}
@@ -132,7 +160,9 @@ Speicherdefinitionen sind die andere Möglichkeit Speicherzellen von assembliert
 \end{warningblock}
 
 \subsubsection{Makros}
-\todo[inline]{Wie definiere ich ein Makro, Grenzen (Zyklische Aufrufe, Rekursion, Anzahl Parameter)}
+
+\todo[inline]{Wie definiere ich ein Makro, Grenzen (Zyklische Aufrufe,
+Rekursion, Anzahl Parameter)}
 
 Häufig benötigte Folgen von Befehlen können als Makro definiert werden. Hierzu
 existieren folgende Direktiven:
@@ -211,11 +241,22 @@ Die RISC-V Instruktionen sind in verschiedene Module aufgeteilt. Durch eine Modu
 Es kann generell für ein Projekt im Simulator entweder 32 oder 64 Bit als Registerlänge gewählt werden. Dementsprechend können nur Module mit der selben Länge verwendet werden. Die 64 Bit Erweiterungen enthalten alle Instruktionen ihrer 32 Bit Gegenstücke, allerdings funktionieren diese auf den gesamten 64 Bit.\\
 Im Folgenden wird jeder unterstützte Befehl kurz erläutert. Eine detailliertere Beschreibung ist den Hilfetextanzeigen (\autoref{help-component}) im Simulator zu entnehmen.\\
 
-Alle regulären Instruktionen verwenden in der einen oder anderen Art Register also Operanden. Die im Simulator unterstützten Module stellen dem Programmierer 32 Allzweckregister zur Verfügung. Diese Register sind je nach gewähltem Basismodul 32 oder 64 bit lang. Das Register 0 (''zero''-Register) hat unveränderbar den Wert 0. Für eine gute Verwendungsmöglichkeit siehe \autoref{manual-riscv-jump-instructions}. Die Register werden über \texttt{x<id>} angesprochen, wobei \texttt{id} die Nummer des Registers ist. So steht \texttt{x0} für das Register 0 und \texttt{x17} für das Register 17.\\
-Zur Angabe von Zahl-Konstanten (sog. ''Immediates'') unterstützt der Simulator folgende 3 Möglichkeiten:\\
-Mit dem Präfix \texttt{0b} lässt sich die Konstante in Binärdarstellung ausdrücken. \texttt{0b1101} steht z.B. für die Zahl 13.\\
-Mit dem Präfix \texttt{0x} werden Konstanten in Hexadezimal geschrieben. \texttt{0xaffe} $\widehat{=}$ 45 054.\\
-Wird die Zahl ohne Präfix geschrieben, interpretiert sie der Simulator als Zahl in Dezimaldarstellung.
+Alle regulären Instruktionen verwenden in der einen oder anderen Art Register
+also Operanden. Die im Simulator unterstützten Module stellen dem Programmierer
+32 Allzweckregister zur Verfügung. Diese Register sind je nach gewähltem
+Basismodul 32 oder 64 bit lang. Das Register 0 (''zero''-Register) hat
+unveränderbar den Wert 0. Für eine gute Verwendungsmöglichkeit siehe
+\autoref{manual-riscv-jump-instructions}. Die Register werden über
+\texttt{x<id>} angesprochen, wobei \texttt{id} die Nummer des Registers ist. So
+steht \texttt{x0} für das Register 0 und \texttt{x17} für das Register 17.\\
+Zur Angabe von Zahl-Konstanten (sog. ''Immediates'') unterstützt der Simulator
+folgende 3 Möglichkeiten:\\
+Mit dem Präfix \texttt{0b} lässt sich die Konstante in Binärdarstellung
+ausdrücken. \texttt{0b1101} steht z.B. für die Zahl 13.\\
+Mit dem Präfix \texttt{0x} werden Konstanten in Hexadezimal geschrieben.
+\texttt{0xaffe} $\widehat{=}$ 45 054.\\
+Wird die Zahl ohne Präfix geschrieben, interpretiert sie der Simulator als Zahl
+in Dezimaldarstellung.
 
 \begin{infoblock}{Arithmetische Ausdrücke zur Übersetzungszeit}
 	Der Simulator unterstützt zudem arithmetische Ausdrücke für Konstanten. So ist \texttt{andi x1,x1, 2*3} gleichwertig zu \texttt{andi x1, x1, 6}. Das ist besonders hilfreich, da auch mit Labels und \texttt{.equ} definierte Konstanten gerechnet werden kann.\\
@@ -248,9 +289,24 @@ Wird die Zahl ohne Präfix geschrieben, interpretiert sie der Simulator als Zahl
 \end{infoblock}
 
 \begin{warningblock}
-	Die Interpretation von Zahldarstellungen in binärer oder hexadizimaler Form folgt nicht immer dem Zweierkomplement.
-	Die Zahldarstellungen werden stets als eine 32 Bit lange Zahl interpretiert\footnote{Dies ermöglicht arithmetisches Rechnen auch (leicht) außerhalb des Wertebereichs der erwarteten Konstante. Dies ist möglich, wenn nur Zwischenergebnisse den Wertebereich verlassen, das Ergebnis aber im Wertebereich liegt. Bsp. \texttt{addi x1, x0, (2000*3)/4; Legt 3/4 * 2000 in x1}. Hier wird ein Zwischenergebnis (3*2000) größer als 2048 produziert. Würde die Zahldarstellung auf die Operandengröße beschränkt werden, wäre das (unerwartete) Ergebnis $(3 \cdot 2000 \mod 2048)/4 = 476$ anstatt $1500$}. Das hat zur Folge, dass \texttt{addi x1,x0, 0xfff} mit einem Übersetzungsfehler als ''zu groß'' abgelehnt wird. Grund ist hier, dass der Befehl eine Konstante im Wertebereich von vorzeichenbehafteten 12 Bit erwartet. Die größte darstellbare Zahl ist $2^{11}-1 = 2047$ während 0xfff $ \widehat{=} 4095$, also zu groß ist.\\
-	Es ist ein Fehler zu denken, dass die obige Instruktion -1 in das Register 1 schreibt. Um das zu erreichen, sollte \texttt{addi x1, x0, -1} oder \texttt{addi x1, x0, -0x1} o.ä verwendet werden.
+
+  Die Interpretation von Zahldarstellungen in binärer oder hexadizimaler Form
+  folgt nicht immer dem Zweierkomplement. Die Zahldarstellungen werden stets als
+  eine 32 Bit lange Zahl interpretiert\footnote{Dies ermöglicht arithmetisches
+  Rechnen auch (leicht) außerhalb des Wertebereichs der erwarteten Konstante.
+  Dies ist möglich, wenn nur Zwischenergebnisse den Wertebereich verlassen, das
+  Ergebnis aber im Wertebereich liegt. Bsp. \texttt{addi x1, x0, (2000*3)/4;
+  Legt 3/4 * 2000 in x1}. Hier wird ein Zwischenergebnis (3*2000) größer als
+  2048 produziert. Würde die Zahldarstellung auf die Operandengröße beschränkt
+  werden, wäre das (unerwartete) Ergebnis $(3 \cdot 2000 \mod 2048)/4 = 476$
+  anstatt $1500$}. Das hat zur Folge, dass \texttt{addi x1,x0, 0xfff} mit einem
+  Übersetzungsfehler als ''zu groß'' abgelehnt wird. Grund ist hier, dass der
+  Befehl eine Konstante im Wertebereich von vorzeichenbehafteten 12 Bit
+  erwartet. Die größte darstellbare Zahl ist $2^{11}-1 = 2047$ während 0xfff $
+  \widehat{=} 4095$, also zu groß ist.\\
+  Es ist ein Fehler zu denken, dass die obige Instruktion -1 in das Register 1
+  schreibt. Um das zu erreichen, sollte \texttt{addi x1, x0, -1} oder
+  \texttt{addi x1, x0, -0x1} o.ä verwendet werden.
 \end{warningblock}
 
 \subsubsection{Arithmetische Befehle}
@@ -263,7 +319,11 @@ Das Format der arithmetischen Operationen ist gleich aufgebaut:\\
  \begin{centering}
  	\texttt{instr <dest>, <reg1>, <reg2|imm>}\\
  \end{centering}
- Die beiden Operanden \texttt{reg1} und \texttt{reg2} bei Register-Register bzw. \texttt{reg1} und \texttt{imm} bei Register-Immediate dienen als Operanden für die arithmetische Funktion. Das Ergebnis wird immer im Register \texttt{dest} abgelegt. Die Operandenregister bleiben also u.U. unverändert.\\
+
+Die beiden Operanden \texttt{reg1} und \texttt{reg2} bei Register-Register bzw.
+\texttt{reg1} und \texttt{imm} bei Register-Immediate dienen als Operanden für
+die arithmetische Funktion. Das Ergebnis wird immer im Register \texttt{dest}
+abgelegt. Die Operandenregister bleiben also u.U. unverändert.\\
 
 
 \begin{tabular}{|c|p{8cm}|p{4cm}|}
@@ -287,9 +347,18 @@ Das Format der arithmetischen Operationen ist gleich aufgebaut:\\
 \end{tabular}
 
 \begin{warningblock}
-	Alle Shiftinstruktionen der Variante Register-Immediate erlauben eine Konstante im Wertebereich zwischen 5 und 12 Bit. Obwohl nur die unteren 5 Bit verwendet werden, führt eine Zahl, die größer als 5 Bit ist, nicht zu einem Übersetzungsfehler.
+Alle Shiftinstruktionen der Variante Register-Immediate erlauben eine
+Konstante im Wertebereich zwischen 5 und 12 Bit. Obwohl nur die unteren 5 Bit
+verwendet werden, führt eine Zahl, die größer als 5 Bit ist, nicht zu einem
+Übersetzungsfehler.
 \end{warningblock}
-Das 64 Bit Modul \textbf{RV64I} fügt zusätzliche spezielle arithmetische Befehle hinzu. Mit RV64I werden die ''normalen'' Instruktionen (siehe Tabelle oben) auf 64 Bit erweitert. Die nun folgenden ''word''-Instruktionen (erkennbar am Suffix ''w'') betrachten jeweils nur die unteren 32 Bit der 64 Bit breiten Operandenregister und berechnen ein 32 Bit breites Ergebnis, das auf 64bit erweitert wird.\\
+
+Das 64 Bit Modul \textbf{RV64I} fügt zusätzliche spezielle arithmetische Befehle
+hinzu. Mit RV64I werden die ''normalen'' Instruktionen (siehe Tabelle oben) auf
+64 Bit erweitert. Die nun folgenden ''word''-Instruktionen (erkennbar am Suffix
+''w'') betrachten jeweils nur die unteren 32 Bit der 64 Bit breiten
+Operandenregister und berechnen ein 32 Bit breites Ergebnis, das auf 64bit
+erweitert wird.\\
 
 \begin{tabular}{|c|p{8cm}|p{4cm}|}
 	\hline
@@ -312,7 +381,12 @@ Das 64 Bit Modul \textbf{RV64I} fügt zusätzliche spezielle arithmetische Befeh
 \end{tabular}
 
 \subsubsection{LUI, AUIPC, SLT}
-\textbf{lui} und \textbf{auipc} sind spezielle Instruktionen, um 32-Bit große Konstanten in ein Register zu bringen. Da die Instruktionslänge bei RISC-V nur 32 Bit beträgt, kann also keine 32 Bit große Konstante und der Ladebefehl gleichzeitig in einer Instruktion zusammengefasst werden. Somit muss das Laden der Konstante in mehreren Instruktionen erfolgen.\\
+
+\textbf{lui} und \textbf{auipc} sind spezielle Instruktionen, um 32-Bit große
+Konstanten in ein Register zu bringen. Da die Instruktionslänge bei RISC-V nur
+32 Bit beträgt, kann also keine 32 Bit große Konstante und der Ladebefehl
+gleichzeitig in einer Instruktion zusammengefasst werden. Somit muss das Laden
+der Konstante in mehreren Instruktionen erfolgen.\\
 
 Mit \textbf{lui} kann eine bis zu 20 Bit große Konstante \texttt{imm} direkt in die oberen 20 Bit des Registers \texttt{reg} geladen werden:
 \texttt{lui <reg>, <imm>}
@@ -328,20 +402,37 @@ Oder eleganter:
   lui x2, myConstant>>12        ;Lade obere 20 Bit
   addi x2, x2, myConstant&0xfff ;Lade untere 12 Bit
 \end{riscv}
-Vorsicht, die obige Implementierung funktioniert nicht bei Zahlen, in deren Repräsentation das 11. Bit gesetzt ist. Ist dies der Fall muss für den lui-Teil zusätzlich noch eins addiert werden. Wem das zu kompliziert ist, verwendet am besten eine passende Pseudoinstruktion (\autoref{user-manual-riscv-overview-pseudos})
+
+Vorsicht, die obige Implementierung funktioniert nicht bei Zahlen, in deren
+Repräsentation das 11. Bit gesetzt ist. Ist dies der Fall muss für den lui-Teil
+zusätzlich noch eins addiert werden. Wem das zu kompliziert ist, verwendet am
+besten eine passende Pseudoinstruktion
+(\autoref{user-manual-riscv-overview-pseudos})
+
 \end{exampleblock}
-\textbf{auipc} ermöglicht es, 32 Bit große Sprungadressen relativ zum Programmzähler zu bauen. Wie auch schon bei \texttt{lui} werden hier mehrere Instruktionen benötigt. \texttt{auipc} lädt eine bis zu 20 Bit große Konstante \texttt{imm} in die oberen 20 Bit des Registers \texttt{reg} und addiert danach den Programmzähler auf das Register:
-\texttt{auipc <reg>, <imm>}
+
+\textbf{auipc} ermöglicht es, 32 Bit große Sprungadressen relativ zum
+Programmzähler zu bauen. Wie auch schon bei \texttt{lui} werden hier mehrere
+Instruktionen benötigt. \texttt{auipc} lädt eine bis zu 20 Bit große Konstante
+\texttt{imm} in die oberen 20 Bit des Registers \texttt{reg} und addiert danach
+den Programmzähler auf das Register: \texttt{auipc <reg>, <imm>}
+
 \begin{exampleblock}{Ganz weiter Sprung}
 Sprung um 0xbadeaffe Byte nach unten:
 \begin{riscv}
   auipc x2, 0xbadea	;Lade obere 20 Bit
   jalr x0, 0xffe	;Addiere untere 12Bit & Sprung
 \end{riscv}
-Auch hier ist eine elegantere Variante mit Konstante und Übersetzungszeit Arithmetik möglich.
+Auch hier ist eine elegantere Variante mit Konstante und Übersetzungszeit
+Arithmetik möglich.
 \end{exampleblock}
 
-\textbf{slt} \texttt{<dest>, <reg1>, <reg2>} vergleicht reg1 und reg2 und schreibt eine 1 in Register dest, wenn reg1 kleiner reg2. Ist dies nicht der Fall, wird eine 0 in Register dest geschrieben. \textbf{sltu} vergleicht die Register vorzeichenlos. \textbf{slti} bzw. \textbf{sltiu} akzeptieren anstatt eines zweiten Registers eine 12-Bit vorzeichenbehaftete bzw. vorzeichenlose Zahl.
+\textbf{slt} \texttt{<dest>, <reg1>, <reg2>} vergleicht reg1 und reg2 und
+schreibt eine 1 in Register dest, wenn reg1 kleiner reg2. Ist dies nicht der
+Fall, wird eine 0 in Register dest geschrieben. \textbf{sltu} vergleicht die
+Register vorzeichenlos. \textbf{slti} bzw. \textbf{sltiu} akzeptieren anstatt
+eines zweiten Registers eine 12-Bit vorzeichenbehaftete bzw. vorzeichenlose
+Zahl.
 
 \subsubsection{Kontrollflussbefehle (Sprung und Verzweigung)}
 \label{manual-riscv-jump-instructions}
@@ -392,8 +483,16 @@ Bei Ausführung prüft die Instruktion eine Bedingung (spezifiziert durch \textt
 \end{tabular}
 
 \begin{infoblock}{Umgang mit Labels in Sprungbefehlen}
-	Ein Label enthält die absolute Adresse an der es definiert ist. Einige der Kontrollflussinstruktionen funktionieren jedoch mit Programmzähler-relativen Adressen, d.h. eigentlich ist eine Umrechnung von absoluter Labeladresse zu relativer Adresse nötig. Diese Umrechnung führt der Simulator aber automatisch für die Befehle durch, die relativ adressiert werden. So können auch relative Kontrollflussinstruktionen wie gewohnt an ein angegebenes Label springen.\\
-	Vorsicht ist lediglich geboten, wenn ein Label in einer relativ adressierten Instruktion noch durch Arithmetik verändert wird. Hier wird das Label zuerst in relative Form gebracht und dann durch die Arithmetik verändert. Es können also unerwartete Ergebnisse entstehen.
+  Ein Label enthält die absolute Adresse an der es definiert ist. Einige der
+  Kontrollflussinstruktionen funktionieren jedoch mit Programmzähler-relativen
+  Adressen, d.h. eigentlich ist eine Umrechnung von absoluter Labeladresse zu
+  relativer Adresse nötig. Diese Umrechnung führt der Simulator aber automatisch
+  für die Befehle durch, die relativ adressiert werden. So können auch relative
+  Kontrollflussinstruktionen wie gewohnt an ein angegebenes Label springen.\\
+	Vorsicht ist lediglich geboten, wenn ein Label in einer relativ adressierten
+	Instruktion noch durch Arithmetik verändert wird. Hier wird das Label zuerst
+	in relative Form gebracht und dann durch die Arithmetik verändert. Es können
+	also unerwartete Ergebnisse entstehen.
 \end{infoblock}
 
 \begin{warningblock}
@@ -439,7 +538,11 @@ Für RV64 kommt eine weitere Instruktion dazu, die oberen Instruktionen funktion
 
 \textbf{Load-Instruktionen}\\
 
-Auch die Lade-Instruktionen sind gleich aufgebaut: \textbf{op} \texttt{<dest>, <base>, <offset>}. Der Inhalt aus Speicherzelle(n) ab \texttt{base+offset} wird ins Register \texttt{dest} geschrieben. Analog zu den Store-Instruktionen spezifiert auch hier \texttt{op} die genaue Anzahl an Bytes. Übrige Bytes im Register \texttt{dest} werden auf 0 gesetzt.\\
+Auch die Lade-Instruktionen sind gleich aufgebaut: \textbf{op} \texttt{<dest>,
+<base>, <offset>}. Der Inhalt aus Speicherzelle(n) ab \texttt{base+offset} wird
+ins Register \texttt{dest} geschrieben. Analog zu den Store-Instruktionen
+spezifiert auch hier \texttt{op} die genaue Anzahl an Bytes. Übrige Bytes im
+Register \texttt{dest} werden auf 0 gesetzt.\\
 
 \begin{tabular}{|c|c|l|}
 	\hline
@@ -468,22 +571,47 @@ Für RV64 kommt eine weitere Instruktion dazu:\\
 \end{warningblock}
 
 \begin{infoblock}{Reihenfolge der Load-Operanden}
-	Die RISC-V Spezifikation definiert die Reihenfolge der Operanden aller Load-Instruktionen anders: Das Zielregister liegt zwischen Basisregister und Offset. Dies ist unintuitiv, daher sind die Load-Instruktionen im Simulator analog zu den Store-Instruktionen definiert.
+Die RISC-V Spezifikation definiert die Reihenfolge der Operanden aller
+Load-Instruktionen anders: Das Zielregister liegt zwischen Basisregister und
+Offset. Dies ist unintuitiv, daher sind die Load-Instruktionen im Simulator
+analog zu den Store-Instruktionen definiert.
 \end{infoblock}
 
 \subsubsection{Simulatorbefehle}
-Um ein einfaches Debuggen zu ermöglichen, unterstützt der Simulator noch Instruktionen, die nicht im RISC-V Standard enthalten sind und vom Verhalten auch eigentlich nicht mehr einer Maschineninstruktion entsprechen. Die Funktionalität ist jedoch, zur einfachen Benutzung, auch als Instruktion im selben Stil implementiert.\\
+Um ein einfaches Debuggen zu ermöglichen, unterstützt der Simulator noch
+Instruktionen, die nicht im RISC-V Standard enthalten sind und vom Verhalten
+auch eigentlich nicht mehr einer Maschineninstruktion entsprechen. Die
+Funktionalität ist jedoch, zur einfachen Benutzung, auch als Instruktion im
+selben Stil implementiert.\\
 
-\textbf{simucrash }\texttt{<msg>} akzeptiert als einzigen Operanden ein String-Literal. Wird diese Instruktion ausgeführt, terminiert das Programm und die eingegebene Nachricht wird angezeigt. Diese Simulatorinstruktion eignet sich also zur Absicherung des Codes, ähnlich wie Exceptions in höheren Programmiersprachen.\\
-\todo[inline]{Evtl. Bild des Dialogs der angzeigt wird}
+\textbf{simucrash } \texttt{<msg>} akzeptiert als einzigen Operanden ein
+String-Literal. Wird diese Instruktion ausgeführt, terminiert das Programm und
+die eingegebene Nachricht wird angezeigt. Diese Simulatorinstruktion eignet sich
+also zur Absicherung des Codes, ähnlich wie Exceptions in höheren
+Programmiersprachen.\\ \todo[inline]{Evtl. Bild des Dialogs der angzeigt wird}
 
-\textbf{simusleep }\texttt{<ms>} akzeptiert als einzigen Operanden eine ganzzahlige Konstante, die die Zeit in Millisekunden repräsentiert. Wird der Befehl ausgeführt, wird die Ausführung der folgenden Instruktion um mindestens\footnote{Aufgrund spezieller Umstände kann das Betriebssystem die Wartezeit auch verlängern. In den allermeisten Fällen handelt es sich dabei aber um einen nicht spürbare Verzögerung.} \texttt{ms} Millisekunden verzögert.
+\textbf{simusleep }\texttt{<ms>} akzeptiert als einzigen Operanden eine
+ganzzahlige Konstante, die die Zeit in Millisekunden repräsentiert. Wird der
+Befehl ausgeführt, wird die Ausführung der folgenden Instruktion um
+mindestens\footnote{Aufgrund spezieller Umstände kann das Betriebssystem die
+Wartezeit auch verlängern. In den allermeisten Fällen handelt es sich dabei aber
+um einen nicht spürbare Verzögerung.} \texttt{ms} Millisekunden verzögert.
 
 
 \subsection{Pseudoinstruktionen}
 \label{user-manual-riscv-overview-pseudos}
-Pseudoinstruktionen sind keine wirklichen Instruktionen, die es im RISC-V Befehlssatz so gibt. Ihre Funktionalität lässt sich mit einer Kombination von RISC-V Instruktionen erreichen. Diese Kombination kann aber unter Umständen recht kompliziert oder mühsam sein, daher stellen viele Assembler-Dialekte Pseudo-Instruktionen zur Verfügung. Diese können wie eine normale Instruktion verwendet werden, werden aber beim Übersetzen/Assemblieren in die eigentliche Kombination zerlegt.\\
-Diese Funktionalität bietet auch der Simulator. Die Pseudoinstruktionen sind hier als Makros ''vordefiniert'', können also überall genutzt werden. Durch Aufklappen der Makros kann man diejenigen Instruktionen sehen, in die die Pseudo-Instruktion zerlegt wird.\\
+
+Pseudoinstruktionen sind keine wirklichen Instruktionen, die es im RISC-V
+Befehlssatz so gibt. Ihre Funktionalität lässt sich mit einer Kombination von
+RISC-V Instruktionen erreichen. Diese Kombination kann aber unter Umständen
+recht kompliziert oder mühsam sein, daher stellen viele Assembler-Dialekte
+Pseudo-Instruktionen zur Verfügung. Diese können wie eine normale Instruktion
+verwendet werden, werden aber beim Übersetzen/Assemblieren in die eigentliche
+Kombination zerlegt.\\
+Diese Funktionalität bietet auch der Simulator. Die Pseudoinstruktionen sind
+hier als Makros ''vordefiniert'', können also überall genutzt werden. Durch
+Aufklappen der Makros kann man diejenigen Instruktionen sehen, in die die
+Pseudo-Instruktion zerlegt wird.\\
 
 % Define tabular layout
 \def\tabulardef{|p{4.8cm}|p{5.0cm}|p{5.0cm}|}
@@ -542,7 +670,11 @@ Diese Funktionalität bietet auch der Simulator. Die Pseudoinstruktionen sind hi
 
 \hline
 \end{tabular}\\
-\footnotetext{\label{user-manual-riscv-overview-pseudos-foot1}Da jede Marke eine Adresse darstellt führt die Verwendung einer Marke hier nicht zu einem Übersetzungsfehler. Anders als bei den relativen Kontrollflussinstruktionen wird hier eine Marke \textbf{nicht} automatisch in die passende relative Adresse umgewandelt}
+\footnotetext{\label{user-manual-riscv-overview-pseudos-foot1}Da jede Marke eine
+Adresse darstellt führt die Verwendung einer Marke hier nicht zu einem
+Übersetzungsfehler. Anders als bei den relativen Kontrollflussinstruktionen wird
+hier eine Marke \textbf{nicht} automatisch in die passende relative Adresse
+umgewandelt}
 
 \begin{tabular}{\tabulardef}
 \hline

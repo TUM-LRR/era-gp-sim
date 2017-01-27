@@ -5,44 +5,106 @@ Das \textit{Parser}-Modul übernimmt die Übersetzung des eingegebenen Textes in
 \subsubsection{Submodule}
 
 Bei Erscheinen der Version 1.0 besteht das Parser-Modul aus vier verschiedenen Untermodulen:
+
 \begin{itemize}
-\item Das \emph{Common-Submodul} stellt Klassen bereit, die zur öffentlichen Schnittstelle des Parsers zu anderen Modulen dienen. Dieses Submodul ist frei von Abhängigkeiten zu jeglichen konkreten Parser-Implementierungen.
-\item Mit dem \emph{Factory-Submodul} können neue, spezifische Parser erzeugt werden.
-\item Das \emph{RISC-V-Submodul} stellt eine konkrete Implementierung eines Assemblierers für die RISC-V-Architektur zur Verfügung.
-\item Im \emph{Independent-Submodul} sind viele Hilfsklassen (zum Beispiel Symboltabellen, Compiler für arithmetische Ausdrücke) bereitgestellt, welche von dem RISC-V-Parser verwendet, genauso gut aber auch gerne von zukünftigen Parser eingebunden werden können.
+
+\item Das \emph{Common-Submodul} stellt Klassen bereit, die zur öffentlichen
+Schnittstelle des Parsers zu anderen Modulen dienen. Dieses Submodul ist frei
+von Abhängigkeiten zu jeglichen konkreten Parser-Implementierungen.
+
+\item Mit dem \emph{Factory-Submodul} können neue, spezifische Parser erzeugt
+werden.
+
+\item Das \emph{RISC-V-Submodul} stellt eine konkrete Implementierung eines
+Assemblierers für die RISC-V-Architektur zur Verfügung.
+
+\item Im \emph{Independent-Submodul} sind viele Hilfsklassen (zum Beispiel
+Symboltabellen, Compiler für arithmetische Ausdrücke) bereitgestellt, welche von
+dem RISC-V-Parser verwendet, genauso gut aber auch gerne von zukünftigen Parser
+eingebunden werden können.
+
 \end{itemize}
+
 Im Folgenden sind diese Submodule nochmal genauer ausgeführt:
 
 \paragraph{Common-Submodul}
 
-Das Kernstück des gesamten Moduls bildet die (abstrakte) Klasse \texttt{Parser}. Diese bietet hauptsächlich zwei Funktionen: Anbieten von Syntax-Informationen mittels der Method \texttt{getSyntaxInformation} (für das Syntax-Highlighting in der Benutzeroberfläche), sowie dem Assemblieren eines gegebenen Assemblerprogrammes mithilfe der Methode \texttt{parse}, die als Eingabeparameter einen C++-Standard-String erwartet.
+Das Kernstück des gesamten Moduls bildet die (abstrakte) Klasse \texttt{Parser}.
+Diese bietet hauptsächlich zwei Funktionen: Anbieten von Syntax-Informationen
+mittels der Method \texttt{getSyntaxInformation} (für das Syntax-Highlighting in
+der Benutzeroberfläche), sowie dem Assemblieren eines gegebenen
+Assemblerprogrammes mithilfe der Methode \texttt{parse}, die als
+Eingabeparameter einen C++-Standard-String erwartet.
 
 \subparagraph{Syntax-Highlighting}
 \todo[inline]{TODO}
 \subparagraph{Das Assemblieren}
-Beim Aufruf der Methode \texttt{parse} soll das Assembler-Programm dabei kompiliert und in einer \texttt{FinalRepresentation}-Datenstruktur zurückgegeben werden. Diese enthält notwendige Informationen für die Ausführung des Assemblerprogrammes sowie dessen Darstellung in der Benutzeroberfläche.
-Die \texttt{FinalRepresentation} besteht dabei aus folgenden Einzelheiten:
+Beim Aufruf der Methode \texttt{parse} soll das Assembler-Programm dabei
+kompiliert und in einer \texttt{FinalRepresentation}-Datenstruktur zurückgegeben
+werden. Diese enthält notwendige Informationen für die Ausführung des
+Assemblerprogrammes sowie dessen Darstellung in der Benutzeroberfläche. Die
+\texttt{FinalRepresentation} besteht dabei aus folgenden Einzelheiten:
 \begin{itemize}
-\item \texttt{CommandList}: Die fertig assemblierten Assemblerbefehle, aneinandergereiht. Jeder der Befehle (des Typs \texttt{FinalCommand}) enthält einen fertig assemblierten \texttt{InstructionNode}, das \texttt{CodePositionInterval}, an welchem der Befehl im Text auftritt, sowie der Speicheradresse, an der der Befehl assembliert werden soll.
-\item \texttt{MacroInformationList}: Beinhaltet alle Makros, welche im Code vorkommen, mit eingesetzten Parametern mit Position des Auftretens.
-\item \texttt{CompileErrorList}: Eine Liste von allen Fehler, Warnungen und Hinweisen, die während des Assembliervorgangs aufgetreten sind. Wenn diese keine Fehler enthält (sehrwohl aber eventuell Warnungen oder Hinweise), so ist das Assemblieren erfolgreich gewesen und das Assemblerprogramm kann ausgeführt werden.
+\item \texttt{CommandList}: Die fertig assemblierten Assemblerbefehle,
+aneinandergereiht. Jeder der Befehle (des Typs \texttt{FinalCommand}) enthält
+einen fertig assemblierten \texttt{InstructionNode}, das
+\texttt{CodePositionInterval}, an welchem der Befehl im Text auftritt, sowie der
+Speicheradresse, an der der Befehl assembliert werden soll.
+\item \texttt{MacroInformationList}: Beinhaltet alle Makros, welche im Code
+vorkommen, mit eingesetzten Parametern mit Position des Auftretens.
+\item \texttt{CompileErrorList}: Eine Liste von allen Fehler, Warnungen und
+Hinweisen, die während des Assembliervorgangs aufgetreten sind. Wenn diese keine
+Fehler enthält (sehrwohl aber eventuell Warnungen oder Hinweise), so ist das
+Assemblieren erfolgreich gewesen und das Assemblerprogramm kann ausgeführt
+werden.
 \end{itemize}
 
 Gehen wir noch auf ein paar Feinheiten ein:
 
-Koordinaten im Assemblertext werden in der Datenstruktur \texttt{CodePosition} als zweidimensionaler Punkt gespeichert, ein Intervall davon entsprechend in der \texttt{CodePositionInterval}-Klasse. Ein Intervall ist genau dann leer, wenn sein Startpunkt vor seinem Endpunkt liegt. In diesem Fall also, wenn die Y-Koordinate des Endpunktes strikt kleiner als die des Startpunktes oder die Y-Koordinaten identisch aber die X-Koordinate des Endpunktes strikt kleiner ist. Ein CodePositionInterval wird beidseitig inklusiv gesehen (d.h. beide Randpunkte liegen noch im Intervall).
+Koordinaten im Assemblertext werden in der Datenstruktur \texttt{CodePosition}
+als zweidimensionaler Punkt gespeichert, ein Intervall davon entsprechend in der
+\texttt{CodePositionInterval}-Klasse. Ein Intervall ist genau dann leer, wenn
+sein Startpunkt vor seinem Endpunkt liegt. In diesem Fall also, wenn die
+Y-Koordinate des Endpunktes strikt kleiner als die des Startpunktes oder die
+Y-Koordinaten identisch aber die X-Koordinate des Endpunktes strikt kleiner ist.
+Ein CodePositionInterval wird beidseitig inklusiv gesehen (d.h. beide Randpunkte
+liegen noch im Intervall).
 
-Ein \texttt{CompileError} kapselt eine Fehlermeldung (bzw. eine Warnung oder einen Hinweis). Dabei wird die Position und die Schwere der Meldung (Fehler, Warnung, Hinweis, vgl. \texttt{CompileErrorSeverity}) festgehalten. Der Begriff „Error“ ist deswegen etwas überladen. Die Meldung selber wird als \texttt{Translateable} gespeichert, sodass diese später in verschiedene Sprachen übersetzt werden können soll. Dabei werden Argumente separat vom eigentlichen Text kodiert. Eine \texttt{CompileErrorList} kapselt dabei die \texttt{CompileError}s und stellt Möglichkeiten zur Erweiterung der Liste bereit. Dies erfolgt über den Aufruf von Makros. Der Grund hierfür ist, dass so die Fehlermeldungen automatisch von einem Qt-Programm gefunden und für das Übersetzen markiert werden können. Die Meldungen müssen dabei ein C-String sein (\texttt{const char*}). Ebenso lassen sich über die \texttt{CompileErrorList} einfache Abfragen stellen, ob jeweils Fehler, Warnungen oder Hinweise vorhanden sind und wenn ja, wie viele.
+Ein \texttt{CompileError} kapselt eine Fehlermeldung (bzw. eine Warnung oder
+einen Hinweis). Dabei wird die Position und die Schwere der Meldung (Fehler,
+Warnung, Hinweis, vgl. \texttt{CompileErrorSeverity}) festgehalten. Der Begriff
+„Error“ ist deswegen etwas überladen. Die Meldung selber wird als
+\texttt{Translateable} gespeichert, sodass diese später in verschiedene Sprachen
+übersetzt werden können soll. Dabei werden Argumente separat vom eigentlichen
+Text kodiert. Eine \texttt{CompileErrorList} kapselt dabei die
+\texttt{CompileError}s und stellt Möglichkeiten zur Erweiterung der Liste
+bereit. Dies erfolgt über den Aufruf von Makros. Der Grund hierfür ist, dass so
+die Fehlermeldungen automatisch von einem Qt-Programm gefunden und für das
+Übersetzen markiert werden können. Die Meldungen müssen dabei ein C-String sein
+(\texttt{const char*}). Ebenso lassen sich über die \texttt{CompileErrorList}
+einfache Abfragen stellen, ob jeweils Fehler, Warnungen oder Hinweise vorhanden
+sind und wenn ja, wie viele.
 
 \paragraph{Factory-Submodul}
 
-Kommen wir zum Factory-Submodul: Dieses besteht lediglich aus einer einzigen Klasse, der \texttt{ParserFactory}. Bei jener werden alle Parserimplementierungen unter einem Namen zur Auswahl gestellt, sodass sie mit Architektur und Speicherzugriff kombiniert einen Parser erzeugen können. Diese Abhängigkeit zu den einzelnen Implementierungsmodulen ist auch der Grund, wieso das Factory-Submodul aus dem Common-Submodul herausgenommen wurde.
+Kommen wir zum Factory-Submodul: Dieses besteht lediglich aus einer einzigen
+Klasse, der \texttt{ParserFactory}. Bei jener werden alle
+Parserimplementierungen unter einem Namen zur Auswahl gestellt, sodass sie mit
+Architektur und Speicherzugriff kombiniert einen Parser erzeugen können. Diese
+Abhängigkeit zu den einzelnen Implementierungsmodulen ist auch der Grund, wieso
+das Factory-Submodul aus dem Common-Submodul herausgenommen wurde.
 
-Mit der Methode \texttt{ParserFactory::createParser} kann dabei ein Parser mit den angegebenen Voraussetzungen generiert werden. Die Map \texttt{ParserFactory::mapping} enthält alle registrierten Parser.
+Mit der Methode \texttt{ParserFactory::createParser} kann dabei ein Parser mit
+den angegebenen Voraussetzungen generiert werden. Die Map
+\texttt{ParserFactory::mapping} enthält alle registrierten Parser.
 
 \paragraph{Independent-Submodul}
 
-Kommen wir nun zum wohl größten Submodul des Parsers, dem \emph{Independent}-Modul, welches eine Sammlung von Hilfsklassen darstellt, welche von verschiedenen Assemblern verwendet werden können sollen. Dieses Modul kann und soll gerne erweitert, dabei aber unabhängig von jeglichem spezifischen Assemblierer gehalten werden.
+Kommen wir nun zum wohl größten Submodul des Parsers, dem
+\emph{Independent}-Modul, welches eine Sammlung von Hilfsklassen darstellt,
+welche von verschiedenen Assemblern verwendet werden können sollen. Dieses Modul
+kann und soll gerne erweitert, dabei aber unabhängig von jeglichem spezifischen
+Assemblierer gehalten werden.
 
 \subparagraph{Intermediate-Darstellung für Befehle}
 \todo[inline]{TODO}
@@ -61,16 +123,26 @@ Kommen wir nun zum wohl größten Submodul des Parsers, dem \emph{Independent}-M
 
 \paragraph{RISC-V-Submodul}
 
-Für RISC-V existiert ein korrespondierendes Parser-Submodul, welches in der \texttt{ParserFactory} über den Namen \texttt{riscv} aufgerufen werden kann. Es verwendet dabei größtenteils die Klassen, die im Independent-Submodul definiert sind.
+Für RISC-V existiert ein korrespondierendes Parser-Submodul, welches in der
+\texttt{ParserFactory} über den Namen \texttt{riscv} aufgerufen werden kann. Es
+verwendet dabei größtenteils die Klassen, die im Independent-Submodul definiert
+sind.
+
 \todo[inline]{TODO: Zum Text-Parsen hier was sagen, RISC-V-Regex erklären}
 
 \subsubsection{Verwenden eines Parsers}
 
-Von außen kann das Parser-Modul über die \texttt{ParserFactory} angesprochen werden. Hier erzeugt man mit Name, Speicherzugriff und gegebener Architektur einen gewünschten Parser und erhält einen Unique-Pointer darauf. Anschließend kann man bereits die \texttt{parse}- und \texttt{getSyntaxHighliting}-Methoden des Parsers selber aufrufen und Text assemblieren lassen. Das Deinitialisieren erfolgt ebenfalls über den eingebauten Destruktor automatisch.
+Von außen kann das Parser-Modul über die \texttt{ParserFactory} angesprochen
+werden. Hier erzeugt man mit Name, Speicherzugriff und gegebener Architektur
+einen gewünschten Parser und erhält einen Unique-Pointer darauf. Anschließend
+kann man bereits die \texttt{parse}- und \texttt{getSyntaxHighliting}-Methoden
+des Parsers selber aufrufen und Text assemblieren lassen. Das Deinitialisieren
+erfolgt ebenfalls über den eingebauten Destruktor automatisch.
 
 \subsubsection{Einschränkungen}
 
-Trotz der aktuellen Fähigkeiten des Parser-Moduls existieren noch folgende Einschränkungen:
+Trotz der aktuellen Fähigkeiten des Parser-Moduls existieren noch folgende
+Einschränkungen:
 
 \todo[inline]{TODO}
 \begin{itemize}
@@ -79,4 +151,3 @@ Trotz der aktuellen Fähigkeiten des Parser-Moduls existieren noch folgende Eins
 \item \emph{Symbol-Tabelle}: \todo[inline]{TODO}
 \item \emph{Gleitkommazahl-Unterstützung}: \todo[inline]{TODO}
 \end{itemize}
-
