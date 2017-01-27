@@ -79,9 +79,15 @@ void ParsingAndExecutionUnit::execute() {
 void ParsingAndExecutionUnit::executeNextLine() {
   _stopCondition->reset();
   size_t nextNode = _findNextNode();
-  if (_executeNode(nextNode)) {
-    _updateLineNumber(nextNode);
-  }
+  do {
+    if (!_executeNode(nextNode)) break;
+
+    nextNode = _updateLineNumber(nextNode);
+
+    if (nextNode >= _finalRepresentation.commandList().size()) break;
+
+    // Skip nodes that aren't part of the user's program
+  } while (_finalRepresentation.commandList()[nextNode].position().isEmpty());
   _executionStopped();
 }
 
