@@ -4,7 +4,9 @@
         <file>Components/Common/ToolTip.qml</file>
         <file>Components/ComponentHolder.qml</file>
         <file>Components/editor/Editor.qml</file>
-        <file>Components/Memory/MemoryComponent.qml</file>
+        <file>Components/editor/InlineMacros.qml</file>
+        <file>Components/editor/IssueMark.qml</file>
+    	  <file>Components/editor/MacroSubeditor.qml</file>
         <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Output/PixelDisplay.qml</file>
         <file>Components/editor/MacroTriangleButton.qml</file>
@@ -16,6 +18,7 @@
         <file>Components/editor/Issue Icons/Warning Icon.png</file>
         <file>Components/editor/Issue Icons/Warning Icon@2x.png</file>
         <file>Components/editor/HelpToolTip.qml</file>
+        <file>Components/Memory/MemoryComponent.qml</file>
         <file>Components/Memory/MemoryTreeView.qml</file>
         <file>Components/Memory/MemoryCell.qml</file>
         <file>Components/Memory/MemoryContent.qml</file>
