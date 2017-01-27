@@ -46,33 +46,4 @@ Beschreibung des Moduls + Schnittstellen zu anderen Modulen
 
 \subsection{GUI}
 
-
-\subsubsection{Aufbau}
-
-Die grafische Benutzeroberfläche des Simulators besteht aus einer Reihe von Komponenten, die sich innerhalb des gegebenen Rasters nahezu beliebig anordnen lassen. Diese Aufteilung in Komponenten spiegelt sich auch in der Implementierung der GUI wieder, indem jede Komponente einer QML-Komponente entspricht, die gegebenenfalls andere Teilkomponenten, nicht zuletzt elementare Qt-Quick-Komponenten, benutzen. Die Komponenten umfassen den Editor, die sechs frei wählbaren Komponenten Snapshots, Output, Input, Register, Speicher und Hilfe, sowie übergeordnete Elemente wie den Split-View, die Projekt-Tabbar, die Toolbar, die Menubar und den Einstellungsdialog.
-
-QML-Komponenten, die Zugriff auf das vom Core zur Verfügung gestellte Modell benötigen, werden zusätzlich mit einer C++-Klasse assoziiert. Diese Klassen halten in der Regel Instanzen der Interface-Klassen \texttt{MemoryAccess}, \texttt{MemoryManager}, \texttt{ArchitectureAccess}, \texttt{ParserInterface} oder \texttt{CommandInterface}  über die der Zugriff auf den Core unter Verwendung des Schedulers erfolgt.
-
-Da das Qt-Framework einen in sich stark abgeschlossenen Aufbau besitzt, werden für QML-Komponenten mit komplexen Modellen, wie etwa der Speicher oder die Register, von Qt-Klassen abgeleitete Modelle benötigt. Da keine Abhängigkeiten vom Qt-Framework innerhalb der GUI-fernen Module Core, Parser, Arch entstehen sollen, kann diese Funktion nicht von Klassen des Cores übernommen werden. Aus diesem Grund übernehmen einige der zu den QML-Komponenten gehörigen C++-Klassen der GUI die Aufgabe des Modells und werden folglich von Qt-Modell-Klassen wie etwa \texttt{QAbstractItemModel} abgeleitet. Ausgenommen von Cache-Zwecken halten diese Modelle selbst keine Daten, sondern holen diese über das zugehörige Interface-Objekt, sobald Daten seitens der QML-Komponente angefordert werden.
-
-\subsubsection{Kommunikation}
-\label{gui-kommunikation}
-Der Simulator unterstützt das gleichzeitige Laden mehrerer unabhängiger Projekte. Diese werden jeweils durch eine \texttt{GUIProject}-Instanz repräsentiert, welches Komponenten-übergreifende Funktionalität für ein Projekt zur Verfügung stellt.
-
-Im \texttt{GUIProject} werden mitunter die C++-Klassen der QML-Komponente gehalten, initialisiert und deren Kommunikation mit dem Core koordiniert.
-Dieses übernimmt also die Rolle des Mittelsmann zwischen dem Core, der keine Qt-Mechanismen verwendet, und der GUI.
-
-Bei der Initialisierung der C++-Klassen übergibt das \texttt{GUIProject} Instanzen der Interface-Klassen (bspw. \texttt{MemoryAccess} und \texttt{ArchitectureAccess}).
-
-Datenaustausch ausgehend vom Core hin zu den QML-Komponenten in der GUI hat nicht den Scheduler zwischengeschaltet, sondern verläuft über das \texttt{GUIProject} in zwei Schritten. Dabei ruft der Core im Schritt einen Callback auf, der im \texttt{ProjectModule} gesetzt werden (näher Informationen im Abschnitt /Core/). Das \texttt{GUIProject} leitet im zweiten Schritt den im \texttt{GUIProject} eingehenden Callback mit Hilfe des Qt-eigenen Signal-Slot-Mechanismus an die Instanzen der C++-Klassen der QML-Komponenten weiter. Diese Umleitung ist mitunter deshalb notwendig, um die eingehende Nachricht, die im Thread des Cores gesendet wird, in den Main-Thread zu übertragen, der von der GUI verwendet wird.
-
-Nachrichten, die von einer der C++-Klassen der Komponenten an den Core gesendet werden sollen, können mit Hilfe der Interface-Klassen in den Scheduler eingefügt werden, der diese an das korrespondierende Core-Objekt weiterleitet.
-
-Damit die QML-Komponenten auf Methoden der zugehörigen C++-Klasse zugreifen können, werden deren Instanzen im \texttt{GUIProject} zum projektspezifischen \texttt{QQMLContext} hinzugefügt, beispielsweise die Klasse \texttt{RegisterModel} als Context-Property \texttt{registerModel}. Auf die Properties dieses Kontexts kann über die zugehörige Bezeichnung (bspw. \texttt{registerModel}) global in jeder QML-Datei zugegriffen werden. Die Trennung der Daten verschiedener Projekte wird gewährleistet, indem jedes \texttt{GUIProject} seinen eigenen Kontext erhält.
-
-Eine Ausnahme von der regulären Kommunikation bildet die Toolbar, die anders als die übrigen QML-Komponenten, die als Kommunikationspartner auftreten, nicht für jedes Projekt einzeln existiert, sondern übergeordnet ist. Der Datenaustausch erfolgt deshalb nicht über das \texttt{GUIProject}, sondern über die \texttt{Ui}-Klasse, die den QML-Dateien über die Context-Property \texttt{ui} zur Verfügung gestellt wird. Da die \texttt{Ui}-Instanz Kenntnis über das aktive Projekt hat, können auch projektspezifische Informationen, etwa über den aktuellen Ausführungszustand, ausgetauscht werden.
-
-
-\subsubsection{Initialisierung}
-
-Nachdem das Programm in der main-Methode der Klasse \texttt{main.cpp} gestartet ist, wird eine Instanz der graphischen Benutzeroberfläche \texttt{Ui} erstellt.
+\input{module-gui.tex}
