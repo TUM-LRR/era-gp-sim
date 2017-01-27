@@ -1,12 +1,8 @@
 \subsection{Architektur}
 
 \todo[inline]{
-	* Syntax Tree \\
-	* Factory \\
-	* Architecture \\
+	* Architecture Description Language \\
 	* Teilung common/riscv \\
-	* ValidationResult \\
-	* InstructionNode \\
 }
 
 Die Architektur (kurz: \textit{Arch}) kümmert sich um die Ausführung der
@@ -75,15 +71,16 @@ die Wortgröße) und bietet zusätzlich Zugang zur \textit{NodeFactory}.
 Mit der NodeFactory werden die Syntax Bäume in Form von \textit{SyntaxTreeNode}
 Objekten erzeugt, welche anschließend validiert und ausgeführt werden können. \\
 Im Folgenden wird auf diese Klassen genauer eingegangen.
+
+\subsubsection{Architecture Description Language}
+
+Eine Architektur kann in \texttt{YAML} Dateien beschrieben werden.
+
+\todo[inline]{@Peter}
+
 \subsubsection{Architecture}
 
-\todo[inline]{
-	* Builder Pattern \\
-	* Formula/Brewery \\
-	* Information Interfaces
-}
-
-Ein \textit{Architecture} Objekt repräsentiert eine geladene Architektur im
+Ein \texttt{Architecture} Objekt repräsentiert eine geladene Architektur im
 Simulator. Der Grundgedanke bei der Entwicklung war das modulare Design von RISC-V
 zu unterstützen, dieses Konzept lässt sich aber leicht auf andere Prozessorarchitekturen
 übertragen. So wird angenommen, dass eine Architektur immer aus einem Basismodul
@@ -93,6 +90,16 @@ Um also ein Architecture Objekt zu erzeugen, wird im ersten Schritt eine
 \textit{ArchitectureFormula} erstellt, die das Basismodul und alle Erweiterungen
 spezifiziert. Ein Aufruf von \textit{Brew()} löst die Abhängigkeiten auf und liest
 anschließend die Informationen aus den Konfigurationsdateien ein.
+
+Intern wird das \textit{Builder Pattern} zum sukzessivem Aufbau des Objekts
+verwendet. Als Oberklasse dient dazu das \texttt{BuilderInterface}, von dem alle
+Komponenten abgeleitet werden. Da eine Architektur lediglich aus strukturierten
+Informationen besteht, existiert eine weitere Oberklasse \texttt{InformationInterface}.
+Von ihr sind wiederum die konkreten Informationsklassen abgeleitet. Nennenswert
+dabei ist die \texttt{ExtensionInformation} Klasse, die ein Modul in unserer
+modularen Auffassung einer Architektur widerspiegelt. Ein finales
+\texttt{Architecture} Modul besteht schließlich aus einem ExtensionInformation
+Objekt, welches mit allen Erweiterungen vereint wurde.
 
 Das Architecture Objekt beschreibt lediglich die Eigenschaften einer Architektur,
 d.h. es stellt Informationen wie die Byte-Reihenfolge, Wortgröße, Speicherausrichtung
@@ -104,16 +111,6 @@ zwischen der Beschreibung der Architektur und der Implementation abläuft, wird
 im Folgenden erläutert.
 
 \subsubsection{Syntax Tree}
-
-\todo[inline]{
-	* Immediate \\
-	* Instruction \\
-	* MemoryAccess \\
-	* RegisterAccess \\
-	* Arithmetic \\
-	* DataNode \\
-	* getValue() assemble() etc.
-}
 
 Der Syntax Baum mit durch Vererbung implementiert und in \textit{common} und
 \textit{riscv} (oder jede beliebige andere Architektur) gegliedert. Eine Übersicht
@@ -237,17 +234,19 @@ Folgende Methoden werden von ihr vorgegeben:
 	in einem Instruktionsknoten durchzuführen.
 \end{itemize}
 
+Die Aufgabe einer konkreten Architektur besteht nun darin, die eben beschriebenen
+Unterklassen inklusive ihrer Methoden entsprechend zu implementieren. In Sektion
+\ref{sec:extension} wird darauf genauer eingegangen. \\
+Um nun Objekte des Syntax Baums zu erzeugen, wird die Node Factory benötigt, auf
+die im Folgenden eingegangen wird.
+
 \subsubsection{Node Factory}
 \label{module-arch-node-factory}
 
-\todo[inline]{
-	* NodeFactoryCollection \\
-	* NodeFactoryCollectionMaker \\
-	* FactoryTypes
-}
-
-Die Node Factory basiert auf dem Abstract Factory Pattern und wird als Diagramm
-in Abbildung \ref{fig:arch-node-factory} dargestellt.
+Mit der \textit{Node Factory} wird der bereits beschriebene Syntax Baum erzeugt.
+Um nach außen ein Architektur-unabhängiges Interface zu bieten, basiert die
+Node Factory dem \textit{Abstract Factory Pattern} und wird als Diagramm in
+Abbildung \ref{fig:arch-node-factory} dargestellt.
 
 \begin{figure}[H]
 	\begin{center}
@@ -294,8 +293,18 @@ in Abbildung \ref{fig:arch-node-factory} dargestellt.
 	\label{fig:arch-node-factory}
 \end{figure}
 
-\subsubsection{Architecture Description Language}
+Wie man erkennen kann, existiert für jeden Knotentyp eine eigene Factory. Dies
+dient der Übersicht, da vor allem die Implementation der
+\texttt{InstructionNodeFactory} bei Architekturen mit vielen Instruktionen
+schnell unübersichtlich werden kann. Um zu verhindern, dass andere Module
+mehrere Node Factory Objekte verwalten müssen, wird eine
+\texttt{NodeFactoryCollection} über das Architecture Objekt zur Verfügung gestellt,
+welches die einzelnen Factory Objekte kapselt und die \texttt{create()} Aufrufe
+weiterleitet.
 
-Eine Architektur kann in \texttt{YAML} Dateien beschrieben werden.
+Des Weiteren fällt auf, dass RISC-V die beiden letzten Node Factories nicht
+implementiert. Der Grund dafür wurde in der vorherigen Sektion beschrieben: RISC-V
+unterstützt keine Inline Speicherzugriffe. Architekturen können durch das Fehlen
+einer Factory signalisieren, dass sie einen Knotentyp nicht unterstützen.
 
-\todo[inline]{@Peter}
+
