@@ -41,14 +41,42 @@ Kommen wir zum Factory-Submodul: Dieses besteht lediglich aus einer einzigen Kla
 Mit der Methode \texttt{ParserFactory::createParser} kann dabei ein Parser mit den angegebenen Voraussetzungen generiert werden. Die Map \texttt{ParserFactory::mapping} enthält alle registrierten Parser.
 
 \paragraph{Independent-Submodul}
+
+Kommen wir nun zum wohl größten Submodul des Parsers, dem \emph{Independent}-Modul, welches eine Sammlung von Hilfsklassen darstellt, welche von verschiedenen Assemblern verwendet werden können sollen. Dieses Modul kann und soll gerne erweitert, dabei aber unabhängig von jeglichem spezifischen Assemblierer gehalten werden.
+
+\subparagraph{Intermediate-Darstellung für Befehle}
+\todo[inline]{TODO}
+
+\subparagraph{Assemblierung der Intermediate-Darstellung}
+\todo[inline]{TODO}
+
+\subparagraph{Makros}
+\todo[inline]{TODO}
+
+\subparagraph{Symbolgraph und Symbol-Replacer}
+\todo[inline]{TODO}
+
+\subparagraph{Compiler für arithmetische Ausdrücke}
 \todo[inline]{TODO}
 
 \paragraph{RISC-V-Submodul}
-\todo[inline]{TODO}
+
+Für RISC-V existiert ein korrespondierendes Parser-Submodul, welches in der \texttt{ParserFactory} über den Namen \texttt{riscv} aufgerufen werden kann. Es verwendet dabei größtenteils die Klassen, die im Independent-Submodul definiert sind.
+\todo[inline]{TODO: Zum Text-Parsen hier was sagen, RISC-V-Regex erklären}
 
 \subsubsection{Verwenden eines Parsers}
-\todo[inline]{TODO}
+
+Von außen kann das Parser-Modul über die \texttt{ParserFactory} angesprochen werden. Hier erzeugt man mit Name, Speicherzugriff und gegebener Architektur einen gewünschten Parser und erhält einen Unique-Pointer darauf. Anschließend kann man bereits die \texttt{parse}- und \texttt{getSyntaxHighliting}-Methoden des Parsers selber aufrufen und Text assemblieren lassen. Das Deinitialisieren erfolgt ebenfalls über den eingebauten Destruktor automatisch.
 
 \subsubsection{Einschränkungen}
+
+Trotz der aktuellen Fähigkeiten des Parser-Moduls existieren noch folgende Einschränkungen:
+
 \todo[inline]{TODO}
+\begin{itemize}
+\item \emph{Segment-Darstellung}: \todo[inline]{TODO}
+\item \emph{Compiler für arithmetische Ausdrücke}: \todo[inline]{TODO}
+\item \emph{Symbol-Tabelle}: \todo[inline]{TODO}
+\item \emph{Gleitkommazahl-Unterstützung}: \todo[inline]{TODO}
+\end{itemize}
 
