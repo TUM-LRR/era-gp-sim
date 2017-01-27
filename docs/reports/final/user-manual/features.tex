@@ -314,10 +314,15 @@ Für die Anzeige gibt es zwei Einstellungen, die man über das Zahnrad rechts un
 
 
 
-\subsubsection{Ausgabe -- Konsole}
-%\todo[inline]{pipe-like, array-based; }
-%\todo[inline]{pipe-like, array-based; }
-Die Konsole verfügt wiederum über zwei Modi, pipe-like und array-based, die in den Einstellungen ausgewählt werden können. Pipe-Like liest immer den Wert des Speichers an der Startadresse ein und gibt das entsprechende ASCII-Zeichen aus. Die Ausgabe wird dabei nicht gelöscht. Möchte man den Text, den die Konsole anzeigt, löschen, so ist das mit einem doppelten Rechtsklick möglich.
-Array-based hingegen liest ab der Speicheradresse, die in den Einstellungen gegeben ist, jedes Byte ein und wandelt es in das entsprechende ASCII-Zeichen um, bis das Ende des Speichers erreicht wird, oder ein Nullbyte auftritt. Der Text kann in dieser Komponente nicht verändert werden. Alle Änderungen müssen über den Speicher erfolgen.
+\subsubsection{Konsole}
+\todo[inline]{Nach review von feature/theme-input Bild der Konsole einfügen. }
+Die Konsole erlaubt es, Text aus dem Speicher auszulesen und byteweise zu Zeichen umgewandelt anzuzeigen. Außerdem kann Text eingegeben werden, an der daraufhin in den Speicher geschrieben wird. Dabei verfügt die Konsole über zwei Modi:
+Im Array-Mode wird in der Konsole angezeigt, was ab der Startaddresse bis zum ersten Null-Byte im Speicher steht. Falls der Nutzer etwas eingibt und Return drückt, wird der eingegebene Text im Speicher an den vorhandenen Text angehängt. Alle Änderungen im relevanten Speicherbereich werden auf den vorhanden Text der Konsole angewandt.
+Im Pipe-Mode der Konsole wird neuer Text immer an die gleiche Speicheraddresse geschrieben, jedoch in der Konsolenansicht an den alten Text angehängt. Dabei wird der komplette vorherige Text der Konsole, der im Speicher war, aus diesem gelöscht. Es wird immer dann neuer Text in die Konsole geladen, wenn ein simulierter Interrupt ausgelöst wurde: Dies ist der Fall, wenn an einer festgelegten Addresse das niedrigste Bit auf 1 gesetzt wurde. Die Konsole lädt dann den neuen Text und setzt dieses Bit wieder auf 0.
+In diesem Modus kann der Text der Konsole nur gelöscht werden, indem über das per Rechtsklick verfügbare Kontextmenü \texttt{Clear} aufgerufen wird. Über dieses Kontextmenü kann auch der Modus der Konsole gewechselt werden.
+In den Einstellungen der Konsole sind zusätzlich noch die Startaddresse des Speicherbereichs der Konsole sowie die Addresse des simulierten Interrupts einstellbar.
+\begin{warningblock}
+    Bei einem Clear Aufruf über das Kontextmenü wird auch der Speicherbereich zurückgesetzt, in dem Text der Konsole steht.
+\end{warningblock}
 
 \subsection{Sonstige Features}
