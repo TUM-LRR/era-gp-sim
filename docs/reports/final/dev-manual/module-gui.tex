@@ -26,4 +26,5 @@ Eine Ausnahme von der regulären Kommunikation bildet die Toolbar, die anders al
 
 \subsubsection{Initialisierung}
 
-Nachdem das Programm in der main-Methode der Klasse \texttt{main.cpp} gestartet ist, wird eine Instanz der graphischen Benutzeroberfläche \texttt{Ui} erstellt.
+\todo{Ggf. entfernen, da nicht besonders nützlich}
+Nachdem das Programm in der main-Methode der Klasse \texttt{main.cpp} gestartet ist, wird eine Instanz der Klasse \texttt{Ui} erstellt. Durch den Aufruf von \texttt{runUi} wird die graphische Oberfläche erstellt und gestartet. Das QML-Wurzelelement des Programms ist ein \texttt{ApplicationWindow}, welches in der Datei \texttt{main.qml} zu finden ist. Da anfänglich noch keine Projekte geöffnet sind, zeigt die GUI ein Fenster an, in dem ein neues Projekt angelegt werden kann. Wurde ein neues Projekt erstellt, so wird die Methode \texttt{addProject} der \texttt{Ui}-Klasse aufgerufen, in welcher eine \texttt{GUIProject}-Instanz erstellt und mit gegebener Konfiguration initialisiert wird.  
