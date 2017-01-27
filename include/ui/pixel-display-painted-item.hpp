@@ -255,6 +255,11 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
    */
   size_t getFreeBits();
 
+  /*
+   * \brief calls update and handles errors
+   */
+  void doUpdate();
+
  private:
 
   /*

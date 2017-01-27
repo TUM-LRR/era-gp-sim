@@ -34,22 +34,22 @@ class Options;
 struct ColorMode {
   using size_t = std::size_t;
   using GetPixelFunction = std::function<std::uint32_t(
-      Optional<OutputComponent *>, const Options &, size_t, size_t)>;
+      Optional<OutputComponent *>, Options &, size_t, size_t)>;
   using GetColorFunction = std::function<std::uint32_t(
-      Optional<OutputComponent *>, const Options &, size_t)>;
+      Optional<OutputComponent *>, Options &, size_t)>;
   using GetPixelFromBufferFunction = std::function<std::uint32_t(
-      const MemoryValue &, size_t, const Options &, size_t, size_t)>;
+      const MemoryValue &, size_t, Options &, size_t, size_t)>;
   using GetColorFromBufferFunction = std::function<std::uint32_t(
-      const MemoryValue &, size_t, const Options &, size_t)>;
+      const MemoryValue &, size_t, Options &, size_t)>;
   using UpdateMemoryFunction = std::function<void(Optional<OutputComponent *>,
-                                                  const Options &,
+                                                  Options &,
                                                   std::shared_ptr<QImage>,
                                                   size_t,
                                                   size_t)>;
   using UpdateAllPixelsFunction = std::function<void(
-      Optional<OutputComponent *>, const Options &, std::shared_ptr<QImage>)>;
+      Optional<OutputComponent *>, Options &, std::shared_ptr<QImage>)>;
   using UpdateAllColorsFunction = std::function<void(
-      Optional<OutputComponent *>, const Options &, std::shared_ptr<QImage>)>;
+      Optional<OutputComponent *>, Options &, std::shared_ptr<QImage>)>;
 
   /*
    * \brief returns the color of the pixel at (x,y)
@@ -96,7 +96,8 @@ struct ColorMode {
                             size_t address,
                             bool indirect,
                             size_t cellSize,
-                            size_t pointerSize);
+                            size_t pointerSize,
+                            Options &o);
   /*
    * \brief returns the memoryValue from memory at address
    * \param memoryAccess The access to the memory
@@ -108,7 +109,7 @@ struct ColorMode {
   static MemoryValue getMemoryValueAt(Optional<OutputComponent *> memoryAccess,
                                       size_t address,
                                       size_t length,
-                                      size_t defaultLength = 1);
+                                      Options &o);
 
   // RGB:
   const static GetPixelFunction RGBGetPixel;

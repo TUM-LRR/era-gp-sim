@@ -46,9 +46,9 @@ void PixelDisplayPaintedItem::memoryChanged(std::size_t address,
         (*_outputComponentPointer)->getMemoryAccess().getMemorySize().get();
   }
   _options.updateMemory(_outputComponentPointer, _image, address, amount);
-  update();
+  doUpdate();
   timeElapsed -= std::clock();
-  std::cout << "Memory Updated in " << (1000 * timeElapsed / CLOCKS_PER_SEC)
+  std::cout << "Memory Updated in " << (1000 * (-timeElapsed) / CLOCKS_PER_SEC)
             << "ms" << std::endl;
 }
 
@@ -57,7 +57,7 @@ void PixelDisplayPaintedItem::setPixelBaseAddress(size_t pixelBaseAddress) {
     std::cout << "pixelBaseAddress changed: " << pixelBaseAddress << std::endl;
     _options.pixelBaseAddress = pixelBaseAddress;
     _options.updateAllPixels(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 void PixelDisplayPaintedItem::setColorBaseAddress(size_t colorBaseAddress) {
@@ -65,7 +65,7 @@ void PixelDisplayPaintedItem::setColorBaseAddress(size_t colorBaseAddress) {
     std::cout << "colorBaseAddress changed: " << colorBaseAddress << std::endl;
     _options.colorBaseAddress = colorBaseAddress;
     _options.updateAllColors(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 void PixelDisplayPaintedItem::setWidth(size_t width) {
@@ -88,35 +88,35 @@ void PixelDisplayPaintedItem::setColorMode(const QString &colorMode) {
     _image = _options.makeImage();
     _options.updateAllPixels(_outputComponentPointer, _image);
     _options.updateAllColors(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 void PixelDisplayPaintedItem::setRBit(size_t rBit) {
   if (_options.rBit != rBit) {
     _options.rBit = rBit;
     _options.updateAllPixels(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 void PixelDisplayPaintedItem::setGBit(size_t gBit) {
   if (_options.gBit != gBit) {
     _options.gBit = gBit;
     _options.updateAllPixels(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 void PixelDisplayPaintedItem::setBBit(size_t bBit) {
   if (_options.bBit != bBit) {
     _options.bBit = bBit;
     _options.updateAllPixels(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 void PixelDisplayPaintedItem::setColumns_rows(bool columns_rows) {
   if (_options.columns_rows != columns_rows) {
     _options.columns_rows = columns_rows;
     _options.updateAllPixels(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 void PixelDisplayPaintedItem::setHorizontallyMirrored(
@@ -130,7 +130,7 @@ void PixelDisplayPaintedItem::setTight(bool tight) {
   if (_options.tight != tight) {
     _options.tight = tight;
     _options.updateAllPixels(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 void PixelDisplayPaintedItem::setPixelBufferPointerLike(
@@ -138,7 +138,7 @@ void PixelDisplayPaintedItem::setPixelBufferPointerLike(
   if (_options.pixelBufferPointerLike != pixelBufferPointerLike) {
     _options.pixelBufferPointerLike = pixelBufferPointerLike;
     _options.updateAllPixels(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 void PixelDisplayPaintedItem::setColorTablePointerLike(
@@ -146,21 +146,21 @@ void PixelDisplayPaintedItem::setColorTablePointerLike(
   if (_options.colorTablePointerLike != colorTablePointerLike) {
     _options.colorTablePointerLike = colorTablePointerLike;
     _options.updateAllColors(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 void PixelDisplayPaintedItem::setFreeBytes(size_t freeBytes) {
   if (_options.freeBytes != freeBytes) {
     _options.freeBytes = freeBytes;
     _options.updateAllPixels(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 void PixelDisplayPaintedItem::setFreeBits(size_t freeBits) {
   if (_options.freeBits != freeBits) {
     _options.freeBits = freeBits;
     _options.updateAllPixels(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 
@@ -220,7 +220,7 @@ void PixelDisplayPaintedItem::resize(size_t width, size_t height) {
     _image = _options.makeImage();
     _options.updateAllPixels(_outputComponentPointer, _image);
     _options.updateAllColors(_outputComponentPointer, _image);
-    update();
+    doUpdate();
   }
 }
 
@@ -245,4 +245,9 @@ QString PixelDisplayPaintedItem::colorModeToString(size_t colorMode) {
   const QString colorModeNameList[] = {QString::fromStdString("RGB"),
                                        QString::fromStdString("Monochrome")};
   return colorModeNameList[colorMode];
+}
+
+void PixelDisplayPaintedItem::doUpdate(){
+  _options.handleErrors();
+  update();
 }

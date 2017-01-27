@@ -52,9 +52,9 @@ struct Options {
   // false->row_major, true->columns->major
   bool columns_rows = false;
   // mirrors the image horizontally
-  bool horizontallyMirrored = false;// TODO
+  bool horizontallyMirrored = false;  // TODO
   // mirrors the image vertically
-  bool verticallyMirrored = false;// TODO
+  bool verticallyMirrored = false;  // TODO
   // packs pixel data as tight as possible
   bool tight = false;
   // interpret PixelBaseAddress as pointer to the PixelBuffer
@@ -65,6 +65,16 @@ struct Options {
   size_t freeBytes = 1;
   // waste n bits in each byte (in Monochrome mode)
   size_t freeBits = 0;
+  // number of possible errors
+  static constexpr size_t maxError = 5;
+  /* space for Errors
+   * 0:couldn't access memoryAccess
+   * 1:pointer outside memory
+   * 2:pixelBuffer outside Memory
+   * 3:colorBuffer outside Memory
+   * 4:bufferStart address not in Memory
+   */
+  std::vector<bool> errorVector = std::vector<bool>(maxError, false);
 
   /*
    * \brief returns the current ColorMode
@@ -77,14 +87,14 @@ struct Options {
    * \param y Y position of the Pixel
    */
   std::uint32_t
-  getPixel(Optional<OutputComponent *> memoryAccess, size_t x, size_t y) const;
+  getPixel(Optional<OutputComponent *> memoryAccess, size_t x, size_t y);
   /*
    * \brief returns the color from the color Table at the index index
    * \param memoryAccess source to load the data from
    * \param index index of the entry in the color Table
    */
   std::uint32_t
-  getColor(Optional<OutputComponent *> memoryAccess, size_t index) const;
+  getColor(Optional<OutputComponent *> memoryAccess, size_t index);
   /*
    * \brief returns the color of the pixel at (x,y) fetching the data from the
    *        prefetched Buffer buffer
@@ -97,7 +107,7 @@ struct Options {
   std::uint32_t getPixelFromBuffer(const MemoryValue &buffer,
                                    size_t offset,
                                    size_t x,
-                                   size_t y) const;
+                                   size_t y);
   /*
    * \brief returns the color from the color Table at the index index fetching
    *        the data from the prefetched Buffer buffer
@@ -106,9 +116,8 @@ struct Options {
    *        colorBuffer
    * \param index index of the entry in the color Table
    */
-  std::uint32_t getColorFromBuffer(const MemoryValue &buffer,
-                                   size_t offset,
-                                   size_t index) const;
+  std::uint32_t
+  getColorFromBuffer(const MemoryValue &buffer, size_t offset, size_t index);
   /*
    * \brief redraws the Pixel at (x,y)
    * \param memoryAccess source to load the data from
@@ -119,7 +128,7 @@ struct Options {
   void updatePixel(Optional<OutputComponent *> memoryAccess,
                    std::shared_ptr<QImage> image,
                    size_t x,
-                   size_t y) const;
+                   size_t y);
   /*
    * \brief updates the color from the color Table at the index index
    * \param memoryAccess source to load the data from
@@ -128,7 +137,7 @@ struct Options {
    */
   void updateColor(Optional<OutputComponent *> memoryAccess,
                    std::shared_ptr<QImage> image,
-                   size_t index) const;
+                   size_t index);
   /*
    * \brief updates all pixels of the image
    * \param memoryAccess source to load the data from
@@ -139,21 +148,32 @@ struct Options {
   void updateMemory(Optional<OutputComponent *> memoryAccess,
                     std::shared_ptr<QImage> image,
                     size_t address,
-                    size_t amount) const;
+                    size_t amount);
   /*
    * \brief updates all pixels of the image
    * \param memoryAccess source to load the data from
    * \param image Image to be be updated
    */
   void updateAllPixels(Optional<OutputComponent *> memoryAccess,
-                       std::shared_ptr<QImage> image) const;
+                       std::shared_ptr<QImage> image);
   /*
    * \brief updates all colors of the image
    * \param memoryAccess source to load the data from
    * \param image Image to be be updated
    */
   void updateAllColors(Optional<OutputComponent *> memoryAccess,
-                       std::shared_ptr<QImage> image) const;
+                       std::shared_ptr<QImage> image);
+
+  /*
+   * \brief sets the error with the index index to true
+   * \param index index of the error in the error vector
+   */
+  void setError(size_t index);
+
+  /*
+   * \brief Handles all errors and resets the error vector
+   */
+  void handleErrors();
 
   std::shared_ptr<QImage> makeImage() const;
   // The color mode used for RGB Color Mode
@@ -163,4 +183,4 @@ struct Options {
 };
 }
 
-#endif// ERAGPSIM_UI_PIXEL_DISPLAY_OPTIONS_HPP
+#endif  // ERAGPSIM_UI_PIXEL_DISPLAY_OPTIONS_HPP

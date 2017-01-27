@@ -19,6 +19,7 @@
 
 #include <QImage>
 
+#include "common/assert.hpp"
 #include "ui/color-mode.hpp"
 #include "ui/pixel-display-options.hpp"
 
@@ -35,47 +36,47 @@ ColorMode Options::getColorMode() const {
 
 std::uint32_t Options::getPixel(Optional<OutputComponent *> memoryAccess,
                                 std::size_t x,
-                                std::size_t y) const {
+                                std::size_t y) {
   return getColorMode().getPixel(memoryAccess, *this, x, y);
 }
-std::uint32_t Options::getColor(Optional<OutputComponent *> memoryAccess,
-                                std::size_t index) const {
+std::uint32_t
+Options::getColor(Optional<OutputComponent *> memoryAccess, std::size_t index) {
   return getColorMode().getColor(memoryAccess, *this, index);
 }
 std::uint32_t Options::getPixelFromBuffer(const MemoryValue &buffer,
                                           std::size_t offset,
                                           std::size_t x,
-                                          std::size_t y) const {
+                                          std::size_t y) {
   return getColorMode().getPixelFromBuffer(buffer, offset, *this, x, y);
 }
 std::uint32_t Options::getColorFromBuffer(const MemoryValue &buffer,
                                           std::size_t offset,
-                                          std::size_t index) const {
+                                          std::size_t index) {
   return getColorMode().getColorFromBuffer(buffer, offset, *this, index);
 }
 void Options::updatePixel(Optional<OutputComponent *> memoryAccess,
                           std::shared_ptr<QImage> image,
                           std::size_t x,
-                          std::size_t y) const {
+                          std::size_t y) {
   image->setPixel(x, y, getPixel(memoryAccess, x, y));
 }
 void Options::updateColor(Optional<OutputComponent *> memoryAccess,
                           std::shared_ptr<QImage> image,
-                          std::size_t index) const {
+                          std::size_t index) {
   image->setColor(index, getColor(memoryAccess, index));
 }
 void Options::updateMemory(Optional<OutputComponent *> memoryAccess,
                            std::shared_ptr<QImage> image,
                            std::size_t address,
-                           std::size_t amount) const {
+                           std::size_t amount) {
   getColorMode().updateMemory(memoryAccess, *this, image, address, amount);
 }
 void Options::updateAllPixels(Optional<OutputComponent *> memoryAccess,
-                              std::shared_ptr<QImage> image) const {
+                              std::shared_ptr<QImage> image) {
   getColorMode().updateAllPixels(memoryAccess, *this, image);
 }
 void Options::updateAllColors(Optional<OutputComponent *> memoryAccess,
-                              std::shared_ptr<QImage> image) const {
+                              std::shared_ptr<QImage> image) {
   getColorMode().updateAllColors(memoryAccess, *this, image);
 }
 
@@ -87,5 +88,21 @@ std::shared_ptr<QImage> Options::makeImage() const {
     default: break;
   }
   return std::make_shared<QImage>(width, height, format);
+}
+
+void Options::setError(size_t index) {
+  assert::that(index < maxError);
+  assert::that(index >= 0);
+  errorVector[index] = true;
+}
+
+void Options::handleErrors() {
+  for (size_t i = 0; i < maxError; ++i) {
+    if (errorVector[i]) {
+      errorVector[i] = false;
+      // TODO::Do handle
+      std::cout << "PixelDisplayError " << i << " occured" << std::endl;
+    }
+  }
 }
 }
