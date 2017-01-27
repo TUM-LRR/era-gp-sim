@@ -58,14 +58,6 @@ Rectangle {
       }
     }
 
-    Tab {
-      title: "Buttons/Text Console Icon"
-      TextInputSelf{
-        id: textI
-        anchors.fill: parent
-      }
-    }
-
     // Change TabView appearance
     style: TabViewStyle {
       tabBar: Rectangle {

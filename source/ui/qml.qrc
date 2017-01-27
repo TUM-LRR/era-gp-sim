@@ -79,10 +79,8 @@
         <file>Components/Input/InputButtons/ButtonInput.qml</file>
         <file>Components/Input/InputMouse/ClickInput.qml</file>
         <file>Components/Input/Input.qml</file>
-        <file>Components/Input/TextInputSelf.qml</file>
         <file>Components/Input/InputButtons/ButtonInputSettings.qml</file>
         <file>Components/Input/InputMouse/ClickInputSettings.qml</file>
-        <file>Components/Input/TextInputSW.qml</file>
         <file>Components/help/HelpWindow.qml</file>
         <file>Components/Input/Buttons/Arrow Button Input Icon Selected.png</file>
         <file>Components/Input/Buttons/Arrow Button Input Icon Selected@2x.png</file>
