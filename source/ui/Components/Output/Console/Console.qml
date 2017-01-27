@@ -31,6 +31,7 @@ Item {
   property alias inputConsole: inputConsole
 
   function clear() {
+    consoleComponent.deleteTextInMemory();
     readonlyConsole.text = "";
   }
 

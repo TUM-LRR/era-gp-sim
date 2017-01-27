@@ -25,7 +25,7 @@ Item {
     id: menu
     MenuItem {
       text: "Clear"
-      visible: consoleText.currentMode;
+      visible: true
       onTriggered: {
         consoleText.clear();
       }

@@ -37,7 +37,7 @@ ConsoleComponent::ConsoleComponent(QQmlContext* context,
 
 void ConsoleComponent::appendText(QString text) {
   if (_deleteBuffer) {
-    _deleteTextInMemory();
+    deleteTextInMemory();
   }
   for (auto i : Utility::range<size_t>(0, text.length())) {
     if (_start + _length > _memoryAccess.getMemorySize().get()) {
@@ -77,7 +77,7 @@ QString ConsoleComponent::getText() {
 
 void ConsoleComponent::setStart(size_t start) {
   if (_memoryAccess.getMemorySize().get() >= start) {
-    _deleteTextInMemory();
+    deleteTextInMemory();
     _start = start;
     _length = 0;
   }
@@ -138,7 +138,7 @@ void ConsoleComponent::resetInterrupt() {
   _memoryAccess.putMemoryValueAt(_interruptAddress, resetValue);
 }
 
-void ConsoleComponent::_deleteTextInMemory() {
+void ConsoleComponent::deleteTextInMemory() {
   if (_length > 0) {
     MemoryValue zero(_length * 8);
     _memoryAccess.putMemoryValueAt(_start, zero);

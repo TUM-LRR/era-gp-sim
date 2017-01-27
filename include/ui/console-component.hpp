@@ -107,10 +107,10 @@ class ConsoleComponent : public QObject {
   /** Resets the simulated interrupt. */
   Q_INVOKABLE void resetInterrupt();
 
- private:
   /** Deletes the text data in the memory. */
-  void _deleteTextInMemory();
+  Q_INVOKABLE void deleteTextInMemory();
 
+ private:
   /** The start address in memory. */
   size_t _start;
 
