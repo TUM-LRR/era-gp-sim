@@ -77,7 +77,7 @@ Item {
 
         Tab {
             title: "Buttons/Text Console Icon"
-            Console{
+            ConsoleComponent {
                 outputItemIndex: 2
             }
         }

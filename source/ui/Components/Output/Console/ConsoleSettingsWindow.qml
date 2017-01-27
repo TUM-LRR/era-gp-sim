@@ -38,7 +38,13 @@ Window {
   function updateSettings() {
     baseAddressTextField.text = "0x" + consoleComponent.getStart().toString();
     interruptAddressTextField.text = "0x" + consoleComponent.getInterruptAddress().toString();
-    deleteBuffer.checked = consoleComponent.deleteBuffer();
+    if(consoleComponent.deleteBuffer()) {
+      pipeMode.checked = true;
+      grid.interruptSettingsOpacity = 1.0;
+    } else {
+      arrayMode.checked = true;
+      grid.interruptSettingsOpacity = 0.0;
+    }
   }
 
   GridLayout {
@@ -55,7 +61,7 @@ Window {
     Behavior on interruptSettingsOpacity {
       NumberAnimation {
         duration: 200
-        easing.type: Easing.InOutExpo
+        easing.type: Easing.OutExpo
       }
     }
 
@@ -108,30 +114,33 @@ Window {
       }
     }
 
+    ExclusiveGroup { id: modeGroup }
+
+    RadioButton {
+      id: arrayMode
+      text: "Array Mode"
+      exclusiveGroup: modeGroup
+      onClicked: {
+        consoleComponent.setDeleteBuffer(false);
+        grid.interruptSettingsOpacity = 0.0;
+      }
+    }
+
+    RadioButton {
+      id: pipeMode
+      text: "Pipe Mode"
+      exclusiveGroup: modeGroup
+      onClicked: {
+        consoleComponent.setDeleteBuffer(true);
+        grid.interruptSettingsOpacity = 1.0;
+      }
+    }
 
     Component.onCompleted: {
       settingsWindowConsole.updateSettings();
     }
   }
 
-  CheckBox{
-    id: deleteBuffer
-
-    anchors.horizontalCenter: grid.horizontalCenter
-    anchors.top: grid.bottom
-    anchors.margins: Theme.console.settings.margin
-
-    text: "overwrite Buffer"
-    checked: true
-    onClicked: {
-      consoleComponent.setDeleteBuffer(checked);
-      if (checked) {
-        grid.interruptSettingsOpacity = 1.0;
-      } else {
-        grid.interruptSettingsOpacity = 0.0;
-      }
-    }
-  }
 
   // Button for accepting setting changes and closing the settings window.
   Button {

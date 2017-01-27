@@ -46,6 +46,8 @@
         <file>Components/Output/Lightstrip/LightStrip.qml</file>
         <file>Components/Output/Lightstrip/LightstripSettingsWindow.qml</file>
         <file>Components/Output/Console/Console.qml</file>
+        <file>Components/Output/Console/ConsoleComponent.qml</file>
+        <file>Components/Output/Console/ContextMenu.qml</file>
         <file>Components/Output/Console/ConsoleSettingsWindow.qml</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected.png</file>
         <file>Components/Output/Buttons/Lightstrip Icon Selected@2x.png</file>

@@ -1,195 +1,158 @@
-import QtQuick 2.0
-import QtQuick 2.3
+/* C++ Assembler Interpreter
+* Copyright (C) 2016 Chair of Computer Architecture
+* at Technical University of Munich
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see http://www.gnu.org/licenses/.*/
+
+import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
 
 Item {
-  property int outputItemIndex: 2
+  id: consoleItem
+
   property bool currentMode
   property var currentAddress
-  id: item
 
-  Rectangle {
-    id: background
-    anchors.fill: parent
-    color: Theme.console.background
+  property alias readonlyConsole: readonlyConsole
+  property alias inputConsole: inputConsole
+
+  function clear() {
+    readonlyConsole.text = "";
   }
 
+  ////////////////////////////////////////////////////
+  // Components for the output part of the console. //
+  ///////////////////////////////////////////////////
 
-  // MouseArea to get focus for the input text edit.
-  MouseArea {
-    id: inputFocusMouse
-    z: scrollView.z + 1
-    anchors.fill: parent
-    propagateComposedEvents: false
-    acceptedButtons: Qt.LeftButton
+  TextEdit {
+    id: readonlyConsole
 
-    onPressed: {
-      inputConsole.focus = true;
-      inputConsole.forceActiveFocus();
-      mouse.accepted = false;
+    anchors.leftMargin: Theme.console.promptMargin
+    anchors.top: parent.top
+    anchors.left: promptColumn.right
+    anchors.right: parent.right
+
+    font.pixelSize: Theme.console.fontSize
+    color: Theme.console.textColor
+    wrapMode: Text.WrapAnywhere
+    text: ""
+    readOnly: true
+    selectByMouse: true
+    height: {
+      if (text === "") {
+        return 0;
+      } else {
+        return contentHeight;
+      }
     }
-    onReleased: mouse.accepted = false;
-    onDoubleClicked: mouse.accepted = false;
-    onPressAndHold: mouse.accepted = false;
+
+    property int correctedLineCount: {
+      if (text === "") {
+        return 0;
+      } else {
+        return lineCount;
+      }
+    }
+
+    onHeightChanged: {
+      if (inputConsole.activeFocus) inputConsole.updateScroll();
+    }
+
+    onActiveFocusChanged: {
+      if (activeFocus) inputConsole.forceActiveFocus();
+    }
+
+    // for correct clipboard behaviour without a clipboard adapter,
+    // only output or input can be copied
+    onSelectedTextChanged: inputConsole.deselect();
   }
 
-  ScrollView {
-    id: scrollView
-    anchors.fill: parent
+  ////////////////////////////////////
+  // Column for the console prompt. //
+  ////////////////////////////////////
 
-    style: ScrollViewStyle {
-      transientScrollBars: true
+  Column {
+    id: promptColumn
+    anchors.left: parent.left
+    anchors.top: parent.top
+    Repeater {
+      model: readonlyConsole.correctedLineCount + 1;
+      Text {
+        text: Theme.console.prompt
+        color: Theme.console.promptColor
+        height: inputConsole.cursorRectangle.height
+        font: inputConsole.font
+      }
+    }
+  }
+
+  //////////////////////////////////////////////////
+  // Components for the input part of the console //
+  //////////////////////////////////////////////////
+
+  TextEdit {
+    id: inputConsole
+
+    selectByMouse: true
+
+    anchors.leftMargin: Theme.console.promptMargin
+    anchors.left: promptColumn.right
+    anchors.right: parent.right
+    anchors.top: readonlyConsole.bottom
+
+    font.pixelSize: Theme.console.fontSize
+    color: Theme.console.textColor
+    wrapMode: Text.WrapAnywhere
+
+    Keys.onReturnPressed: {
+      var newText = "";
+      if (readonlyConsole.text !== "") {
+        newText = "\n" + newText;
+      }
+      newText += inputConsole.text;
+      // Add a null char as delimiter
+      newText += "\0";
+      consoleComponent.appendText(newText);
+      if (currentMode) {
+        consoleComponent.setInterrupt();
+      }
+      text = "";
     }
 
-    Flickable {
-      id: flickable
-      anchors.fill: parent
-      anchors.margins: Theme.console.margin
-      contentHeight: readonlyConsole.height + inputConsole.height
-      contentWidth: scrollView.viewport.width
+    // scroll to cursor, if necessary.
+    onCursorRectangleChanged: updateScroll();
 
-      ////////////////////////////////////////////////////
-      // Components for the output part of the console. //
-      ///////////////////////////////////////////////////
-
-      TextEdit {
-        id: readonlyConsole
-
-        anchors.leftMargin: Theme.console.promptMargin
-        anchors.top: parent.top
-        anchors.left: promptColumn.right
-        anchors.right: parent.right
-
-        font.pixelSize: Theme.console.fontSize
-        color: Theme.console.textColor
-        wrapMode: Text.WrapAnywhere
-        text: ""
-        readOnly: true
-        selectByMouse: true
-        height: {
-          if (text === "") {
-            return 0;
-          } else {
-            return contentHeight;
-          }
-        }
-
-        property int correctedLineCount: {
-          if (text === "") {
-            return 0;
-          } else {
-            return lineCount;
-          }
-        }
-
-        onHeightChanged: {
-          if (inputConsole.activeFocus) inputConsole.updateScroll();
-        }
-
-        onActiveFocusChanged: {
-          if (activeFocus) inputConsole.forceActiveFocus();
-        }
-
-        // for correct clipboard behaviour without a clipboard adapter,
-        // only output or input can be copied
-        onSelectedTextChanged: inputConsole.deselect();
-
-        //Clears the Screen in pipelike mode
-        MouseArea {
-          id: clearArea
-          anchors.fill:parent
-          visible: true
-          acceptedButtons: Qt.RightButton
-          onDoubleClicked: {
-            if (outputComponent.getOutputItem(outputItemIndex)["textMode"] !== 0) {
-              readonlyConsole.text = "";
-            }
-          }
-        }
-
-        function clear() {
-          text = "";
-        }
+    function updateScroll() {
+      if (y + height >= scrollView.flickableItem.contentY + scrollView.viewport.height) {
+        scrollView.flickableItem.contentY =
+        y + height - scrollView.viewport.height + Theme.console.margin*2;
       }
+    }
 
-      ////////////////////////////////////
-      // Column for the console prompt. //
-      ////////////////////////////////////
+    // for correct clipboard behaviour without a clipboard adapter,
+    // only output or input can be copied
+    onSelectedTextChanged: readonlyConsole.deselect();
 
-      Column {
-        id: promptColumn
-        anchors.left: parent.left
-        anchors.top: parent.top
-        Repeater {
-          model: readonlyConsole.correctedLineCount + 1;
-          Text {
-            text: Theme.console.prompt
-            color: Theme.console.promptColor
-            height: inputConsole.cursorRectangle.height
-            font: inputConsole.font
-          }
+    Keys.onPressed: {
+      if (event.matches(StandardKey.Copy)) {
+        if (readonlyConsole.selectedText !== "") {
+          readonlyConsole.copy();
+          event.accepted = true;
         }
-      }
-
-      //////////////////////////////////////////////////
-      // Components for the input part of the console //
-      //////////////////////////////////////////////////
-
-      TextEdit {
-        id: inputConsole
-
-        selectByMouse: true
-
-        anchors.leftMargin: Theme.console.promptMargin
-        anchors.left: promptColumn.right
-        anchors.right: parent.right
-        anchors.top: readonlyConsole.bottom
-
-        font.pixelSize: Theme.console.fontSize
-        color: Theme.console.textColor
-
-        Keys.onReturnPressed: {
-          var newText = "";
-          if (readonlyConsole.text !== "") {
-            newText = "\n" + newText;
-          }
-          newText += inputConsole.text;
-          // Add a null char as delimiter
-          newText += "\0";
-          consoleComponent.appendText(newText);
-          if (currentMode) {
-            consoleComponent.setInterrupt();
-          }
-          text = "";
-        }
-
-        // scroll to cursor, if necessary.
-        onCursorRectangleChanged: updateScroll();
-
-        function updateScroll() {
-          if (y + height >= scrollView.flickableItem.contentY + scrollView.viewport.height) {
-            scrollView.flickableItem.contentY =
-              y + height - scrollView.viewport.height + Theme.console.margin*2;
-          }
-        }
-
-        // for correct clipboard behaviour without a clipboard adapter,
-        // only output or input can be copied
-        onSelectedTextChanged: readonlyConsole.deselect();
-
-        Keys.onPressed: {
-          if (event.matches(StandardKey.Copy)) {
-            if (readonlyConsole.selectedText !== "") {
-              readonlyConsole.copy();
-              event.accepted = true;
-            }
-          }
-        }
-
-        wrapMode: Text.WrapAnywhere
       }
     }
   }
@@ -197,6 +160,7 @@ Item {
   /////////////////////////////////////////////////////////////
   // Connections to update the content according to signals. //
   /////////////////////////////////////////////////////////////
+
   Connections {
     target: outputComponent
     // Check for changes in the memory (at any address).
@@ -216,9 +180,9 @@ Item {
           addressVar <= baseAddress + textLength;
 
       if (!currentMode && (checkBegin || checkLength)) {
-        item.updateContent(baseAddress);
+        consoleItem.updateContent(baseAddress);
       } else if (consoleComponent.checkInterrupt()) {
-        item.updateContent(baseAddress);
+        consoleItem.updateContent(baseAddress);
         consoleComponent.resetInterrupt();
       }
     }
@@ -227,25 +191,26 @@ Item {
   Connections {
     target: consoleComponent
     onSettingsChanged: {
+      settingsWindowConsole.updateSettings();
       var mode = consoleComponent.deleteBuffer();
       var baseAddress = consoleComponent.getStart();
 
       if(mode === currentMode && baseAddress === currentAddress) return;
 
-      if (currentMode !== mode) {
-        currentMode = mode;
-        readonlyConsole.clear();
-      }
+      currentMode = mode;
 
       if (currentAddress !== baseAddress) {
         currentAddress = baseAddress;
-        readonlyConsole.clear();
+        consoleItem.clear();
       }
-      item.updateContent(baseAddress);
+
+      if (!currentMode) {
+        consoleItem.updateContent();
+      }
     }
   }
 
-  function updateContent(baseAddress) {
+  function updateContent() {
     if (currentMode) {
       readonlyConsole.text += consoleComponent.getText();
     } else {
@@ -256,16 +221,6 @@ Item {
   Component.onCompleted: {
     currentAddress = consoleComponent.getStart();
     currentMode = consoleComponent.deleteBuffer();
-    item.updateContent(currentAddress);
+    consoleItem.updateContent();
   }
-
-
-  ConsoleSettingsWindow {
-    id: settingsWindowConsole
-  }
-
-  function settingsButtonPressed() {
-    settingsWindowConsole.show();
-  }
-
 }
