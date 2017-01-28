@@ -70,9 +70,6 @@ Wir arbeiten mit folgenden Compilern:
 \begin{itemize}
 	\item \textit{g++ >= 5}
 	\item \textit{clang++ >= 3.7}
-	\item \textit{MinGW >= ???}
-	\item \textit{MSVC >= ???}
-	\todo{stimmt das?}
 \end{itemize}
 
 \subsubsection{Bibliotheken}
@@ -160,19 +157,39 @@ Installationsort erfragt. Dieser muss später beim Bauen des Projekts angegeben 
 
 \textbf{Qt installieren}
 
-Um Qt auf ein Mac-Computer zu installieren, bietet es sich an, den Installer zu verwenden, den man über die offizielle Website herunterladen kann\footnote{https://www.qt.io/download/}. Bei der Installation können neben der akuellesten auch ältere Versionen des Framework heruntergeladen werden. Nach der Installation befindet sich am angegebenen Installationspfad ein Ordner "Qt", in dem sich auch der QtCreator-IDE befindet.
+Um Qt auf ein Mac-Computer zu installieren, bietet es sich an, den Installer zu
+verwenden, den man über die offizielle Website herunterladen kann
+\footnote{\url{https://www.qt.io/download/}}. Bei der Installation können neben der
+aktuellsten auch ältere Versionen des Framework heruntergeladen werden. Nach
+der Installation befindet sich am angegebenen Installationspfad ein Ordner "Qt",
+in dem sich auch der QtCreator-IDE befindet.
 
 \textbf{CMake aktualisieren}
 
-Zum Bauen des Projekts wird CMake benötigt, das in der Regel über einen Packagemanager installiert oder alternativ von der offiziellen Website\footnote{https://cmake.org/download/} heruntergeladen werden kann.
+Zum Bauen des Projekts wird CMake benötigt, das in der Regel über einen
+Paketmanager installiert oder alternativ von der offiziellen Website
+heruntergeladen werden kann.
 
 \textbf{In QtCreator CMake-Projekt einrichten}
 
-Um ein CMake-Projekt in QtCreator einzurichten, können die selben Schritte, wie im Kapitel für Linux beschrieben, durchgeführt werden.
+Um ein CMake-Projekt in QtCreator einzurichten, können die selben Schritte, wie
+im Kapitel für Linux beschrieben, durchgeführt werden.
 
 \subsubsection{Windows}
 
-Selbst schuld.
+Unter Windows ist es ähnlich wie unter macOS: Die Installation von Qt ist mit
+einem Installer am angenehmsten, wobei es sich anbietet, die Open Source Version
+von Qt zu verwenden. Des Weiteren haben wir die besten Erfahrungen mit MinGW
+\footnote{\url{http://www.mingw.org/}} gemacht, da der Qt Installer anbietet,
+dies automatisch zu installieren. Schließlich wird noch CMake benötigt, was man
+sich von der offiziellen Website herunterlädt. \\
+Mit QtCreator ist der Einrichtungsaufwand am geringsten, da etwaige Pfade zu
+Bibliotheken automatisch eingerichtet werden. Die Einrichtung entspricht den
+selben Schritten, wie im Kapitel für Linux.
+
+Unter Windows gibt es zugegebenermaßen die meisten Probleme, da viele kleine
+Faktoren mitspielen. Bei Problemen sollte die Suchmaschine der Wahl, oder gleich
+eine virtuelle Maschine mit einem Linux für die Entwicklung verwendet werden.
 
 \subsection{CMake / Make}
 \label{dev-report-cmake-build}
