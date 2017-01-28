@@ -41,7 +41,7 @@ Memory::Memory(size_t byteCount, size_t byteSize)
 : _byteCount{byteCount}
 , _byteSize{byteSize}
 , _data{byteCount * byteSize}
-, _callback{[](const size_t, const size_t) {}} {
+, _callback{[](size_t, size_t) {}} {
   assert::that(byteCount > 0);
   assert::that(byteSize > 0);
 }
@@ -291,13 +291,19 @@ void Memory::deserializeJSON(const Json& json) {
                                _dataMapStringIdentifier);
   }
   // TODO::check types!
-  // check that sizes match
+  // check wether the sizes match
   size_t byteCount = *byteCountIt;
   if (_byteCount < byteCount) {
+    // resize the memory, if the snapshot is bigger.
     _byteCount = byteCount;
     _data = MemoryValue(byteCount * _byteSize);
     _sizeCallback(_byteCount);
+  } else {
+    // If the snapshot has the same size or is smaller, clear the current memory
+    // to write the zeros in the serialized data.
+    clear();
   }
+
   size_t byteSize = *byteSizeIt;
   if (_byteSize != byteSize) {
     std::string expected = std::to_string(_byteSize);
@@ -310,9 +316,6 @@ void Memory::deserializeJSON(const Json& json) {
   if (lineLength <= 0) {
     throw DeserializationError("Could not deserialize Memory: lineLength == 0");
   }
-
-  // clear the current memory to write the zeros in the serialized data
-  clear();
 
   const size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
   const char separator = json[_separatorStringIdentifier].get<char>();

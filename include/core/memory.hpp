@@ -33,8 +33,8 @@ class Memory {
  public:
   using size_t = std::size_t;
   using Json = nlohmann::json;
-  using UpdateCallback = std::function<void(const size_t, const size_t)>;
-  using SizeCallback = std::function<void(const size_t)>;
+  using UpdateCallback = std::function<void(size_t, size_t)>;
+  using SizeCallback = std::function<void(size_t)>;
   using RawMapPair = std::pair<std::map<std::string, size_t>,
                                std::map<std::string, std::string>>;
   using ProtectionMap = std::map<size_t, size_t>;
@@ -374,8 +374,7 @@ class Memory {
   /**
    * \brief vector storing data about protected memory areas
    * \note this takes linear time, one could improve this by implementing
-   * some
-   *       binary search, or using some indexed algorithm
+   * some binary search, or using some indexed algorithm
    */
   ProtectionMap _protection{};
 };
