@@ -76,6 +76,7 @@ struct Options {
    * 4:bufferStart address not in Memory
    */
   std::vector<bool> errorVector = std::vector<bool>(maxError, false);
+  static const std::string errorMessages[];
 
   /**
    * \brief returns the current ColorMode

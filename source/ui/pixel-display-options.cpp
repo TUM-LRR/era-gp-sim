@@ -25,6 +25,15 @@
 
 namespace colormode {
 
+const std::string Options::errorMessages[] = {
+    "Unable to access memory",
+    "Pointer outside Memory",
+    "The Pixel Buffer is at least partially outside Memory",
+    "The Color Buffer is at least partially outside Memory",
+    "A Buffers starting address is outside Memory",
+};
+
+
 ColorMode Options::getColorMode() const {
   switch (colorMode) {
     case 0: return RGB;
@@ -101,7 +110,8 @@ void Options::handleErrors() {
     if (errorVector[i]) {
       errorVector[i] = false;
       // TODO::Do handle
-      std::cout << "PixelDisplayError " << i << " occured" << std::endl;
+      std::cout << "PixelDisplayError " << i << " occured:" << errorMessages[i]
+                << std::endl;
     }
   }
 }
