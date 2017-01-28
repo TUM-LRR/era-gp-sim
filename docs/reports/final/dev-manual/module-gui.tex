@@ -4,11 +4,72 @@ Die grafische Benutzeroberfläche des Simulators besteht aus einer Reihe von
 Komponenten, die sich innerhalb des gegebenen Rasters nahezu beliebig anordnen
 lassen. Diese Aufteilung in Komponenten spiegelt sich auch in der
 Implementierung der GUI wieder, indem jede Komponente einer QML-Komponente
-entspricht, die gegebenenfalls andere Teilkomponenten, nicht zuletzt elementare
-Qt-Quick-Komponenten, benutzen. Die Komponenten umfassen den Editor, die sechs
-frei wählbaren Komponenten Snapshots, Output, Input, Register, Speicher und
-Hilfe, sowie übergeordnete Elemente wie den Split-View, die Projekt-Tabbar, die
-Toolbar, die Menubar und den Einstellungsdialog.
+entspricht. Zu den besagten Komponenten gehören Snapshots, Hilfe, Register,
+Speicher, Input und Output (siehe auch Abbildung \ref{fig:gui-composition}).
+
+Ihnen übergeordnet ist eine Organisationsstruktur mit dem eigentlichen Fenster
+an der Spitze, welches unterteilt wird in die Menubar mit Editor- und
+Projekt-Untermenü, die Toolbar mit den Ausführungsbutton und schließlich den
+Projekt-Tabview, welcher die geöffneten Projekte enthält. Bei letzterem gilt zu
+beachten, dass der Tabview sowohl die Tabbar als auch die Tab-Inhalte, also die
+eigentlichen Projekte, repräsentiert.
+
+Jedes Projekt weist, wie bereits erwähnt, eine gerasterte Struktur auf, die
+durch die Splitview-Komponente mit vier nebeneinander angeordneten Teilbereichen
+voller Höhe realisiert ist. Jeder dieser Teilbereiche ist wiederum in zwei
+übereinander angeordnete Bereiche unterteilt, verwirklicht durch die
+InnerSplitviews bzw. die InnerSplitviewsEditor. Letztere QML-Komponente ist eine
+spezielle Ausprägung, die im oberen Teilbereich den Editor anzeigt, welcher,
+anders als alle anderen Komponenten, nicht variabel positionierbar ist.
+
+Die inneren Splitviews bestehen schließlich aus einem SplitViewItem, welches
+neben der frei wählbaren Komponente (Snapshots, Hilfe etc.) auch den
+Komponenten-Header enthält, über den zum Einen die angezeigte Komponente gewählt
+wird und zum Anderen die Komponenteneinstellungen aufgerufen werden können.
+
+\begin{figure}[H]
+	\begin{center}
+    \begin{tikzpicture}
+      \tikzset{font=\small,
+        edge from parent fork down,
+        level distance=1.75cm,
+        every node/.style=
+          {rectangle,rounded corners,
+          minimum height=8mm,
+          fill=white,
+          draw=black!50,
+          drop shadow,
+          align=center,
+          text depth = 0pt
+          },
+        edge from parent/.style=
+          {{Diamond}-,
+          draw=black!50,
+          thick
+          }}
+\Tree [.{ApplicationWindow\\(main.qml)}
+        [.MenuBar ]
+        [.Toolbar ]
+        [.ProjectTabView
+            [.Splitview
+                 [.InnerSplitviews
+                     [.SplitViewItem
+                         [.Snapshots ]
+                         [.Help ]
+                         [.Registers ]
+                         [.Memory ]
+                         [.Inputs ]
+                         [.Outputs ] ] ]
+                 [.{InnerSplitviews-\\Editor}
+                     [.SplitViewItem ]
+                     [.Editor ] ] ] ] ]
+\end{tikzpicture}
+	\end{center}
+	\caption{Grundlegende Zusammensetzung der GUI-Komponenten. Die Knotentitel im
+	Diagramm entsprechen nicht notwendigerweise den Namen der assoziierten
+	Komponente.}
+	\label{fig:gui-composition}
+\end{figure}
 
 QML-Komponenten, die Zugriff auf das vom Core zur Verfügung gestellte Modell
 benötigen, werden zusätzlich mit einer C++-Klasse assoziiert. Diese Klassen
