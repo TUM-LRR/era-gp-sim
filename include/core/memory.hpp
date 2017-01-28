@@ -31,12 +31,13 @@
 
 class Memory {
  public:
+  using size_t = std::size_t;
   using Json = nlohmann::json;
-  using CallbackFunction =
-      std::function<void(const std::size_t, const std::size_t)>;
-  using RawMapPair = std::pair<std::map<std::string, std::size_t>,
+  using UpdateCallback = std::function<void(const size_t, const size_t)>;
+  using SizeCallback = std::function<void(const size_t)>;
+  using RawMapPair = std::pair<std::map<std::string, size_t>,
                                std::map<std::string, std::string>>;
-  using ProtectionMap = std::map<std::size_t, std::size_t>;
+  using ProtectionMap = std::map<size_t, size_t>;
   /**
    * \brief Default constructor. Constructs an empty Memory with default size
    *        (64 Bytes � 8 Bit)
@@ -48,7 +49,7 @@ class Memory {
    * \param byteCount Number of Bytes
    * \param byteSize Size of a Byte in Bit
    */
-  Memory(std::size_t byteCount, std::size_t byteSize = 8);
+  Memory(size_t byteCount, size_t byteSize = 8);
 
   /**
    * \brief Constructs an Memory with the data stored in json
@@ -93,19 +94,24 @@ class Memory {
    * \brief returns _byteSize
    * \returns returns _byteSize
    */
-  std::size_t getByteSize() const;
+  size_t getByteSize() const;
 
   /**
   * \brief returns _byteCount
   * \returns returns _byteCount
   */
-  std::size_t getByteCount() const;
+  size_t getByteCount() const;
 
   /**
    * \brief Sets the callback to notify the gui about changes in the data
    * \param callback the callback to be set as _callback
    */
-  void setCallback(const CallbackFunction &callback);
+  void setCallback(const UpdateCallback &callback);
+
+  /**
+   * Sets the callback which notifies the gui about a change of the memory size.
+   */
+  void setSizeCallback(const SizeCallback &callback);
 
   /**
    * \brief Returns a MemoryValue holding the data stored in the Memory at
@@ -117,7 +123,7 @@ class Memory {
    * \throws AssertionError iff [address; address+amount[ is not subset of
    *         [0; _byteCount[
    */
-  MemoryValue get(std::size_t address, std::size_t amount = 1) const;
+  MemoryValue get(size_t address, size_t amount = 1) const;
   /**
    * \brief Returns a MemoryValue holding the data stored in the Memory at
    *        [address; address+amount[
@@ -127,7 +133,7 @@ class Memory {
    *          [address;address+amount[ with 0 for all bytes not in
    *          [0; _byteCount[
    */
-  MemoryValue tryGet(std::size_t address, std::size_t amount = 1) const;
+  MemoryValue tryGet(size_t address, size_t amount = 1) const;
   /**
    * \brief Writes value into the Memory at address
    * \param address Starting address of the to be overwritten value
@@ -136,16 +142,15 @@ class Memory {
    * \throws AssertionError iff [address; address+(value.size()/_byteSize)[ is
    *         not subset of [0; _byteCount[ or value.size()%_byteSize != 0
    */
-  void put(std::size_t address,
-           const MemoryValue &value,
-           bool ignoreProtection = false);
+  void
+  put(size_t address, const MemoryValue &value, bool ignoreProtection = false);
   /**
    * \brief Writes value into the Memory at address
    * \param address Starting address of the to be overwritten value
    * \param value Value to write
    * \param ignoreProtection if this is true do ignore all protection
    */
-  void tryPut(std::size_t address,
+  void tryPut(size_t address,
               const MemoryValue &value,
               bool ignoreProtection = false);
   /**
@@ -158,9 +163,8 @@ class Memory {
    * \throws AssertionError iff [address; address+(value.size()/_byteSize)[ is
    *         not subset of [0; _byteCount[ or value.size()%_byteSize != 0
    */
-  MemoryValue set(std::size_t address,
-                  const MemoryValue &value,
-                  bool ignoreProtection = false);
+  MemoryValue
+  set(size_t address, const MemoryValue &value, bool ignoreProtection = false);
   /**
    * \brief Writes value into the Memory at address and returns the previous
    *        value
@@ -170,7 +174,7 @@ class Memory {
    * \returns Value that was overwritten with 0 for all bytes not in
    *          [0; _byteCount[
    */
-  MemoryValue trySet(std::size_t address,
+  MemoryValue trySet(size_t address,
                      const MemoryValue &value,
                      bool ignoreProtection = false);
 
@@ -183,7 +187,7 @@ class Memory {
    */
   Json &serializeJSON(Json &json,
                       char separator = _standardSeparator,
-                      std::size_t lineLength = 1) const;
+                      size_t lineLength = 1) const;
 
   /**
    * \brief converts the memory into serializeable strings
@@ -194,7 +198,7 @@ class Memory {
    */
   Json serializeJSON(Json &&json = Json(),
                      char separator = _standardSeparator,
-                     std::size_t lineLength = 1) const;
+                     size_t lineLength = 1) const;
 
   /**
    * \brief sets the memory to the data stored in json
@@ -225,21 +229,21 @@ class Memory {
    * \param amount of cells to ckeck beginning with address
    * \returns true iff any cells within the area is protected
    */
-  bool isProtected(std::size_t address, std::size_t amount = 1) const;
+  bool isProtected(size_t address, size_t amount = 1) const;
 
   /**
    * \brief makes the area protected
    * \param address first address of the to protect area
    * \param amount of cells to protect beginning with address
    */
-  void makeProtected(std::size_t address, std::size_t amount = 1);
+  void makeProtected(size_t address, size_t amount = 1);
 
   /**
    * \brief makes the area not protected
    * \param address first address of the to unprotect area
    * \param amount of cells to unprotect beginning with address
    */
-  void removeProtection(std::size_t address, std::size_t amount = 1);
+  void removeProtection(size_t address, size_t amount = 1);
 
   /**
    * \brief makes nothing protected
@@ -278,8 +282,8 @@ class Memory {
    * \returns a long MemoryValue represenation of line
    */
   static MemoryValue _deserializeLine(const std::string &line,
-                                      std::size_t byteSize,
-                                      std::size_t lineLength,
+                                      size_t byteSize,
+                                      size_t lineLength,
                                       char separator);
 
   /**
@@ -291,7 +295,7 @@ class Memory {
    * \returns MemoryValue holding the data stored in the Memory at
    *          [address;address+amount[
    */
-  MemoryValue _get(std::size_t address, std::size_t amount = 1) const;
+  MemoryValue _get(size_t address, size_t amount = 1) const;
   /**
    * \brief Writes value into the Memory at address, undefined behaviour if
    *        [address; address + value.size() / _byteSize[ is not subset of
@@ -301,9 +305,9 @@ class Memory {
    * \param amount precalculated amount of bytes stored in value
    * \param ignoreProtection if this is true do ignore all protection
    */
-  void _put(std::size_t address,
+  void _put(size_t address,
             const MemoryValue &value,
-            std::size_t amount,
+            size_t amount,
             bool ignoreProtection = false);
   /**
    * \brief Writes value into the Memory at address and returns the previous
@@ -314,9 +318,8 @@ class Memory {
    * \param ignoreProtection if this is true do ignore all protection
    * \returns Value that was overwritten
    */
-  MemoryValue _set(std::size_t address,
-                   const MemoryValue &value,
-                   bool ignoreProtection = false);
+  MemoryValue
+  _set(size_t address, const MemoryValue &value, bool ignoreProtection = false);
   /**
    * \brief This Method is called when the whole Memory changes and
    *        notifies the Gui of the change
@@ -328,7 +331,7 @@ class Memory {
    * \param address address of the updated value
    * \param amount length of the updated value
    */
-  void _wasUpdated(std::size_t address, std::size_t amount = 1) const;
+  void _wasUpdated(size_t address, size_t amount = 1) const;
 
   /**
    * \brief converts the memory into serializeable strings
@@ -337,25 +340,25 @@ class Memory {
    * \returns a serialize representation of the Memory
    */
   RawMapPair _serializeRaw(char separator = _standardSeparator,
-                           std::size_t lineLength = 64) const;
+                           size_t lineLength = 64) const;
 
   /**
    * \brief returns true if the protection area [protectionBegin, protectionEnd]
    *        overlaps with the area [address, address + amount]
    */
-  bool _overlaps(std::size_t protectionBegin,
-                 std::size_t protectionEnd,
-                 std::size_t address,
-                 std::size_t amount,
+  bool _overlaps(size_t protectionBegin,
+                 size_t protectionEnd,
+                 size_t address,
+                 size_t amount,
                  bool equal) const;
   /**
    * \brief Size of a Byte in Bit
    */
-  std::size_t _byteSize;
+  size_t _byteSize;
   /**
    * \brief Number of Bytes
    */
-  std::size_t _byteCount;
+  size_t _byteCount;
   /**
    * \brief MemoryValue holding all the data
    */
@@ -363,14 +366,18 @@ class Memory {
   /**
    * \brief This function gets called for every changed area in Memory
    */
-  CallbackFunction _callback;
+  UpdateCallback _callback;
+
+  /** This callback is called when the memory size changes. */
+  SizeCallback _sizeCallback;
 
   /**
    * \brief vector storing data about protected memory areas
-   * \note this takes linear time, one could improve this by implementing some
+   * \note this takes linear time, one could improve this by implementing
+   * some
    *       binary search, or using some indexed algorithm
    */
   ProtectionMap _protection{};
 };
 
-#endif// ERAGPSIM_CORE_MEMORY_HPP
+#endif  // ERAGPSIM_CORE_MEMORY_HPP

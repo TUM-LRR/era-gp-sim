@@ -241,6 +241,11 @@ class GuiProject : QObject {
    */
   void memoryChanged(std::size_t address, std::size_t length);
 
+  /** A signal to notify components that the size of the memory changed.
+   * \param newSize The new size of the memory.
+   */
+  void memorySizeChanged(std::size_t newSize);
+
   /**
    * A signal to notify the gui to ask the user for a save path for a
    * text save.

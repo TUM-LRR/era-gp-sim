@@ -62,6 +62,17 @@ void MemoryComponentPresenter::onMemoryChanged(size_t address, size_t length) {
   emit dataChanged(this->index(start), this->index(end));
 }
 
+void MemoryComponentPresenter::onMemorySizeChanged(size_t newSize) {
+  if (newSize > _memorySize) {
+    beginInsertRows(QModelIndex(), _memorySize, newSize - 1);
+    _memorySize = newSize;
+    endInsertRows();
+  } else if (newSize < _memorySize) {
+    beginRemoveRows(QModelIndex(), newSize, _memorySize - 1);
+    _memorySize = newSize;
+    endRemoveRows();
+  }
+}
 
 void MemoryComponentPresenter::setValue(int address,
                                         const QString &value,
