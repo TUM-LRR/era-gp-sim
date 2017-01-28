@@ -30,9 +30,9 @@ SyntaxHighlighter::SyntaxHighlighter(ParserInterface &parserInterface,
                                      QTextDocument *document)
 : QSyntaxHighlighter(document) {
   _addImmediateRegexToSyntaxHighlighter(parserInterface);
+  _addLabelRegexToSyntaxHighlighter(parserInterface);
   _addInstructionKeywordsRegexToSyntaxHighlighter(parserInterface);
   _addRegisterRegexToSyntaxHighlighter(parserInterface);
-  _addLabelRegexToSyntaxHighlighter(parserInterface);
   _addCommentRegexToSyntaxHighlighter(parserInterface);
 }
 

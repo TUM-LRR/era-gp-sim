@@ -207,8 +207,8 @@ FinalRepresentation RiscvParser::parse(const std::string& text) {
 const SyntaxInformation RiscvParser::getSyntaxInformation() {
   SyntaxInformation info;
 
-  // Matches single words after a : or line-start
-  info.addSyntaxRegex(R"((?<=^|:) *[a-zA-Z.]+)",
+  // Matches single words after a ':'' or line-start that does not end with ':'
+  info.addSyntaxRegex(R"((?<=^|:) *[a-zA-Z.]+\b(?!:))",
                       SyntaxInformation::Token::Instruction);
 
   // Add comment regex
@@ -216,16 +216,16 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   info.addSyntaxRegex(";.*", SyntaxInformation::Token::Comment);
 
   // Add label regex
-  // Matches words at the beginning of a line (ignoring whitespaces) which end
-  // with a ':'
-  info.addSyntaxRegex("^\\s*\\w+:", SyntaxInformation::Token::Label);
+  // Matches words starting with a letter or '_'
+  info.addSyntaxRegex("\\b[a-zA-Z_]\\w*", SyntaxInformation::Token::Label);
 
   // Add immediate regex
-  // Matches expressions containing digits, letters, operators, brackets and
-  // spaces.
+  // Matches expressions operators and brackets
   info.addSyntaxRegex(
-      R"([0-9a-zA-Z\+\-%\*\/\(\)\|\^&=!<>~_]+)",
-      SyntaxInformation::Token::Immediate);
+      R"([\+\-%\*\/\(\)\|\^&=!<>~_]+)", SyntaxInformation::Token::Immediate);
+  // Matches Numbers optionally starting with '0x' or '0b'
+  info.addSyntaxRegex(
+      R"(\b(?:0[xb])?[0-9]+)", SyntaxInformation::Token::Immediate);
 
   // Matches string literals
   info.addSyntaxRegex(R"(".*")", SyntaxInformation::Token::Immediate);
