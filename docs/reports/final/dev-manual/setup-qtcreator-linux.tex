@@ -37,8 +37,13 @@ sehen sein.\\ Im Projects-Tab (linker Rand, Schraubenschlüssel) im Reiter
 ''Build \& Run'' wird jetzt der Build-Prozess konfiguriert. Bei ''Edit build
 configuration'' Debug auswählen, dann unter ''Build Steps'' folgendes
 verändern:\\
-\includegraphics[scale=0.5]{images/setup-qtcreator-buildrun-config.png}\\ Der
-Eintrag von cmake Arguments soll dabei der relative Pfad vom eingetragenen
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{images/setup-qtcreator-buildrun-config.png}	
+	\caption{Build \& Run Konfiguration}
+\end{figure}
+
+Der Eintrag von cmake Arguments soll dabei der relative Pfad vom eingetragenen
 Build-Ordner zum obersten Ordner des Projekts sein. Im Beispiel ist der
 Build-Order unter \texttt{era-gp-sim/build\_qtcreator\_debug} angelegt, d.h.
 eine Ebene höher liegt der root-Ordner des Projekts. Das \texttt{-j4} Argument
@@ -52,7 +57,11 @@ sowohl ''Build Steps'' als auch ''Run'' wie oben verändern.\\
 
 Ins Edit-Tab wechseln und am linken Rand unten beim Monitor von ''Release'' auf
 ''Debug'' wechseln und dann mit Klick auf den Hammer das Projekt bauen.\\
-\includegraphics[scale=0.7]{images/setup-qtcreator-change-buildrun-flavor.png}\\
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.7]{images/setup-qtcreator-change-buildrun-flavor.png}
+	\caption{Verschiedene Ausführungsoptionen}
+\end{figure}
 Hier können dann auch später statt ''era-sim'' verschiedene Test-Suits lokal
 ausgeführt werden. In der ''Compile Output'' Konsole kann der Fortschritt des
 Bauvorgangs überwacht werden.\\
