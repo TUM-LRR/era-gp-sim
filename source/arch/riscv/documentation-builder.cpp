@@ -16,6 +16,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.*/
 
 #include "arch/riscv/documentation-builder.hpp"
+#include "QtGlobal"
 #include "common/assert.hpp"
 
 using Key = DocumentationBuilder::Key;
@@ -30,20 +31,23 @@ Translateable DocumentationBuilder::build() {
   assert::that(_hasKey(Key::INSTRUCTION));
   assert::that(_hasKey(Key::SHORT_SYNTAX));
   return Translateable(
-      "<b>%1</b>: <code>%2</code><p style=\"margin-left:5%\">%3</p>%4<br>%5",
+      "<b>%1</b>: <code>%2</code><p "
+      "style=\"margin-left:5%\">%3</p><br>%4<br>%5<br>%6",
       _components[Key::INSTRUCTION], _components[Key::SHORT_SYNTAX],
-       _optional(Key::OPERAND_DESCRIPTION), _optional(Key::SHORT_DESCRIPTION),
-       _optional(Key::DETAIL_DESCRIPTION));
+      _optional(Key::OPERAND_DESCRIPTION), _optional(Key::SHORT_DESCRIPTION),
+      _optional(Key::DETAIL_DESCRIPTION), _optional(Key::OPERAND_RANGE));
 }
 
 DocumentationBuilder &DocumentationBuilder::instruction(const std::string &s) {
-    _add(Key::INSTRUCTION, std::make_shared<Translateable>(s, Translateable::NO_TR_POSSIBLE{}));
+  _add(Key::INSTRUCTION,
+       std::make_shared<Translateable>(s, Translateable::NO_TR_POSSIBLE{}));
   return *this;
 }
 
 DocumentationBuilder &DocumentationBuilder::detailDescription(
     const std::string &s) {
-    _add(Key::DETAIL_DESCRIPTION, std::make_shared<Translateable>(s, Translateable::NO_TR_POSSIBLE{}));
+  _add(Key::DETAIL_DESCRIPTION,
+       std::make_shared<Translateable>(s, Translateable::NO_TR_POSSIBLE{}));
   return *this;
 }
 
@@ -66,15 +70,19 @@ DocumentationBuilder &DocumentationBuilder::operandDescription(
   auto &baseString = existingTranslateable->getModifiableBaseString();
   baseString += '%';
   baseString += std::to_string(_operandCount + 1);  // will be %1, %2, ...
-  existingTranslateable->addOperand("<br><code><span style=\"color:%1\"><b>%2</b></span></code>: %3",
-                                    _nextColor(), name, description);
+  existingTranslateable->addOperand(
+      "<br><code><span style=\"color:%1\"><b>%2</b></span></code>: %3",
+      _nextColor(), name, description);
   ++_operandCount;
   return *this;
 }
 
 DocumentationBuilder &DocumentationBuilder::shortDescription(
     const std::string &s) {
-    _add(Key::SHORT_DESCRIPTION, std::make_shared<Translateable>(s, Translateable::NO_TR_POSSIBLE{}));
+  _add(Key::SHORT_DESCRIPTION,
+       std::make_shared<Translateable>(
+           "<span style=\"background-color: #cccccc\"><b>" + s + "</b></span>",
+           Translateable::NO_TR_POSSIBLE{}));
   return *this;
 }
 
@@ -89,7 +97,8 @@ DocumentationBuilder &DocumentationBuilder::shortSyntax(StringList operands) {
     result += std::to_string(2 + 2 * i);  // will be %2, %4, ...
     result += "</b><span>, ";
     translateable->addOperand(_colors[i % _colors.size()]);
-    translateable->addOperand(std::make_shared<Translateable>(op, Translateable::NO_TR_POSSIBLE{}));
+    translateable->addOperand(
+        std::make_shared<Translateable>(op, Translateable::NO_TR_POSSIBLE{}));
     ++i;
   }
 
@@ -97,6 +106,19 @@ DocumentationBuilder &DocumentationBuilder::shortSyntax(StringList operands) {
   translateable->getModifiableBaseString() +=
       result.substr(0, result.size() - 2);
   _add(Key::SHORT_SYNTAX, translateable);
+  return *this;
+}
+
+DocumentationBuilder &DocumentationBuilder::operandRange(
+    const std::string &name, int range, bool isSigned) {
+  // signed range is from -2^(n-1) to 2^(n-1)-1
+  // unsigned range is from 0 to 2^(n)-1
+  int lowerBound = isSigned ? -(1 << (range-1)) : 0;
+  int upperBound = isSigned ? ((1 << (range-1)) - 1) : ((1 << range) - 1);
+  TranslateablePtr ptr = std::make_shared<Translateable>(
+      QT_TRANSLATE_NOOP("RISCV instruction help text", "Range of %1: %2 to %3"),
+      name, std::to_string(lowerBound), std::to_string(upperBound));
+  _add(Key::OPERAND_RANGE, ptr);
   return *this;
 }
 

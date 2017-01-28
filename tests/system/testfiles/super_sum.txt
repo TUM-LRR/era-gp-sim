@@ -1,0 +1,33 @@
+.section data
+result: .resw 1
+sum_data: .byte 1, 2, 3, 4, 5
+.byte 0
+
+
+; x1: index reg
+; x2: inner_index
+; x3: tmp reg
+; x4: ret reg
+; x5: sum
+.section text
+add x1, x0, x0; Index reg
+add x2, x0, x0; Inner index reg
+index_end_loop:
+lb x3, x1, sum_data
+beq x0, x3, end ;end was reached
+jal x4, inner_loop_start
+addi x1, x1, 1
+jal x0, index_end_loop
+
+
+inner_loop_start:
+add x2, x0, x0 ; inner_index = 0
+inner_loop:
+lb x3, x2, sum_data
+add x5, x5, x3 ; sum += sum_data[inner_index]
+addi x2, x2, 1 ; inner_index++
+bge x1, x2, inner_loop
+jalr x0, x4, 0
+
+end:
+add x0, x0, x0; NOP

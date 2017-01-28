@@ -19,7 +19,7 @@
 
 
 #include <algorithm>
-#include <cassert>
+#include "common/assert.hpp"
 #include <string>
 
 #include "arch/common/architecture-brewery.hpp"
@@ -38,7 +38,7 @@ Architecture::Architecture(const std::string& name)
 Architecture::Architecture(const std::string& name,
                            const ExtensionInformation& base)
 : _validated(false) {
-  assert(base.isComplete());
+  assert::that(base.isComplete());
   // For constraints
   this->name(name);
 }
@@ -63,55 +63,55 @@ Architecture& Architecture::extendBy(const ExtensionInformation& extension) {
 }
 
 Architecture& Architecture::name(const std::string& name) {
-  assert(!name.empty());
+  assert::that(!name.empty());
   _name = name;
 
   return *this;
 }
 
 const std::string& Architecture::getName() const {
-  assert(isValidated());
+  assert::that(isValidated());
   return _name;
 }
 
 Architecture::Endianness Architecture::getEndianness() const {
-  assert(isValidated());
+  assert::that(isValidated());
   return _base.getEndianness();
 }
 
 Architecture::SignedRepresentation
 Architecture::getSignedRepresentation() const {
-  assert(isValidated());
+  assert::that(isValidated());
   return _base.getSignedRepresentation();
 }
 
 Architecture::AlignmentBehavior Architecture::getAlignmentBehavior() const {
-  assert(isValidated());
+  assert::that(isValidated());
   return _base.getAlignmentBehavior();
 }
 
 Architecture::word_size_t Architecture::getWordSize() const {
-  assert(isValidated());
+  assert::that(isValidated());
   return _base.getWordSize();
 }
 
 Architecture::byte_size_t Architecture::getByteSize() const noexcept {
-  assert(isValidated());
+  assert::that(isValidated());
   return _base.getByteSize();
 }
 
 const UnitContainer& Architecture::getUnits() const {
-  assert(isValidated());
+  assert::that(isValidated());
   return _base.getUnits();
 }
 
 const InstructionSet& Architecture::getInstructions() const {
-  assert(isValidated());
+  assert::that(isValidated());
   return _base.getInstructions();
 }
 
 const std::string& Architecture::getBuiltinMacros() const {
-  assert(isValidated());
+  assert::that(isValidated());
   return _base.getBuiltinMacros();
 }
 
@@ -121,7 +121,7 @@ const NodeFactoryCollection& Architecture::getNodeFactories() const {
 
 Architecture& Architecture::validate() {
   if (!_validated) {
-    assert(isValid());
+    assert::that(isValid());
     _validated = true;
   }
 
