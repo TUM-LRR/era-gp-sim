@@ -7,15 +7,21 @@
 \todo[inline]{Bild mit nummerierten Komponenten einfügen.}
 
 \begin{enumerate}
-\item \textbf{Editor:} Hier wird der Assemblercode geschrieben, der vom Simulator assembliert und ausgeführt werden soll.
+\item \textbf{Editor:} Hier wird der Assemblercode geschrieben, der vom
+Simulator assembliert und ausgeführt werden soll.
 \item \textbf{Toolbar:} Enthält Buttons zur Ausführung des Assemblerprogramms.
 \item \textbf{Tabbar:} Zeigt aktuell geöffnete Projekte an.
-\item \textbf{Register:} Zeigt Prozessorregister und erlaubt Bearbeitung der Registerwerte.
-\item \textbf{Speicher:} Zeigt Hauptspeicherinhalt und erlaubt Bearbeitung einzelner Speicherzellen.
+\item \textbf{Register:} Zeigt Prozessorregister und erlaubt Bearbeitung der
+Registerwerte.
+\item \textbf{Speicher:} Zeigt Hauptspeicherinhalt und erlaubt Bearbeitung
+einzelner Speicherzellen.
 \item \textbf{Hilfe:} Zeigt Hilfestellungen zur aktiven Zeile im Editor an.
-\item \textbf{Output:} Bietet Auswahl an Ausgabegeräten, die über den Speicher angesteuert werden können.
-\item \textbf{Input:} Bietet Auswahl an Eingabegeräten, die Benutzereingaben empfangen und kodiert in den Speicher schreiben.
-\item \textbf{Snapshots:} Erlaubt das Anlegen und Laden von Schnappschüssen des Prozessorzustands (Register- und Speicherinhalt).
+\item \textbf{Output:} Bietet Auswahl an Ausgabegeräten, die über den Speicher
+angesteuert werden können.
+\item \textbf{Input:} Bietet Auswahl an Eingabegeräten, die Benutzereingaben
+empfangen und kodiert in den Speicher schreiben.
+\item \textbf{Snapshots:} Erlaubt das Anlegen und Laden von Schnappschüssen
+des Prozessorzustands (Register- und Speicherinhalt).
 \end{enumerate}
 
 % Ich schlage eine Teilung der einzelnen Features nach Projektverwaltung(Laden, Speichern, Snapshots), Erstellen von Programmen (Editor, Hilfetexte), Ausführung von Programmen(Ausfühmodi, Breakpoints), Interaktion mit laufenden Programmen (Input/Output-Components) und sonstiges vor
@@ -322,7 +328,7 @@ Nutzers über die Benutzeroberfläche des Simulators entgegen, während
 Ausgabekomponenten Zahlenwerte graphisch darstellen.
 
 Die Kommunikation mit den Ein- und Ausgabekomponenten erfolgt über den Speicher.
-Für Eingabekomponenten lässt sich eine Adresse im Speicher (die sogenannte
+Für Eingabekomponenten lässt sich eine Adresse im Speicher, die sogenannte
 \textit{Memory Source Address} angeben, an die jegliche eingelesene Werte
 geschrieben werden. Analog gibt es auch für Ausgabekomponenten eine
 \textit{Memory Source Address}, die angibt, von welcher Stelle im Speicher an
@@ -350,6 +356,30 @@ durch die \textit{Memory Source Address} festgelegt. Diese bleibt im Laufe der
 Eingaben konstant, das heißt ein neues Tastensignal überschreibt die alte
 Kodierung im Speicher. Erneutes Klicken auf das Rechteck beendet die Eingabe.
 
+Eine Tastenkodierung ist 4 Byte lang. Eine Übersicht über die unterstützten
+Tasten und die zughörige Kodierung, die in den Speicher geschrieben wird, bietet
+Tabelle \ref{tab:keys}.
+
+\begin{figure}
+	\centering
+	\begin{tabular}{ll}
+	\textbf{Taste} & \textbf{Wert} \\
+	\hline
+	Escape & 0x01000000 \\
+	Tab & 0x01000001 \\
+	Backtab & 0x01000002 \\
+	Backspace & 0x01000003 \\
+	Return & 0x01000004 \\
+	Enter & 0x01000005 \\
+	Insert & 0x01000006 \\
+	Delete & 0x01000007 \\
+	Pause & 0x01000008 \\
+\end{tabular}
+	\caption{Liste an Tasten und zugehöriger Kodierung, die in den Speicher
+geschrieben wird.\newline Quelle: \url{http://doc.qt.io/qt-4.8/qt.html\#Key-enum}}
+	\label{tab:keys}
+\end{figure}
+
 Über das Einstellungsmenü der Komponente kann die \textit{Memory Source Address}
 festgelegt werden, also die Adresse im Speicher, an die die kodierte
 Tastatureingabe geschrieben wird.
@@ -360,41 +390,31 @@ Tastatureingabe geschrieben wird.
 	\caption{Eingabe mit Pfeiltasten}
 	\label{Joystick}
 \end{figure}
-Eine ähnliche Eingabe kann auch über die Konsole erfolgen.
 
 
 \subsubsection{Eingabe -- Mausklick}
 %\todo[inline]{welche werte werden geschrieben, Reihenfolge?}
-Wird ein Punkt im farbigen Feld dieses Moduls geklickt, so werden seine
-Koordinaten in den Speicher geschrieben. In das erste Byte wird die x-Koordinate
-eingetragen, in das zweite die y-Koordinate. Die Angabe erfolgt dabei in ganzen
-Zahlen. Das linke obere Eck hat die Koordinaten $(0, 0)$, die rechte untere
-entsprechend $(255, 255)$. Man erkennt, dass der größte mögliche Wert $255$ ist.
-Die Werte der y-Achse steigen dabei, wie am Rand des Moduls eingezeichnet, siehe
-Abbildung \ref{MouseArea}, nach unten hin an, die Werte der x-Achse nach rechts.
+Die Mausklick-Eingabekomponente liest Mausklicks des Benutzers über einen
+Klick-Bereich ein und schreibt die x- und y-Koodinate des Klicks relativ zum
+Klick-Bereich in den Speicher. Der Klick-Bereich deckt ein Koordinatensystem von
+$0$ bis $255$ in beiden Dimensionen ab, unabhängig von der abosluten Größe des
+Bereichs. Der Koordinatenursprung liegt in der linken oberen Ecke des
+Klick-Bereichs. Die Koordinate eines Klicks ergibt sich relativ zur Länge des
+Rechtecks in der jeweiligen Dimension. Ist das Rechteck 100 Pixel breit und wird
+auf das zwanzigste Pixel geklickt, so ergibt sich die x-Koordinate $20 / 100
+\cdot 255 = 51$. Die Koordinaten werden stets abgerundet.
+
+Die eingelesenen Werte werden an die \textit{Memory Source Address} in
+den Speicher geschrieben. Sowohl die x- als auch die y-Koordinate werden als
+8-Bit-Werte in den Speicher geschrieben, wobei die x-Koordinate vor der
+y-Koordinate steht.
+
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.3\textwidth]{Images/MouseArea}
 	\caption{Eingabe mit Mausklick}
 	\label{MouseArea}
 \end{figure}
-
-\subsubsection{Eingabe -- Text}
-%\todo[inline]{wann wird geschriebener Text in den Speicher geschrieben?, Wie lang kann mein Text sein?}
-Die Texteingabe verfügt über zwei Modi, array-based und pipe-like. Im ersten
-Modus wird die Eingabe ab der Startadresse, angegeben in den Einstellungen, in
-den Speicher geschrieben. Verwendet werden dabei die ASCII-Zeichen. Die Eingabe
-wird übernommen und eingetragen, wenn die Enter-Taste gedrückt wird, dann wird
-auch der Inhalt des Feldes gelöscht. Die Maximale Länge ist wiederum in den
-Einstellungen angegeben und kann dort verändert werden. Verwendet man den
-zweiten Modus, so wird nach jeder Eingabe das entsprechende Zeichen an die
-Startadresse geschrieben. Man beachte, dass damit der letzte Wert überschrieben
-wird. Es ist dabei auch möglich, Pfeiltasten anzugeben. Befindet sich der Cursor
-im Eingabefeld und eine Pfeiltaste wird gedrückt, so wird für die Pfeiltaste
-rechts die eins in den Speicher geschrieben. Alle anderen sind fortlaufend im
-Uhrzeigersinn nummeriert, genau wie bei der Eingabe über die Buttons, die die
-Pfeiltasten zeigen. Der Inhalt des Eingabefeldes wird nach jedem Zeichen
-gelöscht.
 
 \subsubsection{Ausgabe -- Lichtbandanzeige}
 
