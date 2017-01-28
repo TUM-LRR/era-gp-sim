@@ -294,7 +294,10 @@ void Memory::deserializeJSON(const Json& json) {
   // check wether the sizes match
   size_t byteCount = *byteCountIt;
   if (_byteCount < byteCount) {
-    // resize the memory, if the snapshot is bigger.
+    // resize the memory if the snapshot is bigger.
+    // Memory size is not reduced for smaller snapshots, as ui components would
+    // have to adapt to a smaller size before the size is actually reduced.
+    // Otherwise there is a high chance of invalid calls to the memory.
     _byteCount = byteCount;
     _data = MemoryValue(byteCount * _byteSize);
     _sizeCallback(_byteCount);
