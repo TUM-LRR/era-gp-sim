@@ -26,12 +26,14 @@ Item {
 
     MenuItem {
       text: "Undo"
+      enabled: textRegion.canUndo
       onTriggered: textRegion.undo()
     }
 
     MenuItem {
       text: "Redo"
-      onTriggered: textRegion.undo()
+      enabled: textRegion.canRedo
+      onTriggered: textRegion.redo()
     }
 
     MenuSeparator { }
@@ -44,9 +46,11 @@ Item {
     MenuItem {
       text: "Copy All"
       onTriggered: {
+        var previousPosition = textRegion.cursorPosition;
         textRegion.selectAll();
         textRegion.copy();
         textRegion.deselect();
+        textRegion.cursorPosition = previousPosition;
       }
     }
 
@@ -60,7 +64,7 @@ Item {
       onTriggered: {
         textRegion.selectAll();
         textRegion.cut();
-        textRegion.deselect();
+        // Since there is no text left, no need to reset any cursor.
       }
     }
 
