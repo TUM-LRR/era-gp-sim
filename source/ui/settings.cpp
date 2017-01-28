@@ -32,6 +32,10 @@
 
 Settings* Settings::_settings = nullptr;
 
+// Note: this is a QResource File (compiled into the binary, see qml.qrc)
+const char* const Settings::_settingsDefaultPath =
+    ":/Components/Settings/default-settings.json";
+
 Status Settings::Make() {
   assert::that(_settings == nullptr);
 
@@ -108,7 +112,7 @@ QStringList Settings::listOfAllThemeNames() const noexcept {
       _listOfAllThemeNames.append(theme.completeBaseName());
     }
 
-    // Swap the default theme into the first position (we guarantee this)/
+    // Swap the default theme into the first position (we guarantee this)
     auto defaultThemeIndex =
         _listOfAllThemeNames.indexOf((*this)["theme"].toString());
     assert::that(defaultThemeIndex != -1);
@@ -123,15 +127,14 @@ Settings::Json Settings::toJson() const {
 
   for (const auto& key : super::keys()) {
     json[key] = QJsonValue::fromVariant((*this)[key]);
-    assert::that(!json[key].isNull());
+    assert::that(!json[key].isUndefined());
   }
 
   return json;
 }
 
 StatusWithValue<QString> Settings::_findSettingsDirectory() {
-  auto directory =
-      QDir(QString::fromStdString(Utility::rootPath()));  // QDir::home();
+  auto directory = QDir::home();  // Represents an absolute path to $HOME.
 
   if (!directory.exists()) {
     return Status::Fail("Could not find home directory");
@@ -146,8 +149,17 @@ StatusWithValue<QString> Settings::_findSettingsDirectory() {
 
 QString Settings::_findSettingsFile(const QString& directoryPath) {
   QDir directory(directoryPath);
-  QFileInfo file(directory.filePath("settings.json"));
-  return file.absoluteFilePath();
+  return directory.absoluteFilePath("settings.json");
+}
+
+StatusWithValue<Settings::Json> Settings::_loadJson() {
+  auto data = _loadSettingsData();
+  if (!data) return data.status();
+
+  auto json = QJsonDocument::fromJson(data.value());
+
+  assert::that(json.isObject());
+  return json.object();
 }
 
 StatusWithValue<QByteArray> Settings::_loadSettingsData() {
@@ -157,8 +169,7 @@ StatusWithValue<QByteArray> Settings::_loadSettingsData() {
   }
 
   auto settingsLoadPath = _settingsFilePath;
-  QFileInfo fileInfo(_settingsFilePath);
-  if (!fileInfo.exists()) {
+  if (!QFile::exists(settingsLoadPath)) {
     settingsLoadPath = _settingsDefaultPath;
   }
 
@@ -181,20 +192,15 @@ Status Settings::_findSettings() {
   auto directoryResult = _findSettingsDirectory();
   if (!directoryResult) return directoryResult.status();
 
+  // Note that it is OK if we do not find the settings file, since we can
+  // use the default settings file built into the application. We *do* need
+  // to find the settings directory, however. That's why we check the
+  // status above.
+
   _settingsFilePath = _findSettingsFile(directoryResult.value());
-
   _settingsDirectoryPath = directoryResult.value();
+
   return Status::OK;
-}
-
-StatusWithValue<Settings::Json> Settings::_loadJson() {
-  auto data = _loadSettingsData();
-  if (!data) return data.status();
-
-  auto json = QJsonDocument::fromJson(data.value());
-
-  assert::that(json.isObject());
-  return json.object();
 }
 
 Status Settings::_checkSnapshotLocation(Json& json) {
@@ -206,11 +212,14 @@ Status Settings::_checkSnapshotLocation(Json& json) {
     return Status::OK;
   }
 
-  // TODO(psag): QDir::home();
-  QDir defaultLocation(QString::fromStdString(Utility::rootPath()));
-  defaultLocation.cd(".erasim/snapshots");
+  auto defaultLocation = QDir::home();
+  defaultLocation.cd(".erasim");
 
-  json["snapshotLocation"] = defaultLocation.canonicalPath();
+  // No-Op if the directory already exists
+  defaultLocation.mkdir("snapshots");
+  defaultLocation.cd("snapshots");
+
+  json["snapshotLocation"] = defaultLocation.absolutePath();
 
   // Store this to disk so that it will be set the next time.
   auto status = _store(json);

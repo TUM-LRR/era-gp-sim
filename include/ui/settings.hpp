@@ -121,6 +121,9 @@ class Settings : public QQmlPropertyMap {
   /** The singleton. */
   static Settings* _settings;
 
+  /** The path to the default settings. */
+  static const char* const _settingsDefaultPath;
+
   /**
    * Attempts to locate the settings directory at the expected path.
    *
@@ -146,6 +149,13 @@ class Settings : public QQmlPropertyMap {
   Settings();
 
   /**
+   * Loads the JSON for the settings.
+   *
+   * \return The JSON of the specified theme.
+   */
+  StatusWithValue<Json> _loadJson();
+
+  /**
    * Loads raw settings data from disk.
    *
    * \returns A QByteArray of raw JSON bytes.
@@ -159,13 +169,6 @@ class Settings : public QQmlPropertyMap {
    * \returns A status for finding the paths.
    */
   Status _findSettings();
-
-  /**
-   * Loads the JSON for the settings.
-   *
-   * \return The JSON of the specified theme.
-   */
-  StatusWithValue<Json> _loadJson();
 
   /**
    * Checks if the snapshot location is null in the JSON and coalesces it
@@ -201,10 +204,6 @@ class Settings : public QQmlPropertyMap {
 
   /** A list of all theme names. */
   mutable QStringList _listOfAllThemeNames;
-
-  /** The path to the default settings (in the qrc). */
-  static constexpr auto _settingsDefaultPath =
-      ":/Components/Settings/default-settings.json";
 };
 
 

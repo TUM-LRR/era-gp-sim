@@ -38,7 +38,7 @@ Item {
     }
 
     MenuItem {
-      text: "All registfadsers to Signed Decimal"
+      text: "All registers to Signed Decimal"
       onTriggered: registerTreeView.formatAllRegisters("Signed Decimal");
     }
 
@@ -56,7 +56,6 @@ Item {
 
   Connections {
     target: registerComponent
-
     onSettingsButtonPressed: {
        contextMenu.popup();
     }

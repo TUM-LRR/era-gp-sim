@@ -22,7 +22,7 @@ import QtQuick.Controls 1.5
 import QtQuick.Dialogs 1.2
 import Theme 1.0
 import "../Common"
-import "../Common/TextUtilities.js" as TextUtilities
+import "../../Js/TextUtility.js" as TextUtility
 
 // Each line wich contains any issue (error, warning or information) is marked by
 // an issueMark. An issueMark is the container of one or more issueItems.
@@ -216,7 +216,7 @@ Item {
         function _offsetFirstIssueItemIfNecessary() {
             if (issueMark.issueItems.length == 0 ) return;
             // Check if the first issueText would overlap the line text.
-            var lineEndX = textArea.positionToRectangle(TextUtilities.getLineEndForLine(textArea.text, lineNumber)).x;
+            var lineEndX = textArea.positionToRectangle(TextUtility.getLineEndForLine(textArea.text, lineNumber)).x;
             var errorLeftX = textArea.width - issueMark.issueItems[0].width;
             var textToErrorDistance = errorLeftX - lineEndX;
             // If it would overlap, offset it by one line.
