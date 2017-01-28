@@ -32,8 +32,7 @@ Project::Project(std::weak_ptr<Scheduler> &&scheduler,
 , _memory(memorySize, _architecture.getByteSize())
 , _registerSet()
 , _architectureFormula(architectureFormula)
-, _errorCallback(
-      [](const Translateable&) {}) {
+, _errorCallback([](const Translateable &) {}) {
   _architecture.validate();
 
   for (UnitInformation unitInfo : _architecture.getUnits()) {
@@ -132,8 +131,7 @@ MemoryValue Project::trySetMemoryValueAt(size_t address,
   return _memory.trySet(address, value, ignoreProtection);
 }
 
-bool Project::isMemoryProtectedAt(size_t address,
-                                  size_t amount) const {
+bool Project::isMemoryProtectedAt(size_t address, size_t amount) const {
   return _memory.isProtected(address, amount);
 }
 
@@ -206,7 +204,7 @@ void Project::loadSnapshot(const Json &snapshotData) {
     _memory.deserializeJSON(snapshot.getMemoryJson());
     _registerSet.deserializeJSON(snapshot.getRegisterJson());
   } catch (const DeserializationError &exception) {
-      _errorCallback(exception.what());
+    _errorCallback(exception.what());
   }
 }
 
@@ -254,6 +252,10 @@ void Project::setUpdateRegisterCallback(
 
 void Project::setUpdateMemoryCallback(Callback<size_t, size_t> callback) {
   _memory.setCallback(callback);
+}
+
+void Project::setUpdateMemorySizeCallback(Callback<size_t> callback) {
+  _memory.setSizeCallback(callback);
 }
 
 void Project::setErrorCallback(ErrorCallback callback) {
