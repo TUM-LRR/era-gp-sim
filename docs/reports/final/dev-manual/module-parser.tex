@@ -219,7 +219,20 @@ Für RISC-V existiert ein korrespondierendes Parser-Submodul, welches in der
 verwendet dabei größtenteils die Klassen, die im Independent-Submodul definiert
 sind.
 
-\todo[inline]{TODO: Zum Text-Parsen hier was sagen, RISC-V-Regex erklären}
+Der RISC-V-Parser liest zuerst zeilenweise den Programm-Code ein und speichert
+ihn in einem \texttt{Intermediate\-Representator}. Dann wird die
+\texttt{transform}-Funktion aufgerufen und die entstehende
+\texttt{Final\-Representation} zurückgegeben.
+
+Zum Parsen einer einzelnen Zeile wird die Hilfsklasse
+\texttt{RiscvParser::\allowbreak{}RiscvRegex} verwendet. Diese Klasse nutzte
+während der Entwicklung einen regulären Ausdruck, um die Zeile in
+verschiedene Elemente aufzuteilen. Um bestimmte Einschränkungen dieses Vorgangs
+zu umgehen, wurde die Klasse neu geschrieben, der Name aber beibehalten.
+
+Nach aktuellem Stand wird über jedes Zeichen der zu parsenden Zeile iteriert und
+bei gewissen Zeichen der letzte Teil der Zeile als Label, Instruktion oder
+Parameter gespeichert. Hierbei werden beliebig viele Parameter unterstützt.
 
 \subsubsection{Verwenden eines Parsers}
 
@@ -279,7 +292,9 @@ Einschränkungen:
 \item \emph{Segment-Darstellung}: \todo[inline]{TODO}
 \item \emph{Compiler für arithmetische Ausdrücke}: \todo[inline]{TODO}
 \item \emph{Symbol-Tabelle}: \todo[inline]{TODO}
-\item \emph{Gleitkommazahl-Unterstützung}: \todo[inline]{TODO}
+\item \emph{Gleitkommazahl-Unterstützung}: Unterstützung für Gleitkommezahlen
+wurde während der Entwicklung aufgegeben, kann aber bei Bedarf leicht in den
+Parser integriert werden.
 \end{itemize}
 
 \subsubsection{Weiterführende Dokumentation}
