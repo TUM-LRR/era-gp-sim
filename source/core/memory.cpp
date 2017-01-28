@@ -291,7 +291,7 @@ void Memory::deserializeJSON(const Json& json) {
                                _dataMapStringIdentifier);
   }
   // TODO::check types!
-  // check wether the sizes match
+  // check whether the sizes match
   size_t byteCount = *byteCountIt;
   if (_byteCount < byteCount) {
     // resize the memory if the snapshot is bigger.
