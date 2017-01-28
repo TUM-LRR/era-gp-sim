@@ -1,6 +1,8 @@
 \subsection{Parser}
 
-Das \textit{Parser}-Modul übernimmt die Übersetzung des eingegebenen Textes in die für das \textit{Architectur}-Modul lesbaren Syntaxbäume. Damit entspricht dieses Modul größtenteils dem eigentlichen Assemblierer.
+Das \textit{Parser}-Modul übernimmt die Übersetzung des eingegebenen Textes in
+die für das \textit{Architektur}-Modul lesbaren Syntaxbäume. Damit entspricht
+dieses Modul größtenteils dem eigentlichen Assemblierer.
 
 \subsubsection{Submodule}
 
@@ -31,28 +33,41 @@ Im Folgenden sind diese Submodule nochmal genauer ausgeführt:
 
 Das Kernstück des gesamten Moduls bildet die (abstrakte) Klasse \texttt{Parser}.
 Diese bietet hauptsächlich zwei Funktionen: Anbieten von Syntax-Informationen
-mittels der Method \texttt{getSyntaxInformation} (für das Syntax-Highlighting in
+mittels der Methode \texttt{getSyntaxInformation} (für das Syntax-Highlighting in
 der Benutzeroberfläche), sowie dem Assemblieren eines gegebenen
 Assemblerprogrammes mithilfe der Methode \texttt{parse}, die als
 Eingabeparameter einen C++-Standard-String erwartet.
 
 \subparagraph{Syntax-Highlighting}
-\todo[inline]{TODO}
+
+Beim Aufruf der Methode \texttt{getSyntaxInformation} soll ein Objekt der Klasse
+\texttt{SyntaxInformation} erstellt und zurückgegeben werden. Dieses Objekt
+enthält Informationen zum Syntax-Highlighting.
+
+Zur Bestimmung der hervorzuhebenden Teile des Textes werden reguläre Ausdrücke
+verwendet. Um unterschiedliche Formatierungen zu ermöglichen, wird jeder
+Ausdruck einem Token (siehe \texttt{SyntaxInformation::Token}) zugeordnet.
+
+Um einem \texttt{SyntaxInformation}-Objekt einen regulären Ausdruck hinzuzufügen,
+kann die Methode \texttt{addSyntaxRegex} verwendet werden.
+
 \subparagraph{Das Assemblieren}
-Beim Aufruf der Methode \texttt{parse} soll das Assembler-Programm dabei
-kompiliert und in einer \texttt{FinalRepresentation}-Datenstruktur zurückgegeben
-werden. Diese enthält notwendige Informationen für die Ausführung des
+
+Beim Aufruf der Methode \texttt{parse} soll das Assembler-Programm kompiliert
+und in einer \texttt{FinalRepresentation}-Datenstruktur zurückgegeben werden.
+Diese enthält notwendige Informationen für die Ausführung des
 Assemblerprogrammes sowie dessen Darstellung in der Benutzeroberfläche. Die
 \texttt{FinalRepresentation} besteht dabei aus folgenden Einzelheiten:
+
 \begin{itemize}
 \item \texttt{CommandList}: Die fertig assemblierten Assemblerbefehle,
 aneinandergereiht. Jeder der Befehle (des Typs \texttt{FinalCommand}) enthält
 einen fertig assemblierten \texttt{InstructionNode}, das
-\texttt{CodePositionInterval}, an welchem der Befehl im Text auftritt, sowie der
+\texttt{CodePositionInterval}, an welchem der Befehl im Text auftritt, sowie die
 Speicheradresse, an der der Befehl assembliert werden soll.
 \item \texttt{MacroInformationList}: Beinhaltet alle Makros, welche im Code
-vorkommen, mit eingesetzten Parametern mit Position des Auftretens.
-\item \texttt{CompileErrorList}: Eine Liste von allen Fehler, Warnungen und
+vorkommen, mit eingesetzten Parametern und Position des Auftretens.
+\item \texttt{CompileErrorList}: Eine Liste von allen Fehlern, Warnungen und
 Hinweisen, die während des Assembliervorgangs aufgetreten sind. Wenn diese keine
 Fehler enthält (sehrwohl aber eventuell Warnungen oder Hinweise), so ist das
 Assemblieren erfolgreich gewesen und das Assemblerprogramm kann ausgeführt
@@ -67,16 +82,18 @@ als zweidimensionaler Punkt gespeichert, ein Intervall davon entsprechend in der
 sein Startpunkt vor seinem Endpunkt liegt. In diesem Fall also, wenn die
 Y-Koordinate des Endpunktes strikt kleiner als die des Startpunktes oder die
 Y-Koordinaten identisch aber die X-Koordinate des Endpunktes strikt kleiner ist.
-Ein CodePositionInterval wird beidseitig inklusiv gesehen (d.h. beide Randpunkte
+Ein \texttt{CodePositionInterval} wird beidseitig inklusiv gesehen (d.h. beide Randpunkte
 liegen noch im Intervall).
 
 Ein \texttt{CompileError} kapselt eine Fehlermeldung (bzw. eine Warnung oder
 einen Hinweis). Dabei wird die Position und die Schwere der Meldung (Fehler,
-Warnung, Hinweis, vgl. \texttt{CompileErrorSeverity}) festgehalten. Der Begriff
+Warnung, Hinweis, vgl. \texttt{Compile\-Error\-Severity}) festgehalten. Der Begriff
 „Error“ ist deswegen etwas überladen. Die Meldung selber wird als
 \texttt{Translateable} gespeichert, sodass diese später in verschiedene Sprachen
-übersetzt werden können soll. Dabei werden Argumente separat vom eigentlichen
-Text kodiert. Eine \texttt{CompileErrorList} kapselt dabei die
+übersetzt werden könnte. Dabei werden Argumente separat vom eigentlichen
+Text kodiert.
+
+Eine \texttt{CompileErrorList} kapselt die
 \texttt{CompileError}s und stellt Möglichkeiten zur Erweiterung der Liste
 bereit. Dies erfolgt über den Aufruf von Makros. Der Grund hierfür ist, dass so
 die Fehlermeldungen automatisch von einem Qt-Programm gefunden und für das
@@ -107,13 +124,87 @@ kann und soll gerne erweitert, dabei aber unabhängig von jeglichem spezifischen
 Assemblierer gehalten werden.
 
 \subparagraph{Intermediate-Darstellung für Befehle}
-\todo[inline]{TODO}
+
+Das Independent-Submodul stellt Klassen zur Verfügung, die als
+Übergangsdarstellung zwischen Text und assemblierten Syntaxbaum eines
+Assembler-Programms dienen. Eine Übersicht der wichtigsten Klassen bietet
+Abbildung \ref{fig:parser-intermediate}.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}[node distance=1.0cm and 0.7cm]
+
+		\node (super) [class] {IntermediateOperation};
+		\node (instr) [class, below = of super] {IntermediateInstruction};
+		\node (macro) [class, right = of instr] {IntermediateMacroInstruction};
+		\node (dir) [class, left = of instr] {IntermediateDirective};
+		\node (sub) [below = of dir, yshift = 3mm, xshift = 1cm] {\textit{Diverse implementierte Direktiven}};
+
+		\draw[inheritance-arrow] (dir.north) -- ++(0,0.5cm) -| (super);
+		\draw[inheritance-arrow] (macro.north) -- ++(0,0.5cm) -| (super);
+		\draw[inheritance-arrow] (instr.north) -- (super);
+		\draw[inheritance-arrow] (sub.north) ++(-1.0cm,0) -- (dir);
+		\end{tikzpicture}
+	\end{center}
+	\caption{Klassendiagramm Intermediate-Darstellung}
+	\label{fig:parser-intermediate}
+\end{figure}
+
+Diese Klassen haben folgende Funktionen:
+
+\begin{itemize}
+	\item \texttt{IntermediateOperation} ist die abstrakte Oberklasse, die das
+	Interface definiert.
+	\item \texttt{IntermediateInstruction} steht für eine Maschineninstruktion,
+	die vom Architekturmodul ausgewertet werden muss.
+	\item \texttt{IntermediateMacroInstruction} steht für eine Instruktion,
+	bei der es sich um einen Makroaufruf handelt. Diese Klasse muss nicht von
+	einem Parser instanziiert werden (näheres im Abschnitt Makros).
+	\item \texttt{IntermediateDirective} ist eine Oberklasse für
+	Implementierungen von Parser-Direkti\-ven. Alle unterstützten Direktiven erben
+	von dieser Klasse.
+\end{itemize}
+
+Die Klasse \texttt{IntermediateRepresentator} enthält eine Liste mehrerer
+dieser Operationen und stellt eine Methode bereit, um diese Operationen in eine
+\texttt{FinalRepresentation} umzuwandeln.
 
 \subparagraph{Assemblierung der Intermediate-Darstellung}
-\todo[inline]{TODO}
+Um die Operationen aus der Intermediate-Darstellung in ein Objekt der Klasse
+\texttt{FinalRepresentation} umzuwandeln, kann die Funktion
+\texttt{IntermediateRepresentator::\allowbreak{}transform} aufgerufen werden.
+Diese Methode führt nacheinander folgende Schritte aus:
+
+\begin{enumerate}
+	\item Aufrufen der \texttt{precompile} Funktion für alle Operationen.
+	\item Ersetzen aller Instruktionen, bei denen es sich um Makroaufrufe
+	handelt, mit Makro-Instruktionen.
+	\item Reservieren von Speicher für alle Befehle mit Hilfe der
+	\texttt{allocateMemory} Funktion.
+	\item Einlesen aller Labels/Konstanten und deren Werte mit der
+	\texttt{enhanceSymbolTable} Funktion.
+	\item "`Ausführen"' aller Operationen, d.h. meistens Erzeugen eines
+	Syntaxknotens und Einfügen dieses Knotens in die \texttt{FinalRepresentation}
+\end{enumerate}
 
 \subparagraph{Makros}
-\todo[inline]{TODO}
+Für das Parsen von Makros existieren zwei Direktiven: \texttt{Makro\-Directive}
+und \texttt{Makro\-End\-Directive}. Alle Befehle zwischen diesen beiden
+Direktiven werden in eine interne Liste des \texttt{Makro\-Directive}-Objekts
+eingefügt, anstatt wie gewöhnlich in den \texttt{Intermediate\-Representator}.
+
+Im \texttt{precompile}-Schritt trägt sich die Makro-Direktive mit ihrem Namen
+in eine Tabelle (\texttt{Macro\-Directive\-Table}) ein. Daraufhin wird für jede
+\texttt{Intermediate\-Instruction} überprüft, ob der Name ihres Befehls als
+Makro in der Tabelle eingetragen ist. Falls ja, wird die Instruktion mit einer
+\texttt{Intermediate\-Macro\-Instruction} ersetzt und alle Befehle aus der
+Makro-Direktive nach Einsetzen von eventuellen Parametern in die neue
+Makro-Instruktion kopiert.
+
+Im \texttt{allocateMemory}- und \texttt{execute}-Schritt reicht die Makro-
+Instruktion die Funktionsaufrufe einfach an die enthaltenen Instruktionen
+weiter. Falls Fehler entstehen, werden diese an die Position des Makro-Aufrufs
+verschoben.
 
 \subparagraph{Symbolgraph und Symbol-Replacer}
 \todo[inline]{TODO}
@@ -139,6 +230,45 @@ kann man bereits die \texttt{parse}- und \texttt{getSyntaxHighliting}-Methoden
 des Parsers selber aufrufen und Text assemblieren lassen. Das Deinitialisieren
 erfolgt ebenfalls über den eingebauten Destruktor automatisch.
 
+Eine Übersicht über diesen Prozess bietet Abbildung \ref{fig:parser-overview}.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}[node distance=1.0cm and 3.0cm]
+		\tikzstyle{myarrow} = [->, thick]
+
+		\node (factory) [class]
+		{
+			\textbf{ParserFactory}
+		};
+		\node (invis1) [empty, right = of factory] {};
+		\node (parser) [class, rectangle split, rectangle split parts=2, below = of invis1]
+		{
+			\textbf{Parser}
+			\nodepart{second}
+			\begin{tabular}{c}
+				getSyntaxInformation()
+			\end{tabular}
+		};
+		\node (final) [class, rectangle split, rectangle split parts=2, right = of parser]
+		{
+			\textbf{FinalRepresentation}
+			\nodepart{second}
+			\begin{tabular}{c}
+				commandList() \\
+				errorList() \\
+				macroList() \\
+				\ldots
+			\end{tabular}
+		};
+		\draw[myarrow] (factory) edge node [xshift=1.1cm, yshift=2mm] {createParser()} (parser);
+		\draw[myarrow] (parser) edge node [yshift=2mm] {parse()} (final);
+		\end{tikzpicture}
+	\end{center}
+	\caption{Übersicht der Parserschnittstelle}
+	\label{fig:parser-overview}
+\end{figure}
+
 \subsubsection{Einschränkungen}
 
 Trotz der aktuellen Fähigkeiten des Parser-Moduls existieren noch folgende
@@ -151,3 +281,36 @@ Einschränkungen:
 \item \emph{Symbol-Tabelle}: \todo[inline]{TODO}
 \item \emph{Gleitkommazahl-Unterstützung}: \todo[inline]{TODO}
 \end{itemize}
+
+\subsubsection{Weiterführende Dokumentation}
+
+Weiterführende Dokumentation findet sich in denen für den Parser relevanten
+Dateien, welche in Abbildung \ref{fig:parser-further} aufgelistet sind.
+
+\begin{figure}[H]
+	\begin{center}
+	\begin{tikzpicture}[%
+	grow via three points={one child at (0.8,-0.8) and
+		two children at (0.8,-0.8) and (0.8,-1.7)},
+	edge from parent path={($(\tikzparentnode\tikzparentanchor)+(.2cm,0pt)$) |- (\tikzchildnode\tikzchildanchor)},
+	growth parent anchor=west,
+	parent anchor=south west]
+	\tikzstyle{every node}=[draw=black,anchor=west]
+	\node {\erasim}
+	child { node {$\{\text{tests/}, \text{include/}, \text{source/}\}$}
+		child { node {parser/}
+			child { node {common/} }
+			child { node {factory/} }
+			child { node {independent/} }
+			child { node {riscv/} }
+		}
+	}
+	child [missing] {}
+	child [missing] {}
+	child [missing] {};
+	\end{tikzpicture}
+	\end{center}
+
+	\caption{Relevante Dateien des Parsermoduls}
+	\label{fig:parser-further}
+\end{figure}
