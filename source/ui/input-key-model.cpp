@@ -29,7 +29,7 @@ InputKeyModel::InputKeyModel(QQmlContext* context,
 
 void InputKeyModel::keyPressed(unsigned int id) {
   // save id at start in Memory
-  auto memoryValue = conversions::convert(id, 8);
+  auto memoryValue = conversions::convert(id, 32);
   _memoryAccess.putMemoryValueAt(_start, memoryValue);
 }
 
