@@ -90,9 +90,9 @@ entstehen sollen, kann diese Funktion nicht von Klassen des Cores übernommen
 werden. Aus diesem Grund übernehmen einige der zu den QML-Komponenten gehörigen
 C++-Klassen der GUI die Aufgabe des Modells und werden folglich von
 Qt-Modell-Klassen wie etwa \texttt{QAbstractItemModel} abgeleitet. Ausgenommen
-von Cache-Zwecken halten diese Modelle selbst keine Daten, sondern holen diese
-über das zugehörige Interface-Objekt, sobald Daten seitens der QML-Komponente
-angefordert werden.
+von Cache-Zwecken halten diese Modelle selbst keine veränderbaren Daten
+(Registerwerte, Speicherwerte etc.), sondern holen diese über das zugehörige
+Interface-Objekt, sobald Daten seitens der QML-Komponente angefordert werden.
 
 \subsubsection{Kommunikation}
 \label{gui-kommunikation}
