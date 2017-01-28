@@ -18,6 +18,7 @@
 
 #include "parser/independent/intermediate-macro-instruction.hpp"
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -98,8 +99,34 @@ void IntermediateMacroInstruction::execute(
     CompileErrorList& errors,
     FinalCommandVector& commandOutput,
     MemoryAccess& memoryAccess) {
+  CompileErrorList innerErrors;
+  FinalCommandVector innerCommands;
   for (const auto& operation : _operations) {
-    operation->execute(immutable, errors, commandOutput, memoryAccess);
+    operation->execute(immutable, innerErrors, innerCommands, memoryAccess);
+  }
+  // If the inner commands don't have their own position, use the position of
+  // the macro call
+  if (innerCommands.size() > 0 && innerCommands[0].position().isEmpty()) {
+    commandOutput.emplace_back(innerCommands[0].node(),
+                               positionInterval(),
+                               innerCommands[0].address());
+  } else {
+    if (innerCommands.size() > 0) {
+      commandOutput.push_back(std::move(innerCommands[0]));
+    }
+  }
+
+  // Move errors to macro call position
+  for (const auto& error : innerErrors.errors()) {
+    errors.pushCompileErrorInternal(
+        error.severity(), positionInterval(), error.message());
+  }
+
+  // Move rest of inner commands to commandOutput
+  if (innerCommands.size() > 1) {
+    std::move(innerCommands.begin() + 1,
+              innerCommands.end(),
+              std::back_inserter(commandOutput));
   }
 }
 

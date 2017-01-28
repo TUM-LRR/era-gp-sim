@@ -62,6 +62,8 @@ class CompileErrorList {
    */
   const CompileErrorVector& errors() const noexcept;
 
+  CompileErrorVector& errors() noexcept;
+
   /**
    * A helper method to determine if the list has any errors (not
    * including warnings, information).
@@ -152,6 +154,17 @@ class CompileErrorList {
             interval,
             severity});
   }
+
+  /**
+   * Adds a compile error created from the arguments to the list.
+   *
+   * \param severity The given severity of the compile error.
+   * \param interval The given code position interval where to error occured.
+   * \param message The message to record.
+   */
+  void pushCompileErrorInternal(CompileErrorSeverity severity,
+                                const CodePositionInterval& interval,
+                                const Translateable& message);
 
   /**
    * Adds a compile error created from the arguments to the list,
