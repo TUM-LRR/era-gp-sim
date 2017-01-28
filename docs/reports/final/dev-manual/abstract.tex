@@ -201,7 +201,7 @@ von \textit{Make}\footnote{\url{https://www.gnu.org/software/make/}} ausgeführt
 Um einen Build des Projekts durchzuführen, sollte vorher einen entsprechende Build Umgebung
 aufgesetzt werden. Anschließend kann man mit den Folgenden Befehlen einen Clean Build erzeugen:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=bash, keywords={}]
 # Projekt herunterladen
 git clone https://github.com/TUM-LRR/era-gp-sim
 
@@ -228,7 +228,7 @@ make -j 4
 Hat man Qt manuell installiert, ist es ggf. notwendig, den Installationspfad bei der
 Ausführung von CMake zu spezifizieren.
 
-\begin{lstlisting}
+\begin{lstlisting}[language=bash, keywords={}]
 # Wurde z.B. der Ordner ~/Qt5.7.0 bei der manuellen
 # Installation von Qt angegeben, so muss man CMake mit
 # dem folgenden Argument aufrufen:
