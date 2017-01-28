@@ -17,8 +17,8 @@ eines Syntax Baums. Des Weiteren ist die Architektur für die Validierung einer
 Instruktion zuständig, und stellt bei Fehlern entsprechende Nachrichten zur
 Verfügung, die dem Nutzer helfen sollen, das Problem zu beheben.
 
-Eine Übersicht über die Schnittstellen des Architekturmoduls bietet Abbildung
-\ref{fig:arch-overview} (Die verwendeten Klassennahmen stimmen nicht mit denen
+Eine Übersicht über die Schnittstellen des Architekturmoduls bietet
+\autoref{fig:arch-overview} (Die verwendeten Klassennahmen stimmen nicht mit denen
 im Quellcode überein, es geht hier nur um das Prinzip).
 
 \begin{figure}[H]
@@ -116,7 +116,7 @@ Implementation abläuft, wird im Folgenden erläutert.
 
 Der Syntax Baum mit durch Vererbung implementiert und in \textit{common} und
 \textit{riscv} (oder jede beliebige andere Architektur) gegliedert. Eine
-Übersicht bietet Abbildung \ref{fig:arch-syntax-tree}
+Übersicht bietet \autoref{fig:arch-syntax-tree}
 
 \begin{figure}[H]
 	\begin{center}
@@ -247,8 +247,8 @@ Folgende Methoden werden von ihr vorgegeben:
 \end{itemize}
 
 Die Aufgabe einer konkreten Architektur besteht nun darin, die eben beschriebenen
-Unterklassen inklusive ihrer Methoden entsprechend zu implementieren. In Sektion
-\ref{sec:extension} wird darauf genauer eingegangen. \\
+Unterklassen inklusive ihrer Methoden entsprechend zu implementieren. In
+\autoref{sec:extension} wird darauf genauer eingegangen. \\
 Um nun Objekte des Syntax Baums zu erzeugen, wird die Node Factory benötigt, auf
 die im Folgenden eingegangen wird.
 
@@ -258,7 +258,7 @@ die im Folgenden eingegangen wird.
 Mit der \textit{Node Factory} wird der bereits beschriebene Syntax Baum erzeugt.
 Um nach außen ein Architektur-unabhängiges Interface zu bieten, basiert die
 Node Factory dem \textit{Abstract Factory Pattern} und wird als Diagramm in
-Abbildung \ref{fig:arch-node-factory} dargestellt.
+\autoref{fig:arch-node-factory} dargestellt.
 
 \begin{figure}[H]
 	\begin{center}
@@ -366,7 +366,7 @@ Implementation eines \texttt{uint128\_t} schreiben, indem man z.B. zwei
 
 Diese vorherigen Sektionen geben einen Überblick über die Architektur.
 Weiterführende Dokumentation findet sich in denen für die Architektur relevanten
-Dateien, welche in Abbildung \ref{fig:arch-further} aufgelistet sind.
+Dateien, welche in \autoref{fig:arch-further} aufgelistet sind.
 
 \begin{figure}[H]
 	\begin{center}
