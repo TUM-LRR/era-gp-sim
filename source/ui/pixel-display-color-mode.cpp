@@ -194,7 +194,7 @@ const ColorMode::UpdateMemoryFunction ColorMode::RGBUpdateMemory = [](
         (o.tight ? ((sizeInBit * o.width * o.height + cellSize - 1) / cellSize)
                  : (((sizeInBit + cellSize - 1) / cellSize + o.freeBytes) *
                     o.height * o.width));
-    if (pixelBufferPointer + pixelBufferSize >= memSize) {
+    if (pixelBufferPointer + pixelBufferSize > memSize) {
       o.setError(2);
     }
     if (address < pixelBufferPointer + pixelBufferSize &&
@@ -382,7 +382,7 @@ const ColorMode::UpdateMemoryFunction ColorMode::MonochromeUpdateMemory = [](
   }
   if (!hasAlreadyUpdatedAllPixels) {
     size_t pixelBufferSize = (o.width * o.height + cellSize - 1) / cellSize;
-    if (pixelBufferPointer + pixelBufferSize >= memSize) {
+    if (pixelBufferPointer + pixelBufferSize > memSize) {
       o.setError(2);
     }
     if (address < pixelBufferPointer + pixelBufferSize &&
@@ -435,7 +435,7 @@ const ColorMode::UpdateMemoryFunction ColorMode::MonochromeUpdateMemory = [](
     constexpr size_t colorSizeInBit = 32;
     size_t colorSizeInByte = (colorSizeInBit + cellSize - 1) / cellSize;
     size_t colorBufferSize = colorCount * colorSizeInByte;
-    if (colorBufferPointer + colorBufferSize >= memSize) {
+    if (colorBufferPointer + colorBufferSize > memSize) {
       o.setError(3);
     }
     if (address < colorBufferPointer + colorBufferSize &&
