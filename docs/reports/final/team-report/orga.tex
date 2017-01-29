@@ -151,13 +151,14 @@ auf das GitHub Repository des Projekts, während Grafik \ref{fig:time-frame}
 einen Eindruck über die Diskrepanz zwischen geplanter und tatsächlicher
 Fertigstellung von Meilensteinen gibt.
 
-\begin{figure}[h!]
+\begin{figure}[b!]
   \centering
   \includegraphics[scale=0.45]{figures/commit-history}
-  \caption{Ein Histogramm der gesammelten Commitzahlen auf das GitHub Repository von \erasim{} während des Entwicklungszeitraumes. Quelle: \link{https://github.com/TUM-LRR/era-gp-sim/graphs/contributors}, letzter Zugriff \today.}
+  \caption{Ein Histogramm der gesammelten Commitzahlen auf das GitHub Repository von \erasim{} während des Entwicklungszeitraumes. Quelle: {\small\url{https://github.com/TUM-LRR/era-gp-sim/graphs/contributors}}, letzter Zugriff \today.}
   \label{fig:commit-history}
 \end{figure}
 
+\pagebreak
 Wir behaupten, dass sich unsere Verplanung bei manchen der Meilensteinen auf drei Ursachen zurückzuführen lässt:
 
 \begin{enumerate}
@@ -240,9 +241,163 @@ Wir behaupten, dass sich unsere Verplanung bei manchen der Meilensteinen auf dre
 \subsection{Workflow}
 \label{team:orga-workflow}
 
-language
-definitions of done
-test driven
-waffle
-kommunikationsmittel
-github
+Diese Sektion gibt einen Einblick in den gesamten Workflow der Entwicklung von
+\erasim{}. Mit \emph{Worfklow} sind die genutzten Programmiersprachen, Prinzipen und Methoden sowie auch Hilfsmittel gemeint. Hierbei möchten wir insbesondere darauf eingehen, wie leicht oder schwer es für das Team war, den Workflow zu lernen sowie auch evaluieren, wie effektiv unsere Entwicklung aufgrund unseres Workflows war. Wir wollen hierbei nicht in Detail auf die \emph{praktischen} Aspekte des Workflows eingehen, da diese im Entwicklerbericht genauestens ausgeführt sind.
+
+\subsubsection{Sprachen}
+\label{team:orga-workflow-lang}
+
+Wie bei vielen großen Softwareprojekten üblich, haben wir für die Entwicklung
+von \erasim{} eine Programmiersprache als Hauptwerkzeug genutzt, gegebenenfalls
+aber nach dem Prinzip ``Use the Right Tool for the Job'' auch in anderen
+Sprachen entwickelt. Unser Hauptwerkzeug war hierbei \emph{C++}\footnote{Wir
+haben insbesondere darauf Wert gelegt, die neuen C++11 und C++14 Standards zu
+nutzen.}, womit das gesamte ``Backend'' sowie auch bestimmte Teile des
+``Frontends'', beispielsweise Datenmodelle, implementiert sind. Für die
+Entwicklung der GUI wurde das \emph{Qt}\footnote{\url{https://www.qt.io}} C++
+Framework verwendet, wobei wir die \emph{QML} und \emph{Javascript}
+Skriptingsprachen zur Definition der Benutzeroberfläche nutzten. Andere Sprachen
+beeinschließen \emph{Python}, womit einige Tools zur Produktivitätssteigerung
+sowie ein $\text{SASS} \rightarrow \text{JSON}$ Konvertierer als Teil unserer
+UI-Theming Implementierung geschrieben wurden, \LaTeX{} zur Ausarbeitung von
+Spezifikationen sowie \emph{SASS}\footnote{\url{http://sass-lang.com}} zur
+Definition von UI Themes. Insgesamt wurden in diesen Sprachen ca. 35,000 Zeilen
+Code geschrieben. Grafik \ref{fig:lang} zeigt hierzu den prozentuellen Anteil
+jeder Sprache an dieser Zahl, wobei Tabelle \ref{tbl:lang} eine genauere
+Aufschlüsselung präsentiert.
+
+\begin{figure}[h!]
+  \centering
+  \vspace{-0.2cm}
+  \begin{tikzpicture}
+    \newlength{\height}\setlength{\height}{0.4cm}\relax
+
+    % C++
+    \fill [Red, rounded corners=2pt]
+          (0, 0) rectangle ++(10.9, \height);
+    \draw [Red] (5, {\height + 0.5cm})
+          node {\small\texttt{C++ (78.7\%)}};
+
+    % QML
+    \fill [Green, rounded corners=2pt]
+          (10.8, 0) rectangle ++(1.9, \height);
+    \draw [Green] (11.5, -0.5cm)
+          node {\small\texttt{QML (13.7\%)}};
+
+    % LaTeX
+    \fill [orange, rounded corners=2pt]
+          (12.6, 0) rectangle ++(1, \height);
+    \draw [orange] (13.75, -0.5cm)
+          node {\small\texttt{\LaTeX (4.4\%)}};
+
+    % Python
+    \fill [ProcessBlue, rounded corners=2pt]
+          (13.5, 0) rectangle ++(0.5, \height);
+    \draw [ProcessBlue] (14, {\height + 0.5cm})
+          node {\small\texttt{Python (1.5\%)}};
+
+    % Other
+    \fill [Gray, rounded corners=2pt]
+          (13.9, 0) rectangle ++(0.5, \height);
+    \draw [Gray] (16, {\height/2})
+          node {\small\texttt{Andere (1.7\%)}};
+  \end{tikzpicture}
+  \caption{Der prozentuelle Anteil der von uns genutzten Programmiersprachen  an der Gesamtzahl an Codezeilen.}
+  \label{fig:lang}
+\end{figure}
+
+\pagebreak
+
+\begin{table}
+  \centering
+  \begin{tabular}{lrrr}
+    \textbf{Programmiersprache} & \textbf{Kommentarzeilen} & \textbf{Codezeilen} & \textbf{Gesamt} \\
+    \midrule
+    C++ & 17475 & 23637 & 41112 \\
+    QML & 1973 & 5567 & 7540 \\
+    TeX & 247 & 3966 & 4213 \\
+    Python & 242 & 543 & 785 \\
+    JSON & 0 & 531 & 531 \\
+    SASS & 11 & 439 & 450 \\
+    CMake & 117 & 308 & 425 \\
+    Markdown & 0 & 82 & 82 \\
+    JavaScript & 27 & 71 & 98 \\
+    \bottomrule
+    Alle & 20092 & 35144 & 55236
+  \end{tabular}
+  \caption{Eine Aufschlüsselung der für die Entwicklung von \erasim{} geschriebenen Codezeilen in den von uns genutzten Programmiersprachen. Die erste Spalte nennt die Progammiersprache, die zweite Spalte listet die Anzahl an \emph{echten} Codezeilen in dieser Sprache und die dritte Spalte die Anzahl an Kommentaren.}
+  \label{tbl:lang}
+\end{table}
+
+\textbf{Lernphase}
+
+Eine besondere Herausforderung bei der Entwicklung von \erasim{} war, dass nur
+zwei der (anfangs) zwölf Mitglieder zur effektiven Entwicklung ausreichendes
+Wissen in C++ besaßen. Natürlich waren alle in der Programmierung bereits
+erfahren, jedoch in anderen Sprachen wie Java oder C\#. Somit musste
+der Großteil der Teammitglieder zu Beginn des Projekts darin investieren, C++ zu
+erlernen. Da C++ für seine steile Lernkurve berüchtigt ist, war dies keine
+kleine Aufgabe. Dennoch fanden alle Entwickler erfreulich schnell den Einstieg
+in die Sprache und konnten bald darin produktiv werden. Hilfreich hierfür waren
+unter anderem die Lektüre bestimmter Bücher wie \emph{C++
+Primer}\footnote{\emph{C++ Primer}; Lipmann, Lajoie \& Moo (2012)} oder \emph{A
+Tour of C++}\footnote{\emph{A Tour of C++}; Bjarne Stroustrup (2013)}, ein
+eigener Kanal für C++-bezogene Fragen in Slack, gründliche Code Reviews
+von Kameraden mit mehr C++ Erfahrung sowie auch die Einhaltung eines
+strikten Style Guides, der die Feature-Vielfalt von C++ etwas reduziert.
+
+\textbf{Evaluation}
+
+In Retrospektive können wir als Team folgenden Schlusss zur Wahl von C++ als hauptsächliche Programmiersprache für \erasim{} ziehen: C++ ist \emph{schwer}, aber \emph{effektiv}. Wir können einige Nachteile der Sprache identifizieren, können aber insbesondere auch ihre vielen Vorteile wertschätzen. Folgende Eigenschaften von C++ würden wir als positiv für die Effektivität und Effizienz unserer Entwicklung einschätzen:
+\vspace{-0.2cm}
+\begin{itemize}
+  \item C++ ist umfangreich und bereitet viele Möglichkeiten, zum Beispiel im
+  Bereich Threading, generischem Programmieren via Templates und Operator
+  Überladungen,
+  \item Die Hardwarenähe und Speicherverwaltungsmöglichkeiten der Sprache können
+  in vielen Fällen Performanceverbesserungen im Vergleich zu anderen Sprachen
+  bringen,
+  \item Gleichzeitig schützt das Prinzip von \emph{Resource Acquisition Is
+  Initialization} (RAII) und Standardklassen wie \texttt{shared\_ptr} vor Memory
+  Leaks und anderen Gefahren,
+  \item Tools wie \texttt{clang-format}, \texttt{clang-tidy} oder
+  \texttt{cpplint} beschleunigen die (fehlerfreie) Entwicklung.
+\end{itemize}
+
+Gleichzeitig sind uns folgende Aspekte negativ aufgefallen:
+\vspace{-0.3cm}
+\begin{itemize}
+  \item C++ ist umfangreich und bereitet viele Möglichkeiten, zum Beispiel im
+  Bereich Threading, generischem Programmieren via Templates und Operator
+  Überladungen,
+  \item Fehlermeldungen können sehr komplex sein und deren Behebung oftmals mehr
+  Zeit in Anspruch nehmen, als die eigentlich Entwicklung,
+  \item Die Lernkurve ist sehr hoch und erschwert den Einstieg in die Sprache,
+  \item Compiler, Libraries und Tools sind oftmals sehr stark plattformabhängig,
+  was zu erhöhter Komplexizität und erhöhtem Aufwand führen kann (im Vergleich
+  zu JVM-basierten Sprachen),
+  \item Das Fehlen eines Modulsystems (und die damit verbundene Notwendigkeit
+  von \emph{Forward-Deklarationen}) kann bei fehlender Vorsicht schnell zu
+  Problemen, wie Include-Zyklen, führen.
+
+\end{itemize}
+
+\subsubsection{Methoden}
+\label{team:orga-workflow-methods}
+
+\subsubsection{Hilfsmittel}
+\label{team:orga-workflow-tools}
+
+language (learning, effectiveness)
+- C++
+- Qt
+- Python
+
+methods
+- definitions of done
+- test driven
+
+hilfsmittel
+- github
+- waffle
+- kommunikationsmittel
