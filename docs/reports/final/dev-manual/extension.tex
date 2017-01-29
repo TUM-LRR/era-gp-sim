@@ -18,10 +18,10 @@ bereits vorhandenen Teile zu verstehen und anzuwenden.\\
 \subsection{Übersicht zur Architektur}
 
 Um zu verstehen, wo die Erweiterung im Konzept einzuordnen ist, und welche
-Klassen zu implementieren sind, sollte man den Prozess verstehen, wie ein
+Klassen zu implementieren sind, sollte man den Prozess verstehen, wie genau ein
 Assembler-Paket geladen und angesprochen wird. Einen groben Überblick bietet \autoref{dev-manual-extension-overview}. Die Namen der Komponenten finden sich so nicht im Code
 wieder, sie dienen lediglich als Oberbegriff für eine ganze Reihe von Klassen
-und -strukturen die grob dieselbe Aufgabe haben.
+und -strukturen die grob die selbe Aufgabe haben.
 
 \begin{figure}
 	\centering
@@ -418,21 +418,21 @@ RISC-V Implementierungen der benötigten Fabriken definiert (siehe
 
 \subsection{Erweiterung der GUI}
 Soll eine neue Komponente zur GUI hinzugefügt werden, gibt es mehrere
-Entscheidungen zu treffen. Die Komponente kann etwas Bestehendes, wie die
+Entscheidungen zu treffen. Die Komponente kann etwas bestehendes, wie die
 Ausgabe, erweitern oder komplett neu sein. in diesem Fall gilt es noch zu
-klären, ob sie projektspezifisch, wie Speicher oder Register, ist oder auf das
-gesamte Programm, also außerhalb der TabView wie die Menubar, bezogen werden soll.
+klären, ob sie Projektspezifisch, wie Speicher oder Register, ist oder auf das
+ganze Programm, also außerhalb der TabView wie die Menubar, bezogen werden soll.
 
 \subsubsection{Erweiterung bestehender Komponenten}
 Das Erweitern bestehender Komponenten ist vergleichsweise einfach. Hier gilt es,
 in der entsprechenden C++-Datei nachzuschlagen. Ist, wie bei der Ausgabe, nur
-eine für die gesamte Komponente vorhanden, müssen hier etwaige Attribute und
+eine für die gesamte Komponente angelegt, müssen hier etwaige Attribute und
 Methoden ergänzt werden. Ist dagegen für jeden einzelnen Teil eine eigene Datei
 angelegt, so sollte auch für die Erweiterung eine ergänzt werden. Man beachte,
 dass es wahrscheinlich nötig sein wird, die Instanzen zum \texttt{QQMLContext}
 hinzuzufügen.\\
 In QML sind Komponenten, die mehrere eigene Module besitzen, üblicherweise in
-einem TabView dargestellt. Es muss also nur ein Tab in der Hauptdatei der zu
+einer TabView dargestellt. Es muss also nur ein Tab in der Hauptdatei der zu
 erweiternden Komponente ergänzt werden. Die eigentliche Definition sollte in
 einer eigenen Datei in einem neuen Unterverzeichnis erfolgen. Im Allgemeinen
 sollte auch auf ein Einstellungsfenster, die entsprechende Funktion und die
@@ -442,13 +442,13 @@ anderen Module.
 \subsubsection{Neue Komponenten}
 
 Auch das Hinzufügen neuer Komponenten gestaltet sich nicht besonders schwierig.
-Für den QML-Teil ist Folgendes zu tun: Im Ordner sollte \texttt{ui/Components} ein
+Für den QML-Teil ist Folgendes zu tun: Im Ordner \texttt{ui/Components} ein
 neuer Ordner angelegt werden. Dort werden alle neuen Dateien der Erweiterung
 abgelegt. Außerhalb dieses Ordners muss nur die Datei
 \texttt{ui/SplitviewItem.qml} modifiziert werden. Hier muss in der ComboBox der
 entsprechende Name eingetragen werden, in den Variablen \texttt{model} und
 \texttt{usualList}. Außerdem muss unten im Loader der Pfad der Hauptdatei
-hinzugefügt werden, am gleichen Index wie der Name in der ComboBox. Des Weiteren
+hinzugefügt werden, am gleichen Index wie der Name in der ComboBox. Des weiteren
 sei bemerkt, dass jede neue Komponente eine Variable
 \texttt{hasComponentSettings} benötigt.\\
 Der C++-Teil wird einfach unter \texttt{ui} abgelegt. Auch ein Header sollte im
