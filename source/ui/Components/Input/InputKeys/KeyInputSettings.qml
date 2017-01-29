@@ -37,7 +37,8 @@ Window {
 
   // Refreshes the window's control contentItem.
   function updateSettings() {
-    baseAddressTextField.text = "0x" + inputKeyMod.getStart().toString(16);
+    var baseAddressInt = parseInt(inputKeyMod.getStart());
+    baseAddressTextField.text = "0x" + baseAddressInt.toString(16);
   }
 
   onVisibleChanged: settingsWindowIK.updateSettings();
