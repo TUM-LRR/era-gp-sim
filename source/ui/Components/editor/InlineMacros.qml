@@ -275,15 +275,25 @@ Item {
 
     // Accepts a given line number inside the editor and factors out all blank lines inserted for macro expansions.
     function convertRawLineNumberToDisplayLineNumber(text, rawLineNumber) {
-        var lineNumber = rawLineNumber;
-        for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
-            var macro = macros[macroIndex];
-            var macroRawLine = convertDisplayLineNumberToRawLineNumber((macro["startLine"]));
-            if (macroRawLine < lineNumber && macro["collapsed"] === false) {
-                lineNumber -= Number(macro["lineCount"]);
-            }
+      // Number of blank lines found so far.
+      var blankLineCount = 0;
+      // Iterate over all macros and note down every macro blank line.
+      for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
+        var macro = macros[macroIndex];
+        // Note: startLine starts counting at 0.
+        var macroRawLineNumber = Number(macro["startLine"])+blankLineCount;
+        // Check if the given line number lies below a macro expansion.
+        if (macro["collapsed"] === false && rawLineNumber > (macroRawLineNumber+1)) {
+          blankLineCount += Number(macro["lineCount"]);
+          // If the given line number lies within a macro expansion, return position
+          // of macro expansion.
+          if (rawLineNumber <= (macroRawLineNumber+1+Number(macro["lineCount"]))) {
+            // Note: startLine starts counting at 0.
+            return Number(macro["startLine"])+1;
+          }
         }
-        return lineNumber;
+      }
+      return rawLineNumber-blankLineCount;
     }
 
     // Accepts a given display line number (i.e. as in sidebar) and factors in all blank lines inserted for macro expansions.
