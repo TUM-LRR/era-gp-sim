@@ -74,7 +74,7 @@ Window {
           outputComponent.setOutputItemProperty(outputItemIndex, "baseAddress", inputValue);
           var maxStrips = (outputComponent.getMemorySize() - (inputValue)) * 8;
           var strips = TextUtility.convertStringToInteger(String(numberOfStripsTextField.text));
-          if(strips > maxStrips){
+          if (strips > maxStrips){
             numberOfStripsTextField.text = maxStrips + "";
             numberOfStripsTextField.processInput();
           }
@@ -102,7 +102,7 @@ Window {
         var size = TextUtility.convertStringToInteger(String(baseAddressTextField.text)) ;
         var maxStrips = (outputComponent.getMemorySize() - size) * 8;
         if (inputValue !== undefined && inputValue > 0) {
-          if(inputValue <= maxStrips){
+          if (inputValue <= maxStrips){
             outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", inputValue);
           } else {
             outputComponent.setOutputItemProperty(outputItemIndex, "numberOfStrips", maxStrips);

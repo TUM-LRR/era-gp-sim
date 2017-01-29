@@ -49,7 +49,7 @@ Item {
       if ((address + length) >= _baseAddress && _mode === 0) {
         item.updateContent(_baseAddress);
       } else if (_mode !== 0 ){
-        if(address <= _baseAddress && address + length >= _baseAddress) {
+        if (address <= _baseAddress && address + length >= _baseAddress) {
           item.updateContent(_baseAddress);
         }
       }
@@ -58,7 +58,7 @@ Item {
     onOutputItemSettingsChanged: {
       var mode = outputComponent.getOutputItem(outputItemIndex)["textMode"];
       var baseAddress = outputComponent.getOutputItem(outputItemIndex)["baseAddress"];
-      if(mode === oldMode && baseAddress === oldAddress) {
+      if (mode === oldMode && baseAddress === oldAddress) {
         return;
       }
       item.updateContent(outputComponent.getOutputItem(outputItemIndex)["baseAddress"]);

@@ -23,7 +23,7 @@ import QtQuick.Layouts 1.2
 
 import Theme 1.0
 
-SplitView{
+SplitView {
   property var usual1
   property var usual2
 
@@ -44,14 +44,14 @@ SplitView{
   }
 
   orientation: Qt.Vertical
-  SplitviewItem{
+  SplitviewItem {
     id: item1
     Layout.minimumHeight: 25
     height: parent.height/2
     usual: parent.usual1
   }
 
-  SplitviewItem{
+  SplitviewItem {
     id: item2
     height: parent.height/2
     Layout.minimumHeight: 10

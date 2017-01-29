@@ -56,7 +56,7 @@ void SyntaxHighlighter::_addKeywords(
   for (const auto &regexString : parserInterface.getSyntaxRegex(token).get()) {
     QRegularExpression regex(QString::fromStdString(regexString),
                              patternOption);
-    KeywordRule keyword{regex, format};
+    KeywordRule keyword {regex, format};
     _keywords.push_back(keyword);
   }
 }

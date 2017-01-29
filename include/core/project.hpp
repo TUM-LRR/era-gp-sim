@@ -50,8 +50,7 @@ class Project : public Servant {
  public:
   template <typename... T>
   using Callback = std::function<void(T...)>;
-  using ErrorCallback =
-      Callback<const Translateable &>;
+  using ErrorCallback = Callback<const Translateable &>;
 
   using size_t = std::size_t;
   using MemoryValueToString = std::function<std::string(MemoryValue)>;
@@ -257,6 +256,13 @@ class Project : public Servant {
   void setUpdateMemoryCallback(Callback<size_t, size_t> callback);
 
   /**
+   * Set the callback which is used to signal the gui that the memory size
+   * changed.
+   * \param callback
+   */
+  void setUpdateMemorySizeCallback(Callback<size_t> callback);
+
+  /**
    * Set the callback which is used to notify the gui of an error.
    *
    * \param callback
@@ -268,7 +274,7 @@ class Project : public Servant {
    *
    */
   Architecture getArchitecture() const;
-    
+
 
  private:
   /**

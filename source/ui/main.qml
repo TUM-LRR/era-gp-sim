@@ -180,7 +180,7 @@ ApplicationWindow {
           }
           onExecutionStopped: {
             editor.parse();
-            placeholderItem.isRunning = false;
+            placeholderItem.running = false;
           }
         }
       }
@@ -214,8 +214,6 @@ ApplicationWindow {
     selectExisting: false
     selectFolder: false
     selectMultiple: false
-    onAccepted: {
-      ui.saveTextAs(tabView.currentProjectId(), fileDialog.fileUrl);
-    }
+    onAccepted: onAcceptedFunction(fileDialog.fileUrl);
   }
 }

@@ -22,7 +22,7 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
-Item{
+Item {
     anchors.fill: parent
     property string usualText: "Sorry, no help available"
     property int currentLine: 1
@@ -48,7 +48,7 @@ Item{
         // Send when text changes
         onCommandListUpdated: {
             textarea.text = guiProject.getCommandHelp(currentLine);
-            if(textarea.text === ""){
+            if (textarea.text === ""){
                 textarea.text = usualText;
             }
         }
@@ -60,7 +60,7 @@ Item{
         onCursorLineChanged: {
             currentLine = line;
             textarea.text = guiProject.getCommandHelp(currentLine);
-            if(textarea.text === ""){
+            if (textarea.text === ""){
                 textarea.text = usualText;
             }
         }

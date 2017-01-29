@@ -114,7 +114,7 @@ Window {
                 id: mode
                 ExclusiveGroup { id: modeGroup }
 
-                RadioButton{
+                RadioButton {
                     id: ab
                     text: "ArrayBased"
                     checked: true

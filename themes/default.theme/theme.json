@@ -296,17 +296,20 @@
         "lineHighlight": {
             "background": "#1ae8e8e8",
             "border": {
-                "color": "#1ab2b2b2"
+                "color": "#1ab2b2b2",
+                "width": 1
             }
         },
-        "executionLineHighlight": {
+        "executedLineHighlighting": {
             "background": "#1a2196F3",
             "border": {
-                "color": "transparent"
+                "color": "transparent",
+                "width": 1
             }
         },
         "breakpoint": {
-            "color": "#FF4081"
+            "color": "#FF4081",
+            "radius": 0.5
         },
         "sidebar": {
             "background": "#e8e8e8",

@@ -24,7 +24,7 @@ import QtQuick 2.6
 Item {
     anchors.top: parent.top
 
-    Rectangle{
+    Rectangle {
         id: area
         width: 255
         height: 255
@@ -33,7 +33,7 @@ Item {
 
         color: "blue"
 
-        MouseArea{
+        MouseArea {
             anchors.fill: parent
             onClicked: {
                 //console.info(mouse.x);
@@ -43,7 +43,7 @@ Item {
         }
 
     }
-    Rectangle{
+    Rectangle {
         id: xRect
         height: 40
         width: area.width
@@ -52,7 +52,7 @@ Item {
         anchors.topMargin: 10
         color: "transparent"
 
-        Text{
+        Text {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             text: "0"
@@ -64,21 +64,21 @@ Item {
             anchors.centerIn: parent
         }
 
-        Text{
+        Text {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             text: "255"
         }
     }
 
-    Rectangle{
+    Rectangle {
         width: 40
         height: area.height
         anchors.right: area.left
         anchors.top: area.top
         color: "transparent"
 
-        Text{
+        Text {
             anchors.top: parent.top
             anchors.right: parent.right
             text: "0  "
@@ -90,7 +90,7 @@ Item {
             text: "y \u2193"
         }
 
-        Text{
+        Text {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             text: "255  "
@@ -101,7 +101,7 @@ Item {
         settingsWindowIC.show();
     }
 
-    ClickInputSW{
+    ClickInputSW {
         id: settingsWindowIC
     }
 
