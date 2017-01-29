@@ -146,20 +146,60 @@ sondern erst im September fertiggestellt. Ebenso wurde die (korrekte)
 Assemblierungslogik zur realitätsnahen Darstellung von Instruktionen im Speicher
 im Dezember und nicht bereits im August vollendet. Auch verschob sich ein nicht
 unbeachtlicher Teil der Entwicklung der GUI auf Dezember und Januar. Grafik
-\ref{fig:commit-history} zeigt ein interpoliertes Histogramm der Commitzahlen
+\ref{fig:commit-history} zeigt ein Histogramm der Commitzahlen
 auf das GitHub Repository des Projekts, während Grafik \ref{fig:time-frame}
 einen Eindruck über die Diskrepanz zwischen geplanter und tatsächlicher
 Fertigstellung von Meilensteinen gibt.
 
-Wir behaupten, dass sich unsere Verplanung bei manchen der Meilensteinen auf vier Ursachen zurückz uführen lässt: Mangel an Erfahrung und Einschätzungsvermögen
-
-\begin{figure}[p!]
-  \includegraphics[scale=0.1]{figures/commit-history}
-  \caption{Ein Histogramm der gesammelten Commitzahlen auf das GitHub Repository von \erasim{} während des Entwicklungszeitraumes.}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.45]{figures/commit-history}
+  \caption{Ein Histogramm der gesammelten Commitzahlen auf das GitHub Repository von \erasim{} während des Entwicklungszeitraumes. Quelle: \link{https://github.com/TUM-LRR/era-gp-sim/graphs/contributors}, letzter Zugriff \today.}
   \label{fig:commit-history}
 \end{figure}
 
-\begin{figure}[p!]
+Wir behaupten, dass sich unsere Verplanung bei manchen der Meilensteinen auf drei Ursachen zurückzuführen lässt:
+
+\begin{enumerate}
+  \emphitem{Mangel an Erfahrung und Einschätzungsvermögen}. Da zum Zeitpunkt
+  unserer Planungsphase kein Mitglied des Teams Erfahrung mit der ``A-Z''
+  Entwicklung eines solch anspruchsvollen Projekts hatte, behaupten wir, dass es
+  uns schwer fiel, den Arbeitsaufwand für bestimmte Features realistisch
+  einzuschätzen. Dies ist insbesondere bei der Entwicklung der GUI merkbar, wo
+  gegen Ende der Entwicklungszeit noch viele weitere Hände, als ursprünglich
+  geplant, mithelfen mussten, um ein korrektes und intuitives User Interface zu
+  gestalten. Könnten wir heute, mit unserer neu gewonnenen Erfahrung, die
+  Entwicklungsschritte neu priorisieren, so würden wir bestimmte Aufgaben gewiss
+  anders gewichten.
+  \emphitem{Irreguläre Verfügbarkeit}. Während (1) zu Fehlern in der
+  \emph{Vorarbeit} geführt hat, war es insbesondere die unregelmäßige
+  Verfügbarkeit von Mitgliedern während der Entwicklungsphase, die uns bei der
+  \emph{Exekution} der geplanten Schritte Zeit gekostet hat. Bestimmte
+  Ereignisse, die im studentischen Alltag auftreten können, seien es
+  Prüfungszeiten, Sommerferien oder Praktika, haben es schwer gemacht,
+  regelmäßige Sprints zu planen und aufrechtzuhalten. Beispielsweise erkennt man
+  an Grafik \ref{fig:commit-history}, dass gegen Ende Juli und Anfang August das
+  Vorbereiten für Klausuren höhere Priorität als die Entwicklung des Simulators
+  hatte. Ebenso hinkte im November die Produktivität aufgrund von Lern- oder
+  Praktikumsstress sichtlich nach. Diese Unregelmäßgitkeit ist schlicht ein
+  Resultat davon, dass wir als Studirende an dem Projekt nie \emph{vollzeit}
+  arbeiten konnten. Es ist natürlich viel einfacher in einem Team von
+  Vollzeitangestellten (bspw. in einer Firma) einen rigorosen Entwicklungszyklus
+  einzuplanen und einzuhalten.
+
+  \emphitem{Austritt einiger Mitglieder}. Letztlich identifizieren wir als eine
+  weitere Produktivitätsschranke den Austritt zweier Teamkameraden im dritten
+  Viertel der Entwicklungszeit. Diesen Mitgliedern waren Aufgaben zugeteilt,
+  dessen Abschluss sie uns (verspätet) zusicherten, an welchen sie aber nur
+  sporadisch arbeiteten und niemals abschlossen. Als diese Personen dann doch,
+  relativ spät, aus dem Projekt vollkommen ausschieden, blieben deren Features
+  übrig. Da die bestehende Arbeit dieser Entwickler zum Teil undokumentiert oder
+  inkorrekt war, musste noch zusätzliche Arbeitszeit von anderen Teammitgliedern
+  investiert werden, um diese Features verspätet aber doch abzuschließen. Im Rückblick hätten wir wohl schneller klarstellen sollen, ob diese Mitglieder sich wirklich weiter für \erasim{} engagieren wollen. Wäre das ``Nein'' als Antwort früher klargeworden, hätten wir deren Aufgaben schneller neu verteilen und fertigstellen können.
+
+\end{enumerate}
+
+\begin{figure}[h!]
   \centering
   \begin{tikzpicture}[thick]
     \draw [|->] (0, 0) -- ++(16, 0);
