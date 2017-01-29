@@ -60,6 +60,10 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_PROPERTY(size_t freeBytes READ getFreeBytes WRITE setFreeBytes)
   Q_PROPERTY(size_t freeBits READ getFreeBits WRITE setFreeBits)
 
+ signals:
+  void pixelDisplayError(const QString &errMsg) const;
+  void pixelDisplayErrorResolved() const;
+
  public:
   /**
    * \brief constructs a new PixelDisplayPaintedItem
@@ -308,6 +312,14 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
    * \param colorMode Index of the colorMode
    */
   static QString colorModeToString(size_t colorMode);
+
+  /**
+   * calls the appropiate error related signal
+   * \param resolved activates the resolved signal
+   * \param errMsg the error message to be shown
+   */
+  const std::function<void(bool, const std::string &)>
+      _pixelDisplayErrorFunction;
 
   /** shared pointer to the image */
   std::shared_ptr<QImage> _image;

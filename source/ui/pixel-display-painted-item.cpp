@@ -27,7 +27,16 @@
 #include "ui/output-component.hpp"
 
 PixelDisplayPaintedItem::PixelDisplayPaintedItem(QQuickItem *parent)
-: QQuickPaintedItem(parent), _options{} {
+: QQuickPaintedItem(parent)
+, _options{}
+, _pixelDisplayErrorFunction{
+      [this](bool resolved, const std::string &errMsg) -> void {
+        if (resolved) {
+          emit pixelDisplayErrorResolved();
+        } else {
+          emit pixelDisplayError(QString::fromStdString(errMsg));
+        }
+      }} {
   _options.colorMode = 0;
   _options.width = 16;
   _options.height = 16;
@@ -228,23 +237,23 @@ size_t PixelDisplayPaintedItem::stringToColorMode(const QString &colorMode) {
     }
   }
   assert::that(false);
-  return 0; // oh what beautiful error code
+  return 0;  // oh what beautiful error code
 }
 QString PixelDisplayPaintedItem::colorModeToString(size_t colorMode) {
-  assert::that(colorMode>=0);
-  assert::that(colorMode<2);
+  assert::that(colorMode >= 0);
+  assert::that(colorMode < 2);
   const QString colorModeNameList[] = {QString::fromStdString("RGB"),
                                        QString::fromStdString("Monochrome")};
   return colorModeNameList[colorMode];
 }
 
-void PixelDisplayPaintedItem::doUpdate(){
-  _options.handleErrors();
-  update();
-}
-
-OutputComponent *PixelDisplayPaintedItem::getOutputComponent(){
+OutputComponent *PixelDisplayPaintedItem::getOutputComponent() {
   // this shouldn't be called ever
   assert::that(false);
   return nullptr;
+}
+
+void PixelDisplayPaintedItem::doUpdate() {
+  _options.handleErrors(_pixelDisplayErrorFunction);
+  update();
 }

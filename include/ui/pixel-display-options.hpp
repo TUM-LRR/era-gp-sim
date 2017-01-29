@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_UI_PIXEL_DISPLAY_OPTIONS_HPP
 #define ERAGPSIM_UI_PIXEL_DISPLAY_OPTIONS_HPP
 
+#include <functional>
 #include <memory>
 
 #include "common/optional.hpp"
@@ -32,6 +33,12 @@ namespace colormode {
 struct ColorMode;
 struct Options {
   using size_t = std::size_t;
+  using pixelDisplayErrorFunction =
+      std::function<void(bool, const std::string &)>;
+  /** number of possible errors */
+  static constexpr size_t maxError = 5;
+  /** the Error messages of the pixel display */
+  static const std::string errorMessages[];
   // address of of the pixelBuffer(pointer)
   size_t pixelBaseAddress = 0;
   // address of of the colorBuffer(pointer)
@@ -65,8 +72,6 @@ struct Options {
   size_t freeBytes = 1;
   // waste n bits in each byte (in Monochrome mode)
   size_t freeBits = 0;
-  // number of possible errors
-  static constexpr size_t maxError = 5;
   /**
    * space for Errors
    * 0:couldn't access memoryAccess
@@ -76,7 +81,6 @@ struct Options {
    * 4:bufferStart address not in Memory
    */
   std::vector<bool> errorVector = std::vector<bool>(maxError, false);
-  static const std::string errorMessages[];
 
   /**
    * \brief returns the current ColorMode
@@ -180,7 +184,7 @@ struct Options {
   /**
    * \brief Handles all errors and resets the error vector
    */
-  void handleErrors();
+  void handleErrors(const pixelDisplayErrorFunction &errFun);
 
   /** The color mode used for RGB Color Mode */
   static ColorMode RGB;

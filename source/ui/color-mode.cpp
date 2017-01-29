@@ -71,6 +71,7 @@ ColorMode::getMemoryValueAt(Optional<OutputComponent *> memoryAccess,
           .get();
     } else {
       o.setError(4);
+      return MemoryValue{1};
     }
   }
   o.setError(0);

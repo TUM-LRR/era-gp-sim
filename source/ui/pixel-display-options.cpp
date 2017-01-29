@@ -18,6 +18,7 @@
 */
 
 #include <QImage>
+#include <sstream>
 
 #include "common/assert.hpp"
 #include "ui/color-mode.hpp"
@@ -105,14 +106,17 @@ void Options::setError(size_t index) {
   errorVector[index] = true;
 }
 
-void Options::handleErrors() {
+void Options::handleErrors(const pixelDisplayErrorFunction &errFun) {
+  bool resolved = true;
+  std::stringstream stream{};
   for (size_t i = 0; i < maxError; ++i) {
     if (errorVector[i]) {
+      resolved &= errorVector[i];
       errorVector[i] = false;
-      // TODO::Do handle
-      std::cout << "PixelDisplayError " << i << " occured:" << errorMessages[i]
-                << std::endl;
+      stream << "PixelDisplayError " << i << " occured:" << errorMessages[i]
+             << "\n";
     }
   }
+  errFun(resolved, stream.str());
 }
 }
