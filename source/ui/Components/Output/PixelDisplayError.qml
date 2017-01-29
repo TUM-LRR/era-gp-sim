@@ -29,6 +29,9 @@ Rectangle {
   color: Theme.pixelDisplay.error.color
   border.color: Theme.pixelDisplay.error.borderColor
 
+  property real maxTooltipWidth
+  property real maxTooltipHeight
+
   Image {
     id: errorIcon
     anchors.fill: parent
@@ -46,6 +49,8 @@ Rectangle {
     id: errorTooltip
     anchors.fill: parent
     permanentOnClick: false
+    maxWidth: maxTooltipWidth
+    maxHeight: maxTooltipHeight
   }
 
   Connections {
