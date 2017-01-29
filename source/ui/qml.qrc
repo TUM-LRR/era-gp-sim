@@ -90,10 +90,6 @@
         <file>Components/Input/Buttons/Mouse Input Icon Selected@2x.png</file>
         <file>Components/Input/Buttons/Mouse Input Icon.png</file>
         <file>Components/Input/Buttons/Mouse Input Icon@2x.png</file>
-        <file>Components/Input/Buttons/Text Console Icon Selected.png</file>
-        <file>Components/Input/Buttons/Text Console Icon Selected@2x.png</file>
-        <file>Components/Input/Buttons/Text Console Icon.png</file>
-        <file>Components/Input/Buttons/Text Console Icon@2x.png</file>
         <file>Components/Settings/AskAboutUnsavedChangesDialog.qml</file>
         <file>Components/Settings/CheckboxSetting.qml</file>
         <file>Components/Settings/default-settings.json</file>
