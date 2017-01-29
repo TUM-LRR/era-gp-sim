@@ -29,20 +29,32 @@ TabView {
   Component.onCompleted: createProject()
   onCurrentIndexChanged: updateMenuState();
 
+  function projectItem(projectIndex) {
+    return tabView.getTab(projectIndex).item;
+  }
+
   // Undefined if there is no tab.
   function currentProjectItem() {
-    return tabView.getTab(tabView.currentIndex).item;
+    return projectItem(tabView.currentIndex);
+  }
+
+  function projectId(projectIndex) {
+    return projectItem(projectIndex).projectId;
   }
 
   // Undefined if there is no tab.
   function currentProjectId() {
-    return currentProjectItem().projectId;
+    return projectId(tabView.currentIndex);
+  }
+
+  function projectIsReady(projectIndex) {
+    return projectItem(projectIndex).projectValid;
   }
 
   // Returns false if there is only a creation screen in the current tab.
   // Undefined if there is no tab.
   function currentProjectIsReady() {
-    return currentProjectItem().projectValid;
+    return projectIsReady(tabView.currentIndex);
   }
 
   style: TabViewStyle {
@@ -170,7 +182,7 @@ TabView {
             }
           }
         }
-        onClicked: closeProject();
+        onClicked: closeProject(styleData.index);
       }
     }
   }
